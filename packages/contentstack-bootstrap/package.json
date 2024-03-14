@@ -1,0 +1,76 @@
+{
+  "name": "@contentstack/cli-cm-bootstrap",
+  "description": "Bootstrap contentstack apps",
+  "version": "1.9.0",
+  "author": "Contentstack",
+  "bugs": "https://github.com/contentstack/cli/issues",
+  "scripts": {
+    "build": "npm run clean && npm run compile",
+    "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
+    "compile": "tsc -b tsconfig.json",
+    "postpack": "rm -f oclif.manifest.json",
+    "posttest": "eslint . --ext .ts --config .eslintrc",
+    "prepack": "pnpm compile && oclif manifest && oclif readme",
+    "version": "oclif readme && git add README.md",
+    "test": "npm run build && npm run test:e2e",
+    "test:e2e": "nyc mocha \"test/**/*.test.js\"",
+    "test:report": "nyc --reporter=lcov mocha \"test/**/*.test.js\""
+  },
+  "dependencies": {
+    "@contentstack/cli-cm-seed": "~1.7.0",
+    "@contentstack/cli-command": "~1.2.16",
+    "@contentstack/cli-utilities": "~1.5.12",
+    "inquirer": "8.2.4",
+    "mkdirp": "^1.0.4",
+    "tar": "^6.1.13"
+  },
+  "devDependencies": {
+    "@oclif/test": "^2.5.6",
+    "@types/inquirer": "^9.0.3",
+    "@types/mkdirp": "^1.0.1",
+    "@types/node": "^14.14.32",
+    "@types/tar": "^6.1.3",
+    "chai": "^4.3.4",
+    "eslint": "^8.18.0",
+    "eslint-config-oclif": "^4.0.0",
+    "eslint-config-oclif-typescript": "^3.0.8",
+    "globby": "^10.0.2",
+    "mocha": "10.1.0",
+    "nyc": "^15.1.0",
+    "oclif": "^3.8.1",
+    "rimraf": "^2.7.1",
+    "tmp": "^0.2.2",
+    "ts-node": "^8.10.2",
+    "typescript": "^4.9.3"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "files": [
+    "/lib",
+    "/messages",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "homepage": "https://github.com/contentstack/cli",
+  "keywords": [
+    "contentstack",
+    "cli",
+    "plugin"
+  ],
+  "license": "MIT",
+  "oclif": {
+    "commands": "./lib/commands",
+    "bin": "csdx",
+    "plugin": [
+      "@contentstack/cli-cm-seed"
+    ],
+    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-bootstrap/<%- commandPath %>"
+  },
+  "csdxConfig": {
+    "shortCommandName": {
+      "cm:bootstrap": "BTSTRP"
+    }
+  },
+  "repository": "contentstack/cli"
+}

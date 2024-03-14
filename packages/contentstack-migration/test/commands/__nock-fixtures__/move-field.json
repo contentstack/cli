@@ -1,0 +1,3959 @@
+[
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "POST",
+        "path": "/v3/content_types",
+        "body": {
+            "content_type": {
+                "title": "foo3",
+                "uid": "foo3",
+                "description": "sample description",
+                "options": {
+                    "is_page": true,
+                    "singleton": false
+                },
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    }
+                ]
+            }
+        },
+        "status": 201,
+        "response": {
+            "notice": "Content Type created successfully.",
+            "content_type": {
+                "created_at": "2021-09-09T03:50:19.681Z",
+                "updated_at": "2021-09-09T03:50:19.681Z",
+                "title": "foo3",
+                "uid": "foo3",
+                "_version": 1,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "description": "sample description",
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            },
+                            "uid": "***REMOVED***"
+                        }
+                    ],
+                    "management_token": {
+                        "read": true
+                    }
+                },
+                "SYS_ACL": {
+                    "roles": [],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": true,
+                    "singleton": false,
+                    "title": "title",
+                    "url_pattern": "/:title",
+                    "url_prefix": "/"
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:19 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "35ms",
+            "X-REQUEST-ID",
+            "51994",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "GET",
+        "path": "/v3/content_types/foo3",
+        "body": "",
+        "status": 200,
+        "response": {
+            "content_type": {
+                "created_at": "2021-09-09T03:50:19.681Z",
+                "updated_at": "2021-09-09T03:50:19.681Z",
+                "title": "foo3",
+                "uid": "foo3",
+                "_version": 1,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "description": "sample description",
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            },
+                            "uid": "***REMOVED***"
+                        }
+                    ],
+                    "management_token": {
+                        "read": true
+                    }
+                },
+                "SYS_ACL": {
+                    "roles": [
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        },
+                        {
+                            "uid": "bltmock9e992a923aafa5f79e992a923aaf",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            }
+                        },
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        }
+                    ],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": true,
+                    "singleton": false,
+                    "title": "title",
+                    "url_pattern": "/:title",
+                    "url_prefix": "/"
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:21 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "Vary",
+            "Accept-Encoding",
+            "Surrogate-Key",
+            "bltmock9e992a923aafdmock521adc4b5b3.content_types bltmock9e992a923aafdmock521adc4b5b3.content_types.foo3",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "14ms",
+            "X-REQUEST-ID",
+            "84509",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "PUT",
+        "path": "/v3/content_types/foo3",
+        "body": {
+            "content_type": {
+                "_version": 1,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "facebook",
+                        "uid": "facebook_link",
+                        "data_type": "link",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "description": "Edited description",
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            },
+                            "uid": "***REMOVED***"
+                        }
+                    ],
+                    "management_token": {
+                        "read": true
+                    }
+                },
+                "SYS_ACL": {
+                    "roles": [
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        },
+                        {
+                            "uid": "bltmock9e992a923aafa5f79e992a923aaf",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            }
+                        },
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        }
+                    ],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": false,
+                    "singleton": false
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "status": 200,
+        "response": {
+            "notice": "Content Type updated successfully.",
+            "content_type": {
+                "created_at": "2021-09-09T03:50:19.681Z",
+                "updated_at": "2021-09-09T03:50:23.258Z",
+                "title": "foo3",
+                "uid": "foo3",
+                "_version": 2,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "facebook",
+                        "uid": "facebook_link",
+                        "data_type": "link",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "description": "Edited description",
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            }
+                        }
+                    ]
+                },
+                "SYS_ACL": {
+                    "roles": [],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": false,
+                    "singleton": false,
+                    "title": "title"
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:23 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "Vary",
+            "Accept-Encoding",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "34ms",
+            "X-REQUEST-ID",
+            "83337",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "DELETE",
+        "path": "/v3/content_types/foo3",
+        "body": "",
+        "status": 200,
+        "response": {
+            "notice": "Content Type deleted successfully."
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:24 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "Vary",
+            "Accept-Encoding",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "43ms",
+            "X-REQUEST-ID",
+            "63487",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "POST",
+        "path": "/v3/content_types",
+        "body": {
+            "content_type": {
+                "title": "foo",
+                "uid": "foo",
+                "description": "Sample description",
+                "options": {
+                    "is_page": true,
+                    "singleton": false
+                },
+                "schema": [
+                    {
+                        "display_name": "bar",
+                        "uid": "bar",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    }
+                ]
+            }
+        },
+        "status": 422,
+        "response": {
+            "error_message": "Content Type creation failed. Please try again.",
+            "error_code": 115,
+            "errors": {
+                "content_type": [
+                    "should have a 'title' field."
+                ],
+                "schema": [
+                    "should have a 'url' field."
+                ]
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:25 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "16ms",
+            "X-REQUEST-ID",
+            "68813",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "POST",
+        "path": "/v3/content_types",
+        "body": {
+            "content_type": {
+                "title": "foo3",
+                "uid": "foo3",
+                "description": "sample description",
+                "options": {
+                    "is_page": true,
+                    "singleton": false
+                },
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    }
+                ]
+            }
+        },
+        "status": 201,
+        "response": {
+            "notice": "Content Type created successfully.",
+            "content_type": {
+                "created_at": "2021-09-09T03:50:27.001Z",
+                "updated_at": "2021-09-09T03:50:27.001Z",
+                "title": "foo3",
+                "uid": "foo3",
+                "_version": 1,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "description": "sample description",
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            },
+                            "uid": "***REMOVED***"
+                        }
+                    ],
+                    "management_token": {
+                        "read": true
+                    }
+                },
+                "SYS_ACL": {
+                    "roles": [],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": true,
+                    "singleton": false,
+                    "title": "title",
+                    "url_pattern": "/:title",
+                    "url_prefix": "/"
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:27 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "25ms",
+            "X-REQUEST-ID",
+            "28526",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "GET",
+        "path": "/v3/content_types/foo3",
+        "body": "",
+        "status": 200,
+        "response": {
+            "content_type": {
+                "created_at": "2021-09-09T03:50:27.001Z",
+                "updated_at": "2021-09-09T03:50:27.001Z",
+                "title": "foo3",
+                "uid": "foo3",
+                "_version": 1,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "description": "sample description",
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            },
+                            "uid": "***REMOVED***"
+                        }
+                    ],
+                    "management_token": {
+                        "read": true
+                    }
+                },
+                "SYS_ACL": {
+                    "roles": [
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        },
+                        {
+                            "uid": "bltmock9e992a923aafa5f79e992a923aaf",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            }
+                        },
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        }
+                    ],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": true,
+                    "singleton": false,
+                    "title": "title",
+                    "url_pattern": "/:title",
+                    "url_prefix": "/"
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:28 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "Vary",
+            "Accept-Encoding",
+            "Surrogate-Key",
+            "bltmock9e992a923aafdmock521adc4b5b3.content_types bltmock9e992a923aafdmock521adc4b5b3.content_types.foo3",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "11ms",
+            "X-REQUEST-ID",
+            "54498",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "PUT",
+        "path": "/v3/content_types/foo3",
+        "body": {
+            "content_type": {
+                "_version": 1,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            },
+                            "uid": "***REMOVED***"
+                        }
+                    ],
+                    "management_token": {
+                        "read": true
+                    }
+                },
+                "SYS_ACL": {
+                    "roles": [
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        },
+                        {
+                            "uid": "bltmock9e992a923aafa5f79e992a923aaf",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            }
+                        },
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        }
+                    ],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": true,
+                    "singleton": false
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "status": 200,
+        "response": {
+            "notice": "Content Type updated successfully.",
+            "content_type": {
+                "created_at": "2021-09-09T03:50:27.001Z",
+                "updated_at": "2021-09-09T03:50:29.645Z",
+                "title": "foo3",
+                "uid": "foo3",
+                "_version": 2,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "description": "sample description",
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            }
+                        }
+                    ]
+                },
+                "SYS_ACL": {
+                    "roles": [],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": true,
+                    "singleton": false,
+                    "title": "title",
+                    "url_pattern": "/:title",
+                    "url_prefix": "/"
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:29 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "Vary",
+            "Accept-Encoding",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "59ms",
+            "X-REQUEST-ID",
+            "91569",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "GET",
+        "path": "/v3/content_types/foo3",
+        "body": "",
+        "status": 200,
+        "response": {
+            "content_type": {
+                "created_at": "2021-09-09T03:50:27.001Z",
+                "updated_at": "2021-09-09T03:50:29.645Z",
+                "title": "foo3",
+                "uid": "foo3",
+                "_version": 2,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "description": "sample description",
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            }
+                        }
+                    ]
+                },
+                "SYS_ACL": {
+                    "roles": [
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        },
+                        {
+                            "uid": "bltmock9e992a923aafa5f79e992a923aaf",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            }
+                        },
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        }
+                    ],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": true,
+                    "singleton": false,
+                    "title": "title",
+                    "url_pattern": "/:title",
+                    "url_prefix": "/"
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:30 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "Vary",
+            "Accept-Encoding",
+            "Surrogate-Key",
+            "bltmock9e992a923aafdmock521adc4b5b3.content_types bltmock9e992a923aafdmock521adc4b5b3.content_types.foo3",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "14ms",
+            "X-REQUEST-ID",
+            "6667",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "DELETE",
+        "path": "/v3/content_types/foo3",
+        "body": "",
+        "status": 200,
+        "response": {
+            "notice": "Content Type deleted successfully."
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:32 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "Vary",
+            "Accept-Encoding",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "48ms",
+            "X-REQUEST-ID",
+            "29141",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "POST",
+        "path": "/v3/content_types",
+        "body": {
+            "content_type": {
+                "title": "foo3",
+                "uid": "foo3",
+                "description": "sample description",
+                "options": {
+                    "is_page": true,
+                    "singleton": false
+                },
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    }
+                ]
+            }
+        },
+        "status": 201,
+        "response": {
+            "notice": "Content Type created successfully.",
+            "content_type": {
+                "created_at": "2021-09-09T03:50:34.404Z",
+                "updated_at": "2021-09-09T03:50:34.404Z",
+                "title": "foo3",
+                "uid": "foo3",
+                "_version": 1,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "description": "sample description",
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            },
+                            "uid": "***REMOVED***"
+                        }
+                    ],
+                    "management_token": {
+                        "read": true
+                    }
+                },
+                "SYS_ACL": {
+                    "roles": [],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": true,
+                    "singleton": false,
+                    "title": "title",
+                    "url_pattern": "/:title",
+                    "url_prefix": "/"
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:34 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "41ms",
+            "X-REQUEST-ID",
+            "44193",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "GET",
+        "path": "/v3/content_types/foo3",
+        "body": "",
+        "status": 200,
+        "response": {
+            "content_type": {
+                "created_at": "2021-09-09T03:50:34.404Z",
+                "updated_at": "2021-09-09T03:50:34.404Z",
+                "title": "foo3",
+                "uid": "foo3",
+                "_version": 1,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "description": "sample description",
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            },
+                            "uid": "***REMOVED***"
+                        }
+                    ],
+                    "management_token": {
+                        "read": true
+                    }
+                },
+                "SYS_ACL": {
+                    "roles": [
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        },
+                        {
+                            "uid": "bltmock9e992a923aafa5f79e992a923aaf",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            }
+                        },
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        }
+                    ],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": true,
+                    "singleton": false,
+                    "title": "title",
+                    "url_pattern": "/:title",
+                    "url_prefix": "/"
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:36 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "Vary",
+            "Accept-Encoding",
+            "Surrogate-Key",
+            "bltmock9e992a923aafdmock521adc4b5b3.content_types bltmock9e992a923aafdmock521adc4b5b3.content_types.foo3",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "10ms",
+            "X-REQUEST-ID",
+            "1397",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "PUT",
+        "path": "/v3/content_types/foo3",
+        "body": {
+            "content_type": {
+                "_version": 1,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "facebook",
+                        "uid": "facebook_link",
+                        "data_type": "link",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "description": "Edited description",
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            },
+                            "uid": "***REMOVED***"
+                        }
+                    ],
+                    "management_token": {
+                        "read": true
+                    }
+                },
+                "SYS_ACL": {
+                    "roles": [
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        },
+                        {
+                            "uid": "bltmock9e992a923aafa5f79e992a923aaf",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            }
+                        },
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        }
+                    ],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": false,
+                    "singleton": false
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "status": 200,
+        "response": {
+            "notice": "Content Type updated successfully.",
+            "content_type": {
+                "created_at": "2021-09-09T03:50:34.404Z",
+                "updated_at": "2021-09-09T03:50:37.427Z",
+                "title": "foo3",
+                "uid": "foo3",
+                "_version": 2,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "facebook",
+                        "uid": "facebook_link",
+                        "data_type": "link",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "description": "Edited description",
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            }
+                        }
+                    ]
+                },
+                "SYS_ACL": {
+                    "roles": [],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": false,
+                    "singleton": false,
+                    "title": "title"
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:37 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "Vary",
+            "Accept-Encoding",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "37ms",
+            "X-REQUEST-ID",
+            "93049",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "GET",
+        "path": "/v3/content_types/foo100",
+        "body": "",
+        "status": 422,
+        "response": {
+            "error_message": "The Content Type 'foo100' was not found. Please try again.",
+            "error_code": 118,
+            "errors": {
+                "uid": [
+                    "is not valid."
+                ]
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:38 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "8ms",
+            "X-REQUEST-ID",
+            "88191",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "DELETE",
+        "path": "/v3/content_types/foo3",
+        "body": "",
+        "status": 200,
+        "response": {
+            "notice": "Content Type deleted successfully."
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:40 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "Vary",
+            "Accept-Encoding",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "50ms",
+            "X-REQUEST-ID",
+            "9010",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "POST",
+        "path": "/v3/content_types",
+        "body": {
+            "content_type": {
+                "title": "foo3",
+                "uid": "foo3",
+                "description": "sample description",
+                "options": {
+                    "is_page": true,
+                    "singleton": false
+                },
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    }
+                ]
+            }
+        },
+        "status": 201,
+        "response": {
+            "notice": "Content Type created successfully.",
+            "content_type": {
+                "created_at": "2021-09-09T03:50:41.716Z",
+                "updated_at": "2021-09-09T03:50:41.716Z",
+                "title": "foo3",
+                "uid": "foo3",
+                "_version": 1,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "description": "sample description",
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            },
+                            "uid": "***REMOVED***"
+                        }
+                    ],
+                    "management_token": {
+                        "read": true
+                    }
+                },
+                "SYS_ACL": {
+                    "roles": [],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": true,
+                    "singleton": false,
+                    "title": "title",
+                    "url_pattern": "/:title",
+                    "url_prefix": "/"
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:41 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "24ms",
+            "X-REQUEST-ID",
+            "71314",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "GET",
+        "path": "/v3/content_types/foo3",
+        "body": "",
+        "status": 200,
+        "response": {
+            "content_type": {
+                "created_at": "2021-09-09T03:50:41.716Z",
+                "updated_at": "2021-09-09T03:50:41.716Z",
+                "title": "foo3",
+                "uid": "foo3",
+                "_version": 1,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "description": "sample description",
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            },
+                            "uid": "***REMOVED***"
+                        }
+                    ],
+                    "management_token": {
+                        "read": true
+                    }
+                },
+                "SYS_ACL": {
+                    "roles": [
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        },
+                        {
+                            "uid": "bltmock9e992a923aafa5f79e992a923aaf",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            }
+                        },
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        }
+                    ],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": true,
+                    "singleton": false,
+                    "title": "title",
+                    "url_pattern": "/:title",
+                    "url_prefix": "/"
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:43 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "Vary",
+            "Accept-Encoding",
+            "Surrogate-Key",
+            "bltmock9e992a923aafdmock521adc4b5b3.content_types bltmock9e992a923aafdmock521adc4b5b3.content_types.foo3",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "10ms",
+            "X-REQUEST-ID",
+            "50393",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "PUT",
+        "path": "/v3/content_types/foo3",
+        "body": {
+            "content_type": {
+                "_version": 1,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "Facebook Link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": true
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            },
+                            "uid": "***REMOVED***"
+                        }
+                    ],
+                    "management_token": {
+                        "read": true
+                    }
+                },
+                "SYS_ACL": {
+                    "roles": [
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        },
+                        {
+                            "uid": "bltmock9e992a923aafa5f79e992a923aaf",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            }
+                        },
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        }
+                    ],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": true,
+                    "singleton": false
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "status": 200,
+        "response": {
+            "notice": "Content Type updated successfully.",
+            "content_type": {
+                "created_at": "2021-09-09T03:50:41.716Z",
+                "updated_at": "2021-09-09T03:50:45.146Z",
+                "title": "foo3",
+                "uid": "foo3",
+                "_version": 2,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "Facebook Link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "description": "sample description",
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            }
+                        }
+                    ]
+                },
+                "SYS_ACL": {
+                    "roles": [],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": true,
+                    "singleton": false,
+                    "title": "title",
+                    "url_pattern": "/:title",
+                    "url_prefix": "/"
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:45 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "Vary",
+            "Accept-Encoding",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "25ms",
+            "X-REQUEST-ID",
+            "9631",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "DELETE",
+        "path": "/v3/content_types/foo3",
+        "body": "",
+        "status": 200,
+        "response": {
+            "notice": "Content Type deleted successfully."
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:46 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "Vary",
+            "Accept-Encoding",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "44ms",
+            "X-REQUEST-ID",
+            "50442",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "POST",
+        "path": "/v3/content_types",
+        "body": {
+            "content_type": {
+                "title": "foo3",
+                "uid": "foo3",
+                "description": "sample description",
+                "options": {
+                    "is_page": true,
+                    "singleton": false
+                },
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    }
+                ]
+            }
+        },
+        "status": 201,
+        "response": {
+            "notice": "Content Type created successfully.",
+            "content_type": {
+                "created_at": "2021-09-09T03:50:48.081Z",
+                "updated_at": "2021-09-09T03:50:48.081Z",
+                "title": "foo3",
+                "uid": "foo3",
+                "_version": 1,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "description": "sample description",
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            },
+                            "uid": "***REMOVED***"
+                        }
+                    ],
+                    "management_token": {
+                        "read": true
+                    }
+                },
+                "SYS_ACL": {
+                    "roles": [],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": true,
+                    "singleton": false,
+                    "title": "title",
+                    "url_pattern": "/:title",
+                    "url_prefix": "/"
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:48 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "24ms",
+            "X-REQUEST-ID",
+            "93853",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "GET",
+        "path": "/v3/content_types/foo3",
+        "body": "",
+        "status": 200,
+        "response": {
+            "content_type": {
+                "created_at": "2021-09-09T03:50:48.081Z",
+                "updated_at": "2021-09-09T03:50:48.081Z",
+                "title": "foo3",
+                "uid": "foo3",
+                "_version": 1,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "description": "sample description",
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            },
+                            "uid": "***REMOVED***"
+                        }
+                    ],
+                    "management_token": {
+                        "read": true
+                    }
+                },
+                "SYS_ACL": {
+                    "roles": [
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        },
+                        {
+                            "uid": "bltmock9e992a923aafa5f79e992a923aaf",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            }
+                        },
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        }
+                    ],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": true,
+                    "singleton": false,
+                    "title": "title",
+                    "url_pattern": "/:title",
+                    "url_prefix": "/"
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:49 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "Vary",
+            "Accept-Encoding",
+            "Surrogate-Key",
+            "bltmock9e992a923aafdmock521adc4b5b3.content_types bltmock9e992a923aafdmock521adc4b5b3.content_types.foo3",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "13ms",
+            "X-REQUEST-ID",
+            "45332",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "PUT",
+        "path": "/v3/content_types/foo3",
+        "body": {
+            "content_type": {
+                "_version": 1,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            },
+                            "uid": "***REMOVED***"
+                        }
+                    ],
+                    "management_token": {
+                        "read": true
+                    }
+                },
+                "SYS_ACL": {
+                    "roles": [
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        },
+                        {
+                            "uid": "bltmock9e992a923aafa5f79e992a923aaf",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            }
+                        },
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        }
+                    ],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": true,
+                    "singleton": false
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "status": 200,
+        "response": {
+            "notice": "Content Type updated successfully.",
+            "content_type": {
+                "created_at": "2021-09-09T03:50:48.081Z",
+                "updated_at": "2021-09-09T03:50:53.184Z",
+                "title": "foo3",
+                "uid": "foo3",
+                "_version": 2,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "description": "sample description",
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            }
+                        }
+                    ]
+                },
+                "SYS_ACL": {
+                    "roles": [],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": true,
+                    "singleton": false,
+                    "title": "title",
+                    "url_pattern": "/:title",
+                    "url_prefix": "/"
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:53 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "Vary",
+            "Accept-Encoding",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "26ms",
+            "X-REQUEST-ID",
+            "29860",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "GET",
+        "path": "/v3/content_types/foo3",
+        "body": "",
+        "status": 200,
+        "response": {
+            "content_type": {
+                "created_at": "2021-09-09T03:50:48.081Z",
+                "updated_at": "2021-09-09T03:50:53.184Z",
+                "title": "foo3",
+                "uid": "foo3",
+                "_version": 2,
+                "inbuilt_class": false,
+                "schema": [
+                    {
+                        "display_name": "Title",
+                        "uid": "title",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "URL",
+                        "uid": "url",
+                        "data_type": "text",
+                        "mandatory": false,
+                        "unique": true,
+                        "field_metadata": {
+                            "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    }
+                ],
+                "last_activity": {},
+                "maintain_revisions": true,
+                "description": "sample description",
+                "DEFAULT_ACL": {
+                    "others": {
+                        "read": false,
+                        "create": false
+                    },
+                    "users": [
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "read": true
+                            }
+                        }
+                    ]
+                },
+                "SYS_ACL": {
+                    "roles": [
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        },
+                        {
+                            "uid": "bltmock9e992a923aafa5f79e992a923aaf",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            }
+                        },
+                        {
+                            "uid": "***REMOVED***",
+                            "read": true,
+                            "sub_acl": {
+                                "create": true,
+                                "read": true,
+                                "update": true,
+                                "delete": true,
+                                "publish": true
+                            },
+                            "update": true,
+                            "delete": true
+                        }
+                    ],
+                    "others": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "sub_acl": {
+                            "read": false,
+                            "create": false,
+                            "update": false,
+                            "delete": false,
+                            "publish": false
+                        }
+                    }
+                },
+                "options": {
+                    "is_page": true,
+                    "singleton": false,
+                    "title": "title",
+                    "url_pattern": "/:title",
+                    "url_prefix": "/"
+                },
+                "abilities": {
+                    "get_one_object": true,
+                    "get_all_objects": true,
+                    "create_object": true,
+                    "update_object": true,
+                    "delete_object": true,
+                    "delete_all_objects": true
+                }
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:50:54 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "Vary",
+            "Accept-Encoding",
+            "Surrogate-Key",
+            "bltmock9e992a923aafdmock521adc4b5b3.content_types bltmock9e992a923aafdmock521adc4b5b3.content_types.foo3",
+            "X-Contentstack-Organization",
+            "bltmock9e992a923aafmock99a6ce838a5a",
+            "X-Runtime",
+            "11ms",
+            "X-REQUEST-ID",
+            "8304",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    }
+]

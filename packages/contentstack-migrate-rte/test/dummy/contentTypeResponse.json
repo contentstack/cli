@@ -1,0 +1,3014 @@
+{
+    "contenttypewithsinglerte": {
+        "content_type": {
+            "created_at": "2021-06-18T08:28:40.550Z",
+            "updated_at": "2021-06-18T08:29:11.162Z",
+            "title": "ContentTypeWithSingleRTE",
+            "uid": "contenttypewithsinglerte",
+            "_version": 2,
+            "inbuilt_class": false,
+            "schema": [
+                {
+                    "data_type": "text",
+                    "display_name": "Title",
+                    "field_metadata": {
+                        "_default": true,
+                        "version": 3
+                    },
+                    "mandatory": true,
+                    "uid": "title",
+                    "unique": true,
+                    "non_localizable": false,
+                    "multiple": false
+                },
+                {
+                    "data_type": "text",
+                    "display_name": "Rich Text Editor",
+                    "uid": "rich_text_editor",
+                    "field_metadata": {
+                        "allow_rich_text": true,
+                        "description": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": [],
+                        "version": 3
+                    },
+                    "non_localizable": false,
+                    "multiple": false,
+                    "mandatory": false,
+                    "unique": false
+                },
+                {
+                    "data_type": "json",
+                    "display_name": "Supercharged RTE",
+                    "uid": "supercharged_rte",
+                    "field_metadata": {
+                        "allow_json_rte": true,
+                        "description": "",
+                        "default_value": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": []
+                    },
+                    "format": "",
+                    "error_messages": {
+                        "format": ""
+                    },
+                    "mandatory": false,
+                    "non_localizable": false,
+                    "multiple": false,
+                    "unique": false
+                }
+            ],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "DEFAULT_ACL": {
+                "others": {
+                    "read": false,
+                    "create": false
+                },
+                "users": [
+                    {
+                        "uid": "bltd17749910d177e04",
+                        "read": true,
+                        "sub_acl": {
+                            "read": true
+                        }
+                    }
+                ]
+            },
+            "SYS_ACL": {
+                "roles": [
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    }
+                ],
+                "others": {
+                    "read": false,
+                    "create": false,
+                    "update": false,
+                    "delete": false,
+                    "sub_acl": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "publish": false
+                    }
+                }
+            },
+            "options": {
+                "is_page": false,
+                "singleton": false,
+                "sub_title": [],
+                "title": "title"
+            },
+            "abilities": {
+                "get_one_object": true,
+                "get_all_objects": true,
+                "create_object": true,
+                "update_object": true,
+                "delete_object": true,
+                "delete_all_objects": true
+            }
+        }
+    },
+    "contenttypewithinvalidjsonrteschema": {
+        "content_type": {
+            "created_at": "2021-06-18T08:28:40.550Z",
+            "updated_at": "2021-06-18T08:29:11.162Z",
+            "title": "ContentTypeWithSingleRTE",
+            "uid": "contenttypewithsinglerte",
+            "_version": 2,
+            "inbuilt_class": false,
+            "schema": [
+                {
+                    "data_type": "text",
+                    "display_name": "Title",
+                    "field_metadata": {
+                        "_default": true,
+                        "version": 3
+                    },
+                    "mandatory": true,
+                    "uid": "title",
+                    "unique": true,
+                    "non_localizable": false,
+                    "multiple": false
+                },
+                {
+                    "data_type": "text",
+                    "display_name": "Rich Text Editor",
+                    "uid": "rich_text_editor",
+                    "field_metadata": {
+                        "allow_rich_text": true,
+                        "description": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": [],
+                        "version": 3
+                    },
+                    "non_localizable": false,
+                    "multiple": false,
+                    "mandatory": false,
+                    "unique": false
+                },
+                {
+                    "data_type": "json",
+                    "display_name": "Supercharged RTE",
+                    "uid": "supercharged_rte",
+                    "field_metadata": {
+                        "description": "",
+                        "default_value": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": []
+                    },
+                    "format": "",
+                    "error_messages": {
+                        "format": ""
+                    },
+                    "mandatory": false,
+                    "non_localizable": false,
+                    "multiple": false,
+                    "unique": false
+                }
+            ],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "DEFAULT_ACL": {
+                "others": {
+                    "read": false,
+                    "create": false
+                },
+                "users": [
+                    {
+                        "uid": "bltd17749910d177e04",
+                        "read": true,
+                        "sub_acl": {
+                            "read": true
+                        }
+                    }
+                ]
+            },
+            "SYS_ACL": {
+                "roles": [
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    }
+                ],
+                "others": {
+                    "read": false,
+                    "create": false,
+                    "update": false,
+                    "delete": false,
+                    "sub_acl": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "publish": false
+                    }
+                }
+            },
+            "options": {
+                "is_page": false,
+                "singleton": false,
+                "sub_title": [],
+                "title": "title"
+            },
+            "abilities": {
+                "get_one_object": true,
+                "get_all_objects": true,
+                "create_object": true,
+                "update_object": true,
+                "delete_object": true,
+                "delete_all_objects": true
+            }
+        }
+    },
+    "contenttypedifferentlevelrte": {
+        "content_type": {
+            "created_at": "2021-06-22T11:35:00.339Z",
+            "updated_at": "2021-06-22T11:35:19.016Z",
+            "title": "contenttypedifferentlevelrte",
+            "uid": "contenttypedifferentlevelrte",
+            "_version": 2,
+            "inbuilt_class": false,
+            "schema": [
+                {
+                    "data_type": "text",
+                    "display_name": "Title",
+                    "field_metadata": {
+                        "_default": true,
+                        "version": 3
+                    },
+                    "mandatory": true,
+                    "uid": "title",
+                    "unique": true,
+                    "non_localizable": false,
+                    "multiple": false
+                },
+                {
+                    "data_type": "group",
+                    "display_name": "Group",
+                    "field_metadata": {
+                        "description": "",
+                        "instruction": ""
+                    },
+                    "schema": [
+                        {
+                            "data_type": "text",
+                            "display_name": "Rich Text Editor",
+                            "uid": "rich_text_editor",
+                            "field_metadata": {
+                                "allow_rich_text": true,
+                                "description": "",
+                                "multiline": false,
+                                "rich_text_type": "advanced",
+                                "options": [],
+                                "version": 3
+                            },
+                            "non_localizable": false,
+                            "multiple": false,
+                            "mandatory": false,
+                            "unique": false
+                        }
+                    ],
+                    "uid": "group",
+                    "non_localizable": false,
+                    "multiple": false,
+                    "mandatory": false,
+                    "unique": false
+                },
+                {
+                    "data_type": "json",
+                    "display_name": "Supercharged RTE",
+                    "uid": "supercharged_rte",
+                    "field_metadata": {
+                        "allow_json_rte": true,
+                        "description": "",
+                        "default_value": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": []
+                    },
+                    "format": "",
+                    "error_messages": {
+                        "format": ""
+                    },
+                    "mandatory": false,
+                    "non_localizable": false,
+                    "multiple": false,
+                    "unique": false
+                }
+            ],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "DEFAULT_ACL": {
+                "others": {
+                    "read": false,
+                    "create": false
+                },
+                "users": [
+                    {
+                        "uid": "bltd17749910d177e04",
+                        "read": true,
+                        "sub_acl": {
+                            "read": true
+                        }
+                    }
+                ]
+            },
+            "SYS_ACL": {
+                "roles": [
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    }
+                ],
+                "others": {
+                    "read": false,
+                    "create": false,
+                    "update": false,
+                    "delete": false,
+                    "sub_acl": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "publish": false
+                    }
+                }
+            },
+            "options": {
+                "is_page": false,
+                "singleton": false,
+                "sub_title": [],
+                "title": "title"
+            },
+            "abilities": {
+                "get_one_object": true,
+                "get_all_objects": true,
+                "create_object": true,
+                "update_object": true,
+                "delete_object": true,
+                "delete_all_objects": true
+            }
+        }
+    },
+    "contenttypewithinvalidhtmlrteschema": {
+        "content_type": {
+            "created_at": "2021-06-18T08:28:40.550Z",
+            "updated_at": "2021-06-18T08:29:11.162Z",
+            "title": "contenttypewithinvalidhtmlrteschema",
+            "uid": "contenttypewithinvalidhtmlrteschema",
+            "_version": 2,
+            "inbuilt_class": false,
+            "schema": [
+                {
+                    "data_type": "text",
+                    "display_name": "Title",
+                    "field_metadata": {
+                        "_default": true,
+                        "version": 3
+                    },
+                    "mandatory": true,
+                    "uid": "title",
+                    "unique": true,
+                    "non_localizable": false,
+                    "multiple": false
+                },
+                {
+                    "data_type": "text",
+                    "display_name": "Rich Text Editor",
+                    "uid": "rich_text_editor",
+                    "non_localizable": false,
+                    "multiple": false,
+                    "mandatory": false,
+                    "unique": false
+                },
+                {
+                    "data_type": "json",
+                    "display_name": "Supercharged RTE",
+                    "uid": "supercharged_rte",
+                    "field_metadata": {
+                        "allow_json_rte": true,
+                        "description": "",
+                        "default_value": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": []
+                    },
+                    "format": "",
+                    "error_messages": {
+                        "format": ""
+                    },
+                    "mandatory": false,
+                    "non_localizable": false,
+                    "multiple": false,
+                    "unique": false
+                }
+            ],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "DEFAULT_ACL": {
+                "others": {
+                    "read": false,
+                    "create": false
+                },
+                "users": [
+                    {
+                        "uid": "bltd17749910d177e04",
+                        "read": true,
+                        "sub_acl": {
+                            "read": true
+                        }
+                    }
+                ]
+            },
+            "SYS_ACL": {
+                "roles": [
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    }
+                ],
+                "others": {
+                    "read": false,
+                    "create": false,
+                    "update": false,
+                    "delete": false,
+                    "sub_acl": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "publish": false
+                    }
+                }
+            },
+            "options": {
+                "is_page": false,
+                "singleton": false,
+                "sub_title": [],
+                "title": "title"
+            },
+            "abilities": {
+                "get_one_object": true,
+                "get_all_objects": true,
+                "create_object": true,
+                "update_object": true,
+                "delete_object": true,
+                "delete_all_objects": true
+            }
+        }
+    },
+    "contenttype1forglobalfield": {
+        "content_type": {
+            "created_at": "2021-06-21T09:35:10.023Z",
+            "updated_at": "2021-06-21T09:35:58.489Z",
+            "title": "contentType1ForglobalField",
+            "uid": "contenttype1forglobalfield",
+            "_version": 2,
+            "inbuilt_class": false,
+            "schema": [
+                {
+                    "data_type": "text",
+                    "display_name": "Title",
+                    "field_metadata": {
+                        "_default": true,
+                        "version": 3
+                    },
+                    "mandatory": true,
+                    "uid": "title",
+                    "unique": true,
+                    "non_localizable": false,
+                    "multiple": false
+                },
+                {
+                    "data_type": "global_field",
+                    "display_name": "Global",
+                    "reference_to": "globalfieldformigration",
+                    "field_metadata": {
+                        "description": ""
+                    },
+                    "uid": "global_field",
+                    "non_localizable": false,
+                    "multiple": false,
+                    "mandatory": false,
+                    "unique": false,
+                    "schema": [
+                        {
+                            "data_type": "text",
+                            "display_name": "Rich Text Editor",
+                            "uid": "rich_text_editor",
+                            "field_metadata": {
+                                "allow_rich_text": true,
+                                "description": "",
+                                "multiline": false,
+                                "rich_text_type": "advanced",
+                                "options": [],
+                                "version": 3
+                            },
+                            "non_localizable": false,
+                            "multiple": false,
+                            "mandatory": false,
+                            "unique": false,
+                            "indexed": false,
+                            "inbuilt_model": false
+                        },
+                        {
+                            "data_type": "json",
+                            "display_name": "Supercharged RTE",
+                            "uid": "supercharged_rte",
+                            "field_metadata": {
+                                "allow_json_rte": true,
+                                "description": "",
+                                "default_value": "",
+                                "multiline": false,
+                                "rich_text_type": "advanced",
+                                "options": []
+                            },
+                            "format": "",
+                            "error_messages": {
+                                "format": ""
+                            },
+                            "mandatory": false,
+                            "non_localizable": false,
+                            "multiple": false,
+                            "unique": false,
+                            "indexed": false,
+                            "inbuilt_model": false
+                        }
+                    ]
+                },
+                {
+                    "data_type": "group",
+                    "display_name": "Group",
+                    "field_metadata": {
+                        "description": "",
+                        "instruction": ""
+                    },
+                    "schema": [
+                        {
+                            "data_type": "global_field",
+                            "display_name": "Global",
+                            "reference_to": "globalfieldformigration",
+                            "field_metadata": {
+                                "description": ""
+                            },
+                            "uid": "global_field",
+                            "non_localizable": false,
+                            "multiple": false,
+                            "mandatory": false,
+                            "unique": false,
+                            "schema": [
+                                {
+                                    "data_type": "text",
+                                    "display_name": "Rich Text Editor",
+                                    "uid": "rich_text_editor",
+                                    "field_metadata": {
+                                        "allow_rich_text": true,
+                                        "description": "",
+                                        "multiline": false,
+                                        "rich_text_type": "advanced",
+                                        "options": [],
+                                        "version": 3
+                                    },
+                                    "non_localizable": false,
+                                    "multiple": false,
+                                    "mandatory": false,
+                                    "unique": false,
+                                    "indexed": false,
+                                    "inbuilt_model": false
+                                },
+                                {
+                                    "data_type": "json",
+                                    "display_name": "Supercharged RTE",
+                                    "uid": "supercharged_rte",
+                                    "field_metadata": {
+                                        "allow_json_rte": true,
+                                        "description": "",
+                                        "default_value": "",
+                                        "multiline": false,
+                                        "rich_text_type": "advanced",
+                                        "options": []
+                                    },
+                                    "format": "",
+                                    "error_messages": {
+                                        "format": ""
+                                    },
+                                    "mandatory": false,
+                                    "non_localizable": false,
+                                    "multiple": false,
+                                    "unique": false,
+                                    "indexed": false,
+                                    "inbuilt_model": false
+                                }
+                            ]
+                        }
+                    ],
+                    "uid": "group",
+                    "non_localizable": false,
+                    "multiple": false,
+                    "mandatory": false,
+                    "unique": false
+                }
+            ],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "DEFAULT_ACL": {
+                "others": {
+                    "read": false,
+                    "create": false
+                },
+                "users": [
+                    {
+                        "uid": "bltd17749910d177e04",
+                        "read": true,
+                        "sub_acl": {
+                            "read": true
+                        }
+                    }
+                ]
+            },
+            "SYS_ACL": {
+                "roles": [
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    }
+                ],
+                "others": {
+                    "read": false,
+                    "create": false,
+                    "update": false,
+                    "delete": false,
+                    "sub_acl": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "publish": false
+                    }
+                }
+            },
+            "options": {
+                "is_page": false,
+                "singleton": false,
+                "sub_title": [],
+                "title": "title"
+            },
+            "abilities": {
+                "get_one_object": true,
+                "get_all_objects": true,
+                "create_object": true,
+                "update_object": true,
+                "delete_object": true,
+                "delete_all_objects": true
+            }
+        }
+    },
+    "contenttype2forglobalfield": {
+        "content_type": {
+            "created_at": "2021-06-21T09:36:41.354Z",
+            "updated_at": "2021-06-21T09:37:19.970Z",
+            "title": "contenttype2forglobalfield",
+            "uid": "contenttype2forglobalfield",
+            "_version": 2,
+            "inbuilt_class": false,
+            "schema": [
+                {
+                    "data_type": "text",
+                    "display_name": "Title",
+                    "field_metadata": {
+                        "_default": true,
+                        "version": 3
+                    },
+                    "mandatory": true,
+                    "uid": "title",
+                    "unique": true,
+                    "non_localizable": false,
+                    "multiple": false
+                },
+                {
+                    "data_type": "global_field",
+                    "display_name": "Global",
+                    "reference_to": "globalfieldformigration",
+                    "field_metadata": {
+                        "description": ""
+                    },
+                    "uid": "global_field",
+                    "non_localizable": false,
+                    "multiple": false,
+                    "mandatory": false,
+                    "unique": false,
+                    "schema": [
+                        {
+                            "data_type": "text",
+                            "display_name": "Rich Text Editor",
+                            "uid": "rich_text_editor",
+                            "field_metadata": {
+                                "allow_rich_text": true,
+                                "description": "",
+                                "multiline": false,
+                                "rich_text_type": "advanced",
+                                "options": [],
+                                "version": 3
+                            },
+                            "non_localizable": false,
+                            "multiple": false,
+                            "mandatory": false,
+                            "unique": false,
+                            "indexed": false,
+                            "inbuilt_model": false
+                        },
+                        {
+                            "data_type": "json",
+                            "display_name": "Supercharged RTE",
+                            "uid": "supercharged_rte",
+                            "field_metadata": {
+                                "allow_json_rte": true,
+                                "description": "",
+                                "default_value": "",
+                                "multiline": false,
+                                "rich_text_type": "advanced",
+                                "options": []
+                            },
+                            "format": "",
+                            "error_messages": {
+                                "format": ""
+                            },
+                            "mandatory": false,
+                            "non_localizable": false,
+                            "multiple": false,
+                            "unique": false,
+                            "indexed": false,
+                            "inbuilt_model": false
+                        }
+                    ]
+                }
+            ],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "DEFAULT_ACL": {
+                "others": {
+                    "read": false,
+                    "create": false
+                },
+                "users": [
+                    {
+                        "uid": "bltd17749910d177e04",
+                        "read": true,
+                        "sub_acl": {
+                            "read": true
+                        }
+                    }
+                ]
+            },
+            "SYS_ACL": {
+                "roles": [
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    }
+                ],
+                "others": {
+                    "read": false,
+                    "create": false,
+                    "update": false,
+                    "delete": false,
+                    "sub_acl": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "publish": false
+                    }
+                }
+            },
+            "options": {
+                "is_page": false,
+                "singleton": false,
+                "sub_title": [],
+                "title": "title"
+            },
+            "abilities": {
+                "get_one_object": true,
+                "get_all_objects": true,
+                "create_object": true,
+                "update_object": true,
+                "delete_object": true,
+                "delete_all_objects": true
+            }
+        }
+    },
+    "contenttypewithinvalidrtetype": {
+        "content_type": {
+            "created_at": "2021-06-22T05:00:12.357Z",
+            "updated_at": "2021-06-22T05:01:53.175Z",
+            "title": "contenttypewithinvalidrtetype",
+            "uid": "contenttypewithinvalidrtetype",
+            "_version": 3,
+            "inbuilt_class": false,
+            "schema": [
+                {
+                    "data_type": "text",
+                    "display_name": "Title",
+                    "field_metadata": {
+                        "_default": true,
+                        "version": 3
+                    },
+                    "mandatory": true,
+                    "uid": "title",
+                    "unique": true,
+                    "non_localizable": false,
+                    "multiple": false
+                },
+                {
+                    "data_type": "text",
+                    "display_name": "Rich Text Editor",
+                    "uid": "rich_text_editor",
+                    "field_metadata": {
+                        "allow_rich_text": true,
+                        "description": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": [],
+                        "version": 3
+                    },
+                    "multiple": true,
+                    "non_localizable": false,
+                    "mandatory": false,
+                    "unique": false
+                },
+                {
+                    "data_type": "json",
+                    "display_name": "Supercharged RTE",
+                    "uid": "supercharged_rte",
+                    "field_metadata": {
+                        "allow_json_rte": true,
+                        "description": "",
+                        "default_value": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": []
+                    },
+                    "format": "",
+                    "error_messages": {
+                        "format": ""
+                    },
+                    "mandatory": false,
+                    "non_localizable": false,
+                    "multiple": false,
+                    "unique": false
+                }
+            ],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "DEFAULT_ACL": {
+                "others": {
+                    "read": false,
+                    "create": false
+                },
+                "users": [
+                    {
+                        "uid": "bltd17749910d177e04",
+                        "read": true,
+                        "sub_acl": {
+                            "read": true
+                        }
+                    }
+                ]
+            },
+            "SYS_ACL": {
+                "roles": [
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    }
+                ],
+                "others": {
+                    "read": false,
+                    "create": false,
+                    "update": false,
+                    "delete": false,
+                    "sub_acl": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "publish": false
+                    }
+                }
+            },
+            "options": {
+                "is_page": false,
+                "singleton": false,
+                "sub_title": [],
+                "title": "title"
+            },
+            "abilities": {
+                "get_one_object": true,
+                "get_all_objects": true,
+                "create_object": true,
+                "update_object": true,
+                "delete_object": true,
+                "delete_all_objects": true
+            }
+        }
+    },
+    "contenttypewithmultiplerte": {
+        "content_type": {
+            "created_at": "2021-06-22T05:18:50.239Z",
+            "updated_at": "2021-06-22T05:50:45.916Z",
+            "title": "contenttypewithmultiplerte",
+            "uid": "contenttypewithmultiplerte",
+            "_version": 3,
+            "inbuilt_class": false,
+            "schema": [
+                {
+                    "data_type": "text",
+                    "display_name": "Title",
+                    "field_metadata": {
+                        "_default": true,
+                        "version": 3
+                    },
+                    "mandatory": true,
+                    "uid": "title",
+                    "unique": true,
+                    "non_localizable": false,
+                    "multiple": false
+                },
+                {
+                    "data_type": "text",
+                    "display_name": "Rich Text Editor",
+                    "uid": "rich_text_editor",
+                    "field_metadata": {
+                        "allow_rich_text": true,
+                        "description": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": [],
+                        "version": 3
+                    },
+                    "multiple": true,
+                    "non_localizable": false,
+                    "mandatory": false,
+                    "unique": false
+                },
+                {
+                    "data_type": "json",
+                    "display_name": "Supercharged RTE",
+                    "uid": "supercharged_rte",
+                    "field_metadata": {
+                        "allow_json_rte": true,
+                        "description": "",
+                        "default_value": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": []
+                    },
+                    "format": "",
+                    "error_messages": {
+                        "format": ""
+                    },
+                    "mandatory": false,
+                    "multiple": true,
+                    "non_localizable": false,
+                    "unique": false
+                }
+            ],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "DEFAULT_ACL": {
+                "others": {
+                    "read": false,
+                    "create": false
+                },
+                "users": [
+                    {
+                        "uid": "bltd17749910d177e04",
+                        "read": true,
+                        "sub_acl": {
+                            "read": true
+                        }
+                    }
+                ]
+            },
+            "SYS_ACL": {
+                "roles": [
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    }
+                ],
+                "others": {
+                    "read": false,
+                    "create": false,
+                    "update": false,
+                    "delete": false,
+                    "sub_acl": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "publish": false
+                    }
+                }
+            },
+            "options": {
+                "is_page": false,
+                "singleton": false,
+                "sub_title": [],
+                "title": "title"
+            },
+            "abilities": {
+                "get_one_object": true,
+                "get_all_objects": true,
+                "create_object": true,
+                "update_object": true,
+                "delete_object": true,
+                "delete_all_objects": true
+            }
+        }
+    },
+    "contenttypewithemptyschema": {
+        "content_type": {
+            "created_at": "2021-06-22T05:18:50.239Z",
+            "updated_at": "2021-06-22T05:50:45.916Z",
+            "title": "contenttypewithemptyschema",
+            "uid": "contenttypewithemptyschema",
+            "_version": 3,
+            "inbuilt_class": false,
+            "schema": [],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "DEFAULT_ACL": {
+                "others": {
+                    "read": false,
+                    "create": false
+                },
+                "users": [
+                    {
+                        "uid": "bltd17749910d177e04",
+                        "read": true,
+                        "sub_acl": {
+                            "read": true
+                        }
+                    }
+                ]
+            },
+            "SYS_ACL": {
+                "roles": [
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    }
+                ],
+                "others": {
+                    "read": false,
+                    "create": false,
+                    "update": false,
+                    "delete": false,
+                    "sub_acl": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "publish": false
+                    }
+                }
+            },
+            "options": {
+                "is_page": false,
+                "singleton": false,
+                "sub_title": [],
+                "title": "title"
+            },
+            "abilities": {
+                "get_one_object": true,
+                "get_all_objects": true,
+                "create_object": true,
+                "update_object": true,
+                "delete_object": true,
+                "delete_all_objects": true
+            }
+        }
+    },
+    "contenttypewithmodularblock": {
+        "content_type": {
+            "created_at": "2021-06-22T08:36:26.050Z",
+            "updated_at": "2021-06-22T09:55:52.105Z",
+            "title": "contenttypewithmodularblock",
+            "uid": "contenttypewithmodularblock",
+            "_version": 3,
+            "inbuilt_class": false,
+            "schema": [
+                {
+                    "data_type": "text",
+                    "display_name": "Title",
+                    "field_metadata": {
+                        "_default": true,
+                        "version": 3
+                    },
+                    "mandatory": true,
+                    "uid": "title",
+                    "unique": true,
+                    "non_localizable": false,
+                    "multiple": false
+                },
+                {
+                    "data_type": "blocks",
+                    "display_name": "Modular Blocks",
+                    "blocks": [
+                        {
+                            "title": "test1",
+                            "uid": "test1",
+                            "schema": [
+                                {
+                                    "data_type": "text",
+                                    "display_name": "Rich Text Editor",
+                                    "uid": "rich_text_editor",
+                                    "field_metadata": {
+                                        "allow_rich_text": true,
+                                        "description": "",
+                                        "multiline": false,
+                                        "rich_text_type": "advanced",
+                                        "options": [],
+                                        "version": 3
+                                    },
+                                    "non_localizable": false,
+                                    "multiple": false,
+                                    "mandatory": false,
+                                    "unique": false
+                                },
+                                {
+                                    "data_type": "json",
+                                    "display_name": "Supercharged RTE",
+                                    "uid": "supercharged_rte",
+                                    "field_metadata": {
+                                        "allow_json_rte": true,
+                                        "description": "",
+                                        "default_value": "",
+                                        "multiline": false,
+                                        "rich_text_type": "advanced",
+                                        "options": []
+                                    },
+                                    "format": "",
+                                    "error_messages": {
+                                        "format": ""
+                                    },
+                                    "mandatory": false,
+                                    "non_localizable": false,
+                                    "multiple": false,
+                                    "unique": false
+                                }
+                            ]
+                        }
+                    ],
+                    "multiple": true,
+                    "uid": "modular_blocks",
+                    "field_metadata": {
+                        "instruction": "",
+                        "description": ""
+                    },
+                    "non_localizable": false,
+                    "mandatory": false,
+                    "unique": false
+                }
+            ],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "DEFAULT_ACL": {
+                "others": {
+                    "read": false,
+                    "create": false
+                },
+                "users": [
+                    {
+                        "uid": "bltd17749910d177e04",
+                        "read": true,
+                        "sub_acl": {
+                            "read": true
+                        }
+                    }
+                ]
+            },
+            "SYS_ACL": {
+                "roles": [
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    }
+                ],
+                "others": {
+                    "read": false,
+                    "create": false,
+                    "update": false,
+                    "delete": false,
+                    "sub_acl": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "publish": false
+                    }
+                }
+            },
+            "options": {
+                "is_page": false,
+                "singleton": false,
+                "sub_title": [],
+                "title": "title"
+            },
+            "abilities": {
+                "get_one_object": true,
+                "get_all_objects": true,
+                "create_object": true,
+                "update_object": true,
+                "delete_object": true,
+                "delete_all_objects": true
+            }
+        }
+    },
+    "contenttypewithgroup": {
+        "content_type": {
+            "created_at": "2021-06-22T10:18:54.177Z",
+            "updated_at": "2021-06-22T10:19:31.012Z",
+            "title": "contenttypewithgroup",
+            "uid": "contenttypewithgroup",
+            "_version": 2,
+            "inbuilt_class": false,
+            "schema": [
+                {
+                    "data_type": "text",
+                    "display_name": "Title",
+                    "field_metadata": {
+                        "_default": true,
+                        "version": 3
+                    },
+                    "mandatory": true,
+                    "uid": "title",
+                    "unique": true,
+                    "non_localizable": false,
+                    "multiple": false
+                },
+                {
+                    "data_type": "group",
+                    "display_name": "Group",
+                    "field_metadata": {
+                        "description": "",
+                        "instruction": ""
+                    },
+                    "schema": [
+                        {
+                            "data_type": "text",
+                            "display_name": "Rich Text Editor",
+                            "uid": "rich_text_editor",
+                            "field_metadata": {
+                                "allow_rich_text": true,
+                                "description": "",
+                                "multiline": false,
+                                "rich_text_type": "advanced",
+                                "options": [],
+                                "version": 3
+                            },
+                            "multiple": true,
+                            "non_localizable": false,
+                            "mandatory": false,
+                            "unique": false
+                        },
+                        {
+                            "data_type": "json",
+                            "display_name": "Supercharged RTE",
+                            "uid": "supercharged_rte",
+                            "field_metadata": {
+                                "allow_json_rte": true,
+                                "description": "",
+                                "default_value": "",
+                                "multiline": false,
+                                "rich_text_type": "advanced",
+                                "options": []
+                            },
+                            "format": "",
+                            "error_messages": {
+                                "format": ""
+                            },
+                            "mandatory": false,
+                            "multiple": true,
+                            "non_localizable": false,
+                            "unique": false
+                        }
+                    ],
+                    "uid": "group",
+                    "non_localizable": false,
+                    "multiple": false,
+                    "mandatory": false,
+                    "unique": false
+                }
+            ],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "DEFAULT_ACL": {
+                "others": {
+                    "read": false,
+                    "create": false
+                },
+                "users": [
+                    {
+                        "uid": "bltd17749910d177e04",
+                        "read": true,
+                        "sub_acl": {
+                            "read": true
+                        }
+                    }
+                ]
+            },
+            "SYS_ACL": {
+                "roles": [
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    }
+                ],
+                "others": {
+                    "read": false,
+                    "create": false,
+                    "update": false,
+                    "delete": false,
+                    "sub_acl": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "publish": false
+                    }
+                }
+            },
+            "options": {
+                "is_page": false,
+                "singleton": false,
+                "sub_title": [],
+                "title": "title"
+            },
+            "abilities": {
+                "get_one_object": true,
+                "get_all_objects": true,
+                "create_object": true,
+                "update_object": true,
+                "delete_object": true,
+                "delete_all_objects": true
+            }
+        }
+    },
+    "contenttypewithmultiplegroup": {
+        "content_type": {
+            "created_at": "2021-06-22T10:35:26.275Z",
+            "updated_at": "2021-06-22T10:36:06.768Z",
+            "title": "contenttypewithmultiplegroup",
+            "uid": "contenttypewithmultiplegroup",
+            "_version": 2,
+            "inbuilt_class": false,
+            "schema": [
+                {
+                    "data_type": "text",
+                    "display_name": "Title",
+                    "field_metadata": {
+                        "_default": true,
+                        "version": 3
+                    },
+                    "mandatory": true,
+                    "uid": "title",
+                    "unique": true,
+                    "non_localizable": false,
+                    "multiple": false
+                },
+                {
+                    "data_type": "group",
+                    "display_name": "Group",
+                    "field_metadata": {
+                        "description": "",
+                        "instruction": ""
+                    },
+                    "schema": [
+                        {
+                            "data_type": "text",
+                            "display_name": "Rich Text Editor",
+                            "uid": "rich_text_editor",
+                            "field_metadata": {
+                                "allow_rich_text": true,
+                                "description": "",
+                                "multiline": false,
+                                "rich_text_type": "advanced",
+                                "options": [],
+                                "version": 3
+                            },
+                            "non_localizable": false,
+                            "multiple": false,
+                            "mandatory": false,
+                            "unique": false
+                        },
+                        {
+                            "data_type": "json",
+                            "display_name": "Supercharged RTE",
+                            "uid": "supercharged_rte",
+                            "field_metadata": {
+                                "allow_json_rte": true,
+                                "description": "",
+                                "default_value": "",
+                                "multiline": false,
+                                "rich_text_type": "advanced",
+                                "options": []
+                            },
+                            "format": "",
+                            "error_messages": {
+                                "format": ""
+                            },
+                            "mandatory": false,
+                            "non_localizable": false,
+                            "multiple": false,
+                            "unique": false
+                        }
+                    ],
+                    "uid": "group",
+                    "multiple": true,
+                    "non_localizable": false,
+                    "mandatory": false,
+                    "unique": false
+                }
+            ],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "DEFAULT_ACL": {
+                "others": {
+                    "read": false,
+                    "create": false
+                },
+                "users": [
+                    {
+                        "uid": "bltd17749910d177e04",
+                        "read": true,
+                        "sub_acl": {
+                            "read": true
+                        }
+                    }
+                ]
+            },
+            "SYS_ACL": {
+                "roles": [
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    }
+                ],
+                "others": {
+                    "read": false,
+                    "create": false,
+                    "update": false,
+                    "delete": false,
+                    "sub_acl": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "publish": false
+                    }
+                }
+            },
+            "options": {
+                "is_page": false,
+                "singleton": false,
+                "sub_title": [],
+                "title": "title"
+            },
+            "abilities": {
+                "get_one_object": true,
+                "get_all_objects": true,
+                "create_object": true,
+                "update_object": true,
+                "delete_object": true,
+                "delete_all_objects": true
+            }
+        }
+    },
+    "contenttypewithentryupdateerror": {
+        "content_type": {
+            "created_at": "2021-06-24T09:59:49.808Z",
+            "updated_at": "2021-06-24T10:01:00.908Z",
+            "title": "contenttypewithentryUpdateError",
+            "uid": "contenttypewithentryupdateerror",
+            "_version": 2,
+            "inbuilt_class": false,
+            "schema": [
+                {
+                    "data_type": "text",
+                    "display_name": "Title",
+                    "field_metadata": {
+                        "_default": true,
+                        "version": 3
+                    },
+                    "mandatory": true,
+                    "uid": "title",
+                    "unique": true,
+                    "non_localizable": false,
+                    "multiple": false
+                },
+                {
+                    "data_type": "text",
+                    "display_name": "Rich Text Editor",
+                    "uid": "rich_text_editor",
+                    "field_metadata": {
+                        "allow_rich_text": true,
+                        "description": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": [],
+                        "version": 3
+                    },
+                    "non_localizable": false,
+                    "multiple": false,
+                    "mandatory": false,
+                    "unique": false
+                },
+                {
+                    "data_type": "json",
+                    "display_name": "Supercharged RTE",
+                    "uid": "supercharged_rte",
+                    "field_metadata": {
+                        "allow_json_rte": true,
+                        "description": "",
+                        "default_value": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": []
+                    },
+                    "format": "",
+                    "error_messages": {
+                        "format": ""
+                    },
+                    "mandatory": false,
+                    "non_localizable": false,
+                    "multiple": false,
+                    "unique": false
+                }
+            ],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "DEFAULT_ACL": {
+                "others": {
+                    "read": false,
+                    "create": false
+                },
+                "users": [
+                    {
+                        "uid": "bltd17749910d177e04",
+                        "read": true,
+                        "sub_acl": {
+                            "read": true
+                        }
+                    }
+                ]
+            },
+            "SYS_ACL": {
+                "roles": [
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    }
+                ],
+                "others": {
+                    "read": false,
+                    "create": false,
+                    "update": false,
+                    "delete": false,
+                    "sub_acl": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "publish": false
+                    }
+                }
+            },
+            "options": {
+                "is_page": false,
+                "singleton": false,
+                "sub_title": [],
+                "title": "title"
+            },
+            "abilities": {
+                "get_one_object": true,
+                "get_all_objects": true,
+                "create_object": true,
+                "update_object": true,
+                "delete_object": true,
+                "delete_all_objects": true
+            }
+        }
+    },
+    "contenttypewithfilefield": {
+        "content_type": {
+            "created_at": "2021-08-11T08:48:38.491Z",
+            "updated_at": "2021-08-11T08:50:42.734Z",
+            "title": "contenttypewithfilefield",
+            "uid": "contenttypewithfilefield",
+            "_version": 3,
+            "inbuilt_class": false,
+            "schema": [
+                {
+                    "data_type": "text",
+                    "display_name": "Title",
+                    "field_metadata": {
+                        "_default": true,
+                        "version": 3
+                    },
+                    "mandatory": true,
+                    "uid": "title",
+                    "unique": true,
+                    "non_localizable": false,
+                    "multiple": false
+                },
+                {
+                    "data_type": "file",
+                    "display_name": "File",
+                    "uid": "file",
+                    "extensions": [],
+                    "field_metadata": {
+                        "description": "",
+                        "rich_text_type": "standard"
+                    },
+                    "mandatory": false,
+                    "multiple": false,
+                    "non_localizable": false,
+                    "unique": false
+                },
+                {
+                    "data_type": "file",
+                    "display_name": "File",
+                    "uid": "asset",
+                    "extensions": [],
+                    "field_metadata": {
+                        "description": "",
+                        "rich_text_type": "standard"
+                    },
+                    "mandatory": false,
+                    "multiple": false,
+                    "non_localizable": false,
+                    "unique": false
+                },
+                {
+                    "data_type": "blocks",
+                    "display_name": "Modular Blocks",
+                    "blocks": [
+                        {
+                            "title": "test1",
+                            "uid": "test1",
+                            "schema": [
+                                {
+                                    "data_type": "file",
+                                    "display_name": "File",
+                                    "uid": "file",
+                                    "extensions": [],
+                                    "field_metadata": {
+                                        "description": "",
+                                        "rich_text_type": "standard"
+                                    },
+                                    "mandatory": false,
+                                    "multiple": true,
+                                    "non_localizable": false,
+                                    "unique": false
+                                }
+                            ]
+                        }
+                    ],
+                    "multiple": true,
+                    "uid": "modular_blocks",
+                    "field_metadata": {
+                        "instruction": "",
+                        "description": ""
+                    },
+                    "mandatory": false,
+                    "non_localizable": false,
+                    "unique": false
+                },
+                {
+                    "data_type": "group",
+                    "display_name": "Group",
+                    "field_metadata": {
+                        "description": "",
+                        "instruction": ""
+                    },
+                    "schema": [
+                        {
+                            "data_type": "file",
+                            "display_name": "File",
+                            "uid": "file",
+                            "field_metadata": {
+                                "description": "",
+                                "rich_text_type": "standard",
+                                "image": true
+                            },
+                            "mandatory": false,
+                            "multiple": false,
+                            "non_localizable": false,
+                            "unique": false,
+                            "dimension": {
+                                "width": {
+                                    "min": null,
+                                    "max": null
+                                },
+                                "height": {
+                                    "min": null,
+                                    "max": null
+                                }
+                            }
+                        }
+                    ],
+                    "uid": "group",
+                    "mandatory": false,
+                    "multiple": false,
+                    "non_localizable": false,
+                    "unique": false
+                },
+                {
+                    "data_type": "text",
+                    "display_name": "Rich Text Editor",
+                    "uid": "rich_text_editor",
+                    "field_metadata": {
+                        "allow_rich_text": true,
+                        "description": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": [],
+                        "version": 3
+                    },
+                    "mandatory": false,
+                    "multiple": false,
+                    "non_localizable": false,
+                    "unique": false
+                },
+                {
+                    "data_type": "json",
+                    "display_name": "JSON Rich Text Editor",
+                    "uid": "json_rte",
+                    "field_metadata": {
+                        "allow_json_rte": true,
+                        "embed_entry": false,
+                        "description": "",
+                        "default_value": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": []
+                    },
+                    "format": "",
+                    "error_messages": {
+                        "format": ""
+                    },
+                    "reference_to": [
+                        "sys_assets"
+                    ],
+                    "mandatory": false,
+                    "non_localizable": false,
+                    "multiple": false,
+                    "unique": false
+                }
+            ],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "DEFAULT_ACL": {
+                "others": {
+                    "read": false,
+                    "create": false
+                },
+                "users": [
+                    {
+                        "uid": "bltd17749910d177e04",
+                        "read": true,
+                        "sub_acl": {
+                            "read": true
+                        }
+                    }
+                ]
+            },
+            "SYS_ACL": {
+                "roles": [
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    }
+                ],
+                "others": {
+                    "read": false,
+                    "create": false,
+                    "update": false,
+                    "delete": false,
+                    "sub_acl": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "publish": false
+                    }
+                }
+            },
+            "options": {
+                "is_page": false,
+                "singleton": true,
+                "sub_title": [],
+                "title": "title"
+            },
+            "abilities": {
+                "get_one_object": true,
+                "get_all_objects": true,
+                "create_object": true,
+                "update_object": true,
+                "delete_object": true,
+                "delete_all_objects": true
+            },
+            "extension_uids": []
+        }
+    },
+    "rte_images": {
+        "content_type": {
+            "created_at": "2021-06-18T08:28:40.550Z",
+            "updated_at": "2021-06-18T08:29:11.162Z",
+            "title": "ContentTypeWithSingleRTE",
+            "uid": "rte_images",
+            "_version": 2,
+            "inbuilt_class": false,
+            "schema": [
+                {
+                    "data_type": "text",
+                    "display_name": "Title",
+                    "field_metadata": {
+                        "_default": true,
+                        "version": 3
+                    },
+                    "mandatory": true,
+                    "uid": "title",
+                    "unique": true,
+                    "non_localizable": false,
+                    "multiple": false
+                },
+                {
+                    "data_type": "text",
+                    "display_name": "Rich Text Editor",
+                    "uid": "rich_text_editor",
+                    "field_metadata": {
+                        "allow_rich_text": true,
+                        "description": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": [],
+                        "version": 3
+                    },
+                    "non_localizable": false,
+                    "multiple": false,
+                    "mandatory": false,
+                    "unique": false
+                },
+                {
+                    "data_type": "json",
+                    "display_name": "Supercharged RTE",
+                    "uid": "supercharged_rte",
+                    "field_metadata": {
+                        "allow_json_rte": true,
+                        "description": "",
+                        "default_value": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": []
+                    },
+                    "format": "",
+                    "error_messages": {
+                        "format": ""
+                    },
+                    "mandatory": false,
+                    "non_localizable": false,
+                    "multiple": false,
+                    "unique": false
+                }
+            ],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "DEFAULT_ACL": {
+                "others": {
+                    "read": false,
+                    "create": false
+                },
+                "users": [
+                    {
+                        "uid": "bltd17749910d177e04",
+                        "read": true,
+                        "sub_acl": {
+                            "read": true
+                        }
+                    }
+                ]
+            },
+            "SYS_ACL": {
+                "roles": [
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    }
+                ],
+                "others": {
+                    "read": false,
+                    "create": false,
+                    "update": false,
+                    "delete": false,
+                    "sub_acl": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "publish": false
+                    }
+                }
+            },
+            "options": {
+                "is_page": false,
+                "singleton": false,
+                "sub_title": [],
+                "title": "title"
+            },
+            "abilities": {
+                "get_one_object": true,
+                "get_all_objects": true,
+                "create_object": true,
+                "update_object": true,
+                "delete_object": true,
+                "delete_all_objects": true
+            }
+        }
+    }
+}
