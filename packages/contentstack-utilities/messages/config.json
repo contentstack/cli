@@ -1,0 +1,9 @@
+{
+    "CLI_CONFIG_SET_REGION_DESCRIPTION": "Set region for CLI",
+    "CLI_CONFIG_SET_REGION_FLAG_D_DESCRIPTION": "Custom host to set for content delivery API, if this flag is added then cma and name flags are required",
+    "CLI_CONFIG_SET_REGION_FLAG_M_DESCRIPTION": "Custom host to set for content management API, , if this flag is added then cda and name flags are required",
+    "CLI_CONFIG_SET_REGION_FLAG_N_DESCRIPTION": "Name for the region, if this flag is added then cda and cma flags are required",
+    "CLI_CONFIG_SET_REGION_DEFAULT": "No argument or custom flag provided. Setting region to default NA",
+    "CLI_CONFIG_GET_REGION_DESCRIPTION": "Get current region set for CLI",
+    "CLI_CONFIG_GET_REGION_NOT_FOUND": "No region found, please set by running command $ csdx config:set:region"
+}
