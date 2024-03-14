@@ -1,0 +1,9 @@
+{
+    "sourceBranch": "main",
+    "authorContentTypes": [
+        "John Doe",
+        "Lucy",
+        "Ben Tennyson"
+    ],
+    "contentTypeUID": "testct"
+}

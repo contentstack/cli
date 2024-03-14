@@ -1,0 +1,163 @@
+{
+  "name": "@contentstack/cli",
+  "description": "Command-line tool (CLI) to interact with Contentstack",
+  "version": "1.15.1",
+  "author": "Contentstack",
+  "bin": {
+    "csdx": "./bin/run"
+  },
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "npm run clean && npm run compile",
+    "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
+    "compile": "tsc -b tsconfig.json",
+    "postpack": "rm -f oclif.manifest.json",
+    "version": "oclif readme  && git add README.md",
+    "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+    "pretest": "tsc -p test",
+    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+    "posttest": "npm run lint",
+    "lint": "eslint src/**/*.ts",
+    "prepack": "pnpm compile && oclif manifest && oclif readme"
+  },
+  "dependencies": {
+    "@contentstack/cli-audit": "~1.4.1",
+    "@contentstack/cli-auth": "~1.3.17",
+    "@contentstack/cli-cm-bootstrap": "~1.9.0",
+    "@contentstack/cli-cm-branches": "~1.0.22",
+    "@contentstack/cli-cm-bulk-publish": "~1.4.2",
+    "@contentstack/cli-cm-export": "~1.11.0",
+    "@contentstack/cli-cm-clone": "~1.10.1",
+    "@contentstack/cli-cm-export-to-csv": "~1.7.0",
+    "@contentstack/cli-cm-import": "~1.14.1",
+    "@contentstack/cli-cm-migrate-rte": "~1.4.15",
+    "@contentstack/cli-cm-seed": "~1.7.1",
+    "@contentstack/cli-command": "~1.2.17",
+    "@contentstack/cli-config": "~1.6.2",
+    "@contentstack/cli-launch": "~1.0.16",
+    "@contentstack/cli-migration": "~1.5.0",
+    "@contentstack/cli-utilities": "~1.5.12",
+    "@contentstack/management": "~1.15.3",
+    "@oclif/core": "^2.9.3",
+    "@oclif/plugin-help": "^5",
+    "@oclif/plugin-not-found": "^2.4.0",
+    "@oclif/plugin-plugins": "^4.1.9",
+    "chalk": "^4.1.2",
+    "debug": "^4.1.1",
+    "figlet": "^1.5.2",
+    "inquirer": "8.2.4",
+    "node-machine-id": "^1.1.12",
+    "open": "^8.4.2",
+    "short-uuid": "^4.2.2",
+    "uuid": "^9.0.0",
+    "winston": "^3.7.2"
+  },
+  "devDependencies": {
+    "@oclif/test": "^2.5.6",
+    "@types/chai": "^4.2.18",
+    "@types/inquirer": "^9.0.3",
+    "@types/mkdirp": "^1.0.1",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "^14.14.32",
+    "@types/sinon": "^10.0.2",
+    "chai": "^4.3.4",
+    "eslint": "^8.18.0",
+    "eslint-config-oclif": "^4.0.0",
+    "eslint-config-oclif-typescript": "^3.0.8",
+    "globby": "^10.0.2",
+    "mocha": "10.1.0",
+    "nock": "^13.1.0",
+    "nyc": "^15.1.0",
+    "oclif": "^3.8.1",
+    "rimraf": "^2.7.1",
+    "shelljs": "^0.8.4",
+    "sinon": "^15.0.1",
+    "tmp": "^0.2.2",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.4.1",
+    "typescript": "^4.9.3"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "files": [
+    "/bin",
+    "/lib",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "homepage": "https://github.com/contentstack/cli",
+  "keywords": [
+    "contentstack",
+    "cli",
+    "plugin"
+  ],
+  "license": "MIT",
+  "oclif": {
+    "topicSeparator": ":",
+    "additionalHelpFlags": [
+      "-h"
+    ],
+    "additionalVersionFlags": [
+      "-v"
+    ],
+    "topics": {
+      "auth": {
+        "description": "Perform authentication-related activities"
+      },
+      "cm": {
+        "description": "Perform content management activities"
+      },
+      "config": {
+        "description": "Perform configuration related activities"
+      },
+      "cm:assets": {
+        "description": "Assets related operations"
+      },
+      "cm:entries": {
+        "description": "Entries related operations"
+      },
+      "cm:stacks": {
+        "description": "Stacks related operations"
+      },
+      "launch": {
+        "description": "Launch related operations"
+      },
+      "plugins": {
+        "description": "List installed plugins"
+      }
+    },
+    "helpClass": "./lib/help.js",
+    "bin": "csdx",
+    "plugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-not-found",
+      "@oclif/plugin-plugins",
+      "@contentstack/cli-config",
+      "@contentstack/cli-auth",
+      "@contentstack/cli-cm-import",
+      "@contentstack/cli-cm-export",
+      "@contentstack/cli-cm-seed",
+      "@contentstack/cli-cm-bootstrap",
+      "@contentstack/cli-cm-export-to-csv",
+      "@contentstack/cli-cm-clone",
+      "@contentstack/cli-cm-migrate-rte",
+      "@contentstack/cli-migration",
+      "@contentstack/cli-cm-bulk-publish",
+      "@contentstack/cli-cm-branches",
+      "@contentstack/cli-launch",
+      "@contentstack/cli-audit"
+    ],
+    "hooks": {
+      "prerun": [
+        "./lib/hooks/prerun/command-deprecation-check"
+      ],
+      "init": [
+        "./lib/hooks/init/context-init",
+        "./lib/hooks/init/utils-init"
+      ]
+    }
+  },
+  "repository": "https://github.com/contentstack/cli"
+}

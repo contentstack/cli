@@ -1,0 +1,290 @@
+name: Release CLI Plugins
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.3
+      - uses: pnpm/action-setup@v2.2.4
+        with:
+          version: 7
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '18.x'
+          cache: 'pnpm'
+      - name: Reading Configuration
+        id: release_config
+        uses: rgarcia-phi/json-to-variables@v1.1.0
+        with:
+          filename: .github/config/release.json
+          prefix: release
+      - name: Installing dependencies of dev dependencies
+        id: dev-dependencies-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_dev-dependencies == 'true'}}
+        working-directory: ./packages/contentstack-dev-dependencies
+        run: npm install
+      - name: Compiling dev dependencies
+        if: ${{ steps.dev-dependencies-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-dev-dependencies
+        run: npm run prepack
+      - name: Publishing dev dependencies
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.dev-dependencies-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-dev-dependencies/package.json
+      - name: Installing dependencies of utilities
+        id: utilities-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_utilities == 'true'}}
+        working-directory: ./packages/contentstack-utilities
+        run: npm install
+      - name: Compiling utilities
+        if: ${{ steps.utilities-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-utilities
+        run: npm run prepack
+      - name: Publishing utilities
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.utilities-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-utilities/package.json
+      - name: Installing dependencies of command
+        id: command-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_command == 'true'}}
+        working-directory: ./packages/contentstack-command
+        run: npm install
+      - name: Compiling command
+        if: ${{ steps.command-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-command
+        run: npm run prepack
+      - name: Publishing command
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.command-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-command/package.json
+      - name: Installing dependencies of config
+        id: config-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_config == 'true'}}
+        working-directory: ./packages/contentstack-config
+        run: npm install
+      - name: Compiling config
+        if: ${{ steps.config-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-config
+        run: npm run prepack
+      - name: Publishing config
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.config-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-config/package.json
+      - name: Installing dependencies of auth
+        id: auth-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_auth == 'true'}}
+        working-directory: ./packages/contentstack-auth
+        run: npm install
+      - name: Compiling auth
+        if: ${{ steps.auth-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-auth
+        run: npm run prepack
+      - name: Publishing auth
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.auth-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-auth/package.json
+      - name: Installing dependencies of export
+        id: export-installation
+        if: ${{ env.release_releaseAll == 'true' || env.release_plugins_export == 'true'}}
+        working-directory: ./packages/contentstack-export
+        run: npm install
+      - name: Compiling export
+        if: ${{ steps.export-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-export
+        run: npm run prepack
+      - name: Publishing export
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.export-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-export/package.json
+      - name: Installing dependencies of audit
+        id: audit-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_audit == 'true'}}
+        working-directory: ./packages/contentstack-audit
+        run: npm install
+      - name: Compiling audit
+        if: ${{ steps.audit-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-audit
+        run: npm run prepack
+      - name: Publishing audit
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.audit-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-audit/package.json
+          access: public
+      - name: Installing dependencies of import
+        id: import-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_import == 'true'}}
+        working-directory: ./packages/contentstack-import
+        run: npm install
+      - name: Compiling import
+        if: ${{ steps.import-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-import
+        run: npm run prepack
+      - name: Publishing import
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.import-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-import/package.json
+      - name: Installing dependencies of clone
+        id: clone-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_clone == 'true'}}
+        working-directory: ./packages/contentstack-clone
+        run: npm install
+      - name: Publishing clone
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.clone-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-clone/package.json
+      - name: Installing dependencies of export to csv
+        id: export-to-csv-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_export-to-csv == 'true'}}
+        working-directory: ./packages/contentstack-export-to-csv
+        run: npm install
+      - name: Publishing export to csv
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.export-to-csv-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-export-to-csv/package.json
+      - name: Installing dependencies of migrate rte
+        id: migrate-rte-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_migrate-rte == 'true'}}
+        working-directory: ./packages/contentstack-migrate-rte
+        run: npm install
+      - name: Publishing migrate rte
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.migrate-rte-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-migrate-rte/package.json
+      - name: Installing dependencies of migration
+        id: migration-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_migration == 'true'}}
+        working-directory: ./packages/contentstack-migration
+        run: npm install
+      - name: Publishing migration
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.migration-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-migration/package.json
+      - name: Installing dependencies of seed
+        id: seed-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_seed == 'true'}}
+        working-directory: ./packages/contentstack-seed
+        run: npm install
+      - name: Compiling seed
+        if: ${{ steps.seed-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-seed
+        run: npm run prepack
+      - name: Publishing seed
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.seed-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-seed/package.json
+      - name: Installing dependencies of bootstrap
+        id: bootstrap-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_bootstrap == 'true'}}
+        working-directory: ./packages/contentstack-bootstrap
+        run: npm install
+      - name: Compiling bootstrap
+        if: ${{ steps.bootstrap-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-bootstrap
+        run: npm run prepack
+      - name: Publishing bootstrap
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.bootstrap-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-bootstrap/package.json
+      - name: Installing dependencies of bulk publish
+        id: bulk-publish-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_bulk-publish == 'true'}}
+        working-directory: ./packages/contentstack-bulk-publish
+        run: npm install
+      - name: Publishing bulk publish
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.bulk-publish-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-bulk-publish/package.json
+      - name: Installing dependencies of launch
+        id: launch-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_launch == 'true'}}
+        working-directory: ./packages/contentstack-launch
+        run: npm install
+      - name: Compiling launch
+        if: ${{ steps.launch-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-launch
+        run: npm run prepack
+      - name: Publishing launch
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.launch-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-launch/package.json
+          access: public
+      - name: Installing dependencies of branches
+        id: branches-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_branches == 'true'}}
+        working-directory: ./packages/contentstack-branches
+        run: npm install
+      - name: Compiling branches
+        if: ${{ steps.branches-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-branches
+        run: npm run prepack
+      - name: Publishing branches
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.branches-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-branches/package.json
+          access: public
+      - name: Installing dependencies of core
+        id: core-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_core == 'true'}}
+        working-directory: ./packages/contentstack
+        run: npm install
+      - name: Compiling core
+        if: ${{ steps.core-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack
+        run: npm run prepack
+      - name: Publishing core
+        id: publish-core
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.core-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack/package.json
+      - uses: actions/checkout@v3.5.3
+        with:
+          ref: 'prod-qa-pipeline'
+      - run: echo ${{ steps.publish-core.outputs.version  }} > version.md
+      - uses: EndBug/add-and-commit@v9
+        with:
+          message: 'Released version'
+      - name: Create Release
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create v${{ steps.publish-core.outputs.version }} --title "Release ${{ steps.publish-core.outputs.version }}" --generate-notes
