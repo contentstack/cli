@@ -1,0 +1,22 @@
+{
+    "releaseAll": true,
+    "plugins": {
+        "utilities": false,
+        "command": false,
+        "config": false,
+        "auth": false,
+        "export": false,
+        "import": true,
+        "clone": false,
+        "export-to-csv": false,
+        "migrate-rte": false,
+        "migration": false,
+        "seed": false,
+        "bootstrap": false,
+        "bulk-publish": false,
+        "dev-dependencies": false,
+        "launch": false,
+        "branches": false,
+        "core": false
+    }
+}

@@ -1,0 +1,663 @@
+{
+    "contenttypewithsinglerte": {
+        "blt6168b6493a122849": {
+            "entry": {
+                "content_type_uid": "contenttypewithsinglerte",
+                "title": "Entry 2",
+                "rich_text_editor": "<p>value 2</p>",
+                "supercharged_rte": {
+                    "attrs": {
+                        "dirty": true
+                    },
+                    "children": [
+                        {
+                            "type": "p",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "children": [
+                                {
+                                    "text": "value 2"
+                                }
+                            ]
+                        }
+                    ],
+                    "type": "doc"
+                },
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blt6168b6493a122849",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        },
+        "blt6168b6493a122849_en-in": {
+            "entry": {
+                "content_type_uid": "contenttypewithsinglerte",
+                "title": "Entry 2",
+                "rich_text_editor": "<p>value 2 en-in</p>",
+              "tags": [
+              ],
+                "locale": "en-in",
+              "ACL": {
+              },
+                "_version": 1,
+                "_in_progress": false,
+                "supercharged_rte": {
+                    "type": "doc",
+                    "attrs": {
+                        "dirty": true
+                    },
+                    "children": [
+                        {
+                            "type": "p",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "children": [
+                                {
+                                    "text": "value 2 en-in"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "blt94ab8cf0a7956243": {
+            "entry": {
+                "content_type_uid": "contenttypewithsinglerte",
+                "title": "entry 1",
+                "rich_text_editor": "<p>value 1</p>",
+                "supercharged_rte": {
+                    "attrs": {
+                        "dirty": true
+                    },
+                    "children": [
+                        {
+                            "type": "p",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "children": [
+                                {
+                                    "text": "value 1"
+                                }
+                            ]
+                        }
+                    ],
+                    "type": "doc"
+                },
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blt94ab8cf0a7956243",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        }
+    },
+    "contenttype1forglobalfield": {
+        "blt982804d4a39b0197": {
+            "entry": {
+                "content_type_uid": "contenttype1forglobalfield",
+                "title": "test1",
+                "global_field": {
+                    "rich_text_editor": "<p>global =&gt; richtext</p>",
+                    "supercharged_rte": {
+                        "uid": "1ce9c36aee364ef4bce4af5888ada1ca",
+                        "attrs": {
+                            "dirty": true
+                        },
+                        "children": [
+                            {
+                                "type": "p",
+                                "attrs": {
+                                    "dirty": true
+                                },
+                                "uid": "7ce05e1c02cd4d1e874f49e14c9896b7",
+                                "children": [
+                                    {
+                                        "text": "global => richtext"
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "doc"
+                    }
+                },
+                "group": {
+                    "global_field": {
+                        "rich_text_editor": "<p>group =&gt; global =&gt; rte</p>",
+                        "supercharged_rte": {
+                            "uid": "aa9cf4eda3b14d5593afe7f42d8b6d32",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "children": [
+                                {
+                                    "type": "p",
+                                    "attrs": {
+                                        "dirty": true
+                                    },
+                                    "uid": "8a068301df9a4711b17513a59c50ec1d",
+                                    "children": [
+                                        {
+                                            "text": "group => global => rte"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "type": "doc"
+                        }
+                    }
+                },
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blt982804d4a39b0197",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        }
+    },
+    "contenttype2forglobalfield": {
+        "blta20a822fdd7bcc87": {
+            "entry": {
+                "content_type_uid": "contenttype2forglobalfield",
+                "title": "test1",
+                "global_field": {
+                    "rich_text_editor": "<p>global =&gt; rte</p>",
+                    "supercharged_rte": {
+                        "uid": "dd260ea1cbae4b7e8dc76d2ba093bc59",
+                        "attrs": {
+                            "dirty": true
+                        },
+                        "children": [
+                            {
+                                "type": "p",
+                                "attrs": {
+                                    "dirty": true
+                                },
+                                "uid": "0d791273a9a94e24b938875ea91b3506",
+                                "children": [
+                                    {
+                                        "text": "global => rte"
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "doc"
+                    }
+                },
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blta20a822fdd7bcc87",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        }
+    },
+    "contenttypewithmultiplerte": {
+        "blt55ac0aa11a1dafe9": {
+            "entry": {
+                "content_type_uid": "contenttypewithmultiplerte",
+                "title": "test1",
+                "rich_text_editor": [
+                    "<p>multiple 1</p>",
+                    "<p>mutiple 2</p>"
+                ],
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blt55ac0aa11a1dafe9",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false,
+                "supercharged_rte": [
+                    {
+                        "uid": "a4005415a7534771bb2f109cd66e3bca",
+                        "attrs": {
+                            "dirty": true
+                        },
+                        "children": [
+                            {
+                                "type": "p",
+                                "attrs": {
+                                    "dirty": true
+                                },
+                                "uid": "a7bda536f4eb4537b46c5ba5bb591b88",
+                                "children": [
+                                    {
+                                        "text": "multiple 1"
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "doc"
+                    },
+                    {
+                        "uid": "799c65b6e8ef4a5a835a84dd00a5d2c1",
+                        "attrs": {
+                            "dirty": true
+                        },
+                        "children": [
+                            {
+                                "type": "p",
+                                "attrs": {
+                                    "dirty": true
+                                },
+                                "uid": "ff5062221af04f389023498a784ef60b",
+                                "children": [
+                                    {
+                                        "text": "mutiple 2"
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "doc"
+                    }
+                ]
+            }
+        }
+    },
+    "contenttypewithmodularblock": {
+        "blte02628730f4d0c3c": {
+            "entry": {
+                "content_type_uid": "contenttypewithmodularblock",
+                "title": "",
+                "modular_blocks": [
+                    {
+                        "test1": {
+                            "rich_text_editor": "<p>M1</p>",
+                            "_metadata": {
+                                "uid": "csa15520723d8f9738"
+                            },
+                            "supercharged_rte": {
+                                "uid": "41084f4b46ae4c74a0621178f9a90a9b",
+                                "attrs": {
+                                    "dirty": true
+                                },
+                                "children": [
+                                    {
+                                        "type": "p",
+                                        "attrs": {
+                                            "dirty": true
+                                        },
+                                        "uid": "f1731c44ddce4b5fbb89f1a9709709ba",
+                                        "children": [
+                                            {
+                                                "text": "M1"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "type": "doc"
+                            }
+                        }
+                    },
+                    {
+                        "test1": {
+                            "rich_text_editor": "<p>m2</p>",
+                            "_metadata": {
+                                "uid": "csc3ccd3f10d8ceff6"
+                            },
+                            "supercharged_rte": {
+                                "uid": "9e59aad291d841209bb0a09f0f25dc4c",
+                                "attrs": {
+                                    "dirty": true
+                                },
+                                "children": [
+                                    {
+                                        "type": "p",
+                                        "attrs": {
+                                            "dirty": true
+                                        },
+                                        "uid": "6da41ca59c864c46a411c174ba8ff897",
+                                        "children": [
+                                            {
+                                                "text": "m2"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "type": "doc"
+                            }
+                        }
+                    },
+                    {
+                        "test1": {
+                            "rich_text_editor": "<p>m3</p>",
+                            "_metadata": {
+                                "uid": "csf2355ddf2979a0a1"
+                            },
+                            "supercharged_rte": {
+                                "uid": "618a22106fee4782985480921013a827",
+                                "attrs": {
+                                    "dirty": true
+                                },
+                                "children": [
+                                    {
+                                        "type": "p",
+                                        "attrs": {
+                                            "dirty": true
+                                        },
+                                        "uid": "78a1989b5d1f4924861062c4028cf4ab",
+                                        "children": [
+                                            {
+                                                "text": "m3"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "type": "doc"
+                            }
+                        }
+                    }
+                ],
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blte02628730f4d0c3c",
+                "_version": 1,
+                "_in_progress": true
+            }
+        }
+    },
+    "contenttypewithgroup": {
+        "blt279161bdc0c77b2d": {
+            "entry": {
+                "content_type_uid": "contenttypewithgroup",
+                "title": "test1",
+                "group": {
+                    "rich_text_editor": [
+                        "<p>rte1</p>",
+                        "<p>rte2</p>"
+                    ],
+                    "supercharged_rte": [
+                        {
+                            "uid": "619f41a6e1914e8d850643b4b638c5ef",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "children": [
+                                {
+                                    "type": "p",
+                                    "attrs": {
+                                        "dirty": true
+                                    },
+                                    "uid": "6ab95d01d77741469a9927cfc9a8b595",
+                                    "children": [
+                                        {
+                                            "text": "rte1"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "type": "doc"
+                        },
+                        {
+                            "uid": "c0260baf5ea74800875c759748bf3922",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "children": [
+                                {
+                                    "type": "p",
+                                    "attrs": {
+                                        "dirty": true
+                                    },
+                                    "uid": "ea3bdcc5a3b14bb9bab15332a719c6a4",
+                                    "children": [
+                                        {
+                                            "text": "rte2"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "type": "doc"
+                        }
+                    ]
+                },
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blt279161bdc0c77b2d",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        }
+    },
+    "contenttypewithmultiplegroup": {
+        "bltd939c78b885da314": {
+            "entry": {
+                "content_type_uid": "contenttypewithmultiplegroup",
+                "title": "test1",
+                "group": [
+                    {
+                        "rich_text_editor": "<p>instance 1</p>",
+                        "_metadata": {
+                            "uid": "cs46fbdc80bbb32699"
+                        },
+                        "supercharged_rte": {
+                            "uid": "a01850a70b1342399ac1c2b2a51276f2",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "children": [
+                                {
+                                    "type": "p",
+                                    "attrs": {
+                                        "dirty": true
+                                    },
+                                    "uid": "674b2d9c59fb49a8b99fe3616726edb8",
+                                    "children": [
+                                        {
+                                            "text": "instance 1"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "type": "doc"
+                        }
+                    },
+                    {
+                        "rich_text_editor": "<p>instance 2</p>",
+                        "_metadata": {
+                            "uid": "cs9fa775294fcb9aba"
+                        },
+                        "supercharged_rte": {
+                            "uid": "e097125cee1f4574a21d5263762909ea",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "children": [
+                                {
+                                    "type": "p",
+                                    "attrs": {
+                                        "dirty": true
+                                    },
+                                    "uid": "6cc8a21ad87d48eab401e50f1f33adc4",
+                                    "children": [
+                                        {
+                                            "text": "instance 2"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "type": "doc"
+                        }
+                    }
+                ],
+                "tags": [],
+                "locale": "en-us",
+                "uid": "bltd939c78b885da314",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        }
+    },
+    "contenttypewithfilefield": {
+        "bltcbf22e3759df80ef": {
+            "entry": {
+                "content_type_uid": "contenttypewithfilefield",
+                "title": "This is test",
+                "file": null,
+                "asset": "bltab83acc0e405b6f8",
+                "modular_blocks": [
+                    {
+                        "test1": {
+                            "file": [
+                                "bltb13b08635ebffdc4",
+                                "bltb85f710a4a984858",
+                                "blt3d60320b8e0b9b0a"
+                            ],
+                            "_metadata": {}
+                        }
+                    },
+                    {
+                        "test1": {
+                            "file": [
+                                "bltab83acc0e405b6f8"
+                            ],
+                            "_metadata": {}
+                        }
+                    }
+                ],
+                "group": {
+                    "file": "bltab83acc0e405b6f8"
+                },
+                "rich_text_editor": "<p>This is test</p>",
+                "tags": [],
+                "locale": "en-us",
+                "_version": 1,
+                "_in_progress": false,
+                "json_rte": {
+                    "type": "doc",
+                    "attrs": {
+                        "dirty": true
+                    },
+                    "children": [
+                        {
+                            "type": "p",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "children": [
+                                {
+                                    "text": "This is test"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "rte_images": {
+        "blt6168b6493a122849": {
+            "entry": {
+                "content_type_uid": "rte_images",
+                "title": "Entry 2",
+                "rich_text_editor": "<p></p><img asset_uid=\"bltfea8157ddfb8e776\" height=\"auto\" src=\"https://images.contentstack.io/v3/assets/blt858e12437ac2679e/bltfea8157ddfb8e776/6329f1106a7f7364973c028c/landscape-3.jpg\" width=\"194\" max-width=\"194\" style=\"width: 194px; height: auto;\"/> <img height=\"auto\" src=\"https://images.contentstack.io/v3/assets/blt858e12437ac2679e/bltfea8157ddfb8e776/6329f1106a7f7364973c028c/landscape-3.jpg\" width=\"194\" max-width=\"194\" style=\"width: 194px; height: auto;\"/>",
+                "supercharged_rte": {
+                    "type": "doc",
+                    "uid": "bf1e7d19bf1444d99aa37d13c5f89860",
+                    "attrs": {
+                        "dirty": true
+                    },
+                    "children": [
+                        {
+                            "type": "p",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "uid": "d44446f8623f4622a8baaa15da5c2b32",
+                            "children": [
+                                {
+                                    "text": ""
+                                }
+                            ]
+                        },
+                        {
+                            "type": "reference",
+                            "attrs": {
+                                "asset-name": "landscape-3.jpg",
+                                "content-type-uid": "sys_assets",
+                                "asset-link": "https://images.contentstack.io/v3/assets/blt858e12437ac2679e/bltfea8157ddfb8e776/6329f1106a7f7364973c028c/landscape-3.jpg",
+                                "asset-type": "image/jpg",
+                                "display-type": "display",
+                                "type": "asset",
+                                "asset-uid": "bltfea8157ddfb8e776",
+                                "style": {
+                                    "width": "194px",
+                                    "height": "auto"
+                                },
+                                "redactor-attributes": {
+                                    "asset_uid": "bltfea8157ddfb8e776",
+                                    "height": "auto",
+                                    "src": "https://images.contentstack.io/v3/assets/blt858e12437ac2679e/bltfea8157ddfb8e776/6329f1106a7f7364973c028c/landscape-3.jpg",
+                                    "width": "194",
+                                    "max-width": "194",
+                                    "style": "width: 194px; height: auto;"
+                                },
+                                "width": 194,
+                                "dirty": true
+                            },
+                            "uid": "abebb46533cf48138863121eb6068368",
+                            "children": [
+                                {
+                                    "text": ""
+                                }
+                            ]
+                        },
+                        {
+                            "type": "fragment",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "uid": "d3b2c282a8084d4b809992bd778802eb",
+                            "children": [
+                                {
+                                    "text": " "
+                                }
+                            ]
+                        },
+                        {
+                            "type": "img",
+                            "attrs": {
+                                "url": "https://images.contentstack.io/v3/assets/blt858e12437ac2679e/bltfea8157ddfb8e776/6329f1106a7f7364973c028c/landscape-3.jpg",
+                                "style": {
+                                    "width": "194px",
+                                    "height": "auto"
+                                },
+                                "redactor-attributes": {
+                                    "height": "auto",
+                                    "src": "https://images.contentstack.io/v3/assets/blt858e12437ac2679e/bltfea8157ddfb8e776/6329f1106a7f7364973c028c/landscape-3.jpg",
+                                    "width": "194",
+                                    "max-width": "194",
+                                    "style": "width: 194px; height: auto;"
+                                },
+                                "width": 194,
+                                "dirty": true
+                            },
+                            "uid": "94ac7edb6c3e4447b88793324e4e5a3b",
+                            "children": [
+                                {
+                                    "text": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blt6168b6493a122849",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        }
+    }
+}

@@ -1,0 +1,13 @@
+{
+  "alias": "test1",
+  "content-type": "contenttypewithsinglerte",
+  "global-field": false,
+  "paths": [
+    {
+      "from": "rich_text_editor",
+      "to": "supercharged_rte"
+    }
+  ],
+  "delay": 50,
+  "locale": ["en-in", "en-us"]
+}

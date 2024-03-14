@@ -1,0 +1,70 @@
+{
+  "name": "@contentstack/cli-cm-migrate-rte",
+  "description": "Contentstack CLI plugin to migrate HTML RTE to JSON RTE",
+  "version": "1.4.15",
+  "author": "contentstack",
+  "bugs": "https://github.com/contentstack/cli/issues",
+  "dependencies": {
+    "@contentstack/cli-command": "~1.2.16",
+    "@contentstack/cli-utilities": "~1.5.12",
+    "@contentstack/json-rte-serializer": "~2.0.4",
+    "collapse-whitespace": "^1.1.7",
+    "chalk": "^4.1.2",
+    "jsdom": "^20.0.3",
+    "jsonschema": "^1.4.0",
+    "lodash": "^4.17.21",
+    "nock": "^13.1.0",
+    "omit-deep-lodash": "^1.1.5",
+    "sinon": "^15.0.1",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@oclif/test": "^2.5.6",
+    "chai": "^4.3.4",
+    "eslint": "^8.18.0",
+    "eslint-config-oclif": "^4.0.0",
+    "globby": "^10.0.2",
+    "mocha": "^10.0.0",
+    "nyc": "^15.1.0",
+    "oclif": "^3.11.3",
+    "tslib": "^1.13.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "files": [
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json",
+    "/src"
+  ],
+  "homepage": "https://github.com/contentstack/cli",
+  "keywords": [
+    "contentstack",
+    "cli",
+    "plugin",
+    "JSON RTE"
+  ],
+  "license": "MIT",
+  "oclif": {
+    "commands": "./src/commands",
+    "bin": "csdx",
+    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-migrate-rte/<%- commandPath %>"
+  },
+  "repository": "contentstack/cli",
+  "scripts": {
+    "postpack": "rm -f oclif.manifest.json",
+    "prepack": "oclif manifest && oclif readme",
+    "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
+    "version": "oclif readme && git add README.md",
+    "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
+  },
+  "csdxConfig": {
+    "expiredCommands": {
+      "cm:migrate-rte": "csdx cm:entries:migrate-html-rte"
+    },
+    "shortCommandName": {
+      "cm:entries:migrate-html-rte": "MGRTRTE",
+      "cm:migrate-rte": "O-MGRTRTE"
+    }
+  }
+}
