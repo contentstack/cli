@@ -1,0 +1,23 @@
+{
+  "name": "csdx",
+  "version": "1.0.0",
+  "devDependencies": {
+    "pnpm": "^7.23.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "private": true,
+  "scripts": {
+    "cache:clear": "pnpm store prune",
+    "clean": "pnpm --filter './packages/*' -w clean",
+    "bootstrap": "pnpm install --no-frozen-lockfile",
+    "prepack": "pnpm --filter \"./packages/*\" -w prepack",
+    "package-lock-only": "npm i --package-lock-only --workspaces",
+    "setup-repo": "npm i && pnpm package-lock-only && pnpm clean && pnpm install --no-frozen-lockfile && pnpm prepack"
+  },
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ]
+}
