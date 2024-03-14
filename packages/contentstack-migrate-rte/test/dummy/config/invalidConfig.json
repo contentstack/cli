@@ -1,0 +1,12 @@
+{
+  "alias": 123,
+  "content-type": "contenttypewithsinglerte",
+  "global-field": false,
+  "paths": [
+    {
+      "from": "rich_text_editor",
+      "to": "supercharged_rte"
+    }
+  ],
+  "delay": 50
+}

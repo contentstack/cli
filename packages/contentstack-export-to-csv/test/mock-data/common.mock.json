@@ -1,0 +1,400 @@
+{
+  "taxonomiesResp": {
+    "taxonomies": [
+      {
+        "uid": "taxonomy_uid_1",
+        "name": "taxonomy uid 1",
+        "description": "",
+        "created_at": "2023-09-01T06:09:44.934Z",
+        "created_by": "user1",
+        "updated_at": "2023-09-01T06:44:16.604Z",
+        "updated_by": "user1"
+      },
+      {
+        "uid": "taxonomy_uid_2",
+        "name": "taxonomy uid 2",
+        "description": "",
+        "created_at": "2023-09-01T06:09:44.934Z",
+        "created_by": "user1",
+        "updated_at": "2023-09-01T06:44:16.604Z",
+        "updated_by": "user1"
+      }
+    ],
+    "count": 2
+  },
+  "termsResp": {
+    "terms": [
+      {
+        "uid": "wsq",
+        "name": "wsq",
+        "created_at": "2023-08-30T09:51:12.043Z",
+        "created_by": "user1",
+        "updated_at": "2023-08-30T09:51:12.043Z",
+        "updated_by": "user1",
+        "parent_uid": null,
+        "depth": 1
+      },
+      {
+        "uid": "term2",
+        "name": "term2",
+        "created_at": "2023-08-30T09:45:11.963Z",
+        "created_by": "user2",
+        "updated_at": "2023-08-30T09:45:11.963Z",
+        "updated_by": "user2",
+        "parent_uid": null,
+        "depth": 1
+      }
+    ],
+    "count": 2
+  },
+  "organizations": [
+    {
+      "uid": "test-uid-1",
+      "name": "test org 1"
+    },
+    {
+      "uid": "test-uid-2",
+      "name": "test org 2"
+    },
+    {
+        "uid": "org_uid_1_teams",
+        "name": "Teams Org"
+    }
+  ],
+  "stacks": [
+    {
+      "name": "Stack 1",
+      "uid": "stack-uid-1",
+      "api_key": "stack_api_key_1"
+    },
+    {
+      "name": "Stack 2",
+      "uid": "stack-uid-2",
+      "api_key": "stack_api_key_2"
+    }
+  ],
+  "users": [
+    {
+      "uid": "uid1",
+      "email": "test@gmail.abc",
+      "user_uid": "user1",
+      "org_uid": "test-uid-1",
+      "invited_by": "user2",
+      "invited_at": "2023-08-21T11:08:41.038Z",
+      "status": "accepted",
+      "acceptance_token": "dfghdfgd",
+      "created_at": "2023-08-21T11:08:41.036Z",
+      "updated_at": "2023-08-21T11:09:11.342Z",
+      "urlPath": "/user",
+      "organizations": [
+        {
+          "uid": "test-uid-1",
+          "name": "test org 1",
+          "org_roles": [
+            {
+              "uid": "role1",
+              "name": "Admin",
+              "description": "Admin Role",
+              "org_uid": "test-uid-1",
+              "admin": true,
+              "default": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uid": "test-uid-2",
+      "name": "test org 2"
+    },
+    {
+      "organizations": [
+        {
+          "uid": "org_uid_1_teams",
+          "name": "Teams Org",
+          "org_roles": [
+            {
+              "uid": "role1",
+              "name": "Admin",
+              "description": "Admin Role",
+              "org_uid": "test-uid-1",
+              "admin": true,
+              "default": true
+            }
+          ]
+        }
+        ]
+      
+    }
+  ],
+  "roles": [
+    {
+      "urlPath": "/roles/role1",
+      "uid": "role1",
+      "name": "admin",
+      "description": "The Admin role has rights to add/remove users from an organization, and has access to stacks created by self or shared by others.",
+      "org_uid": "test-uid-1",
+      "owner_uid": "user1",
+      "admin": true,
+      "default": true,
+      "users": ["user2", "user3"],
+      "created_at": "2023-08-08T10:09:43.445Z",
+      "updated_at": "2023-08-21T11:08:41.042Z"
+    }
+  ],
+  "contentTypes": [
+    {
+      "stackHeaders": {
+        "api_key": "stack_api_key_1"
+      },
+      "urlPath": "/content_types/ct1",
+      "created_at": "2023-08-08T13:52:31.980Z",
+      "updated_at": "2023-08-08T13:52:34.265Z",
+      "title": "CT 1",
+      "uid": "ct_1",
+      "_version": 2,
+      "inbuilt_class": false,
+      "schema": [
+        {
+          "data_type": "text",
+          "display_name": "Title",
+          "field_metadata": {
+            "_default": true,
+            "version": 3
+          },
+          "mandatory": true,
+          "uid": "title",
+          "unique": true,
+          "multiple": false,
+          "non_localizable": false
+        }
+      ]
+    },
+    {
+      "stackHeaders": {
+        "api_key": "stack_api_key_1"
+      },
+      "urlPath": "/content_types/ct2",
+      "created_at": "2023-08-08T13:52:31.980Z",
+      "updated_at": "2023-08-08T13:52:34.265Z",
+      "title": "CT 2",
+      "uid": "ct_2",
+      "_version": 2,
+      "inbuilt_class": false,
+      "schema": [
+        {
+          "data_type": "text",
+          "display_name": "Title",
+          "field_metadata": {
+            "_default": true,
+            "version": 3
+          },
+          "mandatory": true,
+          "uid": "title",
+          "unique": true,
+          "multiple": false,
+          "non_localizable": false
+        }
+      ]
+    }
+  ],
+  "branch": {
+    "stackHeaders": {
+      "api_key": "stack_api_key_1"
+    },
+    "urlPath": "/stacks/branches/test_branch1",
+    "uid": "test_branch1",
+    "source": "",
+    "created_by": "user1",
+    "updated_by": "user1",
+    "created_at": "2023-08-08T13:51:43.217Z",
+    "updated_at": "2023-08-08T13:51:43.217Z",
+    "deleted_at": false
+  },
+  "entry": [
+    {
+      "stackHeaders": {
+        "api_key": "stack_api_key_1"
+      },
+      "content_type_uid": "home",
+      "urlPath": "/content_types/ct1/entries/test_entry1",
+      "title": "Test Entry1",
+      "url": "/",
+      "tags": [],
+      "locale": "en1",
+      "uid": "test_entry1",
+      "created_by": "user1",
+      "updated_by": "user1",
+      "created_at": "2023-08-08T13:52:46.592Z",
+      "updated_at": "2023-08-08T13:52:46.592Z",
+      "_version": 1
+    }
+  ],
+  "environments": [
+    {
+      "stackHeaders": {
+        "api_key": "stack_api_key_1"
+      },
+      "urlPath": "/environments/development",
+      "urls": [
+        {
+          "url": "http://localhost:3000/",
+          "locale": "en1"
+        }
+      ],
+      "name": "development",
+      "_version": 3,
+      "uid": "env1",
+      "created_by": "user1",
+      "updated_by": "user1",
+      "created_at": "2023-06-12T18:59:56.853Z",
+      "updated_at": "2023-06-12T18:59:56.853Z"
+    }
+  ],
+  "locales": [
+    {
+      "code": "en1",
+      "name": "English - En",
+      "fallback_locale": "en-us",
+      "uid": "gsfdasgdf",
+      "created_at": "2023-09-11T10:44:40.213Z",
+      "updated_at": "2023-09-11T10:44:40.213Z",
+      "ACL": [],
+      "_version": 1
+    }
+  ],
+  "Teams": {
+    "emptyTeam": [],
+    "allTeams": {
+      "count": 1,
+      "teams": [
+        {
+          "_id": "team_1_uid",
+          "name": "Test_Team_1",
+
+          "organizationUid": "org_uid_1_teams",
+          "users": [],
+          "stackRoleMapping": [
+            {
+              "stackApiKey": "stack_api_key",
+              "roles": ["role_uid_1"]
+            }
+          ],
+          "organizationRole": "org_role_uid_1",
+
+          "uid": "team_1_uid",
+          "createdByUserName": "team_creator",
+          "updatedByUserName": "team_creator"
+        }
+      ]
+    }
+  },
+  "roless": {
+    "roles": [
+      {
+        "name": "Developer",
+        "description": "Developer can perform all Content Manager's actions, view audit logs, create roles, invite users, manage content types, languages, and environments.",
+        "uid": "stack_role_uid_3",
+        "users": [],
+        "owner": "ownerEmail@domain.com",
+        "stack": {
+          "uid": "stack_uid",
+          "name": "CLI Test",
+          "org_uid": "org_uid_1_teams",
+          "api_key": "stack_api_key",
+          "master_locale": "en-us",
+
+          "owner_uid": "team_owner_uid",
+          "user_uids": ["team_owner_uid"]
+        },
+        "SYS_ACL": {}
+      },
+      {
+        "name": "Content Manager",
+        "description": "Content Managers can view all content types, manage entries and assets. They cannot edit content types or access stack settings.",
+        "uid": "stack_role_uid_1",
+
+        "updated_by": "team_owner_uid",
+
+        "owner": "ownerEmail@domain.com",
+        "stack": {
+          "uid": "stack_uid",
+          "name": "CLI Test",
+          "org_uid": "org_uid_1_teams",
+          "api_key": "stack_api_key",
+          "master_locale": "en-us",
+
+          "owner_uid": "team_owner_uid",
+          "user_uids": ["team_owner_uid"]
+        },
+        "SYS_ACL": {}
+      },
+      {
+        "name": "Admin",
+        "description": "Admin can perform all actions and manage all settings of the stack, except the ability to delete or transfer ownership of the stack.",
+        "uid": "role_uid_1",
+
+        "updated_at": "2023-10-26T04:44:51.529Z",
+        "users": [],
+        "owner": "ownerEmail@domain.com",
+        "stack": {
+          "uid": "stack_uid",
+          "name": "CLI Test",
+          "org_uid": "org_uid_1_teams",
+          "api_key": "stack_api_key",
+          "master_locale": "en-us",
+
+          "owner_uid": "team_owner_uid",
+          "user_uids": ["team_owner_uid"]
+        },
+        "SYS_ACL": {}
+      },
+      {
+        "name": "Custom_Role_1",
+        "description": "",
+        "users": [],
+        "uid": "stack_role_uid_2",
+
+        "updated_by": "team_owner_uid",
+
+        "owner": "ownerEmail@domain.com",
+        "stack": {
+          "uid": "stack_uid",
+          "name": "CLI Test",
+          "org_uid": "org_uid_1_teams",
+          "api_key": "stack_api_key",
+          "master_locale": "en-us",
+
+          "owner_uid": "team_owner_uid",
+          "user_uids": ["team_owner_uid"]
+        },
+        "SYS_ACL": {}
+      }
+    ]
+  },
+  "org_roles": {
+    "roles": [
+      {
+        "uid": "org_role_uid_1",
+        "name": "admin",
+        "description": "The Admin role has rights to add/remove users from an organization, and has access to stacks created by self or shared by others.",
+        "org_uid": "org_uid_1_teams",
+        "owner_uid": "org_owner_uid",
+        "admin": true,
+        "default": true,
+        "users": ["user_1_uid", "org_owner_uid", "user_2_uid"]
+      },
+      {
+        "uid": "org_role_uid_2",
+        "name": "member",
+        "description": "The Member role has access only to the stacks created by or shared with him/her, and does not have access to organization settings.",
+        "org_uid": "org_uid_1_teams",
+        "owner_uid": "org_owner_uid",
+        "admin": false,
+        "default": true,
+        "users": ["user_1_uid_member", "user_2_uid_member", "user_3_uid_member", "user_4_uid_member"]
+      }
+    ]
+  },
+  "taxonomyCSVData": "`taxonomy1,taxonomy1,,,,,,,\n,,,term1,term1,,,,\n,,,,,term1_2,term1_2,,\n,,,term2,term2,,,,\n,,,,,term2_2,term2_2,,\n,,,,,,,term2_2_1,term2_2_1\n,,,,,term2_1,term2_1,,`"
+}
