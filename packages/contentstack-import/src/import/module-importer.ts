@@ -117,7 +117,7 @@ class ModuleImporter {
     const basePath = resolve(this.importConfig.backupDir, 'logs', 'audit');
     const auditConfig = this.importConfig.auditConfig;
     auditConfig.config.basePath = basePath;
-
+    auditConfig.config.branch = this.importConfig.branchName;
     try {
       const args = [
         '--data-dir',
