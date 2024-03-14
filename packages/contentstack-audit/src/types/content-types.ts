@@ -51,6 +51,7 @@ type RefErrorReturnType = {
   uid?: string;
   content_types?: string[];
   title?: string;
+  branches?: string[];
 };
 
 // NOTE Type 1
@@ -119,6 +120,7 @@ enum OutputColumn {
   title = 'title',
   'uid' = 'uid',
   'missingCts' = 'content_types',
+  'Missing Branches' = 'branches',
 }
 
 export {
