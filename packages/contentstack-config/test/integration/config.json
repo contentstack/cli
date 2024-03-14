@@ -1,0 +1,6 @@
+{
+  "PRINT_LOGS": false,
+  "CDA": "https://cdn.contentstack.io",
+  "CMA": "https://api.contentstack.io",
+  "REGION_NAME": "NA"
+}

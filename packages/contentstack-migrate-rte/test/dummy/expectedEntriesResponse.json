@@ -1,0 +1,663 @@
+{
+    "contenttypewithsinglerte": {
+        "blt6168b6493a122849": {
+            "entry": {
+                "content_type_uid": "contenttypewithsinglerte",
+                "title": "Entry 2",
+                "rich_text_editor": "<p>value 2</p>",
+                "supercharged_rte": {
+                    "attrs": {
+                        "dirty": true
+                    },
+                    "children": [
+                        {
+                            "type": "p",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "children": [
+                                {
+                                    "text": "value 2"
+                                }
+                            ]
+                        }
+                    ],
+                    "type": "doc"
+                },
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blt6168b6493a122849",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        },
+        "blt6168b6493a122849_en-in": {
+            "entry": {
+                "content_type_uid": "contenttypewithsinglerte",
+                "title": "Entry 2",
+                "rich_text_editor": "<p>value 2 en-in</p>",
+              "tags": [
+              ],
+                "locale": "en-in",
+              "ACL": {
+              },
+                "_version": 1,
+                "_in_progress": false,
+                "supercharged_rte": {
+                    "type": "doc",
+                    "attrs": {
+                        "dirty": true
+                    },
+                    "children": [
+                        {
+                            "type": "p",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "children": [
+                                {
+                                    "text": "value 2 en-in"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "blt94ab8cf0a7956243": {
+            "entry": {
+                "content_type_uid": "contenttypewithsinglerte",
+                "title": "entry 1",
+                "rich_text_editor": "<p>value 1</p>",
+                "supercharged_rte": {
+                    "attrs": {
+                        "dirty": true
+                    },
+                    "children": [
+                        {
+                            "type": "p",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "children": [
+                                {
+                                    "text": "value 1"
+                                }
+                            ]
+                        }
+                    ],
+                    "type": "doc"
+                },
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blt94ab8cf0a7956243",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        }
+    },
+    "contenttype1forglobalfield": {
+        "blt982804d4a39b0197": {
+            "entry": {
+                "content_type_uid": "contenttype1forglobalfield",
+                "title": "test1",
+                "global_field": {
+                    "rich_text_editor": "<p>global =&gt; richtext</p>",
+                    "supercharged_rte": {
+                        "uid": "***REMOVED***",
+                        "attrs": {
+                            "dirty": true
+                        },
+                        "children": [
+                            {
+                                "type": "p",
+                                "attrs": {
+                                    "dirty": true
+                                },
+                                "uid": "***REMOVED***",
+                                "children": [
+                                    {
+                                        "text": "global => richtext"
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "doc"
+                    }
+                },
+                "group": {
+                    "global_field": {
+                        "rich_text_editor": "<p>group =&gt; global =&gt; rte</p>",
+                        "supercharged_rte": {
+                            "uid": "***REMOVED***",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "children": [
+                                {
+                                    "type": "p",
+                                    "attrs": {
+                                        "dirty": true
+                                    },
+                                    "uid": "***REMOVED***",
+                                    "children": [
+                                        {
+                                            "text": "group => global => rte"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "type": "doc"
+                        }
+                    }
+                },
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blt982804d4a39b0197",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        }
+    },
+    "contenttype2forglobalfield": {
+        "blta20a822fdd7bcc87": {
+            "entry": {
+                "content_type_uid": "contenttype2forglobalfield",
+                "title": "test1",
+                "global_field": {
+                    "rich_text_editor": "<p>global =&gt; rte</p>",
+                    "supercharged_rte": {
+                        "uid": "***REMOVED***",
+                        "attrs": {
+                            "dirty": true
+                        },
+                        "children": [
+                            {
+                                "type": "p",
+                                "attrs": {
+                                    "dirty": true
+                                },
+                                "uid": "***REMOVED***",
+                                "children": [
+                                    {
+                                        "text": "global => rte"
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "doc"
+                    }
+                },
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blta20a822fdd7bcc87",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        }
+    },
+    "contenttypewithmultiplerte": {
+        "blt55ac0aa11a1dafe9": {
+            "entry": {
+                "content_type_uid": "contenttypewithmultiplerte",
+                "title": "test1",
+                "rich_text_editor": [
+                    "<p>multiple 1</p>",
+                    "<p>mutiple 2</p>"
+                ],
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blt55ac0aa11a1dafe9",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false,
+                "supercharged_rte": [
+                    {
+                        "uid": "***REMOVED***",
+                        "attrs": {
+                            "dirty": true
+                        },
+                        "children": [
+                            {
+                                "type": "p",
+                                "attrs": {
+                                    "dirty": true
+                                },
+                                "uid": "***REMOVED***",
+                                "children": [
+                                    {
+                                        "text": "multiple 1"
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "doc"
+                    },
+                    {
+                        "uid": "***REMOVED***",
+                        "attrs": {
+                            "dirty": true
+                        },
+                        "children": [
+                            {
+                                "type": "p",
+                                "attrs": {
+                                    "dirty": true
+                                },
+                                "uid": "***REMOVED***",
+                                "children": [
+                                    {
+                                        "text": "mutiple 2"
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "doc"
+                    }
+                ]
+            }
+        }
+    },
+    "contenttypewithmodularblock": {
+        "blte02628730f4d0c3c": {
+            "entry": {
+                "content_type_uid": "contenttypewithmodularblock",
+                "title": "",
+                "modular_blocks": [
+                    {
+                        "test1": {
+                            "rich_text_editor": "<p>M1</p>",
+                            "_metadata": {
+                                "uid": "csa15520723d8f9738"
+                            },
+                            "supercharged_rte": {
+                                "uid": "***REMOVED***",
+                                "attrs": {
+                                    "dirty": true
+                                },
+                                "children": [
+                                    {
+                                        "type": "p",
+                                        "attrs": {
+                                            "dirty": true
+                                        },
+                                        "uid": "***REMOVED***",
+                                        "children": [
+                                            {
+                                                "text": "M1"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "type": "doc"
+                            }
+                        }
+                    },
+                    {
+                        "test1": {
+                            "rich_text_editor": "<p>m2</p>",
+                            "_metadata": {
+                                "uid": "csc3ccd3f10d8ceff6"
+                            },
+                            "supercharged_rte": {
+                                "uid": "***REMOVED***",
+                                "attrs": {
+                                    "dirty": true
+                                },
+                                "children": [
+                                    {
+                                        "type": "p",
+                                        "attrs": {
+                                            "dirty": true
+                                        },
+                                        "uid": "***REMOVED***",
+                                        "children": [
+                                            {
+                                                "text": "m2"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "type": "doc"
+                            }
+                        }
+                    },
+                    {
+                        "test1": {
+                            "rich_text_editor": "<p>m3</p>",
+                            "_metadata": {
+                                "uid": "csf2355ddf2979a0a1"
+                            },
+                            "supercharged_rte": {
+                                "uid": "***REMOVED***",
+                                "attrs": {
+                                    "dirty": true
+                                },
+                                "children": [
+                                    {
+                                        "type": "p",
+                                        "attrs": {
+                                            "dirty": true
+                                        },
+                                        "uid": "***REMOVED***",
+                                        "children": [
+                                            {
+                                                "text": "m3"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "type": "doc"
+                            }
+                        }
+                    }
+                ],
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blte02628730f4d0c3c",
+                "_version": 1,
+                "_in_progress": true
+            }
+        }
+    },
+    "contenttypewithgroup": {
+        "blt279161bdc0c77b2d": {
+            "entry": {
+                "content_type_uid": "contenttypewithgroup",
+                "title": "test1",
+                "group": {
+                    "rich_text_editor": [
+                        "<p>rte1</p>",
+                        "<p>rte2</p>"
+                    ],
+                    "supercharged_rte": [
+                        {
+                            "uid": "***REMOVED***",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "children": [
+                                {
+                                    "type": "p",
+                                    "attrs": {
+                                        "dirty": true
+                                    },
+                                    "uid": "***REMOVED***",
+                                    "children": [
+                                        {
+                                            "text": "rte1"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "type": "doc"
+                        },
+                        {
+                            "uid": "***REMOVED***",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "children": [
+                                {
+                                    "type": "p",
+                                    "attrs": {
+                                        "dirty": true
+                                    },
+                                    "uid": "***REMOVED***",
+                                    "children": [
+                                        {
+                                            "text": "rte2"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "type": "doc"
+                        }
+                    ]
+                },
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blt279161bdc0c77b2d",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        }
+    },
+    "contenttypewithmultiplegroup": {
+        "bltd939c78b885da314": {
+            "entry": {
+                "content_type_uid": "contenttypewithmultiplegroup",
+                "title": "test1",
+                "group": [
+                    {
+                        "rich_text_editor": "<p>instance 1</p>",
+                        "_metadata": {
+                            "uid": "cs46fbdc80bbb32699"
+                        },
+                        "supercharged_rte": {
+                            "uid": "***REMOVED***",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "children": [
+                                {
+                                    "type": "p",
+                                    "attrs": {
+                                        "dirty": true
+                                    },
+                                    "uid": "***REMOVED***",
+                                    "children": [
+                                        {
+                                            "text": "instance 1"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "type": "doc"
+                        }
+                    },
+                    {
+                        "rich_text_editor": "<p>instance 2</p>",
+                        "_metadata": {
+                            "uid": "cs9fa775294fcb9aba"
+                        },
+                        "supercharged_rte": {
+                            "uid": "***REMOVED***",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "children": [
+                                {
+                                    "type": "p",
+                                    "attrs": {
+                                        "dirty": true
+                                    },
+                                    "uid": "***REMOVED***",
+                                    "children": [
+                                        {
+                                            "text": "instance 2"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "type": "doc"
+                        }
+                    }
+                ],
+                "tags": [],
+                "locale": "en-us",
+                "uid": "bltd939c78b885da314",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        }
+    },
+    "contenttypewithfilefield": {
+        "bltcbf22e3759df80ef": {
+            "entry": {
+                "content_type_uid": "contenttypewithfilefield",
+                "title": "This is test",
+                "file": null,
+                "asset": "bltab83acc0e405b6f8",
+                "modular_blocks": [
+                    {
+                        "test1": {
+                            "file": [
+                                "bltb13b08635ebffdc4",
+                                "bltb85f710a4a984858",
+                                "blt3d60320b8e0b9b0a"
+                            ],
+                            "_metadata": {}
+                        }
+                    },
+                    {
+                        "test1": {
+                            "file": [
+                                "bltab83acc0e405b6f8"
+                            ],
+                            "_metadata": {}
+                        }
+                    }
+                ],
+                "group": {
+                    "file": "bltab83acc0e405b6f8"
+                },
+                "rich_text_editor": "<p>This is test</p>",
+                "tags": [],
+                "locale": "en-us",
+                "_version": 1,
+                "_in_progress": false,
+                "json_rte": {
+                    "type": "doc",
+                    "attrs": {
+                        "dirty": true
+                    },
+                    "children": [
+                        {
+                            "type": "p",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "children": [
+                                {
+                                    "text": "This is test"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "rte_images": {
+        "blt6168b6493a122849": {
+            "entry": {
+                "content_type_uid": "rte_images",
+                "title": "Entry 2",
+                "rich_text_editor": "<p></p><img asset_uid=\"bltfea8157ddfb8e776\" height=\"auto\" src=\"***REMOVED***8e12437ac2679e/bltfea8157ddfb8e776/6329f1106a7f7364973c028c/landscape-3.jpg\" width=\"194\" max-width=\"194\" style=\"width: 194px; height: auto;\"/> <img height=\"auto\" src=\"***REMOVED***8e12437ac2679e/bltfea8157ddfb8e776/6329f1106a7f7364973c028c/landscape-3.jpg\" width=\"194\" max-width=\"194\" style=\"width: 194px; height: auto;\"/>",
+                "supercharged_rte": {
+                    "type": "doc",
+                    "uid": "***REMOVED***",
+                    "attrs": {
+                        "dirty": true
+                    },
+                    "children": [
+                        {
+                            "type": "p",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "uid": "***REMOVED***",
+                            "children": [
+                                {
+                                    "text": ""
+                                }
+                            ]
+                        },
+                        {
+                            "type": "reference",
+                            "attrs": {
+                                "asset-name": "landscape-3.jpg",
+                                "content-type-uid": "sys_assets",
+                                "asset-link": "***REMOVED***8e12437ac2679e/bltfea8157ddfb8e776/6329f1106a7f7364973c028c/landscape-3.jpg",
+                                "asset-type": "image/jpg",
+                                "display-type": "display",
+                                "type": "asset",
+                                "asset-uid": "bltfea8157ddfb8e776",
+                                "style": {
+                                    "width": "194px",
+                                    "height": "auto"
+                                },
+                                "redactor-attributes": {
+                                    "asset_uid": "bltfea8157ddfb8e776",
+                                    "height": "auto",
+                                    "src": "***REMOVED***8e12437ac2679e/bltfea8157ddfb8e776/6329f1106a7f7364973c028c/landscape-3.jpg",
+                                    "width": "194",
+                                    "max-width": "194",
+                                    "style": "width: 194px; height: auto;"
+                                },
+                                "width": 194,
+                                "dirty": true
+                            },
+                            "uid": "***REMOVED***",
+                            "children": [
+                                {
+                                    "text": ""
+                                }
+                            ]
+                        },
+                        {
+                            "type": "fragment",
+                            "attrs": {
+                                "dirty": true
+                            },
+                            "uid": "***REMOVED***",
+                            "children": [
+                                {
+                                    "text": " "
+                                }
+                            ]
+                        },
+                        {
+                            "type": "img",
+                            "attrs": {
+                                "url": "***REMOVED***8e12437ac2679e/bltfea8157ddfb8e776/6329f1106a7f7364973c028c/landscape-3.jpg",
+                                "style": {
+                                    "width": "194px",
+                                    "height": "auto"
+                                },
+                                "redactor-attributes": {
+                                    "height": "auto",
+                                    "src": "***REMOVED***8e12437ac2679e/bltfea8157ddfb8e776/6329f1106a7f7364973c028c/landscape-3.jpg",
+                                    "width": "194",
+                                    "max-width": "194",
+                                    "style": "width: 194px; height: auto;"
+                                },
+                                "width": 194,
+                                "dirty": true
+                            },
+                            "uid": "***REMOVED***",
+                            "children": [
+                                {
+                                    "text": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blt6168b6493a122849",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        }
+    }
+}
