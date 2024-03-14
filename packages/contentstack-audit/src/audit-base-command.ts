@@ -113,7 +113,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         config: this.sharedConfig,
         fix: this.currentCommand === 'cm:stacks:audit:fix',
       };
-
+      // console.log(this.sharedConfig);
       switch (module) {
         case 'content-types':
           missingCtRefs = await new ContentType(cloneDeep(constructorParam)).run();
@@ -303,7 +303,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
       const tableKeys = Object.keys(missingRefs[0]);
       const arrayOfObjects = tableKeys.map((key) => {
-        if (['title', 'name', 'uid', 'content_types', 'fixStatus'].includes(key)) {
+        if (['title', 'name', 'uid', 'content_types', 'branches', 'fixStatus'].includes(key)) {
           return {
             [key]: {
               minWidth: 7,
@@ -311,7 +311,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
               get: (row: Record<string, unknown>) => {
                 if (key === 'fixStatus') {
                   return chalk.green(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
-                } else if (key === 'content_types') {
+                } else if (key === 'content_types' || key === 'branches') {
                   return chalk.red(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
                 } else {
                   return chalk.white(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
