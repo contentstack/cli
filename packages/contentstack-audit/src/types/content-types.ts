@@ -51,8 +51,9 @@ type RefErrorReturnType = {
   uid?: string;
   content_types?: string[];
   title?: string;
-  branches?: string[];
 };
+
+type WorkflowExtensionsRefErrorReturnType = RefErrorReturnType & { branches?: string[] };
 
 // NOTE Type 1
 type ReferenceFieldDataType = CommonDataTypeStruct & {
@@ -139,4 +140,5 @@ export {
   OutputColumn,
   ContentTypeSchemaType,
   GlobalFieldSchemaTypes,
+  WorkflowExtensionsRefErrorReturnType,
 };
