@@ -119,7 +119,6 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         config: this.sharedConfig,
         fix: this.currentCommand === 'cm:stacks:audit:fix',
       };
-      // console.log(this.sharedConfig);
       switch (module) {
         case 'content-types':
           missingCtRefs = await new ContentType(cloneDeep(constructorParam)).run();
