@@ -1,0 +1,44 @@
+{
+  "ext1": {
+    "stackHeaders": {
+      "api_key": "apiKey"
+    },
+    "urlPath": "/extensions/ext1",
+    "uid": "ext1",
+    "created_at": "2024-02-22T09:45:48.681Z",
+    "updated_at": "2024-02-22T09:45:48.681Z",
+    "created_by": "u1",
+    "updated_by": "u1",
+    "tags": [],
+    "_version": 1,
+    "title": "Progress Bar",
+    "config": {},
+    "type": "field",
+    "data_type": "number",
+    "multiple": false,
+    "scope": {
+      "content_types": ["$all"]
+    }
+  },
+  "ext2": {
+    "stackHeaders": {
+      "api_key": "apiKey"
+    },
+    "urlPath": "/extensions/ext2",
+    "uid": "ext2",
+    "created_at": "2024-02-22T09:45:11.284Z",
+    "updated_at": "2024-02-22T09:45:11.284Z",
+    "created_by": "u1",
+    "updated_by": "u1",
+    "tags": [],
+    "_version": 1,
+    "title": "Color Picker",
+    "config": {},
+    "type": "field",
+    "data_type": "text",
+    "multiple": false,
+    "scope": {
+      "content_types": ["$all"]
+    }
+  }
+}
