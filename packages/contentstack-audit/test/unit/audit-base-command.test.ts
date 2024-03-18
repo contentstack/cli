@@ -7,7 +7,7 @@ import { expect } from '@oclif/test';
 import { ux, cliux } from '@contentstack/cli-utilities';
 
 import { AuditBaseCommand } from '../../src/audit-base-command';
-import { ContentType, Entries, GlobalField } from '../../src/modules';
+import { ContentType, Entries, GlobalField, Extensions, Workflows } from '../../src/modules';
 import { FileTransportInstance } from 'winston/lib/winston/transports';
 import { $t, auditMsg } from '../../src/messages';
 
@@ -41,6 +41,8 @@ describe('AuditBaseCommand class', () => {
       .stub(Entries.prototype, 'run', () => ({ entry_1: {} }))
       .stub(ContentType.prototype, 'run', () => ({ ct_1: {} }))
       .stub(GlobalField.prototype, 'run', () => ({ gf_1: {} }))
+      .stub(Extensions.prototype, 'run', () => ({ ext_1: {} }))
+      .stub(AuditBaseCommand.prototype, 'showOutputOnScreenWorkflowsAndExtension', () => {})
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .it('should show audit report path', async (ctx) => {
         await AuditCMD.run(['--data-dir', resolve(__dirname, 'mock', 'contents')]);
@@ -61,6 +63,8 @@ describe('AuditBaseCommand class', () => {
       .stub(Entries.prototype, 'run', () => ({ entry_1: {} }))
       .stub(ContentType.prototype, 'run', () => ({ ct_1: {} }))
       .stub(GlobalField.prototype, 'run', () => ({ gf_1: {} }))
+      .stub(Workflows.prototype, 'run', () => ({ wf_1: {} }))
+      .stub(Extensions.prototype, 'run', () => ({ ext_1: {} }))
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .it('should print info of no ref found', async (ctx) => {
         await AuditCMD.run([]);
@@ -75,9 +79,11 @@ describe('AuditBaseCommand class', () => {
       .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
       .stub(fs, 'mkdirSync', () => {})
       .stub(fs, 'writeFileSync', () => {})
+      .stub(AuditBaseCommand.prototype, 'showOutputOnScreenWorkflowsAndExtension', () => {})
       .stub(ux, 'table', (...args: any) => {
         args[1].missingRefs.get({ missingRefs: ['gf_0'] });
       })
+      .stub(AuditBaseCommand.prototype, 'showOutputOnScreenWorkflowsAndExtension', () => {})
       .stub(ux.action, 'stop', () => {})
       .stub(ux.action, 'start', () => {})
       .stub(Entries.prototype, 'run', () => ({
@@ -91,6 +97,8 @@ describe('AuditBaseCommand class', () => {
       }))
       .stub(ContentType.prototype, 'run', () => ({ ct_1: {} }))
       .stub(GlobalField.prototype, 'run', () => ({ gf_1: {} }))
+      .stub(Workflows.prototype, 'run', () => ({ wf_1: {} }))
+      .stub(Extensions.prototype, 'run', () => ({ ext_1: {} }))
       .stub(fs, 'createBackUp', () => {})
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .stub(AuditBaseCommand.prototype, 'createBackUp', () => {})

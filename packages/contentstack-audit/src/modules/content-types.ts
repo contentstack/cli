@@ -610,7 +610,7 @@ export default class ContentType {
         treeStr: tree.map(({ name }) => name).join(' ➜ '),
       });
 
-      return null
+      return null;
     }
 
     return field;
