@@ -2,18 +2,19 @@ import { join, resolve } from 'path';
 import { FsUtility } from '@contentstack/cli-utilities';
 import ExportConfig from '@contentstack/cli-cm-export/lib/types/export-config';
 
-import { APIConfig } from '../types';
-import VariantAPIInstance from '../utils/variant-api-adapter';
+import { APIConfig, AdapterType } from '../types';
+import VariantAPIInstance, { VariantHttpClient } from '../utils/variant-api-adapter';
 
-export default class VariantEntries extends VariantAPIInstance {
+export default class VariantEntries extends VariantAPIInstance<VariantHttpClient> {
   public entriesDirPath: string;
   public variantEntryBasePath!: string;
 
   constructor(public readonly exportConfig: ExportConfig, private readonly log: (value: any) => void = console.log) {
-    const config: APIConfig = {
+    const config: APIConfig & AdapterType<VariantHttpClient, APIConfig> = {
       httpClient: true,
       baseURL: exportConfig.host,
       sharedConfig: exportConfig,
+      Adapter: VariantHttpClient,
     };
     super(Object.assign(exportConfig, config));
     this.entriesDirPath = resolve(
@@ -34,7 +35,7 @@ export default class VariantEntries extends VariantAPIInstance {
 
     for (let index = 0; index < entries.length; index++) {
       const entry = entries[index];
-      const variantEntryBasePath = join(this.entriesDirPath, content_type_uid, locale, 'variants', entry.uid);
+      const variantEntryBasePath = join(this.entriesDirPath, content_type_uid, locale, variantEntry.dirName, entry.uid);
       const variantEntriesFs = new FsUtility({
         isArray: true,
         keepMetadata: false,
