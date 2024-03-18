@@ -1,5 +1,5 @@
 import { ExportConfig } from '@contentstack/cli-cm-export/lib/types';
-import { HttpRequestConfig } from '@contentstack/cli-utilities';
+import { HttpClientOptions, HttpRequestConfig } from '@contentstack/cli-utilities';
 
 export interface AnyProperty {
   [propName: string]: any;
@@ -9,6 +9,15 @@ export type APIConfig = HttpRequestConfig & {
   httpClient?: boolean;
   sharedConfig: ExportConfig | Record<string, any> | undefined;
 };
+
+export interface AdapterConstructor<T, C> {
+  new (config: C, options?: HttpClientOptions): T;
+}
+
+export type AdapterType<T, C> = {
+  Adapter: AdapterConstructor<T, C>;
+};
+
 
 export type VariantsOption = {
   skip?: number;
