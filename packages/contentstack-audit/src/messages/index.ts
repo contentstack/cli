@@ -35,7 +35,7 @@ const auditMsg = {
   SCAN_ENTRY_SUCCESS_MSG: "Successfully completed the scanning of {module} ({local}) '{title}'.",
   SCAN_EXT_SUCCESS_MSG: "Successfully completed scanning the {module} titled '{title}' with UID '{uid}'",
   AUDIT_CMD_DESCRIPTION: 'Perform audits and find possible errors in the exported Contentstack data',
-  SCAN_WF_SUCCESS_MSG: 'Successfully removed the workflow with UID {uid} and name {name}.',
+  SCAN_WF_SUCCESS_MSG: 'Successfully completed the scanning of workflow with UID {uid} and name {name}.',
 };
 
 const auditFixMsg = {
