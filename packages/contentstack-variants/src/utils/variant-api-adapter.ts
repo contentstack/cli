@@ -10,7 +10,7 @@ import {
 } from '@contentstack/cli-utilities';
 
 import { ExportConfig } from '@contentstack/cli-cm-export/lib/types';
-import { APIConfig, Variant, VariantOptions, VariantsOption } from '../types';
+import { APIConfig, AdapterType, AnyProperty, Variant, VariantOptions, VariantsOption } from '../types';
 
 export class VariantHttpClient implements Variant {
   public baseURL: string;
@@ -22,14 +22,14 @@ export class VariantHttpClient implements Variant {
     this.baseURL = config.baseURL?.includes('http') ? `${config.baseURL}/v3` : `https://${config.baseURL}/v3`;
     delete this.config.sharedConfig;
     const pickConfig: (keyof HttpRequestConfig)[] = [
-      'baseURL',
       'url',
+      'auth',
       'method',
+      'baseURL',
       'headers',
+      'adapter',
       'httpAgent',
       'httpsAgent',
-      'adapter',
-      'auth',
       'responseType',
     ];
     this.httpClient = new HttpClient(pick(config, pickConfig), options);
@@ -99,7 +99,7 @@ export class VariantHttpClient implements Variant {
       entries = entries.concat(response.entries);
     }
 
-    if (getAllData && skip + 100 < response.count) {
+    if (getAllData && skip + limit < response.count) {
       const end = Date.now();
       const exeTime = end - start;
 
@@ -111,7 +111,7 @@ export class VariantHttpClient implements Variant {
         options['skip'] = 0;
       }
 
-      options.skip += 100;
+      options.skip += limit;
       return await this.variantEntries(options, entries);
     }
 
@@ -159,7 +159,7 @@ export class VariantHttpClient implements Variant {
 export class VariantManagementSDK implements Variant {
   public sdkClient!: ContentstackClient;
 
-  constructor(public readonly config: ContentstackConfig | Record<string, unknown>) {}
+  constructor(public readonly config: ContentstackConfig | AnyProperty) {}
 
   async init(): Promise<void> {
     this.sdkClient = await managementSDKClient(this.config);
@@ -176,16 +176,21 @@ export class VariantManagementSDK implements Variant {
   }
 }
 
-class VariantAPIInstance {
+class VariantAPIInstance<T> {
   protected variantInstance;
 
-  constructor(config: ContentstackConfig | Record<string, any>);
-  constructor(config: APIConfig, options?: HttpClientOptions) {
+  constructor(config: ContentstackConfig & AnyProperty & AdapterType<T, ContentstackConfig>);
+  constructor(config: APIConfig & AdapterType<T, APIConfig & AnyProperty>, options?: HttpClientOptions);
+  constructor(
+    config: APIConfig & AdapterType<T, (APIConfig & AnyProperty) | ContentstackConfig>,
+    options?: HttpClientOptions,
+  ) {
     if (config.httpClient) {
-      delete config.httpClient;
-      this.variantInstance = new VariantHttpClient(config, options);
+      const { httpClient, Adapter, ...restConfig } = config;
+      this.variantInstance = new Adapter(restConfig, options);
     } else {
-      this.variantInstance = new VariantManagementSDK(config);
+      const { Adapter, ...restConfig } = config;
+      this.variantInstance = new Adapter(restConfig);
     }
   }
 }
