@@ -1,8 +1,10 @@
 const { highlight } = require('cardinal');
 const { keys } = Object;
 const chalk = require('chalk');
-const isEmpty = require('lodash/isEmpty')
-
+const isEmpty = require('lodash/isEmpty');
+const MigrationLogger = require('./migration-logger');
+const fs = require('fs');
+const logger = new MigrationLogger(process.cwd());
 const { readFile } = require('./fs-helper');
 const groupBy = require('./group-by');
 
@@ -19,41 +21,58 @@ const getLineWithContext = (lines, lineNumber, context) => {
   };
 };
 
+function removeSpecialCharacter(str) {
+  return str.replace(/\u001b\[\d+m/g, '');
+}
+
 module.exports = (errors) => {
   const errorsByFile = groupBy(errors, 'file');
   const messages = [];
   for (const file of keys(errorsByFile)) {
+    const errorLogs = {};
+    errorLogs[file] = {};
     const fileContents = readFile(file);
     const highlightedCode = highlight(fileContents, { linenos: true });
     const lines = highlightedCode.split('\n');
 
     const fileErrorsMessage = chalk`{red Errors in ${file}}\n\n`;
+    errorLogs[file].fileErrorsMessage = fileErrorsMessage.replace(/\u001b\[\d+m/g, '');
     const errorMessages = errorsByFile[file]
       .map((error) => {
         const callsite = error.meta.callsite;
         const context = 2;
-        const { before, line, after } = getLineWithContext(lines, callsite.line, context);
+        let { before, line, after } = getLineWithContext(lines, callsite.line, context);
 
         const beforeLines = before.map((_line) => chalk`${_line}\n`);
         const afterLines = after.map((_line) => chalk`${_line}\n`);
         const highlightedLine = chalk`{bold ${line}}\n`;
 
+        before = removeSpecialCharacter(before.join('\n'));
+        after = removeSpecialCharacter(after.join('\n'));
+        line = removeSpecialCharacter(line);
+        errorLogs[file].lines = { before, line, after };
+
         const formattedCode = beforeLines + highlightedLine + afterLines;
         if (error.payload.apiError) {
-          return chalk`{red Line ${String(callsite.line)}:} {bold ${error.payload.apiError.message}}\n${formattedCode}`;
+          errorLogs[file].apiError = true;
+          errorLogs[file].errorCode = error.payload.apiError.errorCode;
+          errorLogs[file].errors = error.payload.apiError.errors;
         }
-        if (error.message) {
-          return chalk`{red Line ${String(callsite.line)}:} {bold ${error.message}}\n${formattedCode}`;
+        if (error.message && !error.payload.apiError) {
+          errorLogs[file].apiError = false;
+          errorLogs[file].error = error.message;
         }
-        return chalk`{red Line ${String(callsite.line)}:} {bold something went wrong here.}\n${formattedCode}`;
       })
       .join('\n');
 
     messages.push(`${fileErrorsMessage}${errorMessages}`);
+    logger.log('error', errorLogs);
   }
   if (isEmpty(messages) && errors !== undefined && isEmpty(errorsByFile)) {
     console.error('Migration error---', errors);
+    logger.log('error', errors);
   } else {
+    logger.log('error', { error: messages.join('\n') });
     console.log(messages.join('\n'));
   }
   // eslint-disable-next-line
