@@ -9,7 +9,6 @@ export function entryUpdateScript(contentType) {
   const omit = require('lodash/omit');
   const compact = require('lodash/compact')
   const isPlainObject = require('lodash/isPlainObject');
-  const {cliux, LoggerService} = require('@contentstack/cli-utilities')
   module.exports = async ({ migration, stackSDKInstance, managementAPIClient, config, branch, apiKey }) => {
     const keysToRemove = [
       'content_type_uid',
@@ -42,7 +41,6 @@ export function entryUpdateScript(contentType) {
     let assetUrlMapper = {};
     let assetRefPath = {};
     let parent=[];
-    let logger;
   
     function converter(data) {
       let arr = [];
@@ -484,10 +482,6 @@ export function entryUpdateScript(contentType) {
         successMessage: 'Entries Updated Successfully',
         failedMessage: 'Failed to update entries',
         task: async () => {
-          //logger file
-          if(!fs.existsSync(path.join(filePath, 'entry-migration'))){
-            logger = new LoggerService(filePath, 'entry-migration');
-          }
           
           let compareBranchEntries = await managementAPIClient
           .stack({ api_key: stackSDKInstance.api_key, branch_uid: compareBranch })
@@ -539,15 +533,7 @@ export function entryUpdateScript(contentType) {
           async function updateEntry(entry, entryDetails) {
             Object.assign(entry, { ...entryDetails });
             await entry.update().catch(err => {
-              let errorMsg = 'Entry update failed for uid: ' + entry?.uid + ', title: ' + entry?.title + '.';
-              if(err?.errors?.title){
-                errorMsg +=  err?.errors?.title;
-              }else if(err?.errors?.entry){
-                errorMsg +=  err?.errors?.entry;
-              }else{
-                errorMsg +=  (err?.entry?.errorMessage || err?.errorMessage || err?.message) ?? 'Something went wrong!';
-              }
-              logger.error(errorMsg)
+              throw err
             });
           }
 
@@ -620,7 +606,7 @@ export function entryUpdateScript(contentType) {
                     .entry()
                     .create({ entry: entryDetails })
                     .catch(err => {
-                      (err?.errorMessage || err?.message) ? err?.errorMessage || err?.message : 'Something went wrong!'
+                      throw err;
                     })
                   
                     if(createdEntry){
