@@ -49,7 +49,7 @@ class ModuleImporter {
     if (
       !this.importConfig.skipAudit &&
       (!this.importConfig.moduleName ||
-        ['content-types', 'global-fields', 'entries'].includes(this.importConfig.moduleName))
+        ['content-types', 'global-fields', 'entries', 'extensions', 'workflows'].includes(this.importConfig.moduleName))
     ) {
       if (!(await this.auditImportData(logger))) {
         return { noSuccessMsg: true };
