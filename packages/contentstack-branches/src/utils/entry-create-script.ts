@@ -9,7 +9,6 @@ export function entryCreateScript(contentType) {
   const omit = require('lodash/omit');
   const compact = require('lodash/compact')
   const isPlainObject = require('lodash/isPlainObject');
-  const {cliux, LoggerService} = require('@contentstack/cli-utilities')
   module.exports = async ({ migration, stackSDKInstance, managementAPIClient, config, branch, apiKey }) => {
     const keysToRemove = [
       'content_type_uid',
@@ -41,7 +40,6 @@ export function entryCreateScript(contentType) {
     let assetRefPath = {};
     let downloadedAssets = [];
     let parent=[];
-    let logger;
 
     function getValueByPath(obj, path) {
       return path.split('[').reduce((o, key) => o && o[key.replace(/\]$/, '')], obj);
@@ -470,10 +468,6 @@ export function entryCreateScript(contentType) {
         successTitle: 'Entries Created Successfully',
         failedTitle: 'Failed to create entries',
         task: async () => {
-          //logger file
-          if(!fs.existsSync(path.join(filePath, 'entry-migration'))){
-            logger = new LoggerService(filePath, 'entry-migration');
-          }
 
           const compareBranchEntries = await managementAPIClient
             .stack({ api_key: stackSDKInstance.api_key, branch_uid: compareBranch })
@@ -521,15 +515,7 @@ export function entryCreateScript(contentType) {
           async function updateEntry(entry, entryDetails) {
             Object.assign(entry, { ...entryDetails });
             await entry.update().catch(err => {
-              let errorMsg = 'Entry update failed for uid: ' + entry?.uid + ', title: ' + entry?.title + '. ';
-              if(err?.errors?.title){
-                errorMsg +=  'title'+ err?.errors?.title;
-              }else if(err?.errors?.entry){
-                errorMsg +=  err?.errors?.entry;
-              }else{
-                errorMsg +=  (err?.entry?.errorMessage || err?.errorMessage || err?.message) ?? 'Something went wrong!';
-              }
-              logger.error(errorMsg)
+              throw err;
             });
           }
 
@@ -563,15 +549,7 @@ export function entryCreateScript(contentType) {
                 if(entryDetails !== undefined){
                   entryDetails = updateAssetDetailsInEntries(entryDetails);
                   let createdEntry = await stackSDKInstance.contentType('${contentType}').entry().create({ entry: entryDetails }).catch(err => {
-                    let errorMsg = 'Entry creation failed for contentType: ' + contentType + ', title: ' + entryDetails?.title + '. ';
-                    if(err?.errors?.title){
-                      errorMsg +=  err?.errors?.title;
-                    }else if(err?.errors?.entry){
-                      errorMsg +=  err?.errors?.entry;
-                    }else{
-                      errorMsg +=  (err?.entry?.errorMessage || err?.errorMessage || err?.message) ?? 'Something went wrong!';
-                    }
-                    logger.error(errorMsg)
+                    throw err
                   });
                   if(createdEntry){
                     if (flag.references) {
