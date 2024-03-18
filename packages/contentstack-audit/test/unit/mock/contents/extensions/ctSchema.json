@@ -1,0 +1,303 @@
+[
+  {
+    "title": "ct2",
+    "uid": "ct2",
+    "schema": [
+      {
+        "data_type": "text",
+        "display_name": "Title",
+        "field_metadata": { "_default": true, "version": 3 },
+        "mandatory": true,
+        "uid": "title",
+        "unique": true,
+        "multiple": false,
+        "non_localizable": false
+      }
+    ],
+    "description": "",
+    "options": { "is_page": false, "singleton": true, "sub_title": [], "title": "title" }
+  },
+  {
+    "title": "ct3",
+    "uid": "ct3",
+    "schema": [
+      {
+        "data_type": "text",
+        "display_name": "Title",
+        "field_metadata": { "_default": true, "version": 3 },
+        "mandatory": true,
+        "uid": "title",
+        "unique": true,
+        "multiple": false,
+        "non_localizable": false
+      }
+    ],
+    "description": "",
+    "options": { "is_page": false, "singleton": true, "sub_title": [], "title": "title" }
+  },
+  {
+    "title": "ct4",
+    "uid": "ct4",
+    "schema": [
+      {
+        "data_type": "text",
+        "display_name": "Title",
+        "field_metadata": { "_default": true, "version": 3 },
+        "mandatory": true,
+        "uid": "title",
+        "unique": true,
+        "multiple": false,
+        "non_localizable": false
+      }
+    ],
+    "description": "",
+    "options": { "is_page": false, "singleton": true, "sub_title": [], "title": "title" }
+  },
+  {
+    "title": "ct5",
+    "uid": "ct5",
+    "schema": [
+      {
+        "data_type": "text",
+        "display_name": "Title",
+        "field_metadata": { "_default": true, "version": 3 },
+        "mandatory": true,
+        "uid": "title",
+        "unique": true,
+        "multiple": false,
+        "non_localizable": false
+      }
+    ],
+    "description": "",
+    "options": { "is_page": false, "singleton": true, "sub_title": [], "title": "title" }
+  },
+  {
+    "title": "mpa",
+    "uid": "mpa",
+    "schema": [
+      {
+        "data_type": "text",
+        "display_name": "Title",
+        "field_metadata": { "_default": true, "version": 3 },
+        "mandatory": true,
+        "uid": "title",
+        "unique": true,
+        "multiple": false,
+        "non_localizable": false
+      },
+      {
+        "display_name": "Custom",
+        "extension_uid": "blt1ea8d9d672fe8449",
+        "field_metadata": { "extension": true, "ref_multiple_content_types": true, "ref_multiple": true },
+        "uid": "custom",
+        "mandatory": false,
+        "non_localizable": false,
+        "unique": false,
+        "config": {},
+        "reference_to": ["mpa"],
+        "data_type": "reference",
+        "multiple": false
+      }
+    ],
+    "description": "",
+    "options": { "is_page": false, "singleton": false, "sub_title": [], "title": "title" }
+  },
+  {
+    "title": "ct1",
+    "uid": "ct1",
+    "schema": [
+      {
+        "data_type": "text",
+        "display_name": "Title",
+        "field_metadata": { "_default": true, "version": 3 },
+        "mandatory": true,
+        "uid": "title",
+        "unique": true,
+        "multiple": false,
+        "non_localizable": false
+      },
+      {
+        "data_type": "reference",
+        "display_name": "Reference",
+        "reference_to": ["ct1"],
+        "field_metadata": { "ref_multiple": false, "ref_multiple_content_types": true },
+        "uid": "reference",
+        "mandatory": false,
+        "multiple": false,
+        "non_localizable": false,
+        "unique": false
+      },
+      {
+        "data_type": "group",
+        "display_name": "Group",
+        "field_metadata": { "description": "", "instruction": "" },
+        "schema": [
+          {
+            "data_type": "text",
+            "display_name": "Rich Text Editor",
+            "uid": "rich_text_editor",
+            "field_metadata": {
+              "allow_rich_text": true,
+              "description": "",
+              "multiline": false,
+              "rich_text_type": "custom",
+              "options": [],
+              "version": 3
+            },
+            "mandatory": false,
+            "multiple": false,
+            "non_localizable": false,
+            "unique": false
+          },
+          {
+            "data_type": "json",
+            "display_name": "JSON Rich Text Editor",
+            "uid": "json_rte",
+            "field_metadata": {
+              "allow_json_rte": true,
+              "embed_entry": true,
+              "description": "",
+              "default_value": "",
+              "multiline": false,
+              "rich_text_type": "advanced",
+              "options": [],
+              "ref_multiple_content_types": true
+            },
+            "format": "",
+            "error_messages": { "format": "" },
+            "reference_to": ["sys_assets", "ct3"],
+            "multiple": false,
+            "non_localizable": false,
+            "unique": false,
+            "mandatory": false
+          },
+          {
+            "data_type": "group",
+            "display_name": "Group",
+            "field_metadata": { "description": "", "instruction": "" },
+            "schema": [
+              {
+                "data_type": "reference",
+                "display_name": "Reference",
+                "reference_to": ["ct3"],
+                "field_metadata": { "ref_multiple": false, "ref_multiple_content_types": true },
+                "uid": "reference",
+                "mandatory": false,
+                "multiple": false,
+                "non_localizable": false,
+                "unique": false
+              }
+            ],
+            "uid": "group",
+            "mandatory": false,
+            "multiple": false,
+            "non_localizable": false,
+            "unique": false
+          },
+          {
+            "data_type": "global_field",
+            "display_name": "Global",
+            "reference_to": "gf1",
+            "field_metadata": { "description": "" },
+            "uid": "global_field",
+            "mandatory": false,
+            "multiple": false,
+            "non_localizable": false,
+            "unique": false,
+            "schema": [
+              {
+                "data_type": "reference",
+                "display_name": "Reference",
+                "reference_to": ["ct1"],
+                "field_metadata": { "ref_multiple": false, "ref_multiple_content_types": true },
+                "uid": "reference",
+                "mandatory": false,
+                "multiple": false,
+                "non_localizable": false,
+                "unique": false,
+                "indexed": false,
+                "inbuilt_model": false
+              }
+            ]
+          },
+          {
+            "data_type": "reference",
+            "display_name": "Reference",
+            "reference_to": ["ct2"],
+            "field_metadata": { "ref_multiple": false, "ref_multiple_content_types": true },
+            "uid": "reference",
+            "mandatory": false,
+            "multiple": false,
+            "non_localizable": false,
+            "unique": false
+          }
+        ],
+        "uid": "group",
+        "mandatory": false,
+        "multiple": false,
+        "non_localizable": false,
+        "unique": false
+      }
+    ],
+    "description": "",
+    "options": { "is_page": false, "singleton": true, "sub_title": [], "title": "title" }
+  },
+  {
+    "title": "json",
+    "uid": "json",
+    "schema": [
+      {
+        "data_type": "text",
+        "display_name": "Title",
+        "field_metadata": { "_default": true, "version": 3 },
+        "mandatory": true,
+        "uid": "title",
+        "unique": true,
+        "multiple": false,
+        "non_localizable": false
+      },
+      {
+        "data_type": "json",
+        "display_name": "JSON Rich Text Editor",
+        "uid": "json_rte",
+        "field_metadata": {
+          "allow_json_rte": true,
+          "embed_entry": true,
+          "description": "",
+          "default_value": "",
+          "multiline": false,
+          "rich_text_type": "advanced",
+          "options": ["widget"],
+          "ref_multiple_content_types": true
+        },
+        "format": "",
+        "error_messages": { "format": "" },
+        "reference_to": ["json", "mpa", "ct5", "ct4", "sys_assets"],
+        "multiple": false,
+        "non_localizable": false,
+        "unique": false,
+        "mandatory": false,
+        "plugins": [
+          "blt314473f8f7e13956",
+          "bltc4143ac9b693fbdc",
+          "blt0f35138b9c17384e",
+          "bltcb085fe6edbb3407",
+          "bltc674482e12b1eb30"
+        ]
+      },
+      {
+        "data_type": "reference",
+        "display_name": "Reference",
+        "reference_to": ["mpa", "json", "ct5", "ct4"],
+        "field_metadata": { "ref_multiple": false, "ref_multiple_content_types": true },
+        "uid": "reference",
+        "mandatory": false,
+        "multiple": false,
+        "non_localizable": false,
+        "unique": false
+      }
+    ],
+    "description": "",
+    "options": { "is_page": false, "singleton": true, "sub_title": [], "title": "title" }
+  }
+]
