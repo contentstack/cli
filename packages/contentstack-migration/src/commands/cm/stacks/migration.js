@@ -12,6 +12,7 @@ const { Parser } = require('../../../modules');
 const { ActionList } = require('../../../actions');
 const fs = require('fs');
 const chalk = require('chalk');
+const isEmpty = require('lodash/isEmpty');
 const {
   printFlagDeprecation,
   managementSDKClient,
@@ -24,8 +25,6 @@ const { ApiError, SchemaValidator, MigrationError, FieldValidator } = require('.
 
 // Utils
 const { map: _map, constants, safePromise, errorHelper } = require('../../../utils');
-const { success } = require('../../../utils/logger');
-
 // Properties
 const { get, set, getMapInstance, resetMapInstance } = _map;
 const {
@@ -134,6 +133,10 @@ class MigrationCommand extends Command {
     } else {
       await this.execSingleFile(filePath, mapInstance);
     }
+    const errLogPath = `${process.cwd()}/migration-logs`;
+    if (fs.existsSync(errLogPath) && !isEmpty(`${errLogPath}/error.logs`)) {
+      this.log(`The log has been stored at: `, errLogPath);
+    }
   }
 
   async execSingleFile(filePath, mapInstance) {
@@ -160,21 +163,11 @@ class MigrationCommand extends Command {
 
       const listr = new Listr(tasks);
 
-      await listr.run().catch((error) => {
-        this.handleErrors(error);
-        // When the process is child, send error message to parent
-        if (process.send) process.send({ errorOccurred: true });
-      });
+      await listr.run();
       requests.splice(0, requests.length);
     } catch (error) {
-      // errorHandler(null, null, null, error)
-      if (error.message) {
-        this.log(error.message);
-      } else if (error.errorMessage) {
-        this.log(error.errorMessage);
-      } else {
-        this.log(error);
-      }
+      errorHelper(error, filePath);
+      if (process.send) process.send({ errorOccurred: true });
     }
   }
 
@@ -186,7 +179,6 @@ class MigrationCommand extends Command {
       for (const element of files) {
         const file = element;
         if (extname(file) === '.js') {
-          success(chalk`{white Executing file:} {grey {bold ${file}}}`);
           // eslint-disable-next-line no-await-in-loop
           await this.execSingleFile(pathValidator(resolve(filePath, file)), mapInstance);
         }
