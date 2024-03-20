@@ -143,6 +143,17 @@ const config: DefaultConfig = {
       dependencies: ['locales', 'content-types'],
       exportVersions: false,
     },
+    variantEntry: {
+      dirName: 'variants',
+      fileName: 'index.json',
+      chunkFileSize: 1,
+      query: {
+        skip: 0,
+        limit: 100,
+        locale: 'en-us',
+        include_variant: false,
+      },
+    },
     extensions: {
       dirName: 'extensions',
       fileName: 'extensions.json',
@@ -166,7 +177,7 @@ const config: DefaultConfig = {
       dirName: 'taxonomies',
       fileName: 'taxonomies.json',
       invalidKeys: ['updated_at', 'created_by', 'updated_by', 'stackHeaders', 'urlPath', 'created_at'],
-    }
+    },
   },
   languagesCode: [
     'af-za',
