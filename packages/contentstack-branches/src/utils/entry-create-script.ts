@@ -544,21 +544,21 @@ export function entryCreateScript(contentType) {
           }
 
           try {
-            compareFilteredProperties.length !== 0 &&
-              compareFilteredProperties.forEach(async (entryDetails) => {
-                if(entryDetails !== undefined){
+            if (compareFilteredProperties.length !== 0) {
+              for (let i = 0; i < compareFilteredProperties.length; i++) {
+                let entryDetails = compareFilteredProperties[i];
+                if (entryDetails !== undefined) {
                   entryDetails = updateAssetDetailsInEntries(entryDetails);
-                  let createdEntry = await stackSDKInstance.contentType('${contentType}').entry().create({ entry: entryDetails }).catch(err => {
-                    throw err
-                  });
-                  if(createdEntry){
+                  let createdEntry = await stackSDKInstance.contentType('${contentType}').entry().create({ entry: entryDetails })
+                  if (createdEntry) {
                     if (flag.references) {
                       await updateReferences(entryDetails, createdEntry, references);
                     }
-                    await updateEntry(createdEntry, entryDetails);
+                    await updateEntry(createdEntry, entryDetails)
                   }
                 }
-              });
+              }
+            }
           } catch (error) {
             throw error;
           }

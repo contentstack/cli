@@ -4,7 +4,6 @@ const chalk = require('chalk');
 const isEmpty = require('lodash/isEmpty');
 const MigrationLogger = require('./migration-logger');
 const fs = require('fs');
-const logger = new MigrationLogger(process.cwd());
 const { readFile } = require('./fs-helper');
 const groupBy = require('./group-by');
 
@@ -25,56 +24,67 @@ function removeSpecialCharacter(str) {
   return str.replace(/\u001b\[\d+m/g, '');
 }
 
-module.exports = (errors) => {
+module.exports = (errors, filePath) => {
+  const logger = new MigrationLogger(process.cwd());
+
   const errorsByFile = groupBy(errors, 'file');
   const messages = [];
-  for (const file of keys(errorsByFile)) {
-    const errorLogs = {};
-    errorLogs[file] = {};
-    const fileContents = readFile(file);
-    const highlightedCode = highlight(fileContents, { linenos: true });
-    const lines = highlightedCode.split('\n');
-
-    const fileErrorsMessage = chalk`{red Errors in ${file}}\n\n`;
-    errorLogs[file].fileErrorsMessage = fileErrorsMessage.replace(/\u001b\[\d+m/g, '');
-    const errorMessages = errorsByFile[file]
-      .map((error) => {
-        const callsite = error.meta.callsite;
-        const context = 2;
-        let { before, line, after } = getLineWithContext(lines, callsite.line, context);
-
-        const beforeLines = before.map((_line) => chalk`${_line}\n`);
-        const afterLines = after.map((_line) => chalk`${_line}\n`);
-        const highlightedLine = chalk`{bold ${line}}\n`;
-
-        before = removeSpecialCharacter(before.join('\n'));
-        after = removeSpecialCharacter(after.join('\n'));
-        line = removeSpecialCharacter(line);
-        errorLogs[file].lines = { before, line, after };
-
-        const formattedCode = beforeLines + highlightedLine + afterLines;
-        if (error.payload.apiError) {
-          errorLogs[file].apiError = true;
-          errorLogs[file].errorCode = error.payload.apiError.errorCode;
-          errorLogs[file].errors = error.payload.apiError.errors;
-        }
-        if (error.message && !error.payload.apiError) {
-          errorLogs[file].apiError = false;
-          errorLogs[file].error = error.message;
-        }
-      })
-      .join('\n');
-
-    messages.push(`${fileErrorsMessage}${errorMessages}`);
-    logger.log('error', errorLogs);
-  }
-  if (isEmpty(messages) && errors !== undefined && isEmpty(errorsByFile)) {
-    console.error('Migration error---', errors);
-    logger.log('error', errors);
+  if (filePath) {
+    if (errors.request) {
+      errors.data = errors.request?.data;
+      delete errors.request;
+    }
+    if (errors.message) {
+      delete errors.message;
+    }
+    logger.log('error', { [filePath]: errors });
   } else {
-    logger.log('error', { error: messages.join('\n') });
-    console.log(messages.join('\n'));
+    for (const file of keys(errorsByFile)) {
+      const errorLogs = {};
+      errorLogs[file] = {};
+      const fileContents = readFile(file);
+      const highlightedCode = highlight(fileContents, { linenos: true });
+      const lines = highlightedCode.split('\n');
+
+      const fileErrorsMessage = chalk`{red Errors in ${file}}\n\n`;
+      errorLogs[file].fileErrorsMessage = fileErrorsMessage.replace(/\u001b\[\d+m/g, '');
+      const errorMessages = errorsByFile[file]
+        .map((error) => {
+          const callsite = error.meta.callsite;
+          const context = 2;
+          let { before, line, after } = getLineWithContext(lines, callsite.line, context);
+
+          const beforeLines = before.map((_line) => chalk`${_line}\n`);
+          const afterLines = after.map((_line) => chalk`${_line}\n`);
+          const highlightedLine = chalk`{bold ${line}}\n`;
+
+          before = removeSpecialCharacter(before.join('\n'));
+          after = removeSpecialCharacter(after.join('\n'));
+          line = removeSpecialCharacter(line);
+          errorLogs[file].lines = { before, line, after };
+
+          const formattedCode = beforeLines + highlightedLine + afterLines;
+          if (error.payload?.apiError) {
+            errorLogs[file].apiError = true;
+            errorLogs[file].errorCode = error.payload.apiError.errorCode;
+            errorLogs[file].errors = error.payload.apiError.errors;
+          }
+          if (error.message && !error.payload.apiError) {
+            errorLogs[file].apiError = false;
+            errorLogs[file].error = error.message;
+          }
+        })
+        .join('\n');
+
+      messages.push(`${fileErrorsMessage}${errorMessages}`);
+      logger.log('error', errorLogs);
+    }
+    if (isEmpty(messages) && errors !== undefined && isEmpty(errorsByFile)) {
+      logger.log('error', errors);
+    } else {
+      logger.log('error', { error: messages.join('\n') });
+    }
   }
   // eslint-disable-next-line
-  console.log(chalk`{bold.red Migration unsuccessful}`);
+  // console.log(chalk`{bold.red Migration unsuccessful}`);
 };
