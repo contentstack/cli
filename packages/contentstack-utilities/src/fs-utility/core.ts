@@ -19,6 +19,7 @@ import { getMetaData, mapKeyAndVal } from './helper';
 import { Chunk, PageInfo, FileType, WriteFileOptions, FsConstructorOptions, ChunkFilesGetterType } from './types';
 
 export default class FsUtility {
+  private isArray = false;
   private prefixKey = '';
   private basePath: string;
   private fileExt: FileType;
@@ -47,6 +48,7 @@ export default class FsUtility {
 
   constructor(options: FsConstructorOptions = {}) {
     const {
+      isArray,
       fileExt,
       omitKeys,
       basePath,
@@ -61,6 +63,7 @@ export default class FsUtility {
       createDirIfNotExist = true,
     } = options;
     this.metaHandler = metaHandler;
+    this.isArray = isArray;
     this.basePath = basePath || '';
     this.omitKeys = omitKeys || [];
     this.fileExt = fileExt || 'json';
@@ -70,7 +73,7 @@ export default class FsUtility {
     this.keepMetadata = keepMetadata || (keepMetadata === undefined ?? true);
     this.indexFileName = indexFileName || 'index.json';
     this.pageInfo.hasNextPage = keys(this.indexFileContent).length > 0;
-    this.defaultInitContent = defaultInitContent || (this.fileExt === 'json' ? '{' : '');
+    this.defaultInitContent = defaultInitContent || this.isArray ? '[' : this.fileExt === 'json' ? '{' : '';
 
     if (useIndexer) {
       this.writeIndexer = this.indexFileContent;
@@ -246,7 +249,7 @@ export default class FsUtility {
       fileSizeReachedLimit = true;
     }
 
-    const suffix = fileSizeReachedLimit ? '}' : '';
+    const suffix = fileSizeReachedLimit ? (this.isArray ? ']' : '}') : '';
     fileContent = this.fileExt === 'json' ? `${this.prefixKey}${fileContent}${suffix}` : fileContent;
     this.writableStream?.write(fileContent);
 
@@ -288,7 +291,7 @@ export default class FsUtility {
   completeFile(closeIndexer?: boolean): void {
     if (this.writableStream) {
       if (this.fileExt === 'json') {
-        this.writableStream.write('}');
+        this.writableStream.write(this.isArray ? ']' : '}');
       }
     }
     this.closeFile(closeIndexer);
