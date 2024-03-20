@@ -1,5 +1,9 @@
 import { Modules } from '.';
 
+interface AnyProperty {
+  [propName: string]: any;
+}
+
 export default interface DefaultConfig {
   contentVersion: number;
   versioning: boolean;
@@ -117,6 +121,17 @@ export default interface DefaultConfig {
       limit: number;
       dependencies?: Modules[];
       exportVersions: boolean;
+    };
+    variantEntry: {
+      dirName: string;
+      fileName: string;
+      chunkFileSize: number;
+      query: {
+        skip: number;
+        limit: number;
+        locale: string;
+        include_variant: boolean;
+      } & AnyProperty;
     };
     extensions: {
       dirName: string;

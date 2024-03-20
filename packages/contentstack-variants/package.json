@@ -1,0 +1,24 @@
+{
+  "name": "contentstack-variants",
+  "version": "0.0.1-alpha",
+  "description": "Variants plugin",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "prepack": "pnpm compile",
+    "compile": "tsc -b tsconfig.json",
+    "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo"
+  },
+  "keywords": [
+    "variant"
+  ],
+  "author": "antony.raj@contentstack.com",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "@contentstack/cli-cm-export": "^1.11.1",
+    "lodash": "^4.17.21"
+  }
+}
