@@ -1,7 +1,7 @@
 import Bluebird from 'bluebird';
 import * as url from 'url';
 import * as path from 'path';
-import { ContentstackClient, managementSDKClient, escapeRegExp } from '@contentstack/cli-utilities';
+import { ContentstackClient, managementSDKClient } from '@contentstack/cli-utilities';
 import { ImportConfig } from '../types';
 const debug = require('debug')('util:requests');
 let _ = require('lodash');
@@ -9,6 +9,8 @@ let { marked } = require('marked');
 let helper = require('./file-helper');
 
 const MAX_RETRY_LIMIT = 5;
+
+const escapeRegExp = (str: string) => str.replace(/[*+?^${}()|[\]\\]/g, '\\$&');
 
 function validate(req: any) {
   if (typeof req !== 'object') {
@@ -249,8 +251,8 @@ export const lookupAssets = function (
   assetUrls.forEach(function (assetUrl: any) {
     let mappedAssetUrl = mappedAssetUrls[assetUrl];
     if (typeof mappedAssetUrl !== 'undefined') {
-      const sanitizedUrl = escapeRegExp(assetUrl);
-      const escapedMappedUrl = escapeRegExp(mappedAssetUrl);
+      const sanitizedUrl = escapeRegExp(assetUrl).replace(/\.\./g, '\\$&');
+      const escapedMappedUrl = escapeRegExp(mappedAssetUrl).replace(/\.\./g, '\\$&');
       entry = entry.replace(new RegExp(sanitizedUrl, 'img'), escapedMappedUrl);
       matchedUrls.push(mappedAssetUrl);
     } else {
