@@ -533,9 +533,7 @@ export function entryCreateUpdateScript(contentType) {
           async function updateEntry(entry, entryDetails) {
             if (entry) {
               Object.assign(entry, { ...entryDetails });
-              await entry.update().catch(err => {
-                throw err
-              });
+              await entry.update();
             }
           }
 
@@ -608,9 +606,6 @@ export function entryCreateUpdateScript(contentType) {
                     .contentType('${contentType}')
                     .entry()
                     .create({ entry: entryDetails })
-                    .catch(err => {
-                      throw err;
-                    })
 
                     if(createdEntry){
                       if (flag.references) {
