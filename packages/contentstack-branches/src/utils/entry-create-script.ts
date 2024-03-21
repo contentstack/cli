@@ -514,9 +514,7 @@ export function entryCreateScript(contentType) {
 
           async function updateEntry(entry, entryDetails) {
             Object.assign(entry, { ...entryDetails });
-            await entry.update().catch(err => {
-              throw err;
-            });
+            await entry.update()
           }
 
           async function updateReferences(entryDetails, baseEntry, references) {
