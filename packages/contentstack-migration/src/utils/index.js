@@ -11,7 +11,6 @@ module.exports = {
   safePromise: require('./safe-promise'),
   getConfig: require('./get-config'),
   successHandler: require('./success-handler'),
-  errorHandler: require('./error-handler'),
   getCallsite: require('./callsite'),
   errorHelper: require('./error-helper'),
   groupBy: require('./group-by'),
