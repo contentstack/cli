@@ -134,7 +134,7 @@ class MigrationCommand extends Command {
       await this.execSingleFile(filePath, mapInstance);
     }
     const errLogPath = `${process.cwd()}/migration-logs`;
-    if (fs.existsSync(errLogPath) && !isEmpty(`${errLogPath}/error.logs`)) {
+    if (fs.existsSync(errLogPath)) {
       this.log(`The log has been stored at: `, errLogPath);
     }
   }
