@@ -153,7 +153,8 @@ export default interface DefaultConfig {
     returnResponse?: boolean; // On process completion should return config used in the command
     noTerminalOutput?: boolean; // Skip final audit table output on terminal
     config?: {
-      basePath?: string
+      basePath?: string;
+      branch?: string;
     } & Record<string, any>; // To overwrite any build-in config. And this config is equal to --config flag.
   };
 }
