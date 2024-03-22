@@ -1,5 +1,6 @@
 import omit from 'lodash/omit';
 import pick from 'lodash/pick';
+import { existsSync } from 'fs';
 import {
   HttpClient,
   HttpClientOptions,
@@ -9,8 +10,7 @@ import {
   HttpRequestConfig,
 } from '@contentstack/cli-utilities';
 
-import { ExportConfig } from '@contentstack/cli-cm-export/lib/types';
-import { APIConfig, AdapterType, AnyProperty, Variant, VariantOptions, VariantsOption } from '../types';
+import { APIConfig, AdapterType, AnyProperty, ExportConfig, Variant, VariantOptions, VariantsOption } from '../types';
 
 export class VariantHttpClient implements Variant {
   public baseURL: string;
@@ -69,6 +69,17 @@ export class VariantHttpClient implements Variant {
       locale = variantConfig.query.locale || 'en-us',
       include_variant = variantConfig.query.include_variant || true,
     } = options;
+
+    if (variantConfig.serveMockData && callback) {
+      let data = [] as Record<string, any>[];
+
+      if (existsSync(variantConfig.mockDataPath)) {
+        data = require(variantConfig.mockDataPath) as Record<string, any>[];
+      }
+      callback(data);
+      return;
+    }
+
     const start = Date.now();
     let endpoint = `${this.baseURL}/content_types/${content_type_uid}/entries/${entry_uid}/variants?locale=${locale}`;
 
@@ -90,7 +101,7 @@ export class VariantHttpClient implements Variant {
       endpoint = endpoint.concat(query);
     }
 
-    // FIXME once API is ready addjest the responce accordingly
+    // FIXME once API is ready, validate and addjest the responce accordingly
     const response = (await this.httpClient.get(endpoint)).data;
 
     if (callback) {
