@@ -144,6 +144,7 @@ const config: DefaultConfig = {
       exportVersions: false,
     },
     variantEntry: {
+      serveMockData: true,
       dirName: 'variants',
       fileName: 'index.json',
       chunkFileSize: 1,
@@ -153,6 +154,7 @@ const config: DefaultConfig = {
         locale: 'en-us',
         include_variant: false,
       },
+      mockDataPath: '/Users/antony.raj/Documents/code/cli-variants/contents/variant-mock-data.json'
     },
     extensions: {
       dirName: 'extensions',
