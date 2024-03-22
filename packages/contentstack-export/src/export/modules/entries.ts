@@ -1,8 +1,10 @@
 import * as path from 'path';
+import { LogType, VariantEntries } from '@contentstack/cli-variants';
 import { ContentstackClient, FsUtility } from '@contentstack/cli-utilities';
+
+import BaseClass, { ApiOptions } from './base-class';
 import { log, formatError, fsUtil } from '../../utils';
 import { ExportConfig, ModuleClassParams } from '../../types';
-import BaseClass, { ApiOptions } from './base-class';
 
 export default class EntriesExport extends BaseClass {
   private stackAPIClient: ReturnType<ContentstackClient['stack']>;
@@ -22,6 +24,7 @@ export default class EntriesExport extends BaseClass {
   private localesFilePath: string;
   private schemaFilePath: string;
   private entriesFileHelper: FsUtility;
+  private variantEntries: VariantEntries;
 
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
@@ -41,6 +44,7 @@ export default class EntriesExport extends BaseClass {
       exportConfig.modules.content_types.dirName,
       'schema.json',
     );
+    this.variantEntries = new VariantEntries(this.exportConfig, log as LogType);
   }
 
   async start() {
@@ -139,6 +143,13 @@ export default class EntriesExport extends BaseClass {
           versionedEntryPath,
         });
       }
+      // NOTE Export variant entries
+      await this.variantEntries.exportVariantEntry({
+        locale: options.locale,
+        contentTypeUid: options.contentType,
+        entries: entriesSearchResponse.items,
+      });
+
       options.skip += this.entriesConfig.limit || 100;
       if (options.skip >= entriesSearchResponse.count) {
         return Promise.resolve(true);
