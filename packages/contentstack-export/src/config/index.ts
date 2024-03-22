@@ -154,7 +154,7 @@ const config: DefaultConfig = {
         locale: 'en-us',
         include_variant: false,
       },
-      mockDataPath: '/Users/antony.raj/Documents/code/cli-variants/contents/variant-mock-data.json'
+      mockDataPath: './variant-mock-data.json'
     },
     extensions: {
       dirName: 'extensions',
