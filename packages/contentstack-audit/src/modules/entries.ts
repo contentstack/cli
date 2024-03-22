@@ -826,6 +826,11 @@ export default class Entries {
     entry: EntryReferenceFieldDataType[],
   ) {
     const missingRefs: Record<string, any>[] = [];
+    if (typeof entry === 'string') {
+      let stringReference = entry as string;
+      stringReference = stringReference.replace(/'/g, '"');
+      entry = JSON.parse(stringReference);
+    }
     entry = entry
       ?.map((reference) => {
         const { uid } = reference;
