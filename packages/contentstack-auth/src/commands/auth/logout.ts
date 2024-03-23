@@ -1,4 +1,3 @@
-import { Command } from '@contentstack/cli-command';
 import {
   cliux,
   configHandler,
@@ -11,6 +10,8 @@ import {
 
 import { authHandler } from '../../utils';
 import { BaseCommand } from '../../base-command';
+import { messages } from '../../messages/index';
+
 export default class LogoutCommand extends BaseCommand<typeof LogoutCommand> {
   static run;
   static description = 'User session logout';
@@ -41,7 +42,7 @@ export default class LogoutCommand extends BaseCommand<typeof LogoutCommand> {
     if (!confirm) {
       confirm = await cliux.inquire({
         type: 'confirm',
-        message: 'CLI_AUTH_LOGOUT_CONFIRM',
+        message: messages.CLI_AUTH_LOGOUT_CONFIRM,
         name: 'confirmation',
       });
     }
@@ -50,17 +51,17 @@ export default class LogoutCommand extends BaseCommand<typeof LogoutCommand> {
       const managementAPIClient = await managementSDKClient({ host: this.cmaHost, skipTokenValidity: true });
       authHandler.client = managementAPIClient;
       if (confirm === true && (await oauthHandler.isAuthenticated())) {
-        cliux.loader('CLI_AUTH_LOGOUT_LOADER_START');
+        cliux.loader(messages.CLI_AUTH_LOGOUT_LOADER_START);
         if (await oauthHandler.isAuthorisationTypeBasic()) {
           await authHandler.logout(configHandler.get('authtoken'));
         } else if (await oauthHandler.isAuthorisationTypeOAuth()) {
-          await oauthHandler.oauthLogout()
+          await oauthHandler.oauthLogout();
         }
         cliux.loader('');
-        this.logger.info('successfully logged out');
-        cliux.success('CLI_AUTH_LOGOUT_SUCCESS');
+        this.logger.info('Successfully logged out');
+        cliux.success(messages.CLI_AUTH_LOGOUT_SUCCESS);
       } else {
-        cliux.success('CLI_AUTH_LOGOUT_ALREADY');
+        cliux.success(messages.CLI_AUTH_LOGOUT_ALREADY);
       }
     } catch (error) {
       let errorMessage = '';
@@ -77,7 +78,7 @@ export default class LogoutCommand extends BaseCommand<typeof LogoutCommand> {
       }
 
       this.logger.error('Logout failed', errorMessage);
-      cliux.print('CLI_AUTH_LOGOUT_FAILED', { color: 'yellow' });
+      cliux.print(messages.CLI_AUTH_LOGOUT_FAILED, { color: 'yellow' });
       cliux.print(errorMessage, { color: 'red' });
     } finally {
       if (confirm === true) {

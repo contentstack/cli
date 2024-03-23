@@ -1,4 +1,3 @@
-import { Command } from '@contentstack/cli-command';
 import {
   cliux,
   configHandler,
@@ -11,6 +10,7 @@ import {
 } from '@contentstack/cli-utilities';
 import { askTokenType } from '../../../utils/interactive';
 import { BaseCommand } from '../../../base-command';
+import { messages } from '../../../messages';
 export default class TokensAddCommand extends BaseCommand<typeof TokensAddCommand> {
   static description = 'Adds management/delivery tokens to your session to use it with other CLI commands';
 
@@ -103,34 +103,46 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
 
     try {
       if (!alias) {
-        alias = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ASK_TOKEN_ALIAS', name: 'alias' });
+        alias = await cliux.inquire({
+          type: 'input',
+          message: messages.CLI_AUTH_TOKENS_ADD_ASK_TOKEN_ALIAS,
+          name: 'alias',
+        });
       }
       isAliasExist = Boolean(configHandler.get(`${configKeyTokens}.${alias}`)); // get to Check if alias already present
       if (isAliasExist && !skipAliasReplaceConfirmation) {
         const shouldAliasReplace = await cliux.inquire({
           type: 'confirm',
-          message: `CLI_AUTH_TOKENS_ADD_CONFIRM_ALIAS_REPLACE`,
+          message: messages.CLI_AUTH_TOKENS_ADD_CONFIRM_ALIAS_REPLACE,
           name: 'confirm',
         });
         if (!shouldAliasReplace) {
           this.logger.info('Exiting from the process of replacing the token');
-          cliux.print('CLI_AUTH_EXIT_PROCESS');
+          cliux.print(messages.CLI_AUTH_EXIT_PROCESS);
           return;
         }
       }
 
       if (!apiKey) {
-        apiKey = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_API_KEY', name: 'apiKey' });
+        apiKey = await cliux.inquire({
+          type: 'input',
+          message: messages.CLI_AUTH_TOKENS_ADD_ENTER_API_KEY,
+          name: 'apiKey',
+        });
       }
 
       if (!token) {
-        token = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_TOKEN', name: 'token' });
+        token = await cliux.inquire({
+          type: 'input',
+          message: messages.CLI_AUTH_TOKENS_ADD_ENTER_TOKEN,
+          name: 'token',
+        });
       }
 
       if (isDelivery && !environment) {
         environment = await cliux.inquire({
           type: 'input',
-          message: 'CLI_AUTH_TOKENS_ADD_ENTER_ENVIRONMENT',
+          message: messages.CLI_AUTH_TOKENS_ADD_ENTER_ENVIRONMENT,
           name: 'env',
         });
       }
@@ -142,7 +154,7 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
         const response = (await httpClient.get(`https://${this.cmaHost}/v3/environments?limit=1`)).data;
 
         if (response?.error_code === 105) {
-          throw new Error(messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN'));
+          throw new Error(messageHandler.parse(messages.CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN));
         } else if (response?.error_message) {
           throw new Error(response.error_message);
         }
@@ -154,13 +166,13 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
       }
 
       if (isAliasExist) {
-        cliux.success('CLI_AUTH_TOKENS_ADD_REPLACE_SUCCESS');
+        cliux.success(messages.CLI_AUTH_TOKENS_ADD_REPLACE_SUCCESS);
       } else {
-        cliux.success('CLI_AUTH_TOKENS_ADD_SUCCESS');
+        cliux.success(messages.CLI_AUTH_TOKENS_ADD_SUCCESS);
       }
     } catch (error) {
-      this.logger.error('token add error', error.message);
-      cliux.print('CLI_AUTH_TOKENS_ADD_FAILED', { color: 'yellow' });
+      this.logger.error('Token add error', error.message);
+      cliux.print(messages.CLI_AUTH_TOKENS_ADD_FAILED, { color: 'yellow' });
       cliux.error(error.message.message ? error.message.message : error.message);
     }
   }

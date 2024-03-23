@@ -1,16 +1,15 @@
-import { Command } from '@contentstack/cli-command';
 import {
   cliux,
   CLIError,
   authHandler as oauthHandler,
   flags,
   managementSDKClient,
-  FlagInput
+  FlagInput,
 } from '@contentstack/cli-utilities';
 import { User } from '../../interfaces';
 import { authHandler, interactive } from '../../utils';
 import { BaseCommand } from '../../base-command';
-
+import { messages } from './../../messages/index';
 export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
   static run; // to fix the test issue
   static description = 'User sessions login';
@@ -77,7 +76,7 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
         }
       }
       this.logger.error('login failed', errorMessage);
-      cliux.error('CLI_AUTH_LOGIN_FAILED');
+      cliux.error(messages.CLI_AUTH_LOGIN_FAILED);
       cliux.error(errorMessage);
       process.exit();
     }
@@ -91,7 +90,7 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
       }
       await oauthHandler.setConfigData('basicAuth', user);
       this.logger.info('successfully logged in');
-      cliux.success('CLI_AUTH_LOGIN_SUCCESS');
+      cliux.success(messages.CLI_AUTH_LOGIN_SUCCESS);
     } catch (error) {
       throw error;
     }
