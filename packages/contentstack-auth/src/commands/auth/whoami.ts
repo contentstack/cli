@@ -15,7 +15,7 @@ export default class WhoamiCommand extends BaseCommand<typeof WhoamiCommand> {
         cliux.print(this.email, { color: 'green' });
         this.logger.info('Currently logged in user', this.email);
       } else {
-        cliux.error('CLI_AUTH_WHOAMI_FAILED');
+        cliux.error(messages.CLI_AUTH_WHOAMI_FAILED);
       }
     } catch (error) {
       this.logger.error('whoami error', error.message);

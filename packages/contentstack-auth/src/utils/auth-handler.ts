@@ -2,6 +2,7 @@ import { cliux, CLIError } from '@contentstack/cli-utilities';
 import { User } from '../interfaces';
 import { askOTPChannel, askOTP } from './interactive';
 import { LoggerService } from '@contentstack/cli-utilities';
+import { messages } from '../messages';
 
 /**
  * @class
@@ -54,7 +55,7 @@ class AuthHandler {
               if (otpChannel === 'sms') {
                 try {
                   await this._client.axiosInstance.post('/user/request_token_sms', { user: loginPayload });
-                  cliux.print('CLI_AUTH_LOGIN_SECURITY_CODE_SEND_SUCCESS');
+                  cliux.print(messages.CLI_AUTH_LOGIN_SECURITY_CODE_SEND_SUCCESS);
                 } catch (error) {
                   this.logger.error('Failed to send the security code', error);
                   reject(new CLIError({ message: 'Failed to login - failed to send the security code' }));

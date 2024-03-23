@@ -1,5 +1,6 @@
 import { messageHandler } from '@contentstack/cli-utilities';
 import { LoggerService } from '@contentstack/cli-utilities';
+import { messages } from '../messages';
 /**
  * Validate environment
  * @param contentStackClient
@@ -12,7 +13,7 @@ export const validateEnvironment = async (
   apiKey: string,
   environment: string,
 ): Promise<any> => {
-  const newLogger = new LoggerService(process.cwd(),'cli-log');
+  const newLogger = new LoggerService(process.cwd(), 'cli-log');
   let result: { valid: boolean; message: string };
   try {
     const validationResult = await contentStackClient.Stack({ api_key: apiKey }).environment(environment).fetch();
@@ -20,11 +21,14 @@ export const validateEnvironment = async (
     if (validationResult.name === environment) {
       result = { valid: true, message: validationResult };
     } else {
-      result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_ENVIRONMENT_NAME') };
+      result = {
+        valid: false,
+        message: messageHandler.parse(messages.CLI_AUTH_TOKENS_VALIDATION_INVALID_ENVIRONMENT_NAME),
+      };
     }
   } catch (error) {
     newLogger.error('validate environment error', error);
-    result = { valid: false, message: 'CLI_AUTH_TOKENS_VALIDATION_INVALID_ENVIRONMENT_NAME' };
+    result = { valid: false, message: messages.CLI_AUTH_TOKENS_VALIDATION_INVALID_ENVIRONMENT_NAME };
   }
   return result;
 };
@@ -36,7 +40,7 @@ export const validateEnvironment = async (
  * @returns
  */
 export const validateAPIKey = async (contentStackClient: any, apiKey: string): Promise<any> => {
-  const newLogger = new LoggerService(process.cwd(),'cli-log');
+  const newLogger = new LoggerService(process.cwd(), 'cli-log');
   let result: { valid: boolean; message: string };
   try {
     const validateAPIKeyResult = await contentStackClient.stack({ api_key: apiKey }).fetch();
@@ -44,11 +48,11 @@ export const validateAPIKey = async (contentStackClient: any, apiKey: string): P
     if (validateAPIKeyResult.api_key === apiKey) {
       result = { valid: true, message: validateAPIKeyResult };
     } else {
-      result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY') };
+      result = { valid: false, message: messageHandler.parse(messages.CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY) };
     }
   } catch (error) {
     newLogger.error('validate api key error', error);
-    result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY') };
+    result = { valid: false, message: messageHandler.parse(messages.CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY) };
   }
 
   return result;
