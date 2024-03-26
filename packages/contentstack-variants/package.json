@@ -1,5 +1,5 @@
 {
-  "name": "contentstack-variants",
+  "name": "@contentstack/cli-variants",
   "version": "0.0.1-alpha",
   "description": "Variants plugin",
   "main": "lib/index.js",
@@ -18,7 +18,7 @@
     "typescript": "^5.4.2"
   },
   "dependencies": {
-    "@contentstack/cli-cm-export": "^1.11.1",
+    "@contentstack/cli-utilities": "^1.5.12",
     "lodash": "^4.17.21"
   }
 }
