@@ -1,15 +1,14 @@
 import { join, resolve } from 'path';
 import { FsUtility } from '@contentstack/cli-utilities';
-import ExportConfig from '@contentstack/cli-cm-export/lib/types/export-config';
 
-import { APIConfig, AdapterType } from '../types';
+import { APIConfig, AdapterType, ExportConfig, LogType } from '../types';
 import VariantAPIInstance, { VariantHttpClient } from '../utils/variant-api-adapter';
 
-export default class VariantEntries extends VariantAPIInstance<VariantHttpClient> {
+export class VariantEntries extends VariantAPIInstance<VariantHttpClient> {
   public entriesDirPath: string;
   public variantEntryBasePath!: string;
 
-  constructor(public readonly exportConfig: ExportConfig, private readonly log: (value: any) => void = console.log) {
+  constructor(public readonly exportConfig: ExportConfig, private readonly log: LogType = console.log) {
     const config: APIConfig & AdapterType<VariantHttpClient, APIConfig> = {
       httpClient: true,
       baseURL: exportConfig.host,
@@ -56,8 +55,11 @@ export default class VariantEntries extends VariantAPIInstance<VariantHttpClient
         entry_uid: entry.uid,
       });
       variantEntriesFs.completeFile(true);
-      // FIXME: On final integration with export module the logger should be modified
-      this.log(`Exported variant entries of type '${entry.title} (${entry.uid})' locale '${locale}'`);
+      this.log(
+        this.exportConfig,
+        `Exported variant entries of type '${entry.title} (${entry.uid})' locale '${locale}'`,
+        'info',
+      );
     }
   }
 }
