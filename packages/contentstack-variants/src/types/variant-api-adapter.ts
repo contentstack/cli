@@ -1,9 +1,7 @@
-import { ExportConfig } from '@contentstack/cli-cm-export/lib/types';
 import { HttpClientOptions, HttpRequestConfig } from '@contentstack/cli-utilities';
 
-export interface AnyProperty {
-  [propName: string]: any;
-}
+import { AnyProperty } from './utils';
+import { ExportConfig } from './export-config';
 
 export type APIConfig = HttpRequestConfig & {
   httpClient?: boolean;
