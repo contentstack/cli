@@ -1,21 +1,41 @@
-import { Modules } from '.';
+/**
+ * NOTE: Accessing ExportConfig from the export package is not possible
+ * because it will create a circular dependency and cause the prepack/build command to fail.
+ * Therefore, we are duplicating the following types from the export.
+ */
+import { AnyProperty } from "./utils";
 
-interface AnyProperty {
-  [propName: string]: any;
-}
+export type Modules =
+  | 'stack'
+  | 'assets'
+  | 'locales'
+  | 'environments'
+  | 'extensions'
+  | 'webhooks'
+  | 'global-fields'
+  | 'entries'
+  | 'content-types'
+  | 'custom-roles'
+  | 'workflows'
+  | 'labels'
+  | 'marketplace-apps'
+  | 'taxonomies';
 
-export default interface DefaultConfig {
+export type branch = {
+  uid: string;
+  source: string;
+};
+
+export type masterLocale = {
+  code: string;
+};
+
+export interface DefaultConfig {
   contentVersion: number;
   versioning: boolean;
   host: string;
   cdn?: string;
   developerHubUrls: any;
-  // use below hosts for eu region
-  // host:'https://eu-api.contentstack.com/v3',
-  // use below hosts for azure-na region
-  // host:'https://azure-na-api.contentstack.com/v3',
-  // use below hosts for gcp-na region
-  // host: 'https://gcp-na-api.contentstack.com'
   modules: {
     types: Modules[];
     locales: {
@@ -189,4 +209,33 @@ export default interface DefaultConfig {
   developerHubBaseUrl: string;
   marketplaceAppEncryptionKey: string;
   onlyTSModules: string[];
+}
+
+export interface ExportConfig extends DefaultConfig {
+  exportDir: string;
+  data: string;
+  management_token?: string;
+  apiKey: string;
+  forceStopMarketplaceAppsPrompt: boolean;
+  auth_token?: string;
+  branchName?: string;
+  securedAssets?: boolean;
+  contentTypes?: string[];
+  branches?: branch[];
+  branchEnabled?: boolean;
+  branchDir?: string;
+  singleModuleExport?: boolean;
+  moduleName?: Modules;
+  master_locale: masterLocale;
+
+  headers?: {
+    api_key: string;
+    access_token?: string;
+    authtoken?: string;
+    'X-User-Agent': string;
+  };
+  access_token?: string;
+  org_uid?: string;
+  source_stack?: string;
+  sourceStackName?: string;
 }
