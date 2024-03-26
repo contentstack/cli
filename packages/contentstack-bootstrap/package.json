@@ -22,7 +22,7 @@
     "@contentstack/cli-utilities": "~1.6.0",
     "inquirer": "8.2.4",
     "mkdirp": "^1.0.4",
-    "tar": "^6.1.13"
+    "tar": "^6.2.1 "
   },
   "devDependencies": {
     "@oclif/test": "^2.5.6",
