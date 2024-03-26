@@ -62,12 +62,19 @@ module.exports = (errors, filePath) => {
           after = removeSpecialCharacter(after.join('\n'));
           line = removeSpecialCharacter(line);
           errorLogs[file].lines = { before, line, after };
-
+          if (error.request) {
+            error.data = error.request?.data;
+            delete error.request;
+          }
+          if (error.message) {
+            delete error.message;
+          }
           const formattedCode = beforeLines + highlightedLine + afterLines;
           if (error.payload?.apiError) {
             errorLogs[file].apiError = true;
             errorLogs[file].errorCode = error.payload.apiError.errorCode;
             errorLogs[file].errors = error.payload.apiError.errors;
+            errorLogs[file].data = error.data;
           }
           if (error.message && !error.payload.apiError) {
             errorLogs[file].apiError = false;
