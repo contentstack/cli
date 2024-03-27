@@ -86,8 +86,15 @@ module.exports = (errors, filePath) => {
       messages.push(`${fileErrorsMessage}${errorMessages}`);
       logger.log('error', errorLogs);
     }
+    if (errors?.request) {
+      errors.data = errors.request?.data;
+      delete errors.request;
+    }
+    if (errors?.message) {
+      delete errors.message;
+    }
     if (isEmpty(messages) && errors !== undefined && isEmpty(errorsByFile)) {
-      logger.log('error', errors);
+      logger.log('error', { errors: errors });
       console.log(chalk`{bold.red Migration unsuccessful}`);
     } else {
       logger.log('error', { error: messages.join('\n') });
