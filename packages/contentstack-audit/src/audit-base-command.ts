@@ -13,7 +13,13 @@ import { print } from './util/log';
 import { auditMsg } from './messages';
 import { BaseCommand } from './base-command';
 import { Entries, GlobalField, ContentType, Extensions, Workflows } from './modules';
-import { CommandNames, ContentTypeStruct, OutputColumn, RefErrorReturnType } from './types';
+import {
+  CommandNames,
+  ContentTypeStruct,
+  OutputColumn,
+  RefErrorReturnType,
+  WorkflowExtensionsRefErrorReturnType,
+} from './types';
 
 export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseCommand> {
   private currentCommand!: CommandNames;
@@ -113,7 +119,6 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         config: this.sharedConfig,
         fix: this.currentCommand === 'cm:stacks:audit:fix',
       };
-
       switch (module) {
         case 'content-types':
           missingCtRefs = await new ContentType(cloneDeep(constructorParam)).run();
@@ -303,7 +308,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
       const tableKeys = Object.keys(missingRefs[0]);
       const arrayOfObjects = tableKeys.map((key) => {
-        if (['title', 'name', 'uid', 'content_types', 'fixStatus'].includes(key)) {
+        if (['title', 'name', 'uid', 'content_types', 'branches', 'fixStatus'].includes(key)) {
           return {
             [key]: {
               minWidth: 7,
@@ -311,7 +316,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
               get: (row: Record<string, unknown>) => {
                 if (key === 'fixStatus') {
                   return chalk.green(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
-                } else if (key === 'content_types') {
+                } else if (key === 'content_types' || key === 'branches') {
                   return chalk.red(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
                 } else {
                   return chalk.white(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
@@ -371,14 +376,22 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       const ws = createWriteStream(csvPath).on('error', reject);
       const defaultColumns = Object.keys(OutputColumn);
       const userDefinedColumns = this.sharedConfig.flags.columns ? this.sharedConfig.flags.columns.split(',') : null;
-      let missingRefs: RefErrorReturnType[] = Object.values(listOfMissingRefs).flat();
+      let missingRefs: RefErrorReturnType[] | WorkflowExtensionsRefErrorReturnType[] =
+        Object.values(listOfMissingRefs).flat();
       const columns: (keyof typeof OutputColumn)[] = userDefinedColumns
         ? [...userDefinedColumns, ...defaultColumns.filter((val: string) => !userDefinedColumns.includes(val))]
         : defaultColumns;
 
       if (this.sharedConfig.flags.filter) {
         const [column, value]: [keyof typeof OutputColumn, string] = this.sharedConfig.flags.filter.split('=');
-        missingRefs = missingRefs.filter((row: RefErrorReturnType) => row[OutputColumn[column]] === value);
+        // Filter the missingRefs array
+        missingRefs = missingRefs.filter((row) => {
+          if (OutputColumn[column] in row) {
+            const rowKey = OutputColumn[column] as keyof (RefErrorReturnType | WorkflowExtensionsRefErrorReturnType);
+            return row[rowKey] === value;
+          }
+          return false;
+        });
       }
 
       const rowData: Record<string, string | string[]>[] = [];
@@ -387,7 +400,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
         for (const column of columns) {
           if (Object.keys(issue).includes(OutputColumn[column])) {
-            row[column] = issue[OutputColumn[column]] as string;
+            const issueKey = OutputColumn[column] as keyof typeof issue;
+            row[column] = issue[issueKey] as string;
             row[column] = typeof row[column] === 'object' ? JSON.stringify(row[column]) : row[column];
           }
         }

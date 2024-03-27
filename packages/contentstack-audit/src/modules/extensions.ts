@@ -109,6 +109,7 @@ export default class Extensions {
       this.fix &&
       (this.config.flags['copy-dir'] ||
         this.config.flags['external-config']?.skipConfirm ||
+        this.config.flags.yes ||
         (await ux.confirm(commonMsg.FIX_CONFIRMATION)))
     ) {
       writeFileSync(

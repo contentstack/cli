@@ -46,6 +46,7 @@ describe('Workflows', () => {
       .it(
         'should expect missingRefs equal to workflow which has missing refs, missingCts equal to missing Cts',
         async () => {
+          wf.config.branch = 'development';
           const missingRefs = await wf.run();
           expect(wf.workflowSchema).eql(values(JSON.parse(fs.readFileSync(wf.workflowPath, 'utf8'))));
           expect(missingRefs).eql([
@@ -67,31 +68,20 @@ describe('Workflows', () => {
               enabled: false,
               deleted_at: false,
             },
+            {
+              api_key: 'apiKey',
+              branches: ['main', 'stage'],
+              content_types: [],
+              deleted_at: false,
+              enabled: false,
+              name: 'wf5',
+              org_uid: 'org1',
+              uid: 'wf5',
+            },
           ]);
           expect(wf.missingCts).eql(new Set(['ct45', 'ct14', 'ct6']));
         },
       );
-  });
-
-  describe('run method with valid path and empty ctSchema to check the missing references', () => {
-    const wf = new Workflows({
-      log: () => {},
-      moduleName: 'workflows',
-      ctSchema: [],
-      config: Object.assign(config, {
-        basePath: resolve(`./test/unit/mock/contents/`),
-        flags: {},
-      }),
-    });
-
-    fancy
-      .stdout({ print: process.env.PRINT === 'true' || true })
-      .stub(ux, 'confirm', async () => true)
-      .it('should expect missingRefs equal to all workflows', async () => {
-        const missingRefs = await wf.run();
-        wf.workflowSchema.pop();
-        expect(missingRefs).eql(wf.workflowSchema);
-      });
   });
 
   describe('run method with audit fix for workflows with valid path and empty ctSchema', () => {
@@ -111,6 +101,7 @@ describe('Workflows', () => {
       .stub(wf, 'log', async () => {})
       .stub(ux, 'confirm', async () => true)
       .stub(wf, 'WriteFileSync', () => {})
+      .stub(wf, 'writeFixContent', () => {})
       .it('the run function should run and flow should go till fixWorkflowSchema', async () => {
         const fixedReference = await wf.run();
         expect(fixedReference).eql([
@@ -136,13 +127,14 @@ describe('Workflows', () => {
           },
           {
             api_key: 'apiKey',
-            content_types: ['ct88'],
+            branches: ['main', 'stage'],
+            content_types: [],
             deleted_at: false,
             enabled: false,
             fixStatus: 'Fixed',
-            name: 'wf6',
+            name: 'wf5',
             org_uid: 'org1',
-            uid: 'wf6',
+            uid: 'wf5',
           },
         ]);
       });

@@ -56,6 +56,8 @@ export default class EntriesImport extends BaseClass {
   private autoCreatedEntries: Record<string, any>[];
   private taxonomiesPath: string;
   public taxonomies: Record<string, unknown>;
+  public rteCTs: any;
+  public rteCTsWithRef: any;
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -85,6 +87,8 @@ export default class EntriesImport extends BaseClass {
     this.envs = {};
     this.autoCreatedEntries = [];
     this.failedEntries = [];
+    this.rteCTs = [];
+    this.rteCTsWithRef = [];
   }
 
   async start(): Promise<any> {
@@ -100,8 +104,8 @@ export default class EntriesImport extends BaseClass {
 
       this.assetUidMapper = (fsUtil.readFile(this.assetUidMapperPath) as Record<string, any>) || {};
       this.assetUrlMapper = (fsUtil.readFile(this.assetUrlMapperPath) as Record<string, any>) || {};
-      
-      this.taxonomies = (fsUtil.readFile(this.taxonomiesPath) as Record<string, any>);
+
+      this.taxonomies = fsUtil.readFile(this.taxonomiesPath) as Record<string, any>;
 
       fsUtil.makeDirectory(this.entriesMapperPath);
       await this.disableMandatoryCTReferences();
@@ -225,6 +229,8 @@ export default class EntriesImport extends BaseClass {
       references: false,
       jsonRte: false,
       jsonRteEmbeddedEntries: false,
+      rte: false,
+      rteEmbeddedEntries: false,
     };
     suppressSchemaReference(contentType.schema, flag);
 
@@ -236,6 +242,16 @@ export default class EntriesImport extends BaseClass {
       this.jsonRteCTs.push(contentType.uid);
       if (flag.jsonRteEmbeddedEntries) {
         this.jsonRteCTsWithRef.push(contentType.uid);
+        if (this.refCTs.indexOf(contentType.uid) === -1) {
+          this.refCTs.push(contentType.uid);
+        }
+      }
+    }
+
+    if (flag.rte) {
+      this.rteCTs.push(contentType.uid);
+      if (flag.rteEmbeddedEntries) {
+        this.rteCTsWithRef.push(contentType.uid);
         if (this.refCTs.indexOf(contentType.uid) === -1) {
           this.refCTs.push(contentType.uid);
         }
@@ -413,6 +429,14 @@ export default class EntriesImport extends BaseClass {
       }
       // remove entry references from json-rte fields
       if (this.jsonRteCTsWithRef.indexOf(cTUid) > -1) {
+        entry = removeEntryRefsFromJSONRTE(entry, contentType.schema);
+      }
+
+      if (this.rteCTs.indexOf(cTUid) > -1) {
+        entry = removeEntryRefsFromJSONRTE(entry, contentType.schema);
+      }
+
+      if (this.rteCTsWithRef.indexOf(cTUid) > -1) {
         entry = removeEntryRefsFromJSONRTE(entry, contentType.schema);
       }
       //will remove term if term doesn't exists in taxonomy
@@ -668,7 +692,7 @@ export default class EntriesImport extends BaseClass {
       // Removing temp values
       delete entry.sourceEntryFilePath;
       delete entry.entryOldUid;
-      if (this.jsonRteCTs.indexOf(cTUid) > -1) {
+      if (this.jsonRteCTs.indexOf(cTUid) > -1 || this.rteCTs.indexOf(cTUid) > -1) {
         // the entries stored in eSuccessFilePath, have the same uids as the entries from source data
         entry = restoreJsonRteEntryRefs(entry, sourceEntry, contentType.schema, {
           uidMapper: this.entriesUidMapper,
@@ -676,7 +700,16 @@ export default class EntriesImport extends BaseClass {
           mappedAssetUrls: this.assetUrlMapper,
         });
       }
-
+      entry = lookupAssets(
+        {
+          content_type: contentType,
+          entry: entry,
+        },
+        this.assetUidMapper,
+        this.assetUrlMapper,
+        path.join(this.entriesPath, cTUid),
+        this.installedExtensions,
+      );
       entry = lookupEntries(
         {
           content_type: contentType,

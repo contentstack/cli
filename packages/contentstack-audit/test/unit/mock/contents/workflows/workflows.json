@@ -5,7 +5,9 @@
         "org_uid": "org1",
         "api_key": "apiKey",
         "content_types": [
-            "ct1"
+            "ct1",
+            "ct45",
+            "ct14"
         ],
         "enabled": false,
         "deleted_at": false
@@ -16,7 +18,8 @@
         "org_uid": "org1",
         "api_key": "apiKey",
         "content_types": [
-            "ct2"
+            "ct2",
+            "ct6"
         ],
         "enabled": false,
         "deleted_at": false
@@ -40,6 +43,22 @@
         "api_key": "apiKey",
         "content_types": [
             "ct4"
+        ],
+        "enabled": false,
+        "deleted_at": false
+    },
+    "wf5": {
+        "name": "wf5",
+        "uid": "wf5",
+        "org_uid": "org1",
+        "api_key": "apiKey",
+        "content_types": [
+            "ct4"
+        ],
+        "branches": [
+            "main",
+            "development",
+            "stage"
         ],
         "enabled": false,
         "deleted_at": false
