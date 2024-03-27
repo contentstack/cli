@@ -57,7 +57,6 @@ export default class Workflows {
       return {};
     }
 
-
     this.workflowPath = join(this.folderPath, this.fileName);
     this.workflowSchema = existsSync(this.workflowPath)
       ? values(JSON.parse(readFileSync(this.workflowPath, 'utf8')) as Workflow[])
@@ -146,8 +145,10 @@ export default class Workflows {
   async writeFixContent(newWorkflowSchema: Record<string, Workflow>) {
     if (
       this.fix &&
-      !(this.config.flags['copy-dir'] || this.config.flags['external-config']?.skipConfirm) &&
-      (this.config.flags.yes || (await ux.confirm(commonMsg.FIX_CONFIRMATION)))
+      (this.config.flags['copy-dir'] ||
+        this.config.flags['external-config']?.skipConfirm ||
+        this.config.flags.yes ||
+        (await ux.confirm(commonMsg.FIX_CONFIRMATION)))
     ) {
       writeFileSync(
         join(this.folderPath, this.config.moduleConfig[this.moduleName].fileName),
