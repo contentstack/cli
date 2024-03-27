@@ -114,9 +114,9 @@ export function assetFolderCreateScript(contentType) {
 
   const createAssetTask = () => {
     return {
-      title: 'Create Assets Folder',
+      title: 'Check and create asset folder in base branch',
       successTitle: 'Assets folder Created Successfully',
-      failedTitle: 'Failed to create assets folder',
+      failedTitle: 'Failed to create assets folder in base branch',
       task: async () => {
         try {
           const baseAssetsFolderCount = await getAssetCount(branch, true);
