@@ -1,38 +1,20 @@
 import omit from 'lodash/omit';
-import pick from 'lodash/pick';
 import { existsSync } from 'fs';
 import {
-  HttpClient,
   HttpClientOptions,
   ContentstackClient,
   ContentstackConfig,
   managementSDKClient,
-  HttpRequestConfig,
 } from '@contentstack/cli-utilities';
 
-import { APIConfig, AdapterType, AnyProperty, ExportConfig, Variant, VariantOptions, VariantsOption } from '../types';
+import { APIConfig, AdapterType, AnyProperty, VariantInterface, VariantOptions, VariantsOption } from '../types';
+import { AdapterHelper } from './adapter-helper';
 
-export class VariantHttpClient implements Variant {
-  public baseURL: string;
-  public httpClient: HttpClient;
-  public sharedConfig!: ExportConfig | Record<string, any>;
-
+export class VariantHttpClient extends AdapterHelper implements VariantInterface {
   constructor(public readonly config: APIConfig, options?: HttpClientOptions) {
-    this.sharedConfig = config.sharedConfig || {};
-    this.baseURL = config.baseURL?.includes('http') ? `${config.baseURL}/v3` : `https://${config.baseURL}/v3`;
-    delete this.config.sharedConfig;
-    const pickConfig: (keyof HttpRequestConfig)[] = [
-      'url',
-      'auth',
-      'method',
-      'baseURL',
-      'headers',
-      'adapter',
-      'httpAgent',
-      'httpsAgent',
-      'responseType',
-    ];
-    this.httpClient = new HttpClient(pick(config, pickConfig), options);
+    super(config, options);
+    const baseURL = config.baseURL?.includes('http') ? `${config.baseURL}/v3` : `https://${config.baseURL}/v3`;
+    this.httpClient.baseUrl(baseURL);
   }
 
   async variantEntry(options: VariantOptions) {
@@ -81,7 +63,7 @@ export class VariantHttpClient implements Variant {
     }
 
     const start = Date.now();
-    let endpoint = `${this.baseURL}/content_types/${content_type_uid}/entries/${entry_uid}/variants?locale=${locale}`;
+    let endpoint = `/content_types/${content_type_uid}/entries/${entry_uid}/variants?locale=${locale}`;
 
     if (skip) {
       endpoint = endpoint.concat(`&skip=${skip}`);
@@ -128,46 +110,9 @@ export class VariantHttpClient implements Variant {
 
     if (returnResult) return { entries };
   }
-
-  /**
-   * The function constructs a query string from a given object by encoding its key-value pairs.
-   * @param query - It looks like you have a function `constructQuery` that takes a query object as a
-   * parameter. The function loops through the keys in the query object and constructs a query string
-   * based on the key-value pairs.
-   * @returns The `constructQuery` function returns a string that represents the query parameters
-   * constructed from the input `query` object. If the `query` object is empty (has no keys), the
-   * function does not return anything (void).
-   */
-  constructQuery(query: Record<string, any>): string | void {
-    if (Object.keys(query).length) {
-      let queryParam = '';
-
-      for (const key in query) {
-        if (Object.prototype.hasOwnProperty.call(query, key)) {
-          const element = query[key];
-
-          switch (typeof element) {
-            case 'boolean':
-              queryParam = queryParam.concat(key);
-              break;
-
-            default:
-              queryParam = queryParam.concat(`&${key}=${encodeURIComponent(element)}`);
-              break;
-          }
-        }
-      }
-
-      return queryParam;
-    }
-  }
-
-  delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms <= 0 ? 0 : ms));
-  }
 }
 
-export class VariantManagementSDK implements Variant {
+export class VariantManagementSDK implements VariantInterface {
   public sdkClient!: ContentstackClient;
 
   constructor(public readonly config: ContentstackConfig | AnyProperty) {}
@@ -185,9 +130,13 @@ export class VariantManagementSDK implements Variant {
     // TODO SDK implementation
     return { entries: [{}] };
   }
+
+  constructQuery(query: Record<string, any>): string | void {}
+
+  async delay(ms: number): Promise<void> {}
 }
 
-class VariantAPIInstance<T> {
+export class VariantAdapter<T> {
   protected variantInstance;
 
   constructor(config: ContentstackConfig & AnyProperty & AdapterType<T, ContentstackConfig>);
@@ -206,4 +155,4 @@ class VariantAPIInstance<T> {
   }
 }
 
-export default VariantAPIInstance;
+export default VariantAdapter;
