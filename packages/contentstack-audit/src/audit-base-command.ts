@@ -329,7 +329,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       });
       const mergedObject = Object.assign({}, ...arrayOfObjects);
 
-      ux.table(tableValues, mergedObject, { ...this.flags });
+      ux.table(tableValues, mergedObject);
       this.log(''); // Adding a new line
     }
   }
