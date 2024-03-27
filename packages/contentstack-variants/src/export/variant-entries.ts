@@ -2,9 +2,9 @@ import { join, resolve } from 'path';
 import { FsUtility } from '@contentstack/cli-utilities';
 
 import { APIConfig, AdapterType, ExportConfig, LogType } from '../types';
-import VariantAPIInstance, { VariantHttpClient } from '../utils/variant-api-adapter';
+import VariantAdapter, { VariantHttpClient } from '../utils/variant-api-adapter';
 
-export class VariantEntries extends VariantAPIInstance<VariantHttpClient> {
+export class VariantEntries extends VariantAdapter<VariantHttpClient> {
   public entriesDirPath: string;
   public variantEntryBasePath!: string;
 
