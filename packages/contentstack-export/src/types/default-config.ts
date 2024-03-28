@@ -122,6 +122,9 @@ export default interface DefaultConfig {
       dependencies?: Modules[];
       exportVersions: boolean;
     };
+    eclipse: {
+      dirName: string
+    };
     variantEntry: {
       dirName: string;
       fileName: string;
