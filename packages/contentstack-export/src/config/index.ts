@@ -36,6 +36,7 @@ const config: DefaultConfig = {
       'entries',
       'labels',
       'marketplace-apps',
+      'eclipse',
     ],
     locales: {
       dirName: 'locales',
@@ -142,6 +143,9 @@ const config: DefaultConfig = {
       limit: 100,
       dependencies: ['locales', 'content-types'],
       exportVersions: false,
+    },
+    eclipse: {
+      dirName: 'eclipse',
     },
     variantEntry: {
       serveMockData: true,

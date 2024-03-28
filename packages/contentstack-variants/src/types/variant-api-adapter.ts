@@ -6,6 +6,7 @@ import { ExportConfig } from './export-config';
 export type APIConfig = HttpRequestConfig & {
   httpClient?: boolean;
   sharedConfig: ExportConfig | Record<string, any> | undefined;
+  eclipseURL?: string
 };
 
 export interface AdapterConstructor<T, C> {
