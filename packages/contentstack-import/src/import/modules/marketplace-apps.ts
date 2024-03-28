@@ -231,35 +231,38 @@ export default class ImportMarketplaceApps {
       return Promise.resolve();
     }
 
-    await getConfirmationToCreateApps(privateApps, this.importConfig);
+    let canCreatePrivateApp = await getConfirmationToCreateApps(privateApps, this.importConfig);
+    this.importConfig.canCreatePrivateApp = canCreatePrivateApp;
+    if (canCreatePrivateApp) {
+      log(this.importConfig, 'Starting developer hub private apps re-creation', 'success');
+      for (let app of privateApps) {
+        if (this.importConfig.skipPrivateAppRecreationIfExist && (await this.isPrivateAppExistInDeveloperHub(app))) {
+          // NOTE Found app already exist in the same org
+          this.appUidMapping[app.uid] = app.uid;
+          cliux.print(`App '${app.manifest.name}' already exist. skipping app recreation.!`, { color: 'yellow' });
+          continue;
+        }
 
-    log(this.importConfig, 'Starting developer hub private apps re-creation', 'success');
+        // NOTE keys can be passed to install new app in the developer hub
+        const validKeys = [
+          'uid',
+          'name',
+          'icon',
+          'oauth',
+          'webhook',
+          'visibility',
+          'target_type',
+          'description',
+          'ui_location',
+          'framework_version',
+        ];
+        const manifest = pick(app.manifest, validKeys) as Manifest;
+        this.appOriginalName = manifest.name;
 
-    for (let app of privateApps) {
-      if (this.importConfig.skipPrivateAppRecreationIfExist && (await this.isPrivateAppExistInDeveloperHub(app))) {
-        // NOTE Found app already exist in the same org
-        this.appUidMapping[app.uid] = app.uid;
-        cliux.print(`App '${app.manifest.name}' already exist. skipping app recreation.!`, { color: 'yellow' });
-        continue;
+        await this.createPrivateApp(manifest);
       }
-
-      // NOTE keys can be passed to install new app in the developer hub
-      const validKeys = [
-        'uid',
-        'name',
-        'icon',
-        'oauth',
-        'webhook',
-        'visibility',
-        'target_type',
-        'description',
-        'ui_location',
-        'framework_version',
-      ];
-      const manifest = pick(app.manifest, validKeys) as Manifest;
-      this.appOriginalName = manifest.name;
-
-      await this.createPrivateApp(manifest);
+    } else {
+      log(this.importConfig, 'Skipping developer hub private apps creation', 'success');
     }
 
     this.appOriginalName = undefined;
@@ -422,6 +425,10 @@ export default class ImportMarketplaceApps {
 
     if (!currentStackApp) {
       // NOTE install new app
+      if (app.manifest.visibility === 'private' && !this.importConfig.canCreatePrivateApp) {
+        log(this.importConfig, `Skipping the installation of Private App ${app.manifest.name}`, 'info');
+        return Promise.resolve();
+      }
       const installation = await this.installApp(
         this.importConfig,
         // NOTE if it's private app it should get uid from mapper else will use manifest uid
