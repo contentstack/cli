@@ -9,7 +9,7 @@ import {
   configHandler,
   managementSDKClient,
   marketplaceSDKClient,
-  createDeveloperHubUrl
+  createDeveloperHubUrl,
 } from '@contentstack/cli-utilities';
 
 import { log } from './logger';
@@ -72,6 +72,7 @@ export const getOrgUid = async (config: ImportConfig): Promise<string> => {
 };
 
 export const getConfirmationToCreateApps = async (privateApps: any, config: ImportConfig): Promise<boolean> => {
+  console.log(privateApps);
   if (!config.forceStopMarketplaceAppsPrompt) {
     if (
       !(await cliux.confirm(
@@ -90,15 +91,17 @@ export const getConfirmationToCreateApps = async (privateApps: any, config: Impo
           ),
         )
       ) {
-        return Promise.resolve(true);
-      }
-
-      if (
-        !(await cliux.confirm(
-          chalk.yellow('\nWould you like to re-create the private app and then proceed with the installation? (y/n)'),
-        ))
-      ) {
-        process.exit();
+        return Promise.resolve(false);
+      } else {
+        if (
+          !(await cliux.confirm(
+            chalk.yellow('\nWould you like to re-create the private app and then proceed with the installation? (y/n)'),
+          ))
+        ) {
+          return Promise.resolve(true);
+        } else {
+          return Promise.resolve(false);
+        }
       }
     }
   }
