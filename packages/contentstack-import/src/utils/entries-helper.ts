@@ -427,10 +427,8 @@ export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema:
               rteContent.push('<p></p>');
             }
             entry[element.uid] = rteContent;
-            return entry;
           } else {
             entry[element.uid] = '<p></p>';
-            return entry;
           }
         }
         break;
