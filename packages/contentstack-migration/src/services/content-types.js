@@ -4,7 +4,7 @@
 
 const Base = require('../modules/base');
 // Utils
-const { map: _map, safePromise, successHandler, errorHandler, constants } = require('../utils');
+const { map: _map, safePromise, successHandler, errorHandler, constants, errorHelper } = require('../utils');
 // Map methods
 const { get, getMapInstance, getDataWithAction } = _map;
 const mapInstance = getMapInstance();
@@ -23,7 +23,7 @@ class ContentTypeService {
 
     const [err, result] = await safePromise(this.stackSDKInstance.contentType(id).fetch());
     if (err) {
-      errorHandler(id, ContentType, method, err);
+      errorHelper(err);
       this.base.dispatch(callsite, id, err, 'apiError');
       throw err;
     }
@@ -36,7 +36,7 @@ class ContentTypeService {
     const data = getDataWithAction(id, mapInstance, action);
     const [err, result] = await safePromise(this.stackSDKInstance.contentType().create(data));
     if (err) {
-      errorHandler(id, ContentType, 'POST', err);
+      errorHelper(err);
       this.base.dispatch(callsite, id, err, 'apiError');
       throw err;
     }
@@ -51,7 +51,7 @@ class ContentTypeService {
     const method = 'PUT';
     const [err, result] = await safePromise(data.update());
     if (err) {
-      errorHandler(data.uid, ContentType, method, err);
+      errorHelper(err);
       this.base.dispatch(callsite, data.uid, err, 'apiError');
       throw err;
     }
@@ -66,7 +66,7 @@ class ContentTypeService {
     const [err, result] = await safePromise(this.stackSDKInstance.contentType(id).delete());
 
     if (err) {
-      errorHandler(id, ContentType, method, err);
+      errorHelper(err);
       this.base.dispatch(callsite, id, err, 'apiError');
       throw err;
     }
@@ -306,7 +306,7 @@ class ContentTypeService {
     }
 
     // Handling both the scenarios
-    if ((found === 0) || (against && (found === 1))) {
+    if (found === 0 || (against && found === 1)) {
       isValid = false;
     }
 
