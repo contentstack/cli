@@ -62,12 +62,19 @@ module.exports = (errors, filePath) => {
           after = removeSpecialCharacter(after.join('\n'));
           line = removeSpecialCharacter(line);
           errorLogs[file].lines = { before, line, after };
-
+          if (error.request) {
+            error.data = error.request?.data;
+            delete error.request;
+          }
+          if (error.message) {
+            delete error.message;
+          }
           const formattedCode = beforeLines + highlightedLine + afterLines;
           if (error.payload?.apiError) {
             errorLogs[file].apiError = true;
             errorLogs[file].errorCode = error.payload.apiError.errorCode;
             errorLogs[file].errors = error.payload.apiError.errors;
+            errorLogs[file].data = error.data;
           }
           if (error.message && !error.payload.apiError) {
             errorLogs[file].apiError = false;
@@ -79,8 +86,15 @@ module.exports = (errors, filePath) => {
       messages.push(`${fileErrorsMessage}${errorMessages}`);
       logger.log('error', errorLogs);
     }
+    if (errors?.request) {
+      errors.data = errors.request?.data;
+      delete errors.request;
+    }
+    if (errors?.message) {
+      delete errors.message;
+    }
     if (isEmpty(messages) && errors !== undefined && isEmpty(errorsByFile)) {
-      logger.log('error', errors);
+      logger.log('error', { errors: errors });
       console.log(chalk`{bold.red Migration unsuccessful}`);
     } else {
       logger.log('error', { error: messages.join('\n') });
