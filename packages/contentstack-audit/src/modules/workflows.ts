@@ -21,6 +21,7 @@ export default class Workflows {
   public missingCtInWorkflows: Workflow[];
   public missingCts: Set<string>;
   public workflowPath: string;
+  public isBranchFixDone: boolean;
 
   constructor({
     log,
@@ -41,6 +42,7 @@ export default class Workflows {
     this.missingCtInWorkflows = [];
     this.missingCts = new Set();
     this.workflowPath = '';
+    this.isBranchFixDone = false;
   }
   /**
    * Check whether the given path for the workflow exists or not
@@ -64,9 +66,20 @@ export default class Workflows {
 
     for (const workflow of this.workflowSchema) {
       const ctNotPresent = workflow.content_types.filter((ct) => !this.ctUidSet.has(ct));
-      if (ctNotPresent.length) {
+      const branch = workflow?.branches?.filter((branch) => branch !== this.config?.branch);
+
+      if (ctNotPresent.length || branch?.length) {
         const tempwf = cloneDeep(workflow);
-        tempwf.content_types = ctNotPresent;
+        tempwf.content_types = ctNotPresent || [];
+
+        if (workflow?.branches) {
+          tempwf.branches = branch;
+        }
+
+        if (branch?.length) {
+          this.isBranchFixDone = true;
+        }
+
         ctNotPresent.forEach((ct) => this.missingCts.add(ct));
         this.missingCtInWorkflows.push(tempwf);
       }
@@ -80,7 +93,7 @@ export default class Workflows {
       );
     }
 
-    if (this.fix && this.missingCtInWorkflows.length) {
+    if (this.fix && (this.missingCtInWorkflows.length || this.isBranchFixDone)) {
       await this.fixWorkflowSchema();
       this.missingCtInWorkflows.forEach((wf) => (wf.fixStatus = 'Fixed'));
     }
@@ -96,6 +109,21 @@ export default class Workflows {
     if (Object.keys(newWorkflowSchema).length !== 0) {
       for (const workflow of this.workflowSchema) {
         const fixedCts = workflow.content_types.filter((ct) => !this.missingCts.has(ct));
+        const fixedBranches: string[] = [];
+
+        workflow?.branches?.forEach((branch) => {
+          if (branch !== this.config?.branch) {
+            const { uid, name } = workflow;
+            this.log($t(commonMsg.WF_BRANCH_REMOVAL, { uid, name, branch }), { color: 'yellow' });
+          } else {
+            fixedBranches.push(branch);
+          }
+        });
+
+        if (fixedBranches.length > 0) {
+          newWorkflowSchema[workflow.uid].branches = fixedBranches;
+        }
+
         if (fixedCts.length) {
           newWorkflowSchema[workflow.uid].content_types = fixedCts;
         } else {
@@ -117,8 +145,10 @@ export default class Workflows {
   async writeFixContent(newWorkflowSchema: Record<string, Workflow>) {
     if (
       this.fix &&
-      !(this.config.flags['copy-dir'] || this.config.flags['external-config']?.skipConfirm) &&
-      (this.config.flags.yes || (await ux.confirm(commonMsg.FIX_CONFIRMATION)))
+      (this.config.flags['copy-dir'] ||
+        this.config.flags['external-config']?.skipConfirm ||
+        this.config.flags.yes ||
+        (await ux.confirm(commonMsg.FIX_CONFIRMATION)))
     ) {
       writeFileSync(
         join(this.folderPath, this.config.moduleConfig[this.moduleName].fileName),
