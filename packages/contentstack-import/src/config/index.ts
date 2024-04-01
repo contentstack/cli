@@ -15,6 +15,7 @@ const config: DefaultConfig = {
   // locales: ['fr-fr'],
   host: 'https://api.contentstack.io/v3',
   extensionHost: 'https://app.contentstack.com',
+  personalizationHost: 'https://personalization-api.contentstack.com',
   developerHubUrls: {
     'https://api.contentstack.io': 'https://developerhub-api.contentstack.com',
     'https://eu-api.contentstack.com': 'https://eu-developerhub-api.contentstack.com',
@@ -148,6 +149,13 @@ const config: DefaultConfig = {
     taxonomies: {
       dirName: 'taxonomies',
       fileName: 'taxonomies.json',
+    },
+    personalization: {
+      dirName: 'personalization',
+      projects: {
+        dirName: 'projects',
+        fileName: 'projects.json',
+      },
     },
   },
   languagesCode: [
@@ -394,7 +402,7 @@ const config: DefaultConfig = {
     returnResponse: true, // On process completion should return config used in the command
     noTerminalOutput: false, // Skip final audit table output on terminal
     config: { basePath: '' }, // To overwrite any build-in config. And this config is equal to --config flag.
-  }
+  },
 };
 
 export default config;

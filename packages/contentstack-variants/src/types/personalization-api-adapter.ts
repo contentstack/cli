@@ -1,4 +1,4 @@
-import { AnyProperty } from './utils';
+import { AnyProperty, LogType } from './utils';
 import { AdapterHelperInterface } from './adapter-helper';
 
 export type ProjectStruct = {
@@ -24,7 +24,7 @@ export type CreateProjectInput = {
   connectedStackApiKey?: string;
 };
 
-export interface Personalization extends AdapterHelperInterface {
+export interface Personalization<T> extends AdapterHelperInterface<T> {
   projects(options: GetProjectsParams): Promise<ProjectStruct[] | void>;
 
   createProject(input: CreateProjectInput): Promise<ProjectStruct | void>;
