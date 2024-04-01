@@ -146,6 +146,7 @@ const config: DefaultConfig = {
     },
     eclipse: {
       dirName: 'eclipse',
+      baseURL: 'https://personalization-api.contentstack.com'
     },
     variantEntry: {
       serveMockData: true,
@@ -410,6 +411,7 @@ const config: DefaultConfig = {
     stacks: '/stacks/',
   },
   preserveStackVersion: false,
+  personalizationEnabled: false,
   fetchConcurrency: 5,
   writeConcurrency: 5,
   developerHubBaseUrl: '',

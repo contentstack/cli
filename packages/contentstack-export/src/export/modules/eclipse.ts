@@ -1,20 +1,18 @@
-import omit from 'lodash/omit';
-import isEmpty from 'lodash/isEmpty';
-import { resolve as pResolve } from 'node:path';
+import { ExportProjects, ExportExperiences } from '@contentstack/cli-variants';
 
 import BaseClass from './base-class';
 import { log, formatError, fsUtil } from '../../utils';
-import { LabelConfig, ModuleClassParams } from '../../types';
+import { LabelConfig, ModuleClassParams, ExportConfig,  } from '../../types';
+import { ContentstackClient } from '@contentstack/cli-utilities';
 
-export default class ExportEclipse extends BaseClass {
+export default class ExportEclipse {
+  public exportConfig: ExportConfig;
 
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
-    super({ exportConfig, stackAPIClient });
+    this.exportConfig = exportConfig;
   }
 
-    async start(): Promise<void> {
-        log(this.exportConfig, 'Starting personalization project export', 'info');
-
+  async start(): Promise<void> {    
         // get project details
         // if project exist
         // set that in the global config
@@ -23,6 +21,13 @@ export default class ExportEclipse extends BaseClass {
         // export attributes
         // export audiences
         // export experiences, along with this export content type details as well
+      const projectHandler = new ExportProjects(this.exportConfig);
+      await projectHandler.start();
+      if (this.exportConfig.personalizationEnabled) {
+        log(this.exportConfig, 'Starting personalization project export', 'info');
+        const projectHandler = new ExportExperiences(this.exportConfig);
+
+      }
     
     }
 }
