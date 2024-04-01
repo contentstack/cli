@@ -151,7 +151,9 @@ const config: DefaultConfig = {
       fileName: 'taxonomies.json',
     },
     personalization: {
+      importData: true,
       dirName: 'personalization',
+      importOrder: ['projects'],
       projects: {
         dirName: 'projects',
         fileName: 'projects.json',
