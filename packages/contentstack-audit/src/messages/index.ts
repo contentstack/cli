@@ -19,6 +19,7 @@ const commonMsg = {
   WORKFLOW_FIX_CONFIRMATION: 'Would you like to overwrite existing file?',
   EXTENSION_FIX_WARN: `The extension associated with UID {uid} and title '{title}' will be removed.`,
   EXTENSION_FIX_CONFIRMATION: `Would you like to overwrite existing file?`,
+  WF_BRANCH_REMOVAL: `Removing the branch '{branch} from workflow with UID {uid} and name {name} will be removed.'`,
 };
 
 const auditMsg = {
