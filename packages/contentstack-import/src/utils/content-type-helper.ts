@@ -63,6 +63,9 @@ export const suppressSchemaReference = function (schema: any, flag: any) {
     } else if (schema[i].data_type === 'json' && schema[i].field_metadata.rich_text_type) {
       flag.jsonRte = true;
       if (schema[i].field_metadata.embed_entry === true) flag.jsonRteEmbeddedEntries = true;
+    } else if (schema[i].data_type === 'text' && schema[i].field_metadata.rich_text_type) {
+      flag.rte = true;
+      if (schema[i].field_metadata.embed_entry === true) flag.rteEmbeddedEntries = true;
     }
 
     if (
@@ -146,8 +149,7 @@ export const removeReferenceFields = async function (
     ) {
       flag.supressed = true;
       schema[i].reference_to = ['sys_assets'];
-    }
-    else if (
+    } else if (
       // handling entry references in rte
       schema[i].data_type === 'text' &&
       schema[i].field_metadata.rich_text_type &&

@@ -53,6 +53,8 @@ type RefErrorReturnType = {
   title?: string;
 };
 
+type WorkflowExtensionsRefErrorReturnType = RefErrorReturnType & { branches?: string[] };
+
 // NOTE Type 1
 type ReferenceFieldDataType = CommonDataTypeStruct & {
   reference_to: string[];
@@ -119,6 +121,7 @@ enum OutputColumn {
   title = 'title',
   'uid' = 'uid',
   'missingCts' = 'content_types',
+  'Missing Branches' = 'branches',
 }
 
 export {
@@ -137,4 +140,5 @@ export {
   OutputColumn,
   ContentTypeSchemaType,
   GlobalFieldSchemaTypes,
+  WorkflowExtensionsRefErrorReturnType,
 };
