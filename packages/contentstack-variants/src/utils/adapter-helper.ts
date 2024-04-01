@@ -3,13 +3,13 @@ import { HttpClient, HttpClientOptions, HttpRequestConfig } from '@contentstack/
 
 import { APIConfig, AdapterHelperInterface, ExportConfig } from '../types';
 
-export class AdapterHelper implements AdapterHelperInterface {
-  public httpClient: HttpClient;
-  public sharedConfig!: ExportConfig | Record<string, any>;
+export class AdapterHelper<T> implements AdapterHelperInterface<T> {
+  public readonly config: T;
+  public apiClient: HttpClient;
 
-  constructor(public readonly config: APIConfig, options?: HttpClientOptions) {
-    this.sharedConfig = config.sharedConfig || {};
-    delete this.config.sharedConfig;
+  constructor(public readonly adapterConfig: APIConfig, options?: HttpClientOptions) {
+    this.config = adapterConfig.config as T;
+    delete this.adapterConfig.config;
     const pickConfig: (keyof HttpRequestConfig)[] = [
       'url',
       'auth',
@@ -21,7 +21,7 @@ export class AdapterHelper implements AdapterHelperInterface {
       'httpsAgent',
       'responseType',
     ];
-    this.httpClient = new HttpClient(pick(config, pickConfig), options);
+    this.apiClient = new HttpClient(pick(adapterConfig, pickConfig), options);
   }
 
   /**

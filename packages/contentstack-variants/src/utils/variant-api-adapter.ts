@@ -7,14 +7,22 @@ import {
   managementSDKClient,
 } from '@contentstack/cli-utilities';
 
-import { APIConfig, AdapterType, AnyProperty, VariantInterface, VariantOptions, VariantsOption } from '../types';
+import {
+  APIConfig,
+  AdapterType,
+  AnyProperty,
+  ExportConfig,
+  VariantOptions,
+  VariantsOption,
+  VariantInterface,
+} from '../types';
 import { AdapterHelper } from './adapter-helper';
 
-export class VariantHttpClient extends AdapterHelper implements VariantInterface {
-  constructor(public readonly config: APIConfig, options?: HttpClientOptions) {
+export class VariantHttpClient<T> extends AdapterHelper<T> implements VariantInterface<T> {
+  constructor(config: APIConfig, options?: HttpClientOptions) {
     super(config, options);
     const baseURL = config.baseURL?.includes('http') ? `${config.baseURL}/v3` : `https://${config.baseURL}/v3`;
-    this.httpClient.baseUrl(baseURL);
+    this.apiClient.baseUrl(baseURL);
   }
 
   async variantEntry(options: VariantOptions) {
@@ -39,7 +47,7 @@ export class VariantHttpClient extends AdapterHelper implements VariantInterface
     options: VariantsOption,
     entries: Record<string, any>[] = [],
   ): Promise<{ entries?: Record<string, any>[] | unknown[] } | void> {
-    const variantConfig = this.sharedConfig.modules.variantEntry;
+    const variantConfig = (this.config as ExportConfig).modules.variantEntry;
     const {
       callback,
       entry_uid,
@@ -84,7 +92,7 @@ export class VariantHttpClient extends AdapterHelper implements VariantInterface
     }
 
     // FIXME once API is ready, validate and addjest the responce accordingly
-    const response = (await this.httpClient.get(endpoint)).data;
+    const response = (await this.apiClient.get(endpoint)).data;
 
     if (callback) {
       callback(response.entries);
@@ -112,13 +120,9 @@ export class VariantHttpClient extends AdapterHelper implements VariantInterface
   }
 }
 
-export class VariantManagementSDK implements VariantInterface {
-  public sdkClient!: ContentstackClient;
-
-  constructor(public readonly config: ContentstackConfig | AnyProperty) {}
-
+export class VariantManagementSDK<T> extends AdapterHelper<T> implements VariantInterface<T> {
   async init(): Promise<void> {
-    this.sdkClient = await managementSDKClient(this.config);
+    this.apiClient = await managementSDKClient(this.config);
   }
 
   async variantEntry(options: VariantOptions) {
