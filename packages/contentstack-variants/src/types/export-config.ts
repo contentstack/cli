@@ -19,7 +19,8 @@ export type Modules =
   | 'workflows'
   | 'labels'
   | 'marketplace-apps'
-  | 'taxonomies';
+  | 'taxonomies'
+  | 'eclipse';
 
 export type branch = {
   uid: string;
@@ -153,6 +154,10 @@ export interface DefaultConfig {
         include_variant: boolean;
       } & AnyProperty;
     } & AnyProperty;
+    eclipse: {
+      dirName: string,
+      baseURL: string,
+    } & AnyProperty;
     extensions: {
       dirName: string;
       fileName: string;
@@ -227,15 +232,22 @@ export interface ExportConfig extends DefaultConfig {
   singleModuleExport?: boolean;
   moduleName?: Modules;
   master_locale: masterLocale;
-
   headers?: {
-    api_key: string;
+    api_key?: string;
     access_token?: string;
-    authtoken?: string;
-    'X-User-Agent': string;
+    authtoken: string;
+    'X-User-Agent'?: string;
+    organization_uid?: string;
+    project_id?: string;
   };
   access_token?: string;
   org_uid?: string;
   source_stack?: string;
   sourceStackName?: string;
+  personalizationEnabled: boolean;
+}
+
+export interface EclipseConfig {
+  dirName: string,
+  baseURL: string,
 }
