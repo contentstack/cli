@@ -13,21 +13,24 @@ export default class ExportEclipse {
   }
 
   async start(): Promise<void> {    
-        // get project details
-        // if project exist
-        // set that in the global config
-        // export project
-        // export events
-        // export attributes
-        // export audiences
-        // export experiences, along with this export content type details as well
-      const projectHandler = new ExportProjects(this.exportConfig);
-      await projectHandler.start();
-      if (this.exportConfig.personalizationEnabled) {
-        log(this.exportConfig, 'Starting personalization project export', 'info');
-        const projectHandler = new ExportExperiences(this.exportConfig);
-
-      }
-    
+    try {
+          // get project details
+          // if project exist
+          // set that in the global config
+          // export project
+          const projectHandler = new ExportProjects(this.exportConfig);
+          await projectHandler.start();
+          if (this.exportConfig.personalizationEnabled) {
+            // export events
+            // export attributes
+            // export audiences
+            // export experiences, along with this export content type details as well
+            log(this.exportConfig, 'Starting personalization project export', 'info');
+            new ExportExperiences(this.exportConfig).start();
+          } 
+    } catch (error) {
+      log(this.exportConfig, `Failed to export Personalization project. ${formatError(error)}`, 'error');
+      log(this.exportConfig, error, 'error');
     }
+  }
 }
