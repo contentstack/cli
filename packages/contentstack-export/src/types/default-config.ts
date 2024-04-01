@@ -123,8 +123,9 @@ export default interface DefaultConfig {
       exportVersions: boolean;
     };
     eclipse: {
-      dirName: string
-    };
+      dirName: string,
+      baseURL: string,
+    } & AnyProperty;
     variantEntry: {
       dirName: string;
       fileName: string;
@@ -187,6 +188,7 @@ export default interface DefaultConfig {
     stacks: string;
   };
   preserveStackVersion: boolean;
+  personalizationEnabled: boolean;
   fetchConcurrency: number;
   writeConcurrency: number;
   developerHubBaseUrl: string;
