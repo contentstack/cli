@@ -1,18 +1,31 @@
-import { Modules } from '.';
+import { AnyProperty } from "./utils";
 
-export interface AnyProperty {
-  [propName: string]: any;
-}
+export type ImportModules =
+  | 'stack'
+  | 'assets'
+  | 'locales'
+  | 'environments'
+  | 'extensions'
+  | 'webhooks'
+  | 'global-fields'
+  | 'entries'
+  | 'content-types'
+  | 'custom-roles'
+  | 'workflows'
+  | 'labels'
+  | 'marketplace-apps'
+  | 'taxonomies'
+  | 'projects';
 
-export default interface DefaultConfig extends AnyProperty {
+export interface ImportDefaultConfig extends AnyProperty {
   versioning: boolean;
   host: string;
-  extensionHost: string;
   personalizationHost: string;
+  extensionHost: string;
   developerHubUrls: Record<string, string>;
   modules: {
     apiConcurrency: number;
-    types: Modules[];
+    types: ImportModules[];
     locales: {
       dirName: string;
       fileName: string;
@@ -121,7 +134,7 @@ export default interface DefaultConfig extends AnyProperty {
     taxonomies: {
       dirName: string;
       fileName: string;
-      dependencies?: Modules[];
+      dependencies?: ImportModules[];
     };
     personalization: {
       dirName: string;
@@ -169,3 +182,62 @@ export default interface DefaultConfig extends AnyProperty {
     } & Record<string, any>; // To overwrite any build-in config. And this config is equal to --config flag.
   };
 }
+
+export interface ExternalConfig {
+  source_stack?: string;
+  data: string;
+  fetchConcurrency: number;
+  writeConcurrency: number;
+  email?: string;
+  password?: string;
+}
+
+export interface ImportConfig extends ImportDefaultConfig, ExternalConfig {
+  contentDir: string;
+  data: string;
+  management_token?: string;
+  apiKey: string;
+  forceStopMarketplaceAppsPrompt: boolean;
+  skipPrivateAppRecreationIfExist: boolean;
+  auth_token?: string;
+  branchName?: string;
+  securedAssets?: boolean;
+  contentTypes?: string[];
+  branches?: branch[];
+  branchEnabled?: boolean;
+  branchDir?: string;
+  moduleName?: ImportModules;
+  master_locale: masterLocale;
+  headers?: {
+    api_key: string;
+    access_token?: string;
+    authtoken?: string;
+    'X-User-Agent': string;
+  };
+  access_token?: string;
+  isAuthenticated?: boolean;
+  importWebhookStatus?: string;
+  target_stack?: string;
+  singleModuleImport?: boolean;
+  useBackedupDir?: string;
+  masterLocale: masterLocale;
+  backupDir: string;
+  backupConcurrency?: number;
+  authtoken?: string;
+  destinationStackName?: string;
+  org_uid?: string;
+  contentVersion: number;
+  replaceExisting?: boolean;
+  skipExisting?: boolean;
+  skipAudit?: boolean;
+  stackName?: string;
+}
+
+type branch = {
+  uid: string;
+  source: string;
+};
+
+type masterLocale = {
+  code: string;
+};
