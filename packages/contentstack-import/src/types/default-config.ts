@@ -125,6 +125,8 @@ export default interface DefaultConfig extends AnyProperty {
     };
     personalization: {
       dirName: string;
+      importData: boolean;
+      importOrder: string[];
       projects: {
         dirName: string;
         fileName: string;

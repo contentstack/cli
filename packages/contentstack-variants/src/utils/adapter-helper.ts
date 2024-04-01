@@ -2,12 +2,15 @@ import pick from 'lodash/pick';
 import { HttpClient, HttpClientOptions, HttpRequestConfig } from '@contentstack/cli-utilities';
 
 import { APIConfig, AdapterHelperInterface, ExportConfig } from '../types';
+import messages from '../messages';
 
-export class AdapterHelper<T> implements AdapterHelperInterface<T> {
+export class AdapterHelper<T, ApiClient> implements AdapterHelperInterface<T, ApiClient> {
   public readonly config: T;
-  public apiClient: HttpClient;
+  public readonly apiClient: ApiClient;
+  public readonly messages: typeof messages;
 
   constructor(public readonly adapterConfig: APIConfig, options?: HttpClientOptions) {
+    this.messages = messages;
     this.config = adapterConfig.config as T;
     delete this.adapterConfig.config;
     const pickConfig: (keyof HttpRequestConfig)[] = [
@@ -21,7 +24,7 @@ export class AdapterHelper<T> implements AdapterHelperInterface<T> {
       'httpsAgent',
       'responseType',
     ];
-    this.apiClient = new HttpClient(pick(adapterConfig, pickConfig), options);
+    this.apiClient = new HttpClient(pick(adapterConfig, pickConfig), options) as ApiClient;
   }
 
   /**
