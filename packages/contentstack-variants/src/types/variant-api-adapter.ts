@@ -33,7 +33,7 @@ export type VariantOptions = VariantsOption & {
   variant_uid: string;
 };
 
-export interface VariantInterface<T> extends AdapterHelperInterface<T> {
+export interface VariantInterface<T, ApiClient> extends AdapterHelperInterface<T, ApiClient> {
   variantEntry(options: VariantOptions): Promise<{ entry: Record<string, any> }>;
 
   variantEntries(options: VariantsOption): Promise<{ entries?: Record<string, any>[] | unknown[] } | void>;

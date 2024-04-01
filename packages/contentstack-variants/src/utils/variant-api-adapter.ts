@@ -1,6 +1,7 @@
 import omit from 'lodash/omit';
 import { existsSync } from 'fs';
 import {
+  HttpClient,
   HttpClientOptions,
   ContentstackClient,
   ContentstackConfig,
@@ -18,7 +19,7 @@ import {
 } from '../types';
 import { AdapterHelper } from './adapter-helper';
 
-export class VariantHttpClient<T> extends AdapterHelper<T> implements VariantInterface<T> {
+export class VariantHttpClient<T> extends AdapterHelper<T, HttpClient> implements VariantInterface<T, HttpClient> {
   constructor(config: APIConfig, options?: HttpClientOptions) {
     super(config, options);
     const baseURL = config.baseURL?.includes('http') ? `${config.baseURL}/v3` : `https://${config.baseURL}/v3`;
@@ -120,7 +121,12 @@ export class VariantHttpClient<T> extends AdapterHelper<T> implements VariantInt
   }
 }
 
-export class VariantManagementSDK<T> extends AdapterHelper<T> implements VariantInterface<T> {
+export class VariantManagementSDK<T>
+  extends AdapterHelper<T, ContentstackClient>
+  implements VariantInterface<T, ContentstackClient>
+{
+  public override apiClient!: ContentstackClient;
+  
   async init(): Promise<void> {
     this.apiClient = await managementSDKClient(this.config);
   }
