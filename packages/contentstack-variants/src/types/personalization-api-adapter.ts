@@ -1,3 +1,5 @@
+import { HttpClient } from '@contentstack/cli-utilities';
+
 import { AnyProperty } from './utils';
 import { AdapterHelperInterface } from './adapter-helper';
 
@@ -24,7 +26,7 @@ export type CreateProjectInput = {
   connectedStackApiKey?: string;
 };
 
-export interface Personalization extends AdapterHelperInterface {
+export interface Personalization<T> extends AdapterHelperInterface<T, HttpClient> {
   projects(options: GetProjectsParams): Promise<ProjectStruct[] | void>;
 
   createProject(input: CreateProjectInput): Promise<ProjectStruct | void>;
