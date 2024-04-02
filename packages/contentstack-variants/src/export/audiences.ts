@@ -13,9 +13,7 @@ export default class ExportAudiences extends PersonalizationAdapter<VariantHttpC
 
   constructor(exportConfig: ExportConfig) {
     super({
-      config: {
-        ...exportConfig,
-      },
+      config: { ...exportConfig },
       baseURL: exportConfig.modules.eclipse.baseURL,
       headers: {
         organization_uid: exportConfig.org_uid,
