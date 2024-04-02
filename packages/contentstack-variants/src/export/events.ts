@@ -13,15 +13,13 @@ export default class ExportEvents extends PersonalizationAdapter<VariantHttpClie
 
   constructor(exportConfig: ExportConfig) {
     super({
-      config: {
-        ...exportConfig,
-      },
+      config: { ...exportConfig },
       baseURL: exportConfig.modules.eclipse.baseURL,
       headers: {
         organization_uid: exportConfig.org_uid,
         authtoken: exportConfig.auth_token,
         project_id: exportConfig.project_id,
-      }
+      },
     });
     this.exportConfig = exportConfig;
     this.eclipseConfig = this.exportConfig.modules.eclipse;
