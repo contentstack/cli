@@ -1,10 +1,10 @@
 import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
 
-import { formatError, fsUtil, PersonalizationAdapter, log } from '../utils';
+import { formatError, fsUtil, PersonalizationAdapter, log, VariantHttpClient } from '../utils';
 import { EclipseConfig, ExportConfig, EventsStruct, EventsConfig, LogType } from '../types';
 
-export default class ExportEvents extends PersonalizationAdapter<ExportEvents> {
+export default class ExportEvents extends PersonalizationAdapter<VariantHttpClient<ExportConfig>> {
   private eventsConfig: EventsConfig;
   private eventsFolderPath: string;
   private events: Record<string, unknown>[];

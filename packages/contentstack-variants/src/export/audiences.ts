@@ -1,10 +1,10 @@
 import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
 
-import { formatError, fsUtil, PersonalizationAdapter, log } from '../utils';
+import { formatError, fsUtil, PersonalizationAdapter, log, VariantHttpClient } from '../utils';
 import { EclipseConfig, ExportConfig, AudiencesStruct, AudiencesConfig, LogType } from '../types';
 
-export default class ExportAudiences extends PersonalizationAdapter<ExportAudiences> {
+export default class ExportAudiences extends PersonalizationAdapter<VariantHttpClient<ExportConfig>> {
   private audiencesConfig: AudiencesConfig;
   private audiencesFolderPath: string;
   private audiences: Record<string, unknown>[];
