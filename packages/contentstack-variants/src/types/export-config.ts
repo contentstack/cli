@@ -252,7 +252,7 @@ export interface ExportConfig extends DefaultConfig {
     organization_uid?: string;
     project_id?: string;
   };
-  project_id?: string;
+  project_id?: string; // To fetch events, audiences & attributes
   access_token?: string;
   org_uid?: string;
   source_stack?: string;
