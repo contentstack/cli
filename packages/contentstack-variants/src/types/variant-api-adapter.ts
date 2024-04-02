@@ -6,7 +6,7 @@ import { AdapterHelperInterface } from './adapter-helper';
 
 export type APIConfig = HttpRequestConfig & {
   httpClient?: boolean;
-  sharedConfig: ExportConfig | Record<string, any> | undefined;
+  config: ExportConfig | Record<string, any> | undefined;
 };
 
 export interface AdapterConstructor<T, C> {
@@ -33,7 +33,7 @@ export type VariantOptions = VariantsOption & {
   variant_uid: string;
 };
 
-export interface VariantInterface extends AdapterHelperInterface {
+export interface VariantInterface<T, ApiClient> extends AdapterHelperInterface<T, ApiClient> {
   variantEntry(options: VariantOptions): Promise<{ entry: Record<string, any> }>;
 
   variantEntries(options: VariantsOption): Promise<{ entries?: Record<string, any>[] | unknown[] } | void>;
