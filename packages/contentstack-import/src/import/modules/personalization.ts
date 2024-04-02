@@ -3,7 +3,7 @@ import { Import } from '@contentstack/cli-variants';
 import { log } from '../..//utils';
 import { ImportConfig } from '../../types';
 
-export default class ExportEclipse {
+export default class ImportPersonalization {
   public readonly personalization: ImportConfig['modules']['personalization'];
 
   constructor(public readonly config: ImportConfig) {
