@@ -36,6 +36,7 @@ const config: DefaultConfig = {
       'entries',
       'labels',
       'marketplace-apps',
+      'eclipse',
     ],
     locales: {
       dirName: 'locales',
@@ -143,6 +144,10 @@ const config: DefaultConfig = {
       dependencies: ['locales', 'content-types'],
       exportVersions: false,
     },
+    eclipse: {
+      dirName: 'eclipse',
+      baseURL: 'https://personalization-api.contentstack.com'
+    },
     variantEntry: {
       serveMockData: true,
       dirName: 'variants',
@@ -179,6 +184,16 @@ const config: DefaultConfig = {
       dirName: 'taxonomies',
       fileName: 'taxonomies.json',
       invalidKeys: ['updated_at', 'created_by', 'updated_by', 'stackHeaders', 'urlPath', 'created_at'],
+    },
+    events: {
+      dirName: 'events',
+      fileName: 'events.json',
+      invalidKeys: ['updatedAt', 'createdBy', 'updatedBy', '_id', 'createdAt', 'createdByUserName', 'updatedByUserName'],
+    },
+    audiences: {
+      dirName: 'audiences',
+      fileName: 'audiences.json',
+      invalidKeys: ['updatedAt', 'createdBy', 'updatedBy', '_id', 'createdAt', 'createdByUserName', 'updatedByUserName'],
     },
   },
   languagesCode: [
