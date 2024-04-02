@@ -262,7 +262,7 @@ export default class ImportMarketplaceApps {
         await this.createPrivateApp(manifest);
       }
     } else {
-      log(this.importConfig, 'Skipping developer hub private apps creation', 'success');
+      log(this.importConfig, 'Skipping private apps creation on Developer Hub...', 'success');
     }
 
     this.appOriginalName = undefined;
@@ -426,7 +426,7 @@ export default class ImportMarketplaceApps {
     if (!currentStackApp) {
       // NOTE install new app
       if (app.manifest.visibility === 'private' && !this.importConfig.canCreatePrivateApp) {
-        log(this.importConfig, `Skipping the installation of Private App ${app.manifest.name}`, 'info');
+        log(this.importConfig, `Skipping the installation of the private app ${app.manifest.name}...`, 'info');
         return Promise.resolve();
       }
       const installation = await this.installApp(
