@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { LogType, VariantEntries } from '@contentstack/cli-variants';
+import { LogType, Export } from '@contentstack/cli-variants';
 import { ContentstackClient, FsUtility } from '@contentstack/cli-utilities';
 
 import BaseClass, { ApiOptions } from './base-class';
@@ -24,7 +24,7 @@ export default class EntriesExport extends BaseClass {
   private localesFilePath: string;
   private schemaFilePath: string;
   private entriesFileHelper: FsUtility;
-  private variantEntries: VariantEntries;
+  private variantEntries: Export.VariantEntries;
 
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
@@ -44,7 +44,7 @@ export default class EntriesExport extends BaseClass {
       exportConfig.modules.content_types.dirName,
       'schema.json',
     );
-    this.variantEntries = new VariantEntries(this.exportConfig, log as LogType);
+    this.variantEntries = new Export.VariantEntries(this.exportConfig, log as LogType);
   }
 
   async start() {
