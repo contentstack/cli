@@ -301,6 +301,11 @@ export default class Entries {
     fieldStructure: ReferenceFieldDataType,
     field: EntryReferenceFieldDataType[],
   ) {
+    if (typeof field === 'string') {
+      let stringReference = field as string;
+      stringReference = stringReference.replace(/'/g, '"');
+      field = JSON.parse(stringReference);
+    }
     return this.validateReferenceValues(tree, fieldStructure, field);
   }
 
