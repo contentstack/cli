@@ -1,3 +1,5 @@
+import { AnyProperty } from "./default-config";
+
 type AppLocation =
   | 'cs.cm.stack.config'
   | 'cs.cm.stack.dashboard'
@@ -30,10 +32,6 @@ interface LocationConfiguration {
   signed: boolean;
   base_url: string;
   locations: Extension[];
-}
-
-interface AnyProperty {
-  [propName: string]: any;
 }
 
 type Manifest = {

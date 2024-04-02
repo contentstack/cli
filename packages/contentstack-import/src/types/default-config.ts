@@ -1,9 +1,14 @@
 import { Modules } from '.';
 
-export default interface DefaultConfig {
+export interface AnyProperty {
+  [propName: string]: any;
+}
+
+export default interface DefaultConfig extends AnyProperty {
   versioning: boolean;
   host: string;
   extensionHost: string;
+  personalizationHost: string;
   developerHubUrls: Record<string, string>;
   modules: {
     apiConcurrency: number;
@@ -118,7 +123,16 @@ export default interface DefaultConfig {
       fileName: string;
       dependencies?: Modules[];
     };
-  };
+    personalization: {
+      dirName: string;
+      importData: boolean;
+      importOrder: string[];
+      projects: {
+        dirName: string;
+        fileName: string;
+      };
+    } & AnyProperty;
+  } & AnyProperty;
   languagesCode: string[];
   apis: {
     userSession: string;
@@ -153,7 +167,7 @@ export default interface DefaultConfig {
     returnResponse?: boolean; // On process completion should return config used in the command
     noTerminalOutput?: boolean; // Skip final audit table output on terminal
     config?: {
-      basePath?: string
+      basePath?: string;
     } & Record<string, any>; // To overwrite any build-in config. And this config is equal to --config flag.
   };
 }
