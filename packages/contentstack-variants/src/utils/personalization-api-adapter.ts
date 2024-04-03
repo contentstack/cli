@@ -8,6 +8,7 @@ import {
   ProjectStruct,
   EventsStruct,
   AudiencesStruct,
+  AttributesStruct,
 } from '../types';
 
 export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> implements Personalization<T> {
@@ -23,5 +24,9 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
 
   async getAudiences(): Promise<AudiencesStruct[] | void> {
     return (await this.apiClient.get<AudiencesStruct>('/audiences')).data;
+  }
+
+  async getAttributes(): Promise<AttributesStruct[] | void> {
+    return (await this.apiClient.get<AttributesStruct>('/attributes')).data;
   }
 }

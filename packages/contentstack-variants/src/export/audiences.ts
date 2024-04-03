@@ -43,6 +43,7 @@ export default class ExportAudiences extends PersonalizationAdapter<VariantHttpC
         log(this.exportConfig, 'No Audiences found with the given project!', 'info');
         return;
       } else {
+        this.sanitizeAttribs();
         fsUtil.writeFile(pResolve(this.audiencesFolderPath, this.audiencesConfig.fileName), this.audiences);
         log(this.exportConfig, 'All the audiences have been exported successfully!', 'success');
         return;
@@ -56,6 +57,9 @@ export default class ExportAudiences extends PersonalizationAdapter<VariantHttpC
     }
   }
 
+  /**
+   * function to remove invalid keys from audience object
+   */
   sanitizeAttribs() {
     this.audiences = this.audiences?.map((audience) => omit(audience, this.audiencesConfig.invalidKeys)) || [];
   }
