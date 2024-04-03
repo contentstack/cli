@@ -19,6 +19,7 @@ export default class ImportPersonalization {
       if (this.personalization.importData) {
         const moduleMapper = {
           projects: Import.Project,
+          attributes: Import.Attribute,
         };
 
         const order: (keyof typeof moduleMapper)[] = this.personalization.importOrder as (keyof typeof moduleMapper)[];
