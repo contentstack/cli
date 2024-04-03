@@ -77,7 +77,7 @@ importers:
       '@contentstack/cli-cm-seed': 1.7.2_ogreqof3k35xezedraj6pnd45y
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-config': 1.6.3_ogreqof3k35xezedraj6pnd45y
-      '@contentstack/cli-launch': link:../contentstack-launch
+      '@contentstack/cli-launch': 1.0.17_ogreqof3k35xezedraj6pnd45y
       '@contentstack/cli-migration': 1.5.1_ogreqof3k35xezedraj6pnd45y
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/management': 1.15.3_debug@4.3.4
@@ -735,6 +735,7 @@ importers:
       '@contentstack/cli-audit': ~1.4.1
       '@contentstack/cli-command': ~1.2.16
       '@contentstack/cli-utilities': ~1.5.12
+      '@contentstack/cli-variants': ^0.0.1-alpha
       '@contentstack/management': ~1.15.3
       '@oclif/core': ^2.9.3
       '@oclif/test': ^2.5.6
@@ -778,6 +779,7 @@ importers:
       '@contentstack/cli-audit': link:../contentstack-audit
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/cli-variants': link:../contentstack-variants
       '@contentstack/management': 1.15.3_debug@4.3.4
       '@oclif/core': 2.15.0_ogreqof3k35xezedraj6pnd45y
       big-json: 3.2.0
@@ -1991,6 +1993,46 @@ packages:
       - typescript
       - utf-8-validate
     dev: true
+
+  /@contentstack/cli-launch/1.0.17_ogreqof3k35xezedraj6pnd45y:
+    resolution: {integrity: sha512-DC1Vup26B8+p1e4KbRs//U9xm5oyu+SzAgKbH1Zg/sJvTG7V+LnE5rpjwgQhUEP5pyV39QV+nOSiThrbStI/WQ==}
+    engines: {node: '>=14.0.0'}
+    hasBin: true
+    dependencies:
+      '@apollo/client': 3.8.8_graphql@16.8.1
+      '@contentstack/cli-command': 1.2.17_ogreqof3k35xezedraj6pnd45y
+      '@contentstack/cli-utilities': 1.6.0_ogreqof3k35xezedraj6pnd45y
+      '@oclif/core': 2.15.0_ogreqof3k35xezedraj6pnd45y
+      '@oclif/plugin-help': 5.2.20_ogreqof3k35xezedraj6pnd45y
+      '@oclif/plugin-plugins': 5.0.4
+      '@types/express': 4.17.21
+      '@types/express-serve-static-core': 4.17.41
+      adm-zip: 0.5.10
+      chalk: 4.1.2
+      cross-fetch: 3.1.8
+      dotenv: 16.3.1
+      esm: 3.2.25
+      express: 4.18.2
+      form-data: 4.0.0
+      graphql: 16.8.1
+      ini: 3.0.1
+      lodash: 4.17.21
+      open: 8.4.2
+      winston: 3.11.0
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+      - bufferutil
+      - encoding
+      - graphql-ws
+      - react
+      - react-dom
+      - subscriptions-transport-ws
+      - supports-color
+      - typescript
+      - utf-8-validate
+    dev: false
 
   /@contentstack/cli-migration/1.5.1_ogreqof3k35xezedraj6pnd45y:
     resolution: {integrity: sha512-8JZut37LYqQ5HO7RCICnRiw7xLv+I9SjBSLWTCFeRQHEZ+x+3i+XVTwi1rZnfrkAihQTwVp7p+KCuyX+/jEjIA==}
@@ -3381,6 +3423,40 @@ packages:
       wrap-ansi: 7.0.0
     dev: false
 
+  /@oclif/core/3.26.0:
+    resolution: {integrity: sha512-TpMdfD4tfA2tVVbd4l0PrP02o5KoUXYmudBbTC7CeguDo/GLoprw4uL8cMsaVA26+cbcy7WYtOEydQiHVtJixA==}
+    engines: {node: '>=18.0.0'}
+    dependencies:
+      '@types/cli-progress': 3.11.5
+      ansi-escapes: 4.3.2
+      ansi-styles: 4.3.0
+      cardinal: 2.1.1
+      chalk: 4.1.2
+      clean-stack: 3.0.1
+      cli-progress: 3.12.0
+      color: 4.2.3
+      debug: 4.3.4_supports-color@8.1.1
+      ejs: 3.1.9
+      get-package-type: 0.1.0
+      globby: 11.1.0
+      hyperlinker: 1.0.0
+      indent-string: 4.0.0
+      is-wsl: 2.2.0
+      js-yaml: 3.14.1
+      minimatch: 9.0.3
+      natural-orderby: 2.0.3
+      object-treeify: 1.1.33
+      password-prompt: 1.1.3
+      slice-ansi: 4.0.0
+      string-width: 4.2.3
+      strip-ansi: 6.0.1
+      supports-color: 8.1.1
+      supports-hyperlinks: 2.3.0
+      widest-line: 3.1.0
+      wordwrap: 1.0.0
+      wrap-ansi: 7.0.0
+    dev: false
+
   /@oclif/plugin-help/5.2.14_bk3wvsuof3vjc47yunkur62wp4:
     resolution: {integrity: sha512-7hMLc6zqxeRfG4nvHHQPpbaBj60efM3ULFkCpHZkdLms/ezIkNo40F661QuraIjMP/NN+U6VSfBCGuPkRyxVkA==}
     engines: {node: '>=12.0.0'}
@@ -3544,6 +3620,22 @@ packages:
       shelljs: 0.8.5
       validate-npm-package-name: 5.0.0
       yarn: 1.22.21
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
+  /@oclif/plugin-plugins/5.0.4:
+    resolution: {integrity: sha512-wtO10MH4vKkyXx97n+S/ZJU/fS9YbYbBN/Ku0BOcbeRH0f+CXcPK7pe6SR4AdnTBRb8BmhESrS3+FKfgTCcBXA==}
+    engines: {node: '>=18.0.0'}
+    dependencies:
+      '@oclif/core': 3.26.0
+      chalk: 5.3.0
+      debug: 4.3.4
+      npm: 10.5.0
+      npm-package-arg: 11.0.1
+      npm-run-path: 5.3.0
+      semver: 7.6.0
+      validate-npm-package-name: 5.0.0
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -8650,6 +8742,13 @@ packages:
       lru-cache: 7.18.3
     dev: true
 
+  /hosted-git-info/7.0.1:
+    resolution: {integrity: sha512-+K84LB1DYwMHoHSgaOY/Jfhw3ucPmSET5v98Ke/HdNSw4a0UktWzyW1mjhjpuxxTqOOsfWT/7iVshHmVZ4IpOA==}
+    engines: {node: ^16.14.0 || >=18.0.0}
+    dependencies:
+      lru-cache: 10.1.0
+    dev: false
+
   /html-encoding-sniffer/3.0.0:
     resolution: {integrity: sha512-oWv4T4yJ52iKrufjnyZPkrN0CH3QnrUqdB6In1g5Fe1mia8GmF36gnfNySxoZtxD5+NmYw1EElVXiBk93UeskA==}
     engines: {node: '>=12'}
@@ -11367,6 +11466,16 @@ packages:
       validate-npm-package-name: 5.0.0
     dev: true
 
+  /npm-package-arg/11.0.1:
+    resolution: {integrity: sha512-M7s1BD4NxdAvBKUPqqRW957Xwcl/4Zvo8Aj+ANrzvIPzGJZElrH7Z//rSaec2ORcND6FHHLnZeY8qgTpXDMFQQ==}
+    engines: {node: ^16.14.0 || >=18.0.0}
+    dependencies:
+      hosted-git-info: 7.0.1
+      proc-log: 3.0.0
+      semver: 7.6.0
+      validate-npm-package-name: 5.0.0
+    dev: false
+
   /npm-package-arg/8.1.5:
     resolution: {integrity: sha512-LhgZrg0n0VgvzVdSm1oiZworPbTxYHUJCgtsJW8mGvlDpxTM1vSJc3m5QZeUkhAHIzbz3VCHd/R4osi1L1Tg/Q==}
     engines: {node: '>=10'}
@@ -11464,6 +11573,13 @@ packages:
     dependencies:
       path-key: 3.1.1
 
+  /npm-run-path/5.3.0:
+    resolution: {integrity: sha512-ppwTtiJZq0O/ai0z7yfudtBpWIoxM8yE6nHi1X47eFR2EWORqfbu6CnPlNsjeN683eT0qG6H/Pyf9fCcvjnnnQ==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    dependencies:
+      path-key: 4.0.0
+    dev: false
+
   /npm/10.2.3:
     resolution: {integrity: sha512-GbUui/rHTl0mW8HhJSn4A0Xg89yCR3I9otgJT1i0z1QBPOVlgbh6rlcUTpHT8Gut9O1SJjWRUU0nEcAymhG2tQ==}
     engines: {node: ^18.17.0 || >=20.5.0}
@@ -11533,6 +11649,83 @@ packages:
       - spdx-expression-parse
       - ssri
       - strip-ansi
+      - supports-color
+      - tar
+      - text-table
+      - tiny-relative-date
+      - treeverse
+      - validate-npm-package-name
+      - which
+      - write-file-atomic
+
+  /npm/10.5.0:
+    resolution: {integrity: sha512-Ejxwvfh9YnWVU2yA5FzoYLTW52vxHCz+MHrOFg9Cc8IFgF/6f5AGPAvb5WTay5DIUP1NIfN3VBZ0cLlGO0Ys+A==}
+    engines: {node: ^18.17.0 || >=20.5.0}
+    hasBin: true
+    dev: false
+    bundledDependencies:
+      - '@isaacs/string-locale-compare'
+      - '@npmcli/arborist'
+      - '@npmcli/config'
+      - '@npmcli/fs'
+      - '@npmcli/map-workspaces'
+      - '@npmcli/package-json'
+      - '@npmcli/promise-spawn'
+      - '@npmcli/run-script'
+      - '@sigstore/tuf'
+      - abbrev
+      - archy
+      - cacache
+      - chalk
+      - ci-info
+      - cli-columns
+      - cli-table3
+      - columnify
+      - fastest-levenshtein
+      - fs-minipass
+      - glob
+      - graceful-fs
+      - hosted-git-info
+      - ini
+      - init-package-json
+      - is-cidr
+      - json-parse-even-better-errors
+      - libnpmaccess
+      - libnpmdiff
+      - libnpmexec
+      - libnpmfund
+      - libnpmhook
+      - libnpmorg
+      - libnpmpack
+      - libnpmpublish
+      - libnpmsearch
+      - libnpmteam
+      - libnpmversion
+      - make-fetch-happen
+      - minimatch
+      - minipass
+      - minipass-pipeline
+      - ms
+      - node-gyp
+      - nopt
+      - normalize-package-data
+      - npm-audit-report
+      - npm-install-checks
+      - npm-package-arg
+      - npm-pick-manifest
+      - npm-profile
+      - npm-registry-fetch
+      - npm-user-validate
+      - npmlog
+      - p-map
+      - pacote
+      - parse-conflict-json
+      - proc-log
+      - qrcode-terminal
+      - read
+      - semver
+      - spdx-expression-parse
+      - ssri
       - supports-color
       - tar
       - text-table
@@ -12300,6 +12493,11 @@ packages:
     resolution: {integrity: sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==}
     engines: {node: '>=8'}
 
+  /path-key/4.0.0:
+    resolution: {integrity: sha512-haREypq7xkM7ErfgIyA0z+Bj4AGKlMSdlQE2jvJo6huWD1EdkKYV+G/T4nq0YEF2vgTT8kqMFKo1uHn950r4SQ==}
+    engines: {node: '>=12'}
+    dev: false
+
   /path-parse/1.0.7:
     resolution: {integrity: sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==}
 
@@ -12434,7 +12632,6 @@ packages:
   /proc-log/3.0.0:
     resolution: {integrity: sha512-++Vn7NS4Xf9NacaU9Xq3URUuqZETPsf8L4j5/ckhaRYsfPeRyzGw+iDjFhV/Jr3uNmTvvddEJFWh5R1gRgUH8A==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
-    dev: true
 
   /process-nextick-args/2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
@@ -13067,6 +13264,14 @@ packages:
     hasBin: true
     dependencies:
       lru-cache: 6.0.0
+
+  /semver/7.6.0:
+    resolution: {integrity: sha512-EnwXhrlwXMk9gKu5/flx5sv/an57AkRplG3hTK68W7FRDN+k+OWBj65M7719OkA82XLBxrcX0KSHj+X5COhOVg==}
+    engines: {node: '>=10'}
+    hasBin: true
+    dependencies:
+      lru-cache: 6.0.0
+    dev: false
 
   /send/0.18.0:
     resolution: {integrity: sha512-qqWzuOjSFOuqPjFe4NOsMLafToQQwBSOEpS+FwEt3A2V3vKubTquT3vmLTQpFgMXp8AlFWFuP1qKaJZOtPpVXg==}
