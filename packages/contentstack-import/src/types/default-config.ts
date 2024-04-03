@@ -4,7 +4,7 @@ export interface AnyProperty {
   [propName: string]: any;
 }
 
-export default interface DefaultConfig extends AnyProperty {
+export default interface DefaultConfig {
   versioning: boolean;
   host: string;
   extensionHost: string;
@@ -131,8 +131,12 @@ export default interface DefaultConfig extends AnyProperty {
         dirName: string;
         fileName: string;
       };
-    } & AnyProperty;
-  } & AnyProperty;
+      attributes: {
+        dirName: string;
+        fileName: string;
+      };
+    };
+  };
   languagesCode: string[];
   apis: {
     userSession: string;
