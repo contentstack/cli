@@ -1,16 +1,15 @@
 import memoize from 'lodash/memoize';
 
-const errors = {};
-
-const commonMsg = {};
-
-const project = {
-  PROJECT_CREATE_SUCCESS: 'Projects created successfully!',
+const errors = {
+  CREATE_FAILURE: '${module} created failed!',
 };
 
-const messages: typeof errors & typeof commonMsg & typeof project = {
+const commonMsg = {
+  CREATE_SUCCESS: '${module} created successfully!',
+};
+
+const messages: typeof errors & typeof commonMsg = {
   ...errors,
-  ...project,
   ...commonMsg,
 };
 
@@ -40,4 +39,4 @@ function $t(msg: string, args: Record<string, string>): string {
 }
 
 export default messages;
-export { $t, errors, commonMsg, project };
+export { $t, errors, commonMsg };
