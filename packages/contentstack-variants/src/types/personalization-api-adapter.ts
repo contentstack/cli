@@ -15,17 +15,20 @@ export type ProjectStruct = {
 
 export type GetProjectsParams = {
   connectedStackApiKey: string;
-  includeAudienceCount: boolean;
-  includeActiveExperienceCount: boolean;
-  callback: (value: ProjectStruct[]) => void;
+  includeAudienceCount?: boolean;
+  includeActiveExperienceCount?: boolean;
+  callback?: (value: ProjectStruct[]) => void;
 } & AnyProperty;
 
 export interface CreateProjectInput {
   name: string;
   description: string;
   connectedStackApiKey?: string;
-};
+}
 
+export type GetVariantGroupInput = {
+  experienceUid: string;
+};
 export type EventStruct = {
   _id: string;
   uid: string;
@@ -57,7 +60,7 @@ export interface CreateAttributeInput {
   name: string;
   key: string;
   description: string;
-};
+}
 
 export interface Personalization<T> extends AdapterHelperInterface<T, HttpClient> {
   projects(options: GetProjectsParams): Promise<ProjectStruct[] | void>;

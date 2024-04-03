@@ -3,7 +3,7 @@
  * because it will create a circular dependency and cause the prepack/build command to fail.
  * Therefore, we are duplicating the following types from the export.
  */
-import { AnyProperty } from "./utils";
+import { AnyProperty } from './utils';
 
 export type Modules =
   | 'stack'
@@ -155,8 +155,8 @@ export interface DefaultConfig {
       } & AnyProperty;
     } & AnyProperty;
     eclipse: {
-      dirName: string,
-      baseURL: string,
+      dirName: string;
+      baseURL: string;
     } & AnyProperty;
     extensions: {
       dirName: string;
@@ -263,11 +263,18 @@ export interface ExportConfig extends DefaultConfig {
   org_uid?: string;
   source_stack?: string;
   sourceStackName?: string;
+  personalizationEnabled: boolean;
+  personalizationHost?: string;
 }
 
 export interface EclipseConfig {
-  dirName: string,
-  baseURL: string,
+  dirName: string;
+  baseURL: string;
+}
+
+export interface EclipseConfig {
+  dirName: string;
+  baseURL: string;
 }
 
 export interface EventsConfig {

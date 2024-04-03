@@ -6,6 +6,8 @@ import { AdapterHelperInterface } from './adapter-helper';
 
 export type APIConfig = HttpRequestConfig & {
   httpClient?: boolean;
+  sharedConfig?: ExportConfig | Record<string, any> | undefined;
+  eclipseURL?: string;
   config: ExportConfig | Record<string, any> | undefined;
   baseURL?: string
 };
