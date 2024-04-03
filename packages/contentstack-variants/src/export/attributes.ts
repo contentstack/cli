@@ -8,10 +8,9 @@ export default class ExportAttributes extends PersonalizationAdapter<VariantHttp
   private attributesConfig: AttributesConfig;
   private attributesFolderPath: string;
   private attributes: Record<string, unknown>[];
-  public exportConfig: ExportConfig;
   public eclipseConfig: EclipseConfig;
 
-  constructor(exportConfig: ExportConfig) {
+  constructor(readonly exportConfig: ExportConfig) {
     super({
       config: { ...exportConfig },
       baseURL: exportConfig.modules.eclipse.baseURL,
@@ -21,12 +20,11 @@ export default class ExportAttributes extends PersonalizationAdapter<VariantHttp
         project_id: exportConfig.project_id,
       },
     });
-    this.exportConfig = exportConfig;
-    this.eclipseConfig = this.exportConfig.modules.eclipse;
-    this.attributesConfig = this.exportConfig.modules.attributes;
+    this.eclipseConfig = exportConfig.modules.eclipse;
+    this.attributesConfig = exportConfig.modules.attributes;
     this.attributesFolderPath = pResolve(
-      this.exportConfig.data,
-      this.exportConfig.branchName || '',
+      exportConfig.data,
+      exportConfig.branchName || '',
       this.eclipseConfig.dirName,
       this.attributesConfig.dirName,
     );
