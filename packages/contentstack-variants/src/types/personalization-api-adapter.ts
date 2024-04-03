@@ -1,3 +1,5 @@
+import { HttpClient } from '@contentstack/cli-utilities';
+
 import { AnyProperty } from './utils';
 import { AdapterHelperInterface } from './adapter-helper';
 
@@ -18,7 +20,7 @@ export type GetProjectsParams = {
   callback?: (value: ProjectStruct[]) => void;
 } & AnyProperty;
 
-export type CreateProjectInput = {
+export interface CreateProjectInput {
   name: string;
   description: string;
   connectedStackApiKey?: string;
@@ -28,8 +30,25 @@ export type GetVariantGroupInput = {
   experienceUid: string;
 };
 
-export interface Personalization extends AdapterHelperInterface {
+export type AttributeStruct = {
+  _id: string;
+  uid: string;
+  key: string;
+  name: string;
+  project: string;
+  description: string;
+} & AnyProperty;
+
+export interface CreateAttributeInput {
+  name: string;
+  key: string;
+  description: string;
+};
+
+export interface Personalization<T> extends AdapterHelperInterface<T, HttpClient> {
   projects(options: GetProjectsParams): Promise<ProjectStruct[] | void>;
 
-  createProject(input: CreateProjectInput): Promise<ProjectStruct | void>;
+  createProject(project: CreateProjectInput): Promise<ProjectStruct | void>;
+
+  createAttribute(attribute: CreateAttributeInput): Promise<AttributeStruct | void>;
 }
