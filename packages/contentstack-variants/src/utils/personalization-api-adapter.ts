@@ -1,19 +1,27 @@
-import { HttpClient } from '@contentstack/cli-utilities';
-
 import { AdapterHelper } from './adapter-helper';
+import { configHandler, HttpClient, HttpResponse } from '@contentstack/cli-utilities';
+
 import {
   ProjectStruct,
   Personalization,
   GetProjectsParams,
   CreateProjectInput,
   CreateAttributeInput,
+  APIConfig,
+  GetVariantGroupInput,
   EventStruct,
   AudienceStruct,
   AttributeStruct,
 } from '../types';
-
 export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> implements Personalization<T> {
-  async projects(options: GetProjectsParams, projects: ProjectStruct[] = []): Promise<ProjectStruct[] | void> {}
+  constructor(options: APIConfig) {
+    super(options);
+  }
+
+  async projects(options: GetProjectsParams, projects: ProjectStruct[] = []): Promise<ProjectStruct[] | void> {
+    const getProjectEndPoint = `/projects?connectedStackApiKey=${options.connectedStackApiKey}`;
+    return (await this.apiClient.get(getProjectEndPoint)).data;
+  }
 
   /**
    * This TypeScript function creates a project by making an asynchronous API call to retrieve project
@@ -42,6 +50,17 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     return (await this.apiClient.post<ProjectStruct>('/attributes', attribute)).data;
   }
 
+  async getExperiences(): Promise<ProjectStruct | void> {
+    const getExperiencesEndPoint = `/experiences`;
+    return (await this.apiClient.get(getExperiencesEndPoint)).data;
+  }
+
+  async getVariantGroup(input: GetVariantGroupInput): Promise<ProjectStruct | void> {
+    const getVariantGroupEndPoint = `/experiences/:${input.experienceUid}/cms-integration/variant-group`;
+    return (await this.apiClient.get(getVariantGroupEndPoint)).data;
+  }
+
+  async updateVariantGroup(input: unknown): Promise<ProjectStruct | void> {}
   async getEvents(): Promise<EventStruct[] | void> {
     return (await this.apiClient.get<EventStruct>('/events')).data;
   }
@@ -53,5 +72,4 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
   async getAttributes(): Promise<AttributeStruct[] | void> {
     return (await this.apiClient.get<AttributeStruct>('/attributes')).data;
   }
-
 }

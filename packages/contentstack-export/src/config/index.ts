@@ -426,6 +426,7 @@ const config: DefaultConfig = {
     stacks: '/stacks/',
   },
   preserveStackVersion: false,
+  personalizationEnabled: false,
   fetchConcurrency: 5,
   writeConcurrency: 5,
   developerHubBaseUrl: '',
