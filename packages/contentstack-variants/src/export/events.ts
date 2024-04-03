@@ -8,10 +8,9 @@ export default class ExportEvents extends PersonalizationAdapter<VariantHttpClie
   private eventsConfig: EventsConfig;
   private eventsFolderPath: string;
   private events: Record<string, unknown>[];
-  public exportConfig: ExportConfig;
   public eclipseConfig: EclipseConfig;
 
-  constructor(exportConfig: ExportConfig) {
+  constructor(readonly exportConfig: ExportConfig) {
     super({
       config: { ...exportConfig },
       baseURL: exportConfig.modules.eclipse.baseURL,
@@ -21,12 +20,11 @@ export default class ExportEvents extends PersonalizationAdapter<VariantHttpClie
         project_id: exportConfig.project_id,
       },
     });
-    this.exportConfig = exportConfig;
-    this.eclipseConfig = this.exportConfig.modules.eclipse;
-    this.eventsConfig = this.exportConfig.modules.events;
+    this.eclipseConfig = exportConfig.modules.eclipse;
+    this.eventsConfig = exportConfig.modules.events;
     this.eventsFolderPath = pResolve(
-      this.exportConfig.data,
-      this.exportConfig.branchName || '',
+      exportConfig.data,
+      exportConfig.branchName || '',
       this.eclipseConfig.dirName,
       this.eventsConfig.dirName,
     );
