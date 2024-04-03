@@ -1,17 +1,16 @@
 import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
 
-import { formatError, fsUtil, PersonalizationAdapter, log, VariantHttpClient } from '../utils';
+import { formatError, fsUtil, PersonalizationAdapter,log, VariantHttpClient } from '../utils';
 import { EclipseConfig, ExportConfig, AudiencesStruct, AudiencesConfig, LogType } from '../types';
 
 export default class ExportAudiences extends PersonalizationAdapter<VariantHttpClient<ExportConfig>> {
   private audiencesConfig: AudiencesConfig;
   private audiencesFolderPath: string;
   private audiences: Record<string, unknown>[];
-  public exportConfig: ExportConfig;
   public eclipseConfig: EclipseConfig;
 
-  constructor(exportConfig: ExportConfig) {
+  constructor(readonly exportConfig: ExportConfig) {
     super({
       config: { ...exportConfig },
       baseURL: exportConfig.modules.eclipse.baseURL,
@@ -21,12 +20,11 @@ export default class ExportAudiences extends PersonalizationAdapter<VariantHttpC
         project_id: exportConfig.project_id,
       },
     });
-    this.exportConfig = exportConfig;
-    this.eclipseConfig = this.exportConfig.modules.eclipse;
-    this.audiencesConfig = this.exportConfig.modules.audiences;
+    this.eclipseConfig = exportConfig.modules.eclipse;
+    this.audiencesConfig = exportConfig.modules.audiences;
     this.audiencesFolderPath = pResolve(
-      this.exportConfig.data,
-      this.exportConfig.branchName || '',
+      exportConfig.data,
+      exportConfig.branchName || '',
       this.eclipseConfig.dirName,
       this.audiencesConfig.dirName,
     );
