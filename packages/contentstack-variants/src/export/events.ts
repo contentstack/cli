@@ -2,7 +2,7 @@ import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
 
 import { formatError, fsUtil, PersonalizationAdapter, log, VariantHttpClient } from '../utils';
-import { EclipseConfig, ExportConfig, EventsStruct, EventsConfig, LogType } from '../types';
+import { EclipseConfig, ExportConfig, EventStruct, EventsConfig, LogType } from '../types';
 
 export default class ExportEvents extends PersonalizationAdapter<VariantHttpClient<ExportConfig>> {
   private eventsConfig: EventsConfig;
@@ -35,7 +35,7 @@ export default class ExportEvents extends PersonalizationAdapter<VariantHttpClie
     try {
       log(this.exportConfig, 'Starting events export', 'info');
       await fsUtil.makeDirectory(this.eventsFolderPath);
-      this.events = (await this.getEvents()) as EventsStruct[];
+      this.events = (await this.getEvents()) as EventStruct[];
 
       if (!this.events?.length) {
         log(this.exportConfig, 'No Events found with the given project!', 'info');
