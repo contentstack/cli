@@ -4,10 +4,12 @@ import { AdapterHelper } from './adapter-helper';
 import {
   ProjectStruct,
   Personalization,
-  AttributeStruct,
   GetProjectsParams,
   CreateProjectInput,
   CreateAttributeInput,
+  EventStruct,
+  AudienceStruct,
+  AttributeStruct,
 } from '../types';
 
 export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> implements Personalization<T> {
@@ -39,4 +41,17 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
   async createAttribute(attribute: CreateAttributeInput): Promise<void | AttributeStruct> {
     return (await this.apiClient.post<ProjectStruct>('/attributes', attribute)).data;
   }
+
+  async getEvents(): Promise<EventStruct[] | void> {
+    return (await this.apiClient.get<EventStruct>('/events')).data;
+  }
+
+  async getAudiences(): Promise<AudienceStruct[] | void> {
+    return (await this.apiClient.get<AudienceStruct>('/audiences')).data;
+  }
+
+  async getAttributes(): Promise<AttributeStruct[] | void> {
+    return (await this.apiClient.get<AttributeStruct>('/attributes')).data;
+  }
+
 }
