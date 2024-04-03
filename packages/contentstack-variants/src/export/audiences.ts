@@ -2,7 +2,7 @@ import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
 
 import { formatError, fsUtil, PersonalizationAdapter,log, VariantHttpClient } from '../utils';
-import { EclipseConfig, ExportConfig, AudiencesStruct, AudiencesConfig, LogType } from '../types';
+import { EclipseConfig, ExportConfig, AudienceStruct, AudiencesConfig, LogType } from '../types';
 
 export default class ExportAudiences extends PersonalizationAdapter<VariantHttpClient<ExportConfig>> {
   private audiencesConfig: AudiencesConfig;
@@ -35,7 +35,7 @@ export default class ExportAudiences extends PersonalizationAdapter<VariantHttpC
     try {
       log(this.exportConfig, 'Starting audiences export', 'info');
       await fsUtil.makeDirectory(this.audiencesFolderPath);
-      this.audiences = (await this.getAudiences()) as AudiencesStruct[];
+      this.audiences = (await this.getAudiences()) as AudienceStruct[];
 
       if (!this.audiences?.length) {
         log(this.exportConfig, 'No Audiences found with the given project!', 'info');
