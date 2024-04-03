@@ -301,6 +301,11 @@ export default class Entries {
     fieldStructure: ReferenceFieldDataType,
     field: EntryReferenceFieldDataType[],
   ) {
+    if (typeof field === 'string') {
+      let stringReference = field as string;
+      stringReference = stringReference.replace(/'/g, '"');
+      field = JSON.parse(stringReference);
+    }
     return this.validateReferenceValues(tree, fieldStructure, field);
   }
 
@@ -826,6 +831,11 @@ export default class Entries {
     entry: EntryReferenceFieldDataType[],
   ) {
     const missingRefs: Record<string, any>[] = [];
+    if (typeof entry === 'string') {
+      let stringReference = entry as string;
+      stringReference = stringReference.replace(/'/g, '"');
+      entry = JSON.parse(stringReference);
+    }
     entry = entry
       ?.map((reference) => {
         const { uid } = reference;
