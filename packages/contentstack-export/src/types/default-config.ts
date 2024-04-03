@@ -122,6 +122,10 @@ export default interface DefaultConfig {
       dependencies?: Modules[];
       exportVersions: boolean;
     };
+    eclipse: {
+      dirName: string,
+      baseURL: string,
+    } & AnyProperty;
     variantEntry: {
       dirName: string;
       fileName: string;
@@ -162,6 +166,24 @@ export default interface DefaultConfig {
       requiredKeys: string[];
     };
     taxonomies: {
+      dirName: string;
+      fileName: string;
+      invalidKeys: string[];
+      dependencies?: Modules[];
+    };
+    events: {
+      dirName: string;
+      fileName: string;
+      invalidKeys: string[];
+      dependencies?: Modules[];
+    };
+    audiences: {
+      dirName: string;
+      fileName: string;
+      invalidKeys: string[];
+      dependencies?: Modules[];
+    };
+    attributes: {
       dirName: string;
       fileName: string;
       invalidKeys: string[];
