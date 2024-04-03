@@ -6,20 +6,21 @@ export interface ImportDefaultConfig extends AnyProperty {
   modules: {
     personalization: {
       dirName: string;
+      importData: boolean;
+      importOrder: string[];
       projects: {
         dirName: string;
         fileName: string;
       };
-    } & AnyProperty;
-  } & AnyProperty;
+      attributes: {
+        dirName: string;
+        fileName: string;
+      };
+    }
+  };
 }
 
-export interface ExternalConfig {
-  source_stack?: string;
-  data: string;
-}
-
-export interface ImportConfig extends ImportDefaultConfig, ExternalConfig, AnyProperty {
+export interface ImportConfig extends ImportDefaultConfig, AnyProperty {
   contentDir: string;
   data: string;
   management_token?: string;
