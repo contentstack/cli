@@ -55,6 +55,9 @@ export default class ExportEvents extends PersonalizationAdapter<VariantHttpClie
     }
   }
 
+  /**
+   * function to remove invalid keys from event object
+   */
   sanitizeAttribs() {
     this.events = this.events?.map((event) => omit(event, this.eventsConfig.invalidKeys)) || [];
   }
