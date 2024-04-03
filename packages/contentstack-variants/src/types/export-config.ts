@@ -19,7 +19,8 @@ export type Modules =
   | 'workflows'
   | 'labels'
   | 'marketplace-apps'
-  | 'taxonomies';
+  | 'taxonomies'
+  | 'eclipse';
 
 export type branch = {
   uid: string;
@@ -153,6 +154,10 @@ export interface DefaultConfig {
         include_variant: boolean;
       } & AnyProperty;
     } & AnyProperty;
+    eclipse: {
+      dirName: string,
+      baseURL: string,
+    } & AnyProperty;
     extensions: {
       dirName: string;
       fileName: string;
@@ -182,6 +187,24 @@ export interface DefaultConfig {
       requiredKeys: string[];
     };
     taxonomies: {
+      dirName: string;
+      fileName: string;
+      invalidKeys: string[];
+      dependencies?: Modules[];
+    };
+    events: {
+      dirName: string;
+      fileName: string;
+      invalidKeys: string[];
+      dependencies?: Modules[];
+    };
+    audiences: {
+      dirName: string;
+      fileName: string;
+      invalidKeys: string[];
+      dependencies?: Modules[];
+    };
+    attributes: {
       dirName: string;
       fileName: string;
       invalidKeys: string[];
@@ -227,15 +250,40 @@ export interface ExportConfig extends DefaultConfig {
   singleModuleExport?: boolean;
   moduleName?: Modules;
   master_locale: masterLocale;
-
   headers?: {
-    api_key: string;
+    api_key?: string;
     access_token?: string;
     authtoken?: string;
     'X-User-Agent': string;
+    organization_uid?: string;
+    project_id?: string;
   };
+  project_id?: string; // To fetch events, audiences & attributes
   access_token?: string;
   org_uid?: string;
   source_stack?: string;
   sourceStackName?: string;
+}
+
+export interface EclipseConfig {
+  dirName: string,
+  baseURL: string,
+}
+
+export interface EventsConfig {
+  dirName: string;
+  fileName: string;
+  invalidKeys: string[];
+}
+
+export interface AudiencesConfig {
+  dirName: string;
+  fileName: string;
+  invalidKeys: string[];
+}
+
+export interface AttributesConfig {
+  dirName: string;
+  fileName: string;
+  invalidKeys: string[];
 }

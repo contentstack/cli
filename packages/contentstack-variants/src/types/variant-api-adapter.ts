@@ -7,6 +7,7 @@ import { AdapterHelperInterface } from './adapter-helper';
 export type APIConfig = HttpRequestConfig & {
   httpClient?: boolean;
   config: ExportConfig | Record<string, any> | undefined;
+  baseURL?: string
 };
 
 export interface AdapterConstructor<T, C> {
