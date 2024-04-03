@@ -171,6 +171,24 @@ export default interface DefaultConfig {
       invalidKeys: string[];
       dependencies?: Modules[];
     };
+    events: {
+      dirName: string;
+      fileName: string;
+      invalidKeys: string[];
+      dependencies?: Modules[];
+    };
+    audiences: {
+      dirName: string;
+      fileName: string;
+      invalidKeys: string[];
+      dependencies?: Modules[];
+    };
+    attributes: {
+      dirName: string;
+      fileName: string;
+      invalidKeys: string[];
+      dependencies?: Modules[];
+    };
   };
   languagesCode: string[];
   apis: {
