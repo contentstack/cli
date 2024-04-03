@@ -44,6 +44,15 @@ export type AudiencesStruct = {
   project: string;
 } & AnyProperty;
 
+export type AttributesStruct = {
+  _id: string;
+  uid: string;
+  name: string;
+  key: string;
+  description: string;
+  project: string;
+} & AnyProperty;
+
 export interface Personalization<T> extends AdapterHelperInterface<T, HttpClient> {
   projects(options: GetProjectsParams): Promise<ProjectStruct[] | void>;
 
@@ -52,4 +61,6 @@ export interface Personalization<T> extends AdapterHelperInterface<T, HttpClient
   getEvents(): Promise<EventsStruct[] | void>;
 
   getAudiences(): Promise<AudiencesStruct[] | void>;
+
+  getAttributes(): Promise<AttributesStruct[] | void>;
 }
