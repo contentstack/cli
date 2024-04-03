@@ -27,9 +27,7 @@ export default class ExportEclipse {
       const projectHandler = new ExportProjects(this.exportConfig);
       await projectHandler.start();
       if (this.exportConfig.personalizationEnabled) {
-        // export events
-        // export attributes
-        // export audiences
+        // export events, attributes & audiences
         // export experiences, along with this export content type details as well
 
         log(this.exportConfig, 'Starting personalization project export', 'info');
