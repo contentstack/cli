@@ -192,6 +192,24 @@ export interface DefaultConfig {
       invalidKeys: string[];
       dependencies?: Modules[];
     };
+    events: {
+      dirName: string;
+      fileName: string;
+      invalidKeys: string[];
+      dependencies?: Modules[];
+    };
+    audiences: {
+      dirName: string;
+      fileName: string;
+      invalidKeys: string[];
+      dependencies?: Modules[];
+    };
+    attributes: {
+      dirName: string;
+      fileName: string;
+      invalidKeys: string[];
+      dependencies?: Modules[];
+    };
   };
   languagesCode: string[];
   apis: {
@@ -235,11 +253,12 @@ export interface ExportConfig extends DefaultConfig {
   headers?: {
     api_key?: string;
     access_token?: string;
-    authtoken: string;
-    'X-User-Agent'?: string;
+    authtoken?: string;
+    'X-User-Agent': string;
     organization_uid?: string;
     project_id?: string;
   };
+  project_id?: string; // To fetch events, audiences & attributes
   access_token?: string;
   org_uid?: string;
   source_stack?: string;
@@ -251,4 +270,27 @@ export interface ExportConfig extends DefaultConfig {
 export interface EclipseConfig {
   dirName: string;
   baseURL: string;
+}
+
+export interface EclipseConfig {
+  dirName: string;
+  baseURL: string;
+}
+
+export interface EventsConfig {
+  dirName: string;
+  fileName: string;
+  invalidKeys: string[];
+}
+
+export interface AudiencesConfig {
+  dirName: string;
+  fileName: string;
+  invalidKeys: string[];
+}
+
+export interface AttributesConfig {
+  dirName: string;
+  fileName: string;
+  invalidKeys: string[];
 }
