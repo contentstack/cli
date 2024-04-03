@@ -206,6 +206,7 @@ export default interface DefaultConfig {
     stacks: string;
   };
   preserveStackVersion: boolean;
+  personalizationEnabled: boolean;
   fetchConcurrency: number;
   writeConcurrency: number;
   developerHubBaseUrl: string;
