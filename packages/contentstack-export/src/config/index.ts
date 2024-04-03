@@ -195,6 +195,11 @@ const config: DefaultConfig = {
       fileName: 'audiences.json',
       invalidKeys: ['updatedAt', 'createdBy', 'updatedBy', '_id', 'createdAt', 'createdByUserName', 'updatedByUserName'],
     },
+    attributes: {
+      dirName: 'attributes',
+      fileName: 'attributes.json',
+      invalidKeys: ['updatedAt', 'createdBy', 'updatedBy', '_id', 'createdAt', 'createdByUserName', 'updatedByUserName'],
+    },
   },
   languagesCode: [
     'af-za',

@@ -204,6 +204,12 @@ export interface DefaultConfig {
       invalidKeys: string[];
       dependencies?: Modules[];
     };
+    attributes: {
+      dirName: string;
+      fileName: string;
+      invalidKeys: string[];
+      dependencies?: Modules[];
+    };
   };
   languagesCode: string[];
   apis: {
@@ -271,6 +277,12 @@ export interface EventsConfig {
 }
 
 export interface AudiencesConfig {
+  dirName: string;
+  fileName: string;
+  invalidKeys: string[];
+}
+
+export interface AttributesConfig {
   dirName: string;
   fileName: string;
   invalidKeys: string[];
