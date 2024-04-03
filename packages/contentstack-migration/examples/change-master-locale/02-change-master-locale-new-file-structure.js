@@ -93,21 +93,22 @@ module.exports = async ({ migration, config }) => {
               pathValidator(path.resolve(config.data_dir, `entries/${contentType}/${config.target_locale}/index.json`)),
               { encoding: 'utf8', flag: 'a+' },
             );
-          }
-
-          if (targetMasterLocaleEntries) {
-            targetMasterLocaleEntries = await fs.readFile(
-              pathValidator(
-                path.resolve(
-                  config.data_dir,
-                  `entries/${contentType}/${config.target_locale}/${
-                    Object.values(JSON.parse(targetMasterLocaleEntries))[0]
-                  }`,
+            if (targetMasterLocaleEntries) {
+              targetMasterLocaleEntries = await fs.readFile(
+                pathValidator(
+                  path.resolve(
+                    config.data_dir,
+                    `entries/${contentType}/${config.target_locale}/${
+                      Object.values(JSON.parse(targetMasterLocaleEntries))[0]
+                    }`,
+                  ),
                 ),
-              ),
-              { encoding: 'utf8' },
-            );
-            targetMasterLocaleEntries = JSON.parse(targetMasterLocaleEntries);
+                { encoding: 'utf8' },
+              );
+              targetMasterLocaleEntries = JSON.parse(targetMasterLocaleEntries);
+            } else {
+              targetMasterLocaleEntries = {};
+            }
           } else {
             targetMasterLocaleEntries = {};
           }
@@ -123,7 +124,7 @@ module.exports = async ({ migration, config }) => {
           if (
             existsSync(pathValidator(path.resolve(config.data_dir, `entries/${contentType}/${config.target_locale}`)))
           ) {
-            let tmle = await fs.readFile(
+            let exsitingTargetMasterLocalEntries = await fs.readFile(
               pathValidator(path.resolve(config.data_dir, `entries/${contentType}/${config.target_locale}/index.json`)),
               { encoding: 'utf8', flag: 'a+' },
             );
@@ -131,7 +132,9 @@ module.exports = async ({ migration, config }) => {
               pathValidator(
                 path.resolve(
                   config.data_dir,
-                  `entries/${contentType}/${config.target_locale}/${Object.values(JSON.parse(tmle))[0]}`,
+                  `entries/${contentType}/${config.target_locale}/${
+                    Object.values(JSON.parse(exsitingTargetMasterLocalEntries))[0]
+                  }`,
                 ),
               ),
               JSON.stringify(targetMasterLocaleEntries),
