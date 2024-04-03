@@ -9,6 +9,7 @@ export type APIConfig = HttpRequestConfig & {
   sharedConfig?: ExportConfig | Record<string, any> | undefined;
   eclipseURL?: string;
   config: ExportConfig | Record<string, any> | undefined;
+  baseURL?: string
 };
 
 export interface AdapterConstructor<T, C> {
