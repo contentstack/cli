@@ -185,6 +185,21 @@ const config: DefaultConfig = {
       fileName: 'taxonomies.json',
       invalidKeys: ['updated_at', 'created_by', 'updated_by', 'stackHeaders', 'urlPath', 'created_at'],
     },
+    events: {
+      dirName: 'events',
+      fileName: 'events.json',
+      invalidKeys: ['updatedAt', 'createdBy', 'updatedBy', '_id', 'createdAt', 'createdByUserName', 'updatedByUserName'],
+    },
+    audiences: {
+      dirName: 'audiences',
+      fileName: 'audiences.json',
+      invalidKeys: ['updatedAt', 'createdBy', 'updatedBy', '_id', 'createdAt', 'createdByUserName', 'updatedByUserName'],
+    },
+    attributes: {
+      dirName: 'attributes',
+      fileName: 'attributes.json',
+      invalidKeys: ['updatedAt', 'createdBy', 'updatedBy', '_id', 'createdAt', 'createdByUserName', 'updatedByUserName'],
+    },
   },
   languagesCode: [
     'af-za',

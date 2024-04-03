@@ -4,12 +4,14 @@ import { configHandler, HttpClient, HttpResponse } from '@contentstack/cli-utili
 import {
   ProjectStruct,
   Personalization,
-  AttributeStruct,
   GetProjectsParams,
   CreateProjectInput,
   CreateAttributeInput,
   APIConfig,
   GetVariantGroupInput,
+  EventStruct,
+  AudienceStruct,
+  AttributeStruct,
 } from '../types';
 export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> implements Personalization<T> {
   constructor(options: APIConfig) {
@@ -59,4 +61,15 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
   }
 
   async updateVariantGroup(input: unknown): Promise<ProjectStruct | void> {}
+  async getEvents(): Promise<EventStruct[] | void> {
+    return (await this.apiClient.get<EventStruct>('/events')).data;
+  }
+
+  async getAudiences(): Promise<AudienceStruct[] | void> {
+    return (await this.apiClient.get<AudienceStruct>('/audiences')).data;
+  }
+
+  async getAttributes(): Promise<AttributeStruct[] | void> {
+    return (await this.apiClient.get<AttributeStruct>('/attributes')).data;
+  }
 }
