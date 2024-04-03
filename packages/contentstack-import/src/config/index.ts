@@ -153,10 +153,14 @@ const config: DefaultConfig = {
     personalization: {
       importData: true,
       dirName: 'personalization',
-      importOrder: ['projects'],
+      importOrder: ['projects', 'attributes'],
       projects: {
         dirName: 'projects',
         fileName: 'projects.json',
+      },
+      attributes: {
+        dirName: 'attributes',
+        fileName: 'attributes.json',
       },
     },
   },
