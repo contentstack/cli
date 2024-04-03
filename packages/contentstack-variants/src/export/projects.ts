@@ -29,6 +29,7 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
         this.exportConfig.personalizationEnabled = false;
         return;
       }
+      this.exportConfig.project_id = project[0].uid;
       this.exportConfig.personalizationEnabled = true;
       return fsUtil.writeFile(path.join(this.eclipseConfig.dirName, 'projects', 'projects.json'), project);
     } catch (error) {
