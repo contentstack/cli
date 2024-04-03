@@ -26,7 +26,7 @@ export interface CreateProjectInput {
   connectedStackApiKey?: string;
 };
 
-export type EventsStruct = {
+export type EventStruct = {
   _id: string;
   uid: string;
   key: string;
@@ -35,20 +35,11 @@ export type EventsStruct = {
   project: string;
 } & AnyProperty;
 
-export type AudiencesStruct = {
+export type AudienceStruct = {
   _id: string;
   uid: string;
   definition: object;
   name: string;
-  description: string;
-  project: string;
-} & AnyProperty;
-
-export type AttributesStruct = {
-  _id: string;
-  uid: string;
-  name: string;
-  key: string;
   description: string;
   project: string;
 } & AnyProperty;
@@ -73,11 +64,11 @@ export interface Personalization<T> extends AdapterHelperInterface<T, HttpClient
 
   createProject(project: CreateProjectInput): Promise<ProjectStruct | void>;
 
-  getEvents(): Promise<EventsStruct[] | void>;
+  getEvents(): Promise<EventStruct[] | void>;
 
-  getAudiences(): Promise<AudiencesStruct[] | void>;
+  getAudiences(): Promise<AudienceStruct[] | void>;
 
-  getAttributes(): Promise<AttributesStruct[] | void>;
+  getAttributes(): Promise<AttributeStruct[] | void>;
 
   createAttribute(attribute: CreateAttributeInput): Promise<AttributeStruct | void>;
 }

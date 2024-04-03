@@ -1,7 +1,7 @@
 import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
 
-import { EclipseConfig, ExportConfig, AttributesConfig, AttributesStruct } from '../types';
+import { EclipseConfig, ExportConfig, AttributesConfig, AttributeStruct } from '../types';
 import { formatError, fsUtil, PersonalizationAdapter, log, VariantHttpClient } from '../utils';
 
 export default class ExportAttributes extends PersonalizationAdapter<VariantHttpClient<ExportConfig>> {
@@ -35,7 +35,7 @@ export default class ExportAttributes extends PersonalizationAdapter<VariantHttp
     try {
       log(this.exportConfig, 'Starting attributes export', 'info');
       await fsUtil.makeDirectory(this.attributesFolderPath);
-      this.attributes = (await this.getAttributes()) as AttributesStruct[];
+      this.attributes = (await this.getAttributes()) as AttributeStruct[];
 
       if (!this.attributes?.length) {
         log(this.exportConfig, 'No Attributes found with the given project!', 'info');
