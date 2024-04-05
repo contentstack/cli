@@ -39,7 +39,7 @@ export interface ImportConfig extends ImportDefaultConfig, AnyProperty {
     access_token?: string;
     authtoken?: string;
     'X-User-Agent': string;
-    project_id?: string;
+    'X-Project-Uid'?: string;
   };
   access_token?: string;
   isAuthenticated?: boolean;
