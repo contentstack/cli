@@ -20,7 +20,7 @@ export type Modules =
   | 'labels'
   | 'marketplace-apps'
   | 'taxonomies'
-  | 'eclipse';
+  | 'personalization';
 
 export type branch = {
   uid: string;
@@ -154,7 +154,7 @@ export interface DefaultConfig {
         include_variant: boolean;
       } & AnyProperty;
     } & AnyProperty;
-    eclipse: {
+    personalization: {
       dirName: string;
       baseURL: string;
     } & AnyProperty;

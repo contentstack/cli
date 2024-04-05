@@ -8,9 +8,14 @@ const commonMsg = {
   CREATE_SUCCESS: '${module} created successfully!',
 };
 
-const messages: typeof errors & typeof commonMsg = {
+const migrationMsg = {
+  IMPORT_MSG: 'Migrating ${module}...',
+};
+
+const messages: typeof errors & typeof commonMsg & typeof migrationMsg = {
   ...errors,
   ...commonMsg,
+  ...migrationMsg
 };
 
 /**
