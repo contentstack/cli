@@ -10,7 +10,7 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
     super({
       config: exportConfig,
       baseURL: exportConfig.modules.personalization.baseURL,
-      headers: { authtoken: exportConfig.auth_token, project_id: exportConfig.project_id },
+      headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
     });
     this.exportConfig = exportConfig;
     this.eclipseConfig = exportConfig.modules.personalization;
