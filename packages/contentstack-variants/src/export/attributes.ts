@@ -14,7 +14,7 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
     super({
       config: exportConfig,
       baseURL: exportConfig.modules.personalization.baseURL,
-      headers: { authtoken: exportConfig.auth_token, project_id: exportConfig.project_id},
+      headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
     });
     this.eclipseConfig = exportConfig.modules.personalization;
     this.attributesConfig = exportConfig.modules.attributes;

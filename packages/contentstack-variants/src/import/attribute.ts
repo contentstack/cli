@@ -15,7 +15,7 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
     const conf: APIConfig = {
       config,
       baseURL: config.personalizationHost,
-      headers: { 'x-project-uid': config.project_id, authtoken: config.auth_token },
+      headers: { 'X-Project-Uid': config.project_id, authtoken: config.auth_token },
     };
     super(Object.assign(config, conf));
     this.personalizationConfig = this.config.modules.personalization;
