@@ -36,7 +36,7 @@ const config: DefaultConfig = {
       'entries',
       'labels',
       'marketplace-apps',
-      'eclipse',
+      'personalization',
     ],
     locales: {
       dirName: 'locales',
@@ -144,8 +144,8 @@ const config: DefaultConfig = {
       dependencies: ['locales', 'content-types'],
       exportVersions: false,
     },
-    eclipse: {
-      dirName: 'eclipse',
+    personalization: {
+      dirName: 'personalization',
       baseURL: 'https://personalization-api.contentstack.com'
     },
     variantEntry: {

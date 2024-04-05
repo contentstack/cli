@@ -1,10 +1,10 @@
 import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
 
-import { formatError, fsUtil, PersonalizationAdapter, log, VariantHttpClient } from '../utils';
-import { EclipseConfig, ExportConfig, EventStruct, EventsConfig, LogType } from '../types';
+import { formatError, fsUtil, PersonalizationAdapter, log } from '../utils';
+import { EclipseConfig, ExportConfig, EventStruct, EventsConfig } from '../types';
 
-export default class ExportEvents extends PersonalizationAdapter<VariantHttpClient<ExportConfig>> {
+export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
   private eventsConfig: EventsConfig;
   private eventsFolderPath: string;
   private events: Record<string, unknown>[];
@@ -13,14 +13,14 @@ export default class ExportEvents extends PersonalizationAdapter<VariantHttpClie
   constructor(readonly exportConfig: ExportConfig) {
     super({
       config: { ...exportConfig },
-      baseURL: exportConfig.modules.eclipse.baseURL,
+      baseURL: exportConfig.modules.personalization.baseURL,
       headers: {
         organization_uid: exportConfig.org_uid,
         authtoken: exportConfig.auth_token,
         project_id: exportConfig.project_id,
       },
     });
-    this.eclipseConfig = exportConfig.modules.eclipse;
+    this.eclipseConfig = exportConfig.modules.personalization;
     this.eventsConfig = exportConfig.modules.events;
     this.eventsFolderPath = pResolve(
       exportConfig.data,
