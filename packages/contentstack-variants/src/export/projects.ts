@@ -11,11 +11,11 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
   constructor(exportConfig: ExportConfig) {
     super({
       config: {...exportConfig},
-      baseURL: exportConfig.modules.eclipse.baseURL,
+      baseURL: exportConfig.modules.personalization.baseURL,
       headers: { organization_uid: exportConfig.org_uid, authtoken: exportConfig.auth_token },
     });
     this.exportConfig = exportConfig;
-    this.eclipseConfig = exportConfig.modules.eclipse;
+    this.eclipseConfig = exportConfig.modules.personalization;
     this.projectFolderPath = path.resolve(
       exportConfig.data,
       exportConfig.branchName || '',

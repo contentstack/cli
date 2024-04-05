@@ -34,6 +34,7 @@ const config: DefaultConfig = {
       'marketplace-apps',
       'global-fields',
       'content-types',
+      'personalization',
       'custom-roles',
       'workflows',
       'entries',
@@ -153,7 +154,7 @@ const config: DefaultConfig = {
     personalization: {
       importData: true,
       dirName: 'personalization',
-      importOrder: ['projects', 'attributes'],
+      importOrder: ['projects','attributes', 'audiences'],
       projects: {
         dirName: 'projects',
         fileName: 'projects.json',
@@ -161,6 +162,10 @@ const config: DefaultConfig = {
       attributes: {
         dirName: 'attributes',
         fileName: 'attributes.json',
+      },
+      audiences: {
+        dirName: 'audiences',
+        fileName: 'audiences.json',
       },
     },
   },

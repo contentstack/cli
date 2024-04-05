@@ -41,7 +41,11 @@ export type EventStruct = {
 export type AudienceStruct = {
   _id: string;
   uid: string;
-  definition: object;
+  definition: {
+    _type: string;
+    combinationType: string;
+    rules: Record<string, any>[];
+  };
   name: string;
   description: string;
   project: string;
@@ -62,6 +66,12 @@ export interface CreateAttributeInput {
   description: string;
 }
 
+export interface CreateAudienceInput {
+  name: string;
+  definition: object;
+  description: string;
+}
+
 export interface Personalization<T> extends AdapterHelperInterface<T, HttpClient> {
   projects(options: GetProjectsParams): Promise<ProjectStruct[] | void>;
 
@@ -74,4 +84,6 @@ export interface Personalization<T> extends AdapterHelperInterface<T, HttpClient
   getAttributes(): Promise<AttributeStruct[] | void>;
 
   createAttribute(attribute: CreateAttributeInput): Promise<AttributeStruct | void>;
+
+  createAudience(attribute: CreateAudienceInput): Promise<AudienceStruct | void>;
 }
