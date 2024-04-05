@@ -9,6 +9,7 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
     const conf: APIConfig = {
       config,
       baseURL: config.personalizationHost,
+      headers: { 'x-project-uid': config.project_uid, authtoken: config.auth_token },
     };
     super(Object.assign(config, conf));
   }
