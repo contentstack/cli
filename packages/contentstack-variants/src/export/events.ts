@@ -12,13 +12,9 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
 
   constructor(readonly exportConfig: ExportConfig) {
     super({
-      config: { ...exportConfig },
+      config: exportConfig,
       baseURL: exportConfig.modules.personalization.baseURL,
-      headers: {
-        organization_uid: exportConfig.org_uid,
-        authtoken: exportConfig.auth_token,
-        project_id: exportConfig.project_id,
-      },
+      headers: { authtoken: exportConfig.auth_token, project_id: exportConfig.project_id },
     });
     this.eclipseConfig = exportConfig.modules.personalization;
     this.eventsConfig = exportConfig.modules.events;
