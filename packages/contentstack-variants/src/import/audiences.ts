@@ -16,7 +16,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
     const conf: APIConfig = {
       config,
       baseURL: config.personalizationHost,
-      headers: { authtoken: config.auth_token, project_id: config.project_id },
+      headers: { authtoken: config.auth_token, 'X-Project-Uid': config.project_id},
     };
     super(Object.assign(config, conf));
     this.personalizationConfig = this.config.modules.personalization;

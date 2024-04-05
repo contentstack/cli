@@ -256,7 +256,7 @@ export interface ExportConfig extends DefaultConfig {
     authtoken?: string;
     'X-User-Agent': string;
     organization_uid?: string;
-    project_id?: string;
+    'X-Project-Uid'?: string;
   };
   project_id?: string; // To fetch events, audiences & attributes
   access_token?: string;
