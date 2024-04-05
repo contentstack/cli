@@ -10,9 +10,9 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
   public eclipseConfig: EclipseConfig;
   constructor(exportConfig: ExportConfig) {
     super({
-      config: {...exportConfig},
+      config: exportConfig,
       baseURL: exportConfig.modules.personalization.baseURL,
-      headers: { organization_uid: exportConfig.org_uid, authtoken: exportConfig.auth_token },
+      headers: { authtoken: exportConfig.auth_token, organization_uid: exportConfig.org_uid, },
     });
     this.exportConfig = exportConfig;
     this.eclipseConfig = exportConfig.modules.personalization;
