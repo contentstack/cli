@@ -9,7 +9,7 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
   constructor(exportConfig: ExportConfig) {
     super({
       config: { ...exportConfig },
-      baseURL: exportConfig.modules.eclipse.baseURL,
+      baseURL: exportConfig.modules.personalization.baseURL,
       headers: {
         organization_uid: exportConfig.org_uid,
         authtoken: exportConfig.auth_token,
@@ -17,7 +17,7 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
       },
     });
     this.exportConfig = exportConfig;
-    this.eclipseConfig = exportConfig.modules.eclipse;
+    this.eclipseConfig = exportConfig.modules.personalization;
     this.experiencesFolderPath = path.resolve(
       exportConfig.data,
       exportConfig.branchName || '',
