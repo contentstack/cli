@@ -15,6 +15,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
       httpClient: true,
       baseURL: config.host,
       Adapter: VariantHttpClient<ExportConfig>,
+      headers: { organization_uid: config.org_uid, authtoken: config.auth_token },
     };
     super(Object.assign(config, conf));
     this.entriesDirPath = resolve(config.data, config.branchName || '', config.modules.entries.dirName);
