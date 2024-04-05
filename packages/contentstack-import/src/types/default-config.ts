@@ -135,6 +135,10 @@ export default interface DefaultConfig {
         dirName: string;
         fileName: string;
       };
+      audiences: {
+        dirName: string;
+        fileName: string;
+      };
     };
   };
   languagesCode: string[];

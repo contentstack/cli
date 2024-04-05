@@ -122,7 +122,7 @@ export default interface DefaultConfig {
       dependencies?: Modules[];
       exportVersions: boolean;
     };
-    eclipse: {
+    personalization: {
       dirName: string,
       baseURL: string,
     } & AnyProperty;
