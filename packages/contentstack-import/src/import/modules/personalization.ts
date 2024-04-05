@@ -7,7 +7,7 @@ export default class ImportPersonalization {
   private config: ImportConfig;
   public personalization: ImportConfig['modules']['personalization'];
 
-  constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
+  constructor({ importConfig }: ModuleClassParams) {
     this.personalization = importConfig.modules.personalization;
     this.config = importConfig;
   }
