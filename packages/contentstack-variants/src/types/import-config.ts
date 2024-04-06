@@ -1,5 +1,4 @@
-import { AnyProperty } from "./utils";
-
+import { AnyProperty } from './utils';
 
 export interface ImportDefaultConfig extends AnyProperty {
   personalizationHost: string;
@@ -16,7 +15,11 @@ export interface ImportDefaultConfig extends AnyProperty {
         dirName: string;
         fileName: string;
       };
-    }
+      audiences: {
+        dirName: string;
+        fileName: string;
+      };
+    };
   };
 }
 
@@ -36,6 +39,7 @@ export interface ImportConfig extends ImportDefaultConfig, AnyProperty {
     access_token?: string;
     authtoken?: string;
     'X-User-Agent': string;
+    'X-Project-Uid'?: string;
   };
   access_token?: string;
   isAuthenticated?: boolean;
@@ -50,6 +54,7 @@ export interface ImportConfig extends ImportDefaultConfig, AnyProperty {
   replaceExisting?: boolean;
   skipExisting?: boolean;
   stackName?: string;
+  project_id?: string;
 }
 
 type branch = {

@@ -20,7 +20,7 @@ export type Modules =
   | 'labels'
   | 'marketplace-apps'
   | 'taxonomies'
-  | 'eclipse';
+  | 'personalization';
 
 export type branch = {
   uid: string;
@@ -154,7 +154,7 @@ export interface DefaultConfig {
         include_variant: boolean;
       } & AnyProperty;
     } & AnyProperty;
-    eclipse: {
+    personalization: {
       dirName: string;
       baseURL: string;
     } & AnyProperty;
@@ -256,7 +256,7 @@ export interface ExportConfig extends DefaultConfig {
     authtoken?: string;
     'X-User-Agent': string;
     organization_uid?: string;
-    project_id?: string;
+    'X-Project-Uid'?: string;
   };
   project_id?: string; // To fetch events, audiences & attributes
   access_token?: string;

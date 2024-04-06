@@ -1,13 +1,15 @@
 import { Import } from '@contentstack/cli-variants';
 
-import { log } from '../..//utils';
-import { ImportConfig } from '../../types';
+import { log } from '../../utils';
+import { ImportConfig, ModuleClassParams } from '../../types';
 
 export default class ImportPersonalization {
-  public readonly personalization: ImportConfig['modules']['personalization'];
+  private config: ImportConfig;
+  public personalization: ImportConfig['modules']['personalization'];
 
-  constructor(public readonly config: ImportConfig) {
-    this.personalization = this.config.modules.personalization;
+  constructor({ importConfig }: ModuleClassParams) {
+    this.personalization = importConfig.modules.personalization;
+    this.config = importConfig;
   }
 
   /**
@@ -20,6 +22,7 @@ export default class ImportPersonalization {
         const moduleMapper = {
           projects: Import.Project,
           attributes: Import.Attribute,
+          audiences: Import.Audiences
         };
 
         const order: (keyof typeof moduleMapper)[] = this.personalization.importOrder as (keyof typeof moduleMapper)[];
