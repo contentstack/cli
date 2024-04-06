@@ -1,7 +1,7 @@
 import * as winston from 'winston';
 import * as path from 'path';
 import mkdirp from 'mkdirp';
-import { ExportConfig } from '../types';
+import { ExportConfig, ImportConfig } from '../types';
 
 const slice = Array.prototype.slice;
 
@@ -127,7 +127,7 @@ function init(_logPath: string) {
   };
 }
 
-export const log = (config: ExportConfig, message: any, type: 'info' | 'error' | 'success') => {
+export const log = (config: ExportConfig | ImportConfig, message: any, type: 'info' | 'error' | 'success') => {
   const logsPath = config.data;
   // ignoring the type argument, as we are not using it to create a logfile anymore
   if (type !== 'error') {
