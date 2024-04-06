@@ -42,7 +42,7 @@ export type Modules =
   | 'labels'
   | 'marketplace-apps'
   | 'taxonomies'
-  | 'eclipse';
+  | 'personalization';
 
 export type ModuleClassParams = {
   stackAPIClient: ReturnType<ContentstackClient['stack']>;

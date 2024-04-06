@@ -12,6 +12,7 @@ import {
   EventStruct,
   AudienceStruct,
   AttributeStruct,
+  CreateAudienceInput
 } from '../types';
 export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> implements Personalization<T> {
   constructor(options: APIConfig) {
@@ -47,7 +48,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    * `ProjectStruct`.
    */
   async createAttribute(attribute: CreateAttributeInput): Promise<void | AttributeStruct> {
-    return (await this.apiClient.post<ProjectStruct>('/attributes', attribute)).data;
+    return (await this.apiClient.post<AttributeStruct>('/attributes', attribute)).data;
   }
 
   async getExperiences(): Promise<ProjectStruct | void> {
@@ -71,5 +72,17 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
 
   async getAttributes(): Promise<AttributeStruct[] | void> {
     return (await this.apiClient.get<AttributeStruct>('/attributes')).data;
+  }
+
+  /**
+   * @param {CreateAudienceInput} audience - The `audience` parameter in the `createAudience` function is
+   * of type `CreateAudienceInput`. This parameter likely contains the necessary data or information
+   * needed to create a new audience.
+   * @returns The `createAudience` function is returning the data obtained from a GET request to the
+   * `/audiences` endpoint using the `apiClient` with the input provided. The data returned is of type
+   * `AudienceStruct`.
+   */
+  async createAudience(audience: CreateAudienceInput): Promise<void | AudienceStruct> {
+    return (await this.apiClient.post<AudienceStruct>('/audiences', audience)).data;
   }
 }

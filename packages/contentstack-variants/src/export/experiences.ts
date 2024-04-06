@@ -8,16 +8,12 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
   public eclipseConfig: EclipseConfig;
   constructor(exportConfig: ExportConfig) {
     super({
-      config: { ...exportConfig },
-      baseURL: exportConfig.modules.eclipse.baseURL,
-      headers: {
-        organization_uid: exportConfig.org_uid,
-        authtoken: exportConfig.auth_token,
-        project_id: exportConfig.project_id,
-      },
+      config: exportConfig,
+      baseURL: exportConfig.modules.personalization.baseURL,
+      headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
     });
     this.exportConfig = exportConfig;
-    this.eclipseConfig = exportConfig.modules.eclipse;
+    this.eclipseConfig = exportConfig.modules.personalization;
     this.experiencesFolderPath = path.resolve(
       exportConfig.data,
       exportConfig.branchName || '',
