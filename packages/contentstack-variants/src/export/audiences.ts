@@ -1,10 +1,10 @@
 import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
 
-import { formatError, fsUtil, PersonalizationAdapter,log, VariantHttpClient } from '../utils';
-import { EclipseConfig, ExportConfig, AudienceStruct, AudiencesConfig, LogType } from '../types';
+import { formatError, fsUtil, PersonalizationAdapter,log } from '../utils';
+import { EclipseConfig, ExportConfig, AudienceStruct, AudiencesConfig } from '../types';
 
-export default class ExportAudiences extends PersonalizationAdapter<VariantHttpClient<ExportConfig>> {
+export default class ExportAudiences extends PersonalizationAdapter<ExportConfig> {
   private audiencesConfig: AudiencesConfig;
   private audiencesFolderPath: string;
   private audiences: Record<string, unknown>[];
@@ -12,15 +12,11 @@ export default class ExportAudiences extends PersonalizationAdapter<VariantHttpC
 
   constructor(readonly exportConfig: ExportConfig) {
     super({
-      config: { ...exportConfig },
-      baseURL: exportConfig.modules.eclipse.baseURL,
-      headers: {
-        organization_uid: exportConfig.org_uid,
-        authtoken: exportConfig.auth_token,
-        project_id: exportConfig.project_id,
-      },
+      config: exportConfig,
+      baseURL: exportConfig.modules.personalization.baseURL,
+      headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
     });
-    this.eclipseConfig = exportConfig.modules.eclipse;
+    this.eclipseConfig = exportConfig.modules.personalization;
     this.audiencesConfig = exportConfig.modules.audiences;
     this.audiencesFolderPath = pResolve(
       exportConfig.data,
