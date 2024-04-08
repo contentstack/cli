@@ -552,7 +552,7 @@ export default class EntriesImport extends BaseClass {
 
   async replaceEntriesHandler({
     apiParams,
-    element: entry
+    element: entry,
   }: {
     apiParams: ApiOptions;
     element: Record<string, string>;
@@ -876,19 +876,21 @@ export default class EntriesImport extends BaseClass {
     }
     // log(this.importConfig, `Starting publish entries for ${cTUid} in locale ${locale}`, 'info');
 
-    const onSuccess = ({ response, apiData: { environments, entryUid }, additionalInfo }: any) => {
+    const onSuccess = ({ response, apiData: { environments, entryUid, locales }, additionalInfo }: any) => {
       log(
         this.importConfig,
         `Published entry: '${entryUid}' of content type ${cTUid} and locale ${locale} in ${environments?.join(
           ',',
-        )} environments`,
+        )} environments and ${locales?.join(',')} locales`,
         'info',
       );
     };
-    const onReject = ({ error, apiData, additionalInfo }: any) => {
+    const onReject = ({ error, apiData: { environments, entryUid, locales }, additionalInfo }: any) => {
       log(
         this.importConfig,
-        `${apiData.entryUid} entry of content type ${cTUid} in locale ${locale} failed to publish`,
+        `${entryUid} entry of content type ${cTUid} and locale ${locale} failed to publish in ${environments?.join(
+          ',',
+        )} environments and ${locales?.join(',')} locales `,
         'error',
       );
       log(this.importConfig, formatError(error), 'error');
