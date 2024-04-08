@@ -2,6 +2,7 @@ import omit from 'lodash/omit';
 import { existsSync } from 'fs';
 import {
   HttpClient,
+  HttpResponse,
   HttpClientOptions,
   ContentstackClient,
   ContentstackConfig,
@@ -13,13 +14,18 @@ import {
   AdapterType,
   AnyProperty,
   ExportConfig,
+  ImportConfig,
   VariantOptions,
   VariantsOption,
   VariantInterface,
+  VariantEntryStruct,
+  CreateVariantEntryDto,
+  CreateVariantEntryOptions,
 } from '../types';
+import messages from '../messages';
 import { AdapterHelper } from './adapter-helper';
 
-export class VariantHttpClient<T> extends AdapterHelper<T, HttpClient> implements VariantInterface<T, HttpClient> {
+export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implements VariantInterface<C, HttpClient> {
   constructor(config: APIConfig, options?: HttpClientOptions) {
     super(config, options);
     const baseURL = config.baseURL?.includes('http') ? `${config.baseURL}/v3` : `https://${config.baseURL}/v3`;
@@ -119,6 +125,32 @@ export class VariantHttpClient<T> extends AdapterHelper<T, HttpClient> implement
 
     if (returnResult) return { entries };
   }
+
+  /**
+   * The function `createVariantEntry` creates a new variant entry using the provided input and
+   * options.
+   * @param {CreateVariantEntryDto} input - The `input` parameter in the `createVariantEntry` function
+   * is of type `CreateVariantEntryDto`. This parameter likely contains the data needed to create a new
+   * variant entry, such as the fields and values for the variant entry.
+   * @param {CreateVariantEntryOptions} options - The `options` parameter contains the following
+   * properties:
+   * @returns The function `createVariantEntry` is returning a POST request to the specified endpoint
+   * with the input data provided in the `CreateVariantEntryDto` parameter. The response is expected to
+   * be of type `VariantEntryStruct`.
+   */
+  createVariantEntry(input: CreateVariantEntryDto, options: CreateVariantEntryOptions) {
+    const variantConfig = (this.config as ImportConfig).modules.variantEntry;
+    const { locale = variantConfig.query.locale || 'en-us', variant_id, entry_uid, content_type_uid } = options;
+    let endpoint = `content_types/${content_type_uid}/entries/${entry_uid}/variants/${variant_id}?locale=${locale}`;
+
+    const query = this.constructQuery(omit(variantConfig.query, ['locale']));
+
+    if (query) {
+      endpoint = endpoint.concat(query);
+    }
+
+    return this.apiClient.post<VariantEntryStruct>(endpoint, input);
+  }
 }
 
 export class VariantManagementSDK<T>
@@ -126,7 +158,7 @@ export class VariantManagementSDK<T>
   implements VariantInterface<T, ContentstackClient>
 {
   public override apiClient!: ContentstackClient;
-  
+
   async init(): Promise<void> {
     this.apiClient = await managementSDKClient(this.config);
   }
@@ -141,6 +173,11 @@ export class VariantManagementSDK<T>
     return { entries: [{}] };
   }
 
+  createVariantEntry(input: CreateVariantEntryDto, options: CreateVariantEntryOptions): Promise<HttpResponse<VariantEntryStruct>> {
+    // FIXME placeholder
+    return new HttpClient().post<VariantEntryStruct>('/', input);
+  }
+
   constructQuery(query: Record<string, any>): string | void {}
 
   async delay(ms: number): Promise<void> {}
@@ -148,6 +185,7 @@ export class VariantManagementSDK<T>
 
 export class VariantAdapter<T> {
   protected variantInstance;
+  public readonly messages: typeof messages;
 
   constructor(config: ContentstackConfig & AnyProperty & AdapterType<T, ContentstackConfig>);
   constructor(config: APIConfig & AdapterType<T, APIConfig & AnyProperty>, options?: HttpClientOptions);
@@ -162,6 +200,8 @@ export class VariantAdapter<T> {
       const { Adapter, ...restConfig } = config;
       this.variantInstance = new Adapter(restConfig);
     }
+
+    this.messages = messages;
   }
 }
 
