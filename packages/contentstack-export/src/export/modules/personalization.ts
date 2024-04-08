@@ -18,18 +18,14 @@ export default class ExportPersonalization {
 
   async start(): Promise<void> {
     try {
-      // get project details
-      // if project exist
-      // set that in the global config
-      // export project
-      const projectHandler = new ExportProjects(this.exportConfig);
-      await projectHandler.start();
+      await new ExportProjects(this.exportConfig).start();
       if (this.exportConfig.personalizationEnabled) {
-        // export experiences, along with this export content type details as well
         await new ExportExperiences(this.exportConfig).start();
         await new ExportEvents(this.exportConfig).start();
         await new ExportAudiences(this.exportConfig).start();
         await new ExportAttributes(this.exportConfig).start();
+      } else {
+        log(this.exportConfig, 'No Personalization project linked with the stack', 'info');
       }
     } catch (error) {
       this.exportConfig.personalizationEnabled = false;

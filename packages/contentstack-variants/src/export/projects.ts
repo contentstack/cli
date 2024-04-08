@@ -1,25 +1,25 @@
 import * as path from 'path';
 import { ContentstackClient } from '@contentstack/cli-utilities';
 
-import { ExportConfig, EclipseConfig } from '../types';
+import { ExportConfig, PersonalizationConfig } from '../types';
 import { PersonalizationAdapter, log, fsUtil, formatError } from '../utils';
 
 export default class ExportProjects extends PersonalizationAdapter<ExportConfig> {
   private projectFolderPath: string;
   public exportConfig: ExportConfig;
-  public eclipseConfig: EclipseConfig;
+  public personalizationConfig: PersonalizationConfig;
   constructor(exportConfig: ExportConfig) {
     super({
       config: exportConfig,
       baseURL: exportConfig.modules.personalization.baseURL,
-      headers: { authtoken: exportConfig.auth_token, organization_uid: exportConfig.org_uid, },
+      headers: { authtoken: exportConfig.auth_token, organization_uid: exportConfig.org_uid },
     });
     this.exportConfig = exportConfig;
-    this.eclipseConfig = exportConfig.modules.personalization;
+    this.personalizationConfig = exportConfig.modules.personalization;
     this.projectFolderPath = path.resolve(
       exportConfig.data,
       exportConfig.branchName || '',
-      this.eclipseConfig.dirName,
+      this.personalizationConfig.dirName,
       'projects',
     );
   }
@@ -40,7 +40,7 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
       fsUtil.writeFile(path.resolve(this.projectFolderPath, 'projects.json'), project);
     } catch (error) {
       log(this.exportConfig, `Failed to export projects  ${formatError(error)}`, 'error');
-      log(this.exportConfig, error, 'error');
+      throw error;
     }
   }
 }

@@ -154,7 +154,7 @@ const config: DefaultConfig = {
     personalization: {
       importData: true,
       dirName: 'personalization',
-      importOrder: ['projects','attributes', 'audiences'],
+      importOrder: ['projects', 'attributes', 'audiences', 'events'],
       projects: {
         dirName: 'projects',
         fileName: 'projects.json',
@@ -166,6 +166,10 @@ const config: DefaultConfig = {
       audiences: {
         dirName: 'audiences',
         fileName: 'audiences.json',
+      },
+      events: {
+        dirName: 'events',
+        fileName: 'events.json',
       },
     },
   },

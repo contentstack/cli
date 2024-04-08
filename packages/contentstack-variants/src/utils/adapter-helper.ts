@@ -6,12 +6,12 @@ import { APIConfig, AdapterHelperInterface } from '../types';
 
 export class AdapterHelper<T, ApiClient> implements AdapterHelperInterface<T, ApiClient> {
   public readonly config: T;
-  public readonly $t: typeof $t
+  public readonly $t: typeof $t;
   public readonly apiClient: ApiClient;
   public readonly messages: typeof messages;
 
   constructor(public readonly adapterConfig: APIConfig, options?: HttpClientOptions) {
-    this.$t = $t
+    this.$t = $t;
     this.messages = messages;
     this.config = adapterConfig.config as T;
     delete this.adapterConfig.config;

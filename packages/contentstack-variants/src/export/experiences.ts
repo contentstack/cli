@@ -1,11 +1,11 @@
 import * as path from 'path';
-import { EclipseConfig, ExportConfig } from '../types';
+import { PersonalizationConfig, ExportConfig } from '../types';
 import { formatError, fsUtil, log, PersonalizationAdapter } from '../utils';
 
 export default class ExportExperiences extends PersonalizationAdapter<ExportConfig> {
   private experiencesFolderPath: string;
   public exportConfig: ExportConfig;
-  public eclipseConfig: EclipseConfig;
+  public personalizationConfig: PersonalizationConfig;
   constructor(exportConfig: ExportConfig) {
     super({
       config: exportConfig,
@@ -13,11 +13,11 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
       headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
     });
     this.exportConfig = exportConfig;
-    this.eclipseConfig = exportConfig.modules.personalization;
+    this.personalizationConfig = exportConfig.modules.personalization;
     this.experiencesFolderPath = path.resolve(
       exportConfig.data,
       exportConfig.branchName || '',
-      this.eclipseConfig.dirName,
+      this.personalizationConfig.dirName,
       'experiences',
     );
   }
@@ -34,10 +34,14 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
         log(this.exportConfig, 'No Experiences found with the give project', 'info');
         return;
       }
-      return fsUtil.writeFile(path.resolve(this.experiencesFolderPath, 'experiences.json'), experiences);
+      fsUtil.writeFile(path.resolve(this.experiencesFolderPath, 'experiences.json'), experiences);
+      // const variantGroupDetails = [];
+      // for (let experience of experiences) {
+      //   variantGroupDetails.push(await this.getVariantGroup({ experienceUid: experience.uid }));
+      // }
     } catch (error) {
       log(this.exportConfig, `Failed to export experiences  ${formatError(error)}`, 'error');
-      log(this.exportConfig, error, 'error');
+      throw error;
     }
   }
 }
