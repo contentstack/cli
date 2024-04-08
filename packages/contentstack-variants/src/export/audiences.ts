@@ -1,14 +1,14 @@
 import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
 
-import { formatError, fsUtil, PersonalizationAdapter,log } from '../utils';
-import { EclipseConfig, ExportConfig, AudienceStruct, AudiencesConfig } from '../types';
+import { formatError, fsUtil, PersonalizationAdapter, log } from '../utils';
+import { PersonalizationConfig, ExportConfig, AudienceStruct, AudiencesConfig } from '../types';
 
 export default class ExportAudiences extends PersonalizationAdapter<ExportConfig> {
   private audiencesConfig: AudiencesConfig;
   private audiencesFolderPath: string;
   private audiences: Record<string, unknown>[];
-  public eclipseConfig: EclipseConfig;
+  public personalizationConfig: PersonalizationConfig;
 
   constructor(readonly exportConfig: ExportConfig) {
     super({
@@ -16,12 +16,12 @@ export default class ExportAudiences extends PersonalizationAdapter<ExportConfig
       baseURL: exportConfig.modules.personalization.baseURL,
       headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
     });
-    this.eclipseConfig = exportConfig.modules.personalization;
+    this.personalizationConfig = exportConfig.modules.personalization;
     this.audiencesConfig = exportConfig.modules.audiences;
     this.audiencesFolderPath = pResolve(
       exportConfig.data,
       exportConfig.branchName || '',
-      this.eclipseConfig.dirName,
+      this.personalizationConfig.dirName,
       this.audiencesConfig.dirName,
     );
     this.audiences = [];
@@ -45,9 +45,8 @@ export default class ExportAudiences extends PersonalizationAdapter<ExportConfig
     } catch (error: any) {
       if (error?.errorMessage || error?.message || error?.error_message) {
         log(this.exportConfig, `Failed to export audiences! ${formatError(error)}`, 'error');
-      } else {
-        log(this.exportConfig, `Failed to export audiences! ${error}`, 'error');
       }
+      throw error;
     }
   }
 

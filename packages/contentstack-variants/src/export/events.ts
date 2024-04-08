@@ -2,13 +2,13 @@ import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
 
 import { formatError, fsUtil, PersonalizationAdapter, log } from '../utils';
-import { EclipseConfig, ExportConfig, EventStruct, EventsConfig } from '../types';
+import { PersonalizationConfig, ExportConfig, EventStruct, EventsConfig } from '../types';
 
 export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
   private eventsConfig: EventsConfig;
   private eventsFolderPath: string;
   private events: Record<string, unknown>[];
-  public eclipseConfig: EclipseConfig;
+  public personalizationConfig: PersonalizationConfig;
 
   constructor(readonly exportConfig: ExportConfig) {
     super({
@@ -16,12 +16,12 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
       baseURL: exportConfig.modules.personalization.baseURL,
       headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
     });
-    this.eclipseConfig = exportConfig.modules.personalization;
+    this.personalizationConfig = exportConfig.modules.personalization;
     this.eventsConfig = exportConfig.modules.events;
     this.eventsFolderPath = pResolve(
       exportConfig.data,
       exportConfig.branchName || '',
-      this.eclipseConfig.dirName,
+      this.personalizationConfig.dirName,
       this.eventsConfig.dirName,
     );
     this.events = [];
@@ -45,9 +45,8 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
     } catch (error: any) {
       if (error?.errorMessage || error?.message || error?.error_message) {
         log(this.exportConfig, `Failed to export events! ${formatError(error)}`, 'error');
-      } else {
-        log(this.exportConfig, `Failed to export events! ${error}`, 'error');
       }
+      throw error;
     }
   }
 
