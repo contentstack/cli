@@ -13,6 +13,13 @@ export type ProjectStruct = {
   activeExperienceCount: number;
 } & AnyProperty;
 
+export type ExperienceStruct = {
+  _id: string;
+  uid: string;
+  name: string;
+  description: string;
+} & AnyProperty;
+
 export type GetProjectsParams = {
   connectedStackApiKey: string;
   includeAudienceCount?: boolean;
@@ -62,6 +69,11 @@ export type AttributeStruct = {
 
 export interface CreateAttributeInput {
   name: string;
+  key: string;
+  description: string;
+}
+
+export interface CreateEventInput {
   key: string;
   description: string;
 }

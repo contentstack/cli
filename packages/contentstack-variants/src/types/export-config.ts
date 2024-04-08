@@ -267,12 +267,12 @@ export interface ExportConfig extends DefaultConfig {
   personalizationHost?: string;
 }
 
-export interface EclipseConfig {
+export interface PersonalizationConfig {
   dirName: string;
   baseURL: string;
 }
 
-export interface EclipseConfig {
+export interface PersonalizationConfig {
   dirName: string;
   baseURL: string;
 }

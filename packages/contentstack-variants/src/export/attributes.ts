@@ -2,13 +2,13 @@ import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
 
 import { formatError, fsUtil, PersonalizationAdapter, log } from '../utils';
-import { EclipseConfig, ExportConfig, AttributesConfig, AttributeStruct } from '../types';
+import { PersonalizationConfig, ExportConfig, AttributesConfig, AttributeStruct } from '../types';
 
 export default class ExportAttributes extends PersonalizationAdapter<ExportConfig> {
   private attributesConfig: AttributesConfig;
   private attributesFolderPath: string;
   private attributes: Record<string, unknown>[];
-  public eclipseConfig: EclipseConfig;
+  public personalizationConfig: PersonalizationConfig;
 
   constructor(readonly exportConfig: ExportConfig) {
     super({
@@ -16,12 +16,12 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
       baseURL: exportConfig.modules.personalization.baseURL,
       headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
     });
-    this.eclipseConfig = exportConfig.modules.personalization;
+    this.personalizationConfig = exportConfig.modules.personalization;
     this.attributesConfig = exportConfig.modules.attributes;
     this.attributesFolderPath = pResolve(
       exportConfig.data,
       exportConfig.branchName || '',
-      this.eclipseConfig.dirName,
+      this.personalizationConfig.dirName,
       this.attributesConfig.dirName,
     );
     this.attributes = [];
@@ -45,9 +45,8 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
     } catch (error: any) {
       if (error?.errorMessage || error?.message || error?.error_message) {
         log(this.exportConfig, `Failed to export attributes! ${formatError(error)}`, 'error');
-      } else {
-        log(this.exportConfig, `Failed to export attributes! ${error}`, 'error');
       }
+      throw error;
     }
   }
 

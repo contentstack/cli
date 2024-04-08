@@ -16,7 +16,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
     const conf: APIConfig = {
       config,
       baseURL: config.personalizationHost,
-      headers: { authtoken: config.auth_token, 'X-Project-Uid': config.project_id},
+      headers: { authtoken: config.auth_token, 'X-Project-Uid': config.project_id },
     };
     super(Object.assign(config, conf));
     this.personalizationConfig = this.config.modules.personalization;
@@ -56,7 +56,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
         for (const audience of audiences) {
           let { name, definition, description, uid } = audience;
           //check whether reference attributes exists or not
-          if(definition.rules?.length){
+          if (definition.rules?.length) {
             const updatedDefRules = lookUpAttributes(definition.rules, attributesUid);
             definition.rules = updatedDefRules;
           }
@@ -71,9 +71,8 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
       } catch (error: any) {
         if (error?.errorMessage || error?.message || error?.error_message) {
           log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Audiences' }), 'error');
-        } else {
-          log(this.config, error, 'error');
         }
+        throw error;
       }
     }
   }
