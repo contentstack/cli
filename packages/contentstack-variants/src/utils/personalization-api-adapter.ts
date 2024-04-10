@@ -93,8 +93,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    * of type `CreateExperienceInput`. This parameter likely contains the necessary data or information
    * needed to create a new audience.
    * @returns The `createExperience` function is returning the data obtained from a GET request to the
-   * `/      return (await this.apiClient.post<ExperienceStruct>('/experiences', experience)).data;
-` endpoint using the `apiClient` with the input provided. The data returned is of type
+   * `/experiences` endpoint using the `apiClient` with the input provided. The data returned is of type
    * `ExperienceStruct`.
    */
   async createExperience(experience: CreateExperienceInput): Promise<void | ExperienceStruct> {
