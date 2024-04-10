@@ -139,6 +139,10 @@ export default interface DefaultConfig {
         dirName: string;
         fileName: string;
       };
+      experiences: {
+        dirName: string;
+        fileName: string;
+      };
     };
   };
   languagesCode: string[];
