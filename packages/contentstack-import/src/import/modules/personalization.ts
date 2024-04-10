@@ -22,7 +22,8 @@ export default class ImportPersonalization {
         const moduleMapper = {
           projects: Import.Project,
           attributes: Import.Attribute,
-          audiences: Import.Audiences
+          audiences: Import.Audiences,
+          experiences: Import.Experiences
         };
 
         const order: (keyof typeof moduleMapper)[] = this.personalization.importOrder as (keyof typeof moduleMapper)[];
