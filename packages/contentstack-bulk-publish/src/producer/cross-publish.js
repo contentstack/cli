@@ -191,6 +191,10 @@ async function getSyncEntries(
       }
 
       const entriesResponse = await Stack.sync(syncData);
+    
+      filter?.content_type_uid.forEach((ctUid)=>{
+        entriesResponse.items = entriesResponse.items.filter((entry)=>entry.content_type_uid === ctUid)
+      })
 
       if (entriesResponse.items.length > 0) {
         await bulkAction(stack, entriesResponse.items, bulkPublish, filter, destEnv, apiVersion);
