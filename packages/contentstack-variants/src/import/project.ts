@@ -2,7 +2,7 @@ import { join } from 'path';
 import { existsSync, readFileSync } from 'fs';
 
 import { PersonalizationAdapter } from '../utils';
-import { APIConfig, AnyProperty, CreateProjectInput, ImportConfig, LogType } from '../types';
+import { APIConfig, CreateProjectInput, ImportConfig, LogType } from '../types';
 
 export default class Project extends PersonalizationAdapter<ImportConfig> {
   constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
