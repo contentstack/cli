@@ -144,6 +144,14 @@ export default interface DefaultConfig {
         fileName: string;
       };
     };
+    variantEntry: {
+      dirName: string;
+      fileName: string;
+      apiConcurrency: number;
+      query: {
+        locale: string;
+      } & AnyProperty;
+    } & AnyProperty;
   };
   languagesCode: string[];
   apis: {

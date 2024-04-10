@@ -154,7 +154,7 @@ const config: DefaultConfig = {
     personalization: {
       importData: true,
       dirName: 'personalization',
-      importOrder: ['projects','attributes', 'audiences', 'experiences'],
+      importOrder: ['projects', 'attributes', 'audiences', 'experiences'],
       projects: {
         dirName: 'projects',
         fileName: 'projects.json',
@@ -170,6 +170,14 @@ const config: DefaultConfig = {
       experiences: {
         dirName: 'experiences',
         fileName: 'experiences.json',
+      },
+    },
+    variantEntry: {
+      dirName: 'variants',
+      fileName: 'index.json',
+      apiConcurrency: 5,
+      query: {
+        locale: 'en-us',
       },
     },
   },
