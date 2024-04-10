@@ -19,6 +19,10 @@ export interface ImportDefaultConfig extends AnyProperty {
         dirName: string;
         fileName: string;
       };
+      experiences: {
+        dirName: string;
+        fileName: string;
+      };
     };
   };
 }
