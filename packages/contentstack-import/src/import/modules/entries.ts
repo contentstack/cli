@@ -879,18 +879,18 @@ export default class EntriesImport extends BaseClass {
     const onSuccess = ({ response, apiData: { environments, entryUid, locales }, additionalInfo }: any) => {
       log(
         this.importConfig,
-        `Published entry: '${entryUid}' of content type ${cTUid} and locale ${locale} in ${environments?.join(
+        `Published the entry: '${entryUid}' of Content Type '${cTUid}' and Locale '${locale}' in Environments '${environments?.join(
           ',',
-        )} environments and ${locales?.join(',')} locales`,
+        )}' and Locales '${locales?.join(',')}'`,
         'info',
       );
     };
     const onReject = ({ error, apiData: { environments, entryUid, locales }, additionalInfo }: any) => {
       log(
         this.importConfig,
-        `${entryUid} entry of content type ${cTUid} and locale ${locale} failed to publish in ${environments?.join(
+        `Failed to publish: '${entryUid}' entry of Content Type '${cTUid}' and Locale '${locale}' in Environments '${environments?.join(
           ',',
-        )} environments and ${locales?.join(',')} locales `,
+        )}' and Locales '${locales?.join(',')}'`,
         'error',
       );
       log(this.importConfig, formatError(error), 'error');

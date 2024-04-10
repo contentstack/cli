@@ -120,7 +120,7 @@ module.exports = class ImportMarketplaceApps {
 
         return true;
       },
-      message: 'Enter marketplace app configurations encryption key',
+      message: 'Enter Marketplace app configurations encryption key',
     });
 
     try {
