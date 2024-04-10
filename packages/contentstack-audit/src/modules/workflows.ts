@@ -66,13 +66,16 @@ export default class Workflows {
 
     for (const workflow of this.workflowSchema) {
       const ctNotPresent = workflow.content_types.filter((ct) => !this.ctUidSet.has(ct));
-      const branch = workflow?.branches?.filter((branch) => branch !== this.config?.branch);
+      let branch: string[] | undefined;
+      if (this.config?.branch) {
+        branch = workflow?.branches?.filter((branch) => branch !== this.config?.branch);
+      }
 
       if (ctNotPresent.length || branch?.length) {
         const tempwf = cloneDeep(workflow);
         tempwf.content_types = ctNotPresent || [];
 
-        if (workflow?.branches) {
+        if (workflow?.branches && this.config?.branch) {
           tempwf.branches = branch;
         }
 
@@ -111,17 +114,19 @@ export default class Workflows {
         const fixedCts = workflow.content_types.filter((ct) => !this.missingCts.has(ct));
         const fixedBranches: string[] = [];
 
-        workflow?.branches?.forEach((branch) => {
-          if (branch !== this.config?.branch) {
-            const { uid, name } = workflow;
-            this.log($t(commonMsg.WF_BRANCH_REMOVAL, { uid, name, branch }), { color: 'yellow' });
-          } else {
-            fixedBranches.push(branch);
-          }
-        });
+        if (this.config.branch) {
+          workflow?.branches?.forEach((branch) => {
+            if (branch !== this.config?.branch) {
+              const { uid, name } = workflow;
+              this.log($t(commonMsg.WF_BRANCH_REMOVAL, { uid, name, branch }), { color: 'yellow' });
+            } else {
+              fixedBranches.push(branch);
+            }
+          });
 
-        if (fixedBranches.length > 0) {
-          newWorkflowSchema[workflow.uid].branches = fixedBranches;
+          if (fixedBranches.length > 0) {
+            newWorkflowSchema[workflow.uid].branches = fixedBranches;
+          }
         }
 
         if (fixedCts.length) {
