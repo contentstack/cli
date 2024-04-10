@@ -11,6 +11,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
   private audiencesUidMapper: Record<string, unknown>;
   private personalizationConfig: ImportConfig['modules']['personalization'];
   private audienceConfig: ImportConfig['modules']['personalization']['audiences'];
+  public attributeConfig: ImportConfig['modules']['personalization']['attributes'];
 
   constructor(public readonly config: ImportConfig) {
     const conf: APIConfig = {
@@ -21,6 +22,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
     super(Object.assign(config, conf));
     this.personalizationConfig = this.config.modules.personalization;
     this.audienceConfig = this.personalizationConfig.audiences;
+    this.attributeConfig = this.personalizationConfig.attributes;
     this.mapperDirPath = resolve(
       this.config.backupDir,
       'mapper',
@@ -32,7 +34,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
       this.config.backupDir,
       'mapper',
       this.personalizationConfig.dirName,
-      'attributes',
+      this.attributeConfig.dirName,
       'uid-mapping.json',
     );
     this.audiencesUidMapper = {};
@@ -51,12 +53,12 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
     if (existsSync(audiencesPath)) {
       try {
         const audiences = fsUtil.readFile(audiencesPath, true) as AudienceStruct[];
-        const attributesUid = fsUtil.readFile(this.attributesMapperPath, true) as Record<string, string>;
+        const attributesUid = fsUtil.readFile(this.attributesMapperPath, true) as Record<string, string> || {};
 
         for (const audience of audiences) {
           let { name, definition, description, uid } = audience;
           //check whether reference attributes exists or not
-          if(definition.rules?.length){
+          if (definition.rules?.length) {
             const updatedDefRules = lookUpAttributes(definition.rules, attributesUid);
             definition.rules = updatedDefRules;
           }
