@@ -11,6 +11,7 @@ export interface ExternalConfig {
 }
 
 export default interface ImportConfig extends DefaultConfig, ExternalConfig {
+  canCreatePrivateApp: boolean;
   contentDir: string;
   data: string;
   management_token?: string;
