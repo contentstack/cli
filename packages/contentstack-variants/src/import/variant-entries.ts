@@ -5,16 +5,16 @@ import orderBy from 'lodash/orderBy';
 import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
 import { readFileSync, existsSync } from 'fs';
-import { FsUtility } from '@contentstack/cli-utilities';
+import { FsUtility, HttpResponse } from '@contentstack/cli-utilities';
 
 import VariantAdapter, { VariantHttpClient } from '../utils/variant-api-adapter';
 import {
+  LogType,
   APIConfig,
   AdapterType,
-  EntryDataForVariantEntries,
   ImportConfig,
-  LogType,
   VariantEntryStruct,
+  EntryDataForVariantEntries,
 } from '../types';
 
 export default class VariantEntries extends VariantAdapter<VariantHttpClient<ImportConfig>> {
@@ -149,11 +149,11 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         }
       }
 
-      // FIXME Handle the API response here
-      await Promise.allSettled(allPromise);
+      // NOTE Handle the API response here
+      const resultSet = await Promise.allSettled(allPromise);
 
-      // FIXME publish all the entries
-      this.publishVariantEntries();
+      // NOTE publish all the entries
+      this.publishVariantEntries(resultSet);
 
       const end = Date.now();
       const exeTime = end - start;
@@ -162,12 +162,14 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
   }
 
   handleVariantEntryRelationalData(variantEntry: VariantEntryStruct) {
-    console.log('Handle/Replace variant entry relational data');
     // FIXME: Handle relational data
+    console.log('Handle/Replace variant entry relational data');
     return variantEntry;
   }
 
-  publishVariantEntries() {
+  publishVariantEntries(resultSet: PromiseSettledResult<HttpResponse<VariantEntryStruct>>[]) {
+    // FIXME: Handle variant entry publish
     console.log('Variant entry publish');
+    return resultSet;
   }
 }
