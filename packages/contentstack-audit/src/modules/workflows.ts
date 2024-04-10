@@ -66,20 +66,20 @@ export default class Workflows {
 
     for (const workflow of this.workflowSchema) {
       const ctNotPresent = workflow.content_types.filter((ct) => !this.ctUidSet.has(ct));
-      let branch: string[] | undefined;
+      let branchesToBeRemoved: string[] = [];
       if (this.config?.branch) {
-        branch = workflow?.branches?.filter((branch) => branch !== this.config?.branch);
+        branchesToBeRemoved = workflow?.branches?.filter((branch) => branch !== this.config?.branch);
       }
 
-      if (ctNotPresent.length || branch?.length) {
+      if (ctNotPresent.length || branchesToBeRemoved?.length) {
         const tempwf = cloneDeep(workflow);
         tempwf.content_types = ctNotPresent || [];
 
         if (workflow?.branches && this.config?.branch) {
-          tempwf.branches = branch;
+          tempwf.branches = branchesToBeRemoved;
         }
 
-        if (branch?.length) {
+        if (branchesToBeRemoved?.length) {
           this.isBranchFixDone = true;
         }
 
