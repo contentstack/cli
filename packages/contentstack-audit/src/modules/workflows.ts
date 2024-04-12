@@ -68,7 +68,7 @@ export default class Workflows {
       const ctNotPresent = workflow.content_types.filter((ct) => !this.ctUidSet.has(ct));
       let branchesToBeRemoved: string[] = [];
       if (this.config?.branch) {
-        branchesToBeRemoved = workflow?.branches?.filter((branch) => branch !== this.config?.branch);
+        branchesToBeRemoved = workflow?.branches?.filter((branch) => branch !== this.config?.branch) || [];
       }
 
       if (ctNotPresent.length || branchesToBeRemoved?.length) {
