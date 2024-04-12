@@ -11,30 +11,21 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
   private audiencesUidMapper: Record<string, unknown>;
   private personalizationConfig: ImportConfig['modules']['personalization'];
   private audienceConfig: ImportConfig['modules']['personalization']['audiences'];
+  public attributeConfig: ImportConfig['modules']['personalization']['attributes'];
 
   constructor(public readonly config: ImportConfig) {
     const conf: APIConfig = {
       config,
       baseURL: config.personalizationHost,
-      headers: { authtoken: config.auth_token, 'X-Project-Uid': config.project_id},
+      headers: { authtoken: config.auth_token, 'X-Project-Uid': config.project_id },
     };
     super(Object.assign(config, conf));
     this.personalizationConfig = this.config.modules.personalization;
     this.audienceConfig = this.personalizationConfig.audiences;
-    this.mapperDirPath = resolve(
-      this.config.backupDir,
-      'mapper',
-      this.personalizationConfig.dirName,
-      this.audienceConfig.dirName,
-    );
-    this.audiencesUidMapperPath = resolve(this.mapperDirPath, 'uid-mapping.json');
-    this.attributesMapperPath = resolve(
-      this.config.backupDir,
-      'mapper',
-      this.personalizationConfig.dirName,
-      'attributes',
-      'uid-mapping.json',
-    );
+    this.attributeConfig = this.personalizationConfig.attributes;
+    this.mapperDirPath = resolve(this.config.backupDir, 'mapper', this.personalizationConfig.dirName);
+    this.audiencesUidMapperPath = resolve(this.mapperDirPath, this.audienceConfig.dirName, 'uid-mapping.json');
+    this.attributesMapperPath = resolve(this.mapperDirPath, this.attributeConfig.dirName, 'uid-mapping.json');
     this.audiencesUidMapper = {};
   }
 
@@ -51,14 +42,13 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
     if (existsSync(audiencesPath)) {
       try {
         const audiences = fsUtil.readFile(audiencesPath, true) as AudienceStruct[];
-        const attributesUid = fsUtil.readFile(this.attributesMapperPath, true) as Record<string, string>;
+        const attributesUid = (fsUtil.readFile(this.attributesMapperPath, true) as Record<string, string>) || {};
 
         for (const audience of audiences) {
           let { name, definition, description, uid } = audience;
           //check whether reference attributes exists or not
-          if(definition.rules?.length){
-            const updatedDefRules = lookUpAttributes(definition.rules, attributesUid);
-            definition.rules = updatedDefRules;
+          if (definition.rules?.length) {
+            definition.rules = lookUpAttributes(definition.rules, attributesUid);
           }
           const audienceRes = await this.createAudience({ definition, name, description });
           //map old audience uid to new audience uid
