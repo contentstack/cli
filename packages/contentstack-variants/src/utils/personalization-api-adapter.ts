@@ -1,5 +1,5 @@
 import { AdapterHelper } from './adapter-helper';
-import { configHandler, HttpClient, HttpResponse } from '@contentstack/cli-utilities';
+import { HttpClient } from '@contentstack/cli-utilities';
 
 import {
   ProjectStruct,
@@ -12,7 +12,9 @@ import {
   EventStruct,
   AudienceStruct,
   AttributeStruct,
-  CreateAudienceInput
+  CreateAudienceInput,
+  CreateExperienceInput,
+  ExperienceStruct,
 } from '../types';
 export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> implements Personalization<T> {
   constructor(options: APIConfig) {
@@ -84,5 +86,17 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    */
   async createAudience(audience: CreateAudienceInput): Promise<void | AudienceStruct> {
     return (await this.apiClient.post<AudienceStruct>('/audiences', audience)).data;
+  }
+
+  /**
+   * @param {CreateExperienceInput} experience - The `experience` parameter in the `createExperience` function is
+   * of type `CreateExperienceInput`. This parameter likely contains the necessary data or information
+   * needed to create a new audience.
+   * @returns The `createExperience` function is returning the data obtained from a GET request to the
+   * `/experiences` endpoint using the `apiClient` with the input provided. The data returned is of type
+   * `ExperienceStruct`.
+   */
+  async createExperience(experience: CreateExperienceInput): Promise<void | ExperienceStruct> {
+    return (await this.apiClient.post<ExperienceStruct>('/experiences', experience)).data;
   }
 }
