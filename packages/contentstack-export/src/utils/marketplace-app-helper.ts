@@ -34,7 +34,7 @@ export async function createNodeCryptoInstance(config: ExportConfig): Promise<No
 
         return true;
       },
-      message: 'Enter marketplace app configurations encryption key',
+      message: 'Enter Marketplace app configurations encryption key',
     });
   }
 
