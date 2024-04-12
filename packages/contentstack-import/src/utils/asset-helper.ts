@@ -251,9 +251,11 @@ export const lookupAssets = function (
   assetUrls.forEach(function (assetUrl: any) {
     let mappedAssetUrl = mappedAssetUrls[assetUrl];
     if (typeof mappedAssetUrl !== 'undefined') {
-      const sanitizedUrl = escapeRegExp(assetUrl).replace(/\.\./g, '\\$&');
-      const escapedMappedUrl = escapeRegExp(mappedAssetUrl).replace(/\.\./g, '\\$&');
-      entry = entry.replace(new RegExp(sanitizedUrl, 'img'), escapedMappedUrl);
+      //NOTE - This code was added to resolve the SRE issue but once the code was merged Assets URLs in JSON RTE started breaking
+      // const sanitizedUrl = escapeRegExp(assetUrl).replace(/\.\./g, '\\$&');
+      // const escapedMappedUrl = escapeRegExp(mappedAssetUrl).replace(/\.\./g, '\\$&');
+      // entry = entry.replace(new RegExp(sanitizedUrl, 'img'), escapedMappedUrl);
+      entry = entry.replace(new RegExp(assetUrl, 'img'), mappedAssetUrl);
       matchedUrls.push(mappedAssetUrl);
     } else {
       unmatchedUrls.push(assetUrl);
