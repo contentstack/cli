@@ -29,7 +29,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
 
         for (const project of projects) {
           const { name, description, connectedStackApiKey } = project;
-          const projectRes = await this.createProject({ name, description, connectedStackApiKey }) as ProjectStruct;
+          const projectRes = await this.createProject({ name, description, connectedStackApiKey });
           this.config.project_id = projectRes?.uid;
         }
 

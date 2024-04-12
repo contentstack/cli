@@ -18,33 +18,16 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     const conf: APIConfig = {
       config,
       baseURL: config.personalizationHost,
-      headers: { authtoken: config.auth_token, 'X-Project-Uid': config.project_id},
+      headers: { authtoken: config.auth_token, 'X-Project-Uid': config.project_id },
     };
     super(Object.assign(config, conf));
     this.personalizationConfig = this.config.modules.personalization;
     this.experienceConfig = this.personalizationConfig.experiences;
     this.audienceConfig = this.personalizationConfig.audiences;
-    this.mapperDirPath = resolve(
-      this.config.backupDir,
-      'mapper',
-      this.personalizationConfig.dirName,
-      this.experienceConfig.dirName,
-    );
-    this.experiencesUidMapperPath = resolve(this.mapperDirPath, 'uid-mapping.json');
-    this.audiencesMapperPath = resolve(
-      this.config.backupDir,
-      'mapper',
-      this.personalizationConfig.dirName,
-      this.audienceConfig.dirName,
-      'uid-mapping.json',
-    );
-    this.eventsMapperPath = resolve(
-      this.config.backupDir,
-      'mapper',
-      this.personalizationConfig.dirName,
-      'events',
-      'uid-mapping.json',
-    );
+    this.mapperDirPath = resolve(this.config.backupDir, 'mapper', this.personalizationConfig.dirName);
+    this.experiencesUidMapperPath = resolve(this.mapperDirPath, this.experienceConfig.dirName, 'uid-mapping.json');
+    this.audiencesMapperPath = resolve(this.mapperDirPath, this.audienceConfig.dirName, 'uid-mapping.json');
+    this.eventsMapperPath = resolve(this.mapperDirPath, 'events', 'uid-mapping.json');
     this.experiencesUidMapper = {};
   }
 
@@ -61,14 +44,13 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     if (existsSync(experiencePath)) {
       try {
         const experiences = fsUtil.readFile(experiencePath, true) as ExperienceStruct[];
-        const audiencesUid = fsUtil.readFile(this.audiencesMapperPath, true) as Record<string, string> || {};
-        const eventsUid = fsUtil.readFile(this.eventsMapperPath, true) as Record<string, string> || {};
+        const audiencesUid = (fsUtil.readFile(this.audiencesMapperPath, true) as Record<string, string>) || {};
+        const eventsUid = (fsUtil.readFile(this.eventsMapperPath, true) as Record<string, string>) || {};
 
         for (const experience of experiences) {
           const { uid, ...restExperienceData } = experience;
-          let experienceReqObj: CreateExperienceInput = { ...restExperienceData };
           //check whether reference audience exists or not that referenced in variations having __type equal to AudienceBasedVariation & targeting
-          experienceReqObj = lookUpAudiences(experienceReqObj, audiencesUid);
+          let experienceReqObj = lookUpAudiences(restExperienceData, audiencesUid);
           //check whether events exists or not that referenced in metrics
           experienceReqObj = lookUpEvents(experienceReqObj, eventsUid);
 
