@@ -121,7 +121,11 @@ export default class EntriesImport extends BaseClass {
         // Note: Instead of using entryRequestOptions, we can prepare request options for replace, to avoid unnecessary operations
         for (let entryRequestOption of entryRequestOptions) {
           await this.replaceEntries(entryRequestOption).catch((error) => {
-            log(this.importConfig, `Error while replacing the existing entries ${formatError(error)}`, 'error');
+            log(
+              this.importConfig,
+              `Error while replacing the existing entries ${formatError(error)} || ${JSON.stringify(error)}`,
+              'error',
+            );
           });
         }
       }
@@ -134,7 +138,9 @@ export default class EntriesImport extends BaseClass {
         await this.removeAutoCreatedEntries().catch((error) => {
           log(
             this.importConfig,
-            `Error while removing auto created entries in master locale ${formatError(error)}`,
+            `Error while removing auto created entries in master locale ${formatError(error)} || ${JSON.stringify(
+              error,
+            )}`,
             'error',
           );
         });
@@ -149,20 +155,28 @@ export default class EntriesImport extends BaseClass {
             `Error while updating entries references of ${entryUpdateRequestOption.cTUid} in locale ${entryUpdateRequestOption.locale}`,
             'error',
           );
-          log(this.importConfig, formatError(error), 'error');
+          log(this.importConfig, `${formatError(error)} || ${JSON.stringify(error)}`, 'error');
         });
       }
       fsUtil.writeFile(path.join(this.entriesMapperPath, 'failed-entries.json'), this.failedEntries);
 
       log(this.importConfig, 'Restoring content type changes', 'info');
       await this.enableMandatoryCTReferences().catch((error) => {
-        log(this.importConfig, `Error while updating content type references ${formatError(error)}`, 'error');
+        log(
+          this.importConfig,
+          `Error while updating content type references ${formatError(error)} || ${JSON.stringify(error)}`,
+          'error',
+        );
       });
 
       // Update field rule of content types which are got removed earlier
       log(this.importConfig, 'Updating the field rules of content type', 'info');
       await this.updateFieldRules().catch((error) => {
-        log(this.importConfig, `Error while updating field rules of content type ${formatError(error)}`, 'error');
+        log(
+          this.importConfig,
+          `Error while updating field rules of content type ${formatError(error)} || ${JSON.stringify(error)}`,
+          'error',
+        );
       });
       log(this.importConfig, 'Entries imported successfully', 'success');
 
@@ -176,7 +190,7 @@ export default class EntriesImport extends BaseClass {
               this.importConfig,
               `Error in publishing entries of ${entryRequestOption.cTUid} in locale ${
                 entryRequestOption.locale
-              } ${formatError(error)}`,
+              } ${formatError(error)} || ${JSON.stringify(error)}`,
               'error',
             );
           });
@@ -184,7 +198,7 @@ export default class EntriesImport extends BaseClass {
         log(this.importConfig, 'All the entries have been published successfully', 'success');
       }
     } catch (error) {
-      log(this.importConfig, formatError(error), 'error');
+      log(this.importConfig, `${formatError(error)} || ${JSON.stringify(error)}`, 'error');
       throw new Error('Error while importing entries');
     }
   }
@@ -194,7 +208,7 @@ export default class EntriesImport extends BaseClass {
       log(this.importConfig, `${uid} content type references removed temporarily`, 'success');
     };
     const onReject = ({ error, apiData: { uid } }: any) => {
-      log(this.importConfig, formatError(error), 'error');
+      log(this.importConfig, `${formatError(error)} || ${JSON.stringify(error)}`, 'error');
       throw new Error(`${uid} content type references removal failed`);
     };
     return await this.makeConcurrentCall({
@@ -372,19 +386,19 @@ export default class EntriesImport extends BaseClass {
             `${title} entry of content type ${cTUid} in locale ${locale} failed to create`,
             'error',
           );
-          log(this.importConfig, formatError(error), 'error');
+          log(this.importConfig, `${formatError(error)} || ${JSON.stringify(error)}`, 'error');
           this.failedEntries.push({ content_type: cTUid, locale, entry: { uid, title } });
         }
       } else {
         log(this.importConfig, `${title} entry of content type ${cTUid} in locale ${locale} failed to create`, 'error');
-        log(this.importConfig, formatError(error), 'error');
+        log(this.importConfig, `${formatError(error)} || ${JSON.stringify(error)}`, 'error');
         this.failedEntries.push({ content_type: cTUid, locale, entry: { uid, title } });
       }
     };
 
     for (const index in indexer) {
       const chunk = await fs.readChunkFiles.next().catch((error) => {
-        log(this.importConfig, formatError(error), 'error');
+        log(this.importConfig, `${formatError(error)} || ${JSON.stringify(error)}`, 'error');
       });
 
       if (chunk) {
@@ -471,7 +485,7 @@ export default class EntriesImport extends BaseClass {
         `${entry.title} entry of content type ${cTUid} in locale ${locale} failed to create`,
         'error',
       );
-      log(this.importConfig, formatError(error), 'error');
+      log(this.importConfig, `${formatError(error)} || ${JSON.stringify(error)}`, 'error');
       this.failedEntries.push({ content_type: cTUid, locale, entry: { uid: entry.uid, title: entry.title } });
       apiOptions.apiData = null;
     }
@@ -510,7 +524,7 @@ export default class EntriesImport extends BaseClass {
     };
     const onReject = ({ error, apiData: { uid, title } }: any) => {
       log(this.importConfig, `${title} entry of content type ${cTUid} in locale ${locale} failed to replace`, 'error');
-      log(this.importConfig, formatError(error), 'error');
+      log(this.importConfig, `${formatError(error)} || ${JSON.stringify(error)}`, 'error');
       this.failedEntries.push({
         content_type: cTUid,
         locale,
@@ -521,7 +535,7 @@ export default class EntriesImport extends BaseClass {
 
     for (const index in indexer) {
       const chunk = await fs.readChunkFiles.next().catch((error) => {
-        log(this.importConfig, formatError(error), 'error');
+        log(this.importConfig, `${formatError(error)} || ${JSON.stringify(error)}`, 'error');
       });
 
       if (chunk) {
@@ -552,7 +566,7 @@ export default class EntriesImport extends BaseClass {
 
   async replaceEntriesHandler({
     apiParams,
-    element: entry
+    element: entry,
   }: {
     apiParams: ApiOptions;
     element: Record<string, string>;
@@ -638,7 +652,7 @@ export default class EntriesImport extends BaseClass {
     };
     const onReject = ({ error, apiData: { uid, title } }: any) => {
       log(this.importConfig, `${title} entry of content type ${cTUid} in locale ${locale} failed to update`, 'error');
-      log(this.importConfig, formatError(error), 'error');
+      log(this.importConfig, `${formatError(error)} || ${JSON.stringify(error)}`, 'error');
       this.failedEntries.push({
         content_type: cTUid,
         locale,
@@ -649,7 +663,7 @@ export default class EntriesImport extends BaseClass {
 
     for (const index in indexer) {
       const chunk = await fs.readChunkFiles.next().catch((error) => {
-        log(this.importConfig, formatError(error), 'error');
+        log(this.importConfig, `${formatError(error)} || ${JSON.stringify(error)}`, 'error');
       });
 
       if (chunk) {
@@ -729,7 +743,7 @@ export default class EntriesImport extends BaseClass {
         `${entry.title} entry of content type ${cTUid} in locale ${locale} failed to update`,
         'error',
       );
-      log(this.importConfig, formatError(error), 'error');
+      log(this.importConfig, `${formatError(error)} || ${JSON.stringify(error)}`, 'error');
       apiOptions.apiData = null;
     }
     return apiOptions;
@@ -740,7 +754,7 @@ export default class EntriesImport extends BaseClass {
       log(this.importConfig, `${uid} content type references updated`, 'success');
     };
     const onReject = ({ error, apiData: { uid } }: any) => {
-      log(this.importConfig, formatError(error), 'error');
+      log(this.importConfig, `${formatError(error)} || ${JSON.stringify(error)}`, 'error');
       throw new Error(`Failed to update references of content type ${uid}`);
     };
     return await this.makeConcurrentCall({
@@ -787,7 +801,9 @@ export default class EntriesImport extends BaseClass {
     const onReject = ({ error, apiData: { entryUid } }: any) => {
       log(
         this.importConfig,
-        `Failed to remove auto created entry in master locale - entry uid ${entryUid} \n ${formatError(error)}`,
+        `Failed to remove auto created entry in master locale - entry uid ${entryUid} \n ${formatError(
+          error,
+        )} || ${JSON.stringify(error)}`,
         'error',
       );
     };
@@ -846,14 +862,22 @@ export default class EntriesImport extends BaseClass {
           .contentType(contentType.uid)
           .fetch()
           .catch((error) => {
-            log(this.importConfig, `failed to update the field rules of ${cTUid} ${formatError(error)}`, 'error');
+            log(
+              this.importConfig,
+              `failed to update the field rules of ${cTUid} ${formatError(error)} || ${JSON.stringify(error)}`,
+              'error',
+            );
           });
         if (!contentTypeResponse) {
           continue;
         }
         contentTypeResponse.field_rules = contentType.field_rules;
         await contentTypeResponse.update().catch((error: Error) => {
-          log(this.importConfig, `failed to update the field rules of ${cTUid} ${formatError(error)}`, 'error');
+          log(
+            this.importConfig,
+            `failed to update the field rules of ${cTUid} ${formatError(error)} || ${JSON.stringify(error)}`,
+            'error',
+          );
         });
         log(this.importConfig, `Updated the field rules of ${cTUid}`, 'info');
       } else {
@@ -891,12 +915,12 @@ export default class EntriesImport extends BaseClass {
         `${apiData.entryUid} entry of content type ${cTUid} in locale ${locale} failed to publish`,
         'error',
       );
-      log(this.importConfig, formatError(error), 'error');
+      log(this.importConfig, `${formatError(error)} || ${JSON.stringify(error)}`, 'error');
     };
 
     for (const index in indexer) {
       const chunk = await fs.readChunkFiles.next().catch((error) => {
-        log(this.importConfig, formatError(error), 'error');
+        log(this.importConfig, `${formatError(error)} || ${JSON.stringify(error)}`, 'error');
       });
 
       if (chunk) {
