@@ -101,7 +101,7 @@ export default class FsUtility {
     const indexPath = `${this.basePath}/${this.indexFileName}`;
 
     if (existsSync(indexPath)) {
-      indexData = JSON.parse(readFileSync(indexPath, 'utf-8'));
+      indexData = JSON.parse(readFileSync(indexPath, 'utf8'));
     }
 
     return indexData;
@@ -139,7 +139,7 @@ export default class FsUtility {
     parse = typeof parse === 'undefined' ? true : parse;
 
     if (existsSync(filePath)) {
-      data = parse ? JSON.parse(readFileSync(filePath, 'utf-8')) : data;
+      data = parse ? JSON.parse(readFileSync(filePath, 'utf8')) : data;
     }
 
     return data;
@@ -329,7 +329,7 @@ export default class FsUtility {
     const path = basePath || pResolve(this.basePath, 'metadata.json');
     if (!existsSync(path)) return {};
 
-    return JSON.parse(readFileSync(path, { encoding: 'utf-8' }));
+    return JSON.parse(readFileSync(path, { encoding: 'utf8' }));
   }
 
   /**
@@ -353,7 +353,7 @@ export default class FsUtility {
       }
 
       const fileContent = readFileSync(pResolve(this.basePath, this.readIndexer[index]), {
-        encoding: 'utf-8',
+        encoding: 'utf8',
       });
 
       resolve(this.fileExt === 'json' ? JSON.parse(fileContent) : fileContent);
@@ -374,7 +374,7 @@ export default class FsUtility {
       }
 
       const fileContent = readFileSync(pResolve(this.basePath, this.readIndexer[this.pageInfo.after]), {
-        encoding: 'utf-8',
+        encoding: 'utf8',
       });
 
       resolve(this.fileExt === 'json' ? JSON.parse(fileContent) : fileContent);
@@ -396,7 +396,7 @@ export default class FsUtility {
       }
 
       const fileContent = readFileSync(pResolve(this.basePath, this.readIndexer[this.pageInfo.before]), {
-        encoding: 'utf-8',
+        encoding: 'utf8',
       });
 
       resolve(this.fileExt === 'json' ? JSON.parse(fileContent) : fileContent);
