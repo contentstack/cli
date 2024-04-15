@@ -13,6 +13,7 @@ import {
   AudienceStruct,
   AttributeStruct,
   CreateAudienceInput,
+  CreateEventInput,
   CreateExperienceInput,
   ExperienceStruct,
 } from '../types';
@@ -53,19 +54,24 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     return (await this.apiClient.post<AttributeStruct>('/attributes', attribute)).data;
   }
 
-  async getExperiences(): Promise<ProjectStruct | void> {
+  async getExperiences(): Promise<Array<ExperienceStruct> | void> {
     const getExperiencesEndPoint = `/experiences`;
     return (await this.apiClient.get(getExperiencesEndPoint)).data;
   }
 
-  async getVariantGroup(input: GetVariantGroupInput): Promise<ProjectStruct | void> {
-    const getVariantGroupEndPoint = `/experiences/:${input.experienceUid}/cms-integration/variant-group`;
+  async getVariantGroup(input: GetVariantGroupInput): Promise<ExperienceStruct | void> {
+    const getVariantGroupEndPoint = `/experiences/${input.experienceUid}`;
     return (await this.apiClient.get(getVariantGroupEndPoint)).data;
   }
 
   async updateVariantGroup(input: unknown): Promise<ProjectStruct | void> {}
+
   async getEvents(): Promise<EventStruct[] | void> {
     return (await this.apiClient.get<EventStruct>('/events')).data;
+  }
+
+  async createEvents(event: CreateEventInput): Promise<void | AttributeStruct> {
+    return (await this.apiClient.post<AttributeStruct>('/events', event)).data;
   }
 
   async getAudiences(): Promise<AudienceStruct[] | void> {

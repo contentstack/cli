@@ -66,6 +66,11 @@ export interface CreateAttributeInput {
   description: string;
 }
 
+export interface CreateEventInput {
+  key: string;
+  description: string;
+}
+
 export interface CreateAudienceInput {
   name: string;
   definition: object;
@@ -78,7 +83,7 @@ type ExpVariations = {
   audiences?: string[];
   audienceCombinationType?: string;
   shortUid?: string;
-  trafficDistribution?:string;
+  trafficDistribution?: string;
 } & AnyProperty;
 
 type ExpTargeting = {
@@ -86,7 +91,7 @@ type ExpTargeting = {
     audiences: string[];
     audienceCombinationType: string;
   } & AnyProperty;
-}
+};
 
 export type ExpMetric = {
   event: string;
