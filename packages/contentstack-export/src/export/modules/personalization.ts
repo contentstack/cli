@@ -11,25 +11,31 @@ import { ModuleClassParams, ExportConfig } from '../../types';
 
 export default class ExportPersonalization {
   public exportConfig: ExportConfig;
-
   constructor({ exportConfig }: ModuleClassParams) {
     this.exportConfig = exportConfig;
   }
 
   async start(): Promise<void> {
     try {
-      // get project details
-      // if project exist
-      // set that in the global config
-      // export project
-      const projectHandler = new ExportProjects(this.exportConfig);
-      await projectHandler.start();
+      await new ExportProjects(this.exportConfig).start();
       if (this.exportConfig.personalizationEnabled) {
-        // export experiences, along with this export content type details as well
-        await new ExportExperiences(this.exportConfig).start();
-        await new ExportEvents(this.exportConfig).start();
-        await new ExportAudiences(this.exportConfig).start();
-        await new ExportAttributes(this.exportConfig).start();
+        const moduleMapper = {
+          events: new ExportEvents(this.exportConfig),
+          attributes: new ExportAttributes(this.exportConfig),
+          audiences: new ExportAudiences(this.exportConfig),
+          experiences: new ExportExperiences(this.exportConfig),
+        };
+
+        const order: (keyof typeof moduleMapper)[] = this.exportConfig.modules.personalization
+          .exportOrder as (keyof typeof moduleMapper)[];
+
+        for (const module of order) {
+          if (moduleMapper[module]) {
+            await moduleMapper[module].start();
+          } else {
+            log(this.exportConfig, `No implementation found for the module ${module}`, 'info');
+          }
+        }
       }
     } catch (error) {
       this.exportConfig.personalizationEnabled = false;

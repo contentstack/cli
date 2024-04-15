@@ -8,9 +8,9 @@ import { CreateVariantEntryDto, CreateVariantEntryOptions, VariantEntryStruct } 
 export type APIConfig = HttpRequestConfig & {
   httpClient?: boolean;
   sharedConfig?: ExportConfig | Record<string, any> | undefined;
-  eclipseURL?: string;
+  personalizationURL?: string;
   config: ExportConfig | Record<string, any> | undefined;
-  baseURL?: string
+  baseURL?: string;
 };
 
 export interface AdapterConstructor<T, C> {
