@@ -18,11 +18,17 @@ const variantEntry = {
   VARIANT_ID_NOT_FOUND: 'Variant ID not found',
 };
 
-const messages: typeof errors & typeof commonMsg & typeof migrationMsg & typeof variantEntry = {
+const expImportMsg = {
+  VALIDATE_VARIANT_AND_VARIANT_GRP: 'Validating variant group and variants creation...',
+  SKIP_PERSONALIZATION_IMPORT: 'Skipping personalization migration!'
+};
+
+const messages: typeof errors & typeof commonMsg & typeof migrationMsg & typeof variantEntry & typeof expImportMsg = {
   ...errors,
   ...commonMsg,
   ...migrationMsg,
   ...variantEntry,
+  ...expImportMsg
 };
 
 /**
