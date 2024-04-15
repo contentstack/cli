@@ -111,6 +111,10 @@ export type ExperienceStruct = {
   metrics?: ExpMetric[];
   status: string;
   metadata?: object;
+  _cms?: {
+    variantGroup?: object;
+    variants?: object;
+  }
 } & AnyProperty;
 
 export interface CreateExperienceInput {

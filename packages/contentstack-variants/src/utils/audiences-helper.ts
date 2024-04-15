@@ -1,7 +1,7 @@
 import { CreateExperienceInput } from '../types';
 
 /**
- * function to replace old audience uid with new one OR delete the audience details if not exists
+ * function for substituting an old audience UID with a new one or deleting the audience information if it does not exist
  * @param audiences - {audiences} list of audience
  * @param audiencesUid - {audiencesUid} audiences mapper data in format {<old-uid>: <new-uid>}
  */
@@ -17,7 +17,7 @@ function updateAudiences(audiences: string[], audiencesUid: Record<string, strin
 }
 
 /**
- * Lookup function to either update uid or remove it if audience not created in target project
+ * function to either modify the UID or eliminate it if the audience is not created in the target project
  * @param experience - experience object
  * @param audiencesUid - {audiencesUid} audiences mapper data in format {<old-uid>: <new-uid>}
  * @returns
