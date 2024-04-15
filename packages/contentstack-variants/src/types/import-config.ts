@@ -11,6 +11,8 @@ export interface ImportDefaultConfig extends AnyProperty {
       dirName: string;
       importData: boolean;
       importOrder: string[];
+      thresholdTimer: number;
+      checkIntervalDuration: number;
       projects: {
         dirName: string;
         fileName: string;
