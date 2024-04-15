@@ -4,14 +4,14 @@ import { HttpClient, HttpClientOptions, HttpRequestConfig } from '@contentstack/
 import messages, { $t } from '../messages';
 import { APIConfig, AdapterHelperInterface } from '../types';
 
-export class AdapterHelper<C, ApiClient> implements AdapterHelperInterface<C , ApiClient> {
+export class AdapterHelper<C, ApiClient> implements AdapterHelperInterface<C, ApiClient> {
   public readonly config: C;
-  public readonly $t: typeof $t
+  public readonly $t: typeof $t;
   public readonly apiClient: ApiClient;
   public readonly messages: typeof messages;
 
   constructor(public readonly adapterConfig: APIConfig, options?: HttpClientOptions) {
-    this.$t = $t
+    this.$t = $t;
     this.messages = messages;
     this.config = adapterConfig.config as C;
     delete this.adapterConfig.config;
