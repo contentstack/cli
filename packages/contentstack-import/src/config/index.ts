@@ -155,6 +155,8 @@ const config: DefaultConfig = {
       importData: true,
       dirName: 'personalization',
       importOrder: ['projects', 'attributes', 'audiences', 'experiences'],
+      thresholdTimer: 30000,
+      checkIntervalDuration: 10000,
       projects: {
         dirName: 'projects',
         fileName: 'projects.json',

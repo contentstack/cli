@@ -6,6 +6,7 @@ import { PersonalizationAdapter, fsUtil, log, lookUpAttributes } from '../utils'
 
 export default class Audiences extends PersonalizationAdapter<ImportConfig> {
   private mapperDirPath: string;
+  private audienceMapperDirPath: string;
   private attributesMapperPath: string;
   private audiencesUidMapperPath: string;
   private audiencesUidMapper: Record<string, unknown>;
@@ -24,7 +25,8 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
     this.audienceConfig = this.personalizationConfig.audiences;
     this.attributeConfig = this.personalizationConfig.attributes;
     this.mapperDirPath = resolve(this.config.backupDir, 'mapper', this.personalizationConfig.dirName);
-    this.audiencesUidMapperPath = resolve(this.mapperDirPath, this.audienceConfig.dirName, 'uid-mapping.json');
+    this.audienceMapperDirPath = resolve(this.mapperDirPath, this.audienceConfig.dirName);
+    this.audiencesUidMapperPath = resolve(this.audienceMapperDirPath, 'uid-mapping.json');
     this.attributesMapperPath = resolve(this.mapperDirPath, this.attributeConfig.dirName, 'uid-mapping.json');
     this.audiencesUidMapper = {};
   }
@@ -35,7 +37,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
   async import() {
     log(this.config, this.$t(this.messages.IMPORT_MSG, { module: 'Audiences' }), 'info');
 
-    await fsUtil.makeDirectory(this.mapperDirPath);
+    await fsUtil.makeDirectory(this.audienceMapperDirPath);
     const { dirName, fileName } = this.audienceConfig;
     const audiencesPath = resolve(this.config.data, this.personalizationConfig.dirName, dirName, fileName);
 

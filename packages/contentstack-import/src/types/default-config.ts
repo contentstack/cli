@@ -127,6 +127,8 @@ export default interface DefaultConfig {
       dirName: string;
       importData: boolean;
       importOrder: string[];
+      thresholdTimer: number;
+      checkIntervalDuration: number;
       projects: {
         dirName: string;
         fileName: string;
