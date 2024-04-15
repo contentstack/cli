@@ -145,8 +145,29 @@ const config: DefaultConfig = {
       exportVersions: false,
     },
     personalization: {
+      baseURL: 'https://personalization-api.contentstack.com',
       dirName: 'personalization',
-      baseURL: 'https://personalization-api.contentstack.com'
+      exportOrder: ['attributes', 'audiences', 'events', 'experiences'],
+      projects: {
+        dirName: 'projects',
+        fileName: 'projects.json',
+      },
+      attributes: {
+        dirName: 'attributes',
+        fileName: 'attributes.json',
+      },
+      audiences: {
+        dirName: 'audiences',
+        fileName: 'audiences.json',
+      },
+      events: {
+        dirName: 'events',
+        fileName: 'events.json',
+      },
+      experiences: {
+        dirName: 'experiences',
+        fileName: 'experiences.json',
+      },
     },
     variantEntry: {
       serveMockData: true,
@@ -159,7 +180,7 @@ const config: DefaultConfig = {
         locale: 'en-us',
         include_variant: false,
       },
-      mockDataPath: './variant-mock-data.json'
+      mockDataPath: './variant-mock-data.json',
     },
     extensions: {
       dirName: 'extensions',
@@ -188,17 +209,41 @@ const config: DefaultConfig = {
     events: {
       dirName: 'events',
       fileName: 'events.json',
-      invalidKeys: ['updatedAt', 'createdBy', 'updatedBy', '_id', 'createdAt', 'createdByUserName', 'updatedByUserName'],
+      invalidKeys: [
+        'updatedAt',
+        'createdBy',
+        'updatedBy',
+        '_id',
+        'createdAt',
+        'createdByUserName',
+        'updatedByUserName',
+      ],
     },
     audiences: {
       dirName: 'audiences',
       fileName: 'audiences.json',
-      invalidKeys: ['updatedAt', 'createdBy', 'updatedBy', '_id', 'createdAt', 'createdByUserName', 'updatedByUserName'],
+      invalidKeys: [
+        'updatedAt',
+        'createdBy',
+        'updatedBy',
+        '_id',
+        'createdAt',
+        'createdByUserName',
+        'updatedByUserName',
+      ],
     },
     attributes: {
       dirName: 'attributes',
       fileName: 'attributes.json',
-      invalidKeys: ['updatedAt', 'createdBy', 'updatedBy', '_id', 'createdAt', 'createdByUserName', 'updatedByUserName'],
+      invalidKeys: [
+        'updatedAt',
+        'createdBy',
+        'updatedBy',
+        '_id',
+        'createdAt',
+        'createdByUserName',
+        'updatedByUserName',
+      ],
     },
   },
   languagesCode: [
