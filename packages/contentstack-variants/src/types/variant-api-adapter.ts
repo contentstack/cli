@@ -1,8 +1,9 @@
-import { HttpClientOptions, HttpRequestConfig } from '@contentstack/cli-utilities';
+import { HttpClientOptions, HttpRequestConfig, HttpResponse } from '@contentstack/cli-utilities';
 
 import { AnyProperty } from './utils';
 import { ExportConfig } from './export-config';
 import { AdapterHelperInterface } from './adapter-helper';
+import { CreateVariantEntryDto, CreateVariantEntryOptions, VariantEntryStruct } from './variant-entry';
 
 export type APIConfig = HttpRequestConfig & {
   httpClient?: boolean;
@@ -40,4 +41,9 @@ export interface VariantInterface<T, ApiClient> extends AdapterHelperInterface<T
   variantEntry(options: VariantOptions): Promise<{ entry: Record<string, any> }>;
 
   variantEntries(options: VariantsOption): Promise<{ entries?: Record<string, any>[] | unknown[] } | void>;
+
+  createVariantEntry(
+    input: CreateVariantEntryDto,
+    options: CreateVariantEntryOptions,
+  ): Promise<HttpResponse<VariantEntryStruct>>;
 }

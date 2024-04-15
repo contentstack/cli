@@ -20,13 +20,8 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
     super(Object.assign(config, conf));
     this.personalizationConfig = this.config.modules.personalization;
     this.attributeConfig = this.personalizationConfig.attributes;
-    this.mapperDirPath = resolve(
-      this.config.backupDir,
-      'mapper',
-      this.personalizationConfig.dirName,
-      this.attributeConfig.dirName,
-    );
-    this.attributesUidMapperPath = resolve(this.mapperDirPath, 'uid-mapping.json');
+    this.mapperDirPath = resolve(this.config.backupDir, 'mapper', this.personalizationConfig.dirName);
+    this.attributesUidMapperPath = resolve(this.mapperDirPath, this.attributeConfig.dirName, 'uid-mapping.json');
     this.attributesUidMapper = {};
   }
 
