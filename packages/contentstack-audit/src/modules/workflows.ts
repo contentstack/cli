@@ -66,17 +66,20 @@ export default class Workflows {
 
     for (const workflow of this.workflowSchema) {
       const ctNotPresent = workflow.content_types.filter((ct) => !this.ctUidSet.has(ct));
-      const branch = workflow?.branches?.filter((branch) => branch !== this.config?.branch);
+      let branchesToBeRemoved: string[] = [];
+      if (this.config?.branch) {
+        branchesToBeRemoved = workflow?.branches?.filter((branch) => branch !== this.config?.branch) || [];
+      }
 
-      if (ctNotPresent.length || branch?.length) {
+      if (ctNotPresent.length || branchesToBeRemoved?.length) {
         const tempwf = cloneDeep(workflow);
         tempwf.content_types = ctNotPresent || [];
 
-        if (workflow?.branches) {
-          tempwf.branches = branch;
+        if (workflow?.branches && this.config?.branch) {
+          tempwf.branches = branchesToBeRemoved;
         }
 
-        if (branch?.length) {
+        if (branchesToBeRemoved?.length) {
           this.isBranchFixDone = true;
         }
 
@@ -111,17 +114,19 @@ export default class Workflows {
         const fixedCts = workflow.content_types.filter((ct) => !this.missingCts.has(ct));
         const fixedBranches: string[] = [];
 
-        workflow?.branches?.forEach((branch) => {
-          if (branch !== this.config?.branch) {
-            const { uid, name } = workflow;
-            this.log($t(commonMsg.WF_BRANCH_REMOVAL, { uid, name, branch }), { color: 'yellow' });
-          } else {
-            fixedBranches.push(branch);
-          }
-        });
+        if (this.config.branch) {
+          workflow?.branches?.forEach((branch) => {
+            if (branch !== this.config?.branch) {
+              const { uid, name } = workflow;
+              this.log($t(commonMsg.WF_BRANCH_REMOVAL, { uid, name, branch }), { color: 'yellow' });
+            } else {
+              fixedBranches.push(branch);
+            }
+          });
 
-        if (fixedBranches.length > 0) {
-          newWorkflowSchema[workflow.uid].branches = fixedBranches;
+          if (fixedBranches.length > 0) {
+            newWorkflowSchema[workflow.uid].branches = fixedBranches;
+          }
         }
 
         if (fixedCts.length) {

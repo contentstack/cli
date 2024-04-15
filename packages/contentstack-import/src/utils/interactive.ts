@@ -33,7 +33,7 @@ export const askEncryptionKey = async(defaultValue: unknown): Promise<string> =>
 
       return true;
     },
-    message: 'Enter marketplace app configurations encryption key',
+    message: 'Enter Marketplace app configurations encryption key',
   });
 }
 
