@@ -12,10 +12,17 @@ const migrationMsg = {
   IMPORT_MSG: 'Migrating ${module}...',
 };
 
-const messages: typeof errors & typeof commonMsg & typeof migrationMsg = {
+const variantEntry = {
+  IMPORT_ENTRY_NOT_FOUND: 'Entries data not found to import variant entries',
+  EMPTY_VARIANT_UID_DATA: 'Empty variants entry mapper found!',
+  VARIANT_ID_NOT_FOUND: 'Variant ID not found',
+};
+
+const messages: typeof errors & typeof commonMsg & typeof migrationMsg & typeof variantEntry = {
   ...errors,
   ...commonMsg,
-  ...migrationMsg
+  ...migrationMsg,
+  ...variantEntry,
 };
 
 /**
