@@ -143,7 +143,19 @@ export default interface DefaultConfig {
         dirName: string;
         fileName: string;
       };
+      experiences: {
+        dirName: string;
+        fileName: string;
+      };
     };
+    variantEntry: {
+      dirName: string;
+      fileName: string;
+      apiConcurrency: number;
+      query: {
+        locale: string;
+      } & AnyProperty;
+    } & AnyProperty;
   };
   languagesCode: string[];
   apis: {

@@ -3,6 +3,10 @@ import { AnyProperty } from './utils';
 export interface ImportDefaultConfig extends AnyProperty {
   personalizationHost: string;
   modules: {
+    entries: {
+      dirName: string;
+      fileName: string;
+    };
     personalization: {
       dirName: string;
       importData: boolean;
@@ -23,8 +27,20 @@ export interface ImportDefaultConfig extends AnyProperty {
         dirName: string;
         fileName: string;
       };
+      experiences: {
+        dirName: string;
+        fileName: string;
+      };
     };
-  };
+    variantEntry: {
+      dirName: string;
+      fileName: string;
+      apiConcurrency: number;
+      query: {
+        locale: string;
+      } & AnyProperty;
+    } & AnyProperty;
+  } & AnyProperty;
 }
 
 export interface ImportConfig extends ImportDefaultConfig, AnyProperty {

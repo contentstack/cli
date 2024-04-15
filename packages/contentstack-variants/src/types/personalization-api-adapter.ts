@@ -13,13 +13,6 @@ export type ProjectStruct = {
   activeExperienceCount: number;
 } & AnyProperty;
 
-export type ExperienceStruct = {
-  _id: string;
-  uid: string;
-  name: string;
-  description: string;
-} & AnyProperty;
-
 export type GetProjectsParams = {
   connectedStackApiKey: string;
   includeAudienceCount?: boolean;
@@ -84,6 +77,54 @@ export interface CreateAudienceInput {
   description: string;
 }
 
+type ExpVariations = {
+  name: string;
+  __type: string;
+  audiences?: string[];
+  audienceCombinationType?: string;
+  shortUid?: string;
+  trafficDistribution?: string;
+} & AnyProperty;
+
+type ExpTargeting = {
+  audience: {
+    audiences: string[];
+    audienceCombinationType: string;
+  } & AnyProperty;
+};
+
+export type ExpMetric = {
+  event: string;
+  name: string;
+  __type: string;
+} & AnyProperty;
+
+export type ExperienceStruct = {
+  _id: string;
+  uid: string;
+  name: string;
+  __type: string;
+  description: string;
+  targeting?: ExpTargeting;
+  variations: ExpVariations[];
+  variationSplit?: string;
+  metrics?: ExpMetric[];
+  status: string;
+  metadata?: object;
+} & AnyProperty;
+
+export interface CreateExperienceInput {
+  name: string;
+  __type: string;
+  description: string;
+  targeting?: ExpTargeting;
+  variations: ExpVariations[];
+  variationSplit?: string;
+  metrics?: ExpMetric[];
+  status: string;
+  metadata?: object;
+}
+
 export interface Personalization<T> extends AdapterHelperInterface<T, HttpClient> {
   projects(options: GetProjectsParams): Promise<ProjectStruct[] | void>;
 
@@ -98,4 +139,6 @@ export interface Personalization<T> extends AdapterHelperInterface<T, HttpClient
   createAttribute(attribute: CreateAttributeInput): Promise<AttributeStruct | void>;
 
   createAudience(attribute: CreateAudienceInput): Promise<AudienceStruct | void>;
+
+  createExperience(experience: CreateExperienceInput): Promise<ExperienceStruct | void>;
 }
