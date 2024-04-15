@@ -167,6 +167,10 @@ const config: DefaultConfig = {
         dirName: 'audiences',
         fileName: 'audiences.json',
       },
+      events: {
+        dirName: 'events',
+        fileName: 'events.json',
+      },
       experiences: {
         dirName: 'experiences',
         fileName: 'experiences.json',

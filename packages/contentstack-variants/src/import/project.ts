@@ -36,7 +36,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
         this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Projects' }), 'info');
       } catch (error) {
         this.log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Projects' }), 'error');
-        this.log(this.config, error, 'error');
+        throw error;
       }
     }
   }
