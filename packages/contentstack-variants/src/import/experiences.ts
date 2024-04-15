@@ -80,7 +80,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         if (this.personalizationConfig.importData) {
           log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Variant & Variant groups' }), 'info');
           //attach content types in experiences
-        }else{
+        } else {
           log(this.config, this.messages.SKIP_PERSONALIZATION_IMPORT, 'info');
         }
       } catch (error: any) {
@@ -105,9 +105,9 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         const promises = Object.keys(this.experiencesUidMapper)?.map(async (exp) => {
           const expUid = this.experiencesUidMapper[exp];
           const expRes = await this.getExperience(expUid);
-          if (expRes?._cms && expRes?._cms?.variantGroup && expRes?._cms?.variants) {
-            this.cmsVariants[expUid] = expRes?._cms?.variants;
-            this.cmsVariantGroups[expUid] = expRes?._cms?.variantGroup;
+          if (expRes?._cms) {
+            this.cmsVariants[expUid] = expRes._cms?.variants ?? {};
+            this.cmsVariantGroups[expUid] = expRes._cms?.variantGroup ?? {};    
           } else {
             this.personalizationConfig.importData = false;
           }
@@ -118,6 +118,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         let count = 0;
         const maxTries = Math.round(this.personalizationThresholdTimer / this.personalizationCheckIntervalDuration);
 
+        // Invoke validateVariantGroupAndVariantsCreated after some interval if any variants or variant groups associated with experience have not been created yet.
         if (
           Object.keys(this.experiencesUidMapper)?.length !== Object.keys(this.cmsVariants)?.length ||
           Object.keys(this.experiencesUidMapper)?.length !== Object.keys(this.cmsVariantGroups)?.length
