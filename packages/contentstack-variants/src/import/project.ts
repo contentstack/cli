@@ -2,7 +2,7 @@ import { join } from 'path';
 import { existsSync, readFileSync } from 'fs';
 
 import { PersonalizationAdapter } from '../utils';
-import { APIConfig, AnyProperty, CreateProjectInput, ImportConfig, LogType } from '../types';
+import { APIConfig, CreateProjectInput, ImportConfig, LogType, ProjectStruct } from '../types';
 
 export default class Project extends PersonalizationAdapter<ImportConfig> {
   constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
@@ -29,8 +29,8 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
 
         for (const project of projects) {
           const { name, description, connectedStackApiKey } = project;
-          await this.createProject({ name, description, connectedStackApiKey });
-          // store created project id -> this.config.project_id = '';
+          const projectRes = await this.createProject({ name, description, connectedStackApiKey });
+          this.config.project_id = projectRes?.uid;
         }
 
         this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Projects' }), 'info');
