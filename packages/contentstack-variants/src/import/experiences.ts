@@ -130,7 +130,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
             if (count === maxTries) {
               this.personalizationConfig.importData = false;
               clearInterval(intervalId); // Stop the interval
-              reject('Something went wrong with personalization background job!');
+              reject(this.messages.PERSONALIZATION_JOB_FAILURE);
             }
           }, this.personalizationCheckIntervalDuration);
         } else {
