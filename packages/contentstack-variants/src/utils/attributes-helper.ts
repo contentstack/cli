@@ -1,15 +1,8 @@
-interface AttributeRule {
-  _type: string;
-  attribute?: {
-    ref: string;
-  };
-  rules?: AttributeRule[];
-}
-
 /**
- *
- * @param attributeRules
- * @param attributesUid
+ * function to either modify the UID or eliminate it if the attribute is not created in the target project
+ * @param attributeRules 
+ * @param attributesUid - {attributesUid} attributes mapper data in format {<old-uid>: <new-uid>}
+ * @returns 
  */
 export const lookUpAttributes = (attributeRules: Record<string, any>[], attributesUid: Record<string, string>) => {
   for (let index =0; index< attributeRules?.length; index++) {

@@ -6,6 +6,7 @@ import { APIConfig, AttributeStruct, ImportConfig } from '../types';
 
 export default class Attribute extends PersonalizationAdapter<ImportConfig> {
   private mapperDirPath: string;
+  private attrMapperDirPath: string;
   private attributesUidMapperPath: string;
   private attributesUidMapper: Record<string, unknown>;
   private personalizationConfig: ImportConfig['modules']['personalization'];
@@ -21,7 +22,8 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
     this.personalizationConfig = this.config.modules.personalization;
     this.attributeConfig = this.personalizationConfig.attributes;
     this.mapperDirPath = resolve(this.config.backupDir, 'mapper', this.personalizationConfig.dirName);
-    this.attributesUidMapperPath = resolve(this.mapperDirPath, this.attributeConfig.dirName, 'uid-mapping.json');
+    this.attrMapperDirPath = resolve(this.mapperDirPath, this.attributeConfig.dirName);
+    this.attributesUidMapperPath = resolve(this.attrMapperDirPath, 'uid-mapping.json');
     this.attributesUidMapper = {};
   }
 
@@ -31,7 +33,7 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
   async import() {
     log(this.config, this.$t(this.messages.IMPORT_MSG, { module: 'Attributes' }), 'info');
 
-    await fsUtil.makeDirectory(this.mapperDirPath);
+    await fsUtil.makeDirectory(this.attrMapperDirPath);
     const { dirName, fileName } = this.attributeConfig;
     const attributesPath = resolve(this.config.data, this.personalizationConfig.dirName, dirName, fileName);
 
