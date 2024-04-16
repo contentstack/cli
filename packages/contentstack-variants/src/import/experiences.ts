@@ -127,7 +127,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
 
       if (this.pendingVariantAndVariantGrpForExperience?.length) {
         if (retryCount !== this.maxValidateRetry) {
-          this.delay(5000);
+          await this.delay(5000);
           // Filter out the processed elements
           this.pendingVariantAndVariantGrpForExperience = this.pendingVariantAndVariantGrpForExperience.filter(
             (uid) => !this.cmsVariants[uid],
