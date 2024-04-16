@@ -54,8 +54,13 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     return (await this.apiClient.post<AttributeStruct>('/attributes', attribute)).data;
   }
 
-  async getExperiences(): Promise<Array<ExperienceStruct> | void> {
+  async getExperiences(): Promise<ExperienceStruct[] | void> {
     const getExperiencesEndPoint = `/experiences`;
+    return (await this.apiClient.get(getExperiencesEndPoint)).data;
+  }
+
+  async getExperience(experienceUid: string): Promise<ExperienceStruct> {
+    const getExperiencesEndPoint = `/experiences/${experienceUid}`;
     return (await this.apiClient.get(getExperiencesEndPoint)).data;
   }
 
@@ -70,8 +75,8 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     return (await this.apiClient.get<EventStruct>('/events')).data;
   }
 
-  async createEvents(event: CreateEventInput): Promise<void | AttributeStruct> {
-    return (await this.apiClient.post<AttributeStruct>('/events', event)).data;
+  async createEvents(event: CreateEventInput): Promise<void | EventStruct> {
+    return (await this.apiClient.post<EventStruct>('/events', event)).data;
   }
 
   async getAudiences(): Promise<AudienceStruct[] | void> {
