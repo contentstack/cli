@@ -1,9 +1,14 @@
 import { Modules } from '.';
 
+export interface AnyProperty {
+  [propName: string]: any;
+}
+
 export default interface DefaultConfig {
   versioning: boolean;
   host: string;
   extensionHost: string;
+  personalizationHost: string;
   developerHubUrls: Record<string, string>;
   modules: {
     apiConcurrency: number;
@@ -118,6 +123,39 @@ export default interface DefaultConfig {
       fileName: string;
       dependencies?: Modules[];
     };
+    personalization: {
+      dirName: string;
+      importData: boolean;
+      importOrder: string[];
+      projects: {
+        dirName: string;
+        fileName: string;
+      };
+      attributes: {
+        dirName: string;
+        fileName: string;
+      };
+      audiences: {
+        dirName: string;
+        fileName: string;
+      };
+      events: {
+        dirName: string;
+        fileName: string;
+      };
+      experiences: {
+        dirName: string;
+        fileName: string;
+      };
+    };
+    variantEntry: {
+      dirName: string;
+      fileName: string;
+      apiConcurrency: number;
+      query: {
+        locale: string;
+      } & AnyProperty;
+    } & AnyProperty;
   };
   languagesCode: string[];
   apis: {

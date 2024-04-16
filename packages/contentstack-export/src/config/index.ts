@@ -36,6 +36,7 @@ const config: DefaultConfig = {
       'entries',
       'labels',
       'marketplace-apps',
+      'personalization',
     ],
     locales: {
       dirName: 'locales',
@@ -143,6 +144,44 @@ const config: DefaultConfig = {
       dependencies: ['locales', 'content-types'],
       exportVersions: false,
     },
+    personalization: {
+      baseURL: 'https://personalization-api.contentstack.com',
+      dirName: 'personalization',
+      exportOrder: ['attributes', 'audiences', 'events', 'experiences'],
+      projects: {
+        dirName: 'projects',
+        fileName: 'projects.json',
+      },
+      attributes: {
+        dirName: 'attributes',
+        fileName: 'attributes.json',
+      },
+      audiences: {
+        dirName: 'audiences',
+        fileName: 'audiences.json',
+      },
+      events: {
+        dirName: 'events',
+        fileName: 'events.json',
+      },
+      experiences: {
+        dirName: 'experiences',
+        fileName: 'experiences.json',
+      },
+    },
+    variantEntry: {
+      serveMockData: true,
+      dirName: 'variants',
+      fileName: 'index.json',
+      chunkFileSize: 1,
+      query: {
+        skip: 0,
+        limit: 100,
+        locale: 'en-us',
+        include_variant: false,
+      },
+      mockDataPath: './variant-mock-data.json',
+    },
     extensions: {
       dirName: 'extensions',
       fileName: 'extensions.json',
@@ -166,7 +205,46 @@ const config: DefaultConfig = {
       dirName: 'taxonomies',
       fileName: 'taxonomies.json',
       invalidKeys: ['updated_at', 'created_by', 'updated_by', 'stackHeaders', 'urlPath', 'created_at'],
-    }
+    },
+    events: {
+      dirName: 'events',
+      fileName: 'events.json',
+      invalidKeys: [
+        'updatedAt',
+        'createdBy',
+        'updatedBy',
+        '_id',
+        'createdAt',
+        'createdByUserName',
+        'updatedByUserName',
+      ],
+    },
+    audiences: {
+      dirName: 'audiences',
+      fileName: 'audiences.json',
+      invalidKeys: [
+        'updatedAt',
+        'createdBy',
+        'updatedBy',
+        '_id',
+        'createdAt',
+        'createdByUserName',
+        'updatedByUserName',
+      ],
+    },
+    attributes: {
+      dirName: 'attributes',
+      fileName: 'attributes.json',
+      invalidKeys: [
+        'updatedAt',
+        'createdBy',
+        'updatedBy',
+        '_id',
+        'createdAt',
+        'createdByUserName',
+        'updatedByUserName',
+      ],
+    },
   },
   languagesCode: [
     'af-za',
@@ -393,6 +471,7 @@ const config: DefaultConfig = {
     stacks: '/stacks/',
   },
   preserveStackVersion: false,
+  personalizationEnabled: false,
   fetchConcurrency: 5,
   writeConcurrency: 5,
   developerHubBaseUrl: '',
