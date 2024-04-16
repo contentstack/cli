@@ -16,9 +16,9 @@ importers:
       '@contentstack/cli-cm-branches': ~1.0.24
       '@contentstack/cli-cm-bulk-publish': ~1.4.3
       '@contentstack/cli-cm-clone': ~1.10.3
-      '@contentstack/cli-cm-export': ~1.11.1
+      '@contentstack/cli-cm-export': ~1.12.0
       '@contentstack/cli-cm-export-to-csv': ~1.7.0
-      '@contentstack/cli-cm-import': ~1.15.0
+      '@contentstack/cli-cm-import': ~1.16.0
       '@contentstack/cli-cm-migrate-rte': ~1.4.15
       '@contentstack/cli-cm-seed': ~1.7.3
       '@contentstack/cli-command': ~1.2.17
@@ -72,7 +72,7 @@ importers:
       '@contentstack/cli-cm-clone': link:../contentstack-clone
       '@contentstack/cli-cm-export': link:../contentstack-export
       '@contentstack/cli-cm-export-to-csv': link:../contentstack-export-to-csv
-      '@contentstack/cli-cm-import': 1.15.1_ogreqof3k35xezedraj6pnd45y
+      '@contentstack/cli-cm-import': link:../contentstack-import
       '@contentstack/cli-cm-migrate-rte': link:../contentstack-migrate-rte
       '@contentstack/cli-cm-seed': link:../contentstack-seed
       '@contentstack/cli-command': link:../contentstack-command
@@ -450,7 +450,7 @@ importers:
       winston: ^3.7.2
     dependencies:
       '@colors/colors': 1.6.0
-      '@contentstack/cli-cm-export': link:../contentstack-export
+      '@contentstack/cli-cm-export': 1.11.1
       '@contentstack/cli-cm-import': 1.15.1
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
@@ -1672,6 +1672,39 @@ packages:
       - utf-8-validate
     dev: false
 
+  /@contentstack/cli-cm-export/1.11.1:
+    resolution: {integrity: sha512-KBysU/2wp9KiAqxvUrURlpErC1XtsrWEWNeXJbmb9I4OL5GWWWgrChDfS+CorI+JzUZ07w9VkzgAkvn9o2F2AA==}
+    engines: {node: '>=14.0.0'}
+    dependencies:
+      '@contentstack/cli-command': 1.2.17
+      '@contentstack/cli-utilities': 1.6.0
+      '@oclif/core': 2.16.0
+      async: 3.2.5
+      big-json: 3.2.0
+      bluebird: 3.7.2
+      chalk: 4.1.2
+      is-valid-path: 0.1.1
+      lodash: 4.17.21
+      merge: 2.1.1
+      mkdirp: 1.0.4
+      path: 0.12.7
+      progress-stream: 2.0.0
+      promise-limit: 2.7.0
+      proxyquire: 2.1.3
+      tslib: 2.6.2
+      winston: 3.13.0
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+      - bufferutil
+      - debug
+      - encoding
+      - supports-color
+      - typescript
+      - utf-8-validate
+    dev: false
+
   /@contentstack/cli-cm-import/1.15.1:
     resolution: {integrity: sha512-lAWKj/aNaEqtzbJJPkCVzSfX41+CeLal6o49nk1c/UPdTcwCbU4ahON+udkxf9omFq6yMHGZwVhm4BlkGqC1cw==}
     engines: {node: '>=14.0.0'}
@@ -1732,6 +1765,24 @@ packages:
       - '@swc/wasm'
       - '@types/node'
       - bufferutil
+      - encoding
+      - supports-color
+      - typescript
+      - utf-8-validate
+    dev: false
+
+  /@contentstack/cli-command/1.2.17:
+    resolution: {integrity: sha512-z5DWK+S+fRAXIZc0eZH1aw/Vb84wqICzYlGi4nKtov56H7QMWHwb+dORmzQvBHCUjbT/5/cZc6wpBZkebAUc7Q==}
+    engines: {node: '>=14.0.0'}
+    dependencies:
+      '@contentstack/cli-utilities': 1.5.12
+      contentstack: 3.19.1
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+      - bufferutil
+      - debug
       - encoding
       - supports-color
       - typescript
