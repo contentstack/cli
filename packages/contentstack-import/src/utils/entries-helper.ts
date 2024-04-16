@@ -7,6 +7,7 @@ import * as path from 'path';
 import * as _ from 'lodash';
 import config from '../config';
 import * as fileHelper from './file-helper';
+import { escapeRegExp } from '@contentstack/cli-utilities';
 
 import { EntryJsonRTEFieldDataType } from '../types/entries';
 
@@ -199,8 +200,9 @@ export const lookupEntries = function (
   let entry = JSON.stringify(data.entry);
   uids.forEach(function (uid: any) {
     if (mappedUids.hasOwnProperty(uid)) {
-      const escapedUid = uid.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      entry = entry.replace(new RegExp(escapedUid, 'img'), mappedUids[uid]);
+      const sanitizedUid = escapeRegExp(uid);
+      const escapedMappedUid = escapeRegExp(mappedUids[uid]);
+      entry = entry.replace(new RegExp(sanitizedUid, 'img'), escapedMappedUid);
       mapped.push(uid);
     } else {
       unmapped.push(uid);
@@ -417,6 +419,20 @@ export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema:
         }
         break;
       }
+      case 'text': {
+        if (entry[element.uid] && element.field_metadata.rich_text_type) {
+          if (element.multiple) {
+            let rteContent = [];
+            for (let i = 0; i < entry[element.uid].length; i++) {
+              rteContent.push('<p></p>');
+            }
+            entry[element.uid] = rteContent;
+          } else {
+            entry[element.uid] = '<p></p>';
+          }
+        }
+        break;
+      }
     }
   }
   return entry;
@@ -532,10 +548,32 @@ export const restoreJsonRteEntryRefs = (
         }
         break;
       }
+      case 'text': {
+        if (entry[element.uid] && element.field_metadata.rich_text_type) {
+          entry[element.uid] = sourceStackEntry[element.uid];
+          const matches = Object.keys(uidMapper).filter((uid) => {
+            if (sourceStackEntry[element.uid].indexOf(uid) !== -1) return uid;
+          });
+          if (element.multiple && Array.isArray(entry[element.uid])) {
+            for (let i = 0; i < matches.length; i++) {
+              entry[element.uid] = entry[element.uid].map((el: string) => updateUids(el, matches[i], uidMapper));
+            }
+          } else {
+            for (let i = 0; i < matches.length; i++) {
+              entry[element.uid] = updateUids(entry[element.uid], matches[i], uidMapper);
+            }
+          }
+        }
+        break;
+      }
     }
   }
   return entry;
 };
+
+function updateUids(str: string, match: string, uidMapper: Record<string, string>) {
+  return str.replace(new RegExp(match, 'g'), (match: string) => uidMapper[match]);
+}
 
 function setDirtyTrue(jsonRteChild: any) {
   // also removing uids in this function

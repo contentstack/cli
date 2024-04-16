@@ -195,6 +195,7 @@ export default interface DefaultConfig {
     noTerminalOutput?: boolean; // Skip final audit table output on terminal
     config?: {
       basePath?: string;
+      branch?: string;
     } & Record<string, any>; // To overwrite any build-in config. And this config is equal to --config flag.
   };
 }
