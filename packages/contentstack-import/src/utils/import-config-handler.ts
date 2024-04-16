@@ -60,6 +60,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   }
 
   config.isAuthenticated = isAuthenticated();
+  config.auth_token = configHandler.get('authtoken'); // TBD handle auth token in httpClient & sdk
 
   //Note to support the old key
   config.source_stack = config.apiKey;
