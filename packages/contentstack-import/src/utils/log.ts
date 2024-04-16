@@ -26,7 +26,7 @@ export function log(entryOrMessage: MessageType, logType?: LogsType, hidden?: bo
 
 export function initLogger(config?: ImportConfig | undefined) {
   if (!logger) {
-    const basePath = pathValidator(join(config?.data ?? process.cwd(), 'logs', 'import'));
+    const basePath = pathValidator(join(config?.cliLogsPath ?? process.cwd(), 'logs', 'import'));
     logger = new Logger(Object.assign(config ?? {}, { basePath }));
   }
 
