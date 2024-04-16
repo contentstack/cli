@@ -2,6 +2,7 @@ import { Modules } from '.';
 import DefaultConfig from './default-config';
 
 export default interface ExportConfig extends DefaultConfig {
+  importExportLogPath: string;
   exportDir: string;
   data: string;
   management_token?: string;
@@ -27,7 +28,7 @@ export default interface ExportConfig extends DefaultConfig {
   access_token?: string;
   org_uid?: string;
   source_stack?: string;
-  sourceStackName?:string;
+  sourceStackName?: string;
 }
 
 type branch = {
