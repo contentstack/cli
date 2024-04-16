@@ -2,10 +2,11 @@ import { resolve } from 'path';
 import { existsSync } from 'fs';
 
 import { PersonalizationAdapter, fsUtil, log } from '../utils';
-import { APIConfig, AttributeStruct, ImportConfig } from '../types';
+import { APIConfig, EventStruct, ImportConfig } from '../types';
 
-export default class EventsImport extends PersonalizationAdapter<ImportConfig> {
+export default class Events extends PersonalizationAdapter<ImportConfig> {
   private mapperDirPath: string;
+  private eventMapperDirPath: string;
   private eventsUidMapperPath: string;
   private eventsUidMapper: Record<string, unknown>;
   private personalizationConfig: ImportConfig['modules']['personalization'];
@@ -15,18 +16,14 @@ export default class EventsImport extends PersonalizationAdapter<ImportConfig> {
     const conf: APIConfig = {
       config,
       baseURL: config.personalizationHost,
-      headers: { 'X-Project-Uid': config.project_id, authtoken: config.auth_token },
+      headers: { 'X-Project-Uid': config.modules.personalization.project_id, authtoken: config.auth_token },
     };
     super(Object.assign(config, conf));
     this.personalizationConfig = this.config.modules.personalization;
-    this.eventsConfig = this.personalizationConfig.attributes;
-    this.mapperDirPath = resolve(
-      this.config.backupDir,
-      'mapper',
-      this.personalizationConfig.dirName,
-      this.eventsConfig.dirName,
-    );
-    this.eventsUidMapperPath = resolve(this.mapperDirPath, 'uid-mapping.json');
+    this.eventsConfig = this.personalizationConfig.events;
+    this.mapperDirPath = resolve(this.config.backupDir, 'mapper', this.personalizationConfig.dirName);
+    this.eventMapperDirPath = resolve(this.mapperDirPath, this.eventsConfig.dirName);
+    this.eventsUidMapperPath = resolve(this.eventMapperDirPath, 'uid-mapping.json');
     this.eventsUidMapper = {};
   }
 
@@ -36,13 +33,13 @@ export default class EventsImport extends PersonalizationAdapter<ImportConfig> {
   async import() {
     log(this.config, this.$t(this.messages.IMPORT_MSG, { module: 'Events' }), 'info');
 
-    await fsUtil.makeDirectory(this.mapperDirPath);
+    await fsUtil.makeDirectory(this.eventMapperDirPath);
     const { dirName, fileName } = this.eventsConfig;
     const eventsPath = resolve(this.config.data, this.personalizationConfig.dirName, dirName, fileName);
 
     if (existsSync(eventsPath)) {
       try {
-        const events = fsUtil.readFile(eventsPath, true) as AttributeStruct[];
+        const events = fsUtil.readFile(eventsPath, true) as EventStruct[];
 
         for (const event of events) {
           const { key, description, uid } = event;

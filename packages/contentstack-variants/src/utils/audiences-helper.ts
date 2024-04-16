@@ -28,16 +28,23 @@ export const lookUpAudiences = (
 ): CreateExperienceInput => {
   // Update experience variations
   if (experience?.variations?.length) {
-    experience.variations.forEach((variation) => {
-      if (variation['__type'] === 'AudienceBasedVariation' && variation?.audiences?.length) {
-        updateAudiences(variation.audiences, audiencesUid);
+    for (let index = experience.variations.length - 1; index >= 0; index--) {
+      const expVariations = experience.variations[index];
+      if (expVariations['__type'] === 'AudienceBasedVariation' && expVariations?.audiences?.length) {
+        updateAudiences(expVariations.audiences, audiencesUid);
+        if (!expVariations.audiences.length) {
+          experience.variations.splice(index, 1);
+        }
       }
-    });
+    }
   }
 
   // Update targeting audiences
-  if (experience?.targeting?.hasOwnProperty('audience') && experience.targeting.audience.audiences?.length) {
+  if (experience?.targeting?.hasOwnProperty('audience') && experience?.targeting?.audience?.audiences?.length) {
     updateAudiences(experience.targeting.audience.audiences, audiencesUid);
+    if (!experience.targeting.audience.audiences.length) {
+      experience.targeting = {};
+    }
   }
   return experience;
 };
