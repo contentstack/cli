@@ -64,7 +64,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
   config.source_stack = config.apiKey;
 
   config.forceStopMarketplaceAppsPrompt = exportCmdFlags.yes;
-  config.auth_token = configHandler.get('authtoken'); // TBD remove once dependent modules are updated
+  config.auth_token = configHandler.get('authtoken'); // TBD handle auth token in httpClient & sdk
   config.isAuthenticated = isAuthenticated();
 
   if (exportCmdFlags['branch']) {

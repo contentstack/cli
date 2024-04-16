@@ -154,7 +154,8 @@ const config: DefaultConfig = {
     personalization: {
       importData: true,
       dirName: 'personalization',
-      importOrder: ['projects', 'attributes', 'audiences', 'experiences'],
+      importOrder: ['projects', 'attributes', 'audiences', 'events', 'experiences'],
+      project_id: '',
       projects: {
         dirName: 'projects',
         fileName: 'projects.json',
@@ -174,6 +175,8 @@ const config: DefaultConfig = {
       experiences: {
         dirName: 'experiences',
         fileName: 'experiences.json',
+        thresholdTimer: 60000,
+        checkIntervalDuration: 10000,
       },
     },
     variantEntry: {
