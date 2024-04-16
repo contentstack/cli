@@ -8,6 +8,7 @@ import {
   flags,
   ContentstackClient,
   FlagInput,
+  pathValidator
 } from '@contentstack/cli-utilities';
 import { ModuleExporter } from '../../../export';
 import { setupExportConfig, log, formatError, writeExportMetaFile } from '../../../utils';
@@ -98,7 +99,7 @@ export default class ExportCommand extends Command {
   static aliases: string[] = ['cm:export'];
 
   async run(): Promise<void> {
-    let exportDir: string = path.join(process.cwd(), 'logs');
+    let exportDir: string = pathValidator('logs');
     try {
       const { flags } = await this.parse(ExportCommand);
       let exportConfig = await setupExportConfig(flags);
@@ -112,7 +113,7 @@ export default class ExportCommand extends Command {
         writeExportMetaFile(exportConfig);
       }
       log(exportConfig, `The content of the stack ${exportConfig.apiKey} has been exported successfully!`, 'success');
-      log(exportConfig, `The log has been stored at '${path.join(exportDir, 'logs', 'export')}'`, 'success');
+      log(exportConfig, `The log has been stored at '${pathValidator(path.join(exportDir, 'logs', 'export'))}'`, 'success');
     } catch (error) {
       log({ data: exportDir } as ExportConfig, `Failed to export stack content - ${formatError(error)}`, 'error');
       log({ data: exportDir } as ExportConfig, `The log has been stored at ${exportDir}`, 'info');
