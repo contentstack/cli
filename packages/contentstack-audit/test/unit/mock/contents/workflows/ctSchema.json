@@ -1,0 +1,132 @@
+[
+  {
+    "title": "ct5",
+    "uid": "ct5",
+    "schema": [
+      {
+        "data_type": "text",
+        "display_name": "Title",
+        "field_metadata": {
+          "_default": true,
+          "version": 3
+        },
+        "mandatory": true,
+        "uid": "title",
+        "unique": true,
+        "multiple": false,
+        "non_localizable": false
+      }
+    ],
+    "description": "",
+    "options": {
+      "is_page": false,
+      "singleton": true,
+      "sub_title": [],
+      "title": "title"
+    }
+  },
+  {
+    "title": "ct4",
+    "uid": "ct4",
+    "schema": [
+      {
+        "data_type": "text",
+        "display_name": "Title",
+        "field_metadata": {
+          "_default": true,
+          "version": 3
+        },
+        "mandatory": true,
+        "uid": "title",
+        "unique": true,
+        "multiple": false,
+        "non_localizable": false
+      }
+    ],
+    "description": "",
+    "options": {
+      "is_page": false,
+      "singleton": true,
+      "sub_title": [],
+      "title": "title"
+    }
+  },
+  {
+    "title": "ct3",
+    "uid": "ct3",
+    "schema": [
+      {
+        "data_type": "text",
+        "display_name": "Title",
+        "field_metadata": {
+          "_default": true,
+          "version": 3
+        },
+        "mandatory": true,
+        "uid": "title",
+        "unique": true,
+        "multiple": false,
+        "non_localizable": false
+      }
+    ],
+    "description": "",
+    "options": {
+      "is_page": false,
+      "singleton": true,
+      "sub_title": [],
+      "title": "title"
+    }
+  },
+  {
+    "title": "ct2",
+    "uid": "ct2",
+    "schema": [
+      {
+        "data_type": "text",
+        "display_name": "Title",
+        "field_metadata": {
+          "_default": true,
+          "version": 3
+        },
+        "mandatory": true,
+        "uid": "title",
+        "unique": true,
+        "multiple": false,
+        "non_localizable": false
+      }
+    ],
+    "description": "",
+    "options": {
+      "is_page": false,
+      "singleton": true,
+      "sub_title": [],
+      "title": "title"
+    }
+  },
+  {
+    "title": "ct1",
+    "uid": "ct1",
+    "schema": [
+      {
+        "data_type": "text",
+        "display_name": "Title",
+        "field_metadata": {
+          "_default": true,
+          "version": 3
+        },
+        "mandatory": true,
+        "uid": "title",
+        "unique": true,
+        "multiple": false,
+        "non_localizable": false
+      }
+    ],
+    "description": "",
+    "options": {
+      "is_page": false,
+      "singleton": true,
+      "sub_title": [],
+      "title": "title"
+    }
+  }
+]
