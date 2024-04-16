@@ -4,6 +4,7 @@ const { createLogger, format, transports } = require('winston');
 const { resolve, join } = require('path');
 const { slice } = Array.prototype;
 const { stringify } = JSON;
+const { pathValidator } = require('@contentstack/cli-utilities');
 
 const { combine, label, printf, colorize } = format;
 
@@ -32,10 +33,10 @@ function init(logFileName) {
   // Create dir if does not exist
   makeDir(logsDir);
 
-  const logPath = join(logsDir, logFileName + '.log');
+  const logPath = pathValidator(join(logsDir, logFileName + '.log'));
   const logger = createLogger({
     format: combine(colorize(), label({ label: 'Migration' }), customFormat),
-    transports: [new transports.File({ filename: logPath }), new transports.Console()],
+    transports: [new transports.File({ filename: logPath })],
   });
 
   let args;
@@ -53,9 +54,9 @@ function init(logFileName) {
       logString && logger.log('warn', logString);
     },
     error: function () {
-      args = slice.call(arguments);
-      logString = getString(args);
-      logString && logger.log('error', logString);
+      // args = slice.call(arguments);
+      // logString = getString(args);
+      // logString && logger.log('error', logString);
     },
     debug: function () {
       args = slice.call(arguments);
