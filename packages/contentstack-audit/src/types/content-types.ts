@@ -48,7 +48,12 @@ type RefErrorReturnType = {
   missingRefs: string[];
   display_name: string;
   tree: Record<string, unknown>[];
+  uid?: string;
+  content_types?: string[];
+  title?: string;
 };
+
+type WorkflowExtensionsRefErrorReturnType = RefErrorReturnType & { branches?: string[] };
 
 // NOTE Type 1
 type ReferenceFieldDataType = CommonDataTypeStruct & {
@@ -113,6 +118,10 @@ enum OutputColumn {
   'Field type' = 'data_type',
   'Missing references' = 'missingRefs',
   Path = 'treeStr',
+  title = 'title',
+  'uid' = 'uid',
+  'missingCts' = 'content_types',
+  'Missing Branches' = 'branches',
 }
 
 export {
@@ -131,4 +140,5 @@ export {
   OutputColumn,
   ContentTypeSchemaType,
   GlobalFieldSchemaTypes,
+  WorkflowExtensionsRefErrorReturnType,
 };
