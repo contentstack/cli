@@ -1,6 +1,7 @@
 import * as process from 'process';
 import * as path from 'path';
 import ImportCommand from '@contentstack/cli-cm-import';
+import { pathValidator } from '@contentstack/cli-utilities';
 
 const STACK_FOLDER = 'stack';
 
@@ -15,7 +16,7 @@ export interface ImporterOptions {
 }
 
 export async function run(options: ImporterOptions) {
-  const importPath = path.resolve(options.tmpPath, STACK_FOLDER);
+  const importPath = pathValidator(path.resolve(options.tmpPath, STACK_FOLDER));
 
   const args = options.alias
     ? ['-k', options.api_key, '-d', importPath, '--alias', options.alias!]
