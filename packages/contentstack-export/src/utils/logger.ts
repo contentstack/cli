@@ -133,7 +133,7 @@ function init(_logPath: string) {
   };
 }
 
-export const log = async (config: ExportConfig, message: any, type: string) => {
+export const log = (config: ExportConfig, message: any, type: 'info' | 'error' | 'success') => {
   const logsPath = config.data;
   // ignoring the type argument, as we are not using it to create a logfile anymore
   if (type !== 'error') {
