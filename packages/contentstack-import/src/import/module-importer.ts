@@ -114,7 +114,7 @@ class ModuleImporter {
    * fix available and the user confirms to proceed with the fix, otherwise it returns `false`.
    */
   async auditImportData(logger: Logger) {
-    const basePath = resolve(this.importConfig.backupDir, 'logs', 'audit');
+    const basePath = resolve(this.importConfig.importExportLogPath || this.importConfig.backupDir, 'logs', 'audit');
     const auditConfig = this.importConfig.auditConfig;
     auditConfig.config.basePath = basePath;
     auditConfig.config.branch = this.importConfig.branchName;
