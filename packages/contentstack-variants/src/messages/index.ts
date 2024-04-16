@@ -20,8 +20,7 @@ const variantEntry = {
 
 const expImportMsg = {
   VALIDATE_VARIANT_AND_VARIANT_GRP: 'Validating variant group and variants creation...',
-  SKIP_PERSONALIZATION_IMPORT: 'Skipping personalization migration!',
-  PERSONALIZATION_JOB_FAILURE: 'Something went wrong with personalization background job!',
+  PERSONALIZATION_JOB_FAILURE: 'Something went wrong with personalization background job! Failed to fetch some variant & variant groups',
 };
 
 const messages: typeof errors & typeof commonMsg & typeof migrationMsg & typeof variantEntry & typeof expImportMsg = {

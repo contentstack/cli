@@ -23,6 +23,7 @@ export default class ImportPersonalization {
           projects: Import.Project,
           attributes: Import.Attribute,
           audiences: Import.Audiences,
+          events: Import.Events,
           experiences: Import.Experiences
         };
 
