@@ -7,6 +7,7 @@
 var winston = require('winston');
 var path = require('path');
 var mkdirp = require('mkdirp');
+const { pathValidator } = require('@contentstack/cli-utilities');
 var slice = Array.prototype.slice;
 
 function returnString(args) {
@@ -41,10 +42,10 @@ var myCustomLevels = {
 };
 
 function init(_logPath, logfileName) {
-  var logsDir = path.resolve(_logPath, 'logs', 'import');
+  var logsDir = pathValidator(path.resolve(_logPath, 'logs', 'import'));
   // Create dir if doesn't already exist
   mkdirp.sync(logsDir);
-  var logPath = path.join(logsDir, logfileName + '.log');
+  var logPath = path.join(logsDir, pathValidator(logfileName) + '.log');
 
   var transports = [
     new winston.transports.File({

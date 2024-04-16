@@ -12,14 +12,19 @@ const { Parser } = require('../../../modules');
 const { ActionList } = require('../../../actions');
 const fs = require('fs');
 const chalk = require('chalk');
-const { printFlagDeprecation, managementSDKClient, flags, isAuthenticated } = require('@contentstack/cli-utilities');
+const isEmpty = require('lodash/isEmpty');
+const {
+  printFlagDeprecation,
+  managementSDKClient,
+  flags,
+  isAuthenticated,
+  pathValidator,
+} = require('@contentstack/cli-utilities');
 
 const { ApiError, SchemaValidator, MigrationError, FieldValidator } = require('../../../validators');
 
 // Utils
 const { map: _map, constants, safePromise, errorHelper } = require('../../../utils');
-const { success } = require('../../../utils/logger');
-
 // Properties
 const { get, set, getMapInstance, resetMapInstance } = _map;
 const {
@@ -77,7 +82,7 @@ class MigrationCommand extends Command {
       let configObj = config.reduce((a, v) => {
         //NOTE: Temp code to handle only one spilt(Window absolute path issue).Need to replace with hardcoded config key
         let [key, ...value] = v.split(':');
-        value = value?.length > 1 ? value?.join(':') : value?.join( );
+        value = value?.length > 1 ? value?.join(':') : value?.join();
         return { ...a, [key]: value };
       }, {});
       set('config', mapInstance, configObj);
@@ -128,11 +133,15 @@ class MigrationCommand extends Command {
     } else {
       await this.execSingleFile(filePath, mapInstance);
     }
+    const errLogPath = `${process.cwd()}/migration-logs`;
+    if (fs.existsSync(errLogPath)) {
+      this.log(`The log has been stored at: `, errLogPath);
+    }
   }
 
   async execSingleFile(filePath, mapInstance) {
     // Resolved absolute path
-    const resolvedMigrationPath = resolve(filePath);
+    const resolvedMigrationPath = pathValidator(filePath);
     // User provided migration function
     const migrationFunc = require(resolvedMigrationPath);
 
@@ -154,35 +163,24 @@ class MigrationCommand extends Command {
 
       const listr = new Listr(tasks);
 
-      await listr.run().catch((error) => {
-        this.handleErrors(error);
-        // When the process is child, send error message to parent
-        if (process.send) process.send({ errorOccurred: true });
-      });
+      await listr.run();
       requests.splice(0, requests.length);
     } catch (error) {
-      // errorHandler(null, null, null, error)
-      if (error.message) {
-        this.log(error.message);
-      } else if (error.errorMessage) {
-        this.log(error.errorMessage);
-      }else{
-        this.log(error)
-      }
+      errorHelper(error, filePath);
+      if (process.send) process.send({ errorOccurred: true });
     }
   }
 
   async execMultiFiles(filePath, mapInstance) {
     // Resolved absolute path
-    const resolvedMigrationPath = resolve(filePath);
+    const resolvedMigrationPath = pathValidator(filePath);
     try {
       const files = fs.readdirSync(resolvedMigrationPath);
       for (const element of files) {
         const file = element;
         if (extname(file) === '.js') {
-          success(chalk`{white Executing file:} {grey {bold ${file}}}`);
           // eslint-disable-next-line no-await-in-loop
-          await this.execSingleFile(resolve(filePath, file), mapInstance);
+          await this.execSingleFile(pathValidator(resolve(filePath, file)), mapInstance);
         }
       }
     } catch (error) {
