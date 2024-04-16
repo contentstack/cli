@@ -30,7 +30,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
         for (const project of projects) {
           const { name, description, connectedStackApiKey } = project;
           const projectRes = await this.createProject({ name, description, connectedStackApiKey });
-          this.config.project_id = projectRes?.uid;
+          this.config.modules.personalization.project_id = projectRes?.uid;
         }
 
         this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Projects' }), 'info');
