@@ -1,5 +1,9 @@
 import { Modules } from '.';
 
+interface AnyProperty {
+  [propName: string]: any;
+}
+
 export default interface DefaultConfig {
   contentVersion: number;
   versioning: boolean;
@@ -118,6 +122,21 @@ export default interface DefaultConfig {
       dependencies?: Modules[];
       exportVersions: boolean;
     };
+    personalization: {
+      dirName: string,
+      baseURL: string,
+    } & AnyProperty;
+    variantEntry: {
+      dirName: string;
+      fileName: string;
+      chunkFileSize: number;
+      query: {
+        skip: number;
+        limit: number;
+        locale: string;
+        include_variant: boolean;
+      } & AnyProperty;
+    } & AnyProperty;
     extensions: {
       dirName: string;
       fileName: string;
@@ -152,6 +171,24 @@ export default interface DefaultConfig {
       invalidKeys: string[];
       dependencies?: Modules[];
     };
+    events: {
+      dirName: string;
+      fileName: string;
+      invalidKeys: string[];
+      dependencies?: Modules[];
+    };
+    audiences: {
+      dirName: string;
+      fileName: string;
+      invalidKeys: string[];
+      dependencies?: Modules[];
+    };
+    attributes: {
+      dirName: string;
+      fileName: string;
+      invalidKeys: string[];
+      dependencies?: Modules[];
+    };
   };
   languagesCode: string[];
   apis: {
@@ -169,6 +206,7 @@ export default interface DefaultConfig {
     stacks: string;
   };
   preserveStackVersion: boolean;
+  personalizationEnabled: boolean;
   fetchConcurrency: number;
   writeConcurrency: number;
   developerHubBaseUrl: string;
