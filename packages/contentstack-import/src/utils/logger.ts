@@ -136,14 +136,14 @@ function init(_logPath: string) {
 }
 
 export const log = async (config: ImportConfig, message: any, type: string) => {
-  config.importExportLogPath = config.importExportLogPath || config.data || path.join(__dirname, 'logs');
+  config.cliLogsPath = config.cliLogsPath || config.data || path.join(__dirname, 'logs');
   // ignoring the type argument, as we are not using it to create a logfile anymore
   if (type !== 'error') {
     // removed type argument from init method
-    if (type === 'warn') init(config.importExportLogPath).warn(message); //logged warning message in log file
-    else init(config.importExportLogPath).log(message);
+    if (type === 'warn') init(config.cliLogsPath).warn(message); //logged warning message in log file
+    else init(config.cliLogsPath).log(message);
   } else {
-    init(config.importExportLogPath).error(message);
+    init(config.cliLogsPath).error(message);
   }
 };
 
