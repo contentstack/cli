@@ -3,6 +3,7 @@
  */
 import fs from 'fs';
 import path from 'path';
+import forEach from 'lodash/forEach'
 import { configHandler, cliux, messageHandler } from '@contentstack/cli-utilities';
 import { MergeParams } from '../interfaces';
 
@@ -107,6 +108,27 @@ export function handleErrorMsg(err) {
     cliux.print(`Error: ${messageHandler.parse('CLI_BRANCH_API_FAILED')}`, { color: 'red' });
   }
   process.exit(1);
+}
+
+export function validateCompareData(branchCompareData) {
+  let validCompareData = false;
+  if (branchCompareData.content_types) {
+    forEach(branchCompareData.content_types, (value, key) => {
+      if (value?.length > 0) {
+        validCompareData = true;
+       }
+    });
+  }
+
+  if (branchCompareData.global_fields) {
+    forEach(branchCompareData.global_fields, (value, key) => {
+      if (value?.length > 0) {
+        validCompareData = true;
+       }
+    });
+  }
+
+  return validCompareData;
 }
 
 export * from './interactive';
