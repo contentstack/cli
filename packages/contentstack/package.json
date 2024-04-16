@@ -10,7 +10,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "npm run clean && npm run compile",
-    "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
+    "clean": "rm -rf ./li b ./node_modules tsconfig.build.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
     "version": "oclif readme  && git add README.md",
@@ -27,7 +27,7 @@
     "@contentstack/cli-cm-bootstrap": "~1.9.0",
     "@contentstack/cli-cm-branches": "~1.0.24",
     "@contentstack/cli-cm-bulk-publish": "~1.4.4",
-    "@contentstack/cli-cm-export": "~1.11.1",
+    "@contentstack/cli-cm-export": "~1.11.2",
     "@contentstack/cli-cm-clone": "~1.10.3",
     "@contentstack/cli-cm-export-to-csv": "~1.7.0",
     "@contentstack/cli-cm-import": "~1.15.2",
