@@ -13,10 +13,10 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   private cmsVariantGroupPath: string;
   private experiencesUidMapperPath: string;
   private cmsVariants: Record<string, unknown>;
-  private personalizationThresholdTimer: number;
+  private expThresholdTimer: number;
   private cmsVariantGroups: Record<string, unknown>;
   private experiencesUidMapper: Record<string, string>;
-  private personalizationCheckIntervalDuration: number;
+  private expCheckIntervalDuration: number;
   private personalizationConfig: ImportConfig['modules']['personalization'];
   private audienceConfig: ImportConfig['modules']['personalization']['audiences'];
   private experienceConfig: ImportConfig['modules']['personalization']['experiences'];
@@ -25,7 +25,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     const conf: APIConfig = {
       config,
       baseURL: config.personalizationHost,
-      headers: { authtoken: config.auth_token, 'X-Project-Uid': config.project_id },
+      headers: { 'X-Project-Uid': config.modules.personalization.project_id, authtoken: config.auth_token },
     };
     super(Object.assign(config, conf));
     this.personalizationConfig = this.config.modules.personalization;
@@ -41,8 +41,8 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     this.experiencesUidMapper = {};
     this.cmsVariantGroups = {};
     this.cmsVariants = {};
-    this.personalizationThresholdTimer = this.personalizationConfig?.thresholdTimer ?? 60000;
-    this.personalizationCheckIntervalDuration = this.personalizationConfig?.checkIntervalDuration ?? 10000;
+    this.expThresholdTimer = this.experienceConfig?.thresholdTimer ?? 60000;
+    this.expCheckIntervalDuration = this.experienceConfig?.checkIntervalDuration ?? 10000;
   }
 
   /**
@@ -76,12 +76,12 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Experiences' }), 'info');
 
         log(this.config, this.messages.VALIDATE_VARIANT_AND_VARIANT_GRP, 'info');
-        await this.validateVariantGroupAndVariantsCreated();
+        const jobRes = await this.validateVariantGroupAndVariantsCreated();
+        if (!jobRes) log(this.config, this.messages.PERSONALIZATION_JOB_FAILURE, 'info');
+        else log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Variant & Variant groups' }), 'info');
+
         if (this.personalizationConfig.importData) {
-          log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Variant & Variant groups' }), 'info');
           //attach content types in experiences
-        } else {
-          log(this.config, this.messages.SKIP_PERSONALIZATION_IMPORT, 'info');
         }
       } catch (error: any) {
         if (error?.errorMessage || error?.message || error?.error_message) {
@@ -102,21 +102,18 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   validateVariantGroupAndVariantsCreated(): Promise<any> {
     return new Promise(async (resolve, reject) => {
       try {
-        const promises = Object.keys(this.experiencesUidMapper)?.map(async (exp) => {
-          const expUid = this.experiencesUidMapper[exp];
+        const promises = Object.entries(this.experiencesUidMapper).map(async ([exp, expUid]) => {
           const expRes = await this.getExperience(expUid);
           if (expRes?._cms) {
             this.cmsVariants[expUid] = expRes._cms?.variants ?? {};
-            this.cmsVariantGroups[expUid] = expRes._cms?.variantGroup ?? {};    
-          } else {
-            this.personalizationConfig.importData = false;
+            this.cmsVariantGroups[expUid] = expRes._cms?.variantGroup ?? {};
           }
         });
 
         await Promise.all(promises);
         // Counter to track the number of times the function has been called
         let count = 0;
-        const maxTries = Math.round(this.personalizationThresholdTimer / this.personalizationCheckIntervalDuration);
+        const maxTries = Math.round(this.expThresholdTimer / this.expCheckIntervalDuration);
 
         // Invoke validateVariantGroupAndVariantsCreated after some interval if any variants or variant groups associated with experience have not been created yet.
         if (
@@ -128,13 +125,11 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
             count++;
             // Check if maxTries has passed
             if (count === maxTries) {
-              this.personalizationConfig.importData = false;
               clearInterval(intervalId); // Stop the interval
-              reject(this.messages.PERSONALIZATION_JOB_FAILURE);
+              resolve(false);
             }
-          }, this.personalizationCheckIntervalDuration);
+          }, this.expCheckIntervalDuration);
         } else {
-          this.personalizationConfig.importData = true;
           fsUtil.writeFile(this.cmsVariantPath, this.cmsVariants);
           fsUtil.writeFile(this.cmsVariantGroupPath, this.cmsVariantGroups);
           resolve(true);

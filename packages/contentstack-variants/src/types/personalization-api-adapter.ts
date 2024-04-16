@@ -87,9 +87,9 @@ type ExpVariations = {
 } & AnyProperty;
 
 type ExpTargeting = {
-  audience: {
-    audiences: string[];
-    audienceCombinationType: string;
+  audience?: {
+    audiences?: string[];
+    audienceCombinationType?: string;
   } & AnyProperty;
 };
 

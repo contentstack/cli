@@ -75,8 +75,8 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     return (await this.apiClient.get<EventStruct>('/events')).data;
   }
 
-  async createEvents(event: CreateEventInput): Promise<void | AttributeStruct> {
-    return (await this.apiClient.post<AttributeStruct>('/events', event)).data;
+  async createEvents(event: CreateEventInput): Promise<void | EventStruct> {
+    return (await this.apiClient.post<EventStruct>('/events', event)).data;
   }
 
   async getAudiences(): Promise<AudienceStruct[] | void> {
