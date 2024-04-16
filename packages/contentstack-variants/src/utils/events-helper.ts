@@ -1,7 +1,7 @@
 import { CreateExperienceInput, ExpMetric } from '../types';
 
 /**
- * Lookup function to either update uid or remove it if event not created in target project
+ * function to either modify the UID or eliminate it if the event is not created in the target project
  * @param experience - experience object 
  * @param eventsUid - {eventsUid} events mapper data in format {<old-uid>: <new-uid>}
  * @returns
