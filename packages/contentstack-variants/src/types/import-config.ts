@@ -11,8 +11,7 @@ export interface ImportDefaultConfig extends AnyProperty {
       dirName: string;
       importData: boolean;
       importOrder: string[];
-      thresholdTimer: number;
-      checkIntervalDuration: number;
+      project_id?: string;
       projects: {
         dirName: string;
         fileName: string;
@@ -32,6 +31,8 @@ export interface ImportDefaultConfig extends AnyProperty {
       experiences: {
         dirName: string;
         fileName: string;
+        thresholdTimer: number;
+        checkIntervalDuration: number;
       };
     };
     variantEntry: {
@@ -76,7 +77,6 @@ export interface ImportConfig extends ImportDefaultConfig, AnyProperty {
   replaceExisting?: boolean;
   skipExisting?: boolean;
   stackName?: string;
-  project_id?: string;
 }
 
 type branch = {

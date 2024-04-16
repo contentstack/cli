@@ -127,8 +127,7 @@ export default interface DefaultConfig {
       dirName: string;
       importData: boolean;
       importOrder: string[];
-      thresholdTimer: number;
-      checkIntervalDuration: number;
+      project_id?: string;
       projects: {
         dirName: string;
         fileName: string;
@@ -148,6 +147,8 @@ export default interface DefaultConfig {
       experiences: {
         dirName: string;
         fileName: string;
+        thresholdTimer: number;
+        checkIntervalDuration: number;
       };
     };
     variantEntry: {
