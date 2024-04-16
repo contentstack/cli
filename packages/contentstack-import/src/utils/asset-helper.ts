@@ -10,6 +10,8 @@ let helper = require('./file-helper');
 
 const MAX_RETRY_LIMIT = 5;
 
+const escapeRegExp = (str: string) => str.replace(/[*+?^${}()|[\]\\]/g, '\\$&');
+
 function validate(req: any) {
   if (typeof req !== 'object') {
     throw new Error(`Invalid params passed for request\n${JSON.stringify(arguments)}`);
@@ -249,8 +251,9 @@ export const lookupAssets = function (
   assetUrls.forEach(function (assetUrl: any) {
     let mappedAssetUrl = mappedAssetUrls[assetUrl];
     if (typeof mappedAssetUrl !== 'undefined') {
-      const escapedAssetUrl = assetUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      entry = entry.replace(new RegExp(escapedAssetUrl, 'img'), mappedAssetUrl);
+      const sanitizedUrl = escapeRegExp(assetUrl).replace(/\.\./g, '\\$&');
+      const escapedMappedUrl = escapeRegExp(mappedAssetUrl).replace(/\.\./g, '\\$&');
+      entry = entry.replace(new RegExp(sanitizedUrl, 'img'), escapedMappedUrl);
       matchedUrls.push(mappedAssetUrl);
     } else {
       unmatchedUrls.push(assetUrl);
