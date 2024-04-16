@@ -87,9 +87,9 @@ type ExpVariations = {
 } & AnyProperty;
 
 type ExpTargeting = {
-  audience: {
-    audiences: string[];
-    audienceCombinationType: string;
+  audience?: {
+    audiences?: string[];
+    audienceCombinationType?: string;
   } & AnyProperty;
 };
 
@@ -111,6 +111,10 @@ export type ExperienceStruct = {
   metrics?: ExpMetric[];
   status: string;
   metadata?: object;
+  _cms?: {
+    variantGroup?: object;
+    variants?: object;
+  }
 } & AnyProperty;
 
 export interface CreateExperienceInput {
