@@ -3,6 +3,12 @@ import { AnyProperty } from './utils';
 export interface ImportDefaultConfig extends AnyProperty {
   personalizationHost: string;
   modules: {
+    'content-types': {
+      dirName: string;
+      fileName: string;
+      validKeys: string[];
+      limit: number;
+    };
     entries: {
       dirName: string;
       fileName: string;
