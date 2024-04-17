@@ -190,6 +190,8 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       // NOTE Handle the API response here
       const resultSet = await Promise.allSettled(allPromise);
 
+      this.log(this.config, `Batch No. (${batchNo}/${batches.length}) of variant entry import is complete`, 'success');
+
       // NOTE publish all the entries
       this.publishVariantEntries(resultSet);
 
