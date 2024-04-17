@@ -1159,6 +1159,21 @@ importers:
     devDependencies:
       typescript: 5.4.5
 
+  packages/variant-test:
+    specifiers:
+      '@contentstack/cli-cm-import': ^1.14.1
+      '@contentstack/cli-utilities': ^1.5.12
+      '@contentstack/cli-variants': ^0.0.1-alpha
+      lodash: ^4.17.21
+      typescript: ^5.4.5
+    dependencies:
+      '@contentstack/cli-cm-import': link:../contentstack-import
+      '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/cli-variants': link:../contentstack-variants
+      lodash: 4.17.21
+    devDependencies:
+      typescript: 5.4.5
+
 packages:
 
   /@aashutoshrathi/word-wrap/1.2.6:
