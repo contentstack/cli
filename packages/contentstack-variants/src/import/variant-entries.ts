@@ -219,11 +219,14 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     variantEntry: VariantEntryStruct,
   ): VariantEntryStruct {
     if (this.config.helpers) {
-      const { lookUpTerms, lookupAssets, lookupEntries, restoreJsonRteEntryRefs } = this.config.helpers;
+      const { lookUpTerms, lookupAssets, lookupExtension, lookupEntries, restoreJsonRteEntryRefs } =
+        this.config.helpers;
 
-      // FIXME Why do we even need lookupExtension in entries [Ref taken fromentries import]
+      // FIXME Not sure why do we even need lookupExtension in entries [Ref taken fromentries import]
       // NOTE Find and replace extension's UID
-      // lookupExtension(this.config, contentType.schema, this.config.preserveStackVersion, this.installedExtensions);
+      if (lookupExtension) {
+        lookupExtension(this.config, contentType.schema, this.config.preserveStackVersion, this.installedExtensions);
+      }
 
       // NOTE Find and replace RTE Ref UIDs
       variantEntry = restoreJsonRteEntryRefs(variantEntry, variantEntry, contentType.schema, {
