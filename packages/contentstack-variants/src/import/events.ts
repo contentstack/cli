@@ -1,8 +1,8 @@
 import { resolve } from 'path';
 import { existsSync } from 'fs';
 
-import { PersonalizationAdapter, fsUtil, log } from '../utils';
-import { APIConfig, EventStruct, ImportConfig } from '../types';
+import { PersonalizationAdapter, fsUtil } from '../utils';
+import { APIConfig, EventStruct, ImportConfig, LogType } from '../types';
 
 export default class Events extends PersonalizationAdapter<ImportConfig> {
   private mapperDirPath: string;
@@ -12,7 +12,7 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
   private personalizationConfig: ImportConfig['modules']['personalization'];
   private eventsConfig: ImportConfig['modules']['personalization']['events'];
 
-  constructor(public readonly config: ImportConfig) {
+  constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
     const conf: APIConfig = {
       config,
       baseURL: config.personalizationHost,
@@ -31,7 +31,7 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
    * The function asynchronously imports attributes from a JSON file and creates them in the system.
    */
   async import() {
-    log(this.config, this.$t(this.messages.IMPORT_MSG, { module: 'Events' }), 'info');
+    this.log(this.config, this.$t(this.messages.IMPORT_MSG, { module: 'Events' }), 'info');
 
     await fsUtil.makeDirectory(this.eventMapperDirPath);
     const { dirName, fileName } = this.eventsConfig;
@@ -48,10 +48,10 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
         }
 
         fsUtil.writeFile(this.eventsUidMapperPath, this.eventsUidMapper);
-        log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Events' }), 'info');
+        this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Events' }), 'info');
       } catch (error: any) {
         if (error?.errorMessage || error?.message || error?.error_message) {
-          log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Events' }), 'error');
+          this.log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Events' }), 'error');
         }
         throw error;
       }
