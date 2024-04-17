@@ -28,8 +28,8 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
         const projects = JSON.parse(readFileSync(projectPath, 'utf8')) as CreateProjectInput[];
 
         for (const project of projects) {
-          const { name, description, connectedStackApiKey } = project;
-          const projectRes = await this.createProject({ name, description, connectedStackApiKey });
+          const { name, description } = project;
+          const projectRes = await this.createProject({ name, description, connectedStackApiKey: this.config.apiKey });
           this.config.modules.personalization.project_id = projectRes?.uid;
         }
 
