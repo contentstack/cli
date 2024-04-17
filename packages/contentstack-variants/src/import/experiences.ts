@@ -3,12 +3,14 @@ import { existsSync } from 'fs';
 import values from 'lodash/values';
 import cloneDeep from 'lodash/cloneDeep';
 
-import { APIConfig, ImportConfig, ExperienceStruct, CreateExperienceInput } from '../types';
-import { PersonalizationAdapter, fsUtil, log, lookUpAudiences, lookUpEvents } from '../utils';
+import { PersonalizationAdapter, fsUtil, lookUpAudiences, lookUpEvents } from '../utils';
+import { APIConfig, ImportConfig, ExperienceStruct, CreateExperienceInput, LogType } from '../types';
 
 export default class Experiences extends PersonalizationAdapter<ImportConfig> {
+  private createdCTs: string[];
   private mapperDirPath: string;
   private cmsVariantPath: string;
+  private cTsSuccessPath: string;
   private failedCmsExpPath: string;
   private expMapperDirPath: string;
   private eventsMapperPath: string;
@@ -26,7 +28,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   private audienceConfig: ImportConfig['modules']['personalization']['audiences'];
   private experienceConfig: ImportConfig['modules']['personalization']['experiences'];
 
-  constructor(public readonly config: ImportConfig) {
+  constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
     const conf: APIConfig = {
       config,
       baseURL: config.personalizationHost,
@@ -51,13 +53,15 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     this.expCheckIntervalDuration = this.experienceConfig?.checkIntervalDuration ?? 10000;
     this.maxValidateRetry = Math.round(this.expThresholdTimer / this.expCheckIntervalDuration);
     this.pendingVariantAndVariantGrpForExperience = [];
+    this.cTsSuccessPath = resolve(this.config.backupDir, 'mapper', 'content_types', 'success.json');
+    this.createdCTs = [];
   }
 
   /**
    * The function asynchronously imports experiences from a JSON file and creates them in the system.
    */
   async import() {
-    log(this.config, this.$t(this.messages.IMPORT_MSG, { module: 'Experiences' }), 'info');
+    this.log(this.config, this.$t(this.messages.IMPORT_MSG, { module: 'Experiences' }), 'info');
 
     await fsUtil.makeDirectory(this.expMapperDirPath);
     const { dirName, fileName } = this.experienceConfig;
@@ -81,24 +85,26 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
           this.experiencesUidMapper[uid] = expRes?.uid ?? '';
         }
         fsUtil.writeFile(this.experiencesUidMapperPath, this.experiencesUidMapper);
-        log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Experiences' }), 'info');
+        this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Experiences' }), 'info');
 
-        log(this.config, this.messages.VALIDATE_VARIANT_AND_VARIANT_GRP, 'info');
+        this.log(this.config, this.messages.VALIDATE_VARIANT_AND_VARIANT_GRP, 'info');
         this.pendingVariantAndVariantGrpForExperience = values(cloneDeep(this.experiencesUidMapper));
         const jobRes = await this.validateVariantGroupAndVariantsCreated();
         fsUtil.writeFile(this.cmsVariantPath, this.cmsVariants);
         fsUtil.writeFile(this.cmsVariantGroupPath, this.cmsVariantGroups);
         if (jobRes)
-          log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Variant & Variant groups' }), 'info');
+          this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Variant & Variant groups' }), 'info');
 
         if (this.personalizationConfig.importData) {
-          //attach content types in experiences
+          this.log(this.config, this.messages.UPDATING_CT_IN_EXP, 'info');
+          await this.attachCTsInExperience();
+          this.log(this.config, this.messages.UPDATED_CT_IN_EXP, 'info');
         }
       } catch (error: any) {
         if (error?.errorMessage || error?.message || error?.error_message) {
-          log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Experiences' }), 'error');
+          this.log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Experiences' }), 'error');
         } else {
-          log(this.config, error, 'error');
+          this.log(this.config, error, 'error');
         }
       }
     }
@@ -134,13 +140,37 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
           );
           return this.validateVariantGroupAndVariantsCreated(retryCount);
         } else {
-          log(this.config, this.messages.PERSONALIZATION_JOB_FAILURE, 'info');
+          this.log(this.config, this.messages.PERSONALIZATION_JOB_FAILURE, 'info');
           fsUtil.writeFile(this.failedCmsExpPath, this.pendingVariantAndVariantGrpForExperience);
           return false;
         }
       } else {
         return true;
       }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async attachCTsInExperience() {
+    try {
+      // Read the created content types from the file
+      this.createdCTs = fsUtil.readFile(this.cTsSuccessPath, true) as any;
+      await Promise.all(
+        Object.entries(this.experiencesUidMapper).map(async ([oldExpUid, newExpUid]) => {
+          // Get old experience content type details asynchronously
+          const expRes = await this.getCTsFromExperience(oldExpUid);
+
+          if (this.createdCTs && expRes?.contentTypes) {
+            // Filter content types that were created
+            const updatedContentTypes = expRes.contentTypes?.filter((ct: string) => this.createdCTs.includes(ct));
+            if(updatedContentTypes?.length){
+              // Update content types detail in the new experience asynchronously
+              await this.updateCTsInExperience({ contentTypes: updatedContentTypes }, newExpUid);
+            }
+          }
+        }),
+      );
     } catch (error) {
       throw error;
     }

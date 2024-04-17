@@ -24,7 +24,7 @@ export default class ContentTypesImport extends BaseClass {
   private gFsMapperFolderPath: string;
   private gFs: Record<string, unknown>[];
   private failedCTs: Record<string, unknown>[];
-  private createdCTs: Record<string, unknown>[];
+  private createdCTs: string[];
   private cTs: Record<string, unknown>[];
   private cTsUidMapper: Record<string, string>;
   private config: ImportConfig;
@@ -59,7 +59,7 @@ export default class ContentTypesImport extends BaseClass {
     this.gFsConfig = importConfig.modules['global-fields'];
     this.reqConcurrency = this.cTsConfig.writeConcurrency || this.importConfig.writeConcurrency;
     this.cTsFolderPath = path.join(this.importConfig.data, this.cTsConfig.dirName);
-    this.cTsMapperPath = path.join(this.importConfig.data, 'mapper', 'content_types');
+    this.cTsMapperPath = path.join(this.importConfig.data, 'mapper', this.cTsConfig.dirName);
     this.cTsSuccessPath = path.join(this.cTsMapperPath, 'success.json');
     this.gFsFolderPath = path.resolve(this.importConfig.data, this.gFsConfig.dirName);
     this.gFsMapperFolderPath = path.join(importConfig.data, 'mapper', 'global_fields', 'success.json');
@@ -102,11 +102,13 @@ export default class ContentTypesImport extends BaseClass {
     this.taxonomies = fsUtil.readFile(this.taxonomiesPath) as Record<string, unknown>;
 
     await this.seedCTs();
+    if(this.createdCTs?.length) fsUtil.writeFile(this.cTsSuccessPath, this.createdCTs);
     log(this.importConfig, 'Created content types', 'success');
+
     await this.updateCTs();
     log(this.importConfig, 'Updated content types with references', 'success');
     if (this.fieldRules.length > 0) {
-      await fsUtil.writeFile(path.join(this.cTsFolderPath, 'field_rules_uid.json'), this.fieldRules);
+      fsUtil.writeFile(path.join(this.cTsFolderPath, 'field_rules_uid.json'), this.fieldRules);
     }
     log(this.importConfig, 'Updating the extensions...', 'success');
     await this.updatePendingExtensions();
@@ -120,6 +122,7 @@ export default class ContentTypesImport extends BaseClass {
 
   async seedCTs(): Promise<any> {
     const onSuccess = ({ response: globalField, apiData: { content_type: { uid = null } = {} } = {} }: any) => {
+      this.createdCTs.push(uid)
       log(this.importConfig, `${uid} content type seeded`, 'info');
     };
     const onReject = ({ error, apiData: { content_type: { uid = null } = {} } = {} }: any) => {
