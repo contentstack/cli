@@ -222,7 +222,8 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       const { lookUpTerms, lookupAssets, lookupExtension, lookupEntries, restoreJsonRteEntryRefs } =
         this.config.helpers;
 
-      // FIXME Not sure why do we even need lookupExtension in entries [Ref taken fromentries import]
+      // FIXME Not sure why do we even need lookupExtension in entries [Ref taken from entries import]
+      // Feel free to remove this flow if it's not valid
       // NOTE Find and replace extension's UID
       if (lookupExtension) {
         lookupExtension(this.config, contentType.schema, this.config.preserveStackVersion, this.installedExtensions);
@@ -247,7 +248,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
 
       // NOTE: will remove term if term doesn't exists in taxonomy
       // FIXME: Validate if taxonomy support available for variant entries,
-      // if not can remove this lookup flow
+      // if not, feel free to remove this lookup flow.
       lookUpTerms(contentType?.schema, variantEntry, this.taxonomies, this.config);
 
       // NOTE Find and replace asset's UID
