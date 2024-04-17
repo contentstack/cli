@@ -156,7 +156,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     try {
       // Read the created content types from the file
       this.createdCTs = fsUtil.readFile(this.cTsSuccessPath, true) as any;
-      await Promise.all(
+      await Promise.allSettled(
         Object.entries(this.experiencesUidMapper).map(async ([oldExpUid, newExpUid]) => {
           // Get old experience content type details asynchronously
           const expRes = await this.getCTsFromExperience(oldExpUid);
