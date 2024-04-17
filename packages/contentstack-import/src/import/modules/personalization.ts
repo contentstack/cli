@@ -1,4 +1,4 @@
-import { Import } from '@contentstack/cli-variants';
+import { Import, LogType } from '@contentstack/cli-variants';
 
 import { log } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
@@ -24,14 +24,14 @@ export default class ImportPersonalization {
           attributes: Import.Attribute,
           audiences: Import.Audiences,
           events: Import.Events,
-          experiences: Import.Experiences
+          experiences: Import.Experiences,
         };
 
         const order: (keyof typeof moduleMapper)[] = this.personalization.importOrder as (keyof typeof moduleMapper)[];
 
         for (const module of order) {
           const Module = moduleMapper[module];
-          await new Module(this.config).import();
+          await new Module(this.config, log as unknown as LogType).import();
         }
       }
     } catch (error) {
