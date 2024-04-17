@@ -2,7 +2,7 @@ import { resolve } from 'path';
 import { existsSync } from 'fs';
 
 import { APIConfig, AudienceStruct, ImportConfig, LogType } from '../types';
-import { PersonalizationAdapter, fsUtil, log, lookUpAttributes } from '../utils';
+import { PersonalizationAdapter, fsUtil, lookUpAttributes } from '../utils';
 
 export default class Audiences extends PersonalizationAdapter<ImportConfig> {
   private mapperDirPath: string;
@@ -14,7 +14,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
   private audienceConfig: ImportConfig['modules']['personalization']['audiences'];
   public attributeConfig: ImportConfig['modules']['personalization']['attributes'];
 
-  constructor(public readonly config: ImportConfig) {
+  constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
     const conf: APIConfig = {
       config,
       baseURL: config.personalizationHost,
@@ -35,7 +35,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
    * The function asynchronously imports audiences from a JSON file and creates them in the system.
    */
   async import() {
-    log(this.config, this.$t(this.messages.IMPORT_MSG, { module: 'Audiences' }), 'info');
+    this.log(this.config, this.$t(this.messages.IMPORT_MSG, { module: 'Audiences' }), 'info');
 
     await fsUtil.makeDirectory(this.audienceMapperDirPath);
     const { dirName, fileName } = this.audienceConfig;
@@ -59,10 +59,10 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
         }
 
         fsUtil.writeFile(this.audiencesUidMapperPath, this.audiencesUidMapper);
-        log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Audiences' }), 'info');
+        this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Audiences' }), 'info');
       } catch (error: any) {
         if (error?.errorMessage || error?.message || error?.error_message) {
-          log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Audiences' }), 'error');
+          this.log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Audiences' }), 'error');
         }
         throw error;
       }
