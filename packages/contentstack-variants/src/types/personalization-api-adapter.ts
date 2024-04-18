@@ -129,6 +129,15 @@ export interface CreateExperienceInput {
   metadata?: object;
 }
 
+export interface UpdateExperienceInput {
+  contentTypes: string[];
+}
+
+export interface CMSExperienceStruct {
+  uid: string;
+  contentTypes: string[];
+}
+
 export interface Personalization<T> extends AdapterHelperInterface<T, HttpClient> {
   projects(options: GetProjectsParams): Promise<ProjectStruct[] | void>;
 
@@ -145,4 +154,8 @@ export interface Personalization<T> extends AdapterHelperInterface<T, HttpClient
   createAudience(attribute: CreateAudienceInput): Promise<AudienceStruct | void>;
 
   createExperience(experience: CreateExperienceInput): Promise<ExperienceStruct | void>;
+
+  getCTsFromExperience(experienceUid: string): Promise<CMSExperienceStruct | void>;
+
+  updateCTsInExperience(experience: UpdateExperienceInput, experienceUid: string): Promise<CMSExperienceStruct | void>; 
 }
