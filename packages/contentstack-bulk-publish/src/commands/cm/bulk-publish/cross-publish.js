@@ -124,7 +124,7 @@ class CrossPublishCommand extends Command {
 
   flagsAdapter(_flags) {
     if ('content-type' in _flags) {
-      _flags.contentType = _flags['content-type'];
+      _flags.contentTypes = _flags['content-type'];
       delete _flags['content-type'];
     }
     if ('locales' in _flags) {
@@ -196,7 +196,7 @@ CrossPublishCommand.flags = {
     default: 'true',
   }),
   'api-version': flags.string({
-    description : "API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
+    description: 'API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].',
   }),
   contentType: flags.string({
     char: 't',
