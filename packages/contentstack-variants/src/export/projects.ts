@@ -1,5 +1,4 @@
 import * as path from 'path';
-import { ContentstackClient } from '@contentstack/cli-utilities';
 
 import { ExportConfig, PersonalizationConfig } from '../types';
 import { PersonalizationAdapter, log, fsUtil, formatError } from '../utils';
