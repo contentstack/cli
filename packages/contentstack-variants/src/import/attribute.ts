@@ -1,8 +1,8 @@
 import { resolve } from 'path';
 import { existsSync } from 'fs';
 
-import { PersonalizationAdapter, fsUtil, log } from '../utils';
-import { APIConfig, AttributeStruct, ImportConfig } from '../types';
+import { PersonalizationAdapter, fsUtil } from '../utils';
+import { APIConfig, AttributeStruct, ImportConfig, LogType } from '../types';
 
 export default class Attribute extends PersonalizationAdapter<ImportConfig> {
   private mapperDirPath: string;
@@ -12,7 +12,7 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
   private personalizationConfig: ImportConfig['modules']['personalization'];
   private attributeConfig: ImportConfig['modules']['personalization']['attributes'];
 
-  constructor(public readonly config: ImportConfig) {
+  constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
     const conf: APIConfig = {
       config,
       baseURL: config.personalizationHost,
@@ -31,7 +31,7 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
    * The function asynchronously imports attributes from a JSON file and creates them in the system.
    */
   async import() {
-    log(this.config, this.$t(this.messages.IMPORT_MSG, { module: 'Attributes' }), 'info');
+    this.log(this.config, this.$t(this.messages.IMPORT_MSG, { module: 'Attributes' }), 'info');
 
     await fsUtil.makeDirectory(this.attrMapperDirPath);
     const { dirName, fileName } = this.attributeConfig;
@@ -50,10 +50,10 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
         }
 
         fsUtil.writeFile(this.attributesUidMapperPath, this.attributesUidMapper);
-        log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Attributes' }), 'info');
+        this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Attributes' }), 'info');
       } catch (error: any) {
         if (error?.errorMessage || error?.message || error?.error_message) {
-          log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Attributes' }), 'error');
+          this.log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Attributes' }), 'error');
         }
         throw error;
       }

@@ -16,6 +16,8 @@ import {
   CreateEventInput,
   CreateExperienceInput,
   ExperienceStruct,
+  UpdateExperienceInput,
+  CMSExperienceStruct,
 } from '../types';
 export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> implements Personalization<T> {
   constructor(options: APIConfig) {
@@ -109,5 +111,28 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    */
   async createExperience(experience: CreateExperienceInput): Promise<void | ExperienceStruct> {
     return (await this.apiClient.post<ExperienceStruct>('/experiences', experience)).data;
+  }
+
+  /**
+   * @param {UpdateExperienceInput} experience - The `experience` parameter in the `updateCTsInExperience` function is
+   * of type `UpdateExperienceInput`. This parameter likely contains the necessary data or information
+   * needed to attach CT in new created experience.
+   */
+  async updateCTsInExperience(
+    experience: UpdateExperienceInput,
+    experienceUid: string,
+  ): Promise<void | CMSExperienceStruct> {
+    const updateCTInExpEndPoint = `/experiences/${experienceUid}/cms-integration/variant-group`;
+    return (await this.apiClient.post<CMSExperienceStruct>(updateCTInExpEndPoint, experience)).data;
+  }
+
+  /**
+   * @param {UpdateExperienceInput} experienceUid - The `experienceUid` parameter in the `getCTsFromExperience` function is
+   * of type `string`. This parameter likely contains the necessary data or information
+   * needed to fetch CT details related to experience.
+   */
+  async getCTsFromExperience(experienceUid: string): Promise<void | CMSExperienceStruct> {
+    const getCTFromExpEndPoint = `/experiences/${experienceUid}/cms-integration/variant-group`;
+    return (await this.apiClient.get<CMSExperienceStruct>(getCTFromExpEndPoint)).data;
   }
 }
