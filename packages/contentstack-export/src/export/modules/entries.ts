@@ -26,7 +26,7 @@ export default class EntriesExport extends BaseClass {
   private schemaFilePath: string;
   private entriesFileHelper: FsUtility;
   private projectInstance: ExportProjects;
-  public exportVariantEntry: boolean = true;
+  public exportVariantEntry: boolean = false;
 
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
