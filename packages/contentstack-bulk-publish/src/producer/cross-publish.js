@@ -247,7 +247,7 @@ async function start(
     bulkPublish,
     _filter,
     deliveryToken,
-    contentType,
+    contentTypes,
     environment,
     locale,
     onlyAssets,
@@ -292,8 +292,8 @@ async function start(
     };
     if (f_types) filter.type = f_types;
     // filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
-    if (contentType) {
-      filter.content_type_uid = contentType;
+    if (contentTypes) {
+      filter.content_type_uid = contentTypes;
       filter.type = 'entry_published';
     }
     if (onlyAssets) {
