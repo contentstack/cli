@@ -55,6 +55,7 @@ export default class Entries {
   protected missingRefs: Record<string, any> = {};
   public entryMetaData: Record<string, any>[] = [];
   public moduleName: keyof typeof auditConfig.moduleConfig = 'entries';
+  public isEntryWithoutTitleField: boolean = false;
 
   constructor({ log, fix, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
     this.log = log;
@@ -105,7 +106,6 @@ export default class Entries {
             if (this.fix) {
               this.removeMissingKeysOnEntry(ctSchema.schema as ContentTypeSchemaType[], this.entries[entryUid]);
             }
-
             this.lookForReference([{ locale: code, uid, name: title }], ctSchema, this.entries[entryUid]);
             const message = $t(auditMsg.SCAN_ENTRY_SUCCESS_MSG, {
               title,
@@ -981,10 +981,20 @@ export default class Entries {
           const entries = (await fsUtility.readChunkFiles.next()) as Record<string, EntryStruct>;
           for (const entryUid in entries) {
             let { title } = entries[entryUid];
+            if (!title) {
+              this.isEntryWithoutTitleField = true;
+              this.log(
+                `Entry with UID '${entryUid}' of Content Type '${uid}' in Locale '${code}' does not have a 'title' field.`,
+                `error`,
+              );
+            }
             this.entryMetaData.push({ uid: entryUid, title });
           }
         }
       }
+    }
+    if (this.isEntryWithoutTitleField) {
+      throw Error(`Entries found with missing 'title' field! Please make the data corrections and re-run the audit.`);
     }
   }
 }
