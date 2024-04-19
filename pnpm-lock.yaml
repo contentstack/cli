@@ -10,11 +10,11 @@ importers:
 
   packages/contentstack:
     specifiers:
-      '@contentstack/cli-audit': ~1.5.3
+      '@contentstack/cli-audit': ~1.5.4
       '@contentstack/cli-auth': ~1.3.17
       '@contentstack/cli-cm-bootstrap': ~1.9.0
       '@contentstack/cli-cm-branches': ~1.0.24
-      '@contentstack/cli-cm-bulk-publish': ~1.4.4
+      '@contentstack/cli-cm-bulk-publish': ~1.4.5
       '@contentstack/cli-cm-clone': ~1.10.3
       '@contentstack/cli-cm-export': ~1.11.2
       '@contentstack/cli-cm-export-to-csv': ~1.7.0
@@ -730,7 +730,7 @@ importers:
 
   packages/contentstack-import:
     specifiers:
-      '@contentstack/cli-audit': ~1.5.3
+      '@contentstack/cli-audit': ~1.5.4
       '@contentstack/cli-command': ~1.2.16
       '@contentstack/cli-utilities': ~1.6.0
       '@contentstack/management': ~1.15.3
