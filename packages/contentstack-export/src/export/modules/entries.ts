@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { LogType, Export } from '@contentstack/cli-variants';
 import { ContentstackClient, FsUtility } from '@contentstack/cli-utilities';
+import { LogType, Export, ExportProjects } from '@contentstack/cli-variants';
 
 import BaseClass, { ApiOptions } from './base-class';
 import { log, formatError, fsUtil } from '../../utils';
@@ -20,11 +20,13 @@ export default class EntriesExport extends BaseClass {
     batchLimit?: number;
     exportVersions: boolean;
   };
+  private variantEntries;
   private entriesDirPath: string;
   private localesFilePath: string;
   private schemaFilePath: string;
   private entriesFileHelper: FsUtility;
-  private variantEntries;
+  private projectInstance: ExportProjects;
+  public exportVariantEntry: boolean = false;
 
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
@@ -44,6 +46,7 @@ export default class EntriesExport extends BaseClass {
       exportConfig.modules.content_types.dirName,
       'schema.json',
     );
+    this.projectInstance = new ExportProjects(this.exportConfig);
     this.variantEntries = new Export.VariantEntries(this.exportConfig, log as LogType);
   }
 
@@ -56,13 +59,20 @@ export default class EntriesExport extends BaseClass {
         log(this.exportConfig, 'No content types found to export entries', 'info');
         return;
       }
+
+      // NOTE Check if variant is enabled in specific stack
+      if (this.exportConfig.personalizationEnabled) {
+        try {
+          const project = await this.projectInstance.projects({ connectedStackApiKey: this.exportConfig.apiKey });
+
+          if (project && project[0]?.uid) {
+            this.exportVariantEntry = true;
+          }
+        } catch (_error) {}
+      }
+
       const entryRequestOptions = this.createRequestObjects(locales, contentTypes);
       for (let entryRequestOption of entryRequestOptions) {
-        // log(
-        //   this.exportConfig,
-        //   `Starting export of entries of content type - ${entryRequestOption.contentType} locale - ${entryRequestOption.locale}`,
-        //   'info',
-        // );
         await this.getEntries(entryRequestOption);
         this.entriesFileHelper?.completeFile(true);
         log(
@@ -143,12 +153,15 @@ export default class EntriesExport extends BaseClass {
           versionedEntryPath,
         });
       }
-      // NOTE Export variant entries
-      await this.variantEntries.exportVariantEntry({
-        locale: options.locale,
-        contentTypeUid: options.contentType,
-        entries: entriesSearchResponse.items,
-      });
+
+      // NOTE Export all base entry specific 'variant entries'
+      if (this.exportVariantEntry) {
+        await this.variantEntries.exportVariantEntry({
+          locale: options.locale,
+          contentTypeUid: options.contentType,
+          entries: entriesSearchResponse.items,
+        });
+      }
 
       options.skip += this.entriesConfig.limit || 100;
       if (options.skip >= entriesSearchResponse.count) {
