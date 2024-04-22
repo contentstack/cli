@@ -1,17 +1,22 @@
 const fs = require('fs');
 const chalk = require('chalk');
+const path = require('path');
 module.exports = async ({ migration, stackSDKInstance, managementAPIClient, config }) => {
-  const modules = ['entries', 'assets', 'extensions'];
+  const modules = ['entries', 'assets', 'extensions', 'marketplace_apps'];
 
   const readAllModulesUids = (filePath) => {
-    let uidMapping = [];
+    let uidMapping = {};
+
     modules.forEach((module) => {
-      if (fs.existsSync(`${filePath}/mapper/${module}/uid-mapping.json`)) {
-        let mappedIds = fs.readFileSync(`${filePath}/mapper/${module}/uid-mapping.json`, 'utf-8');
-        mappedIds = JSON.parse(mappedIds);
-        uidMapping = { ...uidMapping, ...mappedIds };
-      } else {
-        console.log(chalk.red(`Mapper Does not exist for module '${module}'`));
+      const mappingFilePath = path.join(filePath, 'mapper', module, 'uid-mapping.json');
+      if (fs.existsSync(mappingFilePath)) {
+        const mappedIds = JSON.parse(fs.readFileSync(mappingFilePath, 'utf-8'));
+
+        if (module === 'marketplace_apps') {
+          Object.values(mappedIds).forEach((ids) => Object.assign(uidMapping, ids));
+        } else {
+          Object.assign(uidMapping, mappedIds);
+        }
       }
     });
 
@@ -22,7 +27,7 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
     try {
       let entries = [];
       let skip = 0;
-      let limit = 1;
+      let limit = 100;
       let count = 0;
       while (skip <= count) {
         const res = await stackSDKInstance.contentType(ct).entry().query({ include_count: true, skip, limit }).find();
@@ -32,9 +37,8 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
       }
       return entries;
     } catch (err) {
-      console.log(err);
-      console.log(chalk.red(`No entry is found for Content-type ${ct}`));
-      return [];
+      console.log(chalk.red(`Cannot Fetch Entries`));
+      throw err;
     }
   };
 
@@ -42,9 +46,27 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
     try {
       return await stackSDKInstance.contentType(ct).fetch();
     } catch (err) {
-      console.log(chalk.red(`Content-type '${ct}' is not present in stack`));
-      return {};
+      console.log(chalk.red(`Error in Fetching the Content-type '${ct}' due to ${err.errorMessage}`));
     }
+  };
+
+  const findAllEntriesUid = (stringifiedEntry) => {
+    let pattern = /\bblt\w*/g;
+    let matches = stringifiedEntry.match(pattern);
+    return matches;
+  };
+
+  const replaceEntriesWithUpdatedUids = (matches, uidMapping, stringifiedEntry) => {
+    let isUpdated = false;
+    matches.forEach((m) => {
+      if (Object.keys(uidMapping).includes(m)) {
+        let regex = new RegExp(m, 'g');
+        stringifiedEntry = stringifiedEntry.replace(regex, uidMapping[m]);
+        console.log(chalk.green(`Replacing UID '${m}' with '${uidMapping[m]}'`));
+        isUpdated = true;
+      }
+    });
+    return { stringifiedEntry, isUpdated };
   };
 
   const updateEntryTask = () => {
@@ -63,8 +85,8 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
           }
 
           for (let ct of config.contentTypes) {
-            let { schema: ctSchema } = await getContentTypeSchema(ct);
-            // console.log(ctSchema);
+            let { schema: ctSchema } = (await getContentTypeSchema(ct)) ?? {};
+
             if (!ctSchema) {
               continue;
             }
@@ -73,7 +95,7 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
               return schema.uid;
             });
 
-            let entry = await getEntries(ct);
+            let entry = (await getEntries(ct)) ?? [];
 
             if (entry.length === 0) {
               log(chalk.red(`No entry found for the CT Content-type '${ct}'`));
@@ -85,17 +107,13 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
               let isUpdated = false;
 
               let stringEntry = JSON.stringify(e);
-              let pattern = /\bblt\w*/g;
-              let matches = stringEntry.match(pattern);
 
-              matches.forEach((m) => {
-                if (Object.keys(uidMapping).includes(m)) {
-                  let regex = new RegExp(m, 'g');
-                  stringEntry = stringEntry.replace(regex, uidMapping[m]);
-                  log(chalk.green(`Replacing UID '${m}' with '${uidMapping[m]}'`));
-                  isUpdated = true;
-                }
-              });
+              let matches = findAllEntriesUid(stringEntry);
+
+              let res = replaceEntriesWithUpdatedUids(matches, uidMapping, stringEntry);
+
+              stringEntry = res.stringifiedEntry;
+              isUpdated = res.isUpdated;
 
               stringEntry = JSON.parse(stringEntry);
 
