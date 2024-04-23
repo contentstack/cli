@@ -42,7 +42,8 @@ export type Modules =
   | 'labels'
   | 'marketplace-apps'
   | 'taxonomies'
-  | 'personalization';
+  | 'personalization'
+  | 'variant-entries';
 
 export type ModuleClassParams = {
   stackAPIClient: ReturnType<ContentstackClient['stack']>;
