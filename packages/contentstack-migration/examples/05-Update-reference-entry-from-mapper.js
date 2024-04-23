@@ -33,7 +33,7 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
         const res = await stackSDKInstance.contentType(ct).entry().query({ include_count: true, skip, limit }).find();
         count = res.count;
         skip += limit;
-        entries = [...entries, ...res.items];
+        entries.push(...res.items);
       }
       return entries;
     } catch (err) {
@@ -58,8 +58,9 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
 
   const replaceEntriesWithUpdatedUids = (matches, uidMapping, stringifiedEntry) => {
     let isUpdated = false;
+    let oldUids = Object.keys(uidMapping);
     matches.forEach((m) => {
-      if (Object.keys(uidMapping).includes(m)) {
+      if (oldUids.includes(m)) {
         let regex = new RegExp(m, 'g');
         stringifiedEntry = stringifiedEntry.replace(regex, uidMapping[m]);
         console.log(chalk.green(`Replacing UID '${m}' with '${uidMapping[m]}'`));
