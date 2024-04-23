@@ -8,8 +8,8 @@ export default class ImportPersonalization {
   public personalization: ImportConfig['modules']['personalization'];
 
   constructor({ importConfig }: ModuleClassParams) {
-    this.personalization = importConfig.modules.personalization;
     this.config = importConfig;
+    this.personalization = importConfig.modules.personalization;
   }
 
   /**
@@ -20,10 +20,10 @@ export default class ImportPersonalization {
     try {
       if (this.personalization.importData) {
         const moduleMapper = {
-          projects: Import.Project,
-          attributes: Import.Attribute,
-          audiences: Import.Audiences,
           events: Import.Events,
+          projects: Import.Project,
+          audiences: Import.Audiences,
+          attributes: Import.Attribute,
           experiences: Import.Experiences,
         };
 
