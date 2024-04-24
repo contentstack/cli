@@ -56,7 +56,7 @@ importers:
       rimraf: ^2.7.1
       shelljs: ^0.8.4
       short-uuid: ^4.2.2
-      sinon: ^15.0.1
+      sinon: ^15.0.u1
       tmp: ^0.2.2
       ts-node: ^10.9.1
       tslib: ^2.4.1
