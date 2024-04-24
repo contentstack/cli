@@ -37,7 +37,6 @@ export const createDeveloperHubUrl = (developerHubBaseUrl: string): string => {
   return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`;
 };
 
-
 export const validatePath = (input: string) => {
   const pattern = /[*$%#<>{}!&?]/g;
   if (pattern.test(input)) {
@@ -53,5 +52,4 @@ export const validatePath = (input: string) => {
 };
 
 // To escape special characters in a string
-export const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
+export const escapeRegExp = (str: string) => str?.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
