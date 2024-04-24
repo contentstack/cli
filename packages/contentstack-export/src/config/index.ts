@@ -170,7 +170,7 @@ const config: DefaultConfig = {
       },
     },
     variantEntry: {
-      serveMockData: true,
+      serveMockData: false,
       dirName: 'variants',
       fileName: 'index.json',
       chunkFileSize: 1,
