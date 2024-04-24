@@ -1000,8 +1000,8 @@ export default class Entries {
         }
       }
     }
-    if (this.isEntryWithoutTitleField) {
-      throw Error(`Entries found with missing 'title' field! Please make the data corrections and re-run the audit.`);
-    }
+    // if (this.isEntryWithoutTitleField) {
+    //    throw Error(`Entries found with missing 'title' field! Please make the data corrections and re-run the audit.`);
+    // }
   }
 }
