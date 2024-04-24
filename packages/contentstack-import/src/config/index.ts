@@ -40,6 +40,7 @@ const config: DefaultConfig = {
       'entries',
       'labels',
       'webhooks',
+      'variant-entries',
     ],
     locales: {
       dirName: 'locales',
