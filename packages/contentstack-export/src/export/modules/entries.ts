@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { ContentstackClient, FsUtility } from '@contentstack/cli-utilities';
 import { LogType, Export, ExportProjects } from '@contentstack/cli-variants';
+import VariantEntries from '@contentstack/cli-variants/lib/export/variant-entries';
 
 import BaseClass, { ApiOptions } from './base-class';
 import { log, formatError, fsUtil } from '../../utils';
@@ -20,7 +21,7 @@ export default class EntriesExport extends BaseClass {
     batchLimit?: number;
     exportVersions: boolean;
   };
-  private variantEntries;
+  private variantEntries!: VariantEntries;
   private entriesDirPath: string;
   private localesFilePath: string;
   private schemaFilePath: string;
@@ -47,7 +48,6 @@ export default class EntriesExport extends BaseClass {
       'schema.json',
     );
     this.projectInstance = new ExportProjects(this.exportConfig);
-    this.variantEntries = new Export.VariantEntries(this.exportConfig, log as LogType);
   }
 
   async start() {
@@ -62,12 +62,19 @@ export default class EntriesExport extends BaseClass {
 
       // NOTE Check if variant is enabled in specific stack
       if (this.exportConfig.personalizationEnabled) {
+        let project_id;
         try {
           const project = await this.projectInstance.projects({ connectedStackApiKey: this.exportConfig.apiKey });
 
           if (project && project[0]?.uid) {
+            project_id = project[0].uid;
             this.exportVariantEntry = true;
           }
+
+          this.variantEntries = new Export.VariantEntries(
+            Object.assign(this.exportConfig, { project_id }),
+            log as LogType,
+          );
         } catch (_error) {}
       }
 
