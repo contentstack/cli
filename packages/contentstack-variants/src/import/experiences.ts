@@ -16,11 +16,13 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   private eventsMapperPath: string;
   private audiencesMapperPath: string;
   private cmsVariantGroupPath: string;
+  private experienceVariantsIdsPath: string;
+  private variantUidMapperFilePath: string;
   private expThresholdTimer: number;
   private maxValidateRetry: number;
   private experiencesUidMapperPath: string;
   private expCheckIntervalDuration: number;
-  private cmsVariants: Record<string, unknown>;
+  private cmsVariants: Record<string, Record<string, string>>;
   private cmsVariantGroups: Record<string, unknown>;
   private experiencesUidMapper: Record<string, string>;
   private pendingVariantAndVariantGrpForExperience: string[];
@@ -46,6 +48,14 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     this.audiencesMapperPath = resolve(this.mapperDirPath, this.audienceConfig.dirName, 'uid-mapping.json');
     this.eventsMapperPath = resolve(this.mapperDirPath, 'events', 'uid-mapping.json');
     this.failedCmsExpPath = resolve(this.expMapperDirPath, 'failed-cms-experience.json');
+    this.failedCmsExpPath = resolve(this.expMapperDirPath, 'failed-cms-experience.json');
+    this.experienceVariantsIdsPath = resolve(
+      this.config.data,
+      this.personalizationConfig.dirName,
+      this.experienceConfig.dirName,
+      'experience-variants-ids.json',
+    );
+    this.variantUidMapperFilePath = resolve(this.expMapperDirPath, 'variants-uid-mapping.json');
     this.experiencesUidMapper = {};
     this.cmsVariantGroups = {};
     this.cmsVariants = {};
@@ -98,8 +108,9 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         if (this.personalizationConfig.importData) {
           this.log(this.config, this.messages.UPDATING_CT_IN_EXP, 'info');
           await this.attachCTsInExperience();
-          this.log(this.config, this.messages.UPDATED_CT_IN_EXP, 'info');
         }
+
+        await this.createVariantIdMapper();
       } catch (error: any) {
         if (error?.errorMessage || error?.message || error?.error_message) {
           this.log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Experiences' }), 'error');
@@ -164,10 +175,12 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
           if (this.createdCTs && expRes?.contentTypes) {
             // Filter content types that were created
             const updatedContentTypes = expRes.contentTypes?.filter((ct: string) => this.createdCTs.includes(ct));
-            if(updatedContentTypes?.length){
+            if (updatedContentTypes?.length) {
               // Update content types detail in the new experience asynchronously
               await this.updateCTsInExperience({ contentTypes: updatedContentTypes }, newExpUid);
             }
+          } else {
+            this.log(this.config, `Failed to attach content type for ${newExpUid}`, 'error');
           }
         }),
       );
@@ -175,4 +188,25 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
       throw error;
     }
   }
+
+  async createVariantIdMapper() {
+    try {
+      const experienceVariantIds: any = fsUtil.readFile(this.experienceVariantsIdsPath, true) || [];
+      const variantUIDMapper: Record<string, string> = {};
+      for (let experienceVariantId of experienceVariantIds) {
+        const [experienceId, variantShortId, oldVariantId] = experienceVariantId.split('-');
+        const latestVariantId = this.cmsVariants[this.experiencesUidMapper[experienceId]]?.[variantShortId];
+        if (latestVariantId) {
+          variantUIDMapper[oldVariantId] = latestVariantId;
+        }
+      }
+
+      fsUtil.writeFile(this.variantUidMapperFilePath, variantUIDMapper);
+    } catch (error) {
+      throw error;
+    }
+  }
 }
+
+
+
