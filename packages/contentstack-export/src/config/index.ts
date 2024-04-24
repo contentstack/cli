@@ -145,7 +145,7 @@ const config: DefaultConfig = {
       exportVersions: false,
     },
     personalization: {
-      baseURL: 'https://personalization-api.contentstack.com',
+      baseURL: 'https://dev-personalization-api.csnonprod.com',
       dirName: 'personalization',
       exportOrder: ['attributes', 'audiences', 'events', 'experiences'],
       projects: {
