@@ -16,6 +16,8 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
       baseURL: config.host,
       Adapter: VariantHttpClient<ExportConfig>,
       headers: {
+        api_key: config.apiKey,
+        branch: config.branchName,
         authtoken: config.auth_token,
         organization_uid: config.org_uid,
         'X-Project-Uid': config.project_id,
