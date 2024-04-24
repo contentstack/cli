@@ -981,7 +981,14 @@ export default class Entries {
           const entries = (await fsUtility.readChunkFiles.next()) as Record<string, EntryStruct>;
           for (const entryUid in entries) {
             let { title } = entries[entryUid];
-            if (!title) {
+
+            if (entries[entryUid].hasOwnProperty('title') && !title) {
+              this.isEntryWithoutTitleField = true;
+              this.log(
+                `The 'title' field in Entry with UID '${entryUid}' of Content Type '${uid}' in Locale '${code}' is empty.`,
+                `error`,
+              );
+            } else if (!title) {
               this.isEntryWithoutTitleField = true;
               this.log(
                 `Entry with UID '${entryUid}' of Content Type '${uid}' in Locale '${code}' does not have a 'title' field.`,
