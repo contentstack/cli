@@ -26,10 +26,11 @@ import messages from '../messages';
 import { AdapterHelper } from './adapter-helper';
 
 export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implements VariantInterface<C, HttpClient> {
+  public baseURL: string
   constructor(config: APIConfig, options?: HttpClientOptions) {
     super(config, options);
-    const baseURL = config.baseURL?.includes('http') ? `${config.baseURL}/v3` : `https://${config.baseURL}/v3`;
-    this.apiClient.baseUrl(baseURL);
+    this.baseURL = config.baseURL?.includes('http') ? `${config.baseURL}/v3` : `https://${config.baseURL}/v3`;
+    this.apiClient.baseUrl(this.baseURL);
   }
 
   async variantEntry(options: VariantOptions) {
