@@ -37,7 +37,7 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
       }
       return entries;
     } catch (err) {
-      console.log(chalk.red(`Cannot Fetch Entries`));
+      console.log(chalk.red(`Failed to fetch the entries...`));
       throw err;
     }
   };
@@ -46,7 +46,7 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
     try {
       return await stackSDKInstance.contentType(ct).fetch();
     } catch (err) {
-      console.log(chalk.red(`Error in Fetching the Content-type '${ct}' due to ${err.errorMessage}`));
+      console.log(chalk.red(`Failed to fetch the Content Type '${ct}' due to ${err.errorMessage}`));
     }
   };
 
@@ -63,7 +63,7 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
       if (oldUids.includes(m)) {
         let regex = new RegExp(m, 'g');
         stringifiedEntry = stringifiedEntry.replace(regex, uidMapping[m]);
-        console.log(chalk.green(`Replacing UID '${m}' with '${uidMapping[m]}'`));
+        console.log(chalk.green(`Replacing the UID '${m}' with '${uidMapping[m]}'...`));
         isUpdated = true;
       }
     });
@@ -81,7 +81,7 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
 
           if ((!config.contentTypes && !Array.isArray(config.contentTypes)) || !config['mapper-path']) {
             throw Error(
-              `Content-type or the Mapper Path is missing from the config. Please provide Content-type in Array and mapper path`,
+              `Missing Content Type or mapper path in config! Please make sure to have the Content Type [in Array] and the mapper path in config.`,
             );
           }
 
@@ -129,24 +129,24 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
 
                 log(
                   chalk.green(
-                    `Updated the References in Entry with UID '${e.uid}' and title '${e.title}' in locale '${e.locale}' of content-type '${ct}'`,
+                    `Successfully updated the references in the entry with UID '${e.uid}' and title '${e.title}'  of Content Type '${ct}' in Locale '${e.locale}'`,
                   ),
                 );
               } else {
                 log(
                   chalk.red(
-                    `Not Updated the Entry with UID '${e.uid}' and title '${e.title}' in locale '${e.locale}' of content-type '${ct}'`,
+                    `Failed to update the references in the entry with UID '${e.uid}' and title '${e.title}' of Content Type '${ct}' in Locale '${e.locale}'`,
                   ),
                 );
               }
             }
-            log(chalk.green(`Updated the entries of CT '${ct}'`));
+            log(chalk.green(`Successfully updated the references in the entries of Content Type '${ct}'`));
           }
         } catch (err) {
           if (err.request?.headers) {
             delete err.request['headers'];
           }
-          console.log(chalk.red(`References not updated`));
+          console.log(chalk.red(`Failed to update references...`));
           throw err;
         }
       },
