@@ -43,6 +43,13 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       httpClient: true,
       baseURL: config.host,
       Adapter: VariantHttpClient<ImportConfig>,
+      headers: {
+        api_key: config.apiKey,
+        branch: config.branchName,
+        authtoken: config.auth_token,
+        organization_uid: config.org_uid,
+        'X-Project-Uid': config.modules.personalization.project_id,
+      },
     };
     super(Object.assign(omit(config, ['helpers']), conf));
     this.entriesMapperPath = resolve(config.backupDir, 'mapper', 'entries');
