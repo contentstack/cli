@@ -15,7 +15,7 @@ const config: DefaultConfig = {
   // locales: ['fr-fr'],
   host: 'https://api.contentstack.io/v3',
   extensionHost: 'https://app.contentstack.com',
-  personalizationHost: 'https://dev-personalization-api.csnonprod.com',
+  personalizationHost: 'https://personalization-api.contentstack.com',
   developerHubUrls: {
     'https://api.contentstack.io': 'https://developerhub-api.contentstack.com',
     'https://eu-api.contentstack.com': 'https://eu-developerhub-api.contentstack.com',
