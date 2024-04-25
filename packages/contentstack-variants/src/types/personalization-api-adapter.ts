@@ -112,8 +112,8 @@ export type ExperienceStruct = {
   status: string;
   metadata?: object;
   _cms?: {
-    variantGroup?: object;
-    variants?: object;
+    variantGroup: object;
+    variants: Record<string, string>;
   }
 } & AnyProperty;
 
