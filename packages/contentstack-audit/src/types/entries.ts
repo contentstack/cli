@@ -46,12 +46,17 @@ type EntryJsonRTEFieldDataType = {
 };
 
 // NOTE Type 5
-type GroupFieldType = EntryReferenceFieldDataType[] | EntryGlobalFieldDataType | EntryJsonRTEFieldDataType;
+type GroupFieldType = EntryReferenceFieldDataType[] | EntryGlobalFieldDataType | EntryJsonRTEFieldDataType ;
 
 type EntryGroupFieldDataType = {
   [key: string]: GroupFieldType;
 };
 
+type SelectValue =   string | string [] | number | number;
+
+type EntrySelectFeildDataType = {
+  [key: string]: SelectValue
+}
 // NOTE Type 6
 type EntryModularBlockType = {
   [key: string]:
@@ -81,7 +86,9 @@ type EntryFieldType =
   | EntryGlobalFieldDataType
   | EntryModularBlocksDataType
   | EntryGroupFieldDataType
-  | EntryExtensionOrAppFieldDataType;
+  | EntryExtensionOrAppFieldDataType
+  | EntrySelectFeildDataType
+  | { [key: string]: any };
 
 export {
   Locale,
@@ -96,4 +103,6 @@ export {
   EntryRefErrorReturnType,
   GroupFieldType,
   EntryModularBlockType,
+  EntrySelectFeildDataType,
+  SelectValue
 };
