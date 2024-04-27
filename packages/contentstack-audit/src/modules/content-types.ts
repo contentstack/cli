@@ -183,8 +183,8 @@ export default class ContentType {
             ...this.validateReferenceField(
               [...tree, { uid: field.uid, name: child.display_name }],
               child as ReferenceFieldDataType,
-            ),
-          );
+          ),
+        );
           break;
         case 'global_field':
           await this.validateGlobalField(
