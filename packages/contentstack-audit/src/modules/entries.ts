@@ -97,7 +97,6 @@ export default class Entries {
           this.entries = entries;
 
           for (const entryUid in this.entries) {
-
             const entry = this.entries[entryUid];
             const { uid, title } = entry;
             this.currentUid = uid;
@@ -133,7 +132,7 @@ export default class Entries {
     // this.log('', 'info'); // Adding empty line
 
     this.removeEmptyVal();
-    return {missingEntryRefs:this.missingRefs, missingSelectFeild:this.missingSelectFeild};
+    return { missingEntryRefs: this.missingRefs, missingSelectFeild: this.missingSelectFeild };
   }
 
   /**
@@ -664,27 +663,24 @@ export default class Entries {
    * @param tree : Contains all the tree where the select field is located used for getting the path to it
    * @param fieldStructure it contains the Content-type structure of the field
    * @param field It contains the value that is present in the entry it can be array or value of number | string
-   * @returns if there is missing field returns field and path 
+   * @returns if there is missing field returns field and path
    * Else empty array
    */
   validateSelectField(tree: Record<string, unknown>[], fieldStructure: SelectFeildStruct, field: any) {
-
     const { display_name, enum: selectOptions, multiple, min_instance, display_type } = fieldStructure;
 
     let missingValues;
 
     if (multiple) {
-
       if (Array.isArray(field)) {
         let obj = this.findNotPresentSelectField(field, selectOptions);
         let { notPresent } = obj;
-        if(notPresent.length){
+        if (notPresent.length) {
           missingValues = notPresent;
         }
       }
-
     } else if (!selectOptions.choices.some((choice) => choice.value === field)) {
-      missingValues = field
+      missingValues = field;
     }
     if (display_type && missingValues) {
       return [
@@ -694,7 +690,7 @@ export default class Entries {
           display_name,
           display_type,
           missingValues,
-          min_instance:min_instance??'NA',
+          min_instance: min_instance ?? 'NA',
           tree,
           treeStr: tree
             .map(({ name }) => name)
@@ -703,7 +699,7 @@ export default class Entries {
         },
       ];
     } else {
-      return []
+      return [];
     }
   }
 
@@ -715,20 +711,18 @@ export default class Entries {
    * @param {Record<string, unknown>}tree Contains the path where the select field can be found
    * @param field : It contains the content-type structure of the select field
    * @param entry : it contains the value in the entry of select field one of the options of the CT.
-   * @returns 
+   * @returns
    */
   fixSelectField(tree: Record<string, unknown>[], field: SelectFeildStruct, entry: any) {
-
     const { enum: selectOptions, multiple, min_instance, display_type, display_name } = field;
 
     let missingValues;
     let isMissingValuePresent = false;
 
     if (multiple) {
-
       let obj = this.findNotPresentSelectField(entry, selectOptions);
-      let {notPresent, filteredFeild } = obj
-      entry = filteredFeild
+      let { notPresent, filteredFeild } = obj;
+      entry = filteredFeild;
       missingValues = notPresent;
 
       if (min_instance && Array.isArray(entry)) {
@@ -751,42 +745,49 @@ export default class Entries {
     } else {
       const isPresent = selectOptions.choices.some((choice) => choice.value === entry);
       if (!isPresent) {
-        missingValues = entry
+        missingValues = entry;
         isMissingValuePresent = true;
         entry = selectOptions.choices.length > 0 ? selectOptions.choices[0].value : null;
       }
     }
-    if (display_type && (isMissingValuePresent)) {
+    if (display_type && isMissingValuePresent) {
       this.missingSelectFeild[this.currentUid].push({
         uid: this.currentUid,
         name: this.currentTitle,
         display_name,
         display_type,
         missingValues,
-        min_instance:min_instance??'NA',
+        min_instance: min_instance ?? 'NA',
         tree,
         treeStr: tree
           .map(({ name }) => name)
           .filter((val) => val)
           .join(' ➜ '),
-        fixStatus : 'Fixed'
-      })
+        fixStatus: 'Fixed',
+      });
     }
     return entry;
   }
   /**
-   * 
+   *
    * @param field It contains the value to be searched
    * @param selectOptions It contains the options that were added in CT
-   * @returns An Array of entry containing only the values that were present in CT, An array of not present entries 
+   * @returns An Array of entry containing only the values that were present in CT, An array of not present entries
    */
   findNotPresentSelectField(field: any, selectOptions: any) {
-    let arrayFeild = field;
-    const notPresent = arrayFeild.filter(
-      (value: any) => !find(selectOptions.choices, { value })
-    );
-    arrayFeild = arrayFeild.filter((val: any) => !notPresent.includes(val));
-    return {filteredFeild:arrayFeild,notPresent};
+    let present = [];
+    let notPresent = [];
+
+    for (const value of field) {
+      const choice = find(selectOptions.choices, { value });
+
+      if (choice) {
+        present.push(choice.value);
+      } else {
+        notPresent.push(value);
+      }
+    }
+    return { filteredFeild: present, notPresent };
   }
 
   /**
