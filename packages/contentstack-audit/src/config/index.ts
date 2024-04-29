@@ -54,6 +54,22 @@ const config = {
       'publish_details',
     ],
   },
+  //These keys will be used output the modules with issues and fixes on console
+  OutputTableKeys : [
+    'title',
+    'name',
+    'uid',
+    'content_types',
+    'branches',
+    'fixStatus',
+    'tree',
+    'display_name',
+    'display_type',
+    'missingRefs',
+    'treeStr',
+    'missingCTSelectFieldValues',
+    'min_instance',
+  ]
 };
 
 export default config;
