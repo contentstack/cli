@@ -64,7 +64,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     ]);
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Extensions', missingRefs: missingCtRefsInExtensions }]);
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Workflows', missingRefs: missingCtRefsInWorkflow }]);
-    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Entreis', missingRefs: missingSelectFeild }]);
+    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Entries Select Field', missingRefs: missingSelectFeild }]);
 
     if (
       !isEmpty(missingCtRefs) ||
@@ -336,21 +336,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       const tableKeys = Object.keys(missingRefs[0]);
       const arrayOfObjects = tableKeys.map((key) => {
         if (
-          [
-            'title',
-            'name',
-            'uid',
-            'content_types',
-            'branches',
-            'fixStatus',
-            'tree',
-            'display_name',
-            'display_type',
-            'missingRefs',
-            'treeStr',
-            'missingValues',
-            'min_instance',
-          ].includes(key)
+         config.OutputTableKeys.includes(key)
         ) {
           return {
             [key]: {
