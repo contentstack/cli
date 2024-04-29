@@ -54,6 +54,7 @@ const config = {
       'publish_details',
     ],
   },
+  //These keys will be used output the modules with issues and fixes on console
   OutputTableKeys : [
     'title',
     'name',
@@ -66,7 +67,7 @@ const config = {
     'display_type',
     'missingRefs',
     'treeStr',
-    'missingValues',
+    'missingCTSelectFieldValues',
     'min_instance',
   ]
 };

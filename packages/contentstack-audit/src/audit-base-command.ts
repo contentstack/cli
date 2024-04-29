@@ -345,7 +345,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
               get: (row: Record<string, unknown>) => {
                 if (key === 'fixStatus') {
                   return chalk.green(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
-                } else if (key === 'content_types' || key === 'branches' || key === 'missingValues') {
+                } else if (key === 'content_types' || key === 'branches' || key === 'missingCTSelectFieldValues') {
                   return chalk.red(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
                 } else {
                   return chalk.white(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
