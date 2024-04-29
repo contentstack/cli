@@ -56,7 +56,7 @@ importers:
       rimraf: ^2.7.1
       shelljs: ^0.8.4
       short-uuid: ^4.2.2
-      sinon: ^15.0.u1
+      sinon: ^15.0.1
       tmp: ^0.2.2
       ts-node: ^10.9.1
       tslib: ^2.4.1
@@ -1150,13 +1150,33 @@ importers:
 
   packages/contentstack-variants:
     specifiers:
+      '@contentstack/cli-dev-dependencies': ^1.2.4
       '@contentstack/cli-utilities': ^1.5.12
+      '@oclif/test': ^2.5.6
+      '@types/chai': ^4.3.14
+      '@types/node': ^20.12.7
+      chai: ^4.4.1
       lodash: ^4.17.21
+      mocha: ^10.4.0
+      nyc: ^15.1.0
+      sinon: ^17.0.1
+      ts-node: ^10.9.2
+      tslib: ^2.6.2
       typescript: ^5.4.2
     dependencies:
       '@contentstack/cli-utilities': link:../contentstack-utilities
       lodash: 4.17.21
     devDependencies:
+      '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
+      '@oclif/test': 2.5.6_b34azymlfgei75qebilxzbqnze
+      '@types/chai': 4.3.14
+      '@types/node': 20.12.7
+      chai: 4.4.1
+      mocha: 10.4.0
+      nyc: 15.1.0
+      sinon: 17.0.1
+      ts-node: 10.9.2_b34azymlfgei75qebilxzbqnze
+      tslib: 2.6.2
       typescript: 5.4.5
 
   packages/variant-test:
