@@ -291,23 +291,13 @@ export default class Entries {
           );
           break;
         case 'text':
-          if (child.hasOwnProperty('display_type')) {
-            this.missingSelectFeild[this.currentUid].push(
-              ...this.validateSelectField(
-                [...tree, { uid: field.uid, name: child.display_name, field: uid }],
-                child as SelectFeildStruct,
-                entry[uid] as any,
-              ),
-            );
-          }
-          break;
         case 'number':
           if (child.hasOwnProperty('display_type')) {
             this.missingSelectFeild[this.currentUid].push(
               ...this.validateSelectField(
                 [...tree, { uid: field.uid, name: child.display_name, field: uid }],
                 child as SelectFeildStruct,
-                entry[uid] as any,
+                entry[uid],
               ),
             );
           }
@@ -653,15 +643,6 @@ export default class Entries {
           ) as EntryGroupFieldDataType;
           break;
         case 'text':
-          if (field.hasOwnProperty('display_type')) {
-            entry[uid] = this.fixSelectField(
-              [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }],
-              field as SelectFeildStruct,
-              entry[uid] as EntrySelectFeildDataType,
-            ) as EntrySelectFeildDataType;
-          }
-
-          break;
         case 'number':
           if (field.hasOwnProperty('display_type')) {
             entry[uid] = this.fixSelectField(
@@ -670,7 +651,6 @@ export default class Entries {
               entry[uid] as EntrySelectFeildDataType,
             ) as EntrySelectFeildDataType;
           }
-
           break;
       }
     });
@@ -688,18 +668,21 @@ export default class Entries {
    * Else empty array
    */
   validateSelectField(tree: Record<string, unknown>[], fieldStructure: SelectFeildStruct, field: any) {
+
     const { display_name, enum: selectOptions, multiple, min_instance, display_type } = fieldStructure;
+
     let missingValues;
+
     if (multiple) {
-      if (min_instance && Array.isArray(field)) {
+
+      if (Array.isArray(field)) {
         let obj = this.findNotPresentSelectField(field, selectOptions);
-        let  {notPresent} = obj
-        missingValues = notPresent;
-      } else if (Array.isArray(field)) {
-        let obj = this.findNotPresentSelectField(field, selectOptions);
-        let  {notPresent} = obj
-        missingValues = notPresent
+        let { notPresent } = obj;
+        if(notPresent.length){
+          missingValues = notPresent;
+        }
       }
+
     } else if (!selectOptions.choices.some((choice) => choice.value === field)) {
       missingValues = field
     }
@@ -735,15 +718,20 @@ export default class Entries {
    * @returns 
    */
   fixSelectField(tree: Record<string, unknown>[], field: SelectFeildStruct, entry: any) {
+
     const { enum: selectOptions, multiple, min_instance, display_type, display_name } = field;
+
     let missingValues;
     let isMissingValuePresent = false;
+
     if (multiple) {
+
+      let obj = this.findNotPresentSelectField(entry, selectOptions);
+      let {notPresent, filteredFeild } = obj
+      entry = filteredFeild
+      missingValues = notPresent;
+
       if (min_instance && Array.isArray(entry)) {
-        let obj = this.findNotPresentSelectField(entry, selectOptions);
-        let {notPresent, filteredFeild } = obj
-        entry = filteredFeild
-        missingValues = notPresent;
         const missingInstances = min_instance - entry.length;
         if (missingInstances > 0) {
           isMissingValuePresent = true;
@@ -754,10 +742,6 @@ export default class Entries {
           entry.push(...newValues);
         }
       } else {
-        let obj = this.findNotPresentSelectField(entry, selectOptions);
-        let {notPresent, filteredFeild } = obj;
-        missingValues = notPresent;
-        entry = filteredFeild;
         if (entry.length === 0) {
           isMissingValuePresent = true;
           const defaultValue = selectOptions.choices.length > 0 ? selectOptions.choices[0].value : null;
@@ -797,17 +781,10 @@ export default class Entries {
    * @returns An Array of entry containing only the values that were present in CT, An array of not present entries 
    */
   findNotPresentSelectField(field: any, selectOptions: any) {
-    let notPresent: any[] = [];
     let arrayFeild = field;
-    console.log(arrayFeild)
-    arrayFeild.forEach((val: any) => {
-      console.log(val);
-      let t = find(selectOptions.choices, { value: val });
-      console.log(t);
-      if (!t) {
-        notPresent.push(val);
-      }
-    });
+    const notPresent = arrayFeild.filter(
+      (value: any) => !find(selectOptions.choices, { value })
+    );
     arrayFeild = arrayFeild.filter((val: any) => !notPresent.includes(val));
     return {filteredFeild:arrayFeild,notPresent};
   }
