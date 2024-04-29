@@ -54,6 +54,21 @@ const config = {
       'publish_details',
     ],
   },
+  OutputTableKeys : [
+    'title',
+    'name',
+    'uid',
+    'content_types',
+    'branches',
+    'fixStatus',
+    'tree',
+    'display_name',
+    'display_type',
+    'missingRefs',
+    'treeStr',
+    'missingValues',
+    'min_instance',
+  ]
 };
 
 export default config;
