@@ -752,7 +752,6 @@ export default class Entries {
         entry = selectOptions.choices.length > 0 ? selectOptions.choices[0].value : null;
       }
     }
-    console.log(isMissingValuePresent,"$%^&&**", this.currentUid)
     if (display_type && isMissingValuePresent) {
       this.missingSelectFeild[this.currentUid].push({
         uid: this.currentUid,
