@@ -61,9 +61,6 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
           content_type_uid,
           entry_uid: entry.uid,
         })
-        .catch((error) => {
-          this.log(this.config, error, 'error');
-        });
       variantEntriesFs.completeFile(true);
       this.log(
         this.config,
