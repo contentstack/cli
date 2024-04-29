@@ -669,27 +669,27 @@ export default class Entries {
   validateSelectField(tree: Record<string, unknown>[], fieldStructure: SelectFeildStruct, field: any) {
     const { display_name, enum: selectOptions, multiple, min_instance, display_type } = fieldStructure;
 
-    let missingValues;
+    let missingCTSelectFieldValues;
 
     if (multiple) {
       if (Array.isArray(field)) {
         let obj = this.findNotPresentSelectField(field, selectOptions);
         let { notPresent } = obj;
         if (notPresent.length) {
-          missingValues = notPresent;
+          missingCTSelectFieldValues = notPresent;
         }
       }
     } else if (!selectOptions.choices.some((choice) => choice.value === field)) {
-      missingValues = field;
+      missingCTSelectFieldValues = field;
     }
-    if (display_type && missingValues) {
+    if (display_type && missingCTSelectFieldValues) {
       return [
         {
           uid: this.currentUid,
           name: this.currentTitle,
           display_name,
           display_type,
-          missingValues,
+          missingCTSelectFieldValues,
           min_instance: min_instance ?? 'NA',
           tree,
           treeStr: tree
@@ -716,15 +716,17 @@ export default class Entries {
   fixSelectField(tree: Record<string, unknown>[], field: SelectFeildStruct, entry: any) {
     const { enum: selectOptions, multiple, min_instance, display_type, display_name } = field;
 
-    let missingValues;
+    let missingCTSelectFieldValues;
     let isMissingValuePresent = false;
 
     if (multiple) {
       let obj = this.findNotPresentSelectField(entry, selectOptions);
       let { notPresent, filteredFeild } = obj;
       entry = filteredFeild;
-      missingValues = notPresent;
-
+      missingCTSelectFieldValues = notPresent;
+      if(missingCTSelectFieldValues.length) {
+        isMissingValuePresent = true;
+      }
       if (min_instance && Array.isArray(entry)) {
         const missingInstances = min_instance - entry.length;
         if (missingInstances > 0) {
@@ -745,18 +747,19 @@ export default class Entries {
     } else {
       const isPresent = selectOptions.choices.some((choice) => choice.value === entry);
       if (!isPresent) {
-        missingValues = entry;
+        missingCTSelectFieldValues = entry;
         isMissingValuePresent = true;
         entry = selectOptions.choices.length > 0 ? selectOptions.choices[0].value : null;
       }
     }
+    console.log(isMissingValuePresent,"$%^&&**", this.currentUid)
     if (display_type && isMissingValuePresent) {
       this.missingSelectFeild[this.currentUid].push({
         uid: this.currentUid,
         name: this.currentTitle,
         display_name,
         display_type,
-        missingValues,
+        missingCTSelectFieldValues,
         min_instance: min_instance ?? 'NA',
         tree,
         treeStr: tree
@@ -777,10 +780,10 @@ export default class Entries {
   findNotPresentSelectField(field: any, selectOptions: any) {
     let present = [];
     let notPresent = [];
-
+    const choicesMap = new Map(selectOptions.choices.map((choice: { value: any; }) => [choice.value, choice]));
     for (const value of field) {
-      const choice = find(selectOptions.choices, { value });
-
+      const choice:any = choicesMap.get(value);
+    
       if (choice) {
         present.push(choice.value);
       } else {

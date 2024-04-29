@@ -137,7 +137,7 @@ enum OutputColumn {
   'uid' = 'uid',
   'missingCts' = 'content_types',
   'Missing Branches' = 'branches',
-  'MissingValues' = 'missingValues',
+  'MissingValues' = 'missingCTSelectFieldValues',
   "Minimum Required Instaces" = 'min_instance'
 }
 
