@@ -1,0 +1,12 @@
+[{
+  "uid": "E-1",
+  "locale": "en-us",
+  "title": "Variant 1",
+  "variant_id": "VARIANT-ID-1",
+  "_version": 1,
+  "_variant": {
+    "uid": "UID-1",
+    "_change_set": [],
+    "_base_entry_version": 1
+  }
+}]
