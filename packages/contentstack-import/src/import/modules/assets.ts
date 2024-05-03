@@ -268,7 +268,7 @@ export default class ImportAssets extends BaseClass {
         return this.environments.hasOwnProperty(environment);
       });
       const environments = uniq(map(publishDetails, ({ environment }) => this.environments[environment].name));
-      const locales = map(publishDetails, 'locale');
+      const locales = uniq(map(publishDetails, 'locale'));
 
       asset.locales = locales;
       asset.environments = environments;
