@@ -121,10 +121,9 @@ export default class Entries {
             this.lookForReference([{ locale: code, uid, name: title }], ctSchema, this.entries[entryUid]);
 
             const fields = this.missingMandatoryFields[uid];
-            if ((this.fix && fields && entry.publish_details.length) || (!this.fix && fields)) {
-              const isPublished = entry.publish_details.length > 0;
+            const isPublished = entry.publish_details.length > 0;
+            if ((this.fix && fields && isPublished) || (!this.fix && fields)) {
               const fixStatus = this.fix ? 'Fixed' : '';
-
               fields?.forEach((field: { isPublished: boolean; fixStatus?: string }) => {
                 field.isPublished = isPublished;
                 if (this.fix && isPublished) {
