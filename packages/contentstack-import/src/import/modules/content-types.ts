@@ -111,7 +111,7 @@ export default class ContentTypesImport extends BaseClass {
     }
     log(this.importConfig, 'Updating the extensions...', 'success');
     await this.updatePendingExtensions();
-    if(this.isExtensionsUpdate){
+    if (this.isExtensionsUpdate) {
       log(this.importConfig, 'Successfully updated the extensions.', 'success');
     }
     await this.updatePendingGFs().catch((error) => {
