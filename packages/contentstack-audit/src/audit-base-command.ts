@@ -55,7 +55,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingCtRefsInExtensions,
       missingCtRefsInWorkflow,
       missingSelectFeild,
-      missingMandatoryFields
+      missingMandatoryFields,
     } = await this.scanAndFix();
 
     this.showOutputOnScreen([
@@ -66,7 +66,9 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Extensions', missingRefs: missingCtRefsInExtensions }]);
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Workflows', missingRefs: missingCtRefsInWorkflow }]);
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Entries Select Field', missingRefs: missingSelectFeild }]);
-    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Entries Mandatory Field', missingRefs: missingMandatoryFields }])
+    this.showOutputOnScreenWorkflowsAndExtension([
+      { module: 'Entries Mandatory Field', missingRefs: missingMandatoryFields },
+    ]);
     if (
       !isEmpty(missingCtRefs) ||
       !isEmpty(missingGfRefs) ||
@@ -156,7 +158,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
           await this.prepareReport(`Entries_Select_feild`, missingSelectFeild);
 
-          await this.prepareReport('Entries_Mandatory_feild',missingMandatoryFields)
+          await this.prepareReport('Entries_Mandatory_feild', missingMandatoryFields);
           break;
         case 'workflows':
           missingCtRefsInWorkflow = await new Workflows({
@@ -195,7 +197,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingCtRefsInExtensions,
       missingCtRefsInWorkflow,
       missingSelectFeild,
-      missingMandatoryFields
+      missingMandatoryFields,
     };
   }
 
@@ -342,9 +344,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingRefs = Object.values(missingRefs).flat();
       const tableKeys = Object.keys(missingRefs[0]);
       const arrayOfObjects = tableKeys.map((key) => {
-        if (
-         config.OutputTableKeys.includes(key)
-        ) {
+        if (config.OutputTableKeys.includes(key)) {
           return {
             [key]: {
               minWidth: 7,
@@ -352,7 +352,12 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
               get: (row: Record<string, unknown>) => {
                 if (key === 'fixStatus') {
                   return chalk.green(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
-                } else if (key === 'content_types' || key === 'branches' || key === 'missingCTSelectFieldValues' || key ==='missingFieldUid') {
+                } else if (
+                  key === 'content_types' ||
+                  key === 'branches' ||
+                  key === 'missingCTSelectFieldValues' ||
+                  key === 'missingFieldUid'
+                ) {
                   return chalk.red(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
                 } else {
                   return chalk.white(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
@@ -381,7 +386,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    * @returns The function `prepareReport` returns a Promise that resolves to `void`.
    */
   prepareReport(
-    moduleName: keyof typeof config.moduleConfig | 'Entries_Select_feild' | 'Entries_Mandatory_feild',
+    moduleName: keyof typeof config.moduleConfig | keyof typeof config.ReportTitleForEntries,
     listOfMissingRefs: Record<string, any>,
   ): Promise<void> {
     if (isEmpty(listOfMissingRefs)) return Promise.resolve(void 0);
@@ -408,7 +413,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    * @returns The function `prepareCSV` returns a Promise that resolves to `void`.
    */
   prepareCSV(
-    moduleName: keyof typeof config.moduleConfig | 'Entries_Select_feild' | 'Entries_Mandatory_feild',
+    moduleName: keyof typeof config.moduleConfig | keyof typeof config.ReportTitleForEntries,
     listOfMissingRefs: Record<string, any>,
   ): Promise<void> {
     const csvPath = join(this.sharedConfig.reportPath, `${moduleName}.csv`);
