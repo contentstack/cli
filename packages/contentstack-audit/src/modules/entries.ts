@@ -8,7 +8,7 @@ import { existsSync, readFileSync, writeFileSync } from 'fs';
 
 import auditConfig from '../config';
 import ContentType from './content-types';
-import { $t, auditFixMsg,  auditMsg, commonMsg } from '../messages';
+import { $t, auditFixMsg, auditMsg, commonMsg } from '../messages';
 import {
   LogFn,
   Locale,
@@ -119,26 +119,25 @@ export default class Entries {
             }
 
             this.lookForReference([{ locale: code, uid, name: title }], ctSchema, this.entries[entryUid]);
-            
-            if(this.missingMandatoryFields[uid] && entry.publish_details.length){
+
+            if (this.missingMandatoryFields[uid] && entry.publish_details.length) {
               const isPublished = entry.publish_details.length > 0;
               const fixStatus = this.fix ? 'Fixed' : '';
-  
+
               this.missingMandatoryFields[uid]?.forEach((field: { isPublished: boolean; fixStatus?: string }) => {
                 field.isPublished = isPublished;
                 if (this.fix) {
                   field.fixStatus = fixStatus;
                 }
               });
-  
+
               if (this.fix && isPublished) {
-                this.log($t(auditFixMsg.ENTRY_MANDATORY_FIELD_FIX,{uid, locale:code}),'error')
+                this.log($t(auditFixMsg.ENTRY_MANDATORY_FIELD_FIX, { uid, locale: code }), 'error');
                 entry.publish_details = [];
               }
             } else {
-              delete this.missingMandatoryFields[uid]
+              delete this.missingMandatoryFields[uid];
             }
-            
 
             const message = $t(auditMsg.SCAN_ENTRY_SUCCESS_MSG, {
               title,
@@ -713,8 +712,8 @@ export default class Entries {
    */
   validateSelectField(tree: Record<string, unknown>[], fieldStructure: SelectFeildStruct, field: any) {
     const { display_name, enum: selectOptions, multiple, min_instance, display_type } = fieldStructure;
-    if(field===null || field === '' || field?.length===0 || !field){
-      let missingCTSelectFieldValues = 'Not Selected'
+    if (field === null || field === '' || field?.length === 0 || !field) {
+      let missingCTSelectFieldValues = 'Not Selected';
       return [
         {
           uid: this.currentUid,
@@ -729,10 +728,10 @@ export default class Entries {
             .filter((val) => val)
             .join(' ➜ '),
         },
-      ]
+      ];
     }
     let missingCTSelectFieldValues;
-   
+
     if (multiple) {
       if (Array.isArray(field)) {
         let obj = this.findNotPresentSelectField(field, selectOptions);
@@ -742,7 +741,7 @@ export default class Entries {
         }
       }
     } else if (!selectOptions.choices.some((choice) => choice.value === field)) {
-      missingCTSelectFieldValues = field ;
+      missingCTSelectFieldValues = field;
     }
     if (display_type && missingCTSelectFieldValues) {
       return [
@@ -786,7 +785,7 @@ export default class Entries {
       let { notPresent, filteredFeild } = obj;
       entry = filteredFeild;
       missingCTSelectFieldValues = notPresent;
-      if(missingCTSelectFieldValues.length) {
+      if (missingCTSelectFieldValues.length) {
         isMissingValuePresent = true;
       }
       if (min_instance && Array.isArray(entry)) {
@@ -798,15 +797,14 @@ export default class Entries {
             .slice(0, missingInstances)
             .map((choice) => choice.value);
           entry.push(...newValues);
-          this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX,{value: newValues.join(' '),uid}), 'error')
+          this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: newValues.join(' '), uid }), 'error');
         }
       } else {
         if (entry.length === 0) {
           isMissingValuePresent = true;
           const defaultValue = selectOptions.choices.length > 0 ? selectOptions.choices[0].value : null;
           entry.push(defaultValue);
-          this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX,{value: defaultValue as string,uid}), 'error')
-
+          this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: defaultValue as string, uid }), 'error');
         }
       }
     } else {
@@ -815,9 +813,8 @@ export default class Entries {
         missingCTSelectFieldValues = entry;
         isMissingValuePresent = true;
         let defaultValue = selectOptions.choices.length > 0 ? selectOptions.choices[0].value : null;
-         entry = defaultValue;
-        this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX,{value: defaultValue as string,uid}), 'error')
-
+        entry = defaultValue;
+        this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: defaultValue as string, uid }), 'error');
       }
     }
     if (display_type && isMissingValuePresent) {
@@ -842,50 +839,41 @@ export default class Entries {
   validateMandatoryFields(tree: Record<string, unknown>[], fieldStructure: any, entry: any) {
     const { display_name, multiple, data_type, mandatory, field_metadata, uid } = fieldStructure;
 
-    if (mandatory) {
-      if (data_type === 'json' && field_metadata.allow_json_rte) {
-        const isval = multiple
-          ? entry[uid]?.[0]?.children?.[0]?.children?.[0]?.text === ''
-          : entry[uid]?.children?.[0]?.children?.[0]?.text === '';
+    const isJsonRteEmpty = () => {
+      const jsonNode = multiple
+        ? entry[uid]?.[0]?.children?.[0]?.children?.[0]?.text
+        : entry[uid]?.children?.[0]?.children?.[0]?.text;
+      return jsonNode === '';
+    };
 
-        if (isval) {
-          return [
-            {
-              uid: this.currentUid,
-              name: this.currentTitle,
-              display_name,
-              missingFieldUid: uid,
-              tree,
-              treeStr: tree
-                .filter(({ name }) => name)
-                .map(({ name }) => name)
-                .join(' ➜ '),
-            },
-          ];
-        }
-      } else {
-        if (!entry[uid] || (multiple ? !entry[uid].length : entry[uid] === '')) {
-          return [
-            {
-              uid: this.currentUid,
-              name: this.currentTitle,
-              display_name,
-              missingFieldUid: uid,
-              tree,
-              treeStr: tree
-                .filter(({ name }) => name)
-                .map(({ name }) => name)
-                .join(' ➜ '),
-            },
-          ];
-        }
+    const isEntryEmpty = () => {
+      const fieldValue = multiple ? entry[uid]?.length : entry[uid];
+      return fieldValue === '' || !fieldValue;
+    };
+
+    if (mandatory) {
+      if (
+        (data_type === 'json' && field_metadata.allow_json_rte && isJsonRteEmpty()) ||
+        (!(data_type === 'json') && isEntryEmpty())
+      ) {
+        return [
+          {
+            uid: this.currentUid,
+            name: this.currentTitle,
+            display_name,
+            missingFieldUid: uid,
+            tree,
+            treeStr: tree
+              .filter(({ name }) => name)
+              .map(({ name }) => name)
+              .join(' ➜ '),
+          },
+        ];
       }
     }
 
     return [];
   }
-
-  fixMandatoryFeilds() {}
 
   /**
    *
@@ -896,10 +884,10 @@ export default class Entries {
   findNotPresentSelectField(field: any, selectOptions: any) {
     let present = [];
     let notPresent = [];
-    const choicesMap = new Map(selectOptions.choices.map((choice: { value: any; }) => [choice.value, choice]));
+    const choicesMap = new Map(selectOptions.choices.map((choice: { value: any }) => [choice.value, choice]));
     for (const value of field) {
-      const choice:any = choicesMap.get(value);
-    
+      const choice: any = choicesMap.get(value);
+
       if (choice) {
         present.push(choice.value);
       } else {
