@@ -37,7 +37,7 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
       fsUtil.writeFile(path.resolve(this.experiencesFolderPath, 'experiences.json'), experiences);
       const experienceToVarianceStrList: Array<string> = [];
       for (let experience of experiences) {
-        let variants = experience?._cms?.variants;
+        let variants = experience?._cms?.variants ?? {}; // Add nullish coalescing operator
         if (variants) {
           Object.keys(variants).forEach((variantShortId: string) => {
             const experienceToVarianceStr = `${experience.uid}-${variantShortId}-${variants[variantShortId]}`;
@@ -49,6 +49,7 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
         path.resolve(this.experiencesFolderPath, 'experiences-variants-ids.json'),
         experienceToVarianceStrList,
       );
+      log(this.exportConfig, 'All the experiences have been exported successfully!', 'success');
     } catch (error) {
       log(this.exportConfig, `Failed to export experiences  ${formatError(error)}`, 'error');
       throw error;
