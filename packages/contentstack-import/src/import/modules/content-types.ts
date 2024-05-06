@@ -52,7 +52,7 @@ export default class ContentTypesImport extends BaseClass {
   private taxonomiesPath: string;
   public taxonomies: Record<string, unknown>;
   private extPendingPath: string;
-  private isExtensionsUpdate: boolean = false;
+  private isExtensionsUpdate = false;
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
