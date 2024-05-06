@@ -69,6 +69,8 @@ const config = {
     'treeStr',
     'missingCTSelectFieldValues',
     'min_instance',
+    'missingFieldUid',
+    'isPublished'
   ]
 };
 
