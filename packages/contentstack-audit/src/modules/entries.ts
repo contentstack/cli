@@ -122,7 +122,7 @@ export default class Entries {
 
             const fields = this.missingMandatoryFields[uid];
             const isPublished = entry.publish_details.length > 0;
-            if ((this.fix && fields && isPublished) || (!this.fix && fields)) {
+            if ((this.fix && fields.length && isPublished) || (!this.fix && fields)) {
               const fixStatus = this.fix ? 'Fixed' : '';
               fields?.forEach((field: { isPublished: boolean; fixStatus?: string }) => {
                 field.isPublished = isPublished;
