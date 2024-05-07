@@ -1,4 +1,3 @@
-
 import * as shortUUID from 'short-uuid';
 import * as path from 'path';
 import { configHandler, pathValidator } from '@contentstack/cli-utilities';
@@ -45,13 +44,12 @@ export default class CsdxContext {
     this.region = configHandler.get('region');
     this.info = { command: cliOpts.id };
     if (command.pluginName) {
-      this.plugin = (cliConfig.plugins || []).find((p) => p.name === command.pluginName) || {};
+      this.plugin = (cliConfig.plugins || new Map()).get(command.pluginName) || {};
       this.plugin.name = command.pluginName;
       this.plugin.config = { ...((this.plugin.pjson && this.plugin.pjson.csdxConfig) || {}) };
-      this.messageFilePath = pathValidator(path.resolve(
-        this.plugin.root,
-        this.plugin.config.messageFilePath || './messages/index.json',
-      ));
+      this.messageFilePath = pathValidator(
+        path.resolve(this.plugin.root, this.plugin.config.messageFilePath || './messages/index.json'),
+      );
       this.info.shortCommandName = this.plugin?.config?.shortCommandName?.[cliOpts.id];
       analyticsInfo.push(this.info.shortCommandName || cliOpts.id);
     }
