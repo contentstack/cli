@@ -8,7 +8,7 @@ import { existsSync, readFileSync, writeFileSync } from 'fs';
 
 import auditConfig from '../config';
 import ContentType from './content-types';
-import { $t, auditMsg, commonMsg } from '../messages';
+import { $t, auditFixMsg, auditMsg, commonMsg } from '../messages';
 import {
   LogFn,
   Locale,
@@ -56,6 +56,7 @@ export default class Entries {
   protected entries!: Record<string, EntryStruct>;
   protected missingRefs: Record<string, any> = {};
   protected missingSelectFeild: Record<string, any> = {};
+  protected missingMandatoryFields: Record<string, any> = {};
   public entryMetaData: Record<string, any>[] = [];
   public moduleName: keyof typeof auditConfig.moduleConfig = 'entries';
   public isEntryWithoutTitleField: boolean = false;
@@ -109,11 +110,35 @@ export default class Entries {
             if (!this.missingSelectFeild[this.currentUid]) {
               this.missingSelectFeild[this.currentUid] = [];
             }
+
+            if (!this.missingMandatoryFields[this.currentUid]) {
+              this.missingMandatoryFields[this.currentUid] = [];
+            }
             if (this.fix) {
               this.removeMissingKeysOnEntry(ctSchema.schema as ContentTypeSchemaType[], this.entries[entryUid]);
             }
 
             this.lookForReference([{ locale: code, uid, name: title }], ctSchema, this.entries[entryUid]);
+
+            const fields = this.missingMandatoryFields[uid];
+            const isPublished = entry.publish_details.length > 0;
+            if ((this.fix && fields && isPublished) || (!this.fix && fields)) {
+              const fixStatus = this.fix ? 'Fixed' : '';
+              fields?.forEach((field: { isPublished: boolean; fixStatus?: string }) => {
+                field.isPublished = isPublished;
+                if (this.fix && isPublished) {
+                  field.fixStatus = fixStatus;
+                }
+              });
+
+              if (this.fix && isPublished) {
+                this.log($t(auditFixMsg.ENTRY_MANDATORY_FIELD_FIX, { uid, locale: code }), 'error');
+                entry.publish_details = [];
+              }
+            } else {
+              delete this.missingMandatoryFields[uid];
+            }
+
             const message = $t(auditMsg.SCAN_ENTRY_SUCCESS_MSG, {
               title,
               local: code,
@@ -132,7 +157,12 @@ export default class Entries {
     // this.log('', 'info'); // Adding empty line
 
     this.removeEmptyVal();
-    return { missingEntryRefs: this.missingRefs, missingSelectFeild: this.missingSelectFeild };
+
+    return {
+      missingEntryRefs: this.missingRefs,
+      missingSelectFeild: this.missingSelectFeild,
+      missingMandatoryFields: this.missingMandatoryFields,
+    };
   }
 
   /**
@@ -147,6 +177,11 @@ export default class Entries {
     for (let propName in this.missingSelectFeild) {
       if (!this.missingSelectFeild[propName].length) {
         delete this.missingSelectFeild[propName];
+      }
+    }
+    for (let propName in this.missingMandatoryFields) {
+      if (!this.missingMandatoryFields[propName].length) {
+        delete this.missingMandatoryFields[propName];
       }
     }
   }
@@ -237,7 +272,16 @@ export default class Entries {
 
     for (const child of field?.schema ?? []) {
       const { uid } = child;
-      if (!entry?.[uid]) continue;
+      this.missingMandatoryFields[this.currentUid].push(
+        ...this.validateMandatoryFields(
+          [...tree, { uid: field.uid, name: child.display_name, field: uid }],
+          child,
+          entry,
+        ),
+      );
+      if (!entry?.[uid] && !child.hasOwnProperty('display_type')) {
+        continue;
+      }
 
       switch (child.data_type) {
         case 'reference':
@@ -668,7 +712,24 @@ export default class Entries {
    */
   validateSelectField(tree: Record<string, unknown>[], fieldStructure: SelectFeildStruct, field: any) {
     const { display_name, enum: selectOptions, multiple, min_instance, display_type } = fieldStructure;
-
+    if (field === null || field === '' || field?.length === 0 || !field) {
+      let missingCTSelectFieldValues = 'Not Selected';
+      return [
+        {
+          uid: this.currentUid,
+          name: this.currentTitle,
+          display_name,
+          display_type,
+          missingCTSelectFieldValues,
+          min_instance: min_instance ?? 'NA',
+          tree,
+          treeStr: tree
+            .map(({ name }) => name)
+            .filter((val) => val)
+            .join(' ➜ '),
+        },
+      ];
+    }
     let missingCTSelectFieldValues;
 
     if (multiple) {
@@ -714,7 +775,7 @@ export default class Entries {
    * @returns
    */
   fixSelectField(tree: Record<string, unknown>[], field: SelectFeildStruct, entry: any) {
-    const { enum: selectOptions, multiple, min_instance, display_type, display_name } = field;
+    const { enum: selectOptions, multiple, min_instance, display_type, display_name, uid } = field;
 
     let missingCTSelectFieldValues;
     let isMissingValuePresent = false;
@@ -724,7 +785,7 @@ export default class Entries {
       let { notPresent, filteredFeild } = obj;
       entry = filteredFeild;
       missingCTSelectFieldValues = notPresent;
-      if(missingCTSelectFieldValues.length) {
+      if (missingCTSelectFieldValues.length) {
         isMissingValuePresent = true;
       }
       if (min_instance && Array.isArray(entry)) {
@@ -736,12 +797,14 @@ export default class Entries {
             .slice(0, missingInstances)
             .map((choice) => choice.value);
           entry.push(...newValues);
+          this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: newValues.join(' '), uid }), 'error');
         }
       } else {
         if (entry.length === 0) {
           isMissingValuePresent = true;
           const defaultValue = selectOptions.choices.length > 0 ? selectOptions.choices[0].value : null;
           entry.push(defaultValue);
+          this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: defaultValue as string, uid }), 'error');
         }
       }
     } else {
@@ -749,7 +812,9 @@ export default class Entries {
       if (!isPresent) {
         missingCTSelectFieldValues = entry;
         isMissingValuePresent = true;
-        entry = selectOptions.choices.length > 0 ? selectOptions.choices[0].value : null;
+        let defaultValue = selectOptions.choices.length > 0 ? selectOptions.choices[0].value : null;
+        entry = defaultValue;
+        this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: defaultValue as string, uid }), 'error');
       }
     }
     if (display_type && isMissingValuePresent) {
@@ -770,6 +835,46 @@ export default class Entries {
     }
     return entry;
   }
+
+  validateMandatoryFields(tree: Record<string, unknown>[], fieldStructure: any, entry: any) {
+    const { display_name, multiple, data_type, mandatory, field_metadata, uid } = fieldStructure;
+
+    const isJsonRteEmpty = () => {
+      const jsonNode = multiple
+        ? entry[uid]?.[0]?.children?.[0]?.children?.[0]?.text
+        : entry[uid]?.children?.[0]?.children?.[0]?.text;
+      return jsonNode === '';
+    };
+
+    const isEntryEmpty = () => {
+      const fieldValue = multiple ? entry[uid]?.length : entry[uid];
+      return fieldValue === '' || !fieldValue;
+    };
+
+    if (mandatory) {
+      if (
+        (data_type === 'json' && field_metadata.allow_json_rte && isJsonRteEmpty()) ||
+        (!(data_type === 'json') && isEntryEmpty())
+      ) {
+        return [
+          {
+            uid: this.currentUid,
+            name: this.currentTitle,
+            display_name,
+            missingFieldUid: uid,
+            tree,
+            treeStr: tree
+              .filter(({ name }) => name)
+              .map(({ name }) => name)
+              .join(' ➜ '),
+          },
+        ];
+      }
+    }
+
+    return [];
+  }
+
   /**
    *
    * @param field It contains the value to be searched
@@ -779,10 +884,10 @@ export default class Entries {
   findNotPresentSelectField(field: any, selectOptions: any) {
     let present = [];
     let notPresent = [];
-    const choicesMap = new Map(selectOptions.choices.map((choice: { value: any; }) => [choice.value, choice]));
+    const choicesMap = new Map(selectOptions.choices.map((choice: { value: any }) => [choice.value, choice]));
     for (const value of field) {
-      const choice:any = choicesMap.get(value);
-    
+      const choice: any = choicesMap.get(value);
+
       if (choice) {
         present.push(choice.value);
       } else {
