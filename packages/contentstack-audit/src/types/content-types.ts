@@ -16,6 +16,7 @@ type ContentTypeStruct = {
   title: string;
   description: string;
   schema?: ContentTypeSchemaType[];
+  mandatory: boolean;
 };
 
 type ModuleConstructorParam = {
@@ -38,6 +39,7 @@ type CommonDataTypeStruct = {
     ref_multiple: boolean;
     allow_json_rte: boolean;
   } & AnyProperty;
+  mandatory: boolean
 };
 
 type RefErrorReturnType = {
@@ -138,7 +140,9 @@ enum OutputColumn {
   'missingCts' = 'content_types',
   'Missing Branches' = 'branches',
   'MissingValues' = 'missingCTSelectFieldValues',
-  "Minimum Required Instaces" = 'min_instance'
+  'Minimum Required Instaces' = 'min_instance',
+  'missingFieldUid' = 'missingFieldUid',
+  'isPublished' = 'isPublished'
 }
 
 export {
