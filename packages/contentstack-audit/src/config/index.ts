@@ -55,7 +55,7 @@ const config = {
     ],
   },
   //These keys will be used output the modules with issues and fixes on console
-  OutputTableKeys : [
+  OutputTableKeys: [
     'title',
     'name',
     'uid',
@@ -69,7 +69,13 @@ const config = {
     'treeStr',
     'missingCTSelectFieldValues',
     'min_instance',
-  ]
+    'missingFieldUid',
+    'isPublished',
+  ],
+  ReportTitleForEntries: {
+    Entries_Select_feild: 'Entries_Select_feild',
+    Entries_Mandatory_feild: 'Entries_Mandatory_feild',
+  },
 };
 
 export default config;

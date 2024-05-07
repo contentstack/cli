@@ -10,6 +10,7 @@ type Locale = {
 type EntryStruct = {
   uid: string;
   title: string;
+  publish_details: []
 } & {
   [key: string]:
     | EntryReferenceFieldDataType[]
