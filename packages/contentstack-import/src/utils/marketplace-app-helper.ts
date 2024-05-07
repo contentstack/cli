@@ -102,6 +102,8 @@ export const getConfirmationToCreateApps = async (privateApps: any, config: Impo
           return Promise.resolve(false);
         }
       }
+    } else {
+      return Promise.resolve(true);
     }
   } else {
     return Promise.resolve(true);
