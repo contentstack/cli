@@ -52,6 +52,7 @@ export default class ContentTypesImport extends BaseClass {
   private taxonomiesPath: string;
   public taxonomies: Record<string, unknown>;
   private extPendingPath: string;
+  private isExtensionsUpdate = false;
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -110,7 +111,9 @@ export default class ContentTypesImport extends BaseClass {
     }
     log(this.importConfig, 'Updating the extensions...', 'success');
     await this.updatePendingExtensions();
-    log(this.importConfig, 'Successfully updated the extensions.', 'success');
+    if (this.isExtensionsUpdate) {
+      log(this.importConfig, 'Successfully updated the extensions.', 'success');
+    }
     await this.updatePendingGFs().catch((error) => {
       log(this.importConfig, `Error while updating pending global field ${formatError(error)}`, 'error');
     });
@@ -263,6 +266,7 @@ export default class ContentTypesImport extends BaseClass {
       return;
     }
 
+    this.isExtensionsUpdate = true;
     const onSuccess = ({ response, apiData: { uid, title } = { uid: null, title: '' } }: any) => {
       log(this.importConfig, `Successfully updated the '${response.title}' extension.`, 'success');
     };
