@@ -15,7 +15,6 @@ const config: DefaultConfig = {
   // locales: ['fr-fr'],
   host: 'https://api.contentstack.io/v3',
   extensionHost: 'https://app.contentstack.com',
-  personalizationHost: 'https://personalization-api.contentstack.com',
   developerHubUrls: {
     'https://api.contentstack.io': 'https://developerhub-api.contentstack.com',
     'https://eu-api.contentstack.com': 'https://eu-developerhub-api.contentstack.com',
@@ -28,7 +27,6 @@ const config: DefaultConfig = {
     types: [
       'locales',
       'environments',
-      'assets',
       'taxonomies',
       'extensions',
       'marketplace-apps',
@@ -38,9 +36,9 @@ const config: DefaultConfig = {
       'custom-roles',
       'workflows',
       'entries',
+      'variant-entries',
       'labels',
       'webhooks',
-      'variant-entries',
     ],
     locales: {
       dirName: 'locales',
@@ -153,6 +151,9 @@ const config: DefaultConfig = {
       fileName: 'taxonomies.json',
     },
     personalization: {
+      baseURL: {
+        NA: 'https://personalization-api.contentstack.com',
+      },
       importData: true,
       dirName: 'personalization',
       importOrder: ['projects', 'attributes', 'audiences', 'events', 'experiences'],
