@@ -51,7 +51,7 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
         this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Events' }), 'info');
       } catch (error) {
         this.log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Events' }), 'error');
-        throw error;
+        this.log(this.config, error, 'error');
       }
     }
   }

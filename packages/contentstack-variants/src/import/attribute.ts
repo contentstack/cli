@@ -53,7 +53,7 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
         this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Attributes' }), 'info');
       } catch (error) {
         this.log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Attributes' }), 'error');
-        throw error;
+        this.log(this.config, error, 'error');
       }
     }
   }

@@ -52,7 +52,7 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
       log(this.exportConfig, 'All the experiences have been exported successfully!', 'success');
     } catch (error) {
       log(this.exportConfig, `Failed to export experiences!`, 'error');
-      throw error;
+      log(this.config, error, 'error');
     }
   }
 }
