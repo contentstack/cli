@@ -51,10 +51,8 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
 
         fsUtil.writeFile(this.attributesUidMapperPath, this.attributesUidMapper);
         this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Attributes' }), 'info');
-      } catch (error: any) {
-        if (error?.errorMessage || error?.message || error?.error_message) {
-          this.log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Attributes' }), 'error');
-        }
+      } catch (error) {
+        this.log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Attributes' }), 'error');
         throw error;
       }
     }
