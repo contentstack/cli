@@ -59,8 +59,8 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     this.experiencesUidMapper = {};
     this.cmsVariantGroups = {};
     this.cmsVariants = {};
-    this.expThresholdTimer = this.experienceConfig?.thresholdTimer ?? 60000;
-    this.expCheckIntervalDuration = this.experienceConfig?.checkIntervalDuration ?? 10000;
+    this.expThresholdTimer = this.experienceConfig?.thresholdTimer ?? 30000;
+    this.expCheckIntervalDuration = this.experienceConfig?.checkIntervalDuration ?? 5000;
     this.maxValidateRetry = Math.round(this.expThresholdTimer / this.expCheckIntervalDuration);
     this.pendingVariantAndVariantGrpForExperience = [];
     this.cTsSuccessPath = resolve(this.config.backupDir, 'mapper', 'content_types', 'success.json');
@@ -111,12 +111,9 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         }
 
         await this.createVariantIdMapper();
-      } catch (error: any) {
-        if (error?.errorMessage || error?.message || error?.error_message) {
-          this.log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Experiences' }), 'error');
-        } else {
-          this.log(this.config, error, 'error');
-        }
+      } catch (error) {
+        this.log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Experiences' }), 'error');
+        this.log(this.config, error, 'error');
       }
     }
   }
@@ -144,14 +141,14 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
 
       if (this.pendingVariantAndVariantGrpForExperience?.length) {
         if (retryCount !== this.maxValidateRetry) {
-          await this.delay(5000);
+          await this.delay(this.expCheckIntervalDuration);
           // Filter out the processed elements
           this.pendingVariantAndVariantGrpForExperience = this.pendingVariantAndVariantGrpForExperience.filter(
             (uid) => !this.cmsVariants[uid],
           );
           return this.validateVariantGroupAndVariantsCreated(retryCount);
         } else {
-          this.log(this.config, this.messages.PERSONALIZATION_JOB_FAILURE, 'info');
+          this.log(this.config, this.messages.PERSONALIZATION_JOB_FAILURE, 'error');
           fsUtil.writeFile(this.failedCmsExpPath, this.pendingVariantAndVariantGrpForExperience);
           return false;
         }
