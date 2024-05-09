@@ -33,12 +33,12 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
         this.exportConfig.personalizationEnabled = false;
         return;
       }
-      this.exportConfig.project_id = project[0].uid;
       this.exportConfig.personalizationEnabled = true;
       this.exportConfig.project_id = project[0]?.uid;
       fsUtil.writeFile(path.resolve(this.projectFolderPath, 'projects.json'), project);
+      log(this.exportConfig, 'Project exported successfully!', 'success');
     } catch (error) {
-      log(this.exportConfig, `Failed to export projects  ${formatError(error)}`, 'error');
+      log(this.exportConfig, `Failed to export projects!`, 'error');
       throw error;
     }
   }
