@@ -8,7 +8,6 @@ export default interface DefaultConfig {
   versioning: boolean;
   host: string;
   extensionHost: string;
-  personalizationHost: string;
   developerHubUrls: Record<string, string>;
   modules: {
     apiConcurrency: number;
@@ -124,6 +123,7 @@ export default interface DefaultConfig {
       dependencies?: Modules[];
     };
     personalization: {
+      baseURL: Record<string, string>;
       dirName: string;
       importData: boolean;
       importOrder: string[];
