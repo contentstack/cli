@@ -42,11 +42,9 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
         log(this.exportConfig, 'All the events have been exported successfully!', 'success');
         return;
       }
-    } catch (error: any) {
-      if (error?.errorMessage || error?.message || error?.error_message) {
-        log(this.exportConfig, `Failed to export events! ${formatError(error)}`, 'error');
-      }
-      throw error;
+    } catch (error) {
+      log(this.exportConfig, `Failed to export events!`, 'error');
+      log(this.config, error, 'error');
     }
   }
 

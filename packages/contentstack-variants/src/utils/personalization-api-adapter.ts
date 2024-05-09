@@ -18,15 +18,19 @@ import {
   ExperienceStruct,
   UpdateExperienceInput,
   CMSExperienceStruct,
+  VariantAPIRes,
+  APIResponse
 } from '../types';
+
 export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> implements Personalization<T> {
   constructor(options: APIConfig) {
     super(options);
   }
 
-  async projects(options: GetProjectsParams, projects: ProjectStruct[] = []): Promise<ProjectStruct[] | void> {
+  async projects(options: GetProjectsParams): Promise<ProjectStruct[]> {
     const getProjectEndPoint = `/projects?connectedStackApiKey=${options.connectedStackApiKey}`;
-    return (await this.apiClient.get(getProjectEndPoint)).data;
+    const data = await this.apiClient.get(getProjectEndPoint);
+    return this.handleVariantAPIRes(data) as ProjectStruct[];
   }
 
   /**
@@ -39,8 +43,9 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    * @returns The `createProject` function is returning a Promise that resolves to either a
    * `ProjectStruct` object or `void`.
    */
-  async createProject(project: CreateProjectInput): Promise<ProjectStruct | void> {
-    return (await this.apiClient.post<ProjectStruct>('/projects', project)).data;
+  async createProject(project: CreateProjectInput): Promise<ProjectStruct> {
+    const data = await this.apiClient.post<ProjectStruct>('/projects', project);
+    return this.handleVariantAPIRes(data) as ProjectStruct;
   }
 
   /**
@@ -52,41 +57,49 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    * `/attributes` endpoint using the `apiClient` with the input provided. The data returned is of type
    * `ProjectStruct`.
    */
-  async createAttribute(attribute: CreateAttributeInput): Promise<void | AttributeStruct> {
-    return (await this.apiClient.post<AttributeStruct>('/attributes', attribute)).data;
+  async createAttribute(attribute: CreateAttributeInput): Promise<AttributeStruct> {
+    const data = await this.apiClient.post<AttributeStruct>('/attributes', attribute);
+    return this.handleVariantAPIRes(data) as AttributeStruct;
   }
 
-  async getExperiences(): Promise<ExperienceStruct[] | void> {
+  async getExperiences(): Promise<ExperienceStruct[]> {
     const getExperiencesEndPoint = `/experiences`;
-    return (await this.apiClient.get(getExperiencesEndPoint)).data;
+    const data = await this.apiClient.get(getExperiencesEndPoint);
+    return this.handleVariantAPIRes(data) as ExperienceStruct[];
   }
 
-  async getExperience(experienceUid: string): Promise<ExperienceStruct> {
+  async getExperience(experienceUid: string): Promise<ExperienceStruct | void> {
     const getExperiencesEndPoint = `/experiences/${experienceUid}`;
-    return (await this.apiClient.get(getExperiencesEndPoint)).data;
+    const data = await this.apiClient.get(getExperiencesEndPoint);
+    return this.handleVariantAPIRes(data) as ExperienceStruct;
   }
 
   async getVariantGroup(input: GetVariantGroupInput): Promise<ExperienceStruct | void> {
     const getVariantGroupEndPoint = `/experiences/${input.experienceUid}`;
-    return (await this.apiClient.get(getVariantGroupEndPoint)).data;
+    const data = await this.apiClient.get(getVariantGroupEndPoint);
+    return this.handleVariantAPIRes(data) as ExperienceStruct;
   }
 
   async updateVariantGroup(input: unknown): Promise<ProjectStruct | void> {}
 
   async getEvents(): Promise<EventStruct[] | void> {
-    return (await this.apiClient.get<EventStruct>('/events')).data;
+    const data = await this.apiClient.get<EventStruct>('/events');
+    return this.handleVariantAPIRes(data) as EventStruct[];
   }
 
   async createEvents(event: CreateEventInput): Promise<void | EventStruct> {
-    return (await this.apiClient.post<EventStruct>('/events', event)).data;
+    const data = await this.apiClient.post<EventStruct>('/events', event);
+    return this.handleVariantAPIRes(data) as EventStruct;
   }
 
   async getAudiences(): Promise<AudienceStruct[] | void> {
-    return (await this.apiClient.get<AudienceStruct>('/audiences')).data;
+    const data = await this.apiClient.get<AudienceStruct>('/audiences');
+    return this.handleVariantAPIRes(data) as AudienceStruct[];
   }
 
   async getAttributes(): Promise<AttributeStruct[] | void> {
-    return (await this.apiClient.get<AttributeStruct>('/attributes')).data;
+    const data = await this.apiClient.get<AttributeStruct>('/attributes');
+    return this.handleVariantAPIRes(data) as AttributeStruct[];
   }
 
   /**
@@ -98,7 +111,8 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    * `AudienceStruct`.
    */
   async createAudience(audience: CreateAudienceInput): Promise<void | AudienceStruct> {
-    return (await this.apiClient.post<AudienceStruct>('/audiences', audience)).data;
+    const data = await this.apiClient.post<AudienceStruct>('/audiences', audience);
+    return this.handleVariantAPIRes(data) as AudienceStruct;
   }
 
   /**
@@ -110,7 +124,8 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    * `ExperienceStruct`.
    */
   async createExperience(experience: CreateExperienceInput): Promise<void | ExperienceStruct> {
-    return (await this.apiClient.post<ExperienceStruct>('/experiences', experience)).data;
+    const data = await this.apiClient.post<ExperienceStruct>('/experiences', experience);
+    return this.handleVariantAPIRes(data) as ExperienceStruct;
   }
 
   /**
@@ -123,7 +138,8 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     experienceUid: string,
   ): Promise<void | CMSExperienceStruct> {
     const updateCTInExpEndPoint = `/experiences/${experienceUid}/cms-integration/variant-group`;
-    return (await this.apiClient.post<CMSExperienceStruct>(updateCTInExpEndPoint, experience)).data;
+    const data = await this.apiClient.post<CMSExperienceStruct>(updateCTInExpEndPoint, experience);
+    return this.handleVariantAPIRes(data) as CMSExperienceStruct;
   }
 
   /**
@@ -133,6 +149,65 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    */
   async getCTsFromExperience(experienceUid: string): Promise<void | CMSExperienceStruct> {
     const getCTFromExpEndPoint = `/experiences/${experienceUid}/cms-integration/variant-group`;
-    return (await this.apiClient.get<CMSExperienceStruct>(getCTFromExpEndPoint)).data;
+    const data = await this.apiClient.get<CMSExperienceStruct>(getCTFromExpEndPoint);
+    return this.handleVariantAPIRes(data) as CMSExperienceStruct;
+  }
+
+  /**
+   * Handles the API response for variant requests.
+   * @param res - The API response object.
+   * @returns The variant API response data.
+   * @throws If the API response status is not within the success range, an error message is thrown.
+   */
+  handleVariantAPIRes(res: APIResponse): VariantAPIRes {
+    const { status, data } = res;
+
+    if (status >= 200 && status < 300) {
+      return data;
+    }
+
+    let errorMsg: string;
+    if(data){
+      if (data?.errors && Object.keys(data.errors).length > 0) {
+        errorMsg = this.formatErrors(data.errors);
+      } else if (data?.error_message) {
+        errorMsg = data.error_message;
+      } else if (data?.message) {
+        errorMsg = data.message;
+      } else {
+        errorMsg = data;
+      }
+    }else{
+      errorMsg = 'Something went wrong while processing your request!';
+    }
+
+    throw errorMsg;
+  }
+
+  /**
+   * Formats the errors into a single string.
+   * @param errors - The errors to be formatted.
+   * @returns The formatted errors as a string.
+   */
+  formatErrors(errors: any): string {
+    const errorMessages: string[] = [];
+  
+    for (const errorKey in errors) {
+      const errorValue = errors[errorKey];
+      if (Array.isArray(errorValue)) {
+        errorMessages.push(...errorValue.map((error: any) => this.formatError(error)));
+      } else {
+        errorMessages.push(this.formatError(errorValue));
+      }
+    }
+  
+    return errorMessages.join(' ');
+  }
+  
+  formatError(error: any): string {
+    if (typeof error === 'object') {
+      return Object.values(error).join(' ');
+    }
+    return String(error);
   }
 }
