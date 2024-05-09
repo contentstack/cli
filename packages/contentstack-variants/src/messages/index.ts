@@ -1,7 +1,7 @@
 import memoize from 'lodash/memoize';
 
 const errors = {
-  CREATE_FAILURE: '{module} created failed!',
+  CREATE_FAILURE: '{module} creation failed!',
 };
 
 const commonMsg = {

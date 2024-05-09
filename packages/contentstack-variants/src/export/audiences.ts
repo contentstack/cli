@@ -42,10 +42,8 @@ export default class ExportAudiences extends PersonalizationAdapter<ExportConfig
         log(this.exportConfig, 'All the audiences have been exported successfully!', 'success');
         return;
       }
-    } catch (error: any) {
-      if (error?.errorMessage || error?.message || error?.error_message) {
-        log(this.exportConfig, `Failed to export audiences! ${formatError(error)}`, 'error');
-      }
+    } catch (error) {
+      log(this.exportConfig, `Failed to export audiences!`, 'error');
       throw error;
     }
   }
