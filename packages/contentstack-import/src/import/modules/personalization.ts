@@ -35,7 +35,11 @@ export default class ImportPersonalization {
         }
       }
     } catch (error) {
+      this.config.modules.personalization.importData = false; // Stop personalization import if project creation fails
       log(this.config, error, 'error');
+      if (!this.personalization.importData){
+        log(this.config, 'Skipping personalization migration...', 'warn')
+      } 
     }
   }
 }

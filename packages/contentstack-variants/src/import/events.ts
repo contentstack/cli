@@ -49,11 +49,9 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
 
         fsUtil.writeFile(this.eventsUidMapperPath, this.eventsUidMapper);
         this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Events' }), 'info');
-      } catch (error: any) {
-        if (error?.errorMessage || error?.message || error?.error_message) {
-          this.log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Events' }), 'error');
-        }
-        throw error;
+      } catch (error) {
+        this.log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Events' }), 'error');
+        this.log(this.config, error, 'error');
       }
     }
   }
