@@ -156,7 +156,7 @@ export interface DefaultConfig {
     } & AnyProperty;
     personalization: {
       dirName: string;
-      baseURL: string;
+      baseURL: Record<string, string>;
     } & AnyProperty;
     extensions: {
       dirName: string;
@@ -265,18 +265,13 @@ export interface ExportConfig extends DefaultConfig {
   sourceStackName?: string;
   personalizationEnabled: boolean;
   personalizationHost?: string;
+  region: any;
 }
 
 export interface PersonalizationConfig {
   dirName: string;
-  baseURL: string;
+  baseURL: Record<string, string>;
 }
-
-export interface PersonalizationConfig {
-  dirName: string;
-  baseURL: string;
-}
-
 export interface EventsConfig {
   dirName: string;
   fileName: string;

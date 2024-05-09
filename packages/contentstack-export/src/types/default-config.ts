@@ -123,8 +123,8 @@ export default interface DefaultConfig {
       exportVersions: boolean;
     };
     personalization: {
-      dirName: string,
-      baseURL: string,
+      dirName: string;
+      baseURL: Record<string, string>;
     } & AnyProperty;
     variantEntry: {
       dirName: string;
