@@ -1,4 +1,4 @@
-import { Modules } from '.';
+import { Modules, Region } from '.';
 import DefaultConfig from './default-config';
 
 export interface ExternalConfig {
@@ -49,6 +49,7 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   skipExisting?: boolean;
   skipAudit?: boolean;
   stackName?: string;
+  region: Region;
 }
 
 type branch = {
