@@ -35,16 +35,14 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
 
       if (!this.attributes?.length) {
         log(this.exportConfig, 'No Attributes found with the given project!', 'info');
-        return;
       } else {
         this.sanitizeAttribs();
         fsUtil.writeFile(pResolve(this.attributesFolderPath, this.attributesConfig.fileName), this.attributes);
         log(this.exportConfig, 'All the attributes have been exported successfully!', 'success');
-        return;
       }
     } catch (error) {
       log(this.exportConfig, `Failed to export attributes!`, 'error');
-      throw error;
+      log(this.config, error, 'error');
     }
   }
 

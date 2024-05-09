@@ -62,7 +62,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
         this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Audiences' }), 'info');
       } catch (error) {
         this.log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Audiences' }), 'error');
-        throw error;
+        this.log(this.config, error, 'error');
       }
     }
   }
