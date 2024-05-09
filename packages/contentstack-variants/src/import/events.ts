@@ -15,7 +15,7 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
   constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
     const conf: APIConfig = {
       config,
-      baseURL: config.personalizationHost,
+      baseURL: config.modules.personalization.baseURL[config.region.name],
       headers: { 'X-Project-Uid': config.modules.personalization.project_id, authtoken: config.auth_token },
     };
     super(Object.assign(config, conf));

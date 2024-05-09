@@ -8,7 +8,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
   constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
     const conf: APIConfig = {
       config,
-      baseURL: config.personalizationHost,
+      baseURL: config.modules.personalization.baseURL[config.region.name],
       headers: { organization_uid: config.org_uid, authtoken: config.auth_token },
     };
     super(Object.assign(config, conf));
