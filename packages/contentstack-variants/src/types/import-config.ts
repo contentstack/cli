@@ -1,7 +1,6 @@
 import { AnyProperty } from './utils';
 
 export interface ImportDefaultConfig extends AnyProperty {
-  personalizationHost: string;
   modules: {
     'content-types': {
       dirName: string;
@@ -14,6 +13,7 @@ export interface ImportDefaultConfig extends AnyProperty {
       fileName: string;
     };
     personalization: {
+      baseURL: Record<string, string>;
       dirName: string;
       importData: boolean;
       importOrder: string[];

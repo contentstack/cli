@@ -145,7 +145,9 @@ const config: DefaultConfig = {
       exportVersions: false,
     },
     personalization: {
-      baseURL: 'https://personalization-api.contentstack.com',
+      baseURL: {
+        NA: 'https://personalization-api.contentstack.com',
+      },
       dirName: 'personalization',
       exportOrder: ['attributes', 'audiences', 'events', 'experiences'],
       projects: {
@@ -471,7 +473,7 @@ const config: DefaultConfig = {
     stacks: '/stacks/',
   },
   preserveStackVersion: false,
-  personalizationEnabled: false,
+  personalizationEnabled: true,
   fetchConcurrency: 5,
   writeConcurrency: 5,
   developerHubBaseUrl: '',
