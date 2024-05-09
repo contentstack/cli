@@ -99,7 +99,6 @@ export default class ExportCommand extends Command {
   static aliases: string[] = ['cm:export'];
 
   async run(): Promise<void> {
-    console.log('this.region', this.region);
     let exportDir: string = pathValidator('logs');
     try {
       const { flags } = await this.parse(ExportCommand);
