@@ -1,8 +1,6 @@
 import omit from 'lodash/omit';
 import chunk from 'lodash/chunk';
-import values from 'lodash/values';
 import entries from 'lodash/entries';
-import orderBy from 'lodash/orderBy';
 import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
 import { readFileSync, existsSync } from 'fs';
@@ -67,7 +65,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
    */
   async import() {
     const filePath = resolve(this.entriesMapperPath, 'data-for-variant-entry.json');
-    const variantIdPath = join(
+    const variantIdPath = resolve(
       this.config.backupDir,
       'mapper',
       this.personalizationconfig.dirName,
@@ -95,20 +93,24 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     const entriesUidMapperPath = join(this.entriesMapperPath, 'uid-mapping.json');
     const assetUidMapperPath = resolve(this.config.backupDir, 'mapper', 'assets', 'uid-mapping.json');
     const assetUrlMapperPath = resolve(this.config.backupDir, 'mapper', 'assets', 'url-mapping.json');
-    const taxonomiesPath = join(this.config.backupDir, 'mapper', 'taxonomies', 'terms', 'success.json');
-    const marketplaceAppMapperPath = join(this.config.backupDir, 'mapper', 'marketplace_apps', 'uid-mapping.json');
+    const taxonomiesPath = resolve(
+      this.config.backupDir,
+      'mapper',
+      this.config.modules.taxonomies.dirName,
+      'terms',
+      'success.json',
+    );
+    const marketplaceAppMapperPath = resolve(this.config.backupDir, 'mapper', 'marketplace_apps', 'uid-mapping.json');
 
     // NOTE Read and store list of variant IDs
     this.variantIdList = JSON.parse(readFileSync(variantIdPath, 'utf8'));
 
     // NOTE entry relational data lookup dependencies.
-    this.entriesUidMapper = JSON.parse(await readFileSync(entriesUidMapperPath, 'utf8'));
-    this.installedExtensions = (
-      JSON.parse(await readFileSync(marketplaceAppMapperPath, 'utf8')) || { extension_uid: {} }
-    ).extension_uid;
+    this.entriesUidMapper = JSON.parse(readFileSync(entriesUidMapperPath, 'utf8'));
+    this.installedExtensions = JSON.parse(readFileSync(marketplaceAppMapperPath, 'utf8')).extension_uid;
     this.taxonomies = existsSync(taxonomiesPath) ? JSON.parse(readFileSync(taxonomiesPath, 'utf8')) : {};
-    this.assetUidMapper = JSON.parse(readFileSync(assetUidMapperPath, 'utf8')) || {};
-    this.assetUrlMapper = JSON.parse(readFileSync(assetUrlMapperPath, 'utf8')) || {};
+    this.assetUidMapper = JSON.parse(readFileSync(assetUidMapperPath, 'utf8'));
+    this.assetUrlMapper = JSON.parse(readFileSync(assetUrlMapperPath, 'utf8'));
 
     for (const entriesForVariant of entriesForVariants) {
       await this.importVariantEntries(entriesForVariant);
@@ -132,11 +134,9 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
 
     for (const _ in fs.indexFileContent) {
       try {
-        const variantEntries = (await fs.readChunkFiles.next()) as VariantEntryStruct;
-        if (variantEntries) {
-          const apiContent = orderBy(values(variantEntries), '_version');
-          await this.handleCuncurrency(contentType, apiContent, entriesForVariant);
-        }
+        const variantEntries = (await fs.readChunkFiles.next()) as VariantEntryStruct[];
+
+        await this.handleCuncurrency(contentType, variantEntries, entriesForVariant);
       } catch (error) {
         this.log(this.config, error, 'error');
       }
@@ -165,7 +165,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     let batchNo = 0;
     const variantEntryConfig = this.config.modules.variantEntry;
     const { content_type, locale, entry_uid } = entriesForVariant;
-    const batches = chunk(variantEntries, variantEntryConfig.apiConcurrency | 5);
+    const batches = chunk(variantEntries, variantEntryConfig.apiConcurrency || 5);
 
     if (isEmpty(batches)) return;
 
@@ -252,13 +252,13 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
           content_type: contentType,
         },
         this.entriesUidMapper,
-        join(this.entriesMapperPath, contentType.uid, variantEntry.locale),
-      );
+        resolve(this.entriesMapperPath, contentType.uid, variantEntry.locale),
+      ).entry;
 
       // NOTE: will remove term if term doesn't exists in taxonomy
       // FIXME: Validate if taxonomy support available for variant entries,
       // if not, feel free to remove this lookup flow.
-      lookUpTerms(contentType?.schema, variantEntry, this.taxonomies, this.config);
+      lookUpTerms(contentType.schema, variantEntry, this.taxonomies, this.config);
 
       // NOTE Find and replace asset's UID
       variantEntry = lookupAssets(
@@ -270,7 +270,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         this.assetUrlMapper,
         this.entriesDirPath,
         this.installedExtensions,
-      );
+      ).entry;
     }
 
     return variantEntry;
