@@ -9,7 +9,7 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
   constructor(exportConfig: ExportConfig) {
     super({
       config: exportConfig,
-      baseURL: exportConfig.modules.personalization.baseURL,
+      baseURL: exportConfig.modules.personalization.baseURL[exportConfig.region.name],
       headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
     });
     this.exportConfig = exportConfig;
@@ -29,25 +29,23 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
       // write experiences in to a file
       log(this.exportConfig, 'Starting experiences export', 'info');
       await fsUtil.makeDirectory(this.experiencesFolderPath);
-      const experiences: Array<ExperienceStruct>  = await this.getExperiences() || [];
+      const experiences: Array<ExperienceStruct> = (await this.getExperiences()) || [];
       if (!experiences || experiences?.length < 1) {
         log(this.exportConfig, 'No Experiences found with the give project', 'info');
         return;
       }
       fsUtil.writeFile(path.resolve(this.experiencesFolderPath, 'experiences.json'), experiences);
-      const experienceToVarianceStrList: Array<string> = [];
+      const experienceToVariantsStrList: Array<string> = [];
       for (let experience of experiences) {
-        let variants = experience?._cms?.variants;
-        if (variants) {
-          Object.keys(variants).forEach((variantShortId: string) => {
-            const experienceToVarianceStr = `${experience.uid}-${variantShortId}-${variants[variantShortId]}`;
-            experienceToVarianceStrList.push(experienceToVarianceStr);
-          });
-        }
+        let variants = experience?._cms?.variants || {};
+        Object.keys(variants).forEach((variantShortId: string) => {
+          const experienceToVariantsStr = `${experience.uid}-${variantShortId}-${variants[variantShortId]}`;
+          experienceToVariantsStrList.push(experienceToVariantsStr);
+        });
       }
       fsUtil.writeFile(
         path.resolve(this.experiencesFolderPath, 'experiences-variants-ids.json'),
-        experienceToVarianceStrList,
+        experienceToVariantsStrList,
       );
     } catch (error) {
       log(this.exportConfig, `Failed to export experiences  ${formatError(error)}`, 'error');

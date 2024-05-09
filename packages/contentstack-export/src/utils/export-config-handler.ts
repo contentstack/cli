@@ -19,12 +19,9 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
 
   const pattern = /[*$%#<>{}!&?]/g;
   if (pattern.test(config.exportDir)) {
-    cliux.print(
-      `\nPlease add a directory path without any of the special characters: (*,&,{,},[,],$,%,<,>,?,!)`,
-      {
-        color: 'yellow',
-      },
-    );
+    cliux.print(`\nPlease add a directory path without any of the special characters: (*,&,{,},[,],$,%,<,>,?,!)`, {
+      color: 'yellow',
+    });
     config.exportDir = await askExportDir();
   }
   config.exportDir = config.exportDir.replace(/['"]/g, '');
@@ -84,7 +81,6 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
   if (Array.isArray(config.filteredModules) && config.filteredModules.length > 0) {
     config.modules.types = filter(defaultConfig.modules.types, (module) => includes(config.filteredModules, module));
   }
-
   return config;
 };
 

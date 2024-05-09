@@ -27,6 +27,13 @@ export interface User {
   authtoken: string;
 }
 
+export interface Region {
+  name: string;
+  cma: string;
+  cda: string;
+  uiHost: string;
+}
+
 export type Modules =
   | 'stack'
   | 'assets'
