@@ -13,7 +13,7 @@ export default class ExportAudiences extends PersonalizationAdapter<ExportConfig
   constructor(readonly exportConfig: ExportConfig) {
     super({
       config: exportConfig,
-      baseURL: exportConfig.modules.personalization.baseURL,
+      baseURL: exportConfig.modules.personalization.baseURL[exportConfig.region.name],
       headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
     });
     this.personalizationConfig = exportConfig.modules.personalization;
