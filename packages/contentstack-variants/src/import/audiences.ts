@@ -60,10 +60,8 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
 
         fsUtil.writeFile(this.audiencesUidMapperPath, this.audiencesUidMapper);
         this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Audiences' }), 'info');
-      } catch (error: any) {
-        if (error?.errorMessage || error?.message || error?.error_message) {
-          this.log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Audiences' }), 'error');
-        }
+      } catch (error) {
+        this.log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Audiences' }), 'error');
         throw error;
       }
     }

@@ -39,8 +39,7 @@ export default class ExportPersonalization {
       }
     } catch (error) {
       this.exportConfig.personalizationEnabled = false;
-      log(this.exportConfig, `Failed to export Personalization project. ${formatError(error)}`, 'error');
-      log(this.exportConfig, error, 'error');
+      log(this.exportConfig, `Failed to export Personalization project! ${error}`, 'error');
     }
   }
 }

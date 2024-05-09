@@ -42,10 +42,8 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
         log(this.exportConfig, 'All the attributes have been exported successfully!', 'success');
         return;
       }
-    } catch (error: any) {
-      if (error?.errorMessage || error?.message || error?.error_message) {
-        log(this.exportConfig, `Failed to export attributes! ${formatError(error)}`, 'error');
-      }
+    } catch (error) {
+      log(this.exportConfig, `Failed to export attributes!`, 'error');
       throw error;
     }
   }
