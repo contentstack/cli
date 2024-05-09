@@ -7,7 +7,7 @@ import {
   flags,
   FlagInput,
   ContentstackClient,
-  pathValidator
+  pathValidator,
 } from '@contentstack/cli-utilities';
 
 import { ImportConfig } from '../../../types';
@@ -126,6 +126,7 @@ export default class ImportCommand extends Command {
       let importConfig = await setupImportConfig(flags);
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;
+      importConfig.region = this.region;
       backupDir = importConfig.backupDir;
 
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
@@ -156,7 +157,9 @@ export default class ImportCommand extends Command {
       log(
         { data: backupDir } as ImportConfig,
         `The log has been stored at ${
-          { data: backupDir } ? pathValidator(path.join(backupDir || __dirname, 'logs', 'import')) : pathValidator(path.join(__dirname, 'logs'))
+          { data: backupDir }
+            ? pathValidator(path.join(backupDir || __dirname, 'logs', 'import'))
+            : pathValidator(path.join(__dirname, 'logs'))
         }`,
         'info',
       );
