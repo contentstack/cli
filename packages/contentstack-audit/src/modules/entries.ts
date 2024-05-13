@@ -8,7 +8,7 @@ import { existsSync, readFileSync, writeFileSync } from 'fs';
 
 import auditConfig from '../config';
 import ContentType from './content-types';
-import { $t, auditMsg, commonMsg } from '../messages';
+import { $t, auditFixMsg, auditMsg, commonMsg } from '../messages';
 import {
   LogFn,
   Locale,
@@ -34,6 +34,8 @@ import {
   EntryReferenceFieldDataType,
   ExtensionOrAppFieldDataType,
   EntryExtensionOrAppFieldDataType,
+  EntrySelectFeildDataType,
+  SelectFeildStruct,
 } from '../types';
 import { print } from '../util';
 import GlobalField from './global-fields';
@@ -53,6 +55,8 @@ export default class Entries {
   public ctSchema: ContentTypeStruct[];
   protected entries!: Record<string, EntryStruct>;
   protected missingRefs: Record<string, any> = {};
+  protected missingSelectFeild: Record<string, any> = {};
+  protected missingMandatoryFields: Record<string, any> = {};
   public entryMetaData: Record<string, any>[] = [];
   public moduleName: keyof typeof auditConfig.moduleConfig = 'entries';
   public isEntryWithoutTitleField: boolean = false;
@@ -103,10 +107,38 @@ export default class Entries {
               this.missingRefs[this.currentUid] = [];
             }
 
+            if (!this.missingSelectFeild[this.currentUid]) {
+              this.missingSelectFeild[this.currentUid] = [];
+            }
+
+            if (!this.missingMandatoryFields[this.currentUid]) {
+              this.missingMandatoryFields[this.currentUid] = [];
+            }
             if (this.fix) {
               this.removeMissingKeysOnEntry(ctSchema.schema as ContentTypeSchemaType[], this.entries[entryUid]);
             }
+
             this.lookForReference([{ locale: code, uid, name: title }], ctSchema, this.entries[entryUid]);
+
+            const fields = this.missingMandatoryFields[uid];
+            const isPublished = entry.publish_details.length > 0;
+            if ((this.fix && fields.length && isPublished) || (!this.fix && fields)) {
+              const fixStatus = this.fix ? 'Fixed' : '';
+              fields?.forEach((field: { isPublished: boolean; fixStatus?: string }) => {
+                field.isPublished = isPublished;
+                if (this.fix && isPublished) {
+                  field.fixStatus = fixStatus;
+                }
+              });
+
+              if (this.fix && isPublished) {
+                this.log($t(auditFixMsg.ENTRY_MANDATORY_FIELD_FIX, { uid, locale: code }), 'error');
+                entry.publish_details = [];
+              }
+            } else {
+              delete this.missingMandatoryFields[uid];
+            }
+
             const message = $t(auditMsg.SCAN_ENTRY_SUCCESS_MSG, {
               title,
               local: code,
@@ -126,7 +158,11 @@ export default class Entries {
 
     this.removeEmptyVal();
 
-    return this.missingRefs;
+    return {
+      missingEntryRefs: this.missingRefs,
+      missingSelectFeild: this.missingSelectFeild,
+      missingMandatoryFields: this.missingMandatoryFields,
+    };
   }
 
   /**
@@ -136,6 +172,16 @@ export default class Entries {
     for (let propName in this.missingRefs) {
       if (!this.missingRefs[propName].length) {
         delete this.missingRefs[propName];
+      }
+    }
+    for (let propName in this.missingSelectFeild) {
+      if (!this.missingSelectFeild[propName].length) {
+        delete this.missingSelectFeild[propName];
+      }
+    }
+    for (let propName in this.missingMandatoryFields) {
+      if (!this.missingMandatoryFields[propName].length) {
+        delete this.missingMandatoryFields[propName];
       }
     }
   }
@@ -224,10 +270,18 @@ export default class Entries {
       entry = this.runFixOnSchema(tree, field.schema as ContentTypeSchemaType[], entry);
     }
 
-    for (const child of field.schema ?? []) {
+    for (const child of field?.schema ?? []) {
       const { uid } = child;
-
-      if (!entry?.[uid]) continue;
+      this.missingMandatoryFields[this.currentUid].push(
+        ...this.validateMandatoryFields(
+          [...tree, { uid: field.uid, name: child.display_name, field: uid }],
+          child,
+          entry,
+        ),
+      );
+      if (!entry?.[uid] && !child.hasOwnProperty('display_type')) {
+        continue;
+      }
 
       switch (child.data_type) {
         case 'reference':
@@ -278,6 +332,18 @@ export default class Entries {
             child as GroupFieldDataType,
             entry[uid] as EntryGroupFieldDataType[],
           );
+          break;
+        case 'text':
+        case 'number':
+          if (child.hasOwnProperty('display_type')) {
+            this.missingSelectFeild[this.currentUid].push(
+              ...this.validateSelectField(
+                [...tree, { uid: field.uid, name: child.display_name, field: uid }],
+                child as SelectFeildStruct,
+                entry[uid],
+              ),
+            );
+          }
           break;
       }
     }
@@ -619,10 +685,216 @@ export default class Entries {
             entry[uid] as EntryGroupFieldDataType[],
           ) as EntryGroupFieldDataType;
           break;
+        case 'text':
+        case 'number':
+          if (field.hasOwnProperty('display_type')) {
+            entry[uid] = this.fixSelectField(
+              [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }],
+              field as SelectFeildStruct,
+              entry[uid] as EntrySelectFeildDataType,
+            ) as EntrySelectFeildDataType;
+          }
+          break;
       }
     });
 
     return entry;
+  }
+
+  /**
+   * We check for the select field with condition in order of multiple -> Array
+   * We find the missing values i.e. the values present in entry but not in the options of the content-type
+   * @param tree : Contains all the tree where the select field is located used for getting the path to it
+   * @param fieldStructure it contains the Content-type structure of the field
+   * @param field It contains the value that is present in the entry it can be array or value of number | string
+   * @returns if there is missing field returns field and path
+   * Else empty array
+   */
+  validateSelectField(tree: Record<string, unknown>[], fieldStructure: SelectFeildStruct, field: any) {
+    const { display_name, enum: selectOptions, multiple, min_instance, display_type } = fieldStructure;
+    if (field === null || field === '' || field?.length === 0 || !field) {
+      let missingCTSelectFieldValues = 'Not Selected';
+      return [
+        {
+          uid: this.currentUid,
+          name: this.currentTitle,
+          display_name,
+          display_type,
+          missingCTSelectFieldValues,
+          min_instance: min_instance ?? 'NA',
+          tree,
+          treeStr: tree
+            .map(({ name }) => name)
+            .filter((val) => val)
+            .join(' ➜ '),
+        },
+      ];
+    }
+    let missingCTSelectFieldValues;
+
+    if (multiple) {
+      if (Array.isArray(field)) {
+        let obj = this.findNotPresentSelectField(field, selectOptions);
+        let { notPresent } = obj;
+        if (notPresent.length) {
+          missingCTSelectFieldValues = notPresent;
+        }
+      }
+    } else if (!selectOptions.choices.some((choice) => choice.value === field)) {
+      missingCTSelectFieldValues = field;
+    }
+    if (display_type && missingCTSelectFieldValues) {
+      return [
+        {
+          uid: this.currentUid,
+          name: this.currentTitle,
+          display_name,
+          display_type,
+          missingCTSelectFieldValues,
+          min_instance: min_instance ?? 'NA',
+          tree,
+          treeStr: tree
+            .map(({ name }) => name)
+            .filter((val) => val)
+            .join(' ➜ '),
+        },
+      ];
+    } else {
+      return [];
+    }
+  }
+
+  /**
+   * This functions check which of the select values used in entry is/are not present in the Content-type
+   * Then removes those values from entry
+   * If the entry is empty then adds the first value of the options
+   * If the entry has multiple choices and min_instances then adds that number of instances
+   * @param {Record<string, unknown>}tree Contains the path where the select field can be found
+   * @param field : It contains the content-type structure of the select field
+   * @param entry : it contains the value in the entry of select field one of the options of the CT.
+   * @returns
+   */
+  fixSelectField(tree: Record<string, unknown>[], field: SelectFeildStruct, entry: any) {
+    const { enum: selectOptions, multiple, min_instance, display_type, display_name, uid } = field;
+
+    let missingCTSelectFieldValues;
+    let isMissingValuePresent = false;
+
+    if (multiple) {
+      let obj = this.findNotPresentSelectField(entry, selectOptions);
+      let { notPresent, filteredFeild } = obj;
+      entry = filteredFeild;
+      missingCTSelectFieldValues = notPresent;
+      if (missingCTSelectFieldValues.length) {
+        isMissingValuePresent = true;
+      }
+      if (min_instance && Array.isArray(entry)) {
+        const missingInstances = min_instance - entry.length;
+        if (missingInstances > 0) {
+          isMissingValuePresent = true;
+          const newValues = selectOptions.choices
+            .filter((choice) => !entry.includes(choice.value))
+            .slice(0, missingInstances)
+            .map((choice) => choice.value);
+          entry.push(...newValues);
+          this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: newValues.join(' '), uid }), 'error');
+        }
+      } else {
+        if (entry.length === 0) {
+          isMissingValuePresent = true;
+          const defaultValue = selectOptions.choices.length > 0 ? selectOptions.choices[0].value : null;
+          entry.push(defaultValue);
+          this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: defaultValue as string, uid }), 'error');
+        }
+      }
+    } else {
+      const isPresent = selectOptions.choices.some((choice) => choice.value === entry);
+      if (!isPresent) {
+        missingCTSelectFieldValues = entry;
+        isMissingValuePresent = true;
+        let defaultValue = selectOptions.choices.length > 0 ? selectOptions.choices[0].value : null;
+        entry = defaultValue;
+        this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: defaultValue as string, uid }), 'error');
+      }
+    }
+    if (display_type && isMissingValuePresent) {
+      this.missingSelectFeild[this.currentUid].push({
+        uid: this.currentUid,
+        name: this.currentTitle,
+        display_name,
+        display_type,
+        missingCTSelectFieldValues,
+        min_instance: min_instance ?? 'NA',
+        tree,
+        treeStr: tree
+          .map(({ name }) => name)
+          .filter((val) => val)
+          .join(' ➜ '),
+        fixStatus: 'Fixed',
+      });
+    }
+    return entry;
+  }
+
+  validateMandatoryFields(tree: Record<string, unknown>[], fieldStructure: any, entry: any) {
+    const { display_name, multiple, data_type, mandatory, field_metadata, uid } = fieldStructure;
+
+    const isJsonRteEmpty = () => {
+      const jsonNode = multiple
+        ? entry[uid]?.[0]?.children?.[0]?.children?.[0]?.text
+        : entry[uid]?.children?.[0]?.children?.[0]?.text;
+      return jsonNode === '';
+    };
+
+    const isEntryEmpty = () => {
+      const fieldValue = multiple ? entry[uid]?.length : entry[uid];
+      return fieldValue === '' || !fieldValue;
+    };
+
+    if (mandatory) {
+      if (
+        (data_type === 'json' && field_metadata.allow_json_rte && isJsonRteEmpty()) ||
+        (!(data_type === 'json') && isEntryEmpty())
+      ) {
+        return [
+          {
+            uid: this.currentUid,
+            name: this.currentTitle,
+            display_name,
+            missingFieldUid: uid,
+            tree,
+            treeStr: tree
+              .filter(({ name }) => name)
+              .map(({ name }) => name)
+              .join(' ➜ '),
+          },
+        ];
+      }
+    }
+
+    return [];
+  }
+
+  /**
+   *
+   * @param field It contains the value to be searched
+   * @param selectOptions It contains the options that were added in CT
+   * @returns An Array of entry containing only the values that were present in CT, An array of not present entries
+   */
+  findNotPresentSelectField(field: any, selectOptions: any) {
+    let present = [];
+    let notPresent = [];
+    const choicesMap = new Map(selectOptions.choices.map((choice: { value: any }) => [choice.value, choice]));
+    for (const value of field) {
+      const choice: any = choicesMap.get(value);
+
+      if (choice) {
+        present.push(choice.value);
+      } else {
+        notPresent.push(value);
+      }
+    }
+    return { filteredFeild: present, notPresent };
   }
 
   /**
@@ -1000,8 +1272,8 @@ export default class Entries {
         }
       }
     }
-    // if (this.isEntryWithoutTitleField) {
-    //    throw Error(`Entries found with missing 'title' field! Please make the data corrections and re-run the audit.`);
-    // }
+    if (this.isEntryWithoutTitleField) {
+      // throw Error(`Entries found with missing 'title' field! Please make the data corrections and re-run the audit.`);
+    }
   }
 }
