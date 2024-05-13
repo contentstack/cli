@@ -24,12 +24,7 @@ function initializeLogger(fileName) {
 /* eslint-disable camelcase */
 function removePublishDetails(elements) {
   if (elements && elements.length > 0) {
-    elements.map((element) => {
-      if (element.hasOwnProperty('publish_details')) {
-        delete element.publish_details;
-      }
-      return element;
-    });
+    return elements.map(({ publish_details, ...rest }) => rest);
   } else {
     delete elements.publish_details;
   }
@@ -44,7 +39,13 @@ function displayEntriesDetails(sanitizedData) {
 
 function displayAssetsDetails(sanitizedData) {
   sanitizedData.forEach((asset) => {
-    console.log(chalk.green(`Asset UID '${asset.uid}' ${asset.version ? `and version '${asset.version}'` : ''} ${asset.locale ? `in locale '${asset.locale}'` : ''}`));
+    console.log(
+      chalk.green(
+        `Asset UID '${asset.uid}' ${asset.version ? `and version '${asset.version}'` : ''} ${
+          asset.locale ? `in locale '${asset.locale}'` : ''
+        }`,
+      ),
+    );
   });
 }
 async function publishEntry(data, _config, queue) {
@@ -467,9 +468,7 @@ async function performBulkUnPublish(data, _config, queue) {
             queue.Enqueue(data);
           } else {
             delete bulkUnPublishObj.stack;
-            console.log(
-              chalk.red(`Bulk assets failed to Unpublish with error ${formatError(error)}`),
-            );
+            console.log(chalk.red(`Bulk assets failed to Unpublish with error ${formatError(error)}`));
             let sanitizedData = removePublishDetails(bulkUnPublishObj.assets);
             displayAssetsDetails(sanitizedData);
             addLogs(
