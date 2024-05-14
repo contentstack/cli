@@ -434,6 +434,7 @@ function updateFileFields(
     for (let i = 0; i <= objekt.length; i++)
       updateFileFields(objekt[i], objekt, i, mappedAssetUids, matchedUids, unmatchedUids);
 
-    parent[pos] = _.compact(objekt);
+    // No need for _.compact() since you want to keep zero values
+    parent[pos] = _.filter(objekt, (value: any) => value !== undefined && value !== null);
   }
 }
