@@ -21,7 +21,7 @@
     "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
   },
   "dependencies": {
-    "@contentstack/cli-command": "~1.2.16",
+    "@contentstack/cli-command": "~1.2.18",
     "@contentstack/cli-utilities": "~1.6.1",
     "chalk": "^4.0.0",
     "debug": "^4.1.1",
