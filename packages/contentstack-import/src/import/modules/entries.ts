@@ -1,13 +1,13 @@
 /* eslint-disable no-prototype-builtins */
 /*!
  * Contentstack Import
- * Copyright (c) 2019 Contentstack LLC
+ * Copyright (c) 2024 Contentstack LLC
  * MIT Licensed
  */
 
 import * as path from 'path';
 import { isEmpty, values, cloneDeep, find, indexOf, forEach } from 'lodash';
-import { FsUtility } from '@contentstack/cli-utilities';
+import { FsUtility, sanitizepath } from '@contentstack/cli-utilities';
 import {
   fsUtil,
   log,
@@ -61,22 +61,22 @@ export default class EntriesImport extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.assetUidMapperPath = path.resolve(importConfig.data, 'mapper', 'assets', 'uid-mapping.json');
-    this.assetUrlMapperPath = path.resolve(importConfig.data, 'mapper', 'assets', 'url-mapping.json');
-    this.entriesMapperPath = path.resolve(importConfig.data, 'mapper', 'entries');
-    this.envPath = path.resolve(importConfig.data, 'environments', 'environments.json');
-    this.entriesUIDMapperPath = path.join(this.entriesMapperPath, 'uid-mapping.json');
-    this.uniqueUidMapperPath = path.join(this.entriesMapperPath, 'unique-mapping.json');
-    this.modifiedCTsPath = path.join(this.entriesMapperPath, 'modified-schemas.json');
-    this.marketplaceAppMapperPath = path.join(this.importConfig.data, 'mapper', 'marketplace_apps', 'uid-mapping.json');
-    this.taxonomiesPath = path.join(this.importConfig.data, 'mapper', 'taxonomies', 'terms', 'success.json');
+    this.assetUidMapperPath = path.resolve(sanitizepath(importConfig.data), 'mapper', 'assets', 'uid-mapping.json');
+    this.assetUrlMapperPath = path.resolve(sanitizepath(importConfig.data), 'mapper', 'assets', 'url-mapping.json');
+    this.entriesMapperPath = path.resolve(sanitizepath(importConfig.data), 'mapper', 'entries');
+    this.envPath = path.resolve(sanitizepath(importConfig.data), 'environments', 'environments.json');
+    this.entriesUIDMapperPath = path.join(sanitizepath(this.entriesMapperPath), 'uid-mapping.json');
+    this.uniqueUidMapperPath = path.join(sanitizepath(this.entriesMapperPath), 'unique-mapping.json');
+    this.modifiedCTsPath = path.join(sanitizepath(this.entriesMapperPath), 'modified-schemas.json');
+    this.marketplaceAppMapperPath = path.join(sanitizepath(this.importConfig.data), 'mapper', 'marketplace_apps', 'uid-mapping.json');
+    this.taxonomiesPath = path.join(sanitizepath(this.importConfig.data), 'mapper', 'taxonomies', 'terms', 'success.json');
     this.entriesConfig = importConfig.modules.entries;
-    this.entriesPath = path.resolve(importConfig.data, this.entriesConfig.dirName);
-    this.cTsPath = path.resolve(importConfig.data, importConfig.modules['content-types'].dirName);
+    this.entriesPath = path.resolve(sanitizepath(importConfig.data), sanitizepath(this.entriesConfig.dirName));
+    this.cTsPath = path.resolve(sanitizepath(importConfig.data), sanitizepath(importConfig.modules['content-types'].dirName));
     this.localesPath = path.resolve(
-      importConfig.data,
-      importConfig.modules.locales.dirName,
-      importConfig.modules.locales.fileName,
+      sanitizepath(importConfig.data),
+      sanitizepath(importConfig.modules.locales.dirName),
+      sanitizepath(importConfig.modules.locales.fileName),
     );
     this.importConcurrency = this.entriesConfig.importConcurrency || importConfig.importConcurrency;
     this.entriesUidMapper = {};

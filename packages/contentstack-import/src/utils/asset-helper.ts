@@ -266,7 +266,8 @@ export const lookupAssets = function (
     let uid = mappedAssetUids[assetUid];
     if (typeof uid !== 'undefined') {
       const escapedAssetUid = assetUid.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      entry = entry.replace(new RegExp(escapedAssetUid, 'img'), uid);
+      const regex = new RegExp(`\\b${escapedAssetUid}\\b`, 'img');
+      entry = entry.replace(regex, uid);
       matchedUids.push(assetUid);
     } else {
       unmatchedUids.push(assetUid);

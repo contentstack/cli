@@ -416,50 +416,55 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     moduleName: keyof typeof config.moduleConfig | keyof typeof config.ReportTitleForEntries,
     listOfMissingRefs: Record<string, any>,
   ): Promise<void> {
-    const csvPath = join(this.sharedConfig.reportPath, `${moduleName}.csv`);
-
-    return new Promise<void>((resolve, reject) => {
-      // file deepcode ignore MissingClose: Will auto close once csv stream end
-      const ws = createWriteStream(csvPath).on('error', reject);
-      const defaultColumns = Object.keys(OutputColumn);
-      const userDefinedColumns = this.sharedConfig.flags.columns ? this.sharedConfig.flags.columns.split(',') : null;
-      let missingRefs: RefErrorReturnType[] | WorkflowExtensionsRefErrorReturnType[] =
-        Object.values(listOfMissingRefs).flat();
-      const columns: (keyof typeof OutputColumn)[] = userDefinedColumns
-        ? [...userDefinedColumns, ...defaultColumns.filter((val: string) => !userDefinedColumns.includes(val))]
-        : defaultColumns;
-
-      if (this.sharedConfig.flags.filter) {
-        const [column, value]: [keyof typeof OutputColumn, string] = this.sharedConfig.flags.filter.split('=');
-        // Filter the missingRefs array
-        missingRefs = missingRefs.filter((row) => {
-          if (OutputColumn[column] in row) {
-            const rowKey = OutputColumn[column] as keyof (RefErrorReturnType | WorkflowExtensionsRefErrorReturnType);
-            return row[rowKey] === value;
-          }
-          return false;
-        });
-      }
-
-      const rowData: Record<string, string | string[]>[] = [];
-      for (const issue of missingRefs) {
-        let row: Record<string, string | string[]> = {};
-
-        for (const column of columns) {
-          if (Object.keys(issue).includes(OutputColumn[column])) {
-            const issueKey = OutputColumn[column] as keyof typeof issue;
-            row[column] = issue[issueKey] as string;
-            row[column] = typeof row[column] === 'object' ? JSON.stringify(row[column]) : row[column];
-          }
+    if(Object.keys(config.moduleConfig).includes(moduleName)){
+      const csvPath = join(this.sharedConfig.reportPath, `${moduleName}.csv`);
+      return new Promise<void>((resolve, reject) => {
+        // file deepcode ignore MissingClose: Will auto close once csv stream end
+        const ws = createWriteStream(csvPath).on('error', reject);
+        const defaultColumns = Object.keys(OutputColumn);
+        const userDefinedColumns = this.sharedConfig.flags.columns ? this.sharedConfig.flags.columns.split(',') : null;
+        let missingRefs: RefErrorReturnType[] | WorkflowExtensionsRefErrorReturnType[] =
+          Object.values(listOfMissingRefs).flat();
+        const columns: (keyof typeof OutputColumn)[] = userDefinedColumns
+          ? [...userDefinedColumns, ...defaultColumns.filter((val: string) => !userDefinedColumns.includes(val))]
+          : defaultColumns;
+  
+        if (this.sharedConfig.flags.filter) {
+          const [column, value]: [keyof typeof OutputColumn, string] = this.sharedConfig.flags.filter.split('=');
+          // Filter the missingRefs array
+          missingRefs = missingRefs.filter((row) => {
+            if (OutputColumn[column] in row) {
+              const rowKey = OutputColumn[column] as keyof (RefErrorReturnType | WorkflowExtensionsRefErrorReturnType);
+              return row[rowKey] === value;
+            }
+            return false;
+          });
         }
-
-        if (this.currentCommand === 'cm:stacks:audit:fix') {
-          row['Fix status'] = row.fixStatus;
+  
+        const rowData: Record<string, string | string[]>[] = [];
+        for (const issue of missingRefs) {
+          let row: Record<string, string | string[]> = {};
+  
+          for (const column of columns) {
+            if (Object.keys(issue).includes(OutputColumn[column])) {
+              const issueKey = OutputColumn[column] as keyof typeof issue;
+              row[column] = issue[issueKey] as string;
+              row[column] = typeof row[column] === 'object' ? JSON.stringify(row[column]) : row[column];
+            }
+          }
+  
+          if (this.currentCommand === 'cm:stacks:audit:fix') {
+            row['Fix status'] = row.fixStatus;
+          }
+  
+          rowData.push(row);
         }
-
-        rowData.push(row);
-      }
-      csv.write(rowData, { headers: true }).pipe(ws).on('error', reject).on('finish', resolve);
-    });
+        csv.write(rowData, { headers: true }).pipe(ws).on('error', reject).on('finish', resolve);
+      });
+    } else {
+      return new Promise<void>((reject)=>{
+        return reject()
+      })
+    }
   }
 }
