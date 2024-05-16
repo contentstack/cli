@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { cliux } from '@contentstack/cli-utilities';
+import { cliux, sanitizepath } from '@contentstack/cli-utilities';
 import { default as ContentStackSeed } from '@contentstack/cli-cm-seed/lib/commands/cm/stacks/seed';
 
 import { AppConfig } from '../config';
@@ -58,7 +58,7 @@ export default class Bootstrap {
     if (options.appConfig.branch) {
       this.repo.branch = options.appConfig.branch;
     }
-    this.cloneDirectory = path.join(options.cloneDirectory, this.repo.name);
+    this.cloneDirectory = path.join(sanitizepath(options.cloneDirectory), sanitizepath(this.repo.name));
     this.ghClient = new GitHubClient(this.repo, options.appConfig.private, options.accessToken);
     this.options = options;
   }

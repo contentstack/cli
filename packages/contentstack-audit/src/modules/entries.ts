@@ -3,7 +3,7 @@ import find from 'lodash/find';
 import values from 'lodash/values';
 import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
-import { ux, FsUtility } from '@contentstack/cli-utilities';
+import { ux, FsUtility, sanitizepath } from '@contentstack/cli-utilities';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 
 import auditConfig from '../config';
@@ -67,9 +67,16 @@ export default class Entries {
     this.fix = fix ?? false;
     this.ctSchema = ctSchema;
     this.gfSchema = gfSchema;
-    this.moduleName = moduleName ?? 'entries';
+    this.moduleName = this.validateModules(moduleName!,this.config.moduleConfig);
     this.fileName = config.moduleConfig[this.moduleName].fileName;
-    this.folderPath = resolve(config.basePath, config.moduleConfig.entries.dirName);
+    this.folderPath = resolve(sanitizepath(config.basePath), sanitizepath(config.moduleConfig.entries.dirName));
+  }
+
+  validateModules(moduleName:keyof typeof auditConfig.moduleConfig, moduleConfig: Record<string, unknown>):keyof typeof auditConfig.moduleConfig {
+    if(Object.keys(moduleConfig).includes(moduleName)){
+      return moduleName;
+    } 
+    return 'entries'
   }
 
   /**

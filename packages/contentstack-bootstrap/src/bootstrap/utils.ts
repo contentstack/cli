@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { cliux, pathValidator } from '@contentstack/cli-utilities';
+import { cliux, pathValidator, sanitizepath } from '@contentstack/cli-utilities';
 import { continueBootstrapCommand } from '../bootstrap/interactive';
 import { AppConfig } from '../config';
 import messageHandler from '../messages';
@@ -154,7 +154,7 @@ const envFileHandler = async (
     case 'reactjs':
     case 'reactjs-starter':
       fileName = `.env.${environmentVariables.environment}.local`;
-      filePath = pathValidator(path.join(clonedDirectory, fileName));
+      filePath = pathValidator(path.join(sanitizepath(clonedDirectory), sanitizepath(fileName)));
       content = `REACT_APP_CONTENTSTACK_API_KEY=${
         environmentVariables.api_key
       }\nREACT_APP_CONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}${
@@ -173,7 +173,7 @@ const envFileHandler = async (
     case 'nextjs':
     case 'nextjs-starter':
       fileName = `.env.${environmentVariables.environment}.local`;
-      filePath = pathValidator(path.join(clonedDirectory, fileName));
+      filePath = pathValidator(path.join(sanitizepath(clonedDirectory), sanitizepath(fileName)));
       content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${
         environmentVariables.deliveryToken
       }\n${
@@ -192,7 +192,7 @@ const envFileHandler = async (
     case 'gatsby':
     case 'gatsby-starter':
       fileName = `.env.${environmentVariables.environment}`;
-      filePath = pathValidator(path.join(clonedDirectory, fileName));
+      filePath = pathValidator(path.join(sanitizepath(clonedDirectory), sanitizepath(fileName)));
       content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${
         environmentVariables.deliveryToken
       }\n${
@@ -239,7 +239,7 @@ const envFileHandler = async (
         !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
       }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\nCONTENTSTACK_LIVE_EDIT_TAGS=false`;
       fileName = `.env${environmentVariables.environment === 'production' ? '.prod' : ''}`;
-      filePath = pathValidator(path.join(clonedDirectory, fileName));
+      filePath = pathValidator(path.join(sanitizepath(clonedDirectory), sanitizepath(fileName)));
       result = await writeEnvFile(content, filePath);
       break;
     case 'nuxtjs':
@@ -247,7 +247,7 @@ const envFileHandler = async (
     case 'nuxt3-starter':
     case 'stencil-starter':
       fileName = production ? '.env.production' : '.env';
-      filePath = pathValidator(path.join(clonedDirectory, fileName));
+      filePath = pathValidator(path.join(sanitizepath(clonedDirectory), sanitizepath(fileName)));
       // Note: Stencil app needs all the env variables, even if they are not having values otherwise the rollup does not work properly and throws process in undefined error.
       content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${
         environmentVariables.deliveryToken
@@ -266,7 +266,7 @@ const envFileHandler = async (
       break;
     case 'vue-starter':
       fileName = '.env';
-      filePath = pathValidator(path.join(clonedDirectory, fileName));
+      filePath = pathValidator(path.join(sanitizepath(clonedDirectory), sanitizepath(fileName)));
       content = `VUE_APP_CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nVUE_APP_CONTENTSTACK_DELIVERY_TOKEN=${
         environmentVariables.deliveryToken
       }\n${
