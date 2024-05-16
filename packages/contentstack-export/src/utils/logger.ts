@@ -1,6 +1,6 @@
 /*!
  * Contentstack Export
- * Copyright (c) 2019 Contentstack LLC
+ * Copyright (c) 2024 Contentstack LLC
  * MIT Licensed
  */
 
@@ -8,7 +8,7 @@ import * as winston from 'winston';
 import * as path from 'path';
 import mkdirp from 'mkdirp';
 import { ExportConfig } from '../types';
-
+import { sanitizepath } from '@contentstack/cli-utilities'
 const slice = Array.prototype.slice;
 
 const ansiRegexPattern = [
@@ -24,7 +24,7 @@ function returnString(args: unknown[]) {
         if (item && typeof item === 'object') {
           try {
             return JSON.stringify(item).replace(/authtoken\":\d"blt................/g, 'authtoken":"blt....');
-          } catch (error) {}
+          } catch (error) { }
           return item;
         }
         return item;
@@ -58,12 +58,12 @@ let errorTransport;
 
 function init(_logPath: string) {
   if (!logger || !errorLogger) {
-    const logsDir = path.resolve(_logPath, 'logs', 'export');
+    const logsDir = path.resolve(sanitizepath(_logPath), 'logs', 'export');
     // Create dir if doesn't already exist
     mkdirp.sync(logsDir);
 
     successTransport = {
-      filename: path.join(logsDir, 'success.log'),
+      filename: path.join(sanitizepath(logsDir), 'success.log'),
       maxFiles: 20,
       maxsize: 1000000,
       tailable: true,
@@ -71,7 +71,7 @@ function init(_logPath: string) {
     };
 
     errorTransport = {
-      filename: path.join(logsDir, 'error.log'),
+      filename: path.join(sanitizepath(logsDir), 'error.log'),
       maxFiles: 20,
       maxsize: 1000000,
       tailable: true,
