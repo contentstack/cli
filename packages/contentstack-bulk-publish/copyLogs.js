@@ -4,6 +4,8 @@ const path = require('path');
 const logFileDir = 'logs';
 const dummyDir = 'test/dummy/';
 
+import { sanitizepath } from '@contentstack/cli-utilities';
+
 if (!fs.existsSync(path.join(__dirname, logFileDir))) {
   fs.mkdirSync(path.join(__dirname, logFileDir));
 }
@@ -30,5 +32,5 @@ const logs = [
 ];
 
 logs.forEach((element) => {
-  fs.createReadStream(path.join(__dirname, dummyDir, element)).pipe(fs.createWriteStream(path.join(__dirname, logFileDir, element)));
+  fs.createReadStream(path.join(__dirname, dummyDir, sanitizepath(element))).pipe(fs.createWriteStream(path.join(__dirname, logFileDir, sanitizepath(element))));
 });

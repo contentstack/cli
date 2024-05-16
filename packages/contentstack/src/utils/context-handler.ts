@@ -1,6 +1,6 @@
 import * as shortUUID from 'short-uuid';
 import * as path from 'path';
-import { configHandler, pathValidator } from '@contentstack/cli-utilities';
+import { configHandler, pathValidator, sanitizepath } from '@contentstack/cli-utilities';
 import { machineIdSync } from 'node-machine-id';
 
 export default class CsdxContext {
@@ -48,7 +48,7 @@ export default class CsdxContext {
       this.plugin.name = command.pluginName;
       this.plugin.config = { ...((this.plugin.pjson && this.plugin.pjson.csdxConfig) || {}) };
       this.messageFilePath = pathValidator(
-        path.resolve(this.plugin.root, this.plugin.config.messageFilePath || './messages/index.json'),
+        path.resolve(sanitizepath(this.plugin.root), sanitizepath(this.plugin.config.messageFilePath) || './messages/index.json'),
       );
       this.info.shortCommandName = this.plugin?.config?.shortCommandName?.[cliOpts.id];
       analyticsInfo.push(this.info.shortCommandName || cliOpts.id);
