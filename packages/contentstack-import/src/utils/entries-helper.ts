@@ -202,7 +202,8 @@ export const lookupEntries = function (
     if (mappedUids.hasOwnProperty(uid)) {
       const sanitizedUid = escapeRegExp(uid);
       const escapedMappedUid = escapeRegExp(mappedUids[uid]);
-      entry = entry.replace(new RegExp(sanitizedUid, 'img'), escapedMappedUid);
+      const uidRegex = new RegExp(`\\b${sanitizedUid}\\b`, 'img');
+      entry = entry.replace(uidRegex, escapedMappedUid);
       mapped.push(uid);
     } else {
       unmapped.push(uid);
@@ -572,7 +573,9 @@ export const restoreJsonRteEntryRefs = (
 };
 
 function updateUids(str: string, match: string, uidMapper: Record<string, string>) {
-  return str.replace(new RegExp(match, 'g'), (match: string) => uidMapper[match]);
+  const sanitizedMatch = escapeRegExp(match);
+  const regex = new RegExp(`\\b${sanitizedMatch}\\b`, 'g');
+  return str.replace(regex, (matchedString) => uidMapper[matchedString]);
 }
 
 function setDirtyTrue(jsonRteChild: any) {
