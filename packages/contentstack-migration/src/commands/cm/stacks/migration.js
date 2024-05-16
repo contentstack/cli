@@ -19,6 +19,7 @@ const {
   flags,
   isAuthenticated,
   pathValidator,
+  sanitizepath,
 } = require('@contentstack/cli-utilities');
 
 const { ApiError, SchemaValidator, MigrationError, FieldValidator } = require('../../../validators');
@@ -180,7 +181,7 @@ class MigrationCommand extends Command {
         const file = element;
         if (extname(file) === '.js') {
           // eslint-disable-next-line no-await-in-loop
-          await this.execSingleFile(pathValidator(resolve(filePath, file)), mapInstance);
+          await this.execSingleFile(pathValidator(resolve(sanitizepath(filePath), sanitizepath(file))), mapInstance);
         }
       }
     } catch (error) {

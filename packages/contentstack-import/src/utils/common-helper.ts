@@ -1,13 +1,13 @@
 /* eslint-disable no-console */
 /*!
  * Contentstack Import
- * Copyright (c) 2019 Contentstack LLC
+ * Copyright (c) 2024 Contentstack LLC
  * MIT Licensed
  */
 
 import * as _ from 'lodash';
 import * as path from 'path';
-import { HttpClient, managementSDKClient, isAuthenticated } from '@contentstack/cli-utilities';
+import { HttpClient, managementSDKClient, isAuthenticated, sanitizepath } from '@contentstack/cli-utilities';
 import { readFileSync, readdirSync, readFile } from './file-helper';
 import chalk from 'chalk';
 import { log } from './logger';
@@ -65,9 +65,9 @@ export const sanitizeStack = (importConfig: ImportConfig) => {
         const newStackVersion = stackDetails.data.stack.settings.version;
         const newStackDate = new Date(newStackVersion).toString();
         const stackFilePath = path.join(
-          importConfig.data,
-          importConfig.modules.stack.dirName,
-          importConfig.modules.stack.fileName,
+          sanitizepath(importConfig.data),
+          sanitizepath(importConfig.modules.stack.dirName),
+          sanitizepath(importConfig.modules.stack.fileName),
         );
 
         const oldStackDetails = readFileSync(stackFilePath);
@@ -184,7 +184,7 @@ export const formatError = (error: any) => {
     } else {
       error = JSON.parse(error.message);
     }
-  } catch (e) {}
+  } catch (e) { }
   let message = error?.errorMessage || error?.error_message || error?.message || error;
   if (error && error.errors && Object.keys(error.errors).length > 0) {
     Object.keys(error.errors).forEach((e) => {
@@ -244,12 +244,12 @@ export const formatDate = (date: Date = new Date()) => {
     .getDate()
     .toString()
     .padStart(2, '0')}T${date.getHours().toString().padStart(2, '0')}-${date
-    .getMinutes()
-    .toString()
-    .padStart(2, '0')}-${date.getSeconds().toString().padStart(2, '0')}-${date
-    .getMilliseconds()
-    .toString()
-    .padStart(3, '0')}Z`;
+      .getMinutes()
+      .toString()
+      .padStart(2, '0')}-${date.getSeconds().toString().padStart(2, '0')}-${date
+        .getMilliseconds()
+        .toString()
+        .padStart(3, '0')}Z`;
 
   return formattedDate;
 };
