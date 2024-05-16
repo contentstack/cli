@@ -1,6 +1,6 @@
 /*!
  * Contentstack Export
- * Copyright (c) 2019 Contentstack LLC
+ * Copyright (c) 2024 Contentstack LLC
  * MIT Licensed
  */
 
@@ -11,7 +11,7 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const chalk = require('chalk');
 const progress = require('progress-stream');
-const { HttpClient, configHandler } = require('@contentstack/cli-utilities');
+const { HttpClient, configHandler, validateUids, sanitizepath, validateFileName } = require('@contentstack/cli-utilities');
 const { fileHelper, log, formatError } = require('../../utils');
 let { default: config } = require('../../config');
 
@@ -282,9 +282,11 @@ module.exports = class ExportAssets {
       }
 
       if (version <= 0) {
-        const assetVersionInfoFile = path.resolve(self.assetsFolderPath, uid, '_contentstack_' + uid + '.json');
-        fileHelper.writeFileSync(assetVersionInfoFile, assetVersionInfo);
-        return resolve();
+        if(validateUids(uid)){
+          const assetVersionInfoFile = path.resolve(self.assetsFolderPath, uid, '_contentstack_' + uid + '.json');
+          fileHelper.writeFileSync(assetVersionInfoFile, assetVersionInfo);
+          return resolve();
+        }
       }
       const queryrequestOption = {
         version: version,
@@ -327,8 +329,11 @@ module.exports = class ExportAssets {
   downloadAsset(asset) {
     const self = this;
     return new Promise(async (resolve, reject) => {
-      const assetFolderPath = path.resolve(self.assetsFolderPath, asset.uid);
-      const assetFilePath = path.resolve(assetFolderPath, asset.filename);
+      if(!validateUids(asset.uid) && !validateFileName(asset.filename)) {
+        reject(`UIDs not valid`)
+      }
+      const assetFolderPath = path.resolve(sanitizepath(self.assetsFolderPath), asset.uid);
+      const assetFilePath = path.resolve(sanitizepath(assetFolderPath), asset.filename);
 
       if (fs.existsSync(assetFilePath)) {
         log(
