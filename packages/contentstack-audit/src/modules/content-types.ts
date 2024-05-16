@@ -4,7 +4,7 @@ import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 
-import { ux } from '@contentstack/cli-utilities';
+import { sanitizepath, ux } from '@contentstack/cli-utilities';
 
 import {
   LogFn,
@@ -51,11 +51,17 @@ export default class ContentType {
     this.fix = fix ?? false;
     this.ctSchema = ctSchema;
     this.gfSchema = gfSchema;
-    this.moduleName = moduleName ?? 'content-types';
+    this.moduleName = this.validateModules(moduleName!,this.config.moduleConfig);
     this.fileName = config.moduleConfig[this.moduleName].fileName;
-    this.folderPath = resolve(config.basePath, config.moduleConfig[this.moduleName].dirName);
+    this.folderPath = resolve(sanitizepath(config.basePath), sanitizepath(config.moduleConfig[this.moduleName].dirName));
   }
 
+  validateModules(moduleName:keyof typeof auditConfig.moduleConfig, moduleConfig: Record<string, unknown>):keyof typeof auditConfig.moduleConfig {
+    if(Object.keys(moduleConfig).includes(moduleName)){
+      return moduleName;
+    } 
+    return 'content-types'
+  }
   /**
    * The `run` function checks if a folder path exists, sets the schema based on the module name,
    * iterates over the schema and looks for references, and returns a list of missing references.
