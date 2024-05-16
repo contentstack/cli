@@ -77,7 +77,9 @@ function $t(msg: string, args: Record<string, string>): string {
 
     for (const key of Object.keys(args)) {
       const escapedKey = escapeRegExp(key);
-      msg = msg.replace(new RegExp(`{${escapedKey}}`, 'g'), escapeRegExp(args[key]) || escapedKey);
+      const escapedKeyRegex = new RegExp(`{${escapedKey}}`, 'g');
+      const sanitizedValue = args[key] ? escapeRegExp(args[key]) : '';
+      msg = msg.replace(escapedKeyRegex, sanitizedValue || escapedKey);
     }
 
     return msg;
