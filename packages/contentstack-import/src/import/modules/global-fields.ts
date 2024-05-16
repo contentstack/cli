@@ -1,13 +1,13 @@
 /* eslint-disable no-prototype-builtins */
 /*!
  * Contentstack Import
- * Copyright (c) 2019 Contentstack LLC
+ * Copyright (c) 2024 Contentstack LLC
  * MIT Licensed
  */
 
 import * as path from 'path';
 import { isEmpty, cloneDeep } from 'lodash';
-import { cliux } from '@contentstack/cli-utilities';
+import { cliux, sanitizepath } from '@contentstack/cli-utilities';
 import { GlobalFieldData } from '@contentstack/management/types/stack/globalField';
 import { fsUtil, log, formatError, fileHelper, lookupExtension, removeReferenceFields } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
@@ -50,13 +50,13 @@ export default class ImportGlobalFields extends BaseClass {
     this.pendingGFs = [];
     this.existingGFs = [];
     this.reqConcurrency = this.gFsConfig.writeConcurrency || this.config.writeConcurrency;
-    this.gFsMapperPath = path.resolve(this.config.data, 'mapper', 'global_fields');
-    this.gFsFolderPath = path.resolve(this.config.data, this.gFsConfig.dirName);
-    this.gFsFailsPath = path.resolve(this.config.data, 'mapper', 'global_fields', 'fails.json');
-    this.gFsSuccessPath = path.resolve(this.config.data, 'mapper', 'global_fields', 'success.json');
-    this.gFsUidMapperPath = path.resolve(this.config.data, 'mapper', 'global_fields', 'uid-mapping.json');
-    this.gFsPendingPath = path.resolve(this.config.data, 'mapper', 'global_fields', 'pending_global_fields.js');
-    this.marketplaceAppMapperPath = path.join(this.config.data, 'mapper', 'marketplace_apps', 'uid-mapping.json');
+    this.gFsMapperPath = path.resolve(sanitizepath(this.config.data), 'mapper', 'global_fields');
+    this.gFsFolderPath = path.resolve(sanitizepath(this.config.data), this.gFsConfig.dirName);
+    this.gFsFailsPath = path.resolve(sanitizepath(this.config.data), 'mapper', 'global_fields', 'fails.json');
+    this.gFsSuccessPath = path.resolve(sanitizepath(this.config.data), 'mapper', 'global_fields', 'success.json');
+    this.gFsUidMapperPath = path.resolve(sanitizepath(this.config.data), 'mapper', 'global_fields', 'uid-mapping.json');
+    this.gFsPendingPath = path.resolve(sanitizepath(this.config.data), 'mapper', 'global_fields', 'pending_global_fields.js');
+    this.marketplaceAppMapperPath = path.join(sanitizepath(this.config.data), 'mapper', 'marketplace_apps', 'uid-mapping.json');
   }
 
   async start(): Promise<any> {
