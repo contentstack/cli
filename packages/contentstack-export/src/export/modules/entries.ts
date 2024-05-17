@@ -153,7 +153,7 @@ export default class EntriesExport extends BaseClass {
     options: { locale: string; contentType: string; versionedEntryPath: string },
   ): Promise<void> {
     const onSuccess = ({ response, apiData: entry }: any) => {
-      fsUtil.writeFile(path.join(sanitizePath(options.versionedEntryPath), `${entry.uid}.json`), response);
+      fsUtil.writeFile(path.join(sanitizePath(options.versionedEntryPath), sanitizePath(`${entry.uid}.json`)), response);
       log(
         this.exportConfig,
         `Exported versioned entries of type '${options.contentType}' locale '${options.locale}'`,
