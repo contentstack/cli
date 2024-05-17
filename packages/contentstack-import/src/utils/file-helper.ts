@@ -117,7 +117,7 @@ export const readdirSync = function (dirPath: string): any {
 
 export const isFolderExist = async (folderPath: string): Promise<any> => {
   return new Promise((resolve, reject) => {
-    folderPath = path.resolve(folderPath);
+    folderPath = path.resolve(sanitizepath(folderPath));
     fs.access(folderPath, (error) => {
       if (error) {
         return resolve(false);
