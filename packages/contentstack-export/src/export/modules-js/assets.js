@@ -283,7 +283,7 @@ module.exports = class ExportAssets {
 
       if (version <= 0) {
         if(validateUids(uid)){
-          const assetVersionInfoFile = path.resolve(self.assetsFolderPath, uid, '_contentstack_' + uid + '.json');
+          const assetVersionInfoFile = path.resolve(sanitizepath(self.assetsFolderPath), sanitizepath(uid), '_contentstack_' + sanitizepath(uid) + '.json');
           fileHelper.writeFileSync(assetVersionInfoFile, assetVersionInfo);
           return resolve();
         }
@@ -332,8 +332,8 @@ module.exports = class ExportAssets {
       if(!validateUids(asset.uid) && !validateFileName(asset.filename)) {
         reject(`UIDs not valid`)
       }
-      const assetFolderPath = path.resolve(sanitizepath(self.assetsFolderPath), asset.uid);
-      const assetFilePath = path.resolve(sanitizepath(assetFolderPath), asset.filename);
+      const assetFolderPath = path.resolve(sanitizepath(self.assetsFolderPath), sanitizepath(asset.uid));
+      const assetFilePath = path.resolve(sanitizepath(assetFolderPath), sanitizepath(asset.filename));
 
       if (fs.existsSync(assetFilePath)) {
         log(
