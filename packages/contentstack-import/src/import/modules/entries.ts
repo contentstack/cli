@@ -336,7 +336,7 @@ export default class EntriesImport extends BaseClass {
         );
         entry.uid = oldUid;
         entry.entryOldUid = oldUid;
-        entry.sourceEntryFilePath = path.join(basePath, additionalInfo.entryFileName); // stores source file path temporarily
+        entry.sourceEntryFilePath = path.join(sanitizepath(basePath), sanitizepath(additionalInfo.entryFileName)); // stores source file path temporarily
         entriesCreateFileHelper.writeIntoFile({ [oldUid]: entry } as any, { mapKeyVal: true });
       } else {
         log(this.importConfig, `Created entry: '${entry.title}' of content type ${cTUid} in locale ${locale}`, 'info');
@@ -348,7 +348,7 @@ export default class EntriesImport extends BaseClass {
           this.autoCreatedEntries.push({ cTUid, locale, entryUid: response.uid });
         }
         this.entriesUidMapper[entry.uid] = response.uid;
-        entry.sourceEntryFilePath = path.join(basePath, additionalInfo.entryFileName); // stores source file path temporarily
+        entry.sourceEntryFilePath = path.join(sanitizepath(basePath), sanitizepath(additionalInfo.entryFileName)); // stores source file path temporarily
         entry.entryOldUid = entry.uid; // stores old uid temporarily
         entriesCreateFileHelper.writeIntoFile({ [entry.uid]: entry } as any, { mapKeyVal: true });
       }
@@ -360,7 +360,7 @@ export default class EntriesImport extends BaseClass {
         if (error?.errors?.title || error?.errors?.uid) {
           if (this.importConfig.replaceExisting) {
             entry.entryOldUid = uid;
-            entry.sourceEntryFilePath = path.join(basePath, additionalInfo.entryFileName); // stores source file path temporarily
+            entry.sourceEntryFilePath = path.join(sanitizepath(basePath), sanitizepath(additionalInfo.entryFileName)); // stores source file path temporarily
             existingEntriesFileHelper.writeIntoFile({ [uid]: entry } as any, { mapKeyVal: true });
           }
           if (!this.importConfig.skipExisting) {
