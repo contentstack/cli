@@ -1,7 +1,7 @@
 const path = require('path');
 const chalk = require('chalk');
 const { fileHelper, executeTask, formatError, log } = require('../../utils');
-const { sanitizepath } = require('@contentstack/cli-utilities');
+const { sanitizePath } = require('@contentstack/cli-utilities');
 
 class ContentTypesExport {
   constructor(exportConfig, stackAPIClient) {
@@ -19,9 +19,9 @@ class ContentTypesExport {
       this.qs.uid = { $in: this.exportConfig.contentTypes };
     }
     this.contentTypesPath = path.resolve(
-      sanitizepath(exportConfig.data),
-      sanitizepath(exportConfig.branchName) || '',
-      sanitizepath(this.contentTypesConfig.dirName),
+      sanitizePath(exportConfig.data),
+      sanitizePath(exportConfig.branchName) || '',
+      sanitizePath(this.contentTypesConfig.dirName),
     );
     this.contentTypes = [];
     this.fetchConcurrency = this.contentTypesConfig.fetchConcurrency || this.exportConfig.fetchConcurrency;
@@ -77,7 +77,7 @@ class ContentTypesExport {
   async writeContentTypes(contentTypes) {
     function write(contentType) {
       return fileHelper.writeFile(
-        path.join(sanitizepath(this.contentTypesPath), `${sanitizepath  (contentType.uid === 'schema' ? 'schema|1' : contentType.uid)}.json`),
+        path.join(sanitizePath(this.contentTypesPath), `${sanitizePath  (contentType.uid === 'schema' ? 'schema|1' : contentType.uid)}.json`),
         contentType,
       );
     }

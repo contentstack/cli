@@ -2,7 +2,7 @@ import path, { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { cloneDeep } from 'lodash';
 import { LogFn, ConfigType, ContentTypeStruct, CtConstructorParam, ModuleConstructorParam, Extension } from '../types';
-import { ux, sanitizepath } from '@contentstack/cli-utilities';
+import { ux, sanitizePath } from '@contentstack/cli-utilities';
 
 import auditConfig from '../config';
 import { $t, auditMsg, commonMsg } from '../messages';
@@ -36,7 +36,7 @@ export default class Extensions {
     this.extensionsSchema = [];
     this.moduleName = this.validateModules(moduleName!,this.config.moduleConfig);
     this.fileName = config.moduleConfig[this.moduleName].fileName;
-    this.folderPath = resolve(sanitizepath(config.basePath), sanitizepath(config.moduleConfig[this.moduleName].dirName));
+    this.folderPath = resolve(sanitizePath(config.basePath), sanitizePath(config.moduleConfig[this.moduleName].dirName));
     this.ctUidSet = new Set(['$all']);
     this.missingCtInExtensions = [];
     this.missingCts = new Set();
