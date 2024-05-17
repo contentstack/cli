@@ -7,7 +7,7 @@ import * as path from 'path';
 import * as _ from 'lodash';
 import config from '../config';
 import * as fileHelper from './file-helper';
-import { escapeRegExp } from '@contentstack/cli-utilities';
+import { escapeRegExp, replaceNonAlphanumericWithEmpty } from '@contentstack/cli-utilities';
 
 import { EntryJsonRTEFieldDataType } from '../types/entries';
 
@@ -200,7 +200,8 @@ export const lookupEntries = function (
   let entry = JSON.stringify(data.entry);
   uids.forEach(function (uid: any) {
     if (mappedUids.hasOwnProperty(uid)) {
-      const sanitizedUid = escapeRegExp(uid);
+      let sanitizedUid = escapeRegExp(uid);
+      sanitizedUid = replaceNonAlphanumericWithEmpty(sanitizedUid)
       const escapedMappedUid = escapeRegExp(mappedUids[uid]);
       const uidRegex = new RegExp(`\\b${sanitizedUid}\\b`, 'img');
       entry = entry.replace(uidRegex, escapedMappedUid);
@@ -573,7 +574,8 @@ export const restoreJsonRteEntryRefs = (
 };
 
 function updateUids(str: string, match: string, uidMapper: Record<string, string>) {
-  const sanitizedMatch = escapeRegExp(match);
+  let sanitizedMatch = escapeRegExp(match);
+  sanitizedMatch = replaceNonAlphanumericWithEmpty(sanitizedMatch)
   const regex = new RegExp(`\\b${sanitizedMatch}\\b`, 'g');
   return str.replace(regex, (matchedString) => uidMapper[matchedString]);
 }
