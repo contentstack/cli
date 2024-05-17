@@ -221,7 +221,7 @@ const envFileHandler = async (
         !isUSRegion && !customHost ? `,\n\t\tregion: '${region.name}'` : ''
       } \n\t } \n };`;
       fileName = `.env${environmentVariables.environment === 'production' ? '.prod' : ''}`;
-      filePath = pathValidator(path.join(clonedDirectory, 'src', 'environments', fileName));
+      filePath = pathValidator(path.join(sanitizepath(clonedDirectory), 'src', 'environments', sanitizepath(fileName)));
       result = await writeEnvFile(content, filePath);
       break;
     case 'angular-starter':

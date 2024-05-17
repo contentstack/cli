@@ -79,8 +79,8 @@ module.exports = async ({ migration, config }) => {
           sourceMasterLocaleEntries = await fs.readFile(
             pathValidator(
               path.resolve(
-                config.data_dir,
-                `entries/${contentType}/${masterLocale}/${Object.values(JSON.parse(sourceMasterLocaleEntries))}`,
+                sanitizepath(config.data_dir),
+                `entries/${sanitizepath(contentType)}/${sanitizepath(masterLocale)}/${Object.values(JSON.parse(sanitizepath(sourceMasterLocaleEntries)))}`,
               ),
             ),
             { encoding: 'utf8' },
