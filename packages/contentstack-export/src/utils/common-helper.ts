@@ -9,7 +9,7 @@ import * as path from 'path';
 import { isAuthenticated } from '@contentstack/cli-utilities';
 import { ExternalConfig, ExportConfig } from '../types';
 import { fsUtil } from './file-helper';
-import { sanitizepath } from '@contentstack/cli-utilities';
+import { sanitizePath } from '@contentstack/cli-utilities';
 
 export const validateConfig = function (config: ExternalConfig) {
   if (!config.host || !config.cdn) {
@@ -84,7 +84,7 @@ export const executeTask = function (
 export const writeExportMetaFile = (exportConfig: ExportConfig, metaFilePath?: string) => {
   const exportMeta = {
     contentVersion: exportConfig.contentVersion,
-    logsPath: path.join(sanitizepath(exportConfig.exportDir), 'logs', 'export'),
+    logsPath: path.join(sanitizePath(exportConfig.exportDir), 'logs', 'export'),
   };
-  fsUtil.writeFile(path.join(sanitizepath(metaFilePath || exportConfig.exportDir), 'export-info.json'), exportMeta);
+  fsUtil.writeFile(path.join(sanitizePath(metaFilePath || exportConfig.exportDir), 'export-info.json'), exportMeta);
 };
