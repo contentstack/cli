@@ -4,7 +4,7 @@ import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 
-import { sanitizepath, ux } from '@contentstack/cli-utilities';
+import { sanitizePath, ux } from '@contentstack/cli-utilities';
 
 import {
   LogFn,
@@ -53,7 +53,7 @@ export default class ContentType {
     this.gfSchema = gfSchema;
     this.moduleName = this.validateModules(moduleName!,this.config.moduleConfig);
     this.fileName = config.moduleConfig[this.moduleName].fileName;
-    this.folderPath = resolve(sanitizepath(config.basePath), sanitizepath(config.moduleConfig[this.moduleName].dirName));
+    this.folderPath = resolve(sanitizePath(config.basePath), sanitizePath(config.moduleConfig[this.moduleName].dirName));
   }
 
   validateModules(moduleName:keyof typeof auditConfig.moduleConfig, moduleConfig: Record<string, unknown>):keyof typeof auditConfig.moduleConfig {

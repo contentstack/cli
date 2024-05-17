@@ -2,7 +2,7 @@ let fs = require('fs').promises;
 let path = require('path')
 let crypto = require('crypto')
 let supportedLocales = require('./locales.json')
-const { pathValidator, sanitizepath } = require('@contentstack/cli-utilities')
+const { pathValidator, sanitizePath } = require('@contentstack/cli-utilities')
 
 module.exports = async ({migration, config}) => {
     let changeMasterLocale = {
@@ -51,10 +51,10 @@ module.exports = async ({migration, config}) => {
           let contentTypes = await fs.readdir(pathValidator(path.resolve(config.data_dir, 'entries')))
           let sourceMasterLocaleEntries, targetMasterLocaleEntries
           for (let contentType of contentTypes) {
-            sourceMasterLocaleEntries = await fs.readFile(pathValidator(path.resolve(sanitizepath(config.data_dir), `entries/${sanitizepath(contentType)}/${sanitizepath(masterLocale)}.json`)), {encoding: 'utf8'})
+            sourceMasterLocaleEntries = await fs.readFile(pathValidator(path.resolve(sanitizePath(config.data_dir), `entries/${sanitizePath(contentType)}/${sanitizePath(masterLocale)}.json`)), {encoding: 'utf8'})
             sourceMasterLocaleEntries = JSON.parse(sourceMasterLocaleEntries)
 
-            targetMasterLocaleEntries = await fs.readFile(pathValidator(path.resolve(sanitizepath(config.data_dir), `entries/${sanitizepath(contentType)}/${sanitizepath(config.target_locale)}.json`)), { encoding: 'utf8', flag: 'a+'})
+            targetMasterLocaleEntries = await fs.readFile(pathValidator(path.resolve(sanitizePath(config.data_dir), `entries/${sanitizePath(contentType)}/${sanitizePath(config.target_locale)}.json`)), { encoding: 'utf8', flag: 'a+'})
             if (targetMasterLocaleEntries.length === 0) {
               targetMasterLocaleEntries = {}
             } else {
