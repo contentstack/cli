@@ -3,7 +3,7 @@ import { ContentstackClient } from '@contentstack/cli-utilities';
 import { log, formatError, fsUtil } from '../../utils';
 import { ExportConfig, ModuleClassParams } from '../../types';
 import BaseClass from './base-class';
-import { sanitizepath } from '@contentstack/cli-utilities';
+import { sanitizePath } from '@contentstack/cli-utilities';
 
 export default class LocaleExport extends BaseClass {
   private stackAPIClient: ReturnType<ContentstackClient['stack']>;
@@ -41,7 +41,7 @@ export default class LocaleExport extends BaseClass {
         BASE: this.localeConfig.requiredKeys,
       },
     };
-    this.localesPath = path.resolve(sanitizepath(exportConfig.data), sanitizepath(exportConfig.branchName || ''),sanitizepath(this.localeConfig.dirName));
+    this.localesPath = path.resolve(sanitizePath(exportConfig.data), sanitizePath(exportConfig.branchName || ''),sanitizePath(this.localeConfig.dirName));
     this.locales = {};
     this.masterLocale = {};
   }
