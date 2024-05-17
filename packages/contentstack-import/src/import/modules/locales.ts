@@ -50,7 +50,7 @@ export default class ImportLocales extends BaseClass {
     this.failedLocales = [];
     this.reqConcurrency = this.localeConfig.writeConcurrency || this.config.writeConcurrency;
     this.langMapperPath = path.resolve(sanitizepath(this.config.data), 'mapper', 'languages');
-    this.langFolderPath = path.resolve(sanitizepath(this.config.data), this.localeConfig.dirName);
+    this.langFolderPath = path.resolve(sanitizepath(this.config.data), sanitizepath(this.localeConfig.dirName));
     this.langFailsPath = path.resolve(sanitizepath(this.config.data), 'mapper', 'languages', 'fails.json');
     this.langSuccessPath = path.resolve(sanitizepath(this.config.data), 'mapper', 'languages', 'success.json');
     this.langUidMapperPath = path.resolve(sanitizepath(this.config.data), 'mapper', 'languages', 'uid-mapper.json');
