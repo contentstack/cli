@@ -1,4 +1,4 @@
-const { sanitizepath } = require('@contentstack/cli-utilities');
+const { sanitizePath } = require('@contentstack/cli-utilities');
 const path = require('path');
 const winston = require('winston');
 const cwd = process.cwd();
@@ -7,7 +7,7 @@ const logsDir = path.join(cwd, 'contentstack-cli-logs', 'bulk-publish');
 let filename;
 
 module.exports.getLoggerInstance = (fileName) => {
-  filename = path.join(logsDir, sanitizepath(fileName));
+  filename = path.join(logsDir, sanitizePath(fileName));
   return winston.createLogger({
     transports: [
       new winston.transports.File({ filename: `${filename}.error`, level: 'error' }),
@@ -18,7 +18,7 @@ module.exports.getLoggerInstance = (fileName) => {
 
 /* eslint-disable no-multi-assign */
 const getFileLoggerInstance = (module.exports.getFileLoggerInstance = (fileName) => {
-  filename = path.join(logsDir, sanitizepath(fileName));
+  filename = path.join(logsDir, sanitizePath(fileName));
   return winston.createLogger({
     transports: [new winston.transports.File({ filename })],
   });
