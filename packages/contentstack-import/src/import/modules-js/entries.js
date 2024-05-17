@@ -20,7 +20,7 @@ const {
   lookupEntries,
 } = require('../../utils');
 const { default: config } = require('../../config');
-const { sanitizepath } = require('@contentstack/cli-utilities');
+const { sanitizePath } = require('@contentstack/cli-utilities');
 const addlogs = log;
 module.exports = class ImportEntries {
   mappedAssetUidPath;
@@ -839,7 +839,7 @@ module.exports = class ImportEntries {
             return resolve();
           }
           self.mappedUids[query.entry.uid] = response.body.entries[0].uid;
-          let _ePath = path.join(sanitizepath(this.entryMapperPath), sanitizepath(query.locale), sanitizepath(query.content_type), 'success.json');
+          let _ePath = path.join(sanitizePath(this.entryMapperPath), sanitizePath(query.locale), sanitizePath(query.content_type), 'success.json');
           let entries = fileHelper.readFileSync(_ePath);
           entries.push(query.entry);
           fileHelper.writeFileSync(_ePath, entries);
