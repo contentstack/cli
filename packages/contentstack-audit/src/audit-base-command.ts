@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
 import cloneDeep from 'lodash/cloneDeep';
-import { cliux, sanitizepath, ux } from '@contentstack/cli-utilities';
+import { cliux, sanitizePath, ux } from '@contentstack/cli-utilities';
 import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'fs';
 
 import config from './config';
@@ -396,7 +396,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     }
 
     // NOTE write int json
-    writeFileSync(join(sanitizepath(this.sharedConfig.reportPath), `${sanitizepath(moduleName)}.json`), JSON.stringify(listOfMissingRefs));
+    writeFileSync(join(sanitizePath(this.sharedConfig.reportPath), `${sanitizePath(moduleName)}.json`), JSON.stringify(listOfMissingRefs));
 
     // NOTE write into CSV
     return this.prepareCSV(moduleName, listOfMissingRefs);
@@ -417,7 +417,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     listOfMissingRefs: Record<string, any>,
   ): Promise<void> {
     if(Object.keys(config.moduleConfig).includes(moduleName)){
-      const csvPath = join(sanitizepath(this.sharedConfig.reportPath), `${sanitizepath(moduleName)}.csv`);
+      const csvPath = join(sanitizePath(this.sharedConfig.reportPath), `${sanitizePath(moduleName)}.csv`);
       return new Promise<void>((resolve, reject) => {
         // file deepcode ignore MissingClose: Will auto close once csv stream end
         const ws = createWriteStream(csvPath).on('error', reject);
