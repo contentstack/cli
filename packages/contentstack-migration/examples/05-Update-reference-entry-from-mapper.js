@@ -8,9 +8,9 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
     let uidMapping = {};
 
     modules.forEach((module) => {
-      const mappingFilePath = path.join(filePath, 'mapper', module, 'uid-mapping.json');
+      const mappingFilePath = path.join(sanitizepath(filePath), 'mapper', sanitizepath(module), 'uid-mapping.json');
       if (fs.existsSync(mappingFilePath)) {
-        const mappedIds = JSON.parse(fs.readFileSync(mappingFilePath, 'utf-8'));
+        const mappedIds = JSON.parse(fs.readFileSync(sanitizepath(mappingFilePath), 'utf-8'));
 
         if (module === 'marketplace_apps') {
           Object.values(mappedIds).forEach((ids) => Object.assign(uidMapping, ids));
