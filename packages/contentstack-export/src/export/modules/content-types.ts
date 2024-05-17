@@ -99,7 +99,7 @@ export default class ContentTypesExport extends BaseClass {
   async writeContentTypes(contentTypes: Record<string, unknown>[]) {
     function write(contentType: Record<string, unknown>) {
       return fsUtil.writeFile(
-        path.join(sanitizePath(this.contentTypesDirPath), `${contentType.uid === 'schema' ? 'schema|1' : contentType.uid}.json`),
+        path.join(sanitizePath(this.contentTypesDirPath), sanitizePath(`${contentType.uid === 'schema' ? 'schema|1' : contentType.uid}.json`)),
         contentType,
       );
     }

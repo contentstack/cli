@@ -1,7 +1,7 @@
 import Bluebird from 'bluebird';
 import * as url from 'url';
 import * as path from 'path';
-import { ContentstackClient, managementSDKClient } from '@contentstack/cli-utilities';
+import { ContentstackClient, managementSDKClient, replaceNonAlphanumericWithEmpty, isValidURL } from '@contentstack/cli-utilities';
 import { ImportConfig } from '../types';
 const debug = require('debug')('util:requests');
 let _ = require('lodash');
@@ -255,8 +255,10 @@ export const lookupAssets = function (
       // const sanitizedUrl = escapeRegExp(assetUrl).replace(/\.\./g, '\\$&');
       // const escapedMappedUrl = escapeRegExp(mappedAssetUrl).replace(/\.\./g, '\\$&');
       // entry = entry.replace(new RegExp(sanitizedUrl, 'img'), escapedMappedUrl);
-      entry = entry.replace(new RegExp(assetUrl, 'img'), mappedAssetUrl);
-      matchedUrls.push(mappedAssetUrl);
+      if(isValidURL(mappedAssetUrl)){
+        entry = entry.replace(new RegExp(assetUrl, 'img'), mappedAssetUrl);
+        matchedUrls.push(mappedAssetUrl);
+      }
     } else {
       unmatchedUrls.push(assetUrl);
     }
@@ -265,7 +267,8 @@ export const lookupAssets = function (
   assetUids.forEach(function (assetUid: any) {
     let uid = mappedAssetUids[assetUid];
     if (typeof uid !== 'undefined') {
-      const escapedAssetUid = assetUid.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      let escapedAssetUid = assetUid.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      escapedAssetUid = replaceNonAlphanumericWithEmpty(escapedAssetUid)
       const regex = new RegExp(`\\b${escapedAssetUid}\\b`, 'img');
       entry = entry.replace(regex, uid);
       matchedUids.push(assetUid);

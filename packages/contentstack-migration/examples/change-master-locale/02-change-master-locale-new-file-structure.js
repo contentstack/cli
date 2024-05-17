@@ -72,7 +72,7 @@ module.exports = async ({ migration, config }) => {
           let sourceMasterLocaleEntries, targetMasterLocaleEntries;
 
           sourceMasterLocaleEntries = await fs.readFile(
-            pathValidator(path.resolve(sanitizePath(config.data_dir), `entries/${contentType}/${masterLocale}/index.json`)),
+            pathValidator(path.resolve(sanitizePath(config.data_dir), sanitizePath(`entries/${contentType}/${masterLocale}/index.json`))),
             { encoding: 'utf8' },
           );
 

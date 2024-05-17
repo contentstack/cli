@@ -63,3 +63,8 @@ export const validateUids = (uid) =>  /^[a-zA-Z0-9]+$/.test(uid);
 
 // Validate File name
 export const validateFileName = (fileName) =>  /^[a-zA-Z0-9-_\.]+$/.test(fileName);
+
+// Validate Regex
+export const replaceNonAlphanumericWithEmpty = input => input.replace(/[^a-zA-Z0-9]/g, '');
+
+export const isValidURL = url => /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})([\/\w .-]*)*\/?$/.test(url);
