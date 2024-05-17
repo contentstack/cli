@@ -51,7 +51,7 @@ export default class ImportGlobalFields extends BaseClass {
     this.existingGFs = [];
     this.reqConcurrency = this.gFsConfig.writeConcurrency || this.config.writeConcurrency;
     this.gFsMapperPath = path.resolve(sanitizepath(this.config.data), 'mapper', 'global_fields');
-    this.gFsFolderPath = path.resolve(sanitizepath(this.config.data), this.gFsConfig.dirName);
+    this.gFsFolderPath = path.resolve(sanitizepath(this.config.data), sanitizepath(this.gFsConfig.dirName));
     this.gFsFailsPath = path.resolve(sanitizepath(this.config.data), 'mapper', 'global_fields', 'fails.json');
     this.gFsSuccessPath = path.resolve(sanitizepath(this.config.data), 'mapper', 'global_fields', 'success.json');
     this.gFsUidMapperPath = path.resolve(sanitizepath(this.config.data), 'mapper', 'global_fields', 'uid-mapping.json');
