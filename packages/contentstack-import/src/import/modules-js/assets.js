@@ -92,7 +92,7 @@ module.exports = class ImportAssets {
                   if(!validateUids(assetUid)){
                     reject(`UID Not Valid`)
                   }
-                  let currentAssetFolderPath = path.join(sanitizepath(self.assetsFolderPath), assetUid);
+                  let currentAssetFolderPath = path.join(sanitizepath(self.assetsFolderPath), sanitizepath(assetUid));
                   if (fs.existsSync(currentAssetFolderPath)) {
                     // if this is true, means, the exported asset data is versioned
                     // hence, upload each asset with its version
@@ -107,7 +107,7 @@ module.exports = class ImportAssets {
                     if(!validateFileName(self.assets[assetUid].filename)){
                       reject(`File Name Not Valid`)
                     }
-                    let assetPath = path.resolve(sanitizepath(currentAssetFolderPath), self.assets[assetUid].filename);
+                    let assetPath = path.resolve(sanitizepath(currentAssetFolderPath), sanitizepath(self.assets[assetUid].filename));
 
                     if (self.assets[assetUid].parent_uid && typeof self.assets[assetUid].parent_uid === 'string') {
                       if (self.mappedFolderUids.hasOwnProperty(self.assets[assetUid].parent_uid)) {
@@ -190,7 +190,7 @@ module.exports = class ImportAssets {
         reject(`UID not valid`)
       }
       let versionedAssetMetadata = fileHelper.readFileSync(
-        path.join(sanitizepath(assetFolderPath), '_contentstack_' + uid + '.json'),
+        path.join(sanitizepath(assetFolderPath), '_contentstack_' + sanitizepath(uid) + '.json'),
       );
       // using last version, find asset's parent
       let lastVersion = versionedAssetMetadata[versionedAssetMetadata.length - 1];
@@ -220,7 +220,7 @@ module.exports = class ImportAssets {
           if(!validateFileName(assetMetadata.filename)){
             reject(`File Name not valid`)
           }
-          let assetPath = path.join(sanitizepath(assetFolderPath), assetMetadata.filename);
+          let assetPath = path.join(sanitizepath(assetFolderPath), sanitizepath(assetMetadata.filename));
 
           if (++counter === 1) {
             return self
