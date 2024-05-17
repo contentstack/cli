@@ -2,23 +2,24 @@ const path = require('path');
 const chalk = require('chalk');
 const { values } = require('lodash');
 const { executeTask, formatError, fileHelper, log } = require('../../utils');
+const { sanitizepath } = require('@contentstack/cli-utilities');
 
 class EntriesExport {
   constructor(exportConfig, stackAPIClient) {
     this.stackAPIClient = stackAPIClient;
     this.exportConfig = exportConfig;
     this.entriesConfig = exportConfig.modules.entries;
-    this.entriesRootPath = path.resolve(exportConfig.data, exportConfig.branchName || '', this.entriesConfig.dirName);
+    this.entriesRootPath = path.resolve((sanitizepath(exportConfig.data)), sanitizepath(exportConfig.branchName || ''), sanitizepath(this.entriesConfig.dirName));
     this.localesFilePath = path.resolve(
-      exportConfig.data,
-      exportConfig.branchName || '',
-      exportConfig.modules.locales.dirName,
-      exportConfig.modules.locales.fileName,
+      sanitizepath(exportConfig.data),
+      sanitizepath(exportConfig.branchName || ''),
+      sanitizepath(exportConfig.modules.locales.dirName),
+      sanitizepath(exportConfig.modules.locales.fileName),
     );
     this.schemaFilePath = path.resolve(
-      exportConfig.data,
-      exportConfig.branchName || '',
-      exportConfig.modules.content_types.dirName,
+      sanitizepath(exportConfig.data),
+      sanitizepath(exportConfig.branchName || ''),
+      sanitizepath(exportConfig.modules.content_types.dirName),
       'schema.json',
     );
     this.fetchConcurrency = this.entriesConfig.fetchConcurrency || exportConfig.fetchConcurrency;
@@ -78,7 +79,7 @@ class EntriesExport {
             if (versionedEntries.length > 0) {
               const write = (versionedEntry) =>
                 fileHelper.writeFile(
-                  path.join(versionedEntryPath, 'version-' + versionedEntry._version + '.json'),
+                  path.join(sanitizepath(versionedEntryPath), 'version-' + sanitizepath(versionedEntry._version) + '.json'),
                   versionedEntry,
                 );
               await executeTask(versionedEntries, write.bind(this), { concurrency: this.writeConcurrency });

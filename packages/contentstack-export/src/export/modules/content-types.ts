@@ -3,6 +3,7 @@ import { ContentstackClient } from '@contentstack/cli-utilities';
 import { log, formatError, fsUtil, executeTask } from '../../utils';
 import { ExportConfig, ModuleClassParams } from '../../types';
 import BaseClass from './base-class';
+import { sanitizepath } from '@contentstack/cli-utilities';
 
 export default class ContentTypesExport extends BaseClass {
   private stackAPIClient: ReturnType<ContentstackClient['stack']>;
@@ -43,9 +44,9 @@ export default class ContentTypesExport extends BaseClass {
      }
     
     this.contentTypesDirPath = path.resolve(
-      exportConfig.data,
-      exportConfig.branchName || '',
-      this.contentTypesConfig.dirName,
+      sanitizepath(exportConfig.data),
+      sanitizepath(exportConfig.branchName || ''),
+      sanitizepath(this.contentTypesConfig.dirName),
     );
     this.contentTypes = [];
   }
@@ -98,7 +99,7 @@ export default class ContentTypesExport extends BaseClass {
   async writeContentTypes(contentTypes: Record<string, unknown>[]) {
     function write(contentType: Record<string, unknown>) {
       return fsUtil.writeFile(
-        path.join(this.contentTypesDirPath, `${contentType.uid === 'schema' ? 'schema|1' : contentType.uid}.json`),
+        path.join(sanitizepath(this.contentTypesDirPath), `${contentType.uid === 'schema' ? 'schema|1' : contentType.uid}.json`),
         contentType,
       );
     }
