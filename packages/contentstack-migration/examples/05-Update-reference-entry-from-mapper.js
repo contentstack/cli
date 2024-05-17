@@ -1,6 +1,7 @@
 const fs = require('fs');
 const chalk = require('chalk');
 const path = require('path');
+const { replaceNonAlphanumericWithEmpty } = require('@contentstack/cli-utilities');
 module.exports = async ({ migration, stackSDKInstance, managementAPIClient, config }) => {
   const modules = ['entries', 'assets', 'extensions', 'marketplace_apps'];
 
@@ -61,6 +62,7 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
     let oldUids = Object.keys(uidMapping);
     matches.forEach((m) => {
       if (oldUids.includes(m)) {
+        m = replaceNonAlphanumericWithEmpty(m);
         let regex = new RegExp(m, 'g');
         stringifiedEntry = stringifiedEntry.replace(regex, uidMapping[m]);
         console.log(chalk.green(`Replacing the UID '${m}' with '${uidMapping[m]}'...`));
