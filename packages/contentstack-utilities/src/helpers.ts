@@ -56,7 +56,7 @@ export const validatePath = (input: string) => {
 export const escapeRegExp = (str: string) => str?.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 // To remove the relative path 
-export const sanitizepath  = (str: string) => str.replace(/^(\.\.(\/|\\|$))+/, '');
+export const sanitizePath  = (str: string) => str.replace(/^(\.\.(\/|\\|$))+/, '');
 
 // To validate the UIDs of assets 
 export const validateUids = (uid) =>  /^[a-zA-Z0-9]+$/.test(uid);

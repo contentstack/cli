@@ -7,7 +7,7 @@
 
 import * as _ from 'lodash';
 import * as path from 'path';
-import { HttpClient, managementSDKClient, isAuthenticated, sanitizepath } from '@contentstack/cli-utilities';
+import { HttpClient, managementSDKClient, isAuthenticated, sanitizePath } from '@contentstack/cli-utilities';
 import { readFileSync, readdirSync, readFile } from './file-helper';
 import chalk from 'chalk';
 import { log } from './logger';
@@ -65,9 +65,9 @@ export const sanitizeStack = (importConfig: ImportConfig) => {
         const newStackVersion = stackDetails.data.stack.settings.version;
         const newStackDate = new Date(newStackVersion).toString();
         const stackFilePath = path.join(
-          sanitizepath(importConfig.data),
-          sanitizepath(importConfig.modules.stack.dirName),
-          sanitizepath(importConfig.modules.stack.fileName),
+          sanitizePath(importConfig.data),
+          sanitizePath(importConfig.modules.stack.dirName),
+          sanitizePath(importConfig.modules.stack.fileName),
         );
 
         const oldStackDetails = readFileSync(stackFilePath);

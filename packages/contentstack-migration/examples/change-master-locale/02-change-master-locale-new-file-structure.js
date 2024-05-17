@@ -3,7 +3,7 @@ let { existsSync } = require('fs');
 let path = require('path');
 let crypto = require('crypto');
 let supportedLocales = require('./locales.json');
-const { pathValidator, FsUtility, sanitizepath } = require('@contentstack/cli-utilities');
+const { pathValidator, FsUtility, sanitizePath } = require('@contentstack/cli-utilities');
 
 module.exports = async ({ migration, config }) => {
   let changeMasterLocale = {
@@ -18,9 +18,9 @@ module.exports = async ({ migration, config }) => {
       }
 
       async function tailorData() {
-        let locales = await fs.readFile(pathValidator(path.resolve(sanitizepath(config.data_dir), 'locales/locales.json')), 'utf-8');
+        let locales = await fs.readFile(pathValidator(path.resolve(sanitizePath(config.data_dir), 'locales/locales.json')), 'utf-8');
         let masterLocale = await fs.readFile(
-          pathValidator(path.resolve(sanitizepath(config.data_dir), 'locales/master-locale.json')),
+          pathValidator(path.resolve(sanitizePath(config.data_dir), 'locales/master-locale.json')),
           'utf-8',
         );
 
@@ -49,7 +49,7 @@ module.exports = async ({ migration, config }) => {
 
         await handleEntries(masterLocale);
         await fs.writeFile(
-          pathValidator(path.resolve(sanitizepath(config.data_dir), 'locales/locales.json')),
+          pathValidator(path.resolve(sanitizePath(config.data_dir), 'locales/locales.json')),
           JSON.stringify(locales),
         );
         masterLocale = await fs.readFile(
@@ -67,20 +67,20 @@ module.exports = async ({ migration, config }) => {
       }
 
       async function handleEntries(masterLocale) {
-        let contentTypes = await fs.readdir(pathValidator(path.resolve(sanitizepath(config.data_dir), 'entries')));
+        let contentTypes = await fs.readdir(pathValidator(path.resolve(sanitizePath(config.data_dir), 'entries')));
         for (let contentType of contentTypes) {
           let sourceMasterLocaleEntries, targetMasterLocaleEntries;
 
           sourceMasterLocaleEntries = await fs.readFile(
-            pathValidator(path.resolve(sanitizepath(config.data_dir), `entries/${contentType}/${masterLocale}/index.json`)),
+            pathValidator(path.resolve(sanitizePath(config.data_dir), `entries/${contentType}/${masterLocale}/index.json`)),
             { encoding: 'utf8' },
           );
 
           sourceMasterLocaleEntries = await fs.readFile(
             pathValidator(
               path.resolve(
-                sanitizepath(config.data_dir),
-                `entries/${sanitizepath(contentType)}/${sanitizepath(masterLocale)}/${Object.values(JSON.parse(sanitizepath(sourceMasterLocaleEntries)))}`,
+                sanitizePath(config.data_dir),
+                `entries/${sanitizePath(contentType)}/${sanitizePath(masterLocale)}/${Object.values(JSON.parse(sanitizePath(sourceMasterLocaleEntries)))}`,
               ),
             ),
             { encoding: 'utf8' },
