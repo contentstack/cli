@@ -2,11 +2,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import mkdirp from 'mkdirp';
 import * as bigJSON from 'big-json';
-import { FsUtility, sanitizepath } from '@contentstack/cli-utilities';
+import { FsUtility, sanitizePath } from '@contentstack/cli-utilities';
 
 export const readFileSync = function (filePath: string, parse: boolean = true): any {
   let data;
-  filePath = path.resolve(sanitizepath(filePath));
+  filePath = path.resolve(sanitizePath(filePath));
   if (fs.existsSync(filePath)) {
     try {
       data = parse ? JSON.parse(fs.readFileSync(filePath, 'utf-8')) : data;
@@ -20,7 +20,7 @@ export const readFileSync = function (filePath: string, parse: boolean = true): 
 // by default file type is json
 export const readFile = async (filePath: string, options = { type: 'json' }): Promise<any> => {
   return new Promise((resolve, reject) => {
-    filePath = path.resolve(sanitizepath(filePath));
+    filePath = path.resolve(sanitizePath(filePath));
     fs.readFile(filePath, 'utf-8', (error, data) => {
       if (error) {
         if (error.code === 'ENOENT') {
@@ -41,7 +41,7 @@ export const readLargeFile = function (filePath: string, opts?: any): Promise<an
   if (typeof filePath !== 'string') {
     return;
   }
-  filePath = path.resolve(sanitizepath(filePath));
+  filePath = path.resolve(sanitizePath(filePath));
   if (fs.existsSync(filePath)) {
     return new Promise((resolve, reject) => {
       const readStream = fs.createReadStream(filePath, { encoding: 'utf-8' });
@@ -82,7 +82,7 @@ export const writeLargeFile = function (filePath: string, data: any): Promise<an
   if (typeof filePath !== 'string' || typeof data !== 'object') {
     return;
   }
-  filePath = path.resolve(sanitizepath(filePath));
+  filePath = path.resolve(sanitizePath(filePath));
   return new Promise((resolve, reject) => {
     const stringifyStream = bigJSON.createStringifyStream({
       body: data,
@@ -117,7 +117,7 @@ export const readdirSync = function (dirPath: string): any {
 
 export const isFolderExist = async (folderPath: string): Promise<any> => {
   return new Promise((resolve, reject) => {
-    folderPath = path.resolve(sanitizepath(folderPath));
+    folderPath = path.resolve(sanitizePath(folderPath));
     fs.access(folderPath, (error) => {
       if (error) {
         return resolve(false);

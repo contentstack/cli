@@ -11,7 +11,7 @@ const mkdirp = require('mkdirp');
 const Promise = require('bluebird');
 let { default: config } = require('../../config');
 const { fileHelper, log, uploadAssetHelper } = require('../../utils');
-const { sanitizepath, validateUids, validateFileName } = require('@contentstack/cli-utilities');
+const { sanitizePath, validateUids, validateFileName } = require('@contentstack/cli-utilities');
 
 module.exports = class ImportAssets {
   assets;
@@ -92,7 +92,7 @@ module.exports = class ImportAssets {
                   if(!validateUids(assetUid)){
                     reject(`UID Not Valid`)
                   }
-                  let currentAssetFolderPath = path.join(sanitizepath(self.assetsFolderPath), sanitizepath(assetUid));
+                  let currentAssetFolderPath = path.join(sanitizePath(self.assetsFolderPath), sanitizePath(assetUid));
                   if (fs.existsSync(currentAssetFolderPath)) {
                     // if this is true, means, the exported asset data is versioned
                     // hence, upload each asset with its version
@@ -107,7 +107,7 @@ module.exports = class ImportAssets {
                     if(!validateFileName(self.assets[assetUid].filename)){
                       reject(`File Name Not Valid`)
                     }
-                    let assetPath = path.resolve(sanitizepath(currentAssetFolderPath), sanitizepath(self.assets[assetUid].filename));
+                    let assetPath = path.resolve(sanitizePath(currentAssetFolderPath), sanitizePath(self.assets[assetUid].filename));
 
                     if (self.assets[assetUid].parent_uid && typeof self.assets[assetUid].parent_uid === 'string') {
                       if (self.mappedFolderUids.hasOwnProperty(self.assets[assetUid].parent_uid)) {
@@ -190,7 +190,7 @@ module.exports = class ImportAssets {
         reject(`UID not valid`)
       }
       let versionedAssetMetadata = fileHelper.readFileSync(
-        path.join(sanitizepath(assetFolderPath), '_contentstack_' + sanitizepath(uid) + '.json'),
+        path.join(sanitizePath(assetFolderPath), '_contentstack_' + sanitizePath(uid) + '.json'),
       );
       // using last version, find asset's parent
       let lastVersion = versionedAssetMetadata[versionedAssetMetadata.length - 1];
@@ -220,7 +220,7 @@ module.exports = class ImportAssets {
           if(!validateFileName(assetMetadata.filename)){
             reject(`File Name not valid`)
           }
-          let assetPath = path.join(sanitizepath(assetFolderPath), sanitizepath(assetMetadata.filename));
+          let assetPath = path.join(sanitizePath(assetFolderPath), sanitizePath(assetMetadata.filename));
 
           if (++counter === 1) {
             return self

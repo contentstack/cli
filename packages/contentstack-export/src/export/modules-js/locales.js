@@ -1,7 +1,7 @@
 const path = require('path');
 const chalk = require('chalk');
 const { formatError, log, fileHelper } = require('../../utils');
-const { sanitizepath } = require('@contentstack/cli-utilities');
+const { sanitizePath } = require('@contentstack/cli-utilities');
 class LocaleExport {
   constructor(exportConfig, stackAPIClient) {
     this.stackAPIClient = stackAPIClient;
@@ -16,7 +16,7 @@ class LocaleExport {
       },
     };
 
-    this.localesPath = path.resolve(sanitizepath(exportConfig.data), sanitizepath(exportConfig.branchName || ''), sanitizepath(this.localeConfig.dirName));
+    this.localesPath = path.resolve(sanitizePath(exportConfig.data), sanitizePath(exportConfig.branchName || ''), sanitizePath(this.localeConfig.dirName));
     this.locales = {};
     this.masterLocale = {};
     this.fetchConcurrency = this.localeConfig.fetchConcurrency || this.exportConfig.fetchConcurrency;
