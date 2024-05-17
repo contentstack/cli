@@ -56,7 +56,7 @@ export const validatePath = (input: string) => {
 export const escapeRegExp = (str: string) => str?.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 // To remove the relative path 
-export const sanitizePath  = (str: string) => str.replace(/^(\.\.(\/|\\|$))+/, '');
+export const sanitizePath  = (str: string) => str?.replace(/^(\.\.(\/|\\|$))+/, '');
 
 // To validate the UIDs of assets 
 export const validateUids = (uid) =>  /^[a-zA-Z0-9]+$/.test(uid);
@@ -65,6 +65,6 @@ export const validateUids = (uid) =>  /^[a-zA-Z0-9]+$/.test(uid);
 export const validateFileName = (fileName) =>  /^[a-zA-Z0-9-_\.]+$/.test(fileName);
 
 // Validate Regex
-export const replaceNonAlphanumericWithEmpty = input => input.replace(/[^a-zA-Z0-9]/g, '');
+export const replaceNonAlphanumericWithEmpty = input => input?.replace(/[^a-zA-Z0-9]/g, '');
 
 export const isValidURL = url => /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})([\/\w .-]*)*\/?$/.test(url);
