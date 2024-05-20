@@ -1,5 +1,5 @@
 import memoize from 'lodash/memoize';
-import { escapeRegExp, replaceNonAlphanumericWithEmpty } from '@contentstack/cli-utilities';
+import { escapeRegExp, validateRegex } from '@contentstack/cli-utilities';
 
 const errors = {};
 
@@ -76,11 +76,15 @@ function $t(msg: string, args: Record<string, string>): string {
     if (!msg) return '';
 
     for (const key of Object.keys(args)) {
-      let escapedKey = escapeRegExp(key);
-      escapedKey = replaceNonAlphanumericWithEmpty(escapedKey)
+      const escapedKey = escapeRegExp(key);
       const escapedKeyRegex = new RegExp(`{${escapedKey}}`, 'g');
-      const sanitizedValue = args[key] ? escapeRegExp(args[key]) : '';
-      msg = msg.replace(escapedKeyRegex, sanitizedValue || escapedKey);
+      let { status } = validateRegex(escapedKeyRegex)
+      if (status === 'safe') {
+        const sanitizedValue = args[key] ? escapeRegExp(args[key]) : '';
+        msg = msg.replace(escapedKeyRegex, sanitizedValue || escapedKey);
+      } else {
+
+      }
     }
 
     return msg;
