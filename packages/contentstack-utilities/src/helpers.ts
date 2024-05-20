@@ -1,6 +1,6 @@
+import { checkSync } from "recheck";
 import authHandler from './auth-handler';
 import { HttpClient, cliux, configHandler } from '.';
-import { string } from '@oclif/core/lib/args';
 export const isAuthenticated = () => authHandler.isAuthenticated();
 export const doesBranchExist = async (stack, branchName) => {
   return stack
@@ -17,13 +17,13 @@ export const isManagementTokenValid = async (stackAPIKey, managementToken) => {
     const response = (await httpClient.get(`${configHandler.get('region').cma}/v3/environments?limit=1`))?.data;
     if (response?.environments) {
       return { valid: true }
-    } else if(response?.error_code) {
+    } else if (response?.error_code) {
       return { valid: false, message: response.error_message };
     } else {
-      throw typeof response === "string"? response : "";
+      throw typeof response === "string" ? response : "";
     }
   } catch (error) {
-    return { valid: 'failedToCheck',message:`Failed to check the validity of the Management token. ${error}`};
+    return { valid: 'failedToCheck', message: `Failed to check the validity of the Management token. ${error}` };
   }
 }
 
@@ -56,15 +56,15 @@ export const validatePath = (input: string) => {
 export const escapeRegExp = (str: string) => str?.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 // To remove the relative path 
-export const sanitizePath  = (str: string) => str?.replace(/^(\.\.(\/|\\|$))+/, '');
+export const sanitizePath = (str: string) => str?.replace(/^(\.\.(\/|\\|$))+/, '');
 
 // To validate the UIDs of assets 
-export const validateUids = (uid) =>  /^[a-zA-Z0-9]+$/.test(uid);
+export const validateUids = (uid) => /^[a-zA-Z0-9]+$/.test(uid);
 
 // Validate File name
-export const validateFileName = (fileName) =>  /^[a-zA-Z0-9-_\.]+$/.test(fileName);
+export const validateFileName = (fileName) => /^[a-zA-Z0-9-_\.]+$/.test(fileName);
 
-// Validate Regex
-export const replaceNonAlphanumericWithEmpty = input => input?.replace(/[^a-zA-Z0-9]/g, '');
+// Validate Regex for ReDDos
+export const validateRegex = (str) => checkSync(str, "");
 
 export const isValidURL = url => /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})([\/\w .-]*)*\/?$/.test(url);
