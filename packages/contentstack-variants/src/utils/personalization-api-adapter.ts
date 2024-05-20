@@ -19,8 +19,9 @@ import {
   UpdateExperienceInput,
   CMSExperienceStruct,
   VariantAPIRes,
-  APIResponse
+  APIResponse,
 } from '../types';
+import { formatErrors } from './error-helper';
 
 export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> implements Personalization<T> {
   constructor(options: APIConfig) {
@@ -167,9 +168,9 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     }
 
     let errorMsg: string;
-    if(data){
+    if (data) {
       if (data?.errors && Object.keys(data.errors).length > 0) {
-        errorMsg = this.formatErrors(data.errors);
+        errorMsg = formatErrors(data.errors);
       } else if (data?.error_message) {
         errorMsg = data.error_message;
       } else if (data?.message) {
@@ -177,37 +178,10 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
       } else {
         errorMsg = data;
       }
-    }else{
+    } else {
       errorMsg = 'Something went wrong while processing your request!';
     }
 
     throw errorMsg;
-  }
-
-  /**
-   * Formats the errors into a single string.
-   * @param errors - The errors to be formatted.
-   * @returns The formatted errors as a string.
-   */
-  formatErrors(errors: any): string {
-    const errorMessages: string[] = [];
-  
-    for (const errorKey in errors) {
-      const errorValue = errors[errorKey];
-      if (Array.isArray(errorValue)) {
-        errorMessages.push(...errorValue.map((error: any) => this.formatError(error)));
-      } else {
-        errorMessages.push(this.formatError(errorValue));
-      }
-    }
-  
-    return errorMessages.join(' ');
-  }
-  
-  formatError(error: any): string {
-    if (typeof error === 'object') {
-      return Object.values(error).join(' ');
-    }
-    return String(error);
   }
 }
