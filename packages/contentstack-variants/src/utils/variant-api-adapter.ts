@@ -21,12 +21,14 @@ import {
   VariantEntryStruct,
   CreateVariantEntryDto,
   CreateVariantEntryOptions,
+  APIResponse,
 } from '../types';
 import messages from '../messages';
 import { AdapterHelper } from './adapter-helper';
+import { formatErrors } from './error-helper';
 
 export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implements VariantInterface<C, HttpClient> {
-  public baseURL: string
+  public baseURL: string;
   constructor(config: APIConfig, options?: HttpClientOptions) {
     super(config, options);
     this.baseURL = config.baseURL?.includes('http') ? `${config.baseURL}/v3` : `https://${config.baseURL}/v3`;
@@ -62,9 +64,9 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
       getAllData,
       returnResult,
       content_type_uid,
+      locale,
       skip = variantConfig.query.skip || 0,
       limit = variantConfig.query.limit || 100,
-      locale = variantConfig.query.locale || 'en-us',
       include_variant = variantConfig.query.include_variant || true,
     } = options;
 
@@ -90,7 +92,7 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
     }
 
     if (include_variant) {
-      endpoint.concat('&include_variant');
+      endpoint = endpoint.concat(`&include_variant=${include_variant}`);
     }
 
     const query = this.constructQuery(omit(variantConfig.query, ['skip', 'limit', 'locale', 'include_variant']));
@@ -99,8 +101,9 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
       endpoint = endpoint.concat(query);
     }
 
-    // FIXME once API is ready, validate and addjest the responce accordingly
-    const response = (await this.apiClient.get(endpoint)).data;
+    // FIXME once API is ready, validate and adjust the response accordingly
+    const data = await this.apiClient.get(endpoint);
+    const response = this.handleVariantAPIRes(data) as { entries: VariantEntryStruct[]; count: number };
 
     if (callback) {
       callback(response.entries);
@@ -139,7 +142,12 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
    * with the input data provided in the `CreateVariantEntryDto` parameter. The response is expected to
    * be of type `VariantEntryStruct`.
    */
-  createVariantEntry(input: CreateVariantEntryDto, options: CreateVariantEntryOptions) {
+  createVariantEntry(
+    input: CreateVariantEntryDto,
+    options: CreateVariantEntryOptions,
+    apiParams: Record<string, any>,
+  ): Promise<VariantEntryStruct | string | void> {
+    const { reject, resolve, variantUid, log } = apiParams;
     const variantConfig = (this.config as ImportConfig).modules.variantEntry;
     const { locale = variantConfig.query.locale || 'en-us', variant_id, entry_uid, content_type_uid } = options;
     let endpoint = `content_types/${content_type_uid}/entries/${entry_uid}/variants/${variant_id}?locale=${locale}`;
@@ -150,7 +158,56 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
       endpoint = endpoint.concat(query);
     }
 
-    return this.apiClient.post<VariantEntryStruct>(endpoint, input);
+    const onSuccess = (response: any) =>
+      resolve({ response, apiData: { variantUid, entryUid: entry_uid, title: input.title }, log });
+    const onReject = (error: Error) =>
+      reject({
+        error,
+        apiData: { variantUid, entryUid: entry_uid, title: input.title },
+        log
+      });
+
+    return this.apiClient.put<VariantEntryStruct>(endpoint, { entry: input }).then((res: any) => {
+      const data = this.handleVariantAPIRes(res);
+      if (res.status === 200 && res.status < 300) {
+        onSuccess(data );
+      } else {
+        onReject(data);
+      }
+    });
+  }
+
+  /**
+   * Handles the API response for variant requests.
+   * @param res - The API response object.
+   * @returns The variant API response data.
+   * @throws If the API response status is not within the success range, an error message is thrown.
+   */
+  handleVariantAPIRes(
+    res: APIResponse,
+  ): VariantEntryStruct | { entries: VariantEntryStruct[]; count: number } | string | any {
+    const { status, data } = res;
+
+    if (status >= 200 && status < 300) {
+      return data;
+    }
+
+    let errorMsg: string;
+    if (data) {
+      if (data?.errors && Object.keys(data.errors).length > 0) {
+        errorMsg = formatErrors(data.errors);
+      } else if (data?.error_message) {
+        errorMsg = data.error_message;
+      } else if (data?.message) {
+        errorMsg = data.message;
+      } else {
+        errorMsg = data;
+      }
+    } else {
+      errorMsg = 'Something went wrong while processing variant entries request!';
+    }
+
+    throw errorMsg;
   }
 }
 
@@ -174,9 +231,19 @@ export class VariantManagementSDK<T>
     return { entries: [{}] };
   }
 
-  createVariantEntry(input: CreateVariantEntryDto, options: CreateVariantEntryOptions): Promise<HttpResponse<VariantEntryStruct>> {
+  createVariantEntry(
+    input: CreateVariantEntryDto,
+    options: CreateVariantEntryOptions,
+    apiParams: Record<string, any>,
+  ): Promise<VariantEntryStruct | string | void> {
     // FIXME placeholder
-    return new HttpClient().post<VariantEntryStruct>('/', input);
+    return Promise.resolve({} as VariantEntryStruct);
+  }
+
+  handleVariantAPIRes(
+    res: APIResponse,
+  ): VariantEntryStruct | { entries: VariantEntryStruct[]; count: number } | string {
+    return res.data;
   }
 
   constructQuery(query: Record<string, any>): string | void {}

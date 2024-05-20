@@ -17,20 +17,24 @@ import {
   VariantEntryStruct,
   ImportHelperMethodsConfig,
   EntryDataForVariantEntries,
+  CreateVariantEntryDto,
 } from '../types';
+import { fsUtil } from '../utils';
 
 export default class VariantEntries extends VariantAdapter<VariantHttpClient<ImportConfig>> {
   public entriesDirPath: string;
   public entriesMapperPath: string;
   public variantEntryBasePath!: string;
-  public variantIdList!: { [key: string]: string };
-  public personalizationconfig: ImportConfig['modules']['personalization'];
+  public variantIdList!: Record<string, unknown>;
+  public personalizationConfig: ImportConfig['modules']['personalization'];
 
-  public taxonomies!: AnyProperty;
-  public assetUrlMapper!: AnyProperty;
-  public assetUidMapper!: AnyProperty;
-  public entriesUidMapper!: AnyProperty;
-  private installedExtensions!: AnyProperty[];
+  public taxonomies!: Record<string, unknown>;
+  public assetUrlMapper!: Record<string, any>;
+  public assetUidMapper!: Record<string, any>;
+  public entriesUidMapper!: Record<string, any>;
+  private installedExtensions!: Record<string, any>[];
+  private variantUidMapper: Record<string, string>;
+  private variantUidMapperPath!: string;
 
   constructor(
     readonly config: ImportConfig & { helpers?: ImportHelperMethodsConfig },
@@ -50,9 +54,11 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       },
     };
     super(Object.assign(omit(config, ['helpers']), conf));
-    this.entriesMapperPath = resolve(config.backupDir, 'mapper', 'entries');
-    this.personalizationconfig = this.config.modules.personalization;
+    this.entriesMapperPath = resolve(config.backupDir, config.branchName || '', 'mapper', 'entries');
+    this.personalizationConfig = this.config.modules.personalization;
     this.entriesDirPath = resolve(config.backupDir, config.branchName || '', config.modules.entries.dirName);
+    this.variantUidMapperPath = resolve(this.entriesMapperPath, 'variant-uid-mapping.json');
+    this.variantUidMapper = {};
   }
 
   /**
@@ -68,8 +74,8 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     const variantIdPath = resolve(
       this.config.backupDir,
       'mapper',
-      this.personalizationconfig.dirName,
-      this.personalizationconfig.experiences.dirName,
+      this.personalizationConfig.dirName,
+      this.personalizationConfig.experiences.dirName,
       'variants-uid-mapping.json',
     );
 
@@ -78,12 +84,12 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       return;
     }
 
-    if (!existsSync(variantIdPath)) {
+    if (!existsSync(variantIdPath) && isEmpty(variantIdPath)) {
       this.log(this.config, this.messages.EMPTY_VARIANT_UID_DATA, 'info');
       return;
     }
 
-    const entriesForVariants = JSON.parse(readFileSync(filePath, 'utf8')) as EntryDataForVariantEntries[];
+    const entriesForVariants = fsUtil.readFile(filePath, true) as EntryDataForVariantEntries[];
 
     if (isEmpty(entriesForVariants)) {
       this.log(this.config, this.messages.IMPORT_ENTRY_NOT_FOUND, 'info');
@@ -101,16 +107,17 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       'success.json',
     );
     const marketplaceAppMapperPath = resolve(this.config.backupDir, 'mapper', 'marketplace_apps', 'uid-mapping.json');
-
+    const envPath = resolve(this.config.backupDir, 'mapper', 'environments', 'environments.json');
     // NOTE Read and store list of variant IDs
-    this.variantIdList = JSON.parse(readFileSync(variantIdPath, 'utf8'));
+    this.variantIdList = (fsUtil.readFile(variantIdPath, true) || {}) as Record<string, unknown>;
 
     // NOTE entry relational data lookup dependencies.
-    this.entriesUidMapper = JSON.parse(readFileSync(entriesUidMapperPath, 'utf8'));
-    this.installedExtensions = JSON.parse(readFileSync(marketplaceAppMapperPath, 'utf8')).extension_uid;
-    this.taxonomies = existsSync(taxonomiesPath) ? JSON.parse(readFileSync(taxonomiesPath, 'utf8')) : {};
-    this.assetUidMapper = JSON.parse(readFileSync(assetUidMapperPath, 'utf8'));
-    this.assetUrlMapper = JSON.parse(readFileSync(assetUrlMapperPath, 'utf8'));
+    this.entriesUidMapper = (fsUtil.readFile(entriesUidMapperPath, true) || {}) as Record<string, any>;
+    this.installedExtensions = ((fsUtil.readFile(marketplaceAppMapperPath) as any) || { extension_uid: {} })
+      .extension_uid as Record<string, any>[];
+    this.taxonomies = (fsUtil.readFile(taxonomiesPath, true) || {}) as Record<string, unknown>;
+    this.assetUidMapper = (fsUtil.readFile(assetUidMapperPath, true) || {}) as Record<string, any>;
+    this.assetUrlMapper = (fsUtil.readFile(assetUrlMapperPath, true) || {}) as Record<string, any>;
 
     for (const entriesForVariant of entriesForVariants) {
       await this.importVariantEntries(entriesForVariant);
@@ -165,6 +172,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     let batchNo = 0;
     const variantEntryConfig = this.config.modules.variantEntry;
     const { content_type, locale, entry_uid } = entriesForVariant;
+    const entryUid = this.entriesUidMapper[entry_uid];
     const batches = chunk(variantEntries, variantEntryConfig.apiConcurrency || 5);
 
     if (isEmpty(batches)) return;
@@ -175,18 +183,40 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       const start = Date.now();
 
       for (let [, variantEntry] of entries(batch)) {
+        const onSuccess = ({ response, apiData: { entryUid, variantUid, title }, log }: any) => {
+          log(this.config, `Created variant entry: '${title}' of entry uid ${entryUid}`, 'info');
+          this.variantUidMapper[variantUid] = response?.entry?._variant?.uid || '';
+        };
+        const onReject = ({ error, apiData: { entryUid, variantUid, title }, log }: any) => {
+          log(this.config, `Failed to create variant entry: '${title}' of entry uid ${entryUid}`, 'error');
+          log(this.config, error, 'error');
+        };
         // NOTE Find new variant Id by old Id
-        const variant_id = this.variantIdList[variantEntry.variant_id];
+        const variant_id = this.variantIdList[variantEntry.variant_id] as string;
         // NOTE Replace all the relation data UID's
         variantEntry = this.handleVariantEntryRelationalData(contentType, variantEntry);
+        const createVariantReq: CreateVariantEntryDto = {
+          title: variantEntry.title,
+          _variant: variantEntry._variant,
+        };
+        const variantUid = variantEntry?._variant?.uid || '';
 
         if (variant_id) {
-          const promise = this.variantInstance.createVariantEntry(variantEntry, {
-            locale,
-            entry_uid,
-            variant_id,
-            content_type_uid: content_type,
-          });
+          const promise = this.variantInstance.createVariantEntry(
+            createVariantReq,
+            {
+              locale,
+              entry_uid: entryUid,
+              variant_id,
+              content_type_uid: content_type,
+            },
+            {
+              reject: onReject.bind(this),
+              resolve: onSuccess.bind(this),
+              variantUid,
+              log: this.log,
+            },
+          );
 
           allPromise.push(promise);
         } else {
@@ -196,12 +226,11 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
 
       // NOTE Handle the API response here
       const resultSet = await Promise.allSettled(allPromise);
-
+      fsUtil.writeFile(this.variantUidMapperPath, this.variantUidMapper);
       this.log(this.config, `Batch No. (${batchNo}/${batches.length}) of variant entry import is complete`, 'success');
 
       // NOTE publish all the entries
       this.publishVariantEntries(resultSet);
-
       const end = Date.now();
       const exeTime = end - start;
       this.variantInstance.delay(1000 - exeTime);
@@ -253,7 +282,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         },
         this.entriesUidMapper,
         resolve(this.entriesMapperPath, contentType.uid, variantEntry.locale),
-      ).entry;
+      );
 
       // NOTE: will remove term if term doesn't exists in taxonomy
       // FIXME: Validate if taxonomy support available for variant entries,
@@ -268,15 +297,15 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         },
         this.assetUidMapper,
         this.assetUrlMapper,
-        this.entriesDirPath,
+        join(this.entriesDirPath, contentType.uid),
         this.installedExtensions,
-      ).entry;
+      );
     }
 
     return variantEntry;
   }
 
-  publishVariantEntries(resultSet: PromiseSettledResult<HttpResponse<VariantEntryStruct>>[]) {
+  publishVariantEntries(resultSet: PromiseSettledResult<unknown>[]) {
     // FIXME: Handle variant entry publish
     console.log('Variant entry publish');
     return resultSet;
