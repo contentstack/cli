@@ -1,5 +1,6 @@
 import { HttpClientOptions, HttpRequestConfig, HttpResponse } from '@contentstack/cli-utilities';
 
+import { APIResponse } from '../types';
 import { AnyProperty } from './utils';
 import { ExportConfig } from './export-config';
 import { AdapterHelperInterface } from './adapter-helper';
@@ -45,5 +46,8 @@ export interface VariantInterface<T, ApiClient> extends AdapterHelperInterface<T
   createVariantEntry(
     input: CreateVariantEntryDto,
     options: CreateVariantEntryOptions,
-  ): Promise<HttpResponse<VariantEntryStruct>>;
+    apiParams: Record<string, any>,
+  ): Promise<VariantEntryStruct | string | void>;
+
+  handleVariantAPIRes(res: APIResponse): VariantEntryStruct | { entries: VariantEntryStruct[]; count: number } | string;
 }
