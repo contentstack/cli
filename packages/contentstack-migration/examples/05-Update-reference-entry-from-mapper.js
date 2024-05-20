@@ -1,7 +1,8 @@
 const fs = require('fs');
 const chalk = require('chalk');
 const path = require('path');
-const { replaceNonAlphanumericWithEmpty } = require('@contentstack/cli-utilities');
+const { validateRegex } = require('@contentstack/cli-utilities');
+
 module.exports = async ({ migration, stackSDKInstance, managementAPIClient, config }) => {
   const modules = ['entries', 'assets', 'extensions', 'marketplace_apps'];
 
@@ -16,13 +17,23 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
         if (module === 'marketplace_apps') {
           Object.values(mappedIds).forEach((ids) => Object.assign(uidMapping, ids));
         } else {
-          Object.assign(uidMapping, mappedIds);
+          Object.assign(uidMapping, sanitizeObject(mappedIds));
         }
       }
     });
 
     return uidMapping;
   };
+
+  const sanitizeObject = (obj) => {
+    const sanitized = {};
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        sanitized[key] = obj[key];
+      }
+    }
+    return sanitized;
+  }
 
   const getEntries = async (ct) => {
     try {
@@ -62,11 +73,13 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
     let oldUids = Object.keys(uidMapping);
     matches.forEach((m) => {
       if (oldUids.includes(m)) {
-        m = replaceNonAlphanumericWithEmpty(m);
         let regex = new RegExp(m, 'g');
-        stringifiedEntry = stringifiedEntry.replace(regex, uidMapping[m]);
-        console.log(chalk.green(`Replacing the UID '${m}' with '${uidMapping[m]}'...`));
-        isUpdated = true;
+        let { status } = validateRegex(regex);
+        if (status === 'safe') {
+          stringifiedEntry = stringifiedEntry.replace(regex, uidMapping[m]);
+          console.log(chalk.green(`Replacing the UID '${m}' with '${uidMapping[m]}'...`));
+          isUpdated = true;
+        }
       }
     });
     return { stringifiedEntry, isUpdated };
