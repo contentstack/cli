@@ -1,6 +1,8 @@
 const fs = require('fs');
 const chalk = require('chalk');
 const path = require('path');
+const { validateRegex } = require('@contentstack/cli-utilities');
+
 module.exports = async ({ migration, stackSDKInstance, managementAPIClient, config }) => {
   const modules = ['entries', 'assets', 'extensions', 'marketplace_apps'];
 
@@ -8,20 +10,30 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
     let uidMapping = {};
 
     modules.forEach((module) => {
-      const mappingFilePath = path.join(filePath, 'mapper', module, 'uid-mapping.json');
+      const mappingFilePath = path.join(sanitizePath(filePath), 'mapper', sanitizePath(module), 'uid-mapping.json');
       if (fs.existsSync(mappingFilePath)) {
-        const mappedIds = JSON.parse(fs.readFileSync(mappingFilePath, 'utf-8'));
+        const mappedIds = JSON.parse(fs.readFileSync(sanitizePath(mappingFilePath), 'utf-8'));
 
         if (module === 'marketplace_apps') {
           Object.values(mappedIds).forEach((ids) => Object.assign(uidMapping, ids));
         } else {
-          Object.assign(uidMapping, mappedIds);
+          Object.assign(uidMapping, sanitizeObject(mappedIds));
         }
       }
     });
 
     return uidMapping;
   };
+
+  const sanitizeObject = (obj) => {
+    const sanitized = {};
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        sanitized[key] = obj[key];
+      }
+    }
+    return sanitized;
+  }
 
   const getEntries = async (ct) => {
     try {
@@ -62,9 +74,12 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
     matches.forEach((m) => {
       if (oldUids.includes(m)) {
         let regex = new RegExp(m, 'g');
-        stringifiedEntry = stringifiedEntry.replace(regex, uidMapping[m]);
-        console.log(chalk.green(`Replacing the UID '${m}' with '${uidMapping[m]}'...`));
-        isUpdated = true;
+        let { status } = validateRegex(regex);
+        if (status === 'safe') {
+          stringifiedEntry = stringifiedEntry.replace(regex, uidMapping[m]);
+          console.log(chalk.green(`Replacing the UID '${m}' with '${uidMapping[m]}'...`));
+          isUpdated = true;
+        }
       }
     });
     return { stringifiedEntry, isUpdated };
