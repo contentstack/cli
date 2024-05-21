@@ -1,12 +1,12 @@
 {
   "name": "@contentstack/cli-cm-export",
   "description": "Contentstack CLI plugin to export content from stack",
-  "version": "1.11.3",
+  "version": "1.11.4",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@contentstack/cli-command": "~1.2.18",
-    "@contentstack/cli-utilities": "~1.6.1",
+    "@contentstack/cli-utilities": "~1.6.2",
     "@oclif/core": "^3.26.5",
     "async": "^3.2.4",
     "big-json": "^3.2.0",

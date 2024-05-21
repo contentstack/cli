@@ -1,13 +1,13 @@
 /*!
  * Contentstack Import
- * Copyright (c) 2019 Contentstack LLC
+ * Copyright (c) 2024 Contentstack LLC
  * MIT Licensed
  */
 
 var winston = require('winston');
 var path = require('path');
 var mkdirp = require('mkdirp');
-const { pathValidator } = require('@contentstack/cli-utilities');
+const { pathValidator, sanitizePath } = require('@contentstack/cli-utilities');
 var slice = Array.prototype.slice;
 
 function returnString(args) {
@@ -42,10 +42,10 @@ var myCustomLevels = {
 };
 
 function init(_logPath, logfileName) {
-  var logsDir = pathValidator(path.resolve(_logPath, 'logs', 'import'));
+  var logsDir = pathValidator(path.resolve(sanitizePath(_logPath), 'logs', 'import'));
   // Create dir if doesn't already exist
   mkdirp.sync(logsDir);
-  var logPath = path.join(logsDir, pathValidator(logfileName) + '.log');
+  var logPath = path.join(sanitizePath(logsDir), pathValidator(sanitizePath(logfileName)) + '.log');
 
   var transports = [
     new winston.transports.File({
