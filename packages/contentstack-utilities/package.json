@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-utilities",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "Utilities for contentstack projects",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -55,7 +55,8 @@
     "unique-string": "^2.0.0",
     "uuid": "^9.0.0",
     "winston": "^3.7.2",
-    "xdg-basedir": "^4.0.0"
+    "xdg-basedir": "^4.0.0",
+    "recheck": "^4.4.5"
   },
   "devDependencies": {
     "@contentstack/cli-dev-dependencies": "^1.2.4",
