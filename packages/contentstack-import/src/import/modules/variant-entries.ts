@@ -1,4 +1,4 @@
-import { Import, ImportHelperMethodsConfig } from '@contentstack/cli-variants';
+import { Import, ImportHelperMethodsConfig, LogType } from '@contentstack/cli-variants';
 
 import { ImportConfig, ModuleClassParams } from '../../types';
 import { log, lookUpTerms, lookupAssets, lookupEntries, lookupExtension, restoreJsonRteEntryRefs } from '../../utils';
@@ -26,7 +26,7 @@ export default class ImportVarientEntries {
           lookupExtension,
           restoreJsonRteEntryRefs,
         };
-        await new Import.VariantEntries(Object.assign(this.config, { helpers })).import();
+        await new Import.VariantEntries(Object.assign(this.config, { helpers }), log as unknown as LogType).import();
       }
     } catch (error) {
       log(this.config, error, 'error');
