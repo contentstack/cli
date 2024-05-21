@@ -131,18 +131,14 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
   }
 
   /**
-   * The function `createVariantEntry` creates a new variant entry using the provided input and
-   * options.
-   * @param {CreateVariantEntryDto} input - The `input` parameter in the `createVariantEntry` function
-   * is of type `CreateVariantEntryDto`. This parameter likely contains the data needed to create a new
-   * variant entry, such as the fields and values for the variant entry.
-   * @param {CreateVariantEntryOptions} options - The `options` parameter contains the following
-   * properties:
-   * @returns The function `createVariantEntry` is returning a POST request to the specified endpoint
-   * with the input data provided in the `CreateVariantEntryDto` parameter. The response is expected to
-   * be of type `VariantEntryStruct`.
+   * Creates a variant entry.
+   *
+   * @param input - The input data for the variant entry.
+   * @param options - The options for creating the variant entry.
+   * @param apiParams - Additional parameters for the API.
+   * @returns A Promise that resolves to a VariantEntryStruct, a string, or void.
    */
-  createVariantEntry(
+  async createVariantEntry(
     input: CreateVariantEntryDto,
     options: CreateVariantEntryOptions,
     apiParams: Record<string, any>,
@@ -160,17 +156,17 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
 
     const onSuccess = (response: any) =>
       resolve({ response, apiData: { variantUid, entryUid: entry_uid, title: input.title }, log });
-    const onReject = (error: Error) =>
+    const onReject = (error: any) =>
       reject({
         error,
         apiData: { variantUid, entryUid: entry_uid, title: input.title },
-        log
+        log,
       });
 
     return this.apiClient.put<VariantEntryStruct>(endpoint, { entry: input }).then((res: any) => {
       const data = this.handleVariantAPIRes(res);
-      if (res.status === 200 && res.status < 300) {
-        onSuccess(data );
+      if (res.status >= 200 && res.status < 300) {
+        onSuccess(data);
       } else {
         onReject(data);
       }
