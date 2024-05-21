@@ -255,13 +255,8 @@ export const lookupAssets = function (
       // const sanitizedUrl = escapeRegExp(assetUrl).replace(/\.\./g, '\\$&');
       // const escapedMappedUrl = escapeRegExp(mappedAssetUrl).replace(/\.\./g, '\\$&');
       // entry = entry.replace(new RegExp(sanitizedUrl, 'img'), escapedMappedUrl);
-      if (isValidURL(mappedAssetUrl)) {
-        let { status } = validateRegex(new RegExp(assetUrl, 'img'))
-        if (status === 'safe') {
-          entry = entry.replace(new RegExp(assetUrl, 'img'), mappedAssetUrl);
-          matchedUrls.push(mappedAssetUrl);
-        }
-      }
+      entry = entry.replace(new RegExp(assetUrl, 'img'), mappedAssetUrl);
+      matchedUrls.push(mappedAssetUrl);
     } else {
       unmatchedUrls.push(assetUrl);
     }
