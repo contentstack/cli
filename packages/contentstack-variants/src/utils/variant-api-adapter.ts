@@ -64,9 +64,9 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
       getAllData,
       returnResult,
       content_type_uid,
-      locale,
       skip = variantConfig.query.skip || 0,
       limit = variantConfig.query.limit || 100,
+      locale = variantConfig.query.locale || 'en-us',
       include_variant = variantConfig.query.include_variant || true,
     } = options;
 
