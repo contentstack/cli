@@ -163,14 +163,18 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
         log,
       });
 
-    return this.apiClient.put<VariantEntryStruct>(endpoint, { entry: input }).then((res: any) => {
+    try {
+      const res = await this.apiClient.put<VariantEntryStruct>(endpoint, { entry: input });
       const data = this.handleVariantAPIRes(res);
+
       if (res.status >= 200 && res.status < 300) {
         onSuccess(data);
       } else {
         onReject(data);
       }
-    });
+    } catch (error: any) {
+      onReject(error);
+    }
   }
 
   /**
@@ -188,20 +192,9 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
       return data;
     }
 
-    let errorMsg: string;
-    if (data) {
-      if (data?.errors && Object.keys(data.errors).length > 0) {
-        errorMsg = formatErrors(data.errors);
-      } else if (data?.error_message) {
-        errorMsg = data.error_message;
-      } else if (data?.message) {
-        errorMsg = data.message;
-      } else {
-        errorMsg = data;
-      }
-    } else {
-      errorMsg = 'Something went wrong while processing variant entries request!';
-    }
+    const errorMsg = data?.errors
+      ? formatErrors(data.errors)
+      : data?.error_message || data?.message || 'Something went wrong while processing variant entries request!';
 
     throw errorMsg;
   }
