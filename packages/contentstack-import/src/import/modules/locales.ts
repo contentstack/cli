@@ -1,13 +1,13 @@
 /* eslint-disable no-prototype-builtins */
 /*!
  * Contentstack Import
- * Copyright (c) 2019 Contentstack LLC
+ * Copyright (c) 2024 Contentstack LLC
  * MIT Licensed
  */
 
 import * as path from 'path';
 import { values, isEmpty, filter, pick } from 'lodash';
-import { cliux } from '@contentstack/cli-utilities';
+import { cliux, sanitizePath } from '@contentstack/cli-utilities';
 import { fsUtil, log, formatError, fileHelper } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import BaseClass from './base-class';
@@ -49,11 +49,11 @@ export default class ImportLocales extends BaseClass {
     this.createdLocales = [];
     this.failedLocales = [];
     this.reqConcurrency = this.localeConfig.writeConcurrency || this.config.writeConcurrency;
-    this.langMapperPath = path.resolve(this.config.data, 'mapper', 'languages');
-    this.langFolderPath = path.resolve(this.config.data, this.localeConfig.dirName);
-    this.langFailsPath = path.resolve(this.config.data, 'mapper', 'languages', 'fails.json');
-    this.langSuccessPath = path.resolve(this.config.data, 'mapper', 'languages', 'success.json');
-    this.langUidMapperPath = path.resolve(this.config.data, 'mapper', 'languages', 'uid-mapper.json');
+    this.langMapperPath = path.resolve(sanitizePath(this.config.data), 'mapper', 'languages');
+    this.langFolderPath = path.resolve(sanitizePath(this.config.data), sanitizePath(this.localeConfig.dirName));
+    this.langFailsPath = path.resolve(sanitizePath(this.config.data), 'mapper', 'languages', 'fails.json');
+    this.langSuccessPath = path.resolve(sanitizePath(this.config.data), 'mapper', 'languages', 'success.json');
+    this.langUidMapperPath = path.resolve(sanitizePath(this.config.data), 'mapper', 'languages', 'uid-mapper.json');
   }
 
   async start(): Promise<any> {
