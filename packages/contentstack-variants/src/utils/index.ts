@@ -6,3 +6,4 @@ export * from './helper';
 export * from './attributes-helper';
 export * from './audiences-helper';
 export * from './events-helper';
+export * from './error-helper';

@@ -53,7 +53,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
       this.config.data,
       this.personalizationConfig.dirName,
       this.experienceConfig.dirName,
-      'experience-variants-ids.json',
+      'experiences-variants-ids.json',
     );
     this.variantUidMapperFilePath = resolve(this.expMapperDirPath, 'variants-uid-mapping.json');
     this.experiencesUidMapper = {};
