@@ -51,15 +51,15 @@ export default class ContentType {
     this.fix = fix ?? false;
     this.ctSchema = ctSchema;
     this.gfSchema = gfSchema;
-    this.moduleName = this.validateModules(moduleName!,this.config.moduleConfig);
+    this.moduleName = this.validateModules(moduleName!, this.config.moduleConfig);
     this.fileName = config.moduleConfig[this.moduleName].fileName;
     this.folderPath = resolve(sanitizePath(config.basePath), sanitizePath(config.moduleConfig[this.moduleName].dirName));
   }
 
-  validateModules(moduleName:keyof typeof auditConfig.moduleConfig, moduleConfig: Record<string, unknown>):keyof typeof auditConfig.moduleConfig {
-    if(Object.keys(moduleConfig).includes(moduleName)){
+  validateModules(moduleName: keyof typeof auditConfig.moduleConfig, moduleConfig: Record<string, unknown>): keyof typeof auditConfig.moduleConfig {
+    if (Object.keys(moduleConfig).includes(moduleName)) {
       return moduleName;
-    } 
+    }
     return 'content-types'
   }
   /**
@@ -121,7 +121,7 @@ export default class ContentType {
     if (existsSync(extensionPath)) {
       try {
         this.extensions = Object.keys(JSON.parse(readFileSync(extensionPath, 'utf8')));
-      } catch (error) {}
+      } catch (error) { }
     }
 
     if (existsSync(marketplacePath)) {
@@ -134,7 +134,7 @@ export default class ContentType {
           ) as string[];
           this.extensions.push(...metaData);
         }
-      } catch (error) {}
+      } catch (error) { }
     }
   }
 
@@ -189,8 +189,8 @@ export default class ContentType {
             ...this.validateReferenceField(
               [...tree, { uid: field.uid, name: child.display_name }],
               child as ReferenceFieldDataType,
-          ),
-        );
+            ),
+          );
           break;
         case 'global_field':
           await this.validateGlobalField(
@@ -270,19 +270,19 @@ export default class ContentType {
 
     return missingRefs.length
       ? [
-          {
-            tree,
-            data_type,
-            missingRefs,
-            display_name,
-            ct_uid: this.currentUid,
-            name: this.currentTitle,
-            treeStr: tree
-              .map(({ name }) => name)
-              .filter((val) => val)
-              .join(' ➜ '),
-          },
-        ]
+        {
+          tree,
+          data_type,
+          missingRefs,
+          display_name,
+          ct_uid: this.currentUid,
+          name: this.currentTitle,
+          treeStr: tree
+            .map(({ name }) => name)
+            .filter((val) => val)
+            .join(' ➜ '),
+        },
+      ]
       : [];
   }
 
@@ -398,19 +398,19 @@ export default class ContentType {
 
     return missingRefs.length
       ? [
-          {
-            tree,
-            data_type,
-            missingRefs,
-            display_name,
-            ct_uid: this.currentUid,
-            name: this.currentTitle,
-            treeStr: tree
-              .map(({ name }) => name)
-              .filter((val) => val)
-              .join(' ➜ '),
-          },
-        ]
+        {
+          tree,
+          data_type,
+          missingRefs,
+          display_name,
+          ct_uid: this.currentUid,
+          name: this.currentTitle,
+          treeStr: tree
+            .map(({ name }) => name)
+            .filter((val) => val)
+            .join(' ➜ '),
+        },
+      ]
       : [];
   }
 
