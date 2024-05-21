@@ -34,7 +34,7 @@ export default class Extensions {
     this.fix = fix ?? false;
     this.ctSchema = ctSchema;
     this.extensionsSchema = [];
-    this.moduleName = this.validateModules(moduleName!,this.config.moduleConfig);
+    this.moduleName = this.validateModules(moduleName!, this.config.moduleConfig);
     this.fileName = config.moduleConfig[this.moduleName].fileName;
     this.folderPath = resolve(sanitizePath(config.basePath), sanitizePath(config.moduleConfig[this.moduleName].dirName));
     this.ctUidSet = new Set(['$all']);
@@ -42,10 +42,10 @@ export default class Extensions {
     this.missingCts = new Set();
     this.extensionsPath = '';
   }
-  validateModules(moduleName:keyof typeof auditConfig.moduleConfig, moduleConfig: Record<string, unknown>):keyof typeof auditConfig.moduleConfig {
-    if(Object.keys(moduleConfig).includes(moduleName)){
+  validateModules(moduleName: keyof typeof auditConfig.moduleConfig, moduleConfig: Record<string, unknown>): keyof typeof auditConfig.moduleConfig {
+    if (Object.keys(moduleConfig).includes(moduleName)) {
       return moduleName;
-    } 
+    }
     return 'extensions'
   }
 
