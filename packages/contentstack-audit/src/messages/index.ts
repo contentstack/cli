@@ -82,8 +82,6 @@ function $t(msg: string, args: Record<string, string>): string {
       if (status === 'safe') {
         const sanitizedValue = args[key] ? escapeRegExp(args[key]) : '';
         msg = msg.replace(escapedKeyRegex, sanitizedValue || escapedKey);
-      } else {
-
       }
     }
 
