@@ -27,6 +27,7 @@ const config: DefaultConfig = {
     types: [
       'locales',
       'environments',
+      'assets',
       'taxonomies',
       'extensions',
       'marketplace-apps',
