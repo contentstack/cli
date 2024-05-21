@@ -84,7 +84,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       return;
     }
 
-    if (!existsSync(variantIdPath) && isEmpty(variantIdPath)) {
+    if (!existsSync(variantIdPath)) {
       this.log(this.config, this.messages.EMPTY_VARIANT_UID_DATA, 'info');
       return;
     }
@@ -110,6 +110,10 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     const envPath = resolve(this.config.backupDir, 'mapper', 'environments', 'environments.json');
     // NOTE Read and store list of variant IDs
     this.variantIdList = (fsUtil.readFile(variantIdPath, true) || {}) as Record<string, unknown>;
+    if (!isEmpty(this.variantIdList)) {
+      this.log(this.config, this.messages.EMPTY_VARIANT_UID_DATA, 'info');
+      return;
+    }
 
     // NOTE entry relational data lookup dependencies.
     this.entriesUidMapper = (fsUtil.readFile(entriesUidMapperPath, true) || {}) as Record<string, any>;
