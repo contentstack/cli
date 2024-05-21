@@ -66,5 +66,3 @@ export const validateFileName = (fileName) => /^[a-zA-Z0-9-_\.]+$/.test(fileName
 
 // Validate Regex for ReDDos
 export const validateRegex = (str) => checkSync(str, "");
-
-export const isValidURL = url => /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})([\/\w .-]*)*\/?$/.test(url);
