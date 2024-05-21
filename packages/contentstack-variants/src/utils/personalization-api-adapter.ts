@@ -167,20 +167,9 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
       return data;
     }
 
-    let errorMsg: string;
-    if (data) {
-      if (data?.errors && Object.keys(data.errors).length > 0) {
-        errorMsg = formatErrors(data.errors);
-      } else if (data?.error_message) {
-        errorMsg = data.error_message;
-      } else if (data?.message) {
-        errorMsg = data.message;
-      } else {
-        errorMsg = data;
-      }
-    } else {
-      errorMsg = 'Something went wrong while processing your request!';
-    }
+    const errorMsg = data?.errors
+      ? formatErrors(data.errors)
+      : data?.error_message || data?.message || 'Something went wrong while processing variant entries request!';
 
     throw errorMsg;
   }
