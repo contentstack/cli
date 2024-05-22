@@ -2,6 +2,8 @@ import omit from 'lodash/omit';
 import chunk from 'lodash/chunk';
 import entries from 'lodash/entries';
 import isEmpty from 'lodash/isEmpty';
+import forEach from 'lodash/forEach';
+import indexOf from 'lodash/indexOf';
 import { join, resolve } from 'path';
 import { readFileSync, existsSync } from 'fs';
 import { FsUtility, HttpResponse } from '@contentstack/cli-utilities';
@@ -18,6 +20,7 @@ import {
   ImportHelperMethodsConfig,
   EntryDataForVariantEntries,
   CreateVariantEntryDto,
+  PublishVariantEntryDto,
 } from '../types';
 import { fsUtil } from '../utils';
 
@@ -35,6 +38,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
   private installedExtensions!: Record<string, any>[];
   private variantUidMapper: Record<string, string>;
   private variantUidMapperPath!: string;
+  private environments!: Record<string, any>;
 
   constructor(
     readonly config: ImportConfig & { helpers?: ImportHelperMethodsConfig },
@@ -107,7 +111,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       'success.json',
     );
     const marketplaceAppMapperPath = resolve(this.config.backupDir, 'mapper', 'marketplace_apps', 'uid-mapping.json');
-    const envPath = resolve(this.config.backupDir, 'mapper', 'environments', 'environments.json');
+    const envPath = resolve(this.config.backupDir, 'environments', 'environments.json');
     // NOTE Read and store list of variant IDs
     this.variantIdList = (fsUtil.readFile(variantIdPath, true) || {}) as Record<string, unknown>;
     if (isEmpty(this.variantIdList)) {
@@ -122,6 +126,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     this.taxonomies = (fsUtil.readFile(taxonomiesPath, true) || {}) as Record<string, unknown>;
     this.assetUidMapper = (fsUtil.readFile(assetUidMapperPath, true) || {}) as Record<string, any>;
     this.assetUrlMapper = (fsUtil.readFile(assetUrlMapperPath, true) || {}) as Record<string, any>;
+    this.environments = (fsUtil.readFile(envPath, true) || {}) as Record<string, any>;
 
     for (const entriesForVariant of entriesForVariants) {
       await this.importVariantEntries(entriesForVariant);
@@ -187,21 +192,22 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       const start = Date.now();
 
       for (let [, variantEntry] of entries(batch)) {
-        const onSuccess = ({ response, apiData: { entryUid, variantUid, title }, log }: any) => {
-          log(this.config, `Created variant entry: '${title}' of entry uid ${entryUid}`, 'info');
+        const onSuccess = ({ response, apiData: { entryUid, variantUid }, log }: any) => {
+          log(this.config, `Created variant entry: '${variantUid}' of entry uid ${entryUid}`, 'info');
           this.variantUidMapper[variantUid] = response?.entry?._variant?.uid || '';
         };
-        const onReject = ({ error, apiData: { entryUid, variantUid, title }, log }: any) => {
-          log(this.config, `Failed to create variant entry: '${title}' of entry uid ${entryUid}`, 'error');
+        const onReject = ({ error, apiData: { entryUid, variantUid }, log }: any) => {
+          log(this.config, `Failed to create variant entry: '${variantUid}' of entry uid ${entryUid}`, 'error');
           log(this.config, error, 'error');
         };
         // NOTE Find new variant Id by old Id
         const variant_id = this.variantIdList[variantEntry.variant_id] as string;
         // NOTE Replace all the relation data UID's
         variantEntry = this.handleVariantEntryRelationalData(contentType, variantEntry);
+        const changeSet = this.serializeChangeSet(variantEntry);
         const createVariantReq: CreateVariantEntryDto = {
-          title: variantEntry.title,
           _variant: variantEntry._variant,
+          ...changeSet,
         };
         const variantUid = variantEntry?._variant?.uid || '';
 
@@ -229,16 +235,32 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       }
 
       // NOTE Handle the API response here
-      const resultSet = await Promise.allSettled(allPromise);
+      await Promise.allSettled(allPromise);
       fsUtil.writeFile(this.variantUidMapperPath, this.variantUidMapper);
-      this.log(this.config, `Batch No. (${batchNo}/${batches.length}) of variant entry import is complete`, 'success');
 
       // NOTE publish all the entries
-      this.publishVariantEntries(resultSet);
+      await this.publishVariantEntries(batch, entryUid, content_type);
+      this.log(
+        this.config,
+        `Entry variant import & publish completed for Batch No. (${batchNo}/${batches.length}).`,
+        'success',
+      );
       const end = Date.now();
       const exeTime = end - start;
       this.variantInstance.delay(1000 - exeTime);
     }
+  }
+
+  serializeChangeSet(variantEntry: VariantEntryStruct) {
+    let changeSet: Record<string, any> = {};
+    if (variantEntry?._variant?._change_set?.length) {
+      variantEntry._variant._change_set.forEach((data: string) => {
+        if (variantEntry[data]) {
+          changeSet[data] = variantEntry[data];
+        }
+      });
+    }
+    return changeSet;
   }
 
   /**
@@ -309,9 +331,79 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     return variantEntry;
   }
 
-  publishVariantEntries(resultSet: PromiseSettledResult<unknown>[]) {
-    // FIXME: Handle variant entry publish
-    console.log('Variant entry publish');
-    return resultSet;
+  async publishVariantEntries(batch: VariantEntryStruct[], entryUid: string, content_type: string) {
+    const allPromise = [];
+    for (let [, variantEntry] of entries(batch)) {
+      const oldVariantUid = variantEntry?._variant?.uid || '';
+      const newVariantUid = this.variantUidMapper[oldVariantUid];
+      if (!newVariantUid) {
+        this.log(this.config, `Variant UID not found for variant entry '${variantEntry?.uid}'`, 'error');
+        continue;
+      }
+      if (this.environments?.length) {
+        this.log(this.config, 'No environment found! Skipping variant entry publishing...', 'info');
+        return;
+      }
+
+      const onSuccess = ({ response, apiData: { entryUid, variantUid }, log }: any) => {
+        log(this.config, `Variant entry: '${variantUid}' of entry uid ${entryUid} published successfully!`, 'info');
+      };
+      const onReject = ({ error, apiData: { entryUid, variantUid }, log }: any) => {
+        log(this.config, `Failed to publish variant entry: '${variantUid}' of entry uid ${entryUid}`, 'error');
+        log(this.config, error, 'error');
+      };
+
+      const { environments, locales } = this.serializePublishEntries(variantEntry);
+      if (environments?.length === 0 || locales?.length === 0) {
+        continue;
+      }
+      const publishReq: PublishVariantEntryDto = {
+        entry: { environments, locales, publish_with_base_entry: false, variants: [{ uid: newVariantUid }] },
+        locale: variantEntry.locale,
+      };
+
+      const promise = this.variantInstance.publishVariantEntry(
+        publishReq,
+        {
+          entry_uid: entryUid,
+          content_type_uid: content_type,
+        },
+        {
+          reject: onReject.bind(this),
+          resolve: onSuccess.bind(this),
+          log: this.log,
+        },
+      );
+
+      allPromise.push(promise);
+    }
+    await Promise.allSettled(allPromise);
+  }
+
+  serializePublishEntries(variantEntry: VariantEntryStruct): {
+    environments: Array<string>;
+    locales: Array<string>;
+  } {
+    const requestObject: {
+      environments: Array<string>;
+      locales: Array<string>;
+    } = {
+      environments: [],
+      locales: [],
+    };
+    if (variantEntry.publish_details && variantEntry.publish_details?.length > 0) {
+      forEach(variantEntry.publish_details, (pubObject) => {
+        if (
+          this.environments.hasOwnProperty(pubObject.environment) &&
+          indexOf(requestObject.environments, this.environments[pubObject.environment].name) === -1
+        ) {
+          requestObject.environments.push(this.environments[pubObject.environment].name);
+        }
+        if (pubObject.locale && indexOf(requestObject.locales, pubObject.locale) === -1) {
+          requestObject.locales.push(pubObject.locale);
+        }
+      });
+    }
+    return requestObject;
   }
 }

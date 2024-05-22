@@ -133,8 +133,9 @@ export default interface DefaultConfig {
       query: {
         skip: number;
         limit: number;
-        locale: string;
         include_variant: boolean;
+        include_count: boolean;
+        include_publish_details: boolean;
       } & AnyProperty;
     } & AnyProperty;
     extensions: {
