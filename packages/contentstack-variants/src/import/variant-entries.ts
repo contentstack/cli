@@ -194,7 +194,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       for (let [, variantEntry] of entries(batch)) {
         const onSuccess = ({ response, apiData: { entryUid, variantUid }, log }: any) => {
           log(this.config, `Created variant entry: '${variantUid}' of entry uid ${entryUid}`, 'info');
-          this.variantUidMapper[variantUid] = response?.entry?._variant?.uid || '';
+          this.variantUidMapper[variantUid] = response?.entry?.variant_id || '';
         };
         const onReject = ({ error, apiData: { entryUid, variantUid }, log }: any) => {
           log(this.config, `Failed to create variant entry: '${variantUid}' of entry uid ${entryUid}`, 'error');
@@ -209,7 +209,6 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
           _variant: variantEntry._variant,
           ...changeSet,
         };
-        const variantUid = variantEntry?._variant?.uid || '';
 
         if (variant_id) {
           const promise = this.variantInstance.createVariantEntry(
@@ -223,7 +222,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
             {
               reject: onReject.bind(this),
               resolve: onSuccess.bind(this),
-              variantUid,
+              variantUid: variantEntry.variant_id,
               log: this.log,
             },
           );
@@ -334,10 +333,10 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
   async publishVariantEntries(batch: VariantEntryStruct[], entryUid: string, content_type: string) {
     const allPromise = [];
     for (let [, variantEntry] of entries(batch)) {
-      const oldVariantUid = variantEntry?._variant?.uid || '';
+      const oldVariantUid = variantEntry.variant_id || '';
       const newVariantUid = this.variantUidMapper[oldVariantUid];
       if (!newVariantUid) {
-        this.log(this.config, `Variant UID not found for variant entry '${variantEntry?.uid}'`, 'error');
+        this.log(this.config, `Variant UID not found for entry '${variantEntry?.uid}'`, 'error');
         continue;
       }
       if (this.environments?.length) {
