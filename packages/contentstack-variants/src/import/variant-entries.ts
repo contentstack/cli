@@ -36,7 +36,6 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
   public assetUidMapper!: Record<string, any>;
   public entriesUidMapper!: Record<string, any>;
   private installedExtensions!: Record<string, any>[];
-  private variantUidMapper: Record<string, string>;
   private variantUidMapperPath!: string;
   private environments!: Record<string, any>;
 
@@ -61,8 +60,6 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     this.entriesMapperPath = resolve(config.backupDir, config.branchName || '', 'mapper', 'entries');
     this.personalizationConfig = this.config.modules.personalization;
     this.entriesDirPath = resolve(config.backupDir, config.branchName || '', config.modules.entries.dirName);
-    this.variantUidMapperPath = resolve(this.entriesMapperPath, 'variant-uid-mapping.json');
-    this.variantUidMapper = {};
   }
 
   /**
@@ -194,8 +191,8 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       for (let [, variantEntry] of entries(batch)) {
         const onSuccess = ({ response, apiData: { entryUid, variantUid }, log }: any) => {
           log(this.config, `Created variant entry: '${variantUid}' of entry uid ${entryUid}`, 'info');
-          this.variantUidMapper[variantUid] = response?.entry?.variant_id || '';
         };
+
         const onReject = ({ error, apiData: { entryUid, variantUid }, log }: any) => {
           log(this.config, `Failed to create variant entry: '${variantUid}' of entry uid ${entryUid}`, 'error');
           log(this.config, error, 'error');
@@ -235,15 +232,14 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
 
       // NOTE Handle the API response here
       await Promise.allSettled(allPromise);
-      fsUtil.writeFile(this.variantUidMapperPath, this.variantUidMapper);
 
       // NOTE publish all the entries
       await this.publishVariantEntries(batch, entryUid, content_type);
-      this.log(
-        this.config,
-        `Entry variant import & publish completed for Batch No. (${batchNo}/${batches.length}).`,
-        'success',
-      );
+      // this.log(
+      //   this.config,
+      //   `Entry variant import & publish completed for Batch No. (${batchNo}/${batches.length}).`,
+      //   'success',
+      // );
       const end = Date.now();
       const exeTime = end - start;
       this.variantInstance.delay(1000 - exeTime);
@@ -334,7 +330,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     const allPromise = [];
     for (let [, variantEntry] of entries(batch)) {
       const oldVariantUid = variantEntry.variant_id || '';
-      const newVariantUid = this.variantUidMapper[oldVariantUid];
+      const newVariantUid = this.variantIdList[oldVariantUid] as string;
       if (!newVariantUid) {
         this.log(this.config, `Variant UID not found for entry '${variantEntry?.uid}'`, 'error');
         continue;
