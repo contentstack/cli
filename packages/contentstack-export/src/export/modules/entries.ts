@@ -75,7 +75,9 @@ export default class EntriesExport extends BaseClass {
             Object.assign(this.exportConfig, { project_id }),
             log as LogType,
           );
-        } catch (_error) {}
+        } catch (error) {
+          log(this.exportConfig, `Failed to export variant entries ${error}`, 'error');
+        }
       }
 
       const entryRequestOptions = this.createRequestObjects(locales, contentTypes);
@@ -91,7 +93,7 @@ export default class EntriesExport extends BaseClass {
       log(this.exportConfig, 'Entries exported successfully', 'success');
     } catch (error) {
       log(this.exportConfig, `Failed to export entries ${formatError(error)}`, 'error');
-      throw new Error('Failed to export entries');
+      // throw new Error('Failed to export entries');
     }
   }
 
