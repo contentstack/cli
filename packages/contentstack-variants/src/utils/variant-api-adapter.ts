@@ -216,6 +216,7 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
       });
 
     try {
+      this.apiClient.headers({ 'api_version': 3.2 });
       const res = await this.apiClient.post<any>(endpoint, input);
       const data = this.handleVariantAPIRes(res);
 
