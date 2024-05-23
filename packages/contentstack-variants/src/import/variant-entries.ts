@@ -128,6 +128,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     for (const entriesForVariant of entriesForVariants) {
       await this.importVariantEntries(entriesForVariant);
     }
+    this.log(this.config, 'All the variant-entries have been imported & published successfully', 'success');
   }
 
   /**
@@ -149,7 +150,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       try {
         const variantEntries = (await fs.readChunkFiles.next()) as VariantEntryStruct[];
 
-        await this.handleCuncurrency(contentType, variantEntries, entriesForVariant);
+        await this.handleConcurrency(contentType, variantEntries, entriesForVariant);
       } catch (error) {
         this.log(this.config, error, 'error');
       }
@@ -170,7 +171,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
    * `Promise.allSettled`. The function also includes logic to handle variant IDs and delays between
    * batch processing.
    */
-  async handleCuncurrency(
+  async handleConcurrency(
     contentType: ContentTypeStruct,
     variantEntries: VariantEntryStruct[],
     entriesForVariant: EntryDataForVariantEntries,
@@ -219,7 +220,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
             {
               reject: onReject.bind(this),
               resolve: onSuccess.bind(this),
-              variantUid: variantEntry.variant_id,
+              variantUid: variant_id,
               log: this.log,
             },
           );
@@ -232,14 +233,8 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
 
       // NOTE Handle the API response here
       await Promise.allSettled(allPromise);
-
       // NOTE publish all the entries
       await this.publishVariantEntries(batch, entryUid, content_type);
-      // this.log(
-      //   this.config,
-      //   `Entry variant import & publish completed for Batch No. (${batchNo}/${batches.length}).`,
-      //   'success',
-      // );
       const end = Date.now();
       const exeTime = end - start;
       this.variantInstance.delay(1000 - exeTime);
@@ -353,8 +348,9 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         continue;
       }
       const publishReq: PublishVariantEntryDto = {
-        entry: { environments, locales, publish_with_base_entry: false, variants: [{ uid: newVariantUid }] },
+        entry: { environments, locales, publish_with_base_entry: false, variants: [{ uid: newVariantUid, version:1 }] },
         locale: variantEntry.locale,
+        version: 1,
       };
 
       const promise = this.variantInstance.publishVariantEntry(
