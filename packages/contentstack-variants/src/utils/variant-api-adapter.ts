@@ -22,6 +22,8 @@ import {
   CreateVariantEntryDto,
   CreateVariantEntryOptions,
   APIResponse,
+  PublishVariantEntryDto,
+  PublishVariantEntryOptions,
 } from '../types';
 import messages from '../messages';
 import { AdapterHelper } from './adapter-helper';
@@ -64,10 +66,12 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
       getAllData,
       returnResult,
       content_type_uid,
+      locale,
       skip = variantConfig.query.skip || 0,
       limit = variantConfig.query.limit || 100,
-      locale = variantConfig.query.locale || 'en-us',
       include_variant = variantConfig.query.include_variant || true,
+      include_count = variantConfig.query.include_count || true,
+      include_publish_details = variantConfig.query.include_publish_details || true,
     } = options;
 
     if (variantConfig.serveMockData && callback) {
@@ -79,6 +83,7 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
       callback(data);
       return;
     }
+    if (!locale) return;
 
     const start = Date.now();
     let endpoint = `/content_types/${content_type_uid}/entries/${entry_uid}/variants?locale=${locale}`;
@@ -95,13 +100,29 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
       endpoint = endpoint.concat(`&include_variant=${include_variant}`);
     }
 
-    const query = this.constructQuery(omit(variantConfig.query, ['skip', 'limit', 'locale', 'include_variant']));
+    if (include_count) {
+      endpoint = endpoint.concat(`&include_count=${include_count}`);
+    }
+
+    if (include_publish_details) {
+      endpoint = endpoint.concat(`&include_publish_details=${include_publish_details}`);
+    }
+
+    const query = this.constructQuery(
+      omit(variantConfig.query, [
+        'skip',
+        'limit',
+        'locale',
+        'include_variant',
+        'include_count',
+        'include_publish_details',
+      ]),
+    );
 
     if (query) {
       endpoint = endpoint.concat(query);
     }
 
-    // FIXME once API is ready, validate and adjust the response accordingly
     const data = await this.apiClient.get(endpoint);
     const response = this.handleVariantAPIRes(data) as { entries: VariantEntryStruct[]; count: number };
 
@@ -154,17 +175,57 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
       endpoint = endpoint.concat(query);
     }
 
-    const onSuccess = (response: any) =>
-      resolve({ response, apiData: { variantUid, entryUid: entry_uid, title: input.title }, log });
+    const onSuccess = (response: any) => resolve({ response, apiData: { variantUid, entryUid: entry_uid }, log });
     const onReject = (error: any) =>
       reject({
         error,
-        apiData: { variantUid, entryUid: entry_uid, title: input.title },
+        apiData: { variantUid, entryUid: entry_uid },
         log,
       });
 
     try {
       const res = await this.apiClient.put<VariantEntryStruct>(endpoint, { entry: input });
+      const data = this.handleVariantAPIRes(res);
+
+      if (res.status >= 200 && res.status < 300) {
+        onSuccess(data);
+      } else {
+        onReject(data);
+      }
+    } catch (error: any) {
+      onReject(error);
+    }
+  }
+
+  /**
+   * Publishes a variant entry.
+   *
+   * @param input - The input data for publishing the variant entry.
+   * @param options - The options for publishing the variant entry.
+   * @param apiParams - Additional API parameters.
+   * @returns A Promise that resolves to the published variant entry response.
+   */
+  async publishVariantEntry(
+    input: PublishVariantEntryDto,
+    options: PublishVariantEntryOptions,
+    apiParams: Record<string, any>,
+  ) {
+    const { reject, resolve, log } = apiParams;
+    const { entry_uid, content_type_uid } = options;
+    let endpoint = `content_types/${content_type_uid}/entries/${entry_uid}/publish`;
+
+    const onSuccess = (response: any) =>
+      resolve({ response, apiData: { entryUid: entry_uid, variantUid: input.entry.variants[0].uid }, log });
+    const onReject = (error: any) =>
+      reject({
+        error,
+        apiData: { entryUid: entry_uid, variantUid: input.entry.variants[0].uid },
+        log,
+      });
+
+    try {
+      this.apiClient.headers({ api_version: 3.2 });
+      const res = await this.apiClient.post<any>(endpoint, input);
       const data = this.handleVariantAPIRes(res);
 
       if (res.status >= 200 && res.status < 300) {
