@@ -27,6 +27,12 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
       try {
         const projects = JSON.parse(readFileSync(projectPath, 'utf8')) as CreateProjectInput[];
 
+        if (projects === undefined || projects?.length) {
+          this.config.modules.personalization.importData = false; // Stop personalization import if stack not connected to any project
+          this.log(this.config, 'No project found!', 'info');
+          return;
+        }
+
         for (const project of projects) {
           const { name, description } = project;
           const projectRes = await this.createProject({
@@ -42,6 +48,9 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
         this.log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Projects' }), 'error');
         throw error;
       }
+    } else {
+      this.config.modules.personalization.importData = false; // Stop personalization import if stack not connected to any project
+      this.log(this.config, 'No project found!', 'info');
     }
   }
 }
