@@ -122,7 +122,7 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
     if (query) {
       endpoint = endpoint.concat(query);
     }
-    
+
     const data = await this.apiClient.get(endpoint);
     const response = this.handleVariantAPIRes(data) as { entries: VariantEntryStruct[]; count: number };
 
@@ -197,6 +197,14 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
     }
   }
 
+  /**
+   * Publishes a variant entry.
+   *
+   * @param input - The input data for publishing the variant entry.
+   * @param options - The options for publishing the variant entry.
+   * @param apiParams - Additional API parameters.
+   * @returns A Promise that resolves to the published variant entry response.
+   */
   async publishVariantEntry(
     input: PublishVariantEntryDto,
     options: PublishVariantEntryOptions,
@@ -216,7 +224,7 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
       });
 
     try {
-      this.apiClient.headers({ 'api_version': 3.2 });
+      this.apiClient.headers({ api_version: 3.2 });
       const res = await this.apiClient.post<any>(endpoint, input);
       const data = this.handleVariantAPIRes(res);
 
