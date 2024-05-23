@@ -49,24 +49,33 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
       });
 
       const callback = (variantEntries: Record<string, any>[]) => {
-        if (!isEmpty(variantEntries)) {
+        if (variantEntries?.length) {
           variantEntriesFs.writeIntoFile(variantEntries);
         }
       };
 
-      await this.variantInstance
-        .variantEntries({
+      try {
+        await this.variantInstance.variantEntries({
           callback,
           getAllData: true,
           content_type_uid,
           entry_uid: entry.uid,
-        })
-      variantEntriesFs.completeFile(true);
-      this.log(
-        this.config,
-        `Exported variant entries of type '${entry.title} (${entry.uid})' locale '${locale}'`,
-        'info',
-      );
+          locale,
+        });
+        variantEntriesFs.completeFile(true);
+        this.log(
+          this.config,
+          `Exported variant entries of type '${entry.title} (${entry.uid})' locale '${locale}'`,
+          'info',
+        );
+      } catch (error) {
+        this.log(
+          this.config,
+          `Error exporting variant entries of type '${entry.title} (${entry.uid})' locale '${locale}'`,
+          'error',
+        );
+        this.log(this.config, error, 'error');
+      }
     }
   }
 }
