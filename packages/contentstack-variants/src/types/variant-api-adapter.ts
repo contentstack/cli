@@ -31,6 +31,8 @@ export type VariantsOption = {
   returnResult?: boolean;
   content_type_uid: string;
   include_variant?: boolean;
+  include_count?: boolean;
+  include_publish_details?: boolean;
   callback?: (value: Record<string, any>[]) => void;
 } & AnyProperty;
 
