@@ -31,15 +31,16 @@ export default class ImportPersonalization {
 
         for (const module of order) {
           const Module = moduleMapper[module];
+          if (!this.personalization.importData && Module.name !== 'Project') break;
           await new Module(this.config, log as unknown as LogType).import();
         }
       }
     } catch (error) {
       this.config.modules.personalization.importData = false; // Stop personalization import if project creation fails
       log(this.config, error, 'error');
-      if (!this.personalization.importData){
-        log(this.config, 'Skipping personalization migration...', 'warn')
-      } 
+      if (!this.personalization.importData) {
+        log(this.config, 'Skipping personalization migration...', 'warn');
+      }
     }
   }
 }
