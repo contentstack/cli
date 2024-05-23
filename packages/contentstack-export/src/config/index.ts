@@ -179,8 +179,9 @@ const config: DefaultConfig = {
       query: {
         skip: 0,
         limit: 100,
-        locale: 'en-us',
         include_variant: false,
+        include_count: true,
+        include_publish_details: true,
       },
       mockDataPath: './variant-mock-data.json',
     },
