@@ -241,6 +241,11 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     }
   }
 
+  /**
+   * Serializes the change set of a variant entry.
+   * @param variantEntry - The variant entry to serialize.
+   * @returns The serialized change set as a record.
+   */
   serializeChangeSet(variantEntry: VariantEntryStruct) {
     let changeSet: Record<string, any> = {};
     if (variantEntry?._variant?._change_set?.length) {
@@ -321,6 +326,13 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     return variantEntry;
   }
 
+  /**
+   * Publishes variant entries in batch for a given entry UID and content type.
+   * @param batch - An array of VariantEntryStruct objects representing the variant entries to be published.
+   * @param entryUid - The UID of the entry for which the variant entries are being published.
+   * @param content_type - The UID of the content type of the entry.
+   * @returns A Promise that resolves when all variant entries have been published.
+   */
   async publishVariantEntries(batch: VariantEntryStruct[], entryUid: string, content_type: string) {
     const allPromise = [];
     for (let [, variantEntry] of entries(batch)) {
@@ -348,7 +360,12 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         continue;
       }
       const publishReq: PublishVariantEntryDto = {
-        entry: { environments, locales, publish_with_base_entry: false, variants: [{ uid: newVariantUid, version:1 }] },
+        entry: {
+          environments,
+          locales,
+          publish_with_base_entry: false,
+          variants: [{ uid: newVariantUid, version: 1 }],
+        },
         locale: variantEntry.locale,
         version: 1,
       };
@@ -371,6 +388,11 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     await Promise.allSettled(allPromise);
   }
 
+  /**
+   * Serializes the publish entries of a variant.
+   * @param variantEntry - The variant entry to serialize.
+   * @returns An object containing the serialized publish entries.
+   */
   serializePublishEntries(variantEntry: VariantEntryStruct): {
     environments: Array<string>;
     locales: Array<string>;
