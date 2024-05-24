@@ -115,6 +115,7 @@ export type ExperienceStruct = {
     variantGroup: object;
     variants: Record<string, string>;
   };
+  content_types?: string[];
 } & AnyProperty;
 
 export interface CreateExperienceInput {
@@ -136,6 +137,7 @@ export interface UpdateExperienceInput {
 export interface CMSExperienceStruct {
   uid: string;
   contentTypes: string[];
+  content_types?: string[];
 }
 
 export type VariantAPIRes =
@@ -153,9 +155,9 @@ export type VariantAPIRes =
   | Error;
 
 export interface APIResponse {
-    status: number;
-    data: any;
-  }
+  status: number;
+  data: any;
+}
 
 export interface Personalization<T> extends AdapterHelperInterface<T, HttpClient> {
   projects(options: GetProjectsParams): Promise<ProjectStruct[] | void>;
