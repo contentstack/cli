@@ -153,7 +153,7 @@ const config: DefaultConfig = {
     },
     personalization: {
       baseURL: {
-        dev11: 'https://dev-personalization-api.csnonprod.com',
+        NA: 'https://personalization-api.contentstack.com',
       },
       importData: true,
       dirName: 'personalization',
