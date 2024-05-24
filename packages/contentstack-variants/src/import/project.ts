@@ -27,7 +27,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
       try {
         const projects = JSON.parse(readFileSync(projectPath, 'utf8')) as CreateProjectInput[];
 
-        if (projects === undefined || projects?.length) {
+        if (!projects || projects.length < 1) {
           this.config.modules.personalization.importData = false; // Stop personalization import if stack not connected to any project
           this.log(this.config, 'No project found!', 'info');
           return;
