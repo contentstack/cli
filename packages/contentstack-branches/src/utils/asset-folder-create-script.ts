@@ -66,7 +66,7 @@ export function assetFolderCreateScript(contentType) {
         if (branch === element.parent_uid) {
           let childUid = element.uid;
           tree[branch][childUid] = {};
-          return findBranches(tree[branch], [childUid], coll);
+          findBranches(tree[branch], [childUid], coll);
         }
       }
     });
