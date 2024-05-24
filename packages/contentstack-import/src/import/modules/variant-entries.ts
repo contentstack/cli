@@ -26,7 +26,7 @@ export default class ImportVarientEntries {
           lookupExtension,
           restoreJsonRteEntryRefs,
         };
-        await new Import.VariantEntries(Object.assign(this.config, { helpers }), log as unknown as LogType).import();
+        await new Import.VariantEntries(Object.assign(this.config, { helpers })).import();
       }
     } catch (error) {
       log(this.config, error, 'error');

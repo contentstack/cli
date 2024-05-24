@@ -1,4 +1,4 @@
-import { resolve } from 'path';
+import { join, resolve } from 'path';
 import { existsSync } from 'fs';
 import values from 'lodash/values';
 import cloneDeep from 'lodash/cloneDeep';
@@ -14,6 +14,8 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   private failedCmsExpPath: string;
   private expMapperDirPath: string;
   private eventsMapperPath: string;
+  private experiencesPath: string;
+  private experiencesDirPath: string;
   private audiencesMapperPath: string;
   private cmsVariantGroupPath: string;
   private experienceVariantsIdsPath: string;
@@ -21,6 +23,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   private expThresholdTimer: number;
   private maxValidateRetry: number;
   private experiencesUidMapperPath: string;
+  private experienceCTsPath: string;
   private expCheckIntervalDuration: number;
   private cmsVariants: Record<string, Record<string, string>>;
   private cmsVariantGroups: Record<string, unknown>;
@@ -38,6 +41,12 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     };
     super(Object.assign(config, conf));
     this.personalizationConfig = this.config.modules.personalization;
+    this.experiencesDirPath = resolve(
+      this.config.data,
+      this.personalizationConfig.dirName,
+      this.personalizationConfig.experiences.dirName,
+    );
+    this.experiencesPath = join(this.experiencesDirPath, this.personalizationConfig.experiences.fileName);
     this.experienceConfig = this.personalizationConfig.experiences;
     this.audienceConfig = this.personalizationConfig.audiences;
     this.mapperDirPath = resolve(this.config.backupDir, 'mapper', this.personalizationConfig.dirName);
@@ -49,6 +58,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     this.eventsMapperPath = resolve(this.mapperDirPath, 'events', 'uid-mapping.json');
     this.failedCmsExpPath = resolve(this.expMapperDirPath, 'failed-cms-experience.json');
     this.failedCmsExpPath = resolve(this.expMapperDirPath, 'failed-cms-experience.json');
+    this.experienceCTsPath = resolve(this.experiencesDirPath, 'experiences-content-types.json');
     this.experienceVariantsIdsPath = resolve(
       this.config.data,
       this.personalizationConfig.dirName,
@@ -74,12 +84,10 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     this.log(this.config, this.$t(this.messages.IMPORT_MSG, { module: 'Experiences' }), 'info');
 
     await fsUtil.makeDirectory(this.expMapperDirPath);
-    const { dirName, fileName } = this.experienceConfig;
-    const experiencePath = resolve(this.config.data, this.personalizationConfig.dirName, dirName, fileName);
 
-    if (existsSync(experiencePath)) {
+    if (existsSync(this.experiencesPath)) {
       try {
-        const experiences = fsUtil.readFile(experiencePath, true) as ExperienceStruct[];
+        const experiences = fsUtil.readFile(this.experiencesPath, true) as ExperienceStruct[];
         const audiencesUid = (fsUtil.readFile(this.audiencesMapperPath, true) as Record<string, string>) || {};
         const eventsUid = (fsUtil.readFile(this.eventsMapperPath, true) as Record<string, string>) || {};
 
@@ -164,25 +172,28 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     try {
       // Read the created content types from the file
       this.createdCTs = fsUtil.readFile(this.cTsSuccessPath, true) as any;
+      if (!this.createdCTs) {
+        this.log(this.config, 'No Content types created, skipping following process', 'error');
+        return;
+      }
+      const experienceCTsMap = fsUtil.readFile(this.experienceCTsPath, true) as Record<string, string[]>;
       await Promise.allSettled(
         Object.entries(this.experiencesUidMapper).map(async ([oldExpUid, newExpUid]) => {
-          // Get old experience content type details asynchronously
-          const expRes = await this.getCTsFromExperience(oldExpUid);
-
-          if (this.createdCTs && expRes?.contentTypes) {
+          if (experienceCTsMap[oldExpUid]?.length) {
             // Filter content types that were created
-            const updatedContentTypes = expRes.contentTypes?.filter((ct: string) => this.createdCTs.includes(ct));
+            const updatedContentTypes = experienceCTsMap[oldExpUid].filter((ct: string) =>
+              this.createdCTs.includes(ct),
+            );
             if (updatedContentTypes?.length) {
               // Update content types detail in the new experience asynchronously
               await this.updateCTsInExperience({ contentTypes: updatedContentTypes }, newExpUid);
             }
-          } else {
-            this.log(this.config, `Failed to attach content type for ${newExpUid}`, 'error');
           }
         }),
       );
     } catch (error) {
-      throw error;
+      this.log(this.config, `Error while attaching content type with experience`, 'error');
+      this.log(this.config, error, 'error');
     }
   }
 
