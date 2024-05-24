@@ -22,7 +22,7 @@ import {
   CreateVariantEntryDto,
   PublishVariantEntryDto,
 } from '../types';
-import { fsUtil } from '../utils';
+import { fsUtil, log } from '../utils';
 
 export default class VariantEntries extends VariantAdapter<VariantHttpClient<ImportConfig>> {
   public entriesDirPath: string;
@@ -39,10 +39,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
   private variantUidMapperPath!: string;
   private environments!: Record<string, any>;
 
-  constructor(
-    readonly config: ImportConfig & { helpers?: ImportHelperMethodsConfig },
-    private readonly log: LogType = console.log,
-  ) {
+  constructor(readonly config: ImportConfig & { helpers?: ImportHelperMethodsConfig }) {
     const conf: APIConfig & AdapterType<VariantHttpClient<ImportConfig>, APIConfig> = {
       config,
       httpClient: true,
@@ -81,19 +78,19 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     );
 
     if (!existsSync(filePath)) {
-      this.log(this.config, this.messages.IMPORT_ENTRY_NOT_FOUND, 'info');
+      log(this.config, this.messages.IMPORT_ENTRY_NOT_FOUND, 'info');
       return;
     }
 
     if (!existsSync(variantIdPath)) {
-      this.log(this.config, this.messages.EMPTY_VARIANT_UID_DATA, 'error');
+      log(this.config, this.messages.EMPTY_VARIANT_UID_DATA, 'error');
       return;
     }
 
     const entriesForVariants = fsUtil.readFile(filePath, true) as EntryDataForVariantEntries[];
 
     if (isEmpty(entriesForVariants)) {
-      this.log(this.config, this.messages.IMPORT_ENTRY_NOT_FOUND, 'info');
+      log(this.config, this.messages.IMPORT_ENTRY_NOT_FOUND, 'info');
       return;
     }
 
@@ -112,7 +109,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     // NOTE Read and store list of variant IDs
     this.variantIdList = (fsUtil.readFile(variantIdPath, true) || {}) as Record<string, unknown>;
     if (isEmpty(this.variantIdList)) {
-      this.log(this.config, this.messages.EMPTY_VARIANT_UID_DATA, 'info');
+      log(this.config, this.messages.EMPTY_VARIANT_UID_DATA, 'info');
       return;
     }
 
@@ -128,7 +125,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     for (const entriesForVariant of entriesForVariants) {
       await this.importVariantEntries(entriesForVariant);
     }
-    this.log(this.config, 'All the variant-entries have been imported & published successfully', 'success');
+    log(this.config, 'All the variant-entries have been imported & published successfully', 'success');
   }
 
   /**
@@ -152,7 +149,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
 
         await this.handleConcurrency(contentType, variantEntries, entriesForVariant);
       } catch (error) {
-        this.log(this.config, error, 'error');
+        log(this.config, error, 'error');
       }
     }
   }
@@ -221,13 +218,13 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
               reject: onReject.bind(this),
               resolve: onSuccess.bind(this),
               variantUid: variant_id,
-              log: this.log,
+              log: log,
             },
           );
 
           allPromise.push(promise);
         } else {
-          this.log(this.config, this.messages.VARIANT_ID_NOT_FOUND, 'error');
+          log(this.config, this.messages.VARIANT_ID_NOT_FOUND, 'error');
         }
       }
 
@@ -339,11 +336,11 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       const oldVariantUid = variantEntry.variant_id || '';
       const newVariantUid = this.variantIdList[oldVariantUid] as string;
       if (!newVariantUid) {
-        this.log(this.config, `Variant UID not found for entry '${variantEntry?.uid}'`, 'error');
+        log(this.config, `Variant UID not found for entry '${variantEntry?.uid}'`, 'error');
         continue;
       }
       if (this.environments?.length) {
-        this.log(this.config, 'No environment found! Skipping variant entry publishing...', 'info');
+        log(this.config, 'No environment found! Skipping variant entry publishing...', 'info');
         return;
       }
 
@@ -379,7 +376,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         {
           reject: onReject.bind(this),
           resolve: onSuccess.bind(this),
-          log: this.log,
+          log: log,
         },
       );
 
