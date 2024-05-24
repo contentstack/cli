@@ -146,7 +146,7 @@ const config: DefaultConfig = {
     },
     personalization: {
       baseURL: {
-        NA: 'https://personalization-api.contentstack.com',
+        dev11: 'https://dev-personalization-api.csnonprod.com',
       },
       dirName: 'personalization',
       exportOrder: ['attributes', 'audiences', 'events', 'experiences'],
