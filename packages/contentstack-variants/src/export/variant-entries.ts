@@ -1,9 +1,10 @@
-import isEmpty from 'lodash/isEmpty';
+import { existsSync } from 'fs';
 import { join, resolve } from 'path';
 import { FsUtility } from '@contentstack/cli-utilities';
 
 import { APIConfig, AdapterType, ExportConfig, LogType } from '../types';
 import VariantAdapter, { VariantHttpClient } from '../utils/variant-api-adapter';
+import { fsUtil } from '../utils';
 
 export default class VariantEntries extends VariantAdapter<VariantHttpClient<ExportConfig>> {
   public entriesDirPath: string;
@@ -46,10 +47,14 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
         basePath: variantEntryBasePath,
         indexFileName: variantEntry.fileName,
         chunkFileSize: variantEntry.chunkFileSize || 1,
+        createDirIfNotExist: false,
       });
 
       const callback = (variantEntries: Record<string, any>[]) => {
         if (variantEntries?.length) {
+          if (!existsSync(variantEntryBasePath)) {
+            fsUtil.makeDirectory(variantEntryBasePath);
+          }
           variantEntriesFs.writeIntoFile(variantEntries);
         }
       };
