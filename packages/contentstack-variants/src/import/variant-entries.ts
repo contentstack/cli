@@ -36,7 +36,8 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
   public assetUidMapper!: Record<string, any>;
   public entriesUidMapper!: Record<string, any>;
   private installedExtensions!: Record<string, any>[];
-  private variantUidMapperPath!: string;
+  private variantSuccessPath!: string;
+  private createdVariantEntries: Record<string, string> = {};
   private environments!: Record<string, any>;
 
   constructor(readonly config: ImportConfig & { helpers?: ImportHelperMethodsConfig }) {
@@ -57,6 +58,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     this.entriesMapperPath = resolve(config.backupDir, config.branchName || '', 'mapper', 'entries');
     this.personalizationConfig = this.config.modules.personalization;
     this.entriesDirPath = resolve(config.backupDir, config.branchName || '', config.modules.entries.dirName);
+    this.variantSuccessPath = resolve(this.entriesMapperPath, 'variant-entries-success.json');
   }
 
   /**
@@ -189,6 +191,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       for (let [, variantEntry] of entries(batch)) {
         const onSuccess = ({ response, apiData: { entryUid, variantUid }, log }: any) => {
           log(this.config, `Created variant entry: '${variantUid}' of entry uid ${entryUid}`, 'info');
+          this.createdVariantEntries[entryUid] = variantUid;
         };
 
         const onReject = ({ error, apiData: { entryUid, variantUid }, log }: any) => {
@@ -236,6 +239,8 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       const exeTime = end - start;
       this.variantInstance.delay(1000 - exeTime);
     }
+
+    fsUtil.writeFile(this.variantSuccessPath, this.createdVariantEntries);
   }
 
   /**
@@ -335,8 +340,12 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     for (let [, variantEntry] of entries(batch)) {
       const oldVariantUid = variantEntry.variant_id || '';
       const newVariantUid = this.variantIdList[oldVariantUid] as string;
-      if (!newVariantUid) {
-        log(this.config, `Variant UID not found for entry '${variantEntry?.uid}'`, 'error');
+      if (!newVariantUid || this.createdVariantEntries[entryUid] !== newVariantUid) { 
+        log(
+          this.config,
+          `${this.messages.VARIANT_ID_NOT_FOUND}. Skipping variant publish for ${newVariantUid}`,
+          'info',
+        );
         continue;
       }
       if (this.environments?.length) {
