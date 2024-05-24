@@ -35,17 +35,35 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
         return;
       }
       fsUtil.writeFile(path.resolve(this.experiencesFolderPath, 'experiences.json'), experiences);
+
       const experienceToVariantsStrList: Array<string> = [];
+      const experienceToContentTypesMap: Record<string, string[]> = {};
       for (let experience of experiences) {
+        // create id mapper for experience to variants
         let variants = experience?._cms?.variants ?? {};
         Object.keys(variants).forEach((variantShortId: string) => {
           const experienceToVariantsStr = `${experience.uid}-${variantShortId}-${variants[variantShortId]}`;
           experienceToVariantsStrList.push(experienceToVariantsStr);
         });
+
+        try {
+          // fetch content of experience
+          const attachedCTs = ((await this.getCTsFromExperience(experience.uid)) || {}).content_types;
+          if (attachedCTs?.length) {
+            experienceToContentTypesMap[experience.uid] = attachedCTs;
+          }
+        } catch (error) {
+          log(this.exportConfig, `Failed to fetch content types of experience ${experience.name}`, 'error');
+        }
       }
       fsUtil.writeFile(
         path.resolve(this.experiencesFolderPath, 'experiences-variants-ids.json'),
         experienceToVariantsStrList,
+      );
+
+      fsUtil.writeFile(
+        path.resolve(this.experiencesFolderPath, 'experiences-content-types.json'),
+        experienceToContentTypesMap,
       );
       log(this.exportConfig, 'All the experiences have been exported successfully!', 'success');
     } catch (error) {
