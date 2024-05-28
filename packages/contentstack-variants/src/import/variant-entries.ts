@@ -36,7 +36,8 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
   public assetUidMapper!: Record<string, any>;
   public entriesUidMapper!: Record<string, any>;
   private installedExtensions!: Record<string, any>[];
-  private variantUidMapperPath!: string;
+  private failedVariantPath!: string;
+  private failedVariantEntries!: Record<string, any>;
   private environments!: Record<string, any>;
 
   constructor(readonly config: ImportConfig & { helpers?: ImportHelperMethodsConfig }) {
@@ -57,6 +58,8 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     this.entriesMapperPath = resolve(config.backupDir, config.branchName || '', 'mapper', 'entries');
     this.personalizationConfig = this.config.modules.personalization;
     this.entriesDirPath = resolve(config.backupDir, config.branchName || '', config.modules.entries.dirName);
+    this.failedVariantPath = resolve(this.entriesMapperPath, 'failed-entry-variants.json');
+    this.failedVariantEntries = new Map()
   }
 
   /**
@@ -125,7 +128,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     for (const entriesForVariant of entriesForVariants) {
       await this.importVariantEntries(entriesForVariant);
     }
-    log(this.config, 'All the variant-entries have been imported & published successfully', 'success');
+    log(this.config, 'All the entries variants have been imported & published successfully', 'success');
   }
 
   /**
@@ -188,11 +191,13 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
 
       for (let [, variantEntry] of entries(batch)) {
         const onSuccess = ({ response, apiData: { entryUid, variantUid }, log }: any) => {
-          log(this.config, `Created variant entry: '${variantUid}' of entry uid ${entryUid}`, 'info');
+          log(this.config, `Created entry variant: '${variantUid}' of entry uid ${entryUid}`, 'info');
         };
 
-        const onReject = ({ error, apiData: { entryUid, variantUid }, log }: any) => {
-          log(this.config, `Failed to create variant entry: '${variantUid}' of entry uid ${entryUid}`, 'error');
+        const onReject = ({ error, apiData, log }: any) => {
+          const { entryUid, variantUid } = apiData;
+          this.failedVariantEntries.set(variantUid, apiData);
+          log(this.config, `Failed to create entry variant: '${variantUid}' of entry uid ${entryUid}`, 'error');
           log(this.config, error, 'error');
         };
         // NOTE Find new variant Id by old Id
@@ -217,7 +222,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
             {
               reject: onReject.bind(this),
               resolve: onSuccess.bind(this),
-              variantUid: variant_id,
+              variantUid: variantEntry.uid,
               log: log,
             },
           );
@@ -236,11 +241,13 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       const exeTime = end - start;
       this.variantInstance.delay(1000 - exeTime);
     }
+
+    fsUtil.writeFile(this.failedVariantPath, this.failedVariantEntries);
   }
 
   /**
-   * Serializes the change set of a variant entry.
-   * @param variantEntry - The variant entry to serialize.
+   * Serializes the change set of a entry variant.
+   * @param variantEntry - The entry variant to serialize.
    * @returns The serialized change set as a record.
    */
   serializeChangeSet(variantEntry: VariantEntryStruct) {
@@ -256,14 +263,14 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
   }
 
   /**
-   * The function `handleVariantEntryRelationalData` processes relational data for a variant entry
+   * The function `handleVariantEntryRelationalData` processes relational data for a entry variant
    * based on the provided content type and configuration helpers.
    * @param {ContentTypeStruct} contentType - The `contentType` parameter in the
    * `handleVariantEntryRelationalData` function is of type `ContentTypeStruct`. It is used to define
    * the structure of the content type being processed within the function. This parameter likely
    * contains information about the schema and configuration of the content type.
    * @param {VariantEntryStruct} variantEntry - The `variantEntry` parameter in the
-   * `handleVariantEntryRelationalData` function is a data structure that represents a variant entry.
+   * `handleVariantEntryRelationalData` function is a data structure that represents a entry variant.
    * It is of type `VariantEntryStruct` and contains information related to a specific entry variant.
    * This function is responsible for performing various operations on the `variantEntry`
    * @returns The function `handleVariantEntryRelationalData` returns the `variantEntry` after
@@ -333,22 +340,30 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
   async publishVariantEntries(batch: VariantEntryStruct[], entryUid: string, content_type: string) {
     const allPromise = [];
     for (let [, variantEntry] of entries(batch)) {
+      const variantUid = variantEntry.uid;
       const oldVariantUid = variantEntry.variant_id || '';
       const newVariantUid = this.variantIdList[oldVariantUid] as string;
+
       if (!newVariantUid) {
-        log(this.config, `Variant UID not found for entry '${variantEntry?.uid}'`, 'error');
+        log(this.config, `${this.messages.VARIANT_ID_NOT_FOUND}. Skipping entry variant publish for ${variantUid}`, 'info');
         continue;
       }
+
+      if (this.failedVariantEntries.has(variantUid)) {
+        log(this.config, `${this.messages.VARIANT_UID_NOT_FOUND}. Skipping entry variant publish for ${variantUid}`, 'info');
+        continue;
+      }
+
       if (this.environments?.length) {
-        log(this.config, 'No environment found! Skipping variant entry publishing...', 'info');
+        log(this.config, 'No environment found! Skipping entry variant publishing...', 'info');
         return;
       }
 
       const onSuccess = ({ response, apiData: { entryUid, variantUid }, log }: any) => {
-        log(this.config, `Variant entry: '${variantUid}' of entry uid ${entryUid} published successfully!`, 'info');
+        log(this.config, `Entry variant: '${variantUid}' of entry uid ${entryUid} published successfully!`, 'info');
       };
       const onReject = ({ error, apiData: { entryUid, variantUid }, log }: any) => {
-        log(this.config, `Failed to publish variant entry: '${variantUid}' of entry uid ${entryUid}`, 'error');
+        log(this.config, `Failed to publish entry variant: '${variantUid}' of entry uid ${entryUid}`, 'error');
         log(this.config, error, 'error');
       };
 
@@ -377,6 +392,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
           reject: onReject.bind(this),
           resolve: onSuccess.bind(this),
           log: log,
+          variantUid
         },
       );
 
@@ -387,7 +403,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
 
   /**
    * Serializes the publish entries of a variant.
-   * @param variantEntry - The variant entry to serialize.
+   * @param variantEntry - The entry variant to serialize.
    * @returns An object containing the serialized publish entries.
    */
   serializePublishEntries(variantEntry: VariantEntryStruct): {

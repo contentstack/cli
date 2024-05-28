@@ -210,16 +210,16 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
     options: PublishVariantEntryOptions,
     apiParams: Record<string, any>,
   ) {
-    const { reject, resolve, log } = apiParams;
+    const { reject, resolve, log, variantUid } = apiParams;
     const { entry_uid, content_type_uid } = options;
     let endpoint = `content_types/${content_type_uid}/entries/${entry_uid}/publish`;
 
     const onSuccess = (response: any) =>
-      resolve({ response, apiData: { entryUid: entry_uid, variantUid: input.entry.variants[0].uid }, log });
+      resolve({ response, apiData: { entryUid: entry_uid, variantUid }, log });
     const onReject = (error: any) =>
       reject({
         error,
-        apiData: { entryUid: entry_uid, variantUid: input.entry.variants[0].uid },
+        apiData: { entryUid: entry_uid, variantUid },
         log,
       });
 
@@ -255,7 +255,7 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
 
     const errorMsg = data?.errors
       ? formatErrors(data.errors)
-      : data?.error_message || data?.message || 'Something went wrong while processing variant entries request!';
+      : data?.error_message || data?.message || 'Something went wrong while processing entry variant request!';
 
     throw errorMsg;
   }
