@@ -16,6 +16,7 @@ const variantEntry = {
   IMPORT_ENTRY_NOT_FOUND: 'Entries data not found to import variant entries',
   EMPTY_VARIANT_UID_DATA: 'Empty variants entry mapper found!',
   VARIANT_ID_NOT_FOUND: 'Variant ID not found',
+  VARIANT_UID_NOT_FOUND: 'Entry Variant UID not found',
 };
 
 const expImportMsg = {
