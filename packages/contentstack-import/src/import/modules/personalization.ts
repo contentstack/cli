@@ -18,10 +18,10 @@ export default class ImportPersonalization {
    */
   async start(): Promise<void> {
     try {
+      await new Import.Project(this.config, log as unknown as LogType).import();
       if (this.personalization.importData) {
         const moduleMapper = {
           events: Import.Events,
-          projects: Import.Project,
           audiences: Import.Audiences,
           attributes: Import.Attribute,
           experiences: Import.Experiences,
@@ -31,7 +31,6 @@ export default class ImportPersonalization {
 
         for (const module of order) {
           const Module = moduleMapper[module];
-          if (!this.personalization.importData && Module.name !== 'Project') break;
           await new Module(this.config, log as unknown as LogType).import();
         }
       }
