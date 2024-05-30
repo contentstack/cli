@@ -42,7 +42,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
           });
           this.config.modules.personalization.project_id = projectRes?.uid;
         }
-
+        this.config.modules.personalization.importData = true;
         this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Projects' }), 'info');
       } catch (error) {
         this.log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Projects' }), 'error');
