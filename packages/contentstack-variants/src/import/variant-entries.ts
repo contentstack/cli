@@ -59,7 +59,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     this.personalizationConfig = this.config.modules.personalization;
     this.entriesDirPath = resolve(config.backupDir, config.branchName || '', config.modules.entries.dirName);
     this.failedVariantPath = resolve(this.entriesMapperPath, 'failed-entry-variants.json');
-    this.failedVariantEntries = new Map()
+    this.failedVariantEntries = new Map();
   }
 
   /**
@@ -149,8 +149,9 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     for (const _ in fs.indexFileContent) {
       try {
         const variantEntries = (await fs.readChunkFiles.next()) as VariantEntryStruct[];
-
-        await this.handleConcurrency(contentType, variantEntries, entriesForVariant);
+        if (variantEntries?.length) {
+          await this.handleConcurrency(contentType, variantEntries, entriesForVariant);
+        }
       } catch (error) {
         log(this.config, error, 'error');
       }
@@ -345,12 +346,20 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       const newVariantUid = this.variantIdList[oldVariantUid] as string;
 
       if (!newVariantUid) {
-        log(this.config, `${this.messages.VARIANT_ID_NOT_FOUND}. Skipping entry variant publish for ${variantUid}`, 'info');
+        log(
+          this.config,
+          `${this.messages.VARIANT_ID_NOT_FOUND}. Skipping entry variant publish for ${variantUid}`,
+          'info',
+        );
         continue;
       }
 
       if (this.failedVariantEntries.has(variantUid)) {
-        log(this.config, `${this.messages.VARIANT_UID_NOT_FOUND}. Skipping entry variant publish for ${variantUid}`, 'info');
+        log(
+          this.config,
+          `${this.messages.VARIANT_UID_NOT_FOUND}. Skipping entry variant publish for ${variantUid}`,
+          'info',
+        );
         continue;
       }
 
@@ -392,7 +401,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
           reject: onReject.bind(this),
           resolve: onSuccess.bind(this),
           log: log,
-          variantUid
+          variantUid,
         },
       );
 
