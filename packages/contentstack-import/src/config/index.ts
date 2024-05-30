@@ -155,9 +155,9 @@ const config: DefaultConfig = {
       baseURL: {
         NA: 'https://personalization-api.contentstack.com',
       },
-      importData: true,
+      importData: false,
       dirName: 'personalization',
-      importOrder: ['projects', 'attributes', 'audiences', 'events', 'experiences'],
+      importOrder: ['attributes', 'audiences', 'events', 'experiences'],
       project_id: '',
       projects: {
         dirName: 'projects',
