@@ -33,10 +33,10 @@ const config: DefaultConfig = {
       'content-types',
       'custom-roles',
       'workflows',
+      'personalization',
       'entries',
       'labels',
       'marketplace-apps',
-      'personalization',
     ],
     locales: {
       dirName: 'locales',
