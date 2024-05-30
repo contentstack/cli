@@ -1,4 +1,4 @@
-import { existsSync } from 'fs';
+import { existsSync, mkdirSync } from 'fs';
 import { join, resolve } from 'path';
 import { FsUtility } from '@contentstack/cli-utilities';
 
@@ -53,7 +53,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
       const callback = (variantEntries: Record<string, any>[]) => {
         if (variantEntries?.length) {
           if (!existsSync(variantEntryBasePath)) {
-            fsUtil.makeDirectory(variantEntryBasePath);
+            mkdirSync(variantEntryBasePath, { recursive: true });
           }
           variantEntriesFs.writeIntoFile(variantEntries);
         }
@@ -67,12 +67,14 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
           entry_uid: entry.uid,
           locale,
         });
-        variantEntriesFs.completeFile(true);
-        this.log(
-          this.config,
-          `Exported variant entries of type '${entry.title} (${entry.uid})' locale '${locale}'`,
-          'info',
-        );
+        if (existsSync(variantEntryBasePath)){
+          variantEntriesFs.completeFile(true);
+          this.log(
+            this.config,
+            `Exported variant entries of type '${entry.title} (${entry.uid})' locale '${locale}'`,
+            'info',
+          );
+        }
       } catch (error) {
         this.log(
           this.config,
