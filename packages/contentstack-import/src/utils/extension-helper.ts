@@ -4,7 +4,7 @@
 
 /*!
  * Contentstack Import
- * Copyright (c) 2019 Contentstack LLC
+ * Copyright (c) 2024 Contentstack LLC
  * MIT Licensed
  */
 import { join } from 'node:path';
