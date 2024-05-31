@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { copy } from 'fs-extra';
-import { cliux } from '@contentstack/cli-utilities';
+import { cliux, sanitizePath } from '@contentstack/cli-utilities';
 
 import { fileHelper, trace } from './index';
 import { ImportConfig } from '../types';
@@ -14,7 +14,7 @@ export default async function backupHandler(importConfig: ImportConfig): Promise
   const subDir = isSubDirectory(importConfig);
 
   if (subDir) {
-    backupDirPath = path.resolve(importConfig.contentDir, '..', '_backup_' + Math.floor(Math.random() * 1000));
+    backupDirPath = path.resolve(sanitizePath(importConfig.contentDir), '..', '_backup_' + Math.floor(Math.random() * 1000));
     if (importConfig.createBackupDir) {
       cliux.print(
         `Warning!!! Provided backup directory path is a sub directory of the content directory, Cannot copy to a sub directory. Hence new backup directory created - ${backupDirPath}`,
