@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-cm-bulk-publish
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-bulk-publish/1.4.6 darwin-arm64 node-v21.6.2
+@contentstack/cli-cm-bulk-publish/1.4.7 darwin-arm64 node-v21.6.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
