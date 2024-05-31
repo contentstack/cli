@@ -1,7 +1,7 @@
 /* eslint-disable no-prototype-builtins */
 /*!
  * Contentstack Import
- * Copyright (c) 2019 Contentstack LLC
+ * Copyright (c) 2024 Contentstack LLC
  * MIT Licensed
  */
 
@@ -11,6 +11,7 @@ import { fsUtil, log, formatError, schemaTemplate, lookupExtension, lookUpTaxono
 import { ImportConfig, ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
 import { updateFieldRules } from '../../utils/content-type-helper';
+import { sanitizePath } from '@contentstack/cli-utilities';
 
 export default class ContentTypesImport extends BaseClass {
   private cTsMapperPath: string;
@@ -59,13 +60,13 @@ export default class ContentTypesImport extends BaseClass {
     this.cTsConfig = importConfig.modules['content-types'];
     this.gFsConfig = importConfig.modules['global-fields'];
     this.reqConcurrency = this.cTsConfig.writeConcurrency || this.importConfig.writeConcurrency;
-    this.cTsFolderPath = path.join(this.importConfig.data, this.cTsConfig.dirName);
-    this.cTsMapperPath = path.join(this.importConfig.data, 'mapper', 'content_types');
-    this.cTsSuccessPath = path.join(this.cTsMapperPath, 'success.json');
-    this.gFsFolderPath = path.resolve(this.importConfig.data, this.gFsConfig.dirName);
-    this.gFsMapperFolderPath = path.join(importConfig.data, 'mapper', 'global_fields', 'success.json');
-    this.gFsPendingPath = path.join(importConfig.data, 'mapper', 'global_fields', 'pending_global_fields.js');
-    this.marketplaceAppMapperPath = path.join(this.importConfig.data, 'mapper', 'marketplace_apps', 'uid-mapping.json');
+    this.cTsFolderPath = path.join(sanitizePath(this.importConfig.data), sanitizePath(this.cTsConfig.dirName));
+    this.cTsMapperPath = path.join(sanitizePath(this.importConfig.data), 'mapper', 'content_types');
+    this.cTsSuccessPath = path.join(sanitizePath(this.cTsMapperPath), 'success.json');
+    this.gFsFolderPath = path.resolve(sanitizePath(this.importConfig.data), sanitizePath(this.gFsConfig.dirName));
+    this.gFsMapperFolderPath = path.join(sanitizePath(importConfig.data), 'mapper', 'global_fields', 'success.json');
+    this.gFsPendingPath = path.join(sanitizePath(importConfig.data), 'mapper', 'global_fields', 'pending_global_fields.js');
+    this.marketplaceAppMapperPath = path.join(sanitizePath(this.importConfig.data), 'mapper', 'marketplace_apps', 'uid-mapping.json');
     this.ignoredFilesInContentTypesFolder = new Map([
       ['__master.json', 'true'],
       ['__priority.json', 'true'],
@@ -79,8 +80,8 @@ export default class ContentTypesImport extends BaseClass {
     this.gFs = [];
     this.createdGFs = [];
     this.pendingGFs = [];
-    this.taxonomiesPath = path.join(importConfig.data, 'mapper/taxonomies', 'success.json');
-    this.extPendingPath = path.join(importConfig.data, 'mapper', 'extensions', 'pending_extensions.js');
+    this.taxonomiesPath = path.join(sanitizePath(importConfig.data), 'mapper/taxonomies', 'success.json');
+    this.extPendingPath = path.join(sanitizePath(importConfig.data), 'mapper', 'extensions', 'pending_extensions.js');
   }
 
   async start(): Promise<any> {
