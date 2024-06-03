@@ -507,9 +507,9 @@ export function entryCreateUpdateScript(contentType) {
         successMessage: 'Entries Updated Successfully',
         failedMessage: 'Failed to update entries',
         task: async () => {
-        let compareBranchEntries = await getEntries(compareBranch, contentType)
+        let compareBranchEntries = await getEntries(compareBranch, '${contentType}')
   
-        let baseBranchEntries = await getEntries(branch, contentType);
+        let baseBranchEntries = await getEntries(branch, '${contentType}');
   
         let contentType = await managementAPIClient
           .stack({ api_key: stackSDKInstance.api_key, branch_uid: compareBranch })
