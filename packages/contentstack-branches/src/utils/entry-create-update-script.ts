@@ -44,9 +44,9 @@ export function entryCreateUpdateScript(contentType) {
   
     function converter(data) {
       let arr = [];
-      for (const elm of data.entries()) {
+      for (const elm of data) {
         // @ts-ignore
-        arr.push([elm[1].title, elm[1]]);
+        arr.push([elm.title, elm]);
       }
       return arr;
     }
@@ -476,6 +476,30 @@ export function entryCreateUpdateScript(contentType) {
       }
     };
 
+    const getEntries = async (branchName, contentType, skip = 0, limit = 100, entries = []) => {
+      let requestObject = {
+        skip,
+        limit,
+        include_count: true,
+      };
+  
+      const entriesSearchResponse = await managementAPIClient
+        .stack({ api_key: stackSDKInstance.api_key, branch_uid: branchName })
+        .contentType('${contentType}')
+        .entry()
+        .query(requestObject)
+        .find();
+  
+      if (entriesSearchResponse?.items?.length > 0) {
+        skip += limit || 100;
+        entries = [...entries, ...entriesSearchResponse.items];
+        if (skip >= entriesSearchResponse.count) {
+          return entries;
+        }
+        return await getEntries(branchName, skip, limit, entries);
+      }
+      return entries;
+    };
 
     const updateEntryTask = () => {
       return {
@@ -483,28 +507,23 @@ export function entryCreateUpdateScript(contentType) {
         successMessage: 'Entries Updated Successfully',
         failedMessage: 'Failed to update entries',
         task: async () => {
-          let compareBranchEntries = await managementAPIClient
-          .stack({ api_key: stackSDKInstance.api_key, branch_uid: compareBranch })
-          .contentType('${contentType}')
-          .entry()
-          .query()
-          .find();
+        let compareBranchEntries = await getEntries(compareBranch, contentType)
   
-        let baseBranchEntries = await stackSDKInstance.contentType('${contentType}').entry().query().find();
+        let baseBranchEntries = await getEntries(branch, contentType);
   
         let contentType = await managementAPIClient
           .stack({ api_key: stackSDKInstance.api_key, branch_uid: compareBranch })
           .contentType('${contentType}')
           .fetch();
         
-          for (let i = 0; i < compareBranchEntries?.items?.length; i++) {
-            assetRefPath[compareBranchEntries.items[i].uid] = []
-            findAssets(contentType.schema, compareBranchEntries.items[i], assetRefPath[compareBranchEntries.items[i].uid]);
+          for (let i = 0; i < compareBranchEntries?.length; i++) {
+            assetRefPath[compareBranchEntries[i].uid] = []
+            findAssets(contentType.schema, compareBranchEntries[i], assetRefPath[compareBranchEntries[i].uid]);
           }
 
           for (let i = 0; i < baseBranchEntries?.items?.length; i++) {
-            assetRefPath[baseBranchEntries.items[i].uid] = []
-            findAssets(contentType.schema, baseBranchEntries.items[i], assetRefPath[baseBranchEntries.items[i].uid]);
+            assetRefPath[baseBranchEntries[i].uid] = []
+            findAssets(contentType.schema, baseBranchEntries[i], assetRefPath[baseBranchEntries[i].uid]);
           }
           assetDetails = [...new Map(assetDetails.map((item) => [item['uid'], item])).values()];
           newAssetDetails = assetDetails;
@@ -568,12 +587,12 @@ export function entryCreateUpdateScript(contentType) {
                 if(entryDetails !== undefined){
                   entryDetails = updateAssetDetailsInEntries(entryDetails);
     
-                  if (baseBranchEntries && baseBranchEntries.items.length) {
-                    let baseEntryUid = baseBranchEntries.items[0].uid;
+                  if (baseBranchEntries && baseBranchEntries.length) {
+                    let baseEntryUid = baseBranchEntries[0].uid;
                     let entry = await stackSDKInstance.contentType('${contentType}').entry(baseEntryUid);
                     
                     if (flag.references) {
-                      await updateReferences(entryDetails, baseBranchEntries.items[0], references);
+                      await updateReferences(entryDetails, baseBranchEntries[0], references);
                     }
     
                     await updateEntry(entry, entryDetails);
@@ -589,19 +608,20 @@ export function entryCreateUpdateScript(contentType) {
                 }
               });
             } else {
-              let compareMap = new Map(converter(compareBranchEntries.items));
-              let baseMap = new Map(converter(baseBranchEntries.items));
+              let compareMap = new Map(converter(compareBranchEntries));
+              let baseMap = new Map(converter(baseBranchEntries));
 
               //NOTE: Filter distinct entries from the base and compare branches according to their titles.
               //TODO: Need to discuss this approach and replace it with uid condition
               let arr = uniquelyConcatenateArrays(Array.from(compareMap.keys()), Array.from(baseMap.keys()));
 
-              arr.map(async (el) => {
-                let entryDetails = deleteUnwantedKeysFromObject(compareMap.get(el), keysToRemove);
+              // Change 
+              for(let i  = 0; i < arr.length ; i++){
+                let entryDetails = deleteUnwantedKeysFromObject(compareMap.get(arr[i]), keysToRemove);
                 //NOTE: In the compare branch, entry must exist. Condition of deleted entry not handled
                 if(entryDetails !== undefined){
                   entryDetails = updateAssetDetailsInEntries(entryDetails);
-                  if (compareMap.get(el) && !baseMap.get(el)) {
+                  if (compareMap.get(arr[i]) && !baseMap.get(arr[i])) {
                     let createdEntry = await stackSDKInstance
                     .contentType('${contentType}')
                     .entry()
@@ -613,8 +633,8 @@ export function entryCreateUpdateScript(contentType) {
                       }     
                       await updateEntry(createdEntry, entryDetails);
                     }
-                  } else if (compareMap.get(el) && baseMap.get(el)) {
-                    let baseEntry = baseMap.get(el);
+                  } else if (compareMap.get(arr[i]) && baseMap.get(arr[i])) {
+                    let baseEntry = baseMap.get(arr[i]);
                     let entry = await stackSDKInstance.contentType('${contentType}').entry(baseEntry.uid);
                     
                     if (flag.references) {
@@ -624,7 +644,7 @@ export function entryCreateUpdateScript(contentType) {
                     await updateEntry(entry, entryDetails);
                   }
                 }
-              });
+              }
             }
           } catch (error) {
             throw error;
