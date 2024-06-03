@@ -495,7 +495,7 @@ export function entryCreateScript(contentType) {
         failedTitle: 'Failed to create entries',
         task: async () => {
 
-          const compareBranchEntries = await getEntries(compareBranch, contentType)
+          const compareBranchEntries = await getEntries(compareBranch, '${contentType}')
           
           const compareFilteredProperties = compareBranchEntries.map((entry) => {
             keysToRemove.map((key) => delete entry[key]);
