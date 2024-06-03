@@ -462,6 +462,32 @@ export function entryCreateScript(contentType) {
       }
     }
 
+    const getEntries = async (branchName, contentType, skip = 0, limit = 100, entries = []) => {
+      let requestObject = {
+        skip,
+        limit,
+        include_count: true,
+      };
+  
+      const entriesSearchResponse = await managementAPIClient
+        .stack({ api_key: stackSDKInstance.api_key, branch_uid: branchName })
+        .contentType('${contentType}')
+        .entry()
+        .query(requestObject)
+        .find();
+  
+      if (entriesSearchResponse?.items?.length > 0) {
+        skip += limit || 100;
+        entries = [...entries, ...entriesSearchResponse.items];
+        if (skip >= entriesSearchResponse.count) {
+          return entries;
+        }
+        return await getEntries(branchName, skip, limit, entries);
+      }
+      return entries;
+    };
+
+
     const createEntryTask = () => {
       return {
         title: 'Create Entries',
@@ -469,14 +495,9 @@ export function entryCreateScript(contentType) {
         failedTitle: 'Failed to create entries',
         task: async () => {
 
-          const compareBranchEntries = await managementAPIClient
-            .stack({ api_key: stackSDKInstance.api_key, branch_uid: compareBranch })
-            .contentType('${contentType}')
-            .entry()
-            .query()
-            .find();
+          const compareBranchEntries = await getEntries(compareBranch, contentType)
           
-          const compareFilteredProperties = compareBranchEntries.items.map((entry) => {
+          const compareFilteredProperties = compareBranchEntries.map((entry) => {
             keysToRemove.map((key) => delete entry[key]);
             return entry;
           });
@@ -486,9 +507,9 @@ export function entryCreateScript(contentType) {
           .contentType('${contentType}')
           .fetch();
 
-          for (let i = 0; i < compareBranchEntries?.items?.length; i++) {
-            assetRefPath[compareBranchEntries.items[i].uid] = []
-            findAssets(contentType.schema, compareBranchEntries.items[i], assetRefPath[compareBranchEntries.items[i].uid]);
+          for (let i = 0; i < compareBranchEntries?.length; i++) {
+            assetRefPath[compareBranchEntries[i].uid] = []
+            findAssets(contentType.schema, compareBranchEntries[i], assetRefPath[compareBranchEntries[i].uid]);
             cAssetDetails = [...new Map(cAssetDetails.map((item) => [item['uid'], item])).values()];
           }
           if (cAssetDetails && cAssetDetails.length) {
