@@ -485,7 +485,7 @@ export function entryCreateUpdateScript(contentType) {
   
       const entriesSearchResponse = await managementAPIClient
         .stack({ api_key: stackSDKInstance.api_key, branch_uid: branchName })
-        .contentType('${contentType}')
+        .contentType(contentType)
         .entry()
         .query(requestObject)
         .find();
@@ -496,7 +496,7 @@ export function entryCreateUpdateScript(contentType) {
         if (skip >= entriesSearchResponse.count) {
           return entries;
         }
-        return await getEntries(branchName, skip, limit, entries);
+        return await getEntries(branchName, contentType, skip, limit, entries);
       }
       return entries;
     };
