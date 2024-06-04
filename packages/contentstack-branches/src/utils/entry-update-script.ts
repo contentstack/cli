@@ -485,7 +485,7 @@ export function entryUpdateScript(contentType) {
   
       const entriesSearchResponse = await managementAPIClient
         .stack({ api_key: stackSDKInstance.api_key, branch_uid: branchName })
-        .contentType('${contentType}')
+        .contentType(contentType)
         .entry()
         .query(requestObject)
         .find();
