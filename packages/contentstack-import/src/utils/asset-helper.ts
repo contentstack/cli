@@ -1,7 +1,7 @@
 import Bluebird from 'bluebird';
 import * as url from 'url';
 import * as path from 'path';
-import { ContentstackClient, managementSDKClient } from '@contentstack/cli-utilities';
+import { ContentstackClient, managementSDKClient, validateRegex } from '@contentstack/cli-utilities';
 import { ImportConfig } from '../types';
 const debug = require('debug')('util:requests');
 let _ = require('lodash');
@@ -266,8 +266,12 @@ export const lookupAssets = function (
     let uid = mappedAssetUids[assetUid];
     if (typeof uid !== 'undefined') {
       const escapedAssetUid = assetUid.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      entry = entry.replace(new RegExp(escapedAssetUid, 'img'), uid);
-      matchedUids.push(assetUid);
+      const regex = new RegExp(`\\b${escapedAssetUid}\\b`, 'img');
+      let { status } = validateRegex(new RegExp(regex, 'img'))
+      if (status === 'safe') {
+        entry = entry.replace(regex, uid);
+        matchedUids.push(assetUid);
+      }
     } else {
       unmatchedUids.push(assetUid);
     }
