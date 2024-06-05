@@ -1,6 +1,6 @@
 /*!
  * Contentstack Import
- * Copyright (c) 2019 Contentstack LLC
+ * Copyright (c) 2024 Contentstack LLC
  * MIT Licensed
  */
 const fs = require('fs');
@@ -11,6 +11,7 @@ const mkdirp = require('mkdirp');
 const Promise = require('bluebird');
 let { default: config } = require('../../config');
 const { fileHelper, log, uploadAssetHelper } = require('../../utils');
+const { sanitizePath, validateUids, validateFileName } = require('@contentstack/cli-utilities');
 
 module.exports = class ImportAssets {
   assets;
@@ -88,7 +89,10 @@ module.exports = class ImportAssets {
                     // the asset has been already imported
                     return void 0;
                   }
-                  let currentAssetFolderPath = path.join(self.assetsFolderPath, assetUid);
+                  if(!validateUids(assetUid)){
+                    reject(`UID Not Valid`)
+                  }
+                  let currentAssetFolderPath = path.join(sanitizePath(self.assetsFolderPath), sanitizePath(assetUid));
                   if (fs.existsSync(currentAssetFolderPath)) {
                     // if this is true, means, the exported asset data is versioned
                     // hence, upload each asset with its version
@@ -100,7 +104,10 @@ module.exports = class ImportAssets {
 
                     let uidContainer = {};
                     let urlContainer = {};
-                    let assetPath = path.resolve(currentAssetFolderPath, self.assets[assetUid].filename);
+                    if(!validateFileName(self.assets[assetUid].filename)){
+                      reject(`File Name Not Valid`)
+                    }
+                    let assetPath = path.resolve(sanitizePath(currentAssetFolderPath), sanitizePath(self.assets[assetUid].filename));
 
                     if (self.assets[assetUid].parent_uid && typeof self.assets[assetUid].parent_uid === 'string') {
                       if (self.mappedFolderUids.hasOwnProperty(self.assets[assetUid].parent_uid)) {
@@ -179,8 +186,11 @@ module.exports = class ImportAssets {
   uploadVersionedAssets(uid, assetFolderPath) {
     let self = this;
     return new Promise(function (resolve, reject) {
+      if(!validateUids(uid)){
+        reject(`UID not valid`)
+      }
       let versionedAssetMetadata = fileHelper.readFileSync(
-        path.join(assetFolderPath, '_contentstack_' + uid + '.json'),
+        path.join(sanitizePath(assetFolderPath), '_contentstack_' + sanitizePath(uid) + '.json'),
       );
       // using last version, find asset's parent
       let lastVersion = versionedAssetMetadata[versionedAssetMetadata.length - 1];
@@ -207,7 +217,10 @@ module.exports = class ImportAssets {
         versionedAssetMetadata,
         function () {
           let assetMetadata = versionedAssetMetadata[counter];
-          let assetPath = path.join(assetFolderPath, assetMetadata.filename);
+          if(!validateFileName(assetMetadata.filename)){
+            reject(`File Name not valid`)
+          }
+          let assetPath = path.join(sanitizePath(assetFolderPath), sanitizePath(assetMetadata.filename));
 
           if (++counter === 1) {
             return self
