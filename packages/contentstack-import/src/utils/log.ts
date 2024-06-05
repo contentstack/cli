@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { LogEntry } from 'winston/index';
-import { Logger, pathValidator } from '@contentstack/cli-utilities';
+import { Logger, pathValidator, sanitizePath } from '@contentstack/cli-utilities';
 import { LogsType, MessageType } from '@contentstack/cli-utilities/lib/logger';
 
 import { ImportConfig } from '../types';
@@ -26,7 +26,7 @@ export function log(entryOrMessage: MessageType, logType?: LogsType, hidden?: bo
 
 export function initLogger(config?: ImportConfig | undefined) {
   if (!logger) {
-    const basePath = pathValidator(join(config?.cliLogsPath ?? process.cwd(), 'logs', 'import'));
+    const basePath = pathValidator(join(sanitizePath(config?.cliLogsPath ?? process.cwd()), 'logs', 'import'));
     logger = new Logger(Object.assign(config ?? {}, { basePath }));
   }
 
