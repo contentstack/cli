@@ -191,7 +191,7 @@ const envFileHandler = async (
       break;
     case 'compass-app':
       fileName = '.env';
-      filePath = pathValidator(path.join(clonedDirectory, fileName));
+      filePath = pathValidator(path.join(sanitizePath(clonedDirectory), sanitizePath(fileName)));
       content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${
         environmentVariables.deliveryToken
       }\n${
