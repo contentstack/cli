@@ -4,7 +4,7 @@
 import fs from 'fs';
 import path from 'path';
 import forEach from 'lodash/forEach'
-import { configHandler, cliux, messageHandler } from '@contentstack/cli-utilities';
+import { configHandler, cliux, messageHandler, sanitizePath } from '@contentstack/cli-utilities';
 import { MergeParams } from '../interfaces';
 
 export const getbranchesList = (branchResult, baseBranch: string) => {
@@ -40,7 +40,7 @@ export const refreshbranchConfig = async (apiKey, branchUid) => {
 export const writeFile = (filePath, data) => {
   return new Promise((resolve, reject) => {
     data = typeof data === 'object' ? JSON.stringify(data, null, 2) : data || '{}';
-    fs.writeFile(path.resolve(filePath), data, (error) => {
+    fs.writeFile(path.resolve(sanitizePath(filePath)), data, (error) => {
       if (error) {
         return reject(error);
       }
@@ -52,7 +52,7 @@ export const writeFile = (filePath, data) => {
 // by default file type is json
 export const readFile = (filePath, options = { type: 'json' }) => {
   return new Promise((resolve, reject) => {
-    filePath = path.resolve(filePath);
+    filePath = path.resolve(sanitizePath(filePath));
     fs.readFile(filePath, 'utf-8', (error, data) => {
       if (error) {
         reject(error);

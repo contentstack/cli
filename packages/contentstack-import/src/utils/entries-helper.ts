@@ -7,7 +7,7 @@ import * as path from 'path';
 import * as _ from 'lodash';
 import config from '../config';
 import * as fileHelper from './file-helper';
-import { escapeRegExp } from '@contentstack/cli-utilities';
+import { escapeRegExp, validateRegex } from '@contentstack/cli-utilities';
 
 import { EntryJsonRTEFieldDataType } from '../types/entries';
 
@@ -87,14 +87,17 @@ export const lookupEntries = function (
             uids.push(_entry[_parent[j]].uid);
           }
         } else {
-          _entry = _entry[_parent[j]];
-          let _keys = _.clone(_parent).splice(j + 1, len);
-          if (Array.isArray(_entry)) {
-            for (let i = 0, _i = _entry?.length; i < _i; i++) {
-              update(_keys, form_id, _entry[i]);
+          const key = _parent[j];
+          if (Object.prototype.hasOwnProperty.call(_entry, key)) {
+            _entry = _entry[key];
+            let _keys = _.clone(_parent).splice(j + 1, len);
+            if (Array.isArray(_entry)) {
+              for (let i = 0, _i = _entry?.length; i < _i; i++) {
+                update(_keys, form_id, _entry[i]);
+              }
+            } else if (!(_entry instanceof Object)) {
+              break;
             }
-          } else if (!(_entry instanceof Object)) {
-            break;
           }
         }
       }
@@ -202,8 +205,12 @@ export const lookupEntries = function (
     if (mappedUids.hasOwnProperty(uid)) {
       const sanitizedUid = escapeRegExp(uid);
       const escapedMappedUid = escapeRegExp(mappedUids[uid]);
-      entry = entry.replace(new RegExp(sanitizedUid, 'img'), escapedMappedUid);
-      mapped.push(uid);
+      const uidRegex = new RegExp(`\\b${sanitizedUid}\\b`, 'img');
+      let { status } = validateRegex(uidRegex);
+      if (status === 'safe') {
+        entry = entry.replace(uidRegex, escapedMappedUid);
+        mapped.push(uid);
+      }
     } else {
       unmapped.push(uid);
     }
@@ -572,7 +579,11 @@ export const restoreJsonRteEntryRefs = (
 };
 
 function updateUids(str: string, match: string, uidMapper: Record<string, string>) {
-  return str.replace(new RegExp(match, 'g'), (match: string) => uidMapper[match]);
+  const sanitizedMatch = escapeRegExp(match);
+  const regex = new RegExp(`\\b${sanitizedMatch}\\b`, 'g');
+  let { status } = validateRegex(regex);
+  if (status === 'safe')
+    return str.replace(regex, (matchedString) => uidMapper[matchedString]);
 }
 
 function setDirtyTrue(jsonRteChild: any) {
