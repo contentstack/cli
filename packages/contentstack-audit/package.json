@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-audit",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "Contentstack audit plugin",
   "author": "Contentstack CLI",
   "homepage": "https://github.com/contentstack/cli",
@@ -19,7 +19,7 @@
   ],
   "dependencies": {
     "@contentstack/cli-command": "~1.2.18",
-    "@contentstack/cli-utilities": "~1.6.1",
+    "@contentstack/cli-utilities": "~1.6.2",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^5.0.0",
     "chalk": "^4.1.2",

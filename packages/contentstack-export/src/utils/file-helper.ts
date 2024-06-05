@@ -2,12 +2,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import mkdirp from 'mkdirp';
 import bigJSON from 'big-json';
-import { FsUtility } from '@contentstack/cli-utilities';
+import { FsUtility, sanitizePath } from '@contentstack/cli-utilities';
 
 export const readFileSync = function (filePath: string, parse: boolean): unknown {
   let data;
   parse = typeof parse === 'undefined' ? true : parse;
-  filePath = path.resolve(filePath);
+  filePath = path.resolve(sanitizePath(filePath));
   if (fs.existsSync(filePath)) {
     data = parse ? JSON.parse(fs.readFileSync(filePath, 'utf8')) : data;
   }
@@ -17,7 +17,7 @@ export const readFileSync = function (filePath: string, parse: boolean): unknown
 // by default file type is json
 export const readFile = async (filePath: string, options = { type: 'json' }): Promise<any> => {
   return new Promise((resolve, reject) => {
-    filePath = path.resolve(filePath);
+    filePath = path.resolve(sanitizePath(filePath));
     fs.readFile(filePath, 'utf-8', (error, data) => {
       if (error) {
         reject(error);
@@ -35,7 +35,7 @@ export const readLargeFile = function (filePath: string, options: { type?: strin
   if (typeof filePath !== 'string') {
     return;
   }
-  filePath = path.resolve(filePath);
+  filePath = path.resolve(sanitizePath(filePath));
   if (fs.existsSync(filePath)) {
     return new Promise((resolve, reject) => {
       const readStream = fs.createReadStream(filePath, { encoding: 'utf-8' });
@@ -76,7 +76,7 @@ export const writeLargeFile = function (filePath: string, data: any): Promise<an
   if (typeof filePath !== 'string' || typeof data !== 'object') {
     return;
   }
-  filePath = path.resolve(filePath);
+  filePath = path.resolve(sanitizePath(filePath));
   return new Promise((resolve, reject) => {
     const stringifyStream = bigJSON.createStringifyStream({
       body: data,

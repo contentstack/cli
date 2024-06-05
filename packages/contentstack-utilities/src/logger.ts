@@ -3,7 +3,7 @@ import { klona } from 'klona/full';
 import path, { normalize } from 'path';
 import winston, { LogEntry } from 'winston';
 
-import { cliux as ux, PrintOptions, messageHandler } from './index';
+import { cliux as ux, PrintOptions, messageHandler, sanitizePath } from './index';
 
 export class LoggerService {
   name: string;
@@ -19,7 +19,7 @@ export class LoggerService {
     const logger = winston.createLogger({
       transports: [
         new winston.transports.File({
-          filename: path.resolve(process.env.CS_CLI_LOG_PATH || `${pathToLog}/logs`, `${name}.log`),
+          filename: path.resolve(sanitizePath(process.env.CS_CLI_LOG_PATH) || `${sanitizePath(pathToLog)}/logs`, `${sanitizePath(name)}.log`),
         }),
       ],
       format: winston.format.combine(

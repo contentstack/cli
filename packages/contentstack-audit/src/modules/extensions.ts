@@ -2,7 +2,7 @@ import path, { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { cloneDeep } from 'lodash';
 import { LogFn, ConfigType, ContentTypeStruct, CtConstructorParam, ModuleConstructorParam, Extension } from '../types';
-import { ux } from '@contentstack/cli-utilities';
+import { ux, sanitizePath } from '@contentstack/cli-utilities';
 
 import auditConfig from '../config';
 import { $t, auditMsg, commonMsg } from '../messages';
@@ -34,13 +34,19 @@ export default class Extensions {
     this.fix = fix ?? false;
     this.ctSchema = ctSchema;
     this.extensionsSchema = [];
-    this.moduleName = moduleName ?? 'extensions';
+    this.moduleName = this.validateModules(moduleName!, this.config.moduleConfig);
     this.fileName = config.moduleConfig[this.moduleName].fileName;
-    this.folderPath = resolve(config.basePath, config.moduleConfig[this.moduleName].dirName);
+    this.folderPath = resolve(sanitizePath(config.basePath), sanitizePath(config.moduleConfig[this.moduleName].dirName));
     this.ctUidSet = new Set(['$all']);
     this.missingCtInExtensions = [];
     this.missingCts = new Set();
     this.extensionsPath = '';
+  }
+  validateModules(moduleName: keyof typeof auditConfig.moduleConfig, moduleConfig: Record<string, unknown>): keyof typeof auditConfig.moduleConfig {
+    if (Object.keys(moduleConfig).includes(moduleName)) {
+      return moduleName;
+    }
+    return 'extensions'
   }
 
   async run() {
