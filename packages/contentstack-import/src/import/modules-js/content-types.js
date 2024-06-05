@@ -3,6 +3,7 @@ const path = require('path');
 const chalk = require('chalk');
 const { cloneDeep, find, findIndex } = require('lodash');
 const { fileHelper, log, executeTask, formatError, schemaTemplate, lookupExtension } = require('../../utils');
+const { sanitizePath } = require('@contentstack/cli-utilities');
 
 class ContentTypesImport {
   constructor(importConfig, stackAPIClient) {
@@ -12,12 +13,12 @@ class ContentTypesImport {
     this.globalFieldConfig = importConfig.modules.globalfields;
     this.importConcurrency = this.contentTypeConfig.importConcurrency || this.importConfig.importConcurrency;
     this.writeConcurrency = this.contentTypeConfig.writeConcurrency || this.importConfig.writeConcurrency;
-    this.contentTypesFolderPath = path.join(this.importConfig.data, this.contentTypeConfig.dirName);
-    this.mapperFolderPath = path.join(this.importConfig.data, 'mapper', 'content_types');
-    this.existingContentTypesPath = path.join(this.mapperFolderPath, 'success.json');
-    this.globalFieldsFolderPath = path.resolve(this.importConfig.data, this.globalFieldConfig.dirName);
-    this.globalFieldMapperFolderPath = path.join(importConfig.data, 'mapper', 'global_fields', 'success.json');
-    this.globalFieldPendingPath = path.join(importConfig.data, 'mapper', 'global_fields', 'pending_global_fields.js');
+    this.contentTypesFolderPath = path.join(sanitizePath(this.importConfig.data), sanitizePath(this.contentTypeConfig.dirName));
+    this.mapperFolderPath = path.join(sanitizePath(this.importConfig.data), 'mapper', 'content_types');
+    this.existingContentTypesPath = path.join(sanitizePath(this.mapperFolderPath), 'success.json');
+    this.globalFieldsFolderPath = path.resolve(sanitizePath(this.importConfig.data),sanitizePath(this.globalFieldConfig.dirName));
+    this.globalFieldMapperFolderPath = path.join(sanitizePath(importConfig.data), 'mapper', 'global_fields', 'success.json');
+    this.globalFieldPendingPath = path.join(sanitizePath(importConfig.data), 'mapper', 'global_fields', 'pending_global_fields.js');
     this.ignoredFilesInContentTypesFolder = new Map([
       ['__master.json', 'true'],
       ['__priority.json', 'true'],

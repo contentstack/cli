@@ -2,7 +2,7 @@ import { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { cloneDeep } from 'lodash';
 import { LogFn, ConfigType, ContentTypeStruct, CtConstructorParam, ModuleConstructorParam, Workflow } from '../types';
-import { ux } from '@contentstack/cli-utilities';
+import { sanitizePath, ux } from '@contentstack/cli-utilities';
 
 import auditConfig from '../config';
 import { $t, auditMsg, commonMsg } from '../messages';
@@ -35,15 +35,22 @@ export default class Workflows {
     this.fix = fix ?? false;
     this.ctSchema = ctSchema;
     this.workflowSchema = [];
-    this.moduleName = moduleName ?? 'workflows';
+    this.moduleName = this.validateModules(moduleName!, this.config.moduleConfig);
     this.fileName = config.moduleConfig[this.moduleName].fileName;
-    this.folderPath = resolve(config.basePath, config.moduleConfig[this.moduleName].dirName);
+    this.folderPath = resolve(sanitizePath(config.basePath), sanitizePath(config.moduleConfig[this.moduleName].dirName));
     this.ctUidSet = new Set(['$all']);
     this.missingCtInWorkflows = [];
     this.missingCts = new Set();
     this.workflowPath = '';
     this.isBranchFixDone = false;
   }
+  validateModules(moduleName: keyof typeof auditConfig.moduleConfig, moduleConfig: Record<string, unknown>): keyof typeof auditConfig.moduleConfig {
+    if (Object.keys(moduleConfig).includes(moduleName)) {
+      return moduleName;
+    }
+    return 'workflows'
+  }
+
   /**
    * Check whether the given path for the workflow exists or not
    * If path exist read
