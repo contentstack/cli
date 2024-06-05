@@ -3,6 +3,7 @@ import { ContentstackClient } from '@contentstack/cli-utilities';
 import { log, formatError, fsUtil } from '../../utils';
 import { ExportConfig, ModuleClassParams } from '../../types';
 import BaseClass from './base-class';
+import { sanitizePath } from '@contentstack/cli-utilities';
 
 export default class GlobalFieldsExport extends BaseClass {
   private stackAPIClient: ReturnType<ContentstackClient['stack']>;
@@ -35,9 +36,9 @@ export default class GlobalFieldsExport extends BaseClass {
       limit: this.globalFieldsConfig.limit,
     };
     this.globalFieldsDirPath = path.resolve(
-      exportConfig.data,
-      exportConfig.branchName || '',
-      this.globalFieldsConfig.dirName,
+      sanitizePath(exportConfig.data),
+      sanitizePath(exportConfig.branchName || ''),
+      sanitizePath(this.globalFieldsConfig.dirName),
     );
     this.globalFields = [];
   }
