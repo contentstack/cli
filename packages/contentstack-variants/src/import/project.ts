@@ -49,7 +49,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
           });
         };
 
-        await createProject();
+        await createProject(this.config.personalizeProjectName);
 
         this.config.modules.personalization.project_id = projectRes.uid;
         this.config.modules.personalization.importData = true;
