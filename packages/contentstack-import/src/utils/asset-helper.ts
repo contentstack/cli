@@ -373,7 +373,7 @@ function findFileUrls(schema: any, _entry: any, assetUrls: any) {
 }
 
 function updateFileFields(
-  objekt: any,
+  object: any,
   parent: any,
   pos: any,
   mappedAssetUids: any,
@@ -381,16 +381,16 @@ function updateFileFields(
   unmatchedUids: any,
   mappedAssetUrls?: any,
 ) {
-  if (_.isPlainObject(objekt) && _.has(objekt, 'filename') && _.has(objekt, 'uid')) {
+  if (_.isPlainObject(object) && _.has(object, 'filename') && _.has(object, 'uid')) {
     if (typeof pos !== 'undefined') {
       if (typeof pos === 'number' || typeof pos === 'string') {
         const replacer = () => {
-          if (mappedAssetUids.hasOwnProperty(objekt.uid)) {
-            parent[pos] = mappedAssetUids[objekt.uid];
-            matchedUids.push(objekt.uid);
+          if (mappedAssetUids.hasOwnProperty(object.uid)) {
+            parent[pos] = mappedAssetUids[object.uid];
+            matchedUids.push(object.uid);
           } else {
             parent[pos] = '';
-            unmatchedUids.push(objekt.uid);
+            unmatchedUids.push(object.uid);
           }
         };
 
@@ -399,7 +399,7 @@ function updateFileFields(
         }
 
         if (
-          objekt &&
+          object &&
           _.isObject(parent[pos]) &&
           parent[pos].uid &&
           parent[pos].url &&
@@ -415,23 +415,23 @@ function updateFileFields(
             parent = _.omit(parent, ['asset']);
           }
 
-          if (objekt.uid && mappedAssetUids && mappedAssetUids[objekt.uid]) {
-            objekt.uid = mappedAssetUids[objekt.uid];
+          if (object.uid && mappedAssetUids && mappedAssetUids[object.uid]) {
+            object.uid = mappedAssetUids[object.uid];
           }
-          if (objekt.url && mappedAssetUrls && mappedAssetUrls[objekt.url]) {
-            objekt.url = mappedAssetUrls[objekt.url];
+          if (object.url && mappedAssetUrls && mappedAssetUrls[object.url]) {
+            object.url = mappedAssetUrls[object.url];
           }
         } else {
           replacer();
         }
       }
     }
-  } else if (_.isPlainObject(objekt)) {
-    for (let key in objekt) updateFileFields(objekt[key], objekt, key, mappedAssetUids, matchedUids, unmatchedUids);
-  } else if (_.isArray(objekt) && objekt.length) {
-    for (let i = 0; i <= objekt.length; i++)
-      updateFileFields(objekt[i], objekt, i, mappedAssetUids, matchedUids, unmatchedUids);
+  } else if (_.isPlainObject(object)) {
+    for (let key in object) updateFileFields(object[key], object, key, mappedAssetUids, matchedUids, unmatchedUids);
+  } else if (_.isArray(object) && object.length) {
+    for (let i = 0; i <= object.length; i++)
+      updateFileFields(object[i], object, i, mappedAssetUids, matchedUids, unmatchedUids);
 
-    parent[pos] = _.compact(objekt);
+    parent[pos] = _.compact(object);
   }
 }

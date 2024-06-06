@@ -50,6 +50,7 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   skipAudit?: boolean;
   stackName?: string;
   region: Region;
+  personalizeProjectName?: string;
 }
 
 type branch = {
