@@ -106,6 +106,10 @@ export default class ImportCommand extends Command {
       default: false,
       description: 'Skips the module exists warning messages.',
     }),
+    'personalize-project-name': flags.string({
+      required: false,
+      description: 'Personalize project name.',
+    }),
     'skip-audit': flags.boolean({
       description: 'Skips the audit fix.',
     }),
