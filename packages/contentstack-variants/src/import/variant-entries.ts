@@ -22,7 +22,7 @@ import {
   CreateVariantEntryDto,
   PublishVariantEntryDto,
 } from '../types';
-import { fsUtil, log } from '../utils';
+import { formatError, fsUtil, log } from '../utils';
 
 export default class VariantEntries extends VariantAdapter<VariantHttpClient<ImportConfig>> {
   public entriesDirPath: string;
@@ -254,9 +254,10 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
   serializeChangeSet(variantEntry: VariantEntryStruct) {
     let changeSet: Record<string, any> = {};
     if (variantEntry?._variant?._change_set?.length) {
-      variantEntry._variant._change_set.forEach((data: string) => {
-        if (variantEntry[data]) {
-          changeSet[data] = variantEntry[data];
+      variantEntry._variant._change_set.forEach((key: string) => {
+        key = key.split('.')[0];
+        if (variantEntry[key]) {
+          changeSet[key] = variantEntry[key];
         }
       });
     }
@@ -315,6 +316,9 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       // if not, feel free to remove this lookup flow.
       lookUpTerms(contentType.schema, variantEntry, this.taxonomies, this.config);
 
+      // update file fields of entry variants to support lookup asset logic
+      this.updateFileFields(variantEntry);
+
       // NOTE Find and replace asset's UID
       variantEntry = lookupAssets(
         {
@@ -329,6 +333,39 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     }
 
     return variantEntry;
+  }
+
+  /**
+   * Updates the file fields of a entry variant to support lookup asset logic.
+   * Lookup asset expects file fields to be an object instead of a string. So here we are updating the file fields to be an object. Object has two keys: `uid` and `filename`. `uid` is the asset UID and `filename` is the name of the file. Used a dummy value for the filename. This is a temporary fix and will be updated in the future.
+   * @param variantEntry - The entry variant to update.
+   */
+  updateFileFields(variantEntry: VariantEntryStruct) {
+    const setValue = (currentObj: VariantEntryStruct, keys: Array<string>) => {
+      if (!currentObj || keys.length === 0) return;
+
+      const [firstKey, ...restKeys] = keys;
+
+      if (Array.isArray(currentObj)) {
+        for (const item of currentObj) {
+          setValue(item, [firstKey, ...restKeys]);
+        }
+      } else if (currentObj && typeof currentObj === 'object') {
+        if (firstKey in currentObj) {
+          if (keys.length === 1) {
+            currentObj[firstKey] = { uid: currentObj[firstKey], filename: 'dummy.jpeg' };
+          } else {
+            setValue(currentObj[firstKey], restKeys);
+          }
+        }
+      }
+    };
+
+    const pathsToUpdate = variantEntry._metadata.references
+      .filter((ref: any) => ref._content_type_uid === 'sys_assets')
+      .map((ref: any) => ref.path);
+
+    pathsToUpdate.forEach((path: string) => setValue(variantEntry, path.split('.')));
   }
 
   /**
@@ -373,7 +410,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       };
       const onReject = ({ error, apiData: { entryUid, variantUid }, log }: any) => {
         log(this.config, `Failed to publish entry variant: '${variantUid}' of entry uid ${entryUid}`, 'error');
-        log(this.config, error, 'error');
+        log(this.config, formatError(error), 'error');
       };
 
       const { environments, locales } = this.serializePublishEntries(variantEntry);

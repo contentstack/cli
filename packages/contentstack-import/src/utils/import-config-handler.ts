@@ -23,12 +23,9 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   config.contentDir = importCmdFlags['data'] || importCmdFlags['data-dir'] || config.data || (await askContentDir());
   const pattern = /[*$%#<>{}!&?]/g;
   if (pattern.test(config.contentDir)) {
-    cliux.print(
-      `\nPlease add a directory path without any of the special characters: (*,&,{,},[,],$,%,<,>,?,!)`,
-      {
-        color: 'yellow',
-      },
-    );
+    cliux.print(`\nPlease add a directory path without any of the special characters: (*,&,{,},[,],$,%,<,>,?,!)`, {
+      color: 'yellow',
+    });
     config.contentDir = await askContentDir();
   }
   config.contentDir = config.contentDir.replace(/['"]/g, '');
@@ -98,6 +95,8 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
 
   config.replaceExisting = importCmdFlags['replace-existing'];
   config.skipExisting = importCmdFlags['skip-existing'];
+
+  config.personalizeProjectName = importCmdFlags['personalize-project-name'];
 
   return config;
 };
