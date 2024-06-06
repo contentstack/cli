@@ -67,7 +67,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
           entry_uid: entry.uid,
           locale,
         });
-        if (existsSync(variantEntryBasePath)){
+        if (existsSync(variantEntryBasePath)) {
           variantEntriesFs.completeFile(true);
           this.log(
             this.config,
