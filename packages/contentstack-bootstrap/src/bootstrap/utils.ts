@@ -189,6 +189,24 @@ const envFileHandler = async (
       }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\nCONTENTSTACK_LIVE_EDIT_TAGS=false`;
       result = await writeEnvFile(content, filePath);
       break;
+    case 'compass-app':
+      fileName = '.env';
+      filePath = pathValidator(path.join(sanitizePath(clonedDirectory), sanitizePath(fileName)));
+      content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${
+        environmentVariables.deliveryToken
+      }\n${
+        livePreviewEnabled
+          ? `\nCONTENTSTACK_PREVIEW_TOKEN=${
+              environmentVariables.preview_token || `''`
+            }\nCONTENTSTACK_PREVIEW_HOST=${previewHost}\nCONTENTSTACK_APP_HOST=${appHost}\n`
+          : '\n'
+      }CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\nCONTENTSTACK_API_HOST=${
+        customHost ? customHost : managementAPIHost
+      }${
+        !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
+      }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\nCONTENTSTACK_LIVE_EDIT_TAGS=false`;
+      result = await writeEnvFile(content, filePath);
+      break;
     case 'gatsby':
     case 'gatsby-starter':
       fileName = `.env.${environmentVariables.environment}`;
