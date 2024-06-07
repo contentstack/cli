@@ -51,6 +51,8 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   skipExisting?: boolean;
   skipAudit?: boolean;
   stackName?: string;
+  'mapper-dir'?: string;
+  'exclude-global-modules': false;
 }
 
 type branch = {
