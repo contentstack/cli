@@ -394,7 +394,8 @@ const config: DefaultConfig = {
     returnResponse: true, // On process completion should return config used in the command
     noTerminalOutput: false, // Skip final audit table output on terminal
     config: { basePath: '' }, // To overwrite any build-in config. And this config is equal to --config flag.
-  }
+  },
+  globalModules: ['taxonomies', 'environments', 'marketplace-apps', 'webhooks'],
 };
 
 export default config;
