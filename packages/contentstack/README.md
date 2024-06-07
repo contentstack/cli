@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.18.2 darwin-arm64 node-v21.6.2
+@contentstack/cli/1.19.0 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -3492,7 +3492,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.21/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.2.3/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:add PLUGIN`
 
@@ -3517,7 +3517,7 @@ GLOBAL FLAGS
 DESCRIPTION
   Installs a plugin into csdx.
 
-  Uses bundled npm executable to install plugins into /Users/raj.pandey/.local/share/@contentstack/cli
+  Uses npm to install plugins.
 
   Installation of a user-installed plugin will override a core plugin.
 
@@ -3566,7 +3566,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.21/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.2.3/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN`
 
@@ -3591,7 +3591,7 @@ GLOBAL FLAGS
 DESCRIPTION
   Installs a plugin into csdx.
 
-  Uses bundled npm executable to install plugins into /Users/raj.pandey/.local/share/@contentstack/cli
+  Uses npm to install plugins.
 
   Installation of a user-installed plugin will override a core plugin.
 
@@ -3615,7 +3615,7 @@ EXAMPLES
     $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.21/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.2.3/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PATH`
 
@@ -3645,7 +3645,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.21/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.2.3/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:remove [PLUGIN]`
 
@@ -3686,7 +3686,7 @@ FLAGS
   --reinstall  Reinstall all plugins after uninstalling.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.21/src/commands/plugins/reset.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.2.3/src/commands/plugins/reset.ts)_
 
 ## `csdx plugins:uninstall [PLUGIN]`
 
@@ -3714,7 +3714,7 @@ EXAMPLES
   $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.21/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.2.3/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:unlink [PLUGIN]`
 
@@ -3758,7 +3758,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.21/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.2.3/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
