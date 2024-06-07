@@ -7,6 +7,7 @@ import { ImportConfig } from '../types';
 
 export default async function backupHandler(importConfig: ImportConfig): Promise<string> {
   if (importConfig.hasOwnProperty('useBackedupDir')) {
+    // await copyMapperFolder(importConfig, importConfig.useBackedupDir);
     return importConfig.useBackedupDir;
   }
 
@@ -14,7 +15,11 @@ export default async function backupHandler(importConfig: ImportConfig): Promise
   const subDir = isSubDirectory(importConfig);
 
   if (subDir) {
-    backupDirPath = path.resolve(sanitizePath(importConfig.contentDir), '..', '_backup_' + Math.floor(Math.random() * 1000));
+    backupDirPath = path.resolve(
+      sanitizePath(importConfig.contentDir),
+      '..',
+      '_backup_' + Math.floor(Math.random() * 1000),
+    );
     if (importConfig.createBackupDir) {
       cliux.print(
         `Warning!!! Provided backup directory path is a sub directory of the content directory, Cannot copy to a sub directory. Hence new backup directory created - ${backupDirPath}`,
@@ -37,7 +42,7 @@ export default async function backupHandler(importConfig: ImportConfig): Promise
 
   if (backupDirPath) {
     cliux.print('Copying content to the backup directory...');
-
+    await copyMapperFolder(importConfig, backupDirPath);
     return new Promise((resolve, reject) => {
       return copy(importConfig.contentDir, backupDirPath, (error: any) => {
         if (error) {
@@ -66,4 +71,26 @@ function isSubDirectory(importConfig: ImportConfig) {
 
   // true if both parent and child have same path
   return true;
+}
+
+/**
+ *
+ */
+
+async function copyMapperFolder(importConfig: ImportConfig, backupDirPath: string) {
+  try {
+    const mapperDir = importConfig['mapper-dir'];
+    if (!mapperDir) {
+      return;
+    }
+    const globalModules = ['taxonomies', 'environments', 'marketplace_apps', 'webhooks'];
+    const copyPromises = globalModules.map((globalModule) =>
+      copy(`${mapperDir}/mapper/${globalModule}`, `${backupDirPath}/mapper/${globalModule}`),
+    );
+    await Promise.all(copyPromises);
+    return backupDirPath;
+  } catch (error) {
+    trace(error, 'error', true);
+    throw error;
+  }
 }
