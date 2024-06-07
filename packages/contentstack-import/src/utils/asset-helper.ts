@@ -83,11 +83,11 @@ export const lookupAssets = function (
       if (
         schema[i].data_type === 'text' &&
         schema[i].field_metadata &&
-        (schema[i].field_metadata.markdown || schema[i].field_metadata.rich_text_type)
+        (schema[i]?.field_metadata?.markdown || schema[i]?.field_metadata?.rich_text_type)
       ) {
         parent.push(schema[i].uid);
         findFileUrls(schema[i], entryToFind, assetUrls);
-        if (schema[i].field_metadata.rich_text_type) {
+        if (schema[i]?.field_metadata?.rich_text_type) {
           findAssetIdsFromHtmlRte(entryToFind, schema[i]);
         }
         parent.pop();
@@ -110,7 +110,7 @@ export const lookupAssets = function (
       }
       // added rich_text_type field check because some marketplace extensions also
       // have data_type has json
-      if (schema[i].data_type === 'json' && schema[i].field_metadata.rich_text_type) {
+      if (schema[i].data_type === 'json' && schema[i]?.field_metadata?.rich_text_type) {
         parent.push(schema[i].uid);
         // findFileUrls(schema[i], entry, assetUrls)
         findAssetIdsFromJsonRte(data.entry, data.content_type.schema);
@@ -188,7 +188,7 @@ export const lookupAssets = function (
           break;
         }
         case 'json': {
-          if (entryObj[element.uid] && element.field_metadata.rich_text_type) {
+          if (entryObj[element.uid] && element?.field_metadata?.rich_text_type) {
             if (element.multiple) {
               entryObj[element.uid].forEach((jsonRteData: any) => {
                 gatherJsonRteAssetIds(jsonRteData);
@@ -267,7 +267,7 @@ export const lookupAssets = function (
     if (typeof uid !== 'undefined') {
       const escapedAssetUid = assetUid.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const regex = new RegExp(`\\b${escapedAssetUid}\\b`, 'img');
-      let { status } = validateRegex(new RegExp(regex, 'img'))
+      let { status } = validateRegex(new RegExp(regex, 'img'));
       if (status === 'safe') {
         entry = entry.replace(regex, uid);
         matchedUids.push(assetUid);
