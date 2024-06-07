@@ -23,12 +23,9 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   config.contentDir = importCmdFlags['data'] || importCmdFlags['data-dir'] || config.data || (await askContentDir());
   const pattern = /[*$%#<>{}!&?]/g;
   if (pattern.test(config.contentDir)) {
-    cliux.print(
-      `\nPlease add a directory path without any of the special characters: (*,&,{,},[,],$,%,<,>,?,!)`,
-      {
-        color: 'yellow',
-      },
-    );
+    cliux.print(`\nPlease add a directory path without any of the special characters: (*,&,{,},[,],$,%,<,>,?,!)`, {
+      color: 'yellow',
+    });
     config.contentDir = await askContentDir();
   }
   config.contentDir = config.contentDir.replace(/['"]/g, '');
@@ -81,7 +78,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
 
   if (importCmdFlags['branch']) {
     config.branchName = importCmdFlags['branch'];
-    config.branchDir = path.join(sanitizePath(config.contentDir), sanitizePath  (config.branchName));
+    config.branchDir = path.join(sanitizePath(config.contentDir), sanitizePath(config.branchName));
   }
   if (importCmdFlags['module']) {
     config.moduleName = importCmdFlags['module'];
@@ -97,6 +94,14 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
 
   config.replaceExisting = importCmdFlags['replace-existing'];
   config.skipExisting = importCmdFlags['skip-existing'];
+
+  if (importCmdFlags['mapper-dir']) {
+    config['mapper-dir'] = importCmdFlags['mapper-dir'];
+  }
+
+  if (importCmdFlags['exclude-global-modules']) {
+    config['exclude-global-modules'] = importCmdFlags['exclude-global-modules'];
+  }
 
   return config;
 };
