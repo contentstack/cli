@@ -65,8 +65,18 @@ export default class ContentTypesImport extends BaseClass {
     this.cTsSuccessPath = path.join(sanitizePath(this.cTsMapperPath), 'success.json');
     this.gFsFolderPath = path.resolve(sanitizePath(this.importConfig.data), sanitizePath(this.gFsConfig.dirName));
     this.gFsMapperFolderPath = path.join(sanitizePath(importConfig.data), 'mapper', 'global_fields', 'success.json');
-    this.gFsPendingPath = path.join(sanitizePath(importConfig.data), 'mapper', 'global_fields', 'pending_global_fields.js');
-    this.marketplaceAppMapperPath = path.join(sanitizePath(this.importConfig.data), 'mapper', 'marketplace_apps', 'uid-mapping.json');
+    this.gFsPendingPath = path.join(
+      sanitizePath(importConfig.data),
+      'mapper',
+      'global_fields',
+      'pending_global_fields.js',
+    );
+    this.marketplaceAppMapperPath = path.join(
+      sanitizePath(this.importConfig.data),
+      'mapper',
+      'marketplace_apps',
+      'uid-mapping.json',
+    );
     this.ignoredFilesInContentTypesFolder = new Map([
       ['__master.json', 'true'],
       ['__priority.json', 'true'],
