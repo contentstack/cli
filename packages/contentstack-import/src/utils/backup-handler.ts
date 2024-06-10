@@ -41,7 +41,6 @@ export default async function backupHandler(importConfig: ImportConfig): Promise
 
   if (backupDirPath) {
     cliux.print('Copying content to the backup directory...');
-    await copyMapperFolder(importConfig, backupDirPath);
     return new Promise((resolve, reject) => {
       return copy(importConfig.contentDir, backupDirPath, (error: any) => {
         if (error) {
@@ -70,25 +69,4 @@ function isSubDirectory(importConfig: ImportConfig) {
 
   // true if both parent and child have same path
   return true;
-}
-
-/**
- *
- */
-
-async function copyMapperFolder(importConfig: ImportConfig, backupDirPath: string) {
-  try {
-    const mapperDir = importConfig['mapper-dir'];
-    if (!mapperDir) {
-      return;
-    }
-    const copyPromises = importConfig.globalModules.map((globalModule: string) =>
-      copy(`${mapperDir}/mapper/${globalModule}`, `${backupDirPath}/mapper/${globalModule}`),
-    );
-    await Promise.all(copyPromises);
-    return backupDirPath;
-  } catch (error) {
-    trace(error, 'error', true);
-    throw error;
-  }
 }
