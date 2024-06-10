@@ -103,6 +103,10 @@ class ModuleImporter {
   async importAllModules(): Promise<any> {
     // use the algorithm to determine the parallel and sequential execution of modules
     for (let moduleName of this.importConfig.modules.types) {
+      if (this.importConfig.globalModules.includes(moduleName) && this.importConfig['exclude-global-modules']) {
+        log(this.importConfig, `Skipping the import of Global Module '${moduleName}' ...`,'warn');
+        continue;
+      }
       await this.importByModuleByName(moduleName);
     }
   }
