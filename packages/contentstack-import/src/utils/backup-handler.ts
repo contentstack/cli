@@ -83,8 +83,7 @@ async function copyMapperFolder(importConfig: ImportConfig, backupDirPath: strin
     if (!mapperDir) {
       return;
     }
-    const globalModules = ['taxonomies', 'environments', 'marketplace_apps', 'webhooks'];
-    const copyPromises = globalModules.map((globalModule) =>
+    const copyPromises = importConfig.globalModules.map((globalModule: string) =>
       copy(`${mapperDir}/mapper/${globalModule}`, `${backupDirPath}/mapper/${globalModule}`),
     );
     await Promise.all(copyPromises);
