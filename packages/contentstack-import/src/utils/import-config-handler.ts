@@ -4,7 +4,7 @@ import { omit, filter, includes, isArray } from 'lodash';
 import { configHandler, isAuthenticated, cliux, sanitizePath } from '@contentstack/cli-utilities';
 import defaultConfig from '../config';
 import { readFile, fileExistsSync } from './file-helper';
-import { askContentDir, askAPIKey } from './interactive';
+import { askContentDir, askAPIKey, askMapperDir } from './interactive';
 import login from './login-handler';
 import { ImportConfig } from '../types';
 
@@ -95,12 +95,14 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   config.replaceExisting = importCmdFlags['replace-existing'];
   config.skipExisting = importCmdFlags['skip-existing'];
 
-  if (importCmdFlags['mapper-dir']) {
-    config['mapper-dir'] = importCmdFlags['mapper-dir'];
-  }
-
   if (importCmdFlags['exclude-global-modules']) {
     config['exclude-global-modules'] = importCmdFlags['exclude-global-modules'];
+  }
+
+  if (importCmdFlags['mapper-dir'] && importCmdFlags['exclude-global-modules']) {
+    config['mapper-dir'] = importCmdFlags['mapper-dir'];
+  } else if (importCmdFlags['exclude-global-modules']) {
+    config['mapper-dir'] = await askMapperDir();
   }
 
   return config;
