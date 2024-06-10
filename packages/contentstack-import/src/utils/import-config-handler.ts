@@ -99,12 +99,6 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
     config['exclude-global-modules'] = importCmdFlags['exclude-global-modules'];
   }
 
-  if (importCmdFlags['mapper-dir'] && importCmdFlags['exclude-global-modules']) {
-    config['mapper-dir'] = importCmdFlags['mapper-dir'];
-  } else if (importCmdFlags['exclude-global-modules']) {
-    config['mapper-dir'] = await askMapperDir();
-  }
-
   return config;
 };
 
