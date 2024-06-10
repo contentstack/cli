@@ -111,6 +111,7 @@ export default class ImportCommand extends Command {
     }),
     'exclude-global-modules': flags.boolean({
       description: 'Excluded the Module that are branch independent from the import',
+      default: false
     }),
     'mapper-dir': flags.string({
       description: 'path of backup directory for base branch import',
