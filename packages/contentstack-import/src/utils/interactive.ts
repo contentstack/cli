@@ -73,3 +73,14 @@ export const selectConfiguration = async():Promise<string> =>{
     message: 'Choose the option to proceed',
   });
 }
+
+export const askMapperDir = async (): Promise<string> => {
+  let result = await cliux.inquire<string>({
+    type: 'input',
+    message: 'Enter the path for the Backup Directory of the imported branch',
+    name: 'dir',
+    validate: validatePath,
+  });
+  result = result.replace(/["']/g, '');
+  return path.resolve(result);
+};
