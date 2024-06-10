@@ -7,7 +7,6 @@ import { ImportConfig } from '../types';
 
 export default async function backupHandler(importConfig: ImportConfig): Promise<string> {
   if (importConfig.hasOwnProperty('useBackedupDir')) {
-    // await copyMapperFolder(importConfig, importConfig.useBackedupDir);
     return importConfig.useBackedupDir;
   }
 
