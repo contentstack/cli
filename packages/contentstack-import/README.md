@@ -82,7 +82,6 @@ FLAGS
   --exclude-global-modules          Excluded the Module that are branch independent from the import
   --import-webhook-status=<option>  [default: disable] [optional] Webhook state
                                     <options: disable|current>
-  --mapper-dir=<value>              path of backup directory for base branch import
   --replace-existing                Replaces the existing module in the target stack.
   --skip-app-recreation             [optional] Skip private apps recreation if already exist
   --skip-audit                      Skips the audit fix.
@@ -133,7 +132,6 @@ FLAGS
   --exclude-global-modules          Excluded the Module that are branch independent from the import
   --import-webhook-status=<option>  [default: disable] [optional] Webhook state
                                     <options: disable|current>
-  --mapper-dir=<value>              path of backup directory for base branch import
   --replace-existing                Replaces the existing module in the target stack.
   --skip-app-recreation             [optional] Skip private apps recreation if already exist
   --skip-audit                      Skips the audit fix.
