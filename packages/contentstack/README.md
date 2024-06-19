@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.18.2 darwin-arm64 node-v21.6.2
+@contentstack/cli/1.20.0 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -122,8 +122,9 @@ Perform audits and find possible errors in the exported Contentstack data
 
 ```
 USAGE
-  $ csdx audit [--report-path <value>] [--modules content-types|global-fields|entries|extensions|workflows]
-    [--columns <value> | ] [--sort <value>] [--filter <value>] [--csv | --no-truncate]
+  $ csdx audit [--report-path <value>] [--modules
+    content-types|global-fields|entries|extensions|workflows...] [--columns <value> | ] [--sort <value>] [--filter
+    <value>] [--csv | --no-truncate]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
@@ -162,10 +163,10 @@ Perform audits and fix possible errors in the exported Contentstack data.
 
 ```
 USAGE
-  $ csdx audit:fix [--report-path <value>] [--modules content-types|global-fields|entries|extensions|workflows]
-    [--copy-path <value> --copy-dir] [--fix-only
-    reference|global_field|json:rte|json:extension|blocks|group|content_types] [--columns <value> | ] [--sort <value>]
-    [--filter <value>] [--csv | --no-truncate]
+  $ csdx audit:fix [--report-path <value>] [--modules
+    content-types|global-fields|entries|extensions|workflows...] [--copy-path <value> --copy-dir] [--fix-only
+    reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value> | ] [--sort
+    <value>] [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   --copy-dir              Create backup from the original data.
@@ -2152,6 +2153,7 @@ FLAGS
   -k, --stack-api-key=<value>           API key of the target stack
   -m, --module=<value>                  [optional] specific module name
   -y, --yes                             [optional] Override marketplace prompts
+      --exclude-global-modules          Excluded the Module that are branch independent from the import
       --import-webhook-status=<option>  [default: disable] [optional] Webhook state
                                         <options: disable|current>
       --replace-existing                Replaces the existing module in the target stack.
@@ -2374,8 +2376,9 @@ Perform audits and find possible errors in the exported Contentstack data
 
 ```
 USAGE
-  $ csdx cm:stacks:audit [--report-path <value>] [--modules content-types|global-fields|entries|extensions|workflows]
-    [--columns <value> | ] [--sort <value>] [--filter <value>] [--csv | --no-truncate]
+  $ csdx cm:stacks:audit [--report-path <value>] [--modules
+    content-types|global-fields|entries|extensions|workflows...] [--columns <value> | ] [--sort <value>] [--filter
+    <value>] [--csv | --no-truncate]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
@@ -2416,10 +2419,10 @@ Perform audits and fix possible errors in the exported Contentstack data.
 
 ```
 USAGE
-  $ csdx cm:stacks:audit:fix [--report-path <value>] [--modules content-types|global-fields|entries|extensions|workflows]
-    [--copy-path <value> --copy-dir] [--fix-only
-    reference|global_field|json:rte|json:extension|blocks|group|content_types] [--columns <value> | ] [--sort <value>]
-    [--filter <value>] [--csv | --no-truncate]
+  $ csdx cm:stacks:audit:fix [--report-path <value>] [--modules
+    content-types|global-fields|entries|extensions|workflows...] [--copy-path <value> --copy-dir] [--fix-only
+    reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value> | ] [--sort
+    <value>] [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   --copy-dir              Create backup from the original data.
@@ -2575,6 +2578,7 @@ FLAGS
   -k, --stack-api-key=<value>           API key of the target stack
   -m, --module=<value>                  [optional] specific module name
   -y, --yes                             [optional] Override marketplace prompts
+      --exclude-global-modules          Excluded the Module that are branch independent from the import
       --import-webhook-status=<option>  [default: disable] [optional] Webhook state
                                         <options: disable|current>
       --replace-existing                Replaces the existing module in the target stack.
@@ -2839,9 +2843,9 @@ Unpublish entries or assets of given content types from the specified environmen
 
 ```
 USAGE
-  $ csdx cm:stacks:unpublish csdx  [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>]
-    [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>]
-    [--only-assets] [--only-entries]
+  $ csdx cm:stacks:unpublish csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>]
+    [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token
+    <value>] [--only-assets] [--only-entries]
 
 FLAGS
   -B, --branch=<value>          [default: main] Specify the branch to fetch the content from (default is main branch)
@@ -3492,7 +3496,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.21/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.2.4/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:add PLUGIN`
 
@@ -3517,7 +3521,7 @@ GLOBAL FLAGS
 DESCRIPTION
   Installs a plugin into csdx.
 
-  Uses bundled npm executable to install plugins into /Users/raj.pandey/.local/share/@contentstack/cli
+  Uses npm to install plugins.
 
   Installation of a user-installed plugin will override a core plugin.
 
@@ -3566,7 +3570,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.21/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.2.4/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN`
 
@@ -3591,7 +3595,7 @@ GLOBAL FLAGS
 DESCRIPTION
   Installs a plugin into csdx.
 
-  Uses bundled npm executable to install plugins into /Users/raj.pandey/.local/share/@contentstack/cli
+  Uses npm to install plugins.
 
   Installation of a user-installed plugin will override a core plugin.
 
@@ -3615,7 +3619,7 @@ EXAMPLES
     $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.21/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.2.4/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PATH`
 
@@ -3645,7 +3649,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.21/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.2.4/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:remove [PLUGIN]`
 
@@ -3686,7 +3690,7 @@ FLAGS
   --reinstall  Reinstall all plugins after uninstalling.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.21/src/commands/plugins/reset.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.2.4/src/commands/plugins/reset.ts)_
 
 ## `csdx plugins:uninstall [PLUGIN]`
 
@@ -3714,7 +3718,7 @@ EXAMPLES
   $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.21/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.2.4/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:unlink [PLUGIN]`
 
@@ -3758,7 +3762,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.0.21/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.2.4/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
