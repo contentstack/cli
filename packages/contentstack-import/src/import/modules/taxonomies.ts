@@ -85,14 +85,20 @@ export default class ImportTaxonomies extends BaseClass {
 
     const onReject = ({ error, apiData }: any) => {
       const taxonomyUID = apiData?.taxonomy?.uid;
-      if (error?.errorMessage || error?.message) {
-        const errorMsg = error?.errorMessage || error?.errors?.taxonomy || error?.errors?.term || error?.message;
-        log(this.importConfig, `Taxonomy '${taxonomyUID}' failed to be import! ${errorMsg}`, 'error');
+      if (error?.status === 409 && error?.statusText === 'Conflict') {
+        log(this.importConfig, `Taxonomy '${taxonomyUID}' already exists!`, 'info');
+        this.createdTaxonomies[taxonomyUID] = apiData?.taxonomy;
+        this.createdTerms[taxonomyUID] = apiData?.terms;
       } else {
-        log(this.importConfig, `Taxonomy '${taxonomyUID}' failed to be import! ${formatError(error)}`, 'error');
+        if (error?.errorMessage || error?.message) {
+          const errorMsg = error?.errorMessage || error?.errors?.taxonomy || error?.errors?.term || error?.message;
+          log(this.importConfig, `Taxonomy '${taxonomyUID}' failed to be import! ${errorMsg}`, 'error');
+        } else {
+          log(this.importConfig, `Taxonomy '${taxonomyUID}' failed to be import! ${formatError(error)}`, 'error');
+        }
+        this.failedTaxonomies[taxonomyUID] = apiData?.taxonomy;
+        this.failedTerms[taxonomyUID] = apiData?.terms;
       }
-      this.failedTaxonomies[taxonomyUID] = apiData?.taxonomy;
-      this.failedTerms[taxonomyUID] = apiData?.terms;
     };
 
     await this.makeConcurrentCall(
