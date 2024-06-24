@@ -1267,7 +1267,7 @@ export default class Entries {
               );
             } else if (!title) {
               this.log(
-                `Entry with UID '${entryUid}' of Content Type '${uid}' in Locale '${code}' does not have a 'title' field.`,
+                `The 'title' field in Entry with UID '${entryUid}' of Content Type '${uid}' in Locale '${code}' is empty.`,
                 `error`,
               );
             }
