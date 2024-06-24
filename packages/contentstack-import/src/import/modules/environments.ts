@@ -20,7 +20,7 @@ export default class ImportEnvironments extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.environmentsConfig =importConfig.modules.environments;
+    this.environmentsConfig = importConfig.modules.environments;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'environments');
     this.environmentsFolderPath = join(this.importConfig.backupDir, this.environmentsConfig.dirName);
     this.envUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
@@ -40,7 +40,10 @@ export default class ImportEnvironments extends BaseClass {
 
     //Step1 check folder exists or not
     if (fileHelper.fileExistsSync(this.environmentsFolderPath)) {
-      this.environments = fsUtil.readFile(join(this.environmentsFolderPath, 'environments.json'), true) as Record<string,unknown>;
+      this.environments = fsUtil.readFile(join(this.environmentsFolderPath, 'environments.json'), true) as Record<
+        string,
+        unknown
+      >;
     } else {
       log(this.importConfig, `No such file or directory - '${this.environmentsFolderPath}'`, 'error');
       return;
@@ -79,10 +82,13 @@ export default class ImportEnvironments extends BaseClass {
       fsUtil.writeFile(this.envUidMapperPath, this.envUidMapper);
     };
 
-    const onReject = ({ error, apiData }: any) => {
+    const onReject = async ({ error, apiData }: any) => {
       const err = error?.message ? JSON.parse(error.message) : error;
-      const { name } = apiData;
+      const { name, uid } = apiData;
       if (err?.errors?.name) {
+        const res = await this.getEnvDetails(name);
+        this.envUidMapper[uid] = res?.uid || ' ';
+        fsUtil.writeFile(this.envUidMapperPath, this.envUidMapper);
         log(this.importConfig, `Environment '${name}' already exists`, 'info');
       } else {
         this.envFailed.push(apiData);
@@ -127,5 +133,15 @@ export default class ImportEnvironments extends BaseClass {
       apiOptions.apiData = environment;
     }
     return apiOptions;
+  }
+
+  async getEnvDetails(envName: string) {
+    return await this.stack
+      .environment(envName)
+      .fetch()
+      .then((data: any) => data)
+      .catch((error: any) => {
+        log(this.importConfig, `Failed to fetch environment details. ${formatError(error)}`, 'error');
+      });
   }
 }
