@@ -59,7 +59,6 @@ export default class Entries {
   protected missingMandatoryFields: Record<string, any> = {};
   public entryMetaData: Record<string, any>[] = [];
   public moduleName: keyof typeof auditConfig.moduleConfig = 'entries';
-  public isEntryWithoutTitleField: boolean = false;
 
   constructor({ log, fix, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
     this.log = log;
@@ -128,7 +127,7 @@ export default class Entries {
             this.lookForReference([{ locale: code, uid, name: title }], ctSchema, this.entries[entryUid]);
 
             const fields = this.missingMandatoryFields[uid];
-            const isPublished = entry.publish_details.length > 0;
+            const isPublished = entry.publish_details?.length > 0;
             if ((this.fix && fields.length && isPublished) || (!this.fix && fields)) {
               const fixStatus = this.fix ? 'Fixed' : '';
               fields?.forEach((field: { isPublished: boolean; fixStatus?: string }) => {
@@ -1262,13 +1261,11 @@ export default class Entries {
             let { title } = entries[entryUid];
 
             if (entries[entryUid].hasOwnProperty('title') && !title) {
-              this.isEntryWithoutTitleField = true;
               this.log(
                 `The 'title' field in Entry with UID '${entryUid}' of Content Type '${uid}' in Locale '${code}' is empty.`,
                 `error`,
               );
             } else if (!title) {
-              this.isEntryWithoutTitleField = true;
               this.log(
                 `Entry with UID '${entryUid}' of Content Type '${uid}' in Locale '${code}' does not have a 'title' field.`,
                 `error`,
@@ -1278,9 +1275,6 @@ export default class Entries {
           }
         }
       }
-    }
-    if (this.isEntryWithoutTitleField) {
-      // throw Error(`Entries found with missing 'title' field! Please make the data corrections and re-run the audit.`);
     }
   }
 }
