@@ -1,15 +1,31 @@
-import { Import, ImportHelperMethodsConfig, LogType } from '@contentstack/cli-variants';
-
+import path from 'path';
+import { Import, ImportHelperMethodsConfig, LogType, ProjectStruct } from '@contentstack/cli-variants';
 import { ImportConfig, ModuleClassParams } from '../../types';
-import { log, lookUpTerms, lookupAssets, lookupEntries, lookupExtension, restoreJsonRteEntryRefs } from '../../utils';
+import {
+  log,
+  lookUpTerms,
+  lookupAssets,
+  lookupEntries,
+  lookupExtension,
+  restoreJsonRteEntryRefs,
+  fsUtil,
+} from '../../utils';
 
 export default class ImportVarientEntries {
   private config: ImportConfig;
   public personalization: ImportConfig['modules']['personalization'];
+  private projectMapperFilePath: string;
 
   constructor({ importConfig }: ModuleClassParams) {
     this.config = importConfig;
     this.personalization = importConfig.modules.personalization;
+    this.projectMapperFilePath = path.resolve(
+      this.config.data,
+      'mapper',
+      this.personalization.dirName,
+      'projects',
+      'projects.json',
+    );
   }
 
   /**
@@ -18,7 +34,9 @@ export default class ImportVarientEntries {
    */
   async start(): Promise<void> {
     try {
-      if (this.personalization.importData) {
+      const project = fsUtil.readFile(this.projectMapperFilePath) as ProjectStruct;
+      if (project && project.uid && this.personalization.importData) {
+        this.config.modules.personalization.project_id = project.uid;
         const helpers: ImportHelperMethodsConfig = {
           lookUpTerms,
           lookupAssets,
@@ -27,6 +45,8 @@ export default class ImportVarientEntries {
           restoreJsonRteEntryRefs,
         };
         await new Import.VariantEntries(Object.assign(this.config, { helpers })).import();
+      } else {
+        log(this.config, 'Skipping entry variants import due to invalid project import', 'error');
       }
     } catch (error) {
       log(this.config, error, 'error');
