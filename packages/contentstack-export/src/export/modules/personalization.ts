@@ -17,6 +17,10 @@ export default class ExportPersonalization {
 
   async start(): Promise<void> {
     try {
+      if (this.exportConfig.management_token) {
+        log(this.exportConfig, 'Skipping Personalize project export when using management token', 'info');
+        return;
+      }
       await new ExportProjects(this.exportConfig).start();
       if (this.exportConfig.personalizationEnabled) {
         const moduleMapper = {
