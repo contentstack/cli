@@ -1,10 +1,11 @@
-import { join } from 'path';
+import { join, resolve as pResolve } from 'path';
 import { existsSync, readFileSync } from 'fs';
 
-import { PersonalizationAdapter, askProjectName } from '../utils';
+import { PersonalizationAdapter, askProjectName, fsUtil } from '../utils';
 import { APIConfig, CreateProjectInput, ImportConfig, LogType, ProjectStruct } from '../types';
 
 export default class Project extends PersonalizationAdapter<ImportConfig> {
+  private projectMapperFolderPath: string;
   constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
     const conf: APIConfig = {
       config,
@@ -12,6 +13,13 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
       headers: { organization_uid: config.org_uid, authtoken: config.auth_token },
     };
     super(Object.assign(config, conf));
+    this.projectMapperFolderPath = pResolve(
+      config.data,
+      config.branchName || '',
+      'mapper',
+      this.config.modules.personalization.dirName,
+      'projects',
+    );
   }
 
   /**
@@ -49,9 +57,11 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
         };
 
         const projectRes = await createProject(this.config.personalizeProjectName);
-
         this.config.modules.personalization.project_id = projectRes.uid;
         this.config.modules.personalization.importData = true;
+
+        await fsUtil.makeDirectory(this.projectMapperFolderPath);
+        fsUtil.writeFile(pResolve(this.projectMapperFolderPath, 'projects.json'), projectRes);
         this.log(this.config, `Project Created Successfully: ${projectRes.uid}`, 'info');
       }
     } else {
