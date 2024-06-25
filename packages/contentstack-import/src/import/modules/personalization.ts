@@ -1,5 +1,4 @@
 import { Import, LogType } from '@contentstack/cli-variants';
-
 import { log } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
 
@@ -18,6 +17,10 @@ export default class ImportPersonalization {
    */
   async start(): Promise<void> {
     try {
+      if (this.config.management_token) {
+        log(this.config, 'Skipping Personalize project import when using management token', 'info');
+        return;
+      }
       await new Import.Project(this.config, log as unknown as LogType).import();
       if (this.personalization.importData) {
         const moduleMapper = {
