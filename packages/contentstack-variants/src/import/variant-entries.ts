@@ -361,11 +361,13 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       }
     };
 
-    const pathsToUpdate = variantEntry._metadata.references
+    const pathsToUpdate = variantEntry?._metadata?.references
       .filter((ref: any) => ref._content_type_uid === 'sys_assets')
       .map((ref: any) => ref.path);
 
-    pathsToUpdate.forEach((path: string) => setValue(variantEntry, path.split('.')));
+    if (pathsToUpdate) {
+      pathsToUpdate.forEach((path: string) => setValue(variantEntry, path.split('.')));
+    }
   }
 
   /**
