@@ -46,8 +46,8 @@ const auditFixMsg = {
   EMPTY_FIX_MSG: 'Successfully removed the empty field/block found at {path} from the schema.',
   AUDIT_FIX_CMD_DESCRIPTION: 'Perform audits and fix possible errors in the exported Contentstack data.',
   WF_FIX_MSG: 'Successfully removed the workflow {uid} named {name}.',
-  ENTRY_MANDATORY_FIELD_FIX: `Removing the publish details from entry uid '{uid}' from locale '{locale}'`,
-  ENTRY_SELECT_FIELD_FIX: `Adding the value '{value}' in select field of uid '{uid}'`
+  ENTRY_MANDATORY_FIELD_FIX: `Removing the publish details from the entry with UID '{uid}' in Locale '{locale}'...`,
+  ENTRY_SELECT_FIELD_FIX: `Adding the value '{value}' in the select field of entry UID '{uid}'...`
 };
 
 const messages: typeof errors &
