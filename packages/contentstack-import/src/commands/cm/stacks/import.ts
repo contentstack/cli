@@ -110,7 +110,7 @@ export default class ImportCommand extends Command {
       description: 'Skips the audit fix.',
     }),
     'exclude-global-modules': flags.boolean({
-      description: 'Excluded the Module that are branch independent from the import',
+      description: 'Excludes the branch-independent module from the import operation',
       default: false
     }),
   };
