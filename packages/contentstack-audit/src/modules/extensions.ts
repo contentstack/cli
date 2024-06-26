@@ -68,8 +68,8 @@ export default class Extensions {
 
       if (ctNotPresent?.length && ext.scope) {
         ext.content_types = ctNotPresent;
-        ctNotPresent.forEach((ct) => this.missingCts.add(ct));
-        this.missingCtInExtensions.push(cloneDeep(ext));
+        ctNotPresent.forEach((ct) => this.missingCts?.add(ct));
+        this.missingCtInExtensions?.push(cloneDeep(ext));
       }
 
       this.log(
