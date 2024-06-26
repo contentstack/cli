@@ -431,11 +431,6 @@ export default class EntriesImport extends BaseClass {
       if (this.jsonRteCTsWithRef.indexOf(cTUid) > -1) {
         entry = removeEntryRefsFromJSONRTE(entry, contentType.schema);
       }
-
-      if (this.rteCTs.indexOf(cTUid) > -1) {
-        entry = removeEntryRefsFromJSONRTE(entry, contentType.schema);
-      }
-
       if (this.rteCTsWithRef.indexOf(cTUid) > -1) {
         entry = removeEntryRefsFromJSONRTE(entry, contentType.schema);
       }
