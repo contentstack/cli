@@ -79,7 +79,7 @@ FLAGS
   -k, --stack-api-key=<value>       API key of the target stack
   -m, --module=<value>              [optional] specific module name
   -y, --yes                         [optional] Override marketplace prompts
-  --exclude-global-modules          Excluded the Module that are branch independent from the import
+  --exclude-global-modules          Excludes the branch-independent module from the import operation
   --import-webhook-status=<option>  [default: disable] [optional] Webhook state
                                     <options: disable|current>
   --replace-existing                Replaces the existing module in the target stack.
@@ -129,7 +129,7 @@ FLAGS
   -k, --stack-api-key=<value>       API key of the target stack
   -m, --module=<value>              [optional] specific module name
   -y, --yes                         [optional] Override marketplace prompts
-  --exclude-global-modules          Excluded the Module that are branch independent from the import
+  --exclude-global-modules          Excludes the branch-independent module from the import operation
   --import-webhook-status=<option>  [default: disable] [optional] Webhook state
                                     <options: disable|current>
   --replace-existing                Replaces the existing module in the target stack.
