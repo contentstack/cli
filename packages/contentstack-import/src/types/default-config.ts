@@ -157,4 +157,5 @@ export default interface DefaultConfig {
       branch?: string;
     } & Record<string, any>; // To overwrite any build-in config. And this config is equal to --config flag.
   };
+  globalModules: string[];
 }
