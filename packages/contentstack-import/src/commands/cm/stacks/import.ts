@@ -109,6 +109,10 @@ export default class ImportCommand extends Command {
     'skip-audit': flags.boolean({
       description: 'Skips the audit fix.',
     }),
+    'exclude-global-modules': flags.boolean({
+      description: 'Excludes the branch-independent module from the import operation',
+      default: false
+    }),
   };
 
   static aliases: string[] = ['cm:import'];
