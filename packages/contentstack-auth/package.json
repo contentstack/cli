@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@contentstack/cli-command": "~1.2.18",
-    "@contentstack/cli-utilities": "~1.6.4",
+    "@contentstack/cli-utilities": "~1.6.3",
     "chalk": "^4.0.0",
     "debug": "^4.1.1",
     "inquirer": "8.2.4",
