@@ -7,7 +7,7 @@ import {
   flags,
   FlagInput,
   ContentstackClient,
-  pathValidator
+  pathValidator,
 } from '@contentstack/cli-utilities';
 
 import { ImportConfig } from '../../../types';
@@ -109,6 +109,10 @@ export default class ImportCommand extends Command {
     'skip-audit': flags.boolean({
       description: 'Skips the audit fix.',
     }),
+    'exclude-global-modules': flags.boolean({
+      description: 'Excludes the branch-independent module from the import operation',
+      default: false
+    }),
   };
 
   static aliases: string[] = ['cm:import'];
@@ -126,7 +130,7 @@ export default class ImportCommand extends Command {
       let importConfig = await setupImportConfig(flags);
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;
-      backupDir = importConfig.backupDir;
+      backupDir = importConfig.cliLogsPath || importConfig.backupDir;
 
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
@@ -144,7 +148,9 @@ export default class ImportCommand extends Command {
 
       log(
         importConfig,
-        `The log has been stored at '${pathValidator(path.join(importConfig.backupDir, 'logs', 'import'))}'`,
+        `The log has been stored at '${pathValidator(
+          path.join(importConfig.cliLogsPath || importConfig.backupDir, 'logs', 'import'),
+        )}'`,
         'success',
       );
     } catch (error) {
@@ -156,7 +162,9 @@ export default class ImportCommand extends Command {
       log(
         { data: backupDir } as ImportConfig,
         `The log has been stored at ${
-          { data: backupDir } ? pathValidator(path.join(backupDir || __dirname, 'logs', 'import')) : pathValidator(path.join(__dirname, 'logs'))
+          { data: backupDir }
+            ? pathValidator(path.join(backupDir || __dirname, 'logs', 'import'))
+            : pathValidator(path.join(__dirname, 'logs'))
         }`,
         'info',
       );

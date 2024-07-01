@@ -1,23 +1,24 @@
+const config = require('../../config.json');
 const mockData = {
   flags: {
     baseBranch: 'main',
     compareBranch: 'dev',
-    stackAPIKey: '***REMOVED***',
+    stackAPIKey: config.stackAPIKey,
     module: 'content-types',
     format: 'compactfield',
   },
   withoutBaseFlag: {
     compareBranch: 'dev',
-    stackAPIKey: '***REMOVED***',
+    stackAPIKey: config.stackAPIKey,
     module: 'content-types',
     format: 'compactfield',
   },
   withoutCompareFlag: {
     baseBranch: 'main',
-    stackAPIKey: '***REMOVED***',
+    stackAPIKey: config.stackAPIKey,
     module: 'content-types',
     format: 'compactfield',
-    compareBranch:''
+    compareBranch: '',
   },
   withoutAPIKeyFlag: {
     baseBranch: 'main',
@@ -29,9 +30,9 @@ const mockData = {
   withoutModuleFlag: {
     baseBranch: 'main',
     compareBranch: 'dev',
-    stackAPIKey: '***REMOVED***',
+    stackAPIKey: config.stackAPIKey,
     format: 'compactfield',
-    module:''
+    module: '',
   },
   data: {
     base: 'main',
@@ -142,7 +143,7 @@ const mockData = {
   },
   branchDiffPayload: {
     module: 'content_type',
-    apiKey: 'afdgaffsdg',
+    apiKey: config.apiKey,
     baseBranch: 'main',
     compareBranch: 'dev',
   },
@@ -406,7 +407,7 @@ const mockData = {
     strategy: 'merge_prefer_base',
     strategySubOption: 'merge_new_only',
     branchCompareData: '',
-    stackAPIKey: 'abcdscdxx',
+    stackAPIKey: config.stackAPIKey2,
     baseBranch: 'main',
     host: '',
     enableEntryExp: false,
@@ -416,7 +417,7 @@ const mockData = {
     strategy: '',
     strategySubOption: '',
     branchCompareData: {},
-    stackAPIKey: 'abcdscdxx',
+    stackAPIKey: config.stackAPIKey2,
     baseBranch: 'main',
     host: '',
     enableEntryExp: false,
@@ -533,13 +534,13 @@ const branchMockData = {
     items: [
       {
         stackHeaders: {
-          api_key: '***REMOVED***',
+          api_key: config.api_key,
         },
         urlPath: '/stacks/branches/new_branch',
         uid: 'new_branch',
         source: 'main',
-        created_by: '***REMOVED***xxx',
-        updated_by: '***REMOVED***xxx',
+        created_by: 'testStringxxx',
+        updated_by: 'testStringxxx',
         created_at: '2023-03-02T12:53:18.809Z',
         updated_at: '2023-03-02T12:53:19.208Z',
         deleted_at: false,
@@ -547,13 +548,13 @@ const branchMockData = {
       },
       {
         stackHeaders: {
-          api_key: '***REMOVED***xxx',
+          api_key: config.api_key,
         },
         urlPath: '/stacks/branches/test_branch',
         uid: 'test_branch',
         source: 'main',
-        created_by: '***REMOVED***xxx',
-        updated_by: '***REMOVED***xxx',
+        created_by: 'testStringxxx',
+        updated_by: 'testStringxxx',
         created_at: '2023-03-01T09:36:18.174Z',
         updated_at: '2023-03-01T09:36:18.538Z',
         deleted_at: false,
@@ -561,13 +562,13 @@ const branchMockData = {
       },
       {
         stackHeaders: {
-          api_key: '***REMOVED***xxx',
+          api_key: config.api_key,
         },
         urlPath: '/stacks/branches/new',
         uid: 'new',
         source: 'main',
-        created_by: '***REMOVED***xxx',
-        updated_by: '***REMOVED***xxx',
+        created_by: 'testStringxxx',
+        updated_by: 'testStringxxx',
         created_at: '2023-01-11T08:55:51.556Z',
         updated_at: '2023-01-11T08:55:51.869Z',
         deleted_at: false,
@@ -575,13 +576,13 @@ const branchMockData = {
       },
       {
         stackHeaders: {
-          api_key: '***REMOVED***xxx',
+          api_key: config.api_key,
         },
         urlPath: '/stacks/branches/main',
         uid: 'main',
         source: '',
-        created_by: '***REMOVED***xxx',
-        updated_by: '***REMOVED***xxx',
+        created_by: 'testStringxxx',
+        updated_by: 'testStringxxx',
         created_at: '2022-09-27T06:11:29.016Z',
         updated_at: '2022-11-18T09:54:41.671Z',
         deleted_at: false,
@@ -589,13 +590,13 @@ const branchMockData = {
       },
       {
         stackHeaders: {
-          api_key: '***REMOVED***xxx',
+          api_key: config.api_key,
         },
         urlPath: '/stacks/branches/release',
         uid: 'release',
         source: 'develop',
-        created_by: '***REMOVED***xxx',
-        updated_by: '***REMOVED***xxx',
+        created_by: 'testStringxxx',
+        updated_by: 'testStringxxx',
         created_at: '2022-10-30T18:37:05.875Z',
         updated_at: '2022-11-18T09:42:22.266Z',
         deleted_at: false,
@@ -805,8 +806,8 @@ const baseAndCompareChanges = {
         path: 'social',
         uid: 'social',
         displayName: 'Social',
-        fieldType: 'group'
-      }
+        fieldType: 'group',
+      },
     },
     added: {},
     deleted: {
@@ -814,9 +815,9 @@ const baseAndCompareChanges = {
         path: 'social.social_share',
         uid: 'social_share',
         displayName: 'Social Share',
-        fieldType: 'group'
-      }
-    }
+        fieldType: 'group',
+      },
+    },
   },
   compareHavingSchema: {
     modified: {
@@ -824,45 +825,45 @@ const baseAndCompareChanges = {
         path: 'social',
         uid: 'social',
         displayName: 'Social',
-        fieldType: 'group'
-      }
+        fieldType: 'group',
+      },
     },
     added: {
       'social.social_share': {
         path: 'social.social_share',
         uid: 'social_share',
         displayName: 'Social Share',
-        fieldType: 'group'
-      }
+        fieldType: 'group',
+      },
     },
-    deleted: {}
+    deleted: {},
   },
-  modifiedFieldRes:{
+  modifiedFieldRes: {
     listOfAddedFields: [
       {
         path: undefined,
         displayName: undefined,
         uid: undefined,
-        field: undefined
-      }
+        field: undefined,
+      },
     ],
     listOfDeletedFields: [
       {
         path: 'single_line_fieldbox33',
         displayName: 'Single Line fieldbox33',
         uid: 'single_line_fieldbox33',
-        field: 'compactfield'
-      }
+        field: 'compactfield',
+      },
     ],
     listOfModifiedFields: [
       {
         path: 'title',
         displayName: 'Name',
         uid: 'title',
-        field: 'metadata'
-      }
-    ]
-  }
+        field: 'metadata',
+      },
+    ],
+  },
 };
 
 export {
@@ -874,5 +875,5 @@ export {
   compareBranchDiff,
   compareBranchNoSchema,
   baseBranchNoSchema,
-  baseAndCompareChanges
+  baseAndCompareChanges,
 };

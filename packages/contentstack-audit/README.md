@@ -19,7 +19,7 @@ $ npm install -g @contentstack/cli-audit
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli-audit/1.4.1 darwin-arm64 node-v20.8.0
+@contentstack/cli-audit/1.6.3 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -36,14 +36,14 @@ USAGE
 * [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix)
 * [`csdx help [COMMANDS]`](#csdx-help-commands)
 * [`csdx plugins`](#csdx-plugins)
-* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
+* [`csdx plugins:add PLUGIN`](#csdx-pluginsadd-plugin)
 * [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
-* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin-1)
-* [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
-* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
+* [`csdx plugins:install PLUGIN`](#csdx-pluginsinstall-plugin)
+* [`csdx plugins:link PATH`](#csdx-pluginslink-path)
+* [`csdx plugins:remove [PLUGIN]`](#csdx-pluginsremove-plugin)
 * [`csdx plugins:reset`](#csdx-pluginsreset)
-* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-1)
-* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-2)
+* [`csdx plugins:uninstall [PLUGIN]`](#csdx-pluginsuninstall-plugin)
+* [`csdx plugins:unlink [PLUGIN]`](#csdx-pluginsunlink-plugin)
 * [`csdx plugins:update`](#csdx-pluginsupdate)
 
 ## `csdx audit`
@@ -52,18 +52,13 @@ Perform audits and find possible errors in the exported Contentstack data
 
 ```
 USAGE
-  $ csdx audit [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries] [--columns <value> | ] [--sort <value>] [--filter <value>] [--csv |
-    --no-truncate]
+  $ csdx audit [--report-path <value>] [--modules content-types|global-fields|entries|extensions|workflows]
+    [--columns <value> | ] [--sort <value>] [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
-                         <options: content-types|global-fields|entries>
+                         <options: content-types|global-fields|entries|extensions|workflows>
   --report-path=<value>  Path to store the audit reports
-
-COMMON FLAGS
-  -c, --config=<value>    Path of the external config
-  -d, --data-dir=<value>  Path where the data is stored
 
 TABLE FLAGS
   --columns=<value>  Show only the specified columns (comma-separated)
@@ -97,23 +92,19 @@ Perform audits and fix possible errors in the exported Contentstack data.
 
 ```
 USAGE
-  $ csdx audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries] [--copy-path <value> --copy-dir] [--fix-only
-    reference|global_field|json:rte|json:extension|blocks|group] [--columns <value> | ] [--sort <value>] [--filter
-    <value>] [--csv | --no-truncate]
+  $ csdx audit:fix [--report-path <value>] [--modules content-types|global-fields|entries|extensions|workflows]
+    [--copy-path <value> --copy-dir] [--fix-only
+    reference|global_field|json:rte|json:extension|blocks|group|content_types] [--columns <value> | ] [--sort <value>]
+    [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   --copy-dir              Create backup from the original data.
   --copy-path=<value>     Provide the path to backup the copied data
   --fix-only=<option>...  Provide the list of fix options
-                          <options: reference|global_field|json:rte|json:extension|blocks|group>
+                          <options: reference|global_field|json:rte|json:extension|blocks|group|content_types>
   --modules=<option>...   Provide the list of modules to be audited
-                          <options: content-types|global-fields|entries>
+                          <options: content-types|global-fields|entries|extensions|workflows>
   --report-path=<value>   Path to store the audit reports
-
-COMMON FLAGS
-  -c, --config=<value>    Path of the external config
-  -d, --data-dir=<value>  Path where the data is stored
 
 TABLE FLAGS
   --columns=<value>  Show only the specified columns (comma-separated)
@@ -149,18 +140,13 @@ Perform audits and find possible errors in the exported Contentstack data
 
 ```
 USAGE
-  $ csdx cm:stacks:audit [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries] [--columns <value> | ] [--sort <value>] [--filter <value>] [--csv |
-    --no-truncate]
+  $ csdx cm:stacks:audit [--report-path <value>] [--modules content-types|global-fields|entries|extensions|workflows]
+    [--columns <value> | ] [--sort <value>] [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
-                         <options: content-types|global-fields|entries>
+                         <options: content-types|global-fields|entries|extensions|workflows>
   --report-path=<value>  Path to store the audit reports
-
-COMMON FLAGS
-  -c, --config=<value>    Path of the external config
-  -d, --data-dir=<value>  Path where the data is stored
 
 TABLE FLAGS
   --columns=<value>  Show only the specified columns (comma-separated)
@@ -196,23 +182,19 @@ Perform audits and fix possible errors in the exported Contentstack data.
 
 ```
 USAGE
-  $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries] [--copy-path <value> --copy-dir] [--fix-only
-    reference|global_field|json:rte|json:extension|blocks|group] [--columns <value> | ] [--sort <value>] [--filter
-    <value>] [--csv | --no-truncate]
+  $ csdx cm:stacks:audit:fix [--report-path <value>] [--modules content-types|global-fields|entries|extensions|workflows]
+    [--copy-path <value> --copy-dir] [--fix-only
+    reference|global_field|json:rte|json:extension|blocks|group|content_types] [--columns <value> | ] [--sort <value>]
+    [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   --copy-dir              Create backup from the original data.
   --copy-path=<value>     Provide the path to backup the copied data
   --fix-only=<option>...  Provide the list of fix options
-                          <options: reference|global_field|json:rte|json:extension|blocks|group>
+                          <options: reference|global_field|json:rte|json:extension|blocks|group|content_types>
   --modules=<option>...   Provide the list of modules to be audited
-                          <options: content-types|global-fields|entries>
+                          <options: content-types|global-fields|entries|extensions|workflows>
   --report-path=<value>   Path to store the audit reports
-
-COMMON FLAGS
-  -c, --config=<value>    Path of the external config
-  -d, --data-dir=<value>  Path where the data is stored
 
 TABLE FLAGS
   --columns=<value>  Show only the specified columns (comma-separated)
@@ -285,48 +267,53 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v4.2.6/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.3/src/commands/plugins/index.ts)_
 
-## `csdx plugins:install PLUGIN...`
+## `csdx plugins:add PLUGIN`
 
-Installs a plugin into the CLI.
+Installs a plugin into csdx.
 
 ```
 USAGE
-  $ csdx plugins:install PLUGIN...
+  $ csdx plugins:add PLUGIN [--json] [-f] [-h] [-s | -v]
 
 ARGUMENTS
   PLUGIN  Plugin to install.
 
 FLAGS
-  -f, --force    Run yarn install with force flag.
+  -f, --force    Force npm to fetch remote resources even if a local copy exists on disk.
   -h, --help     Show CLI help.
-  -s, --silent   Silences yarn output.
-  -v, --verbose  Show verbose yarn output.
+  -s, --silent   Silences npm output.
+  -v, --verbose  Show verbose npm output.
 
 GLOBAL FLAGS
   --json  Format output as json.
 
 DESCRIPTION
-  Installs a plugin into the CLI.
-  Can be installed from npm or a git url.
+  Installs a plugin into csdx.
+
+  Uses npm to install plugins.
 
   Installation of a user-installed plugin will override a core plugin.
 
-  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
-  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
-  the CLI without the need to patch and update the whole CLI.
-
+  Use the CSDX_NPM_LOG_LEVEL environment variable to set the npm loglevel.
+  Use the CSDX_NPM_REGISTRY environment variable to set the npm registry.
 
 ALIASES
   $ csdx plugins:add
 
 EXAMPLES
-  $ csdx plugins:add myplugin 
+  Install a plugin from npm registry.
 
-  $ csdx plugins:add https://github.com/someuser/someplugin
+    $ csdx plugins:add myplugin
 
-  $ csdx plugins:add someuser/someplugin
+  Install a plugin from a github url.
+
+    $ csdx plugins:add https://github.com/someuser/someplugin
+
+  Install a plugin from a github slug.
+
+    $ csdx plugins:add someuser/someplugin
 ```
 
 ## `csdx plugins:inspect PLUGIN...`
@@ -354,59 +341,64 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v4.2.6/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.3/src/commands/plugins/inspect.ts)_
 
-## `csdx plugins:install PLUGIN...`
+## `csdx plugins:install PLUGIN`
 
-Installs a plugin into the CLI.
+Installs a plugin into csdx.
 
 ```
 USAGE
-  $ csdx plugins:install PLUGIN...
+  $ csdx plugins:install PLUGIN [--json] [-f] [-h] [-s | -v]
 
 ARGUMENTS
   PLUGIN  Plugin to install.
 
 FLAGS
-  -f, --force    Run yarn install with force flag.
+  -f, --force    Force npm to fetch remote resources even if a local copy exists on disk.
   -h, --help     Show CLI help.
-  -s, --silent   Silences yarn output.
-  -v, --verbose  Show verbose yarn output.
+  -s, --silent   Silences npm output.
+  -v, --verbose  Show verbose npm output.
 
 GLOBAL FLAGS
   --json  Format output as json.
 
 DESCRIPTION
-  Installs a plugin into the CLI.
-  Can be installed from npm or a git url.
+  Installs a plugin into csdx.
+
+  Uses npm to install plugins.
 
   Installation of a user-installed plugin will override a core plugin.
 
-  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
-  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
-  the CLI without the need to patch and update the whole CLI.
-
+  Use the CSDX_NPM_LOG_LEVEL environment variable to set the npm loglevel.
+  Use the CSDX_NPM_REGISTRY environment variable to set the npm registry.
 
 ALIASES
   $ csdx plugins:add
 
 EXAMPLES
-  $ csdx plugins:install myplugin 
+  Install a plugin from npm registry.
 
-  $ csdx plugins:install https://github.com/someuser/someplugin
+    $ csdx plugins:install myplugin
 
-  $ csdx plugins:install someuser/someplugin
+  Install a plugin from a github url.
+
+    $ csdx plugins:install https://github.com/someuser/someplugin
+
+  Install a plugin from a github slug.
+
+    $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v4.2.6/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.3/src/commands/plugins/install.ts)_
 
-## `csdx plugins:link PLUGIN`
+## `csdx plugins:link PATH`
 
 Links a plugin into the CLI for development.
 
 ```
 USAGE
-  $ csdx plugins:link PLUGIN
+  $ csdx plugins:link PATH [-h] [--install] [-v]
 
 ARGUMENTS
   PATH  [default: .] path to plugin
@@ -428,15 +420,15 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v4.2.6/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.3/src/commands/plugins/link.ts)_
 
-## `csdx plugins:uninstall PLUGIN...`
+## `csdx plugins:remove [PLUGIN]`
 
 Removes a plugin from the CLI.
 
 ```
 USAGE
-  $ csdx plugins:uninstall PLUGIN...
+  $ csdx plugins:remove [PLUGIN] [-h] [-v]
 
 ARGUMENTS
   PLUGIN  plugin to uninstall
@@ -469,15 +461,15 @@ FLAGS
   --reinstall  Reinstall all plugins after uninstalling.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v4.2.6/src/commands/plugins/reset.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.3/src/commands/plugins/reset.ts)_
 
-## `csdx plugins:uninstall PLUGIN...`
+## `csdx plugins:uninstall [PLUGIN]`
 
 Removes a plugin from the CLI.
 
 ```
 USAGE
-  $ csdx plugins:uninstall PLUGIN...
+  $ csdx plugins:uninstall [PLUGIN] [-h] [-v]
 
 ARGUMENTS
   PLUGIN  plugin to uninstall
@@ -497,15 +489,15 @@ EXAMPLES
   $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v4.2.6/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.3/src/commands/plugins/uninstall.ts)_
 
-## `csdx plugins:uninstall PLUGIN...`
+## `csdx plugins:unlink [PLUGIN]`
 
 Removes a plugin from the CLI.
 
 ```
 USAGE
-  $ csdx plugins:uninstall PLUGIN...
+  $ csdx plugins:unlink [PLUGIN] [-h] [-v]
 
 ARGUMENTS
   PLUGIN  plugin to uninstall
@@ -541,5 +533,5 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v4.2.6/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.3/src/commands/plugins/update.ts)_
 <!-- commandsstop -->

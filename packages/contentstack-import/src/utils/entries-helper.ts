@@ -7,7 +7,7 @@ import * as path from 'path';
 import * as _ from 'lodash';
 import config from '../config';
 import * as fileHelper from './file-helper';
-import { escapeRegExp } from '@contentstack/cli-utilities';
+import { escapeRegExp, validateRegex } from '@contentstack/cli-utilities';
 
 import { EntryJsonRTEFieldDataType } from '../types/entries';
 
@@ -62,8 +62,8 @@ export const lookupEntries = function (
       if (_entry && _parent[j]) {
         if (j === len - 1 && _entry[_parent[j]]) {
           if (form_id !== '_assets') {
-            if (_entry[_parent[j]]?.length) {
-              _entry[_parent[j]].forEach((item: any, idx: any) => {
+            if (_entry[_parent[j]]?.length && Object.keys(_entry).includes(_parent[j])) {
+              _entry[_parent[j]]?.forEach((item: any, idx: any) => {
                 if (typeof item.uid === 'string' && item._content_type_uid) {
                   uids.push(item.uid);
                 } else if (typeof item === 'string' && preserveStackVersion === true) {
@@ -87,14 +87,17 @@ export const lookupEntries = function (
             uids.push(_entry[_parent[j]].uid);
           }
         } else {
-          _entry = _entry[_parent[j]];
-          let _keys = _.clone(_parent).splice(j + 1, len);
-          if (Array.isArray(_entry)) {
-            for (let i = 0, _i = _entry?.length; i < _i; i++) {
-              update(_keys, form_id, _entry[i]);
+          const key = _parent[j];
+          if (Object.prototype.hasOwnProperty.call(_entry, key)) {
+            _entry = _entry[key];
+            let _keys = _.clone(_parent).splice(j + 1, len);
+            if (Array.isArray(_entry)) {
+              for (let i = 0, _i = _entry?.length; i < _i; i++) {
+                update(_keys, form_id, _entry[i]);
+              }
+            } else if (!(_entry instanceof Object)) {
+              break;
             }
-          } else if (!(_entry instanceof Object)) {
-            break;
           }
         }
       }
@@ -107,7 +110,7 @@ export const lookupEntries = function (
         case 'reference':
           if (Array.isArray(schema[i].reference_to)) {
             isNewRefFields = true;
-            schema[i].reference_to.forEach((reference: any) => {
+            schema[i]?.reference_to?.forEach((reference: any) => {
               parent.push(schema[i].uid);
               update(parent, reference, _entry);
               parent.pop();
@@ -134,7 +137,7 @@ export const lookupEntries = function (
           }
           break;
         case 'json':
-          if (schema[i].field_metadata.rich_text_type) {
+          if (schema[i]?.field_metadata?.rich_text_type) {
             findEntryIdsFromJsonRte(data.entry, data.content_type.schema);
           }
           break;
@@ -171,7 +174,7 @@ export const lookupEntries = function (
           break;
         }
         case 'json': {
-          if (entry[element.uid] && element.field_metadata.rich_text_type) {
+          if (entry[element.uid] && element?.field_metadata?.rich_text_type) {
             if (element.multiple) {
               entry[element.uid]?.forEach((jsonRteData: any) => {
                 gatherJsonRteEntryIds(jsonRteData);
@@ -198,12 +201,16 @@ export const lookupEntries = function (
 
   uids = _.uniq(uids);
   let entry = JSON.stringify(data.entry);
-  uids.forEach(function (uid: any) {
+  uids?.forEach(function (uid: any) {
     if (mappedUids.hasOwnProperty(uid)) {
       const sanitizedUid = escapeRegExp(uid);
       const escapedMappedUid = escapeRegExp(mappedUids[uid]);
-      entry = entry.replace(new RegExp(sanitizedUid, 'img'), escapedMappedUid);
-      mapped.push(uid);
+      const uidRegex = new RegExp(`\\b${sanitizedUid}\\b`, 'img');
+      let { status } = validateRegex(uidRegex);
+      if (status === 'safe') {
+        entry = entry.replace(uidRegex, escapedMappedUid);
+        mapped.push(uid);
+      }
     } else {
       unmapped.push(uid);
     }
@@ -245,7 +252,7 @@ function findUidsInNewRefFields(entry: any, uids: string[]) {
     if (entry.uid && entry._content_type_uid) {
       uids.push(entry.uid);
     } else if (Array.isArray(entry) && entry.length) {
-      entry.forEach(function (elem) {
+      entry?.forEach(function (elem) {
         findUidsInNewRefFields(elem, uids);
       });
     } else if (Object.keys(entry).length) {
@@ -292,7 +299,7 @@ export const removeUidsFromJsonRteFields = (
         break;
       }
       case 'json': {
-        if (entry[element.uid] && element.field_metadata.rich_text_type) {
+        if (entry[element.uid] && element?.field_metadata?.rich_text_type) {
           if (element.multiple) {
             entry[element.uid] = entry[element.uid].map((jsonRteData: any) => {
               delete jsonRteData.uid; // remove uid
@@ -387,7 +394,7 @@ export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema:
       }
       case 'json': {
         const structuredPTag = '{"type":"p","attrs":{},"children":[{"text":""}]}';
-        if (entry[element.uid] && element.field_metadata.rich_text_type) {
+        if (entry[element.uid] && element?.field_metadata?.rich_text_type) {
           if (element.multiple) {
             entry[element.uid] = entry[element.uid].map(removeReferenceInJsonRTE);
 
@@ -420,7 +427,7 @@ export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema:
         break;
       }
       case 'text': {
-        if (entry[element.uid] && element.field_metadata.rich_text_type) {
+        if (entry[element.uid] && element?.field_metadata?.rich_text_type) {
           if (element.multiple) {
             let rteContent = [];
             for (let i = 0; i < entry[element.uid].length; i++) {
@@ -525,7 +532,7 @@ export const restoreJsonRteEntryRefs = (
         break;
       }
       case 'json': {
-        if (entry[element.uid] && element.field_metadata.rich_text_type) {
+        if (entry[element.uid] && element?.field_metadata?.rich_text_type) {
           if (element.multiple && Array.isArray(entry[element.uid])) {
             entry[element.uid] = sourceStackEntry[element.uid].map((jsonRTE: any) => {
               jsonRTE = restoreReferenceInJsonRTE(jsonRTE, uidMapper);
@@ -549,7 +556,7 @@ export const restoreJsonRteEntryRefs = (
         break;
       }
       case 'text': {
-        if (entry[element.uid] && element.field_metadata.rich_text_type) {
+        if (entry[element.uid] && element?.field_metadata?.rich_text_type) {
           entry[element.uid] = sourceStackEntry[element.uid];
           const matches = Object.keys(uidMapper).filter((uid) => {
             if (sourceStackEntry[element.uid].indexOf(uid) !== -1) return uid;
@@ -572,7 +579,10 @@ export const restoreJsonRteEntryRefs = (
 };
 
 function updateUids(str: string, match: string, uidMapper: Record<string, string>) {
-  return str.replace(new RegExp(match, 'g'), (match: string) => uidMapper[match]);
+  const sanitizedMatch = escapeRegExp(match);
+  const regex = new RegExp(`\\b${sanitizedMatch}\\b`, 'g');
+  let { status } = validateRegex(regex);
+  if (status === 'safe') return str.replace(regex, (matchedString) => uidMapper[matchedString]);
 }
 
 function setDirtyTrue(jsonRteChild: any) {
