@@ -7,8 +7,9 @@ import { assetFolderCreateScript } from './asset-folder-create-script';
 
 type CreateMergeScriptsProps = {
   uid: string;
-  entry_merge_strategy: string;
+  entry_merge_strategy?: string;
   type?: string;
+  status: string
 };
 
 export function generateMergeScripts(mergeSummary, mergeJobUID) {
