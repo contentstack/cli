@@ -1,8 +1,10 @@
+import * as config from './config.json';
+
 module.exports = {
   versioning: false,
   host: 'https://app.contentstack.com',
   source_stack: 'dummyKey',
-  auth_token: 'dummyToken',
+  auth_token: config.auth_token,
   modules: {
     types: [
       'stack',
