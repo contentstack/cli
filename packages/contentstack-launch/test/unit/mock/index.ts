@@ -1,5 +1,5 @@
 export const testFlags = {
-  noProjOrg: { uid: 'bltxxxxxxxxxxxxxx' },
+  noProjOrg: { uid: 'testStringxx' },
   invalidOrg: { name: 'Invalid Org', uid: 'abcd' },
   invalidProj: 'abcd',
 };
@@ -8,7 +8,7 @@ export const launchMockData = {
   flags: {
     type: 'GitHub',
     framework: 'Gatsby',
-    org: 'bltxxxxxxxxxxxxxx',
+    org: 'testStringxx',
     name: 'Test project',
     environment: 'dev',
     branch: 'dev',
@@ -29,7 +29,7 @@ export const logsMockData = {
 export const githubAdapterMockData = {
   userconnection: {
     __typename: 'UserConnection',
-    userUid: 'bltxxxxxxxxxxxxxx',
+    userUid: 'testStringxx',
     provider: 'GitHub',
   },
   adapterConstructorInputs: {
@@ -43,7 +43,7 @@ export const githubAdapterMockData = {
       host: 'api.contentstack.io',
       config: '/Users/shrutika.almeida/Downloads/React-Starter/.cs-launch.json',
       projectBasePath: '/Users/shrutika.almeida/Downloads/React-Starter',
-      authtoken: 'bltxxxxxxxxxxxxxx',
+      authtoken: 'testStringxx',
       authType: 'BASIC',
       authorization: undefined,
       logsApiBaseUrl: 'https://launch-api.contentstack.com/logs/graphql',

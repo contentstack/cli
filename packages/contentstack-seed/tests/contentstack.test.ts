@@ -5,10 +5,11 @@ import axios from 'axios';
 /* eslint-enable @typescript-eslint/no-unused-vars */
 
 import ContentstackClient, { CreateStackOptions } from '../src/seed/contentstack/client';
+import * as config from './config.json';
 
 const CMA_HOST = 'cs.api.com';
 const BASE_URL = `https://${CMA_HOST}/v3/`;
-const API_KEY = 'api_12345';
+const API_KEY = config.API_KEY;
 const ORG_UID = 'org_12345';
 const STACK_UID = 'stack_12345';
 const ORG_NAME = 'org_name_12345';

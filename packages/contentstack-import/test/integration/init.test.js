@@ -6,7 +6,7 @@ const { getEnvData, getStackDetailsByRegion } = require('./utils/helper');
 const LoginCommand = require('@contentstack/cli-auth/lib/commands/auth/login').default;
 const AddTokenCommand = require('@contentstack/cli-auth/lib/commands/auth/tokens/add').default;
 const RegionSetCommand = require('@contentstack/cli-config/lib/commands/config/set/region').default;
-const { DEFAULT_TIMEOUT, PRINT_LOGS, } = require('./config.json');
+const { DEFAULT_TIMEOUT, PRINT_LOGS, encryptionKey } = require('./config.json');
 
 const { ENCRYPTION_KEY } = getEnvData();
 const { DELIMITER, KEY_VAL_DELIMITER } = process.env;
@@ -14,7 +14,7 @@ const { DELIMITER, KEY_VAL_DELIMITER } = process.env;
 const crypto = new NodeCrypto({
   typeIdentifier: '◈',
   algorithm: 'aes-192-cbc',
-  encryptionKey: ENCRYPTION_KEY || '***REMOVED***'
+  encryptionKey: ENCRYPTION_KEY || encryptionKey
 });
 
 module.exports = (region) => {
