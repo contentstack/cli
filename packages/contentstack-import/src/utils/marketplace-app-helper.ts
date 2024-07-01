@@ -9,7 +9,7 @@ import {
   configHandler,
   managementSDKClient,
   marketplaceSDKClient,
-  createDeveloperHubUrl
+  createDeveloperHubUrl,
 } from '@contentstack/cli-utilities';
 
 import { log } from './logger';
@@ -90,17 +90,23 @@ export const getConfirmationToCreateApps = async (privateApps: any, config: Impo
           ),
         )
       ) {
-        return Promise.resolve(true);
+        return Promise.resolve(false);
+      } else {
+        if (
+          await cliux.confirm(
+            chalk.yellow('\nWould you like to re-create the private app and then proceed with the installation? (y/n)'),
+          )
+        ) {
+          return Promise.resolve(true);
+        } else {
+          return Promise.resolve(false);
+        }
       }
-
-      if (
-        !(await cliux.confirm(
-          chalk.yellow('\nWould you like to re-create the private app and then proceed with the installation? (y/n)'),
-        ))
-      ) {
-        process.exit();
-      }
+    } else {
+      return Promise.resolve(true);
     }
+  } else {
+    return Promise.resolve(true);
   }
 };
 
