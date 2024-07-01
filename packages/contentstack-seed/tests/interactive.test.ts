@@ -3,6 +3,7 @@ jest.mock('inquirer');
 const inquirer = require('inquirer');
 import { Organization, Stack } from '../src/seed/contentstack/client';
 import * as interactive from '../src/seed/interactive';
+import * as config from './config.json';
 
 const account = 'account';
 const repo = 'repo';
@@ -109,9 +110,9 @@ describe('interactive', () => {
     const expected_uid = 'uid_2';
 
     const stacks: Stack[] = [
-      { uid: 'uid_1', name: 'Stack 1', api_key: 'api_key_1', master_locale: 'en-us', org_uid: 'org_uid_1' },
-      { uid: expected_uid, name: 'Stack 2', api_key: 'api_key_2', master_locale: 'en-us', org_uid: 'org_uid_2' },
-      { uid: 'uid_3', name: 'Stack 3', api_key: 'api_key_3', master_locale: 'en-us', org_uid: 'org_uid_3' },
+      { uid: 'uid_1', name: 'Stack 1', api_key: config.api_key_1, master_locale: 'en-us', org_uid: 'org_uid_1' },
+      { uid: expected_uid, name: 'Stack 2', api_key: config.api_key_2, master_locale: 'en-us', org_uid: 'org_uid_2' },
+      { uid: 'uid_3', name: 'Stack 3', api_key: config.api_key_3, master_locale: 'en-us', org_uid: 'org_uid_3' },
     ];
 
     // select existing stack
