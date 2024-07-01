@@ -1,6 +1,6 @@
 /*!
  * Contentstack Export
- * Copyright (c) 2019 Contentstack LLC
+ * Copyright (c) 2024 Contentstack LLC
  * MIT Licensed
  */
 const fs = require('fs');
@@ -120,7 +120,7 @@ module.exports = class ImportMarketplaceApps {
 
         return true;
       },
-      message: 'Enter marketplace app configurations encryption key',
+      message: 'Enter Marketplace app configurations encryption key',
     });
 
     try {

@@ -1,7 +1,7 @@
 import merge from 'merge';
 import * as path from 'path';
 import { omit, filter, includes, isArray } from 'lodash';
-import { configHandler, isAuthenticated, cliux } from '@contentstack/cli-utilities';
+import { configHandler, isAuthenticated, cliux, sanitizePath } from '@contentstack/cli-utilities';
 import defaultConfig from '../config';
 import { readFile, fileExistsSync } from './file-helper';
 import { askContentDir, askAPIKey } from './interactive';
@@ -23,12 +23,9 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   config.contentDir = importCmdFlags['data'] || importCmdFlags['data-dir'] || config.data || (await askContentDir());
   const pattern = /[*$%#<>{}!&?]/g;
   if (pattern.test(config.contentDir)) {
-    cliux.print(
-      `\nPlease add a directory path without any of the special characters: (*,&,{,},[,],$,%,<,>,?,!)`,
-      {
-        color: 'yellow',
-      },
-    );
+    cliux.print(`\nPlease add a directory path without any of the special characters: (*,&,{,},[,],$,%,<,>,?,!)`, {
+      color: 'yellow',
+    });
     config.contentDir = await askContentDir();
   }
   config.contentDir = config.contentDir.replace(/['"]/g, '');
@@ -81,7 +78,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
 
   if (importCmdFlags['branch']) {
     config.branchName = importCmdFlags['branch'];
-    config.branchDir = path.join(config.contentDir, config.branchName);
+    config.branchDir = path.join(sanitizePath(config.contentDir), sanitizePath(config.branchName));
   }
   if (importCmdFlags['module']) {
     config.moduleName = importCmdFlags['module'];
@@ -97,6 +94,10 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
 
   config.replaceExisting = importCmdFlags['replace-existing'];
   config.skipExisting = importCmdFlags['skip-existing'];
+
+  if (importCmdFlags['exclude-global-modules']) {
+    config['exclude-global-modules'] = importCmdFlags['exclude-global-modules'];
+  }
 
   return config;
 };
