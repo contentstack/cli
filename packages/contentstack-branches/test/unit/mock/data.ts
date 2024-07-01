@@ -1,23 +1,24 @@
+const config = require('../../config.json');
 const mockData = {
   flags: {
     baseBranch: 'main',
     compareBranch: 'dev',
-    stackAPIKey: '***REMOVED***',
+    stackAPIKey: config.stackAPIKey,
     module: 'content-types',
     format: 'compactfield',
   },
   withoutBaseFlag: {
     compareBranch: 'dev',
-    stackAPIKey: '***REMOVED***',
+    stackAPIKey: config.stackAPIKey,
     module: 'content-types',
     format: 'compactfield',
   },
   withoutCompareFlag: {
     baseBranch: 'main',
-    stackAPIKey: '***REMOVED***',
+    stackAPIKey: config.stackAPIKey,
     module: 'content-types',
     format: 'compactfield',
-    compareBranch:''
+    compareBranch: '',
   },
   withoutAPIKeyFlag: {
     baseBranch: 'main',
@@ -29,9 +30,9 @@ const mockData = {
   withoutModuleFlag: {
     baseBranch: 'main',
     compareBranch: 'dev',
-    stackAPIKey: '***REMOVED***',
+    stackAPIKey: config.stackAPIKey,
     format: 'compactfield',
-    module:''
+    module: '',
   },
   data: {
     base: 'main',
@@ -142,7 +143,7 @@ const mockData = {
   },
   branchDiffPayload: {
     module: 'content_type',
-    apiKey: 'afdgaffsdg',
+    apiKey: config.apiKey,
     baseBranch: 'main',
     compareBranch: 'dev',
   },
@@ -406,7 +407,7 @@ const mockData = {
     strategy: 'merge_prefer_base',
     strategySubOption: 'merge_new_only',
     branchCompareData: '',
-    stackAPIKey: 'abcdscdxx',
+    stackAPIKey: config.stackAPIKey2,
     baseBranch: 'main',
     host: '',
     enableEntryExp: false,
@@ -416,7 +417,7 @@ const mockData = {
     strategy: '',
     strategySubOption: '',
     branchCompareData: {},
-    stackAPIKey: 'abcdscdxx',
+    stackAPIKey: config.stackAPIKey2,
     baseBranch: 'main',
     host: '',
     enableEntryExp: false,
@@ -533,7 +534,7 @@ const branchMockData = {
     items: [
       {
         stackHeaders: {
-          api_key: '***REMOVED***',
+          api_key: config.api_key,
         },
         urlPath: '/stacks/branches/new_branch',
         uid: 'new_branch',
@@ -547,7 +548,7 @@ const branchMockData = {
       },
       {
         stackHeaders: {
-          api_key: '***REMOVED***xxx',
+          api_key: config.api_key,
         },
         urlPath: '/stacks/branches/test_branch',
         uid: 'test_branch',
@@ -561,7 +562,7 @@ const branchMockData = {
       },
       {
         stackHeaders: {
-          api_key: '***REMOVED***xxx',
+          api_key: config.api_key,
         },
         urlPath: '/stacks/branches/new',
         uid: 'new',
@@ -575,7 +576,7 @@ const branchMockData = {
       },
       {
         stackHeaders: {
-          api_key: '***REMOVED***xxx',
+          api_key: config.api_key,
         },
         urlPath: '/stacks/branches/main',
         uid: 'main',
@@ -589,7 +590,7 @@ const branchMockData = {
       },
       {
         stackHeaders: {
-          api_key: '***REMOVED***xxx',
+          api_key: config.api_key,
         },
         urlPath: '/stacks/branches/release',
         uid: 'release',
@@ -805,8 +806,8 @@ const baseAndCompareChanges = {
         path: 'social',
         uid: 'social',
         displayName: 'Social',
-        fieldType: 'group'
-      }
+        fieldType: 'group',
+      },
     },
     added: {},
     deleted: {
@@ -814,9 +815,9 @@ const baseAndCompareChanges = {
         path: 'social.social_share',
         uid: 'social_share',
         displayName: 'Social Share',
-        fieldType: 'group'
-      }
-    }
+        fieldType: 'group',
+      },
+    },
   },
   compareHavingSchema: {
     modified: {
@@ -824,45 +825,45 @@ const baseAndCompareChanges = {
         path: 'social',
         uid: 'social',
         displayName: 'Social',
-        fieldType: 'group'
-      }
+        fieldType: 'group',
+      },
     },
     added: {
       'social.social_share': {
         path: 'social.social_share',
         uid: 'social_share',
         displayName: 'Social Share',
-        fieldType: 'group'
-      }
+        fieldType: 'group',
+      },
     },
-    deleted: {}
+    deleted: {},
   },
-  modifiedFieldRes:{
+  modifiedFieldRes: {
     listOfAddedFields: [
       {
         path: undefined,
         displayName: undefined,
         uid: undefined,
-        field: undefined
-      }
+        field: undefined,
+      },
     ],
     listOfDeletedFields: [
       {
         path: 'single_line_fieldbox33',
         displayName: 'Single Line fieldbox33',
         uid: 'single_line_fieldbox33',
-        field: 'compactfield'
-      }
+        field: 'compactfield',
+      },
     ],
     listOfModifiedFields: [
       {
         path: 'title',
         displayName: 'Name',
         uid: 'title',
-        field: 'metadata'
-      }
-    ]
-  }
+        field: 'metadata',
+      },
+    ],
+  },
 };
 
 export {
@@ -874,5 +875,5 @@ export {
   compareBranchDiff,
   compareBranchNoSchema,
   baseBranchNoSchema,
-  baseAndCompareChanges
+  baseAndCompareChanges,
 };
