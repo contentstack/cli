@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
 import cloneDeep from 'lodash/cloneDeep';
-import { cliux, ux } from '@contentstack/cli-utilities';
+import { cliux, sanitizePath, ux } from '@contentstack/cli-utilities';
 import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'fs';
 
 import config from './config';
@@ -48,8 +48,15 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     await this.createBackUp();
     this.sharedConfig.reportPath = resolve(this.flags['report-path'] || process.cwd(), 'audit-report');
 
-    const { missingCtRefs, missingGfRefs, missingEntryRefs, missingCtRefsInExtensions, missingCtRefsInWorkflow } =
-      await this.scanAndFix();
+    const {
+      missingCtRefs,
+      missingGfRefs,
+      missingEntryRefs,
+      missingCtRefsInExtensions,
+      missingCtRefsInWorkflow,
+      missingSelectFeild,
+      missingMandatoryFields,
+    } = await this.scanAndFix();
 
     this.showOutputOnScreen([
       { module: 'Content types', missingRefs: missingCtRefs },
@@ -58,12 +65,17 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     ]);
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Extensions', missingRefs: missingCtRefsInExtensions }]);
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Workflows', missingRefs: missingCtRefsInWorkflow }]);
+    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Entries Select Field', missingRefs: missingSelectFeild }]);
+    this.showOutputOnScreenWorkflowsAndExtension([
+      { module: 'Entries Mandatory Field', missingRefs: missingMandatoryFields },
+    ]);
     if (
       !isEmpty(missingCtRefs) ||
       !isEmpty(missingGfRefs) ||
       !isEmpty(missingEntryRefs) ||
       !isEmpty(missingCtRefsInWorkflow) ||
-      !isEmpty(missingCtRefsInExtensions)
+      !isEmpty(missingCtRefsInExtensions) ||
+      !isEmpty(missingSelectFeild)
     ) {
       if (this.currentCommand === 'cm:stacks:audit') {
         this.log(this.$t(auditMsg.FINAL_REPORT_PATH, { path: this.sharedConfig.reportPath }), 'warn');
@@ -89,7 +101,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       !isEmpty(missingGfRefs) ||
       !isEmpty(missingEntryRefs) ||
       !isEmpty(missingCtRefsInWorkflow) ||
-      !isEmpty(missingCtRefsInExtensions)
+      !isEmpty(missingCtRefsInExtensions) ||
+      !isEmpty(missingSelectFeild)
     );
   }
 
@@ -101,7 +114,15 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    */
   async scanAndFix() {
     let { ctSchema, gfSchema } = this.getCtAndGfSchema();
-    let missingCtRefs, missingGfRefs, missingEntryRefs, missingCtRefsInExtensions, missingCtRefsInWorkflow;
+    let missingCtRefs,
+      missingGfRefs,
+      missingEntryRefs,
+      missingCtRefsInExtensions,
+      missingCtRefsInWorkflow,
+      missingSelectFeild,
+      missingEntry,
+      missingMandatoryFields;
+
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       print([
         {
@@ -129,8 +150,15 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           await this.prepareReport(module, missingGfRefs);
           break;
         case 'entries':
-          missingEntryRefs = await new Entries(cloneDeep(constructorParam)).run();
+          missingEntry = await new Entries(cloneDeep(constructorParam)).run();
+          missingEntryRefs = missingEntry.missingEntryRefs ?? {};
+          missingSelectFeild = missingEntry.missingSelectFeild ?? {};
+          missingMandatoryFields = missingEntry.missingMandatoryFields ?? {};
           await this.prepareReport(module, missingEntryRefs);
+
+          await this.prepareReport(`Entries_Select_feild`, missingSelectFeild);
+
+          await this.prepareReport('Entries_Mandatory_feild', missingMandatoryFields);
           break;
         case 'workflows':
           missingCtRefsInWorkflow = await new Workflows({
@@ -162,7 +190,15 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       ]);
     }
 
-    return { missingCtRefs, missingGfRefs, missingEntryRefs, missingCtRefsInExtensions, missingCtRefsInWorkflow };
+    return {
+      missingCtRefs,
+      missingGfRefs,
+      missingEntryRefs,
+      missingCtRefsInExtensions,
+      missingCtRefsInWorkflow,
+      missingSelectFeild,
+      missingMandatoryFields,
+    };
   }
 
   /**
@@ -297,7 +333,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     }
     this.log(''); // Adding a new line
 
-    for (const { module, missingRefs } of allMissingRefs) {
+    for (let { module, missingRefs } of allMissingRefs) {
       if (isEmpty(missingRefs)) {
         continue;
       }
@@ -305,10 +341,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       print([{ bold: true, color: 'cyan', message: ` ${module}` }]);
 
       const tableValues = Object.values(missingRefs).flat();
-
+      missingRefs = Object.values(missingRefs).flat();
       const tableKeys = Object.keys(missingRefs[0]);
       const arrayOfObjects = tableKeys.map((key) => {
-        if (['title', 'name', 'uid', 'content_types', 'branches', 'fixStatus'].includes(key)) {
+        if (config.OutputTableKeys.includes(key)) {
           return {
             [key]: {
               minWidth: 7,
@@ -316,7 +352,12 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
               get: (row: Record<string, unknown>) => {
                 if (key === 'fixStatus') {
                   return chalk.green(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
-                } else if (key === 'content_types' || key === 'branches') {
+                } else if (
+                  key === 'content_types' ||
+                  key === 'branches' ||
+                  key === 'missingCTSelectFieldValues' ||
+                  key === 'missingFieldUid'
+                ) {
                   return chalk.red(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
                 } else {
                   return chalk.white(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
@@ -344,7 +385,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    * reference name and the value represents additional information about the missing reference.
    * @returns The function `prepareReport` returns a Promise that resolves to `void`.
    */
-  prepareReport(moduleName: keyof typeof config.moduleConfig, listOfMissingRefs: Record<string, any>): Promise<void> {
+  prepareReport(
+    moduleName: keyof typeof config.moduleConfig | keyof typeof config.ReportTitleForEntries,
+    listOfMissingRefs: Record<string, any>,
+  ): Promise<void> {
     if (isEmpty(listOfMissingRefs)) return Promise.resolve(void 0);
 
     if (!existsSync(this.sharedConfig.reportPath)) {
@@ -352,7 +396,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     }
 
     // NOTE write int json
-    writeFileSync(join(this.sharedConfig.reportPath, `${moduleName}.json`), JSON.stringify(listOfMissingRefs));
+    writeFileSync(join(sanitizePath(this.sharedConfig.reportPath), `${sanitizePath(moduleName)}.json`), JSON.stringify(listOfMissingRefs));
 
     // NOTE write into CSV
     return this.prepareCSV(moduleName, listOfMissingRefs);
@@ -368,51 +412,59 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    * corresponding value is an array of objects that contain details about the missing reference.
    * @returns The function `prepareCSV` returns a Promise that resolves to `void`.
    */
-  prepareCSV(moduleName: keyof typeof config.moduleConfig, listOfMissingRefs: Record<string, any>): Promise<void> {
-    const csvPath = join(this.sharedConfig.reportPath, `${moduleName}.csv`);
+  prepareCSV(
+    moduleName: keyof typeof config.moduleConfig | keyof typeof config.ReportTitleForEntries,
+    listOfMissingRefs: Record<string, any>,
+  ): Promise<void> {
+    if (Object.keys(config.moduleConfig).includes(moduleName)) {
+      const csvPath = join(sanitizePath(this.sharedConfig.reportPath), `${sanitizePath(moduleName)}.csv`);
+      return new Promise<void>((resolve, reject) => {
+        // file deepcode ignore MissingClose: Will auto close once csv stream end
+        const ws = createWriteStream(csvPath).on('error', reject);
+        const defaultColumns = Object.keys(OutputColumn);
+        const userDefinedColumns = this.sharedConfig.flags.columns ? this.sharedConfig.flags.columns.split(',') : null;
+        let missingRefs: RefErrorReturnType[] | WorkflowExtensionsRefErrorReturnType[] =
+          Object.values(listOfMissingRefs).flat();
+        const columns: (keyof typeof OutputColumn)[] = userDefinedColumns
+          ? [...userDefinedColumns, ...defaultColumns.filter((val: string) => !userDefinedColumns.includes(val))]
+          : defaultColumns;
 
-    return new Promise<void>((resolve, reject) => {
-      // file deepcode ignore MissingClose: Will auto close once csv stream end
-      const ws = createWriteStream(csvPath).on('error', reject);
-      const defaultColumns = Object.keys(OutputColumn);
-      const userDefinedColumns = this.sharedConfig.flags.columns ? this.sharedConfig.flags.columns.split(',') : null;
-      let missingRefs: RefErrorReturnType[] | WorkflowExtensionsRefErrorReturnType[] =
-        Object.values(listOfMissingRefs).flat();
-      const columns: (keyof typeof OutputColumn)[] = userDefinedColumns
-        ? [...userDefinedColumns, ...defaultColumns.filter((val: string) => !userDefinedColumns.includes(val))]
-        : defaultColumns;
-
-      if (this.sharedConfig.flags.filter) {
-        const [column, value]: [keyof typeof OutputColumn, string] = this.sharedConfig.flags.filter.split('=');
-        // Filter the missingRefs array
-        missingRefs = missingRefs.filter((row) => {
-          if (OutputColumn[column] in row) {
-            const rowKey = OutputColumn[column] as keyof (RefErrorReturnType | WorkflowExtensionsRefErrorReturnType);
-            return row[rowKey] === value;
-          }
-          return false;
-        });
-      }
-
-      const rowData: Record<string, string | string[]>[] = [];
-      for (const issue of missingRefs) {
-        let row: Record<string, string | string[]> = {};
-
-        for (const column of columns) {
-          if (Object.keys(issue).includes(OutputColumn[column])) {
-            const issueKey = OutputColumn[column] as keyof typeof issue;
-            row[column] = issue[issueKey] as string;
-            row[column] = typeof row[column] === 'object' ? JSON.stringify(row[column]) : row[column];
-          }
+        if (this.sharedConfig.flags.filter) {
+          const [column, value]: [keyof typeof OutputColumn, string] = this.sharedConfig.flags.filter.split('=');
+          // Filter the missingRefs array
+          missingRefs = missingRefs.filter((row) => {
+            if (OutputColumn[column] in row) {
+              const rowKey = OutputColumn[column] as keyof (RefErrorReturnType | WorkflowExtensionsRefErrorReturnType);
+              return row[rowKey] === value;
+            }
+            return false;
+          });
         }
 
-        if (this.currentCommand === 'cm:stacks:audit:fix') {
-          row['Fix status'] = row.fixStatus;
-        }
+        const rowData: Record<string, string | string[]>[] = [];
+        for (const issue of missingRefs) {
+          let row: Record<string, string | string[]> = {};
 
-        rowData.push(row);
-      }
-      csv.write(rowData, { headers: true }).pipe(ws).on('error', reject).on('finish', resolve);
-    });
+          for (const column of columns) {
+            if (Object.keys(issue).includes(OutputColumn[column])) {
+              const issueKey = OutputColumn[column] as keyof typeof issue;
+              row[column] = issue[issueKey] as string;
+              row[column] = typeof row[column] === 'object' ? JSON.stringify(row[column]) : row[column];
+            }
+          }
+
+          if (this.currentCommand === 'cm:stacks:audit:fix') {
+            row['Fix status'] = row.fixStatus;
+          }
+
+          rowData.push(row);
+        }
+        csv.write(rowData, { headers: true }).pipe(ws).on('error', reject).on('finish', resolve);
+      });
+    } else {
+      return new Promise<void>((reject) => {
+        return reject()
+      })
+    }
   }
 }
