@@ -1,5 +1,8 @@
 {
   "IS_TS": true,
   "UNIT_EXECUTION_ORDER": [],
-  "INTEGRATION_EXECUTION_ORDER": []
+  "INTEGRATION_EXECUTION_ORDER": [],
+  "password": "testpassword",
+  "invalidPassowrd": "invalidpassword",
+  "validAPIKey": "adasdfagsf"
 }
