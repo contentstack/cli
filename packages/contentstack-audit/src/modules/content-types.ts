@@ -4,7 +4,7 @@ import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 
-import { ux } from '@contentstack/cli-utilities';
+import { sanitizePath, ux } from '@contentstack/cli-utilities';
 
 import {
   LogFn,
@@ -51,11 +51,17 @@ export default class ContentType {
     this.fix = fix ?? false;
     this.ctSchema = ctSchema;
     this.gfSchema = gfSchema;
-    this.moduleName = moduleName ?? 'content-types';
+    this.moduleName = this.validateModules(moduleName!, this.config.moduleConfig);
     this.fileName = config.moduleConfig[this.moduleName].fileName;
-    this.folderPath = resolve(config.basePath, config.moduleConfig[this.moduleName].dirName);
+    this.folderPath = resolve(sanitizePath(config.basePath), sanitizePath(config.moduleConfig[this.moduleName].dirName));
   }
 
+  validateModules(moduleName: keyof typeof auditConfig.moduleConfig, moduleConfig: Record<string, unknown>): keyof typeof auditConfig.moduleConfig {
+    if (Object.keys(moduleConfig).includes(moduleName)) {
+      return moduleName;
+    }
+    return 'content-types'
+  }
   /**
    * The `run` function checks if a folder path exists, sets the schema based on the module name,
    * iterates over the schema and looks for references, and returns a list of missing references.
@@ -115,7 +121,7 @@ export default class ContentType {
     if (existsSync(extensionPath)) {
       try {
         this.extensions = Object.keys(JSON.parse(readFileSync(extensionPath, 'utf8')));
-      } catch (error) {}
+      } catch (error) { }
     }
 
     if (existsSync(marketplacePath)) {
@@ -128,7 +134,7 @@ export default class ContentType {
           ) as string[];
           this.extensions.push(...metaData);
         }
-      } catch (error) {}
+      } catch (error) { }
     }
   }
 
@@ -264,19 +270,19 @@ export default class ContentType {
 
     return missingRefs.length
       ? [
-          {
-            tree,
-            data_type,
-            missingRefs,
-            display_name,
-            ct_uid: this.currentUid,
-            name: this.currentTitle,
-            treeStr: tree
-              .map(({ name }) => name)
-              .filter((val) => val)
-              .join(' ➜ '),
-          },
-        ]
+        {
+          tree,
+          data_type,
+          missingRefs,
+          display_name,
+          ct_uid: this.currentUid,
+          name: this.currentTitle,
+          treeStr: tree
+            .map(({ name }) => name)
+            .filter((val) => val)
+            .join(' ➜ '),
+        },
+      ]
       : [];
   }
 
@@ -392,19 +398,19 @@ export default class ContentType {
 
     return missingRefs.length
       ? [
-          {
-            tree,
-            data_type,
-            missingRefs,
-            display_name,
-            ct_uid: this.currentUid,
-            name: this.currentTitle,
-            treeStr: tree
-              .map(({ name }) => name)
-              .filter((val) => val)
-              .join(' ➜ '),
-          },
-        ]
+        {
+          tree,
+          data_type,
+          missingRefs,
+          display_name,
+          ct_uid: this.currentUid,
+          name: this.currentTitle,
+          treeStr: tree
+            .map(({ name }) => name)
+            .filter((val) => val)
+            .join(' ➜ '),
+        },
+      ]
       : [];
   }
 
