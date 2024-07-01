@@ -103,6 +103,10 @@ class ModuleImporter {
   async importAllModules(): Promise<any> {
     // use the algorithm to determine the parallel and sequential execution of modules
     for (let moduleName of this.importConfig.modules.types) {
+      if (this.importConfig.globalModules.includes(moduleName) && this.importConfig['exclude-global-modules']) {
+        log(this.importConfig, `Skipping the import of the global module '${moduleName}', as it already exists in the stack.`,'warn');
+        continue;
+      }
       await this.importByModuleByName(moduleName);
     }
   }
@@ -114,7 +118,7 @@ class ModuleImporter {
    * fix available and the user confirms to proceed with the fix, otherwise it returns `false`.
    */
   async auditImportData(logger: Logger) {
-    const basePath = resolve(this.importConfig.backupDir, 'logs', 'audit');
+    const basePath = resolve(this.importConfig.cliLogsPath || this.importConfig.backupDir, 'logs', 'audit');
     const auditConfig = this.importConfig.auditConfig;
     auditConfig.config.basePath = basePath;
     auditConfig.config.branch = this.importConfig.branchName;

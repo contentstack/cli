@@ -1,5 +1,5 @@
 import memoize from 'lodash/memoize';
-import { escapeRegExp } from '@contentstack/cli-utilities';
+import { escapeRegExp, validateRegex } from '@contentstack/cli-utilities';
 
 const errors = {};
 
@@ -46,6 +46,8 @@ const auditFixMsg = {
   EMPTY_FIX_MSG: 'Successfully removed the empty field/block found at {path} from the schema.',
   AUDIT_FIX_CMD_DESCRIPTION: 'Perform audits and fix possible errors in the exported Contentstack data.',
   WF_FIX_MSG: 'Successfully removed the workflow {uid} named {name}.',
+  ENTRY_MANDATORY_FIELD_FIX: `Removing the publish details from the entry with UID '{uid}' in Locale '{locale}'...`,
+  ENTRY_SELECT_FIELD_FIX: `Adding the value '{value}' in the select field of entry UID '{uid}'...`
 };
 
 const messages: typeof errors &
@@ -75,7 +77,12 @@ function $t(msg: string, args: Record<string, string>): string {
 
     for (const key of Object.keys(args)) {
       const escapedKey = escapeRegExp(key);
-      msg = msg.replace(new RegExp(`{${escapedKey}}`, 'g'), escapeRegExp(args[key]) || escapedKey);
+      const escapedKeyRegex = new RegExp(`{${escapedKey}}`, 'g');
+      let { status } = validateRegex(escapedKeyRegex)
+      if (status === 'safe') {
+        const sanitizedValue = args[key] ? escapeRegExp(args[key]) : '';
+        msg = msg.replace(escapedKeyRegex, sanitizedValue || escapedKey);
+      }
     }
 
     return msg;
