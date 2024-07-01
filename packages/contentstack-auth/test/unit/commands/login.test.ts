@@ -3,12 +3,13 @@ import * as sinon from 'sinon';
 import LoginCommand from '../../../src/commands/auth/login';
 import { authHandler, interactive } from '../../../src/utils';
 import { configHandler, cliux } from '@contentstack/cli-utilities';
+import * as conf from '../../config.json';
 
 const config = configHandler;
 
 const user = { email: '***REMOVED***', authtoken: 'testtoken' };
-const credentials = { email: '***REMOVED***', password: 'testpassword' };
-const invalidCredentials = { email: '***REMOVED***', password: 'invalidpassword' };
+const credentials = { email: '***REMOVED***', password: conf.password };
+const invalidCredentials = { email: '***REMOVED***', password: conf.invalidPassowrd };
 const TFATestToken = '24563992';
 
 describe('Login Command', () => {
