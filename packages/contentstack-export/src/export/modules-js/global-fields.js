@@ -1,6 +1,6 @@
 /*!
  * Contentstack Export
- * Copyright (c) 2019 Contentstack LLC
+ * Copyright (c) 2024 Contentstack LLC
  * MIT Licensed
  */
 
@@ -10,6 +10,7 @@ const mkdirp = require('mkdirp');
 const { merge } = require('lodash');
 const { formatError, log, fileHelper } = require('../../utils');
 const { default: config } = require('../../config');
+const { sanitizePath } = require('@contentstack/cli-utilities');
 
 module.exports = class ExportGlobalFields {
   limit = 100;
@@ -34,9 +35,9 @@ module.exports = class ExportGlobalFields {
     this.config = merge(config, exportConfig);
     this.stackAPIClient = stackAPIClient;
     this.globalfieldsFolderPath = path.resolve(
-      this.config.data,
-      this.config.branchName || '',
-      this.globalfieldsConfig.dirName,
+      sanitizePath(this.config.data),
+      sanitizePath(this.config.branchName || ''),
+      sanitizePath(this.globalfieldsConfig.dirName),
     );
   }
 
