@@ -12,10 +12,11 @@ import { inquireOrganization, inquireProceed, inquireStack, inquireRepo } from '
 
 import * as tmp from 'tmp';
 import { cliux } from '@contentstack/cli-utilities';
+import * as config from './config.json';
 
 const org_name = 'Test Organization';
 const org_uid = 'xxxxxxxxxx';
-const api_key = '1234567890';
+const api_key = config.api_key;
 const tmpDirName = '/var/tmp/xxxxxx/';
 const repo = 'stack-gatsby-blog';
 
