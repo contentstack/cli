@@ -106,7 +106,7 @@ export default class ExportCommand extends Command {
       // Note setting host to create cma client
       exportConfig.host = this.cmaHost;
       exportConfig.region = this.region;
-      exportDir = exportConfig.data || exportConfig.exportDir;
+      exportDir = exportConfig.cliLogsPath || exportConfig.data || exportConfig.exportDir;
       const managementAPIClient: ContentstackClient = await managementSDKClient(exportConfig);
       const moduleExporter = new ModuleExporter(managementAPIClient, exportConfig);
       await moduleExporter.start();

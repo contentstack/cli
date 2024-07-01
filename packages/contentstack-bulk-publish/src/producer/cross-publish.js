@@ -192,6 +192,12 @@ async function getSyncEntries(
 
       const entriesResponse = await Stack.sync(syncData);
 
+      if (filter?.content_type_uid?.length) {
+        entriesResponse.items = entriesResponse.items.filter((entry) =>
+          filter?.content_type_uid.includes(entry.content_type_uid),
+        );
+      }
+
       if (entriesResponse.items.length > 0) {
         await bulkAction(stack, entriesResponse.items, bulkPublish, filter, destEnv, apiVersion);
       }
@@ -241,7 +247,7 @@ async function start(
     bulkPublish,
     _filter,
     deliveryToken,
-    contentType,
+    contentTypes,
     environment,
     locale,
     onlyAssets,
@@ -286,8 +292,8 @@ async function start(
     };
     if (f_types) filter.type = f_types;
     // filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
-    if (contentType) {
-      filter.content_type_uid = contentType;
+    if (contentTypes) {
+      filter.content_type_uid = contentTypes;
       filter.type = 'entry_published';
     }
     if (onlyAssets) {
