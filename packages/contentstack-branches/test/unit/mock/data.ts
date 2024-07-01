@@ -426,19 +426,19 @@ const mockData = {
     flags: {
       'base-branch': 'main',
       'compare-branch': 'dev',
-      'stack-api-key': 'sfgfdsg223',
+      'stack-api-key': '***REMOVED***',
       module: 'content_type',
       format: 'compactfield',
     },
     withoutBaseFlag: {
       'compare-branch': 'dev',
-      'stack-api-key': 'sfgfdsg223',
+      'stack-api-key': '***REMOVED***',
       module: 'content_type',
       format: 'compactfield',
     },
     withoutCompareFlag: {
       'base-branch': 'main',
-      'stack-api-key': 'sfgfdsg223',
+      'stack-api-key': '***REMOVED***',
       module: 'content_type',
       format: 'compactfield',
     },
@@ -451,7 +451,7 @@ const mockData = {
     withoutModuleFlag: {
       'base-branch': 'main',
       'compare-branch': 'dev',
-      'stack-api-key': 'sfgfdsg223',
+      'stack-api-key': '***REMOVED***',
       format: 'compactfield',
     },
     branchCompareData: {

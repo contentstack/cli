@@ -117,7 +117,7 @@ describe('Interactive', () => {
   });
 
   it('ask export merge summary path', async function () {
-    const filePath = 'sfgfdsg223';
+    const filePath = '***REMOVED***';
     inquireStub.callsFake(function () {
       return Promise.resolve(filePath);
     });
