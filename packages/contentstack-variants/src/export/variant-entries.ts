@@ -4,13 +4,13 @@ import { FsUtility } from '@contentstack/cli-utilities';
 
 import { APIConfig, AdapterType, ExportConfig, LogType } from '../types';
 import VariantAdapter, { VariantHttpClient } from '../utils/variant-api-adapter';
-import { fsUtil } from '../utils';
+import { fsUtil, log } from '../utils';
 
 export default class VariantEntries extends VariantAdapter<VariantHttpClient<ExportConfig>> {
   public entriesDirPath: string;
   public variantEntryBasePath!: string;
 
-  constructor(readonly config: ExportConfig, private readonly log: LogType = console.log) {
+  constructor(readonly config: ExportConfig) {
     const conf: APIConfig & AdapterType<VariantHttpClient<ExportConfig>, APIConfig> = {
       config,
       httpClient: true,
@@ -69,19 +69,19 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
         });
         if (existsSync(variantEntryBasePath)) {
           variantEntriesFs.completeFile(true);
-          this.log(
+          log(
             this.config,
             `Exported variant entries of type '${entry.title} (${entry.uid})' locale '${locale}'`,
             'info',
           );
         }
       } catch (error) {
-        this.log(
+        log(
           this.config,
           `Error exporting variant entries of type '${entry.title} (${entry.uid})' locale '${locale}'`,
           'error',
         );
-        this.log(this.config, error, 'error');
+        log(this.config, error, 'error');
       }
     }
   }

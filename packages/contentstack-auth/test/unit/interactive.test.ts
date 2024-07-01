@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { interactive } from '../../src/utils';
 import { cliux } from '@contentstack/cli-utilities';
+import * as config from '../config.json'
 
 describe('Interactive', () => {
   let inquireStub;
@@ -31,7 +32,7 @@ describe('Interactive', () => {
   });
 
   it('ask password', async function () {
-    const password = 'testpassword';
+    const password = config.password
     inquireStub.callsFake(function () {
       return Promise.resolve(password);
     });

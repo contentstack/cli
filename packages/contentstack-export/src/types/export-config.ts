@@ -2,6 +2,7 @@ import { Modules, Region } from '.';
 import DefaultConfig from './default-config';
 
 export default interface ExportConfig extends DefaultConfig {
+  cliLogsPath: string;
   exportDir: string;
   data: string;
   management_token?: string;

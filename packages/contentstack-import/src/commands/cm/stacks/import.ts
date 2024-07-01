@@ -113,6 +113,10 @@ export default class ImportCommand extends Command {
     'skip-audit': flags.boolean({
       description: 'Skips the audit fix.',
     }),
+    'exclude-global-modules': flags.boolean({
+      description: 'Excludes the branch-independent module from the import operation',
+      default: false,
+    }),
   };
 
   static aliases: string[] = ['cm:import'];
@@ -131,7 +135,7 @@ export default class ImportCommand extends Command {
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;
       importConfig.region = this.region;
-      backupDir = importConfig.backupDir;
+      backupDir = importConfig.cliLogsPath || importConfig.backupDir;
 
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
@@ -149,7 +153,9 @@ export default class ImportCommand extends Command {
 
       log(
         importConfig,
-        `The log has been stored at '${pathValidator(path.join(importConfig.backupDir, 'logs', 'import'))}'`,
+        `The log has been stored at '${pathValidator(
+          path.join(importConfig.cliLogsPath || importConfig.backupDir, 'logs', 'import'),
+        )}'`,
         'success',
       );
     } catch (error) {

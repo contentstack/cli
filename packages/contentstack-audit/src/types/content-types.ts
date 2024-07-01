@@ -8,13 +8,15 @@ type ContentTypeSchemaType =
   | ExtensionOrAppFieldDataType
   | JsonRTEFieldDataType
   | GroupFieldDataType
-  | ModularBlocksDataType;
+  | ModularBlocksDataType
+  | SelectFeildStruct;
 
 type ContentTypeStruct = {
   uid: string;
   title: string;
   description: string;
   schema?: ContentTypeSchemaType[];
+  mandatory: boolean;
 };
 
 type ModuleConstructorParam = {
@@ -37,6 +39,7 @@ type CommonDataTypeStruct = {
     ref_multiple: boolean;
     allow_json_rte: boolean;
   } & AnyProperty;
+  mandatory: boolean
 };
 
 type RefErrorReturnType = {
@@ -93,6 +96,7 @@ type ModularBlockType = {
     | ReferenceFieldDataType
     | ExtensionOrAppFieldDataType
     | GroupFieldDataType
+    | SelectFeildStruct
   )[];
 };
 
@@ -106,22 +110,39 @@ type GroupFieldSchemaTypes =
   | CommonDataTypeStruct
   | GlobalFieldDataType
   | ReferenceFieldDataType
-  | ExtensionOrAppFieldDataType;
+  | ExtensionOrAppFieldDataType
+  | SelectFeildStruct;
 
-type GlobalFieldSchemaTypes = ReferenceFieldDataType | GroupFieldDataType | ExtensionOrAppFieldDataType;
+type GlobalFieldSchemaTypes = ReferenceFieldDataType | GroupFieldDataType | ExtensionOrAppFieldDataType | SelectFeildStruct;
 
-type ModularBlocksSchemaTypes = ReferenceFieldDataType | JsonRTEFieldDataType;
+type ModularBlocksSchemaTypes = ReferenceFieldDataType | JsonRTEFieldDataType | SelectFeildStruct;
+
+type SelectFeildStruct = CommonDataTypeStruct & {
+  display_type:string;
+  enum: {
+    advanced: string;
+    choices: Record<string, unknown>[];
+  };
+  min_instance?: number;
+  max_instance?: number;
+  multiple: boolean;
+};
 
 enum OutputColumn {
   Title = 'name',
   'Field name' = 'display_name',
   'Field type' = 'data_type',
+  'Display type' = 'display_type',
   'Missing references' = 'missingRefs',
   Path = 'treeStr',
   title = 'title',
   'uid' = 'uid',
   'missingCts' = 'content_types',
   'Missing Branches' = 'branches',
+  'MissingValues' = 'missingCTSelectFieldValues',
+  'Minimum Required Instaces' = 'min_instance',
+  'missingFieldUid' = 'missingFieldUid',
+  'isPublished' = 'isPublished'
 }
 
 export {
@@ -141,4 +162,5 @@ export {
   ContentTypeSchemaType,
   GlobalFieldSchemaTypes,
   WorkflowExtensionsRefErrorReturnType,
+  SelectFeildStruct,
 };
