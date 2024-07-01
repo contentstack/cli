@@ -62,8 +62,6 @@ export {
   Parser,
   Plugin,
   run,
-  toCached,
-  tsPath,
   toStandardizedId,
   toConfiguredId,
   settings,

@@ -1,7 +1,7 @@
 import Bluebird from 'bluebird';
 import * as url from 'url';
 import * as path from 'path';
-import { ContentstackClient, managementSDKClient } from '@contentstack/cli-utilities';
+import { ContentstackClient, managementSDKClient, validateRegex } from '@contentstack/cli-utilities';
 import { ImportConfig } from '../types';
 const debug = require('debug')('util:requests');
 let _ = require('lodash');
@@ -83,11 +83,11 @@ export const lookupAssets = function (
       if (
         schema[i].data_type === 'text' &&
         schema[i].field_metadata &&
-        (schema[i].field_metadata.markdown || schema[i].field_metadata.rich_text_type)
+        (schema[i]?.field_metadata?.markdown || schema[i]?.field_metadata?.rich_text_type)
       ) {
         parent.push(schema[i].uid);
         findFileUrls(schema[i], entryToFind, assetUrls);
-        if (schema[i].field_metadata.rich_text_type) {
+        if (schema[i]?.field_metadata?.rich_text_type) {
           findAssetIdsFromHtmlRte(entryToFind, schema[i]);
         }
         parent.pop();
@@ -110,7 +110,7 @@ export const lookupAssets = function (
       }
       // added rich_text_type field check because some marketplace extensions also
       // have data_type has json
-      if (schema[i].data_type === 'json' && schema[i].field_metadata.rich_text_type) {
+      if (schema[i].data_type === 'json' && schema[i]?.field_metadata?.rich_text_type) {
         parent.push(schema[i].uid);
         // findFileUrls(schema[i], entry, assetUrls)
         findAssetIdsFromJsonRte(data.entry, data.content_type.schema);
@@ -188,7 +188,7 @@ export const lookupAssets = function (
           break;
         }
         case 'json': {
-          if (entryObj[element.uid] && element.field_metadata.rich_text_type) {
+          if (entryObj[element.uid] && element?.field_metadata?.rich_text_type) {
             if (element.multiple) {
               entryObj[element.uid].forEach((jsonRteData: any) => {
                 gatherJsonRteAssetIds(jsonRteData);
@@ -251,9 +251,11 @@ export const lookupAssets = function (
   assetUrls.forEach(function (assetUrl: any) {
     let mappedAssetUrl = mappedAssetUrls[assetUrl];
     if (typeof mappedAssetUrl !== 'undefined') {
-      const sanitizedUrl = escapeRegExp(assetUrl).replace(/\.\./g, '\\$&');
-      const escapedMappedUrl = escapeRegExp(mappedAssetUrl).replace(/\.\./g, '\\$&');
-      entry = entry.replace(new RegExp(sanitizedUrl, 'img'), escapedMappedUrl);
+      //NOTE - This code was added to resolve the SRE issue but once the code was merged Assets URLs in JSON RTE started breaking
+      // const sanitizedUrl = escapeRegExp(assetUrl).replace(/\.\./g, '\\$&');
+      // const escapedMappedUrl = escapeRegExp(mappedAssetUrl).replace(/\.\./g, '\\$&');
+      // entry = entry.replace(new RegExp(sanitizedUrl, 'img'), escapedMappedUrl);
+      entry = entry.replace(new RegExp(assetUrl, 'img'), mappedAssetUrl);
       matchedUrls.push(mappedAssetUrl);
     } else {
       unmatchedUrls.push(assetUrl);
@@ -264,8 +266,12 @@ export const lookupAssets = function (
     let uid = mappedAssetUids[assetUid];
     if (typeof uid !== 'undefined') {
       const escapedAssetUid = assetUid.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      entry = entry.replace(new RegExp(escapedAssetUid, 'img'), uid);
-      matchedUids.push(assetUid);
+      const regex = new RegExp(`\\b${escapedAssetUid}\\b`, 'img');
+      let { status } = validateRegex(new RegExp(regex, 'img'));
+      if (status === 'safe') {
+        entry = entry.replace(regex, uid);
+        matchedUids.push(assetUid);
+      }
     } else {
       unmatchedUids.push(assetUid);
     }
@@ -373,7 +379,7 @@ function findFileUrls(schema: any, _entry: any, assetUrls: any) {
 }
 
 function updateFileFields(
-  objekt: any,
+  object: any,
   parent: any,
   pos: any,
   mappedAssetUids: any,
@@ -381,16 +387,16 @@ function updateFileFields(
   unmatchedUids: any,
   mappedAssetUrls?: any,
 ) {
-  if (_.isPlainObject(objekt) && _.has(objekt, 'filename') && _.has(objekt, 'uid')) {
+  if (_.isPlainObject(object) && _.has(object, 'filename') && _.has(object, 'uid')) {
     if (typeof pos !== 'undefined') {
       if (typeof pos === 'number' || typeof pos === 'string') {
         const replacer = () => {
-          if (mappedAssetUids.hasOwnProperty(objekt.uid)) {
-            parent[pos] = mappedAssetUids[objekt.uid];
-            matchedUids.push(objekt.uid);
+          if (mappedAssetUids.hasOwnProperty(object.uid)) {
+            parent[pos] = mappedAssetUids[object.uid];
+            matchedUids.push(object.uid);
           } else {
             parent[pos] = '';
-            unmatchedUids.push(objekt.uid);
+            unmatchedUids.push(object.uid);
           }
         };
 
@@ -399,7 +405,7 @@ function updateFileFields(
         }
 
         if (
-          objekt &&
+          object &&
           _.isObject(parent[pos]) &&
           parent[pos].uid &&
           parent[pos].url &&
@@ -415,23 +421,24 @@ function updateFileFields(
             parent = _.omit(parent, ['asset']);
           }
 
-          if (objekt.uid && mappedAssetUids && mappedAssetUids[objekt.uid]) {
-            objekt.uid = mappedAssetUids[objekt.uid];
+          if (object.uid && mappedAssetUids && mappedAssetUids[object.uid]) {
+            object.uid = mappedAssetUids[object.uid];
           }
-          if (objekt.url && mappedAssetUrls && mappedAssetUrls[objekt.url]) {
-            objekt.url = mappedAssetUrls[objekt.url];
+          if (object.url && mappedAssetUrls && mappedAssetUrls[object.url]) {
+            object.url = mappedAssetUrls[object.url];
           }
         } else {
           replacer();
         }
       }
     }
-  } else if (_.isPlainObject(objekt)) {
-    for (let key in objekt) updateFileFields(objekt[key], objekt, key, mappedAssetUids, matchedUids, unmatchedUids);
-  } else if (_.isArray(objekt) && objekt.length) {
-    for (let i = 0; i <= objekt.length; i++)
-      updateFileFields(objekt[i], objekt, i, mappedAssetUids, matchedUids, unmatchedUids);
+  } else if (_.isPlainObject(object)) {
+    for (let key in object) updateFileFields(object[key], object, key, mappedAssetUids, matchedUids, unmatchedUids);
+  } else if (_.isArray(object) && object.length) {
+    for (let i = 0; i <= object.length; i++)
+      updateFileFields(object[i], object, i, mappedAssetUids, matchedUids, unmatchedUids);
 
-    parent[pos] = _.compact(objekt);
+    // No need for _.compact() since you want to keep zero values
+    parent[pos] = _.filter(object, (value: any) => value !== undefined && value !== null);
   }
 }

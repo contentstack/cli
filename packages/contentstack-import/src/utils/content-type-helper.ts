@@ -46,7 +46,7 @@ export const schemaTemplate = {
 
 /*!
  * Contentstack Import
- * Copyright (c) 2019 Contentstack LLC
+ * Copyright (c) 2024 Contentstack LLC
  * MIT Licensed
  */
 
@@ -60,10 +60,10 @@ export const suppressSchemaReference = function (schema: any, flag: any) {
       }
     } else if (schema[i].data_type === 'reference') {
       flag.references = true;
-    } else if (schema[i].data_type === 'json' && schema[i].field_metadata.rich_text_type) {
+    } else if (schema[i].data_type === 'json' && schema[i]?.field_metadata?.rich_text_type) {
       flag.jsonRte = true;
       if (schema[i].field_metadata.embed_entry === true) flag.jsonRteEmbeddedEntries = true;
-    } else if (schema[i].data_type === 'text' && schema[i].field_metadata.rich_text_type) {
+    } else if (schema[i].data_type === 'text' && schema[i]?.field_metadata?.rich_text_type) {
       flag.rte = true;
       if (schema[i].field_metadata.embed_entry === true) flag.rteEmbeddedEntries = true;
     }
@@ -143,18 +143,18 @@ export const removeReferenceFields = async function (
     } else if (
       // handling entry references in json rte
       schema[i].data_type === 'json' &&
-      schema[i].field_metadata.rich_text_type &&
-      schema[i].field_metadata.embed_entry &&
-      schema[i].reference_to.length > 1
+      schema[i]?.field_metadata?.rich_text_type &&
+      schema[i]?.field_metadata?.embed_entry &&
+      schema[i]?.reference_to?.length > 1
     ) {
       flag.supressed = true;
       schema[i].reference_to = ['sys_assets'];
     } else if (
       // handling entry references in rte
       schema[i].data_type === 'text' &&
-      schema[i].field_metadata.rich_text_type &&
-      schema[i].field_metadata.embed_entry &&
-      schema[i].reference_to.length >= 1
+      schema[i]?.field_metadata?.rich_text_type &&
+      schema[i]?.field_metadata?.embed_entry &&
+      schema[i]?.reference_to?.length >= 1
     ) {
       flag.supressed = true;
       schema[i].reference_to = ['sys_assets'];
@@ -185,4 +185,4 @@ export const updateFieldRules = function (contentType: any) {
     }
   }
   return fieldRules;
-}
+};

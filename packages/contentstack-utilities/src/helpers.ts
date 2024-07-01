@@ -1,3 +1,4 @@
+import { checkSync } from "recheck";
 import authHandler from './auth-handler';
 import { HttpClient, cliux, configHandler } from '.';
 export const isAuthenticated = () => authHandler.isAuthenticated();
@@ -16,13 +17,13 @@ export const isManagementTokenValid = async (stackAPIKey, managementToken) => {
     const response = (await httpClient.get(`${configHandler.get('region').cma}/v3/environments?limit=1`))?.data;
     if (response?.environments) {
       return { valid: true }
-    } else if(response?.error_code) {
+    } else if (response?.error_code) {
       return { valid: false, message: response.error_message };
     } else {
-      throw typeof response === "string"? response : "";
+      throw typeof response === "string" ? response : "";
     }
   } catch (error) {
-    return { valid: 'failedToCheck',message:`Failed to check the validity of the Management token. ${error}`};
+    return { valid: 'failedToCheck', message: `Failed to check the validity of the Management token. ${error}` };
   }
 }
 
@@ -36,7 +37,6 @@ export const createDeveloperHubUrl = (developerHubBaseUrl: string): string => {
     : developerHubBaseUrl;
   return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`;
 };
-
 
 export const validatePath = (input: string) => {
   const pattern = /[*$%#<>{}!&?]/g;
@@ -53,5 +53,16 @@ export const validatePath = (input: string) => {
 };
 
 // To escape special characters in a string
-export const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+export const escapeRegExp = (str: string) => str?.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+// To remove the relative path 
+export const sanitizePath = (str: string) => str?.replace(/^(\.\.(\/|\\|$))+/, '');
+
+// To validate the UIDs of assets 
+export const validateUids = (uid) => /^[a-zA-Z0-9]+$/.test(uid);
+
+// Validate File name
+export const validateFileName = (fileName) => /^[a-zA-Z0-9-_\.]+$/.test(fileName);
+
+// Validate Regex for ReDDos
+export const validateRegex = (str) => checkSync(str, "");

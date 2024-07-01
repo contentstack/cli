@@ -3,5 +3,6 @@
   "UNIT_EXECUTION_ORDER": [],
   "INTEGRATION_EXECUTION_ORDER": [],
   "ENABLE_PREREQUISITES": true,
-  "REGIONS": ["NA", "EU", "AZURE-NA", "AZURE-EU"]
+  "REGIONS": ["NA", "EU", "AZURE-NA", "AZURE-EU"],
+  "apiKey": "jdgfhcbjx"
 }

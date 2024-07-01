@@ -1,13 +1,13 @@
 /* eslint-disable no-prototype-builtins */
 /*!
  * Contentstack Import
- * Copyright (c) 2019 Contentstack LLC
+ * Copyright (c) 2024 Contentstack LLC
  * MIT Licensed
  */
 
 import * as path from 'path';
 import { isEmpty, values, cloneDeep, find, indexOf, forEach } from 'lodash';
-import { FsUtility } from '@contentstack/cli-utilities';
+import { FsUtility, sanitizePath } from '@contentstack/cli-utilities';
 import {
   fsUtil,
   log,
@@ -61,22 +61,22 @@ export default class EntriesImport extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.assetUidMapperPath = path.resolve(importConfig.data, 'mapper', 'assets', 'uid-mapping.json');
-    this.assetUrlMapperPath = path.resolve(importConfig.data, 'mapper', 'assets', 'url-mapping.json');
-    this.entriesMapperPath = path.resolve(importConfig.data, 'mapper', 'entries');
-    this.envPath = path.resolve(importConfig.data, 'environments', 'environments.json');
-    this.entriesUIDMapperPath = path.join(this.entriesMapperPath, 'uid-mapping.json');
-    this.uniqueUidMapperPath = path.join(this.entriesMapperPath, 'unique-mapping.json');
-    this.modifiedCTsPath = path.join(this.entriesMapperPath, 'modified-schemas.json');
-    this.marketplaceAppMapperPath = path.join(this.importConfig.data, 'mapper', 'marketplace_apps', 'uid-mapping.json');
-    this.taxonomiesPath = path.join(this.importConfig.data, 'mapper', 'taxonomies', 'terms', 'success.json');
+    this.assetUidMapperPath = path.resolve(sanitizePath(importConfig.data), 'mapper', 'assets', 'uid-mapping.json');
+    this.assetUrlMapperPath = path.resolve(sanitizePath(importConfig.data), 'mapper', 'assets', 'url-mapping.json');
+    this.entriesMapperPath = path.resolve(sanitizePath(importConfig.data), 'mapper', 'entries');
+    this.envPath = path.resolve(sanitizePath(importConfig.data), 'environments', 'environments.json');
+    this.entriesUIDMapperPath = path.join(sanitizePath(this.entriesMapperPath), 'uid-mapping.json');
+    this.uniqueUidMapperPath = path.join(sanitizePath(this.entriesMapperPath), 'unique-mapping.json');
+    this.modifiedCTsPath = path.join(sanitizePath(this.entriesMapperPath), 'modified-schemas.json');
+    this.marketplaceAppMapperPath = path.join(sanitizePath(this.importConfig.data), 'mapper', 'marketplace_apps', 'uid-mapping.json');
+    this.taxonomiesPath = path.join(sanitizePath(this.importConfig.data), 'mapper', 'taxonomies', 'terms', 'success.json');
     this.entriesConfig = importConfig.modules.entries;
-    this.entriesPath = path.resolve(importConfig.data, this.entriesConfig.dirName);
-    this.cTsPath = path.resolve(importConfig.data, importConfig.modules['content-types'].dirName);
+    this.entriesPath = path.resolve(sanitizePath(importConfig.data), sanitizePath(this.entriesConfig.dirName));
+    this.cTsPath = path.resolve(sanitizePath(importConfig.data), sanitizePath(importConfig.modules['content-types'].dirName));
     this.localesPath = path.resolve(
-      importConfig.data,
-      importConfig.modules.locales.dirName,
-      importConfig.modules.locales.fileName,
+      sanitizePath(importConfig.data),
+      sanitizePath(importConfig.modules.locales.dirName),
+      sanitizePath(importConfig.modules.locales.fileName),
     );
     this.importConcurrency = this.entriesConfig.importConcurrency || importConfig.importConcurrency;
     this.entriesUidMapper = {};
@@ -336,7 +336,7 @@ export default class EntriesImport extends BaseClass {
         );
         entry.uid = oldUid;
         entry.entryOldUid = oldUid;
-        entry.sourceEntryFilePath = path.join(basePath, additionalInfo.entryFileName); // stores source file path temporarily
+        entry.sourceEntryFilePath = path.join(sanitizePath(basePath), sanitizePath(additionalInfo.entryFileName)); // stores source file path temporarily
         entriesCreateFileHelper.writeIntoFile({ [oldUid]: entry } as any, { mapKeyVal: true });
       } else {
         log(this.importConfig, `Created entry: '${entry.title}' of content type ${cTUid} in locale ${locale}`, 'info');
@@ -348,7 +348,7 @@ export default class EntriesImport extends BaseClass {
           this.autoCreatedEntries.push({ cTUid, locale, entryUid: response.uid });
         }
         this.entriesUidMapper[entry.uid] = response.uid;
-        entry.sourceEntryFilePath = path.join(basePath, additionalInfo.entryFileName); // stores source file path temporarily
+        entry.sourceEntryFilePath = path.join(sanitizePath(basePath), sanitizePath(additionalInfo.entryFileName)); // stores source file path temporarily
         entry.entryOldUid = entry.uid; // stores old uid temporarily
         entriesCreateFileHelper.writeIntoFile({ [entry.uid]: entry } as any, { mapKeyVal: true });
       }
@@ -360,7 +360,7 @@ export default class EntriesImport extends BaseClass {
         if (error?.errors?.title || error?.errors?.uid) {
           if (this.importConfig.replaceExisting) {
             entry.entryOldUid = uid;
-            entry.sourceEntryFilePath = path.join(basePath, additionalInfo.entryFileName); // stores source file path temporarily
+            entry.sourceEntryFilePath = path.join(sanitizePath(basePath), sanitizePath(additionalInfo.entryFileName)); // stores source file path temporarily
             existingEntriesFileHelper.writeIntoFile({ [uid]: entry } as any, { mapKeyVal: true });
           }
           if (!this.importConfig.skipExisting) {
@@ -431,11 +431,6 @@ export default class EntriesImport extends BaseClass {
       if (this.jsonRteCTsWithRef.indexOf(cTUid) > -1) {
         entry = removeEntryRefsFromJSONRTE(entry, contentType.schema);
       }
-
-      if (this.rteCTs.indexOf(cTUid) > -1) {
-        entry = removeEntryRefsFromJSONRTE(entry, contentType.schema);
-      }
-
       if (this.rteCTsWithRef.indexOf(cTUid) > -1) {
         entry = removeEntryRefsFromJSONRTE(entry, contentType.schema);
       }
@@ -552,7 +547,7 @@ export default class EntriesImport extends BaseClass {
 
   async replaceEntriesHandler({
     apiParams,
-    element: entry
+    element: entry,
   }: {
     apiParams: ApiOptions;
     element: Record<string, string>;
@@ -876,19 +871,21 @@ export default class EntriesImport extends BaseClass {
     }
     // log(this.importConfig, `Starting publish entries for ${cTUid} in locale ${locale}`, 'info');
 
-    const onSuccess = ({ response, apiData: { environments, entryUid }, additionalInfo }: any) => {
+    const onSuccess = ({ response, apiData: { environments, entryUid, locales }, additionalInfo }: any) => {
       log(
         this.importConfig,
-        `Published entry: '${entryUid}' of content type ${cTUid} and locale ${locale} in ${environments?.join(
+        `Published the entry: '${entryUid}' of Content Type '${cTUid}' and Locale '${locale}' in Environments '${environments?.join(
           ',',
-        )} environments`,
+        )}' and Locales '${locales?.join(',')}'`,
         'info',
       );
     };
-    const onReject = ({ error, apiData, additionalInfo }: any) => {
+    const onReject = ({ error, apiData: { environments, entryUid, locales }, additionalInfo }: any) => {
       log(
         this.importConfig,
-        `${apiData.entryUid} entry of content type ${cTUid} in locale ${locale} failed to publish`,
+        `Failed to publish: '${entryUid}' entry of Content Type '${cTUid}' and Locale '${locale}' in Environments '${environments?.join(
+          ',',
+        )}' and Locales '${locales?.join(',')}'`,
         'error',
       );
       log(this.importConfig, formatError(error), 'error');

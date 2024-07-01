@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-auth/1.3.17 darwin-arm64 node-v20.8.0
+@contentstack/cli-auth/1.3.19 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -106,8 +106,8 @@ Lists all existing tokens added to the session
 
 ```
 USAGE
-  $ csdx auth:tokens [--columns <value> | -x] [--sort <value>] [--filter <value>] [--output csv|json|yaml |  |
-    [--csv | --no-truncate]] [--no-header | ]
+  $ csdx auth:tokens [--columns <value> | -x] [--filter <value>] [--no-header | [--csv | --no-truncate]]
+    [--output csv|json|yaml |  | ] [--sort <value>]
 
 FLAGS
   -x, --extended     show extra columns
@@ -283,8 +283,8 @@ Lists all existing tokens added to the session
 
 ```
 USAGE
-  $ csdx tokens [--columns <value> | -x] [--sort <value>] [--filter <value>] [--output csv|json|yaml |  |
-    [--csv | --no-truncate]] [--no-header | ]
+  $ csdx tokens [--columns <value> | -x] [--filter <value>] [--no-header | [--csv | --no-truncate]]
+    [--output csv|json|yaml |  | ] [--sort <value>]
 
 FLAGS
   -x, --extended     show extra columns
