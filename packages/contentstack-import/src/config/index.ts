@@ -154,6 +154,7 @@ const config: DefaultConfig = {
     personalization: {
       baseURL: {
         NA: 'https://personalization-api.contentstack.com',
+        DEV: 'https://dev-personalization-api.csnonprod.com',
       },
       importData: true,
       dirName: 'personalization',
@@ -436,6 +437,8 @@ const config: DefaultConfig = {
     noTerminalOutput: false, // Skip final audit table output on terminal
     config: { basePath: '' }, // To overwrite any build-in config. And this config is equal to --config flag.
   },
+  //'taxonomies', 'environments', 'marketplace_apps', workflows, custom-roles --> Add this incase need to extend to the other global modules
+  globalModules: ['webhooks'],
 };
 
 export default config;
