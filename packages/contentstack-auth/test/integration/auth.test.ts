@@ -3,14 +3,14 @@ import { expect, test } from '@oclif/test';
 // @ts-ignore
 import { Helper } from './helper';
 // @ts-ignore
-import { PRINT_LOGS } from './config.json';
+import { PRINT_LOGS, encryptionKey } from './config.json';
 import { cliux as CliUx, messageHandler, NodeCrypto } from '@contentstack/cli-utilities';
 
 const messageFilePath = path.join(__dirname, '..', '..', '..', 'contentstack-utilities', 'messages/auth.json');
 const crypto = new NodeCrypto({
   typeIdentifier: '◈',
   algorithm: 'aes-192-cbc',
-  encryptionKey: process.env.ENCRYPTION_KEY || '***REMOVED***'
+  encryptionKey: process.env.ENCRYPTION_KEY || encryptionKey
 });
 const username = process.env.ENCRYPTION_KEY ? crypto.decrypt(process.env.USERNAME) : process.env.USERNAME
 const password = process.env.ENCRYPTION_KEY ? crypto.decrypt(process.env.PASSWORD) : process.env.PASSWORD
