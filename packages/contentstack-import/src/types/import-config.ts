@@ -11,6 +11,8 @@ export interface ExternalConfig {
 }
 
 export default interface ImportConfig extends DefaultConfig, ExternalConfig {
+  cliLogsPath: string;
+  canCreatePrivateApp: boolean;
   contentDir: string;
   data: string;
   management_token?: string;
@@ -51,6 +53,7 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   stackName?: string;
   region: Region;
   personalizeProjectName?: string;
+  'exclude-global-modules': false;
 }
 
 type branch = {
