@@ -5,6 +5,7 @@ import TokensAddCommand from '../../../src/commands/auth/tokens/add';
 import { tokenValidation } from '../../../src/utils';
 import { stub, assert } from 'sinon';
 import { config as dotenvConfig } from 'dotenv';
+import * as conf from '../../config.json';
 
 dotenvConfig();
 
@@ -24,7 +25,7 @@ describe('Tokens Add Command', () => {
   let managementTokenValidationStub;
   let environmentTokenValidationStub;
   let printStub;
-  const validAPIKey = 'adasdfagsf';
+  const validAPIKey = conf.validAPIKey;
   const validDeliveryToken = '***REMOVED***';
   const validmanagementToken = 'cmajhsd98939482';
   const validEnvironment = 'textenv';
