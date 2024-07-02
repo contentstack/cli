@@ -7,8 +7,9 @@ import { assetFolderCreateScript } from './asset-folder-create-script';
 
 type CreateMergeScriptsProps = {
   uid: string;
-  entry_merge_strategy: string;
+  entry_merge_strategy?: string;
   type?: string;
+  status?: string;
 };
 
 export function generateMergeScripts(mergeSummary, mergeJobUID) {
@@ -43,11 +44,8 @@ export function generateMergeScripts(mergeSummary, mergeJobUID) {
         cliux.print(`Info: Entries of ${messageType} content types selected for the migration`, { color: 'blue' });
       }
     };
-    
-    processContentType(
-      { type: 'assets', uid: '', entry_merge_strategy: '' },
-      mergeStrategies['asset_create_folder'],
-    );
+
+    processContentType({ type: 'assets', uid: '', entry_merge_strategy: '' }, mergeStrategies['asset_create_folder']);
     processContentTypes(mergeSummary.modified, 'Modified');
     processContentTypes(mergeSummary.added, 'New');
 
@@ -92,13 +90,13 @@ export function createMergeScripts(contentType: CreateMergeScriptsProps, mergeJo
         fs.mkdirSync(fullPath);
       }
       let filePath: string;
-      let milliSeconds = date.getMilliseconds().toString().padStart(3, '0')
+      let milliSeconds = date.getMilliseconds().toString().padStart(3, '0');
       if (contentType.type === 'assets') {
         filePath = `${fullPath}/${fileCreatedAt}${milliSeconds}_create_assets_folder.js`;
       } else {
-        filePath = `${fullPath}/${fileCreatedAt}${milliSeconds}_${getContentTypeMergeStatus(contentType.entry_merge_strategy)}_${
-          contentType.uid
-        }.js`;
+        filePath = `${fullPath}/${fileCreatedAt}${milliSeconds}_${getContentTypeMergeStatus(
+          contentType.entry_merge_strategy,
+        )}_${contentType.uid}.js`;
       }
       fs.writeFileSync(filePath, content, 'utf-8');
     }
