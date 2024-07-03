@@ -3,47 +3,9 @@ const { execSync } = require('child_process');
 const path = require('path');
 const { sanitizePath } = require('@contentstack/cli-utilities');
 const os = require('os');
+const { builtinModules } = require('module');
 
-const internalModules = new Set([
-  'assert',
-  'buffer',
-  'child_process',
-  'cluster',
-  'console',
-  'crypto',
-  'dgram',
-  'dns',
-  'domain',
-  'events',
-  'fs',
-  'http',
-  'http2',
-  'https',
-  'inspector',
-  'module',
-  'net',
-  'os',
-  'path',
-  'perf_hooks',
-  'process',
-  'punycode',
-  'querystring',
-  'readline',
-  'repl',
-  'stream',
-  'string_decoder',
-  'timers',
-  'tls',
-  'trace_events',
-  'tty',
-  'url',
-  'util',
-  'v8',
-  'vm',
-  'wasi',
-  'worker_threads',
-  'zlib',
-]);
+const internalModules = new Set(builtinModules);
 
 function checkWritePermissionToDirectory(directory) {
   try {
@@ -81,7 +43,7 @@ function createPackageJson(directory) {
   const templateString = `{
     "name": "MigrationPackage",
     "version": "1.0.0",
-    "main": "1.js",
+    "main": "",
     "scripts": {},
     "keywords": [],
     "author": "",
