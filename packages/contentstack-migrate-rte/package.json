@@ -16,7 +16,7 @@
     "nock": "^13.1.0",
     "omit-deep-lodash": "^1.1.5",
     "sinon": "^15.0.1",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@oclif/test": "^2.5.6",
