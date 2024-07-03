@@ -17,4 +17,5 @@ module.exports = {
   getBatches: require('./get-batches'),
   autoRetry: require('./auto-retry'),
   contentstackSdk: require('./contentstack-sdk'),
+  installModules: require('./modules'),
 };
