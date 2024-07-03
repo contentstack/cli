@@ -25,7 +25,7 @@ const {
 const { ApiError, SchemaValidator, MigrationError, FieldValidator } = require('../../../validators');
 
 // Utils
-const { map: _map, constants, safePromise, errorHelper } = require('../../../utils');
+const { map: _map, constants, safePromise, errorHelper, installModules } = require('../../../utils');
 // Properties
 const { get, set, getMapInstance, resetMapInstance } = _map;
 const {
@@ -67,7 +67,7 @@ class MigrationCommand extends Command {
       this.exit();
     }
 
-    if (!filePath) {
+    if (!filePath || !fs.existsSync(filePath)) {
       this.log('Please provide the migration script file path, use --file-path flag');
       this.exit();
     }
@@ -128,6 +128,10 @@ class MigrationCommand extends Command {
 
     set(MANAGEMENT_SDK, mapInstance, stackSDKInstance);
     set(MANAGEMENT_CLIENT, mapInstance, APIClient);
+
+    if (!(await installModules(filePath, multi))) {
+      this.log(`Cannot proceed with migration as there will be module not found issue as package.json is not created`);
+    }
 
     if (multi) {
       await this.execMultiFiles(filePath, mapInstance);
