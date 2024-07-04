@@ -203,7 +203,7 @@ describe('Auth Handler', () => {
     it('should set OAuth tokens info when type is "oauth"', async () => {
       const userData = {
         access_token: 'abc123',
-        refresh_token: '***REMOVED***',
+        refresh_token: 'def456',
         email: 'test@example.com',
         user_uid: 'user123',
         organization_uid: 'org123',
@@ -222,7 +222,7 @@ describe('Auth Handler', () => {
     it('should set refresh token config data', async () => {
       const userData = {
         access_token: 'abc123',
-        refresh_token: '***REMOVED***',
+        refresh_token: 'def456',
       };
 
       try {
