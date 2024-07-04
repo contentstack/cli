@@ -54,7 +54,7 @@
     "rxjs": "^6.6.7",
     "traverse": "^0.6.7",
     "unique-string": "^2.0.0",
-    "uuid": "^9.0.0",
+    "uuid": "^9.0.1",
     "winston": "^3.7.2",
     "xdg-basedir": "^4.0.0"
   },
