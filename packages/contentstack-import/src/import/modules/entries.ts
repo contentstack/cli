@@ -68,11 +68,25 @@ export default class EntriesImport extends BaseClass {
     this.entriesUIDMapperPath = path.join(sanitizePath(this.entriesMapperPath), 'uid-mapping.json');
     this.uniqueUidMapperPath = path.join(sanitizePath(this.entriesMapperPath), 'unique-mapping.json');
     this.modifiedCTsPath = path.join(sanitizePath(this.entriesMapperPath), 'modified-schemas.json');
-    this.marketplaceAppMapperPath = path.join(sanitizePath(this.importConfig.data), 'mapper', 'marketplace_apps', 'uid-mapping.json');
-    this.taxonomiesPath = path.join(sanitizePath(this.importConfig.data), 'mapper', 'taxonomies', 'terms', 'success.json');
+    this.marketplaceAppMapperPath = path.join(
+      sanitizePath(this.importConfig.data),
+      'mapper',
+      'marketplace_apps',
+      'uid-mapping.json',
+    );
+    this.taxonomiesPath = path.join(
+      sanitizePath(this.importConfig.data),
+      'mapper',
+      'taxonomies',
+      'terms',
+      'success.json',
+    );
     this.entriesConfig = importConfig.modules.entries;
     this.entriesPath = path.resolve(sanitizePath(importConfig.data), sanitizePath(this.entriesConfig.dirName));
-    this.cTsPath = path.resolve(sanitizePath(importConfig.data), sanitizePath(importConfig.modules['content-types'].dirName));
+    this.cTsPath = path.resolve(
+      sanitizePath(importConfig.data),
+      sanitizePath(importConfig.modules['content-types'].dirName),
+    );
     this.localesPath = path.resolve(
       sanitizePath(importConfig.data),
       sanitizePath(importConfig.modules.locales.dirName),
@@ -944,9 +958,15 @@ export default class EntriesImport extends BaseClass {
           requestObject.environments.push(this.envs[pubObject.environment].name);
         }
         if (pubObject.locale && indexOf(requestObject.locales, pubObject.locale) === -1) {
-          requestObject.locales.push(pubObject.locale);
+          if (pubObject.locale === entry.locale) {
+            requestObject.locales.push(pubObject.locale);
+          }
         }
       });
+      if (!requestObject.locales.length) {
+        apiOptions.apiData = null;
+        return apiOptions;
+      }
     } else {
       apiOptions.apiData = null;
       return apiOptions;
