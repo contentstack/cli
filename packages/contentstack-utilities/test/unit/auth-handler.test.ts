@@ -7,6 +7,7 @@ import configHandler from '../../src/config-handler';
 import { HttpClient } from '../../src/http-client';
 const http = require('http');
 const crypto = require('crypto');
+import * as config from './config.json';
 
 describe('Auth Handler', () => {
   describe('setOAuthBaseURL', () => {
@@ -299,7 +300,7 @@ describe('Auth Handler', () => {
       const configOauthRefreshToken = 'valid_refresh_token'; // Set a valid refresh token here
       const configAuthorisationType = authHandler.authorisationTypeOAUTHValue;
       const expectedData = {
-        access_token: 'new_access_token',
+        access_token: config.access_token,
         refresh_token: 'new_refresh_token',
       };
 
@@ -338,7 +339,7 @@ describe('Auth Handler', () => {
 
     it('should reject with error when access token is invalid/empty', async () => {
       const data = {
-        access_token: 'invalid_access_token',
+        access_token: config.invalid_access_token,
       };
       const expectedError = new Error('The provided access token is invalid or expired or revoked');
 

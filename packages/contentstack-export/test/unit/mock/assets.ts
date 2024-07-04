@@ -1,10 +1,12 @@
+import * as config from '../../config.json';
+
 const mockData = {
   findOneData: {},
   countData: { assets: 5 },
   findData: {
     items: [
       {
-        stackHeaders: { api_key: 'jdgfhcbjx' },
+        stackHeaders: { api_key: config.apiKey },
         urlPath: '/assets/scd',
         uid: 'hbjdjcy83kjxc',
         content_type: 'image/jpeg',
@@ -15,7 +17,7 @@ const mockData = {
         _version: 1,
       },
       {
-        stackHeaders: { api_key: 'jdgfhcbjx' },
+        stackHeaders: { api_key: config.apiKey },
         urlPath: '/assets/scd',
         uid: 'hbjdjcy83kjxc',
         content_type: 'image/jpeg',
@@ -26,7 +28,7 @@ const mockData = {
         _version: 2,
       },
       {
-        stackHeaders: { api_key: 'jdgfhcbjx' },
+        stackHeaders: { api_key: config.apiKey },
         urlPath: '/assets/scd',
         uid: 'hbjdjcy83kjxc',
         content_type: 'image/jpeg',
