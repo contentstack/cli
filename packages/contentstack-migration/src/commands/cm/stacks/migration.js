@@ -131,6 +131,7 @@ class MigrationCommand extends Command {
 
     if (!(await installModules(filePath, multi))) {
       this.log(`Failed to install the dependencies of the given scripts.`);
+      process.exit(1);
     }
 
     if (multi) {
