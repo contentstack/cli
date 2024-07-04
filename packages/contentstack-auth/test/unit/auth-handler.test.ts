@@ -3,10 +3,11 @@ import * as sinon from 'sinon';
 import { authHandler, interactive } from '../../src/utils';
 import { CLIError, cliux } from '@contentstack/cli-utilities';
 import { User } from '../../src/interfaces';
+import * as config from '../config.json';
 
 const user: User = { email: '***REMOVED***', authtoken: 'testtoken' };
-const credentials = { email: '***REMOVED***', password: 'testpassword' };
-const invalidCredentials = { email: '***REMOVED***', password: 'invalidpassword' };
+const credentials = { email: '***REMOVED***', password: config.password };
+const invalidCredentials = { email: '***REMOVED***', password: config.invalidPassowrd };
 let TFAEnabled = false;
 let TFAChannel = 'authy';
 const TFATestToken = '24563992';
