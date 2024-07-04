@@ -104,7 +104,7 @@ async function installModules(filePath, multiple) {
     return false;
   }
 
-  console.log(`All modules installed successfully`);
+  console.log(`All dependencies installed successfully`);
   return true;
 }
 

@@ -130,7 +130,7 @@ class MigrationCommand extends Command {
     set(MANAGEMENT_CLIENT, mapInstance, APIClient);
 
     if (!(await installModules(filePath, multi))) {
-      this.log(`Cannot proceed with migration as there will be module not found issue as package.json is not created`);
+      this.log(`Failed to install the dependencies of the given scripts.`);
     }
 
     if (multi) {
