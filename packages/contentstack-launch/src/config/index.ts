@@ -9,13 +9,21 @@ const config = {
   },
   outputDirectories: {
     OTHER: './',
-    NEXTJS: './.next',
     GATSBY: './public',
+    NEXTJS: './.next',
+    CRA: './build',
+    CSR: './',
+    ANGULAR: './dist',
+    VUEJS: './dist',
   },
   listOfFrameWorks: [
+    { name: 'Other', value: 'OTHER' },
     { name: 'Gatsby', value: 'GATSBY' },
     { name: 'NextJs', value: 'NEXTJS' },
-    { name: 'Other', value: 'OTHER' },
+    { name: 'CRA (Create React App)', value: 'CRA' },
+    { name: 'CSR (Client-Side Rendered)', value: 'CSR' },
+    { name: 'Angular', value: 'ANGULAR' },
+    { name: 'VueJs', value: 'VUEJS' },
   ],
   providerMapper: {
     GITPROVIDER: 'GitHub',
