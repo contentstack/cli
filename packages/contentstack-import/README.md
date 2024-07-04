@@ -47,7 +47,7 @@ $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-import/1.15.8 darwin-arm64 node-v18.20.2
+@contentstack/cli-cm-import/1.16.0 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -79,6 +79,7 @@ FLAGS
   -k, --stack-api-key=<value>       API key of the target stack
   -m, --module=<value>              [optional] specific module name
   -y, --yes                         [optional] Override marketplace prompts
+  --exclude-global-modules          Excludes the branch-independent module from the import operation
   --import-webhook-status=<option>  [default: disable] [optional] Webhook state
                                     <options: disable|current>
   --replace-existing                Replaces the existing module in the target stack.
@@ -128,6 +129,7 @@ FLAGS
   -k, --stack-api-key=<value>       API key of the target stack
   -m, --module=<value>              [optional] specific module name
   -y, --yes                         [optional] Override marketplace prompts
+  --exclude-global-modules          Excludes the branch-independent module from the import operation
   --import-webhook-status=<option>  [default: disable] [optional] Webhook state
                                     <options: disable|current>
   --replace-existing                Replaces the existing module in the target stack.
