@@ -20,6 +20,7 @@ interface EnviornmentVariables {
  * Create enviroment
  */
 
+let externalManagementToken: string | undefined;
 export const setupEnvironments = async (
   managementAPIClient: any,
   api_key: string,
@@ -29,6 +30,7 @@ export const setupEnvironments = async (
   livePreviewEnabled: boolean,
   managementToken?: string,
 ) => {
+  externalManagementToken = managementToken; 
   const environmentResult = await managementAPIClient
     .stack({ api_key, management_token: managementToken })
     .environment()
@@ -204,7 +206,11 @@ const envFileHandler = async (
         customHost ? customHost : managementAPIHost
       }${
         !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
-      }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\nCONTENTSTACK_LIVE_EDIT_TAGS=false`;
+      }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\nCONTENTSTACK_LIVE_EDIT_TAGS=false\nCONTENTSTACK_API_HOST=${
+        customHost ? customHost : managementAPIHost
+      }${
+        !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
+      }\nCONTENTSTACK_APP_HOST=${appHost}\nCONTENTSTACK_MANAGEMENT_TOKEN=${externalManagementToken}\nCONTENTSTACK_HOST=${appHost}\nCONTENTSTACK_HOST=${previewHost}`;
       result = await writeEnvFile(content, filePath);
       break;
     case 'gatsby':

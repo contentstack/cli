@@ -20,7 +20,7 @@ export default class SeedCommand extends Command {
     '$ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack in given org uid',
   ];
 
-  static usage = 'cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]';
+  static usage = 'cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]';
 
   static flags: FlagInput = {
     repo: flags.string({
@@ -78,6 +78,10 @@ export default class SeedCommand extends Command {
       char: 'a',
       description: 'Alias of the management token',
     }),
+    locale: flags.string({
+      description: 'Master Locale of the stack',
+      hidden: true,
+    }),
   };
 
   static aliases = ['cm:seed'];
@@ -105,6 +109,7 @@ export default class SeedCommand extends Command {
         skipStackConfirmation: seedFlags['yes'],
         isAuthenticated: isAuthenticated(),
         alias: managementTokenAlias,
+        master_locale: seedFlags['locale'],
       };
 
       const listOfTokens = configHandler.get('tokens');
