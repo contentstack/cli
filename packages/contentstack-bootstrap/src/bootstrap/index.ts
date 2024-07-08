@@ -19,6 +19,7 @@ export interface BootstrapOptions {
   accessToken?: string;
   appType: string;
   livePreviewEnabled?: boolean;
+  master_locale: any;
 }
 
 export interface SeedParams {
@@ -96,6 +97,9 @@ export default class Bootstrap {
       }
       if (this.options.seedParams.managementTokenAlias) {
         cmd.push('--alias', this.options.seedParams.managementTokenAlias);
+      }
+      if (this.options.master_locale) {
+        cmd.push('--locale', this.options.master_locale);
       }
 
       const result = await ContentStackSeed.run(cmd);

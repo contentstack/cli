@@ -152,6 +152,10 @@ export default class BootstrapCommand extends Command {
       const yes = bootstrapCommandFlags.yes as string;
 
       const appConfig: AppConfig = getAppLevelConfigByName(selectedAppName || selectedApp.configKey);
+      let master_locale = "en-us";
+      if( selectedApp.configKey == "compass-app" || selectedAppName == "Compass App"){
+        master_locale = "en";
+      }
 
       let cloneDirectory =
         (bootstrapCommandFlags.directory as string) || (bootstrapCommandFlags['project-dir'] as string);
@@ -187,6 +191,7 @@ export default class BootstrapCommand extends Command {
         region: this.region,
         appType,
         livePreviewEnabled,
+        master_locale,
       };
       const bootstrap = new Bootstrap(options);
       await bootstrap.run();
