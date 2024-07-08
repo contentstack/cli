@@ -11,6 +11,7 @@ export interface AppConfig {
   private?: boolean;
   branch?: string;
   appConfigKey?: string;
+  master_locale?: string;
 }
 
 const config: Configuration = {
