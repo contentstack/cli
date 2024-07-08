@@ -182,6 +182,11 @@ export default class ContentModelSeeder {
 
   async shouldProceed(api_key: string) {
     let count;
+    const stack_details = await this.csClient.getStack(api_key);
+    if(this.options.master_locale != stack_details.master_locale){
+        cliux.print(`You will face some issues in bootstrap app due to change of Master locale.`);
+        return false;
+    }
     count = await this.csClient.getContentTypeCount(api_key, this.managementToken);
 
     if (count > 0 && this._options.skipStackConfirmation !== 'yes') {
