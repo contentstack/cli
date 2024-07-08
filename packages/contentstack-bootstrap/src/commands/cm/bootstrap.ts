@@ -18,6 +18,7 @@ import {
 import config, { getAppLevelConfigByName, AppConfig } from '../../config';
 import messageHandler from '../../messages';
 
+export const DEFAULT_MASTER_LOCALE = 'en-us';
 export default class BootstrapCommand extends Command {
   private bootstrapManagementAPIClient: any;
 
@@ -152,10 +153,11 @@ export default class BootstrapCommand extends Command {
       const yes = bootstrapCommandFlags.yes as string;
 
       const appConfig: AppConfig = getAppLevelConfigByName(selectedAppName || selectedApp.configKey);
-      let master_locale = "en-us";
-      if( selectedApp.configKey == "compass-app" || selectedAppName == "Compass App"){
-        master_locale = "en";
-      }
+      // let master_locale = "en-us";
+      // if( selectedApp.configKey == "compass-app" || selectedAppName == "Compass App"){
+      //   master_locale = "en";
+      // }
+      let master_locale = appConfig.master_locale || DEFAULT_MASTER_LOCALE;
 
       let cloneDirectory =
         (bootstrapCommandFlags.directory as string) || (bootstrapCommandFlags['project-dir'] as string);
