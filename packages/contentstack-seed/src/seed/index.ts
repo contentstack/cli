@@ -31,6 +31,7 @@ export interface ContentModelSeederOptions {
   isAuthenticated: boolean | false;
   managementToken?: string | undefined;
   alias?: string | undefined;
+  master_locale?: string | undefined;
 }
 
 export default class ContentModelSeeder {
@@ -83,12 +84,13 @@ export default class ContentModelSeeder {
     const tmpPath = await this.downloadRelease();
 
     cliux.print(`Importing into ${this.managementToken ? 'your stack' : `'${stackResponse.name}'`}.`);
+    
 
     await importer.run({
       api_key: api_key,
       cdaHost: this.options.cdaHost,
       cmaHost: this.options.cmaHost,
-      master_locale: ENGLISH_LOCALE,
+      master_locale : this.options.master_locale || ENGLISH_LOCALE,
       tmpPath: tmpPath,
       isAuthenticated: this.options.isAuthenticated,
       alias: this.options.alias,
@@ -169,7 +171,7 @@ export default class ContentModelSeeder {
     const newStack = await this.csClient.createStack({
       name: stackName,
       description: '',
-      master_locale: ENGLISH_LOCALE,
+      master_locale: this.options.master_locale || ENGLISH_LOCALE,
       org_uid: organization.uid,
     });
 
