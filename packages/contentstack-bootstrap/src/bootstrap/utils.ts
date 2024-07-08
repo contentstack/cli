@@ -146,6 +146,7 @@ const envFileHandler = async (
   const managementAPIHost = region?.cma?.substring('8');
   const regionName = region && region.name && region.name.toLowerCase();
   previewHost = region?.uiHost?.substring(8)?.replace('app', 'rest-preview');
+  const cdnHost = region?.uiHost?.substring(8)?.replace('app', 'cdn');
   appHost = region?.uiHost?.substring(8);
   const isUSRegion = regionName === 'us' || regionName === 'na';
   if (regionName !== 'eu' && !isUSRegion) {
@@ -210,7 +211,7 @@ const envFileHandler = async (
         customHost ? customHost : managementAPIHost
       }${
         !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
-      }\nCONTENTSTACK_APP_HOST=${appHost}\nCONTENTSTACK_MANAGEMENT_TOKEN=${externalManagementToken}\nCONTENTSTACK_HOST=${appHost}\nCONTENTSTACK_HOST=${previewHost}`;
+      }\nCONTENTSTACK_APP_HOST=${appHost}\nCONTENTSTACK_MANAGEMENT_TOKEN=${externalManagementToken}\nCONTENTSTACK_HOST=${appHost}\nCONTENTSTACK_HOST=${cdnHost}`;
       result = await writeEnvFile(content, filePath);
       break;
     case 'gatsby':
