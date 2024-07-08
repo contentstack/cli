@@ -29,7 +29,7 @@ const config: Configuration = {
     { displayName: 'Vue JS', configKey: 'vue-starter' },
     { displayName: 'Stencil', configKey: 'stencil-starter' },
     { displayName: 'Nuxt3', configKey: 'nuxt3-starter' },
-    // { displayName: 'Compass App', configKey: 'compass-app' }
+    { displayName: 'Compass App', configKey: 'compass-app' }
   ],
   appLevelConfig: {
     nextjs: {
@@ -51,6 +51,7 @@ const config: Configuration = {
     'compass-app': {
       source: 'SunilLsagar/universal-demo',
       stack: 'SunilLsagar/stack-universal-demo',
+      master_locale: 'en',
     },
     'nuxtjs-disabled': {
       source: 'contentstack/contentstack-nuxtjs-vue-universal-demo',
