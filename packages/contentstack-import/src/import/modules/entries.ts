@@ -958,13 +958,11 @@ export default class EntriesImport extends BaseClass {
           requestObject.environments.push(this.envs[pubObject.environment].name);
         }
         if (pubObject.locale && indexOf(requestObject.locales, pubObject.locale) === -1) {
-          if (pubObject.locale === entry.locale) {
-            requestObject.locales.push(pubObject.locale);
-          }
+          requestObject.locales.push(pubObject.locale);
         }
       });
-      if (!requestObject.locales.length) {
-        apiOptions.apiData = null;
+      if (!requestObject.locales.includes(entry.locale)) {
+       apiOptions.apiData = null;
         return apiOptions;
       }
     } else {
