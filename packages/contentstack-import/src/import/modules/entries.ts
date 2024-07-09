@@ -961,8 +961,10 @@ export default class EntriesImport extends BaseClass {
           requestObject.locales.push(pubObject.locale);
         }
       });
+      // NOTE: We added this condition to prevent the error
+      // localised Localised entries can not be published from master locale.
       if (!requestObject.locales.includes(entry.locale)) {
-       apiOptions.apiData = null;
+        apiOptions.apiData = null;
         return apiOptions;
       }
     } else {
