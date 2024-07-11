@@ -21,6 +21,7 @@ export const lookupExtension = function (
   const fs = new FsUtility({ basePath: config.backupDir });
   const extensionPath = join(config.backupDir, 'mapper/extensions', 'uid-mapping.json');
   const globalfieldsPath = join(config.backupDir, 'mapper/globalfields', 'uid-mapping.json');
+  const marketPlaceAppsPath = join(config.backupDir, 'mapper/marketplace_apps', 'uid-mapping.json');
 
   for (let i in schema) {
     if (schema[i].data_type === 'group') {
@@ -72,9 +73,12 @@ export const lookupExtension = function (
     } else if (schema[i].data_type === 'json' && schema[i].hasOwnProperty('plugins') && schema[i].plugins.length > 0) {
       const newPluginUidsArray: any[] = [];
       const data = fs.readFile(extensionPath) as Record<string, unknown>;
+      const marketPlaceAppsData = fs.readFile(marketPlaceAppsPath) as { extension_uid: Record<string, unknown> };
       schema[i].plugins.forEach((extension_key_value: string) => {
         if (data && data.hasOwnProperty(extension_key_value)) {
           newPluginUidsArray.push(data[extension_key_value]);
+        } else if (marketPlaceAppsData && marketPlaceAppsData.extension_uid && marketPlaceAppsData.extension_uid.hasOwnProperty(extension_key_value)) {
+          newPluginUidsArray.push(marketPlaceAppsData.extension_uid[extension_key_value]);
         }
       });
       schema[i].plugins = newPluginUidsArray;
