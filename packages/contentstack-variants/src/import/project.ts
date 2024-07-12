@@ -14,8 +14,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
     };
     super(Object.assign(config, conf));
     this.projectMapperFolderPath = pResolve(
-      config.data,
-      config.branchName || '',
+      this.config.backupDir,
       'mapper',
       this.config.modules.personalization.dirName,
       'projects',
