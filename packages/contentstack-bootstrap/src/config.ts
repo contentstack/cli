@@ -51,7 +51,7 @@ const config: Configuration = {
     },
     'compass-app': {
       source: 'SunilLsagar/universal-demo',
-      stack: 'SunilLsagar/stack-universal-demo',
+      stack: 'SunilLsagar/stack-universal-demo-latest',
       master_locale: 'en',
     },
     'nuxtjs-disabled': {

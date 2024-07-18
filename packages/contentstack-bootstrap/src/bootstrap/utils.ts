@@ -19,8 +19,7 @@ interface EnviornmentVariables {
  * Create delivery token
  * Create enviroment
  */
-
-let externalManagementToken: string | undefined;
+let managementTokenResult: any;
 export const setupEnvironments = async (
   managementAPIClient: any,
   api_key: string,
@@ -30,12 +29,46 @@ export const setupEnvironments = async (
   livePreviewEnabled: boolean,
   managementToken?: string,
 ) => {
-  externalManagementToken = managementToken; 
   const environmentResult = await managementAPIClient
     .stack({ api_key, management_token: managementToken })
     .environment()
     .query()
     .find();
+
+  //create management token if not present
+  if(!managementToken){
+    const managementBody = {
+      "token":{
+          "name":"sample app",
+          "description":"This is a sample management token.",
+          "scope":[
+              {
+                  "module":"content_type",
+                  "acl":{
+                      "read":true,
+                      "write":true
+                  }
+              },
+              {
+                  "module":"branch",
+                  "branches":[
+                      "main"
+                  ],
+                  "acl":{
+                      "read":true
+                  }
+              }
+          ],
+          "expires_on": "3000-01-01",
+          "is_email_notification_enabled":false
+      }
+  }
+  managementTokenResult = await managementAPIClient
+    .stack({ api_key: api_key })
+    .managementToken()
+    .create(managementBody);
+  }
+
   if (Array.isArray(environmentResult.items) && environmentResult.items.length > 0) {
     for (const environment of environmentResult.items) {
       if (environment.name) {
@@ -211,7 +244,7 @@ const envFileHandler = async (
         customHost ? customHost : managementAPIHost
       }${
         !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
-      }\nCONTENTSTACK_APP_HOST=${appHost}\nCONTENTSTACK_MANAGEMENT_TOKEN=${externalManagementToken}\nCONTENTSTACK_HOST=${appHost}\nCONTENTSTACK_HOST=${cdnHost}`;
+      }\nCONTENTSTACK_APP_HOST=${appHost}\nCONTENTSTACK_MANAGEMENT_TOKEN=${managementTokenResult.uid}\nCONTENTSTACK_HOST=${cdnHost}`;
       result = await writeEnvFile(content, filePath);
       break;
     case 'gatsby':
