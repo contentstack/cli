@@ -8,6 +8,7 @@ import {
   HttpClient,
   messageHandler,
   Flags,
+  formatError,
 } from '@contentstack/cli-utilities';
 import { askTokenType } from '../../../utils/interactive';
 import { BaseCommand } from '../../../base-command';
@@ -159,9 +160,10 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
         cliux.success('CLI_AUTH_TOKENS_ADD_SUCCESS');
       }
     } catch (error) {
-      this.logger.error('token add error', error.message);
+      let errorMessage = formatError(error) || 'Something went wrong while adding token. Please try again.';
+      this.logger.error('token add error', errorMessage);
       cliux.print('CLI_AUTH_TOKENS_ADD_FAILED', { color: 'yellow' });
-      cliux.error(error.message.message ? error.message.message : error.message);
+      cliux.error(errorMessage);
     }
   }
 }

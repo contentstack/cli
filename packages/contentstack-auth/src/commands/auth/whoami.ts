@@ -1,5 +1,5 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux } from '@contentstack/cli-utilities';
+import { cliux, formatError } from '@contentstack/cli-utilities';
 import { BaseCommand } from '../../base-command';
 
 export default class WhoamiCommand extends BaseCommand<typeof WhoamiCommand> {
@@ -19,9 +19,10 @@ export default class WhoamiCommand extends BaseCommand<typeof WhoamiCommand> {
         cliux.error('CLI_AUTH_WHOAMI_FAILED');
       }
     } catch (error) {
-      this.logger.error('whoami error', error.message);
+      let errorMessage = formatError(error) || 'Something went wrong. Please try again.';
+      this.logger.error('whoami error', errorMessage);
       cliux.print('CLI_AUTH_WHOAMI_FAILED', { color: 'yellow' });
-      cliux.print(error.message, { color: 'red' });
+      cliux.print(errorMessage, { color: 'red' });
     }
   }
 }

@@ -5,7 +5,8 @@ import {
   authHandler as oauthHandler,
   flags,
   managementSDKClient,
-  FlagInput
+  FlagInput,
+  formatError
 } from '@contentstack/cli-utilities';
 import { User } from '../../interfaces';
 import { authHandler, interactive } from '../../utils';
@@ -64,18 +65,7 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
         await this.login(username, password);
       }
     } catch (error) {
-      let errorMessage = '';
-      if (error) {
-        if (error.message) {
-          if (error.message.message) {
-            errorMessage = error.message.message;
-          } else {
-            errorMessage = error.message;
-          }
-        } else {
-          errorMessage = error;
-        }
-      }
+      let errorMessage = formatError(error) || 'Something went wrong while logging. Please try again.';
       this.logger.error('login failed', errorMessage);
       cliux.error('CLI_AUTH_LOGIN_FAILED');
       cliux.error(errorMessage);
