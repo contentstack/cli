@@ -99,7 +99,7 @@ export const formatError = function (error: any) {
   // Append detailed error information if available
   if (parsedError.errors && Object.keys(parsedError.errors).length > 0) {
     const entityNames: { [key: string]: string } = {
-      authorization: 'Management Token',
+      authorization: 'Authentication',
       api_key: 'Stack API key',
       uid: 'Content Type',
       access_token: 'Delivery Token',
