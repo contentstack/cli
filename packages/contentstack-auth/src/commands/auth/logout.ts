@@ -7,6 +7,7 @@ import {
   authHandler as oauthHandler,
   managementSDKClient,
   FlagInput,
+  formatError,
 } from '@contentstack/cli-utilities';
 
 import { authHandler } from '../../utils';
@@ -54,7 +55,7 @@ export default class LogoutCommand extends BaseCommand<typeof LogoutCommand> {
         if (await oauthHandler.isAuthorisationTypeBasic()) {
           await authHandler.logout(configHandler.get('authtoken'));
         } else if (await oauthHandler.isAuthorisationTypeOAuth()) {
-          await oauthHandler.oauthLogout()
+          await oauthHandler.oauthLogout();
         }
         cliux.loader('');
         this.logger.info('successfully logged out');
@@ -63,18 +64,7 @@ export default class LogoutCommand extends BaseCommand<typeof LogoutCommand> {
         cliux.success('CLI_AUTH_LOGOUT_ALREADY');
       }
     } catch (error) {
-      let errorMessage = '';
-      if (error) {
-        if (error.message) {
-          if (error.message.message) {
-            errorMessage = error.message.message;
-          } else {
-            errorMessage = error.message;
-          }
-        } else {
-          errorMessage = error;
-        }
-      }
+      let errorMessage = formatError(error) || 'Something went wrong while logging out. Please try again.';
 
       this.logger.error('Logout failed', errorMessage);
       cliux.print('CLI_AUTH_LOGOUT_FAILED', { color: 'yellow' });
