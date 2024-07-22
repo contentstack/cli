@@ -78,7 +78,7 @@ export default class ImportMarketplaceApps {
         true,
       ) as Installation[];
     } else {
-      log(this.importConfig, `No such file or directory - '${this.marketPlaceFolderPath}'`, 'error');
+      log(this.importConfig, `No Marketplace apps are found - '${this.marketPlaceFolderPath}'`, 'info');
       return;
     }
 

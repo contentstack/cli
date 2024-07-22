@@ -19,7 +19,7 @@ interface EnviornmentVariables {
  * Create delivery token
  * Create enviroment
  */
-
+let managementTokenResult: any;
 export const setupEnvironments = async (
   managementAPIClient: any,
   api_key: string,
@@ -34,6 +34,40 @@ export const setupEnvironments = async (
     .environment()
     .query()
     .find();
+
+  //create management token if not present
+  if(!managementToken){
+    const managementBody = {
+      "token":{
+          "name":"sample app",
+          "description":"This is a sample management token.",
+          "scope":[
+              {
+                  "module":"content_type",
+                  "acl":{
+                      "read":true,
+                      "write":true
+                  }
+              },
+              {
+                  "module":"branch",
+                  "branches":[
+                      "main"
+                  ],
+                  "acl":{
+                      "read":true
+                  }
+              }
+          ],
+          "expires_on": "3000-01-01",
+          "is_email_notification_enabled":false
+      }
+  }
+  managementTokenResult = await managementAPIClient
+    .stack({ api_key: api_key })
+    .managementToken()
+    .create(managementBody);
+  }
   if (Array.isArray(environmentResult.items) && environmentResult.items.length > 0) {
     for (const environment of environmentResult.items) {
       if (environment.name) {
@@ -144,6 +178,7 @@ const envFileHandler = async (
   const managementAPIHost = region?.cma?.substring('8');
   const regionName = region && region.name && region.name.toLowerCase();
   previewHost = region?.uiHost?.substring(8)?.replace('app', 'rest-preview');
+  const cdnHost = region?.uiHost?.substring(8)?.replace('app', 'cdn');
   appHost = region?.uiHost?.substring(8);
   const isUSRegion = regionName === 'us' || regionName === 'na';
   if (regionName !== 'eu' && !isUSRegion) {
@@ -204,9 +239,12 @@ const envFileHandler = async (
         customHost ? customHost : managementAPIHost
       }${
         !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
-      }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\nCONTENTSTACK_LIVE_EDIT_TAGS=false`;
+      }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\nCONTENTSTACK_LIVE_EDIT_TAGS=false\nCONTENTSTACK_API_HOST=${
+        customHost ? customHost : managementAPIHost
+      }${
+        !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
+      }\nCONTENTSTACK_APP_HOST=${appHost}\nCONTENTSTACK_MANAGEMENT_TOKEN=${managementTokenResult.uid}\nCONTENTSTACK_HOST=${cdnHost}`;
       result = await writeEnvFile(content, filePath);
-      break;
     case 'gatsby':
     case 'gatsby-starter':
       fileName = `.env.${environmentVariables.environment}`;
