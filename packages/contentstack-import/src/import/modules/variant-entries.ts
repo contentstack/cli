@@ -46,7 +46,7 @@ export default class ImportVarientEntries {
         };
         await new Import.VariantEntries(Object.assign(this.config, { helpers })).import();
       } else {
-        log(this.config, 'Skipping entry variants import due to invalid project import', 'error');
+        log(this.config, 'Skipping entry variants import because no personalize project is linked.', 'info');
       }
     } catch (error) {
       log(this.config, error, 'error');
