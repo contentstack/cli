@@ -8,7 +8,7 @@ import * as winston from 'winston';
 import * as path from 'path';
 import mkdirp from 'mkdirp';
 import { ExportConfig } from '../types';
-import { sanitizePath } from '@contentstack/cli-utilities'
+import { sanitizePath } from '@contentstack/cli-utilities';
 const slice = Array.prototype.slice;
 
 const ansiRegexPattern = [
@@ -24,7 +24,7 @@ function returnString(args: unknown[]) {
         if (item && typeof item === 'object') {
           try {
             return JSON.stringify(item).replace(/authtoken\":\d"blt................/g, 'authtoken":"blt....');
-          } catch (error) { }
+          } catch (error) {}
           return item;
         }
         return item;

@@ -1,0 +1,48 @@
+{
+  "data": "./",
+  "exportDir": "./",
+  "apiKey": "TEST-STACK-API-KEY",
+  "master_locale": { "code": "en-us" },
+  "host": "https://test.abc.com",
+  "modules": {
+    "entries": {
+      "dirName": "entries",
+      "fileName": "entries.json",
+      "invalidKeys": [
+        "stackHeaders",
+        "content_type_uid",
+        "urlPath",
+        "created_at",
+        "updated_at",
+        "created_by",
+        "updated_by",
+        "_metadata",
+        "published"
+      ],
+      "batchLimit": 20,
+      "downloadLimit": 5,
+      "limit": 100,
+      "dependencies": ["locales", "content-types"],
+      "exportVersions": false
+    },
+    "personalization": {
+      "dirName": "personalization",
+      "baseURL": "https://test-api.abc.com",
+      "exportOrder": ["attributes", "audiences", "events", "experiences"],
+      "projects": { "dirName": "projects", "fileName": "projects.json" },
+      "attributes": { "dirName": "attributes", "fileName": "attributes.json" },
+      "audiences": { "dirName": "audiences", "fileName": "audiences.json" },
+      "events": { "dirName": "events", "fileName": "events.json" },
+      "experiences": { "dirName": "experiences", "fileName": "experiences.json" }
+    },
+    "variantEntry": {
+      "serveMockData": false,
+      "dirName": "variants",
+      "fileName": "index.json",
+      "chunkFileSize": 1,
+      "query": { "skip": 0, "limit": 100, "locale": "en-us", "include_variant": false },
+      "mockDataPath": "./variant-mock-data.json"
+    }
+  },
+  "personalizationEnabled": true
+}

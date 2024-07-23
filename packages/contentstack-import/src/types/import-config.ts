@@ -1,4 +1,4 @@
-import { Modules } from '.';
+import { Modules, Region } from '.';
 import DefaultConfig from './default-config';
 
 export interface ExternalConfig {
@@ -51,6 +51,8 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   skipExisting?: boolean;
   skipAudit?: boolean;
   stackName?: string;
+  region: Region;
+  personalizeProjectName?: string;
   'exclude-global-modules': false;
 }
 

@@ -27,6 +27,13 @@ export interface User {
   authtoken: string;
 }
 
+export interface Region {
+  name: string;
+  cma: string;
+  cda: string;
+  uiHost: string;
+}
+
 export type Modules =
   | 'stack'
   | 'assets'
@@ -41,7 +48,8 @@ export type Modules =
   | 'workflows'
   | 'labels'
   | 'marketplace-apps'
-  | 'taxonomies';
+  | 'taxonomies'
+  | 'personalization';
 
 export type ModuleClassParams = {
   stackAPIClient: ReturnType<ContentstackClient['stack']>;
