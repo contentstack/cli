@@ -120,13 +120,17 @@ export default class BaseClass {
     const organizations =
       (await getOrganizations({ log: this.log, managementSdk: this.managementSdk as ContentstackClient })) || [];
 
-    if (this.config.flags.org && find(organizations, { uid: this.config.flags.org })) {
-      this.config.currentConfig.organizationUid = this.config.flags.org;
-    } else {
-      if (this.config.flags.org) {
-        this.log('Organization UID not found!', 'error');
-      }
+    const selectedOrgUid = this.config.flags.org;
 
+    if (selectedOrgUid) {
+      const orgExists = find(organizations, { uid: selectedOrgUid });
+      if (orgExists) {
+        this.config.currentConfig.organizationUid = selectedOrgUid;
+      } else {
+        this.log('Organization UID not found!', 'error');
+        this.exit(1);
+      }
+    } else {
       this.config.currentConfig.organizationUid = await ux
         .inquire({
           type: 'search-list',
