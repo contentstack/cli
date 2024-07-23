@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 const path = require('path');
 const { sanitizePath } = require('@contentstack/cli-utilities');
 const os = require('os');
@@ -70,8 +70,11 @@ function installDependencies(dependencies, directory) {
 
 function executeShellCommand(command, directory = '') {
   try {
-    execSync(command, { stdio: 'inherit', cwd: directory });
-    console.log(`Command executed successfully: ${command}`);
+    if (command.startsWith('npm i')) {
+      const [cmd, ...args] = command.split(' ');
+      execFileSync(cmd, args, { stdio: 'inherit', cwd: directory });
+      console.log(`Command executed successfully: ${command}`);
+    }
   } catch (error) {
     console.error(`Error: ${error.message}`);
   }
