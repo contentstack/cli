@@ -76,13 +76,9 @@ function $t(msg: string, args: Record<string, string>): string {
     if (!msg) return '';
 
     for (const key of Object.keys(args)) {
-      const escapedKey = escapeRegExp(key);
-      const escapedKeyRegex = new RegExp(`{${escapedKey}}`, 'g');
-      let { status } = validateRegex(escapedKeyRegex)
-      if (status === 'safe') {
-        const sanitizedValue = args[key] ? escapeRegExp(args[key]) : '';
-        msg = msg.replace(escapedKeyRegex, sanitizedValue || escapedKey);
-      }
+      const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const placeholder = `{${escapedKey}}`;
+      msg = msg.split(placeholder).join(args[key]);
     }
 
     return msg;
