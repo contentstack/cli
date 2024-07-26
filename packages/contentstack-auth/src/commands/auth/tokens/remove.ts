@@ -1,5 +1,5 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, configHandler, flags, FlagInput } from '@contentstack/cli-utilities';
+import { cliux, configHandler, flags, FlagInput, formatError } from '@contentstack/cli-utilities';
 import { BaseCommand } from '../../../base-command';
 
 export default class TokensRemoveCommand extends BaseCommand<typeof TokensRemoveCommand> {
@@ -58,9 +58,10 @@ export default class TokensRemoveCommand extends BaseCommand<typeof TokensRemove
         this.logger.info('Token removed successfully !!', element);
       });
     } catch (error) {
-      this.logger.error('Token remove error', error.message);
+      let errorMessage = formatError(error) || 'Something went wrong while removing token. Please try again.';
+      this.logger.error('Token remove error', errorMessage);
       cliux.print('CLI_AUTH_TOKENS_REMOVE_FAILED', { color: 'yellow' });
-      cliux.print(error.message, { color: 'red' });
+      cliux.print(errorMessage, { color: 'red' });
     }
   }
 }
