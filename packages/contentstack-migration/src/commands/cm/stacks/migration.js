@@ -130,7 +130,7 @@ class MigrationCommand extends Command {
     set(MANAGEMENT_CLIENT, mapInstance, APIClient);
 
     if (!(await installModules(filePath, multi))) {
-      this.log(`Failed to install the dependencies of the given scripts.`);
+      this.log(`Error: Failed to install dependencies for the specified scripts.`);
       process.exit(1);
     }
 
