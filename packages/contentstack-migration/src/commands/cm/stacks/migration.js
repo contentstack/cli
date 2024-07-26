@@ -25,7 +25,7 @@ const {
 const { ApiError, SchemaValidator, MigrationError, FieldValidator } = require('../../../validators');
 
 // Utils
-const { map: _map, constants, safePromise, errorHelper } = require('../../../utils');
+const { map: _map, constants, safePromise, errorHelper, installModules } = require('../../../utils');
 // Properties
 const { get, set, getMapInstance, resetMapInstance } = _map;
 const {
@@ -67,7 +67,7 @@ class MigrationCommand extends Command {
       this.exit();
     }
 
-    if (!filePath) {
+    if (!filePath || !fs.existsSync(filePath)) {
       this.log('Please provide the migration script file path, use --file-path flag');
       this.exit();
     }
@@ -128,6 +128,11 @@ class MigrationCommand extends Command {
 
     set(MANAGEMENT_SDK, mapInstance, stackSDKInstance);
     set(MANAGEMENT_CLIENT, mapInstance, APIClient);
+
+    if (!(await installModules(filePath, multi))) {
+      this.log(`Error: Failed to install dependencies for the specified scripts.`);
+      process.exit(1);
+    }
 
     if (multi) {
       await this.execMultiFiles(filePath, mapInstance);
