@@ -35,7 +35,7 @@
     "@contentstack/cli-cm-seed": "~1.7.7",
     "@contentstack/cli-command": "~1.2.19",
     "@contentstack/cli-config": "~1.6.5",
-    "@contentstack/cli-launch": "~1.0.20",
+    "@contentstack/cli-launch": "~1.0.19",
     "@contentstack/cli-migration": "~1.6.0",
     "@contentstack/cli-utilities": "~1.7.0",
     "@contentstack/management": "~1.15.3",
