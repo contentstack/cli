@@ -219,7 +219,7 @@ export default class ContentModelSeeder {
       cliux.print(
         `Info: Failed to generate a management token.\nNote: Management token is not available in your plan. Please contact the admin for support.`,
         {
-          color: 'yellow',
+          color: 'red',
         },
       );
       return false;
