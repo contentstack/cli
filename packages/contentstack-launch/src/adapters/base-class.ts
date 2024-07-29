@@ -1,4 +1,3 @@
-import path from 'path';
 import open from 'open';
 import dotEnv from 'dotenv';
 import map from 'lodash/map';
