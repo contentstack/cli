@@ -67,6 +67,17 @@ export const setupEnvironments = async (
     .stack({ api_key: api_key })
     .managementToken()
     .create(managementBody);
+  if(!managementTokenResult.uid){
+    cliux.print(
+      `Info: Failed to generate a management token.\nNote: Management token is not available in your plan. Please contact the admin for support.`,
+      {
+        color: 'yellow',
+      },
+    );
+    if ((await continueBootstrapCommand()) === 'no') {
+      return;
+    }
+  } 
   }
   if (Array.isArray(environmentResult.items) && environmentResult.items.length > 0) {
     for (const environment of environmentResult.items) {
@@ -229,15 +240,13 @@ const envFileHandler = async (
       filePath = pathValidator(path.join(sanitizePath(clonedDirectory), sanitizePath(fileName)));
       content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${
         environmentVariables.deliveryToken
-      }\n${
+      }\nCONTENTSTACK_BRANCH=main${
         livePreviewEnabled
           ? `\nCONTENTSTACK_PREVIEW_TOKEN=${
               environmentVariables.preview_token || `''`
             }\nCONTENTSTACK_PREVIEW_HOST=${previewHost}\nCONTENTSTACK_APP_HOST=${appHost}\n`
           : '\n'
-      }CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\nCONTENTSTACK_API_HOST=${
-        customHost ? customHost : managementAPIHost
-      }${
+      }CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${
         !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
       }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\nCONTENTSTACK_LIVE_EDIT_TAGS=false\nCONTENTSTACK_API_HOST=${
         customHost ? customHost : managementAPIHost
