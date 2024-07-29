@@ -52,7 +52,7 @@ export default class Launch extends BaseCommand<typeof Launch> {
     'out-dir': Flags.string({
       description: '[Optional] Output Directory',
     }),
-    "variable-type": Flags.string({
+    'variable-type': Flags.string({
       options: [...config.variablePreparationTypeOptions],
       description: '[Optional] Choose the type of variables',
     }),
@@ -69,8 +69,9 @@ export default class Launch extends BaseCommand<typeof Launch> {
       char: 'a',
       description: '[Optional]Alias(name) for the delivery token',
     }),
-    "env-variables": Flags.string({
-      description: '[Optional] Provide the environment variables in the format of key:value separated by comma Ex:APP_ENV:prod, TEST_ENV:testVal',
+    'env-variables': Flags.string({
+      description:
+        '[Optional] Provide the environment variables in the format of key:value separated by comma Ex:APP_ENV:prod, TEST_ENV:testVal',
     }),
   };
 
