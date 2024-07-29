@@ -19,6 +19,8 @@ export default class Launch extends BaseCommand<typeof Launch> {
     '<%= config.bin %> <%= command.id %> --data-dir <path/of/current/working/dir> --type <options: GitHub|FileUpload>',
     '<%= config.bin %> <%= command.id %> --config <path/to/launch/config/file> --type <options: GitHub|FileUpload>',
     '<%= config.bin %> <%= command.id %> --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value>',
+    '<%= config.bin %> <%= command.id %> --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --variable-type="Import variables from a stack" --alias=<value>',
+    '<%= config.bin %> <%= command.id %> --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --variable-type="Manually add custom variables to the list" --env-variables="APP_ENV:prod, TEST_ENV:testVal"',
   ];
 
   static flags: FlagInput = {
@@ -50,6 +52,10 @@ export default class Launch extends BaseCommand<typeof Launch> {
     'out-dir': Flags.string({
       description: '[Optional] Output Directory',
     }),
+    "variable-type": Flags.string({
+      options: [...config.variablePreparationTypeOptions],
+      description: '[Optional] Choose the type of variables',
+    }),
     'show-variables': Flags.boolean({
       hidden: true,
       default: false,
@@ -58,6 +64,13 @@ export default class Launch extends BaseCommand<typeof Launch> {
     init: Flags.boolean({
       hidden: true,
       description: '[Optional, Hidden] Reinitialize the project if it is an existing launch project.',
+    }),
+    alias: Flags.string({
+      char: 'a',
+      description: '[Optional]Alias(name) for the delivery token',
+    }),
+    "env-variables": Flags.string({
+      description: '[Optional] Provide the environment variables in the format of key:value separated by comma Ex:APP_ENV:prod, TEST_ENV:testVal',
     }),
   };
 
