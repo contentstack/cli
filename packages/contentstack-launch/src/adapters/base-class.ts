@@ -1,3 +1,4 @@
+import path from 'path';
 import open from 'open';
 import dotEnv from 'dotenv';
 import map from 'lodash/map';
@@ -262,14 +263,19 @@ export default class BaseClass {
           this.log(error, 'error');
           this.exit(1);
         })) || [];
-    this.config.selectedStack = await ux
-      .inquire({
-        name: 'stack',
-        type: 'search-list',
-        choices: listOfStacks,
-        message: 'Stack',
-      })
-      .then((name) => find(listOfStacks, { name }));
+
+    if (this.config.selectedStack) {
+      this.config.selectedStack = find(listOfStacks, { api_key: this.config.selectedStack });
+    } else {
+      this.config.selectedStack = await ux
+        .inquire({
+          name: 'stack',
+          type: 'search-list',
+          choices: listOfStacks,
+          message: 'Stack',
+        })
+        .then((name) => find(listOfStacks, { name }));
+    }
   }
 
   /**
@@ -299,16 +305,19 @@ export default class BaseClass {
           this.exit(1);
         })) || [];
 
-    this.config.deliveryToken = await ux
-      .inquire({
-        type: 'search-list',
-        name: 'deliveryToken',
-        choices: listOfDeliveryTokens,
-        message: 'Delivery token',
-      })
-      .then((name) => find(listOfDeliveryTokens, { name }) as Record<string, any>);
-
-    this.config.environment = this.config.deliveryToken.scope[0]?.environments[0]?.name;
+    if (this.config.deliveryToken) {
+      this.config.deliveryToken = find(listOfDeliveryTokens, { token: this.config.deliveryToken });
+    } else {
+      this.config.deliveryToken = await ux
+        .inquire({
+          type: 'search-list',
+          name: 'deliveryToken',
+          choices: listOfDeliveryTokens,
+          message: 'Delivery token',
+        })
+        .then((name) => find(listOfDeliveryTokens, { name }) as Record<string, any>);
+    }
+    this.config.environment = this.config.deliveryToken?.scope[0]?.environments[0]?.name;
   }
 
   /**
@@ -321,38 +330,51 @@ export default class BaseClass {
     let addNew = true;
     const envVariables = [];
 
-    do {
-      const variable = await ux
-        .inquire({
-          type: 'input',
-          name: 'variable',
-          message:
-            'Enter key and value with a colon between them, and use a comma(,) for the key-value pair. Format: <key1>:<value1>, <key2>:<value2> Ex: APP_ENV:prod, TEST_ENV:testVal',
-        })
-        .then((variable) => {
-          return map(split(variable as string, ','), (variable) => {
-            let [key, value] = split(variable as string, ':');
-            value = (value || '').trim();
-            key = (key || '').trim();
+    if (!this.config.envVariables) {
+      do {
+        const variable = await ux
+          .inquire({
+            type: 'input',
+            name: 'variable',
+            message:
+              'Enter key and value with a colon between them, and use a comma(,) for the key-value pair. Format: <key1>:<value1>, <key2>:<value2> Ex: APP_ENV:prod, TEST_ENV:testVal',
+          })
+          .then((variable) => {
+            return map(split(variable as string, ','), (variable) => {
+              let [key, value] = split(variable as string, ':');
+              value = (value || '').trim();
+              key = (key || '').trim();
 
-            return { key, value };
-          }).filter(({ key }) => key);
+              return { key, value };
+            }).filter(({ key }) => key);
+          });
+
+        envVariables.push(...variable);
+
+        if (
+          !(await ux.inquire({
+            type: 'confirm',
+            name: 'canImportFromStack',
+            message: 'Would you like to add more variables?',
+          }))
+        ) {
+          addNew = false;
+        }
+      } while (addNew);
+
+      this.envVariables.push(...envVariables);
+    } else {
+      if (typeof this.config.envVariables === 'string') {
+        const variable = map(split(this.config.envVariables as string, ','), (variable) => {
+          let [key, value] = split(variable as string, ':');
+          value = (value || '').trim();
+          key = (key || '').trim();
+
+          return { key, value };
         });
-
-      envVariables.push(...variable);
-
-      if (
-        !(await ux.inquire({
-          type: 'confirm',
-          name: 'canImportFromStack',
-          message: 'Would you like to add more variables?',
-        }))
-      ) {
-        addNew = false;
+        this.envVariables.push(...variable);
       }
-    } while (addNew);
-
-    this.envVariables.push(...envVariables);
+    }
   }
 
   /**
@@ -492,19 +514,16 @@ export default class BaseClass {
    * @memberof BaseClass
    */
   async handleEnvImportFlow(): Promise<void> {
-    const variablePreparationTypeOptions = [
-      'Import variables from a stack',
-      'Manually add custom variables to the list',
-      'Import variables from the local env file',
-    ];
-    const variablePreparationType: Array<string> = await ux.inquire({
-      type: 'checkbox',
-      name: 'variablePreparationType',
-      default: this.config.framework,
-      choices: variablePreparationTypeOptions,
-      message: 'Import variables from a stack and/or manually add custom variables to the list',
-      // validate: this.inquireRequireValidation,
-    });
+    const variablePreparationType =
+      this.config.variableType ||
+      (await ux.inquire({
+        type: 'checkbox',
+        name: 'variablePreparationType',
+        default: this.config.framework,
+        choices: this.config.variablePreparationTypeOptions,
+        message: 'Import variables from a stack and/or manually add custom variables to the list',
+        // validate: this.inquireRequireValidation,
+      }));
 
     if (includes(variablePreparationType, 'Import variables from a stack')) {
       await this.importEnvFromStack();
@@ -519,8 +538,8 @@ export default class BaseClass {
     if (this.envVariables.length) {
       this.printAllVariables();
     } else {
-      this.log('Import variables from a stack and/or manually add custom variables to the list', 'warn');
-      // this.exit(1);
+      this.log('Please provide env file!', 'error');
+      this.exit(1);
     }
   }
 
@@ -533,10 +552,10 @@ export default class BaseClass {
   async importVariableFromLocalConfig(): Promise<void> {
     const localEnv =
       dotEnv.config({
-        path: this.config.projectBasePath,
+        path: `${this.config.projectBasePath}/.env.local`,
       }).parsed ||
       dotEnv.config({
-        path: `${this.config.projectBasePath}/.env.local`,
+        path: this.config.projectBasePath,
       }).parsed;
 
     if (!isEmpty(localEnv)) {
