@@ -1,21 +1,17 @@
-import map from "lodash/map";
-import { resolve } from "path";
-import omit from "lodash/omit";
-import find from "lodash/find";
-import split from "lodash/split";
-import { exec } from "child_process";
-import replace from "lodash/replace";
-import includes from "lodash/includes";
-import { cliux as ux } from "@contentstack/cli-utilities";
+import map from 'lodash/map';
+import { resolve } from 'path';
+import omit from 'lodash/omit';
+import find from 'lodash/find';
+import split from 'lodash/split';
+import { exec } from 'child_process';
+import replace from 'lodash/replace';
+import includes from 'lodash/includes';
+import { configHandler, cliux as ux } from '@contentstack/cli-utilities';
 
-import { print } from "../util";
-import BaseClass from "./base-class";
-import { getRemoteUrls } from "../util/create-git-meta";
-import {
-  repositoriesQuery,
-  userConnectionsQuery,
-  importProjectMutation,
-} from "../graphql";
+import { print } from '../util';
+import BaseClass from './base-class';
+import { getRemoteUrls } from '../util/create-git-meta';
+import { repositoriesQuery, userConnectionsQuery, importProjectMutation } from '../graphql';
 
 export default class GitHub extends BaseClass {
   /**
@@ -122,32 +118,38 @@ export default class GitHub extends BaseClass {
       name,
       framework,
       environment,
-      "build-command": buildCommand,
-      "output-directory": outputDirectory,
+      'build-command': buildCommand,
+      'out-dir': outputDirectory,
+      'variable-type': variableType,
+      'env-variables': envVariables,
+      alias,
     } = this.config.flags;
+    const { token, apiKey } = configHandler.get(`tokens.${alias}`) ?? {};
+    this.config.selectedStack = apiKey;
+    this.config.deliveryToken = token;
     await this.selectOrg();
     print([
-      { message: "?", color: "green" },
-      { message: "Repository", bold: true },
-      { message: this.config.repository?.fullName, color: "cyan" },
+      { message: '?', color: 'green' },
+      { message: 'Repository', bold: true },
+      { message: this.config.repository?.fullName, color: 'cyan' },
     ]);
     await this.selectBranch();
     this.config.projectName =
       name ||
       (await ux.inquire({
-        type: "input",
-        name: "projectName",
-        message: "Project Name",
+        type: 'input',
+        name: 'projectName',
+        message: 'Project Name',
         default: this.config.repository?.name,
         validate: this.inquireRequireValidation,
       }));
     this.config.environmentName =
       environment ||
       (await ux.inquire({
-        type: "input",
-        default: "Default",
-        name: "environmentName",
-        message: "Environment Name",
+        type: 'input',
+        default: 'Default',
+        name: 'environmentName',
+        message: 'Environment Name',
         validate: this.inquireRequireValidation,
       }));
     if (framework) {
@@ -157,9 +159,9 @@ export default class GitHub extends BaseClass {
         }) as Record<string, any>
       ).value as string;
       print([
-        { message: "?", color: "green" },
-        { message: "Framework Preset", bold: true },
-        { message: this.config.framework, color: "cyan" },
+        { message: '?', color: 'green' },
+        { message: 'Framework Preset', bold: true },
+        { message: this.config.framework, color: 'cyan' },
       ]);
     } else {
       await this.detectFramework();
@@ -175,13 +177,13 @@ export default class GitHub extends BaseClass {
     this.config.outputDirectory =
       outputDirectory ||
       (await ux.inquire({
-        type: "input",
-        name: "outputDirectory",
-        message: "Output Directory",
-        default: (this.config.outputDirectories as Record<string, string>)[
-          this.config?.framework || "OTHER"
-        ],
+        type: 'input',
+        name: 'outputDirectory',
+        message: 'Output Directory',
+        default: (this.config.outputDirectories as Record<string, string>)[this.config?.framework || 'OTHER'],
       }));
+    this.config.variableType = variableType as unknown as string;
+    this.config.envVariables = envVariables;
     await this.handleEnvImportFlow();
   }
 
@@ -201,17 +203,17 @@ export default class GitHub extends BaseClass {
     const userConnections = await this.apolloClient
       .query({ query: userConnectionsQuery })
       .then(({ data: { userConnections } }) => userConnections)
-      .catch((error) => this.log(error, "error"));
+      .catch((error) => this.log(error, 'error'));
 
     const userConnection = find(userConnections, {
       provider: this.config.provider,
     });
 
     if (userConnection) {
-      this.log("GitHub connection identified!", "info");
+      this.log('GitHub connection identified!', 'info');
       this.config.userConnection = userConnection;
     } else {
-      this.log("GitHub connection not found!", "warn");
+      this.log('GitHub connection not found!', 'warn');
       await this.connectToAdapterOnUi();
     }
 
@@ -228,21 +230,21 @@ export default class GitHub extends BaseClass {
     const localRemoteUrl = (await getRemoteUrls(resolve(this.config.projectBasePath, '.git/config')))?.origin || '';
 
     if (!localRemoteUrl) {
-      this.log("GitHub project not identified!", "error");
+      this.log('GitHub project not identified!', 'error');
       await this.connectToAdapterOnUi();
     }
 
     const repositories = await this.apolloClient
       .query({ query: repositoriesQuery })
       .then(({ data: { repositories } }) => repositories)
-      .catch((error) => this.log(error, "error"));
+      .catch((error) => this.log(error, 'error'));
 
     this.config.repository = find(repositories, {
-      url: replace(localRemoteUrl, ".git", ""),
+      url: replace(localRemoteUrl, '.git', ''),
     });
 
     if (!this.config.repository) {
-      this.log("Repository not found in the list!", "error");
+      this.log('Repository not found in the list!', 'error');
       this.exit(1);
     }
 
@@ -259,32 +261,26 @@ export default class GitHub extends BaseClass {
     return new Promise<boolean>((resolve, reject) => {
       const self = this;
       const defaultBranch = this.config.repository?.defaultBranch;
-      if (!defaultBranch) return reject("Branch not found");
+      if (!defaultBranch) return reject('Branch not found');
       exec(
         `git push -u origin ${defaultBranch} --dry-run`,
         { cwd: this.config.projectBasePath },
         function (err, stdout, stderr) {
           if (err) {
-            self.log(err, "error");
+            self.log(err, 'error');
           }
 
           if (
-            includes(stderr, "Everything up-to-date") &&
-            includes(
-              stdout,
-              `Would set upstream of '${defaultBranch}' to '${defaultBranch}' of 'origin'`
-            )
+            includes(stderr, 'Everything up-to-date') &&
+            includes(stdout, `Would set upstream of '${defaultBranch}' to '${defaultBranch}' of 'origin'`)
           ) {
-            self.log("User access verified", "info");
+            self.log('User access verified', 'info');
             return resolve(true);
           }
 
-          self.log(
-            "You do not have write access for the selected repo",
-            "error"
-          );
+          self.log('You do not have write access for the selected repo', 'error');
           self.exit(0);
-        }
+        },
       );
     });
   }
