@@ -184,9 +184,46 @@ export default class ContentModelSeeder {
     let count;
     const stack_details = await this.csClient.getStack(api_key);
     if(this.options.master_locale != stack_details.master_locale){
-        cliux.print(`Compass app requires the master locale to be set to English (en).`);
+        cliux.print(`Compass app requires the master locale to be set to English (en).`,{
+          color: "yellow",
+          bold: true,
+        });
         return false;
     }
+    const managementBody = {
+          "name":"Checking roles for creating management token",
+          "description":"This is a compass app management token.",
+          "scope":[
+              {
+                  "module":"content_type",
+                  "acl":{
+                      "read":true,
+                      "write":true
+                  }
+              },
+              {
+                  "module":"branch",
+                  "branches":[
+                      "main"
+                  ],
+                  "acl":{
+                      "read":true
+                  }
+              }
+          ],
+          "expires_on": "3000-01-01",
+          "is_email_notification_enabled":false
+      }
+    let managementTokenResult = await this.csClient.createManagementToken(api_key, this.managementToken, managementBody);
+    if(managementTokenResult?.response_code == "161" || managementTokenResult?.response_code == "401"){
+      cliux.print(
+        `Info: Failed to generate a management token.\nNote: Management token is not available in your plan. Please contact the admin for support.`,
+        {
+          color: 'red',
+        },
+      );
+      return false;
+    }    
     count = await this.csClient.getContentTypeCount(api_key, this.managementToken);
 
     if (count > 0 && this._options.skipStackConfirmation !== 'yes') {

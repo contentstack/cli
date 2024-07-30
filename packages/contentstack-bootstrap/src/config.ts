@@ -50,7 +50,7 @@ const config: Configuration = {
       stack: 'contentstack/stack-contentstack-angular-modularblock-example',
     },
     'compass-app': {
-      source: 'SunilLsagar/universal-demo',
+      source: 'SunilLsagar/universal-demo-latest',
       stack: 'SunilLsagar/stack-universal-demo-latest',
       master_locale: 'en',
     },
