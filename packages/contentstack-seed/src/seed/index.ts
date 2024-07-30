@@ -215,7 +215,7 @@ export default class ContentModelSeeder {
           "is_email_notification_enabled":false
       }
     let managementTokenResult = await this.csClient.createManagementToken(api_key, this.managementToken, managementBody);
-    if(managementTokenResult.response_code == "161" || managementTokenResult.response_code == "401"){
+    if(managementTokenResult?.response_code == "161" || managementTokenResult?.response_code == "401"){
       cliux.print(
         `Info: Failed to generate a management token.\nNote: Management token is not available in your plan. Please contact the admin for support.`,
         {
