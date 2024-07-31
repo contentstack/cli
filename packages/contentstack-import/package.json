@@ -1,13 +1,13 @@
 {
   "name": "@contentstack/cli-cm-import",
   "description": "Contentstack CLI plugin to import content into stack",
-  "version": "1.16.1",
+  "version": "1.16.2",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@contentstack/cli-audit": "~1.6.3",
-    "@contentstack/cli-command": "~1.2.18",
-    "@contentstack/cli-utilities": "~1.6.3",
+    "@contentstack/cli-command": "~1.2.19",
+    "@contentstack/cli-utilities": "~1.7.0",
     "@contentstack/management": "~1.15.3",
     "@oclif/core": "^3.26.5",
     "big-json": "^3.2.0",
@@ -21,7 +21,7 @@
     "mkdirp": "^1.0.4",
     "promise-limit": "^2.7.0",
     "tslib": "^2.4.1",
-    "uuid": "^9.0.0",
+    "uuid": "^9.0.1",
     "winston": "^3.7.2"
   },
   "devDependencies": {
