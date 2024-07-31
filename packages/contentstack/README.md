@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.20.1 darwin-arm64 node-v22.2.0
+@contentstack/cli/1.21.0 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -3220,8 +3220,9 @@ Launch related operations
 
 ```
 USAGE
-  $ csdx launch [--type GitHub|FileUpload] [--framework Gatsby|NextJs|Other] [--org <value>] [-n <value>]
-    [-e <value>] [--branch <value>] [--build-command <value>] [--out-dir <value>]
+  $ csdx launch [--type GitHub|FileUpload] [--framework Gatsby|NextJs|CRA (Create React App)|CSR
+    (Client-Side Rendered)|Angular|VueJs|Other] [--org <value>] [-n <value>] [-e <value>] [--branch <value>]
+    [--build-command <value>] [--out-dir <value>]
 
 FLAGS
   -e, --environment=<value>    [Optional] Environment name for the Launch project
@@ -3229,7 +3230,8 @@ FLAGS
       --branch=<value>         [Optional] GitHub branch name
       --build-command=<value>  [Optional] Build Command
       --framework=<option>     [Optional] Type of framework
-                               <options: Gatsby|NextJs|Other>
+                               <options: Gatsby|NextJs|CRA (Create React App)|CSR (Client-Side
+                               Rendered)|Angular|VueJs|Other>
       --org=<value>            [Optional] Provide the organization UID to create a new project or deployment
       --out-dir=<value>        [Optional] Output Directory
       --type=<option>          [Optional] Choose the type of adapters
