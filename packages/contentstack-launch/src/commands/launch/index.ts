@@ -54,7 +54,7 @@ export default class Launch extends BaseCommand<typeof Launch> {
     }),
     'variable-type': Flags.string({
       options: [...config.variablePreparationTypeOptions],
-      description: '[Optional] Choose the type of variables',
+      description: '[Optional] Provide a variable type.',
     }),
     'show-variables': Flags.boolean({
       hidden: true,
@@ -67,11 +67,11 @@ export default class Launch extends BaseCommand<typeof Launch> {
     }),
     alias: Flags.string({
       char: 'a',
-      description: '[Optional]Alias(name) for the delivery token',
+      description: '[Optional] Alias(name) for the delivery token',
     }),
     'env-variables': Flags.string({
       description:
-        '[Optional] Provide the environment variables in the format of key:value separated by comma Ex:APP_ENV:prod, TEST_ENV:testVal',
+        '[Optional] Provide the environment variables in the key:value format, separated by comma Ex:APP_ENV:prod, TEST_ENV:testVal',
     }),
   };
 
