@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.21.0 darwin-arm64 node-v22.2.0
+@contentstack/cli/1.21.1 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -3223,20 +3223,27 @@ Launch related operations
 USAGE
   $ csdx launch [--type GitHub|FileUpload] [--framework Gatsby|NextJs|CRA (Create React App)|CSR
     (Client-Side Rendered)|Angular|VueJs|Other] [--org <value>] [-n <value>] [-e <value>] [--branch <value>]
-    [--build-command <value>] [--out-dir <value>]
+    [--build-command <value>] [--out-dir <value>] [--variable-type Import variables from a stack|Manually add custom
+    variables to the list|Import variables from the local env file] [-a <value>] [--env-variables <value>]
 
 FLAGS
-  -e, --environment=<value>    [Optional] Environment name for the Launch project
-  -n, --name=<value>           [Optional] Name of the project
-      --branch=<value>         [Optional] GitHub branch name
-      --build-command=<value>  [Optional] Build Command
-      --framework=<option>     [Optional] Type of framework
-                               <options: Gatsby|NextJs|CRA (Create React App)|CSR (Client-Side
-                               Rendered)|Angular|VueJs|Other>
-      --org=<value>            [Optional] Provide the organization UID to create a new project or deployment
-      --out-dir=<value>        [Optional] Output Directory
-      --type=<option>          [Optional] Choose the type of adapters
-                               <options: GitHub|FileUpload>
+  -a, --alias=<value>           [Optional]Alias(name) for the delivery token
+  -e, --environment=<value>     [Optional] Environment name for the Launch project
+  -n, --name=<value>            [Optional] Name of the project
+      --branch=<value>          [Optional] GitHub branch name
+      --build-command=<value>   [Optional] Build Command
+      --env-variables=<value>   [Optional] Provide the environment variables in the format of key:value separated by
+                                comma Ex:APP_ENV:prod, TEST_ENV:testVal
+      --framework=<option>      [Optional] Type of framework
+                                <options: Gatsby|NextJs|CRA (Create React App)|CSR (Client-Side
+                                Rendered)|Angular|VueJs|Other>
+      --org=<value>             [Optional] Provide the organization UID to create a new project or deployment
+      --out-dir=<value>         [Optional] Output Directory
+      --type=<option>           [Optional] Choose the type of adapters
+                                <options: GitHub|FileUpload>
+      --variable-type=<option>  [Optional] Choose the type of variables
+                                <options: Import variables from a stack|Manually add custom variables to the list|Import
+                                variables from the local env file>
 
 DESCRIPTION
   Launch related operations
@@ -3255,6 +3262,10 @@ EXAMPLES
   $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload>
 
   $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value>
+
+  $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --variable-type="Import variables from a stack" --alias=<value>
+
+  $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --variable-type="Manually add custom variables to the list" --env-variables="APP_ENV:prod, TEST_ENV:testVal"
 ```
 
 _See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/src/commands/launch/index.ts)_
@@ -3499,7 +3510,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.3/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.9/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:add PLUGIN`
 
@@ -3575,6 +3586,7 @@ EXAMPLES
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.3/src/commands/plugins/inspect.ts)_
 
+
 ## `csdx plugins:install PLUGIN`
 
 Installs a plugin into csdx.
@@ -3624,6 +3636,7 @@ EXAMPLES
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.3/src/commands/plugins/install.ts)_
 
+
 ## `csdx plugins:link PATH`
 
 Links a plugin into the CLI for development.
@@ -3653,6 +3666,7 @@ EXAMPLES
 ```
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.3/src/commands/plugins/link.ts)_
+
 
 ## `csdx plugins:remove [PLUGIN]`
 
