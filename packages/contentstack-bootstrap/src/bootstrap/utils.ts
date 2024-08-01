@@ -189,7 +189,7 @@ const envFileHandler = async (
   const managementAPIHost = region?.cma?.substring('8');
   const regionName = region && region.name && region.name.toLowerCase();
   previewHost = region?.uiHost?.substring(8)?.replace('app', 'rest-preview');
-  const cdnHost = region?.uiHost?.substring(8)?.replace('app', 'cdn');
+  const cdnHost = region?.cda?.substring('8');
   appHost = region?.uiHost?.substring(8);
   const isUSRegion = regionName === 'us' || regionName === 'na';
   if (regionName !== 'eu' && !isUSRegion) {
@@ -244,7 +244,7 @@ const envFileHandler = async (
         livePreviewEnabled
           ? `\nCONTENTSTACK_PREVIEW_TOKEN=${
               environmentVariables.preview_token || `''`
-            }\nCONTENTSTACK_PREVIEW_HOST=${previewHost}\nCONTENTSTACK_APP_HOST=${appHost}\n`
+            }\nCONTENTSTACK_PREVIEW_HOST=${previewHost}\n`
           : '\n'
       }CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${
         !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
