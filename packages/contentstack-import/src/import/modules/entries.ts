@@ -24,6 +24,7 @@ import {
 } from '../../utils';
 import { ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
+import * as fs from 'fs';
 
 export default class EntriesImport extends BaseClass {
   private assetUidMapperPath: string;
@@ -68,11 +69,25 @@ export default class EntriesImport extends BaseClass {
     this.entriesUIDMapperPath = path.join(sanitizePath(this.entriesMapperPath), 'uid-mapping.json');
     this.uniqueUidMapperPath = path.join(sanitizePath(this.entriesMapperPath), 'unique-mapping.json');
     this.modifiedCTsPath = path.join(sanitizePath(this.entriesMapperPath), 'modified-schemas.json');
-    this.marketplaceAppMapperPath = path.join(sanitizePath(this.importConfig.data), 'mapper', 'marketplace_apps', 'uid-mapping.json');
-    this.taxonomiesPath = path.join(sanitizePath(this.importConfig.data), 'mapper', 'taxonomies', 'terms', 'success.json');
+    this.marketplaceAppMapperPath = path.join(
+      sanitizePath(this.importConfig.data),
+      'mapper',
+      'marketplace_apps',
+      'uid-mapping.json',
+    );
+    this.taxonomiesPath = path.join(
+      sanitizePath(this.importConfig.data),
+      'mapper',
+      'taxonomies',
+      'terms',
+      'success.json',
+    );
     this.entriesConfig = importConfig.modules.entries;
     this.entriesPath = path.resolve(sanitizePath(importConfig.data), sanitizePath(this.entriesConfig.dirName));
-    this.cTsPath = path.resolve(sanitizePath(importConfig.data), sanitizePath(importConfig.modules['content-types'].dirName));
+    this.cTsPath = path.resolve(
+      sanitizePath(importConfig.data),
+      sanitizePath(importConfig.modules['content-types'].dirName),
+    );
     this.localesPath = path.resolve(
       sanitizePath(importConfig.data),
       sanitizePath(importConfig.modules.locales.dirName),
@@ -947,11 +962,53 @@ export default class EntriesImport extends BaseClass {
           requestObject.locales.push(pubObject.locale);
         }
       });
+      // NOTE: We added this condition to prevent the error
+      // localised Localised entries can not be published from master locale.
+      // If the entry locale is one of the locale that will be sent during the publishing then sent the locales as it is
+      // Else Check for all the lcoales that are being sent for publishng whether the entries are present in the respective locale
+      // The old entry uid is used for that
+      // If it's present then publish the entry from that locale.
+      if (!requestObject.locales.includes(entry.locale)) {
+        this.checkAndRemoveLocales(entry, requestObject, additionalInfo.cTUid);
+      }
+      if (!requestObject.locales.length) {
+        log(
+          this.importConfig,
+          `The entry uid ${entry.uid} is localised into all the locales`,
+          'error',
+        );
+        apiOptions.apiData = null;
+        return apiOptions;
+      }
     } else {
       apiOptions.apiData = null;
       return apiOptions;
     }
     apiOptions.apiData = requestObject;
     return apiOptions;
+  }
+  checkAndRemoveLocales(entry: any, requestObject: any, ctUid: string) {
+    for (const locale of requestObject.locales) {
+      const indexFilePath = path.join(this.entriesPath, ctUid, locale, 'index.json');
+      const indexFile = JSON.parse(fs.readFileSync(indexFilePath, 'utf-8'));
+      for (const file of Object.values(indexFile)) {
+        const entriesFilePath = path.join(this.entriesPath, ctUid, locale, file as string);
+        const entries = Object.keys(JSON.parse(fs.readFileSync(entriesFilePath, 'utf-8')));
+        if (entries.includes(entry.uid)) {
+          log(
+            this.importConfig,
+            `The entry uid '${entry.uid}' is localised into locale '${locale}' hence removing from publish`,
+            'error',
+          );
+          requestObject.locales.splice(requestObject.locales.indexOf(locale), 1);
+        } else {
+          log(
+            this.importConfig,
+            `The entry uid '${entry.uid}' is not localised into locale '${locale}' hence not removing from publish`,
+            'error',
+          );
+        }
+      }
+    }
   }
 }
