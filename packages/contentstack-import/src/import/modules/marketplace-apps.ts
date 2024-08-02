@@ -19,7 +19,7 @@ import {
 } from '@contentstack/cli-utilities';
 
 import { trace } from '../../utils/log';
-import { askEncryptionKey, getAppName } from '../../utils/interactive';
+import { askEncryptionKey, getLocationName } from '../../utils/interactive';
 import { ModuleClassParams, MarketplaceAppsConfig, ImportConfig, Installation, Manifest } from '../../types';
 import {
   log,
@@ -51,6 +51,7 @@ export default class ImportMarketplaceApps {
   public developerHubBaseUrl: string;
   public nodeCrypto: NodeCrypto;
   public appSdk: ContentstackMarketplaceClient;
+  public existingNames: Set<string>;
 
   constructor({ importConfig }: ModuleClassParams) {
     this.importConfig = importConfig;
@@ -63,6 +64,7 @@ export default class ImportMarketplaceApps {
     this.appOriginalName = undefined;
     this.installedApps = [];
     this.installationUidMapping = {};
+    this.existingNames = new Set<string>();
   }
 
   /**
@@ -346,7 +348,7 @@ export default class ImportMarketplaceApps {
       if (location.meta) {
         location.meta = map(location.meta, (meta) => {
           if (meta.name && this.appOriginalName == meta.name) {
-            const name = getAppName(first(split(meta.name, '◈')), appSuffix);
+            const name = getLocationName(first(split(meta.name, '◈')), appSuffix, this.existingNames);
 
             if (!this.appNameMapping[this.appOriginalName]) {
               this.appNameMapping[this.appOriginalName] = name;
@@ -354,7 +356,7 @@ export default class ImportMarketplaceApps {
 
             meta.name = name;
           } else if (meta.name) {
-            meta.name = getAppName(first(split(meta.name, '◈')), appSuffix + (+index + 1));
+            meta.name = getLocationName(first(split(meta.name, '◈')), appSuffix + (+index + 1), this.existingNames);
           }
 
           return meta;
