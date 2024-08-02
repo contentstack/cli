@@ -18,7 +18,7 @@ importers:
       '@contentstack/cli-cm-clone': ~1.10.7
       '@contentstack/cli-cm-export': ~1.11.6
       '@contentstack/cli-cm-export-to-csv': ~1.7.2
-      '@contentstack/cli-cm-import': ~1.16.2
+      '@contentstack/cli-cm-import': ~1.16.3
       '@contentstack/cli-cm-migrate-rte': ~1.4.18
       '@contentstack/cli-cm-seed': ~1.7.7
       '@contentstack/cli-command': ~1.2.19
@@ -424,7 +424,7 @@ importers:
     specifiers:
       '@colors/colors': ^1.5.0
       '@contentstack/cli-cm-export': ~1.11.6
-      '@contentstack/cli-cm-import': ~1.16.2
+      '@contentstack/cli-cm-import': ~1.16.3
       '@contentstack/cli-command': ~1.2.19
       '@contentstack/cli-utilities': ~1.7.0
       '@oclif/test': ^2.5.6
@@ -990,7 +990,7 @@ importers:
 
   packages/contentstack-seed:
     specifiers:
-      '@contentstack/cli-cm-import': ~1.16.2
+      '@contentstack/cli-cm-import': ~1.16.3
       '@contentstack/cli-command': ~1.2.19
       '@contentstack/cli-utilities': ~1.7.0
       '@oclif/plugin-help': ^5.1.19
