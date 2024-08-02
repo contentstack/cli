@@ -53,6 +53,29 @@ export const getAppName= (name: string, appSuffix = 1) => {
   return name;
 }
 
+export const getLocationName= (name: string, appSuffix = 1, existingNames: Set<string>) => {
+  const maxLength = 50;
+  const suffixLength = appSuffix.toString().length + 1; // +1 for the '◈' character
+
+  let truncatedName = name;
+  if (name.length + suffixLength > maxLength) {
+    truncatedName = name.slice(0, maxLength - suffixLength);
+  }
+
+  let newName = `${first(split(truncatedName, '◈'))}◈${appSuffix}`;
+
+  // Ensure uniqueness
+  while (existingNames.has(newName)) {
+    appSuffix++;
+    newName = `${first(split(truncatedName, '◈'))}◈${appSuffix}`;
+  }
+
+  // Add the new name to the set of existing names
+  existingNames.add(newName);
+
+  return newName;
+}
+
 const validateAppName =(name: string ) =>{
   if (name.length < 3 || name.length > 20) {
     return 'The app name should be within 3-20 characters long.';
