@@ -58,6 +58,7 @@ export default class EntriesImport extends BaseClass {
   public taxonomies: Record<string, unknown>;
   public rteCTs: any;
   public rteCTsWithRef: any;
+  private entryLocaleMapper: Record<string, any>;
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -68,11 +69,25 @@ export default class EntriesImport extends BaseClass {
     this.entriesUIDMapperPath = path.join(sanitizePath(this.entriesMapperPath), 'uid-mapping.json');
     this.uniqueUidMapperPath = path.join(sanitizePath(this.entriesMapperPath), 'unique-mapping.json');
     this.modifiedCTsPath = path.join(sanitizePath(this.entriesMapperPath), 'modified-schemas.json');
-    this.marketplaceAppMapperPath = path.join(sanitizePath(this.importConfig.data), 'mapper', 'marketplace_apps', 'uid-mapping.json');
-    this.taxonomiesPath = path.join(sanitizePath(this.importConfig.data), 'mapper', 'taxonomies', 'terms', 'success.json');
+    this.marketplaceAppMapperPath = path.join(
+      sanitizePath(this.importConfig.data),
+      'mapper',
+      'marketplace_apps',
+      'uid-mapping.json',
+    );
+    this.taxonomiesPath = path.join(
+      sanitizePath(this.importConfig.data),
+      'mapper',
+      'taxonomies',
+      'terms',
+      'success.json',
+    );
     this.entriesConfig = importConfig.modules.entries;
     this.entriesPath = path.resolve(sanitizePath(importConfig.data), sanitizePath(this.entriesConfig.dirName));
-    this.cTsPath = path.resolve(sanitizePath(importConfig.data), sanitizePath(importConfig.modules['content-types'].dirName));
+    this.cTsPath = path.resolve(
+      sanitizePath(importConfig.data),
+      sanitizePath(importConfig.modules['content-types'].dirName),
+    );
     this.localesPath = path.resolve(
       sanitizePath(importConfig.data),
       sanitizePath(importConfig.modules.locales.dirName),
@@ -89,6 +104,7 @@ export default class EntriesImport extends BaseClass {
     this.failedEntries = [];
     this.rteCTs = [];
     this.rteCTsWithRef = [];
+    this.entryLocaleMapper = {};
   }
 
   async start(): Promise<any> {
@@ -898,6 +914,8 @@ export default class EntriesImport extends BaseClass {
 
       if (chunk) {
         let apiContent = values(chunk as Record<string, any>[]);
+        const eUid = Object.keys(chunk);
+        await this.createEntryLocaleMapper(cTUid, eUid, locale);
         await this.makeConcurrentCall({
           apiContent,
           processName,
@@ -944,14 +962,56 @@ export default class EntriesImport extends BaseClass {
           requestObject.environments.push(this.envs[pubObject.environment].name);
         }
         if (pubObject.locale && indexOf(requestObject.locales, pubObject.locale) === -1) {
-          requestObject.locales.push(pubObject.locale);
+          if (this.entryLocaleMapper[requestObject.entryUid]) {
+            if (
+              this.entryLocaleMapper[requestObject.entryUid].includes(pubObject.locale) &&
+              pubObject.locale !== additionalInfo.locale
+            ) {
+              log(
+                this.importConfig,
+                `Removing the publishing locale ${pubObject.locale} from entry ${requestObject.entryUid} of content-type ${additionalInfo.cTUid}`,
+                'error',
+              );
+            } else {
+              requestObject.locales.push(pubObject.locale);
+            }
+          }else{
+            log(
+              this.importConfig,
+              `There are no locale for the entry ${requestObject.entryUid} for content-type ${additionalInfo.cTUid}`,
+              'error',
+            );
+          }
         }
       });
+      if (!requestObject.locales.length) {
+        apiOptions.apiData = null;
+        return apiOptions;
+      }
     } else {
       apiOptions.apiData = null;
       return apiOptions;
     }
     apiOptions.apiData = requestObject;
     return apiOptions;
+  }
+
+  async createEntryLocaleMapper(ctUid: string, entryUid: string[], entryLocale: string) {
+    for (let i = 0; i < entryUid.length; i++) {
+      let elocales: string[] = [];
+      let eUid = this.entriesUidMapper[entryUid[i]];
+      if (!eUid) {
+        continue;
+      }
+      if (!this.entryLocaleMapper[eUid]) {
+        const localesArray: any = await this.stack.contentType(ctUid).entry(eUid).locales();
+        localesArray.locales?.forEach((locale: Record<string, string>) => {
+          if (locale?.localized) {
+            elocales.push(locale.code);
+          }
+        });
+        this.entryLocaleMapper[eUid] = elocales;
+      }
+    }
   }
 }
