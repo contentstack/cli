@@ -374,7 +374,7 @@ export default abstract class BaseClass {
           .entry(apiData.entryUid)
           .publish({
             publishDetails: { environments: apiData.environments, locales: apiData.locales },
-            locale: apiData.locale,
+            locale: additionalInfo.locale,
           })
           .then(onSuccess)
           .catch(onReject);
