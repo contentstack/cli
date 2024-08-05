@@ -920,28 +920,24 @@ export default class EntriesImport extends BaseClass {
             apiContentDuplicate.push(c2);
           });
         });
-        const promises = apiContentDuplicate.map(async (content: any, index: any) => {
-          const apiContent = [content];
-          await this.makeConcurrentCall({
-            apiContent,
-            processName,
-            indexerCount,
-            currentIndexer: +index,
-            apiParams: {
-              reject: onReject,
-              resolve: onSuccess,
-              entity: 'publish-entries',
-              includeParamOnCompletion: true,
-              serializeData: this.serializePublishEntries.bind(this),
-              additionalInfo: { contentType, locale: content?.locale, cTUid },
-            },
-            concurrencyLimit: this.importConcurrency,
-          }).then(() => {
-            log(this.importConfig, `Published entries for content type ${cTUid} in locale ${locale}`, 'success');
-          });
+        apiContent = apiContentDuplicate;
+        await this.makeConcurrentCall({
+          apiContent,
+          processName,
+          indexerCount,
+          currentIndexer: +index,
+          apiParams: {
+            reject: onReject,
+            resolve: onSuccess,
+            entity: 'publish-entries',
+            includeParamOnCompletion: true,
+            serializeData: this.serializePublishEntries.bind(this),
+            additionalInfo: { contentType, locale, cTUid },
+          },
+          concurrencyLimit: this.importConcurrency,
+        }).then(() => {
+          log(this.importConfig, `Published entries for content type ${cTUid} in locale ${locale}`, 'success');
         });
-        // Using Promise.all to handle all promises concurrently
-        await Promise.all(promises);
       }
     }
   }
