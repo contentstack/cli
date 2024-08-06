@@ -30,7 +30,7 @@ const config: Configuration = {
     { displayName: 'Vue JS', configKey: 'vue-starter' },
     { displayName: 'Stencil', configKey: 'stencil-starter' },
     { displayName: 'Nuxt3', configKey: 'nuxt3-starter' },
-    { displayName: 'Compass App', configKey: 'compass-app' }
+    // { displayName: 'Compass App', configKey: 'compass-app' }
   ],
   appLevelConfig: {
     nextjs: {
