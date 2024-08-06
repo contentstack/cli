@@ -6,7 +6,7 @@ import FormData from 'form-data';
 import filter from 'lodash/filter';
 import includes from 'lodash/includes';
 import { basename, resolve } from 'path';
-import { cliux, ux } from '@contentstack/cli-utilities';
+import { cliux, configHandler, ux } from '@contentstack/cli-utilities';
 import { createReadStream, existsSync, PathLike, statSync } from 'fs';
 
 import { print } from '../util';
@@ -110,9 +110,14 @@ export default class FileUpload extends BaseClass {
       framework,
       environment,
       'build-command': buildCommand,
-      'output-directory': outputDirectory,
+      'out-dir': outputDirectory,
+      'variable-type': variableType,
+      'env-variables': envVariables,
+      alias,
     } = this.config.flags;
-
+    const { token, apiKey } = configHandler.get(`tokens.${alias}`) ?? {};
+    this.config.selectedStack = apiKey;
+    this.config.deliveryToken = token;
     // this.fileValidation();
     await this.selectOrg();
     await this.createSignedUploadUrl();
@@ -166,6 +171,8 @@ export default class FileUpload extends BaseClass {
         message: 'Output Directory',
         default: (this.config.outputDirectories as Record<string, string>)[this.config?.framework || 'OTHER'],
       }));
+    this.config.variableType = variableType as unknown as string;
+    this.config.envVariables = envVariables;
     await this.handleEnvImportFlow();
   }
 
