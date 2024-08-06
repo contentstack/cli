@@ -40,6 +40,12 @@ const config = {
   supportedAdapters: ['GitHub'],
   deploymentStatus: ['LIVE', 'FAILED', 'SKIPPED', 'DEPLOYED'],
   pollingInterval: 1000,
+  variablePreparationTypeOptions: [
+    'Import variables from a stack',
+    'Manually add custom variables to the list',
+    'Import variables from the local env file',
+  ],
+  variableType: ''
 };
 
-export default config
+export default config;
