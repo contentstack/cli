@@ -374,7 +374,7 @@ export default abstract class BaseClass {
           .entry(apiData.entryUid)
           .publish({
             publishDetails: { environments: apiData.environments, locales: apiData.locales },
-            locale: additionalInfo.locale,
+            locale: apiData.locales[0],
           })
           .then(onSuccess)
           .catch(onReject);
@@ -395,7 +395,7 @@ export default abstract class BaseClass {
           .then(onSuccess)
           .catch(onReject);
       case 'import-taxonomy':
-        if(!apiData || !apiData.filePath){
+        if (!apiData || !apiData.filePath) {
           return Promise.resolve();
         }
         return this.stack.taxonomy(uid).import({ taxonomy: apiData.filePath }).then(onSuccess).catch(onReject);
