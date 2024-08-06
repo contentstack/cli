@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.21.1 darwin-arm64 node-v22.2.0
+@contentstack/cli/1.21.2 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -3227,13 +3227,13 @@ USAGE
     variables to the list|Import variables from the local env file] [-a <value>] [--env-variables <value>]
 
 FLAGS
-  -a, --alias=<value>           [Optional]Alias(name) for the delivery token
+  -a, --alias=<value>           [Optional] Alias(name) for the delivery token
   -e, --environment=<value>     [Optional] Environment name for the Launch project
   -n, --name=<value>            [Optional] Name of the project
       --branch=<value>          [Optional] GitHub branch name
       --build-command=<value>   [Optional] Build Command
-      --env-variables=<value>   [Optional] Provide the environment variables in the format of key:value separated by
-                                comma Ex:APP_ENV:prod, TEST_ENV:testVal
+      --env-variables=<value>   [Optional] Provide the environment variables in the key:value format, separated by comma
+                                Ex:APP_ENV:prod, TEST_ENV:testVal
       --framework=<option>      [Optional] Type of framework
                                 <options: Gatsby|NextJs|CRA (Create React App)|CSR (Client-Side
                                 Rendered)|Angular|VueJs|Other>
@@ -3241,7 +3241,7 @@ FLAGS
       --out-dir=<value>         [Optional] Output Directory
       --type=<option>           [Optional] Choose the type of adapters
                                 <options: GitHub|FileUpload>
-      --variable-type=<option>  [Optional] Choose the type of variables
+      --variable-type=<option>  [Optional] Provide a variable type.
                                 <options: Import variables from a stack|Manually add custom variables to the list|Import
                                 variables from the local env file>
 
@@ -3510,7 +3510,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.9/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.0/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:add PLUGIN`
 
@@ -3584,7 +3584,9 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
+
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.3/src/commands/plugins/inspect.ts)_
+
 
 
 ## `csdx plugins:install PLUGIN`
@@ -3634,7 +3636,9 @@ EXAMPLES
     $ csdx plugins:install someuser/someplugin
 ```
 
+
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.3/src/commands/plugins/install.ts)_
+
 
 
 ## `csdx plugins:link PATH`
@@ -3666,6 +3670,7 @@ EXAMPLES
 ```
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.3/src/commands/plugins/link.ts)_
+
 
 
 ## `csdx plugins:remove [PLUGIN]`
@@ -3708,6 +3713,7 @@ FLAGS
 ```
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.3/src/commands/plugins/reset.ts)_
+
 
 ## `csdx plugins:uninstall [PLUGIN]`
 
