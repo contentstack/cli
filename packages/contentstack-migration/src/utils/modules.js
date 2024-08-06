@@ -74,6 +74,8 @@ function executeShellCommand(command, directory = '') {
       const [cmd, ...args] = command.split(' ');
       execFileSync(cmd, args, { stdio: 'inherit', cwd: directory });
       console.log(`Command executed successfully: ${command}`);
+    } else {
+      console.log(`Command should only be 'npm i <package-name>'`);
     }
   } catch (error) {
     console.error(`Command execution failed. Error: ${error.message}`);
