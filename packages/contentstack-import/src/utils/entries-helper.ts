@@ -203,51 +203,20 @@ export const lookupEntries = function (
 
   uids = _.uniq(uids);
   let entry = JSON.stringify(data.entry);
-
-  //Note: Use this in case prod breaks
-  // uids?.forEach(function (uid: any) {
-  //   if (mappedUids.hasOwnProperty(uid)) {
-  //     const sanitizedUid = escapeRegExp(uid);
-  //     const escapedMappedUid = escapeRegExp(mappedUids[uid]);
-  //     const uidRegex = new RegExp(`\\b${sanitizedUid}\\b`, 'img');
-  //     let { status } = validateRegex(uidRegex);
-  //     if (status === 'safe') {
-  //       entry = entry.replace(uidRegex, escapedMappedUid);
-  //       mapped.push(uid);
-  //     }
-  //   } else {
-  //     unmapped.push(uid);
-  //   }
-  // });
-  
   uids?.forEach(function (uid: any) {
     if (mappedUids.hasOwnProperty(uid)) {
       const sanitizedUid = escapeRegExp(uid);
       const escapedMappedUid = escapeRegExp(mappedUids[uid]);
-      let index = entry.indexOf(sanitizedUid);
-      while (index !== -1) {
-        if ((index === 0 || !isWordCharacter(entry.charAt(index - 1))) &&
-            (index + sanitizedUid.length === entry.length || !isWordCharacter(entry.charAt(index + sanitizedUid.length)))) {
-          entry = entry.substring(0, index) + escapedMappedUid + entry.substring(index + sanitizedUid.length);
-          index += escapedMappedUid.length;  
-        } else {
-          index += sanitizedUid.length;  
-        }
-        index = entry.indexOf(sanitizedUid, index); 
+      const uidRegex = new RegExp(`\\b${sanitizedUid}\\b`, 'img');
+      let { status } = validateRegex(uidRegex);
+      if (status === 'safe') {
+        entry = entry.replace(uidRegex, escapedMappedUid);
+        mapped.push(uid);
       }
-      mapped.push(uid);
     } else {
       unmapped.push(uid);
     }
   });
-  // Note: Delete when prod breaks
-  function escapeRegExp(str:string) {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  }
-  
-  function isWordCharacter(char:string) {
-    return /[a-zA-Z0-9_]/.test(char);
-  }
 
   if (unmapped.length > 0) {
     let unmappedUids = fileHelper.readFileSync(path.join(uidMapperPath, 'unmapped-uids.json'));
@@ -613,9 +582,8 @@ export const restoreJsonRteEntryRefs = (
 
 function updateUids(str: string, match: string, uidMapper: Record<string, string>) {
   const sanitizedMatch = escapeRegExp(match);
-  const parts = str.split(sanitizedMatch);
-  let result = parts.join(uidMapper[match] || sanitizedMatch);
-  return result;
+  const replacement = uidMapper[match] ?? sanitizedMatch;
+  return str.split(sanitizedMatch).join(replacement);
 }
 
 function setDirtyTrue(jsonRteChild: any) {
