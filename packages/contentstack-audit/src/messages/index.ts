@@ -1,5 +1,4 @@
 import memoize from 'lodash/memoize';
-import { escapeRegExp, validateRegex } from '@contentstack/cli-utilities';
 
 const errors = {};
 
@@ -47,7 +46,7 @@ const auditFixMsg = {
   AUDIT_FIX_CMD_DESCRIPTION: 'Perform audits and fix possible errors in the exported Contentstack data.',
   WF_FIX_MSG: 'Successfully removed the workflow {uid} named {name}.',
   ENTRY_MANDATORY_FIELD_FIX: `Removing the publish details from the entry with UID '{uid}' in Locale '{locale}'...`,
-  ENTRY_SELECT_FIELD_FIX: `Adding the value '{value}' in the select field of entry UID '{uid}'...`
+  ENTRY_SELECT_FIELD_FIX: `Adding the value '{value}' in the select field of entry UID '{uid}'...`,
 };
 
 const messages: typeof errors &
@@ -76,7 +75,7 @@ function $t(msg: string, args: Record<string, string>): string {
     if (!msg) return '';
 
     for (const key of Object.keys(args)) {
-      const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const placeholder = `{${escapedKey}}`;
       msg = msg.split(placeholder).join(args[key]);
     }
