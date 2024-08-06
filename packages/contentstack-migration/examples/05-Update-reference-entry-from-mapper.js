@@ -75,13 +75,10 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
     let oldUids = Object.keys(uidMapping);
     matches.forEach((m) => {
       if (oldUids.includes(m)) {
-        let sanitizedUid = m; 
-        let { status } = validateRegex(regex);
-        if (status === 'safe') {
-          stringifiedEntry = stringifiedEntry.split(sanitizedUid).join(uisdMapping[sanitizedUid]);
-          console.log(chalk.green(`Replacing the UID '${m}' with '${uidMapping[m]}'...`));
-          isUpdated = true;
-        }
+        let sanitizedUid = m;
+        stringifiedEntry = stringifiedEntry.split(sanitizedUid).join(uisdMapping[sanitizedUid]);
+        console.log(chalk.green(`Replacing the UID '${m}' with '${uidMapping[m]}'...`));
+        isUpdated = true;
       }
     });
     return { stringifiedEntry, isUpdated };
