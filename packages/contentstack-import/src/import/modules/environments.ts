@@ -45,7 +45,7 @@ export default class ImportEnvironments extends BaseClass {
         unknown
       >;
     } else {
-      log(this.importConfig, `No such file or directory - '${this.environmentsFolderPath}'`, 'error');
+      log(this.importConfig, `No Environments Found - '${this.environmentsFolderPath}'`, 'info');
       return;
     }
 
