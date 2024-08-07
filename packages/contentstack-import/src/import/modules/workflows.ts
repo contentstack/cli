@@ -54,7 +54,7 @@ export default class ImportWorkflows extends BaseClass {
         unknown
       >;
     } else {
-      log(this.importConfig, `No such file or directory - '${this.workflowsFolderPath}'`, 'error');
+      log(this.importConfig, `No Workflows Found - '${this.workflowsFolderPath}'`, 'info');
       return;
     }
 
