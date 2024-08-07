@@ -89,7 +89,9 @@ export const lookupEntries = function (
         } else {
           const key = _parent[j];
           if (Object.prototype.hasOwnProperty.call(_entry, key)) {
-            _entry = _entry[key];
+            const tempEntry = Object.create(null);
+            _.merge(tempEntry, _entry);
+            _entry = tempEntry[key];
             let _keys = _.clone(_parent).splice(j + 1, len);
             if (Array.isArray(_entry)) {
               for (let i = 0, _i = _entry?.length; i < _i; i++) {
@@ -580,9 +582,8 @@ export const restoreJsonRteEntryRefs = (
 
 function updateUids(str: string, match: string, uidMapper: Record<string, string>) {
   const sanitizedMatch = escapeRegExp(match);
-  const regex = new RegExp(`\\b${sanitizedMatch}\\b`, 'g');
-  let { status } = validateRegex(regex);
-  if (status === 'safe') return str.replace(regex, (matchedString) => uidMapper[matchedString]);
+  const replacement = uidMapper[match] ?? sanitizedMatch;
+  return str.split(sanitizedMatch).join(replacement);
 }
 
 function setDirtyTrue(jsonRteChild: any) {
