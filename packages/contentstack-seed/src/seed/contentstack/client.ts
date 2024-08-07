@@ -16,11 +16,31 @@ export interface Stack {
   org_uid: string;
 }
 
+export interface ManagementToken {
+  response_code: string;
+  response_message: string;
+}
+
+
 export interface CreateStackOptions {
   name: string;
   description: string;
   master_locale: string;
   org_uid: string;
+}
+
+export interface createManagementTokenOptions{
+  name: string;
+  description: string;
+  expires_on: string;
+  scope: {
+    module: string;
+    acl: {
+      read: boolean;
+      write?: boolean;
+    };
+    branches?: string[];
+  }[];
 }
 
 export default class ContentstackClient {
@@ -165,6 +185,37 @@ export default class ContentstackClient {
     } catch (error) {
       throw this.buildError(error);
     }
+  }
+
+  async createManagementToken(api_key: string, managementToken: any, options: createManagementTokenOptions): Promise<ManagementToken> {
+    try {
+      const client = await this.instance;
+      const body = {
+        token: {
+          name: options.name,
+          description: options.description,
+          scope: options.scope,
+          expires_on: options.expires_on,
+        },
+      };
+
+      const response = await client.stack({ api_key: api_key, management_token: managementToken }).managementToken().create(body);
+      return {
+        response_code: response.errorCode,
+        response_message: response.errorMessage
+      };
+    } catch (error: unknown) {
+      const typedError = error as { errorCode: string };
+      
+      if (typedError.errorCode === '401') {
+          return {
+            response_code: '401',
+            response_message: 'You do not have access to create management tokens. Please try again or ask an Administrator for assistance.'
+          }
+      }
+      throw this.buildError(typedError);
+  }
+  
   }
 
   private buildError(error: any) {
