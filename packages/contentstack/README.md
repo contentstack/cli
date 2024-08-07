@@ -3510,7 +3510,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.0/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.2/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:add PLUGIN`
 
@@ -3585,6 +3585,7 @@ EXAMPLES
 ```
 
 
+
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.3/src/commands/plugins/inspect.ts)_
 
 
@@ -3638,7 +3639,6 @@ EXAMPLES
 
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.3/src/commands/plugins/install.ts)_
-
 
 
 ## `csdx plugins:link PATH`
@@ -3712,7 +3712,9 @@ FLAGS
   --reinstall  Reinstall all plugins after uninstalling.
 ```
 
+
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.3/src/commands/plugins/reset.ts)_
+
 
 
 ## `csdx plugins:uninstall [PLUGIN]`
@@ -3741,7 +3743,9 @@ EXAMPLES
   $ csdx plugins:uninstall myplugin
 ```
 
+
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.3/src/commands/plugins/uninstall.ts)_
+
 
 ## `csdx plugins:unlink [PLUGIN]`
 
@@ -3786,6 +3790,7 @@ DESCRIPTION
 ```
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.3.3/src/commands/plugins/update.ts)_
+
 
 ## `csdx tokens`
 
