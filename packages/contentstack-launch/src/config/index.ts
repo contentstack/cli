@@ -29,13 +29,7 @@ const config = {
     GITPROVIDER: 'GitHub',
     FILEUPLOAD: 'FileUpload',
   },
-  launchHubUrls: {
-    // NOTE CMA url used as launch url mapper to avoid conflict if user used any custom name
-    'https://api.contentstack.io': 'https://launch-api.contentstack.com',
-    'https://eu-api.contentstack.com': '',
-    'https://azure-na-api.contentstack.com': '',
-    'https://azure-eu-api.contentstack.com': '',
-  },
+  launchHubUrls: '',
   launchBaseUrl: '',
   supportedAdapters: ['GitHub'],
   deploymentStatus: ['LIVE', 'FAILED', 'SKIPPED', 'DEPLOYED'],
@@ -45,7 +39,7 @@ const config = {
     'Manually add custom variables to the list',
     'Import variables from the local env file',
   ],
-  variableType: ''
+  variableType: '',
 };
 
 export default config;
