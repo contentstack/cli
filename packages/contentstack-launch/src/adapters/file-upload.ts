@@ -329,7 +329,6 @@ export default class FileUpload extends BaseClass {
       } else {
         ux.action.stop('File upload failed!');
         this.log('File upload failed. Please try again.', 'error');
-        console.log(response);
         this.exit(1);
       }
     } catch (error) {
