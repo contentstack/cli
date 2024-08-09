@@ -50,8 +50,8 @@ const config: Configuration = {
       stack: 'contentstack/stack-contentstack-angular-modularblock-example',
     },
     'compass-app': {
-      source: 'SunilLsagar/universal-demo-latest',
-      stack: 'SunilLsagar/stack-universal-demo-latest',
+      source: 'contentstack/contentstack-universal-demo',
+      stack: 'contentstack/stack-contentstack-universal-demo',
       master_locale: 'en',
     },
     'nuxtjs-disabled': {
