@@ -44,7 +44,7 @@ export default class Importlabels extends BaseClass {
     if (fileHelper.fileExistsSync(this.labelsFolderPath)) {
       this.labels = fsUtil.readFile(join(this.labelsFolderPath, 'labels.json'), true) as Record<string, unknown>;
     } else {
-      log(this.importConfig, `No such file or directory - '${this.labelsFolderPath}'`, 'error');
+      log(this.importConfig, `No labels found - '${this.labelsFolderPath}'`, 'info');
       return;
     }
 
@@ -71,7 +71,7 @@ export default class Importlabels extends BaseClass {
 
   async importlabels() {
     if (this.labels === undefined || isEmpty(this.labels)) {
-      log(this.importConfig, 'No Label Found', 'info');
+      log(this.importConfig, 'No Labels Found', 'info');
       return;
     }
 

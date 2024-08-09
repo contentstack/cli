@@ -43,7 +43,7 @@ export default class ImportWebhooks extends BaseClass {
     if (fileHelper.fileExistsSync(this.webhooksFolderPath)) {
       this.webhooks = fsUtil.readFile(join(this.webhooksFolderPath, 'webhooks.json'), true) as Record<string, unknown>;
     } else {
-      log(this.importConfig, `No such file or directory - '${this.webhooksFolderPath}'`, 'error');
+      log(this.importConfig, `No Webhooks Found - '${this.webhooksFolderPath}'`, 'info');
       return;
     }
 

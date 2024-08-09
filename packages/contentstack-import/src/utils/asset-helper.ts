@@ -251,11 +251,7 @@ export const lookupAssets = function (
   assetUrls.forEach(function (assetUrl: any) {
     let mappedAssetUrl = mappedAssetUrls[assetUrl];
     if (typeof mappedAssetUrl !== 'undefined') {
-      //NOTE - This code was added to resolve the SRE issue but once the code was merged Assets URLs in JSON RTE started breaking
-      // const sanitizedUrl = escapeRegExp(assetUrl).replace(/\.\./g, '\\$&');
-      // const escapedMappedUrl = escapeRegExp(mappedAssetUrl).replace(/\.\./g, '\\$&');
-      // entry = entry.replace(new RegExp(sanitizedUrl, 'img'), escapedMappedUrl);
-      entry = entry.replace(new RegExp(assetUrl, 'img'), mappedAssetUrl);
+      entry = entry.split(assetUrl).join(mappedAssetUrl);
       matchedUrls.push(mappedAssetUrl);
     } else {
       unmatchedUrls.push(assetUrl);
@@ -266,12 +262,8 @@ export const lookupAssets = function (
     let uid = mappedAssetUids[assetUid];
     if (typeof uid !== 'undefined') {
       const escapedAssetUid = assetUid.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const regex = new RegExp(`\\b${escapedAssetUid}\\b`, 'img');
-      let { status } = validateRegex(new RegExp(regex, 'img'));
-      if (status === 'safe') {
-        entry = entry.replace(regex, uid);
-        matchedUids.push(assetUid);
-      }
+      entry = entry.split(escapedAssetUid).join(uid);
+      matchedUids.push(assetUid);
     } else {
       unmatchedUids.push(assetUid);
     }

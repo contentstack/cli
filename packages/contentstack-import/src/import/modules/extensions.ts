@@ -52,7 +52,7 @@ export default class ImportExtensions extends BaseClass {
         Record<string, unknown>
       >;
     } else {
-      log(this.importConfig, `No such file or directory - '${this.extensionsFolderPath}'`, 'error');
+      log(this.importConfig, `No Extensions Found - '${this.extensionsFolderPath}'`, 'info');
       return;
     }
 

@@ -47,7 +47,7 @@ export default class ImportTaxonomies extends BaseClass {
         unknown
       >;
     } else {
-      log(this.importConfig, `No such file or directory - '${this.taxonomiesFolderPath}'`, 'error');
+      log(this.importConfig, `No Taxonomies Found! - '${this.taxonomiesFolderPath}'`, 'info');
       return;
     }
 

@@ -81,7 +81,7 @@ module.exports = ({ migration, stackSDKInstance, managementAPIClient, config }) 
       task: async (params) => {
         try {
           stack = stackClient();
-          if (!fs.existsSync(dataDir)) throw new Error(`No such file or directory - ${dataDir}`);
+          if (!fs.existsSync(dataDir)) throw new Error(`No Taxonomies folder found! - ${dataDir}`);
           const taxonomies = await readCsv(dataDir, { headers: true, delimiter });
 
           if (!taxonomies?.length) throw new Error('No Taxonomies found!');
