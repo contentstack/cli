@@ -11,6 +11,7 @@ export interface AppConfig {
   private?: boolean;
   branch?: string;
   appConfigKey?: string;
+  master_locale?: string;
 }
 
 const config: Configuration = {
@@ -49,8 +50,9 @@ const config: Configuration = {
       stack: 'contentstack/stack-contentstack-angular-modularblock-example',
     },
     'compass-app': {
-      source: 'SunilLsagar/universal-demo',
-      stack: 'SunilLsagar/stack-universal-demo',
+      source: 'contentstack/contentstack-universal-demo',
+      stack: 'contentstack/stack-contentstack-universal-demo',
+      master_locale: 'en',
     },
     'nuxtjs-disabled': {
       source: 'contentstack/contentstack-nuxtjs-vue-universal-demo',

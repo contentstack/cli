@@ -24,7 +24,6 @@ import {
 } from '../../utils';
 import { ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
-
 export default class EntriesImport extends BaseClass {
   private assetUidMapperPath: string;
   private assetUidMapper: Record<string, any>;
@@ -949,6 +948,16 @@ export default class EntriesImport extends BaseClass {
 
       if (chunk) {
         let apiContent = values(chunk as Record<string, any>[]);
+        let apiContentDuplicate: any = [];
+        apiContent.forEach((content: Record<string, any>) => {
+          content?.publish_details?.forEach((publish: Record<string, any>) => {
+            let c2 = { ...content };
+            c2.locale = publish.locale;
+            c2.publish_details = [publish];
+            apiContentDuplicate.push(c2);
+          });
+        });
+        apiContent = apiContentDuplicate;
         await this.makeConcurrentCall({
           apiContent,
           processName,
