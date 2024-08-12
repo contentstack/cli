@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 const path = require('path');
 const { sanitizePath } = require('@contentstack/cli-utilities');
 const os = require('os');
@@ -12,7 +12,7 @@ function checkWritePermissionToDirectory(directory) {
     fs.accessSync(directory, fs.constants.W_OK);
     return true;
   } catch (err) {
-    console.log(`You don't have write access to directory`);
+    console.log(`Permission Denied! You do not have the necessary write access for this directory.`);
     return false;
   }
 }
@@ -70,10 +70,15 @@ function installDependencies(dependencies, directory) {
 
 function executeShellCommand(command, directory = '') {
   try {
-    execSync(command, { stdio: 'inherit', cwd: directory });
-    console.log(`Command executed successfully: ${command}`);
+    if (command.startsWith('npm i')) {
+      const [cmd, ...args] = command.split(' ');
+      execFileSync(cmd, args, { stdio: 'inherit', cwd: directory });
+      console.log(`Command executed successfully: ${command}`);
+    } else {
+      console.log(`Command should only be 'npm i <package-name>'`);
+    }
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    console.error(`Command execution failed. Error: ${error.message}`);
   }
 }
 
@@ -87,14 +92,14 @@ async function installModules(filePath, multiple) {
     }
 
     if (files.length === 0) {
-      console.log(`There are no files to create package.json for, exiting the code`);
+      console.log(`Error: Could not locate files needed to create package.json. Exiting the process.`);
       return true;
     }
 
     const dependencies = scanFileForDependencies(dirPath, files);
 
     if (!doesPackageJsonExist(dirPath)) {
-      console.log(`package.json doesn't exist, creating one`);
+      console.log(`package.json not found. Creating a new package.json...`);
       createPackageJson(dirPath);
     }
 
@@ -104,7 +109,7 @@ async function installModules(filePath, multiple) {
     return false;
   }
 
-  console.log(`All dependencies installed successfully`);
+  console.log(`All dependencies installed successfully.`);
   return true;
 }
 
