@@ -5,8 +5,9 @@ import find from 'lodash/find';
 import FormData from 'form-data';
 import filter from 'lodash/filter';
 import includes from 'lodash/includes';
+import isEmpty from 'lodash/isEmpty';
 import { basename, resolve } from 'path';
-import { cliux, configHandler, ux } from '@contentstack/cli-utilities';
+import { cliux, configHandler, HttpClient, ux } from '@contentstack/cli-utilities';
 import { createReadStream, existsSync, PathLike, statSync } from 'fs';
 
 import { print } from '../util';
@@ -263,28 +264,80 @@ export default class FileUpload extends BaseClass {
    * @memberof FileUpload
    */
   async uploadFile(fileName: string, filePath: PathLike): Promise<void> {
-    const { uploadUrl, fields } = this.signedUploadUrlData;
+    const { uploadUrl, fields, headers } = this.signedUploadUrlData;
     const formData = new FormData();
 
-    for (const { formFieldKey, formFieldValue } of fields) {
-      formData.append(formFieldKey, formFieldValue);
+    if (!isEmpty(fields)) {
+      for (const { formFieldKey, formFieldValue } of fields) {
+        formData.append(formFieldKey, formFieldValue);
+      }
+
+      formData.append('file', createReadStream(filePath), fileName);
+      await this.submitFormData(formData, uploadUrl);
+    } else if (!isEmpty(headers)) {
+      await this.uploadWithHttpClient(filePath, uploadUrl, headers, fileName);
     }
+  }
 
-    formData.append('file', createReadStream(filePath) as any, fileName);
-
-    await new Promise<void>((resolve) => {
-      ux.action.start('Starting file upload...');
-      formData.submit(uploadUrl, (error, res) => {
-        if (error) {
-          ux.action.stop('File upload failed!');
-          this.log('File upload failed. Please try again.', 'error');
-          this.log(error, 'error');
-          this.exit(1);
-        }
-
-        resolve();
-        ux.action.stop();
+  private async submitFormData(formData: FormData, uploadUrl: string): Promise<void> {
+    ux.action.start('Starting file upload...');
+    try {
+      await new Promise<void>((resolve, reject) => {
+        formData.submit(uploadUrl, (error, res) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve();
+          }
+        });
       });
-    });
+
+      ux.action.stop();
+    } catch (error) {
+      ux.action.stop('File upload failed!');
+      this.log('File upload failed. Please try again.', 'error');
+      if (error instanceof Error) {
+        this.log(error.message, 'error');
+      }
+      this.exit(1);
+    }
+  }
+
+  private async uploadWithHttpClient(
+    filePath: PathLike,
+    uploadUrl: string,
+    headers: Array<{ key: string; value: string }>,
+    fileName: string,
+  ): Promise<void> {
+    ux.action.start('Starting file upload...');
+    const httpClient = new HttpClient();
+    const form = new FormData();
+    form.append('file', createReadStream(filePath), fileName);
+
+    // Convert headers array to a headers object
+    const headerObject = headers.reduce((acc, { key, value }) => {
+      acc[key] = value;
+      return acc;
+    }, {} as Record<string, string>);
+
+    try {
+      const response = await httpClient.headers(headerObject).put(uploadUrl, form);
+      const { status } = response;
+
+      if (status >= 200 && status < 300) {
+        ux.action.stop();
+      } else {
+        ux.action.stop('File upload failed!');
+        this.log('File upload failed. Please try again.', 'error');
+        this.exit(1);
+      }
+    } catch (error) {
+      ux.action.stop('File upload failed!');
+      this.log('File upload failed. Please try again.', 'error');
+      if (error instanceof Error) {
+        this.log(`Error: ${error.message}`, 'error');
+      }
+      this.exit(1);
+    }
   }
 }
