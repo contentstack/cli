@@ -1,13 +1,9 @@
-import EventEmitter from "events";
-import { ux } from "@contentstack/cli-utilities";
-import { ApolloClient, ObservableQuery } from "@apollo/client/core";
+import EventEmitter from 'events';
+import { ux } from '@contentstack/cli-utilities';
+import { ApolloClient, ObservableQuery } from '@apollo/client/core';
 
-import { LogPollingInput, ConfigType } from "../types";
-import {
-  deploymentQuery,
-  deploymentLogsQuery,
-  serverlessLogsQuery,
-} from "../graphql";
+import { LogPollingInput, ConfigType } from '../types';
+import { deploymentQuery, deploymentLogsQuery, serverlessLogsQuery } from '../graphql';
 
 export default class LogPolling {
   private config: ConfigType;
@@ -69,15 +65,15 @@ export default class LogPolling {
     let statusWatchQuery = this.getDeploymentStatus();
     statusWatchQuery.subscribe(({ data, errors, error }) => {
       if (error) {
-        this.$event.emit("deployment-logs", {
+        this.$event.emit('deployment-logs', {
           message: error?.message,
-          msgType: "error",
+          msgType: 'error',
         });
       }
       if (errors?.length && data === null) {
-        this.$event.emit("deployment-logs", {
+        this.$event.emit('deployment-logs', {
           message: errors,
-          msgType: "error",
+          msgType: 'error',
         });
         statusWatchQuery.stopPolling();
       }
@@ -110,33 +106,33 @@ export default class LogPolling {
       {
         deploymentUid: string | undefined;
       }
-    >
+    >,
   ): void {
     let timestamp: number = 0;
     logsWatchQuery.subscribe(({ data, errors, error }) => {
-      ux.action.start("Loading deployment logs...");
+      ux.action.start('Loading deployment logs...');
 
       if (error) {
         ux.action.stop();
-        this.$event.emit("deployment-logs", { 
+        this.$event.emit('deployment-logs', {
           message: error?.message,
-          msgType: "error", 
+          msgType: 'error',
         });
-        this.$event.emit("deployment-logs", {
-          message: "DONE",
-          msgType: "debug",
+        this.$event.emit('deployment-logs', {
+          message: 'DONE',
+          msgType: 'debug',
         });
         logsWatchQuery.stopPolling();
       }
       if (errors?.length && data === null) {
         ux.action.stop();
-        this.$event.emit("deployment-logs", {
+        this.$event.emit('deployment-logs', {
           message: errors,
-          msgType: "error",
+          msgType: 'error',
         });
-        this.$event.emit("deployment-logs", {
-          message: "DONE",
-          msgType: "debug",
+        this.$event.emit('deployment-logs', {
+          message: 'DONE',
+          msgType: 'debug',
         });
         logsWatchQuery.stopPolling();
       }
@@ -144,12 +140,11 @@ export default class LogPolling {
         let logsData = data?.getLogs;
         if (logsData?.length) {
           ux.action.stop();
-          this.$event.emit("deployment-logs", {
+          this.$event.emit('deployment-logs', {
             message: logsData,
-            msgType: "info",
+            msgType: 'info',
           });
-          timestamp =
-            new Date(logsData[logsData.length - 1].timestamp).getTime() + 1;
+          timestamp = new Date(logsData[logsData.length - 1].timestamp).getTime() + 1;
           logsWatchQuery.setVariables({
             deploymentUid: this.config.deployment,
             timestamp: new Date(timestamp).toISOString(),
@@ -158,9 +153,9 @@ export default class LogPolling {
 
         if (this.config.deploymentStatus.includes(this.deploymentStatus)) {
           logsWatchQuery.stopPolling();
-          this.$event.emit("deployment-logs", {
-            message: "DONE",
-            msgType: "debug",
+          this.$event.emit('deployment-logs', {
+            message: 'DONE',
+            msgType: 'debug',
           });
         }
       }
@@ -208,17 +203,17 @@ export default class LogPolling {
           endTime: number;
         };
       }
-    >
+    >,
   ): void {
     serverLogsWatchQuery.subscribe(({ data, errors, error }) => {
-      ux.action.start("Loading server logs...");
+      ux.action.start('Loading server logs...');
       if (error) {
         ux.action.stop();
-        this.$event.emit("server-logs", { message: error?.message, msgType: "error" });
+        this.$event.emit('server-logs', { message: error?.message, msgType: 'error' });
       }
       if (errors?.length && data === null) {
         ux.action.stop();
-        this.$event.emit("server-logs", { message: errors, msgType: "error" });
+        this.$event.emit('server-logs', { message: errors, msgType: 'error' });
         serverLogsWatchQuery.stopPolling();
       }
 
@@ -226,9 +221,8 @@ export default class LogPolling {
       let logsLength = logsData?.length;
       if (logsLength > 0) {
         ux.action.stop();
-        this.$event.emit("server-logs", { message: logsData, msgType: "info" });
-        this.startTime =
-          new Date(logsData[logsLength - 1].timestamp).getTime() + 1;
+        this.$event.emit('server-logs', { message: logsData, msgType: 'info' });
+        this.startTime = new Date(logsData[logsLength - 1].timestamp).getTime() + 1;
         this.endTime = this.startTime + 10 * 1000;
       } else if (logsLength === 0) {
         this.endTime = this.endTime + 10 * 1000;
@@ -243,4 +237,3 @@ export default class LogPolling {
     });
   }
 }
-
