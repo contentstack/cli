@@ -7,7 +7,7 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
   const modules = ['entries', 'assets', 'extensions', 'marketplace_apps'];
 
   const readAllModulesUids = (filePath) => {
-    let uidMapping = {};
+    let uidMapping = Object.create(null);
 
     modules.forEach((module) => {
       const mappingFilePath = path.join(sanitizePath(filePath), 'mapper', sanitizePath(module), 'uid-mapping.json');
@@ -15,9 +15,11 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
         const mappedIds = JSON.parse(fs.readFileSync(sanitizePath(mappingFilePath), 'utf-8'));
 
         if (module === 'marketplace_apps') {
-          Object.values(mappedIds).forEach((ids) => Object.assign(uidMapping, ids));
+          Object.values(mappedIds).forEach((ids) => {
+            uidMapping = { ...uidMapping, ...sanitizeObject(ids) };
+          });
         } else {
-          Object.assign(uidMapping, sanitizeObject(mappedIds));
+          uidMapping = { ...uidMapping, ...sanitizeObject(mappedIds) };
         }
       }
     });
@@ -33,7 +35,7 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
       }
     }
     return sanitized;
-  }
+  };
 
   const getEntries = async (ct) => {
     try {
@@ -73,13 +75,10 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
     let oldUids = Object.keys(uidMapping);
     matches.forEach((m) => {
       if (oldUids.includes(m)) {
-        let regex = new RegExp(m, 'g');
-        let { status } = validateRegex(regex);
-        if (status === 'safe') {
-          stringifiedEntry = stringifiedEntry.replace(regex, uidMapping[m]);
-          console.log(chalk.green(`Replacing the UID '${m}' with '${uidMapping[m]}'...`));
-          isUpdated = true;
-        }
+        let sanitizedUid = m;
+        stringifiedEntry = stringifiedEntry.split(sanitizedUid).join(uisdMapping[sanitizedUid]);
+        console.log(chalk.green(`Replacing the UID '${m}' with '${uidMapping[m]}'...`));
+        isUpdated = true;
       }
     });
     return { stringifiedEntry, isUpdated };
