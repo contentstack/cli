@@ -46,29 +46,28 @@ async function getEntries(stack, contentType, locale, bulkPublish, environments,
         for (let index = 0; index < entries.length; index++) {
           let variants = [];
 
-          if (variantsFlag) {
-            const variantsEntriesResponse = await stack
-              .contentType(contentType)
-              .entry(entries[index].uid)
-              .variants()
-              .query(queryParams)
-              .find();
-
-            variants = variantsEntriesResponse.items.map(entry => ({
-              uid: entry.variants_uid,
-            }));
-          }
+          
 
           if (bulkPublish) {
+            let entry;
             if (bulkPublishSet.length < 10) {
-              bulkPublishSet.push({
+              entry = {
                 uid: entries[index].uid,
                 content_type: contentType,
                 locale,
                 publish_details: entries[index].publish_details || [],
-                variants: variants
-              });
+              };
+
+              if (variantsFlag) {
+                variants = await getVariantEntries(stack, contentType, entries, index, queryParams);
+                if(variants.length > 0){
+                  entry.publish_with_base_entry = true;
+                  entry.variants = variants;
+                }
+                
+              } 
             }
+            bulkPublishSet.push(entry);
 
             if (bulkPublishSet.length === 10) {
               await queue.Enqueue({
@@ -77,7 +76,7 @@ async function getEntries(stack, contentType, locale, bulkPublish, environments,
                 Type: 'entry',
                 environments: environments,
                 stack: stack,
-                apiVersion
+                apiVersion,
               });
               bulkPublishSet = [];
             }
@@ -93,7 +92,7 @@ async function getEntries(stack, contentType, locale, bulkPublish, environments,
                 Type: 'entry',
                 environments: environments,
                 stack: stack,
-                apiVersion
+                apiVersion,
               });
               bulkPublishSet = [];
             }
@@ -119,6 +118,25 @@ async function getEntries(stack, contentType, locale, bulkPublish, environments,
       })
       .catch((error) => reject(error));
   });
+}
+
+async function getVariantEntries(stack, contentType, entries, index, queryParams) {
+  try {
+    const variantsEntriesResponse = await stack
+      .contentType(contentType)
+      .entry(entries[index].uid)
+      .variants()
+      .query(queryParams)
+      .find();
+
+    const variants = variantsEntriesResponse.items.map(entry => ({
+      uid: entry.variants_uid,
+    }));
+    
+    return variants;
+  } catch (error) {
+    throw new Error(`Error fetching variants: ${error.message}`);
+  }
 }
 
 async function getContentTypes(stack, skip = 0, contentTypes = []) {

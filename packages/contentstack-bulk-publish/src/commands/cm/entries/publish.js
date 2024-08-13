@@ -248,7 +248,6 @@ PublishEntriesCommand.flags = {
   'source-env': flags.string({ description: 'Source environment' }),
   'include-variants': flags.boolean({ 
     default: false, // set the default value to false
-    allowNo: true, // this allows the flag to be negated with `--no-include-variants`
     description: 'Include Variants flag will publish all associated variant entries.' 
   }),
 };
