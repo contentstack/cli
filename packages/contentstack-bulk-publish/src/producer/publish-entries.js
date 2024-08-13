@@ -8,6 +8,7 @@ const { performBulkPublish, publishEntry, initializeLogger } = require('../consu
 const retryFailedLogs = require('../util/retryfailed');
 const { validateFile } = require('../util/fs');
 const { isEmpty } = require('../util');
+const VARIANTS_PUBLISH_API_VERSION = '3.2';
 
 const queue = getQueue();
 
@@ -18,7 +19,7 @@ let allContentTypes = [];
 let bulkPublishSet = [];
 let filePath;
 
-async function getEntries(stack, contentType, locale, bulkPublish, environments, apiVersion, skip = 0) {
+async function getEntries(stack, contentType, locale, bulkPublish, environments, apiVersion, variantsFlag = false, skip = 0) {
   return new Promise((resolve, reject) => {
     skipCount = skip;
 
@@ -29,6 +30,10 @@ async function getEntries(stack, contentType, locale, bulkPublish, environments,
       include_publish_details: true,
     };
 
+    if (variantsFlag) {
+      queryParams.apiVersion = VARIANTS_PUBLISH_API_VERSION;
+    }
+
     stack
       .contentType(contentType)
       .entry()
@@ -37,7 +42,23 @@ async function getEntries(stack, contentType, locale, bulkPublish, environments,
       .then(async (entriesResponse) => {
         skipCount += entriesResponse.items.length;
         let entries = entriesResponse.items;
-        for (let index = 0; index < entriesResponse.items.length; index++) {
+
+        for (let index = 0; index < entries.length; index++) {
+          let variants = [];
+
+          if (variantsFlag) {
+            const variantsEntriesResponse = await stack
+              .contentType(contentType)
+              .entry(entries[index].uid)
+              .variants()
+              .query(queryParams)
+              .find();
+
+            variants = variantsEntriesResponse.items.map(entry => ({
+              uid: entry.variants_uid,
+            }));
+          }
+
           if (bulkPublish) {
             if (bulkPublishSet.length < 10) {
               bulkPublishSet.push({
@@ -45,6 +66,7 @@ async function getEntries(stack, contentType, locale, bulkPublish, environments,
                 content_type: contentType,
                 locale,
                 publish_details: entries[index].publish_details || [],
+                variants: variants
               });
             }
 
@@ -61,7 +83,7 @@ async function getEntries(stack, contentType, locale, bulkPublish, environments,
             }
 
             if (
-              index === entriesResponse.items.length - 1 &&
+              index === entries.length - 1 &&
               bulkPublishSet.length <= 10 &&
               bulkPublishSet.length > 0
             ) {
@@ -74,7 +96,7 @@ async function getEntries(stack, contentType, locale, bulkPublish, environments,
                 apiVersion
               });
               bulkPublishSet = [];
-            } // bulkPublish
+            }
           } else {
             await queue.Enqueue({
               content_type: contentType,
@@ -92,7 +114,7 @@ async function getEntries(stack, contentType, locale, bulkPublish, environments,
           bulkPublishSet = [];
           return resolve();
         }
-        await getEntries(stack, contentType, locale, bulkPublish, environments, apiVersion, skipCount);
+        await getEntries(stack, contentType, locale, bulkPublish, environments, apiVersion, variantsFlag, skipCount);
         return resolve();
       })
       .catch((error) => reject(error));
@@ -135,7 +157,7 @@ function setConfig(conf, bp) {
 }
 
 async function start(
-  { retryFailed, bulkPublish, publishAllContentTypes, contentTypes, locales, environments, apiVersion },
+  { retryFailed, bulkPublish, publishAllContentTypes, contentTypes, locales, environments, apiVersion, includeVariantsFlag },
   stack,
   config,
 ) {
@@ -149,6 +171,11 @@ async function start(
     }
     process.exit(0);
   });
+
+  if (includeVariantsFlag) {
+    apiVersion = VARIANTS_PUBLISH_API_VERSION;
+  }
+
   if (retryFailed) {
     if (typeof retryFailed === 'string') {
       if (!validateFile(retryFailed, ['publish-entries', 'bulk-publish-entries'])) {
@@ -173,7 +200,7 @@ async function start(
     for (let loc = 0; loc < locales.length; loc += 1) {
       for (let i = 0; i < allContentTypes.length; i += 1) {
         /* eslint-disable no-await-in-loop */
-        await getEntries(stack, allContentTypes[i].uid || allContentTypes[i], locales[loc], bulkPublish, environments, apiVersion);
+        await getEntries(stack, allContentTypes[i].uid || allContentTypes[i], locales[loc], bulkPublish, environments, apiVersion, includeVariantsFlag);
         /* eslint-enable no-await-in-loop */
       }
     }
