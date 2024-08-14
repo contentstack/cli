@@ -153,7 +153,9 @@ async function getVariantEntries(stack, contentType, entries, index, queryParams
 
     return variants;
   } catch (error) {
-    throw new Error(`Error fetching variants: ${error.message}`);
+    // Handle error message retrieval from different properties
+    const errorMessage = error?.errorMessage || error?.message || error?.errors || 'Falied to fetch the variant entries, Please contact the admin for support.';
+    throw new Error(`Error fetching variants: ${errorMessage}`);
   }
 }
 
