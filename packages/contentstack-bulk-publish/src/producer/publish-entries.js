@@ -120,19 +120,37 @@ async function getEntries(stack, contentType, locale, bulkPublish, environments,
   });
 }
 
-async function getVariantEntries(stack, contentType, entries, index, queryParams) {
+async function getVariantEntries(stack, contentType, entries, index, queryParams, skip = 0) {
   try {
+    let variantQueryParams = {
+      locale: queryParams.locale || 'en-us',
+      include_count: true,
+      skip: skip,  // Adding skip parameter for pagination
+      limit: 100,  // Set a limit to fetch up to 100 entries per request
+      include_publish_details: true,
+    };
+
     const variantsEntriesResponse = await stack
       .contentType(contentType)
       .entry(entries[index].uid)
       .variants()
-      .query(queryParams)
+      .query(variantQueryParams)
       .find();
 
+    // Map the response items to extract variant UIDs
     const variants = variantsEntriesResponse.items.map(entry => ({
       uid: entry.variants_uid,
     }));
-    
+
+    // Check if there are more entries to fetch
+    if (variantsEntriesResponse.items.length === variantQueryParams.limit) {
+      // Recursively fetch the next set of variants with updated skip value
+      const nextVariants = await getVariantEntries(stack, contentType, entries, index, queryParams, skip + variantQueryParams.limit);
+      
+      // Ensure nextVariants is an array before concatenation
+      return Array.isArray(nextVariants) ? variants.concat(nextVariants) : variants;
+    }
+
     return variants;
   } catch (error) {
     throw new Error(`Error fetching variants: ${error.message}`);
