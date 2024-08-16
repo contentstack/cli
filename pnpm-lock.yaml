@@ -31,7 +31,7 @@ importers:
       '@oclif/plugin-help': ^5
       '@oclif/plugin-not-found': ^2.4.0
       '@oclif/plugin-plugins': ^5.0.0
-      '@oclif/test': ^2.5.6
+      '@oclif/test': ^4.0.8
       '@types/chai': ^4.2.18
       '@types/inquirer': ^9.0.3
       '@types/mkdirp': ^1.0.1
@@ -95,7 +95,7 @@ importers:
       uuid: 9.0.1
       winston: 3.13.1
     devDependencies:
-      '@oclif/test': 2.5.6_ogreqof3k35xezedraj6pnd45y
+      '@oclif/test': 4.0.8_@oclif+core@3.27.0
       '@types/chai': 4.3.17
       '@types/inquirer': 9.0.7
       '@types/mkdirp': 1.0.2
@@ -126,7 +126,7 @@ importers:
       '@contentstack/cli-utilities': ~1.7.1
       '@oclif/plugin-help': ^5
       '@oclif/plugin-plugins': ^5.0.0
-      '@oclif/test': ^2.5.6
+      '@oclif/test': ^4.0.8
       '@types/chai': ^4.3.5
       '@types/fs-extra': ^11.0.2
       '@types/mocha': ^10.0.6
@@ -164,7 +164,7 @@ importers:
       winston: 3.13.1
     devDependencies:
       '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
-      '@oclif/test': 2.5.6_4j7van2hzdd6hrxfrj2mlmuwxm
+      '@oclif/test': 4.0.8
       '@types/chai': 4.3.17
       '@types/fs-extra': 11.0.4
       '@types/mocha': 10.0.7
@@ -190,7 +190,7 @@ importers:
       '@contentstack/cli-utilities': ~1.7.1
       '@fancy-test/nock': ^0.1.1
       '@oclif/plugin-help': ^5.1.19
-      '@oclif/test': ^2.5.6
+      '@oclif/test': ^4.0.8
       '@types/chai': ^4.2.18
       '@types/inquirer': ^9.0.3
       '@types/mkdirp': ^1.0.1
@@ -225,7 +225,7 @@ importers:
     devDependencies:
       '@fancy-test/nock': 0.1.1
       '@oclif/plugin-help': 5.2.20_ogreqof3k35xezedraj6pnd45y
-      '@oclif/test': 2.5.6_ogreqof3k35xezedraj6pnd45y
+      '@oclif/test': 4.0.8
       '@types/chai': 4.3.17
       '@types/inquirer': 9.0.7
       '@types/mkdirp': 1.0.2
@@ -252,7 +252,7 @@ importers:
       '@contentstack/cli-cm-seed': ~1.7.6
       '@contentstack/cli-command': ~1.2.19
       '@contentstack/cli-utilities': ~1.7.1
-      '@oclif/test': ^2.5.6
+      '@oclif/test': ^4.0.8
       '@types/inquirer': ^9.0.3
       '@types/mkdirp': ^1.0.1
       '@types/node': ^14.14.32
@@ -280,7 +280,7 @@ importers:
       mkdirp: 1.0.4
       tar: 6.2.1
     devDependencies:
-      '@oclif/test': 2.5.6_ogreqof3k35xezedraj6pnd45y
+      '@oclif/test': 4.0.8
       '@types/inquirer': 9.0.7
       '@types/mkdirp': 1.0.2
       '@types/node': 14.18.63
@@ -307,7 +307,7 @@ importers:
       '@contentstack/cli-utilities': ~1.7.1
       '@oclif/core': ^3.26.5
       '@oclif/plugin-help': ^5.1.19
-      '@oclif/test': ^2.5.6
+      '@oclif/test': ^4.0.8
       '@types/flat': ^5.0.2
       assert: ^2.0.0
       async: ^3.2.4
@@ -361,7 +361,7 @@ importers:
       '@contentstack/cli-config': link:../contentstack-config
       '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
       '@oclif/plugin-help': 5.2.20_typescript@4.9.5
-      '@oclif/test': 2.5.6_typescript@4.9.5
+      '@oclif/test': 4.0.8_@oclif+core@3.27.0
       '@types/flat': 5.0.5
       assert: 2.1.0
       chai: 4.5.0
@@ -381,7 +381,7 @@ importers:
     specifiers:
       '@contentstack/cli-command': ~1.2.19
       '@contentstack/cli-utilities': ~1.7.1
-      '@oclif/test': ^2.5.6
+      '@oclif/test': ^4.0.8
       bluebird: ^3.7.2
       chai: ^4.2.0
       chalk: ^4.1.2
@@ -410,7 +410,7 @@ importers:
       nock: 13.5.4
       winston: 3.13.1
     devDependencies:
-      '@oclif/test': 2.5.6
+      '@oclif/test': 4.0.8
       chai: 4.5.0
       eslint: 8.57.0
       eslint-config-oclif: 4.0.0_eslint@8.57.0
@@ -427,7 +427,7 @@ importers:
       '@contentstack/cli-cm-import': ~1.16.5
       '@contentstack/cli-command': ~1.2.19
       '@contentstack/cli-utilities': ~1.7.1
-      '@oclif/test': ^2.5.6
+      '@oclif/test': ^4.0.8
       async: ^3.2.4
       chai: ^4.2.0
       chalk: ^4.1.0
@@ -466,7 +466,7 @@ importers:
       rimraf: 5.0.10
       winston: 3.13.1
     devDependencies:
-      '@oclif/test': 2.5.6
+      '@oclif/test': 4.0.8
       chai: 4.5.0
       eslint: 8.57.0
       eslint-config-oclif: 4.0.0_eslint@8.57.0
@@ -480,7 +480,7 @@ importers:
   packages/contentstack-command:
     specifiers:
       '@contentstack/cli-utilities': ~1.7.1
-      '@oclif/test': ^2.5.6
+      '@oclif/test': ^4.0.8
       '@types/chai': ^4.2.18
       '@types/mkdirp': ^1.0.1
       '@types/mocha': ^8.2.2
@@ -501,7 +501,7 @@ importers:
       '@contentstack/cli-utilities': link:../contentstack-utilities
       contentstack: 3.20.3
     devDependencies:
-      '@oclif/test': 2.5.6_ogreqof3k35xezedraj6pnd45y
+      '@oclif/test': 4.0.8
       '@types/chai': 4.3.17
       '@types/mkdirp': 1.0.2
       '@types/mocha': 8.2.3
@@ -522,7 +522,7 @@ importers:
     specifiers:
       '@contentstack/cli-command': ~1.2.19
       '@contentstack/cli-utilities': ~1.7.1
-      '@oclif/test': ^2.5.6
+      '@oclif/test': ^4.0.8
       '@types/chai': ^4.2.18
       '@types/inquirer': ^9.0.3
       '@types/mkdirp': ^1.0.1
@@ -558,7 +558,7 @@ importers:
       mkdirp: 1.0.4
       winston: 3.13.1
     devDependencies:
-      '@oclif/test': 2.5.6_ogreqof3k35xezedraj6pnd45y
+      '@oclif/test': 4.0.8
       '@types/chai': 4.3.17
       '@types/inquirer': 9.0.7
       '@types/mkdirp': 1.0.2
@@ -582,7 +582,7 @@ importers:
   packages/contentstack-dev-dependencies:
     specifiers:
       '@oclif/core': ^2.9.3
-      '@oclif/test': ^2.5.6
+      '@oclif/test': ^4.0.8
       '@types/node': ^14.14.32
       eslint: ^7.32.0
       fancy-test: ^2.0.0
@@ -593,7 +593,7 @@ importers:
       typescript: ^4.9.3
     dependencies:
       '@oclif/core': 2.16.0_ogreqof3k35xezedraj6pnd45y
-      '@oclif/test': 2.5.6_ogreqof3k35xezedraj6pnd45y
+      '@oclif/test': 4.0.8_@oclif+core@2.16.0
       fancy-test: 2.0.42
       lodash: 4.17.21
     devDependencies:
@@ -613,7 +613,7 @@ importers:
       '@contentstack/cli-utilities': ~1.7.1
       '@oclif/core': ^3.26.5
       '@oclif/plugin-help': ^5.1.19
-      '@oclif/test': ^2.5.6
+      '@oclif/test': ^4.0.8
       '@types/big-json': ^3.2.0
       '@types/mkdirp': ^1.0.2
       '@types/progress-stream': ^2.0.2
@@ -667,7 +667,7 @@ importers:
       '@contentstack/cli-config': link:../contentstack-config
       '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
       '@oclif/plugin-help': 5.2.20_typescript@4.9.5
-      '@oclif/test': 2.5.6_typescript@4.9.5
+      '@oclif/test': 4.0.8_@oclif+core@3.27.0
       '@types/big-json': 3.2.4
       '@types/mkdirp': 1.0.2
       '@types/progress-stream': 2.0.5
@@ -689,7 +689,7 @@ importers:
     specifiers:
       '@contentstack/cli-command': ~1.2.19
       '@contentstack/cli-utilities': ~1.7.1
-      '@oclif/test': ^2.5.6
+      '@oclif/test': ^4.0.8
       '@types/chai': ^4.3.6
       '@types/mocha': ^10.0.1
       chai: ^4.3.8
@@ -715,7 +715,7 @@ importers:
       inquirer-checkbox-plus-prompt: 1.0.1
       mkdirp: 3.0.1
     devDependencies:
-      '@oclif/test': 2.5.6
+      '@oclif/test': 4.0.8
       '@types/chai': 4.3.17
       '@types/mocha': 10.0.7
       chai: 4.5.0
@@ -735,7 +735,7 @@ importers:
       '@contentstack/cli-utilities': ~1.7.1
       '@contentstack/management': ~1.17.0
       '@oclif/core': ^3.26.5
-      '@oclif/test': ^2.5.6
+      '@oclif/test': ^4.0.8
       '@types/big-json': ^3.2.0
       '@types/bluebird': ^3.5.38
       '@types/chai': ^4.2.18
@@ -792,7 +792,7 @@ importers:
       uuid: 9.0.1
       winston: 3.13.1
     devDependencies:
-      '@oclif/test': 2.5.6_ogreqof3k35xezedraj6pnd45y
+      '@oclif/test': 4.0.8_@oclif+core@3.27.0
       '@types/big-json': 3.2.4
       '@types/bluebird': 3.5.42
       '@types/chai': 4.3.17
@@ -825,7 +825,7 @@ importers:
       '@oclif/core': ^3.26.5
       '@oclif/plugin-help': ^5
       '@oclif/plugin-plugins': ^5.0.0
-      '@oclif/test': ^2.5.6
+      '@oclif/test': ^4.0.8
       '@types/adm-zip': ^0.5.0
       '@types/chai': ^4
       '@types/esm': ^3.2.0
@@ -877,7 +877,7 @@ importers:
       open: 8.4.2
       winston: 3.13.1
     devDependencies:
-      '@oclif/test': 2.5.6_kb3eoetozq7tj3ldxanlv4btym
+      '@oclif/test': 4.0.8_@oclif+core@3.27.0
       '@types/adm-zip': 0.5.5
       '@types/chai': 4.3.17
       '@types/esm': 3.2.2
@@ -899,7 +899,7 @@ importers:
       '@contentstack/cli-command': ~1.2.19
       '@contentstack/cli-utilities': ~1.7.1
       '@contentstack/json-rte-serializer': ~2.0.4
-      '@oclif/test': ^2.5.6
+      '@oclif/test': ^4.0.8
       chai: ^4.3.4
       chalk: ^4.1.2
       collapse-whitespace: ^1.1.7
@@ -931,7 +931,7 @@ importers:
       sinon: 15.2.0
       uuid: 9.0.1
     devDependencies:
-      '@oclif/test': 2.5.6
+      '@oclif/test': 4.0.8
       chai: 4.5.0
       eslint: 8.57.0
       eslint-config-oclif: 4.0.0_eslint@8.57.0
@@ -945,7 +945,7 @@ importers:
     specifiers:
       '@contentstack/cli-command': ~1.2.19
       '@contentstack/cli-utilities': ~1.7.1
-      '@oclif/test': ^2.5.6
+      '@oclif/test': ^4.0.8
       async: ^3.2.4
       callsites: ^3.1.0
       cardinal: ^2.1.1
@@ -976,7 +976,7 @@ importers:
       listr: 0.14.3
       winston: 3.13.1
     devDependencies:
-      '@oclif/test': 2.5.6
+      '@oclif/test': 4.0.8
       chai: 4.5.0
       eslint: 8.57.0
       globby: 10.0.2
@@ -1049,7 +1049,7 @@ importers:
       '@contentstack/management': ~1.17.0
       '@contentstack/marketplace-sdk': ^1.2.1
       '@oclif/core': ^3.26.5
-      '@oclif/test': ^2.5.6
+      '@oclif/test': ^4.0.8
       '@types/chai': ^4.2.18
       '@types/inquirer': ^9.0.3
       '@types/mkdirp': ^1.0.1
@@ -1122,7 +1122,7 @@ importers:
       xdg-basedir: 4.0.0
     devDependencies:
       '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
-      '@oclif/test': 2.5.6_ogreqof3k35xezedraj6pnd45y
+      '@oclif/test': 4.0.8_@oclif+core@3.27.0
       '@types/chai': 4.3.17
       '@types/inquirer': 9.0.7
       '@types/mkdirp': 1.0.2
@@ -2658,7 +2658,6 @@ packages:
       widest-line: 3.1.0
       wordwrap: 1.0.0
       wrap-ansi: 7.0.0
-    dev: false
 
   /@oclif/core/4.0.17:
     resolution: {integrity: sha512-zfdSRip9DVMOklMojWCLZEB4iOzy7LDTABCDzCXqmpZGS+o1e1xts4jGhnte3mi0WV0YthNfYqF16tqk6CWITA==}
@@ -2918,73 +2917,42 @@ packages:
       - typescript
     dev: true
 
-  /@oclif/test/2.5.6:
-    resolution: {integrity: sha512-AcusFApdU6/akXaofhBDrY4IM9uYzlOD9bYCCM0NwUXOv1m6320hSp2DT/wkj9H1gsvKbJXZHqgtXsNGZTWLFg==}
-    engines: {node: '>=12.0.0'}
+  /@oclif/test/4.0.8:
+    resolution: {integrity: sha512-1UDwN2zrNRquQiWfn5wcokeQOOlJMrrn5KPufcrXzrh5otX9C/rkAGyQsJnEisbruPjOO541hzdybUzvK7Kvwg==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@oclif/core': '>= 3.0.0'
     dependencies:
-      '@oclif/core': 2.16.0
-      fancy-test: 2.0.42
+      ansis: 3.3.2
+      debug: 4.3.6
     transitivePeerDependencies:
-      - '@swc/core'
-      - '@swc/wasm'
-      - '@types/node'
       - supports-color
-      - typescript
     dev: true
 
-  /@oclif/test/2.5.6_4j7van2hzdd6hrxfrj2mlmuwxm:
-    resolution: {integrity: sha512-AcusFApdU6/akXaofhBDrY4IM9uYzlOD9bYCCM0NwUXOv1m6320hSp2DT/wkj9H1gsvKbJXZHqgtXsNGZTWLFg==}
-    engines: {node: '>=12.0.0'}
-    dependencies:
-      '@oclif/core': 2.16.0_4j7van2hzdd6hrxfrj2mlmuwxm
-      fancy-test: 2.0.42
-    transitivePeerDependencies:
-      - '@swc/core'
-      - '@swc/wasm'
-      - '@types/node'
-      - supports-color
-      - typescript
-    dev: true
-
-  /@oclif/test/2.5.6_kb3eoetozq7tj3ldxanlv4btym:
-    resolution: {integrity: sha512-AcusFApdU6/akXaofhBDrY4IM9uYzlOD9bYCCM0NwUXOv1m6320hSp2DT/wkj9H1gsvKbJXZHqgtXsNGZTWLFg==}
-    engines: {node: '>=12.0.0'}
-    dependencies:
-      '@oclif/core': 2.16.0_kb3eoetozq7tj3ldxanlv4btym
-      fancy-test: 2.0.42
-    transitivePeerDependencies:
-      - '@swc/core'
-      - '@swc/wasm'
-      - '@types/node'
-      - supports-color
-      - typescript
-    dev: true
-
-  /@oclif/test/2.5.6_ogreqof3k35xezedraj6pnd45y:
-    resolution: {integrity: sha512-AcusFApdU6/akXaofhBDrY4IM9uYzlOD9bYCCM0NwUXOv1m6320hSp2DT/wkj9H1gsvKbJXZHqgtXsNGZTWLFg==}
-    engines: {node: '>=12.0.0'}
+  /@oclif/test/4.0.8_@oclif+core@2.16.0:
+    resolution: {integrity: sha512-1UDwN2zrNRquQiWfn5wcokeQOOlJMrrn5KPufcrXzrh5otX9C/rkAGyQsJnEisbruPjOO541hzdybUzvK7Kvwg==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@oclif/core': '>= 3.0.0'
     dependencies:
       '@oclif/core': 2.16.0_ogreqof3k35xezedraj6pnd45y
-      fancy-test: 2.0.42
+      ansis: 3.3.2
+      debug: 4.3.6
     transitivePeerDependencies:
-      - '@swc/core'
-      - '@swc/wasm'
-      - '@types/node'
       - supports-color
-      - typescript
+    dev: false
 
-  /@oclif/test/2.5.6_typescript@4.9.5:
-    resolution: {integrity: sha512-AcusFApdU6/akXaofhBDrY4IM9uYzlOD9bYCCM0NwUXOv1m6320hSp2DT/wkj9H1gsvKbJXZHqgtXsNGZTWLFg==}
-    engines: {node: '>=12.0.0'}
+  /@oclif/test/4.0.8_@oclif+core@3.27.0:
+    resolution: {integrity: sha512-1UDwN2zrNRquQiWfn5wcokeQOOlJMrrn5KPufcrXzrh5otX9C/rkAGyQsJnEisbruPjOO541hzdybUzvK7Kvwg==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@oclif/core': '>= 3.0.0'
     dependencies:
-      '@oclif/core': 2.16.0_typescript@4.9.5
-      fancy-test: 2.0.42
+      '@oclif/core': 3.27.0
+      ansis: 3.3.2
+      debug: 4.3.6
     transitivePeerDependencies:
-      - '@swc/core'
-      - '@swc/wasm'
-      - '@types/node'
       - supports-color
-      - typescript
     dev: true
 
   /@octokit/auth-token/2.5.0:
@@ -4403,7 +4371,6 @@ packages:
   /ansis/3.3.2:
     resolution: {integrity: sha512-cFthbBlt+Oi0i9Pv/j6YdVWJh54CtjGACaMPCIrEV4Ha7HWsIjXDwseYV79TIL0B4+KfSwD5S70PeQDkPUd1rA==}
     engines: {node: '>=15'}
-    dev: false
 
   /any-base/1.1.0:
     resolution: {integrity: sha512-uMgjozySS8adZZYePpaWs8cxB9/kdzmpX6SgJZ+wbz1K5eYk5QMYDVJaZKhxyIHUdnnJkfR7SVgStgH7LkGUyg==}
@@ -5445,7 +5412,6 @@ packages:
     dependencies:
       color-name: 1.1.4
       simple-swizzle: 0.2.2
-    dev: false
 
   /color-support/1.1.3:
     resolution: {integrity: sha512-qiBjkpbMLO/HL68y+lh4q0/O1MZFj2RX6X/KmMa3+gJD3z+WwI1ZzDHysvqHGS3mP6mznPckpXmw1nI9cJjyRg==}
@@ -5465,7 +5431,6 @@ packages:
     dependencies:
       color-convert: 2.0.1
       color-string: 1.9.1
-    dev: false
 
   /colors/1.0.3:
     resolution: {integrity: sha512-pFGrxThWcWQ2MsAz6RtgeWe4NK2kUE1WfsrvvlctdII745EW9I0yflqhe7++M5LEc7bV2c/9/5zc8sFcpL0Drw==}
@@ -8486,7 +8451,6 @@ packages:
 
   /is-arrayish/0.3.2:
     resolution: {integrity: sha512-eVRqCvVlZbuw3GrM63ovNSNAeA1K16kaR/LRY/92w0zxQ5/1YzwblUX652i4Xs9RwAGjW9d9y6X88t8OaAJfWQ==}
-    dev: false
 
   /is-bigint/1.0.4:
     resolution: {integrity: sha512-zB9CruMamjym81i2JZ3UMn54PKGsQzsJeo6xvN3HJJ4CAsQNB6iRutp2To77OfCNuoxspsIhzaPoO1zyCEhFOg==}
@@ -12818,7 +12782,6 @@ packages:
     resolution: {integrity: sha512-JA//kQgZtbuY83m+xT+tXJkmJncGMTFT+C+g2h2R9uxkYIrE2yy9sgmcLhCnw57/WSD+Eh3J97FPEDFnbXnDUg==}
     dependencies:
       is-arrayish: 0.3.2
-    dev: false
 
   /sinon/11.1.2:
     resolution: {integrity: sha512-59237HChms4kg7/sXhiRcUzdSkKuydDeTiamT/jesUVHshBgL8XAmhgFo0GfK6RruMDM/iRSij1EybmMog9cJw==}
