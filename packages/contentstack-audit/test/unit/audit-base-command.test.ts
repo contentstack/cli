@@ -3,7 +3,7 @@ import winston from 'winston';
 import { resolve } from 'path';
 import { fancy } from 'fancy-test';
 import { PassThrough } from 'stream';
-import { expect } from '@oclif/test';
+import { expect } from 'chai';
 import { ux, cliux } from '@contentstack/cli-utilities';
 
 import { AuditBaseCommand } from '../../src/audit-base-command';
