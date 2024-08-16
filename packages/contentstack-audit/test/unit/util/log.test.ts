@@ -2,7 +2,7 @@ import sinon from 'sinon';
 import winston from 'winston';
 import { resolve } from 'path';
 import { fancy } from 'fancy-test';
-import { expect } from '@oclif/test';
+import { expect } from 'chai';
 import { cliux as ux } from '@contentstack/cli-utilities';
 import { FileTransportInstance } from 'winston/lib/winston/transports';
 
@@ -93,7 +93,7 @@ describe('Log utility', () => {
         ]);
       })
       .it('print method should apply given styles on the message', ({ stdout }) => {
-        expect(stdout).to.includes('test message')
+        expect(stdout).to.includes('test message');
       });
   });
 });
