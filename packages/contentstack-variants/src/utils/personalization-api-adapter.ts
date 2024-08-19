@@ -78,17 +78,21 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
   }
 
   async getVariantGroup(input: GetVariantGroupInput): Promise<VariantGroupStruct | void> {
-    const getVariantGroupEndPoint = `/variant_groups`;
-    const data = await this.cmaAPIClient
-      .queryParams({ experience_uid: input.experienceUid })
-      .get(getVariantGroupEndPoint);
-    return this.handleVariantAPIRes(data) as VariantGroupStruct;
+    if (this.cmaAPIClient) {
+      const getVariantGroupEndPoint = `/variant_groups`;
+      const data = await this.cmaAPIClient
+        .queryParams({ experience_uid: input.experienceUid })
+        .get(getVariantGroupEndPoint);
+      return this.handleVariantAPIRes(data) as VariantGroupStruct;
+    }
   }
 
   async updateVariantGroup(input: VariantGroup): Promise<VariantGroup | void> {
-    const updateVariantGroupEndPoint = `/variant_groups/${input.uid}`;
-    const data = await this.cmaAPIClient.put(updateVariantGroupEndPoint, input);
-    return this.handleVariantAPIRes(data) as VariantGroup;
+    if (this.cmaAPIClient) {
+      const updateVariantGroupEndPoint = `/variant_groups/${input.uid}`;
+      const data = await this.cmaAPIClient.put(updateVariantGroupEndPoint, input);
+      return this.handleVariantAPIRes(data) as VariantGroup;
+    }
   }
 
   async getEvents(): Promise<EventStruct[] | void> {
