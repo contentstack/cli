@@ -20,6 +20,8 @@ import {
   CMSExperienceStruct,
   VariantAPIRes,
   APIResponse,
+  VariantGroupStruct,
+  VariantGroup,
 } from '../types';
 import { formatErrors } from './error-helper';
 
@@ -75,13 +77,23 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     return this.handleVariantAPIRes(data) as ExperienceStruct;
   }
 
-  async getVariantGroup(input: GetVariantGroupInput): Promise<ExperienceStruct | void> {
-    const getVariantGroupEndPoint = `/experiences/${input.experienceUid}`;
-    const data = await this.apiClient.get(getVariantGroupEndPoint);
-    return this.handleVariantAPIRes(data) as ExperienceStruct;
+  async getVariantGroup(input: GetVariantGroupInput): Promise<VariantGroupStruct | void> {
+    if (this.cmaAPIClient) {
+      const getVariantGroupEndPoint = `/variant_groups`;
+      const data = await this.cmaAPIClient
+        .queryParams({ experience_uid: input.experienceUid })
+        .get(getVariantGroupEndPoint);
+      return this.handleVariantAPIRes(data) as VariantGroupStruct;
+    }
   }
 
-  async updateVariantGroup(input: unknown): Promise<ProjectStruct | void> {}
+  async updateVariantGroup(input: VariantGroup): Promise<VariantGroup | void> {
+    if (this.cmaAPIClient) {
+      const updateVariantGroupEndPoint = `/variant_groups/${input.uid}`;
+      const data = await this.cmaAPIClient.put(updateVariantGroupEndPoint, input);
+      return this.handleVariantAPIRes(data) as VariantGroup;
+    }
+  }
 
   async getEvents(): Promise<EventStruct[] | void> {
     const data = await this.apiClient.get<EventStruct>('/events');
