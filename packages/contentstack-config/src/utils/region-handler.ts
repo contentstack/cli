@@ -3,12 +3,12 @@ import { configHandler } from '@contentstack/cli-utilities';
 function validURL(str) {
   const pattern = new RegExp(
     '^(https?:\\/\\/)?' + // protocol (http or https)
-      '([a-zA-Z0-9.-]+|' + // domain name
-      '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))' + // IP address
-      '(:\\d+)?' + // port
-      '(/[-a-zA-Z0-9_.~+-]*)*' + // path
-      '(\\?[;&a-zA-Z0-9_.~+=-]*)?' + // query string
-      '(\\#[-a-zA-Z0-9_]*)?$', // fragment
+    '([a-zA-Z0-9.-]+|' + // domain name
+    '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))' + // IP address
+    '(:\\d+)?' + // port
+    '(/[-a-zA-Z0-9_.~+-]*)*' + // path
+    '(\\?[;&a-zA-Z0-9_.~+=-]*)?' + // query string
+    '(\\#[-a-zA-Z0-9_]*)?$', // fragment
     'i',
   );
 
@@ -22,30 +22,45 @@ const regions = {
     cda: 'https://cdn.contentstack.io',
     uiHost: 'https://app.contentstack.com',
     name: 'NA',
+    'developerHubUrl': 'https://developerhub-api.contentstack.com',
+    'launchUrl': 'https://launch-api.contentstack.com',
+    'personalizeUrl': 'https://personalization-api.contentstack.com',
   },
   EU: {
     cma: 'https://eu-api.contentstack.com',
     cda: 'https://eu-cdn.contentstack.com',
     uiHost: 'https://eu-app.contentstack.com',
     name: 'EU',
+    'developerHubUrl': 'https://eu-developerhub-api.contentstack.com',
+    'launchUrl': 'https://eu-launch-api.contentstack.com',
+    'personalizeUrl': '',
   },
   'AZURE-NA': {
     cma: 'https://azure-na-api.contentstack.com',
     cda: 'https://azure-na-cdn.contentstack.com',
     uiHost: 'https://azure-na-app.contentstack.com',
     name: 'AZURE-NA',
+    'developerHubUrl': 'https://azure-na-developerhub-api.contentstack.com',
+    'launchUrl': 'https://azure-na-launch-api.contentstack.com',
+    'personalizeUrl': '',
   },
   'AZURE-EU': {
     cma: 'https://azure-eu-api.contentstack.com',
     cda: 'https://azure-eu-cdn.contentstack.com',
     uiHost: 'https://azure-eu-app.contentstack.com',
     name: 'AZURE-EU',
+    'developerHubUrl': 'https://azure-eu-developerhub-api.contentstack.com',
+    'launchUrl': 'https://azure-eu-launch-api.contentstack.com',
+    'personalizeUrl': '',
   },
   'GCP-NA': {
     cma: 'https://gcp-na-api.contentstack.com',
     cda: 'https://gcp-na-cdn.contentstack.com',
     uiHost: 'https://gcp-na-app.contentstack.com',
     name: 'GCP-NA',
+    'developerHubUrl': 'https://gcp-na-developerhub-api.contentstack.com',
+    'launchUrl': '',
+    'personalizeUrl': '',
   },
 };
 
@@ -133,6 +148,9 @@ class UserConfig {
       cda: regionObject.cda,
       uiHost: regionObject.uiHost,
       name: regionObject.name,
+      developerHubUrl: regionObject['developerHubUrl'],
+      personalizeUrl: regionObject['personalizeUrl'],
+      launchUrl: regionObject['launchUrl'],
     };
 
     return sanitizedRegion;
