@@ -23,7 +23,7 @@ const regions = {
     uiHost: 'https://app.contentstack.com',
     name: 'NA',
     'developerHubUrl': 'https://developerhub-api.contentstack.com',
-    'launchUrl': 'https://launch-api.contentstack.com',
+    'launchHubUrl': 'https://launch-api.contentstack.com',
     'personalizeUrl': 'https://personalization-api.contentstack.com',
   },
   EU: {
@@ -32,7 +32,7 @@ const regions = {
     uiHost: 'https://eu-app.contentstack.com',
     name: 'EU',
     'developerHubUrl': 'https://eu-developerhub-api.contentstack.com',
-    'launchUrl': 'https://eu-launch-api.contentstack.com',
+    'launchHubUrl': 'https://eu-launch-api.contentstack.com',
     'personalizeUrl': '',
   },
   'AZURE-NA': {
@@ -41,7 +41,7 @@ const regions = {
     uiHost: 'https://azure-na-app.contentstack.com',
     name: 'AZURE-NA',
     'developerHubUrl': 'https://azure-na-developerhub-api.contentstack.com',
-    'launchUrl': 'https://azure-na-launch-api.contentstack.com',
+    'launchHubUrl': 'https://azure-na-launch-api.contentstack.com',
     'personalizeUrl': '',
   },
   'AZURE-EU': {
@@ -50,7 +50,7 @@ const regions = {
     uiHost: 'https://azure-eu-app.contentstack.com',
     name: 'AZURE-EU',
     'developerHubUrl': 'https://azure-eu-developerhub-api.contentstack.com',
-    'launchUrl': 'https://azure-eu-launch-api.contentstack.com',
+    'launchHubUrl': 'https://azure-eu-launch-api.contentstack.com',
     'personalizeUrl': '',
   },
   'GCP-NA': {
@@ -59,7 +59,7 @@ const regions = {
     uiHost: 'https://gcp-na-app.contentstack.com',
     name: 'GCP-NA',
     'developerHubUrl': 'https://gcp-na-developerhub-api.contentstack.com',
-    'launchUrl': '',
+    'launchHubUrl': '',
     'personalizeUrl': '',
   },
 };
@@ -150,7 +150,7 @@ class UserConfig {
       name: regionObject.name,
       developerHubUrl: regionObject['developerHubUrl'],
       personalizeUrl: regionObject['personalizeUrl'],
-      launchUrl: regionObject['launchUrl'],
+      launchHubUrl: regionObject['launchHubUrl'],
     };
 
     return sanitizedRegion;
