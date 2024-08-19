@@ -11,6 +11,10 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
       config: exportConfig,
       baseURL: exportConfig.modules.personalization.baseURL[exportConfig.region.name],
       headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
+      cmaConfig: {
+        baseURL: exportConfig.region.cma + `/v3`,
+        headers: { authtoken: exportConfig.auth_token, api_key: exportConfig.apiKey },
+      },
     });
     this.exportConfig = exportConfig;
     this.personalizationConfig = exportConfig.modules.personalization;
@@ -48,9 +52,10 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
 
         try {
           // fetch content of experience
-          const attachedCTs = ((await this.getCTsFromExperience(experience.uid)) || {}).content_types;
-          if (attachedCTs?.length) {
-            experienceToContentTypesMap[experience.uid] = attachedCTs;
+          const { variant_groups: [variantGroup] = [] } =
+            (await this.getVariantGroup({ experienceUid: experience.uid })) || {};
+          if (variantGroup?.content_types?.length) {
+            experienceToContentTypesMap[experience.uid] = variantGroup.content_types;
           }
         } catch (error) {
           log(this.exportConfig, `Failed to fetch content types of experience ${experience.name}`, 'error');
