@@ -17,5 +17,5 @@ export interface Region {
   uiHost: string;
   developerHubUrl: string;
   personalizeUrl: string;
-  launchUrl: string;
+  launchHubUrl: string;
 }

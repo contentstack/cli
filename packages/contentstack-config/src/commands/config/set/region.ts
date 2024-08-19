@@ -75,7 +75,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     let uiHost = regionSetFlags['ui-host'];
     let developerHubUrl = regionSetFlags['developer-hub'];
     let personalizeUrl = regionSetFlags['personalize'];
-    let launchUrl = regionSetFlags['launch'];
+    let launchHubUrl = regionSetFlags['launch'];
     let selectedRegion = args.region;
     if (!(cda && cma && uiHost && name) && !selectedRegion) {
       selectedRegion = await interactive.askRegions();
@@ -97,13 +97,13 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
         if (!developerHubUrl) {
           developerHubUrl = this.transformUrl(cma, 'developerhub-api');
         }
-        if (!launchUrl) {
-          launchUrl = this.transformUrl(cma, 'launch-api');
+        if (!launchHubUrl) {
+          launchHubUrl = this.transformUrl(cma, 'launch-api');
         }
         if (!personalizeUrl) {
           personalizeUrl = this.transformUrl(cma, 'personalize-api');
         }
-        let customRegion: Region = { cda, cma, uiHost, name, developerHubUrl, personalizeUrl, launchUrl };
+        let customRegion: Region = { cda, cma, uiHost, name, developerHubUrl, personalizeUrl, launchHubUrl };
         customRegion = regionHandler.setCustomRegion(customRegion);
         await authHandler.setConfigData('logout'); //Todo: Handle this logout flow well through logout command call
         cliux.success(`Custom region has been set to ${customRegion.name}`);
@@ -112,7 +112,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
         cliux.success(`UI HOST: ${customRegion.uiHost}`);
         cliux.success(`Developer Hub URL: ${customRegion.developerHubUrl}`);
         cliux.success(`Personalization URL: ${customRegion.personalizeUrl}`);
-        cliux.success(`Launch URL: ${customRegion.launchUrl}`);
+        cliux.success(`Launch URL: ${customRegion.launchHubUrl}`);
       } catch (error) {
         this.logger.error('failed to set the region', error);
         cliux.error(`Failed to set region due to: ${error.message}`);
@@ -126,7 +126,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
       cliux.success(`UI HOST: ${regionDetails.uiHost}`);
       cliux.success(`Developer Hub URL: ${regionDetails.developerHubUrl}`);
       cliux.success(`Personalization URL: ${regionDetails.personalizeUrl}`);
-      cliux.success(`Launch URL: ${regionDetails.launchUrl}`);
+      cliux.success(`Launch URL: ${regionDetails.launchHubUrl}`);
     } else {
       cliux.error(`Invalid region is given`);
     }
