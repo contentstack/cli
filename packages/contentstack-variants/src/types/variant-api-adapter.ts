@@ -12,6 +12,7 @@ export type APIConfig = HttpRequestConfig & {
   personalizationURL?: string;
   config: ExportConfig | Record<string, any> | undefined;
   baseURL?: string;
+  cmaConfig?: HttpRequestConfig;
 };
 
 export interface AdapterConstructor<T, C> {

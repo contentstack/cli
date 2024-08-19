@@ -38,6 +38,10 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
       config,
       baseURL: config.modules.personalization.baseURL[config.region.name],
       headers: { 'X-Project-Uid': config.modules.personalization.project_id, authtoken: config.auth_token },
+      cmaConfig: {
+        baseURL: config.region.cma + `/v3`,
+        headers: { authtoken: config.auth_token, api_key: config.apiKey },
+      },
     };
     super(Object.assign(config, conf));
     this.personalizationConfig = this.config.modules.personalization;
@@ -177,7 +181,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         return;
       }
       const experienceCTsMap = fsUtil.readFile(this.experienceCTsPath, true) as Record<string, string[]>;
-      await Promise.allSettled(
+      return await Promise.allSettled(
         Object.entries(this.experiencesUidMapper).map(async ([oldExpUid, newExpUid]) => {
           if (experienceCTsMap[oldExpUid]?.length) {
             // Filter content types that were created
@@ -185,8 +189,11 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
               this.createdCTs.includes(ct),
             );
             if (updatedContentTypes?.length) {
+              const { variant_groups: [variantGroup] = [] } =
+                (await this.getVariantGroup({ experienceUid: newExpUid })) || {};
+              variantGroup.content_types = updatedContentTypes;
               // Update content types detail in the new experience asynchronously
-              await this.updateCTsInExperience({ contentTypes: updatedContentTypes }, newExpUid);
+              return await this.updateVariantGroup(variantGroup);
             }
           }
         }),

@@ -8,6 +8,7 @@ export class AdapterHelper<C, ApiClient> implements AdapterHelperInterface<C, Ap
   public readonly config: C;
   public readonly $t: typeof $t;
   public readonly apiClient: ApiClient;
+  public readonly cmaAPIClient?: ApiClient;
   public readonly messages: typeof messages;
 
   constructor(public readonly adapterConfig: APIConfig, options?: HttpClientOptions) {
@@ -27,6 +28,9 @@ export class AdapterHelper<C, ApiClient> implements AdapterHelperInterface<C, Ap
       'responseType',
     ];
     this.apiClient = new HttpClient(pick(adapterConfig, pickConfig), options) as ApiClient;
+    if (adapterConfig.cmaConfig) {
+      this.cmaAPIClient = new HttpClient(pick(adapterConfig.cmaConfig, pickConfig), options) as ApiClient;
+    }
   }
 
   /**
