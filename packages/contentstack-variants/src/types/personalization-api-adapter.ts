@@ -29,6 +29,18 @@ export interface CreateProjectInput {
 export type GetVariantGroupInput = {
   experienceUid: string;
 };
+
+export type VariantGroup = {
+  uid: string;
+  name: string;
+  content_types: string[];
+  description: string;
+} & AnyProperty;
+
+export type VariantGroupStruct = {
+  variant_groups: Array<VariantGroup>;
+} & AnyProperty;
+
 export type EventStruct = {
   _id: string;
   uid: string;
@@ -152,6 +164,7 @@ export type VariantAPIRes =
   | EventStruct
   | AudienceStruct
   | CMSExperienceStruct
+  | VariantGroupStruct
   | Error;
 
 export interface APIResponse {
