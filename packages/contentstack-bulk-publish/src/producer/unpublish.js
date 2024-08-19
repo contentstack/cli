@@ -15,6 +15,7 @@ const assetQueue = getQueue();
 const { Command } = require('@contentstack/cli-command');
 const command = new Command();
 const { isEmpty } = require('../util');
+const VARIANTS_UNPUBLISH_API_VERSION = '3.2';
 
 let bulkUnPublishSet = [];
 let bulkUnPulishAssetSet = [];
@@ -50,19 +51,25 @@ function getQueryParams(filter) {
   return queryString;
 }
 
-function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion) {
+function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion, variantsFlag) {
   return new Promise(async (resolve) => {
     for (let index = 0; index < items.length; index++) {
       changedFlag = true;
 
       if (bulkUnpublish) {
         if (bulkUnPublishSet.length < 10 && items[index].type === 'entry_published') {
-          bulkUnPublishSet.push({
+          const entryData = {
             uid: items[index].data.uid,
             content_type: items[index].content_type_uid,
             locale: items[index].data.locale || 'en-us',
-            publish_details: [items[index].data.publish_details] || [],
-          });
+            publish_details: items[index].data.publish_details || [],
+          };
+
+          if (variantsFlag) {
+            entryData.publish_with_base_entry = true;
+            entryData.variants = items[index].data.variants;
+          }
+          bulkUnPublishSet.push(entryData);
         }
 
         if (bulkUnPulishAssetSet.length < 10 && items[index].type === 'asset_published') {
@@ -155,6 +162,7 @@ async function getSyncEntries(
   environment,
   deliveryToken,
   apiVersion,
+  variantsFlag,
   paginationToken = null,
 ) {
   return new Promise(async (resolve, reject) => {
@@ -202,11 +210,15 @@ async function getSyncEntries(
         syncData['type'] = queryParamsObj.type;
       }
 
-      const entriesResponse = await Stack.sync(syncData);
-
+      let entriesResponse = await Stack.sync(syncData);
       if (entriesResponse.items.length > 0) {
-        await bulkAction(stack, entriesResponse.items, bulkUnpublish, environment, locale, apiVersion);
+        if (variantsFlag) {
+          queryParamsObj.apiVersion = VARIANTS_UNPUBLISH_API_VERSION;
+          entriesResponse.items = await attachVariantsToItems(stack, entriesResponse.items, queryParamsObj); // with variants data
+        }
+        await bulkAction(stack, entriesResponse.items, bulkUnpublish, environment, locale, apiVersion, variantsFlag);
       }
+      
       if (entriesResponse.items.length === 0) {
         if (!changedFlag) console.log('No Entries/Assets Found published on specified environment');
         return resolve();
@@ -230,6 +242,54 @@ async function getSyncEntries(
   });
 }
 
+async function attachVariantsToItems(stack, items, queryParams) {
+  for (const item of items) {
+    const { content_type_uid, data } = item;
+    const variantEntries = await getVariantEntries(stack, content_type_uid, item, queryParams); // Fetch the variants using fetchVariants method
+    item.data.variants = variantEntries; // Attach the fetched variants to the data object in the item
+  }
+  return items;
+}
+
+async function getVariantEntries(stack, contentType, entries, queryParams, skip = 0) {
+  try {
+    let variantQueryParams = {
+      locale: queryParams.locale || 'en-us',
+      include_count: true,
+      skip: skip,  // Adding skip parameter for pagination
+      limit: 100,  // Set a limit to fetch up to 100 entries per request
+      include_publish_details: true,
+    };
+
+    const variantsEntriesResponse = await stack
+      .contentType(contentType)
+      .entry(entries.data.uid)
+      .variants()
+      .query(variantQueryParams)
+      .find();
+
+    // Map the response items to extract variant UIDs
+    const variants = variantsEntriesResponse.items.map(entry => ({
+      uid: entry.variants_uid,
+    }));
+
+    // Check if there are more entries to fetch
+    if (variantsEntriesResponse.items.length === variantQueryParams.limit) {
+      // Recursively fetch the next set of variants with updated skip value
+      const nextVariants = await getVariantEntries(stack, contentType, entries, queryParams, skip + variantQueryParams.limit);
+      
+      // Ensure nextVariants is an array before concatenation
+      return Array.isArray(nextVariants) ? variants.concat(nextVariants) : variants;
+    }
+
+    return variants;
+  } catch (error) {
+    // Handle error message retrieval from different properties
+    const errorMessage = error?.errorMessage || error?.message || error?.errors || 'Falied to fetch the variant entries, Please contact the admin for support.';
+    throw new Error(`Error fetching variants: ${errorMessage}`);
+  }
+}
+
 async function start(
   {
     retryFailed,
@@ -242,6 +302,7 @@ async function start(
     onlyEntries,
     f_types,
     apiVersion,
+    includeVariantsFlag,
   },
   stack,
   config,
@@ -256,7 +317,9 @@ async function start(
     }
     process.exit(0);
   });
-
+  if (includeVariantsFlag) {
+    apiVersion = VARIANTS_UNPUBLISH_API_VERSION;
+  }
   if (retryFailed) {
     if (typeof retryFailed === 'string' && retryFailed.length > 0) {
       if (!validateFile(retryFailed, ['unpublish', 'bulk-unpublish'])) {
@@ -294,7 +357,7 @@ async function start(
     }
     setConfig(config, bulkUnpublish);
     const queryParams = getQueryParams(filter);
-    await getSyncEntries(stack, config, locale, queryParams, bulkUnpublish, environment, deliveryToken, apiVersion);
+    await getSyncEntries(stack, config, locale, queryParams, bulkUnpublish, environment, deliveryToken, apiVersion, includeVariantsFlag);
   }
 }
 
