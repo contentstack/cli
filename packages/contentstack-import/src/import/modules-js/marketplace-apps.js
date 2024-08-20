@@ -25,7 +25,9 @@ const {
 } = require('../../utils');
 const { trace } = require('../../utils/log');
 const { default: config } = require('../../config');
-const { getDeveloperHubUrl, getAllStackSpecificApps } = require('../../utils/marketplace-app-helper');
+const { getAllStackSpecificApps } = require('../../utils/marketplace-app-helper');
+const { Command } = require('@contentstack/cli-command');
+const command = new Command();
 
 module.exports = class ImportMarketplaceApps {
   client;
@@ -62,7 +64,7 @@ module.exports = class ImportMarketplaceApps {
       return Promise.resolve();
     }
 
-    this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl(this.config));
+    this.developerHubBaseUrl = this.config.developerHubBaseUrl || command.developerHubUrl;
     this.config.developerHubBaseUrl = this.developerHubBaseUrl;
     this.client = await managementSDKClient({ endpoint: this.developerHubBaseUrl });
     this.appSdkAxiosInstance = await managementSDKClient({
