@@ -18,7 +18,7 @@ import {
 } from '@contentstack/cli-utilities';
 
 import config from './config';
-import { getLaunchHubUrl, GraphqlApiClient, Logger } from './util';
+import { GraphqlApiClient, Logger } from './util';
 import { ConfigType, LogFn, Providers } from './types';
 
 export type Flags<T extends typeof Command> = Interfaces.InferredFlags<(typeof BaseCommand)['baseFlags'] & T['flags']>;
@@ -35,6 +35,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
   protected flags!: Flags<T>;
   protected args!: Args<T>;
+  public command!: Command;
 
   // define flags that can be inherited by any command that extends BaseCommand
   static baseFlags: FlagInput = {
@@ -105,7 +106,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       this.flags['data-dir'] || this.flags.config
         ? this.flags.config || resolve(this.flags['data-dir'], config.configName)
         : resolve(process.cwd(), config.configName);
-    const baseUrl = config.launchBaseUrl || getLaunchHubUrl();
+    const baseUrl = config.launchBaseUrl || this.command.launchHubUrl;
     this.sharedConfig = {
       ...require('./config').default,
       currentConfig: {},
