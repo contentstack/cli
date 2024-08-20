@@ -19,7 +19,7 @@ let allContentTypes = [];
 let bulkPublishSet = [];
 let filePath;
 
-async function getEntries(stack, contentType, locale, bulkPublish, environments, apiVersion, variantsFlag = false, skip = 0) {
+async function getEntries(stack, contentType, locale, bulkPublish, environments, apiVersion, variantsFlag = false, entry_uid = undefined, skip = 0) {
   return new Promise((resolve, reject) => {
     skipCount = skip;
 
@@ -32,6 +32,9 @@ async function getEntries(stack, contentType, locale, bulkPublish, environments,
 
     if (variantsFlag) {
       queryParams.apiVersion = VARIANTS_PUBLISH_API_VERSION;
+    }
+    if (entry_uid) {
+      queryParams.uid = entry_uid;
     }
 
     stack
@@ -195,7 +198,7 @@ function setConfig(conf, bp) {
 }
 
 async function start(
-  { retryFailed, bulkPublish, publishAllContentTypes, contentTypes, locales, environments, apiVersion, includeVariantsFlag },
+  { retryFailed, bulkPublish, publishAllContentTypes, contentTypes, locales, environments, apiVersion, includeVariantsFlag, entry_uid },
   stack,
   config,
 ) {
@@ -238,7 +241,7 @@ async function start(
     for (let loc = 0; loc < locales.length; loc += 1) {
       for (let i = 0; i < allContentTypes.length; i += 1) {
         /* eslint-disable no-await-in-loop */
-        await getEntries(stack, allContentTypes[i].uid || allContentTypes[i], locales[loc], bulkPublish, environments, apiVersion, includeVariantsFlag);
+        await getEntries(stack, allContentTypes[i].uid || allContentTypes[i], locales[loc], bulkPublish, environments, apiVersion, includeVariantsFlag, entry_uid);
         /* eslint-enable no-await-in-loop */
       }
     }

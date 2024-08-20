@@ -22,6 +22,7 @@ class PublishEntriesCommand extends Command {
       entriesFlags['publish-all-content-types'] || entriesFlags.publishAllContentTypes || false;
     entriesFlags.apiVersion = entriesFlags['api-version'] || '3';
     entriesFlags.includeVariants = entriesFlags['include-variants'] || entriesFlags.includeVariants || false;
+    entriesFlags.entryUid = entriesFlags['entry-uid'] || entriesFlags.entryUid;
     delete entriesFlags['api-version'];
     delete entriesFlags['retry-failed'];
     delete entriesFlags['content-types'];
@@ -59,6 +60,7 @@ class PublishEntriesCommand extends Command {
           this.error('Please use `--alias` or `--stack-api-key` to proceed.', { exit: 2 });
         }
         updatedFlags.includeVariantsFlag = entriesFlags.includeVariants;
+        updatedFlags.entry_uid = entriesFlags.entryUid;
         updatedFlags.bulkPublish = updatedFlags.bulkPublish !== 'false';
         stack = await getStack(config);
       }
@@ -246,6 +248,7 @@ PublishEntriesCommand.flags = {
   }),
   'delivery-token': flags.string({ description: 'Delivery token for source environment' }),
   'source-env': flags.string({ description: 'Source environment' }),
+  'entry-uid': flags.string({ description: 'Entry Uid for publish all associated variant entries.' }),
   'include-variants': flags.boolean({ 
     default: false, // set the default value to false
     description: 'Include Variants flag will publish all associated variant entries.' 
@@ -276,11 +279,14 @@ PublishEntriesCommand.examples = [
   '',
   'Using --include-variants',
   'csdx cm:entries:publish -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN] [--include-variants]',
+  '',
+  'Using --entry-uid and --include-variants',
+  'csdx cm:entries:publish -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN] --entry-uid [ENTRY UID] [--include-variants]',
 ];
 
 PublishEntriesCommand.aliases = ['cm:bulk-publish:entries'];
 
 PublishEntriesCommand.usage =
-  'cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--include-variants]';
+  'cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants]';
 
 module.exports = PublishEntriesCommand;
