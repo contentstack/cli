@@ -30,7 +30,7 @@
     "@contentstack/cli-cm-export": "~1.11.6",
     "@contentstack/cli-cm-clone": "~1.10.7",
     "@contentstack/cli-cm-export-to-csv": "~1.7.2",
-    "@contentstack/cli-cm-import": "~1.16.5",
+    "@contentstack/cli-cm-import": "~1.16.6",
     "@contentstack/cli-cm-migrate-rte": "~1.4.18",
     "@contentstack/cli-cm-seed": "~1.7.8",
     "@contentstack/cli-command": "~1.2.19",
