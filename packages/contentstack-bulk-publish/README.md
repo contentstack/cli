@@ -1249,7 +1249,7 @@ Unpublish entries from the given environment
 USAGE
   $ csdx cm:entries:unpublish [-a <value>] [-k <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch
     <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--api-version <value>] [--content-type <value>]
-    [--delivery-token <value>]
+    [--delivery-token <value>] [--include-variants]
 
 FLAGS
   -a, --alias=<value>          Alias(name) for the management token
@@ -1264,6 +1264,7 @@ FLAGS
                                bulkpublish API will be used to unpublish the entries
   --content-type=<value>       Content type filter
   --delivery-token=<value>     Delivery token for source environment
+  --include-variants           Include Variants flag will unpublish all associated variant entries.
   --locale=<value>             Locale filter
   --retry-failed=<value>       Retry publishing failed entries from the logfile
 
@@ -1306,6 +1307,12 @@ EXAMPLES
   Using --stack-api-key flag
 
   $ csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --stack-api-key [STACK API KEY] --delivery-token [DELIVERY TOKEN]
+
+
+
+  Using --include-variants flag
+
+  $ csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --stack-api-key [STACK API KEY] --delivery-token [DELIVERY TOKEN] --include-variants
 ```
 
 _See code: [src/commands/cm/entries/unpublish.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/entries/unpublish.js)_
