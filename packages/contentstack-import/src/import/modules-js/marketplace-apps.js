@@ -25,7 +25,7 @@ const {
 } = require('../../utils');
 const { trace } = require('../../utils/log');
 const { default: config } = require('../../config');
-const { getDeveloperHubUrl, getAllStackSpecificApps } = require('../../utils/marketplace-app-helper');
+const { getAllStackSpecificApps } = require('../../utils/marketplace-app-helper');
 
 module.exports = class ImportMarketplaceApps {
   client;
