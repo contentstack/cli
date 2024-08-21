@@ -19,7 +19,7 @@ class UnpublishCommand extends Command {
     unpublishFlags.onlyAssets = false;
     unpublishFlags.onlyEntries = true;
     unpublishFlags.apiVersion = unpublishFlags['api-version'] || '3';
-    unpublishFlags.includeVariants = unpublishFlags['include-variants'] || unpublishFlags.includeVariants || false;
+    unpublishFlags.includeVariants = unpublishFlags['include-variants'];
     delete unpublishFlags['api-version'];
     delete unpublishFlags['retry-failed'];
     delete unpublishFlags['bulk-unpublish'];
