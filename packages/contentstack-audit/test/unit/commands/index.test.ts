@@ -1,10 +1,10 @@
 import winston from 'winston';
 import { expect } from 'chai';
 import { runCommand } from '@oclif/test';
+import fancy from 'fancy-test';
 import { FileTransportInstance } from 'winston/lib/winston/transports';
 
 import { AuditBaseCommand } from '../../../src/audit-base-command';
-import fancy from 'fancy-test';
 describe('Audit command', () => {
   const fsTransport = class FsTransport {
     filename!: string;
