@@ -1,7 +1,7 @@
 import winston from 'winston';
 import { resolve } from 'path';
 import { fancy } from 'fancy-test';
-import { expect } from '@oclif/test';
+import { expect } from 'chai';
 import { FileTransportInstance } from 'winston/lib/winston/transports';
 
 import { BaseCommand } from '../../src/base-command';
