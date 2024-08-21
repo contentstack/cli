@@ -16,14 +16,14 @@ describe('AuditFix command', () => {
     sinon.stub(fs, 'rmSync').callsFake(() => {});
     sinon.stub(winston.transports, 'File').callsFake(() => fsTransport);
     sinon.stub(winston, 'createLogger').call(() => ({ log: () => {}, error: () => {} }));
-    const spy = sinon.stub(AuditBaseCommand.prototype, 'start').callsFake(() => {
+    const startSpy = sinon.stub(AuditBaseCommand.prototype, 'start').callsFake(() => {
       return Promise.resolve(true);
     });
 
     it('should trigger AuditBaseCommand start method', async () => {
       const { stdout } = await runCommand(['cm:stacks:audit:fix'], { root: process.cwd() });
       expect(stdout).to.be.empty.string;
-      expect(spy.args).to.be.eql([['cm:stacks:audit:fix']]);
+      expect(startSpy.args).to.be.eql([['cm:stacks:audit:fix']]);
     });
   });
 });
