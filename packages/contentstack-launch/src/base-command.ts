@@ -35,7 +35,6 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
   protected flags!: Flags<T>;
   protected args!: Args<T>;
-  public command!: Command;
 
   // define flags that can be inherited by any command that extends BaseCommand
   static baseFlags: FlagInput = {
@@ -106,7 +105,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       this.flags['data-dir'] || this.flags.config
         ? this.flags.config || resolve(this.flags['data-dir'], config.configName)
         : resolve(process.cwd(), config.configName);
-    const baseUrl = config.launchBaseUrl || this.command.launchHubUrl;
+    const baseUrl = config.launchBaseUrl || this.launchHubUrl;
     this.sharedConfig = {
       ...require('./config').default,
       currentConfig: {},
