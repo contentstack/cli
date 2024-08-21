@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.23.0 darwin-arm64 node-v22.2.0
+@contentstack/cli/1.24.0 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -3161,18 +3161,23 @@ Set region for CLI
 
 ```
 USAGE
-  $ csdx config:set:region [REGION] [-d <value> -m <value> --ui-host <value> -n <value>]
+  $ csdx config:set:region [REGION] [-d <value> -m <value> --ui-host <value> -n <value>] [--developer-hub <value>]
+    [--personalize <value>] [--launch <value>]
 
 ARGUMENTS
   REGION  Name for the region
 
 FLAGS
-  -d, --cda=<value>      Custom host to set for content delivery API, if this flag is added then cma, ui-host and name
-                         flags are required
-  -m, --cma=<value>      Custom host to set for content management API, , if this flag is added then cda, ui-host and
-                         name flags are required
-  -n, --name=<value>     Name for the region, if this flag is added then cda, cma and ui-host flags are required
-      --ui-host=<value>  Custom UI host to set for CLI, if this flag is added then cda, cma and name flags are required
+  -d, --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and
+                               name flags are required
+  -m, --cma=<value>            Custom host to set for content management API, , if this flag is added then cda, ui-host
+                               and name flags are required
+  -n, --name=<value>           Name for the region, if this flag is added then cda, cma and ui-host flags are required
+      --developer-hub=<value>  Custom host to set for developer hub API
+      --launch=<value>         Custom host to set for launch API
+      --personalize=<value>    Custom host to set for personalization API
+      --ui-host=<value>        Custom UI host to set for CLI, if this flag is added then cda, cma and name flags are
+                               required
 
 DESCRIPTION
   Set region for CLI
@@ -3191,6 +3196,14 @@ EXAMPLES
   $ csdx config:set:region GCP-NA
 
   $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India"
+
+  $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India" --developer-hub <developer_hub_url>
+
+  $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India" --personalize <personalize_url>
+
+  $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India" --launch <launch_url>
+
+  $ csdx config:set:region --cda <contentstack_cda_endpoint> --cma <contentstack_cma_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India" --developer-hub <developer_hub_url> --personalize <personalize_url> --launch <launch_url>
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/region.ts)_
