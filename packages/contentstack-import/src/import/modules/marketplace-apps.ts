@@ -33,8 +33,8 @@ import {
   confirmToCloseProcess,
   getAllStackSpecificApps,
   getConfirmationToCreateApps,
+  getDeveloperHubUrl,
 } from '../../utils';
-import { Command } from '@contentstack/cli-command';
 
 export default class ImportMarketplaceApps {
   public importConfig: ImportConfig;
@@ -52,7 +52,6 @@ export default class ImportMarketplaceApps {
   public nodeCrypto: NodeCrypto;
   public appSdk: ContentstackMarketplaceClient;
   public existingNames: Set<string>;
-  public command: Command;
 
   constructor({ importConfig }: ModuleClassParams) {
     this.importConfig = importConfig;
@@ -95,7 +94,7 @@ export default class ImportMarketplaceApps {
       return Promise.resolve();
     }
     await fsUtil.makeDirectory(this.mapperDirPath);
-    this.developerHubBaseUrl = this.importConfig.developerHubBaseUrl || this.command.developerHubUrl;
+    this.developerHubBaseUrl = this.importConfig.developerHubBaseUrl || (await getDeveloperHubUrl(this.importConfig))
     this.importConfig.developerHubBaseUrl = this.developerHubBaseUrl;
 
     // NOTE init marketplace app sdk

@@ -14,7 +14,7 @@ import {
 } from '@contentstack/cli-utilities';
 
 import { ModuleClassParams, MarketplaceAppsConfig, ExportConfig, Installation, Manifest } from '../../types';
-import { log, fsUtil, getOrgUid, formatError, createNodeCryptoInstance } from '../../utils';
+import { log, fsUtil, getOrgUid, formatError, createNodeCryptoInstance, getDeveloperHubUrl } from '../../utils';
 import { Command } from '@contentstack/cli-command';
 
 export default class ExportMarketplaceApps {
@@ -49,7 +49,7 @@ export default class ExportMarketplaceApps {
       this.marketplaceAppConfig.dirName,
     );
     await fsUtil.makeDirectory(this.marketplaceAppPath);
-    this.developerHubBaseUrl = this.exportConfig.developerHubBaseUrl || this.command.developerHubUrl;
+    this.developerHubBaseUrl = this.exportConfig.developerHubBaseUrl || (await getDeveloperHubUrl(this.exportConfig));
     this.exportConfig.org_uid = await getOrgUid(this.exportConfig);
 
     // NOTE init marketplace app sdk
