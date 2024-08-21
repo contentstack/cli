@@ -33,7 +33,7 @@ const regions = {
     name: 'EU',
     'developerHubUrl': 'https://eu-developerhub-api.contentstack.com',
     'launchHubUrl': 'https://eu-launch-api.contentstack.com',
-    'personalizeUrl': '',
+    'personalizeUrl': 'Not available',
   },
   'AZURE-NA': {
     cma: 'https://azure-na-api.contentstack.com',
@@ -42,7 +42,7 @@ const regions = {
     name: 'AZURE-NA',
     'developerHubUrl': 'https://azure-na-developerhub-api.contentstack.com',
     'launchHubUrl': 'https://azure-na-launch-api.contentstack.com',
-    'personalizeUrl': '',
+    'personalizeUrl': 'Not available',
   },
   'AZURE-EU': {
     cma: 'https://azure-eu-api.contentstack.com',
@@ -51,7 +51,7 @@ const regions = {
     name: 'AZURE-EU',
     'developerHubUrl': 'https://azure-eu-developerhub-api.contentstack.com',
     'launchHubUrl': 'https://azure-eu-launch-api.contentstack.com',
-    'personalizeUrl': '',
+    'personalizeUrl': 'Not available',
   },
   'GCP-NA': {
     cma: 'https://gcp-na-api.contentstack.com',
@@ -59,8 +59,8 @@ const regions = {
     uiHost: 'https://gcp-na-app.contentstack.com',
     name: 'GCP-NA',
     'developerHubUrl': 'https://gcp-na-developerhub-api.contentstack.com',
-    'launchHubUrl': '',
-    'personalizeUrl': '',
+    'launchHubUrl': 'Not available',
+    'personalizeUrl': 'Not available',
   },
 };
 
