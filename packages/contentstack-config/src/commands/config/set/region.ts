@@ -40,13 +40,13 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
       dependsOn: ['cda', 'cma', 'ui-host'],
     }),
     'developer-hub': _flags.string({
-      description: 'Custom host to set for developer hub API',
+      description: 'Custom host to set for Developer hub API',
     }),
     'personalize': _flags.string({
-      description: 'Custom host to set for personalization API',
+      description: 'Custom host to set for Personalize API',
     }),
     'launch': _flags.string({
-      description: 'Custom host to set for launch API',
+      description: 'Custom host to set for Launch API',
     }),
   };
   static examples = [
@@ -111,7 +111,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
         cliux.success(`CDA HOST: ${customRegion.cda}`);
         cliux.success(`UI HOST: ${customRegion.uiHost}`);
         cliux.success(`Developer Hub URL: ${customRegion.developerHubUrl}`);
-        cliux.success(`Personalization URL: ${customRegion.personalizeUrl}`);
+        cliux.success(`Personalize URL: ${customRegion.personalizeUrl}`);
         cliux.success(`Launch URL: ${customRegion.launchHubUrl}`);
       } catch (error) {
         this.logger.error('failed to set the region', error);
@@ -125,7 +125,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
       cliux.success(`CMA HOST: ${regionDetails.cma}`);
       cliux.success(`UI HOST: ${regionDetails.uiHost}`);
       cliux.success(`Developer Hub URL: ${regionDetails.developerHubUrl}`);
-      cliux.success(`Personalization URL: ${regionDetails.personalizeUrl}`);
+      cliux.success(`Personalize URL: ${regionDetails.personalizeUrl}`);
       cliux.success(`Launch URL: ${regionDetails.launchHubUrl}`);
     } else {
       cliux.error(`Invalid region is given`);
