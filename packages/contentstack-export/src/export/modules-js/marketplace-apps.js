@@ -20,8 +20,6 @@ const {
 const { default: config } = require('../../config');
 const { formatError, log, fileHelper } = require('../../utils');
 const { createNodeCryptoInstance } = require('../../utils');
-const { Command } = require('@contentstack/cli-command');
-const command = new Command();
 
 module.exports = class ExportMarketplaceApps {
   client;
@@ -45,7 +43,7 @@ module.exports = class ExportMarketplaceApps {
       return Promise.resolve();
     }
 
-    this.developerHubBaseUrl = this.config.developerHubBaseUrl || (command.developerHubUrl);
+    this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl(this.config));
     this.appSdkAxiosInstance = await managementSDKClient({
       endpoint: this.developerHubBaseUrl,
     });
