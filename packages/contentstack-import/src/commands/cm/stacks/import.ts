@@ -135,6 +135,7 @@ export default class ImportCommand extends Command {
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;
       importConfig.region = this.region;
+      importConfig.developerHubBaseUrl = this.developerHubUrl;
       backupDir = importConfig.cliLogsPath || importConfig.backupDir;
 
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
