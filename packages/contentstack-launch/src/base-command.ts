@@ -105,7 +105,10 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       this.flags['data-dir'] || this.flags.config
         ? this.flags.config || resolve(this.flags['data-dir'], config.configName)
         : resolve(process.cwd(), config.configName);
-    const baseUrl = config.launchBaseUrl || getLaunchHubUrl();
+    let baseUrl = config.launchBaseUrl || this.launchHubUrl;
+    if (!baseUrl) {
+      baseUrl = getLaunchHubUrl();
+    }
     this.sharedConfig = {
       ...require('./config').default,
       currentConfig: {},
