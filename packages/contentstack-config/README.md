@@ -277,9 +277,9 @@ FLAGS
   -m, --cma=<value>        Custom host to set for content management API, , if this flag is added then cda, ui-host and
                            name flags are required
   -n, --name=<value>       Name for the region, if this flag is added then cda, cma and ui-host flags are required
-  --developer-hub=<value>  Custom host to set for developer hub API
-  --launch=<value>         Custom host to set for launch API
-  --personalize=<value>    Custom host to set for personalization API
+  --developer-hub=<value>  Custom host to set for Developer hub API
+  --launch=<value>         Custom host to set for Launch API
+  --personalize=<value>    Custom host to set for Personalize API
   --ui-host=<value>        Custom UI host to set for CLI, if this flag is added then cda, cma and name flags are
                            required
 
