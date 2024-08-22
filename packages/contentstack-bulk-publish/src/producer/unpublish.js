@@ -258,7 +258,6 @@ async function getVariantEntries(stack, contentType, entries, queryParams, skip 
       include_count: true,
       skip: skip,  // Adding skip parameter for pagination
       limit: 100,  // Set a limit to fetch up to 100 entries per request
-      include_publish_details: true,
     };
 
     const variantsEntriesResponse = await stack
