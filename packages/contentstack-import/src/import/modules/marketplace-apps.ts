@@ -28,12 +28,12 @@ import {
   fileHelper,
   formatError,
   ifAppAlreadyExist,
-  getDeveloperHubUrl,
   handleNameConflict,
   makeRedirectUrlCall,
   confirmToCloseProcess,
   getAllStackSpecificApps,
   getConfirmationToCreateApps,
+  getDeveloperHubUrl,
 } from '../../utils';
 
 export default class ImportMarketplaceApps {
@@ -94,7 +94,7 @@ export default class ImportMarketplaceApps {
       return Promise.resolve();
     }
     await fsUtil.makeDirectory(this.mapperDirPath);
-    this.developerHubBaseUrl = this.importConfig.developerHubBaseUrl || (await getDeveloperHubUrl(this.importConfig));
+    this.developerHubBaseUrl = this.importConfig.developerHubBaseUrl || (await getDeveloperHubUrl(this.importConfig))
     this.importConfig.developerHubBaseUrl = this.developerHubBaseUrl;
 
     // NOTE init marketplace app sdk
