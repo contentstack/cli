@@ -19,7 +19,7 @@ const {
 } = require('@contentstack/cli-utilities');
 const { default: config } = require('../../config');
 const { formatError, log, fileHelper } = require('../../utils');
-const { getDeveloperHubUrl, createNodeCryptoInstance } = require('../../utils');
+const { createNodeCryptoInstance } = require('../../utils');
 
 module.exports = class ExportMarketplaceApps {
   client;
