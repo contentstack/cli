@@ -15,6 +15,7 @@ const assetQueue = getQueue();
 const { Command } = require('@contentstack/cli-command');
 const command = new Command();
 const { isEmpty } = require('../util');
+const VARIANTS_PUBLISH_API_VERSION = '3.2';
 
 let bulkPublishSet = [];
 let bulkPublishAssetSet = [];
@@ -33,20 +34,27 @@ function getQueryParams(filter) {
   return queryString;
 }
 
-async function bulkAction(stack, items, bulkPublish, filter, destEnv, apiVersion) {
+async function bulkAction(stack, items, bulkPublish, filter, destEnv, apiVersion, variantsFlag = false) {
   return new Promise(async (resolve) => {
     for (let index = 0; index < items.length; index++) {
       changedFlag = true;
 
       if (bulkPublish) {
         if (bulkPublishSet.length < 10 && items[index].type === 'entry_published') {
-          bulkPublishSet.push({
+          const entry = {
             uid: items[index].data.uid,
             content_type: items[index].content_type_uid,
             locale: items[index].data.locale || 'en-us',
             version: items[index].data._version,
             publish_details: [items[index].data.publish_details] || [],
-          });
+          };
+
+          if (variantsFlag) {
+            entry.variants = items[index].data.variants || [];
+            entry.publish_with_base_entry = true;
+          }
+
+          bulkPublishSet.push(JSON.parse(JSON.stringify(entry)));
         }
 
         if (bulkPublishAssetSet.length < 10 && items[index].type === 'asset_published') {
@@ -143,6 +151,7 @@ async function getSyncEntries(
   deliveryToken,
   destEnv,
   apiVersion,
+  variantsFlag = false,
   paginationToken = null,
 ) {
   return new Promise(async (resolve, reject) => {
@@ -198,8 +207,18 @@ async function getSyncEntries(
         );
       }
 
+      if (variantsFlag) {
+        for (let index = 0; index < entriesResponse?.items?.length; index++) {
+          let variants = [];
+          variants = await getVariantEntries(stack, entries[index].content_type_uid, entries, index, queryParamsObj);
+          if (variants.length > 0) {
+            entriesResponse.items[index].data.variants = variants;
+          }
+        }
+      }
+
       if (entriesResponse.items.length > 0) {
-        await bulkAction(stack, entriesResponse.items, bulkPublish, filter, destEnv, apiVersion);
+        await bulkAction(stack, entriesResponse.items, bulkPublish, filter, destEnv, apiVersion, variantsFlag);
       }
       if (!entriesResponse.pagination_token) {
         if (!changedFlag) console.log('No Entries/Assets Found published on specified environment');
@@ -241,6 +260,48 @@ function setConfig(conf, bp) {
   filePath = initializeLogger(logFileName);
 }
 
+async function getVariantEntries(stack, contentType, entries, index, queryParams, skip = 0) {
+  try {
+    let variantQueryParams = {
+      locale: queryParams.locale || 'en-us',
+      include_count: true,
+      skip: skip, // Adding skip parameter for pagination
+      limit: 100, // Set a limit to fetch up to 100 entries per request
+    };
+
+    const variantsEntriesResponse = await stack
+      .contentType(contentType)
+      .entry(entries[index].data.uid)
+      .variants()
+      .query(variantQueryParams)
+      .find();
+
+    const variants = variantsEntriesResponse.items.map((entry) => ({
+      uid: entry.variants_uid,
+    }));
+
+    if (variantsEntriesResponse.items.length === variantQueryParams.limit) {
+      const nextVariants = await getVariantEntries(
+        stack,
+        contentType,
+        entries,
+        index,
+        queryParams,
+        skip + variantQueryParams.limit,
+      );
+      return Array.isArray(nextVariants) ? variants.concat(nextVariants) : variants;
+    }
+    return variants;
+  } catch (error) {
+    const errorMessage =
+      error?.errorMessage ||
+      error?.message ||
+      error?.errors ||
+      'Falied to fetch the variant entries, Please contact the admin for support.';
+    throw new Error(`Error fetching variants: ${errorMessage}`);
+  }
+}
+
 async function start(
   {
     retryFailed,
@@ -255,6 +316,7 @@ async function start(
     destEnv,
     f_types,
     apiVersion,
+    includeVariants,
   },
   stack,
   config,
@@ -306,7 +368,20 @@ async function start(
     setConfig(config, bulkPublish);
     // filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
     const queryParams = getQueryParams(filter);
-    await getSyncEntries(stack, config, queryParams, bulkPublish, filter, deliveryToken, destEnv, apiVersion);
+    if (includeVariants) {
+      apiVersion = VARIANTS_PUBLISH_API_VERSION;
+    }
+    await getSyncEntries(
+      stack,
+      config,
+      queryParams,
+      bulkPublish,
+      filter,
+      deliveryToken,
+      destEnv,
+      apiVersion,
+      includeVariants,
+    );
   }
 }
 
