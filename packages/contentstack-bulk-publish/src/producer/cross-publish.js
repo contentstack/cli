@@ -208,8 +208,7 @@ async function getSyncEntries(
       }
 
       if (variantsFlag) {
-        let entries = entriesResponse.items;
-        for (let index = 0; index < entries.length; index++) {
+        for (let index = 0; index < entriesResponse?.items?.length; index++) {
           let variants = [];
           variants = await getVariantEntries(stack, entries[index].content_type_uid, entries, index, queryParamsObj);
           if (variants.length > 0) {
@@ -268,7 +267,6 @@ async function getVariantEntries(stack, contentType, entries, index, queryParams
       include_count: true,
       skip: skip, // Adding skip parameter for pagination
       limit: 100, // Set a limit to fetch up to 100 entries per request
-      include_publish_details: true,
     };
 
     const variantsEntriesResponse = await stack
