@@ -20,6 +20,7 @@ import {
   RefErrorReturnType,
   WorkflowExtensionsRefErrorReturnType,
 } from './types';
+import CustomRoles from './modules/custom-roles';
 
 export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseCommand> {
   private currentCommand!: CommandNames;
@@ -56,6 +57,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingCtRefsInWorkflow,
       missingSelectFeild,
       missingMandatoryFields,
+      missingRefInCustomRoles
     } = await this.scanAndFix();
 
     this.showOutputOnScreen([
@@ -69,13 +71,15 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     this.showOutputOnScreenWorkflowsAndExtension([
       { module: 'Entries Mandatory Field', missingRefs: missingMandatoryFields },
     ]);
+    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Custom Roles', missingRefs: missingRefInCustomRoles }]);
     if (
       !isEmpty(missingCtRefs) ||
       !isEmpty(missingGfRefs) ||
       !isEmpty(missingEntryRefs) ||
       !isEmpty(missingCtRefsInWorkflow) ||
       !isEmpty(missingCtRefsInExtensions) ||
-      !isEmpty(missingSelectFeild)
+      !isEmpty(missingSelectFeild) ||
+      !isEmpty(missingRefInCustomRoles) 
     ) {
       if (this.currentCommand === 'cm:stacks:audit') {
         this.log(this.$t(auditMsg.FINAL_REPORT_PATH, { path: this.sharedConfig.reportPath }), 'warn');
@@ -102,7 +106,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       !isEmpty(missingEntryRefs) ||
       !isEmpty(missingCtRefsInWorkflow) ||
       !isEmpty(missingCtRefsInExtensions) ||
-      !isEmpty(missingSelectFeild)
+      !isEmpty(missingSelectFeild) || 
+      !isEmpty(missingRefInCustomRoles)
     );
   }
 
@@ -121,7 +126,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingCtRefsInWorkflow,
       missingSelectFeild,
       missingEntry,
-      missingMandatoryFields;
+      missingMandatoryFields,
+      missingRefInCustomRoles;
 
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       print([
@@ -174,6 +180,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           missingCtRefsInExtensions = await new Extensions(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingCtRefsInExtensions);
           break;
+        case 'custom-roles':
+          missingRefInCustomRoles = await new CustomRoles(cloneDeep(constructorParam)).run();
+          await this.prepareReport(module, missingRefInCustomRoles);
+          break;
       }
 
       print([
@@ -198,6 +208,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingCtRefsInWorkflow,
       missingSelectFeild,
       missingMandatoryFields,
+      missingRefInCustomRoles,
     };
   }
 
