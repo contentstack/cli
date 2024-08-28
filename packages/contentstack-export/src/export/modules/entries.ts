@@ -94,7 +94,7 @@ export default class EntriesExport extends BaseClass {
       log(this.exportConfig, 'Entries exported successfully', 'success');
     } catch (error) {
       log(this.exportConfig, `Failed to export entries ${formatError(error)}`, 'error');
-      // throw new Error('Failed to export entries');
+      throw new Error('Failed to export entries');
     }
   }
 
