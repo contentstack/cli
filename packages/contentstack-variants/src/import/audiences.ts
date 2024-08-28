@@ -3,6 +3,7 @@ import { existsSync } from 'fs';
 import { sanitizePath } from '@contentstack/cli-utilities';
 import { APIConfig, AudienceStruct, ImportConfig, LogType } from '../types';
 import { PersonalizationAdapter, fsUtil, lookUpAttributes } from '../utils';
+import { Command } from '@contentstack/cli-command';
 
 export default class Audiences extends PersonalizationAdapter<ImportConfig> {
   private mapperDirPath: string;
@@ -14,10 +15,10 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
   private audienceConfig: ImportConfig['modules']['personalization']['audiences'];
   public attributeConfig: ImportConfig['modules']['personalization']['attributes'];
 
-  constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
+  constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log, readonly command: Command) {
     const conf: APIConfig = {
       config,
-      baseURL: config.modules.personalization.baseURL[config.region.name],
+      baseURL: config.modules.personalization.baseURL[config.region.name] || command.personalizeUrl,
       headers: { 'X-Project-Uid': config.modules.personalization.project_id, authtoken: config.auth_token },
     };
     super(Object.assign(config, conf));
