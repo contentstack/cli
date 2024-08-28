@@ -49,7 +49,7 @@ class ModuleImporter {
     if (
       !this.importConfig.skipAudit &&
       (!this.importConfig.moduleName ||
-        ['content-types', 'global-fields', 'entries', 'extensions', 'workflows'].includes(this.importConfig.moduleName))
+        ['content-types', 'global-fields', 'entries', 'extensions', 'workflows', 'custom-roles'].includes(this.importConfig.moduleName))
     ) {
       if (!(await this.auditImportData(logger))) {
         return { noSuccessMsg: true };
@@ -136,7 +136,7 @@ class ModuleImporter {
         args.push('--modules', this.importConfig.moduleName);
       } else if (this.importConfig.modules.types.length) {
         this.importConfig.modules.types
-          .filter((val) => ['content-types', 'global-fields', 'entries', 'extensions', 'workflows'].includes(val))
+          .filter((val) => ['content-types', 'global-fields', 'entries', 'extensions', 'workflows', 'custom-roles'].includes(val))
           .forEach((val) => {
             args.push('--modules', val);
           });
