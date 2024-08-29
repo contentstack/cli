@@ -863,7 +863,7 @@ export default class Entries {
     };
 
     if (mandatory) {
-      if ((data_type === 'json' && field_metadata.allow_json_rte && isJsonRteEmpty()) || isEntryEmpty()) {
+      if ((data_type === 'json' && field_metadata.allow_json_rte && isJsonRteEmpty()) || (!(data_type === 'json') && isEntryEmpty())) {
         return [
           {
             uid: this.currentUid,

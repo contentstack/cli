@@ -132,7 +132,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingSelectFeild,
       missingEntry,
       missingMandatoryFields,
-      missingTitleFields;
+      missingTitleFields,
       missingRefInCustomRoles;
 
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
@@ -218,7 +218,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingCtRefsInWorkflow,
       missingSelectFeild,
       missingMandatoryFields,
-      missingTitleFields
+      missingTitleFields,
       missingRefInCustomRoles,
     };
   }
