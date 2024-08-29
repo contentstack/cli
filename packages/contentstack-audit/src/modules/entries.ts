@@ -57,6 +57,7 @@ export default class Entries {
   protected missingRefs: Record<string, any> = {};
   protected missingSelectFeild: Record<string, any> = {};
   protected missingMandatoryFields: Record<string, any> = {};
+  protected missingTitleFields: Record<string, any> = {};
   public entryMetaData: Record<string, any>[] = [];
   public moduleName: keyof typeof auditConfig.moduleConfig = 'entries';
 
@@ -71,11 +72,14 @@ export default class Entries {
     this.folderPath = resolve(sanitizePath(config.basePath), sanitizePath(config.moduleConfig.entries.dirName));
   }
 
-  validateModules(moduleName: keyof typeof auditConfig.moduleConfig, moduleConfig: Record<string, unknown>): keyof typeof auditConfig.moduleConfig {
+  validateModules(
+    moduleName: keyof typeof auditConfig.moduleConfig,
+    moduleConfig: Record<string, unknown>,
+  ): keyof typeof auditConfig.moduleConfig {
     if (Object.keys(moduleConfig).includes(moduleName)) {
       return moduleName;
     }
-    return 'entries'
+    return 'entries';
   }
 
   /**
@@ -168,6 +172,7 @@ export default class Entries {
       missingEntryRefs: this.missingRefs,
       missingSelectFeild: this.missingSelectFeild,
       missingMandatoryFields: this.missingMandatoryFields,
+      missingTitleFields: this.missingTitleFields,
     };
   }
 
@@ -199,7 +204,7 @@ export default class Entries {
   async fixPrerequisiteData() {
     this.ctSchema = (await new ContentType({
       fix: true,
-      log: () => { },
+      log: () => {},
       config: this.config,
       moduleName: 'content-types',
       ctSchema: this.ctSchema,
@@ -207,7 +212,7 @@ export default class Entries {
     }).run(true)) as ContentTypeStruct[];
     this.gfSchema = (await new GlobalField({
       fix: true,
-      log: () => { },
+      log: () => {},
       config: this.config,
       moduleName: 'global-fields',
       ctSchema: this.ctSchema,
@@ -220,7 +225,7 @@ export default class Entries {
     if (existsSync(extensionPath)) {
       try {
         this.extensions = Object.keys(JSON.parse(readFileSync(extensionPath, 'utf8')));
-      } catch (error) { }
+      } catch (error) {}
     }
 
     if (existsSync(marketplacePath)) {
@@ -233,7 +238,7 @@ export default class Entries {
           ) as string[];
           this.extensions.push(...metaData);
         }
-      } catch (error) { }
+      } catch (error) {}
     }
   }
 
@@ -415,19 +420,19 @@ export default class Entries {
 
     return missingRefs.length
       ? [
-        {
-          tree,
-          data_type,
-          missingRefs,
-          display_name,
-          ct_uid: this.currentUid,
-          name: this.currentTitle,
-          treeStr: tree
-            .map(({ name }) => name)
-            .filter((val) => val)
-            .join(' ➜ '),
-        },
-      ]
+          {
+            tree,
+            data_type,
+            missingRefs,
+            display_name,
+            ct_uid: this.currentUid,
+            name: this.currentTitle,
+            treeStr: tree
+              .map(({ name }) => name)
+              .filter((val) => val)
+              .join(' ➜ '),
+          },
+        ]
       : [];
   }
 
@@ -587,19 +592,19 @@ export default class Entries {
 
     return missingRefs.length
       ? [
-        {
-          tree,
-          data_type,
-          missingRefs,
-          display_name,
-          uid: this.currentUid,
-          name: this.currentTitle,
-          treeStr: tree
-            .map(({ name }) => name)
-            .filter((val) => val)
-            .join(' ➜ '),
-        },
-      ]
+          {
+            tree,
+            data_type,
+            missingRefs,
+            display_name,
+            uid: this.currentUid,
+            name: this.currentTitle,
+            treeStr: tree
+              .map(({ name }) => name)
+              .filter((val) => val)
+              .join(' ➜ '),
+          },
+        ]
       : [];
   }
 
@@ -858,10 +863,7 @@ export default class Entries {
     };
 
     if (mandatory) {
-      if (
-        (data_type === 'json' && field_metadata.allow_json_rte && isJsonRteEmpty()) ||
-        (!(data_type === 'json') && isEntryEmpty())
-      ) {
+      if ((data_type === 'json' && field_metadata.allow_json_rte && isJsonRteEmpty()) || isEntryEmpty()) {
         return [
           {
             uid: this.currentUid,
@@ -1261,6 +1263,11 @@ export default class Entries {
             let { title } = entries[entryUid];
 
             if (entries[entryUid].hasOwnProperty('title') && !title) {
+              this.missingTitleFields[entryUid] = {
+                'Entry UID': entryUid,
+                'Content Type UID': uid,
+                "Locale": code,
+              };
               this.log(
                 `The 'title' field in Entry with UID '${entryUid}' of Content Type '${uid}' in Locale '${code}' is empty.`,
                 `error`,
