@@ -56,6 +56,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingCtRefsInWorkflow,
       missingSelectFeild,
       missingMandatoryFields,
+      missingTitleFields
     } = await this.scanAndFix();
 
     this.showOutputOnScreen([
@@ -69,13 +70,17 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     this.showOutputOnScreenWorkflowsAndExtension([
       { module: 'Entries Mandatory Field', missingRefs: missingMandatoryFields },
     ]);
+    this.showOutputOnScreenWorkflowsAndExtension([
+      { module: 'Entries Title Field', missingRefs: missingTitleFields },
+    ]);
     if (
       !isEmpty(missingCtRefs) ||
       !isEmpty(missingGfRefs) ||
       !isEmpty(missingEntryRefs) ||
       !isEmpty(missingCtRefsInWorkflow) ||
       !isEmpty(missingCtRefsInExtensions) ||
-      !isEmpty(missingSelectFeild)
+      !isEmpty(missingSelectFeild) ||
+      !isEmpty(missingTitleFields)
     ) {
       if (this.currentCommand === 'cm:stacks:audit') {
         this.log(this.$t(auditMsg.FINAL_REPORT_PATH, { path: this.sharedConfig.reportPath }), 'warn');
@@ -121,7 +126,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingCtRefsInWorkflow,
       missingSelectFeild,
       missingEntry,
-      missingMandatoryFields;
+      missingMandatoryFields,
+      missingTitleFields;
 
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       print([
@@ -154,11 +160,15 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           missingEntryRefs = missingEntry.missingEntryRefs ?? {};
           missingSelectFeild = missingEntry.missingSelectFeild ?? {};
           missingMandatoryFields = missingEntry.missingMandatoryFields ?? {};
+          missingTitleFields = missingEntry.missingTitleFields ?? {};
           await this.prepareReport(module, missingEntryRefs);
 
           await this.prepareReport(`Entries_Select_feild`, missingSelectFeild);
 
           await this.prepareReport('Entries_Mandatory_feild', missingMandatoryFields);
+
+          await this.prepareReport('Entries_Title_feild', missingTitleFields);
+
           break;
         case 'workflows':
           missingCtRefsInWorkflow = await new Workflows({
@@ -198,6 +208,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingCtRefsInWorkflow,
       missingSelectFeild,
       missingMandatoryFields,
+      missingTitleFields
     };
   }
 
@@ -416,7 +427,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     moduleName: keyof typeof config.moduleConfig | keyof typeof config.ReportTitleForEntries,
     listOfMissingRefs: Record<string, any>,
   ): Promise<void> {
-    if (Object.keys(config.moduleConfig).includes(moduleName)) {
+    if (Object.keys(config.moduleConfig).includes(moduleName) || config.feild_level_modules.includes(moduleName)) {
       const csvPath = join(sanitizePath(this.sharedConfig.reportPath), `${sanitizePath(moduleName)}.csv`);
       return new Promise<void>((resolve, reject) => {
         // file deepcode ignore MissingClose: Will auto close once csv stream end
