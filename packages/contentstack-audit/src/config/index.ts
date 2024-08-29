@@ -80,7 +80,9 @@ const config = {
   ReportTitleForEntries: {
     Entries_Select_feild: 'Entries_Select_feild',
     Entries_Mandatory_feild: 'Entries_Mandatory_feild',
+    Entries_Title_feild: 'Entries_Title_feild'
   },
+  'feild_level_modules' : ['Entries_Title_feild']
 };
 
 export default config;
