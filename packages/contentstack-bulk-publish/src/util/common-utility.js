@@ -13,16 +13,16 @@ function fetchBulkPublishLimit(orgUid) {
     } else if (defaultPlan?.value && defaultPlan?.utilize) {
       bulkPublishLimit = Math.ceil((defaultPlan.value * defaultPlan.utilize) / 100);
     }
-  }else{
-      cliux.print(
-        'Bulk publish limit not found in config. Using default limit. Please set the limit using $csdx config:set:rate-limit',
-        { color: 'yellow' },
-      );
-      // TODO: Update the link once the rate-limit documentation is ready
-      cliux.print(
-        'Suggestions: To set the rate limit, visit https://www.contentstack.com/docs/developers/cli#get-started-with-contentstack-command-line-interface-cli',
-        { color: 'blue' },
-      );
+  } else {
+    cliux.print(
+      'Bulk publish limit not found in config. Using default limit. Please set the limit using $csdx config:set:rate-limit',
+      { color: 'yellow' },
+    );
+    // TODO: Update the link once the rate-limit documentation is ready
+    cliux.print(
+      'Suggestions: To set the rate limit, visit https://www.contentstack.com/docs/developers/cli#get-started-with-contentstack-command-line-interface-cli',
+      { color: 'blue' },
+    );
   }
   return bulkPublishLimit;
 }
