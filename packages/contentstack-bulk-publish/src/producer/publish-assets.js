@@ -6,6 +6,7 @@ const { performBulkPublish, publishAsset, initializeLogger } = require('../consu
 const retryFailedLogs = require('../util/retryfailed');
 const { validateFile } = require('../util/fs');
 const { isEmpty } = require('../util');
+const { fetchBulkPublishLimit } = require('../util/common-utility');
 
 const queue = getQueue();
 let logFileName;
@@ -14,7 +15,7 @@ let filePath;
 
 /* eslint-disable no-param-reassign */
 
-async function getAssets(stack, folder, bulkPublish, environments, locale, apiVersion, skip = 0) {
+async function getAssets(stack, folder, bulkPublish, environments, locale, apiVersion, bulkPublishLimit, skip = 0) {
   return new Promise((resolve, reject) => {
     let queryParams = {
       folder: folder,
@@ -33,18 +34,27 @@ async function getAssets(stack, folder, bulkPublish, environments, locale, apiVe
           let assets = assetResponse.items;
           for (let index = 0; index < assetResponse.items.length; index++) {
             if (assets[index].is_dir === true) {
-              await getAssets(stack, assets[index].uid, bulkPublish, environments, locale, apiVersion, 0);
+              await getAssets(
+                stack,
+                assets[index].uid,
+                bulkPublish,
+                environments,
+                locale,
+                apiVersion,
+                bulkPublishLimit,
+                0,
+              );
               continue;
             }
             if (bulkPublish) {
-              if (bulkPublishSet.length < 10) {
+              if (bulkPublishSet.length < bulkPublishLimit) {
                 bulkPublishSet.push({
                   uid: assets[index].uid,
                   locale,
                   publish_details: assets[index].publish_details || [],
                 });
               }
-              if (bulkPublishSet.length === 10) {
+              if (bulkPublishSet.length === bulkPublishLimit) {
                 await queue.Enqueue({
                   assets: bulkPublishSet,
                   Type: 'asset',
@@ -56,7 +66,11 @@ async function getAssets(stack, folder, bulkPublish, environments, locale, apiVe
                 bulkPublishSet = [];
               }
 
-              if (assetResponse.items.length - 1 === index && bulkPublishSet.length > 0 && bulkPublishSet.length < 10) {
+              if (
+                assetResponse.items.length - 1 === index &&
+                bulkPublishSet.length > 0 &&
+                bulkPublishSet.length < bulkPublishLimit
+              ) {
                 await queue.Enqueue({
                   assets: bulkPublishSet,
                   Type: 'asset',
@@ -81,7 +95,7 @@ async function getAssets(stack, folder, bulkPublish, environments, locale, apiVe
           if (skip === assetResponse.count) {
             return resolve(true);
           }
-          await getAssets(stack, folder, bulkPublish, environments, locale, apiVersion, skip);
+          await getAssets(stack, folder, bulkPublish, environments, locale, apiVersion, bulkPublishLimit, skip);
           return resolve();
         } else {
           resolve();
@@ -133,8 +147,9 @@ async function start({ retryFailed, bulkPublish, environments, folderUid, locale
     }
   } else if (folderUid) {
     setConfig(config, bulkPublish);
+    const bulkPublishLimit = fetchBulkPublishLimit(stack?.org_uid);
     for (const element of locales) {
-      await getAssets(stack, folderUid, bulkPublish, environments, element, apiVersion);
+      await getAssets(stack, folderUid, bulkPublish, environments, element, apiVersion, bulkPublishLimit);
     }
   }
 }
