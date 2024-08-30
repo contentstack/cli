@@ -723,7 +723,7 @@ export default class Entries {
    */
   validateSelectField(tree: Record<string, unknown>[], fieldStructure: SelectFeildStruct, field: any) {
     const { display_name, enum: selectOptions, multiple, min_instance, display_type, data_type } = fieldStructure;
-    if (field === null || field === '' || field?.length === 0 || (!field && data_type !== 'number')) {
+    if (field === null || field === '' || (Array.isArray(field) && field.length === 0) || (!field && data_type !== 'number')) {
       let missingCTSelectFieldValues = 'Not Selected';
       return [
         {
