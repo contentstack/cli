@@ -912,14 +912,13 @@ export default class EntriesImport extends BaseClass {
       if (chunk) {
         let apiContent = values(chunk as Record<string, any>[]);
         let apiContentDuplicate: any = [];
-        apiContent.forEach((content: Record<string, any>) => {
-          content?.publish_details?.forEach((publish: Record<string, any>) => {
-            let c2 = { ...content };
-            c2.locale = publish.locale;
-            c2.publish_details = [publish];
-            apiContentDuplicate.push(c2);
-          });
-        });
+        apiContentDuplicate = apiContent.flatMap((content: Record<string, any>) =>
+          content?.publish_details?.map((publish: Record<string, any>) => ({
+            ...content,
+            locale: publish.locale,
+            publish_details: [publish],
+          }))
+        );   
         apiContent = apiContentDuplicate;
         await this.makeConcurrentCall({
           apiContent,
