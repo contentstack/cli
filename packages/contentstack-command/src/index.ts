@@ -93,6 +93,18 @@ abstract class ContentstackCommand extends Command {
     }
     throw new CLIError('No token found');
   }
+
+  get developerHubUrl() {
+    return this.region.developerHubUrl;
+  }
+
+  get launchHubUrl() {
+    return this.region.launchHubUrl;
+  }
+
+  get personalizeUrl() {
+    return this.region.personalizeUrl;
+  }
 }
 
 module.exports = {

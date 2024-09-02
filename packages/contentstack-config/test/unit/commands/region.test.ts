@@ -13,6 +13,9 @@ describe('Region command', function () {
     cma: 'https://api.contentstack.com',
     cda: 'https://cda.contentstack.com',
     uiHost: '',
+    'developerHubUrl': 'https://developerhub-api.contentstack.com',
+    'launchHubUrl': 'https://launch-api.contentstack.com',
+    'personalizeUrl': 'https://personalization-api.contentstack.com',
   };
   let cliuxPrintStub;
   beforeEach(function () {
