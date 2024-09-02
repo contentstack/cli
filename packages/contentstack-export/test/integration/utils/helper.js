@@ -3,11 +3,12 @@ const _ = require('lodash');
 const { default: config } = require('../../../lib/config');
 const { Command } = require('@contentstack/cli-command');
 const { managementSDKClient, HttpClient } = require('@contentstack/cli-utilities');
-const { getDeveloperHubUrl } = require('../../../lib/utils/marketplace-app-helper');
 const pjson = require('../../../package.json');
 const { REGIONS } = require('../../config.json');
 const { expect } = require('@oclif/test');
 const { APP_ENV, DELIMITER, KEY_VAL_DELIMITER } = process.env;
+const { Command } = require('@contentstack/cli-command');
+const command = new Command();
 
 let envData = { NA: {}, EU: {}, 'AZURE-NA': {}, 'AZURE-EU': {}, env_pushed: false };
 
@@ -185,7 +186,7 @@ const getMarketplaceAppsCount = async (stack) => {
 };
 
 const getAllStackSpecificApps = async (stack, skip = 0) => {
-  const developerHubBaseUrl = await getDeveloperHubUrl(config);
+  const developerHubBaseUrl = command.developerHubUrl;
   const httpClient = new HttpClient().headers({
     authtoken: config.auth_token,
     organization_uid: config.org_uid,
