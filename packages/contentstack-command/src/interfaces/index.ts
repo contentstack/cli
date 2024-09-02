@@ -3,4 +3,7 @@ export interface Region {
   cma: string;
   cda: string;
   uiHost: string;
+  developerHubUrl: string;
+  launchHubUrl: string;
+  personalizeUrl: string;
 }
