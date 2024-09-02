@@ -18,6 +18,9 @@ export default class RegionGetCommand extends BaseCommand<typeof RegionGetComman
     cliux.print(`CDA HOST: ${currentRegion.cda}`);
     cliux.print(`CMA HOST: ${currentRegion.cma}`);
     cliux.print(`UI HOST: ${currentRegion.uiHost}`);
+    cliux.print(`Developer Hub URL: ${currentRegion.developerHubUrl}`);
+    cliux.print(`Launch URL: ${currentRegion.launchHubUrl}`);
+    cliux.print(`Personalize URL: ${currentRegion.personalizeUrl}`);
     this.logger.error(`Currently using ${currentRegion.name} region`);
 
   }
