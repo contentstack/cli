@@ -11,7 +11,7 @@ export interface ExternalConfig {
 }
 
 export default interface ImportConfig extends DefaultConfig, ExternalConfig {
-  cliLogsPath: string;
+  cliLogsPath?: string;
   contentDir: string;
   data: string;
   management_token?: string;
