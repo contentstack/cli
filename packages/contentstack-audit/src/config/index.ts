@@ -2,7 +2,7 @@ const config = {
   showTerminalOutput: true,
   skipRefs: ['sys_assets'],
   skipFieldTypes: ['taxonomy', 'group'],
-  modules: ['content-types', 'global-fields', 'entries', 'extensions', 'workflows'],
+  modules: ['content-types', 'global-fields', 'entries', 'extensions', 'workflows', 'custom-roles'],
   'fix-fields': ['reference', 'global_field', 'json:rte', 'json:extension', 'blocks', 'group', 'content_types'],
   moduleConfig: {
     'content-types': {
@@ -34,6 +34,11 @@ const config = {
       name: 'extensions',
       dirName: 'extensions',
       fileName: 'extensions.json',
+    },
+    'custom-roles': {
+      name: 'custom-roles',
+      dirName: 'custom-roles',
+      fileName: 'custom-roles.json',
     },
   },
   entries: {
@@ -75,7 +80,9 @@ const config = {
   ReportTitleForEntries: {
     Entries_Select_feild: 'Entries_Select_feild',
     Entries_Mandatory_feild: 'Entries_Mandatory_feild',
+    Entries_Title_feild: 'Entries_Title_feild',
   },
+  feild_level_modules: ['Entries_Title_feild', 'Entries_Mandatory_feild', 'Entries_Select_feild'],
 };
 
 export default config;
