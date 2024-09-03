@@ -1,0 +1,52 @@
+import { Modules } from '.';
+
+export default interface DefaultConfig {
+  host: string;
+  modules: {
+    customRoles: {
+      dirName: string;
+      fileName: string;
+      dependencies: Modules[];
+    };
+    environments: {
+      dirName: string;
+      fileName: string;
+      dependencies: Modules[];
+    };
+    extensions: {
+      dirName: string;
+      fileName: string;
+      dependencies: Modules[];
+    };
+    assets: {
+      dirName: string;
+      fileName: string;
+      dependencies: Modules[];
+    };
+    'content-types': {
+      dirName: string;
+      fileName: string;
+      dependencies: Modules[];
+    };
+    entries: {
+      dirName: string;
+      fileName: string;
+      dependencies: Modules[];
+    };
+    'global-fields': {
+      dirName: string;
+      fileName: string;
+      dependencies: Modules[];
+    };
+    marketplace_apps: {
+      dirName: string;
+      fileName: string;
+      dependencies: Modules[];
+    };
+    taxonomies: {
+      dirName: string;
+      fileName: string;
+      dependencies?: Modules[];
+    };
+  };
+}
