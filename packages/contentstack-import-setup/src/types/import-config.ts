@@ -12,16 +12,12 @@ export interface ExternalConfig {
 
 export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   cliLogsPath: string;
-  canCreatePrivateApp: boolean;
   contentDir: string;
   data: string;
   management_token?: string;
   apiKey: string;
   forceStopMarketplaceAppsPrompt: boolean;
-  skipPrivateAppRecreationIfExist: boolean;
   auth_token?: string;
-  branchName?: string;
-  securedAssets?: boolean;
   contentTypes?: string[];
   branches?: branch[];
   branchEnabled?: boolean;
@@ -36,10 +32,7 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   };
   access_token?: string;
   isAuthenticated?: boolean;
-  importWebhookStatus?: string;
   target_stack?: string;
-  singleModuleImport?: boolean;
-  useBackedupDir?: string;
   masterLocale: masterLocale;
   backupDir: string;
   backupConcurrency?: number;
@@ -47,11 +40,7 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   destinationStackName?: string;
   org_uid?: string;
   contentVersion: number;
-  replaceExisting?: boolean;
-  skipExisting?: boolean;
-  skipAudit?: boolean;
   stackName?: string;
-  'exclude-global-modules': false;
 }
 
 type branch = {
