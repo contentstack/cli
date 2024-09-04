@@ -97,18 +97,6 @@ export async function askEarlyAccessHeaderAlias(): Promise<string> {
   });
 }
 
-export function handleErrorMsg(err) {
-  if (err?.errorMessage) {
-    cliux.print(`Error: ${err.errorMessage}`, { color: 'red' });
-  } else if (err?.message) {
-    cliux.print(`Error: ${err.message}`, { color: 'red' });
-  } else {
-    console.log(err);
-    cliux.print(`Error: ${messageHandler.parse('CLI_CONFIG_API_FAILED')}`, { color: 'red' });
-  }
-  process.exit(1);
-}
-
 export const askOrgID = async (): Promise<string> => {
   return cliux.inquire<string>({
     type: 'input',
