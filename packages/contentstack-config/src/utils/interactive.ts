@@ -97,30 +97,10 @@ export async function askEarlyAccessHeaderAlias(): Promise<string> {
   });
 }
 
-export function handleErrorMsg(err) {
-  if (err?.errorMessage) {
-    cliux.print(`Error: ${err.errorMessage}`, { color: 'red' });
-  } else if (err?.message) {
-    cliux.print(`Error: ${err.message}`, { color: 'red' });
-  } else {
-    console.log(err);
-    cliux.print(`Error: ${messageHandler.parse('CLI_BRANCH_API_FAILED')}`, { color: 'red' });
-  }
-  process.exit(1);
-}
-
 export const askOrgID = async (): Promise<string> => {
   return cliux.inquire<string>({
     type: 'input',
-    message: 'CLI_CONFIG_SET_RATE_LIMIT_FLAG_O_DESCRIPTION',
+    message: 'Provide the organization UID',
     name: 'org',
-  });
-};
-
-export const askLimitName = async (): Promise<string> => {
-  return cliux.inquire<string>({
-    type: 'input',
-    message: 'CLI_CONFIG_SET_RATE_LIMIT_FLAG_L_DESCRIPTION',
-    name: 'limitName',
   });
 };
