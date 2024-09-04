@@ -19,3 +19,19 @@ export interface Region {
   personalizeUrl: string;
   launchHubUrl: string;
 }
+
+
+export interface RateLimitConfig {
+  getLimit?: {
+    value: number;
+    utilize: number;
+  };
+  limit?: {
+    value: number;
+    utilize: number;
+  };
+  bulkLimit?: {
+    value: number;
+    utilize: number;
+  };
+}
