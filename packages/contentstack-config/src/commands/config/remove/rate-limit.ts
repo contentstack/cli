@@ -13,10 +13,6 @@ export default class RateLimitRemoveCommand extends Command {
   static examples = ['$ csdx config:remove:rate-limit --org <<org_uid>>'];
   async run() {
     try {
-      if (!isAuthenticated()) {
-        const err = { errorMessage: 'You are not logged in. Please login with command $ csdx auth:login' };
-        cliux.print(err.errorMessage, { color: 'red' });
-      }
       const { flags } = await this.parse(RateLimitRemoveCommand);
       let { org } = flags;
       if (!org) {
