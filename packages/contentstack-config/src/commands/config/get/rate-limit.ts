@@ -1,20 +1,15 @@
-import { cliux, configHandler, isAuthenticated } from '@contentstack/cli-utilities';
+import { cliux, configHandler, isAuthenticated, messageHandler } from '@contentstack/cli-utilities';
 import { Command } from '@contentstack/cli-command';
-import { handleErrorMsg } from '../../../utils/interactive';
 import { RateLimitConfig } from '../../../interfaces';
 
 export default class RateLimitGetCommand extends Command {
-
+  static description: string = messageHandler.parse('Get rate-limit of organizations');
   static examples = ['$ csdx config:get:rate-limit'];
 
   async run() {
     try {
-      if (!isAuthenticated()) {
-        const err = { errorMessage: 'You are not logged in. Please login with command $ csdx auth:login' };
-        handleErrorMsg(err);
-      }
-      const rateLimits = configHandler.get('rateLimits') || {};
-      const rateLimitData: RateLimitConfig = rateLimits.rateLimit || {};
+      const rateLimit = configHandler.get('rateLimit') || {};
+      const rateLimitData: RateLimitConfig = rateLimit || {};
 
       const tableData = Object.entries(rateLimitData).map(([org, limits]) => ({
         Org: org === 'default' ? 'default' : org,
@@ -37,9 +32,6 @@ export default class RateLimitGetCommand extends Command {
           minWidth: 20,
         },
         'Bulk Limit': {
-          minWidth: 20,
-        },
-        'Download Limit': {
           minWidth: 20,
         },
       };
