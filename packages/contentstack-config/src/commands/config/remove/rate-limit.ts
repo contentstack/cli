@@ -1,9 +1,9 @@
-import { cliux, configHandler, FlagInput, flags, messageHandler } from '@contentstack/cli-utilities';
+import { cliux, configHandler, FlagInput, flags } from '@contentstack/cli-utilities';
 import { Command } from '@contentstack/cli-command';
 import { askOrgID } from '../../../utils/interactive';
 
 export default class RateLimitRemoveCommand extends Command {
-  static description: string = messageHandler.parse('Remove rate-limit of the organization');
+  static description: string = 'Remove rate-limit of the organization';
 
   static flags: FlagInput = {
     org: flags.string({
