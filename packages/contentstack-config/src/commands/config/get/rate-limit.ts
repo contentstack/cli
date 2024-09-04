@@ -1,24 +1,20 @@
-import { cliux, configHandler, messageHandler } from '@contentstack/cli-utilities';
+import { cliux, configHandler } from '@contentstack/cli-utilities';
 import { Command } from '@contentstack/cli-command';
 import { RateLimitConfig } from '../../../interfaces';
 
 export default class RateLimitGetCommand extends Command {
-  static description: string = messageHandler.parse('Get rate-limit of organizations');
+  static description: string = 'Get rate-limit of organizations';
   static examples = ['$ csdx config:get:rate-limit'];
 
   async run() {
     try {
       const rateLimit = configHandler.get('rateLimit') || {};
-      const rateLimitData: RateLimitConfig = rateLimit || {};
-
-      const tableData = Object.entries(rateLimitData).map(([org, limits]) => ({
+      const formatLimit = (limit) => (limit ? `${limit.value}(${limit.utilize}%)` : '0');
+      const tableData = Object.entries(rateLimit).map(([org, limits]: [string, RateLimitConfig]) => ({
         Org: org === 'default' ? 'default' : org,
-        'Get Limit': limits.getLimit ? `${limits.getLimit.value}(${limits.getLimit.utilize}%)` : '0',
-        Limit: limits.limit ? `${limits.limit.value}(${limits.limit.utilize}%)` : '0',
-        'Bulk Limit': limits.bulkLimit ? `${limits.bulkLimit.value}(${limits.bulkLimit.utilize}%)` : '0',
-        'Download Limit': limits.downloadLimit
-          ? `${limits.downloadLimit.value}(${limits.downloadLimit.utilize}%)`
-          : '0',
+        'Get Limit': formatLimit(limits.getLimit),
+        Limit: formatLimit(limits.limit),
+        'Bulk Limit': formatLimit(limits.bulkLimit),
       }));
 
       const columns = {
