@@ -1,4 +1,4 @@
-import { cliux, configHandler, isAuthenticated, messageHandler } from '@contentstack/cli-utilities';
+import { cliux, configHandler, messageHandler } from '@contentstack/cli-utilities';
 import { Command } from '@contentstack/cli-command';
 import { RateLimitConfig } from '../../../interfaces';
 

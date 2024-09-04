@@ -1,4 +1,4 @@
-import { cliux, configHandler, FlagInput, flags, isAuthenticated, messageHandler } from '@contentstack/cli-utilities';
+import { cliux, configHandler, FlagInput, flags, messageHandler } from '@contentstack/cli-utilities';
 import { Command } from '@contentstack/cli-command';
 import { askOrgID } from '../../../utils/interactive';
 
