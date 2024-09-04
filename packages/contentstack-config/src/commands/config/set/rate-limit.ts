@@ -1,15 +1,8 @@
-import {
-  flags as _flags,
-  isAuthenticated,
-  FlagInput,
-  ArgInput,
-  args,
-  managementSDKClient,
-} from '@contentstack/cli-utilities';
+import { flags, isAuthenticated, FlagInput, managementSDKClient, cliux } from '@contentstack/cli-utilities';
 
-import { RateLimitHandler } from '../../../utils/rateLimit-handler';
+import { RateLimitHandler } from '../../../utils/rate-limit-handler';
 import { BaseCommand } from '../../../base-command';
-import { askLimitName, askOrgID } from '../../../utils/interactive';
+import { askOrgID } from '../../../utils/interactive';
 
 interface RateLimitConfig {
   org?: string;
@@ -23,23 +16,23 @@ export default class RateLimitSetCommand extends BaseCommand<typeof RateLimitSet
   static description = 'Set rate-limit for CLI';
 
   static flags: FlagInput = {
-    org: _flags.string({
-      description: 'To add organisation uid',
+    org: flags.string({
+      description: 'Provide the organization UID',
     }),
 
-    utilize: _flags.string({
-      description: 'To set the utilization percentage',
+    utilize: flags.string({
+      description: 'Provide the utilization percentage',
       default: '50',
     }),
 
-    'limit-name': _flags.string({
-      description: 'To set the limit for getLimit, limit, bulkLimit',
+    'limit-name': flags.string({
+      description: '[Optional] Provide the limit names separated by comma',
       multiple: true,
     }),
 
-    default: _flags.boolean({
+    default: flags.boolean({
       default: false,
-      description: 'To reset to default rate limits',
+      description: 'Reset to default rate limit',
     }),
   };
 
@@ -50,39 +43,27 @@ export default class RateLimitSetCommand extends BaseCommand<typeof RateLimitSet
     '$ csdx config:set:rate-limit --org <<org_uid>> --default',
   ];
 
-  static args: ArgInput = {
-    ratelimit: args.string({ description: 'Rate limit for the Organisation' }),
-  };
-
   public async run(): Promise<void> {
     if (!isAuthenticated()) {
-      console.log('Please login to execute this command, csdx auth:login');
-      this.exit(1);
+      const err = { errorMessage: 'You are not logged in. Please login with command $ csdx auth:login' };
+      cliux.print(err.errorMessage, { color: 'red' });
     }
 
-    const { args, flags } = await this.parse(RateLimitSetCommand);
+    const { flags } = await this.parse(RateLimitSetCommand);
     const config: RateLimitConfig = {};
 
     let { org, utilize, 'limit-name': limitName, default: isDefault } = flags;
+    if (!org) {
+      org = await askOrgID();
+    }
     if (isDefault) {
-      if (!org) {
-        org = await askOrgID(); // Prompt for organization ID if not provided
-      }
-      // Reset to default
       config.org = org;
       config.utilize = 50;
       config.limitName = ['getLimit', 'limit', 'bulkLimit'];
     } else {
-      if (!org) {
-        org = await askOrgID(); // Prompt for organization ID if not provided
-      }
-      if (!limitName || limitName.length === 0) {
-        limitName = await askLimitName(); // Prompt for limit names if not provided
-      }
-      // Apply provided values or set defaults
       config.org = org;
       config.utilize = Number(utilize.replace('%', '')) || 50; // Handle percentage input
-      config.limitName = limitName || ['getLimit', 'limit', 'bulkLimit'];
+      config.limitName = ['getLimit', 'limit', 'bulkLimit'];
     }
 
     const limitHandler = new RateLimitHandler();
@@ -92,8 +73,7 @@ export default class RateLimitSetCommand extends BaseCommand<typeof RateLimitSet
     try {
       await limitHandler.setRateLimit(config);
     } catch (error) {
-      console.error('An error occurred while setting the rate limit:', error);
-      this.exit(1);
+      this.log('Unable to set the rate limits', error instanceof Error ? error.message : error);
     }
   }
 }
