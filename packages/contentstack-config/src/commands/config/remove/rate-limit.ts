@@ -24,10 +24,7 @@ export default class RateLimitRemoveCommand extends Command {
         cliux.print(`No rate limit found for the organization UID: ${org}`, { color: 'red' });
         return;
       }
-
-      delete rateLimit[org];
-
-      configHandler.set('rateLimit', rateLimit);
+      configHandler.delete(`rateLimit.${org}`);
       cliux.print(`Rate limit entry for organization UID ${org} has been removed.`, { color: 'green' });
     } catch (error) {
       this.log('Unable to remove the rate limit entry', error instanceof Error ? error.message : error);
