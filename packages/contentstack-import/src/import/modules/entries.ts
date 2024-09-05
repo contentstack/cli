@@ -1010,6 +1010,10 @@ export default class EntriesImport extends BaseClass {
       apiOptions.apiData = null;
       return apiOptions;
     }
+    if(requestObject.environments.length === 0 || requestObject.locales.length === 0 ){
+      apiOptions.apiData = null;
+      return apiOptions;
+    }
     apiOptions.apiData = requestObject;
     return apiOptions;
   }
