@@ -50,7 +50,9 @@ class ModuleImporter {
     if (
       !this.importConfig.skipAudit &&
       (!this.importConfig.moduleName ||
-        ['content-types', 'global-fields', 'entries', 'extensions', 'workflows'].includes(this.importConfig.moduleName))
+        ['content-types', 'global-fields', 'entries', 'extensions', 'workflows', 'custom-roles'].includes(
+          this.importConfig.moduleName,
+        ))
     ) {
       if (!(await this.auditImportData(logger))) {
         return { noSuccessMsg: true };
@@ -105,7 +107,11 @@ class ModuleImporter {
     // use the algorithm to determine the parallel and sequential execution of modules
     for (let moduleName of this.importConfig.modules.types) {
       if (this.importConfig.globalModules.includes(moduleName) && this.importConfig['exclude-global-modules']) {
-        log(this.importConfig, `Skipping the import of the global module '${moduleName}', as it already exists in the stack.`,'warn');
+        log(
+          this.importConfig,
+          `Skipping the import of the global module '${moduleName}', as it already exists in the stack.`,
+          'warn',
+        );
         continue;
       }
       await this.importByModuleByName(moduleName);
@@ -137,7 +143,9 @@ class ModuleImporter {
         args.push('--modules', this.importConfig.moduleName);
       } else if (this.importConfig.modules.types.length) {
         this.importConfig.modules.types
-          .filter((val) => ['content-types', 'global-fields', 'entries', 'extensions', 'workflows'].includes(val))
+          .filter((val) =>
+            ['content-types', 'global-fields', 'entries', 'extensions', 'workflows', 'custom-roles'].includes(val),
+          )
           .forEach((val) => {
             args.push('--modules', val);
           });
