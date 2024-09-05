@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.24.0 darwin-arm64 node-v22.2.0
+@contentstack/cli/1.25.0 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -123,12 +123,12 @@ Perform audits and find possible errors in the exported Contentstack data
 ```
 USAGE
   $ csdx audit [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows...] [--columns <value> | ] [--sort <value>] [--filter
-    <value>] [--csv | --no-truncate]
+    content-types|global-fields|entries|extensions|workflows|custom-roles...] [--columns <value> | ] [--sort <value>]
+    [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
-                         <options: content-types|global-fields|entries|extensions|workflows>
+                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles>
   --report-path=<value>  Path to store the audit reports
 
 TABLE FLAGS
@@ -164,9 +164,9 @@ Perform audits and fix possible errors in the exported Contentstack data.
 ```
 USAGE
   $ csdx audit:fix [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows...] [--copy-path <value> --copy-dir] [--fix-only
-    reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value> | ] [--sort
-    <value>] [--filter <value>] [--csv | --no-truncate]
+    content-types|global-fields|entries|extensions|workflows|custom-roles...] [--copy-path <value> --copy-dir]
+    [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value> | ]
+    [--sort <value>] [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   --copy-dir              Create backup from the original data.
@@ -174,7 +174,7 @@ FLAGS
   --fix-only=<option>...  Provide the list of fix options
                           <options: reference|global_field|json:rte|json:extension|blocks|group|content_types>
   --modules=<option>...   Provide the list of modules to be audited
-                          <options: content-types|global-fields|entries|extensions|workflows>
+                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles>
   --report-path=<value>   Path to store the audit reports
 
 TABLE FLAGS
@@ -2378,12 +2378,12 @@ Perform audits and find possible errors in the exported Contentstack data
 ```
 USAGE
   $ csdx cm:stacks:audit [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows...] [--columns <value> | ] [--sort <value>] [--filter
-    <value>] [--csv | --no-truncate]
+    content-types|global-fields|entries|extensions|workflows|custom-roles...] [--columns <value> | ] [--sort <value>]
+    [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
-                         <options: content-types|global-fields|entries|extensions|workflows>
+                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles>
   --report-path=<value>  Path to store the audit reports
 
 TABLE FLAGS
@@ -2421,9 +2421,9 @@ Perform audits and fix possible errors in the exported Contentstack data.
 ```
 USAGE
   $ csdx cm:stacks:audit:fix [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows...] [--copy-path <value> --copy-dir] [--fix-only
-    reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value> | ] [--sort
-    <value>] [--filter <value>] [--csv | --no-truncate]
+    content-types|global-fields|entries|extensions|workflows|custom-roles...] [--copy-path <value> --copy-dir]
+    [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value> | ]
+    [--sort <value>] [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   --copy-dir              Create backup from the original data.
@@ -2431,7 +2431,7 @@ FLAGS
   --fix-only=<option>...  Provide the list of fix options
                           <options: reference|global_field|json:rte|json:extension|blocks|group|content_types>
   --modules=<option>...   Provide the list of modules to be audited
-                          <options: content-types|global-fields|entries|extensions|workflows>
+                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles>
   --report-path=<value>   Path to store the audit reports
 
 TABLE FLAGS
@@ -3525,7 +3525,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.4/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.6/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:add PLUGIN`
 
@@ -3599,7 +3599,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.4/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.6/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN`
 
@@ -3648,7 +3648,7 @@ EXAMPLES
     $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.4/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.6/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PATH`
 
@@ -3678,7 +3678,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.4/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.6/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:remove [PLUGIN]`
 
@@ -3719,7 +3719,7 @@ FLAGS
   --reinstall  Reinstall all plugins after uninstalling.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.4/src/commands/plugins/reset.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.6/src/commands/plugins/reset.ts)_
 
 ## `csdx plugins:uninstall [PLUGIN]`
 
@@ -3747,7 +3747,7 @@ EXAMPLES
   $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.4/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.6/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:unlink [PLUGIN]`
 
@@ -3791,7 +3791,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.4/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.6/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
