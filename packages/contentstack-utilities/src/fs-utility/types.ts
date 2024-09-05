@@ -72,6 +72,8 @@ type FsConstructorOptions = {
   useIndexer?: boolean;
 
   metaHandler?: (array: any) => any;
+
+  isArray?: boolean;
 };
 
 type ChunkFilesGetterType = Promise<Record<string, unknown> | Record<string, unknown>[] | Error>;
