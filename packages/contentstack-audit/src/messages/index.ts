@@ -19,6 +19,7 @@ const commonMsg = {
   EXTENSION_FIX_WARN: `The extension associated with UID {uid} and title '{title}' will be removed.`,
   EXTENSION_FIX_CONFIRMATION: `Would you like to overwrite existing file?`,
   WF_BRANCH_REMOVAL: `Removing the branch '{branch} from workflow with UID {uid} and name {name} will be removed.'`,
+  CR_BRANCH_REMOVAL: `Removing the branch '{branch} from custom role with UID {uid} and name {name} will be removed.'`,
 };
 
 const auditMsg = {
@@ -35,6 +36,7 @@ const auditMsg = {
   SCAN_EXT_SUCCESS_MSG: "Successfully completed scanning the {module} titled '{title}' with UID '{uid}'",
   AUDIT_CMD_DESCRIPTION: 'Perform audits and find possible errors in the exported Contentstack data',
   SCAN_WF_SUCCESS_MSG: 'Successfully completed the scanning of workflow with UID {uid} and name {name}.',
+  SCAN_CR_SUCCESS_MSG: 'Successfully completed the scanning of custom role with UID {uid} and name {name}.',
 };
 
 const auditFixMsg = {
