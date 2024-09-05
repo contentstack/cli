@@ -429,7 +429,6 @@ function updateFileFields(
   } else if (_.isArray(object) && object.length) {
     for (let i = 0; i <= object.length; i++)
       updateFileFields(object[i], object, i, mappedAssetUids, matchedUids, unmatchedUids);
-
     // No need for _.compact() since you want to keep zero values
     parent[pos] = _.filter(object, (value: any) => value !== undefined && value !== null);
   }
