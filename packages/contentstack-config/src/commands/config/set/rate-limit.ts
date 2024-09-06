@@ -2,14 +2,9 @@ import { flags, isAuthenticated, FlagInput, managementSDKClient, cliux } from '@
 import { RateLimitHandler } from '../../../utils/rate-limit-handler';
 import { BaseCommand } from '../../../base-command';
 import { askOrgID } from '../../../utils/interactive';
+import { SetRateLimitConfig } from '../../../interfaces';
+import { limitNamesConfig } from '../../../utils/common-utilities';
 
-interface RateLimitConfig {
-  org?: string;
-  utilize?: number;
-  limitName?: string[];
-  default?: boolean;
-  auth_token?: string;
-}
 
 export default class RateLimitSetCommand extends BaseCommand<typeof RateLimitSetCommand> {
   static description = 'Set rate-limit for CLI';
@@ -20,12 +15,12 @@ export default class RateLimitSetCommand extends BaseCommand<typeof RateLimitSet
     }),
 
     utilize: flags.string({
-      description: 'Provide the utilization percentage',
-      default: '50',
+      description: 'Provide the utilization percentage for rate limit',
+      default: '50%',
     }),
 
     'limit-name': flags.string({
-      description: '[Optional] Provide the limit names separated by comma',
+      description: '[Optional] Provide the limit names separated by comma (,) []',
       multiple: true,
     }),
 
@@ -49,17 +44,14 @@ export default class RateLimitSetCommand extends BaseCommand<typeof RateLimitSet
     }
 
     const { flags } = await this.parse(RateLimitSetCommand);
-    const config: RateLimitConfig = {};
+    let { org, utilize, 'limit-name': limitName } = flags;
+    const config: SetRateLimitConfig = { org: '', limitName: limitNamesConfig};
 
-    let { org, utilize, 'limit-name': limitName, default: isDefault } = flags;
     if (!org) {
       org = await askOrgID();
     }
     config.org = org;
-    if (isDefault) {
-      config.utilize = 50;
-      config['limit-name'] = ['getLimit', 'limit', 'bulkLimit'];
-    }
+
     if (limitName) {
       config['limit-name'] = limitName;
     }
@@ -74,7 +66,7 @@ export default class RateLimitSetCommand extends BaseCommand<typeof RateLimitSet
     try {
       await limitHandler.setRateLimit(config);
     } catch (error) {
-      cliux.error(`error : Couldn't find the organization with UID: ${org}`);
+      cliux.error(`Error : Something went wrong while setting rate limit for org: ${org}`, error);
     }
   }
 }
