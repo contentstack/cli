@@ -20,7 +20,6 @@ export interface Region {
   launchHubUrl: string;
 }
 
-
 export interface RateLimitConfig {
   getLimit?: {
     value: number;
@@ -34,4 +33,11 @@ export interface RateLimitConfig {
     value: number;
     utilize: number;
   };
+}
+
+export interface SetRateLimitConfig {
+  org: string;
+  utilize?: number;
+  limitName?: string[];
+  default?: boolean;
 }
