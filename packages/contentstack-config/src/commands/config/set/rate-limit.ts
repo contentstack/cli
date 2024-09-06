@@ -1,5 +1,4 @@
 import { flags, isAuthenticated, FlagInput, managementSDKClient, cliux } from '@contentstack/cli-utilities';
-
 import { RateLimitHandler } from '../../../utils/rate-limit-handler';
 import { BaseCommand } from '../../../base-command';
 import { askOrgID } from '../../../utils/interactive';
@@ -56,14 +55,16 @@ export default class RateLimitSetCommand extends BaseCommand<typeof RateLimitSet
     if (!org) {
       org = await askOrgID();
     }
+    config.org = org;
     if (isDefault) {
-      config.org = org;
       config.utilize = 50;
-      config.limitName = ['getLimit', 'limit', 'bulkLimit'];
-    } else {
-      config.org = org;
-      config.utilize = Number(utilize.replace('%', '')) || 50; // Handle percentage input
-      config.limitName = ['getLimit', 'limit', 'bulkLimit'];
+      config['limit-name'] = ['getLimit', 'limit', 'bulkLimit'];
+    }
+    if (limitName) {
+      config['limit-name'] = limitName;
+    }
+    if (utilize) {
+      config.utilize = Number(utilize.replace('%', ''));
     }
 
     const limitHandler = new RateLimitHandler();
@@ -73,7 +74,7 @@ export default class RateLimitSetCommand extends BaseCommand<typeof RateLimitSet
     try {
       await limitHandler.setRateLimit(config);
     } catch (error) {
-      this.log('Unable to set the rate limits', error instanceof Error ? error.message : error);
+      cliux.error(`error : Couldn't find the organization with UID: ${org}`);
     }
   }
 }
