@@ -51,7 +51,6 @@ export class RateLimitHandler {
     }
 
     configHandler.set('rateLimit', rateLimit);
-    console.log("🚀 ~ RateLimitHandler ~ setRateLimit ~ rateLimit:", rateLimit)
     cliux.print(`Rate limit has been set successfully`, { color: 'green' });
   }
 }
