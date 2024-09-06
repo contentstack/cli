@@ -1,14 +1,7 @@
 import { cliux, configHandler } from '@contentstack/cli-utilities';
 
-const rateLimit = {
-  default: {
-    getLimit: { value: 10, utilize: 50 },
-    limit: { value: 10, utilize: 50 },
-    bulkLimit: { value: 1, utilize: 50 },
-  },
-};
-
 const requiredLimitsArray = ['getLimit', 'limit', 'bulkLimit'];
+const rateLimit = configHandler.get('rateLimit');
 
 let client: any = {};
 
@@ -26,32 +19,36 @@ export class RateLimitHandler {
       ? config['limit-name'][0].split(',').map((name) => name.trim())
       : [];
 
-    const organizations = await client.organization(config.org).fetch({ include_plan: true });
-    const features = organizations.plan?.features || [];
+    try {
+      const organizations = await client.organization(config.org).fetch({ include_plan: true });
+      const features = organizations.plan?.features || [];
 
-    for (const limitName of limitNames) {
-      if (requiredLimitsArray.includes(limitName)) {
+      const limitsToUpdate = { ...rateLimit.default };
+
+      for (const limitName of requiredLimitsArray) {
         const feature = features.find((f: { uid: string }) => f.uid === limitName);
         if (feature) {
-          rateLimit[config.org][limitName] = {
+          limitsToUpdate[limitName] = {
             value: feature.limit,
             utilize: config.utilize,
           };
         }
       }
-    }
 
-    for (const limitName of requiredLimitsArray) {
-      if (!rateLimit[config.org][limitName]) {
-        rateLimit[config.org][limitName] = {
-          value: limitName === 'bulkLimit' ? 1 : 10,
-          utilize: config.utilize,
-        };
+      for (const limitName of limitNames) {
+        if (requiredLimitsArray.includes(limitName)) {
+          limitsToUpdate[limitName] = {
+            ...limitsToUpdate[limitName],
+            utilize: config.utilize,
+          };
+        }
       }
+      rateLimit[config.org] = limitsToUpdate;
+      configHandler.set('rateLimit', rateLimit);
+      cliux.success('Rate limit has been set successfully');
+    } catch (error) {
+      cliux.error(`Error: Couldn't set the rate limit. ${error.message}`);
     }
-
-    configHandler.set('rateLimit', rateLimit);
-    cliux.print(`Rate limit has been set successfully`, { color: 'green' });
   }
 }
 
