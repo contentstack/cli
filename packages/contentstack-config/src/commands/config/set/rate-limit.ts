@@ -19,7 +19,7 @@ export default class RateLimitSetCommand extends BaseCommand<typeof RateLimitSet
     }),
 
     'limit-name': flags.string({
-      description: '[Optional] Provide the limit names separated by commas [\'limit\', \'getLimit\', \'bulkLimit\']',
+      description: "[Optional] Provide the limit names separated by commas ['limit', 'getLimit', 'bulkLimit']",
       multiple: true,
     }),
 
@@ -39,57 +39,47 @@ export default class RateLimitSetCommand extends BaseCommand<typeof RateLimitSet
     if (!isAuthenticated()) {
       const err = { errorMessage: 'You are not logged in. Please login with command $ csdx auth:login' };
       cliux.print(err.errorMessage, { color: 'red' });
+      this.exit(1);
     }
 
     const { flags } = await this.parse(RateLimitSetCommand);
     let { org, utilize, 'limit-name': limitName } = flags;
-
-    if (utilize) {
-      const utilizeValues = utilize.split(',').map((utilize) => Number(utilize.trim()));
-      if (utilizeValues.some((utilize) => isNaN(utilize) || utilize < 0 || utilize > 100)) {
-        cliux.error('Utilize percentages must be numbers between 0 and 100.');
-        return;
-      }
-
-      if (limitName && limitName.length > 0 && limitName[0].split(',').length !== utilizeValues.length) {
-        cliux.error('The number of utilization percentages must match the number of limit names provided.');
-        return;
-      }
-    }
-
-    if (limitName) {
-      const invalidLimitNames = limitName
-        .flatMap((name) => name.split(','))
-        .map((name) => name.trim())
-        .filter((name) => !limitNamesConfig.includes(name));
-
-      if (invalidLimitNames.length > 0) {
-        cliux.error(`Invalid limit names provided: ${invalidLimitNames.join(', ')}`);
-        return;
-      }
-    }
-
     const config: SetRateLimitConfig = { org: '', limitName: limitNamesConfig };
 
     if (!org) {
       org = await askOrgID();
     }
     config.org = org;
-
-    if (flags.default) {
-      config.default = true;
-    }
-    if (limitName) {
-      config['limit-name'] = limitName.flatMap((name) => name.split(',').map((n) => n.trim()));
-    }
+    config.default = flags.default;
     if (utilize) {
-      config.utilize = utilize.split(',').map((v) => v.trim());
+      const utilizeValues = utilize?.split(',')?.map((u: string) => Number(u.trim()));
+      if (utilizeValues.some((u: number) => isNaN(u) || u < 0 || u > 100)) {
+        cliux.error('Utilize percentages must be numbers between 0 and 100.');
+        return;
+      }
+      if (limitName?.length > 0 && limitName[0]?.split(',')?.length !== utilizeValues.length) {
+        cliux.error('The number of utilization percentages must match the number of limit names provided.');
+        return;
+      } else {
+        config.utilize = utilize.split(',').map((v: string) => v.trim());
+      }
+    }
+
+    if (limitName) {
+      const invalidLimitNames = limitName[0].split(',').map((name: string) => name.trim());
+
+      if (!limitNamesConfig.includes(invalidLimitNames)) {
+        cliux.error(`Invalid limit names provided: ${invalidLimitNames.join(', ')}`);
+        return;
+      } else {
+        config['limit-name'] = limitName[0].split(',').map((n) => n.trim());
+      }
     }
 
     const limitHandler = new RateLimitHandler();
     const managementAPIClient = await managementSDKClient(config);
     limitHandler.setClient(managementAPIClient);
-
+    cliux.success(`Rate limit has been set successfully for org: ${config.org}`);
     try {
       await limitHandler.setRateLimit(config);
     } catch (error) {
