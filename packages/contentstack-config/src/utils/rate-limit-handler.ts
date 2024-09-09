@@ -31,27 +31,20 @@ export class RateLimitHandler {
 
       const limitsToUpdate = { ...rateLimit[config.org] };
 
-      for (const limitName of limitNamesConfig && limitNames) {
-        const feature = features.find((f: { uid: string }) => f.uid === limitName);
-        if (feature) {
-          limitsToUpdate[limitName] = {
-            value: rateLimit[config.org][limitName].value,
-            utilize: utilizeValues[limitNamesConfig.indexOf(limitName)] || Number(config.utilize[0]),
-          };
-        }
-      }
-      for (const [index, limitName] of limitNames.entries()) {
+      limitNames.forEach((limitName, index) => {
         if (limitNamesConfig.includes(limitName)) {
-          limitsToUpdate[limitName] = {
-            ...limitsToUpdate[limitName],
-            utilize: utilizeValues[index] || Number(config.utilize[0]),
-          };
+          const feature = features.find((f: { uid: string }) => f.uid === limitName);
+          if (feature) {
+            limitsToUpdate[limitName] = {
+              value: rateLimit[config.org][limitName]?.value || rateLimit.default[limitName]?.value,
+              utilize: utilizeValues[index] || Number(config.utilize[0]),
+            };
+          }
         }
-      }
+      });
 
       rateLimit[config.org] = limitsToUpdate;
       configHandler.set('rateLimit', rateLimit);
-      cliux.success(`Rate limit has been set successfully for org: ${config.org}`);
     } catch (error) {
       cliux.error(`Error: Unable to set the rate limit`, error?.errorMessage || error?.message || error);
     }
