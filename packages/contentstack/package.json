@@ -151,7 +151,8 @@
     ],
     "hooks": {
       "prerun": [
-        "./lib/hooks/prerun/command-deprecation-check"
+        "./lib/hooks/prerun/command-deprecation-check",
+        "./lib/hooks/prerun/default-rate-limit-check"
       ],
       "init": [
         "./lib/hooks/init/context-init",
