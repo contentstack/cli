@@ -6,7 +6,7 @@ import forEach from 'lodash/forEach';
 import indexOf from 'lodash/indexOf';
 import { join, resolve } from 'path';
 import { readFileSync, existsSync } from 'fs';
-import { FsUtility, HttpResponse } from '@contentstack/cli-utilities';
+import { FsUtility, HttpResponse, sanitizePath } from '@contentstack/cli-utilities';
 
 import VariantAdapter, { VariantHttpClient } from '../utils/variant-api-adapter';
 import {
@@ -53,12 +53,12 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         organization_uid: config.org_uid,
         'X-Project-Uid': config.modules.personalization.project_id,
       },
-    };
+    }; 
     super(Object.assign(omit(config, ['helpers']), conf));
-    this.entriesMapperPath = resolve(config.backupDir, config.branchName || '', 'mapper', 'entries');
+    this.entriesMapperPath = resolve(sanitizePath(config.backupDir), config.branchName || '', 'mapper', 'entries');
     this.personalizationConfig = this.config.modules.personalization;
-    this.entriesDirPath = resolve(config.backupDir, config.branchName || '', config.modules.entries.dirName);
-    this.failedVariantPath = resolve(this.entriesMapperPath, 'failed-entry-variants.json');
+    this.entriesDirPath = resolve(sanitizePath(config.backupDir), config.branchName || '', sanitizePath(config.modules.entries.dirName));
+    this.failedVariantPath = resolve(sanitizePath(this.entriesMapperPath), 'failed-entry-variants.json');
     this.failedVariantEntries = new Map();
   }
 
@@ -71,12 +71,12 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
    * message indicating that no entries were found and return.
    */
   async import() {
-    const filePath = resolve(this.entriesMapperPath, 'data-for-variant-entry.json');
+    const filePath = resolve(sanitizePath(this.entriesMapperPath), 'data-for-variant-entry.json');
     const variantIdPath = resolve(
-      this.config.backupDir,
+      sanitizePath(this.config.backupDir),
       'mapper',
-      this.personalizationConfig.dirName,
-      this.personalizationConfig.experiences.dirName,
+      sanitizePath(this.personalizationConfig.dirName),
+      sanitizePath(this.personalizationConfig.experiences.dirName),
       'variants-uid-mapping.json',
     );
 
@@ -97,18 +97,18 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       return;
     }
 
-    const entriesUidMapperPath = join(this.entriesMapperPath, 'uid-mapping.json');
-    const assetUidMapperPath = resolve(this.config.backupDir, 'mapper', 'assets', 'uid-mapping.json');
-    const assetUrlMapperPath = resolve(this.config.backupDir, 'mapper', 'assets', 'url-mapping.json');
+    const entriesUidMapperPath = join(sanitizePath(this.entriesMapperPath), 'uid-mapping.json');
+    const assetUidMapperPath = resolve(sanitizePath(this.config.backupDir), 'mapper', 'assets', 'uid-mapping.json');
+    const assetUrlMapperPath = resolve(sanitizePath(this.config.backupDir), 'mapper', 'assets', 'url-mapping.json');
     const taxonomiesPath = resolve(
-      this.config.backupDir,
+      sanitizePath(this.config.backupDir),
       'mapper',
-      this.config.modules.taxonomies.dirName,
+      sanitizePath(this.config.modules.taxonomies.dirName),
       'terms',
       'success.json',
     );
-    const marketplaceAppMapperPath = resolve(this.config.backupDir, 'mapper', 'marketplace_apps', 'uid-mapping.json');
-    const envPath = resolve(this.config.backupDir, 'environments', 'environments.json');
+    const marketplaceAppMapperPath = resolve(sanitizePath(this.config.backupDir), 'mapper', 'marketplace_apps', 'uid-mapping.json');
+    const envPath = resolve(sanitizePath(this.config.backupDir), 'environments', 'environments.json');
     // NOTE Read and store list of variant IDs
     this.variantIdList = (fsUtil.readFile(variantIdPath, true) || {}) as Record<string, unknown>;
     if (isEmpty(this.variantIdList)) {
@@ -141,9 +141,9 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     const { content_type, locale, entry_uid } = entriesForVariant;
     const ctConfig = this.config.modules['content-types'];
     const contentType: ContentTypeStruct = JSON.parse(
-      readFileSync(resolve(this.config.backupDir, ctConfig.dirName, `${content_type}.json`), 'utf8'),
+      readFileSync(resolve(sanitizePath(this.config.backupDir), sanitizePath(ctConfig.dirName), `${content_type}.json`), 'utf8'),
     );
-    const variantEntryBasePath = join(this.entriesDirPath, content_type, locale, variantEntry.dirName, entry_uid);
+    const variantEntryBasePath = join(sanitizePath(this.entriesDirPath), sanitizePath(content_type), sanitizePath(locale), sanitizePath(variantEntry.dirName), sanitizePath(entry_uid));
     const fs = new FsUtility({ basePath: variantEntryBasePath });
 
     for (const _ in fs.indexFileContent) {
@@ -327,7 +327,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         },
         this.assetUidMapper,
         this.assetUrlMapper,
-        join(this.entriesDirPath, contentType.uid),
+        join(sanitizePath(this.entriesDirPath), sanitizePath(contentType.uid)),
         this.installedExtensions,
       );
     }
