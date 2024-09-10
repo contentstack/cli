@@ -2,7 +2,7 @@ import { join, resolve } from 'path';
 import { existsSync } from 'fs';
 import values from 'lodash/values';
 import cloneDeep from 'lodash/cloneDeep';
-
+import { sanitizePath } from '@contentstack/cli-utilities';
 import { PersonalizationAdapter, fsUtil, lookUpAudiences, lookUpEvents } from '../utils';
 import { APIConfig, ImportConfig, ExperienceStruct, CreateExperienceInput, LogType } from '../types';
 
@@ -50,26 +50,26 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
       this.personalizationConfig.dirName,
       this.personalizationConfig.experiences.dirName,
     );
-    this.experiencesPath = join(this.experiencesDirPath, this.personalizationConfig.experiences.fileName);
+    this.experiencesPath = join(sanitizePath(this.experiencesDirPath), sanitizePath(this.personalizationConfig.experiences.fileName));
     this.experienceConfig = this.personalizationConfig.experiences;
     this.audienceConfig = this.personalizationConfig.audiences;
-    this.mapperDirPath = resolve(this.config.backupDir, 'mapper', this.personalizationConfig.dirName);
-    this.expMapperDirPath = resolve(this.mapperDirPath, this.experienceConfig.dirName);
-    this.experiencesUidMapperPath = resolve(this.expMapperDirPath, 'uid-mapping.json');
-    this.cmsVariantGroupPath = resolve(this.expMapperDirPath, 'cms-variant-groups.json');
-    this.cmsVariantPath = resolve(this.expMapperDirPath, 'cms-variants.json');
-    this.audiencesMapperPath = resolve(this.mapperDirPath, this.audienceConfig.dirName, 'uid-mapping.json');
-    this.eventsMapperPath = resolve(this.mapperDirPath, 'events', 'uid-mapping.json');
-    this.failedCmsExpPath = resolve(this.expMapperDirPath, 'failed-cms-experience.json');
-    this.failedCmsExpPath = resolve(this.expMapperDirPath, 'failed-cms-experience.json');
-    this.experienceCTsPath = resolve(this.experiencesDirPath, 'experiences-content-types.json');
+    this.mapperDirPath = resolve(sanitizePath(this.config.backupDir), 'mapper', sanitizePath(this.personalizationConfig.dirName));
+    this.expMapperDirPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.experienceConfig.dirName));
+    this.experiencesUidMapperPath = resolve(sanitizePath(this.expMapperDirPath), 'uid-mapping.json');
+    this.cmsVariantGroupPath = resolve(sanitizePath(this.expMapperDirPath), 'cms-variant-groups.json');
+    this.cmsVariantPath = resolve(sanitizePath(this.expMapperDirPath), 'cms-variants.json');
+    this.audiencesMapperPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.audienceConfig.dirName), 'uid-mapping.json');
+    this.eventsMapperPath = resolve(sanitizePath(this.mapperDirPath), 'events', 'uid-mapping.json');
+    this.failedCmsExpPath = resolve(sanitizePath(this.expMapperDirPath), 'failed-cms-experience.json');
+    this.failedCmsExpPath = resolve(sanitizePath(this.expMapperDirPath), 'failed-cms-experience.json');
+    this.experienceCTsPath = resolve(sanitizePath(this.experiencesDirPath), 'experiences-content-types.json');
     this.experienceVariantsIdsPath = resolve(
-      this.config.data,
-      this.personalizationConfig.dirName,
-      this.experienceConfig.dirName,
+      sanitizePath(this.config.data),
+      sanitizePath(this.personalizationConfig.dirName),
+      sanitizePath(this.experienceConfig.dirName),
       'experiences-variants-ids.json',
     );
-    this.variantUidMapperFilePath = resolve(this.expMapperDirPath, 'variants-uid-mapping.json');
+    this.variantUidMapperFilePath = resolve(sanitizePath(this.expMapperDirPath), 'variants-uid-mapping.json');
     this.experiencesUidMapper = {};
     this.cmsVariantGroups = {};
     this.cmsVariants = {};
@@ -77,7 +77,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     this.expCheckIntervalDuration = this.experienceConfig?.checkIntervalDuration ?? 5000;
     this.maxValidateRetry = Math.round(this.expThresholdTimer / this.expCheckIntervalDuration);
     this.pendingVariantAndVariantGrpForExperience = [];
-    this.cTsSuccessPath = resolve(this.config.backupDir, 'mapper', 'content_types', 'success.json');
+    this.cTsSuccessPath = resolve(sanitizePath(this.config.backupDir), 'mapper', 'content_types', 'success.json');
     this.createdCTs = [];
   }
 
