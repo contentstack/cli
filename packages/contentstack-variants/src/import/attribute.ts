@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 import { existsSync } from 'fs';
-
+import { sanitizePath } from '@contentstack/cli-utilities';
 import { PersonalizationAdapter, fsUtil } from '../utils';
 import { APIConfig, AttributeStruct, ImportConfig, LogType } from '../types';
 
@@ -21,9 +21,9 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
     super(Object.assign(config, conf));
     this.personalizationConfig = this.config.modules.personalization;
     this.attributeConfig = this.personalizationConfig.attributes;
-    this.mapperDirPath = resolve(this.config.backupDir, 'mapper', this.personalizationConfig.dirName);
-    this.attrMapperDirPath = resolve(this.mapperDirPath, this.attributeConfig.dirName);
-    this.attributesUidMapperPath = resolve(this.attrMapperDirPath, 'uid-mapping.json');
+    this.mapperDirPath = resolve(sanitizePath(this.config.backupDir), 'mapper', sanitizePath(this.personalizationConfig.dirName));
+    this.attrMapperDirPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.attributeConfig.dirName));
+    this.attributesUidMapperPath = resolve(sanitizePath(this.attrMapperDirPath), 'uid-mapping.json');
     this.attributesUidMapper = {};
   }
 
@@ -35,7 +35,7 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
 
     await fsUtil.makeDirectory(this.attrMapperDirPath);
     const { dirName, fileName } = this.attributeConfig;
-    const attributesPath = resolve(this.config.data, this.personalizationConfig.dirName, dirName, fileName);
+    const attributesPath = resolve(sanitizePath(this.config.data), sanitizePath(this.personalizationConfig.dirName), sanitizePath(dirName), sanitizePath(fileName));
 
     if (existsSync(attributesPath)) {
       try {
