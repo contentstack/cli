@@ -55,9 +55,9 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       },
     }; 
     super(Object.assign(omit(config, ['helpers']), conf));
-    this.entriesMapperPath = resolve(sanitizePath(config.backupDir), config.branchName || '', 'mapper', 'entries');
+    this.entriesMapperPath = resolve(sanitizePath(config.backupDir), sanitizePath(config.branchName || ''), 'mapper', 'entries');
     this.personalizationConfig = this.config.modules.personalization;
-    this.entriesDirPath = resolve(sanitizePath(config.backupDir), config.branchName || '', sanitizePath(config.modules.entries.dirName));
+    this.entriesDirPath = resolve(sanitizePath(config.backupDir), sanitizePath(config.branchName || ''), sanitizePath(config.modules.entries.dirName));
     this.failedVariantPath = resolve(sanitizePath(this.entriesMapperPath), 'failed-entry-variants.json');
     this.failedVariantEntries = new Map();
   }
@@ -141,7 +141,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     const { content_type, locale, entry_uid } = entriesForVariant;
     const ctConfig = this.config.modules['content-types'];
     const contentType: ContentTypeStruct = JSON.parse(
-      readFileSync(resolve(sanitizePath(this.config.backupDir), sanitizePath(ctConfig.dirName), `${content_type}.json`), 'utf8'),
+      readFileSync(resolve(sanitizePath(this.config.backupDir), sanitizePath(ctConfig.dirName), `${sanitizePath(content_type)}.json`), 'utf8'),
     );
     const variantEntryBasePath = join(sanitizePath(this.entriesDirPath), sanitizePath(content_type), sanitizePath(locale), sanitizePath(variantEntry.dirName), sanitizePath(entry_uid));
     const fs = new FsUtility({ basePath: variantEntryBasePath });
@@ -308,7 +308,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
           content_type: contentType,
         },
         this.entriesUidMapper,
-        resolve(this.entriesMapperPath, contentType.uid, variantEntry.locale),
+        resolve(sanitizePath(this.entriesMapperPath), sanitizePath(contentType.uid), sanitizePath(variantEntry.locale)),
       );
 
       // NOTE: will remove term if term doesn't exists in taxonomy

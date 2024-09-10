@@ -46,9 +46,9 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     super(Object.assign(config, conf));
     this.personalizationConfig = this.config.modules.personalization;
     this.experiencesDirPath = resolve(
-      this.config.data,
-      this.personalizationConfig.dirName,
-      this.personalizationConfig.experiences.dirName,
+      sanitizePath(this.config.data),
+      sanitizePath(this.personalizationConfig.dirName),
+      sanitizePath(this.personalizationConfig.experiences.dirName),
     );
     this.experiencesPath = join(sanitizePath(this.experiencesDirPath), sanitizePath(this.personalizationConfig.experiences.fileName));
     this.experienceConfig = this.personalizationConfig.experiences;
