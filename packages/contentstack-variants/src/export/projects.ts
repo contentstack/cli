@@ -1,5 +1,5 @@
 import * as path from 'path';
-
+import { sanitizePath } from '@contentstack/cli-utilities';
 import { ExportConfig, PersonalizationConfig } from '../types';
 import { PersonalizationAdapter, log, fsUtil, formatError } from '../utils';
 
@@ -16,9 +16,9 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
     this.exportConfig = exportConfig;
     this.personalizationConfig = exportConfig.modules.personalization;
     this.projectFolderPath = path.resolve(
-      exportConfig.data,
-      exportConfig.branchName || '',
-      this.personalizationConfig.dirName,
+      sanitizePath(exportConfig.data),
+      sanitizePath(exportConfig.branchName || ''),
+      sanitizePath(this.personalizationConfig.dirName),
       'projects',
     );
   }
@@ -35,7 +35,7 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
       }
       this.exportConfig.personalizationEnabled = true;
       this.exportConfig.project_id = project[0]?.uid;
-      fsUtil.writeFile(path.resolve(this.projectFolderPath, 'projects.json'), project);
+      fsUtil.writeFile(path.resolve(sanitizePath(this.projectFolderPath), 'projects.json'), project);
       log(this.exportConfig, 'Project exported successfully!', 'success');
     } catch (error) {
       log(this.exportConfig, `Failed to export projects!`, 'error');
