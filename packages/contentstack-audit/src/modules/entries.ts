@@ -284,11 +284,11 @@ export default class Entries {
     for (const child of field?.schema ?? []) {
       const { uid } = child;
       this.missingMandatoryFields[this.currentUid].push(
-        ...this.validateMandatoryFields(
+        ...(this.validateMandatoryFields(
           [...tree, { uid: field.uid, name: child.display_name, field: uid }],
           child,
           entry,
-        ),
+        )),
       );
       if (!entry?.[uid] && !child.hasOwnProperty('display_type')) {
         continue;
@@ -722,8 +722,8 @@ export default class Entries {
    * Else empty array
    */
   validateSelectField(tree: Record<string, unknown>[], fieldStructure: SelectFeildStruct, field: any) {
-    const { display_name, enum: selectOptions, multiple, min_instance, display_type } = fieldStructure;
-    if (field === null || field === '' || field?.length === 0 || !field) {
+    const { display_name, enum: selectOptions, multiple, min_instance, display_type, data_type } = fieldStructure;
+    if (field === null || field === '' || (Array.isArray(field) && field.length === 0) || (!field && data_type !== 'number')) {
       let missingCTSelectFieldValues = 'Not Selected';
       return [
         {
@@ -858,12 +858,18 @@ export default class Entries {
     };
 
     const isEntryEmpty = () => {
-      const fieldValue = multiple ? entry[uid]?.length : entry[uid];
+      let fieldValue = multiple ? entry[uid]?.length : entry;
+      if (data_type === 'number' && !multiple) {
+        fieldValue = entry[uid] || entry[uid] === 0 ? true : false;
+      }
+      if (Array.isArray(entry[uid]) &&  data_type === 'reference') {
+        fieldValue = entry[uid]?.length ? true : false;
+      }
       return fieldValue === '' || !fieldValue;
     };
 
     if (mandatory) {
-      if ((data_type === 'json' && field_metadata.allow_json_rte && isJsonRteEmpty()) || (!(data_type === 'json') && isEntryEmpty())) {
+      if ((data_type === 'json' && field_metadata.allow_json_rte && isJsonRteEmpty()) || isEntryEmpty()) {
         return [
           {
             uid: this.currentUid,
