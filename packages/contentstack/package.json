@@ -32,12 +32,12 @@
     "@contentstack/cli-cm-export-to-csv": "~1.7.2",
     "@contentstack/cli-cm-import": "~1.16.7",
     "@contentstack/cli-cm-migrate-rte": "~1.4.18",
-    "@contentstack/cli-cm-seed": "~1.7.8",
+    "@contentstack/cli-cm-seed": "~1.7.9",
     "@contentstack/cli-command": "~1.3.0",
     "@contentstack/cli-config": "~1.7.0",
     "@contentstack/cli-launch": "~1.2.1",
     "@contentstack/cli-migration": "~1.6.1",
-    "@contentstack/cli-utilities": "~1.7.1",
+    "@contentstack/cli-utilities": "~1.7.2",
     "@contentstack/management": "~1.17.0",
     "@oclif/core": "^3.26.5",
     "@oclif/plugin-help": "^5",
@@ -151,7 +151,8 @@
     ],
     "hooks": {
       "prerun": [
-        "./lib/hooks/prerun/command-deprecation-check"
+        "./lib/hooks/prerun/command-deprecation-check",
+        "./lib/hooks/prerun/default-rate-limit-check"
       ],
       "init": [
         "./lib/hooks/init/context-init",
