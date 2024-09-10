@@ -1,5 +1,6 @@
 import path from 'path';
 import { Import, ImportHelperMethodsConfig, LogType, ProjectStruct } from '@contentstack/cli-variants';
+import { sanitizePath } from '@contentstack/cli-utilities';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import {
   log,
@@ -20,9 +21,9 @@ export default class ImportVarientEntries {
     this.config = importConfig;
     this.personalization = importConfig.modules.personalization;
     this.projectMapperFilePath = path.resolve(
-      this.config.data,
+      sanitizePath(this.config.data),
       'mapper',
-      this.personalization.dirName,
+      sanitizePath(this.personalization.dirName),
       'projects',
       'projects.json',
     );
