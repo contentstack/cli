@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 import { existsSync } from 'fs';
-
+import { sanitizePath } from '@contentstack/cli-utilities';
 import { APIConfig, AudienceStruct, ImportConfig, LogType } from '../types';
 import { PersonalizationAdapter, fsUtil, lookUpAttributes } from '../utils';
 
@@ -24,10 +24,10 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
     this.personalizationConfig = this.config.modules.personalization;
     this.audienceConfig = this.personalizationConfig.audiences;
     this.attributeConfig = this.personalizationConfig.attributes;
-    this.mapperDirPath = resolve(this.config.backupDir, 'mapper', this.personalizationConfig.dirName);
-    this.audienceMapperDirPath = resolve(this.mapperDirPath, this.audienceConfig.dirName);
-    this.audiencesUidMapperPath = resolve(this.audienceMapperDirPath, 'uid-mapping.json');
-    this.attributesMapperPath = resolve(this.mapperDirPath, this.attributeConfig.dirName, 'uid-mapping.json');
+    this.mapperDirPath = resolve(sanitizePath(this.config.backupDir), 'mapper', sanitizePath(this.personalizationConfig.dirName));
+    this.audienceMapperDirPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.audienceConfig.dirName));
+    this.audiencesUidMapperPath = resolve(sanitizePath(this.audienceMapperDirPath), 'uid-mapping.json');
+    this.attributesMapperPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.attributeConfig.dirName), 'uid-mapping.json');
     this.audiencesUidMapper = {};
   }
 
@@ -39,7 +39,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
 
     await fsUtil.makeDirectory(this.audienceMapperDirPath);
     const { dirName, fileName } = this.audienceConfig;
-    const audiencesPath = resolve(this.config.data, this.personalizationConfig.dirName, dirName, fileName);
+    const audiencesPath = resolve(sanitizePath(this.config.data), sanitizePath(this.personalizationConfig.dirName), sanitizePath(dirName), sanitizePath(fileName));
 
     if (existsSync(audiencesPath)) {
       try {
