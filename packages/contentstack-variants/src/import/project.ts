@@ -1,6 +1,6 @@
 import { join, resolve as pResolve } from 'path';
 import { existsSync, readFileSync } from 'fs';
-
+import { sanitizePath } from '@contentstack/cli-utilities';
 import { PersonalizationAdapter, askProjectName, fsUtil } from '../utils';
 import { APIConfig, CreateProjectInput, ImportConfig, LogType, ProjectStruct } from '../types';
 
@@ -14,9 +14,9 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
     };
     super(Object.assign(config, conf));
     this.projectMapperFolderPath = pResolve(
-      this.config.backupDir,
+      sanitizePath(this.config.backupDir),
       'mapper',
-      this.config.modules.personalization.dirName,
+      sanitizePath(this.config.modules.personalization.dirName),
       'projects',
     );
   }
@@ -28,7 +28,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
   async import() {
     const personalization = this.config.modules.personalization;
     const { dirName, fileName } = personalization.projects;
-    const projectPath = join(this.config.data, personalization.dirName, dirName, fileName);
+    const projectPath = join(sanitizePath(this.config.data), sanitizePath(personalization.dirName), sanitizePath(dirName), sanitizePath(fileName));
 
     if (existsSync(projectPath)) {
       const projects = JSON.parse(readFileSync(projectPath, 'utf8')) as CreateProjectInput[];
@@ -60,7 +60,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
         this.config.modules.personalization.importData = true;
 
         await fsUtil.makeDirectory(this.projectMapperFolderPath);
-        fsUtil.writeFile(pResolve(this.projectMapperFolderPath, 'projects.json'), projectRes);
+        fsUtil.writeFile(pResolve(sanitizePath(this.projectMapperFolderPath), 'projects.json'), projectRes);
         this.log(this.config, `Project Created Successfully: ${projectRes.uid}`, 'info');
       }
     } else {
