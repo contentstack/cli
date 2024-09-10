@@ -1,6 +1,6 @@
 import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
-
+import { sanitizePath } from '@contentstack/cli-utilities';
 import { formatError, fsUtil, PersonalizationAdapter, log } from '../utils';
 import { PersonalizationConfig, ExportConfig, AttributesConfig, AttributeStruct } from '../types';
 
@@ -19,10 +19,10 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
     this.personalizationConfig = exportConfig.modules.personalization;
     this.attributesConfig = exportConfig.modules.attributes;
     this.attributesFolderPath = pResolve(
-      exportConfig.data,
-      exportConfig.branchName || '',
-      this.personalizationConfig.dirName,
-      this.attributesConfig.dirName,
+      sanitizePath(exportConfig.data),
+      sanitizePath(exportConfig.branchName || ''),
+      sanitizePath(this.personalizationConfig.dirName),
+      sanitizePath(this.attributesConfig.dirName),
     );
     this.attributes = [];
   }
@@ -37,7 +37,7 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
         log(this.exportConfig, 'No Attributes found with the given project!', 'info');
       } else {
         this.sanitizeAttribs();
-        fsUtil.writeFile(pResolve(this.attributesFolderPath, this.attributesConfig.fileName), this.attributes);
+        fsUtil.writeFile(pResolve(sanitizePath(this.attributesFolderPath), sanitizePath(this.attributesConfig.fileName)), this.attributes);
         log(this.exportConfig, 'All the attributes have been exported successfully!', 'success');
       }
     } catch (error) {
