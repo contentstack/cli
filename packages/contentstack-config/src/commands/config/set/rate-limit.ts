@@ -5,7 +5,7 @@ import { askOrgID } from '../../../utils/interactive';
 import { SetRateLimitConfig } from '../../../interfaces';
 import { limitNamesConfig } from '../../../utils/common-utilities';
 
-export default class RateLimitSetCommand extends BaseCommand<typeof RateLimitSetCommand> {
+export default class SetRateLimitCommand extends BaseCommand<typeof SetRateLimitCommand> {
   static description = 'Set rate-limit for CLI';
 
   static flags: FlagInput = {
@@ -42,7 +42,7 @@ export default class RateLimitSetCommand extends BaseCommand<typeof RateLimitSet
       this.exit(1);
     }
 
-    const { flags } = await this.parse(RateLimitSetCommand);
+    const { flags } = await this.parse(SetRateLimitCommand);
     let { org, utilize, 'limit-name': limitName } = flags;
     const config: SetRateLimitConfig = { org: '', limitName: limitNamesConfig };
 
