@@ -95,6 +95,7 @@ USAGE
 * [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
 * [`csdx config:set:ea-header`](#csdx-configsetea-header)
 * [`csdx config:set:early-access-header`](#csdx-configsetearly-access-header)
+* [`csdx config:set:rate-limit`](#csdx-configsetrate-limit)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMANDS]`](#csdx-help-commands)
 * [`csdx launch`](#csdx-launch)
@@ -3195,6 +3196,33 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/early-access-header.ts)_
+
+## `csdx config:set:rate-limit`
+
+Set rate-limit for CLI
+
+```
+USAGE
+  $ csdx config:set:rate-limit [--org <value>] [--utilize <value>] [--limit-name <value>...] [--default]
+
+FLAGS
+  --default                Reset to default rate limit
+  --limit-name=<value>...  [Optional] Provide the limit names separated by commas ['limit', 'getLimit', 'bulkLimit']
+  --org=<value>            Provide the organization UID
+  --utilize=<value>        [default: 50] Provide the utilization percentages for rate limit, separated by commas
+
+DESCRIPTION
+  Set rate-limit for CLI
+
+EXAMPLES
+  $ csdx config:set:rate-limit --org <<org_uid>>
+
+  $ csdx config:set:rate-limit --org <<org_uid>> --utilize 70,80 --limit-name getLimit,limit
+
+  $ csdx config:set:rate-limit --org <<org_uid>> --default
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/rate-limit.ts)_
 
 ## `csdx config:set:region [REGION]`
 
