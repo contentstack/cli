@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync } from 'fs';
 import { join, resolve } from 'path';
-import { FsUtility } from '@contentstack/cli-utilities';
+import { FsUtility, sanitizePath } from '@contentstack/cli-utilities';
 
 import { APIConfig, AdapterType, ExportConfig, LogType } from '../types';
 import VariantAdapter, { VariantHttpClient } from '../utils/variant-api-adapter';
@@ -25,7 +25,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
       },
     };
     super(Object.assign(config, conf));
-    this.entriesDirPath = resolve(config.data, config.branchName || '', config.modules.entries.dirName);
+    this.entriesDirPath = resolve(sanitizePath(config.data), sanitizePath(config.branchName || ''), sanitizePath(config.modules.entries.dirName));
   }
 
   /**
@@ -39,7 +39,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
 
     for (let index = 0; index < entries.length; index++) {
       const entry = entries[index];
-      const variantEntryBasePath = join(this.entriesDirPath, content_type_uid, locale, variantEntry.dirName, entry.uid);
+      const variantEntryBasePath = join(sanitizePath(this.entriesDirPath), sanitizePath(content_type_uid), sanitizePath(locale), sanitizePath(variantEntry.dirName), sanitizePath(entry.uid));
       const variantEntriesFs = new FsUtility({
         isArray: true,
         keepMetadata: false,

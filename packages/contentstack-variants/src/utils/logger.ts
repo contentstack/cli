@@ -1,6 +1,7 @@
 import * as winston from 'winston';
 import * as path from 'path';
 import mkdirp from 'mkdirp';
+import { sanitizePath } from '@contentstack/cli-utilities';
 import { ExportConfig, ImportConfig } from '../types';
 
 const slice = Array.prototype.slice;
@@ -52,12 +53,12 @@ let errorTransport;
 
 function init(_logPath: string) {
   if (!logger || !errorLogger) {
-    const logsDir = path.resolve(_logPath, 'logs', 'export');
+    const logsDir = path.resolve(sanitizePath(_logPath), 'logs', 'export');
     // Create dir if doesn't already exist
     mkdirp.sync(logsDir);
 
     successTransport = {
-      filename: path.join(logsDir, 'success.log'),
+      filename: path.join(sanitizePath(logsDir), 'success.log'),
       maxFiles: 20,
       maxsize: 1000000,
       tailable: true,
@@ -65,7 +66,7 @@ function init(_logPath: string) {
     };
 
     errorTransport = {
-      filename: path.join(logsDir, 'error.log'),
+      filename: path.join(sanitizePath(logsDir), 'error.log'),
       maxFiles: 20,
       maxsize: 1000000,
       tailable: true,
