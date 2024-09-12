@@ -79,9 +79,9 @@ export default class SetRateLimitCommand extends BaseCommand<typeof SetRateLimit
     const limitHandler = new RateLimitHandler();
     const managementAPIClient = await managementSDKClient(config);
     limitHandler.setClient(managementAPIClient);
-    cliux.success(`Rate limit has been set successfully for org: ${config.org}`);
     try {
       await limitHandler.setRateLimit(config);
+      cliux.success(`Rate limit has been set successfully for org: ${config.org}`);
     } catch (error) {
       cliux.error(`Error: Something went wrong while setting rate limit for org: ${org}`, error);
     }
