@@ -4,9 +4,9 @@
  * Copyright (c) 2024 Contentstack LLC
  * MIT Licensed
  */
-
 import * as path from 'path';
-import { isEmpty, values, cloneDeep, find, indexOf, forEach } from 'lodash';
+import { writeFileSync } from 'fs';
+import { isEmpty, values, cloneDeep, find, indexOf, forEach, remove } from 'lodash';
 import { FsUtility, sanitizePath } from '@contentstack/cli-utilities';
 import {
   fsUtil,
@@ -57,6 +57,7 @@ export default class EntriesImport extends BaseClass {
   public taxonomies: Record<string, unknown>;
   public rteCTs: any;
   public rteCTsWithRef: any;
+  public entriesForVariant: { content_type: string; locale: string; entry_uid: string }[] = [];
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -196,9 +197,24 @@ export default class EntriesImport extends BaseClass {
         }
         log(this.importConfig, 'All the entries have been published successfully', 'success');
       }
+
+      this.createEntryDataForVariantEntry();
     } catch (error) {
+      this.createEntryDataForVariantEntry();
       log(this.importConfig, formatError(error), 'error');
       throw new Error('Error while importing entries');
+    }
+  }
+
+  /**
+   * The function `createEntryDataForVariantEntry` writes the `entriesForVariant` data to a JSON file
+   * named `data-for-variant-entry.json`.
+   */
+  createEntryDataForVariantEntry() {
+    const filePath = path.join(this.entriesMapperPath, 'data-for-variant-entry.json');
+
+    if (!isEmpty(this.entriesForVariant)) {
+      writeFileSync(filePath, JSON.stringify(this.entriesForVariant), { encoding: 'utf8' });
     }
   }
 
@@ -340,6 +356,7 @@ export default class EntriesImport extends BaseClass {
     const contentType = find(this.cTs, { uid: cTUid });
 
     const onSuccess = ({ response, apiData: entry, additionalInfo }: any) => {
+      this.entriesForVariant.push({ content_type: cTUid, entry_uid: entry.uid, locale });
       if (additionalInfo[entry.uid]?.isLocalized) {
         let oldUid = additionalInfo[entry.uid].entryOldUid;
         log(
@@ -368,7 +385,9 @@ export default class EntriesImport extends BaseClass {
     };
     const onReject = ({ error, apiData: entry, additionalInfo }: any) => {
       const { title, uid } = entry;
-      //Note: write existing entries into files to handler later
+      // NOTE Remove from list if any entry import failed
+      remove(this.entriesForVariant, { locale, entry_uid: uid });
+      // NOTE: write existing entries into files to handler later
       if (error.errorCode === 119) {
         if (error?.errors?.title || error?.errors?.uid) {
           if (this.importConfig.replaceExisting) {
@@ -517,6 +536,9 @@ export default class EntriesImport extends BaseClass {
       entriesReplaceFileHelper.writeIntoFile({ [entry.uid]: entry } as any, { mapKeyVal: true });
     };
     const onReject = ({ error, apiData: { uid, title } }: any) => {
+      // NOTE Remove from list if any entry import failed
+      remove(this.entriesForVariant, { locale, entry_uid: uid });
+
       log(this.importConfig, `${title} entry of content type ${cTUid} in locale ${locale} failed to replace`, 'error');
       log(this.importConfig, formatError(error), 'error');
       this.failedEntries.push({
@@ -645,6 +667,9 @@ export default class EntriesImport extends BaseClass {
       log(this.importConfig, `Updated entry: '${title}' of content type ${cTUid} in locale ${locale}`, 'info');
     };
     const onReject = ({ error, apiData: { uid, title } }: any) => {
+      // NOTE Remove from list if any entry import failed
+      remove(this.entriesForVariant, { locale, entry_uid: uid });
+
       log(this.importConfig, `${title} entry of content type ${cTUid} in locale ${locale} failed to update`, 'error');
       log(this.importConfig, formatError(error), 'error');
       this.failedEntries.push({
@@ -790,9 +815,21 @@ export default class EntriesImport extends BaseClass {
 
   async removeAutoCreatedEntries(): Promise<void> {
     const onSuccess = ({ response, apiData: { entryUid } }: any) => {
+      // NOTE Remove entry from list
+      remove(this.entriesForVariant, {
+        entry_uid: entryUid,
+        locale: this.importConfig?.master_locale?.code,
+      });
+
       log(this.importConfig, `Auto created entry in master locale removed - entry uid ${entryUid} `, 'success');
     };
     const onReject = ({ error, apiData: { entryUid } }: any) => {
+      // NOTE Remove entry from list
+      remove(this.entriesForVariant, {
+        entry_uid: entryUid,
+        locale: this.importConfig?.master_locale?.code,
+      });
+
       log(
         this.importConfig,
         `Failed to remove auto created entry in master locale - entry uid ${entryUid} \n ${formatError(error)}`,
@@ -970,6 +1007,10 @@ export default class EntriesImport extends BaseClass {
         }
       });
     } else {
+      apiOptions.apiData = null;
+      return apiOptions;
+    }
+    if(requestObject.environments.length === 0 || requestObject.locales.length === 0 ){
       apiOptions.apiData = null;
       return apiOptions;
     }
