@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { sanitizePath } from '@contentstack/cli-utilities';
 import { PersonalizationConfig, ExportConfig, ExperienceStruct } from '../types';
 import { formatError, fsUtil, log, PersonalizationAdapter } from '../utils';
 
@@ -19,9 +20,9 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
     this.exportConfig = exportConfig;
     this.personalizationConfig = exportConfig.modules.personalization;
     this.experiencesFolderPath = path.resolve(
-      exportConfig.data,
-      exportConfig.branchName || '',
-      this.personalizationConfig.dirName,
+      sanitizePath(exportConfig.data),
+      sanitizePath(exportConfig.branchName || ''),
+      sanitizePath(this.personalizationConfig.dirName),
       'experiences',
     );
   }
@@ -38,7 +39,7 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
         log(this.exportConfig, 'No Experiences found with the give project', 'info');
         return;
       }
-      fsUtil.writeFile(path.resolve(this.experiencesFolderPath, 'experiences.json'), experiences);
+      fsUtil.writeFile(path.resolve(sanitizePath(this.experiencesFolderPath), 'experiences.json'), experiences);
 
       const experienceToVariantsStrList: Array<string> = [];
       const experienceToContentTypesMap: Record<string, string[]> = {};
@@ -62,12 +63,12 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
         }
       }
       fsUtil.writeFile(
-        path.resolve(this.experiencesFolderPath, 'experiences-variants-ids.json'),
+        path.resolve(sanitizePath(this.experiencesFolderPath), 'experiences-variants-ids.json'),
         experienceToVariantsStrList,
       );
 
       fsUtil.writeFile(
-        path.resolve(this.experiencesFolderPath, 'experiences-content-types.json'),
+        path.resolve(sanitizePath(this.experiencesFolderPath), 'experiences-content-types.json'),
         experienceToContentTypesMap,
       );
       log(this.exportConfig, 'All the experiences have been exported successfully!', 'success');

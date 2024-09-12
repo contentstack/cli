@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 import { existsSync } from 'fs';
-
+import { sanitizePath } from '@contentstack/cli-utilities';
 import { PersonalizationAdapter, fsUtil } from '../utils';
 import { APIConfig, EventStruct, ImportConfig, LogType } from '../types';
 
@@ -21,9 +21,9 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
     super(Object.assign(config, conf));
     this.personalizationConfig = this.config.modules.personalization;
     this.eventsConfig = this.personalizationConfig.events;
-    this.mapperDirPath = resolve(this.config.backupDir, 'mapper', this.personalizationConfig.dirName);
-    this.eventMapperDirPath = resolve(this.mapperDirPath, this.eventsConfig.dirName);
-    this.eventsUidMapperPath = resolve(this.eventMapperDirPath, 'uid-mapping.json');
+    this.mapperDirPath = resolve(sanitizePath(this.config.backupDir), 'mapper', sanitizePath(this.personalizationConfig.dirName));
+    this.eventMapperDirPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.eventsConfig.dirName));
+    this.eventsUidMapperPath = resolve(sanitizePath(this.eventMapperDirPath), 'uid-mapping.json');
     this.eventsUidMapper = {};
   }
 
@@ -35,7 +35,7 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
 
     await fsUtil.makeDirectory(this.eventMapperDirPath);
     const { dirName, fileName } = this.eventsConfig;
-    const eventsPath = resolve(this.config.data, this.personalizationConfig.dirName, dirName, fileName);
+    const eventsPath = resolve(sanitizePath(this.config.data), sanitizePath(this.personalizationConfig.dirName), sanitizePath(dirName), sanitizePath(fileName));
 
     if (existsSync(eventsPath)) {
       try {
