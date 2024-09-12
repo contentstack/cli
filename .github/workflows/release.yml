@@ -52,6 +52,22 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-utilities/package.json
+      - name: Installing dependencies of variants
+        id: variants-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_utilities == 'true'}}
+        working-directory: ./packages/contentstack-variants
+        run: npm install
+      - name: Compiling variants
+        if: ${{ steps.variants-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-variants
+        run: npm run prepack
+      - name: Publishing variants
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.variants-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-variants/package.json
+          access: public
       - name: Installing dependencies of command
         id: command-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_command == 'true'}}
