@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.24.0 darwin-arm64 node-v22.2.0
+@contentstack/cli/1.25.0 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -2147,21 +2147,22 @@ USAGE
     [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]
 
 FLAGS
-  -B, --branch=<value>                  [optional] branch name
-  -a, --alias=<value>                   alias of the management token
-  -b, --backup-dir=<value>              [optional] backup directory name when using specific module
-  -c, --config=<value>                  [optional] path of config file
-  -d, --data-dir=<value>                path and location where data is stored
-  -k, --stack-api-key=<value>           API key of the target stack
-  -m, --module=<value>                  [optional] specific module name
-  -y, --yes                             [optional] Override marketplace prompts
-      --exclude-global-modules          Excludes the branch-independent module from the import operation
-      --import-webhook-status=<option>  [default: disable] [optional] Webhook state
-                                        <options: disable|current>
-      --replace-existing                Replaces the existing module in the target stack.
-      --skip-app-recreation             [optional] Skip private apps recreation if already exist
-      --skip-audit                      Skips the audit fix.
-      --skip-existing                   Skips the module exists warning messages.
+  -B, --branch=<value>                    [optional] branch name
+  -a, --alias=<value>                     alias of the management token
+  -b, --backup-dir=<value>                [optional] backup directory name when using specific module
+  -c, --config=<value>                    [optional] path of config file
+  -d, --data-dir=<value>                  path and location where data is stored
+  -k, --stack-api-key=<value>             API key of the target stack
+  -m, --module=<value>                    [optional] specific module name
+  -y, --yes                               [optional] Override marketplace prompts
+      --exclude-global-modules            Excludes the branch-independent module from the import operation
+      --import-webhook-status=<option>    [default: disable] [optional] Webhook state
+                                          <options: disable|current>
+      --personalize-project-name=<value>  Personalize project name.
+      --replace-existing                  Replaces the existing module in the target stack.
+      --skip-app-recreation               [optional] Skip private apps recreation if already exist
+      --skip-audit                        Skips the audit fix.
+      --skip-existing                     Skips the module exists warning messages.
 
 DESCRIPTION
   Import content from a stack
@@ -2572,21 +2573,22 @@ USAGE
     <value>] [--branch <value>] [--import-webhook-status disable|current]
 
 FLAGS
-  -B, --branch=<value>                  [optional] branch name
-  -a, --alias=<value>                   alias of the management token
-  -b, --backup-dir=<value>              [optional] backup directory name when using specific module
-  -c, --config=<value>                  [optional] path of config file
-  -d, --data-dir=<value>                path and location where data is stored
-  -k, --stack-api-key=<value>           API key of the target stack
-  -m, --module=<value>                  [optional] specific module name
-  -y, --yes                             [optional] Override marketplace prompts
-      --exclude-global-modules          Excludes the branch-independent module from the import operation
-      --import-webhook-status=<option>  [default: disable] [optional] Webhook state
-                                        <options: disable|current>
-      --replace-existing                Replaces the existing module in the target stack.
-      --skip-app-recreation             [optional] Skip private apps recreation if already exist
-      --skip-audit                      Skips the audit fix.
-      --skip-existing                   Skips the module exists warning messages.
+  -B, --branch=<value>                    [optional] branch name
+  -a, --alias=<value>                     alias of the management token
+  -b, --backup-dir=<value>                [optional] backup directory name when using specific module
+  -c, --config=<value>                    [optional] path of config file
+  -d, --data-dir=<value>                  path and location where data is stored
+  -k, --stack-api-key=<value>             API key of the target stack
+  -m, --module=<value>                    [optional] specific module name
+  -y, --yes                               [optional] Override marketplace prompts
+      --exclude-global-modules            Excludes the branch-independent module from the import operation
+      --import-webhook-status=<option>    [default: disable] [optional] Webhook state
+                                          <options: disable|current>
+      --personalize-project-name=<value>  Personalize project name.
+      --replace-existing                  Replaces the existing module in the target stack.
+      --skip-app-recreation               [optional] Skip private apps recreation if already exist
+      --skip-audit                        Skips the audit fix.
+      --skip-existing                     Skips the module exists warning messages.
 
 DESCRIPTION
   Import content from a stack
