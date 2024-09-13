@@ -45,6 +45,7 @@ export class RateLimitHandler {
 
       rateLimit[config.org] = limitsToUpdate;
       configHandler.set('rateLimit', rateLimit);
+      cliux.success(`Rate limit has been set successfully for org: ${config.org}`);
     } catch (error) {
       cliux.error(`Error: Unable to set the rate limit`, error?.errorMessage || error?.message || error);
     }

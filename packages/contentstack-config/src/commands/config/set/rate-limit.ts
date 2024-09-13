@@ -5,7 +5,7 @@ import { askOrgID } from '../../../utils/interactive';
 import { SetRateLimitConfig } from '../../../interfaces';
 import { limitNamesConfig } from '../../../utils/common-utilities';
 
-export default class RateLimitSetCommand extends BaseCommand<typeof RateLimitSetCommand> {
+export default class SetRateLimitCommand extends BaseCommand<typeof SetRateLimitCommand> {
   static description = 'Set rate-limit for CLI';
 
   static flags: FlagInput = {
@@ -42,7 +42,7 @@ export default class RateLimitSetCommand extends BaseCommand<typeof RateLimitSet
       this.exit(1);
     }
 
-    const { flags } = await this.parse(RateLimitSetCommand);
+    const { flags } = await this.parse(SetRateLimitCommand);
     let { org, utilize, 'limit-name': limitName } = flags;
     const config: SetRateLimitConfig = { org: '', limitName: limitNamesConfig };
 
@@ -68,7 +68,7 @@ export default class RateLimitSetCommand extends BaseCommand<typeof RateLimitSet
     if (limitName) {
       const invalidLimitNames = limitName[0].split(',').map((name: string) => name.trim());
 
-      if (!limitNamesConfig.includes(invalidLimitNames)) {
+      if (invalidLimitNames.some((name: string) => !limitNamesConfig.includes(name))) {
         cliux.error(`Invalid limit names provided: ${invalidLimitNames.join(', ')}`);
         return;
       } else {
@@ -79,7 +79,6 @@ export default class RateLimitSetCommand extends BaseCommand<typeof RateLimitSet
     const limitHandler = new RateLimitHandler();
     const managementAPIClient = await managementSDKClient(config);
     limitHandler.setClient(managementAPIClient);
-    cliux.success(`Rate limit has been set successfully for org: ${config.org}`);
     try {
       await limitHandler.setRateLimit(config);
     } catch (error) {
