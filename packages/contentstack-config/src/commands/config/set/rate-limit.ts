@@ -68,7 +68,7 @@ export default class SetRateLimitCommand extends BaseCommand<typeof SetRateLimit
     if (limitName) {
       const invalidLimitNames = limitName[0].split(',').map((name: string) => name.trim());
 
-      if (!limitNamesConfig.includes(invalidLimitNames)) {
+      if (invalidLimitNames.some((name: string) => !limitNamesConfig.includes(name))) {
         cliux.error(`Invalid limit names provided: ${invalidLimitNames.join(', ')}`);
         return;
       } else {
@@ -81,7 +81,6 @@ export default class SetRateLimitCommand extends BaseCommand<typeof SetRateLimit
     limitHandler.setClient(managementAPIClient);
     try {
       await limitHandler.setRateLimit(config);
-      cliux.success(`Rate limit has been set successfully for org: ${config.org}`);
     } catch (error) {
       cliux.error(`Error: Something went wrong while setting rate limit for org: ${org}`, error);
     }
