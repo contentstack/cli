@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-cm-clone",
   "description": "Contentstack stack clone plugin",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "author": "Contentstack",
   "bugs": "https://github.com/rohitmishra209/cli-cm-clone/issues",
   "dependencies": {
@@ -32,7 +32,7 @@
     "mocha": "^10.0.0",
     "nyc": "^15.1.0",
     "oclif": "^3.8.1",
-    "sinon": "^15.0.1"
+    "sinon": "^19.0.0"
   },
   "engines": {
     "node": ">=14.0.0"
