@@ -19,6 +19,7 @@ import { getMetaData, mapKeyAndVal } from './helper';
 import { Chunk, PageInfo, FileType, WriteFileOptions, FsConstructorOptions, ChunkFilesGetterType } from './types';
 
 export default class FsUtility {
+  private isArray = false;
   private prefixKey = '';
   private basePath: string;
   private fileExt: FileType;
@@ -47,6 +48,7 @@ export default class FsUtility {
 
   constructor(options: FsConstructorOptions = {}) {
     const {
+      isArray,
       fileExt,
       omitKeys,
       basePath,
@@ -61,6 +63,7 @@ export default class FsUtility {
       createDirIfNotExist = true,
     } = options;
     this.metaHandler = metaHandler;
+    this.isArray = isArray;
     this.basePath = basePath || '';
     this.omitKeys = omitKeys || [];
     this.fileExt = fileExt || 'json';
@@ -70,7 +73,7 @@ export default class FsUtility {
     this.keepMetadata = keepMetadata || (keepMetadata === undefined ?? true);
     this.indexFileName = indexFileName || 'index.json';
     this.pageInfo.hasNextPage = keys(this.indexFileContent).length > 0;
-    this.defaultInitContent = defaultInitContent || (this.fileExt === 'json' ? '{' : '');
+    this.defaultInitContent = defaultInitContent || this.isArray ? '[' : this.fileExt === 'json' ? '{' : '';
 
     if (useIndexer) {
       this.writeIndexer = this.indexFileContent;
@@ -98,7 +101,7 @@ export default class FsUtility {
     const indexPath = `${this.basePath}/${this.indexFileName}`;
 
     if (existsSync(indexPath)) {
-      indexData = JSON.parse(readFileSync(indexPath, 'utf-8'));
+      indexData = JSON.parse(readFileSync(indexPath, 'utf8'));
     }
 
     return indexData;
@@ -136,7 +139,7 @@ export default class FsUtility {
     parse = typeof parse === 'undefined' ? true : parse;
 
     if (existsSync(filePath)) {
-      data = parse ? JSON.parse(readFileSync(filePath, 'utf-8')) : data;
+      data = parse ? JSON.parse(readFileSync(filePath, 'utf8')) : data;
     }
 
     return data;
@@ -246,7 +249,7 @@ export default class FsUtility {
       fileSizeReachedLimit = true;
     }
 
-    const suffix = fileSizeReachedLimit ? '}' : '';
+    const suffix = fileSizeReachedLimit ? (this.isArray ? ']' : '}') : '';
     fileContent = this.fileExt === 'json' ? `${this.prefixKey}${fileContent}${suffix}` : fileContent;
     this.writableStream?.write(fileContent);
 
@@ -288,7 +291,7 @@ export default class FsUtility {
   completeFile(closeIndexer?: boolean): void {
     if (this.writableStream) {
       if (this.fileExt === 'json') {
-        this.writableStream.write('}');
+        this.writableStream.write(this.isArray ? ']' : '}');
       }
     }
     this.closeFile(closeIndexer);
@@ -326,7 +329,7 @@ export default class FsUtility {
     const path = basePath || pResolve(this.basePath, 'metadata.json');
     if (!existsSync(path)) return {};
 
-    return JSON.parse(readFileSync(path, { encoding: 'utf-8' }));
+    return JSON.parse(readFileSync(path, { encoding: 'utf8' }));
   }
 
   /**
@@ -350,7 +353,7 @@ export default class FsUtility {
       }
 
       const fileContent = readFileSync(pResolve(this.basePath, this.readIndexer[index]), {
-        encoding: 'utf-8',
+        encoding: 'utf8',
       });
 
       resolve(this.fileExt === 'json' ? JSON.parse(fileContent) : fileContent);
@@ -371,7 +374,7 @@ export default class FsUtility {
       }
 
       const fileContent = readFileSync(pResolve(this.basePath, this.readIndexer[this.pageInfo.after]), {
-        encoding: 'utf-8',
+        encoding: 'utf8',
       });
 
       resolve(this.fileExt === 'json' ? JSON.parse(fileContent) : fileContent);
@@ -393,7 +396,7 @@ export default class FsUtility {
       }
 
       const fileContent = readFileSync(pResolve(this.basePath, this.readIndexer[this.pageInfo.before]), {
-        encoding: 'utf-8',
+        encoding: 'utf8',
       });
 
       resolve(this.fileExt === 'json' ? JSON.parse(fileContent) : fileContent);
