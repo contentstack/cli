@@ -67,6 +67,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   }
 
   config.isAuthenticated = isAuthenticated();
+  config.auth_token = configHandler.get('authtoken'); // TBD handle auth token in httpClient & sdk
 
   //Note to support the old key
   config.source_stack = config.apiKey;
@@ -78,7 +79,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
 
   if (importCmdFlags['branch']) {
     config.branchName = importCmdFlags['branch'];
-    config.branchDir = path.join(sanitizePath(config.contentDir), sanitizePath(config.branchName));
+    config.branchDir = config.contentDir;
   }
   if (importCmdFlags['module']) {
     config.moduleName = importCmdFlags['module'];
@@ -94,6 +95,8 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
 
   config.replaceExisting = importCmdFlags['replace-existing'];
   config.skipExisting = importCmdFlags['skip-existing'];
+
+  config.personalizeProjectName = importCmdFlags['personalize-project-name'];
 
   if (importCmdFlags['exclude-global-modules']) {
     config['exclude-global-modules'] = importCmdFlags['exclude-global-modules'];

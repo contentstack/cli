@@ -19,12 +19,9 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
 
   const pattern = /[*$%#<>{}!&?]/g;
   if (pattern.test(config.exportDir)) {
-    cliux.print(
-      `\nPlease add a directory path without any of the special characters: (*,&,{,},[,],$,%,<,>,?,!)`,
-      {
-        color: 'yellow',
-      },
-    );
+    cliux.print(`\nPlease add a directory path without any of the special characters: (*,&,{,},[,],$,%,<,>,?,!)`, {
+      color: 'yellow',
+    });
     config.exportDir = await askExportDir();
   }
   config.exportDir = config.exportDir.replace(/['"]/g, '');
@@ -64,7 +61,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
   config.source_stack = config.apiKey;
 
   config.forceStopMarketplaceAppsPrompt = exportCmdFlags.yes;
-  config.auth_token = configHandler.get('authtoken'); // TBD remove once dependent modules are updated
+  config.auth_token = configHandler.get('authtoken'); // TBD handle auth token in httpClient & sdk
   config.isAuthenticated = isAuthenticated();
 
   if (exportCmdFlags['branch']) {
@@ -84,7 +81,6 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
   if (Array.isArray(config.filteredModules) && config.filteredModules.length > 0) {
     config.modules.types = filter(defaultConfig.modules.types, (module) => includes(config.filteredModules, module));
   }
-
   return config;
 };
 
