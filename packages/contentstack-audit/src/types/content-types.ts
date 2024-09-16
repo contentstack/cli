@@ -142,7 +142,10 @@ enum OutputColumn {
   'MissingValues' = 'missingCTSelectFieldValues',
   'Minimum Required Instaces' = 'min_instance',
   'missingFieldUid' = 'missingFieldUid',
-  'isPublished' = 'isPublished'
+  'isPublished' = 'isPublished',
+  'Entry UID' ="Entry UID",
+  'Content Type UID'= 'Content Type UID',
+  "Locale"="Locale",
 }
 
 export {
