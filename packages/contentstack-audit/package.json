@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-audit",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Contentstack audit plugin",
   "author": "Contentstack CLI",
   "homepage": "https://github.com/contentstack/cli",
@@ -45,7 +45,7 @@
     "nyc": "^15.1.0",
     "oclif": "^3",
     "shx": "^0.3.4",
-    "sinon": "^17.0.0",
+    "sinon": "^19.0.0",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
     "tslib": "^2.5.3",
