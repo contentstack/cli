@@ -1,4 +1,4 @@
-import { Modules } from '.';
+import { Modules, Region } from '.';
 import DefaultConfig from './default-config';
 
 export default interface ExportConfig extends DefaultConfig {
@@ -18,17 +18,18 @@ export default interface ExportConfig extends DefaultConfig {
   singleModuleExport?: boolean;
   moduleName?: Modules;
   master_locale: masterLocale;
-
   headers?: {
     api_key: string;
     access_token?: string;
     authtoken?: string;
     'X-User-Agent': string;
+    organization_uid?: string;
   };
   access_token?: string;
   org_uid?: string;
   source_stack?: string;
   sourceStackName?: string;
+  region: Region;
 }
 
 type branch = {
