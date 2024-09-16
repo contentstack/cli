@@ -4,7 +4,7 @@ import { stub, createSandbox } from 'sinon';
 import { cliux } from '@contentstack/cli-utilities';
 import fs from 'fs';
 import { FileUpload, BaseClass } from '../../../src/adapters';
-import { BaseCommand } from '../../../src/commands/launch/base-command';
+import { BaseCommand } from '../../../src/base-command';
 
 describe('File Upload', () => {
   let inquireStub, prepareApiClientsStub, prepareConfigStub, getConfigStub;
@@ -152,6 +152,7 @@ describe('File Upload', () => {
           { name: 'NextJs', value: 'NEXTJS' },
           { name: 'Other', value: 'OTHER' },
         ],
+        outputDirectories:""
       },
     };
     let archiveMockData = { zipName: 'abc.zip', zipPath: 'path/to/zip', projectName: 'test' };
