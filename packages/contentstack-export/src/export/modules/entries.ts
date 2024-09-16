@@ -1,5 +1,7 @@
 import * as path from 'path';
 import { ContentstackClient, FsUtility } from '@contentstack/cli-utilities';
+import { LogType, Export, ExportProjects } from '@contentstack/cli-variants';
+
 import { log, formatError, fsUtil } from '../../utils';
 import { ExportConfig, ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
@@ -19,17 +21,24 @@ export default class EntriesExport extends BaseClass {
     batchLimit?: number;
     exportVersions: boolean;
   };
+  private variantEntries!: any;
   private entriesDirPath: string;
   private localesFilePath: string;
   private schemaFilePath: string;
   private entriesFileHelper: FsUtility;
+  private projectInstance: ExportProjects;
+  public exportVariantEntry: boolean = false;
 
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
     this.stackAPIClient = stackAPIClient;
     this.exportConfig = exportConfig;
     this.entriesConfig = exportConfig.modules.entries;
-    this.entriesDirPath = path.resolve(sanitizePath(exportConfig.data), sanitizePath(exportConfig.branchName || ''), sanitizePath(this.entriesConfig.dirName));
+    this.entriesDirPath = path.resolve(
+      sanitizePath(exportConfig.data),
+      sanitizePath(exportConfig.branchName || ''),
+      sanitizePath(this.entriesConfig.dirName),
+    );
     this.localesFilePath = path.resolve(
       sanitizePath(exportConfig.data),
       sanitizePath(exportConfig.branchName || ''),
@@ -42,6 +51,7 @@ export default class EntriesExport extends BaseClass {
       sanitizePath(exportConfig.modules.content_types.dirName),
       'schema.json',
     );
+    this.projectInstance = new ExportProjects(this.exportConfig);
   }
 
   async start() {
@@ -53,13 +63,26 @@ export default class EntriesExport extends BaseClass {
         log(this.exportConfig, 'No content types found to export entries', 'info');
         return;
       }
+
+      // NOTE Check if variant is enabled in specific stack
+      if (this.exportConfig.personalizationEnabled) {
+        let project_id;
+        try {
+          const project = await this.projectInstance.projects({ connectedStackApiKey: this.exportConfig.apiKey });
+
+          if (project && project[0]?.uid) {
+            project_id = project[0].uid;
+            this.exportVariantEntry = true;
+          }
+
+          this.variantEntries = new Export.VariantEntries(Object.assign(this.exportConfig, { project_id }));
+        } catch (error) {
+          log(this.exportConfig, `Failed to export variant entries ${error}`, 'error');
+        }
+      }
+
       const entryRequestOptions = this.createRequestObjects(locales, contentTypes);
       for (let entryRequestOption of entryRequestOptions) {
-        // log(
-        //   this.exportConfig,
-        //   `Starting export of entries of content type - ${entryRequestOption.contentType} locale - ${entryRequestOption.locale}`,
-        //   'info',
-        // );
         await this.getEntries(entryRequestOption);
         this.entriesFileHelper?.completeFile(true);
         log(
@@ -119,7 +142,11 @@ export default class EntriesExport extends BaseClass {
 
     if (Array.isArray(entriesSearchResponse.items) && entriesSearchResponse.items.length > 0) {
       if (options.skip === 0) {
-        const entryBasePath = path.join(sanitizePath(this.entriesDirPath), sanitizePath(options.contentType), sanitizePath(options.locale));
+        const entryBasePath = path.join(
+          sanitizePath(this.entriesDirPath),
+          sanitizePath(options.contentType),
+          sanitizePath(options.locale),
+        );
         await fsUtil.makeDirectory(entryBasePath);
         this.entriesFileHelper = new FsUtility({
           moduleName: 'entries',
@@ -132,7 +159,12 @@ export default class EntriesExport extends BaseClass {
       }
       this.entriesFileHelper.writeIntoFile(entriesSearchResponse.items, { mapKeyVal: true });
       if (this.entriesConfig.exportVersions) {
-        let versionedEntryPath = path.join(sanitizePath(this.entriesDirPath), sanitizePath(options.contentType),sanitizePath(options.locale), 'versions');
+        let versionedEntryPath = path.join(
+          sanitizePath(this.entriesDirPath),
+          sanitizePath(options.contentType),
+          sanitizePath(options.locale),
+          'versions',
+        );
         fsUtil.makeDirectory(versionedEntryPath);
         await this.fetchEntriesVersions(entriesSearchResponse.items, {
           locale: options.locale,
@@ -140,6 +172,16 @@ export default class EntriesExport extends BaseClass {
           versionedEntryPath,
         });
       }
+
+      // NOTE Export all base entry specific 'variant entries'
+      if (this.exportVariantEntry) {
+        await this.variantEntries.exportVariantEntry({
+          locale: options.locale,
+          contentTypeUid: options.contentType,
+          entries: entriesSearchResponse.items,
+        });
+      }
+
       options.skip += this.entriesConfig.limit || 100;
       if (options.skip >= entriesSearchResponse.count) {
         return Promise.resolve(true);
@@ -153,7 +195,10 @@ export default class EntriesExport extends BaseClass {
     options: { locale: string; contentType: string; versionedEntryPath: string },
   ): Promise<void> {
     const onSuccess = ({ response, apiData: entry }: any) => {
-      fsUtil.writeFile(path.join(sanitizePath(options.versionedEntryPath), sanitizePath(`${entry.uid}.json`)), response);
+      fsUtil.writeFile(
+        path.join(sanitizePath(options.versionedEntryPath), sanitizePath(`${entry.uid}.json`)),
+        response,
+      );
       log(
         this.exportConfig,
         `Exported versioned entries of type '${options.contentType}' locale '${options.locale}'`,
