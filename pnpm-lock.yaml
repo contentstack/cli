@@ -10,22 +10,22 @@ importers:
 
   packages/contentstack:
     specifiers:
-      '@contentstack/cli-audit': ~1.7.0
-      '@contentstack/cli-auth': ~1.3.20
+      '@contentstack/cli-audit': ~1.7.1
+      '@contentstack/cli-auth': ~1.3.21
       '@contentstack/cli-cm-bootstrap': ~1.11.0
-      '@contentstack/cli-cm-branches': ~1.1.2
+      '@contentstack/cli-cm-branches': ~1.1.3
       '@contentstack/cli-cm-bulk-publish': ~1.4.8
-      '@contentstack/cli-cm-clone': ~1.11.0
-      '@contentstack/cli-cm-export': ~1.12.0
+      '@contentstack/cli-cm-clone': ~1.11.1
+      '@contentstack/cli-cm-export': ~1.12.1
       '@contentstack/cli-cm-export-to-csv': ~1.7.2
-      '@contentstack/cli-cm-import': ~1.17.0
-      '@contentstack/cli-cm-migrate-rte': ~1.4.18
+      '@contentstack/cli-cm-import': ~1.17.1
+      '@contentstack/cli-cm-migrate-rte': ~1.4.19
       '@contentstack/cli-cm-seed': ~1.8.0
-      '@contentstack/cli-command': ~1.3.0
-      '@contentstack/cli-config': ~1.7.0
+      '@contentstack/cli-command': ~1.3.1
+      '@contentstack/cli-config': ~1.7.1
       '@contentstack/cli-launch': ~1.2.1
       '@contentstack/cli-migration': ~1.6.1
-      '@contentstack/cli-utilities': ~1.7.2
+      '@contentstack/cli-utilities': ~1.7.3
       '@contentstack/management': ~1.17.0
       '@oclif/core': ^3.26.5
       '@oclif/plugin-help': ^5
@@ -56,7 +56,7 @@ importers:
       rimraf: ^2.7.1
       shelljs: ^0.8.4
       short-uuid: ^4.2.2
-      sinon: ^15.0.1
+      sinon: ^19.0.0
       tmp: ^0.2.2
       ts-node: ^10.9.1
       tslib: ^2.4.1
@@ -113,7 +113,7 @@ importers:
       oclif: 3.17.2_ogreqof3k35xezedraj6pnd45y
       rimraf: 2.7.1
       shelljs: 0.8.5
-      sinon: 15.2.0
+      sinon: 19.0.0
       tmp: 0.2.3
       ts-node: 10.9.2_ogreqof3k35xezedraj6pnd45y
       tslib: 2.7.0
@@ -144,7 +144,7 @@ importers:
       nyc: ^15.1.0
       oclif: ^3
       shx: ^0.3.4
-      sinon: ^17.0.0
+      sinon: ^19.0.0
       ts-jest: ^29.1.1
       ts-node: ^10.9.1
       tslib: ^2.5.3
@@ -178,7 +178,7 @@ importers:
       nyc: 15.1.0
       oclif: 3.17.2_jln2qwzhhdivd256vsigcad44a
       shx: 0.3.4
-      sinon: 17.0.2
+      sinon: 19.0.0
       ts-jest: 29.2.5_typescript@5.5.4
       ts-node: 10.9.2_jln2qwzhhdivd256vsigcad44a
       tslib: 2.7.0
@@ -210,7 +210,7 @@ importers:
       nyc: ^15.1.0
       oclif: ^3.8.1
       rimraf: ^2.7.1
-      sinon: ^15.0.1
+      sinon: ^19.0.0
       tmp: ^0.2.2
       ts-node: ^10.9.1
       typescript: ^4.9.3
@@ -242,7 +242,7 @@ importers:
       nyc: 15.1.0
       oclif: 3.17.2_ogreqof3k35xezedraj6pnd45y
       rimraf: 2.7.1
-      sinon: 15.2.0
+      sinon: 19.0.0
       tmp: 0.2.3
       ts-node: 10.9.2_ogreqof3k35xezedraj6pnd45y
       typescript: 4.9.5
@@ -332,7 +332,7 @@ importers:
       progress-stream: ^2.0.0
       promise-limit: ^2.7.0
       proxyquire: ^2.1.3
-      sinon: ^15.0.1
+      sinon: ^19.0.0
       ts-node: ^10.9.1
       tslib: ^2.4.1
       typescript: ^4.9.3
@@ -373,7 +373,7 @@ importers:
       mocha: 10.1.0
       nyc: 15.1.0
       oclif: 3.17.2_fxnscsehfcewpnie2ltbcrhxa4
-      sinon: 15.2.0
+      sinon: 19.0.0
       ts-node: 10.9.2_typescript@4.9.5
       typescript: 4.9.5
 
@@ -446,7 +446,7 @@ importers:
       ora: ^5.1.0
       prompt: ^1.3.0
       rimraf: ^5.0.5
-      sinon: ^15.0.1
+      sinon: ^19.0.0
       winston: ^3.7.2
     dependencies:
       '@colors/colors': 1.6.0
@@ -475,7 +475,7 @@ importers:
       mocha: 10.7.3
       nyc: 15.1.0
       oclif: 3.17.2
-      sinon: 15.2.0
+      sinon: 19.0.0
 
   packages/contentstack-command:
     specifiers:
@@ -494,7 +494,7 @@ importers:
       mocha: 10.1.0
       nyc: ^15.1.0
       rimraf: ^2.7.1
-      sinon: ^15.0.1
+      sinon: ^19.0.0
       ts-node: ^8.10.2
       typescript: ^4.9.3
     dependencies:
@@ -514,7 +514,7 @@ importers:
       mocha: 10.1.0
       nyc: 15.1.0
       rimraf: 2.7.1
-      sinon: 15.2.0
+      sinon: 19.0.0
       ts-node: 8.10.2_typescript@4.9.5
       typescript: 4.9.5
 
@@ -543,7 +543,7 @@ importers:
       nyc: ^15.1.0
       oclif: ^3.8.1
       rimraf: ^2.7.1
-      sinon: ^15.0.1
+      sinon: ^19.0.0
       tmp: ^0.2.2
       ts-node: ^10.9.1
       typescript: ^4.9.3
@@ -574,7 +574,7 @@ importers:
       nyc: 15.1.0
       oclif: 3.17.2_ogreqof3k35xezedraj6pnd45y
       rimraf: 2.7.1
-      sinon: 15.2.0
+      sinon: 19.0.0
       tmp: 0.2.3
       ts-node: 10.9.2_ogreqof3k35xezedraj6pnd45y
       typescript: 4.9.5
@@ -640,7 +640,7 @@ importers:
       progress-stream: ^2.0.0
       promise-limit: ^2.7.0
       proxyquire: ^2.1.3
-      sinon: ^15.0.1
+      sinon: ^19.0.0
       ts-node: ^10.9.1
       tslib: ^2.4.1
       typescript: ^4.9.3
@@ -683,7 +683,7 @@ importers:
       mocha: 10.1.0
       nyc: 15.1.0
       oclif: 3.17.2_fxnscsehfcewpnie2ltbcrhxa4
-      sinon: 15.2.0
+      sinon: 19.0.0
       ts-node: 10.9.2_typescript@4.9.5
       typescript: 4.9.5
 
@@ -768,7 +768,7 @@ importers:
       oclif: ^3.8.1
       promise-limit: ^2.7.0
       rimraf: ^2.7.1
-      sinon: ^11.1.1
+      sinon: ^19.0.0
       tmp: ^0.2.2
       ts-node: ^10.9.1
       tslib: ^2.4.1
@@ -816,7 +816,7 @@ importers:
       nyc: 15.1.0
       oclif: 3.17.2_vk2nahlbg3l2zm6o274jd7fsaa
       rimraf: 2.7.1
-      sinon: 11.1.2
+      sinon: 19.0.0
       tmp: 0.2.3
       ts-node: 10.9.2_ogreqof3k35xezedraj6pnd45y
       typescript: 4.9.5
@@ -918,7 +918,7 @@ importers:
       nyc: ^15.1.0
       oclif: ^3.11.3
       omit-deep-lodash: ^1.1.5
-      sinon: ^15.0.1
+      sinon: ^19.0.0
       tslib: ^1.13.0
       uuid: ^9.0.1
     dependencies:
@@ -932,7 +932,7 @@ importers:
       lodash: 4.17.21
       nock: 13.5.5
       omit-deep-lodash: 1.1.7
-      sinon: 15.2.0
+      sinon: 19.0.0
       uuid: 9.0.1
     devDependencies:
       '@oclif/test': 2.5.6
@@ -1088,7 +1088,7 @@ importers:
       recheck: ^4.4.5
       rimraf: ^2.7.1
       rxjs: ^6.6.7
-      sinon: ^15.0.1
+      sinon: ^19.0.0
       tmp: ^0.2.2
       traverse: ^0.6.7
       ts-node: ^10.9.1
@@ -1144,7 +1144,7 @@ importers:
       nock: 13.5.5
       nyc: 15.1.0
       rimraf: 2.7.1
-      sinon: 15.2.0
+      sinon: 19.0.0
       tmp: 0.2.3
       ts-node: 10.9.2_ogreqof3k35xezedraj6pnd45y
       tslib: 1.14.1
@@ -3238,16 +3238,11 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /@sinonjs/commons/1.8.6:
-    resolution: {integrity: sha512-Ky+XkAkqPZSm3NLBeUng77EBQl3cmeJhITaGHdYH8kjVB+aun3S4XBRti2zt17mtt0mIUDiNxYeoJm6drVvBJQ==}
-    dependencies:
-      type-detect: 4.0.8
-    dev: true
-
   /@sinonjs/commons/2.0.0:
     resolution: {integrity: sha512-uLa0j859mMrg2slwQYdO/AkrOfmH+X6LTVmNTS9CqexuE2IvVORIkSpJLqePAbEnKJ77aMmCwr1NUZ57120Xcg==}
     dependencies:
       type-detect: 4.0.8
+    dev: true
 
   /@sinonjs/commons/3.0.1:
     resolution: {integrity: sha512-K3mCHKQ9sVh8o1C9cxkwxaOmXoAMlDxC1mYyHrjqOWEcBjYr76t96zL2zlj5dUGZ3HSw240X1qgH3Mjf1yJWpQ==}
@@ -3258,30 +3253,31 @@ packages:
     resolution: {integrity: sha512-V4BG07kuYSUkTCSBHG8G8TNhM+F19jXFWnQtzj+we8DrkpSBCee9Z3Ms8yiGer/dlmhe35/Xdgyo3/0rQKg7YA==}
     dependencies:
       '@sinonjs/commons': 3.0.1
+    dev: true
 
   /@sinonjs/fake-timers/11.3.1:
     resolution: {integrity: sha512-EVJO7nW5M/F5Tur0Rf2z/QoMo+1Ia963RiMtapiQrEWvY0iBUvADo8Beegwjpnle5BHkyHuoxSTW3jF43H1XRA==}
     dependencies:
       '@sinonjs/commons': 3.0.1
-
-  /@sinonjs/fake-timers/7.1.2:
-    resolution: {integrity: sha512-iQADsW4LBMISqZ6Ci1dupJL9pprqwcVFTcOsEmQOEhW+KLCVn/Y4Jrvg2k19fIHCp+iFprriYPTdRcQR8NbUPg==}
-    dependencies:
-      '@sinonjs/commons': 1.8.6
     dev: true
 
-  /@sinonjs/samsam/6.1.3:
-    resolution: {integrity: sha512-nhOb2dWPeb1sd3IQXL/dVPnKHDOAFfvichtBf4xV00/rU1QbPCQqKMbvIheIjqwVjh7qIgf2AHTHi391yMOMpQ==}
+  /@sinonjs/fake-timers/13.0.1:
+    resolution: {integrity: sha512-ZEbLYOvZQHccQJzbg2E5r+/Mdjb6BMdjToL4r8WwUw0VTjTnyY3gCnwLeiovcXI3/Uo25exmqmiwsjL/eE/rSg==}
     dependencies:
-      '@sinonjs/commons': 1.8.6
-      lodash.get: 4.4.2
-      type-detect: 4.1.0
-    dev: true
+      '@sinonjs/commons': 3.0.1
 
   /@sinonjs/samsam/8.0.0:
     resolution: {integrity: sha512-Bp8KUVlLp8ibJZrnvq2foVhP0IVX2CIprMJPK0vqGqgrDa0OHVKeZyBykqskkrdxV6yKBPmGasO8LVjAKR3Gew==}
     dependencies:
       '@sinonjs/commons': 2.0.0
+      lodash.get: 4.4.2
+      type-detect: 4.1.0
+    dev: true
+
+  /@sinonjs/samsam/8.0.2:
+    resolution: {integrity: sha512-v46t/fwnhejRSFTGqbpn9u+LQ9xJDse10gNnPgAcxgdoCDMXj/G2asWAC/8Qs+BAZDicX+MNZouXT1A7c83kVw==}
+    dependencies:
+      '@sinonjs/commons': 3.0.1
       lodash.get: 4.4.2
       type-detect: 4.1.0
 
@@ -6085,6 +6081,11 @@ packages:
 
   /diff/5.2.0:
     resolution: {integrity: sha512-uIFDxqpRZGZ6ThOk84hEfqWoHx2devRFvpTZcTHur85vImfaxUbTW9Ryh4CpCuDnToOP1CEtXKIgytHBPVff5A==}
+    engines: {node: '>=0.3.1'}
+    dev: true
+
+  /diff/7.0.0:
+    resolution: {integrity: sha512-PJWHUb1RFevKCwaFA9RlG5tCd+FO5iRh9A8HEtkmBH2Li03iJriB6m6JIN4rGz3K3JLawI7/veA1xzRKP6ISBw==}
     engines: {node: '>=0.3.1'}
 
   /dir-glob/3.0.1:
@@ -10770,6 +10771,16 @@ packages:
       '@sinonjs/text-encoding': 0.7.3
       just-extend: 6.2.0
       path-to-regexp: 6.2.2
+    dev: true
+
+  /nise/6.1.1:
+    resolution: {integrity: sha512-aMSAzLVY7LyeM60gvBS423nBmIPP+Wy7St7hsb+8/fc1HmeoHJfLO8CKse4u3BtOZvQLJghYPI2i/1WZrEj5/g==}
+    dependencies:
+      '@sinonjs/commons': 3.0.1
+      '@sinonjs/fake-timers': 13.0.1
+      '@sinonjs/text-encoding': 0.7.3
+      just-extend: 6.2.0
+      path-to-regexp: 8.1.0
 
   /nock/13.5.5:
     resolution: {integrity: sha512-XKYnqUrCwXC8DGG1xX4YH5yNIrlh9c065uaMZZHUoeUUINTOyt+x/G+ezYk0Ft6ExSREVIs+qBJDK503viTfFA==}
@@ -11994,6 +12005,11 @@ packages:
 
   /path-to-regexp/6.2.2:
     resolution: {integrity: sha512-GQX3SSMokngb36+whdpRXE+3f9V8UzyAorlYvOGx87ufGHehNTn5lCxrKtLyZ4Yl/wEKnNnr98ZzOwwDZV5ogw==}
+    dev: true
+
+  /path-to-regexp/8.1.0:
+    resolution: {integrity: sha512-Bqn3vc8CMHty6zuD+tG23s6v2kwxslHEhTj4eYaVKGIEB+YX/2wd0/rgXLFD9G9id9KCtbVy/3ZgmvZjpa0UdQ==}
+    engines: {node: '>=16'}
 
   /path-type/4.0.0:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
@@ -12940,29 +12956,6 @@ packages:
       is-arrayish: 0.3.2
     dev: false
 
-  /sinon/11.1.2:
-    resolution: {integrity: sha512-59237HChms4kg7/sXhiRcUzdSkKuydDeTiamT/jesUVHshBgL8XAmhgFo0GfK6RruMDM/iRSij1EybmMog9cJw==}
-    deprecated: 16.1.1
-    dependencies:
-      '@sinonjs/commons': 1.8.6
-      '@sinonjs/fake-timers': 7.1.2
-      '@sinonjs/samsam': 6.1.3
-      diff: 5.2.0
-      nise: 5.1.9
-      supports-color: 7.2.0
-    dev: true
-
-  /sinon/15.2.0:
-    resolution: {integrity: sha512-nPS85arNqwBXaIsFCkolHjGIkFo+Oxu9vbgmBJizLAhqe6P2o3Qmj3KCUoRkfhHtvgDhZdWD3risLHAUJ8npjw==}
-    deprecated: 16.1.1
-    dependencies:
-      '@sinonjs/commons': 3.0.1
-      '@sinonjs/fake-timers': 10.3.0
-      '@sinonjs/samsam': 8.0.0
-      diff: 5.2.0
-      nise: 5.1.9
-      supports-color: 7.2.0
-
   /sinon/17.0.2:
     resolution: {integrity: sha512-uihLiaB9FhzesElPDFZA7hDcNABzsVHwr3YfmM9sBllVwab3l0ltGlRV1XhpNfIacNDLGD1QRZNLs5nU5+hTuA==}
     deprecated: There
@@ -12974,6 +12967,16 @@ packages:
       nise: 5.1.9
       supports-color: 7.2.0
     dev: true
+
+  /sinon/19.0.0:
+    resolution: {integrity: sha512-YwPCB6NgZDam4hsEWe0mzTNbtKWFUtnpMSSQR+CmhWtVCkMqynwl9d7AjmfE7pPlGCXkHSi80mPHy70RTsAijg==}
+    dependencies:
+      '@sinonjs/commons': 3.0.1
+      '@sinonjs/fake-timers': 13.0.1
+      '@sinonjs/samsam': 8.0.2
+      diff: 7.0.0
+      nise: 6.1.1
+      supports-color: 7.2.0
 
   /sisteransi/1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
