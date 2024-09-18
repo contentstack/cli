@@ -198,7 +198,7 @@ function setConfig(conf, bp) {
 }
 
 async function start(
-  { retryFailed, bulkPublish, publishAllContentTypes, contentTypes, locales, environments, apiVersion, includeVariantsFlag, entry_uid },
+  { retryFailed, bulkPublish, publishAllContentTypes, contentTypes, locales, environments, apiVersion, includeVariants, entryUid },
   stack,
   config,
 ) {
@@ -213,7 +213,7 @@ async function start(
     process.exit(0);
   });
 
-  if (includeVariantsFlag) {
+  if (includeVariants) {
     apiVersion = VARIANTS_PUBLISH_API_VERSION;
   }
 
@@ -240,7 +240,7 @@ async function start(
     for (let loc = 0; loc < locales.length; loc += 1) {
       for (let i = 0; i < allContentTypes.length; i += 1) {
         /* eslint-disable no-await-in-loop */
-        await getEntries(stack, allContentTypes[i].uid || allContentTypes[i], locales[loc], bulkPublish, environments, apiVersion, includeVariantsFlag, entry_uid);
+        await getEntries(stack, allContentTypes[i].uid || allContentTypes[i], locales[loc], bulkPublish, environments, apiVersion, includeVariants, entryUid);
         /* eslint-enable no-await-in-loop */
       }
     }
