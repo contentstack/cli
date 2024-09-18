@@ -40,7 +40,7 @@ describe('AuditBaseCommand class', () => {
   });
   describe('Audit command flow', () => {
     fancy
-      .stdout({ print: true })
+      .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
       .stub(fs, 'mkdirSync', () => {})
