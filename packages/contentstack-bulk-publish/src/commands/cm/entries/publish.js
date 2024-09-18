@@ -23,6 +23,9 @@ class PublishEntriesCommand extends Command {
     entriesFlags.apiVersion = entriesFlags['api-version'] || '3';
     entriesFlags.includeVariants = entriesFlags['include-variants'] || entriesFlags.includeVariants || false;
     entriesFlags.entryUid = entriesFlags['entry-uid'] || entriesFlags.entryUid;
+    if(entriesFlags.entryUid === undefined){
+      delete entriesFlags['entryUid'];
+    }
     delete entriesFlags['api-version'];
     delete entriesFlags['retry-failed'];
     delete entriesFlags['content-types'];
@@ -62,12 +65,6 @@ class PublishEntriesCommand extends Command {
           this.error('Please use `--alias` or `--stack-api-key` to proceed.', { exit: 2 });
         }
         updatedFlags.includeVariants = entriesFlags.includeVariants;
-        if(entriesFlags.entryUid){
-          updatedFlags.entryUid = entriesFlags.entryUid;
-        } else {
-          updatedFlags.entryUid = false;
-        }
-        // updatedFlags.entry_uid = entriesFlags.entryUid;
         updatedFlags.bulkPublish = updatedFlags.bulkPublish !== 'false';
         stack = await getStack(config);
       }
