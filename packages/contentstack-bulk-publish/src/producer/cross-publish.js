@@ -210,7 +210,7 @@ async function getSyncEntries(
       if (variantsFlag) {
         for (let index = 0; index < entriesResponse?.items?.length; index++) {
           let variants = [];
-          variants = await getVariantEntries(stack, entries[index].content_type_uid, entries, index, queryParamsObj);
+          variants = await getVariantEntries(stack, entriesResponse.items[index].content_type_uid, entriesResponse, index, queryParamsObj);
           if (variants.length > 0) {
             entriesResponse.items[index].data.variants = variants;
           }
@@ -271,7 +271,7 @@ async function getVariantEntries(stack, contentType, entries, index, queryParams
 
     const variantsEntriesResponse = await stack
       .contentType(contentType)
-      .entry(entries[index].data.uid)
+      .entry(entries.items[index].data.uid)
       .variants()
       .query(variantQueryParams)
       .find();

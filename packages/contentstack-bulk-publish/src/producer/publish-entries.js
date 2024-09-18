@@ -48,9 +48,6 @@ async function getEntries(stack, contentType, locale, bulkPublish, environments,
 
         for (let index = 0; index < entries.length; index++) {
           let variants = [];
-
-          
-
           if (bulkPublish) {
             let entry;
             if (bulkPublishSet.length < 10) {
@@ -64,7 +61,10 @@ async function getEntries(stack, contentType, locale, bulkPublish, environments,
               if (variantsFlag) {
                 variants = await getVariantEntries(stack, contentType, entries, index, queryParams);
                 if(variants.length > 0){
-                  entry.publish_with_base_entry = true;
+                  entry.variant_rules = {
+                    publish_latest_base: true,
+                    publish_latest_base_conditionally: true
+                  };
                   entry.variants = variants;
                 }
                 
@@ -222,7 +222,6 @@ async function start(
       if (!validateFile(retryFailed, ['publish-entries', 'bulk-publish-entries'])) {
         return false;
       }
-
       bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false;
       setConfig(config, bulkPublish);
       if (bulkPublish) {

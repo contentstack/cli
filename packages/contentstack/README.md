@@ -1135,13 +1135,13 @@ EXAMPLES
 
   Using --include-variants
 
-  $ csdx cm:entries:publish -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN] [--include-variants]
+  $ csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN] [--include-variants]
 
 
 
   Using --entry-uid and --include-variants
 
-  $ csdx cm:entries:publish -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN] --entry-uid [ENTRY UID] [--include-variants]
+  $ csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN] --entry-uid [ENTRY UID] [--include-variants]
 ```
 
 ## `csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`
@@ -1645,13 +1645,13 @@ EXAMPLES
 
   Using --include-variants
 
-  $ csdx cm:entries:publish -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN] [--include-variants]
+  $ csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN] [--include-variants]
 
 
 
   Using --entry-uid and --include-variants
 
-  $ csdx cm:entries:publish -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN] --entry-uid [ENTRY UID] [--include-variants]
+  $ csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN] --entry-uid [ENTRY UID] [--include-variants]
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/entries/publish.js)_
@@ -2187,22 +2187,21 @@ USAGE
     [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]
 
 FLAGS
-  -B, --branch=<value>                    [optional] branch name
-  -a, --alias=<value>                     alias of the management token
-  -b, --backup-dir=<value>                [optional] backup directory name when using specific module
-  -c, --config=<value>                    [optional] path of config file
-  -d, --data-dir=<value>                  path and location where data is stored
-  -k, --stack-api-key=<value>             API key of the target stack
-  -m, --module=<value>                    [optional] specific module name
-  -y, --yes                               [optional] Override marketplace prompts
-      --exclude-global-modules            Excludes the branch-independent module from the import operation
-      --import-webhook-status=<option>    [default: disable] [optional] Webhook state
-                                          <options: disable|current>
-      --personalize-project-name=<value>  Personalize project name.
-      --replace-existing                  Replaces the existing module in the target stack.
-      --skip-app-recreation               [optional] Skip private apps recreation if already exist
-      --skip-audit                        Skips the audit fix.
-      --skip-existing                     Skips the module exists warning messages.
+  -B, --branch=<value>                  [optional] branch name
+  -a, --alias=<value>                   alias of the management token
+  -b, --backup-dir=<value>              [optional] backup directory name when using specific module
+  -c, --config=<value>                  [optional] path of config file
+  -d, --data-dir=<value>                path and location where data is stored
+  -k, --stack-api-key=<value>           API key of the target stack
+  -m, --module=<value>                  [optional] specific module name
+  -y, --yes                             [optional] Override marketplace prompts
+      --exclude-global-modules          Excludes the branch-independent module from the import operation
+      --import-webhook-status=<option>  [default: disable] [optional] Webhook state
+                                        <options: disable|current>
+      --replace-existing                Replaces the existing module in the target stack.
+      --skip-app-recreation             [optional] Skip private apps recreation if already exist
+      --skip-audit                      Skips the audit fix.
+      --skip-existing                   Skips the module exists warning messages.
 
 DESCRIPTION
   Import content from a stack
@@ -2613,22 +2612,21 @@ USAGE
     <value>] [--branch <value>] [--import-webhook-status disable|current]
 
 FLAGS
-  -B, --branch=<value>                    [optional] branch name
-  -a, --alias=<value>                     alias of the management token
-  -b, --backup-dir=<value>                [optional] backup directory name when using specific module
-  -c, --config=<value>                    [optional] path of config file
-  -d, --data-dir=<value>                  path and location where data is stored
-  -k, --stack-api-key=<value>             API key of the target stack
-  -m, --module=<value>                    [optional] specific module name
-  -y, --yes                               [optional] Override marketplace prompts
-      --exclude-global-modules            Excludes the branch-independent module from the import operation
-      --import-webhook-status=<option>    [default: disable] [optional] Webhook state
-                                          <options: disable|current>
-      --personalize-project-name=<value>  Personalize project name.
-      --replace-existing                  Replaces the existing module in the target stack.
-      --skip-app-recreation               [optional] Skip private apps recreation if already exist
-      --skip-audit                        Skips the audit fix.
-      --skip-existing                     Skips the module exists warning messages.
+  -B, --branch=<value>                  [optional] branch name
+  -a, --alias=<value>                   alias of the management token
+  -b, --backup-dir=<value>              [optional] backup directory name when using specific module
+  -c, --config=<value>                  [optional] path of config file
+  -d, --data-dir=<value>                path and location where data is stored
+  -k, --stack-api-key=<value>           API key of the target stack
+  -m, --module=<value>                  [optional] specific module name
+  -y, --yes                             [optional] Override marketplace prompts
+      --exclude-global-modules          Excludes the branch-independent module from the import operation
+      --import-webhook-status=<option>  [default: disable] [optional] Webhook state
+                                        <options: disable|current>
+      --replace-existing                Replaces the existing module in the target stack.
+      --skip-app-recreation             [optional] Skip private apps recreation if already exist
+      --skip-audit                      Skips the audit fix.
+      --skip-existing                   Skips the module exists warning messages.
 
 DESCRIPTION
   Import content from a stack
@@ -3554,7 +3552,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.4/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.8/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:add PLUGIN`
 
@@ -3628,7 +3626,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.4/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.8/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN`
 
@@ -3677,7 +3675,7 @@ EXAMPLES
     $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.4/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.8/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PATH`
 
@@ -3707,7 +3705,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.4/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.8/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:remove [PLUGIN]`
 
@@ -3748,7 +3746,7 @@ FLAGS
   --reinstall  Reinstall all plugins after uninstalling.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.4/src/commands/plugins/reset.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.8/src/commands/plugins/reset.ts)_
 
 ## `csdx plugins:uninstall [PLUGIN]`
 
@@ -3776,7 +3774,7 @@ EXAMPLES
   $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.4/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.8/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:unlink [PLUGIN]`
 
@@ -3820,7 +3818,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.4/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.8/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
