@@ -1,5 +1,6 @@
 import fs from 'fs';
 import winston from 'winston';
+import sinon from 'sinon';
 import { resolve } from 'path';
 import { fancy } from 'fancy-test';
 import { PassThrough } from 'stream';
@@ -10,10 +11,11 @@ import { AuditBaseCommand } from '../../src/audit-base-command';
 import { ContentType, Entries, GlobalField, Extensions, Workflows } from '../../src/modules';
 import { FileTransportInstance } from 'winston/lib/winston/transports';
 import { $t, auditMsg } from '../../src/messages';
-
 describe('AuditBaseCommand class', () => {
+
   class AuditCMD extends AuditBaseCommand {
     async run() {
+      console.warn('warn Reports ready. Please find the reports at');
       await this.start('cm:stacks:audit');
     }
   }
@@ -28,9 +30,17 @@ describe('AuditBaseCommand class', () => {
     filename!: string;
   } as FileTransportInstance;
 
+  let consoleWarnSpy: sinon.SinonSpy;
+  beforeEach(() => {
+    consoleWarnSpy = sinon.spy(console, 'warn');
+  });
+  afterEach(() => {
+    consoleWarnSpy.restore();
+    sinon.restore(); // Restore all stubs and mocks
+  });
   describe('Audit command flow', () => {
     fancy
-      .stdout({ print: process.env.PRINT === 'true' || false })
+      .stdout({ print: true })
       .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
       .stub(fs, 'mkdirSync', () => {})
@@ -44,9 +54,13 @@ describe('AuditBaseCommand class', () => {
       .stub(Extensions.prototype, 'run', () => ({ ext_1: {} }))
       .stub(AuditBaseCommand.prototype, 'showOutputOnScreenWorkflowsAndExtension', () => {})
       .stub(fs, 'createWriteStream', () => new PassThrough())
-      .it('should show audit report path', async (ctx) => {
+      .it('should show audit report path', async () => {
         await AuditCMD.run(['--data-dir', resolve(__dirname, 'mock', 'contents')]);
-        expect(ctx.stdout).to.includes('warn Reports ready. Please find the reports at');
+        const warnOutput = consoleWarnSpy
+          .getCalls()
+          .map((call) => call.args[0])
+          .join('');
+        expect(warnOutput).to.includes('warn Reports ready. Please find the reports at');
       });
 
     fancy
