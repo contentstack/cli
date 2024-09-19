@@ -107,7 +107,7 @@ export default class ExportCommand extends Command {
       exportConfig.host = this.cmaHost;
       exportConfig.region = this.region;
       exportConfig.developerHubBaseUrl = this.developerHubUrl;
-      exportConfig.modules.personalization.baseURL = { 'baseURL': this.personalizeUrl };
+      exportConfig.modules.personalization.baseURL[exportConfig.region.name] = this.personalizeUrl;
       exportDir = exportConfig.cliLogsPath || exportConfig.data || exportConfig.exportDir;
       const managementAPIClient: ContentstackClient = await managementSDKClient(exportConfig);
       const moduleExporter = new ModuleExporter(managementAPIClient, exportConfig);
