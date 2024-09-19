@@ -2,16 +2,15 @@ import * as path from 'path';
 import { sanitizePath } from '@contentstack/cli-utilities';
 import { PersonalizationConfig, ExportConfig, ExperienceStruct } from '../types';
 import { formatError, fsUtil, log, PersonalizationAdapter } from '../utils';
-import { Command } from '@contentstack/cli-command';
 
 export default class ExportExperiences extends PersonalizationAdapter<ExportConfig> {
   private experiencesFolderPath: string;
   public exportConfig: ExportConfig;
   public personalizationConfig: PersonalizationConfig;
-  constructor(exportConfig: ExportConfig, readonly command: Command) {
+  constructor(exportConfig: ExportConfig) {
     super({
       config: exportConfig,
-      baseURL: exportConfig.modules.personalization.baseURL[exportConfig.region.name] || command.personalizeUrl,
+      baseURL: exportConfig.modules.personalization.baseURL[exportConfig.region.name],
       headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
       cmaConfig: {
         baseURL: exportConfig.region.cma + `/v3`,
