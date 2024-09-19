@@ -5,7 +5,6 @@ import cloneDeep from 'lodash/cloneDeep';
 import { sanitizePath } from '@contentstack/cli-utilities';
 import { PersonalizationAdapter, fsUtil, lookUpAudiences, lookUpEvents } from '../utils';
 import { APIConfig, ImportConfig, ExperienceStruct, CreateExperienceInput, LogType } from '../types';
-
 export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   private createdCTs: string[];
   private mapperDirPath: string;
