@@ -248,7 +248,6 @@ async function performBulkPublish(data, _config, queue) {
       if (bulkPublishObj.apiVersion) {
         if (!isNaN(bulkPublishObj.apiVersion) && bulkPublishObj.apiVersion === apiVersionForNRP) {
           payload['api_version'] = bulkPublishObj.apiVersion;
-          stack.stackHeaders['api_version'] = bulkPublishObj.apiVersion;
           payload.details.publish_with_reference = true;
         } else {
           if (bulkPublishObj.apiVersion !== '3') {
