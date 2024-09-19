@@ -9,7 +9,7 @@ import { CreateVariantEntryDto, CreateVariantEntryOptions, VariantEntryStruct } 
 export type APIConfig = HttpRequestConfig & {
   httpClient?: boolean;
   sharedConfig?: ExportConfig | Record<string, any> | undefined;
-  personalizeUrl?: string;
+  personalizationURL?: string;
   config: ExportConfig | Record<string, any> | undefined;
   baseURL?: string;
   cmaConfig?: HttpRequestConfig;
