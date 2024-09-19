@@ -2,16 +2,15 @@ import * as path from 'path';
 import { sanitizePath } from '@contentstack/cli-utilities';
 import { ExportConfig, PersonalizationConfig } from '../types';
 import { PersonalizationAdapter, log, fsUtil, formatError } from '../utils';
-import { Command } from '@contentstack/cli-command';
 
 export default class ExportProjects extends PersonalizationAdapter<ExportConfig> {
   private projectFolderPath: string;
   public exportConfig: ExportConfig;
   public personalizationConfig: PersonalizationConfig;
-  constructor(exportConfig: ExportConfig, readonly command: Command) {
+  constructor(exportConfig: ExportConfig) {
     super({
       config: exportConfig,
-      baseURL: exportConfig.modules.personalization.baseURL[exportConfig.region.name] || command.personalizeUrl,
+      baseURL: exportConfig.modules.personalization.baseURL[exportConfig.region.name],
       headers: { authtoken: exportConfig.auth_token, organization_uid: exportConfig.org_uid },
     });
     this.exportConfig = exportConfig;

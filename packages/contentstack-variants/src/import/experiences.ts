@@ -5,8 +5,6 @@ import cloneDeep from 'lodash/cloneDeep';
 import { sanitizePath } from '@contentstack/cli-utilities';
 import { PersonalizationAdapter, fsUtil, lookUpAudiences, lookUpEvents } from '../utils';
 import { APIConfig, ImportConfig, ExperienceStruct, CreateExperienceInput, LogType } from '../types';
-import { Command } from '@contentstack/cli-command';
-
 export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   private createdCTs: string[];
   private mapperDirPath: string;
@@ -34,10 +32,10 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   private audienceConfig: ImportConfig['modules']['personalization']['audiences'];
   private experienceConfig: ImportConfig['modules']['personalization']['experiences'];
 
-  constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log, readonly command: Command) {
+  constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
     const conf: APIConfig = {
       config,
-      baseURL: config.modules.personalization.baseURL[config.region.name] || command.personalizeUrl,
+      baseURL: config.modules.personalization.baseURL[config.region.name],
       headers: { 'X-Project-Uid': config.modules.personalization.project_id, authtoken: config.auth_token },
       cmaConfig: {
         baseURL: config.region.cma + `/v3`,

@@ -3,7 +3,6 @@ import { existsSync } from 'fs';
 import { sanitizePath } from '@contentstack/cli-utilities';
 import { PersonalizationAdapter, fsUtil } from '../utils';
 import { APIConfig, AttributeStruct, ImportConfig, LogType } from '../types';
-import { Command } from '@contentstack/cli-command';
 
 export default class Attribute extends PersonalizationAdapter<ImportConfig> {
   private mapperDirPath: string;
@@ -13,10 +12,10 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
   private personalizationConfig: ImportConfig['modules']['personalization'];
   private attributeConfig: ImportConfig['modules']['personalization']['attributes'];
 
-  constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log, readonly command: Command) {
+  constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
     const conf: APIConfig = {
       config,
-      baseURL: config.modules.personalization.baseURL[config.region.name] || command.personalizeUrl,
+      baseURL: config.modules.personalization.baseURL[config.region.name],
       headers: { 'X-Project-Uid': config.modules.personalization.project_id, authtoken: config.auth_token },
     };
     super(Object.assign(config, conf));

@@ -3,14 +3,13 @@ import { existsSync, readFileSync } from 'fs';
 import { sanitizePath } from '@contentstack/cli-utilities';
 import { PersonalizationAdapter, askProjectName, fsUtil } from '../utils';
 import { APIConfig, CreateProjectInput, ImportConfig, LogType, ProjectStruct } from '../types';
-import { Command } from '@contentstack/cli-command';
 
 export default class Project extends PersonalizationAdapter<ImportConfig> {
   private projectMapperFolderPath: string;
-  constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log, readonly command: Command) {
+  constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
     const conf: APIConfig = {
       config,
-      baseURL: config.modules.personalization.baseURL[config.region.name] || command.personalizeUrl,
+      baseURL: config.modules.personalization.baseURL[config.region.name],
       headers: { organization_uid: config.org_uid, authtoken: config.auth_token },
     };
     super(Object.assign(config, conf));
