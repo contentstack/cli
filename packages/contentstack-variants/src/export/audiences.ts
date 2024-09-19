@@ -3,7 +3,6 @@ import { resolve as pResolve } from 'node:path';
 
 import { formatError, fsUtil, PersonalizationAdapter, log } from '../utils';
 import { PersonalizationConfig, ExportConfig, AudienceStruct, AudiencesConfig } from '../types';
-import { Command } from '@contentstack/cli-command';
 
 export default class ExportAudiences extends PersonalizationAdapter<ExportConfig> {
   private audiencesConfig: AudiencesConfig;
@@ -11,10 +10,10 @@ export default class ExportAudiences extends PersonalizationAdapter<ExportConfig
   private audiences: Record<string, unknown>[];
   public personalizationConfig: PersonalizationConfig;
 
-  constructor(readonly exportConfig: ExportConfig, readonly command: Command) {
+  constructor(readonly exportConfig: ExportConfig) {
     super({
       config: exportConfig,
-      baseURL: exportConfig.modules.personalization.baseURL[exportConfig.region.name] || command.personalizeUrl,
+      baseURL: exportConfig.modules.personalization.baseURL[exportConfig.region.name],
       headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
     });
     this.personalizationConfig = exportConfig.modules.personalization;
