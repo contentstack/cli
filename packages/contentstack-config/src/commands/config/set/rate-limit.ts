@@ -44,7 +44,7 @@ export default class SetRateLimitCommand extends BaseCommand<typeof SetRateLimit
 
     const { flags } = await this.parse(SetRateLimitCommand);
     let { org, utilize, 'limit-name': limitName } = flags;
-    const config: SetRateLimitConfig = { org: '', limitName: limitNamesConfig };
+    const config: SetRateLimitConfig = { org: '', limitName: limitNamesConfig, host: this.cmaHost };
 
     if (!org) {
       org = await askOrgID();
@@ -82,7 +82,8 @@ export default class SetRateLimitCommand extends BaseCommand<typeof SetRateLimit
     try {
       await limitHandler.setRateLimit(config);
     } catch (error) {
-      cliux.error(`Error: Something went wrong while setting rate limit for org: ${org}`, error);
+      cliux.error(`Error: Something went wrong while setting rate limit for org: ${org}`);
+      cliux.error(error);
     }
   }
 }

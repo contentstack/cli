@@ -40,4 +40,5 @@ export interface SetRateLimitConfig {
   utilize?: number;
   limitName?: string[];
   default?: boolean;
+  host?: string;
 }
