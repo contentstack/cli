@@ -13,10 +13,10 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
   constructor(readonly exportConfig: ExportConfig) {
     super({
       config: exportConfig,
-      baseURL: exportConfig.modules.personalization.baseURL[exportConfig.region.name],
+      baseURL: exportConfig.modules.personalize.baseURL[exportConfig.region.name],
       headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
     });
-    this.personalizationConfig = exportConfig.modules.personalization;
+    this.personalizationConfig = exportConfig.modules.personalize;
     this.attributesConfig = exportConfig.modules.attributes;
     this.attributesFolderPath = pResolve(
       sanitizePath(exportConfig.data),
