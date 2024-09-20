@@ -2,13 +2,13 @@ import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
 import { sanitizePath } from '@contentstack/cli-utilities';
 import { formatError, fsUtil, PersonalizationAdapter, log } from '../utils';
-import { PersonalizationConfig, ExportConfig, AttributesConfig, AttributeStruct } from '../types';
+import { PersonalizeConfig, ExportConfig, AttributesConfig, AttributeStruct } from '../types';
 
 export default class ExportAttributes extends PersonalizationAdapter<ExportConfig> {
   private attributesConfig: AttributesConfig;
   private attributesFolderPath: string;
   private attributes: Record<string, unknown>[];
-  public personalizationConfig: PersonalizationConfig;
+  public personalizeConfig: PersonalizeConfig;
 
   constructor(readonly exportConfig: ExportConfig) {
     super({
@@ -16,12 +16,12 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
       baseURL: exportConfig.modules.personalize.baseURL[exportConfig.region.name],
       headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
     });
-    this.personalizationConfig = exportConfig.modules.personalize;
+    this.personalizeConfig = exportConfig.modules.personalize;
     this.attributesConfig = exportConfig.modules.attributes;
     this.attributesFolderPath = pResolve(
       sanitizePath(exportConfig.data),
       sanitizePath(exportConfig.branchName || ''),
-      sanitizePath(this.personalizationConfig.dirName),
+      sanitizePath(this.personalizeConfig.dirName),
       sanitizePath(this.attributesConfig.dirName),
     );
     this.attributes = [];

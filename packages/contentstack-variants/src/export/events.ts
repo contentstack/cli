@@ -2,13 +2,13 @@ import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
 
 import { formatError, fsUtil, PersonalizationAdapter, log } from '../utils';
-import { PersonalizationConfig, ExportConfig, EventStruct, EventsConfig } from '../types';
+import { PersonalizeConfig, ExportConfig, EventStruct, EventsConfig } from '../types';
 
 export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
   private eventsConfig: EventsConfig;
   private eventsFolderPath: string;
   private events: Record<string, unknown>[];
-  public personalizationConfig: PersonalizationConfig;
+  public personalizeConfig: PersonalizeConfig;
 
   constructor(readonly exportConfig: ExportConfig) {
     super({
@@ -16,12 +16,12 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
       baseURL: exportConfig.modules.personalize.baseURL[exportConfig.region.name],
       headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
     });
-    this.personalizationConfig = exportConfig.modules.personalize;
+    this.personalizeConfig = exportConfig.modules.personalize;
     this.eventsConfig = exportConfig.modules.events;
     this.eventsFolderPath = pResolve(
       exportConfig.data,
       exportConfig.branchName || '',
-      this.personalizationConfig.dirName,
+      this.personalizeConfig.dirName,
       this.eventsConfig.dirName,
     );
     this.events = [];

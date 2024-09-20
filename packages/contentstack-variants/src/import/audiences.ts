@@ -10,7 +10,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
   private attributesMapperPath: string;
   private audiencesUidMapperPath: string;
   private audiencesUidMapper: Record<string, unknown>;
-  private personalizationConfig: ImportConfig['modules']['personalize'];
+  private personalizeConfig: ImportConfig['modules']['personalize'];
   private audienceConfig: ImportConfig['modules']['personalize']['audiences'];
   public attributeConfig: ImportConfig['modules']['personalize']['attributes'];
 
@@ -21,10 +21,10 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
       headers: { 'X-Project-Uid': config.modules.personalize.project_id, authtoken: config.auth_token },
     };
     super(Object.assign(config, conf));
-    this.personalizationConfig = this.config.modules.personalize;
-    this.audienceConfig = this.personalizationConfig.audiences;
-    this.attributeConfig = this.personalizationConfig.attributes;
-    this.mapperDirPath = resolve(sanitizePath(this.config.backupDir), 'mapper', sanitizePath(this.personalizationConfig.dirName));
+    this.personalizeConfig = this.config.modules.personalize;
+    this.audienceConfig = this.personalizeConfig.audiences;
+    this.attributeConfig = this.personalizeConfig.attributes;
+    this.mapperDirPath = resolve(sanitizePath(this.config.backupDir), 'mapper', sanitizePath(this.personalizeConfig.dirName));
     this.audienceMapperDirPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.audienceConfig.dirName));
     this.audiencesUidMapperPath = resolve(sanitizePath(this.audienceMapperDirPath), 'uid-mapping.json');
     this.attributesMapperPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.attributeConfig.dirName), 'uid-mapping.json');
@@ -39,7 +39,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
 
     await fsUtil.makeDirectory(this.audienceMapperDirPath);
     const { dirName, fileName } = this.audienceConfig;
-    const audiencesPath = resolve(sanitizePath(this.config.data), sanitizePath(this.personalizationConfig.dirName), sanitizePath(dirName), sanitizePath(fileName));
+    const audiencesPath = resolve(sanitizePath(this.config.data), sanitizePath(this.personalizeConfig.dirName), sanitizePath(dirName), sanitizePath(fileName));
 
     if (existsSync(audiencesPath)) {
       try {
