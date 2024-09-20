@@ -1,12 +1,12 @@
 import * as path from 'path';
 import { sanitizePath } from '@contentstack/cli-utilities';
-import { PersonalizationConfig, ExportConfig, ExperienceStruct } from '../types';
+import { PersonalizeConfig, ExportConfig, ExperienceStruct } from '../types';
 import { formatError, fsUtil, log, PersonalizationAdapter } from '../utils';
 
 export default class ExportExperiences extends PersonalizationAdapter<ExportConfig> {
   private experiencesFolderPath: string;
   public exportConfig: ExportConfig;
-  public personalizationConfig: PersonalizationConfig;
+  public personalizeConfig: PersonalizeConfig;
   constructor(exportConfig: ExportConfig) {
     super({
       config: exportConfig,
@@ -18,11 +18,11 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
       },
     });
     this.exportConfig = exportConfig;
-    this.personalizationConfig = exportConfig.modules.personalize;
+    this.personalizeConfig = exportConfig.modules.personalize;
     this.experiencesFolderPath = path.resolve(
       sanitizePath(exportConfig.data),
       sanitizePath(exportConfig.branchName || ''),
-      sanitizePath(this.personalizationConfig.dirName),
+      sanitizePath(this.personalizeConfig.dirName),
       'experiences',
     );
   }

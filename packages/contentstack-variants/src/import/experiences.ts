@@ -28,7 +28,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   private cmsVariantGroups: Record<string, unknown>;
   private experiencesUidMapper: Record<string, string>;
   private pendingVariantAndVariantGrpForExperience: string[];
-  private personalizationConfig: ImportConfig['modules']['personalize'];
+  private personalizeConfig: ImportConfig['modules']['personalize'];
   private audienceConfig: ImportConfig['modules']['personalize']['audiences'];
   private experienceConfig: ImportConfig['modules']['personalize']['experiences'];
 
@@ -43,16 +43,16 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
       },
     };
     super(Object.assign(config, conf));
-    this.personalizationConfig = this.config.modules.personalize;
+    this.personalizeConfig = this.config.modules.personalize;
     this.experiencesDirPath = resolve(
       sanitizePath(this.config.data),
-      sanitizePath(this.personalizationConfig.dirName),
-      sanitizePath(this.personalizationConfig.experiences.dirName),
+      sanitizePath(this.personalizeConfig.dirName),
+      sanitizePath(this.personalizeConfig.experiences.dirName),
     );
-    this.experiencesPath = join(sanitizePath(this.experiencesDirPath), sanitizePath(this.personalizationConfig.experiences.fileName));
-    this.experienceConfig = this.personalizationConfig.experiences;
-    this.audienceConfig = this.personalizationConfig.audiences;
-    this.mapperDirPath = resolve(sanitizePath(this.config.backupDir), 'mapper', sanitizePath(this.personalizationConfig.dirName));
+    this.experiencesPath = join(sanitizePath(this.experiencesDirPath), sanitizePath(this.personalizeConfig.experiences.fileName));
+    this.experienceConfig = this.personalizeConfig.experiences;
+    this.audienceConfig = this.personalizeConfig.audiences;
+    this.mapperDirPath = resolve(sanitizePath(this.config.backupDir), 'mapper', sanitizePath(this.personalizeConfig.dirName));
     this.expMapperDirPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.experienceConfig.dirName));
     this.experiencesUidMapperPath = resolve(sanitizePath(this.expMapperDirPath), 'uid-mapping.json');
     this.cmsVariantGroupPath = resolve(sanitizePath(this.expMapperDirPath), 'cms-variant-groups.json');
@@ -64,7 +64,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     this.experienceCTsPath = resolve(sanitizePath(this.experiencesDirPath), 'experiences-content-types.json');
     this.experienceVariantsIdsPath = resolve(
       sanitizePath(this.config.data),
-      sanitizePath(this.personalizationConfig.dirName),
+      sanitizePath(this.personalizeConfig.dirName),
       sanitizePath(this.experienceConfig.dirName),
       'experiences-variants-ids.json',
     );
@@ -116,7 +116,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         if (jobRes)
           this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Variant & Variant groups' }), 'info');
 
-        if (this.personalizationConfig.importData) {
+        if (this.personalizeConfig.importData) {
           this.log(this.config, this.messages.UPDATING_CT_IN_EXP, 'info');
           await this.attachCTsInExperience();
         }
