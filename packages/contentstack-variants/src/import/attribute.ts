@@ -9,7 +9,7 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
   private attrMapperDirPath: string;
   private attributesUidMapperPath: string;
   private attributesUidMapper: Record<string, unknown>;
-  private personalizationConfig: ImportConfig['modules']['personalize'];
+  private personalizeConfig: ImportConfig['modules']['personalize'];
   private attributeConfig: ImportConfig['modules']['personalize']['attributes'];
 
   constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
@@ -19,9 +19,9 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
       headers: { 'X-Project-Uid': config.modules.personalize.project_id, authtoken: config.auth_token },
     };
     super(Object.assign(config, conf));
-    this.personalizationConfig = this.config.modules.personalize;
-    this.attributeConfig = this.personalizationConfig.attributes;
-    this.mapperDirPath = resolve(sanitizePath(this.config.backupDir), 'mapper', sanitizePath(this.personalizationConfig.dirName));
+    this.personalizeConfig = this.config.modules.personalize;
+    this.attributeConfig = this.personalizeConfig.attributes;
+    this.mapperDirPath = resolve(sanitizePath(this.config.backupDir), 'mapper', sanitizePath(this.personalizeConfig.dirName));
     this.attrMapperDirPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.attributeConfig.dirName));
     this.attributesUidMapperPath = resolve(sanitizePath(this.attrMapperDirPath), 'uid-mapping.json');
     this.attributesUidMapper = {};
@@ -35,7 +35,7 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
 
     await fsUtil.makeDirectory(this.attrMapperDirPath);
     const { dirName, fileName } = this.attributeConfig;
-    const attributesPath = resolve(sanitizePath(this.config.data), sanitizePath(this.personalizationConfig.dirName), sanitizePath(dirName), sanitizePath(fileName));
+    const attributesPath = resolve(sanitizePath(this.config.data), sanitizePath(this.personalizeConfig.dirName), sanitizePath(dirName), sanitizePath(fileName));
 
     if (existsSync(attributesPath)) {
       try {

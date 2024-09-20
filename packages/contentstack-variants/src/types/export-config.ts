@@ -269,7 +269,7 @@ export interface ExportConfig extends DefaultConfig {
   region: any;
 }
 
-export interface PersonalizationConfig {
+export interface PersonalizeConfig {
   dirName: string;
   baseURL: Record<string, string>;
 }

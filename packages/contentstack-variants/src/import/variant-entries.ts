@@ -29,7 +29,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
   public entriesMapperPath: string;
   public variantEntryBasePath!: string;
   public variantIdList!: Record<string, unknown>;
-  public personalizationConfig: ImportConfig['modules']['personalize'];
+  public personalizeConfig: ImportConfig['modules']['personalize'];
 
   public taxonomies!: Record<string, unknown>;
   public assetUrlMapper!: Record<string, any>;
@@ -56,7 +56,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     }; 
     super(Object.assign(omit(config, ['helpers']), conf));
     this.entriesMapperPath = resolve(sanitizePath(config.backupDir), sanitizePath(config.branchName || ''), 'mapper', 'entries');
-    this.personalizationConfig = this.config.modules.personalize;
+    this.personalizeConfig = this.config.modules.personalize;
     this.entriesDirPath = resolve(sanitizePath(config.backupDir), sanitizePath(config.branchName || ''), sanitizePath(config.modules.entries.dirName));
     this.failedVariantPath = resolve(sanitizePath(this.entriesMapperPath), 'failed-entry-variants.json');
     this.failedVariantEntries = new Map();
@@ -75,8 +75,8 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     const variantIdPath = resolve(
       sanitizePath(this.config.backupDir),
       'mapper',
-      sanitizePath(this.personalizationConfig.dirName),
-      sanitizePath(this.personalizationConfig.experiences.dirName),
+      sanitizePath(this.personalizeConfig.dirName),
+      sanitizePath(this.personalizeConfig.experiences.dirName),
       'variants-uid-mapping.json',
     );
 
