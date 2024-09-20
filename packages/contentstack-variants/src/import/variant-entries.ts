@@ -29,7 +29,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
   public entriesMapperPath: string;
   public variantEntryBasePath!: string;
   public variantIdList!: Record<string, unknown>;
-  public personalizationConfig: ImportConfig['modules']['personalization'];
+  public personalizationConfig: ImportConfig['modules']['personalize'];
 
   public taxonomies!: Record<string, unknown>;
   public assetUrlMapper!: Record<string, any>;
@@ -51,12 +51,12 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         branch: config.branchName,
         authtoken: config.auth_token,
         organization_uid: config.org_uid,
-        'X-Project-Uid': config.modules.personalization.project_id,
+        'X-Project-Uid': config.modules.personalize.project_id,
       },
     }; 
     super(Object.assign(omit(config, ['helpers']), conf));
     this.entriesMapperPath = resolve(sanitizePath(config.backupDir), sanitizePath(config.branchName || ''), 'mapper', 'entries');
-    this.personalizationConfig = this.config.modules.personalization;
+    this.personalizationConfig = this.config.modules.personalize;
     this.entriesDirPath = resolve(sanitizePath(config.backupDir), sanitizePath(config.branchName || ''), sanitizePath(config.modules.entries.dirName));
     this.failedVariantPath = resolve(sanitizePath(this.entriesMapperPath), 'failed-entry-variants.json');
     this.failedVariantEntries = new Map();
@@ -202,7 +202,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
           log(this.config, error, 'error');
         };
         // NOTE Find new variant Id by old Id
-        const variant_id = this.variantIdList[variantEntry.variant_id] as string;
+        const variantId = this.variantIdList[variantEntry._variant._uid] as string;
         // NOTE Replace all the relation data UID's
         variantEntry = this.handleVariantEntryRelationalData(contentType, variantEntry);
         const changeSet = this.serializeChangeSet(variantEntry);
@@ -211,13 +211,13 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
           ...changeSet,
         };
 
-        if (variant_id) {
+        if (variantId) {
           const promise = this.variantInstance.createVariantEntry(
             createVariantReq,
             {
               locale,
               entry_uid: entryUid,
-              variant_id,
+              variant_id: variantId,
               content_type_uid: content_type,
             },
             {
@@ -380,23 +380,23 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
   async publishVariantEntries(batch: VariantEntryStruct[], entryUid: string, content_type: string) {
     const allPromise = [];
     for (let [, variantEntry] of entries(batch)) {
-      const variantUid = variantEntry.uid;
-      const oldVariantUid = variantEntry.variant_id || '';
+      const variantEntryUID = variantEntry.uid;
+      const oldVariantUid = variantEntry._variant._uid || '';
       const newVariantUid = this.variantIdList[oldVariantUid] as string;
 
       if (!newVariantUid) {
         log(
           this.config,
-          `${this.messages.VARIANT_ID_NOT_FOUND}. Skipping entry variant publish for ${variantUid}`,
+          `${this.messages.VARIANT_ID_NOT_FOUND}. Skipping entry variant publish for ${variantEntryUID}`,
           'info',
         );
         continue;
       }
 
-      if (this.failedVariantEntries.has(variantUid)) {
+      if (this.failedVariantEntries.has(variantEntryUID)) {
         log(
           this.config,
-          `${this.messages.VARIANT_UID_NOT_FOUND}. Skipping entry variant publish for ${variantUid}`,
+          `${this.messages.VARIANT_UID_NOT_FOUND}. Skipping entry variant publish for ${variantEntryUID}`,
           'info',
         );
         continue;
@@ -440,7 +440,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
           reject: onReject.bind(this),
           resolve: onSuccess.bind(this),
           log: log,
-          variantUid,
+          variantEntryUID,
         },
       );
 

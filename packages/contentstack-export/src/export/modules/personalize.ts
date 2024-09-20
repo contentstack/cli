@@ -10,12 +10,12 @@ import {
 import { log, formatError } from '../../utils';
 import { ModuleClassParams, ExportConfig } from '../../types';
 
-export default class ExportPersonalization {
+export default class ExportPersonalize {
   public exportConfig: ExportConfig;
   public personalizeConfig: { dirName: string; baseURL: Record<string, string> } & AnyProperty;
   constructor({ exportConfig }: ModuleClassParams) {
     this.exportConfig = exportConfig;
-    this.personalizeConfig = exportConfig.modules.personalization;
+    this.personalizeConfig = exportConfig.modules.personalize;
   }
 
   async start(): Promise<void> {
@@ -39,7 +39,7 @@ export default class ExportPersonalization {
           experiences: new ExportExperiences(this.exportConfig),
         };
 
-        const order: (keyof typeof moduleMapper)[] = this.exportConfig.modules.personalization
+        const order: (keyof typeof moduleMapper)[] = this.exportConfig.modules.personalize
           .exportOrder as (keyof typeof moduleMapper)[];
 
         for (const module of order) {

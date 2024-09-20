@@ -10,7 +10,7 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
   constructor(exportConfig: ExportConfig) {
     super({
       config: exportConfig,
-      baseURL: exportConfig.modules.personalization.baseURL[exportConfig.region.name],
+      baseURL: exportConfig.modules.personalize.baseURL[exportConfig.region.name],
       headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
       cmaConfig: {
         baseURL: exportConfig.region.cma + `/v3`,
@@ -18,7 +18,7 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
       },
     });
     this.exportConfig = exportConfig;
-    this.personalizationConfig = exportConfig.modules.personalization;
+    this.personalizationConfig = exportConfig.modules.personalize;
     this.experiencesFolderPath = path.resolve(
       sanitizePath(exportConfig.data),
       sanitizePath(exportConfig.branchName || ''),

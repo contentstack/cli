@@ -28,22 +28,22 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   private cmsVariantGroups: Record<string, unknown>;
   private experiencesUidMapper: Record<string, string>;
   private pendingVariantAndVariantGrpForExperience: string[];
-  private personalizationConfig: ImportConfig['modules']['personalization'];
-  private audienceConfig: ImportConfig['modules']['personalization']['audiences'];
-  private experienceConfig: ImportConfig['modules']['personalization']['experiences'];
+  private personalizationConfig: ImportConfig['modules']['personalize'];
+  private audienceConfig: ImportConfig['modules']['personalize']['audiences'];
+  private experienceConfig: ImportConfig['modules']['personalize']['experiences'];
 
   constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
     const conf: APIConfig = {
       config,
-      baseURL: config.modules.personalization.baseURL[config.region.name],
-      headers: { 'X-Project-Uid': config.modules.personalization.project_id, authtoken: config.auth_token },
+      baseURL: config.modules.personalize.baseURL[config.region.name],
+      headers: { 'X-Project-Uid': config.modules.personalize.project_id, authtoken: config.auth_token },
       cmaConfig: {
         baseURL: config.region.cma + `/v3`,
         headers: { authtoken: config.auth_token, api_key: config.apiKey },
       },
     };
     super(Object.assign(config, conf));
-    this.personalizationConfig = this.config.modules.personalization;
+    this.personalizationConfig = this.config.modules.personalize;
     this.experiencesDirPath = resolve(
       sanitizePath(this.config.data),
       sanitizePath(this.personalizationConfig.dirName),
@@ -130,9 +130,9 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   }
 
   /**
-   * function to validate if all variant groups and variants have been created using personalization background job
-   * store the variant groups data in mapper/personalization/experiences/cms-variant-groups.json and the variants data
-   * in mapper/personalization/experiences/cms-variants.json. If not, invoke validateVariantGroupAndVariantsCreated after some delay.
+   * function to validate if all variant groups and variants have been created using personalize background job
+   * store the variant groups data in mapper/personalize/experiences/cms-variant-groups.json and the variants data
+   * in mapper/personalize/experiences/cms-variants.json. If not, invoke validateVariantGroupAndVariantsCreated after some delay.
    * @param retryCount Counter to track the number of times the function has been called
    * @returns
    */
@@ -159,7 +159,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
           );
           return this.validateVariantGroupAndVariantsCreated(retryCount);
         } else {
-          this.log(this.config, this.messages.PERSONALIZATION_JOB_FAILURE, 'error');
+          this.log(this.config, this.messages.PERSONALIZE_JOB_FAILURE, 'error');
           fsUtil.writeFile(this.failedCmsExpPath, this.pendingVariantAndVariantGrpForExperience);
           return false;
         }

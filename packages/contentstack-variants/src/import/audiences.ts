@@ -10,18 +10,18 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
   private attributesMapperPath: string;
   private audiencesUidMapperPath: string;
   private audiencesUidMapper: Record<string, unknown>;
-  private personalizationConfig: ImportConfig['modules']['personalization'];
-  private audienceConfig: ImportConfig['modules']['personalization']['audiences'];
-  public attributeConfig: ImportConfig['modules']['personalization']['attributes'];
+  private personalizationConfig: ImportConfig['modules']['personalize'];
+  private audienceConfig: ImportConfig['modules']['personalize']['audiences'];
+  public attributeConfig: ImportConfig['modules']['personalize']['attributes'];
 
   constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
     const conf: APIConfig = {
       config,
-      baseURL: config.modules.personalization.baseURL[config.region.name],
-      headers: { 'X-Project-Uid': config.modules.personalization.project_id, authtoken: config.auth_token },
+      baseURL: config.modules.personalize.baseURL[config.region.name],
+      headers: { 'X-Project-Uid': config.modules.personalize.project_id, authtoken: config.auth_token },
     };
     super(Object.assign(config, conf));
-    this.personalizationConfig = this.config.modules.personalization;
+    this.personalizationConfig = this.config.modules.personalize;
     this.audienceConfig = this.personalizationConfig.audiences;
     this.attributeConfig = this.personalizationConfig.attributes;
     this.mapperDirPath = resolve(sanitizePath(this.config.backupDir), 'mapper', sanitizePath(this.personalizationConfig.dirName));
