@@ -1,12 +1,12 @@
 import * as path from 'path';
 import { sanitizePath } from '@contentstack/cli-utilities';
-import { ExportConfig, PersonalizationConfig } from '../types';
+import { ExportConfig, PersonalizeConfig } from '../types';
 import { PersonalizationAdapter, log, fsUtil, formatError } from '../utils';
 
 export default class ExportProjects extends PersonalizationAdapter<ExportConfig> {
   private projectFolderPath: string;
   public exportConfig: ExportConfig;
-  public personalizationConfig: PersonalizationConfig;
+  public personalizeConfig: PersonalizeConfig;
   constructor(exportConfig: ExportConfig) {
     super({
       config: exportConfig,
@@ -14,11 +14,11 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
       headers: { authtoken: exportConfig.auth_token, organization_uid: exportConfig.org_uid },
     });
     this.exportConfig = exportConfig;
-    this.personalizationConfig = exportConfig.modules.personalize;
+    this.personalizeConfig = exportConfig.modules.personalize;
     this.projectFolderPath = path.resolve(
       sanitizePath(exportConfig.data),
       sanitizePath(exportConfig.branchName || ''),
-      sanitizePath(this.personalizationConfig.dirName),
+      sanitizePath(this.personalizeConfig.dirName),
       'projects',
     );
   }

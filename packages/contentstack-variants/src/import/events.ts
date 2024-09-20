@@ -9,7 +9,7 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
   private eventMapperDirPath: string;
   private eventsUidMapperPath: string;
   private eventsUidMapper: Record<string, unknown>;
-  private personalizationConfig: ImportConfig['modules']['personalize'];
+  private personalizeConfig: ImportConfig['modules']['personalize'];
   private eventsConfig: ImportConfig['modules']['personalize']['events'];
 
   constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
@@ -19,9 +19,9 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
       headers: { 'X-Project-Uid': config.modules.personalize.project_id, authtoken: config.auth_token },
     };
     super(Object.assign(config, conf));
-    this.personalizationConfig = this.config.modules.personalize;
-    this.eventsConfig = this.personalizationConfig.events;
-    this.mapperDirPath = resolve(sanitizePath(this.config.backupDir), 'mapper', sanitizePath(this.personalizationConfig.dirName));
+    this.personalizeConfig = this.config.modules.personalize;
+    this.eventsConfig = this.personalizeConfig.events;
+    this.mapperDirPath = resolve(sanitizePath(this.config.backupDir), 'mapper', sanitizePath(this.personalizeConfig.dirName));
     this.eventMapperDirPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.eventsConfig.dirName));
     this.eventsUidMapperPath = resolve(sanitizePath(this.eventMapperDirPath), 'uid-mapping.json');
     this.eventsUidMapper = {};
@@ -35,7 +35,7 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
 
     await fsUtil.makeDirectory(this.eventMapperDirPath);
     const { dirName, fileName } = this.eventsConfig;
-    const eventsPath = resolve(sanitizePath(this.config.data), sanitizePath(this.personalizationConfig.dirName), sanitizePath(dirName), sanitizePath(fileName));
+    const eventsPath = resolve(sanitizePath(this.config.data), sanitizePath(this.personalizeConfig.dirName), sanitizePath(dirName), sanitizePath(fileName));
 
     if (existsSync(eventsPath)) {
       try {
