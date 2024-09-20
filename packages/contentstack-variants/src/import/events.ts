@@ -9,17 +9,17 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
   private eventMapperDirPath: string;
   private eventsUidMapperPath: string;
   private eventsUidMapper: Record<string, unknown>;
-  private personalizationConfig: ImportConfig['modules']['personalization'];
-  private eventsConfig: ImportConfig['modules']['personalization']['events'];
+  private personalizationConfig: ImportConfig['modules']['personalize'];
+  private eventsConfig: ImportConfig['modules']['personalize']['events'];
 
   constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
     const conf: APIConfig = {
       config,
-      baseURL: config.modules.personalization.baseURL[config.region.name],
-      headers: { 'X-Project-Uid': config.modules.personalization.project_id, authtoken: config.auth_token },
+      baseURL: config.modules.personalize.baseURL[config.region.name],
+      headers: { 'X-Project-Uid': config.modules.personalize.project_id, authtoken: config.auth_token },
     };
     super(Object.assign(config, conf));
-    this.personalizationConfig = this.config.modules.personalization;
+    this.personalizationConfig = this.config.modules.personalize;
     this.eventsConfig = this.personalizationConfig.events;
     this.mapperDirPath = resolve(sanitizePath(this.config.backupDir), 'mapper', sanitizePath(this.personalizationConfig.dirName));
     this.eventMapperDirPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.eventsConfig.dirName));
