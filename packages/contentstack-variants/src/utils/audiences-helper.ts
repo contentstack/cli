@@ -1,4 +1,4 @@
-import { CreateExperienceInput } from '../types';
+import { CreateExperienceInput, CreateExperienceVersionInput } from '../types';
 
 /**
  * function for substituting an old audience UID with a new one or deleting the audience information if it does not exist
@@ -37,10 +37,20 @@ export const lookUpAudiences = (
         }
       }
     }
+  } else if (experience.variants) {
+    for (let index = experience.variants.length - 1; index >= 0; index--) {
+      const expVariations = experience.variants[index];
+      if (expVariations['__type'] === 'AudienceBasedVariation' && expVariations?.audiences?.length) {
+        updateAudiences(expVariations.audiences, audiencesUid);
+        if (!expVariations.audiences.length) {
+          experience.variants.splice(index, 1);
+        }
+      }
+    }
   }
 
-  // Update targeting audiences
   if (experience?.targeting?.hasOwnProperty('audience') && experience?.targeting?.audience?.audiences?.length) {
+    // Update targeting audiences
     updateAudiences(experience.targeting.audience.audiences, audiencesUid);
     if (!experience.targeting.audience.audiences.length) {
       experience.targeting = {};
