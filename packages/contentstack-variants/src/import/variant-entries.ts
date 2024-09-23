@@ -53,11 +53,20 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         organization_uid: config.org_uid,
         'X-Project-Uid': config.modules.personalize.project_id,
       },
-    }; 
+    };
     super(Object.assign(omit(config, ['helpers']), conf));
-    this.entriesMapperPath = resolve(sanitizePath(config.backupDir), sanitizePath(config.branchName || ''), 'mapper', 'entries');
+    this.entriesMapperPath = resolve(
+      sanitizePath(config.backupDir),
+      sanitizePath(config.branchName || ''),
+      'mapper',
+      'entries',
+    );
     this.personalizeConfig = this.config.modules.personalize;
-    this.entriesDirPath = resolve(sanitizePath(config.backupDir), sanitizePath(config.branchName || ''), sanitizePath(config.modules.entries.dirName));
+    this.entriesDirPath = resolve(
+      sanitizePath(config.backupDir),
+      sanitizePath(config.branchName || ''),
+      sanitizePath(config.modules.entries.dirName),
+    );
     this.failedVariantPath = resolve(sanitizePath(this.entriesMapperPath), 'failed-entry-variants.json');
     this.failedVariantEntries = new Map();
   }
@@ -107,7 +116,12 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       'terms',
       'success.json',
     );
-    const marketplaceAppMapperPath = resolve(sanitizePath(this.config.backupDir), 'mapper', 'marketplace_apps', 'uid-mapping.json');
+    const marketplaceAppMapperPath = resolve(
+      sanitizePath(this.config.backupDir),
+      'mapper',
+      'marketplace_apps',
+      'uid-mapping.json',
+    );
     const envPath = resolve(sanitizePath(this.config.backupDir), 'environments', 'environments.json');
     // NOTE Read and store list of variant IDs
     this.variantIdList = (fsUtil.readFile(variantIdPath, true) || {}) as Record<string, unknown>;
@@ -141,9 +155,22 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     const { content_type, locale, entry_uid } = entriesForVariant;
     const ctConfig = this.config.modules['content-types'];
     const contentType: ContentTypeStruct = JSON.parse(
-      readFileSync(resolve(sanitizePath(this.config.backupDir), sanitizePath(ctConfig.dirName), `${sanitizePath(content_type)}.json`), 'utf8'),
+      readFileSync(
+        resolve(
+          sanitizePath(this.config.backupDir),
+          sanitizePath(ctConfig.dirName),
+          `${sanitizePath(content_type)}.json`,
+        ),
+        'utf8',
+      ),
     );
-    const variantEntryBasePath = join(sanitizePath(this.entriesDirPath), sanitizePath(content_type), sanitizePath(locale), sanitizePath(variantEntry.dirName), sanitizePath(entry_uid));
+    const variantEntryBasePath = join(
+      sanitizePath(this.entriesDirPath),
+      sanitizePath(content_type),
+      sanitizePath(locale),
+      sanitizePath(variantEntry.dirName),
+      sanitizePath(entry_uid),
+    );
     const fs = new FsUtility({ basePath: variantEntryBasePath });
 
     for (const _ in fs.indexFileContent) {
@@ -223,7 +250,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
             {
               reject: onReject.bind(this),
               resolve: onSuccess.bind(this),
-              variantUid: variantEntry.uid,
+              variantUid: variantId,
               log: log,
             },
           );
@@ -385,11 +412,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       const newVariantUid = this.variantIdList[oldVariantUid] as string;
 
       if (!newVariantUid) {
-        log(
-          this.config,
-          `${this.messages.VARIANT_ID_NOT_FOUND}. Skipping entry variant publish for ${variantEntryUID}`,
-          'info',
-        );
+        log(this.config, `${this.messages.VARIANT_ID_NOT_FOUND}. Skipping entry variant publish`, 'info');
         continue;
       }
 
@@ -440,7 +463,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
           reject: onReject.bind(this),
           resolve: onSuccess.bind(this),
           log: log,
-          variantEntryUID,
+          variantEntryUID: newVariantUid,
         },
       );
 
