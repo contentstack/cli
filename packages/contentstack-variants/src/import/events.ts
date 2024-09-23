@@ -21,7 +21,11 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
     super(Object.assign(config, conf));
     this.personalizeConfig = this.config.modules.personalize;
     this.eventsConfig = this.personalizeConfig.events;
-    this.mapperDirPath = resolve(sanitizePath(this.config.backupDir), 'mapper', sanitizePath(this.personalizeConfig.dirName));
+    this.mapperDirPath = resolve(
+      sanitizePath(this.config.backupDir),
+      'mapper',
+      sanitizePath(this.personalizeConfig.dirName),
+    );
     this.eventMapperDirPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.eventsConfig.dirName));
     this.eventsUidMapperPath = resolve(sanitizePath(this.eventMapperDirPath), 'uid-mapping.json');
     this.eventsUidMapper = {};
@@ -35,7 +39,12 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
 
     await fsUtil.makeDirectory(this.eventMapperDirPath);
     const { dirName, fileName } = this.eventsConfig;
-    const eventsPath = resolve(sanitizePath(this.config.data), sanitizePath(this.personalizeConfig.dirName), sanitizePath(dirName), sanitizePath(fileName));
+    const eventsPath = resolve(
+      sanitizePath(this.config.data),
+      sanitizePath(this.personalizeConfig.dirName),
+      sanitizePath(dirName),
+      sanitizePath(fileName),
+    );
 
     if (existsSync(eventsPath)) {
       try {
@@ -43,8 +52,13 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
 
         for (const event of events) {
           const { key, description, uid } = event;
-          const eventsResponse = await this.createEvents({ key, description });
-          this.eventsUidMapper[uid] = eventsResponse?.uid ?? '';
+          try {
+            const eventsResponse = await this.createEvents({ key, description });
+            this.eventsUidMapper[uid] = eventsResponse?.uid ?? '';
+          } catch (error) {
+            this.log(this.config, `failed to create event uid: ${uid}`, 'error');
+            this.log(this.config, error, 'error');
+          }
         }
 
         fsUtil.writeFile(this.eventsUidMapperPath, this.eventsUidMapper);
