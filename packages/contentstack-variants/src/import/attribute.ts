@@ -21,7 +21,11 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
     super(Object.assign(config, conf));
     this.personalizeConfig = this.config.modules.personalize;
     this.attributeConfig = this.personalizeConfig.attributes;
-    this.mapperDirPath = resolve(sanitizePath(this.config.backupDir), 'mapper', sanitizePath(this.personalizeConfig.dirName));
+    this.mapperDirPath = resolve(
+      sanitizePath(this.config.backupDir),
+      'mapper',
+      sanitizePath(this.personalizeConfig.dirName),
+    );
     this.attrMapperDirPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.attributeConfig.dirName));
     this.attributesUidMapperPath = resolve(sanitizePath(this.attrMapperDirPath), 'uid-mapping.json');
     this.attributesUidMapper = {};
@@ -35,7 +39,12 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
 
     await fsUtil.makeDirectory(this.attrMapperDirPath);
     const { dirName, fileName } = this.attributeConfig;
-    const attributesPath = resolve(sanitizePath(this.config.data), sanitizePath(this.personalizeConfig.dirName), sanitizePath(dirName), sanitizePath(fileName));
+    const attributesPath = resolve(
+      sanitizePath(this.config.data),
+      sanitizePath(this.personalizeConfig.dirName),
+      sanitizePath(dirName),
+      sanitizePath(fileName),
+    );
 
     if (existsSync(attributesPath)) {
       try {
@@ -43,10 +52,15 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
 
         for (const attribute of attributes) {
           const { key, name, description, uid } = attribute;
-          const attributeRes = await this.createAttribute({ key, name, description });
-          //map old attribute uid to new attribute uid
-          //mapper file is used to check whether attribute created or not before creating audience
-          this.attributesUidMapper[uid] = attributeRes?.uid ?? '';
+          try {
+            const attributeRes = await this.createAttribute({ key, name, description });
+            //map old attribute uid to new attribute uid
+            //mapper file is used to check whether attribute created or not before creating audience
+            this.attributesUidMapper[uid] = attributeRes?.uid ?? '';
+          } catch (error) {
+            this.log(this.config, `Failed to create attribute ${name}!`, 'error');
+            this.log(this.config, error, 'error');
+          }
         }
 
         fsUtil.writeFile(this.attributesUidMapperPath, this.attributesUidMapper);
