@@ -34,12 +34,13 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
       // write experiences in to a file
       log(this.exportConfig, 'Starting experiences export', 'info');
       await fsUtil.makeDirectory(this.experiencesFolderPath);
+      await fsUtil.makeDirectory(path.resolve(this.experiencesFolderPath, 'versions'));
       const experiences: Array<ExperienceStruct> = (await this.getExperiences()) || [];
       if (!experiences || experiences?.length < 1) {
         log(this.exportConfig, 'No Experiences found with the give project', 'info');
         return;
       }
-      fsUtil.writeFile(path.resolve(sanitizePath(this.experiencesFolderPath), 'experiences.json'), experiences);
+      fsUtil.writeFile(path.resolve(this.experiencesFolderPath, 'experiences.json'), experiences);
 
       const experienceToVariantsStrList: Array<string> = [];
       const experienceToContentTypesMap: Record<string, string[]> = {};
@@ -50,6 +51,21 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
           const experienceToVariantsStr = `${experience.uid}-${variantShortId}-${variants[variantShortId]}`;
           experienceToVariantsStrList.push(experienceToVariantsStr);
         });
+
+        try {
+          // fetch versions of experience
+          const experienceVersions = (await this.getExperienceVersions(experience.uid)) || [];
+          if (experienceVersions.length > 0) {
+            fsUtil.writeFile(
+              path.resolve(this.experiencesFolderPath, 'versions', `${experience.uid}.json`),
+              experienceVersions,
+            );
+          } else {
+            log(this.exportConfig, `No versions found for experience ${experience.name}`, 'info');
+          }
+        } catch (error) {
+          log(this.exportConfig, `Failed to fetch versions of experience ${experience.name}`, 'error');
+        }
 
         try {
           // fetch content of experience
@@ -63,12 +79,12 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
         }
       }
       fsUtil.writeFile(
-        path.resolve(sanitizePath(this.experiencesFolderPath), 'experiences-variants-ids.json'),
+        path.resolve(this.experiencesFolderPath, 'experiences-variants-ids.json'),
         experienceToVariantsStrList,
       );
 
       fsUtil.writeFile(
-        path.resolve(sanitizePath(this.experiencesFolderPath), 'experiences-content-types.json'),
+        path.resolve(this.experiencesFolderPath, 'experiences-content-types.json'),
         experienceToContentTypesMap,
       );
       log(this.exportConfig, 'All the experiences have been exported successfully!', 'success');
