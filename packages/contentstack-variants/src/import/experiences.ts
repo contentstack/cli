@@ -147,6 +147,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         if (this.personalizeConfig.importData) {
           this.log(this.config, this.messages.UPDATING_CT_IN_EXP, 'info');
           await this.attachCTsInExperience();
+          this.log(this.config, this.messages.UPDATED_CT_IN_EXP, 'info');
         }
 
         await this.createVariantIdMapper();
@@ -220,9 +221,9 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   }
 
   /**
-   * function to validate if all variant groups and variants have been created using personalization background job
-   * store the variant groups data in mapper/personalization/experiences/cms-variant-groups.json and the variants data
-   * in mapper/personalization/experiences/cms-variants.json. If not, invoke validateVariantGroupAndVariantsCreated after some delay.
+   * function to validate if all variant groups and variants have been created using personalize background job
+   * store the variant groups data in mapper/personalize/experiences/cms-variant-groups.json and the variants data
+   * in mapper/personalize/experiences/cms-variants.json. If not, invoke validateVariantGroupAndVariantsCreated after some delay.
    * @param retryCount Counter to track the number of times the function has been called
    * @returns
    */
