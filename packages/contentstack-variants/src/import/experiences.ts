@@ -4,7 +4,15 @@ import values from 'lodash/values';
 import cloneDeep from 'lodash/cloneDeep';
 import { sanitizePath } from '@contentstack/cli-utilities';
 import { PersonalizationAdapter, fsUtil, lookUpAudiences, lookUpEvents } from '../utils';
-import { APIConfig, ImportConfig, ExperienceStruct, CreateExperienceInput, LogType } from '../types';
+import {
+  APIConfig,
+  ImportConfig,
+  ExperienceStruct,
+  CreateExperienceInput,
+  LogType,
+  CreateExperienceVersionInput,
+} from '../types';
+import exp from 'constants';
 
 export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   private createdCTs: string[];
@@ -29,6 +37,8 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   private cmsVariantGroups: Record<string, unknown>;
   private experiencesUidMapper: Record<string, string>;
   private pendingVariantAndVariantGrpForExperience: string[];
+  private audiencesUid: Record<string, string>;
+  private eventsUid: Record<string, string>;
   private personalizationConfig: ImportConfig['modules']['personalization'];
   private audienceConfig: ImportConfig['modules']['personalization']['audiences'];
   private experienceConfig: ImportConfig['modules']['personalization']['experiences'];
@@ -50,15 +60,26 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
       sanitizePath(this.personalizationConfig.dirName),
       sanitizePath(this.personalizationConfig.experiences.dirName),
     );
-    this.experiencesPath = join(sanitizePath(this.experiencesDirPath), sanitizePath(this.personalizationConfig.experiences.fileName));
+    this.experiencesPath = join(
+      sanitizePath(this.experiencesDirPath),
+      sanitizePath(this.personalizationConfig.experiences.fileName),
+    );
     this.experienceConfig = this.personalizationConfig.experiences;
     this.audienceConfig = this.personalizationConfig.audiences;
-    this.mapperDirPath = resolve(sanitizePath(this.config.backupDir), 'mapper', sanitizePath(this.personalizationConfig.dirName));
+    this.mapperDirPath = resolve(
+      sanitizePath(this.config.backupDir),
+      'mapper',
+      sanitizePath(this.personalizationConfig.dirName),
+    );
     this.expMapperDirPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.experienceConfig.dirName));
     this.experiencesUidMapperPath = resolve(sanitizePath(this.expMapperDirPath), 'uid-mapping.json');
     this.cmsVariantGroupPath = resolve(sanitizePath(this.expMapperDirPath), 'cms-variant-groups.json');
     this.cmsVariantPath = resolve(sanitizePath(this.expMapperDirPath), 'cms-variants.json');
-    this.audiencesMapperPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.audienceConfig.dirName), 'uid-mapping.json');
+    this.audiencesMapperPath = resolve(
+      sanitizePath(this.mapperDirPath),
+      sanitizePath(this.audienceConfig.dirName),
+      'uid-mapping.json',
+    );
     this.eventsMapperPath = resolve(sanitizePath(this.mapperDirPath), 'events', 'uid-mapping.json');
     this.failedCmsExpPath = resolve(sanitizePath(this.expMapperDirPath), 'failed-cms-experience.json');
     this.failedCmsExpPath = resolve(sanitizePath(this.expMapperDirPath), 'failed-cms-experience.json');
@@ -79,6 +100,8 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     this.pendingVariantAndVariantGrpForExperience = [];
     this.cTsSuccessPath = resolve(sanitizePath(this.config.backupDir), 'mapper', 'content_types', 'success.json');
     this.createdCTs = [];
+    this.audiencesUid = (fsUtil.readFile(this.audiencesMapperPath, true) as Record<string, string>) || {};
+    this.eventsUid = (fsUtil.readFile(this.eventsMapperPath, true) as Record<string, string>) || {};
   }
 
   /**
@@ -92,19 +115,25 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     if (existsSync(this.experiencesPath)) {
       try {
         const experiences = fsUtil.readFile(this.experiencesPath, true) as ExperienceStruct[];
-        const audiencesUid = (fsUtil.readFile(this.audiencesMapperPath, true) as Record<string, string>) || {};
-        const eventsUid = (fsUtil.readFile(this.eventsMapperPath, true) as Record<string, string>) || {};
 
         for (const experience of experiences) {
           const { uid, ...restExperienceData } = experience;
           //check whether reference audience exists or not that referenced in variations having __type equal to AudienceBasedVariation & targeting
-          let experienceReqObj: CreateExperienceInput = lookUpAudiences(restExperienceData, audiencesUid);
+          let experienceReqObj: CreateExperienceInput = lookUpAudiences(restExperienceData, this.audiencesUid);
           //check whether events exists or not that referenced in metrics
-          experienceReqObj = lookUpEvents(experienceReqObj, eventsUid);
+          experienceReqObj = lookUpEvents(experienceReqObj, this.eventsUid);
 
-          const expRes = await this.createExperience(experienceReqObj);
+          const expRes = (await this.createExperience(experienceReqObj)) as ExperienceStruct;
           //map old experience uid to new experience uid
           this.experiencesUidMapper[uid] = expRes?.uid ?? '';
+
+          try {
+            // import versions of experience
+            await this.importExperienceVersions(expRes, uid);
+          } catch (error) {
+            this.log(this.config, `Error while importing experience versions of ${expRes.uid}`, 'error');
+            this.log(this.config, error, 'error');
+          }
         }
         fsUtil.writeFile(this.experiencesUidMapperPath, this.experiencesUidMapper);
         this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Experiences' }), 'info');
@@ -126,6 +155,68 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
       } catch (error) {
         this.log(this.config, this.$t(this.messages.CREATE_FAILURE, { module: 'Experiences' }), 'error');
         this.log(this.config, error, 'error');
+      }
+    }
+  }
+
+  /**
+   * function import experience versions from a JSON file and creates them in the project.
+   */
+  async importExperienceVersions(experience: ExperienceStruct, oldExperienceUid: string) {
+    const versionsPath = resolve(sanitizePath(this.experiencesDirPath), 'versions', `${oldExperienceUid}.json`);
+
+    if (!existsSync(versionsPath)) {
+      return;
+    }
+
+    const versions = fsUtil.readFile(versionsPath, true) as ExperienceStruct[];
+    const versionMap: Record<string, CreateExperienceVersionInput | undefined> = {
+      ACTIVE: undefined,
+      DRAFT: undefined,
+      PAUSE: undefined,
+    };
+
+    // Process each version and map them by status
+    versions.forEach((version) => {
+      let versionReqObj = lookUpAudiences(version, this.audiencesUid) as CreateExperienceVersionInput;
+      versionReqObj = lookUpEvents(version, this.eventsUid) as CreateExperienceVersionInput;
+
+      if (versionReqObj && versionReqObj.status) {
+        versionMap[versionReqObj.status] = versionReqObj;
+      }
+    });
+
+    // Prioritize updating or creating versions based on the order: ACTIVE -> DRAFT -> PAUSE
+    return await this.handleVersionUpdateOrCreate(experience, versionMap);
+  }
+
+  // Helper method to handle version update or creation logic
+  private async handleVersionUpdateOrCreate(
+    experience: ExperienceStruct,
+    versionMap: Record<string, CreateExperienceVersionInput | undefined>,
+  ) {
+    const { ACTIVE, DRAFT, PAUSE } = versionMap;
+    let latestVersionUsed = false;
+
+    if (ACTIVE) {
+      await this.updateExperienceVersion(experience.uid, experience.latestVersion, ACTIVE);
+      latestVersionUsed = true;
+    }
+
+    if (DRAFT) {
+      if (latestVersionUsed) {
+        await this.createExperienceVersion(experience.uid, DRAFT);
+      } else {
+        await this.updateExperienceVersion(experience.uid, experience.latestVersion, DRAFT);
+        latestVersionUsed = true;
+      }
+    }
+
+    if (PAUSE) {
+      if (latestVersionUsed) {
+        await this.createExperienceVersion(experience.uid, PAUSE);
+      } else {
+        await this.updateExperienceVersion(experience.uid, experience.latestVersion, PAUSE);
       }
     }
   }
