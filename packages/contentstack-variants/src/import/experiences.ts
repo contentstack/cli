@@ -12,8 +12,6 @@ import {
   LogType,
   CreateExperienceVersionInput,
 } from '../types';
-import exp from 'constants';
-
 export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   private createdCTs: string[];
   private mapperDirPath: string;
