@@ -208,10 +208,10 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     if (status >= 200 && status < 300) {
       return data;
     }
-
+    
     const errorMsg = data?.errors
       ? formatErrors(data.errors)
-      : data?.error_message || data?.message || 'Something went wrong while processing variant entries request!';
+      : data?.error || data?.error_message || data?.message || 'Something went wrong while processing variant entries request!';
 
     throw errorMsg;
   }
