@@ -275,8 +275,8 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         Object.entries(this.experiencesUidMapper).map(async ([oldExpUid, newExpUid]) => {
           if (experienceCTsMap[oldExpUid]?.length) {
             // Filter content types that were created
-            const updatedContentTypes = experienceCTsMap[oldExpUid].filter((ct: any) =>
-              this.createdCTs.includes(ct?.uid),
+            const updatedContentTypes = experienceCTsMap[oldExpUid].filter(
+              (ct: any) => this.createdCTs.includes(ct?.uid) && ct.status === 'linked',
             );
             if (updatedContentTypes?.length) {
               const { variant_groups: [variantGroup] = [] } =
