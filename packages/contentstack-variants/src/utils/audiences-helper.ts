@@ -40,7 +40,7 @@ export const lookUpAudiences = (
   } else if (experience.variants) {
     for (let index = experience.variants.length - 1; index >= 0; index--) {
       const expVariations = experience.variants[index];
-      if (expVariations['__type'] === 'AudienceBasedVariation' && expVariations?.audiences?.length) {
+      if (expVariations['__type'] === 'SegmentedVariant' && expVariations?.audiences?.length) {
         updateAudiences(expVariations.audiences, audiencesUid);
         if (!expVariations.audiences.length) {
           experience.variants.splice(index, 1);
