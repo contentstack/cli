@@ -29,7 +29,7 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
       await fsUtil.makeDirectory(this.projectFolderPath);
       const project = await this.projects({ connectedStackApiKey: this.exportConfig.apiKey });
       if (!project || project?.length < 1) {
-        log(this.exportConfig, 'No Personalization Project connected with the given stack', 'info');
+        log(this.exportConfig, 'No Personalize Project connected with the given stack', 'info');
         this.exportConfig.personalizationEnabled = false;
         return;
       }
@@ -38,7 +38,9 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
       fsUtil.writeFile(path.resolve(sanitizePath(this.projectFolderPath), 'projects.json'), project);
       log(this.exportConfig, 'Project exported successfully!', 'success');
     } catch (error) {
-      log(this.exportConfig, `Failed to export projects!`, 'error');
+      if (error !== 'Forbidden') {
+        log(this.exportConfig, `Failed to export projects!`, 'error');
+      }
       throw error;
     }
   }
