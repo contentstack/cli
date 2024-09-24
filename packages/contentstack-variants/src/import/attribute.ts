@@ -52,6 +52,10 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
 
         for (const attribute of attributes) {
           const { key, name, description, uid } = attribute;
+          // skip creating preset attributes, as they are already present in the system
+          if (attribute.__type === 'PRESET') {
+            continue;
+          }
           try {
             const attributeRes = await this.createAttribute({ key, name, description });
             //map old attribute uid to new attribute uid
