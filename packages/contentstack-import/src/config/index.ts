@@ -153,7 +153,7 @@ const config: DefaultConfig = {
     },
     personalize: {
       baseURL: {
-        NA: 'https://personalization-api.contentstack.com',
+        NA: 'https://personalize-api.contentstack.com',
       },
       importData: true,
       dirName: 'personalize',
