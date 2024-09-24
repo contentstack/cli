@@ -51,8 +51,12 @@ export default class ExportPersonalize {
         }
       }
     } catch (error) {
+      if (error === 'Forbidden') {
+        log(this.exportConfig, "Personalize is not enabled in the given organization!", 'info');
+      } else {
+        log(this.exportConfig, error, 'error');
+      }
       this.exportConfig.personalizationEnabled = false;
-      log(this.exportConfig, error, 'error');
     }
   }
 }
