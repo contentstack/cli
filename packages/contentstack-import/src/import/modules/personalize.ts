@@ -2,13 +2,13 @@ import { Import, LogType } from '@contentstack/cli-variants';
 import { log } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
 
-export default class ImportPersonalization {
+export default class ImportPersonalize {
   private config: ImportConfig;
-  public personalizeConfig: ImportConfig['modules']['personalization'];
+  public personalizeConfig: ImportConfig['modules']['personalize'];
 
   constructor({ importConfig }: ModuleClassParams) {
     this.config = importConfig;
-    this.personalizeConfig = importConfig.modules.personalization;
+    this.personalizeConfig = importConfig.modules.personalize;
   }
 
   /**
@@ -45,10 +45,10 @@ export default class ImportPersonalization {
         }
       }
     } catch (error) {
-      this.personalizeConfig.importData = false; // Stop personalization import if project creation fails
+      this.personalizeConfig.importData = false; // Stop personalize import if project creation fails
       log(this.config, error, 'error');
       if (!this.personalizeConfig.importData) {
-        log(this.config, 'Skipping personalization migration...', 'warn');
+        log(this.config, 'Skipping personalize migration...', 'warn');
       }
     }
   }
