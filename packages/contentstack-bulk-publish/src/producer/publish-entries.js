@@ -19,7 +19,18 @@ let allContentTypes = [];
 let bulkPublishSet = [];
 let filePath;
 
-async function getEntries(stack, contentType, locale, bulkPublish, environments, apiVersion, variantsFlag = false, entry_uid = undefined, skip = 0) {
+async function getEntries(
+  stack,
+  contentType,
+  locale,
+  bulkPublish,
+  environments,
+  apiVersion,
+  variantsFlag = false,
+  entry_uid = undefined,
+  publishWithoutBaseFlag = false,
+  skip = 0,
+) {
   return new Promise((resolve, reject) => {
     skipCount = skip;
 
@@ -60,15 +71,22 @@ async function getEntries(stack, contentType, locale, bulkPublish, environments,
 
               if (variantsFlag) {
                 variants = await getVariantEntries(stack, contentType, entries, index, queryParams);
-                if(variants.length > 0){
-                  entry.variant_rules = {
-                    publish_latest_base: true,
-                    publish_latest_base_conditionally: true
-                  };
+                if (variants.length > 0) {
+                  if (publishWithoutBaseFlag) {
+                    entry.variant_rules = {
+                      publish_latest_base: true,
+                      publish_latest_base_conditionally: false,
+                    };
+                  } else {
+                    entry.variant_rules = {
+                      publish_latest_base: false,
+                      publish_latest_base_conditionally: true,
+                    };
+                  }
+
                   entry.variants = variants;
                 }
-                
-              } 
+              }
             }
             bulkPublishSet.push(entry);
 
@@ -84,11 +102,7 @@ async function getEntries(stack, contentType, locale, bulkPublish, environments,
               bulkPublishSet = [];
             }
 
-            if (
-              index === entries.length - 1 &&
-              bulkPublishSet.length <= 10 &&
-              bulkPublishSet.length > 0
-            ) {
+            if (index === entries.length - 1 && bulkPublishSet.length <= 10 && bulkPublishSet.length > 0) {
               await queue.Enqueue({
                 entries: bulkPublishSet,
                 locale,
@@ -116,7 +130,18 @@ async function getEntries(stack, contentType, locale, bulkPublish, environments,
           bulkPublishSet = [];
           return resolve();
         }
-        await getEntries(stack, contentType, locale, bulkPublish, environments, apiVersion, variantsFlag, skipCount);
+        await getEntries(
+          stack,
+          contentType,
+          locale,
+          bulkPublish,
+          environments,
+          apiVersion,
+          variantsFlag,
+          entry_uid,
+          publishWithoutBaseFlag,
+          skipCount,
+        );
         return resolve();
       })
       .catch((error) => reject(error));
@@ -128,8 +153,8 @@ async function getVariantEntries(stack, contentType, entries, index, queryParams
     let variantQueryParams = {
       locale: queryParams.locale || 'en-us',
       include_count: true,
-      skip: skip,  // Adding skip parameter for pagination
-      limit: 100,  // Set a limit to fetch up to 100 entries per request
+      skip: skip, // Adding skip parameter for pagination
+      limit: 100, // Set a limit to fetch up to 100 entries per request
       include_publish_details: true,
     };
 
@@ -141,15 +166,22 @@ async function getVariantEntries(stack, contentType, entries, index, queryParams
       .find();
 
     // Map the response items to extract variant UIDs
-    const variants = variantsEntriesResponse.items.map(entry => ({
-      uid: entry.variants_uid,
+    const variants = variantsEntriesResponse.items.map((entry) => ({
+      uid: entry.variants._variant._uid,
     }));
 
     // Check if there are more entries to fetch
     if (variantsEntriesResponse.items.length === variantQueryParams.limit) {
       // Recursively fetch the next set of variants with updated skip value
-      const nextVariants = await getVariantEntries(stack, contentType, entries, index, queryParams, skip + variantQueryParams.limit);
-      
+      const nextVariants = await getVariantEntries(
+        stack,
+        contentType,
+        entries,
+        index,
+        queryParams,
+        skip + variantQueryParams.limit,
+      );
+
       // Ensure nextVariants is an array before concatenation
       return Array.isArray(nextVariants) ? variants.concat(nextVariants) : variants;
     }
@@ -157,7 +189,11 @@ async function getVariantEntries(stack, contentType, entries, index, queryParams
     return variants;
   } catch (error) {
     // Handle error message retrieval from different properties
-    const errorMessage = error?.errorMessage || error?.message || error?.errors || 'Falied to fetch the variant entries, Please contact the admin for support.';
+    const errorMessage =
+      error?.errorMessage ||
+      error?.message ||
+      error?.errors ||
+      'Falied to fetch the variant entries, Please contact the admin for support.';
     throw new Error(`Error fetching variants: ${errorMessage}`);
   }
 }
@@ -198,7 +234,18 @@ function setConfig(conf, bp) {
 }
 
 async function start(
-  { retryFailed, bulkPublish, publishAllContentTypes, contentTypes, locales, environments, apiVersion, includeVariants, entryUid },
+  {
+    retryFailed,
+    bulkPublish,
+    publishAllContentTypes,
+    contentTypes,
+    locales,
+    environments,
+    apiVersion,
+    includeVariants,
+    entryUid,
+    publishWithoutBase,
+  },
   stack,
   config,
 ) {
@@ -240,7 +287,17 @@ async function start(
     for (let loc = 0; loc < locales.length; loc += 1) {
       for (let i = 0; i < allContentTypes.length; i += 1) {
         /* eslint-disable no-await-in-loop */
-        await getEntries(stack, allContentTypes[i].uid || allContentTypes[i], locales[loc], bulkPublish, environments, apiVersion, includeVariants, entryUid);
+        await getEntries(
+          stack,
+          allContentTypes[i].uid || allContentTypes[i],
+          locales[loc],
+          bulkPublish,
+          environments,
+          apiVersion,
+          includeVariants,
+          entryUid,
+          publishWithoutBase,
+        );
         /* eslint-enable no-await-in-loop */
       }
     }
