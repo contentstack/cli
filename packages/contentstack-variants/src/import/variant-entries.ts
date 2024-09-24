@@ -463,7 +463,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
           reject: onReject.bind(this),
           resolve: onSuccess.bind(this),
           log: log,
-          variantEntryUID: newVariantUid,
+          variantUid: newVariantUid,
         },
       );
 
