@@ -4,7 +4,7 @@ import { stub, createSandbox } from 'sinon';
 import { cliux } from '@contentstack/cli-utilities';
 import { githubAdapterMockData } from '../mock/index';
 import { GitHub, BaseClass } from '../../../src/adapters';
-import { BaseCommand } from '../../../src/commands/launch/base-command';
+import { BaseCommand } from '../../../src/base-command';
 
 describe('GitHub', () => {
   let inquireStub, prepareApiClientsStub, prepareConfigStub, getConfigStub;
