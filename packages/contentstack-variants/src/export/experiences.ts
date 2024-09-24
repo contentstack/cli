@@ -1,16 +1,16 @@
 import * as path from 'path';
 import { sanitizePath } from '@contentstack/cli-utilities';
-import { PersonalizationConfig, ExportConfig, ExperienceStruct } from '../types';
+import { PersonalizeConfig, ExportConfig, ExperienceStruct } from '../types';
 import { formatError, fsUtil, log, PersonalizationAdapter } from '../utils';
 
 export default class ExportExperiences extends PersonalizationAdapter<ExportConfig> {
   private experiencesFolderPath: string;
   public exportConfig: ExportConfig;
-  public personalizationConfig: PersonalizationConfig;
+  public personalizeConfig: PersonalizeConfig;
   constructor(exportConfig: ExportConfig) {
     super({
       config: exportConfig,
-      baseURL: exportConfig.modules.personalization.baseURL[exportConfig.region.name],
+      baseURL: exportConfig.modules.personalize.baseURL[exportConfig.region.name],
       headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
       cmaConfig: {
         baseURL: exportConfig.region.cma + `/v3`,
@@ -18,11 +18,11 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
       },
     });
     this.exportConfig = exportConfig;
-    this.personalizationConfig = exportConfig.modules.personalization;
+    this.personalizeConfig = exportConfig.modules.personalize;
     this.experiencesFolderPath = path.resolve(
       sanitizePath(exportConfig.data),
       sanitizePath(exportConfig.branchName || ''),
-      sanitizePath(this.personalizationConfig.dirName),
+      sanitizePath(this.personalizeConfig.dirName),
       'experiences',
     );
   }
