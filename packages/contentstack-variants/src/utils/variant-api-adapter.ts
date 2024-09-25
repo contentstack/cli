@@ -184,6 +184,7 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
       });
 
     try {
+      this.apiClient.headers({ api_version: undefined });
       const res = await this.apiClient.put<VariantEntryStruct>(endpoint, { entry: input });
       const data = this.handleVariantAPIRes(res);
 
@@ -214,8 +215,7 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
     const { entry_uid, content_type_uid } = options;
     let endpoint = `content_types/${content_type_uid}/entries/${entry_uid}/publish`;
 
-    const onSuccess = (response: any) =>
-      resolve({ response, apiData: { entryUid: entry_uid, variantUid }, log });
+    const onSuccess = (response: any) => resolve({ response, apiData: { entryUid: entry_uid, variantUid }, log });
     const onReject = (error: any) =>
       reject({
         error,
