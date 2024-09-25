@@ -162,7 +162,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
    * function import experience versions from a JSON file and creates them in the project.
    */
   async importExperienceVersions(experience: ExperienceStruct, oldExperienceUid: string) {
-    const versionsPath = resolve(sanitizePath(this.experiencesDirPath), 'versions', `${oldExperienceUid}.json`);
+    const versionsPath = resolve(sanitizePath(this.experiencesDirPath), 'versions', `${sanitizePath(oldExperienceUid)}.json`);
 
     if (!existsSync(versionsPath)) {
       return;
