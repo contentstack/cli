@@ -4,8 +4,14 @@ import values from 'lodash/values';
 import cloneDeep from 'lodash/cloneDeep';
 import { sanitizePath } from '@contentstack/cli-utilities';
 import { PersonalizationAdapter, fsUtil, lookUpAudiences, lookUpEvents } from '../utils';
-import { APIConfig, ImportConfig, ExperienceStruct, CreateExperienceInput, LogType } from '../types';
-
+import {
+  APIConfig,
+  ImportConfig,
+  ExperienceStruct,
+  CreateExperienceInput,
+  LogType,
+  CreateExperienceVersionInput,
+} from '../types';
 export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   private createdCTs: string[];
   private mapperDirPath: string;
@@ -29,43 +35,56 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   private cmsVariantGroups: Record<string, unknown>;
   private experiencesUidMapper: Record<string, string>;
   private pendingVariantAndVariantGrpForExperience: string[];
-  private personalizationConfig: ImportConfig['modules']['personalization'];
-  private audienceConfig: ImportConfig['modules']['personalization']['audiences'];
-  private experienceConfig: ImportConfig['modules']['personalization']['experiences'];
+  private audiencesUid: Record<string, string>;
+  private eventsUid: Record<string, string>;
+  private personalizeConfig: ImportConfig['modules']['personalize'];
+  private audienceConfig: ImportConfig['modules']['personalize']['audiences'];
+  private experienceConfig: ImportConfig['modules']['personalize']['experiences'];
 
   constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
     const conf: APIConfig = {
       config,
-      baseURL: config.modules.personalization.baseURL[config.region.name],
-      headers: { 'X-Project-Uid': config.modules.personalization.project_id, authtoken: config.auth_token },
+      baseURL: config.modules.personalize.baseURL[config.region.name],
+      headers: { 'X-Project-Uid': config.modules.personalize.project_id, authtoken: config.auth_token },
       cmaConfig: {
         baseURL: config.region.cma + `/v3`,
         headers: { authtoken: config.auth_token, api_key: config.apiKey },
       },
     };
     super(Object.assign(config, conf));
-    this.personalizationConfig = this.config.modules.personalization;
+    this.personalizeConfig = this.config.modules.personalize;
     this.experiencesDirPath = resolve(
       sanitizePath(this.config.data),
-      sanitizePath(this.personalizationConfig.dirName),
-      sanitizePath(this.personalizationConfig.experiences.dirName),
+      sanitizePath(this.personalizeConfig.dirName),
+      sanitizePath(this.personalizeConfig.experiences.dirName),
     );
-    this.experiencesPath = join(sanitizePath(this.experiencesDirPath), sanitizePath(this.personalizationConfig.experiences.fileName));
-    this.experienceConfig = this.personalizationConfig.experiences;
-    this.audienceConfig = this.personalizationConfig.audiences;
-    this.mapperDirPath = resolve(sanitizePath(this.config.backupDir), 'mapper', sanitizePath(this.personalizationConfig.dirName));
+    this.experiencesPath = join(
+      sanitizePath(this.experiencesDirPath),
+      sanitizePath(this.personalizeConfig.experiences.fileName),
+    );
+    this.experienceConfig = this.personalizeConfig.experiences;
+    this.audienceConfig = this.personalizeConfig.audiences;
+    this.mapperDirPath = resolve(
+      sanitizePath(this.config.backupDir),
+      'mapper',
+      sanitizePath(this.personalizeConfig.dirName),
+    );
     this.expMapperDirPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.experienceConfig.dirName));
     this.experiencesUidMapperPath = resolve(sanitizePath(this.expMapperDirPath), 'uid-mapping.json');
     this.cmsVariantGroupPath = resolve(sanitizePath(this.expMapperDirPath), 'cms-variant-groups.json');
     this.cmsVariantPath = resolve(sanitizePath(this.expMapperDirPath), 'cms-variants.json');
-    this.audiencesMapperPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.audienceConfig.dirName), 'uid-mapping.json');
+    this.audiencesMapperPath = resolve(
+      sanitizePath(this.mapperDirPath),
+      sanitizePath(this.audienceConfig.dirName),
+      'uid-mapping.json',
+    );
     this.eventsMapperPath = resolve(sanitizePath(this.mapperDirPath), 'events', 'uid-mapping.json');
     this.failedCmsExpPath = resolve(sanitizePath(this.expMapperDirPath), 'failed-cms-experience.json');
     this.failedCmsExpPath = resolve(sanitizePath(this.expMapperDirPath), 'failed-cms-experience.json');
     this.experienceCTsPath = resolve(sanitizePath(this.experiencesDirPath), 'experiences-content-types.json');
     this.experienceVariantsIdsPath = resolve(
       sanitizePath(this.config.data),
-      sanitizePath(this.personalizationConfig.dirName),
+      sanitizePath(this.personalizeConfig.dirName),
       sanitizePath(this.experienceConfig.dirName),
       'experiences-variants-ids.json',
     );
@@ -79,6 +98,8 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     this.pendingVariantAndVariantGrpForExperience = [];
     this.cTsSuccessPath = resolve(sanitizePath(this.config.backupDir), 'mapper', 'content_types', 'success.json');
     this.createdCTs = [];
+    this.audiencesUid = (fsUtil.readFile(this.audiencesMapperPath, true) as Record<string, string>) || {};
+    this.eventsUid = (fsUtil.readFile(this.eventsMapperPath, true) as Record<string, string>) || {};
   }
 
   /**
@@ -92,19 +113,25 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     if (existsSync(this.experiencesPath)) {
       try {
         const experiences = fsUtil.readFile(this.experiencesPath, true) as ExperienceStruct[];
-        const audiencesUid = (fsUtil.readFile(this.audiencesMapperPath, true) as Record<string, string>) || {};
-        const eventsUid = (fsUtil.readFile(this.eventsMapperPath, true) as Record<string, string>) || {};
 
         for (const experience of experiences) {
           const { uid, ...restExperienceData } = experience;
           //check whether reference audience exists or not that referenced in variations having __type equal to AudienceBasedVariation & targeting
-          let experienceReqObj: CreateExperienceInput = lookUpAudiences(restExperienceData, audiencesUid);
+          let experienceReqObj: CreateExperienceInput = lookUpAudiences(restExperienceData, this.audiencesUid);
           //check whether events exists or not that referenced in metrics
-          experienceReqObj = lookUpEvents(experienceReqObj, eventsUid);
+          experienceReqObj = lookUpEvents(experienceReqObj, this.eventsUid);
 
-          const expRes = await this.createExperience(experienceReqObj);
+          const expRes = (await this.createExperience(experienceReqObj)) as ExperienceStruct;
           //map old experience uid to new experience uid
           this.experiencesUidMapper[uid] = expRes?.uid ?? '';
+
+          try {
+            // import versions of experience
+            await this.importExperienceVersions(expRes, uid);
+          } catch (error) {
+            this.log(this.config, `Error while importing experience versions of ${expRes.uid}`, 'error');
+            this.log(this.config, error, 'error');
+          }
         }
         fsUtil.writeFile(this.experiencesUidMapperPath, this.experiencesUidMapper);
         this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Experiences' }), 'info');
@@ -117,9 +144,10 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         if (jobRes)
           this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Variant & Variant groups' }), 'info');
 
-        if (this.personalizationConfig.importData) {
+        if (this.personalizeConfig.importData) {
           this.log(this.config, this.messages.UPDATING_CT_IN_EXP, 'info');
           await this.attachCTsInExperience();
+          this.log(this.config, this.messages.UPDATED_CT_IN_EXP, 'info');
         }
 
         await this.createVariantIdMapper();
@@ -131,9 +159,71 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   }
 
   /**
-   * function to validate if all variant groups and variants have been created using personalization background job
-   * store the variant groups data in mapper/personalization/experiences/cms-variant-groups.json and the variants data
-   * in mapper/personalization/experiences/cms-variants.json. If not, invoke validateVariantGroupAndVariantsCreated after some delay.
+   * function import experience versions from a JSON file and creates them in the project.
+   */
+  async importExperienceVersions(experience: ExperienceStruct, oldExperienceUid: string) {
+    const versionsPath = resolve(sanitizePath(this.experiencesDirPath), 'versions', `${oldExperienceUid}.json`);
+
+    if (!existsSync(versionsPath)) {
+      return;
+    }
+
+    const versions = fsUtil.readFile(versionsPath, true) as ExperienceStruct[];
+    const versionMap: Record<string, CreateExperienceVersionInput | undefined> = {
+      ACTIVE: undefined,
+      DRAFT: undefined,
+      PAUSE: undefined,
+    };
+
+    // Process each version and map them by status
+    versions.forEach((version) => {
+      let versionReqObj = lookUpAudiences(version, this.audiencesUid) as CreateExperienceVersionInput;
+      versionReqObj = lookUpEvents(version, this.eventsUid) as CreateExperienceVersionInput;
+
+      if (versionReqObj && versionReqObj.status) {
+        versionMap[versionReqObj.status] = versionReqObj;
+      }
+    });
+
+    // Prioritize updating or creating versions based on the order: ACTIVE -> DRAFT -> PAUSE
+    return await this.handleVersionUpdateOrCreate(experience, versionMap);
+  }
+
+  // Helper method to handle version update or creation logic
+  private async handleVersionUpdateOrCreate(
+    experience: ExperienceStruct,
+    versionMap: Record<string, CreateExperienceVersionInput | undefined>,
+  ) {
+    const { ACTIVE, DRAFT, PAUSE } = versionMap;
+    let latestVersionUsed = false;
+
+    if (ACTIVE) {
+      await this.updateExperienceVersion(experience.uid, experience.latestVersion, ACTIVE);
+      latestVersionUsed = true;
+    }
+
+    if (DRAFT) {
+      if (latestVersionUsed) {
+        await this.createExperienceVersion(experience.uid, DRAFT);
+      } else {
+        await this.updateExperienceVersion(experience.uid, experience.latestVersion, DRAFT);
+        latestVersionUsed = true;
+      }
+    }
+
+    if (PAUSE) {
+      if (latestVersionUsed) {
+        await this.createExperienceVersion(experience.uid, PAUSE);
+      } else {
+        await this.updateExperienceVersion(experience.uid, experience.latestVersion, PAUSE);
+      }
+    }
+  }
+
+  /**
+   * function to validate if all variant groups and variants have been created using personalize background job
+   * store the variant groups data in mapper/personalize/experiences/cms-variant-groups.json and the variants data
+   * in mapper/personalize/experiences/cms-variants.json. If not, invoke validateVariantGroupAndVariantsCreated after some delay.
    * @param retryCount Counter to track the number of times the function has been called
    * @returns
    */
@@ -160,7 +250,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
           );
           return this.validateVariantGroupAndVariantsCreated(retryCount);
         } else {
-          this.log(this.config, this.messages.PERSONALIZATION_JOB_FAILURE, 'error');
+          this.log(this.config, this.messages.PERSONALIZE_JOB_FAILURE, 'error');
           fsUtil.writeFile(this.failedCmsExpPath, this.pendingVariantAndVariantGrpForExperience);
           return false;
         }
@@ -185,8 +275,8 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         Object.entries(this.experiencesUidMapper).map(async ([oldExpUid, newExpUid]) => {
           if (experienceCTsMap[oldExpUid]?.length) {
             // Filter content types that were created
-            const updatedContentTypes = experienceCTsMap[oldExpUid].filter((ct: any) =>
-              this.createdCTs.includes(ct?.uid),
+            const updatedContentTypes = experienceCTsMap[oldExpUid].filter(
+              (ct: any) => this.createdCTs.includes(ct?.uid) && ct.status === 'linked',
             );
             if (updatedContentTypes?.length) {
               const { variant_groups: [variantGroup] = [] } =
