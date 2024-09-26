@@ -22,6 +22,7 @@ import {
   APIResponse,
   VariantGroupStruct,
   VariantGroup,
+  CreateExperienceVersionInput,
 } from '../types';
 import { formatErrors } from './error-helper';
 
@@ -74,6 +75,35 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
   async getExperience(experienceUid: string): Promise<ExperienceStruct | void> {
     const getExperiencesEndPoint = `/experiences/${experienceUid}`;
     const data = await this.apiClient.get(getExperiencesEndPoint);
+    return this.handleVariantAPIRes(data) as ExperienceStruct;
+  }
+
+  async getExperienceVersions(experienceUid: string): Promise<ExperienceStruct | void> {
+    const getExperiencesVersionsEndPoint = `/experiences/${experienceUid}/versions`;
+    const data = await this.apiClient.get(getExperiencesVersionsEndPoint);
+    return this.handleVariantAPIRes(data) as ExperienceStruct;
+  }
+
+  async createExperienceVersion(
+    experienceUid: string,
+    input: CreateExperienceVersionInput,
+  ): Promise<ExperienceStruct | void> {
+    const createExperiencesVersionsEndPoint = `/experiences/${experienceUid}/versions`;
+    const data = await this.apiClient.post(createExperiencesVersionsEndPoint, input);
+    return this.handleVariantAPIRes(data) as ExperienceStruct;
+  }
+
+  async updateExperienceVersion(
+    experienceUid: string,
+    versionId: string,
+    input: CreateExperienceVersionInput,
+  ): Promise<ExperienceStruct | void> {
+    // loop through input and remove shortId from variant
+    if (input?.variants) {
+      input.variants = input.variants.map(({ shortUid, ...rest }) => rest);
+    }
+    const updateExperiencesVersionsEndPoint = `/experiences/${experienceUid}/versions/${versionId}`;
+    const data = await this.apiClient.put(updateExperiencesVersionsEndPoint, input);
     return this.handleVariantAPIRes(data) as ExperienceStruct;
   }
 
@@ -178,10 +208,10 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     if (status >= 200 && status < 300) {
       return data;
     }
-
+    
     const errorMsg = data?.errors
       ? formatErrors(data.errors)
-      : data?.error_message || data?.message || 'Something went wrong while processing variant entries request!';
+      : data?.error || data?.error_message || data?.message || 'Something went wrong while processing variant entries request!';
 
     throw errorMsg;
   }
