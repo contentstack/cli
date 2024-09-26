@@ -3,11 +3,11 @@ import { AnyProperty } from './utils';
 export type VariantEntryStruct = {
   uid: string;
   title: string;
-  variant_id: string;
   locale: string;
   _version: number;
   _variant: {
-    uid: string;
+    _uid: string;
+    _instance_uid: string;
     _change_set: string[];
     _base_entry_version: number;
   };

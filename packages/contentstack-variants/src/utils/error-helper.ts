@@ -22,5 +22,5 @@ function formatError(error: any): string {
   if (typeof error === 'object') {
     return Object.values(error).join(' ');
   }
-  return String(error);
+  return error;
 }

@@ -33,7 +33,7 @@ const config: DefaultConfig = {
       'content-types',
       'custom-roles',
       'workflows',
-      'personalization',
+      'personalize',
       'entries',
       'labels',
       'marketplace-apps',
@@ -144,11 +144,11 @@ const config: DefaultConfig = {
       dependencies: ['locales', 'content-types'],
       exportVersions: false,
     },
-    personalization: {
+    personalize: {
       baseURL: {
-        NA: 'https://personalization-api.contentstack.com',
+        NA: 'https://personalize-api.contentstack.com',
       },
-      dirName: 'personalization',
+      dirName: 'personalize',
       exportOrder: ['attributes', 'audiences', 'events', 'experiences'],
       projects: {
         dirName: 'projects',
