@@ -130,6 +130,18 @@ export type ExperienceStruct = {
   content_types?: string[];
 } & AnyProperty;
 
+export interface CreateExperienceVersionInput {
+  name: string;
+  __type: string;
+  description: string;
+  targeting?: ExpTargeting;
+  variations: ExpVariations[];
+  variationSplit?: string;
+  metrics?: ExpMetric[];
+  status: string;
+  metadata?: object;
+  variants: Array<ExpVariations>;
+}
 export interface CreateExperienceInput {
   name: string;
   __type: string;
@@ -140,6 +152,7 @@ export interface CreateExperienceInput {
   metrics?: ExpMetric[];
   status: string;
   metadata?: object;
+  variants?: Array<ExpVariations>;
 }
 
 export interface UpdateExperienceInput {
