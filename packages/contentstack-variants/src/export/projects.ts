@@ -1,24 +1,24 @@
 import * as path from 'path';
 import { sanitizePath } from '@contentstack/cli-utilities';
-import { ExportConfig, PersonalizationConfig } from '../types';
+import { ExportConfig, PersonalizeConfig } from '../types';
 import { PersonalizationAdapter, log, fsUtil, formatError } from '../utils';
 
 export default class ExportProjects extends PersonalizationAdapter<ExportConfig> {
   private projectFolderPath: string;
   public exportConfig: ExportConfig;
-  public personalizationConfig: PersonalizationConfig;
+  public personalizeConfig: PersonalizeConfig;
   constructor(exportConfig: ExportConfig) {
     super({
       config: exportConfig,
-      baseURL: exportConfig.modules.personalization.baseURL[exportConfig.region.name],
+      baseURL: exportConfig.modules.personalize.baseURL[exportConfig.region.name],
       headers: { authtoken: exportConfig.auth_token, organization_uid: exportConfig.org_uid },
     });
     this.exportConfig = exportConfig;
-    this.personalizationConfig = exportConfig.modules.personalization;
+    this.personalizeConfig = exportConfig.modules.personalize;
     this.projectFolderPath = path.resolve(
       sanitizePath(exportConfig.data),
       sanitizePath(exportConfig.branchName || ''),
-      sanitizePath(this.personalizationConfig.dirName),
+      sanitizePath(this.personalizeConfig.dirName),
       'projects',
     );
   }
@@ -29,7 +29,7 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
       await fsUtil.makeDirectory(this.projectFolderPath);
       const project = await this.projects({ connectedStackApiKey: this.exportConfig.apiKey });
       if (!project || project?.length < 1) {
-        log(this.exportConfig, 'No Personalization Project connected with the given stack', 'info');
+        log(this.exportConfig, 'No Personalize Project connected with the given stack', 'info');
         this.exportConfig.personalizationEnabled = false;
         return;
       }
@@ -38,7 +38,9 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
       fsUtil.writeFile(path.resolve(sanitizePath(this.projectFolderPath), 'projects.json'), project);
       log(this.exportConfig, 'Project exported successfully!', 'success');
     } catch (error) {
-      log(this.exportConfig, `Failed to export projects!`, 'error');
+      if (error !== 'Forbidden') {
+        log(this.exportConfig, `Failed to export projects!`, 'error');
+      }
       throw error;
     }
   }
