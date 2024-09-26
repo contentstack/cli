@@ -122,7 +122,7 @@ export default interface DefaultConfig {
       fileName: string;
       dependencies?: Modules[];
     };
-    personalization: {
+    personalize: {
       baseURL: Record<string, string>;
       dirName: string;
       importData: boolean;
