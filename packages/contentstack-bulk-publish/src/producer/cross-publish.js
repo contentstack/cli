@@ -51,7 +51,10 @@ async function bulkAction(stack, items, bulkPublish, filter, destEnv, apiVersion
 
           if (variantsFlag) {
             entry.variants = items[index].data.variants || [];
-            entry.publish_with_base_entry = true;
+            entry.variant_rules = {
+              publish_latest_base: true,
+              publish_latest_base_conditionally: true
+            };
           }
 
           bulkPublishSet.push(JSON.parse(JSON.stringify(entry)));
@@ -210,7 +213,8 @@ async function getSyncEntries(
       if (variantsFlag) {
         for (let index = 0; index < entriesResponse?.items?.length; index++) {
           let variants = [];
-          variants = await getVariantEntries(stack, entries[index].content_type_uid, entries, index, queryParamsObj);
+          const entries = entriesResponse.items[index];
+          variants = await getVariantEntries(stack, entries.content_type_uid, entriesResponse, index, queryParamsObj);
           if (variants.length > 0) {
             entriesResponse.items[index].data.variants = variants;
           }
@@ -268,10 +272,10 @@ async function getVariantEntries(stack, contentType, entries, index, queryParams
       skip: skip, // Adding skip parameter for pagination
       limit: 100, // Set a limit to fetch up to 100 entries per request
     };
-
+    const entryUid = entries.items[index].data.uid
     const variantsEntriesResponse = await stack
       .contentType(contentType)
-      .entry(entries[index].data.uid)
+      .entry(entryUid)
       .variants()
       .query(variantQueryParams)
       .find();
