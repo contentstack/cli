@@ -406,6 +406,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
    */
   async publishVariantEntries(batch: VariantEntryStruct[], entryUid: string, content_type: string) {
     const allPromise = [];
+    log(this.config, `Publishing variant entries for entry uid '${entryUid}' of Content Type '${content_type}'`, 'info');
     for (let [, variantEntry] of entries(batch)) {
       const variantEntryUID = variantEntry.uid;
       const oldVariantUid = variantEntry._variant._uid || '';
@@ -446,11 +447,9 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         entry: {
           environments,
           locales,
-          publish_with_base_entry: false,
           variants: [{ uid: newVariantUid, version: 1 }],
         },
         locale: variantEntry.locale,
-        version: 1,
       };
 
       const promise = this.variantInstance.publishVariantEntry(
@@ -470,6 +469,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       allPromise.push(promise);
     }
     await Promise.allSettled(allPromise);
+    log(this.config, `Published variant entries for entry uid '${entryUid}' of Content Type '${content_type}'`, 'info');
   }
 
   /**
