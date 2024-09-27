@@ -7,7 +7,7 @@ import {
   AnyProperty,
 } from '@contentstack/cli-variants';
 
-import { log, formatError } from '../../utils';
+import { log } from '../../utils';
 import { ModuleClassParams, ExportConfig } from '../../types';
 
 export default class ExportPersonalize {
