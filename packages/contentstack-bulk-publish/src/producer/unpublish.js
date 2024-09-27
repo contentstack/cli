@@ -51,7 +51,7 @@ function getQueryParams(filter) {
   return queryString;
 }
 
-function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion, variantsFlag) {
+function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion, variantsFlag = false) {
   return new Promise(async (resolve) => {
     for (let index = 0; index < items.length; index++) {
       changedFlag = true;
@@ -64,12 +64,14 @@ function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion
             locale: items[index].data.locale || 'en-us',
             publish_details: items[index].data.publish_details || [],
           };
-
-          if (variantsFlag) {
-            entryData.publish_with_base_entry = true;
-            entryData.variants = items[index].data.variants;
+        
+          if (variantsFlag && Array.isArray(items[index].data.variants) && items[index].data.variants.length > 0) {
+            const entryWithVariants = { ...entryData, variants: items[index].data.variants };
+            bulkUnPublishSet.push(entryWithVariants);
+            bulkUnPublishSet.push(entryData);
+          } else {
+            bulkUnPublishSet.push(entryData);
           }
-          bulkUnPublishSet.push(entryData);
         }
 
         if (bulkUnPulishAssetSet.length < 10 && items[index].type === 'asset_published') {
@@ -128,7 +130,7 @@ function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion
         }
       } else {
         if (items[index].type === 'entry_published') {
-          await entryQueue.Enqueue({
+          await entryQueue.Enqueue({  
             content_type: items[index].content_type_uid,
             publish_details: [items[index].data.publish_details],
             environments: [environment],
@@ -136,6 +138,7 @@ function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion
             locale: items[index].data.locale || 'en-us',
             Type: 'entry',
             stack: stack,
+            apiVersion,
           });
         }
         if (items[index].type === 'asset_published') {
@@ -233,6 +236,7 @@ async function getSyncEntries(
           environment,
           deliveryToken,
           apiVersion,
+          variantsFlag,
           null,
         );
       }, 3000);
@@ -269,7 +273,7 @@ async function getVariantEntries(stack, contentType, entries, queryParams, skip 
 
     // Map the response items to extract variant UIDs
     const variants = variantsEntriesResponse.items.map(entry => ({
-      uid: entry.variants_uid,
+      uid: entry.variants._variant._uid,
     }));
 
     // Check if there are more entries to fetch
@@ -301,7 +305,7 @@ async function start(
     onlyEntries,
     f_types,
     apiVersion,
-    includeVariantsFlag,
+    includeVariants,
   },
   stack,
   config,
@@ -316,7 +320,7 @@ async function start(
     }
     process.exit(0);
   });
-  if (includeVariantsFlag) {
+  if (includeVariants) {
     apiVersion = VARIANTS_UNPUBLISH_API_VERSION;
   }
   if (retryFailed) {
@@ -356,7 +360,7 @@ async function start(
     }
     setConfig(config, bulkUnpublish);
     const queryParams = getQueryParams(filter);
-    await getSyncEntries(stack, config, locale, queryParams, bulkUnpublish, environment, deliveryToken, apiVersion, includeVariantsFlag);
+    await getSyncEntries(stack, config, locale, queryParams, bulkUnpublish, environment, deliveryToken, apiVersion, includeVariants);
   }
 }
 
