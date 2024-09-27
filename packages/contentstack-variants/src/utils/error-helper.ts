@@ -9,18 +9,18 @@ export function formatErrors(errors: any): string {
   for (const errorKey in errors) {
     const errorValue = errors[errorKey];
     if (Array.isArray(errorValue)) {
-      errorMessages.push(...errorValue.map((error: any) => formatError(errorKey, error)));
+      errorMessages.push(...errorValue.map((error: any) => formatError(error)));
     } else {
-      errorMessages.push(formatError(errorKey, errorValue));
+      errorMessages.push(formatError(errorValue));
     }
   }
 
   return errorMessages.join(' ');
 }
 
-function formatError(errorKey: string, error: any): string {
+function formatError(error: any): string {
   if (typeof error === 'object') {
-    return `${errorKey}: ${Object.values(error).join(' ')}`;
+    return Object.values(error).join(' ');
   }
-  return `${errorKey}: ${error}`;
+  return error;
 }
