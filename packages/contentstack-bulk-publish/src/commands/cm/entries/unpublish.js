@@ -19,12 +19,13 @@ class UnpublishCommand extends Command {
     unpublishFlags.onlyAssets = false;
     unpublishFlags.onlyEntries = true;
     unpublishFlags.apiVersion = unpublishFlags['api-version'] || '3';
-    unpublishFlags.includeVariants = unpublishFlags['include-variants'];
+    unpublishFlags.includeVariants = unpublishFlags['include-variants'] || false;
     delete unpublishFlags['api-version'];
     delete unpublishFlags['retry-failed'];
     delete unpublishFlags['bulk-unpublish'];
     delete unpublishFlags['content-type'];
     delete unpublishFlags['delivery-token'];
+    delete unpublishFlags['include-variants'];
 
     let updatedFlags;
     try {
@@ -60,7 +61,6 @@ class UnpublishCommand extends Command {
           updatedFlags.deliveryToken = await cliux.prompt('Enter delivery token of your source environment');
         }
         updatedFlags.bulkUnpublish = updatedFlags.bulkUnpublish === 'false' ? false : true;
-        updatedFlags.includeVariantsFlag = updatedFlags.includeVariants;
         stack = await getStack(config);
       }
       if (!updatedFlags.deliveryToken && updatedFlags.deliveryToken.length === 0) {
