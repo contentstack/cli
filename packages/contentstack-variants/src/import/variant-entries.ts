@@ -383,12 +383,9 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
             // Check if the current property is already an object with uid and filename
             const existingValue = currentObj[firstKey];
 
-            if (
-              !existingValue ||
-              (typeof existingValue === 'object' && existingValue.uid && existingValue.filename)
-            ) {
+            if (existingValue && typeof existingValue === 'object' && existingValue.uid) {
               currentObj[firstKey] = { uid: existingValue.uid, filename: 'dummy.jpeg' };
-            }else {
+            } else {
               currentObj[firstKey] = { uid: currentObj[firstKey], filename: 'dummy.jpeg' };
             }
           } else {
