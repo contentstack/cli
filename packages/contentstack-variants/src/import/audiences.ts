@@ -18,7 +18,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
     const conf: APIConfig = {
       config,
       baseURL: config.modules.personalize.baseURL[config.region.name],
-      headers: { 'X-Project-Uid': config.modules.personalize.project_id, authtoken: config.auth_token },
+      headers: { 'X-Project-Uid': config.modules.personalize.project_id },
     };
     super(Object.assign(config, conf));
     this.personalizeConfig = this.config.modules.personalize;
@@ -44,7 +44,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
    */
   async import() {
     this.log(this.config, this.$t(this.messages.IMPORT_MSG, { module: 'Audiences' }), 'info');
-
+    await this.init();
     await fsUtil.makeDirectory(this.audienceMapperDirPath);
     const { dirName, fileName } = this.audienceConfig;
     const audiencesPath = resolve(
