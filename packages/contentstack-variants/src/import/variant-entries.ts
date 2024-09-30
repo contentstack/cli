@@ -368,7 +368,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
    * @param variantEntry - The entry variant to update.
    */
   updateFileFields(variantEntry: VariantEntryStruct) {
-    const setValue = (currentObj: VariantEntryStruct, keys: Array<string>) => {
+    const setValue = (currentObj: VariantEntryStruct, keys: string[]) => {
       if (!currentObj || keys.length === 0) return;
 
       const [firstKey, ...restKeys] = keys;
@@ -380,7 +380,14 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       } else if (currentObj && typeof currentObj === 'object') {
         if (firstKey in currentObj) {
           if (keys.length === 1) {
-            currentObj[firstKey] = { uid: currentObj[firstKey], filename: 'dummy.jpeg' };
+            // Check if the current property is already an object with uid and filename
+            const existingValue = currentObj[firstKey];
+
+            if (existingValue && typeof existingValue === 'object' && existingValue.uid) {
+              currentObj[firstKey] = { uid: existingValue.uid, filename: 'dummy.jpeg' };
+            } else {
+              currentObj[firstKey] = { uid: currentObj[firstKey], filename: 'dummy.jpeg' };
+            }
           } else {
             setValue(currentObj[firstKey], restKeys);
           }
@@ -388,13 +395,12 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       }
     };
 
-    const pathsToUpdate = variantEntry?._metadata?.references
-      .filter((ref: any) => ref._content_type_uid === 'sys_assets')
-      .map((ref: any) => ref.path);
+    const pathsToUpdate =
+      variantEntry?._metadata?.references
+        ?.filter((ref: any) => ref._content_type_uid === 'sys_assets')
+        .map((ref: any) => ref.path) || [];
 
-    if (pathsToUpdate) {
-      pathsToUpdate.forEach((path: string) => setValue(variantEntry, path.split('.')));
-    }
+    pathsToUpdate.forEach((path: string) => setValue(variantEntry, path.split('.')));
   }
 
   /**
@@ -406,6 +412,11 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
    */
   async publishVariantEntries(batch: VariantEntryStruct[], entryUid: string, content_type: string) {
     const allPromise = [];
+    log(
+      this.config,
+      `Publishing variant entries for entry uid '${entryUid}' of Content Type '${content_type}'`,
+      'info',
+    );
     for (let [, variantEntry] of entries(batch)) {
       const variantEntryUID = variantEntry.uid;
       const oldVariantUid = variantEntry._variant._uid || '';
@@ -446,11 +457,9 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         entry: {
           environments,
           locales,
-          publish_with_base_entry: false,
           variants: [{ uid: newVariantUid, version: 1 }],
         },
         locale: variantEntry.locale,
-        version: 1,
       };
 
       const promise = this.variantInstance.publishVariantEntry(
@@ -470,6 +479,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       allPromise.push(promise);
     }
     await Promise.allSettled(allPromise);
+    log(this.config, `Published variant entries for entry uid '${entryUid}' of Content Type '${content_type}'`, 'info');
   }
 
   /**

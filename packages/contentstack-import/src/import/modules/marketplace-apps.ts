@@ -438,7 +438,7 @@ export default class ImportMarketplaceApps {
       );
 
       if (installation.installation_uid) {
-        const appName = this.appNameMapping[app.manifest.name] ?? app.manifest.name;
+        const appName = this.appNameMapping[app.manifest.name] || app.manifest.name || app.manifest.uid;
         log(this.importConfig, `${appName} app installed successfully.!`, 'success');
         await makeRedirectUrlCall(installation, appName, this.importConfig);
         this.installationUidMapping[app.uid] = installation.installation_uid;
@@ -448,7 +448,8 @@ export default class ImportMarketplaceApps {
         await confirmToCloseProcess(installation, this.importConfig);
       }
     } else if (!isEmpty(configuration) || !isEmpty(server_configuration)) {
-      log(this.importConfig, `${app.manifest.name} is already installed`, 'success');
+      const appName = app.manifest.name || app.manifest.uid;
+      log(this.importConfig, `${appName} is already installed`, 'success');
       updateParam = await ifAppAlreadyExist(app, currentStackApp, this.importConfig);
     }
 
@@ -481,7 +482,8 @@ export default class ImportMarketplaceApps {
             trace(data, 'error', true);
             log(this.importConfig, formatError(data.message), 'success');
           } else {
-            log(this.importConfig, `${app.manifest.name} app config updated successfully.!`, 'success');
+            const appName = app.manifest.name || app.manifest.uid;
+            log(this.importConfig, `${appName} app config updated successfully.!`, 'success');
           }
         })
         .catch((error: any) => {

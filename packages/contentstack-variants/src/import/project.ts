@@ -46,7 +46,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
             description: project.description,
             connectedStackApiKey: this.config.apiKey,
           }).catch(async (error) => {
-            if (error === 'personalization.PROJECTS.DUPLICATE_NAME' || error === 'personalize.PROJECTS.DUPLICATE_NAME') {
+            if (error.includes('personalization.PROJECTS.DUPLICATE_NAME') || error.includes('personalize.PROJECTS.DUPLICATE_NAME')) {
               const projectName = await askProjectName('Copy Of ' + (newName || project.name));
               return await createProject(projectName);
             }
