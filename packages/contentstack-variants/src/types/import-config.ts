@@ -12,7 +12,7 @@ export interface ImportDefaultConfig extends AnyProperty {
       dirName: string;
       fileName: string;
     };
-    personalization: {
+    personalize: {
       baseURL: Record<string, string>;
       dirName: string;
       importData: boolean;

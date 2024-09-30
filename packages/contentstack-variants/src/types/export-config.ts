@@ -20,7 +20,7 @@ export type Modules =
   | 'labels'
   | 'marketplace-apps'
   | 'taxonomies'
-  | 'personalization';
+  | 'personalize';
 
 export type branch = {
   uid: string;
@@ -155,7 +155,7 @@ export interface DefaultConfig {
         include_publish_details: boolean;
       } & AnyProperty;
     } & AnyProperty;
-    personalization: {
+    personalize: {
       dirName: string;
       baseURL: Record<string, string>;
     } & AnyProperty;
@@ -269,7 +269,7 @@ export interface ExportConfig extends DefaultConfig {
   region: any;
 }
 
-export interface PersonalizationConfig {
+export interface PersonalizeConfig {
   dirName: string;
   baseURL: Record<string, string>;
 }
