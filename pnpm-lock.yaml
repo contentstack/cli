@@ -1068,6 +1068,7 @@ importers:
       cli-table: ^0.3.11
       conf: ^10.2.0
       debug: ^4.1.1
+      dotenv: ^16.4.5
       eslint: ^8.18.0
       eslint-config-oclif: ^4.0.0
       eslint-config-oclif-typescript: ^3.0.8
@@ -1108,6 +1109,7 @@ importers:
       cli-table: 0.3.11
       conf: 10.2.0
       debug: 4.3.7
+      dotenv: 16.4.5
       figures: 3.2.0
       inquirer: 8.2.4
       inquirer-search-checkbox: 1.0.0
