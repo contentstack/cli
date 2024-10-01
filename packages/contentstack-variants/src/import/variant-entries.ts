@@ -49,7 +49,6 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       headers: {
         api_key: config.apiKey,
         branch: config.branchName,
-        authtoken: config.auth_token,
         organization_uid: config.org_uid,
         'X-Project-Uid': config.modules.personalize.project_id,
       },
@@ -138,7 +137,8 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     this.assetUidMapper = (fsUtil.readFile(assetUidMapperPath, true) || {}) as Record<string, any>;
     this.assetUrlMapper = (fsUtil.readFile(assetUrlMapperPath, true) || {}) as Record<string, any>;
     this.environments = (fsUtil.readFile(envPath, true) || {}) as Record<string, any>;
-
+    // set the token
+    await this.variantInstance.init();
     for (const entriesForVariant of entriesForVariants) {
       await this.importVariantEntries(entriesForVariant);
     }

@@ -19,7 +19,6 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
       headers: {
         api_key: config.apiKey,
         branch: config.branchName,
-        authtoken: config.auth_token,
         organization_uid: config.org_uid,
         'X-Project-Uid': config.project_id,
       },
@@ -36,7 +35,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
   async exportVariantEntry(options: { locale: string; contentTypeUid: string; entries: Record<string, any>[] }) {
     const variantEntry = this.config.modules.variantEntry;
     const { entries, locale, contentTypeUid: content_type_uid } = options;
-
+    await this.variantInstance.init();
     for (let index = 0; index < entries.length; index++) {
       const entry = entries[index];
       const variantEntryBasePath = join(sanitizePath(this.entriesDirPath), sanitizePath(content_type_uid), sanitizePath(locale), sanitizePath(variantEntry.dirName), sanitizePath(entry.uid));
