@@ -53,7 +53,6 @@ class AuthenticationHandler {
 
   async refreshAccessToken(error: any, maxRetryCount = 1): Promise<void> {
     if (error.response && error.response.status) {
-      // Increment the retry count only when not exceeding max retries
       if (maxRetryCount >= 3) {
         ux.print('Max retry count reached, please login to proceed', {
           color: 'yellow',
@@ -61,7 +60,7 @@ class AuthenticationHandler {
         process.exit(1);
       }
 
-      maxRetryCount++; // Increment here for the next retry attempt
+      maxRetryCount++; // Increment for the next retry attempt
 
       switch (error.response.status) {
         case 401:
@@ -80,8 +79,8 @@ class AuthenticationHandler {
 
         case 429:
         case 408:
-          // These cases might require a wait, consider adding a delay before retrying
-          await new Promise((resolve) => setTimeout(resolve, 1000)); // Example wait of 1 second
+          // These cases require a wait, adding a delay before retrying
+          await new Promise((resolve) => setTimeout(resolve, 1000)); // wait for 1 second
           return this.refreshAccessToken(error, maxRetryCount); // Retry
 
         default:
