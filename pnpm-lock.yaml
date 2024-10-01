@@ -20,7 +20,7 @@ importers:
       '@contentstack/cli-cm-export-to-csv': ~1.7.2
       '@contentstack/cli-cm-import': ~1.19.0
       '@contentstack/cli-cm-migrate-rte': ~1.4.19
-      '@contentstack/cli-cm-seed': ~1.9.0
+      '@contentstack/cli-cm-seed': ~1.10.0
       '@contentstack/cli-command': ~1.3.1
       '@contentstack/cli-config': ~1.7.2
       '@contentstack/cli-launch': ~1.2.2
@@ -74,7 +74,7 @@ importers:
       '@contentstack/cli-cm-export-to-csv': link:../contentstack-export-to-csv
       '@contentstack/cli-cm-import': link:../contentstack-import
       '@contentstack/cli-cm-migrate-rte': link:../contentstack-migrate-rte
-      '@contentstack/cli-cm-seed': 1.9.0_ogreqof3k35xezedraj6pnd45y
+      '@contentstack/cli-cm-seed': link:../contentstack-seed
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-config': link:../contentstack-config
       '@contentstack/cli-launch': link:../contentstack-launch
@@ -1641,30 +1641,6 @@ packages:
       - typescript
     dev: false
 
-  /@contentstack/cli-audit/1.7.1_ogreqof3k35xezedraj6pnd45y:
-    resolution: {integrity: sha512-Eocn4UWuKFp46fhpA6kgfl5S13yci59VK3Vcsi6Cj4TC3OTnR4mB2yDvuFt3GtIW7zKblVA9GYzqub6JeGvt6w==}
-    engines: {node: '>=16'}
-    hasBin: true
-    dependencies:
-      '@contentstack/cli-command': 1.3.1
-      '@contentstack/cli-utilities': 1.7.3
-      '@oclif/plugin-help': 5.2.20_ogreqof3k35xezedraj6pnd45y
-      '@oclif/plugin-plugins': 5.4.9
-      chalk: 4.1.2
-      fast-csv: 4.3.6
-      fs-extra: 11.2.0
-      lodash: 4.17.21
-      uuid: 9.0.1
-      winston: 3.14.2
-    transitivePeerDependencies:
-      - '@swc/core'
-      - '@swc/wasm'
-      - '@types/node'
-      - encoding
-      - supports-color
-      - typescript
-    dev: false
-
   /@contentstack/cli-cm-export/1.13.0:
     resolution: {integrity: sha512-zIx1ud4eLH2SgGHwagxyzZlQKkbiF4ObkOoU8c6sLnN6edKFldMxR5lTti4yp3T4oN0sm6IfJ3z+wKle3dBO3w==}
     engines: {node: '>=14.0.0'}
@@ -1715,59 +1691,6 @@ packages:
       tslib: 2.7.0
       uuid: 9.0.1
       winston: 3.14.2
-    transitivePeerDependencies:
-      - '@swc/core'
-      - '@swc/wasm'
-      - '@types/node'
-      - encoding
-      - supports-color
-      - typescript
-    dev: false
-
-  /@contentstack/cli-cm-import/1.18.0_ogreqof3k35xezedraj6pnd45y:
-    resolution: {integrity: sha512-d03LA/YHKuZSoFTKRaDmUa+fD66J8SnJVRm2553H9GGia+d85g2qDHToMdQEgtK/O4pUiEffsCUvnuulM34isA==}
-    engines: {node: '>=14.0.0'}
-    dependencies:
-      '@contentstack/cli-audit': 1.7.1_ogreqof3k35xezedraj6pnd45y
-      '@contentstack/cli-command': 1.3.1
-      '@contentstack/cli-utilities': 1.7.3
-      '@contentstack/cli-variants': 1.0.0
-      '@contentstack/management': 1.17.2_debug@4.3.7
-      '@oclif/core': 3.27.0
-      big-json: 3.2.0
-      bluebird: 3.7.2
-      chalk: 4.1.2
-      debug: 4.3.7
-      fs-extra: 11.2.0
-      lodash: 4.17.21
-      marked: 4.3.0
-      merge: 2.1.1
-      mkdirp: 1.0.4
-      promise-limit: 2.7.0
-      tslib: 2.7.0
-      uuid: 9.0.1
-      winston: 3.14.2
-    transitivePeerDependencies:
-      - '@swc/core'
-      - '@swc/wasm'
-      - '@types/node'
-      - encoding
-      - supports-color
-      - typescript
-    dev: false
-
-  /@contentstack/cli-cm-seed/1.9.0_ogreqof3k35xezedraj6pnd45y:
-    resolution: {integrity: sha512-KnwKOqljU3NTVzmaMqaOCt5X+0QzyPK/VGB+5Vfj7nEGy0Mz1HA8RjWnZdwKgk1tRkH9mYsj4tG32sRDPYsX/g==}
-    engines: {node: '>=14.0.0'}
-    dependencies:
-      '@contentstack/cli-cm-import': 1.18.0_ogreqof3k35xezedraj6pnd45y
-      '@contentstack/cli-command': 1.3.1
-      '@contentstack/cli-utilities': 1.7.3
-      inquirer: 8.2.4
-      mkdirp: 1.0.4
-      tar: 6.2.1
-      tmp: 0.2.3
-      tslib: 2.7.0
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
