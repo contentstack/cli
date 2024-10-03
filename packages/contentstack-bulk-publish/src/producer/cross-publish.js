@@ -52,7 +52,7 @@ async function bulkAction(stack, items, bulkPublish, filter, destEnv, apiVersion
           if (variantsFlag) {
             entry.variants = items[index].data.variants || [];
             entry.variant_rules = {
-              publish_latest_base: true,
+              publish_latest_base: false,
               publish_latest_base_conditionally: true
             };
           }
@@ -281,7 +281,7 @@ async function getVariantEntries(stack, contentType, entries, index, queryParams
       .find();
 
     const variants = variantsEntriesResponse.items.map((entry) => ({
-      uid: entry.variants_uid,
+      uid: entry.variants._variant._uid,
     }));
 
     if (variantsEntriesResponse.items.length === variantQueryParams.limit) {
