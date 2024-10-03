@@ -51,9 +51,9 @@ let errorLogger: winston.Logger;
 let successTransport;
 let errorTransport;
 
-function init(_logPath: string) {
+function init(_logPath: string, module: string) {
   if (!logger || !errorLogger) {
-    const logsDir = path.resolve(sanitizePath(_logPath), 'logs', 'export');
+    const logsDir = path.resolve(sanitizePath(_logPath), 'logs', module);
     // Create dir if doesn't already exist
     mkdirp.sync(logsDir);
 
@@ -131,11 +131,12 @@ function init(_logPath: string) {
 export const log = (config: ExportConfig | ImportConfig, message: any, type: 'info' | 'error' | 'success') => {
   const logsPath = config.data;
   // ignoring the type argument, as we are not using it to create a logfile anymore
+  const module = (config as ImportConfig)['backupDir'] ? 'import' : 'export';
   if (type !== 'error') {
     // removed type argument from init method
-    init(logsPath).log(message);
+    init(logsPath, module).log(message);
   } else {
-    init(logsPath).error(message);
+    init(logsPath, module).error(message);
   }
 };
 
