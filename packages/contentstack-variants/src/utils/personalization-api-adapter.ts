@@ -1,5 +1,5 @@
 import { AdapterHelper } from './adapter-helper';
-import { HttpClient } from '@contentstack/cli-utilities';
+import { HttpClient, authenticationHandler } from '@contentstack/cli-utilities';
 
 import {
   ProjectStruct,
@@ -31,10 +31,27 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     super(options);
   }
 
+  async init(): Promise<void> {
+    await authenticationHandler.getAuthDetails();
+    const token = authenticationHandler.accessToken;
+    if (authenticationHandler.isOauthEnabled) {
+      this.apiClient.headers({ authorization: token });
+      if(this.adapterConfig.cmaConfig) {
+        this.cmaAPIClient?.headers({ authorization: token });
+      }
+    } else {
+      this.apiClient.headers({ authtoken: token });
+      if(this.adapterConfig.cmaConfig) {
+        this.cmaAPIClient?.headers({ authtoken: token });
+      }
+    }
+  }
+
   async projects(options: GetProjectsParams): Promise<ProjectStruct[]> {
+    await this.init();
     const getProjectEndPoint = `/projects?connectedStackApiKey=${options.connectedStackApiKey}`;
     const data = await this.apiClient.get(getProjectEndPoint);
-    return this.handleVariantAPIRes(data) as ProjectStruct[];
+    return (await this.handleVariantAPIRes(data)) as ProjectStruct[];
   }
 
   /**
@@ -49,7 +66,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    */
   async createProject(project: CreateProjectInput): Promise<ProjectStruct> {
     const data = await this.apiClient.post<ProjectStruct>('/projects', project);
-    return this.handleVariantAPIRes(data) as ProjectStruct;
+    return (await this.handleVariantAPIRes(data)) as ProjectStruct;
   }
 
   /**
@@ -63,25 +80,25 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    */
   async createAttribute(attribute: CreateAttributeInput): Promise<AttributeStruct> {
     const data = await this.apiClient.post<AttributeStruct>('/attributes', attribute);
-    return this.handleVariantAPIRes(data) as AttributeStruct;
+    return (await this.handleVariantAPIRes(data)) as AttributeStruct;
   }
 
   async getExperiences(): Promise<ExperienceStruct[]> {
     const getExperiencesEndPoint = `/experiences`;
     const data = await this.apiClient.get(getExperiencesEndPoint);
-    return this.handleVariantAPIRes(data) as ExperienceStruct[];
+    return (await this.handleVariantAPIRes(data)) as ExperienceStruct[];
   }
 
   async getExperience(experienceUid: string): Promise<ExperienceStruct | void> {
     const getExperiencesEndPoint = `/experiences/${experienceUid}`;
     const data = await this.apiClient.get(getExperiencesEndPoint);
-    return this.handleVariantAPIRes(data) as ExperienceStruct;
+    return (await this.handleVariantAPIRes(data)) as ExperienceStruct;
   }
 
   async getExperienceVersions(experienceUid: string): Promise<ExperienceStruct | void> {
     const getExperiencesVersionsEndPoint = `/experiences/${experienceUid}/versions`;
     const data = await this.apiClient.get(getExperiencesVersionsEndPoint);
-    return this.handleVariantAPIRes(data) as ExperienceStruct;
+    return (await this.handleVariantAPIRes(data)) as ExperienceStruct;
   }
 
   async createExperienceVersion(
@@ -90,7 +107,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
   ): Promise<ExperienceStruct | void> {
     const createExperiencesVersionsEndPoint = `/experiences/${experienceUid}/versions`;
     const data = await this.apiClient.post(createExperiencesVersionsEndPoint, input);
-    return this.handleVariantAPIRes(data) as ExperienceStruct;
+    return (await this.handleVariantAPIRes(data)) as ExperienceStruct;
   }
 
   async updateExperienceVersion(
@@ -104,7 +121,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     }
     const updateExperiencesVersionsEndPoint = `/experiences/${experienceUid}/versions/${versionId}`;
     const data = await this.apiClient.put(updateExperiencesVersionsEndPoint, input);
-    return this.handleVariantAPIRes(data) as ExperienceStruct;
+    return (await this.handleVariantAPIRes(data)) as ExperienceStruct;
   }
 
   async getVariantGroup(input: GetVariantGroupInput): Promise<VariantGroupStruct | void> {
@@ -113,7 +130,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
       const data = await this.cmaAPIClient
         .queryParams({ experience_uid: input.experienceUid })
         .get(getVariantGroupEndPoint);
-      return this.handleVariantAPIRes(data) as VariantGroupStruct;
+      return (await this.handleVariantAPIRes(data)) as VariantGroupStruct;
     }
   }
 
@@ -121,28 +138,28 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     if (this.cmaAPIClient) {
       const updateVariantGroupEndPoint = `/variant_groups/${input.uid}`;
       const data = await this.cmaAPIClient.put(updateVariantGroupEndPoint, input);
-      return this.handleVariantAPIRes(data) as VariantGroup;
+      return (await this.handleVariantAPIRes(data)) as VariantGroup;
     }
   }
 
   async getEvents(): Promise<EventStruct[] | void> {
     const data = await this.apiClient.get<EventStruct>('/events');
-    return this.handleVariantAPIRes(data) as EventStruct[];
+    return (await this.handleVariantAPIRes(data)) as EventStruct[];
   }
 
   async createEvents(event: CreateEventInput): Promise<void | EventStruct> {
     const data = await this.apiClient.post<EventStruct>('/events', event);
-    return this.handleVariantAPIRes(data) as EventStruct;
+    return (await this.handleVariantAPIRes(data)) as EventStruct;
   }
 
   async getAudiences(): Promise<AudienceStruct[] | void> {
     const data = await this.apiClient.get<AudienceStruct>('/audiences');
-    return this.handleVariantAPIRes(data) as AudienceStruct[];
+    return (await this.handleVariantAPIRes(data)) as AudienceStruct[];
   }
 
   async getAttributes(): Promise<AttributeStruct[] | void> {
     const data = await this.apiClient.get<AttributeStruct>('/attributes');
-    return this.handleVariantAPIRes(data) as AttributeStruct[];
+    return (await this.handleVariantAPIRes(data)) as AttributeStruct[];
   }
 
   /**
@@ -155,7 +172,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    */
   async createAudience(audience: CreateAudienceInput): Promise<void | AudienceStruct> {
     const data = await this.apiClient.post<AudienceStruct>('/audiences', audience);
-    return this.handleVariantAPIRes(data) as AudienceStruct;
+    return (await this.handleVariantAPIRes(data)) as AudienceStruct;
   }
 
   /**
@@ -168,7 +185,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    */
   async createExperience(experience: CreateExperienceInput): Promise<void | ExperienceStruct> {
     const data = await this.apiClient.post<ExperienceStruct>('/experiences', experience);
-    return this.handleVariantAPIRes(data) as ExperienceStruct;
+    return (await this.handleVariantAPIRes(data)) as ExperienceStruct;
   }
 
   /**
@@ -182,7 +199,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
   ): Promise<void | CMSExperienceStruct> {
     const updateCTInExpEndPoint = `/experiences/${experienceUid}/cms-integration/variant-group`;
     const data = await this.apiClient.post<CMSExperienceStruct>(updateCTInExpEndPoint, experience);
-    return this.handleVariantAPIRes(data) as CMSExperienceStruct;
+    return (await this.handleVariantAPIRes(data)) as CMSExperienceStruct;
   }
 
   /**
@@ -193,7 +210,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
   async getCTsFromExperience(experienceUid: string): Promise<void | CMSExperienceStruct> {
     const getCTFromExpEndPoint = `/experiences/${experienceUid}/cms-integration/variant-group`;
     const data = await this.apiClient.get<CMSExperienceStruct>(getCTFromExpEndPoint);
-    return this.handleVariantAPIRes(data) as CMSExperienceStruct;
+    return (await this.handleVariantAPIRes(data)) as CMSExperienceStruct;
   }
 
   /**
@@ -202,16 +219,22 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    * @returns The variant API response data.
    * @throws If the API response status is not within the success range, an error message is thrown.
    */
-  handleVariantAPIRes(res: APIResponse): VariantAPIRes {
+  async handleVariantAPIRes(res: APIResponse): Promise<VariantAPIRes> {
     const { status, data } = res;
 
     if (status >= 200 && status < 300) {
       return data;
     }
-    
+
+    // Refresh the access token if it has expired
+    await authenticationHandler.refreshAccessToken(res);
+
     const errorMsg = data?.errors
       ? formatErrors(data.errors)
-      : data?.error || data?.error_message || data?.message || 'Something went wrong while processing variant entries request!';
+      : data?.error ||
+        data?.error_message ||
+        data?.message ||
+        'Something went wrong while processing variant entries request!';
 
     throw errorMsg;
   }

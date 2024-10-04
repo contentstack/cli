@@ -50,7 +50,6 @@ export type PublishVariantEntryDto = {
   entry: {
     environments: string[];
     locales: string[];
-    publish_with_base_entry: boolean;
     variants: {
       uid: string;
       version?: number;
