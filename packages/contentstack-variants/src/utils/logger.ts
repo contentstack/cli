@@ -53,7 +53,7 @@ let errorTransport;
 
 function init(_logPath: string, module: string) {
   if (!logger || !errorLogger) {
-    const logsDir = path.resolve(sanitizePath(_logPath), 'logs', module);
+    const logsDir = path.resolve(sanitizePath(_logPath), 'logs', sanitizePath(module));
     // Create dir if doesn't already exist
     mkdirp.sync(logsDir);
 
