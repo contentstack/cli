@@ -20,19 +20,15 @@ export interface Region {
   launchHubUrl: string;
 }
 
+export interface Limit {
+  value: number;
+  utilize: number;
+}
+
 export interface RateLimitConfig {
-  getLimit?: {
-    value: number;
-    utilize: number;
-  };
-  limit?: {
-    value: number;
-    utilize: number;
-  };
-  bulkLimit?: {
-    value: number;
-    utilize: number;
-  };
+  getLimit?: Limit;
+  limit?: Limit
+  bulkLimit?: Limit
 }
 
 export interface SetRateLimitConfig {
