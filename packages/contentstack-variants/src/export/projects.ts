@@ -11,7 +11,7 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
     super({
       config: exportConfig,
       baseURL: exportConfig.modules.personalize.baseURL[exportConfig.region.name],
-      headers: { authtoken: exportConfig.auth_token, organization_uid: exportConfig.org_uid },
+      headers: { organization_uid: exportConfig.org_uid },
     });
     this.exportConfig = exportConfig;
     this.personalizeConfig = exportConfig.modules.personalize;
@@ -26,6 +26,7 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
   async start() {
     try {
       log(this.exportConfig, 'Starting projects export', 'info');
+      await this.init();
       await fsUtil.makeDirectory(this.projectFolderPath);
       const project = await this.projects({ connectedStackApiKey: this.exportConfig.apiKey });
       if (!project || project?.length < 1) {
