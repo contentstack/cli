@@ -19,22 +19,36 @@ describe('Region command', function () {
     personalizeUrl: 'https://personalization-api.contentstack.com',
   };
   let cliuxPrintStub;
+  let configGetStub;
+  let configSetStub;
   beforeEach(function () {
-    config.set('region', region.name);
+    configGetStub = sinon.stub(config, 'get').callsFake((key) => {
+      if (key === 'region') return region.name;
+      return undefined;
+    });
+    configSetStub = sinon.stub(config, 'set').callsFake(function (key, value) {
+      this[key] = value;
+      return this;
+    });
     cliuxPrintStub = sinon.stub(cliux, 'print').callsFake(function () {});
   });
   afterEach(function () {
     cliuxPrintStub.restore();
+    configGetStub.restore();
+    configSetStub.restore();
   });
   it('Get region, should print region', async function () {
     await GetRegionCommand.run([]);
     expect(cliuxPrintStub.callCount).to.equal(7);
   });
   it('should log an error and exit when the region is not set', async function () {
+    configGetStub.callsFake((key) => {
+      if (key === 'region') return undefined;
+      return undefined;
+    });
     sinon.stub(process, 'exit').callsFake((code) => {
       throw new Error(`CLI_CONFIG_GET_REGION_NOT_FOUND EEXIT: ${code}`);
     });
-    config.delete('region');
     let result;
     try {
       await GetRegionCommand.run([]);
@@ -49,7 +63,10 @@ describe('Region command', function () {
   });
 
   it('should get the default region if none is set', function () {
-    config.delete('region');
+    configGetStub.callsFake((key) => {
+      if (key === 'region') return undefined;
+      return undefined;
+    });
     const region = UserConfig.getRegion();
     expect(region).to.have.property('name', 'NA');
   });
@@ -113,7 +130,6 @@ describe('Region Handler', function () {
     inquireStub.returns(Promise.resolve('NA'));
     const result = await askRegions();
     expect(result).to.equal('NA');
-    inquireStub.restore();
   });
 
   it('askCustomRegion should return custom region details', async function () {
