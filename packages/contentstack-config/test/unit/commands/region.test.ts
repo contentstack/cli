@@ -1,8 +1,7 @@
-import { expect, should } from 'chai';
+import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { configHandler } from '@contentstack/cli-utilities';
 import GetRegionCommand from '../../../src/commands/config/get/region';
-import SetRegionCommand from '../../../src/commands/config/set/region';
 import { cliux } from '@contentstack/cli-utilities';
 import { Region } from '../../../src/interfaces';
 
@@ -13,9 +12,9 @@ describe('Region command', function () {
     cma: 'https://api.contentstack.com',
     cda: 'https://cda.contentstack.com',
     uiHost: '',
-    'developerHubUrl': 'https://developerhub-api.contentstack.com',
-    'launchHubUrl': 'https://launch-api.contentstack.com',
-    'personalizeUrl': 'https://personalization-api.contentstack.com',
+    developerHubUrl: 'https://developerhub-api.contentstack.com',
+    launchHubUrl: 'https://launch-api.contentstack.com',
+    personalizeUrl: 'https://personalization-api.contentstack.com',
   };
   let cliuxPrintStub;
   beforeEach(function () {
@@ -27,17 +26,20 @@ describe('Region command', function () {
   });
   it('Get region, should print region', async function () {
     await GetRegionCommand.run([]);
-    expect(cliuxPrintStub.calledThrice).to.be.true;
+    expect(cliuxPrintStub.callCount).to.equal(7);
   });
-  it('Get region by not setting the region, should throw an error', async function () {
+  it('should log an error and exit when the region is not set', async function () {
+    sinon.stub(process, 'exit').callsFake((code) => {
+      throw new Error(`CLI_CONFIG_GET_REGION_NOT_FOUND EEXIT: ${code}`);
+    });
     config.delete('region');
     let result;
     try {
-      result = await GetRegionCommand.run([]);
+      await GetRegionCommand.run([]);
     } catch (error) {
       result = error;
     }
-    expect(result).instanceOf(Error);
+    expect(result.message).to.include('CLI_CONFIG_GET_REGION_NOT_FOUND EEXIT: 1');
   });
   //   it('Set custom region, should be successful', async function () {});
   //   it('Set region by flag, should be successful', async function () {});
