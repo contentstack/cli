@@ -5,6 +5,7 @@ import GetRegionCommand from '../../../src/commands/config/get/region';
 import { cliux } from '@contentstack/cli-utilities';
 import { Region } from '../../../src/interfaces';
 import UserConfig from '../../../src/utils/region-handler';
+import { askCustomRegion, askRegions } from '../../../src/utils/interactive';
 
 const config = configHandler;
 describe('Region command', function () {
@@ -97,4 +98,36 @@ describe('Region command', function () {
   //   it('Set region by flag, should be successful', async function () {});
   //   it('Set region by flag not existing, should throw an error', async function () {});
   //   it('Set region without flag, should set the default', async function () {});
+});
+
+describe('Region Handler', function () {
+  let inquireStub;
+  beforeEach(function () {
+    inquireStub = sinon.stub(cliux, 'inquire');
+  });
+  afterEach(function () {
+    inquireStub.restore();
+  });
+
+  it('askRegions should return selected region', async function () {
+    inquireStub.returns(Promise.resolve('NA'));
+    const result = await askRegions();
+    expect(result).to.equal('NA');
+    inquireStub.restore();
+  });
+
+  it('askCustomRegion should return custom region details', async function () {
+    inquireStub.returns(Promise.resolve('Custom Region'));
+    inquireStub.onCall(1).returns(Promise.resolve('https://custom-cma.com'));
+    inquireStub.onCall(2).returns(Promise.resolve('https://custom-cda.com'));
+    inquireStub.onCall(3).returns(Promise.resolve('https://custom-ui.com'));
+
+    const result = await askCustomRegion();
+    expect(result).to.deep.equal({
+      name: 'Custom Region',
+      cma: 'https://custom-cma.com',
+      cda: 'https://custom-cda.com',
+      uiHost: 'https://custom-ui.com',
+    });
+  });
 });
