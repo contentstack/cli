@@ -131,6 +131,13 @@ export function entryUpdateScript(contentType) {
           parent.pop();
         }
         if (
+          schema[i].data_type === 'json' &&
+          schema[i].field_metadata.extension &&
+          schema[i].field_metadata.is_asset
+        ) {
+          fetchAssetFromFileFields(parent,schema[i],entry);
+        }
+        if (
           schema[i].data_type === 'text' &&
           schema[i].field_metadata &&
           (schema[i].field_metadata.markdown || schema[i].field_metadata.rich_text_type)
@@ -143,44 +150,48 @@ export function entryUpdateScript(contentType) {
           parent.pop();
         }
         if (schema[i].data_type === 'file') {
-          parent.push(schema[i].uid);
-          let updatedEntry = entry;
-          for (let i = 0; i < parent.length; i++) {
-            updatedEntry = updatedEntry[parent[i]];
-          }
-          const imgDetails = updatedEntry;
-          if (schema[i].multiple) {
-            if (imgDetails && imgDetails.length) {
-              imgDetails.forEach((img) => {
-                const obj = {
-                  uid: img.uid,
-                  parent_uid: img.parent_uid,
-                  description: img.description,
-                  title: img.title,
-                  filename: img.filename,
-                  url: img.url,
-                };
-                assetDetails.push(obj);
-              });
-            }
-          } else {
-            if (imgDetails) {
-              const obj = {
-                uid: imgDetails.uid,
-                parent_uid: imgDetails.parent_uid,
-                description: imgDetails.description,
-                title: imgDetails.title,
-                filename: imgDetails.filename,
-                url: imgDetails.url,
-              };
-              assetDetails.push(obj);
-            }
-          }
-          parent.pop();
+          fetchAssetFromFileFields(parent,schema[i],entry);
         }
       }
     };
-  
+
+    function fetchAssetFromFileFields (parent, schema, entry) {
+      parent.push(schema.uid);
+      let updatedEntry = entry;
+      for (let i = 0; i < parent.length; i++) {
+        updatedEntry = updatedEntry[parent[i]];
+      }
+      const imgDetails = updatedEntry;
+      if (schema.multiple) {
+        if (imgDetails && imgDetails.length) {
+          imgDetails.forEach((img) => {
+            const obj = {
+              uid: img.uid,
+              parent_uid: img.parent_uid,
+              description: img.description,
+              title: img.title,
+              filename: img.filename,
+              url: img.url,
+            };
+            assetDetails.push(obj);
+          });
+        }
+      } else {
+        if (imgDetails) {
+          const obj = {
+            uid: imgDetails.uid,
+            parent_uid: imgDetails.parent_uid,
+            description: imgDetails.description,
+            title: imgDetails.title,
+            filename: imgDetails.filename,
+            url: imgDetails.url,
+          };
+          assetDetails.push(obj);
+        }
+      }
+      parent.pop();
+    }
+    
     function findAssetIdsFromHtmlRte(entryObj, ctSchema) {
       const regex = /<img asset_uid=\\"([^"]+)\\"/g;
       let match;

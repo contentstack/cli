@@ -49,7 +49,7 @@ export type Modules =
   | 'labels'
   | 'marketplace-apps'
   | 'taxonomies'
-  | 'personalization'
+  | 'personalize'
   | 'variant-entries';
 
 export type ModuleClassParams = {
