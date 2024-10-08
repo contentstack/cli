@@ -9,19 +9,23 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
   private eventMapperDirPath: string;
   private eventsUidMapperPath: string;
   private eventsUidMapper: Record<string, unknown>;
-  private personalizationConfig: ImportConfig['modules']['personalization'];
-  private eventsConfig: ImportConfig['modules']['personalization']['events'];
+  private personalizeConfig: ImportConfig['modules']['personalize'];
+  private eventsConfig: ImportConfig['modules']['personalize']['events'];
 
   constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
     const conf: APIConfig = {
       config,
-      baseURL: config.modules.personalization.baseURL[config.region.name],
-      headers: { 'X-Project-Uid': config.modules.personalization.project_id, authtoken: config.auth_token },
+      baseURL: config.modules.personalize.baseURL[config.region.name],
+      headers: { 'X-Project-Uid': config.modules.personalize.project_id, authtoken: config.auth_token },
     };
     super(Object.assign(config, conf));
-    this.personalizationConfig = this.config.modules.personalization;
-    this.eventsConfig = this.personalizationConfig.events;
-    this.mapperDirPath = resolve(sanitizePath(this.config.backupDir), 'mapper', sanitizePath(this.personalizationConfig.dirName));
+    this.personalizeConfig = this.config.modules.personalize;
+    this.eventsConfig = this.personalizeConfig.events;
+    this.mapperDirPath = resolve(
+      sanitizePath(this.config.backupDir),
+      'mapper',
+      sanitizePath(this.personalizeConfig.dirName),
+    );
     this.eventMapperDirPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.eventsConfig.dirName));
     this.eventsUidMapperPath = resolve(sanitizePath(this.eventMapperDirPath), 'uid-mapping.json');
     this.eventsUidMapper = {};
@@ -35,7 +39,12 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
 
     await fsUtil.makeDirectory(this.eventMapperDirPath);
     const { dirName, fileName } = this.eventsConfig;
-    const eventsPath = resolve(sanitizePath(this.config.data), sanitizePath(this.personalizationConfig.dirName), sanitizePath(dirName), sanitizePath(fileName));
+    const eventsPath = resolve(
+      sanitizePath(this.config.data),
+      sanitizePath(this.personalizeConfig.dirName),
+      sanitizePath(dirName),
+      sanitizePath(fileName),
+    );
 
     if (existsSync(eventsPath)) {
       try {
@@ -43,8 +52,13 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
 
         for (const event of events) {
           const { key, description, uid } = event;
-          const eventsResponse = await this.createEvents({ key, description });
-          this.eventsUidMapper[uid] = eventsResponse?.uid ?? '';
+          try {
+            const eventsResponse = await this.createEvents({ key, description });
+            this.eventsUidMapper[uid] = eventsResponse?.uid ?? '';
+          } catch (error) {
+            this.log(this.config, `failed to create event uid: ${uid}`, 'error');
+            this.log(this.config, error, 'error');
+          }
         }
 
         fsUtil.writeFile(this.eventsUidMapperPath, this.eventsUidMapper);
