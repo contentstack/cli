@@ -33,7 +33,7 @@ const config: DefaultConfig = {
       'marketplace-apps',
       'global-fields',
       'content-types',
-      'personalization',
+      'personalize',
       'custom-roles',
       'workflows',
       'entries',
@@ -151,12 +151,12 @@ const config: DefaultConfig = {
       dirName: 'taxonomies',
       fileName: 'taxonomies.json',
     },
-    personalization: {
+    personalize: {
       baseURL: {
-        NA: 'https://personalization-api.contentstack.com',
+        NA: 'https://personalize-api.contentstack.com',
       },
       importData: true,
-      dirName: 'personalization',
+      dirName: 'personalize',
       importOrder: ['attributes', 'audiences', 'events', 'experiences'],
       project_id: '',
       projects: {
