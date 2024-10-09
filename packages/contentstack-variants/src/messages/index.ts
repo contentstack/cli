@@ -13,6 +13,7 @@ const migrationMsg = {
 };
 
 const variantEntry = {
+  VARIANT_ENTRY_FILE_NOT_FOUND: 'Variant entry file not found!',
   IMPORT_ENTRY_NOT_FOUND: 'Entries data not found to import variant entries',
   EMPTY_VARIANT_UID_DATA: 'Empty variants entry mapper found!',
   VARIANT_ID_NOT_FOUND: 'Variant ID not found',
