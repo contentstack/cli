@@ -14,6 +14,13 @@ export interface PrintOptions {
   color?: string;
 }
 
+export interface Region {
+  name: string;
+  cma: string;
+  cda: string;
+  uiHost: string;
+}
+
 export interface InquirePayload {
   type: string;
   name: string;
@@ -41,7 +48,9 @@ export type Modules =
   | 'workflows'
   | 'labels'
   | 'marketplace-apps'
-  | 'taxonomies';
+  | 'taxonomies'
+  | 'personalize'
+  | 'variant-entries';
 
 export type ModuleClassParams = {
   stackAPIClient: ReturnType<ContentstackClient['stack']>;
@@ -90,7 +99,7 @@ export interface CustomRoleConfig {
   customRolesLocalesFileName: string;
 }
 
-export interface TaxonomiesConfig{
+export interface TaxonomiesConfig {
   dirName: string;
   fileName: string;
   dependencies?: Modules[];
@@ -99,11 +108,11 @@ export interface TaxonomiesConfig{
 export { default as DefaultConfig } from './default-config';
 export { default as ImportConfig } from './import-config';
 
-export * from './entries'
-export * from './marketplace-app'
+export * from './entries';
+export * from './marketplace-app';
 
-export type ExtensionType  = {
-  uid: string,
-  scope: Record<string,unknown>,
-  title: string
-}
+export type ExtensionType = {
+  uid: string;
+  scope: Record<string, unknown>;
+  title: string;
+};
