@@ -25,6 +25,7 @@ describe('contentstack-auth plugin test', () => {
 
   describe('Check auth:login command with wrong credentials', () => {
     test
+    .loadConfig({ root: process.cwd() })
       // @ts-ignore
       .stub(CliUx, 'inquire', async (inquire) => {
         switch (inquire.name) {
@@ -34,24 +35,27 @@ describe('contentstack-auth plugin test', () => {
             return 'WrongPassword@12345%$#@!'; // NOTE forcing wrong password
         }
       })
+      .stub(process,'exit',()=>{})
       .stdout({ print: PRINT_LOGS || false })
       .command(['auth:login'])
       .it('Login should fail due to wrong credentials.!', (ctx) => {
-        expect(ctx.stdout).to.a('string').includes('Login Error\nLooks like your email or password is invalid');
+        expect(ctx.stdout).to.be.includes('Login Error\nLooks like your email or password is invalid. Please try again or reset your password.');
       });
   });
 
   describe('Check auth:login command with --username, --password flags and wrong credentials', () => {
-    test
+    test.loadConfig({ root: process.cwd() })
       .stdout({ print: PRINT_LOGS || false })
+      .stub(process,'exit',()=>{})
       .command(['auth:login', `--username=${username}`, '--password=WrongPassword@12345%$#@!'])
       .it('Login should fail due to wrong credentials.!', (ctx) => {
-        expect(ctx.stdout).to.a('string').includes('Login Error\nLooks like your email or password is invalid');
+        expect(ctx.stdout).to.a('string').includes('Login Error\nLooks like your email or password is invalid. Please try again or reset your password.');
       });
   });
 
+  //NOTE
   describe('Check auth:login command with correct credentials.', () => {
-    test
+    test.loadConfig({ root: process.cwd() })
       // @ts-ignore
       .stub(CliUx, 'inquire', async (inquire) => {
         switch (inquire.name) {
@@ -69,17 +73,17 @@ describe('contentstack-auth plugin test', () => {
   });
 
   describe('Check auth:logout command', () => {
-    test
+    test.loadConfig({ root: process.cwd() })
       .stub(CliUx, 'inquire', async () => 'Yes')
       .stdout({ print: PRINT_LOGS || false })
-      .command(['auth:logout'])
+      .command(['auth:logout','--yes'])
       .it('Logout should succeed.!', (ctx) => {
         expect(ctx.stdout).to.a('string').includes('Successfully logged out');
       });
   });
 
   describe('Check auth:login command with --username, --password flags', () => {
-    test
+    test.loadConfig({ root: process.cwd() })
       .stdout({ print: PRINT_LOGS || false })
       .command(['auth:login', `-u=${username}`, `-p=${password}`])
       .it('Login should succeed!', (ctx) => {
@@ -95,7 +99,7 @@ describe('contentstack-auth plugin test', () => {
     after(() => {
       mail = '';
     });
-    test
+    test.loadConfig({ root: process.cwd() })
       .stdout({ print: PRINT_LOGS || false })
       .command(['whoami'])
       .it('shows user email who logged in', (ctx) => {
