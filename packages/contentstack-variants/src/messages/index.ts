@@ -23,7 +23,7 @@ const expImportMsg = {
   UPDATING_CT_IN_EXP: 'Updating content types in experiences...',
   UPDATED_CT_IN_EXP: 'Successfully updated content types in experiences!',
   VALIDATE_VARIANT_AND_VARIANT_GRP: 'Validating variant group and variants creation...',
-  PERSONALIZE_JOB_FAILURE: 'Something went wrong with personalize background job! Failed to fetch some variant & variant groups',
+  PERSONALIZE_JOB_FAILURE: 'Something went wrong! Failed to fetch some variant and variant groups.',
 };
 
 const messages: typeof errors & typeof commonMsg & typeof migrationMsg & typeof variantEntry & typeof expImportMsg = {
