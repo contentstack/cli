@@ -45,10 +45,10 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     const conf: APIConfig = {
       config,
       baseURL: config.modules.personalize.baseURL[config.region.name],
-      headers: { 'X-Project-Uid': config.modules.personalize.project_id, authtoken: config.auth_token },
+      headers: { 'X-Project-Uid': config.modules.personalize.project_id},
       cmaConfig: {
         baseURL: config.region.cma + `/v3`,
-        headers: { authtoken: config.auth_token, api_key: config.apiKey },
+        headers: { api_key: config.apiKey },
       },
     };
     super(Object.assign(config, conf));
@@ -107,7 +107,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
    */
   async import() {
     this.log(this.config, this.$t(this.messages.IMPORT_MSG, { module: 'Experiences' }), 'info');
-
+    await this.init();
     await fsUtil.makeDirectory(this.expMapperDirPath);
 
     if (existsSync(this.experiencesPath)) {

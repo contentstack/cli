@@ -11,10 +11,10 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
     super({
       config: exportConfig,
       baseURL: exportConfig.modules.personalize.baseURL[exportConfig.region.name],
-      headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
+      headers: { 'X-Project-Uid': exportConfig.project_id },
       cmaConfig: {
         baseURL: exportConfig.region.cma + `/v3`,
-        headers: { authtoken: exportConfig.auth_token, api_key: exportConfig.apiKey },
+        headers: { api_key: exportConfig.apiKey },
       },
     });
     this.exportConfig = exportConfig;
@@ -33,6 +33,7 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
       // loop through experiences and get content types attached to it
       // write experiences in to a file
       log(this.exportConfig, 'Starting experiences export', 'info');
+      await this.init();
       await fsUtil.makeDirectory(this.experiencesFolderPath);
       await fsUtil.makeDirectory(path.resolve(sanitizePath(this.experiencesFolderPath), 'versions'));
       const experiences: Array<ExperienceStruct> = (await this.getExperiences()) || [];
