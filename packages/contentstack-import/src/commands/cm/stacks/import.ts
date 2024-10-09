@@ -106,12 +106,16 @@ export default class ImportCommand extends Command {
       default: false,
       description: 'Skips the module exists warning messages.',
     }),
+    'personalize-project-name': flags.string({
+      required: false,
+      description: 'Personalize project name.',
+    }),
     'skip-audit': flags.boolean({
       description: 'Skips the audit fix.',
     }),
     'exclude-global-modules': flags.boolean({
       description: 'Excludes the branch-independent module from the import operation',
-      default: false
+      default: false,
     }),
   };
 
@@ -130,7 +134,9 @@ export default class ImportCommand extends Command {
       let importConfig = await setupImportConfig(flags);
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;
+      importConfig.region = this.region;
       importConfig.developerHubBaseUrl = this.developerHubUrl;
+      if (this.personalizeUrl) importConfig.modules.personalize.baseURL[importConfig.region.name] = this.personalizeUrl;
       backupDir = importConfig.cliLogsPath || importConfig.backupDir;
 
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);

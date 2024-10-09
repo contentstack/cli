@@ -33,9 +33,11 @@ const config: DefaultConfig = {
       'marketplace-apps',
       'global-fields',
       'content-types',
+      'personalize',
       'custom-roles',
       'workflows',
       'entries',
+      'variant-entries',
       'labels',
       'webhooks',
     ],
@@ -148,6 +150,45 @@ const config: DefaultConfig = {
     taxonomies: {
       dirName: 'taxonomies',
       fileName: 'taxonomies.json',
+    },
+    personalize: {
+      baseURL: {
+        NA: 'https://personalize-api.contentstack.com',
+      },
+      importData: true,
+      dirName: 'personalize',
+      importOrder: ['attributes', 'audiences', 'events', 'experiences'],
+      project_id: '',
+      projects: {
+        dirName: 'projects',
+        fileName: 'projects.json',
+      },
+      attributes: {
+        dirName: 'attributes',
+        fileName: 'attributes.json',
+      },
+      audiences: {
+        dirName: 'audiences',
+        fileName: 'audiences.json',
+      },
+      events: {
+        dirName: 'events',
+        fileName: 'events.json',
+      },
+      experiences: {
+        dirName: 'experiences',
+        fileName: 'experiences.json',
+        thresholdTimer: 60000,
+        checkIntervalDuration: 10000,
+      },
+    },
+    variantEntry: {
+      dirName: 'variants',
+      fileName: 'index.json',
+      apiConcurrency: 5,
+      query: {
+        locale: 'en-us',
+      },
     },
   },
   languagesCode: [

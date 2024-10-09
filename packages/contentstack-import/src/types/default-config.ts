@@ -1,5 +1,9 @@
 import { Modules } from '.';
 
+export interface AnyProperty {
+  [propName: string]: any;
+}
+
 export default interface DefaultConfig {
   versioning: boolean;
   host: string;
@@ -118,6 +122,43 @@ export default interface DefaultConfig {
       fileName: string;
       dependencies?: Modules[];
     };
+    personalize: {
+      baseURL: Record<string, string>;
+      dirName: string;
+      importData: boolean;
+      importOrder: string[];
+      project_id?: string;
+      projects: {
+        dirName: string;
+        fileName: string;
+      };
+      attributes: {
+        dirName: string;
+        fileName: string;
+      };
+      audiences: {
+        dirName: string;
+        fileName: string;
+      };
+      events: {
+        dirName: string;
+        fileName: string;
+      };
+      experiences: {
+        dirName: string;
+        fileName: string;
+        thresholdTimer: number;
+        checkIntervalDuration: number;
+      };
+    };
+    variantEntry: {
+      dirName: string;
+      fileName: string;
+      apiConcurrency: number;
+      query: {
+        locale: string;
+      } & AnyProperty;
+    } & AnyProperty;
   };
   languagesCode: string[];
   apis: {
