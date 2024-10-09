@@ -12,8 +12,8 @@ export const lookUpAttributes = (attributeRules: Record<string, any>[], attribut
       // Check if attribute reference exists in attributesUid
       const attributeRef = rule.attribute?.ref;
       const attributeType = rule.attribute['__type'];
-      // check if type is UserAttributeReference
-      if (attributeType === 'UserAttributeReference') {
+      // check if type is CustomAttributeReference
+      if (attributeType === 'CustomAttributeReference') {
         if (attributeRef && attributesUid.hasOwnProperty(attributeRef) && attributesUid[attributeRef]) {
           rule.attribute.ref = attributesUid[attributeRef];
         } else {

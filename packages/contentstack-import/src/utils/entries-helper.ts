@@ -548,11 +548,17 @@ export const restoreJsonRteEntryRefs = (
             });
           } else {
             entry[element.uid] = restoreReferenceInJsonRTE(sourceStackEntry[element.uid], uidMapper);
-            entry[element.uid].children = entry[element.uid].children.map((child: any) => {
-              child = setDirtyTrue(child);
-              child = resolveAssetRefsInEntryRefsForJsonRte(child, mappedAssetUids, mappedAssetUrls);
-              return child;
-            });
+            if (entry[element.uid].children && entry[element.uid].children.length > 0) {
+              entry[element.uid].children = entry[element.uid].children.map((child: any) => {
+                child = setDirtyTrue(child);
+                child = resolveAssetRefsInEntryRefsForJsonRte(child, mappedAssetUids, mappedAssetUrls);
+                return child;
+              });
+            } else {
+              entry[element.uid].children = [
+                { type: 'p', attrs: { style: {}, 'redactor-attributes': {}, dir: 'ltr' } },
+              ];
+            }
           }
         }
         break;

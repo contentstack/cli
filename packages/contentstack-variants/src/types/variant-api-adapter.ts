@@ -42,6 +42,8 @@ export type VariantOptions = VariantsOption & {
 };
 
 export interface VariantInterface<T, ApiClient> extends AdapterHelperInterface<T, ApiClient> {
+  init(): Promise<void>;
+
   variantEntry(options: VariantOptions): Promise<{ entry: Record<string, any> }>;
 
   variantEntries(options: VariantsOption): Promise<{ entries?: Record<string, any>[] | unknown[] } | void>;
@@ -52,5 +54,5 @@ export interface VariantInterface<T, ApiClient> extends AdapterHelperInterface<T
     apiParams: Record<string, any>,
   ): Promise<VariantEntryStruct | string | void>;
 
-  handleVariantAPIRes(res: APIResponse): VariantEntryStruct | { entries: VariantEntryStruct[]; count: number } | string;
+  handleVariantAPIRes(res: APIResponse): Promise<VariantEntryStruct | { entries: VariantEntryStruct[]; count: number } | string>;
 }
