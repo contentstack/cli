@@ -138,7 +138,9 @@ export default class ExportMarketplaceApps {
    */
   async getAppConfigurations(index: number, appInstallation: any) {
     const appName = appInstallation?.manifest?.name;
-    log(this.exportConfig, `Exporting ${appName} app and it's config.`, 'info');
+    const appUid = appInstallation?.manifest?.uid;
+    const app = appName || appUid;
+    log(this.exportConfig, `Exporting ${app} app and it's config.`, 'info');
 
     await this.appSdk
       .marketplace(this.exportConfig.org_uid)
@@ -158,17 +160,17 @@ export default class ExportMarketplaceApps {
 
           if (!isEmpty(data?.server_configuration)) {
             this.installedApps[index]['server_configuration'] = this.nodeCrypto.encrypt(data.server_configuration);
-            log(this.exportConfig, `Exported ${appName} app and it's config.`, 'success');
+            log(this.exportConfig, `Exported ${app} app and it's config.`, 'success');
           } else {
-            log(this.exportConfig, `Exported ${appName} app`, 'success');
+            log(this.exportConfig, `Exported ${app} app`, 'success');
           }
         } else if (error) {
-          log(this.exportConfig, `Error on exporting ${appName} app and it's config.`, 'error');
+          log(this.exportConfig, `Error on exporting ${app} app and it's config.`, 'error');
           log(this.exportConfig, error, 'error');
         }
       })
       .catch((error: any) => {
-        log(this.exportConfig, `Failed to export ${appName} app config ${formatError(error)}`, 'error');
+        log(this.exportConfig, `Failed to export ${app} app config ${formatError(error)}`, 'error');
         log(this.exportConfig, error, 'error');
       });
   }

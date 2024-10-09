@@ -14,7 +14,7 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
     super({
       config: exportConfig,
       baseURL: exportConfig.modules.personalize.baseURL[exportConfig.region.name],
-      headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
+      headers: { 'X-Project-Uid': exportConfig.project_id },
     });
     this.personalizeConfig = exportConfig.modules.personalize;
     this.attributesConfig = exportConfig.modules.attributes;
@@ -30,6 +30,7 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
   async start() {
     try {
       log(this.exportConfig, 'Starting attributes export', 'info');
+      await this.init();
       await fsUtil.makeDirectory(this.attributesFolderPath);
       this.attributes = (await this.getAttributes()) as AttributeStruct[];
 
@@ -37,7 +38,10 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
         log(this.exportConfig, 'No Attributes found with the given project!', 'info');
       } else {
         this.sanitizeAttribs();
-        fsUtil.writeFile(pResolve(sanitizePath(this.attributesFolderPath), sanitizePath(this.attributesConfig.fileName)), this.attributes);
+        fsUtil.writeFile(
+          pResolve(sanitizePath(this.attributesFolderPath), sanitizePath(this.attributesConfig.fileName)),
+          this.attributes,
+        );
         log(this.exportConfig, 'All the attributes have been exported successfully!', 'success');
       }
     } catch (error) {
