@@ -79,6 +79,14 @@ export class CloudFunctions {
         ).default;
         app.use(express.json());
         app.use(express.urlencoded({ extended: true }));
+
+        app.use((request: Request, response: Response, next) => {
+          if (!response.getHeader('cache-control')) {
+            response.setHeader('cache-control', 'no-store');
+          }
+          next();
+        });
+        
         app.all(
           cloudFunctionResource.apiResourceURI,
           async (request: Request, response: Response) => {
@@ -94,6 +102,11 @@ export class CloudFunctions {
     );
   }
 
+  private isProxyEdgeFile(filename: string): boolean {
+    const PROXY_EDGE_FILENAME = '[proxy].edge.js';
+    return filename === PROXY_EDGE_FILENAME;
+  }
+
   private async parseCloudFunctionResources(): Promise<
     CloudFunctionResource[]
   > {
@@ -103,10 +116,9 @@ export class CloudFunctions {
     for await (const filePath of filePaths) {
       const parsedPath = path.parse(filePath);
 
-      if (
-        parsedPath.ext !== CLOUD_FUNCTIONS_SUPPORTED_EXTENSION ||
-        !(await this.checkDefaultExport(filePath))
-      ) {
+      if (this.isProxyEdgeFile(parsedPath.base)
+        || parsedPath.ext !== CLOUD_FUNCTIONS_SUPPORTED_EXTENSION
+        || !await this.checkDefaultExport(filePath)) {
         continue;
       }
 
