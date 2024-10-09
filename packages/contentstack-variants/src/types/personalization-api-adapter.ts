@@ -206,5 +206,5 @@ export interface Personalization<T> extends AdapterHelperInterface<T, HttpClient
 
   updateCTsInExperience(experience: UpdateExperienceInput, experienceUid: string): Promise<CMSExperienceStruct | void>;
 
-  handleVariantAPIRes(res: any): VariantAPIRes;
+  handleVariantAPIRes(res: any): Promise<VariantAPIRes>;
 }
