@@ -1,6 +1,7 @@
 import cliux from './cli-ux';
 import HttpClient from './http-client';
 import configHandler from './config-handler';
+import dotenv from 'dotenv';
 import * as ContentstackManagementSDK from '@contentstack/management';
 import messageHandler from './message-handler';
 const http = require('http');
@@ -8,6 +9,7 @@ const url = require('url');
 import open from 'open';
 import {LoggerService} from './logger';
 const crypto = require('crypto');
+dotenv.config();
 
 /**
  * @class
