@@ -23,7 +23,7 @@ const expImportMsg = {
   UPDATING_CT_IN_EXP: 'Updating content types in experiences...',
   UPDATED_CT_IN_EXP: 'Successfully updated content types in experiences!',
   VALIDATE_VARIANT_AND_VARIANT_GRP: 'Validating variant group and variants creation...',
-  PERSONALIZATION_JOB_FAILURE: 'Something went wrong with personalization background job! Failed to fetch some variant & variant groups',
+  PERSONALIZE_JOB_FAILURE: 'Something went wrong with personalize background job! Failed to fetch some variant & variant groups',
 };
 
 const messages: typeof errors & typeof commonMsg & typeof migrationMsg & typeof variantEntry & typeof expImportMsg = {
@@ -50,7 +50,8 @@ function $t(msg: string, args: Record<string, string>): string {
 
     for (const key of Object.keys(args)) {
       const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      msg = msg.replace(new RegExp(`{${escapedKey}}`, 'g'), args[key] || escapedKey);
+      const placeholder = `{${escapedKey}}`;
+      msg = msg.split(placeholder).join(args[key]);
     }
 
     return msg;
