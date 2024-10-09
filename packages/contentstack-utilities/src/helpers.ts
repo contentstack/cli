@@ -80,6 +80,21 @@ export const formatError = function (error: any) {
     parsedError = error;
   }
 
+  // Check if parsedError is an empty object
+  if (parsedError && typeof parsedError === 'object' && Object.keys(parsedError).length === 0) {
+    return `An unknown error occurred. ${error}`;
+  }
+
+  // Check for specific SSL error
+  if (parsedError?.code === 'UNABLE_TO_GET_ISSUER_CERT_LOCALLY') {
+    return 'UNABLE_TO_GET_ISSUER_CERT_LOCALLY occurred during SSL certificate verification! Please check your certificate configuration.';
+  }
+
+  // Handle self signed certificate error
+  if (parsedError?.code === 'SELF_SIGNED_CERT_IN_CHAIN') {
+    return 'Self-signed certificate in the certificate chain! Please ensure your certificate configuration is correct and the necessary CA certificates are trusted.';
+  }
+
   // Determine the error message
   let message = parsedError.errorMessage || parsedError.error_message || parsedError.message || parsedError;
   if (typeof message === 'object') {
