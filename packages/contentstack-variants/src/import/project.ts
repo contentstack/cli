@@ -10,7 +10,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
     const conf: APIConfig = {
       config,
       baseURL: config.modules.personalize.baseURL[config.region.name],
-      headers: { organization_uid: config.org_uid, authtoken: config.auth_token },
+      headers: { organization_uid: config.org_uid },
     };
     super(Object.assign(config, conf));
     this.projectMapperFolderPath = pResolve(
@@ -29,7 +29,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
     const personalize = this.config.modules.personalize;
     const { dirName, fileName } = personalize.projects;
     const projectPath = join(sanitizePath(this.config.data), sanitizePath(personalize.dirName), sanitizePath(dirName), sanitizePath(fileName));
-
+    
     if (existsSync(projectPath)) {
       const projects = JSON.parse(readFileSync(projectPath, 'utf8')) as CreateProjectInput[];
 
@@ -38,7 +38,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
         this.log(this.config, 'No project found!', 'info');
         return;
       }
-
+      await this.init();
       for (const project of projects) {
         const createProject = async (newName: void | string): Promise<ProjectStruct> => {
           return await this.createProject({
@@ -46,7 +46,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
             description: project.description,
             connectedStackApiKey: this.config.apiKey,
           }).catch(async (error) => {
-            if (error === 'personalization.PROJECTS.DUPLICATE_NAME' || error === 'personalize.PROJECTS.DUPLICATE_NAME') {
+            if (error.includes('personalization.PROJECTS.DUPLICATE_NAME') || error.includes('personalize.PROJECTS.DUPLICATE_NAME')) {
               const projectName = await askProjectName('Copy Of ' + (newName || project.name));
               return await createProject(projectName);
             }

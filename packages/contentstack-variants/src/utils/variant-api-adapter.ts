@@ -7,6 +7,7 @@ import {
   ContentstackClient,
   ContentstackConfig,
   managementSDKClient,
+  authenticationHandler,
 } from '@contentstack/cli-utilities';
 
 import {
@@ -35,6 +36,16 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
     super(config, options);
     this.baseURL = config.baseURL?.includes('http') ? `${config.baseURL}/v3` : `https://${config.baseURL}/v3`;
     this.apiClient.baseUrl(this.baseURL);
+  }
+
+  async init(): Promise<void> {
+    await authenticationHandler.getAuthDetails();
+    const token = authenticationHandler.accessToken;
+    if (authenticationHandler.isOauthEnabled) {
+      this.apiClient.headers({ authorization: token });
+    } else {
+      this.apiClient.headers({ authtoken: token });
+    }
   }
 
   async variantEntry(options: VariantOptions) {
@@ -124,7 +135,7 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
     }
 
     const data = await this.apiClient.get(endpoint);
-    const response = this.handleVariantAPIRes(data) as { entries: VariantEntryStruct[]; count: number };
+    const response = (await this.handleVariantAPIRes(data)) as { entries: VariantEntryStruct[]; count: number };
 
     if (callback) {
       callback(response.entries);
@@ -244,14 +255,17 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
    * @returns The variant API response data.
    * @throws If the API response status is not within the success range, an error message is thrown.
    */
-  handleVariantAPIRes(
+  async handleVariantAPIRes(
     res: APIResponse,
-  ): VariantEntryStruct | { entries: VariantEntryStruct[]; count: number } | string | any {
+  ): Promise<VariantEntryStruct | { entries: VariantEntryStruct[]; count: number } | string | any> {
     const { status, data } = res;
 
     if (status >= 200 && status < 300) {
       return data;
     }
+
+    // Refresh the access token if the response status is 401
+    await authenticationHandler.refreshAccessToken(res);
 
     const errorMsg = data?.errors
       ? formatErrors(data.errors)
@@ -290,9 +304,9 @@ export class VariantManagementSDK<T>
     return Promise.resolve({} as VariantEntryStruct);
   }
 
-  handleVariantAPIRes(
+  async handleVariantAPIRes(
     res: APIResponse,
-  ): VariantEntryStruct | { entries: VariantEntryStruct[]; count: number } | string {
+  ): Promise<VariantEntryStruct | { entries: VariantEntryStruct[]; count: number } | string> {
     return res.data;
   }
 
