@@ -7,7 +7,6 @@ const mockData = require('../../mock-data/common.mock.json');
 const { configHandler } = require('@contentstack/cli-utilities');
 const { runCommand } = require('@oclif/test')
 const sinon = require('sinon');
-const { cliux } = require('@contentstack/cli-utilities');
 
 const { cma } = configHandler.get('region');
 let sandbox;
@@ -68,6 +67,30 @@ describe('Export to CSV functionality', () => {
       ]);
       expect(stdout).to.include('Writing taxonomies to file:');
     });
+
+    it('CSV file should be created using prompt', async () => {
+      nock(cma)
+        .get(`/v3/organizations?limit=100`)
+        .reply(200, { organizations: mockData.organizations })
+        .get(`/v3/stacks?&query={"org_uid":"${mockData.organizations[0].uid}"}`)
+        .reply(200, { stacks: mockData.stacks })
+        .get(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}`)
+        .reply(200, { taxonomy: mockData.taxonomiesResp.taxonomies[0] })
+        .get(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}/export?format=csv`)
+        .reply(200, mockData.taxonomyCSVData);
+
+      sandbox.stub(process, 'chdir').returns(undefined);
+      sandbox.stub(inquirer, 'registerPrompt').returns(undefined);
+      sandbox.stub(inquirer, 'prompt').returns(Promise.resolve({
+        action: 'taxonomies',
+        chosenOrg: mockData.organizations[0].name,
+        chosenStack: mockData.stacks[0].name,
+      }));
+
+      const { stdout } = await runCommand(['cm:export-to-csv', '--taxonomy-uid', 'taxonomy_uid_1']);
+      expect(stdout).to.include('Writing taxonomies to file');
+      sandbox.restore();
+    });
   });
 
   describe('Export entries', () => {
@@ -101,6 +124,40 @@ describe('Export to CSV functionality', () => {
       ]);
       expect(result.stdout).to.include('Writing entries to file:');
     });
+
+    it('Entries CSV file should be created with prompt', async () => {
+      sandbox.stub(inquirer, 'registerPrompt').returns(undefined);
+      sandbox.stub(inquirer, 'prompt').returns(Promise.resolve({
+        action: 'entries',
+        chosenOrg: mockData.organizations[0].name,
+        chosenLanguage: mockData.locales[0].name,
+        chosenStack: mockData.stacks[0].name,
+        chosenContentTypes: [mockData.contentTypes[0].uid],
+        branch: mockData.branch.uid,
+      }));
+      nock(cma)
+        .get(`/v3/organizations?limit=100`)
+        .reply(200, { organizations: mockData.organizations })
+        .get(`/v3/stacks?&query={"org_uid":"${mockData.organizations[0].uid}"}`)
+        .reply(200, { stacks: mockData.stacks })
+        .get('/v3/environments')
+        .reply(200, { environments: mockData.environments })
+        .get('/v3/locales')
+        .reply(200, { locales: mockData.locales })
+        .get('/v3/stacks/branches')
+        .reply(200, { branches: mockData.branch })
+        .get('/v3/content_types?count=true')
+        .reply(200, { content_types: 2 })
+        .get('/v3/content_types?skip=0&include_branch=true')
+        .reply(200, { content_types: mockData.contentTypes })
+        .get(`/v3/content_types/${mockData.contentTypes[0].uid}/entries?include_publish_details=true&locale=${mockData.locales[0].code}&count=true`)
+        .reply(200, { entries: 1 })
+        .get(`/v3/content_types/${mockData.contentTypes[0].uid}/entries?include_publish_details=true&locale=${mockData.locales[0].code}&skip=0&limit=100&include_workflow=true`)
+        .reply(200, { entries: mockData.entry });
+      const { stdout } = await runCommand(['cm:export-to-csv']);
+      expect(stdout).to.include('Writing entries to file');
+      sandbox.restore();
+    });
   });
 
   describe("export-to-csv with action users", () => {
@@ -120,23 +177,26 @@ describe('Export to CSV functionality', () => {
       });
     });
 
-    describe.skip("Export users CSV file with prompt", () => {
-      beforeEach(() => {
-        sandbox.stub(cliux, "inquire").resolves({
+    describe("Export users CSV file with prompt", () => {
+      it('Users CSV file should be successfully created', async () => {
+        sandbox.stub(process, 'chdir').returns(undefined);
+        sandbox.stub(inquirer, 'registerPrompt').returns(undefined);
+        sandbox.stub(inquirer, 'prompt').returns(Promise.resolve({
           action: 'users',
           chosenOrg: mockData.organizations[0].name,
-        });
+        }));
         nock(cma)
-          .get(`/v3/organizations?limit=100`).reply(200, { organizations: mockData.organizations })
-          .get('/v3/user?include_orgs_roles=true').reply(200, { user: mockData.users[0] }).persist()
-          .get(`/v3/organizations/${mockData.organizations[0].uid}/roles`).reply(200, { roles: mockData.roles })
+          .get(`/v3/organizations?limit=100`)
+          .reply(200, { organizations: mockData.organizations })
+          .get('/v3/user?include_orgs_roles=true')
+          .reply(200, { user: mockData.users[0] }).persist()
+          .get(`/v3/organizations/${mockData.organizations[0].uid}/roles`)
+          .reply(200, { roles: mockData.roles })
           .get(`/v3/organizations/${mockData.organizations[0].uid}/share?skip=0&page=1&limit=100`)
-          .reply(200, { users: mockData.users })
-      });
-
-      it("Users CSV file should be successfully created", async () => {
-        const { stdout } = await runCommand(["cm:export-to-csv"]);
-        expect(stdout).to.include("CSV file created successfully");
+          .reply(200, { users: mockData.users });
+        const { stdout } = await runCommand(['cm:export-to-csv']);
+        expect(stdout).to.include('Writing organization details to file');
+        sandbox.restore();
       });
     });
   })
@@ -152,7 +212,7 @@ describe("Testing teams support in CLI export-to-csv", () => {
   });
 
   describe("Testing Teams Command with org and team flags", () => {
-    beforeEach(() => {
+    it("CSV file should be created", async () => {
       nock(cma)
         .get(`/v3/organizations/org_uid_1_teams/teams?skip=0&limit=100&includeUserDetails=true`)
         .reply(200, mockData.Teams.allTeams)
@@ -160,8 +220,7 @@ describe("Testing teams support in CLI export-to-csv", () => {
         .reply(200, mockData.org_roles)
         .get(`/v3/roles`)
         .reply(200, { roles: mockData.roless.roles })
-    })
-    it("CSV file should be created", async () => {
+
       const { stdout } = await runCommand([
         "cm:export-to-csv",
         "--action",
@@ -176,7 +235,7 @@ describe("Testing teams support in CLI export-to-csv", () => {
   });
 
   describe("Testing Teams Command with no teams", () => {
-    beforeEach(() => {
+    it("CSV file should be created", async () => {
       nock(cma)
         .get(`/v3/organizations/org_uid_1_teams/teams?skip=0&limit=100&includeUserDetails=true`)
         .reply(200, mockData.Teams.allTeams)
@@ -184,8 +243,7 @@ describe("Testing teams support in CLI export-to-csv", () => {
         .reply(200, mockData.org_roles)
         .get(`/v3/roles`)
         .reply(200, { roles: mockData.roless.roles })
-    })
-    it("CSV file should be created", async () => {
+
       const { stdout } = await runCommand([
         "cm:export-to-csv",
         "--action",
@@ -221,49 +279,52 @@ describe("Testing teams support in CLI export-to-csv", () => {
     });
   });
 
-  describe.skip("Testing Teams Command with prompt", () => {
-    beforeEach(() => {
+  describe('Testing Teams Command with prompt', () => {
+    it('CSV file should be created', async () => {
+      sandbox.stub(process, 'chdir').returns(undefined);
+      sandbox.stub(inquirer, 'registerPrompt').returns(undefined);
+      sandbox.stub(inquirer, 'prompt').returns(Promise.resolve({
+        action: 'teams',
+        chosenOrg: mockData.organizations[2].name,
+      }));
       nock(cma)
-        .get('/v3/user?include_orgs_roles=true').reply(200, { user: mockData.users[2] })
+        .get('/v3/user?include_orgs_roles=true')
+        .reply(200, { user: mockData.users[2] })
         .get(`/v3/organizations/org_uid_1_teams/teams?skip=0&limit=100&includeUserDetails=true`)
         .reply(200, mockData.Teams.allTeams)
         .get(`/v3/organizations/org_uid_1_teams/roles`)
         .reply(200, mockData.org_roles)
         .get(`/v3/roles`)
-        .reply(200, { roles: mockData.roless.roles })
+        .reply(200, { roles: mockData.roless.roles });
 
-      sandbox.stub(cliux, "inquire").resolves({
-        action: 'teams',
-        chosenOrg: mockData.organizations[2].name,
-      });
-    });
-
-    it("CSV file should be created", async () => {
-      const { stdout } = await runCommand(["cm:export-to-csv"]);
-      expect(stdout).to.include("CSV file created successfully");
+      const { stdout } = await runCommand(['cm:export-to-csv']);
+      expect(stdout).to.include('Exporting the teams of Organisation Teams Org');
+      sandbox.restore();
     });
   });
 
-  describe.skip("Testing Teams Command with prompt and no stack role data", () => {
-    beforeEach(() => {
+  describe('Testing Teams Command with prompt and no stack role data', () => {
+    it('CSV file should be created', async () => {
+      sandbox.stub(process, 'chdir').returns(undefined);
+      sandbox.stub(inquirer, 'registerPrompt').returns(undefined);
+      sandbox.stub(inquirer, 'prompt').returns(Promise.resolve({
+        action: 'teams',
+        chosenOrg: mockData.organizations[2].name,
+        chooseExport: 'yes',
+      }));
       nock(cma)
-        .get('/v3/user?include_orgs_roles=true').reply(200, { user: mockData.users[2] })
+        .get('/v3/user?include_orgs_roles=true')
+        .reply(200, { user: mockData.users[2] })
         .get(`/v3/organizations/org_uid_1_teams/teams?skip=0&limit=100&includeUserDetails=true`)
         .reply(200, mockData.Teams.allTeams)
         .get(`/v3/organizations/org_uid_1_teams/roles`)
         .reply(200, mockData.org_roles)
         .get(`/v3/roles`)
-        .reply(200, { roles: mockData.roless.roles })
+        .reply(200, { roles: {} });
 
-      sandbox.stub(cliux, "inquire").resolves({
-        action: 'teams',
-        chosenOrg: mockData.organizations[2].name,
-        chooseExport: 'yes',
-      });
-    });
-    it("CSV file should be created", async () => {
-      const { stdout } = await runCommand(["cm:export-to-csv"]);
-      expect(stdout).to.include("CSV file created successfully");
+      const { stdout } = await runCommand(['cm:export-to-csv']);
+      expect(stdout).to.include('Exporting the teams of Organisation Teams Org');
+      sandbox.restore();
     });
   });
 });
