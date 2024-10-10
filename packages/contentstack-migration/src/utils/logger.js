@@ -29,7 +29,7 @@ const customFormat = printf(({ level, message }) => {
 });
 
 function init(logFileName) {
-  const logsDir = resolve('logs');
+  const logsDir = resolve(process.env.CS_CLI_LOG_PATH?? process.cwd(),'logs');
   // Create dir if does not exist
   makeDir(logsDir);
 
