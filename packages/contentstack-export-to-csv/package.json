@@ -47,8 +47,8 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
-    "test:unit": "mocha --timeout 10000 --forbid-only \"test/unit/**/*.test.js\" \"test/util/common-utils.test.js\"",
-    "test:unit:report": "nyc --extension .js mocha --forbid-only \"test/unit/**/*.test.js\" \"test/util/common-utils.test.js\"",
+    "test:unit": "mocha --timeout 10000 --forbid-only \"test/unit/**/*.test.js\" \"test/util/*.test.js\"",
+    "test:unit:report": "nyc --extension .js mocha --forbid-only \"test/unit/**/*.test.js\" \"test/util/*.test.js\"",
     "version": "oclif readme && git add README.md",
     "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
   },

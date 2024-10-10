@@ -1,445 +1,204 @@
-const {expect, test} = require('@oclif/test')
+
+const { expect } = require('chai');
+const inquirer = require('inquirer');
+const {
+  chooseStack,
+  getEntries,
+  getEnvironments,
+  chooseLanguage,
+  getOrgUsers,
+  getOrgRoles,
+  getMappedUsers,
+  getMappedRoles,
+  cleanEntries,
+  determineUserOrgRole,
+} = require('../../src/util/index');
+const sinon = require('sinon');
 const util = require('../../src/util')
-const ExportToCsvCommand = require('../../src/commands/cm/export-to-csv.js')
-const inquirer = require('inquirer')
-const config = require('../../src/util/config.js')
-const entries = require('../mock-data/entries.json')
-const mkdirp = require('mkdirp')
 
-// eslint-disable-next-line no-undef
-describe('test util functions', () => {
-	// test chooseOrganization when an organization is chosen
-	test
-  .stdout()
-  .stub(ExportToCsvCommand.prototype, 'managementAPIClient', () => {
-    const organizations = {
-      items: [{name: 'org1', uid: 'org1'}, {name: 'org2', uid: 'org2'}, {name: 'org3', uid: 'org3'}]
-    }
-    return {
-      organization: function() {
-        return {
-          fetchAll: function() {
-            return new Promise(resolve => resolve(organizations))
-          }
-        }
+describe('Test Util functions', () => {
+  let managementAPIClientMock;
+
+  beforeEach(() => {
+    managementAPIClientMock = {
+      organization: sinon.stub(),
+      getUser: sinon.stub(),
+      stack: sinon.stub(),
+      contentType: sinon.stub(),
+      locale: sinon.stub(),
+      environment: sinon.stub(),
+    };
+  });
+
+  describe('Choose Stack', () => {
+    it('should return chosen stack', async () => {
+      managementAPIClientMock.stack.returns({
+        query: () => ({
+          find: async () => ({ items: [{ name: 'Stack1', api_key: 'key1' }] }),
+        }),
+      });
+      inquirer.prompt = async () => ({ chosenStack: 'Stack1' });
+      const result = await chooseStack(managementAPIClientMock, 'orgUid');
+      expect(result).to.deep.equal({ name: 'Stack1', apiKey: 'key1' });
+    });
+  });
+
+  describe('Get Entries', () => {
+    it('should return entries', async () => {
+      managementAPIClientMock.contentType.returns({
+        entry: () => ({
+          query: () => ({
+            find: async () => [{ title: 'Entry1' }, { title: 'Entry2' }],
+          }),
+        }),
+      });
+
+      const result = await getEntries(managementAPIClientMock, 'contentTypeUid', 'en', 0, 100);
+      expect(result).to.deep.equal([{ title: 'Entry1' }, { title: 'Entry2' }]);
+    });
+  });
+
+  describe('Get Environments', () => {
+    it('should return environments', async () => {
+      managementAPIClientMock.environment.returns({
+        query: () => ({
+          find: async () => ({ items: [{ uid: 'env1', name: 'Environment1' }] }),
+        }),
+      });
+
+      const result = await getEnvironments(managementAPIClientMock);
+      expect(result).to.deep.equal({ env1: 'Environment1' });
+    });
+  });
+
+  describe('Choose Language', () => {
+    it('should return chosen language', async () => {
+      managementAPIClientMock.locale.returns({
+        query: () => ({
+          find: async () => ({ items: [{ name: 'English', code: 'en' }] }),
+        }),
+      });
+      inquirer.prompt = async () => ({ chosenLanguage: 'English' });
+
+      const result = await chooseLanguage(managementAPIClientMock);
+      expect(result).to.deep.equal({ name: 'English', code: 'en' });
+    });
+  });
+
+  describe('Get Org Users', () => {
+    it('should return organization users', async () => {
+      managementAPIClientMock.getUser.returns(Promise.resolve({
+        organizations: [{ uid: 'orgUid', is_owner: true }],
+      }));
+      managementAPIClientMock.organization.returns({
+        getInvitations: async () => ({ items: [{ user_uid: 'user1', email: 'user1@example.com' }] }),
+      });
+      const result = await getOrgUsers(managementAPIClientMock, 'orgUid');
+      expect(result).to.deep.equal({ items: [{ user_uid: 'user1', email: 'user1@example.com' }] });
+    });
+
+    it('should return an error when user is not an admin of the organization', async () => {
+      managementAPIClientMock.getUser.returns(Promise.resolve({
+        organizations: [{ uid: 'orgUid', org_roles: [] }],
+      }));
+      try { await getOrgUsers(managementAPIClientMock, 'orgUid'); }
+      catch (error) {
+        expect(error.message).to.include('Unable to export data. Make sure you\'re an admin or owner of this organization');
       }
-    }
-  })
-  .stub(inquirer, 'prompt', () => new Promise(resolve => resolve({chosenOrg: 'org1'})))
-  .it('checks if chosen organization is returned', async () => {
-    let data = await util.chooseOrganization(ExportToCsvCommand.prototype.managementAPIClient)
-		expect(data.name).to.equal('org1')
-		expect(data.uid).to.equal('org1')
-  })
+    });
+  });
 
-  // test chooseOrganization when user selects cancel
-	test
-  .stdout()
-  .stub(ExportToCsvCommand.prototype, 'managementAPIClient', () => {
-    const organizations = {
-      items: [{name: 'org1', uid: 'org1'}, {name: 'org2', uid: 'org2'}, {name: 'org3', uid: 'org3'}]
-    }
-    return {
-      organization: function() {
-        return {
-          fetchAll: function() {
-            return new Promise(resolve => resolve(organizations))
-          }
-        }
+  describe('Get Org Roles', () => {
+    it('should return organization roles', async () => {
+      managementAPIClientMock.getUser.returns(Promise.resolve({
+        organizations: [{ uid: 'orgUid', is_owner: true }],
+      }));
+      managementAPIClientMock.organization.returns({
+        roles: async () => ({ items: [{ uid: 'role1', name: 'Admin' }] }),
+      });
+
+      const result = await getOrgRoles(managementAPIClientMock, 'orgUid');
+      expect(result).to.deep.equal({ items: [{ uid: 'role1', name: 'Admin' }] });
+    });
+
+    it('should return an error when user is not an admin of the organization', async () => {
+      managementAPIClientMock.getUser.returns(Promise.resolve({
+        organizations: [{ uid: 'orgUid', org_roles: [] }],
+      }));
+      try { await getOrgRoles(managementAPIClientMock, 'orgUid'); }
+      catch (error) {
+        expect(error.message).to.include('Unable to export data. Make sure you\'re an admin or owner of this organization');
       }
-    }
-  })
-  .stub(inquirer, 'prompt', () => new Promise(resolve => resolve({chosenOrg: config.cancelString})))
-  // eslint-disable-next-line no-undef
-  .stub(process, 'exit', () => {}) // stubbing the global process.exit method
-  .it('checks code if cancel and exit is selected', async () => {
-    let data = await util.chooseOrganization(ExportToCsvCommand.prototype.managementAPIClient)
-    // as process.exit has been stubbed, chooseOrganization would continue executing
-		expect(data.name).to.equal(config.cancelString)
-  })
+    });
+  });
 
-  test
-  .stdout({print: true})
-  .stub(ExportToCsvCommand.prototype, 'managementAPIClient', () => {
-    const organizations = [{name: 'org1', uid: 'org1', org_roles: [{admin: true}]}, {name: 'org2', uid: 'org2', is_owner: true}, {name: 'org3', uid: 'org3'}]
-    return {
-      getUser: function() {
-        return new Promise(resolve => resolve({
-          organizations: organizations
-        }))
-      }
-    }
-  })
-  .stub(inquirer, 'prompt', () => new Promise(resolve => resolve({chosenOrg: 'org1'})))
-  .it('checks if chosen organization is returned when the action is exportUsers', async () => {
-    let data = await util.chooseOrganization(ExportToCsvCommand.prototype.managementAPIClient, config.exportUsers)
-    expect(data.name).to.equal('org1')
-    expect(data.uid).to.equal('org1')
-  })
+  describe('Get Mapped Users', () => {
+    it('should return mapped users', () => {
+      const users = { items: [{ user_uid: 'user1', email: 'user1@example.com' }] };
+      const result = getMappedUsers(users);
+      expect(result).to.deep.equal({ user1: 'user1@example.com', System: 'System' });
+    });
+  });
 
-  // test chooseStack when a stack is chosen
-	test
-  .stdout()
-  .stub(ExportToCsvCommand.prototype, 'managementAPIClient', () => {
-    const stacks = {
-      items: [{name: 'stack1', api_key: 'stack1'}, {name: 'stack2', api_key: 'stack2'}, {name: 'stack3', api_key: 'stack3'}]
-    }
-    return {
-      stack: function() {
-        return {
-          query: function() {
-            return {
-							find: function() {
-								return new Promise(resolve => resolve(stacks))
-							}
-            }
-          }
-        }
-      }
-    }
-  })
-  .stub(inquirer, 'prompt', () => new Promise(resolve => resolve({chosenStack: 'stack1'})))
-  .it('checks if chosen stack is returned', async () => {
-    let data = await util.chooseStack(ExportToCsvCommand.prototype.managementAPIClient, 'someOrgUid')
-		expect(data.name).to.equal('stack1')
-		expect(data.apiKey).to.equal('stack1')
-  })
+  describe('Get Mapped Roles', () => {
+    it('should return mapped roles', () => {
+      const roles = { items: [{ uid: 'role1', name: 'Admin' }] };
+      const result = getMappedRoles(roles);
+      expect(result).to.deep.equal({ role1: 'Admin' });
+    });
+  });
 
-  // test chooseStack when user selects cancel
-	test
-  .stdout()
-  .stub(ExportToCsvCommand.prototype, 'managementAPIClient', () => {
-    const stacks = {
-      items: [{name: 'stack1', api_key: 'stack1'}, {name: 'stack2', api_key: 'stack2'}, {name: 'stack3', api_key: 'stack3'}]
-    }
-    return {
-      stack: function() {
-        return {
-          query: function() {
-            return {
-							find: function() {
-								return new Promise(resolve => resolve(stacks))
-							}
-            }
-          }
-        }
-      }
-    }
-  })
-  .stub(inquirer, 'prompt', () => new Promise(resolve => resolve({chosenStack: config.cancelString})))
-  // eslint-disable-next-line no-undef
-  .stub(process, 'exit', () => {}) // stubbing the global process.exit method
-  .it('if the user selects cancel and exit instead of a stack', async () => {
-    let data = await util.chooseStack(ExportToCsvCommand.prototype.managementAPIClient, 'someOrgUid')
-		expect(data.name).to.equal(config.cancelString)
-  })
+  describe('Clean Entries', () => {
+    it('should filter and format entries correctly', () => {
+      const entries = [
+        {
+          locale: 'en',
+          publish_details: [{ environment: 'env1', locale: 'en', time: '2021-01-01' }],
+          _workflow: { name: 'Workflow1' },
+          otherField: 'value',
+        },
+      ];
+      const environments = { env1: 'Production' };
+      const contentTypeUid = 'contentTypeUid';
 
-  // test chooseContentType when a content type is chosen
-	test
-  .stdout()
-  .stub(ExportToCsvCommand.prototype, 'managementAPIClient', () => {
-    const content_types = {
-      items: [{title: 'ct1', uid: 'ct1'}, {title: 'ct2', uid: 'ct2'}, {title: 'ct3', uid: 'ct3'}]
-    }
-    return {
-      stack: function() {
-        return {
-          contentType: function() {
-            return {
-							query: function() {
-                return {
-                  find: function() {
-                    return new Promise(resolve => resolve(content_types))
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  })
-  .stub(inquirer, 'prompt', () => new Promise(resolve => resolve({chosenContentTypes: ['ct1']})))
-  .it('checks if chosen content type is returned', async () => {
-    let data = await util.chooseContentType(ExportToCsvCommand.prototype.managementAPIClient, 'someStackApiKey')
-    expect(data).to.be.an('array')
-		expect(data[0]).to.equal('ct1')
-  })
+      const result = cleanEntries(entries, 'en', environments, contentTypeUid);
+      expect(result).to.deep.equal([
+        {
+          locale: 'en',
+          publish_details: ['["Production","en","2021-01-01"]'],
+          _workflow: 'Workflow1',
+          ACL: '{}',
+          content_type_uid: contentTypeUid,
+          otherField: 'value',
+        },
+      ]);
+    });
+  });
 
-  // test chooseContentType if the user selects cancel
+  describe('Get DateTime', () => {
+    it('should return a string', () => {
+      expect(util.getDateTime()).to.be.a('string');
+    });
+  });
 
-  // test get Entries
-  test
-  .stdout()
-  .stub(ExportToCsvCommand.prototype, 'managementAPIClient', () => {
-    const _entries = {
-      items: [{title: 'ct1', uid: 'ct1'}, {title: 'ct2', uid: 'ct2'}, {title: 'ct3', uid: 'ct3'}]
-    }
-    return {
-      stack: function() {
-        return {
-          contentType: function() {
-            return {
-              entry: function() {
-                return {
-                  query: function() {
-                    return {
-                      find: function() {
-                        return new Promise(resolve => resolve(_entries))
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  })
-  .it('checks if getEntries return the required result', async () => {
-    let data = await util.getEntries(ExportToCsvCommand.prototype.managementAPIClient, 'someStackApiKey', 'someContentType', 'en-us')
-    expect(data.items).to.be.an('array')
-  })
-  
-  // test get Environments
-  test
-  .stdout()
-  .stub(ExportToCsvCommand.prototype, 'managementAPIClient', () => {
-    const environments = {
-      items: [{name: 'env1', uid: 'env1'}, {name: 'env2', uid: 'env2'}, {name: 'env3', uid: 'env3'}]
-    }
-    return {
-      stack: function() {
-        return {
-          environment: function() {
-            return {
-              query: function() {
-                return {
-                  find: function() {
-                    return new Promise(resolve => resolve(environments))
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  })
-  .it('checks if getEnvironmnets return the required result', async () => {
-    let data = await util.getEnvironments(ExportToCsvCommand.prototype.managementAPIClient, 'someStackApiKey')
-    expect(data).to.be.an('object')
-  })
+  describe('Determine User Organization Role', () => {
+    it('should return "Owner" if the user is an owner', () => {
+      const user = { is_owner: true };
+      const result = determineUserOrgRole(user, {});
+      expect(result).to.equal('Owner');
+    });
 
-  // test choose Languages
-  test
-  .stdout()
-  .stub(ExportToCsvCommand.prototype, 'managementAPIClient', () => {
-    const languages = {
-      items: [{name: 'l1', code: 'l1'}, {name: 'l2', code: 'l2'}, {name: 'l3', code: 'l3'}]
-    }
-    return {
-      stack: function() {
-        return {
-          locale: function() {
-            return {
-              query: function() {
-                return {
-                  find: function() {
-                    return new Promise(resolve => resolve(languages))
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  })
-  .stub(inquirer, 'prompt', () => new Promise(resolve => resolve({chosenLanguage: 'l1'})))
-  .it('checks if chosen language is returned', async () => {
-    let data = await util.chooseLanguage(ExportToCsvCommand.prototype.managementAPIClient, 'someStackApiKey')
-    expect(data.name).to.equal('l1')
-    expect(data.code).to.equal('l1')
-  })
+    it('should return role name based on org roles', () => {
+      const user = { org_roles: ['role1'] };
+      const roles = { role1: 'Admin' };
+      const result = determineUserOrgRole(user, roles);
+      expect(result).to.equal('Admin');
+    });
 
-  // test choose Languages when the user selects cancel
-
-  // test write function
-  test
-  .stdout()
-  .stub(inquirer, 'prompt', () => new Promise(resolve => resolve({action: 'Export Entries to CSV'})))
-  .it('test write function', async () => {
-    let data = await util.startupQuestions()
-    expect(data).to.equal('Export Entries to CSV')
-  })
-
-  // test startupQuestions
-  test
-  .stdout()
-  .stub(inquirer, 'prompt', () => new Promise(resolve => resolve({action: 'Export Entries to CSV'})))
-  .it('checks if chosen option is returned from startupQuestions', async () => {
-    let data = await util.startupQuestions()
-    expect(data).to.equal('Export Entries to CSV')
-  })
-
-  // test startupQuestions if user chooses to Exit
-
-  // test getOrgUsers
-  test
-  .stdout()
-  .stub(ExportToCsvCommand.prototype, 'managementAPIClient', () => {
-    const users = {
-      items: [{name: 'user1', user_uid: 'user1'}, {name: 'user2', user_uid: 'user2'}, {name: 'user3', user_uid: 'user3'}]
-    }
-    return {
-      getUser: function () {
-        return new Promise(resolve => resolve({
-          organizations: [{ 
-            uid: 'orgUid1',
-            getInvitations: function() {
-              return new Promise(_resolve => _resolve(users))
-            }
-          }]
-        }))
-      }
-    }
-  })
-  .it('check getOrgUsers response', async () => {
-    let data = await util.getOrgUsers(ExportToCsvCommand.prototype.managementAPIClient, 'orgUid1')
-    expect(data.items).to.be.an('array')
-  })
-
-  // test getOrgUsers when user is not admin for the organization
-  test
-  .stdout()
-  .stub(ExportToCsvCommand.prototype, 'managementAPIClient', () => {
-    return {
-      getUser: function () {
-        return new Promise(resolve => resolve({
-          organizations: [{ 
-            uid: 'orgUid1',
-          }]
-        }))
-      }
-    }
-  })
-  .it('check getOrgUsers response when user is not an admin of the organization', async () => {
-    let expectedError = new Error(config.adminError)
-    try {
-      await util.getOrgUsers(ExportToCsvCommand.prototype.managementAPIClient, 'orgUid1')
-    } catch(error) {
-      expect(error.message).to.equal(expectedError.message)
-    }
-  })
-
-  // test getMappedUsers
-  test
-  .stdout()
-  .it('check getMappedUsers response', async () => {
-    const users = {
-      items: [{name: 'user1', user_uid: 'user1'}, {name: 'user2', user_uid: 'user2'}, {name: 'user3', user_uid: 'user3'}]
-    }
-    let data = util.getMappedUsers(users)
-    expect(data).to.be.an('object')
-  })
-
-  // test getMappedRoles
-  test
-  .stdout()
-  .it('check getMappedRoles response', async () => {
-    const roles = {
-      items: [{name: 'role1', uid: 'role1'}, {name: 'role2', uid: 'role2'}, {name: 'role3', uid: 'role3'}]
-    }
-    let data = util.getMappedRoles(roles)
-    expect(data).to.be.an('object')
-  })
-
-  // test getOrgRoles
-  test
-  .stdout()
-  .stub(ExportToCsvCommand.prototype, 'managementAPIClient', () => {
-    const roles = {
-      items: [{name: 'role1', uid: 'role1'}, {name: 'role2', uid: 'role2'}, {name: 'role3', uid: 'role3'}]
-    }
-    return {
-      getUser: function () {
-        return new Promise(resolve => resolve({
-          organizations: [{ 
-            uid: 'orgUid1',
-            roles: function() {
-              return new Promise(_resolve => _resolve(roles))
-            }
-          }]
-        }))
-      }
-    }
-  })
-  .it('check getOrgRoles response', async () => {
-    let data = await util.getOrgRoles(ExportToCsvCommand.prototype.managementAPIClient, 'orgUid1')
-    expect(data.items).to.be.an('array')
-  })
-
-  // test getOrgRoles when user is not an admin of the organization
-  test
-  .stdout()
-  .stub(ExportToCsvCommand.prototype, 'managementAPIClient', () => {
-    return {
-      getUser: function () {
-        return new Promise(resolve => resolve({
-          organizations: [{ 
-            uid: 'orgUid1',
-          }]
-        }))
-      }
-    }
-  })
-  .it('check getOrgRoles response when user is not an admin of the organization', async () => {
-    let expectedError = new Error(config.adminError)
-    try {
-      await util.getOrgRoles(ExportToCsvCommand.prototype.managementAPIClient, 'orgUid1')
-    } catch(error) {
-      expect(error.message).to.equal(expectedError.message)
-    }
-  })
-
-  // test determineUserRole
-  test
-  .stdout()
-  .it('check determineUserRole response', async () => {
-    const roles = {'role1': 'role1', 'role2': 'role2', 'role3': 'role3'} // mapped roles (roleName: roleId)
-    const user1 = {
-      org_roles: ['role1']
-    }
-    const user2 = {
-      org_roles: ['role2'],
-      is_owner: true
-    }
-    let roleName1 = util.determineUserOrgRole(user1, roles)
-    let roleName2 = util.determineUserOrgRole(user2, roles)
-
-    expect(roleName1).to.equal('role1')
-    expect(roleName2).to.equal('Owner')
-  })
-
-  // test cleanEntries
-  test
-  .stdout()
-  .it('test clean Entries', async () => {
-    const environments = [{name: 'env1', uid: 'env1'}, {name: 'env2', uid: 'env2'}, {name: 'env3', uid: 'env3'}]
-    const language = 'en-us'
-    const contentTypeUid = 'uid'
-
-    const filteredEntries = util.cleanEntries(entries.items, language, environments, contentTypeUid)
-
-    expect(filteredEntries).to.be.an('object')
-  })
-
-  // test getDateTime
-  test
-  .stdout()
-  .it('test getDateTime', async () => {
-    expect(util.getDateTime()).to.be.a('string')
-  })
-})
+    it('should return "No Role" if there are no roles', () => {
+      const user = { org_roles: [] };
+      const result = determineUserOrgRole(user, {});
+      expect(result).to.equal('No Role');
+    });
+  });
+});
