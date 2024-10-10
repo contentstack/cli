@@ -25,7 +25,7 @@ function removeSpecialCharacter(str) {
 }
 
 module.exports = (errors, filePath) => {
-  const logger = new MigrationLogger(process.cwd());
+  const logger = new MigrationLogger(process.env.CS_CLI_LOG_PATH ?? process.cwd());
 
   const errorsByFile = groupBy(errors, 'file');
   const messages = [];
