@@ -56,14 +56,12 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     super(Object.assign(omit(config, ['helpers']), conf));
     this.entriesMapperPath = resolve(
       sanitizePath(config.backupDir),
-      sanitizePath(config.branchName || ''),
       'mapper',
       'entries',
     );
     this.personalizeConfig = this.config.modules.personalize;
     this.entriesDirPath = resolve(
       sanitizePath(config.backupDir),
-      sanitizePath(config.branchName || ''),
       sanitizePath(config.modules.entries.dirName),
     );
     this.failedVariantPath = resolve(sanitizePath(this.entriesMapperPath), 'failed-entry-variants.json');
@@ -89,7 +87,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     );
 
     if (!existsSync(filePath)) {
-      log(this.config, this.messages.IMPORT_ENTRY_NOT_FOUND, 'info');
+      log(this.config, this.messages.VARIANT_ENTRY_FILE_NOT_FOUND, 'info');
       return;
     }
 
