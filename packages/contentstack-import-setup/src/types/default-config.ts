@@ -3,7 +3,7 @@ import { Modules } from '.';
 export default interface DefaultConfig {
   host: string;
   modules: {
-    customRoles: {
+    'custom-roles': {
       dirName: string;
       fileName: string;
       dependencies: Modules[];
@@ -11,17 +11,17 @@ export default interface DefaultConfig {
     environments: {
       dirName: string;
       fileName: string;
-      dependencies: Modules[];
+      dependencies?: Modules[];
     };
     extensions: {
       dirName: string;
       fileName: string;
-      dependencies: Modules[];
+      dependencies?: Modules[];
     };
     assets: {
       dirName: string;
       fileName: string;
-      dependencies: Modules[];
+      dependencies?: Modules[];
     };
     'content-types': {
       dirName: string;
@@ -38,10 +38,10 @@ export default interface DefaultConfig {
       fileName: string;
       dependencies: Modules[];
     };
-    marketplace_apps: {
+    'marketplace-apps': {
       dirName: string;
       fileName: string;
-      dependencies: Modules[];
+      dependencies?: Modules[];
     };
     taxonomies: {
       dirName: string;
