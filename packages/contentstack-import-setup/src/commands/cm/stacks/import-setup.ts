@@ -53,18 +53,18 @@ export default class ImportSetupCommand extends Command {
       await importSetup.start();
       log(
         importSetupConfig,
-        `Successfully created back folder and mapper files for the stack with the API key ${importSetupConfig.apiKey}.`,
+        `Successfully created backup folder and mapper files for the stack with the API key ${importSetupConfig.apiKey}.`,
         'success',
       );
       log(
         importSetupConfig,
-        `The back folder created at '${pathValidator(path.join(importSetupConfig.backupDir))}'`,
+        `The backup folder created at '${pathValidator(path.join(importSetupConfig.backupDir))}'`,
         'success',
       );
     } catch (error) {
       log(
         { data: '' } as ImportConfig,
-        `Failed to create back folder and mapper files - ${formatError(error)}`,
+        `Failed to create backup folder and mapper files - ${formatError(error)}`,
         'error',
       );
     }
