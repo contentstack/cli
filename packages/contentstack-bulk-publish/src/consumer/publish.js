@@ -33,33 +33,9 @@ function removePublishDetails(elements) {
 }
 
 function displayEntriesDetails(sanitizedData) {
-  let contentType = '';
-  let locale = '';
-  let entryUIDs = [];
-
   sanitizedData.forEach((entry) => {
-    contentType = entry.content_type;
-    locale = entry.locale;
-    entryUIDs.push(entry.uid);
+    console.log(chalk.green(`Entry UID '${entry.uid}' of CT '${entry.content_type}' in locale '${entry.locale}'`));
   });
-
-  entryUIDs = entryUIDs.join(', ');
-  console.log(chalk.green(`Entry UIDs '${entryUIDs}' of Content type '${contentType}' in locale '${locale}'`));
-}
-
-function displayFailedEntriesDetails(sanitizedData) {
-  let contentType = '';
-  let locale = '';
-  let entryUIDs = [];
-
-  sanitizedData.forEach((entry) => {
-    contentType = entry.content_type;
-    locale = entry.locale;
-    entryUIDs.push(entry.uid);
-  });
-  
-  entryUIDs = entryUIDs.join(', ');
-  console.log(chalk.red(`Entry UIDs '${entryUIDs}' of CT '${contentType}' in locale '${locale}'`));
 }
 
 function displayAssetsDetails(sanitizedData) {
@@ -309,7 +285,7 @@ async function performBulkPublish(data, _config, queue) {
             delete bulkPublishObj.stack;
             console.log(chalk.red(`Bulk entries failed to publish with error ${formatError(error)}`));
             let sanitizedData = removePublishDetails(bulkPublishObj.entries);
-            displayFailedEntriesDetails(sanitizedData);
+            displayEntriesDetails(sanitizedData);
             addLogs(
               logger,
               { options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host },
@@ -438,7 +414,7 @@ async function performBulkUnPublish(data, _config, queue) {
             delete bulkUnPublishObj.stack;
             console.log(chalk.red(`Bulk entries failed to Unpublish with error ${formatError(error)}`));
             let sanitizedData = removePublishDetails(bulkUnPublishObj.entries);
-            displayFailedEntriesDetails(sanitizedData);
+            displayEntriesDetails(sanitizedData);
             addLogs(
               logger,
               { options: bulkUnPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host },
