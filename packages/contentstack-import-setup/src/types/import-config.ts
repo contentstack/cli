@@ -34,13 +34,17 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   isAuthenticated?: boolean;
   target_stack?: string;
   masterLocale: masterLocale;
-  backupDir: string;
   backupConcurrency?: number;
   authtoken?: string;
   destinationStackName?: string;
   org_uid?: string;
   contentVersion: number;
   stackName?: string;
+  branchName: string;
+  selectedModules: Modules[];
+  useBackedupDir?: string;
+  backupDir: string;
+  createBackupDir?: string;
 }
 
 type branch = {

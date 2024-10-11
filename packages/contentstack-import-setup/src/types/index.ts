@@ -1,5 +1,5 @@
 import { ContentstackClient } from '@contentstack/cli-utilities';
-import ImportConfig from './default-config';
+import ImportConfig from './import-config';
 
 export type ModuleClassParams = {
   stackAPIClient: ReturnType<ContentstackClient['stack']>;

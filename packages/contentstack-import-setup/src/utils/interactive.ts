@@ -14,6 +14,19 @@ export const askContentDir = async (): Promise<string> => {
   return path.resolve(result);
 };
 
+export const askSelectedModules = async (): Promise<string> => {
+  return cliux.inquire<string>({
+    type: 'list',
+    name: 'selectedModule',
+    message: 'Please select a module to generate the mapper files',
+    choices: [
+      { name: 'Content types', value: 'content-types' },
+      { name: 'Entries', value: 'entries' },
+      { name: 'Both', value: 'both' },
+    ],
+  });
+};
+
 export const askAPIKey = async (): Promise<string> => {
   return cliux.inquire<string>({
     type: 'input',

@@ -1,7 +1,7 @@
 import * as chalk from 'chalk';
-import { log, fsUtil } from '../utils';
+import { log, fsUtil } from '../../utils';
 import { join } from 'path';
-import { ImportConfig, ModuleClassParams } from '../types';
+import { ImportConfig, ModuleClassParams } from '../../types';
 import { isEmpty } from 'lodash';
 
 export default class ExtensionImportSetup {
@@ -34,13 +34,13 @@ export default class ExtensionImportSetup {
       const extensions: any = await fsUtil.readFile(this.extensionsFilePath);
       if (!isEmpty(extensions)) {
         // 2. Create mapper directory
-        const mapperFilePath = join(this.config.backupDirPath, 'mapper', 'extensions');
+        const mapperFilePath = join(this.config.backupDir, 'mapper', 'extensions');
         fsUtil.makeDirectory(mapperFilePath); // Use fsUtil
 
         for (const extension of Object.values(extensions) as any) {
-          const targetExtension: any = await this.getExtension(extension.title);
+          const targetExtension: any = await this.getExtension(extension);
           if (!targetExtension) {
-            log(this.config, chalk.red(`Extension with title '${extension.title}' not found in the stack!`), 'error');
+            log(this.config, `Extension with title '${extension.title}' not found in the stack!`, 'error');
             continue;
           }
           this.extensionMapper[extension.uid] = targetExtension.uid;
@@ -48,12 +48,12 @@ export default class ExtensionImportSetup {
 
         await fsUtil.writeFile(this.extUidMapperPath, this.extensionMapper);
 
-        log(this.config, chalk.green(`Mapper file created at '${this.extUidMapperPath}'`), 'success');
+        log(this.config, `Generate required setup files for extension`, 'success');
       } else {
-        log(this.config, chalk.red('No extensions found in the content folder!'), 'error');
+        log(this.config, 'No extensions found in the content folder!', 'error');
       }
     } catch (error) {
-      log(this.config, chalk.red(`Error generating extension mapper: ${error.message}`), 'error');
+      log(this.config, `Error generating extension mapper: ${error.message}`, 'error');
     }
   }
 
