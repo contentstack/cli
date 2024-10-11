@@ -15,12 +15,18 @@ async function getStack(data) {
     stackOptions.api_key = tokenDetails.apiKey;
   } else if (data.stackApiKey) {
     if (!isAuthenticated()) {
-      throw new Error('Please login to proceed further. Or use `--alias` instead of `--stack-api-key` to proceed without logging in.')
+      throw new Error(
+        'Please login to proceed further. Or use `--alias` instead of `--stack-api-key` to proceed without logging in.',
+      );
     }
     stackOptions.api_key = data.stackApiKey;
   }
   const managementClient = await managementSDKClient(options);
   const stack = managementClient.stack(stackOptions);
+  if (data.stackApiKey && isAuthenticated()) {
+    const stackDetails = await stack.fetch();
+    stack.org_uid = stackDetails.org_uid;
+  }
   stack.alias = data.alias;
   stack.host = data.host;
   return stack;
