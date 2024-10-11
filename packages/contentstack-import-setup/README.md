@@ -73,7 +73,8 @@ FLAGS
   -a, --alias=<value>          alias of the management token
   -d, --data-dir=<value>       path and location where data is stored
   -k, --stack-api-key=<value>  API key of the target stack
-  --modules=<value>...         (required) [optional] specific module name
+  --modules=<option>           [optional] specific module name
+                               <options: content-types|entries|both>
 
 DESCRIPTION
   Import content from a stack
@@ -97,7 +98,8 @@ FLAGS
   -a, --alias=<value>          alias of the management token
   -d, --data-dir=<value>       path and location where data is stored
   -k, --stack-api-key=<value>  API key of the target stack
-  --modules=<value>...         (required) [optional] specific module name
+  --modules=<option>           [optional] specific module name
+                               <options: content-types|entries|both>
 
 DESCRIPTION
   Import content from a stack
