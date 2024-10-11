@@ -12,6 +12,7 @@ const { performBulkPublish, publishEntry, initializeLogger } = require('../consu
 const retryFailedLogs = require('../util/retryfailed');
 const { validateFile } = require('../util/fs');
 const { isEmpty } = require('../util');
+const { fetchBulkPublishLimit } = require('../util/common-utility');
 
 let changedFlag = false;
 const queue = getQueue();
@@ -226,6 +227,7 @@ async function getEntries(
   environments,
   sourceEnv,
   apiVersion,
+  bulkPublishLimit,
   skip = 0,
 ) {
   return new Promise((resolve, reject) => {
@@ -253,7 +255,7 @@ async function getEntries(
                 localizedEntry = localizedEntry || {};
                 if (checkNonLocalizedFieldChanges(schema, entry, localizedEntry)) {
                   if (bulkPublish) {
-                    if (bulkPublishSet.length < 10) {
+                    if (bulkPublishSet.length < bulkPublishLimit) {
                       bulkPublishSet.push({
                         uid: entry.uid,
                         content_type: contentType,
@@ -261,7 +263,7 @@ async function getEntries(
                         publish_details: localizedEntry.publish_details || [],
                       });
                     }
-                    if (bulkPublishSet.length === 10) {
+                    if (bulkPublishSet.length === bulkPublishLimit) {
                       await queue.Enqueue({
                         entries: bulkPublishSet,
                         locale: locale.code,
@@ -293,7 +295,7 @@ async function getEntries(
                 reject(error);
               }
             }
-            if (bulkPublishSet.length > 0 && bulkPublishSet.length < 10) {
+            if (bulkPublishSet.length > 0 && bulkPublishSet.length < bulkPublishLimit) {
               await queue.Enqueue({
                 entries: bulkPublishSet,
                 locale: locale.code,
@@ -311,7 +313,7 @@ async function getEntries(
           bulkPublishSet = [];
           return resolve();
         }
-        await getEntries(stack, schema, contentType, languages, masterLocale, bulkPublish, environments, sourceEnv, apiVersion, skipCount);
+        await getEntries(stack, schema, contentType, languages, masterLocale, bulkPublish, environments, sourceEnv, apiVersion, bulkPublishLimit, skipCount);
         return resolve();
       })
       .catch((error) => reject(error));
@@ -363,10 +365,11 @@ async function start({ retryFailed, bulkPublish, sourceEnv, contentTypes, enviro
     setConfig(config, bulkPublish);
     const masterLocale = 'en-us';
     const languages = await getLanguages(stack);
+    const bulkPublishLimit = fetchBulkPublishLimit(stack?.org_uid);
     for (const element of contentTypes) {
       /* eslint-disable no-await-in-loop */
       const schema = await getContentTypeSchema(stack, element);
-      await getEntries(stack, schema, element, languages, masterLocale, bulkPublish, environments, sourceEnv, apiVersion);
+      await getEntries(stack, schema, element, languages, masterLocale, bulkPublish, environments, sourceEnv, apiVersion, bulkPublishLimit);
       /* eslint-enable no-await-in-loop */
     }
   }
