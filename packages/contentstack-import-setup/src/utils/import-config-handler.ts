@@ -4,21 +4,21 @@ import { omit, filter, includes, isArray } from 'lodash';
 import { configHandler, isAuthenticated, cliux, sanitizePath } from '@contentstack/cli-utilities';
 import defaultConfig from '../config';
 import { readFile, fileExistsSync } from './file-helper';
-import { askContentDir, askAPIKey } from './interactive';
+import { askContentDir, askAPIKey, askSelectedModules } from './interactive';
 import login from './login-handler';
 import { ImportConfig } from '../types';
 
 const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   let config: ImportConfig = merge({}, defaultConfig);
   // setup the config
-  if (importCmdFlags['config']) {
-    let externalConfig = await readFile(importCmdFlags['config']);
-    if (isArray(externalConfig['modules'])) {
-      config.modules.types = filter(config.modules.types, (module) => includes(externalConfig['modules'], module));
-      externalConfig = omit(externalConfig, ['modules']);
-    }
-    config = merge.recursive(config, externalConfig);
-  }
+  // if (importCmdFlags['config']) {
+  //   let externalConfig = await readFile(importCmdFlags['config']);
+  //   if (isArray(externalConfig['modules'])) {
+  //     config.modules = filter(config.modules, (module) => includes(externalConfig['modules'], module));
+  //     externalConfig = omit(externalConfig, ['modules']);
+  //   }
+  //   config = merge.recursive(config, externalConfig);
+  // }
 
   config.contentDir = importCmdFlags['data'] || importCmdFlags['data-dir'] || config.data || (await askContentDir());
   const pattern = /[*$%#<>{}!&?]/g;
@@ -71,32 +71,25 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   //Note to support the old key
   config.source_stack = config.apiKey;
 
-  config.skipAudit = importCmdFlags['skip-audit'];
-  config.forceStopMarketplaceAppsPrompt = importCmdFlags.yes;
-  config.importWebhookStatus = importCmdFlags['import-webhook-status'];
-  config.skipPrivateAppRecreationIfExist = importCmdFlags['skip-app-recreation'];
+  // config.skipAudit = importCmdFlags['skip-audit'];
+  // config.forceStopMarketplaceAppsPrompt = importCmdFlags.yes;
+  // config.importWebhookStatus = importCmdFlags['import-webhook-status'];
+  // config.skipPrivateAppRecreationIfExist = importCmdFlags['skip-app-recreation'];
 
   if (importCmdFlags['branch']) {
     config.branchName = importCmdFlags['branch'];
     config.branchDir = path.join(sanitizePath(config.contentDir), sanitizePath(config.branchName));
   }
-  if (importCmdFlags['module']) {
-    config.moduleName = importCmdFlags['module'];
-    config.singleModuleImport = true;
+
+  const selectedModule = importCmdFlags['modules'] || (await askSelectedModules());
+  if (selectedModule === 'both') {
+    config.selectedModules = ['content-types', 'entries'];
+  } else {
+    config.selectedModules = [selectedModule];
   }
 
   if (importCmdFlags['backup-dir']) {
     config.useBackedupDir = importCmdFlags['backup-dir'];
-  }
-
-  // Note to support old modules
-  config.target_stack = config.apiKey;
-
-  config.replaceExisting = importCmdFlags['replace-existing'];
-  config.skipExisting = importCmdFlags['skip-existing'];
-
-  if (importCmdFlags['exclude-global-modules']) {
-    config['exclude-global-modules'] = importCmdFlags['exclude-global-modules'];
   }
 
   return config;

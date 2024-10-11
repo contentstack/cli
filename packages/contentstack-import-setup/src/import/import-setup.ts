@@ -1,39 +1,49 @@
-import { ImportConfig } from '../types';
-import { log } from '../utils';
+import Module from 'module';
+import { ImportConfig, Modules } from '../types';
+import { backupHandler, formatError, log } from '../utils';
+import { ContentstackClient } from '@contentstack/cli-utilities';
 
 export default class ImportSetup {
   protected config: ImportConfig;
-  public mapperLogic: { [key: string]: string[] } = {};
+  private managementAPIClient: ContentstackClient;
+  private importConfig: ImportConfig;
+  private stackAPIClient: any;
+  public dependencyTree: { [key: string]: string[] } = {};
 
-  constructor(config: ImportConfig) {
+  constructor(config: ImportConfig, managementAPIClient: ContentstackClient) {
     this.config = config;
+    this.managementAPIClient = managementAPIClient;
+    this.stackAPIClient = this.managementAPIClient.stack({
+      api_key: this.config.apiKey,
+      management_token: this.config.management_token,
+    });
   }
 
   /**
    * Generate mapper logic
-   * This method generates mapper logic based on the selected modules
+   * This method generates dependency tree based on the selected modules
    * @returns {Promise<Array<void | string>>}
    */
-  protected async generateMapperLogic() {
-    function getAllDependencies(module: string, visited: Set<string> = new Set()): string[] {
+  protected async generateDependencyTree() {
+    type ModulesKey = keyof typeof this.config.modules;
+
+    const getAllDependencies = (module: ModulesKey, visited: Set<string> = new Set()): Modules[] => {
       if (visited.has(module)) return [];
 
       visited.add(module);
-      let dependencies = this.config.modules[module]?.dependencies || [];
+      let dependencies: Modules[] = this.config.modules[module as ModulesKey]?.dependencies || [];
 
       for (const dependency of dependencies) {
-        dependencies = dependencies.concat(getAllDependencies(dependency, visited));
+        dependencies = dependencies.concat(getAllDependencies(dependency as ModulesKey, visited));
       }
 
       return dependencies;
-    }
+    };
 
     for (const module of this.config.selectedModules) {
-      const allDependencies = getAllDependencies(module);
-      this.mapperLogic[module] = Array.from(new Set(allDependencies));
+      const allDependencies = getAllDependencies(module as ModulesKey);
+      this.dependencyTree[module] = Array.from(new Set(allDependencies));
     }
-
-    log(this.config, 'Mapper logic generated:', 'info');
   }
 
   /**
@@ -43,20 +53,22 @@ export default class ImportSetup {
    * @returns {Promise<void>}
    */
   protected async runModuleImports() {
-    for (const moduleName in this.mapperLogic) {
+    for (const moduleName in this.dependencyTree) {
       try {
-        const modulePath = `./${moduleName}`;
+        const modulePath = `./modules/${moduleName}`;
         const { default: ModuleClass } = await import(modulePath);
 
         const modulePayload = {
           config: this.config,
-          dependencies: this.mapperLogic[moduleName],
+          dependencies: this.dependencyTree[moduleName],
+          stackAPIClient: this.stackAPIClient,
         };
 
         const moduleInstance = new ModuleClass(modulePayload);
         await moduleInstance.start();
       } catch (error) {
-        log(this.config, `Error importing '${moduleName}': ${error.message}`, 'error');
+        log(this.config, `Error importing '${moduleName}': ${formatError(error)}`, 'error');
+        throw error;
       }
     }
   }
@@ -69,10 +81,15 @@ export default class ImportSetup {
    */
   async start() {
     try {
-      await this.generateMapperLogic();
+      const backupDir = await backupHandler(this.config);
+      if (backupDir) {
+        this.config.backupDir = backupDir;
+      }
+      await this.generateDependencyTree();
       await this.runModuleImports();
     } catch (error) {
-      log(this.config, `An error occurred during import setup: ${error.message}`, 'error');
+      console.log(error);
+      throw error;
     }
   }
 }

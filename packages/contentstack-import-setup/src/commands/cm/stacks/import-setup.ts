@@ -12,7 +12,7 @@ import {
 
 import { ImportConfig } from '../../../types';
 import { setupImportConfig, formatError, log } from '../../../utils';
-import { ImportSetup } from 'src/import';
+import { ImportSetup } from '../../../import';
 
 export default class ImportSetupCommand extends Command {
   static description = messageHandler.parse('Import content from a stack');
@@ -35,7 +35,7 @@ export default class ImportSetupCommand extends Command {
       description: 'alias of the management token',
     }),
     modules: flags.string({
-      required: false,
+      options: ['content-types', 'entries', 'both'], // only allow the value to be from a discrete set
       description: '[optional] specific module name',
     }),
   };
@@ -48,22 +48,25 @@ export default class ImportSetupCommand extends Command {
     try {
       const { flags } = await this.parse(ImportSetupCommand);
       let importSetupConfig = await setupImportConfig(flags);
-      const importSetup = new ImportSetup(importSetupConfig);
+      const managementAPIClient: ContentstackClient = await managementSDKClient(importSetupConfig);
+      const importSetup = new ImportSetup(importSetupConfig, managementAPIClient);
       await importSetup.start();
       log(
         importSetupConfig,
-        importSetupConfig.stackName
-          ? `Successfully generated mapper files for the stack named ${importSetupConfig.stackName} with the API key ${importSetupConfig.apiKey}.`
-          : `Mapper files have been generated for the stack ${importSetupConfig.apiKey} successfully!`,
+        `Successfully created back folder and mapper files for the stack with the API key ${importSetupConfig.apiKey}.`,
         'success',
       );
       log(
         importSetupConfig,
-        `The mapper files have been stored at '${pathValidator(path.join(importSetupConfig.backupDirPath, 'mapper'))}'`,
+        `The back folder created at '${pathValidator(path.join(importSetupConfig.backupDir))}'`,
         'success',
       );
     } catch (error) {
-      log({ data: '' } as ImportConfig, `Failed to generate mapper files - ${formatError(error)}`, 'error');
+      log(
+        { data: '' } as ImportConfig,
+        `Failed to create back folder and mapper files - ${formatError(error)}`,
+        'error',
+      );
     }
   }
 }
