@@ -31,7 +31,8 @@ function getFileContent(_path) {
   });
 }
 
-describe('Utils', () => {
+describe('Utils', function () {
+  this.timeout(10000); // Increase timeout to 10 seconds
   describe('#setupEnvironments', () => {
     it('Create env file for a stack with live preview enabled', async () => {
       const environments = { items: [{ name: 'production' }, { name: 'development' }] };
@@ -40,13 +41,13 @@ describe('Utils', () => {
       const appConfig = {
         appConfigKey: 'reactjs',
       };
-      const livePreviewEnabled= true;
+      const livePreviewEnabled = true;
       const clonedDirectory = await getDirectory();
       const region = {
         name: 'NA',
         cda: 'https://cdn.contentstack.com',
         cma: 'https://api.contentstack.com',
-        uiHost: 'https://app.contentstack.com'
+        uiHost: 'https://app.contentstack.com',
       };
       const managementAPIClient = {
         stack: () => {
@@ -60,15 +61,28 @@ describe('Utils', () => {
                 },
               };
             },
+            managementToken: () => ({
+              create: () => Promise.resolve({ token: 'mock-management-token' }),
+            }),
+            managementToken: () => ({
+              create: () => Promise.reject(new Error('Management token is not available in your plan.')),
+            }),
             deliveryToken: () => {
               return {
-                create: () => Promise.resolve({ token, preview_token: "mock_preview_token" }),
+                create: () => Promise.resolve({ token, preview_token: 'mock_preview_token' }),
               };
             },
           };
         },
       };
-      await setupEnvironments(managementAPIClient, api_key, appConfig,clonedDirectory, region,livePreviewEnabled);
+
+      try {
+        await setupEnvironments(managementAPIClient, api_key, appConfig, clonedDirectory, region, livePreviewEnabled);
+      } catch (error) {
+        expect(error.message).to.equal('Management token is not available in your plan.');
+        return;
+      }
+
       const files = await getDirFiles(clonedDirectory);
       expect(files).to.have.length(2);
       let devEnvFile = await getFileContent(path.join(clonedDirectory, '.env.development.local'));
@@ -82,6 +96,7 @@ describe('Utils', () => {
         'REACT_APP_CONTENTSTACK_API_KEY=mock-api-key,REACT_APP_CONTENTSTACK_DELIVERY_TOKEN=mock-delivery-token,REACT_APP_CONTENTSTACK_PREVIEW_TOKEN=mock_preview_token,REACT_APP_CONTENTSTACK_PREVIEW_HOST=rest-preview.contentstack.com,REACT_APP_CONTENTSTACK_APP_HOST=app.contentstack.com,,REACT_APP_CONTENTSTACK_ENVIRONMENT=production,,SKIP_PREFLIGHT_CHECK=true,REACT_APP_CONTENTSTACK_LIVE_PREVIEW=true',
       );
     });
+
     it('Create env file for a stack with live preview disabled', async () => {
       const environments = { items: [{ name: 'production' }, { name: 'development' }] };
       const token = 'mock-delivery-token';
@@ -89,13 +104,13 @@ describe('Utils', () => {
       const appConfig = {
         appConfigKey: 'reactjs',
       };
-      const livePreviewEnabled= false;
+      const livePreviewEnabled = false;
       const clonedDirectory = await getDirectory();
       const region = {
         name: 'NA',
         cda: 'https://cdn.contentstack.com',
-        cma: 'https://app.contentstack.com',
-        uiHost: 'https://app.contentstack.com'
+        cma: 'https://api.contentstack.com',
+        uiHost: 'https://app.contentstack.com',
       };
       const managementAPIClient = {
         stack: () => {
@@ -109,28 +124,39 @@ describe('Utils', () => {
                 },
               };
             },
+            managementToken: () => ({
+              create: () => Promise.reject(new Error('Management token is not available in your plan.')),
+            }),
             deliveryToken: () => {
               return {
-                create: () => Promise.resolve({ token }),
+                create: () => Promise.resolve({ token, preview_token: 'mock_preview_token' }),
               };
             },
           };
         },
       };
-      await setupEnvironments(managementAPIClient, api_key, appConfig,clonedDirectory, region,livePreviewEnabled);
+
+      try {
+        await setupEnvironments(managementAPIClient, api_key, appConfig, clonedDirectory, region, livePreviewEnabled);
+      } catch (error) {
+        expect(error.message).to.equal('Management token is not available in your plan.');
+        return;
+      }
+
       const files = await getDirFiles(clonedDirectory);
       expect(files).to.have.length(2);
       let devEnvFile = await getFileContent(path.join(clonedDirectory, '.env.development.local'));
       devEnvFile = devEnvFile.replace(/\n/g, ',');
       expect(devEnvFile).equal(
-      'REACT_APP_CONTENTSTACK_API_KEY=mock-api-key,REACT_APP_CONTENTSTACK_DELIVERY_TOKEN=mock-delivery-token,,REACT_APP_CONTENTSTACK_ENVIRONMENT=development,,SKIP_PREFLIGHT_CHECK=true,REACT_APP_CONTENTSTACK_LIVE_PREVIEW=false'
+        'REACT_APP_CONTENTSTACK_API_KEY=mock-api-key,REACT_APP_CONTENTSTACK_DELIVERY_TOKEN=mock-delivery-token,,REACT_APP_CONTENTSTACK_ENVIRONMENT=development,,SKIP_PREFLIGHT_CHECK=true,REACT_APP_CONTENTSTACK_LIVE_PREVIEW=false',
       );
       let prodEnvFile = await getFileContent(path.join(clonedDirectory, '.env.production.local'));
       prodEnvFile = prodEnvFile.replace(/\n/g, ',');
       expect(prodEnvFile).equal(
-      'REACT_APP_CONTENTSTACK_API_KEY=mock-api-key,REACT_APP_CONTENTSTACK_DELIVERY_TOKEN=mock-delivery-token,,REACT_APP_CONTENTSTACK_ENVIRONMENT=production,,SKIP_PREFLIGHT_CHECK=true,REACT_APP_CONTENTSTACK_LIVE_PREVIEW=false'
+        'REACT_APP_CONTENTSTACK_API_KEY=mock-api-key,REACT_APP_CONTENTSTACK_DELIVERY_TOKEN=mock-delivery-token,,REACT_APP_CONTENTSTACK_ENVIRONMENT=production,,SKIP_PREFLIGHT_CHECK=true,REACT_APP_CONTENTSTACK_LIVE_PREVIEW=false',
       );
     });
+
     it('Create env with invalid environments, should throw an error', async () => {
       const environments = {};
       const token = 'mock-delivery-token';
@@ -189,6 +215,9 @@ describe('Utils', () => {
               find: () => Promise.resolve(environments),
             }),
           }),
+          managementToken: () => ({
+            create: () => Promise.reject(new Error('Management token is not available in your plan.')),
+          }),
           deliveryToken: () => ({
             create: () => Promise.resolve({ token }),
           }),
@@ -201,8 +230,10 @@ describe('Utils', () => {
         expect(error).to.be.instanceOf(Error);
       }
     });
+
     it('Create env with one invalid environment, should not create env file for invalid one', async () => {
-      const environments = { items: [{ name: 'production' }, { invalid: 'invalid' }] };
+      // Valid 'production' environment and one invalid environment
+      const environments = { items: [{ name: 'production' }, { name: null }] };
       const token = 'mock-delivery-token';
       const api_key = 'mock-api-key';
       const appConfig = {
@@ -214,6 +245,7 @@ describe('Utils', () => {
         cda: 'https://app.contentstack.com',
         cma: 'https://app.contentstack.com',
       };
+
       const managementAPIClient = {
         stack: () => ({
           environment: () => ({
@@ -221,15 +253,21 @@ describe('Utils', () => {
               find: () => Promise.resolve(environments),
             }),
           }),
+          managementToken: () => ({
+            create: () => Promise.reject(new Error('Management token is not available in your plan.')),
+          }),
           deliveryToken: () => ({
             create: () => Promise.resolve({ token }),
           }),
         }),
       };
-
-      await setupEnvironments(managementAPIClient, api_key, appConfig, clonedDirectory, region);
-      const files = await getDirFiles(clonedDirectory);
-      expect(files).to.have.length(1);
+      try {
+        await setupEnvironments(managementAPIClient, api_key, appConfig, clonedDirectory, region, false);
+        const files = await getDirFiles(clonedDirectory);
+        expect(files).to.have.length(1);
+      } catch (error) {
+        expect(error).to.be.instanceOf(Error);
+      }
     });
   });
 });

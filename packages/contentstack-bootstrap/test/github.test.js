@@ -29,7 +29,7 @@ describe('Github Client', function () {
 
     it('Clone the source repo', async function () {
         this.timeout(1000000)
-        const repo = GitHubClient.parsePath('contentstack/contentstack-nextjs-react-universal-demo');
+        const repo = GitHubClient.parsePath('contentstack/compass-starter-app');
         const gClient = new GitHubClient(repo);
         const dir = await getDirectory();
         const result = await gClient.getLatest(dir);
