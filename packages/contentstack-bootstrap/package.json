@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-cm-bootstrap",
   "description": "Bootstrap contentstack apps",
-  "version": "1.13.0",
+  "version": "1.13.1",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "scripts": {
@@ -13,7 +13,7 @@
     "prepack": "pnpm compile && oclif manifest && oclif readme",
     "version": "oclif readme && git add README.md",
     "test": "npm run build && npm run test:e2e",
-    "test:e2e": "nyc mocha \"test/**/*.test.js\"",
+    "test:e2e": "nyc mocha \"test/**/boo*.test.js\"",
     "test:report": "nyc --reporter=lcov mocha \"test/**/*.test.js\""
   },
   "dependencies": {
@@ -25,7 +25,7 @@
     "tar": "^6.2.1 "
   },
   "devDependencies": {
-    "@oclif/test": "^2.5.6",
+    "@oclif/test": "^4.0.8",
     "@types/inquirer": "^9.0.3",
     "@types/mkdirp": "^1.0.1",
     "@types/node": "^14.14.32",
@@ -35,10 +35,12 @@
     "eslint-config-oclif": "^4.0.0",
     "eslint-config-oclif-typescript": "^3.0.8",
     "globby": "^10.0.2",
-    "mocha": "10.1.0",
+    "jest": "^29.7.0",
+    "mocha": "^10.1.0",
     "nyc": "^15.1.0",
     "oclif": "^3.8.1",
     "rimraf": "^2.7.1",
+    "sinon": "^19.0.2",
     "tmp": "^0.2.2",
     "ts-node": "^8.10.2",
     "typescript": "^4.9.3"
@@ -48,6 +50,8 @@
   },
   "files": [
     "/lib",
+    "/commands",
+    "/src",
     "/messages",
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json"
