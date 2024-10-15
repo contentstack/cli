@@ -1,4 +1,4 @@
-const { expect, test } = require('@oclif/test')
+const { expect } = require('chai');
 const GitHubClient = require('../lib/bootstrap/github/client').default
 const tmp = require('tmp')
 const path = require('path')
@@ -29,7 +29,7 @@ describe('Github Client', function () {
 
     it('Clone the source repo', async function () {
         this.timeout(1000000)
-        const repo = GitHubClient.parsePath('contentstack/contentstack-nextjs-react-universal-demo');
+        const repo = GitHubClient.parsePath('contentstack/compass-starter-app');
         const gClient = new GitHubClient(repo);
         const dir = await getDirectory();
         const result = await gClient.getLatest(dir);
