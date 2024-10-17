@@ -54,16 +54,9 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       },
     };
     super(Object.assign(omit(config, ['helpers']), conf));
-    this.entriesMapperPath = resolve(
-      sanitizePath(config.backupDir),
-      'mapper',
-      'entries',
-    );
+    this.entriesMapperPath = resolve(sanitizePath(config.backupDir), 'mapper', 'entries');
     this.personalizeConfig = this.config.modules.personalize;
-    this.entriesDirPath = resolve(
-      sanitizePath(config.backupDir),
-      sanitizePath(config.modules.entries.dirName),
-    );
+    this.entriesDirPath = resolve(sanitizePath(config.backupDir), sanitizePath(config.modules.entries.dirName));
     this.failedVariantPath = resolve(sanitizePath(this.entriesMapperPath), 'failed-entry-variants.json');
     this.failedVariantEntries = new Map();
   }
@@ -169,7 +162,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       sanitizePath(variantEntry.dirName),
       sanitizePath(entry_uid),
     );
-    const fs = new FsUtility({ basePath: variantEntryBasePath });
+    const fs = new FsUtility({ basePath: variantEntryBasePath, createDirIfNotExist: false });
 
     for (const _ in fs.indexFileContent) {
       try {
@@ -217,13 +210,21 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
 
       for (let [, variantEntry] of entries(batch)) {
         const onSuccess = ({ response, apiData: { entryUid, variantUid }, log }: any) => {
-          log(this.config, `Created entry variant: '${variantUid}' of entry uid ${entryUid}`, 'info');
+          log(
+            this.config,
+            `Created entry variant: '${variantUid}' of entry uid ${entryUid} locale '${locale}'`,
+            'info',
+          );
         };
 
         const onReject = ({ error, apiData, log }: any) => {
           const { entryUid, variantUid } = apiData;
           this.failedVariantEntries.set(variantUid, apiData);
-          log(this.config, `Failed to create entry variant: '${variantUid}' of entry uid ${entryUid}`, 'error');
+          log(
+            this.config,
+            `Failed to create entry variant: '${variantUid}' of entry uid ${entryUid} locale '${locale}'`,
+            'error',
+          );
           log(this.config, error, 'error');
         };
         // NOTE Find new variant Id by old Id
@@ -440,10 +441,18 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       }
 
       const onSuccess = ({ response, apiData: { entryUid, variantUid }, log }: any) => {
-        log(this.config, `Entry variant: '${variantUid}' of entry uid ${entryUid} published successfully!`, 'info');
+        log(
+          this.config,
+          `Entry variant: '${variantUid}' of entry '${entryUid}' published on locales '${locales.join(',')}'`,
+          'info',
+        );
       };
       const onReject = ({ error, apiData: { entryUid, variantUid }, log }: any) => {
-        log(this.config, `Failed to publish entry variant: '${variantUid}' of entry uid ${entryUid}`, 'error');
+        log(
+          this.config,
+          `Failed to publish entry variant: '${variantUid}' of entry uid ${entryUid} on locales '${locales.join(',')}'`,
+          'error',
+        );
         log(this.config, formatError(error), 'error');
       };
 
