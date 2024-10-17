@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.7.3",
+  "version": "1.8.0",
   "author": "Contentstack",
   "scripts": {
     "build": "npm run clean && npm run compile",
@@ -81,7 +81,10 @@
       "config:get:region": "RGT",
       "config:set:region": "RST",
       "config:get:base-branch": "BRGT",
-      "config:set:base-branch": "BRST"
+      "config:set:base-branch": "BRST",
+      "config:set:rate-limit": "RLST",
+      "config:get:rate-limit": "RLGT",
+      "config:remove:rate-limit": "RLRM"
     }
   },
   "repository": "contentstack/cli"
