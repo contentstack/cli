@@ -54,7 +54,7 @@ export type PublishVariantEntryDto = {
       uid: string;
       version?: number;
     }[];
-  }
+  };
   locale: string;
   version?: number;
 } & AnyProperty;
