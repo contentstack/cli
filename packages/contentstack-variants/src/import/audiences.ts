@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 import { existsSync } from 'fs';
-
+import { sanitizePath } from '@contentstack/cli-utilities';
 import { APIConfig, AudienceStruct, ImportConfig, LogType } from '../types';
 import { PersonalizationAdapter, fsUtil, lookUpAttributes } from '../utils';
 
@@ -10,24 +10,32 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
   private attributesMapperPath: string;
   private audiencesUidMapperPath: string;
   private audiencesUidMapper: Record<string, unknown>;
-  private personalizationConfig: ImportConfig['modules']['personalization'];
-  private audienceConfig: ImportConfig['modules']['personalization']['audiences'];
-  public attributeConfig: ImportConfig['modules']['personalization']['attributes'];
+  private personalizeConfig: ImportConfig['modules']['personalize'];
+  private audienceConfig: ImportConfig['modules']['personalize']['audiences'];
+  public attributeConfig: ImportConfig['modules']['personalize']['attributes'];
 
   constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
     const conf: APIConfig = {
       config,
-      baseURL: config.modules.personalization.baseURL[config.region.name],
-      headers: { 'X-Project-Uid': config.modules.personalization.project_id, authtoken: config.auth_token },
+      baseURL: config.modules.personalize.baseURL[config.region.name],
+      headers: { 'X-Project-Uid': config.modules.personalize.project_id },
     };
     super(Object.assign(config, conf));
-    this.personalizationConfig = this.config.modules.personalization;
-    this.audienceConfig = this.personalizationConfig.audiences;
-    this.attributeConfig = this.personalizationConfig.attributes;
-    this.mapperDirPath = resolve(this.config.backupDir, 'mapper', this.personalizationConfig.dirName);
-    this.audienceMapperDirPath = resolve(this.mapperDirPath, this.audienceConfig.dirName);
-    this.audiencesUidMapperPath = resolve(this.audienceMapperDirPath, 'uid-mapping.json');
-    this.attributesMapperPath = resolve(this.mapperDirPath, this.attributeConfig.dirName, 'uid-mapping.json');
+    this.personalizeConfig = this.config.modules.personalize;
+    this.audienceConfig = this.personalizeConfig.audiences;
+    this.attributeConfig = this.personalizeConfig.attributes;
+    this.mapperDirPath = resolve(
+      sanitizePath(this.config.backupDir),
+      'mapper',
+      sanitizePath(this.personalizeConfig.dirName),
+    );
+    this.audienceMapperDirPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.audienceConfig.dirName));
+    this.audiencesUidMapperPath = resolve(sanitizePath(this.audienceMapperDirPath), 'uid-mapping.json');
+    this.attributesMapperPath = resolve(
+      sanitizePath(this.mapperDirPath),
+      sanitizePath(this.attributeConfig.dirName),
+      'uid-mapping.json',
+    );
     this.audiencesUidMapper = {};
   }
 
@@ -36,10 +44,15 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
    */
   async import() {
     this.log(this.config, this.$t(this.messages.IMPORT_MSG, { module: 'Audiences' }), 'info');
-
+    await this.init();
     await fsUtil.makeDirectory(this.audienceMapperDirPath);
     const { dirName, fileName } = this.audienceConfig;
-    const audiencesPath = resolve(this.config.data, this.personalizationConfig.dirName, dirName, fileName);
+    const audiencesPath = resolve(
+      sanitizePath(this.config.data),
+      sanitizePath(this.personalizeConfig.dirName),
+      sanitizePath(dirName),
+      sanitizePath(fileName),
+    );
 
     if (existsSync(audiencesPath)) {
       try {
@@ -48,14 +61,19 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
 
         for (const audience of audiences) {
           let { name, definition, description, uid } = audience;
-          //check whether reference attributes exists or not
-          if (definition.rules?.length) {
-            definition.rules = lookUpAttributes(definition.rules, attributesUid);
+          try {
+            //check whether reference attributes exists or not
+            if (definition.rules?.length) {
+              definition.rules = lookUpAttributes(definition.rules, attributesUid);
+            }
+            const audienceRes = await this.createAudience({ definition, name, description });
+            //map old audience uid to new audience uid
+            //mapper file is used to check whether audience created or not before creating experience
+            this.audiencesUidMapper[uid] = audienceRes?.uid ?? '';
+          } catch (error) {
+            this.log(this.config, `Failed to create audience uid: ${uid}, name: ${name}`, 'error');
+            this.log(this.config, error, 'error');
           }
-          const audienceRes = await this.createAudience({ definition, name, description });
-          //map old audience uid to new audience uid
-          //mapper file is used to check whether audience created or not before creating experience
-          this.audiencesUidMapper[uid] = audienceRes?.uid ?? '';
         }
 
         fsUtil.writeFile(this.audiencesUidMapperPath, this.audiencesUidMapper);

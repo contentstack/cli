@@ -356,9 +356,9 @@ export default class EntriesImport extends BaseClass {
     const contentType = find(this.cTs, { uid: cTUid });
 
     const onSuccess = ({ response, apiData: entry, additionalInfo }: any) => {
-      this.entriesForVariant.push({ content_type: cTUid, entry_uid: entry.uid, locale });
       if (additionalInfo[entry.uid]?.isLocalized) {
         let oldUid = additionalInfo[entry.uid].entryOldUid;
+        this.entriesForVariant.push({ content_type: cTUid, entry_uid: oldUid, locale });
         log(
           this.importConfig,
           `Localized entry: '${entry.title}' of content type ${cTUid} in locale ${locale}`,
@@ -370,6 +370,7 @@ export default class EntriesImport extends BaseClass {
         entriesCreateFileHelper.writeIntoFile({ [oldUid]: entry } as any, { mapKeyVal: true });
       } else {
         log(this.importConfig, `Created entry: '${entry.title}' of content type ${cTUid} in locale ${locale}`, 'info');
+        this.entriesForVariant.push({ content_type: cTUid, entry_uid: entry.uid, locale });
         // This is for creating localized entries that do not have a counterpart in master locale.
         // For example : To create entry1 in fr-fr, where en-us is the master locale
         // entry1 will get created in en-us first, then fr-fr version will be created
@@ -949,14 +950,13 @@ export default class EntriesImport extends BaseClass {
       if (chunk) {
         let apiContent = values(chunk as Record<string, any>[]);
         let apiContentDuplicate: any = [];
-        apiContent.forEach((content: Record<string, any>) => {
-          content?.publish_details?.forEach((publish: Record<string, any>) => {
-            let c2 = { ...content };
-            c2.locale = publish.locale;
-            c2.publish_details = [publish];
-            apiContentDuplicate.push(c2);
-          });
-        });
+        apiContentDuplicate = apiContent.flatMap((content: Record<string, any>) =>
+          content?.publish_details?.map((publish: Record<string, any>) => ({
+            ...content,
+            locale: publish.locale,
+            publish_details: [publish],
+          }))
+        );   
         apiContent = apiContentDuplicate;
         await this.makeConcurrentCall({
           apiContent,
@@ -1008,6 +1008,10 @@ export default class EntriesImport extends BaseClass {
         }
       });
     } else {
+      apiOptions.apiData = null;
+      return apiOptions;
+    }
+    if(requestObject.environments.length === 0 || requestObject.locales.length === 0 ){
       apiOptions.apiData = null;
       return apiOptions;
     }

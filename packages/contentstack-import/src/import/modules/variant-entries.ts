@@ -1,5 +1,6 @@
 import path from 'path';
 import { Import, ImportHelperMethodsConfig, LogType, ProjectStruct } from '@contentstack/cli-variants';
+import { sanitizePath } from '@contentstack/cli-utilities';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import {
   log,
@@ -13,16 +14,16 @@ import {
 
 export default class ImportVarientEntries {
   private config: ImportConfig;
-  public personalization: ImportConfig['modules']['personalization'];
+  public personalize: ImportConfig['modules']['personalize'];
   private projectMapperFilePath: string;
 
   constructor({ importConfig }: ModuleClassParams) {
     this.config = importConfig;
-    this.personalization = importConfig.modules.personalization;
+    this.personalize = importConfig.modules.personalize;
     this.projectMapperFilePath = path.resolve(
-      this.config.data,
+      sanitizePath(this.config.data),
       'mapper',
-      this.personalization.dirName,
+      sanitizePath(this.personalize.dirName),
       'projects',
       'projects.json',
     );
@@ -35,8 +36,8 @@ export default class ImportVarientEntries {
   async start(): Promise<void> {
     try {
       const project = fsUtil.readFile(this.projectMapperFilePath) as ProjectStruct;
-      if (project && project.uid && this.personalization.importData) {
-        this.config.modules.personalization.project_id = project.uid;
+      if (project && project.uid) {
+        this.config.modules.personalize.project_id = project.uid;
         const helpers: ImportHelperMethodsConfig = {
           lookUpTerms,
           lookupAssets,

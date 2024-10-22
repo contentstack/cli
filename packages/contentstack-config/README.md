@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-config/1.6.5 darwin-arm64 node-v22.2.0
+@contentstack/cli-config/1.8.0 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -32,13 +32,16 @@ USAGE
 * [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
 * [`csdx config:get:ea-header`](#csdx-configgetea-header)
 * [`csdx config:get:early-access-header`](#csdx-configgetearly-access-header)
+* [`csdx config:get:rate-limit`](#csdx-configgetrate-limit)
 * [`csdx config:get:region`](#csdx-configgetregion)
 * [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
 * [`csdx config:remove:ea-header`](#csdx-configremoveea-header)
 * [`csdx config:remove:early-access-header`](#csdx-configremoveearly-access-header)
+* [`csdx config:remove:rate-limit`](#csdx-configremoverate-limit)
 * [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
 * [`csdx config:set:ea-header`](#csdx-configsetea-header)
 * [`csdx config:set:early-access-header`](#csdx-configsetearly-access-header)
+* [`csdx config:set:rate-limit`](#csdx-configsetrate-limit)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 
 ## `csdx config:get:base-branch`
@@ -95,6 +98,23 @@ EXAMPLES
 ```
 
 _See code: [src/commands/config/get/early-access-header.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/early-access-header.ts)_
+
+## `csdx config:get:rate-limit`
+
+Get rate-limit of organizations
+
+```
+USAGE
+  $ csdx config:get:rate-limit
+
+DESCRIPTION
+  Get rate-limit of organizations
+
+EXAMPLES
+  $ csdx config:get:rate-limit
+```
+
+_See code: [src/commands/config/get/rate-limit.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/rate-limit.ts)_
 
 ## `csdx config:get:region`
 
@@ -186,6 +206,26 @@ EXAMPLES
 
 _See code: [src/commands/config/remove/early-access-header.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/early-access-header.ts)_
 
+## `csdx config:remove:rate-limit`
+
+Remove rate-limit of the organization
+
+```
+USAGE
+  $ csdx config:remove:rate-limit [--org <value>]
+
+FLAGS
+  --org=<value>  Provide the organization UID
+
+DESCRIPTION
+  Remove rate-limit of the organization
+
+EXAMPLES
+  $ csdx config:remove:rate-limit --org <<org_uid>>
+```
+
+_See code: [src/commands/config/remove/rate-limit.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/rate-limit.ts)_
+
 ## `csdx config:set:base-branch`
 
 Set branch for CLI
@@ -259,24 +299,56 @@ EXAMPLES
 
 _See code: [src/commands/config/set/early-access-header.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/early-access-header.ts)_
 
+## `csdx config:set:rate-limit`
+
+Set rate-limit for CLI
+
+```
+USAGE
+  $ csdx config:set:rate-limit [--org <value>] [--utilize <value>] [--limit-name <value>] [--default]
+
+FLAGS
+  --default                Reset to default rate limit
+  --limit-name=<value>...  [Optional] Provide the limit names separated by commas ['limit', 'getLimit', 'bulkLimit']
+  --org=<value>            Provide the organization UID
+  --utilize=<value>        [default: 50] Provide the utilization percentages for rate limit, separated by commas
+
+DESCRIPTION
+  Set rate-limit for CLI
+
+EXAMPLES
+  $ csdx config:set:rate-limit --org <<org_uid>>
+
+  $ csdx config:set:rate-limit --org <<org_uid>> --utilize 70,80 --limit-name getLimit,limit
+
+  $ csdx config:set:rate-limit --org <<org_uid>> --default
+```
+
+_See code: [src/commands/config/set/rate-limit.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/rate-limit.ts)_
+
 ## `csdx config:set:region [REGION]`
 
 Set region for CLI
 
 ```
 USAGE
-  $ csdx config:set:region [REGION] [-d <value> -m <value> --ui-host <value> -n <value>]
+  $ csdx config:set:region [REGION] [-d <value> -m <value> --ui-host <value> -n <value>] [--developer-hub <value>]
+    [--personalize <value>] [--launch <value>]
 
 ARGUMENTS
   REGION  Name for the region
 
 FLAGS
-  -d, --cda=<value>   Custom host to set for content delivery API, if this flag is added then cma, ui-host and name
-                      flags are required
-  -m, --cma=<value>   Custom host to set for content management API, , if this flag is added then cda, ui-host and name
-                      flags are required
-  -n, --name=<value>  Name for the region, if this flag is added then cda, cma and ui-host flags are required
-  --ui-host=<value>   Custom UI host to set for CLI, if this flag is added then cda, cma and name flags are required
+  -d, --cda=<value>        Custom host to set for content delivery API, if this flag is added then cma, ui-host and name
+                           flags are required
+  -m, --cma=<value>        Custom host to set for content management API, , if this flag is added then cda, ui-host and
+                           name flags are required
+  -n, --name=<value>       Name for the region, if this flag is added then cda, cma and ui-host flags are required
+  --developer-hub=<value>  Custom host to set for Developer hub API
+  --launch=<value>         Custom host to set for Launch API
+  --personalize=<value>    Custom host to set for Personalize API
+  --ui-host=<value>        Custom UI host to set for CLI, if this flag is added then cda, cma and name flags are
+                           required
 
 DESCRIPTION
   Set region for CLI
@@ -295,6 +367,14 @@ EXAMPLES
   $ csdx config:set:region GCP-NA
 
   $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India"
+
+  $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India" --developer-hub <developer_hub_url>
+
+  $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India" --personalize <personalize_url>
+
+  $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India" --launch <launch_url>
+
+  $ csdx config:set:region --cda <contentstack_cda_endpoint> --cma <contentstack_cma_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India" --developer-hub <developer_hub_url> --personalize <personalize_url> --launch <launch_url>
 ```
 
 _See code: [src/commands/config/set/region.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/region.ts)_

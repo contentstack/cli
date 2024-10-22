@@ -28,6 +28,10 @@ const createSignedUploadUrlMutation: DocumentNode = gql`
         formFieldKey
         formFieldValue
       }
+      headers{
+        key
+        value
+      }
     }
   }
 `;

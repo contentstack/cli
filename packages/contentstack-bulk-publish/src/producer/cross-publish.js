@@ -15,6 +15,7 @@ const assetQueue = getQueue();
 const { Command } = require('@contentstack/cli-command');
 const command = new Command();
 const { isEmpty } = require('../util');
+const { fetchBulkPublishLimit } = require('../util/common-utility');
 const VARIANTS_PUBLISH_API_VERSION = '3.2';
 
 let bulkPublishSet = [];
@@ -34,13 +35,13 @@ function getQueryParams(filter) {
   return queryString;
 }
 
-async function bulkAction(stack, items, bulkPublish, filter, destEnv, apiVersion, variantsFlag = false) {
+async function bulkAction(stack, items, bulkPublish, filter, destEnv, apiVersion, bulkPublishLimit, variantsFlag = false) {
   return new Promise(async (resolve) => {
     for (let index = 0; index < items.length; index++) {
       changedFlag = true;
 
       if (bulkPublish) {
-        if (bulkPublishSet.length < 10 && items[index].type === 'entry_published') {
+        if (bulkPublishSet.length < bulkPublishLimit && items[index].type === 'entry_published') {
           const entry = {
             uid: items[index].data.uid,
             content_type: items[index].content_type_uid,
@@ -60,7 +61,7 @@ async function bulkAction(stack, items, bulkPublish, filter, destEnv, apiVersion
           bulkPublishSet.push(JSON.parse(JSON.stringify(entry)));
         }
 
-        if (bulkPublishAssetSet.length < 10 && items[index].type === 'asset_published') {
+        if (bulkPublishAssetSet.length < bulkPublishLimit && items[index].type === 'asset_published') {
           bulkPublishAssetSet.push({
             uid: items[index].data.uid,
             version: items[index].data._version,
@@ -68,7 +69,7 @@ async function bulkAction(stack, items, bulkPublish, filter, destEnv, apiVersion
           });
         }
 
-        if (bulkPublishAssetSet.length === 10) {
+        if (bulkPublishAssetSet.length === bulkPublishLimit) {
           await queue.Enqueue({
             assets: bulkPublishAssetSet,
             Type: 'asset',
@@ -80,7 +81,7 @@ async function bulkAction(stack, items, bulkPublish, filter, destEnv, apiVersion
           bulkPublishAssetSet = [];
         }
 
-        if (bulkPublishSet.length === 10) {
+        if (bulkPublishSet.length === bulkPublishLimit) {
           await queue.Enqueue({
             entries: bulkPublishSet,
             locale: filter.locale,
@@ -92,7 +93,7 @@ async function bulkAction(stack, items, bulkPublish, filter, destEnv, apiVersion
           bulkPublishSet = [];
         }
 
-        if (index === items.length - 1 && bulkPublishAssetSet.length <= 10 && bulkPublishAssetSet.length > 0) {
+        if (index === items.length - 1 && bulkPublishAssetSet.length <= bulkPublishLimit && bulkPublishAssetSet.length > 0) {
           await queue.Enqueue({
             assets: bulkPublishAssetSet,
             Type: 'asset',
@@ -104,7 +105,7 @@ async function bulkAction(stack, items, bulkPublish, filter, destEnv, apiVersion
           bulkPublishAssetSet = [];
         }
 
-        if (index === items.length - 1 && bulkPublishSet.length <= 10 && bulkPublishSet.length > 0) {
+        if (index === items.length - 1 && bulkPublishSet.length <= bulkPublishLimit && bulkPublishSet.length > 0) {
           await queue.Enqueue({
             entries: bulkPublishSet,
             locale: filter.locale,
@@ -154,6 +155,7 @@ async function getSyncEntries(
   deliveryToken,
   destEnv,
   apiVersion,
+  bulkPublishLimit,
   variantsFlag = false,
   paginationToken = null,
 ) {
@@ -222,7 +224,7 @@ async function getSyncEntries(
       }
 
       if (entriesResponse.items.length > 0) {
-        await bulkAction(stack, entriesResponse.items, bulkPublish, filter, destEnv, apiVersion, variantsFlag);
+        await bulkAction(stack, entriesResponse.items, bulkPublish, filter, destEnv, apiVersion, bulkPublishLimit, variantsFlag);
       }
       if (!entriesResponse.pagination_token) {
         if (!changedFlag) console.log('No Entries/Assets Found published on specified environment');
@@ -238,6 +240,7 @@ async function getSyncEntries(
           deliveryToken,
           destEnv,
           apiVersion,
+          bulkPublishLimit,
           entriesResponse.pagination_token,
         );
       }, 3000);
@@ -372,6 +375,7 @@ async function start(
     setConfig(config, bulkPublish);
     // filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
     const queryParams = getQueryParams(filter);
+    const bulkPublishLimit = fetchBulkPublishLimit(stack?.org_uid);
     if (includeVariants) {
       apiVersion = VARIANTS_PUBLISH_API_VERSION;
     }
@@ -383,7 +387,7 @@ async function start(
       filter,
       deliveryToken,
       destEnv,
-      apiVersion,
+      apiVersion, bulkPublishLimit,
       includeVariants,
     );
   }

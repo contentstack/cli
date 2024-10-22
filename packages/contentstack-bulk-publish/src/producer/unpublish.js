@@ -15,6 +15,7 @@ const assetQueue = getQueue();
 const { Command } = require('@contentstack/cli-command');
 const command = new Command();
 const { isEmpty } = require('../util');
+const { fetchBulkPublishLimit } = require('../util/common-utility');
 const VARIANTS_UNPUBLISH_API_VERSION = '3.2';
 
 let bulkUnPublishSet = [];
@@ -51,13 +52,13 @@ function getQueryParams(filter) {
   return queryString;
 }
 
-function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion, variantsFlag = false) {
+function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion, bulkPublishLimit, variantsFlag = false) {
   return new Promise(async (resolve) => {
     for (let index = 0; index < items.length; index++) {
       changedFlag = true;
 
       if (bulkUnpublish) {
-        if (bulkUnPublishSet.length < 10 && items[index].type === 'entry_published') {
+        if (bulkUnPublishSet.length < bulkPublishLimit && items[index].type === 'entry_published') {
           const entryData = {
             uid: items[index].data.uid,
             content_type: items[index].content_type_uid,
@@ -74,7 +75,7 @@ function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion
           }
         }
 
-        if (bulkUnPulishAssetSet.length < 10 && items[index].type === 'asset_published') {
+        if (bulkUnPulishAssetSet.length < bulkPublishLimit && items[index].type === 'asset_published') {
           bulkUnPulishAssetSet.push({
             uid: items[index].data.uid,
             version: items[index].data._version,
@@ -82,7 +83,7 @@ function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion
           });
         }
 
-        if (bulkUnPulishAssetSet.length === 10) {
+        if (bulkUnPulishAssetSet.length === bulkPublishLimit) {
           await queue.Enqueue({
             assets: bulkUnPulishAssetSet,
             Type: 'asset',
@@ -94,7 +95,7 @@ function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion
           bulkUnPulishAssetSet = [];
         }
 
-        if (bulkUnPublishSet.length === 10) {
+        if (bulkUnPublishSet.length === bulkPublishLimit) {
           await queue.Enqueue({
             entries: bulkUnPublishSet,
             locale: locale,
@@ -105,7 +106,7 @@ function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion
           });
           bulkUnPublishSet = [];
         }
-        if (index === items.length - 1 && bulkUnPulishAssetSet.length <= 10 && bulkUnPulishAssetSet.length > 0) {
+        if (index === items.length - 1 && bulkUnPulishAssetSet.length <= bulkPublishLimit && bulkUnPulishAssetSet.length > 0) {
           await queue.Enqueue({
             assets: bulkUnPulishAssetSet,
             Type: 'asset',
@@ -117,7 +118,7 @@ function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion
           bulkUnPulishAssetSet = [];
         }
 
-        if (index === items.length - 1 && bulkUnPublishSet.length <= 10 && bulkUnPublishSet.length > 0) {
+        if (index === items.length - 1 && bulkUnPublishSet.length <= bulkPublishLimit && bulkUnPublishSet.length > 0) {
           await queue.Enqueue({
             entries: bulkUnPublishSet,
             locale: locale,
@@ -165,6 +166,7 @@ async function getSyncEntries(
   environment,
   deliveryToken,
   apiVersion,
+  bulkPublishLimit,
   variantsFlag,
   paginationToken = null,
 ) {
@@ -219,7 +221,7 @@ async function getSyncEntries(
           queryParamsObj.apiVersion = VARIANTS_UNPUBLISH_API_VERSION;
           entriesResponse.items = await attachVariantsToItems(stack, entriesResponse.items, queryParamsObj); // with variants data
         }
-        await bulkAction(stack, entriesResponse.items, bulkUnpublish, environment, locale, apiVersion, variantsFlag);
+        await bulkAction(stack, entriesResponse.items, bulkUnpublish, environment, locale, apiVersion, variantsFlag, bulkPublishLimit);
       }
       
       if (entriesResponse.items.length === 0) {
@@ -236,6 +238,7 @@ async function getSyncEntries(
           environment,
           deliveryToken,
           apiVersion,
+          bulkPublishLimit,
           variantsFlag,
           null,
         );
@@ -360,7 +363,8 @@ async function start(
     }
     setConfig(config, bulkUnpublish);
     const queryParams = getQueryParams(filter);
-    await getSyncEntries(stack, config, locale, queryParams, bulkUnpublish, environment, deliveryToken, apiVersion, includeVariants);
+    const bulkPublishLimit = fetchBulkPublishLimit(stack?.org_uid);
+    await getSyncEntries(stack, config, locale, queryParams, bulkUnpublish, environment, deliveryToken, apiVersion, bulkPublishLimit, includeVariants);
   }
 }
 
