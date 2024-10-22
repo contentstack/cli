@@ -21,25 +21,17 @@ let bulkPublishSet = [];
 let filePath;
 
 async function getEntries(
-  
   stack,
- 
   contentType,
- 
   locale,
- 
   bulkPublish,
- 
   environments,
- 
   apiVersion,
   bulkPublishLimit,
- 
   variantsFlag = false,
   entry_uid = undefined,
   publishWithoutBaseFlag = false,
   skip = 0,
-,
 ) {
   return new Promise((resolve, reject) => {
     skipCount = skip;
@@ -112,7 +104,11 @@ async function getEntries(
               bulkPublishSet = [];
             }
 
-            if (index === entries.length - 1 && bulkPublishSet.length <= bulkPublishLimit && bulkPublishSet.length > 0) {
+            if (
+              index === entries.length - 1 &&
+              bulkPublishSet.length <= bulkPublishLimit &&
+              bulkPublishSet.length > 0
+            ) {
               await queue.Enqueue({
                 entries: bulkPublishSet,
                 locale,
@@ -141,25 +137,17 @@ async function getEntries(
           return resolve();
         }
         await getEntries(
-          
           stack,
-         
           contentType,
-         
           locale,
-         
           bulkPublish,
-         
           environments,
-         
           apiVersion,
           bulkPublishLimit,
-         
           variantsFlag,
           entry_uid,
           publishWithoutBaseFlag,
           skipCount,
-        ,
         );
         return resolve();
       })
@@ -308,20 +296,13 @@ async function start(
       for (let i = 0; i < allContentTypes.length; i += 1) {
         /* eslint-disable no-await-in-loop */
         await getEntries(
-          
           stack,
-         
           allContentTypes[i].uid || allContentTypes[i],
-         
           locales[loc],
-         
           bulkPublish,
-         
           environments,
-         
           apiVersion,
           bulkPublishLimit,
-        ,
           includeVariants,
           entryUid,
           publishWithoutBase,
