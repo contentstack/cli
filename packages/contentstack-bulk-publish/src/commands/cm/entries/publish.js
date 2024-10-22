@@ -22,7 +22,6 @@ class PublishEntriesCommand extends Command {
       entriesFlags['publish-all-content-types'] || entriesFlags.publishAllContentTypes || false;
     entriesFlags.apiVersion = entriesFlags['api-version'] || '3';
     entriesFlags.includeVariants = entriesFlags['include-variants'] || entriesFlags.includeVariants || false;
-    entriesFlags.publishWithoutBase = entriesFlags['publish-without-base'] || entriesFlags.publishWithoutBase || false;
     entriesFlags.entryUid = entriesFlags['entry-uid'] || entriesFlags.entryUid;
 
     if (entriesFlags.entryUid === undefined) {
@@ -35,7 +34,6 @@ class PublishEntriesCommand extends Command {
     delete entriesFlags['publish-all-content-types'];
     delete entriesFlags['include-variants'];
     delete entriesFlags['entry-uid'];
-    delete entriesFlags['publish-without-base'];
 
     let updatedFlags;
     try {
@@ -66,9 +64,6 @@ class PublishEntriesCommand extends Command {
           config.stackApiKey = updatedFlags['stack-api-key'];
         } else {
           this.error('Please use `--alias` or `--stack-api-key` to proceed.', { exit: 2 });
-        }
-        if (updatedFlags.publishWithoutBase && !updatedFlags.includeVariants) {
-          this.error('Please use `--include-variants` to proceed.', { exit: 2 });
         }
         updatedFlags.bulkPublish = updatedFlags.bulkPublish !== 'false';
         stack = await getStack(config);
@@ -262,10 +257,6 @@ PublishEntriesCommand.flags = {
     default: false, // set the default value to false
     description: 'Include Variants flag will publish all associated variant entries with base entry.',
   }),
-  'publish-without-base': flags.boolean({
-    default: false,
-    description: 'Publish without base flag will publish all associated variant entries except base entry.',
-  }),
 };
 
 PublishEntriesCommand.examples = [
@@ -295,14 +286,11 @@ PublishEntriesCommand.examples = [
   '',
   'Using --entry-uid and --include-variants',
   'csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN] --entry-uid [ENTRY UID] [--include-variants]',
-  '',
-  'Using --include-variants and --publish-without-base',
-  'csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN] [--include-variants][--publish-without-base]',
 ];
 
 PublishEntriesCommand.aliases = ['cm:bulk-publish:entries'];
 
 PublishEntriesCommand.usage =
-  'cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants][--publish-without-base]';
+  'cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants]';
 
 module.exports = PublishEntriesCommand;
