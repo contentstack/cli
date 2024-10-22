@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.22.0 darwin-arm64 node-v22.2.0
+@contentstack/cli/1.28.1 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -86,13 +86,16 @@ USAGE
 * [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
 * [`csdx config:get:ea-header`](#csdx-configgetea-header)
 * [`csdx config:get:early-access-header`](#csdx-configgetearly-access-header)
+* [`csdx config:get:rate-limit`](#csdx-configgetrate-limit)
 * [`csdx config:get:region`](#csdx-configgetregion)
 * [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
 * [`csdx config:remove:ea-header`](#csdx-configremoveea-header)
 * [`csdx config:remove:early-access-header`](#csdx-configremoveearly-access-header)
+* [`csdx config:remove:rate-limit`](#csdx-configremoverate-limit)
 * [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
 * [`csdx config:set:ea-header`](#csdx-configsetea-header)
 * [`csdx config:set:early-access-header`](#csdx-configsetearly-access-header)
+* [`csdx config:set:rate-limit`](#csdx-configsetrate-limit)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMANDS]`](#csdx-help-commands)
 * [`csdx launch`](#csdx-launch)
@@ -123,12 +126,12 @@ Perform audits and find possible errors in the exported Contentstack data
 ```
 USAGE
   $ csdx audit [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows...] [--columns <value> | ] [--sort <value>] [--filter
-    <value>] [--csv | --no-truncate]
+    content-types|global-fields|entries|extensions|workflows|custom-roles...] [--columns <value> | ] [--sort <value>]
+    [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
-                         <options: content-types|global-fields|entries|extensions|workflows>
+                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles>
   --report-path=<value>  Path to store the audit reports
 
 TABLE FLAGS
@@ -164,9 +167,9 @@ Perform audits and fix possible errors in the exported Contentstack data.
 ```
 USAGE
   $ csdx audit:fix [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows...] [--copy-path <value> --copy-dir] [--fix-only
-    reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value> | ] [--sort
-    <value>] [--filter <value>] [--csv | --no-truncate]
+    content-types|global-fields|entries|extensions|workflows|custom-roles...] [--copy-path <value> --copy-dir]
+    [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value> | ]
+    [--sort <value>] [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   --copy-dir              Create backup from the original data.
@@ -174,7 +177,7 @@ FLAGS
   --fix-only=<option>...  Provide the list of fix options
                           <options: reference|global_field|json:rte|json:extension|blocks|group|content_types>
   --modules=<option>...   Provide the list of modules to be audited
-                          <options: content-types|global-fields|entries|extensions|workflows>
+                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles>
   --report-path=<value>   Path to store the audit reports
 
 TABLE FLAGS
@@ -2437,12 +2440,12 @@ Perform audits and find possible errors in the exported Contentstack data
 ```
 USAGE
   $ csdx cm:stacks:audit [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows...] [--columns <value> | ] [--sort <value>] [--filter
-    <value>] [--csv | --no-truncate]
+    content-types|global-fields|entries|extensions|workflows|custom-roles...] [--columns <value> | ] [--sort <value>]
+    [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
-                         <options: content-types|global-fields|entries|extensions|workflows>
+                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles>
   --report-path=<value>  Path to store the audit reports
 
 TABLE FLAGS
@@ -2480,9 +2483,9 @@ Perform audits and fix possible errors in the exported Contentstack data.
 ```
 USAGE
   $ csdx cm:stacks:audit:fix [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows...] [--copy-path <value> --copy-dir] [--fix-only
-    reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value> | ] [--sort
-    <value>] [--filter <value>] [--csv | --no-truncate]
+    content-types|global-fields|entries|extensions|workflows|custom-roles...] [--copy-path <value> --copy-dir]
+    [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value> | ]
+    [--sort <value>] [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   --copy-dir              Create backup from the original data.
@@ -2490,7 +2493,7 @@ FLAGS
   --fix-only=<option>...  Provide the list of fix options
                           <options: reference|global_field|json:rte|json:extension|blocks|group|content_types>
   --modules=<option>...   Provide the list of modules to be audited
-                          <options: content-types|global-fields|entries|extensions|workflows>
+                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles>
   --report-path=<value>   Path to store the audit reports
 
 TABLE FLAGS
@@ -3053,6 +3056,23 @@ EXAMPLES
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/early-access-header.ts)_
 
+## `csdx config:get:rate-limit`
+
+Get rate-limit of organizations
+
+```
+USAGE
+  $ csdx config:get:rate-limit
+
+DESCRIPTION
+  Get rate-limit of organizations
+
+EXAMPLES
+  $ csdx config:get:rate-limit
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/rate-limit.ts)_
+
 ## `csdx config:get:region`
 
 Get current region set for CLI
@@ -3143,6 +3163,26 @@ EXAMPLES
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/early-access-header.ts)_
 
+## `csdx config:remove:rate-limit`
+
+Remove rate-limit of the organization
+
+```
+USAGE
+  $ csdx config:remove:rate-limit [--org <value>]
+
+FLAGS
+  --org=<value>  Provide the organization UID
+
+DESCRIPTION
+  Remove rate-limit of the organization
+
+EXAMPLES
+  $ csdx config:remove:rate-limit --org <<org_uid>>
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/rate-limit.ts)_
+
 ## `csdx config:set:base-branch`
 
 Set branch for CLI
@@ -3216,24 +3256,56 @@ EXAMPLES
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/early-access-header.ts)_
 
+## `csdx config:set:rate-limit`
+
+Set rate-limit for CLI
+
+```
+USAGE
+  $ csdx config:set:rate-limit [--org <value>] [--utilize <value>] [--limit-name <value>...] [--default]
+
+FLAGS
+  --default                Reset to default rate limit
+  --limit-name=<value>...  [Optional] Provide the limit names separated by commas ['limit', 'getLimit', 'bulkLimit']
+  --org=<value>            Provide the organization UID
+  --utilize=<value>        [default: 50] Provide the utilization percentages for rate limit, separated by commas
+
+DESCRIPTION
+  Set rate-limit for CLI
+
+EXAMPLES
+  $ csdx config:set:rate-limit --org <<org_uid>>
+
+  $ csdx config:set:rate-limit --org <<org_uid>> --utilize 70,80 --limit-name getLimit,limit
+
+  $ csdx config:set:rate-limit --org <<org_uid>> --default
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/rate-limit.ts)_
+
 ## `csdx config:set:region [REGION]`
 
 Set region for CLI
 
 ```
 USAGE
-  $ csdx config:set:region [REGION] [-d <value> -m <value> --ui-host <value> -n <value>]
+  $ csdx config:set:region [REGION] [-d <value> -m <value> --ui-host <value> -n <value>] [--developer-hub <value>]
+    [--personalize <value>] [--launch <value>]
 
 ARGUMENTS
   REGION  Name for the region
 
 FLAGS
-  -d, --cda=<value>      Custom host to set for content delivery API, if this flag is added then cma, ui-host and name
-                         flags are required
-  -m, --cma=<value>      Custom host to set for content management API, , if this flag is added then cda, ui-host and
-                         name flags are required
-  -n, --name=<value>     Name for the region, if this flag is added then cda, cma and ui-host flags are required
-      --ui-host=<value>  Custom UI host to set for CLI, if this flag is added then cda, cma and name flags are required
+  -d, --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and
+                               name flags are required
+  -m, --cma=<value>            Custom host to set for content management API, , if this flag is added then cda, ui-host
+                               and name flags are required
+  -n, --name=<value>           Name for the region, if this flag is added then cda, cma and ui-host flags are required
+      --developer-hub=<value>  Custom host to set for Developer hub API
+      --launch=<value>         Custom host to set for Launch API
+      --personalize=<value>    Custom host to set for Personalize API
+      --ui-host=<value>        Custom UI host to set for CLI, if this flag is added then cda, cma and name flags are
+                               required
 
 DESCRIPTION
   Set region for CLI
@@ -3252,6 +3324,14 @@ EXAMPLES
   $ csdx config:set:region GCP-NA
 
   $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India"
+
+  $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India" --developer-hub <developer_hub_url>
+
+  $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India" --personalize <personalize_url>
+
+  $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India" --launch <launch_url>
+
+  $ csdx config:set:region --cda <contentstack_cda_endpoint> --cma <contentstack_cma_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India" --developer-hub <developer_hub_url> --personalize <personalize_url> --launch <launch_url>
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/region.ts)_
@@ -3571,7 +3651,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.2/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.15/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:add PLUGIN`
 
@@ -3645,7 +3725,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.2/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.15/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN`
 
@@ -3694,7 +3774,7 @@ EXAMPLES
     $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.2/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.15/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PATH`
 
@@ -3714,6 +3794,7 @@ FLAGS
 
 DESCRIPTION
   Links a plugin into the CLI for development.
+
   Installation of a linked plugin will override a user-installed or core plugin.
 
   e.g. If you have a user-installed or core plugin that has a 'hello' command, installing a linked plugin with a 'hello'
@@ -3724,7 +3805,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.2/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.15/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:remove [PLUGIN]`
 
@@ -3765,7 +3846,7 @@ FLAGS
   --reinstall  Reinstall all plugins after uninstalling.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.2/src/commands/plugins/reset.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.15/src/commands/plugins/reset.ts)_
 
 ## `csdx plugins:uninstall [PLUGIN]`
 
@@ -3793,7 +3874,7 @@ EXAMPLES
   $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.2/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.15/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:unlink [PLUGIN]`
 
@@ -3837,7 +3918,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.2/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.15/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 

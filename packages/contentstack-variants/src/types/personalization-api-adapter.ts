@@ -29,6 +29,18 @@ export interface CreateProjectInput {
 export type GetVariantGroupInput = {
   experienceUid: string;
 };
+
+export type VariantGroup = {
+  uid: string;
+  name: string;
+  content_types: string[];
+  description: string;
+} & AnyProperty;
+
+export type VariantGroupStruct = {
+  variant_groups: Array<VariantGroup>;
+} & AnyProperty;
+
 export type EventStruct = {
   _id: string;
   uid: string;
@@ -118,6 +130,18 @@ export type ExperienceStruct = {
   content_types?: string[];
 } & AnyProperty;
 
+export interface CreateExperienceVersionInput {
+  name: string;
+  __type: string;
+  description: string;
+  targeting?: ExpTargeting;
+  variations: ExpVariations[];
+  variationSplit?: string;
+  metrics?: ExpMetric[];
+  status: string;
+  metadata?: object;
+  variants: Array<ExpVariations>;
+}
 export interface CreateExperienceInput {
   name: string;
   __type: string;
@@ -128,6 +152,7 @@ export interface CreateExperienceInput {
   metrics?: ExpMetric[];
   status: string;
   metadata?: object;
+  variants?: Array<ExpVariations>;
 }
 
 export interface UpdateExperienceInput {
@@ -152,6 +177,7 @@ export type VariantAPIRes =
   | EventStruct
   | AudienceStruct
   | CMSExperienceStruct
+  | VariantGroupStruct
   | Error;
 
 export interface APIResponse {
@@ -180,5 +206,5 @@ export interface Personalization<T> extends AdapterHelperInterface<T, HttpClient
 
   updateCTsInExperience(experience: UpdateExperienceInput, experienceUid: string): Promise<CMSExperienceStruct | void>;
 
-  handleVariantAPIRes(res: any): VariantAPIRes;
+  handleVariantAPIRes(res: any): Promise<VariantAPIRes>;
 }

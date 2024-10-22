@@ -2,13 +2,13 @@ import { Import, LogType } from '@contentstack/cli-variants';
 import { log } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
 
-export default class ImportPersonalization {
+export default class ImportPersonalize {
   private config: ImportConfig;
-  public personalization: ImportConfig['modules']['personalization'];
+  public personalizeConfig: ImportConfig['modules']['personalize'];
 
   constructor({ importConfig }: ModuleClassParams) {
     this.config = importConfig;
-    this.personalization = importConfig.modules.personalization;
+    this.personalizeConfig = importConfig.modules.personalize;
   }
 
   /**
@@ -17,12 +17,18 @@ export default class ImportPersonalization {
    */
   async start(): Promise<void> {
     try {
+      if (!this.personalizeConfig.baseURL[this.config.region.name]) {
+        log(this.config, 'Skipping Personalize project import, personalize url is not set', 'info');
+        this.personalizeConfig.importData = false;
+        return;
+      }
+
       if (this.config.management_token) {
         log(this.config, 'Skipping Personalize project import when using management token', 'info');
         return;
       }
       await new Import.Project(this.config, log as unknown as LogType).import();
-      if (this.personalization.importData) {
+      if (this.personalizeConfig.importData) {
         const moduleMapper = {
           events: Import.Events,
           audiences: Import.Audiences,
@@ -30,7 +36,8 @@ export default class ImportPersonalization {
           experiences: Import.Experiences,
         };
 
-        const order: (keyof typeof moduleMapper)[] = this.personalization.importOrder as (keyof typeof moduleMapper)[];
+        const order: (keyof typeof moduleMapper)[] = this.personalizeConfig
+          .importOrder as (keyof typeof moduleMapper)[];
 
         for (const module of order) {
           const Module = moduleMapper[module];
@@ -38,10 +45,10 @@ export default class ImportPersonalization {
         }
       }
     } catch (error) {
-      this.config.modules.personalization.importData = false; // Stop personalization import if project creation fails
+      this.personalizeConfig.importData = false; // Stop personalize import if project creation fails
       log(this.config, error, 'error');
-      if (!this.personalization.importData) {
-        log(this.config, 'Skipping personalization migration...', 'warn');
+      if (!this.personalizeConfig.importData) {
+        log(this.config, 'Skipping personalize migration...', 'warn');
       }
     }
   }
