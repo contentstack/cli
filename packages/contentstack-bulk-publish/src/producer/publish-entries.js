@@ -30,7 +30,6 @@ async function getEntries(
   bulkPublishLimit,
   variantsFlag = false,
   entry_uid = undefined,
-  publishWithoutBaseFlag = false,
   skip = 0,
 ) {
   return new Promise((resolve, reject) => {
@@ -74,18 +73,10 @@ async function getEntries(
               if (variantsFlag) {
                 variants = await getVariantEntries(stack, contentType, entries, index, queryParams);
                 if (variants.length > 0) {
-                  if (publishWithoutBaseFlag) {
-                    entry.variant_rules = {
-                      publish_latest_base: true,
-                      publish_latest_base_conditionally: false,
-                    };
-                  } else {
-                    entry.variant_rules = {
-                      publish_latest_base: false,
-                      publish_latest_base_conditionally: true,
-                    };
-                  }
-
+                  entry.variant_rules = {
+                    publish_latest_base: false,
+                    publish_latest_base_conditionally: true,
+                  };
                   entry.variants = variants;
                 }
               }
@@ -146,7 +137,6 @@ async function getEntries(
           bulkPublishLimit,
           variantsFlag,
           entry_uid,
-          publishWithoutBaseFlag,
           skipCount,
         );
         return resolve();
@@ -251,7 +241,6 @@ async function start(
     apiVersion,
     includeVariants,
     entryUid,
-    publishWithoutBase,
   },
   stack,
   config,
@@ -305,7 +294,6 @@ async function start(
           bulkPublishLimit,
           includeVariants,
           entryUid,
-          publishWithoutBase,
         );
         /* eslint-enable no-await-in-loop */
       }
