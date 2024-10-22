@@ -37,13 +37,13 @@ USAGE
 * [`csdx cm:bulk-publish:clear`](#csdx-cmbulk-publishclear)
 * [`csdx cm:bulk-publish:configure`](#csdx-cmbulk-publishconfigure)
 * [`csdx cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries] [--include-variants]`](#csdx-cmbulk-publishcross-publish--a-value---retry-failed-value---bulk-publish-value---content-type-value---locales-value---source-env-value---environments-value---delivery-token-value--c-value--y---branch-value---onlyassets---onlyentries---include-variants)
-* [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants][--publish-without-base]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value---entry-uid-value---include-variants--publish-without-base)
+* [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value---entry-uid-value---include-variants)
 * [`csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-modified--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
 * [`csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-non-localized-fields--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value--e-value--c-value--y---branch-value)
 * [`csdx cm:bulk-publish:revert`](#csdx-cmbulk-publishrevert)
 * [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries)
 * [`csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-only-unpublished--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
-* [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants][--publish-without-base]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value---entry-uid-value---include-variants--publish-without-base-1)
+* [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value---entry-uid-value---include-variants-1)
 * [`csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-modified--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value-1)
 * [`csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-non-localized-fields--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value--e-value--c-value--y---branch-value-1)
 * [`csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-only-unpublished--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value-1)
@@ -506,7 +506,7 @@ EXAMPLES
 
 _See code: [src/commands/cm/bulk-publish/cross-publish.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
 
-## `csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants][--publish-without-base]`
+## `csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants]`
 
 Publish entries from multiple contenttypes to multiple environments and locales
 
@@ -514,8 +514,7 @@ Publish entries from multiple contenttypes to multiple environments and locales
 USAGE
   $ csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>]
     [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch
-    <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>]
-    [--include-variants][--publish-without-base]
+    <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants]
 
 FLAGS
   -B, --branch=<value>           [default: main] Specify the branch to fetch the content (by default the main branch is
@@ -535,8 +534,6 @@ FLAGS
   --entry-uid=<value>            Entry Uid for publish all associated variant entries.
   --include-variants             Include Variants flag will publish all associated variant entries with base entry.
   --publish-all-content-types    (optional) Publish all contenttypes (cannot be set when contentTypes flag is set)
-  --publish-without-base         Publish without base flag will publish all associated variant entries except base
-                                 entry.
   --retry-failed=<value>         (optional) Retry failed entries from the logfile (overrides all other flags) This flag
                                  is used to retry publishing entries that failed to publish in a previous attempt. A log
                                  file for the previous session will be required for processing the failed entries
@@ -606,12 +603,6 @@ EXAMPLES
   Using --entry-uid and --include-variants
 
   $ csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN] --entry-uid [ENTRY UID] [--include-variants]
-
-
-
-  Using --include-variants and --publish-without-base
-
-  $ csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN] [--include-variants][--publish-without-base]
 ```
 
 ## `csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`
@@ -961,7 +952,7 @@ EXAMPLES
   $ csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a [MANAGEMENT TOKEN ALIAS] --stack-api-key [STACK API KEY] -source-env [SOURCE ENV]
 ```
 
-## `csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants][--publish-without-base]`
+## `csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants]`
 
 Publish entries from multiple contenttypes to multiple environments and locales
 
@@ -969,8 +960,7 @@ Publish entries from multiple contenttypes to multiple environments and locales
 USAGE
   $ csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>]
     [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch
-    <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>]
-    [--include-variants][--publish-without-base]
+    <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants]
 
 FLAGS
   -B, --branch=<value>           [default: main] Specify the branch to fetch the content (by default the main branch is
@@ -990,8 +980,6 @@ FLAGS
   --entry-uid=<value>            Entry Uid for publish all associated variant entries.
   --include-variants             Include Variants flag will publish all associated variant entries with base entry.
   --publish-all-content-types    (optional) Publish all contenttypes (cannot be set when contentTypes flag is set)
-  --publish-without-base         Publish without base flag will publish all associated variant entries except base
-                                 entry.
   --retry-failed=<value>         (optional) Retry failed entries from the logfile (overrides all other flags) This flag
                                  is used to retry publishing entries that failed to publish in a previous attempt. A log
                                  file for the previous session will be required for processing the failed entries
@@ -1061,12 +1049,6 @@ EXAMPLES
   Using --entry-uid and --include-variants
 
   $ csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN] --entry-uid [ENTRY UID] [--include-variants]
-
-
-
-  Using --include-variants and --publish-without-base
-
-  $ csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN] [--include-variants][--publish-without-base]
 ```
 
 _See code: [src/commands/cm/entries/publish.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/entries/publish.js)_
