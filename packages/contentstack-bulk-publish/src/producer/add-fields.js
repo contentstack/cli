@@ -10,6 +10,7 @@ const { performBulkPublish, publishEntry, initializeLogger } = require('../consu
 const retryFailedLogs = require('../util/retryfailed');
 const { validateFile } = require('../util/fs');
 const { isEmpty } = require('../util');
+const { fetchBulkPublishLimit } = require('../util/common-utility');
 
 const queue = getQueue();
 queue.consumer = performBulkPublish;
@@ -200,6 +201,7 @@ async function getEntries(
   environments,
   forceUpdate,
   apiVersion,
+  bulkPublishLimit,
   skip = 0,
 ) {
   let queryParams = {
@@ -223,7 +225,7 @@ async function getEntries(
           const flag = await updateEntry(updatedEntry, locale);
           if (flag) {
             if (bulkPublish) {
-              if (bulkPublishSet.length < 10) {
+              if (bulkPublishSet.length < bulkPublishLimit) {
                 bulkPublishSet.push({
                   uid: entries[index].uid,
                   content_type: contentType,
@@ -231,7 +233,7 @@ async function getEntries(
                   publish_details: entries[index].publish_details,
                 });
               }
-              if (bulkPublishSet.length === 10) {
+              if (bulkPublishSet.length === bulkPublishLimit) {
                 await queue.Enqueue({
                   entries: bulkPublishSet,
                   locale,
@@ -260,7 +262,7 @@ async function getEntries(
           console.log(`No change Observed for contentType ${contentType} with entry ${entries[index].uid}`);
         }
 
-        if (index === entriesResponse.items.length - 1 && bulkPublishSet.length > 0 && bulkPublishSet.length < 10) {
+        if (index === entriesResponse.items.length - 1 && bulkPublishSet.length > 0 && bulkPublishSet.length < bulkPublishLimit) {
           await queue.Enqueue({
             entries: bulkPublishSet,
             locale,
@@ -277,7 +279,7 @@ async function getEntries(
       }
       return setTimeout(
         async () =>
-          getEntries(stack, config, schema, contentType, locale, bulkPublish, environments, forceUpdate, apiVersion, skip),
+          getEntries(stack, config, schema, contentType, locale, bulkPublish, environments, forceUpdate, apiVersion, bulkPublishLimit, skip),
         2000,
       );
     })
@@ -321,6 +323,7 @@ async function start(
     }
   } else {
     setConfig(config, bulkPublish);
+    const bulkPublishLimit = fetchBulkPublishLimit(stack?.org_uid);
     for (let i = 0; i < contentTypes.length; i += 1) {
       getContentTypeSchema(stack, contentTypes[i])
         .then(async (schema) => {
@@ -335,7 +338,8 @@ async function start(
                 bulkPublish,
                 environments,
                 forceUpdate,
-                apiVersion
+                apiVersion,
+                bulkPublishLimit
               );
             } catch (err) {
               console.log(`Failed to get Entries with contentType ${contentTypes[i]} and locale ${locales[j]}`);
