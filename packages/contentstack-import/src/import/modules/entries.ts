@@ -356,9 +356,9 @@ export default class EntriesImport extends BaseClass {
     const contentType = find(this.cTs, { uid: cTUid });
 
     const onSuccess = ({ response, apiData: entry, additionalInfo }: any) => {
-      this.entriesForVariant.push({ content_type: cTUid, entry_uid: entry.uid, locale });
       if (additionalInfo[entry.uid]?.isLocalized) {
         let oldUid = additionalInfo[entry.uid].entryOldUid;
+        this.entriesForVariant.push({ content_type: cTUid, entry_uid: oldUid, locale });
         log(
           this.importConfig,
           `Localized entry: '${entry.title}' of content type ${cTUid} in locale ${locale}`,
@@ -370,6 +370,7 @@ export default class EntriesImport extends BaseClass {
         entriesCreateFileHelper.writeIntoFile({ [oldUid]: entry } as any, { mapKeyVal: true });
       } else {
         log(this.importConfig, `Created entry: '${entry.title}' of content type ${cTUid} in locale ${locale}`, 'info');
+        this.entriesForVariant.push({ content_type: cTUid, entry_uid: entry.uid, locale });
         // This is for creating localized entries that do not have a counterpart in master locale.
         // For example : To create entry1 in fr-fr, where en-us is the master locale
         // entry1 will get created in en-us first, then fr-fr version will be created
