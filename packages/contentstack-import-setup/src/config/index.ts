@@ -35,7 +35,7 @@ const config: DefaultConfig = {
     'content-types': {
       dirName: 'content_types',
       fileName: 'content_types.json',
-      dependencies: ['extensions'],
+      dependencies: ['extensions', 'taxonomies'],
     },
     entries: {
       dirName: 'entries',
@@ -54,6 +54,21 @@ const config: DefaultConfig = {
     taxonomies: {
       dirName: 'taxonomies',
       fileName: 'taxonomies.json',
+      invalidKeys: [
+        'updated_at',
+        'created_by',
+        'updated_by',
+        'stackHeaders',
+        'urlPath',
+        'created_at',
+        'ancestors',
+        'update',
+        'delete',
+        'fetch',
+        'descendants',
+        'move',
+        'search',
+      ],
     },
   },
 };
