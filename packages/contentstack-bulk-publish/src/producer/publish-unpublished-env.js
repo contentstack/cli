@@ -9,6 +9,7 @@ const { performBulkPublish, publishEntry, initializeLogger } = require('../consu
 const retryFailedLogs = require('../util/retryfailed');
 const { validateFile } = require('../util/fs');
 const { isEmpty } = require('../util');
+const { fetchBulkPublishLimit } = require('../util/common-utility');
 
 const queue = getQueue();
 let skipCount;
@@ -42,7 +43,7 @@ async function getEnvironment(stack, environmentName) {
   });
 }
 
-async function getEntries(stack, contentType, environmentUid, locale, bulkPublish, environments, apiVersion, skip = 0) {
+async function getEntries(stack, contentType, environmentUid, locale, bulkPublish, environments, apiVersion, bulkPublishLimit, skip = 0) {
   return new Promise((resolve, reject) => {
     skipCount = skip;
 
@@ -68,7 +69,7 @@ async function getEntries(stack, contentType, environmentUid, locale, bulkPublis
             if (!publishedEntry) {
               changedFlag = true;
               if (bulkPublish) {
-                if (bulkPublishSet.length < 10) {
+                if (bulkPublishSet.length < bulkPublishLimit) {
                   bulkPublishSet.push({
                     uid: entries[index].uid,
                     content_type: contentType,
@@ -89,7 +90,7 @@ async function getEntries(stack, contentType, environmentUid, locale, bulkPublis
               }
             }
             if (bulkPublish) {
-              if (bulkPublishSet.length === 10) {
+              if (bulkPublishSet.length === bulkPublishLimit) {
                 await queue.Enqueue({
                   entries: bulkPublishSet,
                   locale,
@@ -102,7 +103,7 @@ async function getEntries(stack, contentType, environmentUid, locale, bulkPublis
               }
               if (
                 index === responseEntries.items.length - 1 &&
-                bulkPublishSet.length < 10 &&
+                bulkPublishSet.length < bulkPublishLimit &&
                 bulkPublishSet.length > 0
               ) {
                 await queue.Enqueue({
@@ -162,10 +163,11 @@ async function start({ sourceEnv, environments, locale, contentTypes, bulkPublis
   } else {
     setConfig(config, bulkPublish);
     if (sourceEnv) {
+      const bulkPublishLimit = fetchBulkPublishLimit(stack?.org_uid);
       const environmentDetails = await getEnvironment(stack, sourceEnv);
       for (let i = 0; i < contentTypes.length; i += 1) {
         /* eslint-disable no-await-in-loop */
-        await getEntries(stack, contentTypes[i], environmentDetails.uid, locale, bulkPublish, environments, apiVersion);
+        await getEntries(stack, contentTypes[i], environmentDetails.uid, locale, bulkPublish, environments, apiVersion, bulkPublishLimit);
         /* eslint-enable no-await-in-loop */
         changedFlag = false;
       }
