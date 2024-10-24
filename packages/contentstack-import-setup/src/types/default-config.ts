@@ -48,6 +48,7 @@ export default interface DefaultConfig {
       dirName: string;
       fileName: string;
       dependencies?: Modules[];
+      invalidKeys: string[];
     };
   };
   fetchConcurrency: number;
