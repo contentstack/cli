@@ -19,6 +19,44 @@ export interface PrintOptions {
   color?: string;
 }
 
+export type AdditionalKeys = {
+  backupDir: string;
+};
+
+export type ApiModuleType = 'fetch-assets';
+
+export type ApiOptions = {
+  uid?: string;
+  url?: string;
+  entity: ApiModuleType;
+  apiData?: Record<any, any> | any;
+  resolve: (value: any) => Promise<void> | void;
+  reject: (error: any) => Promise<void> | void;
+  additionalInfo?: Record<any, any>;
+  includeParamOnCompletion?: boolean;
+  serializeData?: (input: ApiOptions) => any;
+};
+
+export type EnvType = {
+  processName: string;
+  totalCount?: number;
+  indexerCount?: number;
+  currentIndexer?: number;
+  apiParams?: ApiOptions;
+  concurrencyLimit?: number;
+  apiContent: Record<string, any>[];
+};
+
+export type CustomPromiseHandlerInput = {
+  index: number;
+  batchIndex: number;
+  element?: Record<string, unknown>;
+  apiParams?: ApiOptions;
+  isLastRequest: boolean;
+};
+
+export type CustomPromiseHandler = (input: CustomPromiseHandlerInput) => Promise<any>;
+
 export interface InquirePayload {
   type: string;
   name: string;
@@ -86,6 +124,12 @@ export interface CustomRoleConfig {
   fileName: string;
   customRolesLocalesFileName: string;
 }
+
+export type AssetRecord = {
+  uid: string;
+  url: string;
+  title: string;
+};
 
 export interface TaxonomiesConfig {
   dirName: string;

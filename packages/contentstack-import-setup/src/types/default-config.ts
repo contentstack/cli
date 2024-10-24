@@ -22,6 +22,7 @@ export default interface DefaultConfig {
       dirName: string;
       fileName: string;
       dependencies?: Modules[];
+      fetchConcurrency: number;
     };
     'content-types': {
       dirName: string;
@@ -49,4 +50,5 @@ export default interface DefaultConfig {
       dependencies?: Modules[];
     };
   };
+  fetchConcurrency: number;
 }
