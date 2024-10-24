@@ -144,3 +144,10 @@ export type ExtensionType = {
   scope: Record<string, unknown>;
   title: string;
 };
+
+export type TaxonomyQueryParams = {
+  include_count: boolean;
+  limit: number;
+  skip: number;
+  depth?: number;
+};
