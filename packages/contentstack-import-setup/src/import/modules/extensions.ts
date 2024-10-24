@@ -3,6 +3,7 @@ import { log, fsUtil } from '../../utils';
 import { join } from 'path';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import { isEmpty } from 'lodash';
+import { formatError } from '@contentstack/cli-utilities';
 
 export default class ExtensionImportSetup {
   private config: ImportConfig;
@@ -48,12 +49,12 @@ export default class ExtensionImportSetup {
 
         await fsUtil.writeFile(this.extUidMapperPath, this.extensionMapper);
 
-        log(this.config, `Generate required setup files for extension`, 'success');
+        log(this.config, `Generated required setup files for extension`, 'success');
       } else {
         log(this.config, 'No extensions found in the content folder!', 'error');
       }
     } catch (error) {
-      log(this.config, `Error generating extension mapper: ${error.message}`, 'error');
+      log(this.config, `Error generating extension mapper: ${formatError(error)}`, 'error');
     }
   }
 
