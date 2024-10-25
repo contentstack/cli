@@ -31,11 +31,12 @@ const config: DefaultConfig = {
     assets: {
       dirName: 'assets',
       fileName: 'assets.json',
+      fetchConcurrency: 5,
     },
     'content-types': {
       dirName: 'content_types',
       fileName: 'content_types.json',
-      dependencies: ['extensions', 'taxonomies'],
+      dependencies: ['assets', 'extensions', 'taxonomies'],
     },
     entries: {
       dirName: 'entries',
@@ -71,6 +72,7 @@ const config: DefaultConfig = {
       ],
     },
   },
+  fetchConcurrency: 5,
 };
 
 export default config;
