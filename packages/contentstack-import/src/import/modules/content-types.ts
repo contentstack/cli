@@ -7,11 +7,11 @@
 
 import * as path from 'path';
 import { isEmpty, find, cloneDeep, map } from 'lodash';
-import { fsUtil, log, formatError, schemaTemplate, lookupExtension, lookUpTaxonomy } from '../../utils';
+import { sanitizePath } from '@contentstack/cli-utilities';
+import { fsUtil, log, formatError, schemaTemplate, lookupExtension, lookUpTaxonomy, checkAndCreateMapperFile } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
 import { updateFieldRules } from '../../utils/content-type-helper';
-import { sanitizePath } from '@contentstack/cli-utilities';
 
 export default class ContentTypesImport extends BaseClass {
   private cTsMapperPath: string;
@@ -108,6 +108,11 @@ export default class ContentTypesImport extends BaseClass {
       return;
     }
     await fsUtil.makeDirectory(this.cTsMapperPath);
+    
+    // check and create mapper file
+    log(this.importConfig, 'Checking and generating CT import dependant mapper file...', 'info');
+    await checkAndCreateMapperFile(this.importConfig);
+
     this.installedExtensions = (
       ((await fsUtil.readFile(this.marketplaceAppMapperPath)) as any) || { extension_uid: {} }
     ).extension_uid;
