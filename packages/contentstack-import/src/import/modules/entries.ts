@@ -21,6 +21,7 @@ import {
   lookupAssets,
   fileHelper,
   lookUpTerms,
+  checkAndCreateMapperFile,
 } from '../../utils';
 import { ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
@@ -112,6 +113,11 @@ export default class EntriesImport extends BaseClass {
         log(this.importConfig, 'No content type found', 'info');
         return;
       }
+      
+      // check and create mapper file
+      log(this.importConfig, 'Checking and generating entries import dependant mapper file...', 'info');
+      await checkAndCreateMapperFile(this.importConfig);
+
       this.installedExtensions = (
         ((await fsUtil.readFile(this.marketplaceAppMapperPath)) as any) || { extension_uid: {} }
       ).extension_uid;
@@ -954,8 +960,8 @@ export default class EntriesImport extends BaseClass {
             ...content,
             locale: publish.locale,
             publish_details: [publish],
-          }))
-        );   
+          })),
+        );
         apiContent = apiContentDuplicate;
         await this.makeConcurrentCall({
           apiContent,
@@ -1010,7 +1016,7 @@ export default class EntriesImport extends BaseClass {
       apiOptions.apiData = null;
       return apiOptions;
     }
-    if(requestObject.environments.length === 0 || requestObject.locales.length === 0 ){
+    if (requestObject.environments.length === 0 || requestObject.locales.length === 0) {
       apiOptions.apiData = null;
       return apiOptions;
     }
