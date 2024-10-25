@@ -38,6 +38,9 @@ export default class ImportSetupCommand extends Command {
       options: ['content-types', 'entries', 'both'], // only allow the value to be from a discrete set
       description: '[optional] specific module name',
     }),
+    'backup-dir': flags.string({
+      description: '[optional] backup directory name when using specific module',
+    }),
   };
 
   static aliases: string[] = ['cm:import'];

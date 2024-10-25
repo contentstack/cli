@@ -54,6 +54,7 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   region: Region;
   personalizeProjectName?: string;
   'exclude-global-modules': false;
+  alias?: string;
 }
 
 type branch = {

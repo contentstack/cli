@@ -42,6 +42,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   const managementTokenAlias = importCmdFlags['management-token-alias'] || importCmdFlags['alias'];
 
   if (managementTokenAlias) {
+    config.alias = managementTokenAlias;
     const { token, apiKey } = configHandler.get(`tokens.${managementTokenAlias}`) ?? {};
     config.management_token = token;
     config.apiKey = apiKey;
