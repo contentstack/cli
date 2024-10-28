@@ -29,6 +29,7 @@ describe('Migration Config validation', () => {
     .throws("Token with alias 'invalidAlias' was not found");
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => false)
     .stdout()
     .command([
@@ -50,6 +51,7 @@ describe('Migration Config validation', () => {
     .it('deny config confirmation');
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => true)
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -60,6 +62,7 @@ describe('Migration Config validation', () => {
     .it('throw error on Empty paths');
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => true)
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -70,6 +73,7 @@ describe('Migration Config validation', () => {
     .it('throw error on invalid config type');
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => true)
     .stdout()
     .command([
@@ -89,6 +93,7 @@ describe('Migration Config validation', () => {
     .it('throw error on config without alias property');
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => true)
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -111,6 +116,7 @@ describe('Migration Config validation', () => {
     .it('throw error on invalidAlias');
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => true)
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -269,6 +275,7 @@ describe('Content Type with Single RTE Field of Single Type', function () {
   });
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -278,6 +285,7 @@ describe('Content Type with Single RTE Field of Single Type', function () {
     });
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -287,6 +295,7 @@ describe('Content Type with Single RTE Field of Single Type', function () {
     });
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -295,6 +304,7 @@ describe('Content Type with Single RTE Field of Single Type', function () {
       expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 3 Entrie(s)');
     });
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -316,6 +326,7 @@ describe('Content Type with Single RTE Field of Single Type', function () {
     });
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -338,6 +349,7 @@ describe('Content Type with Single RTE Field of Single Type', function () {
       expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 1 Entrie(s)');
     });
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -361,6 +373,7 @@ describe('Content Type with Single RTE Field of Single Type', function () {
     .it('throw error on invalid html rte path');
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -384,6 +397,7 @@ describe('Content Type with Single RTE Field of Single Type', function () {
     .it('throw error on invalid html rte field schema');
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -406,6 +420,7 @@ describe('Content Type with Single RTE Field of Single Type', function () {
     })
     .it('throw error on invalid json rte field schema');
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -429,6 +444,7 @@ describe('Content Type with Single RTE Field of Single Type', function () {
     .it('throw error on invalid json rte path');
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -444,6 +460,7 @@ describe('Content Type with Single RTE Field of Single Type', function () {
     .it('throw error on migration of Mutiple Html rte with single Json rte');
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -467,6 +484,7 @@ describe('Content Type with Single RTE Field of Single Type', function () {
     .it('throw error on content type with empty schema');
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -492,6 +510,7 @@ describe('Content Type with Single RTE Field of Single Type', function () {
     .it('throw error on different level rte migration');
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => true)
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -514,6 +533,7 @@ describe('Content Type with Single RTE Field of Single Type', function () {
     .it('throw error on invalid contenttype');
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => true)
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -537,15 +557,20 @@ describe('Content Type with Single RTE Field of Single Type', function () {
       );
     });
 
-    test
+  test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
-    .command(['cm:entries:migrate-html-rte', '--config-path', './test/dummy/config/config-for-images-in-rte.json', '--yes'])
+    .command([
+      'cm:entries:migrate-html-rte',
+      '--config-path',
+      './test/dummy/config/config-for-images-in-rte.json',
+      '--yes',
+    ])
     .it('should have proper json structure for images migrated from HTML RTE', (ctx) => {
       expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 1 Entrie(s)');
     });
-    
 });
 describe('Global Field Migration', () => {
   let token = getToken('test1');
@@ -574,6 +599,7 @@ describe('Global Field Migration', () => {
     type: 'management',
   });
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -583,6 +609,7 @@ describe('Global Field Migration', () => {
     });
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -607,6 +634,7 @@ describe('Global Field Migration', () => {
     .it('throw error on global field with empty referred content_types');
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -633,6 +661,7 @@ describe('Global Field Migration', () => {
     .it('throw error on global field with invalid content_type');
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -657,6 +686,7 @@ describe('Global Field Migration', () => {
     .it('throw error on global field with empty schema');
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -683,6 +713,7 @@ describe('Global Field Migration', () => {
     .it('throw error on global field with empty schema content_type');
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -715,6 +746,7 @@ describe('Content Type with single rte of multiple type', () => {
     type: 'management',
   });
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -732,6 +764,7 @@ describe('Content Type with Single RTE inside modular block', () => {
     type: 'management',
   });
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -762,6 +795,7 @@ describe('Content Type with Single RTE of type multiple inside group', () => {
     type: 'management',
   });
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -792,6 +826,7 @@ describe('Content Type with Single RTE inside group of type multiple', () => {
     type: 'management',
   });
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -822,6 +857,7 @@ describe('Content Type with multiple file field', () => {
     type: 'management',
   });
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
@@ -865,6 +901,7 @@ describe('Migration with old flags and command', () => {
     });
 
   test
+    .loadConfig({ root: process.cwd() })
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
