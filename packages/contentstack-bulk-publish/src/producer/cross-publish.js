@@ -50,7 +50,7 @@ async function bulkAction(stack, items, bulkPublish, filter, destEnv, apiVersion
             publish_details: [items[index].data.publish_details] || [],
           };
 
-          if (variantsFlag) {
+          if (variantsFlag && Array.isArray(items[index].data.variants) && items[index].data.variants.length > 0) {
             entry.variants = items[index].data.variants || [];
             entry.variant_rules = {
               publish_latest_base: false,
