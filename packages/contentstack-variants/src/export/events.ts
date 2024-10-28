@@ -14,7 +14,7 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
     super({
       config: exportConfig,
       baseURL: exportConfig.modules.personalize.baseURL[exportConfig.region.name],
-      headers: { authtoken: exportConfig.auth_token, 'X-Project-Uid': exportConfig.project_id },
+      headers: { 'X-Project-Uid': exportConfig.project_id },
     });
     this.personalizeConfig = exportConfig.modules.personalize;
     this.eventsConfig = exportConfig.modules.events;
@@ -30,6 +30,7 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
   async start() {
     try {
       log(this.exportConfig, 'Starting events export', 'info');
+      await this.init();
       await fsUtil.makeDirectory(this.eventsFolderPath);
       this.events = (await this.getEvents()) as EventStruct[];
 
