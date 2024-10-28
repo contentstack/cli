@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.7.2",
+  "version": "1.8.0",
   "author": "Contentstack",
   "scripts": {
     "build": "npm run clean && npm run compile",
@@ -21,8 +21,8 @@
     "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
   },
   "dependencies": {
-    "@contentstack/cli-command": "~1.3.1",
-    "@contentstack/cli-utilities": "~1.7.4",
+    "@contentstack/cli-command": "~1.3.2",
+    "@contentstack/cli-utilities": "~1.8.0",
     "chalk": "^4.1.2",
     "debug": "^4.3.7",
     "inquirer": "8.2.6",
@@ -81,7 +81,10 @@
       "config:get:region": "RGT",
       "config:set:region": "RST",
       "config:get:base-branch": "BRGT",
-      "config:set:base-branch": "BRST"
+      "config:set:base-branch": "BRST",
+      "config:set:rate-limit": "RLST",
+      "config:get:rate-limit": "RLGT",
+      "config:remove:rate-limit": "RLRM"
     }
   },
   "repository": "contentstack/cli"

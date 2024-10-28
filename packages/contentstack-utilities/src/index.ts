@@ -77,3 +77,4 @@ export { FlagInput, ArgInput, FlagDefinition } from '@oclif/core/lib/interfaces/
 export { default as TablePrompt } from './inquirer-table-prompt';
 
 export { Logger };
+export { default as authenticationHandler } from './authentication-handler';

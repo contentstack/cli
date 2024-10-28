@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-variants",
-  "version": "1.0.0",
+  "version": "1.1.2",
   "description": "Variants plugin",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -30,7 +30,7 @@
     "typescript": "^5.6.2"
   },
   "dependencies": {
-    "@contentstack/cli-utilities": "^1.7.4",
+    "@contentstack/cli-utilities": "^1.8.0",
     "lodash": "^4.17.21",
     "mkdirp": "^1.0.4",
     "winston": "^3.14.2"

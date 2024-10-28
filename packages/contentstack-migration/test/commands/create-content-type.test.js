@@ -12,6 +12,7 @@ describe('Create content type from migration script', () => {
   describe('Create content type with passing options as arguments', () => {
     nockBack('create-content-type.json', (nockDone) => {
       test
+        .loadConfig({ root: process.cwd() })
         .stdout()
         .command([
           'cm:migration',
@@ -27,6 +28,7 @@ describe('Create content type from migration script', () => {
         });
 
       test
+        .loadConfig({ root: process.cwd() })
         .stdout()
         .command([
           'cm:migration',
@@ -42,6 +44,7 @@ describe('Create content type from migration script', () => {
         });
 
       test
+        .loadConfig({ root: process.cwd() })
         .stdout()
         .command([
           'cm:migration',
@@ -60,6 +63,7 @@ describe('Create content type from migration script', () => {
 
   describe('should show error for misspelled properties', () => {
     test
+      .loadConfig({ root: process.cwd() })
       .stdout()
       .command([
         'cm:migration',
@@ -74,6 +78,7 @@ describe('Create content type from migration script', () => {
       });
 
     test
+      .loadConfig({ root: process.cwd() })
       .stdout()
       .command([
         'cm:migration',
@@ -89,6 +94,7 @@ describe('Create content type from migration script', () => {
 
     nockBack('missing-required-field.json', (nockDone) => {
       test
+        .loadConfig({ root: process.cwd() })
         .stdout()
         .command([
           'cm:migration',

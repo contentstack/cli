@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-config/1.7.2 darwin-arm64 node-v22.2.0
+@contentstack/cli-config/1.8.0 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -32,13 +32,16 @@ USAGE
 * [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
 * [`csdx config:get:ea-header`](#csdx-configgetea-header)
 * [`csdx config:get:early-access-header`](#csdx-configgetearly-access-header)
+* [`csdx config:get:rate-limit`](#csdx-configgetrate-limit)
 * [`csdx config:get:region`](#csdx-configgetregion)
 * [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
 * [`csdx config:remove:ea-header`](#csdx-configremoveea-header)
 * [`csdx config:remove:early-access-header`](#csdx-configremoveearly-access-header)
+* [`csdx config:remove:rate-limit`](#csdx-configremoverate-limit)
 * [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
 * [`csdx config:set:ea-header`](#csdx-configsetea-header)
 * [`csdx config:set:early-access-header`](#csdx-configsetearly-access-header)
+* [`csdx config:set:rate-limit`](#csdx-configsetrate-limit)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 
 ## `csdx config:get:base-branch`
@@ -95,6 +98,23 @@ EXAMPLES
 ```
 
 _See code: [src/commands/config/get/early-access-header.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/early-access-header.ts)_
+
+## `csdx config:get:rate-limit`
+
+Get rate-limit of organizations
+
+```
+USAGE
+  $ csdx config:get:rate-limit
+
+DESCRIPTION
+  Get rate-limit of organizations
+
+EXAMPLES
+  $ csdx config:get:rate-limit
+```
+
+_See code: [src/commands/config/get/rate-limit.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/rate-limit.ts)_
 
 ## `csdx config:get:region`
 
@@ -186,6 +206,26 @@ EXAMPLES
 
 _See code: [src/commands/config/remove/early-access-header.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/early-access-header.ts)_
 
+## `csdx config:remove:rate-limit`
+
+Remove rate-limit of the organization
+
+```
+USAGE
+  $ csdx config:remove:rate-limit [--org <value>]
+
+FLAGS
+  --org=<value>  Provide the organization UID
+
+DESCRIPTION
+  Remove rate-limit of the organization
+
+EXAMPLES
+  $ csdx config:remove:rate-limit --org <<org_uid>>
+```
+
+_See code: [src/commands/config/remove/rate-limit.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/rate-limit.ts)_
+
 ## `csdx config:set:base-branch`
 
 Set branch for CLI
@@ -258,6 +298,33 @@ EXAMPLES
 ```
 
 _See code: [src/commands/config/set/early-access-header.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/early-access-header.ts)_
+
+## `csdx config:set:rate-limit`
+
+Set rate-limit for CLI
+
+```
+USAGE
+  $ csdx config:set:rate-limit [--org <value>] [--utilize <value>] [--limit-name <value>] [--default]
+
+FLAGS
+  --default                Reset to default rate limit
+  --limit-name=<value>...  [Optional] Provide the limit names separated by commas ['limit', 'getLimit', 'bulkLimit']
+  --org=<value>            Provide the organization UID
+  --utilize=<value>        [default: 50] Provide the utilization percentages for rate limit, separated by commas
+
+DESCRIPTION
+  Set rate-limit for CLI
+
+EXAMPLES
+  $ csdx config:set:rate-limit --org <<org_uid>>
+
+  $ csdx config:set:rate-limit --org <<org_uid>> --utilize 70,80 --limit-name getLimit,limit
+
+  $ csdx config:set:rate-limit --org <<org_uid>> --default
+```
+
+_See code: [src/commands/config/set/rate-limit.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/rate-limit.ts)_
 
 ## `csdx config:set:region [REGION]`
 
