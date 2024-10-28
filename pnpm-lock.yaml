@@ -157,6 +157,7 @@ importers:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/plugin-help': 5.2.20_zhvwj5a53mgn7otcrznh33iybe
+      '@oclif/plugin-help': 5.2.20_zhvwj5a53mgn7otcrznh33iybe
       '@oclif/plugin-plugins': 5.4.15
       chalk: 4.1.2
       fast-csv: 4.3.6
@@ -166,6 +167,7 @@ importers:
       winston: 3.15.0
     devDependencies:
       '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
+      '@oclif/test': 2.5.6_zhvwj5a53mgn7otcrznh33iybe
       '@oclif/test': 2.5.6_zhvwj5a53mgn7otcrznh33iybe
       '@types/chai': 4.3.20
       '@types/fs-extra': 11.0.4
@@ -904,24 +906,24 @@ importers:
     specifiers:
       '@contentstack/cli-command': ~1.3.2
       '@contentstack/cli-utilities': ~1.8.0
-      '@contentstack/json-rte-serializer': ~2.0.4
+      '@contentstack/json-rte-serializer': ~2.0.10
       '@oclif/test': ^2.5.6
-      chai: ^4.3.4
+      chai: ^4.5.0
       chalk: ^4.1.2
       collapse-whitespace: ^1.1.7
-      eslint: ^8.18.0
+      eslint: ^8.57.1
       eslint-config-oclif: ^4.0.0
       globby: ^10.0.2
       jsdom: ^20.0.3
-      jsonschema: ^1.4.0
+      jsonschema: ^1.4.1
       lodash: ^4.17.21
-      mocha: ^10.0.0
-      nock: ^13.1.0
+      mocha: ^10.7.3
+      nock: ^13.5.5
       nyc: ^15.1.0
-      oclif: ^3.11.3
-      omit-deep-lodash: ^1.1.5
-      sinon: ^19.0.0
-      tslib: ^1.13.0
+      oclif: ^3.17.2
+      omit-deep-lodash: ^1.1.7
+      sinon: ^19.0.2
+      tslib: ^1.14.1
       uuid: ^9.0.1
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
@@ -13762,6 +13764,7 @@ packages:
       diff: 4.0.2
       make-error: 1.3.6
       typescript: 4.9.5
+      typescript: 4.9.5
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
@@ -13794,7 +13797,9 @@ packages:
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
     dev: true
+    dev: true
 
+  /ts-node/10.9.2_undc7hau6r3u5mly52lq5soody:
   /ts-node/10.9.2_undc7hau6r3u5mly52lq5soody:
     resolution: {integrity: sha512-f0FFpIdcHgn8zcPSbf1dRevwt047YMnaiJM3u2w2RewrB+fob/zePZcrOyQoLMMO7aBIddLcQIEK5dYjkLnGrQ==}
     hasBin: true
@@ -13851,6 +13856,7 @@ packages:
       create-require: 1.1.1
       diff: 4.0.2
       make-error: 1.3.6
+      typescript: 5.6.3
       typescript: 5.6.3
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
