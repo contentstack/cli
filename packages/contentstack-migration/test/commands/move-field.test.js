@@ -11,6 +11,7 @@ describe("Move field test from migration script", () => {
   nockBack.setMode("record");
   describe("prepare for edit field test", () => {
     test
+    .loadConfig({ root: process.cwd() })
       .command([
         "cm:migration",
         "-n",
@@ -24,6 +25,7 @@ describe("Move field test from migration script", () => {
   describe("Move field", () => {
     nockBack("move-field.json", (nockDone) => {
       test
+      .loadConfig({ root: process.cwd() })
         .stdout()
         .command([
           "cm:migration",
@@ -41,6 +43,7 @@ describe("Move field test from migration script", () => {
         });
 
       test
+      .loadConfig({ root: process.cwd() })
         .stdout()
         .command([
           "cm:migration",
@@ -58,6 +61,7 @@ describe("Move field test from migration script", () => {
   });
   describe("wind up field test", () => {
     test
+    .loadConfig({ root: process.cwd() })
       .command([
         "cm:migration",
         "-n",

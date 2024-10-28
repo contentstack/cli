@@ -13,6 +13,7 @@ describe('Delete field test from migration script', () => {
 
   describe('prepare for field test', () => {
     test
+    .loadConfig({ root: process.cwd() })
       .command([
         'cm:migration',
         '-n',
@@ -27,6 +28,7 @@ describe('Delete field test from migration script', () => {
   describe('Delete field', () => {
     nockBack('delete-field.json', (nockDone) => {
       test
+      .loadConfig({ root: process.cwd() })
         .stdout()
         .command([
           'cm:migration',
@@ -42,6 +44,7 @@ describe('Delete field test from migration script', () => {
         });
 
       test
+      .loadConfig({ root: process.cwd() })
         .stdout()
         .command([
           'cm:migration',
@@ -60,6 +63,7 @@ describe('Delete field test from migration script', () => {
 
   describe('wind up field test', () => {
     test
+    .loadConfig({ root: process.cwd() })
       .command([
         'cm:migration',
         '-n',
