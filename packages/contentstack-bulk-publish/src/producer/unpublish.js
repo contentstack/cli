@@ -69,7 +69,6 @@ function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion
           if (variantsFlag && Array.isArray(items[index].data.variants) && items[index].data.variants.length > 0) {
             const entryWithVariants = { ...entryData, variants: items[index].data.variants };
             bulkUnPublishSet.push(entryWithVariants);
-            bulkUnPublishSet.push(entryData);
           } else {
             bulkUnPublishSet.push(entryData);
           }
@@ -215,13 +214,16 @@ async function getSyncEntries(
         syncData['type'] = queryParamsObj.type;
       }
 
-      let entriesResponse = await Stack.sync(syncData);
+      const entriesResponse = await Stack.sync(syncData);
       if (entriesResponse.items.length > 0) {
         if (variantsFlag) {
           queryParamsObj.apiVersion = VARIANTS_UNPUBLISH_API_VERSION;
-          entriesResponse.items = await attachVariantsToItems(stack, entriesResponse.items, queryParamsObj); // with variants data
+          const itemsWithVariants = await attachVariantsToItems(stack, entriesResponse.items, queryParamsObj);
+          // Call bulkAction for entries with variants
+          await bulkAction(stack, itemsWithVariants, bulkUnpublish, environment, locale, apiVersion, bulkPublishLimit, variantsFlag);
         }
-        await bulkAction(stack, entriesResponse.items, bulkUnpublish, environment, locale, apiVersion, variantsFlag, bulkPublishLimit);
+        // Call bulkAction for entries without variants
+        await bulkAction(stack, entriesResponse.items, bulkUnpublish, environment, locale, apiVersion, bulkPublishLimit, false);
       }
       
       if (entriesResponse.items.length === 0) {
@@ -248,7 +250,6 @@ async function getSyncEntries(
     }
   });
 }
-
 async function attachVariantsToItems(stack, items, queryParams) {
   for (const item of items) {
     const { content_type_uid, data } = item;
