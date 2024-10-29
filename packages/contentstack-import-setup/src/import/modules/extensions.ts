@@ -41,7 +41,7 @@ export default class ExtensionImportSetup {
         for (const extension of Object.values(extensions) as any) {
           const targetExtension: any = await this.getExtension(extension);
           if (!targetExtension) {
-            log(this.config, `Extension with title '${extension.title}' not found in the stack!`, 'error');
+            log(this.config, `Extension with title '${extension.title}' not found in the stack!`, 'info');
             continue;
           }
           this.extensionMapper[extension.uid] = targetExtension.uid;
