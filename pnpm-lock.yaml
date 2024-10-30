@@ -904,8 +904,8 @@ importers:
     specifiers:
       '@contentstack/cli-command': ~1.3.2
       '@contentstack/cli-utilities': ~1.8.0
-      '@contentstack/json-rte-serializer': ~2.0.10
-      '@oclif/test': ^4.0.9
+      '@contentstack/json-rte-serializer': ~2.0.11
+      '@oclif/test': ^4.1.0
       chai: ^4.5.0
       chalk: ^4.1.2
       collapse-whitespace: ^1.1.7
@@ -915,7 +915,7 @@ importers:
       jsdom: ^20.0.3
       jsonschema: ^1.4.1
       lodash: ^4.17.21
-      mocha: ^10.7.3
+      mocha: ^10.8.1
       nock: ^13.5.5
       nyc: ^15.1.0
       oclif: ^3.17.2
@@ -942,7 +942,7 @@ importers:
       eslint: 8.57.1
       eslint-config-oclif: 4.0.0_eslint@8.57.1
       globby: 10.0.2
-      mocha: 10.7.3
+      mocha: 10.8.1
       nyc: 15.1.0
       oclif: 3.17.2
       tslib: 1.14.1
@@ -10960,6 +10960,33 @@ packages:
 
   /mocha/10.7.3:
     resolution: {integrity: sha512-uQWxAu44wwiACGqjbPYmjo7Lg8sFrS3dQe7PP2FQI+woptP4vZXSMcfMyFL/e1yFEeEpV4RtyTpZROOKmxis+A==}
+    engines: {node: '>= 14.0.0'}
+    hasBin: true
+    dependencies:
+      ansi-colors: 4.1.3
+      browser-stdout: 1.3.1
+      chokidar: 3.6.0
+      debug: 4.3.7_supports-color@8.1.1
+      diff: 5.2.0
+      escape-string-regexp: 4.0.0
+      find-up: 5.0.0
+      glob: 8.1.0
+      he: 1.2.0
+      js-yaml: 4.1.0
+      log-symbols: 4.1.0
+      minimatch: 5.1.6
+      ms: 2.1.3
+      serialize-javascript: 6.0.2
+      strip-json-comments: 3.1.1
+      supports-color: 8.1.1
+      workerpool: 6.5.1
+      yargs: 16.2.0
+      yargs-parser: 20.2.9
+      yargs-unparser: 2.0.0
+    dev: true
+
+  /mocha/10.8.1:
+    resolution: {integrity: sha512-WxSpEWgF03HfgNKBuysfK40DUaOSVX5zxgLDoieMGO+zyE69iq2eQ1vBypvIJ5mOPKpuVAqWiTbt4Orj7L6wVw==}
     engines: {node: '>= 14.0.0'}
     hasBin: true
     dependencies:
