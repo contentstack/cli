@@ -36,7 +36,7 @@ describe('Migration Config validation', () => {
       expect(error.message).to.contain();
     })
     .it('deny config confirmation', async () => {
-      const { stderr } = await runCommand(
+      const { error } = await runCommand(
         [
           'cm:entries:migrate-html-rte',
           '--alias',
@@ -52,36 +52,35 @@ describe('Migration Config validation', () => {
         ],
         { root: process.cwd() },
       );
-      
-      expect(stderr.message).to.contain('User aborted the command.');
+      expect(error.message).to.contain('User aborted the command.');
     });
 
   fancy
     .stub(cliux, 'confirm', () => true)
     .stub(command, 'getToken', getTokenCallback)
     .it('throw error on Empty paths', async () => {
-      const {stderr} = await runCommand(
+      const {error} = await runCommand(
         ['cm:entries:migrate-html-rte', '--config-path', './test/dummy/config/configWithEmptyPath.json', '--yes'],
         { root: process.cwd() },
       );
-      expect(stderr.message).to.contain('No value provided for the "paths" property in config.');
+      expect(error.message).to.contain('No value provided for the "paths" property in config.');
     });
 
   fancy
     .stub(cliux, 'confirm', () => true)
     .stub(command, 'getToken', getTokenCallback)
     .it('throw error on invalid config type', async () => {
-      const {stderr} = await runCommand(
+      const {error} = await runCommand(
         ['cm:entries:migrate-html-rte', '--config-path', '../test/dummy/config/invalidConfig.json', '--yes'],
         { root: process.cwd() },
       );
-      expect(stderr.message).to.contain('Invalid key type. alias must be of string type(s).');
+      expect(error.message).to.contain('Invalid key type. alias must be of string type(s).');
     });
 
   fancy
     .stub(cliux, 'confirm', () => true)
     .it('throw error on config without alias property', async () => {
-      const { stderr } = await runCommand(
+      const { error } = await runCommand(
         [
           'cm:entries:migrate-html-rte',
           '--content-type',
@@ -95,14 +94,14 @@ describe('Migration Config validation', () => {
         ],
         { root: process.cwd() },
       );
-      expect(stderr.message).to.contain('alias is mandatory while defining config.');
+      expect(error.message).to.contain('alias is mandatory while defining config.');
     });
 
   fancy
     .stub(cliux, 'confirm', () => true)
     .stub(command, 'getToken', getTokenCallback)
     .it('throw error on invalidAlias', async () => {
-      const { stderr } = await runCommand(
+      const { error } = await runCommand(
         [
           'cm:entries:migrate-html-rte',
           '--alias',
@@ -118,18 +117,18 @@ describe('Migration Config validation', () => {
         ],
         { root: process.cwd() },
       );
-      expect(stderr.message).to.contain('Invalid alias provided for the management token.');
+      expect(error.message).to.contain('Invalid alias provided for the management token.');
     });
 
   fancy
     .stub(cliux, 'confirm', () => true)
     .stub(command, 'getToken', getTokenCallback)
     .it('throw error on invalid config file', async () => {
-      const { stderr } = await runCommand(
+      const { error } = await runCommand(
         ['cm:entries:migrate-html-rte', '--config-path', './test/dummy/config/configWithInvalidPath.json', '--yes'],
         { root: process.cwd() },
       );
-      expect(stderr.message).to.contain('The specified path to config file does not exist.');
+      expect(error.message).to.contain('The specified path to config file does not exist.');
     });
 });
 describe('Content Type with Single RTE Field of Single Type', function () {
@@ -291,7 +290,7 @@ describe('Content Type with Single RTE Field of Single Type', function () {
     .stub(command, 'getToken', getTokenCallback)
     .it('execute using config file w/ locale', async () => {
       const { stdout } = await runCommand(
-        ['cm:entries:migrate-html-rte', '--config-path', './test/dummy/config/config_locale.json', '--yes'],
+        ['cm:entries:migrate-html-rte', '--config-path', '/Users/raj.pandey/Documents/cli13/cli/packages/contentstack-migrate-rte/test/dummy/config/config_locale.json', '--yes'],
         { root: process.cwd() },
       );
       expect(stdout).to.contain('Updated 1 Content Type(s) and 1 Entrie(s)');
@@ -358,7 +357,7 @@ describe('Content Type with Single RTE Field of Single Type', function () {
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .it('throw error on invalid html rte path', async () => {
-      const { stderr } = await runCommand([
+      const { error } = await runCommand([
         'cm:entries:migrate-html-rte',
         '--alias',
         'test1',
@@ -372,14 +371,14 @@ describe('Content Type with Single RTE Field of Single Type', function () {
         '--delay',
         '50',
       ],{ root: process.cwd() });
-      expect(stderr.message).to.contain('The specified path to invalidPath HTML RTE does not exist.');
+      expect(error.message).to.contain('The specified path to invalidPath HTML RTE does not exist.');
     });
 
   fancy
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .it('throw error on invalid html rte field schema', async () => {
-      const { stderr } = await runCommand(
+      const { error } = await runCommand(
         [
           'cm:entries:migrate-html-rte',
           '--alias',
@@ -396,14 +395,14 @@ describe('Content Type with Single RTE Field of Single Type', function () {
         ],
         { root: process.cwd() },
       );
-      expect(stderr.message).to.contain('The specified path to rich_text_editor HTML RTE does not exist.');
+      expect(error.message).to.contain('The specified path to rich_text_editor HTML RTE does not exist.');
     });
 
   fancy
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .it('throw error on invalid json rte field schema', async () => {
-      const { stderr } = await runCommand(
+      const { error } = await runCommand(
         [
           'cm:entries:migrate-html-rte',
           '--alias',
@@ -420,13 +419,13 @@ describe('Content Type with Single RTE Field of Single Type', function () {
         ],
         { root: process.cwd() },
       );
-      expect(stderr.message).to.contain('The specified path to supercharged_rte JSON RTE does not exist.');
+      expect(error.message).to.contain('The specified path to supercharged_rte JSON RTE does not exist.');
     });
   fancy
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .it('throw error on invalid json rte path', async () => {
-      const { stderr } = await runCommand(
+      const { error } = await runCommand(
         [
           'cm:entries:migrate-html-rte',
           '--alias',
@@ -443,14 +442,14 @@ describe('Content Type with Single RTE Field of Single Type', function () {
         ],
         { root: process.cwd() },
       );
-      expect(stderr.message).to.contain('The specified path to invalidPath JSON RTE does not exist.');
+      expect(error.message).to.contain('The specified path to invalidPath JSON RTE does not exist.');
     });
 
   fancy
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .it('throw error on migration of Mutiple Html rte with single Json rte', async () => {
-      const { stderr } = await runCommand(
+      const { error } = await runCommand(
         [
           'cm:entries:migrate-html-rte',
           '--config-path',
@@ -459,14 +458,14 @@ describe('Content Type with Single RTE Field of Single Type', function () {
         ],
         { root: process.cwd() },
       );
-      expect(stderr.message).to.contain('Cannot convert "Multiple" type HTML RTE to "Single" type JSON RTE.');
+      expect(error.message).to.contain('Cannot convert "Multiple" type HTML RTE to "Single" type JSON RTE.');
     });
 
   fancy
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .it('throw error on content type with empty schema', async () => {
-      const { stderr } = await runCommand(
+      const { error } = await runCommand(
         [
           'cm:entries:migrate-html-rte',
           '--alias',
@@ -483,14 +482,14 @@ describe('Content Type with Single RTE Field of Single Type', function () {
         ],
         { root: process.cwd() },
       );
-      expect(stderr.message).to.contain('The contenttypewithemptyschema content type contains an empty schema.');
+      expect(error.message).to.contain('The contenttypewithemptyschema content type contains an empty schema.');
     });
 
   fancy
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .it('throw error on different level rte migration', async () => {
-      const { stderr } = await runCommand(
+      const { error } = await runCommand(
         [
           'cm:entries:migrate-html-rte',
           '--alias',
@@ -507,7 +506,7 @@ describe('Content Type with Single RTE Field of Single Type', function () {
         ],
         { root: process.cwd() },
       );
-      expect(stderr.message).to.contain(
+      expect(error.message).to.contain(
         'To complete migration, HTML RTE and JSON RTE should be present at the same field depth level.',
       );
     });
@@ -516,7 +515,7 @@ describe('Content Type with Single RTE Field of Single Type', function () {
     .stub(cliux, 'confirm', () => true)
     .stub(command, 'getToken', getTokenCallback)
     .it('throw error on invalid contenttype', async () => {
-      const { stderr } = await runCommand(
+      const { error } = await runCommand(
         [
           'cm:entries:migrate-html-rte',
           '--alias',
@@ -532,7 +531,7 @@ describe('Content Type with Single RTE Field of Single Type', function () {
         ],
         { root: process.cwd() },
       );
-      expect(stderr.message).to.contain("The Content Type 'invalidContentType' was not found. Please try again.");
+      expect(error.message).to.contain("The Content Type 'invalidContentType' was not found. Please try again.");
     });
 
   fancy
@@ -613,7 +612,7 @@ describe('Global Field Migration', () => {
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .it('throw error on global field with empty referred content_types', async () => {
-      const { stderr } = await runCommand(
+      const { error } = await runCommand(
         [
           'cm:entries:migrate-html-rte',
           '--alias',
@@ -631,14 +630,14 @@ describe('Global Field Migration', () => {
         ],
         { root: process.cwd() },
       );
-      expect(stderr.message).to.contain('globalfieldformigration Global field is not referred in any content type.');
+      expect(error.message).to.contain('globalfieldformigration Global field is not referred in any content type.');
     });
 
   fancy
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .it('throw error on global field with invalid content_type', async () => {
-      const { stderr } = await runCommand(
+      const { error } = await runCommand(
         [
           'cm:entries:migrate-html-rte',
           '--alias',
@@ -656,7 +655,7 @@ describe('Global Field Migration', () => {
         ],
         { root: process.cwd() },
       );
-      expect(stderr.message).to.contain(
+      expect(error.message).to.contain(
         'The contenttypewithemptyschema content type referred in globalfieldformigration contains an empty schema.',
       );
     });
@@ -665,7 +664,7 @@ describe('Global Field Migration', () => {
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .it('throw error on global field with empty schema', async () => {
-      const { stderr } = await runCommand(
+      const { error } = await runCommand(
         [
           'cm:entries:migrate-html-rte',
           '--alias',
@@ -683,14 +682,14 @@ describe('Global Field Migration', () => {
         ],
         { root: process.cwd() },
       );
-      expect(stderr.message).to.contain('The globalfieldwithemptyschema Global field contains an empty schema.');
+      expect(error.message).to.contain('The globalfieldwithemptyschema Global field contains an empty schema.');
     });
 
   fancy
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .it('throw error on global field with empty schema content_type', async () => {
-      const { stderr } = await runCommand(
+      const { error } = await runCommand(
         [
           'cm:entries:migrate-html-rte',
           '--alias',
@@ -708,7 +707,7 @@ describe('Global Field Migration', () => {
         ],
         { root: process.cwd() },
       );
-      expect(stderr.message).to.contain(
+      expect(error.message).to.contain(
         'The contenttypewithemptyschema content type referred in globalfieldwithemptyschemacontenttype contains an empty schema.',
       );
     });
@@ -717,7 +716,7 @@ describe('Global Field Migration', () => {
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .it('throw error on invalid global_field uid', async () => {
-      const { stderr } = await runCommand(
+      const { error } = await runCommand(
         [
           'cm:entries:migrate-html-rte',
           '--alias',
@@ -735,7 +734,7 @@ describe('Global Field Migration', () => {
         ],
         { root: process.cwd() },
       );
-      expect(stderr.message).to.contain("The Global Field 'invalidUidGlobalfield' was not found. Please try again.");
+      expect(error.message).to.contain("The Global Field 'invalidUidGlobalfield' was not found. Please try again.");
     });
 });
 
