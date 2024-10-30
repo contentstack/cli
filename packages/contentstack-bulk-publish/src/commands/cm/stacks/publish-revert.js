@@ -71,19 +71,19 @@ A log file name is required to execute revert command
 `;
 
 RevertCommand.flags = {
-  'retry-failed': flags.string({ description: 'retry publishing failed entries from the logfile' }),
-  'log-file': flags.string({ description: 'logfile to be used to revert' }),
+  'retry-failed': flags.string({ description: '(optional)  Use this option to retry publishing the failed entries from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags.' }),
+  'log-file': flags.string({ description: 'Path of the success logfile of a particular publish action.' }),
 
   //To be deprecated
   retryFailed: flags.string({
     char: 'r',
-    description: 'retry publishing failed entries from the logfile',
+    description: '(optional)  Use this option to retry publishing the failed entries from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags.',
     hidden: true,
     parse: printFlagDeprecation(['-r', '--retryFailed'], ['--retry-failed']),
   }),
   logFile: flags.string({
     char: 'l',
-    description: 'logfile to be used to revert',
+    description: 'Path of the success logfile of a particular publish action.',
     hidden: true,
     parse: printFlagDeprecation(['-l', '--logFile'], ['--log-file']),
   }),

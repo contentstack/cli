@@ -5,8 +5,8 @@ import { interactive } from '../../../utils';
 export default class BranchSetCommand extends Command {
   static description = 'Set branch for CLI';
   static flags: FlagInput = {
-    'stack-api-key': flags.string({ char: 'k', description: 'Stack API Key' }),
-    'base-branch': flags.string({ description: 'Base Branch' }),
+    'stack-api-key': flags.string({ char: 'k', description: 'Stack API key' }),
+    'base-branch': flags.string({ description: 'Base branch (Target branch).' }),
   };
   static examples = [
     '$ csdx config:set:base-branch',
