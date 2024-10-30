@@ -134,45 +134,47 @@ But, if retry-failed flag is set, then only a logfile is required`;
 UnpublishCommand.flags = {
   alias: flags.string({
     char: 'a',
-    description: 'Alias(name) for the management token',
+    description: 'Alias (name) of the management token. You must use either the --alias flag or the --stack-api-key flag.',
   }),
   'stack-api-key': flags.string({
     char: 'k',
-    description: 'Stack api key to be used',
+    description: 'API key of the source stack. You must use either the --stack-api-key flag or the --alias flag.',
     required: false,
   }),
   environment: flags.string({
     char: 'e',
-    description: 'Source Environment',
+    description: 'The name of the environment from where entries/assets need to be unpublished.',
   }),
   config: flags.string({
     char: 'c',
-    description: 'Path to the config file',
+    description: '(optional) Path of an optional configuration JSON file containing all the options for a single run. Refer to the configure command to create a configuration file.',
   }),
   yes: flags.boolean({
     char: 'y',
-    description: 'Agree to process the command with the current configuration',
+    description: 'Set it to true to process the command with the current configuration.',
   }),
   locale: flags.string({
-    description: 'Locale filter',
+    description: 'Locale from which entries/assets will be unpublished, e.g., en-us.',
   }),
   branch: flags.string({
     default: 'main',
-    description: 'Specify the branch to fetch the content (by default the main branch is selected)',
+    description: 'The name of the branch where you want to perform the bulk unpublish operation. If you don’t mention the branch name, then by default the content from the main branch will be unpublished.',
   }),
   'retry-failed': flags.string({
-    description: 'Retry unpublishing failed assets from the logfile',
+    description: '(optional) Use this option to retry unpublishing the failed entries from the logfile. Specify the name of the logfile that lists failed unpublish calls. If this option is used, it will override all other flags.',
   }),
   'bulk-unpublish': flags.string({
-    description:
-      "By default this flag is set as true. It indicates that contentstack's bulkpublish API will be used to unpublish the assets",
+    description: 'Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by default.',
     default: 'true',
   }),
   'api-version': flags.string({
-    description : "API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
+    description: 'API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].',
   }),
   'delivery-token': flags.string({
-    description: 'Delivery Token for source environment',
+    description: 'The delivery token of the source environment.',
+  }),
+  'content-type': flags.string({
+    description: 'The UID of the content type whose entries you want to unpublish in bulk.',
   }),
 };
 
