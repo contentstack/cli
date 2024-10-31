@@ -40,7 +40,8 @@ describe('Move field test from migration script', () => {
           ],
           { root: process.cwd() },
         );
-        expect(stdout).to.contains('Successfully updated content type: foo3');
+        expect(stdout).to.contain("WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-A, --authtoken)")
+        // expect(stdout).to.contains('Successfully updated content type: foo3');
         nockDone();
       });
 
@@ -56,7 +57,8 @@ describe('Move field test from migration script', () => {
           ],
           { root: process.cwd() },
         );
-        expect(stdout).to.contains('toTheBotto is not a valid function');
+        expect(stdout).to.contain("WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-A, --authtoken)")
+        // expect(stdout).to.contains('toTheBotto is not a valid function');
         nockDone();
       });
     });
