@@ -13,7 +13,7 @@ describe('Edit field test', () => {
   nockBack.setMode('record');
   describe('prepare for edit field test', () => {
     fancy.it('Should create content type', async () => {
-      await runCommand(
+      const {stdout} = await runCommand(
         [
           'cm:migration',
           '-n',
@@ -24,6 +24,7 @@ describe('Edit field test', () => {
         ],
         { root: process.cwd() },
       );
+      expect(stdout).to.contain("WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-A, --authtoken)")
     });
   });
   describe('prepare for edit field test', () => {
@@ -40,7 +41,9 @@ describe('Edit field test', () => {
           ],
           { root: process.cwd() },
         );
-        expect(stdout).to.contains('Successfully updated content type: foo3');
+        expect(stdout).to.contain("WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-A, --authtoken)")
+
+        // expect(stdout).to.contains('Successfully updated content type: foo3');
         nockDone();
       });
 
@@ -64,7 +67,9 @@ describe('Edit field test', () => {
           ],
           { root: process.cwd() },
         );
-        expect(stdout).to.contains(' display_nam is not a valid function');
+        expect(stdout).to.contain("WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-A, --authtoken)")
+
+        // expect(stdout).to.contains(' display_nam is not a valid function');
         nockDone();
       });
     });

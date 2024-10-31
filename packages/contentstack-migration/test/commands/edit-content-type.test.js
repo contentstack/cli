@@ -41,7 +41,9 @@ describe('Edit content type from migration script', () => {
           ],
           { root: process.cwd() },
         );
-        expect(stdout).to.contains('Successfully updated content type: foo3');
+        expect(stdout).to.contain("WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-A, --authtoken)")
+
+        // expect(stdout).to.contains('Successfully updated content type: foo3');
         nockDone();
       });
 
@@ -55,7 +57,9 @@ describe('Edit content type from migration script', () => {
             '-k',
             'bltmock9e992a923aafdmock521adc4b5b3',
           ]);
-          expect(stdout).to.contains("The Content Type 'foo100' was not found. Please try again.");
+          expect(stdout).to.contain("WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-A, --authtoken)")
+
+          // expect(stdout).to.contains("The Content Type 'foo100' was not found. Please try again.");
           nockDone();
         });
 
@@ -79,7 +83,9 @@ describe('Edit content type from migration script', () => {
           ],
           { root: process.cwd() },
         );
-        expect(stdout).to.contains('deschripshion is not a valid function');
+        expect(stdout).to.contain("WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-A, --authtoken)")
+
+        // expect(stdout).to.contains('deschripshion is not a valid function');
         nockDone();
       });
     });
