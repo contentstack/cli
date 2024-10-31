@@ -11,6 +11,7 @@ describe('Edit content type from migration script', () => {
   nockBack.setMode('record');
   describe('prepare for edit field test', () => {
     test
+    .loadConfig({ root: process.cwd() })
       .command([
         'cm:migration',
         '-n',
@@ -25,6 +26,7 @@ describe('Edit content type from migration script', () => {
   describe('Allow editing existing content type', () => {
     nockBack('edit-content-type.json', (nockDone) => {
       test
+      .loadConfig({ root: process.cwd() })
         .stdout()
         .command([
           'cm:migration',
@@ -40,6 +42,7 @@ describe('Edit content type from migration script', () => {
         });
 
       test
+      .loadConfig({ root: process.cwd() })
         .stdout()
         .command([
           'cm:migration',
@@ -63,6 +66,7 @@ describe('Edit content type from migration script', () => {
       // })
 
       test
+      .loadConfig({ root: process.cwd() })
         .stdout()
         .command([
           'cm:migration',
@@ -80,6 +84,7 @@ describe('Edit content type from migration script', () => {
   });
   describe('wind up field test', () => {
     test
+    .loadConfig({ root: process.cwd() })
       .command([
         'cm:migration',
         '-n',
