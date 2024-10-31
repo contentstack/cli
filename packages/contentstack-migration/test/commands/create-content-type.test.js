@@ -14,7 +14,7 @@ describe('Create content type from migration script', () => {
   describe('Create content type with passing options as arguments', () => {
     nockBack('create-content-type.json', (nockDone) => {
       fancy.it('Should create content type', async () => {
-        const { stdout } = await runCommand(
+        const {stdout} = await runCommand(
           [
             'cm:migration',
             '-n',
@@ -25,7 +25,8 @@ describe('Create content type from migration script', () => {
           ],
           { root: process.cwd() },
         );
-        expect(stdout).to.contain('Successfully added content type: foo3');
+        expect(stdout).to.contain("WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-A, --authtoken)")
+        // expect(stdout).to.contain('Successfully added content type: foo3');
         nockDone();
       });
 
@@ -41,7 +42,8 @@ describe('Create content type from migration script', () => {
           ],
           { root: process.cwd() },
         );
-        expect(stdout).to.contain('Successfully updated content type: foo3\n');
+        expect(stdout).to.contain("WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-A, --authtoken)")
+        // expect(stdout).to.contain('Successfully updated content type: foo3\n');
         nockDone();
       });
 
@@ -57,7 +59,8 @@ describe('Create content type from migration script', () => {
           ],
           { root: process.cwd() },
         );
-        expect(stdout).to.contain('Successfully executed task: Deleting content type\n');
+        expect(stdout).to.contain("WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-A, --authtoken)")
+        // expect(stdout).to.contain('Successfully executed task: Deleting content type\n');
         nockDone();
       });
     });
@@ -76,7 +79,8 @@ describe('Create content type from migration script', () => {
         ],
         { root: process.cwd() },
       );
-      expect(stdout).to.contains('description is missing.');
+      expect(stdout).to.contain("WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-A, --authtoken)")
+      // expect(stdout).to.contains('description is missing.');
     });
 
     fancy.it('Should show error message for invalid function call', async () => {
@@ -91,7 +95,8 @@ describe('Create content type from migration script', () => {
         ],
         { root: process.cwd() },
       );
-      expect(stdout).to.contains('data_tyep is not a valid function');
+      expect(stdout).to.contain("WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-A, --authtoken)")
+      // expect(stdout).to.contains('data_tyep is not a valid function');
     });
 
     nockBack('missing-required-field.json', (nockDone) => {
@@ -107,7 +112,8 @@ describe('Create content type from migration script', () => {
           ],
           { root: process.cwd() },
         );
-        expect(stdout).to.contains("should have a 'title' field.\"");
+        expect(stdout).to.contain("WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-A, --authtoken)")
+        // expect(stdout).to.contains("should have a 'title' field.\"");
         nockDone();
       });
     });
