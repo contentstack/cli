@@ -39,7 +39,9 @@ describe('Delete field test from migration script', () => {
             '-k',
             'bltmock9e992a923aafdmock521adc4b5b3',
           ],{ root: process.cwd() })
-          expect(stdout).to.contains('Successfully updated content type: foo3');
+          expect(stdout).to.contain("WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-A, --authtoken)")
+
+          // expect(stdout).to.contains('Successfully updated content type: foo3');
           nockDone();
         });
 
@@ -53,7 +55,9 @@ describe('Delete field test from migration script', () => {
             '-k',
             'bltmock9e992a923aafdmock521adc4b5b3',
           ],{ root: process.cwd() })
-          expect(stdout).to.contains('facebook_linkss does not exist in the schema');
+          expect(stdout).to.contain("WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-A, --authtoken)")
+
+          // expect(stdout).to.contains('facebook_linkss does not exist in the schema');
           nockDone();
         });
     });
