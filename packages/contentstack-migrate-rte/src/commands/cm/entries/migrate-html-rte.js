@@ -66,58 +66,62 @@ JsonMigrationCommand.description = 'Migration script to migrate content from HTM
 JsonMigrationCommand.flags = {
   'config-path': flags.string({
     char: 'c',
-    description: 'Path to config file',
+    description: 'Specify the path where your config file is located.',
     required: false,
   }),
   alias: flags.string({
     char: 'a',
-    description: 'Alias(name) for the management token',
+    description: 'Enter the alias name. You must use either the --alias flag or the --stack-api-key flag.',
     required: false,
   }),
   'stack-api-key': flags.string({
-    description: 'Stack api key to be used',
+    description: 'API key of the source stack. You must use either the --stack-api-key flag or the --alias flag.',
     required: false,
   }),
   'content-type': flags.string({
-    description: 'The content type from which entries will be migrated',
+    description: 'Specify the UID of the content type for which you want to migrate HTML RTE content.',
     required: false,
   }),
   'global-field': flags.boolean({
-    description: 'This flag is set to false by default. It indicates that current content type is a globalfield',
+    description: 'Checks whether the specified UID belongs to a content type or a global field. This flag is set to false by default.',
     default: false,
     required: false,
   }),
   yes: flags.boolean({
     char: 'y',
-    description: 'Agree to process the command with the current configuration',
+    description: 'Avoids reconfirmation of your configuration.',
     default: false,
     required: false,
   }),
   branch: flags.string({
-    description: '[optional] branch name',
+    description: 'The name of the branch to be used.',
+    required: false,
   }),
   'html-path': flags.string({
-    description: 'Provide path of HTML RTE to migrate',
+    description: 'Enter the path to the HTML RTE whose content you want to migrate.',
     dependsOn: ['json-path'],
     required: false,
   }),
   'json-path': flags.string({
-    description: 'Provide path of JSON RTE to migrate',
+    description: 'Enter the path to the JSON RTE to which you want to migrate the HTML RTE content.',
     dependsOn: ['html-path'],
     required: false,
   }),
   delay: flags.integer({
-    description: 'Provide delay in ms between two entry update',
+    description: 'To set the interval time between the migration of HTML RTE to JSON RTE in subsequent entries of a content type. The default value is 1,000 milliseconds.',
     default: 1000,
     required: false,
   }),
   locale: flags.string({
-    description: 'The locale from which entries will be migrated',
+    description: 'The locale from which entries will be migrated.',
     required: false,
   }),
-  'batch-limit': flags.integer({ description: 'Provide batch limit for updating entries', default: 50 }),
+  'batch-limit': flags.integer({
+    description: 'Provide batch limit for updating entries (default: 50).',
+    default: 50,
+  }),
 
-  //To be deprecated
+  // To be deprecated
   configPath: flags.string({
     char: 'p',
     description: 'Path to the config file',
@@ -131,19 +135,19 @@ JsonMigrationCommand.flags = {
   }),
   isGlobalField: flags.boolean({
     char: 'g',
-    description: 'This flag is set to false by default. It indicates that current content-type is global-field',
+    description: 'Indicates that the current content type is a global field (default: false)',
     hidden: true,
     parse: printFlagDeprecation(['-g', '--isGlobalField'], ['--global-field']),
   }),
   htmlPath: flags.string({
     char: 'h',
-    description: 'Provide path of HTML RTE to migrate',
+    description: 'Provide the path of HTML RTE to migrate',
     hidden: true,
     parse: printFlagDeprecation(['-h', '--htmlPath'], ['--html-path']),
   }),
   jsonPath: flags.string({
     char: 'j',
-    description: 'Provide path of JSON RTE to migrate',
+    description: 'Provide the path of JSON RTE to migrate',
     hidden: true,
     parse: printFlagDeprecation(['-j', '--jsonPath'], ['--json-path']),
   }),
