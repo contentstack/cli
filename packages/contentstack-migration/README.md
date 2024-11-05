@@ -45,14 +45,18 @@ USAGE
     [--config <value>] [--multiple]
 
 FLAGS
-  -B, --branch=<value>         Use this flag to add the branch name where you want to perform the migration.
-  -a, --alias=<value>          Use this flag to add the management token alias.
-  -k, --stack-api-key=<value>  With this flag add the API key of your stack.
-  --config=<value>...          [optional] inline configuration, <key1>:<value1>
-  --config-file=<value>        [optional] Path of the JSON configuration file
-  --file-path=<value>          Use this flag to provide the path of the file of the migration script provided by the
-                               user.
-  --multiple                   This flag helps you to migrate multiple content files in a single instance.
+  -B, --branch=<value>         Use this flag to add the branch name where you want to perform the migration. (target
+                               branch name)
+  -a, --alias=<value>          Use this flag to add the management token alias. You must use either the --alias flag or
+                               the --stack-api-key flag.
+  -k, --stack-api-key=<value>  Use this flag to add the API key of your stack. You must use either the --stack-api-key
+                               flag or the --alias flag.
+  --config=<value>...          [optional] Inline configuration, <key1>:<value1>. Passing an external configuration makes
+                               the script re-usable.
+  --config-file=<value>        [optional] Path of the JSON configuration file.
+  --file-path=<value>          Use this flag to provide the path of the file of the migration script.
+  --multiple                   This flag helps you to migrate multiple content files in a single instance. Mention the
+                               folder path where your migration script files are stored.
 
 DESCRIPTION
   Contentstack migration script.
@@ -84,14 +88,18 @@ USAGE
     [--config <value>] [--multiple]
 
 FLAGS
-  -B, --branch=<value>         Use this flag to add the branch name where you want to perform the migration.
-  -a, --alias=<value>          Use this flag to add the management token alias.
-  -k, --stack-api-key=<value>  With this flag add the API key of your stack.
-  --config=<value>...          [optional] inline configuration, <key1>:<value1>
-  --config-file=<value>        [optional] Path of the JSON configuration file
-  --file-path=<value>          Use this flag to provide the path of the file of the migration script provided by the
-                               user.
-  --multiple                   This flag helps you to migrate multiple content files in a single instance.
+  -B, --branch=<value>         Use this flag to add the branch name where you want to perform the migration. (target
+                               branch name)
+  -a, --alias=<value>          Use this flag to add the management token alias. You must use either the --alias flag or
+                               the --stack-api-key flag.
+  -k, --stack-api-key=<value>  Use this flag to add the API key of your stack. You must use either the --stack-api-key
+                               flag or the --alias flag.
+  --config=<value>...          [optional] Inline configuration, <key1>:<value1>. Passing an external configuration makes
+                               the script re-usable.
+  --config-file=<value>        [optional] Path of the JSON configuration file.
+  --file-path=<value>          Use this flag to provide the path of the file of the migration script.
+  --multiple                   This flag helps you to migrate multiple content files in a single instance. Mention the
+                               folder path where your migration script files are stored.
 
 DESCRIPTION
   Contentstack migration script.
