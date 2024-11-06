@@ -570,6 +570,8 @@ FLAGS
   --content-types=<value>...     The UID of the content type(s) whose entries you want to publish in bulk. In case of
                                  multiple content types, specify the IDs separated by spaces.
   --delivery-token=<value>       The delivery token of the source environment.
+  --entry-uid=<value>            Entry Uid for publish all associated variant entries.
+  --include-variants             Include Variants flag will publish all associated variant entries with base entry.
   --publish-all-content-types    (optional) Set it to true to bulk publish entries from all content types. If the
                                  --content-types option is already used, then you cannot use this option.
   --retry-failed=<value>         (optional) Use this option to retry publishing the failed entries/ assets from the
@@ -1048,6 +1050,8 @@ FLAGS
   --content-types=<value>...     The UID of the content type(s) whose entries you want to publish in bulk. In case of
                                  multiple content types, specify the IDs separated by spaces.
   --delivery-token=<value>       The delivery token of the source environment.
+  --entry-uid=<value>            Entry Uid for publish all associated variant entries.
+  --include-variants             Include Variants flag will publish all associated variant entries with base entry.
   --publish-all-content-types    (optional) Set it to true to bulk publish entries from all content types. If the
                                  --content-types option is already used, then you cannot use this option.
   --retry-failed=<value>         (optional) Use this option to retry publishing the failed entries/ assets from the
@@ -1397,6 +1401,7 @@ FLAGS
                                Bulk Publish APIs will be used to unpublish the entries.
   --content-type=<value>       The UID of the content type whose entries you want to unpublish in bulk.
   --delivery-token=<value>     The delivery token of the source environment.
+  --include-variants           Include Variants flag will unpublish all associated variant entries.
   --locale=<value>             Locale from which entries/assets will be unpublished, e.g., en-us.
   --retry-failed=<value>       (optional) Use this option to retry unpublishing the failed entries from the logfile.
                                Specify the name of the logfile that lists failed unpublish calls. If used, this option

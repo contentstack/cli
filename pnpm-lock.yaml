@@ -1054,7 +1054,7 @@ importers:
   packages/contentstack-utilities:
     specifiers:
       '@contentstack/cli-dev-dependencies': ^1.2.4
-      '@contentstack/management': ~1.17.0
+      '@contentstack/management': ~1.18.0
       '@contentstack/marketplace-sdk': ^1.2.1
       '@oclif/core': ^3.26.5
       '@oclif/test': ^2.5.6
@@ -1104,7 +1104,7 @@ importers:
       winston: ^3.7.2
       xdg-basedir: ^4.0.0
     dependencies:
-      '@contentstack/management': 1.17.2_debug@4.3.7
+      '@contentstack/management': 1.18.2_debug@4.3.7
       '@contentstack/marketplace-sdk': 1.2.3_debug@4.3.7
       '@oclif/core': 3.27.0
       axios: 1.7.7_debug@4.3.7
