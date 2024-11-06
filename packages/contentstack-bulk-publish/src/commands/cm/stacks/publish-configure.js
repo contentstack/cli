@@ -35,8 +35,8 @@ class ConfigureCommand extends Command {
 ConfigureCommand.description = `The configure command is used to generate a configuration file for publish scripts.`;
 
 ConfigureCommand.flags = {
-  alias: flags.string({ char: 'a', description: 'Alias(name) for the management token' }),
-  'stack-api-key': flags.string({ char: 'k', description: 'Stack api key to be used' }),
+  alias: flags.string({ char: 'a', description: 'Name (alias) of the management token you want to use. You must use either the --alias flag or the --stack-api-key flag.' }),
+  'stack-api-key': flags.string({ char: 'k', description: 'API key of the source stack. You must use either the --stack-api-key flag or the --alias flag.' }),
 };
 
 ConfigureCommand.examples = [

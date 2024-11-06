@@ -63,8 +63,8 @@ USAGE
   $ csdx cm:branches
 
 FLAGS
-  -k, --stack-api-key=<value>  Stack API Key
-  --verbose                    Verbose
+  -k, --stack-api-key=<value>  Stack API key
+  --verbose                    Verbose, display information in detailed format.
 
 DESCRIPTION
   List the branches
@@ -91,8 +91,8 @@ USAGE
 
 FLAGS
   -k, --stack-api-key=<value>  Stack API key
-  --source=<value>             Source branch from which new branch to be created
-  --uid=<value>                Branch UID to be created
+  --source=<value>             Source branch from which a new branch is to be created.
+  --uid=<value>                Branch UID (unique name) to be created.
 
 DESCRIPTION
   Create a new branch
@@ -145,12 +145,13 @@ USAGE
   $ csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]
 
 FLAGS
-  -k, --stack-api-key=<value>  Provide Stack API key to show difference between branches
-  --base-branch=<value>        Base branch
-  --compare-branch=<value>     Compare branch
-  --format=<option>            [default: compact-text] [Optional] Type of flags to show branches differences
+  -k, --stack-api-key=<value>  [optional] Provide the Stack API key to show the difference between branches.
+  --base-branch=<value>        [optional] Base branch (Target branch).
+  --compare-branch=<value>     [optional] Compare branch (Source branch).
+  --format=<option>            [default: compact-text] [default: compact-text] [optional] Type of flags to show the
+                               difference between two branches. <options: compact-text, detailed-text>
                                <options: compact-text|detailed-text>
-  --module=<option>            Module
+  --module=<option>            [optional] Module. <options: content-types, global-fields, all>
                                <options: content-types|global-fields|all>
 
 DESCRIPTION
@@ -194,13 +195,13 @@ USAGE
     [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]
 
 FLAGS
-  -k, --stack-api-key=<value>    Provide Stack API key to show difference between branches
-  --base-branch=<value>          Base branch
-  --comment=<value>              Merge comment
-  --compare-branch=<value>       Compare branch name
-  --export-summary-path=<value>  Export summary file path
-  --no-revert                    If passed, will not create the new revert branch
-  --use-merge-summary=<value>    Path of merge summary file
+  -k, --stack-api-key=<value>    [optional] Provide stack API key to show the difference between the branches.
+  --base-branch=<value>          [optional] Base branch (Target branch).
+  --comment=<value>              [optional] Pass a comment.
+  --compare-branch=<value>       [optional] Compare branch (Source branch).
+  --export-summary-path=<value>  [optional] Export summary file path.
+  --no-revert                    [optional] If passed, will not create the new revert branch.
+  --use-merge-summary=<value>    [optional] Path of merge summary file.
 
 DESCRIPTION
   Merge changes from a branch
