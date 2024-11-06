@@ -41,19 +41,21 @@ USAGE
     <value>] [--batch-limit <value>]
 
 FLAGS
-  -a, --alias=<value>        Alias(name) for the management token
-  -c, --config-path=<value>  Path to config file
-  -y, --yes                  Agree to process the command with the current configuration
-  --batch-limit=<value>      [default: 50] Provide batch limit for updating entries
-  --branch=<value>           [optional] branch name
-  --content-type=<value>     The content type from which entries will be migrated
-  --delay=<value>            [default: 1000] Provide delay in ms between two entry update
-  --global-field             This flag is set to false by default. It indicates that current content type is a
-                             globalfield
-  --html-path=<value>        Provide path of HTML RTE to migrate
-  --json-path=<value>        Provide path of JSON RTE to migrate
-  --locale=<value>           The locale from which entries will be migrated
-  --stack-api-key=<value>    Stack api key to be used
+  -a, --alias=<value>        Enter the alias name. You must use either the --alias flag or the --stack-api-key flag.
+  -c, --config-path=<value>  Specify the path where your config file is located.
+  -y, --yes                  Avoids reconfirmation of your configuration.
+  --batch-limit=<value>      [default: 50] Provide batch limit for updating entries (default: 50).
+  --branch=<value>           The name of the branch to be used.
+  --content-type=<value>     Specify the UID of the content type for which you want to migrate HTML RTE content.
+  --delay=<value>            [default: 1000] To set the interval time between the migration of HTML RTE to JSON RTE in
+                             subsequent entries of a content type. The default value is 1,000 milliseconds.
+  --global-field             Checks whether the specified UID belongs to a content type or a global field. This flag is
+                             set to false by default.
+  --html-path=<value>        Enter the path to the HTML RTE whose content you want to migrate.
+  --json-path=<value>        Enter the path to the JSON RTE to which you want to migrate the HTML RTE content.
+  --locale=<value>           The locale from which entries will be migrated.
+  --stack-api-key=<value>    API key of the source stack. You must use either the --stack-api-key flag or the --alias
+                             flag.
 
 DESCRIPTION
   Migration script to migrate content from HTML RTE to JSON RTE
@@ -102,19 +104,21 @@ USAGE
     <value>] [--batch-limit <value>]
 
 FLAGS
-  -a, --alias=<value>        Alias(name) for the management token
-  -c, --config-path=<value>  Path to config file
-  -y, --yes                  Agree to process the command with the current configuration
-  --batch-limit=<value>      [default: 50] Provide batch limit for updating entries
-  --branch=<value>           [optional] branch name
-  --content-type=<value>     The content type from which entries will be migrated
-  --delay=<value>            [default: 1000] Provide delay in ms between two entry update
-  --global-field             This flag is set to false by default. It indicates that current content type is a
-                             globalfield
-  --html-path=<value>        Provide path of HTML RTE to migrate
-  --json-path=<value>        Provide path of JSON RTE to migrate
-  --locale=<value>           The locale from which entries will be migrated
-  --stack-api-key=<value>    Stack api key to be used
+  -a, --alias=<value>        Enter the alias name. You must use either the --alias flag or the --stack-api-key flag.
+  -c, --config-path=<value>  Specify the path where your config file is located.
+  -y, --yes                  Avoids reconfirmation of your configuration.
+  --batch-limit=<value>      [default: 50] Provide batch limit for updating entries (default: 50).
+  --branch=<value>           The name of the branch to be used.
+  --content-type=<value>     Specify the UID of the content type for which you want to migrate HTML RTE content.
+  --delay=<value>            [default: 1000] To set the interval time between the migration of HTML RTE to JSON RTE in
+                             subsequent entries of a content type. The default value is 1,000 milliseconds.
+  --global-field             Checks whether the specified UID belongs to a content type or a global field. This flag is
+                             set to false by default.
+  --html-path=<value>        Enter the path to the HTML RTE whose content you want to migrate.
+  --json-path=<value>        Enter the path to the JSON RTE to which you want to migrate the HTML RTE content.
+  --locale=<value>           The locale from which entries will be migrated.
+  --stack-api-key=<value>    API key of the source stack. You must use either the --stack-api-key flag or the --alias
+                             flag.
 
 DESCRIPTION
   Migration script to migrate content from HTML RTE to JSON RTE

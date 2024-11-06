@@ -176,81 +176,80 @@ But, if retry-failed flag is set, then only a logfile is required
 `;
 
 PublishEntriesCommand.flags = {
-  alias: flags.string({ char: 'a', description: 'Alias(name) for the management token' }),
+  alias: flags.string({ char: 'a', description: 'Alias (name) of the management token. You must use either the --alias flag or the --stack-api-key flag.' }),
   'stack-api-key': flags.string({
     char: 'k',
-    description: 'Stack api key to be used',
+    description: 'API key of the source stack. You must use either the --stack-api-key flag or the --alias flag.',
   }),
   retryFailed: flags.string({
     char: 'r',
     description:
-      'Retry failed entries from the logfile (optional, overrides all other flags) This flag is used to retry publishing entries that failed to publish in a previous attempt. A log file for the previous session will be required for processing the failed entries',
+      '(optional) Use this option to retry publishing the failed entries/ assets from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags.',
     hidden: true,
     parse: printFlagDeprecation(['-r', '--retryFailed'], ['--retry-failed']),
   }),
   'retry-failed': flags.string({
     description:
-      '(optional) Retry failed entries from the logfile (overrides all other flags) This flag is used to retry publishing entries that failed to publish in a previous attempt. A log file for the previous session will be required for processing the failed entries',
+      '(optional) Use this option to retry publishing the failed entries/ assets from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags.',
   }),
   bulkPublish: flags.string({
     char: 'b',
-    description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
+    description: `Set this flag to use Contentstack\'s Bulk Publish APIs. This flag is set to true, by default.`,
     hidden: true,
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
   'bulk-publish': flags.string({
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
+      `Set this flag to use Contentstack\'s Bulk Publish APIs. This flag is set to true, by default.`,
     default: 'true',
   }),
   'api-version': flags.string({
-    description: 'API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].',
+    description : 'API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].',
   }),
   'publish-all-content-types': flags.boolean({
-    description: '(optional) Publish all contenttypes (cannot be set when contentTypes flag is set)',
+    description: '(optional) Set it to true to bulk publish entries from all content types. If the --content-types option is already used, then you cannot use this option.',
   }),
   publishAllContentTypes: flags.boolean({
     char: 'o',
-    description: 'Publish all content-types (optional, cannot be set when contentTypes flag is set)',
+    description: '(optional) Set it to true to bulk publish entries from all content types. If the --content-types option is already used, then you cannot use this option.',
     hidden: true,
     parse: printFlagDeprecation(['-o', '--publishAllContentTypes'], ['--publish-all-content-types']),
   }),
   'content-types': flags.string({
-    description: 'The Contenttypes from which entries need to be published',
+    description: 'The UID of the content type(s) whose entries you want to publish in bulk. In case of multiple content types, specify the IDs separated by spaces.',
     multiple: true,
   }),
   contentTypes: flags.string({
     char: 't',
-    description: 'The Contenttypes from which entries will be published',
+    description: 'The UID of the content type(s) whose entries you want to publish in bulk. In case of multiple content types, specify the IDs separated by spaces.',
     multiple: true,
     parse: printFlagDeprecation(['-t', '--contentTypes'], ['--content-types']),
     hidden: true,
   }),
   locales: flags.string({
     char: 'l',
-    description: 'Locales where entries will be published',
+    description: ' Locales in which entries will be published, e.g., en-us. In the case of multiple locales, specify the codes separated by spaces.',
     multiple: true,
     parse: printFlagDeprecation(['-l'], ['--locales']),
   }),
   environments: flags.string({
     char: 'e',
-    description: 'Environments where entries will be published',
+    description: 'The name of the environment on which entries will be published. In case of multiple environments, specify their names separated by spaces.',
     multiple: true,
   }),
   config: flags.string({
     char: 'c',
     description:
-      'Path for the external config file (A new config file can be generated at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`)',
+      '(optional) The path of the optional configuration JSON file containing all the options for a single run. Refer to the configure command to create a configuration file.',
   }),
-  yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
+  yes: flags.boolean({ char: 'y', description: 'Set it to true to process the command with the current configuration.' }),
   branch: flags.string({
     char: 'B',
     default: 'main',
-    description: 'Specify the branch to fetch the content (by default the main branch is selected)',
+    description: 'The name of the branch where you want to perform the bulk publish operation. If you don’t mention the branch name, then by default the content from main branch will be published.',
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
-  'delivery-token': flags.string({ description: 'Delivery token for source environment' }),
+  'delivery-token': flags.string({ description: 'The delivery token of the source environment.' }),
   'source-env': flags.string({ description: 'Source environment' }),
   'entry-uid': flags.string({ description: 'Entry Uid for publish all associated variant entries.' }),
   'include-variants': flags.boolean({

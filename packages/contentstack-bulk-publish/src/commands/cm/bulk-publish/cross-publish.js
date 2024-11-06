@@ -190,17 +190,17 @@ CrossPublishCommand.flags = {
     char: 'b',
     hidden: true,
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
+      "Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by default.",
     default: 'true',
     parse: printFlagDeprecation(['--bulkPublish', '-b'], ['--bulk-publish']),
   }),
   'bulk-publish': flags.string({
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
+      "Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by default.",
     default: 'true',
   }),
   'api-version': flags.string({
-    description: 'API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].',
+    description: 'API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].',
   }),
   contentType: flags.string({
     char: 't',
@@ -244,12 +244,12 @@ CrossPublishCommand.flags = {
   }),
   deliveryToken: flags.string({
     char: 'x',
-    description: 'Delivery token for source environment',
+    description: 'The delivery token of the source environment.',
     hidden: true,
     parse: printFlagDeprecation(['--deliveryToken', '-x'], ['--delivery-token']),
   }),
   'delivery-token': flags.string({
-    description: 'Delivery token for source environment',
+    description: 'The delivery token of the source environment.',
   }),
   config: flags.string({ char: 'c', description: 'Path to the config file' }),
   yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
