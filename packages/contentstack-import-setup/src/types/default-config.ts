@@ -2,6 +2,7 @@ import { Modules } from '.';
 
 export default interface DefaultConfig {
   host: string;
+  developerHubBaseUrl: string;
   modules: {
     'custom-roles': {
       dirName: string;

@@ -81,6 +81,12 @@ export default class ImportSetup {
    */
   async start() {
     try {
+      if (!this.config.management_token) {
+        const stackDetails: Record<string, unknown> = await this.stackAPIClient.fetch();
+        this.config.stackName = stackDetails.name as string;
+        this.config.org_uid = stackDetails.org_uid as string;
+      }
+
       const backupDir = await backupHandler(this.config);
       if (backupDir) {
         this.config.backupDir = backupDir;
