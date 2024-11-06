@@ -31,11 +31,11 @@ export default class ImportCommand extends Command {
   static flags: FlagInput = {
     config: flags.string({
       char: 'c',
-      description: '[optional] path of config file',
+      description: '[optional] Path of config file.',
     }),
     'stack-uid': flags.string({
       char: 's',
-      description: 'API key of the target stack',
+      description: 'API key of the target stack.',
       hidden: true,
       parse: printFlagDeprecation(['-s', '--stack-uid'], ['-k', '--stack-api-key']),
     }),
@@ -50,11 +50,11 @@ export default class ImportCommand extends Command {
     }),
     'data-dir': flags.string({
       char: 'd',
-      description: 'path and location where data is stored',
+      description: `The path or the location in your file system where the content, you intend to import, is stored. For example, -d "C:\\Users\\Name\\Desktop\\cli\\content". If the export folder has branches involved, then the path should point till the particular branch. For example, “-d "C:\\Users\\Name\\Desktop\\cli\\content\\branch_name"`,
     }),
     alias: flags.string({
       char: 'a',
-      description: 'alias of the management token',
+      description: 'The management token of the destination stack where you will import the content.',
     }),
     'management-token-alias': flags.string({
       description: 'alias of the management token',
@@ -70,21 +70,21 @@ export default class ImportCommand extends Command {
     module: flags.string({
       required: false,
       char: 'm',
-      description: '[optional] specific module name',
+      description: '[optional] Specify the module to import into the target stack. If not specified, the import command will import all the modules into the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, and taxonomies.',
       parse: printFlagDeprecation(['-m'], ['--module']),
     }),
     'backup-dir': flags.string({
       char: 'b',
-      description: '[optional] backup directory name when using specific module',
+      description: '[optional] Backup directory name when using specific module.',
       parse: printFlagDeprecation(['-b'], ['--backup-dir']),
     }),
     branch: flags.string({
       char: 'B',
-      description: '[optional] branch name',
+      description: 'The name of the branch where you want to import your content. If you don\'t mention the branch name, then by default the content will be imported to the main branch.',
       parse: printFlagDeprecation(['-B'], ['--branch']),
     }),
     'import-webhook-status': flags.string({
-      description: '[optional] Webhook state',
+      description: '[optional] This webhook state keeps the same state of webhooks as the source stack.',
       options: ['disable', 'current'],
       required: false,
       default: 'disable',
@@ -92,7 +92,7 @@ export default class ImportCommand extends Command {
     yes: flags.boolean({
       char: 'y',
       required: false,
-      description: '[optional] Override marketplace prompts',
+      description: '[optional] Force override all Marketplace prompts.',
     }),
     'skip-app-recreation': flags.boolean({
       description: '[optional] Skip private apps recreation if already exist',
@@ -111,10 +111,10 @@ export default class ImportCommand extends Command {
       description: 'Personalize project name.',
     }),
     'skip-audit': flags.boolean({
-      description: 'Skips the audit fix.',
+      description: 'Skips the audit fix that occurs during an import operation.',
     }),
     'exclude-global-modules': flags.boolean({
-      description: 'Excludes the branch-independent module from the import operation',
+      description: 'Excludes the branch-independent module from the import operation.',
       default: false,
     }),
   };

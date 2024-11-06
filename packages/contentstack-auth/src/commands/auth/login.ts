@@ -27,14 +27,14 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
   static flags: FlagInput = {
     username: flags.string({
       char: 'u',
-      description: 'User name',
+      description: 'Email address of your Contentstack account.',
       multiple: false,
       required: false,
       exclusive: ['oauth'],
     }),
     password: flags.string({
       char: 'p',
-      description: 'Password',
+      description: 'Password of your Contentstack app',
       multiple: false,
       required: false,
       exclusive: ['oauth'],
