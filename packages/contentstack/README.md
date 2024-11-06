@@ -1085,25 +1085,32 @@ USAGE
     <value>] [--delivery-token <value>] [--source-env <value>]
 
 FLAGS
-  -B, --branch=<value>             [default: main] Specify the branch to fetch the content (by default the main branch
-                                   is selected)
-  -a, --alias=<value>              Alias(name) for the management token
-  -c, --config=<value>             Path for the external config file (A new config file can be generated at the current
-                                   working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`)
-  -e, --environments=<value>...    Environments where entries will be published
-  -k, --stack-api-key=<value>      Stack api key to be used
-  -l, --locales=<value>...         Locales where entries will be published
-  -y, --yes                        Agree to process the command with the current configuration
-      --api-version=<value>        API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-      --bulk-publish=<value>       [default: true] This flag is set to true by default. It indicates that contentstack's
-                                   bulkpublish API will be used to publish the entries
-      --content-types=<value>...   The Contenttypes from which entries need to be published
-      --delivery-token=<value>     Delivery token for source environment
-      --publish-all-content-types  (optional) Publish all contenttypes (cannot be set when contentTypes flag is set)
-      --retry-failed=<value>       (optional) Retry failed entries from the logfile (overrides all other flags) This
-                                   flag is used to retry publishing entries that failed to publish in a previous
-                                   attempt. A log file for the previous session will be required for processing the
-                                   failed entries
+  -B, --branch=<value>             [default: main] The name of the branch where you want to perform the bulk publish
+                                   operation. If you don’t mention the branch name, then by default the content from
+                                   main branch will be published.
+  -a, --alias=<value>              Alias (name) of the management token. You must use either the --alias flag or the
+                                   --stack-api-key flag.
+  -c, --config=<value>             (optional) The path of the optional configuration JSON file containing all the
+                                   options for a single run. Refer to the configure command to create a configuration
+                                   file.
+  -e, --environments=<value>...    The name of the environment on which entries will be published. In case of multiple
+                                   environments, specify their names separated by spaces.
+  -k, --stack-api-key=<value>      API key of the source stack. You must use either the --stack-api-key flag or the
+                                   --alias flag.
+  -l, --locales=<value>...         Locales in which entries will be published, e.g., en-us. In the case of multiple
+                                   locales, specify the codes separated by spaces.
+  -y, --yes                        Set it to true to process the command with the current configuration.
+      --api-version=<value>        API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
+      --bulk-publish=<value>       [default: true] Set this flag to use Contentstack's Bulk Publish APIs. This flag is
+                                   set to true, by default.
+      --content-types=<value>...   The UID of the content type(s) whose entries you want to publish in bulk. In case of
+                                   multiple content types, specify the IDs separated by spaces.
+      --delivery-token=<value>     The delivery token of the source environment.
+      --publish-all-content-types  (optional) Set it to true to bulk publish entries from all content types. If the
+                                   --content-types option is already used, then you cannot use this option.
+      --retry-failed=<value>       (optional) Use this option to retry publishing the failed entries/ assets from the
+                                   logfile. Specify the name of the logfile that lists failed publish calls. If this
+                                   option is used, it will override all other flags.
       --source-env=<value>         Source environment
 
 DESCRIPTION
@@ -1632,8 +1639,6 @@ FLAGS
       --content-types=<value>...   The UID of the content type(s) whose entries you want to publish in bulk. In case of
                                    multiple content types, specify the IDs separated by spaces.
       --delivery-token=<value>     The delivery token of the source environment.
-      --entry-uid=<value>          Entry Uid for publish all associated variant entries.
-      --include-variants           Include Variants flag will publish all associated variant entries with base entry.
       --publish-all-content-types  (optional) Set it to true to bulk publish entries from all content types. If the
                                    --content-types option is already used, then you cannot use this option.
       --retry-failed=<value>       (optional) Use this option to retry publishing the failed entries/ assets from the
@@ -1971,7 +1976,6 @@ FLAGS
                                 Bulk Publish APIs will be used to unpublish the entries.
       --content-type=<value>    The UID of the content type whose entries you want to unpublish in bulk.
       --delivery-token=<value>  The delivery token of the source environment.
-      --include-variants        Include Variants flag will unpublish all associated variant entries.
       --locale=<value>          Locale from which entries/assets will be unpublished, e.g., en-us.
       --retry-failed=<value>    (optional) Use this option to retry unpublishing the failed entries from the logfile.
                                 Specify the name of the logfile that lists failed unpublish calls. If used, this option
