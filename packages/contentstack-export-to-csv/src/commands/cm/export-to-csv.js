@@ -17,60 +17,60 @@ class ExportToCsvCommand extends Command {
       required: false,
       multiple: false,
       options: ['entries', 'users', 'teams', 'taxonomies'],
-      description: `Option to export data (entries, users, teams, taxonomies)`,
+      description: 'Option to export data (entries, users, teams, taxonomies). [options: entries|users|teams|taxonomies]',
     }),
     alias: flags.string({
       char: 'a',
-      description: 'Alias of the management token',
+      description: 'Alias of the management token.',
     }),
     org: flags.string({
       multiple: false,
       required: false,
-      description: 'Provide organization UID to clone org users',
+      description: 'Provide organization UID to clone org users.',
     }),
     'stack-name': flags.string({
       char: 'n',
       multiple: false,
       required: false,
-      description: 'Name of the stack that needs to be created as csv filename.',
+      description: 'Name of the stack that needs to be created as CSV filename.',
     }),
     'stack-api-key': flags.string({
       char: 'k',
       multiple: false,
       required: false,
-      description: 'API key of the source stack',
+      description: 'API Key of the source stack.',
     }),
     'org-name': flags.string({
       multiple: false,
       required: false,
-      description: 'Name of the organization that needs to be created as csv filename.',
+      description: 'Name of the organization that needs to be created as CSV filename.',
     }),
     locale: flags.string({
       required: false,
       multiple: false,
-      description: 'Locale for which entries need to be exported',
+      description: 'Locale of entries that will be exported.',
     }),
     'content-type': flags.string({
-      description: 'Content type for which entries needs to be exported',
+      description: 'Content type of entries that will be exported.',
       required: false,
       multiple: false,
     }),
     branch: flags.string({
-      description: 'Branch from which entries need to be exported',
+      description: 'Branch from which entries will be exported.',
       multiple: false,
       required: false,
     }),
-    "team-uid": flags.string({
-      description: 'Uid of the team whose user data and stack roles are required'
+    'team-uid': flags.string({
+      description: 'Provide the UID of a specific team in an organization.',
     }),
     'taxonomy-uid': flags.string({
-      description: 'Provide the taxonomy UID of the related terms you want to export',
+      description: 'Provide the taxonomy UID of the related terms you want to export.',
     }),
     delimiter: flags.string({
-      description: '[optional] Provide a delimiter to separate individual data fields within the CSV file.',
+      description: '[default: ,] [optional] Provide a delimiter to separate individual data fields within the CSV file. For example: cm:export-to-csv --delimiter \'|\'',
       default: ',',
     }),
-  };
+  };  
 
   async run() {
     try {

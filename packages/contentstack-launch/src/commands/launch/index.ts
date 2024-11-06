@@ -26,54 +26,53 @@ export default class Launch extends BaseCommand<typeof Launch> {
   static flags: FlagInput = {
     type: Flags.string({
       options: [...config.supportedAdapters, 'FileUpload'],
-      description: '[Optional] Choose the type of adapters',
+      description: '[optional] Type of adapters. <options: GitHub|FileUpload>',
     }),
     framework: Flags.string({
       options: map(config.listOfFrameWorks, 'name'),
-      description: '[Optional] Type of framework',
+      description: '[optional] Type of framework. <options: Gatsby|NextJS|Other>',
     }),
     org: Flags.string({
-      description: '[Optional] Provide the organization UID to create a new project or deployment',
+      description: '[optional] Provide the organization UID to create a new project or deployment.',
     }),
     name: Flags.string({
       char: 'n',
-      description: '[Optional] Name of the project',
+      description: '[optional] Name of the project.',
     }),
     environment: Flags.string({
       char: 'e',
-      description: '[Optional] Environment name for the Launch project',
+      description: '[optional] Environment name for the Launch project.',
     }),
     branch: Flags.string({
-      description: '[Optional] GitHub branch name',
+      description: '[optional] GitHub branch name.',
     }),
     'build-command': Flags.string({
-      description: '[Optional] Build Command',
+      description: '[optional] Build Command.',
     }),
     'out-dir': Flags.string({
-      description: '[Optional] Output Directory',
+      description: '[optional] Output Directory.',
     }),
     'variable-type': Flags.string({
       options: [...config.variablePreparationTypeOptions],
-      description: '[Optional] Provide a variable type.',
+      description: '[optional] Provide a variable type. <options: Import variables from a stack|Manually add custom variables to the list|Import variables from the local env file>',
     }),
     'show-variables': Flags.boolean({
       hidden: true,
       default: false,
-      description: '[Optional, Hidden] Show variable values on the UI',
+      description: '[optional, Hidden] Show variable values on the UI.',
     }),
     init: Flags.boolean({
       hidden: true,
-      description: '[Optional, Hidden] Reinitialize the project if it is an existing launch project.',
+      description: '[optional, Hidden] Reinitialize the project if it is an existing Launch project.',
     }),
     alias: Flags.string({
       char: 'a',
-      description: '[Optional] Alias(name) for the delivery token',
+      description: '[optional] Alias (name) for the delivery token.',
     }),
     'env-variables': Flags.string({
-      description:
-        '[Optional] Provide the environment variables in the key:value format, separated by comma Ex:APP_ENV:prod, TEST_ENV:testVal',
+      description: '[optional] Provide the environment variables in the key:value format, separated by comma. For example: APP_ENV:prod, TEST_ENV:testVal.',
     }),
-  };
+  };  
 
   async run(): Promise<void> {
     if (!this.flags.init) {

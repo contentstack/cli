@@ -20,40 +20,40 @@ export default class BranchMergeCommand extends Command {
 
   // TBD improve flag descriptions
   static flags = {
-    'compare-branch': flags.string({
-      description: 'Compare branch name',
+  'compare-branch': flags.string({
+      description: '[optional] Compare branch (Source branch).',
     }),
     'base-branch': flags.string({
-      description: 'Base branch',
+      description: '[optional] Base branch (Target branch).',
     }),
     comment: flags.string({
-      description: 'Merge comment',
+      description: '[optional] Pass a comment.',
     }),
     'stack-api-key': flags.string({
       char: 'k',
-      description: 'Provide Stack API key to show difference between branches',
+      description: '[optional] Provide stack API key to show the difference between the branches.',
     }),
     'export-summary-path': flags.string({
-      description: 'Export summary file path',
+      description: '[optional] Export summary file path.',
     }),
     'use-merge-summary': flags.string({
-      description: 'Path of merge summary file',
+      description: '[optional] Path of merge summary file.',
     }),
     'no-revert': flags.boolean({
-      description: 'If passed, will not create the new revert branch',
+      description: '[optional] If passed, will not create the new revert branch.',
     }),
     strategy: flags.string({
-      description: 'Merge strategy',
+      description: '[hidden] Merge strategy.',
       options: ['merge_prefer_base', 'merge_prefer_compare', 'overwrite_with_compare', 'custom_preferences'],
       hidden: true,
     }),
     'strategy-sub-options': flags.string({
-      description: 'Merge strategy sub options',
+      description: '[hidden] Merge strategy sub options.',
       options: ['new', 'modified', 'both'],
       hidden: true,
     }),
     'merge-action': flags.string({
-      description: 'Merge strategy',
+      description: '[hidden] Merge action.',
       options: ['export', 'execute', 'both'],
       hidden: true,
     }),
