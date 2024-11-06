@@ -66,8 +66,8 @@ export default class ExtensionImportSetup {
           .extension()
           .query({ query: { title: extension.title } })
           .findOne()
-          .catch((error) => {
-            reject(true);
+          .catch((error: Error) => {
+            reject(error);
           })) || {};
       resolve(extensionsInStack);
     });

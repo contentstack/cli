@@ -14,6 +14,7 @@ const config: DefaultConfig = {
   // not passing `locale` will migrate all the locales present
   // locales: ['fr-fr'],
   host: 'https://api.contentstack.io/v3',
+  developerHubBaseUrl: '',
   modules: {
     'custom-roles': {
       dirName: 'custom-roles',
@@ -36,12 +37,12 @@ const config: DefaultConfig = {
     'content-types': {
       dirName: 'content_types',
       fileName: 'content_types.json',
-      dependencies: ['assets', 'extensions', 'taxonomies'],
+      dependencies: ['extensions', 'marketplace-apps', 'taxonomies'],
     },
     entries: {
       dirName: 'entries',
       fileName: 'entries.json',
-      dependencies: ['assets', 'environments', 'marketplace-apps', 'taxonomies'],
+      dependencies: ['assets', 'marketplace-apps', 'taxonomies'],
     },
     'global-fields': {
       dirName: 'global_fields',

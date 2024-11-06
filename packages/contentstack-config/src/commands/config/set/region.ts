@@ -56,11 +56,11 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     '$ csdx config:set:region AZURE-NA',
     '$ csdx config:set:region AZURE-EU',
     '$ csdx config:set:region GCP-NA',
-    '$ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India"',
-    '$ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India" --developer-hub <developer_hub_url>',
-    '$ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India" --personalize <personalize_url>',
-    '$ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India" --launch <launch_url>',
-    '$ csdx config:set:region --cda <contentstack_cda_endpoint> --cma <contentstack_cma_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India" --developer-hub <developer_hub_url> --personalize <personalize_url> --launch <launch_url>',    
+    '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India"',
+    '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url>',
+    '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --personalize <custom_personalize_url>',
+    '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --launch <custom_launch_url>',
+    '$ csdx config:set:region --cda <custom_cda_host_url> --cma <custom_cma_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url> --launch <custom_launch_url> --personalize <custom_personalize_url>',    
   ];
 
   static args: ArgInput = {
