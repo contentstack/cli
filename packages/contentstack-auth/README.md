@@ -49,8 +49,8 @@ USAGE
   $ csdx auth:login [-u <value> | --oauth] [-p <value> | ]
 
 FLAGS
-  -p, --password=<value>  Password
-  -u, --username=<value>  User name
+  -p, --password=<value>  Password of your Contentstack app
+  -u, --username=<value>  Email address of your Contentstack account.
   --oauth                 Enables single sign-on (SSO) in Contentstack CLI
 
 DESCRIPTION
@@ -141,7 +141,7 @@ USAGE
   $ csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]
 
 FLAGS
-  -a, --alias=<value>          Name of the token alias
+  -a, --alias=<value>          Alias (name) you want to assign to the token
   -d, --delivery               Set this flag to save delivery token
   -e, --environment=<value>    Environment name for delivery token
   -k, --stack-api-key=<value>  Stack API Key
@@ -187,8 +187,8 @@ USAGE
   $ csdx auth:tokens:remove [-a <value>] [-i]
 
 FLAGS
-  -a, --alias=<value>  Token alias
-  -i, --ignore         Ignore
+  -a, --alias=<value>  Alias (name) of the token to delete.
+  -i, --ignore         Ignores if the token is not present.
 
 DESCRIPTION
   Removes selected tokens
@@ -230,8 +230,8 @@ USAGE
   $ csdx login [-u <value> | --oauth] [-p <value> | ]
 
 FLAGS
-  -p, --password=<value>  Password
-  -u, --username=<value>  User name
+  -p, --password=<value>  Password of your Contentstack app
+  -u, --username=<value>  Email address of your Contentstack account.
   --oauth                 Enables single sign-on (SSO) in Contentstack CLI
 
 DESCRIPTION

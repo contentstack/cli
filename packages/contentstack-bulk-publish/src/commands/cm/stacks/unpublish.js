@@ -203,13 +203,13 @@ UnpublishCommand.flags = {
     default: 'true',
   }),
   'api-version': flags.string({
-    description : "API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
+    description : "API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
   }),
   'content-type': flags.string({
     description: 'Content type filter',
   }),
   'delivery-token': flags.string({
-    description: 'Delivery token for source environment',
+    description: 'The delivery token of the source environment.',
   }),
   'only-assets': flags.boolean({
     description: 'Unpublish only assets',

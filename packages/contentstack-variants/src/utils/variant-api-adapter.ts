@@ -226,11 +226,12 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
     const { entry_uid, content_type_uid } = options;
     let endpoint = `content_types/${content_type_uid}/entries/${entry_uid}/publish`;
 
-    const onSuccess = (response: any) => resolve({ response, apiData: { entryUid: entry_uid, variantUid }, log });
+    const onSuccess = (response: any) =>
+      resolve({ response, apiData: { entryUid: entry_uid, variantUid, locales: input.entry.locales }, log });
     const onReject = (error: any) =>
       reject({
         error,
-        apiData: { entryUid: entry_uid, variantUid },
+        apiData: { entryUid: entry_uid, variantUid, locales: input.entry.locales },
         log,
       });
 

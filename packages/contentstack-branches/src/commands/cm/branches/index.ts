@@ -10,8 +10,8 @@ export default class BranchListCommand extends Command {
   static usage: string = 'cm:branches'; // Note: Add and modify the usage
 
   static flags = {
-    'stack-api-key': flags.string({ char: 'k', description: 'Stack API Key' }),
-    verbose: flags.boolean({ description: 'Verbose' }),
+    'stack-api-key': flags.string({ char: 'k', description: 'Stack API key' }),
+    verbose: flags.boolean({ description: 'Verbose, display information in detailed format.' }),
   };
 
   static aliases: string[] = []; // Note: alternative usage if any
