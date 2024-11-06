@@ -137,6 +137,7 @@ UnpublishCommand.flags = {
   alias: flags.string({
     char: 'a',
     description: 'Alias (name) for the management token. You must use either the --alias flag or the --stack-api-key flag.',
+    description: 'Alias (name) for the management token. You must use either the --alias flag or the --stack-api-key flag.',
   }),
   'stack-api-key': flags.string({
     char: 'k',
