@@ -71,21 +71,31 @@ USAGE
     [--branch <value>] [--import-webhook-status disable|current]
 
 FLAGS
-  -B, --branch=<value>                [optional] branch name
-  -a, --alias=<value>                 alias of the management token
-  -b, --backup-dir=<value>            [optional] backup directory name when using specific module
-  -c, --config=<value>                [optional] path of config file
-  -d, --data-dir=<value>              path and location where data is stored
+  -B, --branch=<value>                The name of the branch where you want to import your content. If you don't mention
+                                      the branch name, then by default the content will be imported to the main branch.
+  -a, --alias=<value>                 The management token of the destination stack where you will import the content.
+  -b, --backup-dir=<value>            [optional] Backup directory name when using specific module.
+  -c, --config=<value>                [optional] Path of config file.
+  -d, --data-dir=<value>              The path or the location in your file system where the content, you intend to
+                                      import, is stored. For example, -d "C:\Users\Name\Desktop\cli\content". If the
+                                      export folder has branches involved, then the path should point till the
+                                      particular branch. For example, “-d
+                                      "C:\Users\Name\Desktop\cli\content\branch_name"
   -k, --stack-api-key=<value>         API key of the target stack
-  -m, --module=<value>                [optional] specific module name
-  -y, --yes                           [optional] Override marketplace prompts
-  --exclude-global-modules            Excludes the branch-independent module from the import operation
-  --import-webhook-status=<option>    [default: disable] [optional] Webhook state
+  -m, --module=<value>                [optional] Specify the module to import into the target stack. If not specified,
+                                      the import command will import all the modules into the stack. The available
+                                      modules are assets, content-types, entries, environments, extensions,
+                                      marketplace-apps, global-fields, labels, locales, webhooks, workflows,
+                                      custom-roles, and taxonomies.
+  -y, --yes                           [optional] Force override all Marketplace prompts.
+  --exclude-global-modules            Excludes the branch-independent module from the import operation.
+  --import-webhook-status=<option>    [default: disable] [optional] This webhook state keeps the same state of webhooks
+                                      as the source stack.
                                       <options: disable|current>
   --personalize-project-name=<value>  Personalize project name.
   --replace-existing                  Replaces the existing module in the target stack.
   --skip-app-recreation               [optional] Skip private apps recreation if already exist
-  --skip-audit                        Skips the audit fix.
+  --skip-audit                        Skips the audit fix that occurs during an import operation.
   --skip-existing                     Skips the module exists warning messages.
 
 DESCRIPTION
@@ -122,21 +132,31 @@ USAGE
     [--branch <value>] [--import-webhook-status disable|current]
 
 FLAGS
-  -B, --branch=<value>                [optional] branch name
-  -a, --alias=<value>                 alias of the management token
-  -b, --backup-dir=<value>            [optional] backup directory name when using specific module
-  -c, --config=<value>                [optional] path of config file
-  -d, --data-dir=<value>              path and location where data is stored
+  -B, --branch=<value>                The name of the branch where you want to import your content. If you don't mention
+                                      the branch name, then by default the content will be imported to the main branch.
+  -a, --alias=<value>                 The management token of the destination stack where you will import the content.
+  -b, --backup-dir=<value>            [optional] Backup directory name when using specific module.
+  -c, --config=<value>                [optional] Path of config file.
+  -d, --data-dir=<value>              The path or the location in your file system where the content, you intend to
+                                      import, is stored. For example, -d "C:\Users\Name\Desktop\cli\content". If the
+                                      export folder has branches involved, then the path should point till the
+                                      particular branch. For example, “-d
+                                      "C:\Users\Name\Desktop\cli\content\branch_name"
   -k, --stack-api-key=<value>         API key of the target stack
-  -m, --module=<value>                [optional] specific module name
-  -y, --yes                           [optional] Override marketplace prompts
-  --exclude-global-modules            Excludes the branch-independent module from the import operation
-  --import-webhook-status=<option>    [default: disable] [optional] Webhook state
+  -m, --module=<value>                [optional] Specify the module to import into the target stack. If not specified,
+                                      the import command will import all the modules into the stack. The available
+                                      modules are assets, content-types, entries, environments, extensions,
+                                      marketplace-apps, global-fields, labels, locales, webhooks, workflows,
+                                      custom-roles, and taxonomies.
+  -y, --yes                           [optional] Force override all Marketplace prompts.
+  --exclude-global-modules            Excludes the branch-independent module from the import operation.
+  --import-webhook-status=<option>    [default: disable] [optional] This webhook state keeps the same state of webhooks
+                                      as the source stack.
                                       <options: disable|current>
   --personalize-project-name=<value>  Personalize project name.
   --replace-existing                  Replaces the existing module in the target stack.
   --skip-app-recreation               [optional] Skip private apps recreation if already exist
-  --skip-audit                        Skips the audit fix.
+  --skip-audit                        Skips the audit fix that occurs during an import operation.
   --skip-existing                     Skips the module exists warning messages.
 
 DESCRIPTION

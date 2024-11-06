@@ -157,79 +157,77 @@ But, if retryFailed flag is set, then only a logfile is required
 AssetsPublishCommand.flags = {
   alias: flags.string({
     char: 'a',
-    description: 'Alias(name) for the management token',
+    description: 'Alias (name) for the management token. You must use either the --alias flag or the --stack-api-key flag.',
   }),
   'stack-api-key': flags.string({
     char: 'k',
-    description: 'Stack api key to be used',
+    description: 'API key of the source stack. You must use either the --stack-api-key flag or the --alias flag.',
     required: false,
   }),
   'retry-failed': flags.string({
-    description: 'Retry publishing failed assets from the logfile (optional, will override all other flags)',
+    description: 'Use this option to retry publishing the failed assets from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags.',
   }),
   environments: flags.string({
     char: 'e',
-    description: 'Environments where assets will be published',
+    description: 'The name of the environment on which entries will be published. In case of multiple environments, specify their names separated by spaces.',
     multiple: true,
   }),
   'folder-uid': flags.string({
-    description: '[default: cs_root] Folder-uid from where the assets will be published',
+    description: '(optional) The UID of the Assets’ folder from which the assets need to be published. The default value is cs_root.',
     exclusive: ['source-env'],
   }),
   'bulk-publish': flags.string({
-    description:
-      "By default this flag is set as true. It indicates that contentstack's bulkpublish API will be used to publish the assets",
+    description: 'Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by default.',
     default: 'true',
   }),
   config: flags.string({
     char: 'c',
-    description: 'Path to the config file',
+    description: '(optional) The path of the optional configuration JSON file containing all the options for a single run. Refer to the configure command to create a configuration file.',
   }),
   yes: flags.boolean({
     char: 'y',
-    description: 'Agree to process the command with the current configuration',
+    description: 'Set it to true to process the command with the current configuration.',
   }),
   locales: flags.string({
     char: 'l',
-    description: 'Locales to where assets will be published',
+    description: 'Locales in which assets will be published, e.g., en-us. In the case of multiple locales, specify the codes separated by spaces.',
     multiple: true,
     parse: printFlagDeprecation(['-l'], ['--locales']),
   }),
   branch: flags.string({
     char: 'B',
     default: 'main',
-    description: 'Specify the branch to fetch the content (by default the main branch is selected)',
+    description: 'The name of the branch where you want to perform the bulk publish operation. If you don’t mention the branch name, then by default the assets from the main branch will be published.',
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
-
+  
   // To be deprecated
   retryFailed: flags.string({
     char: 'r',
-    description: 'Retry publishing failed assets from the logfile (optional, will override all other flags)',
+    description: 'Retry publishing failed assets from the logfile (optional, will override all other flags).',
     hidden: true,
     parse: printFlagDeprecation(['-r', '--retryFailed'], ['--retry-failed']),
   }),
   folderUid: flags.string({
     char: 'u',
-    description: '[default: cs_root] Folder-uid from where the assets will be published',
+    description: '(default: cs_root) Folder-uid from where the assets will be published.',
     hidden: true,
     parse: printFlagDeprecation(['-u', '--folderUid'], ['--folder-uid']),
     exclusive: ['source-env'],
   }),
   bulkPublish: flags.string({
     char: 'b',
-    description:
-      "By default this flag is set as true. It indicates that contentstack's bulkpublish API will be used to publish the entries",
+    description: "By default this flag is set as true. It indicates that Contentstack's bulk publish API will be used to publish the entries.",
     default: 'true',
     hidden: true,
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
   'api-version': flags.string({
-    description : "API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
+    description: "API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
   }),
-  'delivery-token': flags.string({ description: 'Delivery token for source environment' }),
+  'delivery-token': flags.string({ description: 'The delivery token of the source environment.' }),
   'source-env': flags.string({ description: 'Source environment' }),
-  'content-types': flags.string({ description: 'Content types', hidden: true, multiple: true }), // this is a work around, as this command is to be run with entries:publish command and should not break flags check.
+  'content-types': flags.string({ description: 'Content types', hidden: true, multiple: true }),
 };
 
 AssetsPublishCommand.examples = [

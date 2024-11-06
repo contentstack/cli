@@ -30,7 +30,7 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
   ];
 
   static flags: FlagInput = {
-    alias: Flags.string({ char: 'a', description: 'Name of the token alias' }),
+    alias: Flags.string({ char: 'a', description: 'Alias (name) you want to assign to the token' }),
     delivery: flags.boolean({
       char: 'd',
       description: 'Set this flag to save delivery token',
