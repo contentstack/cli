@@ -1187,10 +1187,6 @@ importers:
       mocha: 10.7.3
       nyc: 15.1.0
       sinon: 19.0.2
-      ts-node: 10.9.2_rvjp636s5zvybu2spzyy7beizy
-      tslib: 2.8.0
-      typescript: 5.6.3
-
 packages:
 
   /@ampproject/remapping/2.3.0:
