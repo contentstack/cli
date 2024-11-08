@@ -12,6 +12,7 @@ const { configHandler } = require('@contentstack/cli-utilities');
 let config = configHandler
 const { initializeLogger, performBulkUnPublish, publishUsingVersion } = require('../consumer/publish');
 const getStack = require('../util/client.js').getStack;
+const { fetchBulkPublishLimit } = require('../util/common-utility');
 
 const intervalBetweenPublishRequests = 3; // interval in seconds
 
@@ -185,6 +186,7 @@ async function revertUsingLogs(logFileName) {
         branch: response.file[0].message.branch || 'main'
       });
       logs = await formatLogData(stack, response.file);
+      const bulkPublishLimit = fetchBulkPublishLimit(stack?.org_uid);
 
       logs.environments.forEach((environment, envIndex) => {
         switch (logs.type) {
@@ -199,7 +201,7 @@ async function revertUsingLogs(logFileName) {
                   // handle revert case
 
                   publishDetailsForThisEnvironment.forEach((publishDetail) => {
-                    if (bulkPublishSet.length < 10) {
+                    if (bulkPublishSet.length < bulkPublishLimit) {
                       bulkPublishSet.push({
                         uid,
                         version: publishDetail.version,
@@ -209,7 +211,7 @@ async function revertUsingLogs(logFileName) {
                       });
                     }
 
-                    if (bulkPublishSet.length === 10) {
+                    if (bulkPublishSet.length === bulkPublishLimit) {
                       const data = {
                         entries: bulkPublishSet,
                         environments: [environment.name],
@@ -222,7 +224,7 @@ async function revertUsingLogs(logFileName) {
                     }
                   });
                 } else {
-                  if (bulkUnpublishSet.length < 10) {
+                  if (bulkUnpublishSet.length < bulkPublishLimit) {
                     bulkUnpublishSet.push({
                       uid,
                       locale,
@@ -231,7 +233,7 @@ async function revertUsingLogs(logFileName) {
                     });
                   }
 
-                  if (bulkUnpublishSet.length === 10) {
+                  if (bulkUnpublishSet.length === bulkPublishLimit) {
                     unpublishQueue.Enqueue({
                       entries: bulkUnpublishSet,
                       environments: [environment.name],
@@ -244,7 +246,7 @@ async function revertUsingLogs(logFileName) {
                 }
 
                 if (entryIndex === logs.entries[loc].length - 1) {
-                  if (bulkUnpublishSet.length <= 10 && bulkUnpublishSet.length !== 0) {
+                  if (bulkUnpublishSet.length <= bulkPublishLimit && bulkUnpublishSet.length !== 0) {
                     unpublishQueue.Enqueue({
                       entries: bulkUnpublishSet,
                       environments: [environment.name],
@@ -255,7 +257,7 @@ async function revertUsingLogs(logFileName) {
                     bulkUnpublishSet = [];
                   }
 
-                  if (bulkPublishSet.length <= 10 && bulkPublishSet.length !== 0) {
+                  if (bulkPublishSet.length <= bulkPublishLimit && bulkPublishSet.length !== 0) {
                     const data = {
                       entries: bulkPublishSet,
                       environments: [environment.name],
@@ -288,7 +290,7 @@ async function revertUsingLogs(logFileName) {
                 // handle revert case
 
                 publishDetailsForThisEnvironment.forEach((publishDetail) => {
-                  if (bulkPublishSet.length < 10) {
+                  if (bulkPublishSet.length < bulkPublishLimit) {
                     bulkPublishSet.push({
                       uid,
                       version: publishDetail.version,
@@ -296,7 +298,7 @@ async function revertUsingLogs(logFileName) {
                     });
                   }
 
-                  if (bulkPublishSet.length === 10) {
+                  if (bulkPublishSet.length === bulkPublishLimit) {
                     const data = {
                       assets: bulkPublishSet,
                       environments: [environment.name],
@@ -309,14 +311,14 @@ async function revertUsingLogs(logFileName) {
                   }
                 });
               } else {
-                if (bulkUnpublishSet.length < 10) {
+                if (bulkUnpublishSet.length < bulkPublishLimit) {
                   bulkUnpublishSet.push({
                     uid,
                     publish_details: [],
                   });
                 }
 
-                if (bulkUnpublishSet.length === 10) {
+                if (bulkUnpublishSet.length === bulkPublishLimit) {
                   unpublishQueue.Enqueue({
                     assets: bulkUnpublishSet,
                     environments: [environment.name],
@@ -328,7 +330,7 @@ async function revertUsingLogs(logFileName) {
               }
 
               if (assetIndex === logs.assets.length - 1) {
-                if (bulkUnpublishSet.length <= 10 && bulkUnpublishSet.length !== 0) {
+                if (bulkUnpublishSet.length <= bulkPublishLimit && bulkUnpublishSet.length !== 0) {
                   unpublishQueue.Enqueue({
                     assets: bulkUnpublishSet,
                     environments: [environment.name],
@@ -338,7 +340,7 @@ async function revertUsingLogs(logFileName) {
                   bulkUnpublishSet = [];
                 }
 
-                if (bulkPublishSet.length <= 10 && bulkPublishSet.length !== 0) {
+                if (bulkPublishSet.length <= bulkPublishLimit && bulkPublishSet.length !== 0) {
                   const data = {
                     assets: bulkPublishSet,
                     environments: [environment.name],
