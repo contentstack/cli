@@ -10,6 +10,7 @@ const retryFailedLogs = require('../util/retryfailed');
 const { validateFile } = require('../util/fs');
 const { setDelayForBulkPublish } = require('../util');
 const { isEmpty } = require('../util');
+const { fetchBulkPublishLimit } = require('../util/common-utility');
 
 let skipCount;
 const queue = getQueue();
@@ -30,7 +31,7 @@ async function getEnvironment(stack, environmentName) {
   });
 }
 
-async function getEntries(stack, contentType, environmentUid, locale, bulkPublish, environments, apiVersion, skip = 0) {
+async function getEntries(stack, contentType, environmentUid, locale, bulkPublish, environments, apiVersion, bulkPublishLimit, skip = 0) {
   return new Promise((resolve, reject) => {
     skipCount = skip;
 
@@ -57,7 +58,7 @@ async function getEntries(stack, contentType, environmentUid, locale, bulkPublis
             if (publishedEntry && publishedEntry.version < entries[index]._version) {
               changedFlag = true;
               if (bulkPublish) {
-                if (bulkPublishSet.length < 10) {
+                if (bulkPublishSet.length < bulkPublishLimit) {
                   bulkPublishSet.push({
                     uid: entries[index].uid,
                     content_type: contentType,
@@ -77,7 +78,7 @@ async function getEntries(stack, contentType, environmentUid, locale, bulkPublis
                 });
               }
             }
-            if (bulkPublishSet.length === 10) {
+            if (bulkPublishSet.length === bulkPublishLimit) {
               await queue.Enqueue({
                 entries: bulkPublishSet,
                 locale,
@@ -91,7 +92,7 @@ async function getEntries(stack, contentType, environmentUid, locale, bulkPublis
             if (
               index === responseEntries.items.length - 1 &&
               bulkPublishSet.length > 0 &&
-              bulkPublishSet.length <= 10
+              bulkPublishSet.length <= bulkPublishLimit
             ) {
               await queue.Enqueue({
                 entries: bulkPublishSet,
@@ -162,11 +163,12 @@ async function start({ retryFailed, bulkPublish, sourceEnv, contentTypes, locale
     }
   } else if (sourceEnv) {
     setConfig(config, bulkPublish);
+    const bulkPublishLimit = fetchBulkPublishLimit(stack?.org_uid)
     const environmentDetails = await getEnvironment(stack, sourceEnv);
     for (let i = 0; i < contentTypes.length; i += 1) {
       for (let j = 0; j < locales.length; j += 1) {
         /* eslint-disable no-await-in-loop */
-        await getEntries(stack, contentTypes[i], environmentDetails.uid, locales[j], bulkPublish, environments, apiVersion);
+        await getEntries(stack, contentTypes[i], environmentDetails.uid, locales[j], bulkPublish, environments, apiVersion,bulkPublishLimit );
         /* eslint-enable no-await-in-loop */
       }
     }
