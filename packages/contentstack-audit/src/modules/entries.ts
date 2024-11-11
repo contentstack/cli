@@ -890,24 +890,27 @@ export default class Entries {
   }
 
   /**
-   *
+   * this is called in case the select field has multiple optins to chose from 
    * @param field It contains the value to be searched
    * @param selectOptions It contains the options that were added in CT
    * @returns An Array of entry containing only the values that were present in CT, An array of not present entries
    */
   findNotPresentSelectField(field: any, selectOptions: any) {
+    if(!field){
+      field = []
+    }
     let present = [];
     let notPresent = [];
     const choicesMap = new Map(selectOptions.choices.map((choice: { value: any }) => [choice.value, choice]));
-    for (const value of field) {
-      const choice: any = choicesMap.get(value);
-
-      if (choice) {
-        present.push(choice.value);
-      } else {
-        notPresent.push(value);
+      for (const value of field) {
+        const choice: any = choicesMap.get(value);
+  
+        if (choice) {
+          present.push(choice.value);
+        } else {
+          notPresent.push(value);
+        }
       }
-    }
     return { filteredFeild: present, notPresent };
   }
 

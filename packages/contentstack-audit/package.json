@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-audit",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "description": "Contentstack audit plugin",
   "author": "Contentstack CLI",
   "homepage": "https://github.com/contentstack/cli",
@@ -27,7 +27,7 @@
     "fs-extra": "^11.2.0",
     "lodash": "^4.17.21",
     "uuid": "^9.0.1",
-    "winston": "^3.16.0"
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@contentstack/cli-dev-dependencies": "^1.2.4",
