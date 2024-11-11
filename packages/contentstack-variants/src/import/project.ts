@@ -9,14 +9,14 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
   constructor(public readonly config: ImportConfig, private readonly log: LogType = console.log) {
     const conf: APIConfig = {
       config,
-      baseURL: config.modules.personalization.baseURL[config.region.name],
-      headers: { organization_uid: config.org_uid, authtoken: config.auth_token },
+      baseURL: config.modules.personalize.baseURL[config.region.name],
+      headers: { organization_uid: config.org_uid },
     };
     super(Object.assign(config, conf));
     this.projectMapperFolderPath = pResolve(
       sanitizePath(this.config.backupDir),
       'mapper',
-      sanitizePath(this.config.modules.personalization.dirName),
+      sanitizePath(this.config.modules.personalize.dirName),
       'projects',
     );
   }
@@ -26,19 +26,19 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
    * data.
    */
   async import() {
-    const personalization = this.config.modules.personalization;
-    const { dirName, fileName } = personalization.projects;
-    const projectPath = join(sanitizePath(this.config.data), sanitizePath(personalization.dirName), sanitizePath(dirName), sanitizePath(fileName));
-
+    const personalize = this.config.modules.personalize;
+    const { dirName, fileName } = personalize.projects;
+    const projectPath = join(sanitizePath(this.config.data), sanitizePath(personalize.dirName), sanitizePath(dirName), sanitizePath(fileName));
+    
     if (existsSync(projectPath)) {
       const projects = JSON.parse(readFileSync(projectPath, 'utf8')) as CreateProjectInput[];
 
       if (!projects || projects.length < 1) {
-        this.config.modules.personalization.importData = false; // Stop personalization import if stack not connected to any project
+        this.config.modules.personalize.importData = false; // Stop personalize import if stack not connected to any project
         this.log(this.config, 'No project found!', 'info');
         return;
       }
-
+      await this.init();
       for (const project of projects) {
         const createProject = async (newName: void | string): Promise<ProjectStruct> => {
           return await this.createProject({
@@ -46,7 +46,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
             description: project.description,
             connectedStackApiKey: this.config.apiKey,
           }).catch(async (error) => {
-            if (error === 'personalization.PROJECTS.DUPLICATE_NAME') {
+            if (error.includes('personalization.PROJECTS.DUPLICATE_NAME') || error.includes('personalize.PROJECTS.DUPLICATE_NAME')) {
               const projectName = await askProjectName('Copy Of ' + (newName || project.name));
               return await createProject(projectName);
             }
@@ -56,15 +56,15 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
         };
 
         const projectRes = await createProject(this.config.personalizeProjectName);
-        this.config.modules.personalization.project_id = projectRes.uid;
-        this.config.modules.personalization.importData = true;
+        this.config.modules.personalize.project_id = projectRes.uid;
+        this.config.modules.personalize.importData = true;
 
         await fsUtil.makeDirectory(this.projectMapperFolderPath);
         fsUtil.writeFile(pResolve(sanitizePath(this.projectMapperFolderPath), 'projects.json'), projectRes);
         this.log(this.config, `Project Created Successfully: ${projectRes.uid}`, 'info');
       }
     } else {
-      this.config.modules.personalization.importData = false; // Stop personalization import if stack not connected to any project
+      this.config.modules.personalize.importData = false; // Stop personalize import if stack not connected to any project
       this.log(this.config, 'No project found!', 'info');
     }
   }

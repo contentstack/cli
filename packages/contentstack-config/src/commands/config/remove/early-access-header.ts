@@ -6,8 +6,8 @@ export default class RemoveEarlyAccessHeader extends Command {
   static description = 'Remove Early Access header';
   static aliases: string[] = ['config:remove:ea-header'];
   static flags: FlagInput = {
-    'header-alias': flags.string({ description: 'Early access header alias' }),
-    yes: flags.boolean({ char: 'y', description: 'Force Remove' }),
+    'header-alias': flags.string({ description: '(optional) Provide the Early Access header alias name.' }),
+    yes: flags.boolean({ char: 'y', description: '(optional) Force the removal of Early Access header configuration by skipping the confirmation.' }),
   };
   static examples: string[] = [
     '$ <%= config.bin %> <%= command.id %>',
