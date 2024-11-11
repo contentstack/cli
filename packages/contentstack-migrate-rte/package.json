@@ -24,7 +24,7 @@
     "eslint": "^8.57.1",
     "eslint-config-oclif": "^4.0.0",
     "globby": "^10.0.2",
-    "mocha": "^10.8.1",
+    "mocha": "^10.8.2",
     "nyc": "^15.1.0",
     "oclif": "^3.17.2",
     "tslib": "^1.14.1"
