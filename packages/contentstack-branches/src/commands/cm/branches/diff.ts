@@ -26,26 +26,26 @@ export default class BranchDiffCommand extends Command {
 
   static flags = {
     'base-branch': flags.string({
-      description: 'Base branch',
+      description: '[optional] Base branch (Target branch).',
     }),
     'compare-branch': flags.string({
-      description: 'Compare branch',
+      description: '[optional] Compare branch (Source branch).',
     }),
     module: flags.string({
-      description: 'Module',
+      description: '[optional] Module. <options: content-types, global-fields, all>',
       options: ['content-types', 'global-fields', 'all'],
     }),
     'stack-api-key': flags.string({
       char: 'k',
-      description: 'Provide Stack API key to show difference between branches',
+      description: '[optional] Provide the Stack API key to show the difference between branches.',
     }),
     format: flags.string({
       default: 'compact-text',
       multiple: false,
       options: ['compact-text', 'detailed-text'],
-      description: '[Optional] Type of flags to show branches differences',
+      description: '[default: compact-text] [optional] Type of flags to show the difference between two branches. <options: compact-text, detailed-text>',
     }),
-  };
+  };  
 
   static aliases: string[] = []; // Note: alternative usage if any
 

@@ -2,7 +2,7 @@ import fs from 'fs';
 import sinon from 'sinon';
 import { resolve } from 'path';
 import { fancy } from 'fancy-test';
-import { expect } from '@oclif/test';
+import { expect } from 'chai';
 import cloneDeep from 'lodash/cloneDeep';
 import { ux } from '@contentstack/cli-utilities';
 

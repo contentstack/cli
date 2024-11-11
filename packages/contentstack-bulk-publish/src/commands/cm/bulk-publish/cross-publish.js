@@ -46,7 +46,7 @@ class CrossPublishCommand extends Command {
           updatedFlags.deliveryToken = await cliux.prompt('Enter delivery token of your source environment');
         }
         updatedFlags.bulkPublish = updatedFlags.bulkPublish === 'false' ? false : true;
-
+        updatedFlags.includeVariants = updatedFlags.includeVariants === false ? false : true;
         stack = await getStack(config);
       }
 
@@ -155,6 +155,10 @@ class CrossPublishCommand extends Command {
       _flags.deliveryToken = _flags['delivery-token'];
       delete _flags['delivery-token'];
     }
+    if ('include-variants' in _flags) {
+      _flags.includeVariants = _flags['include-variants'];
+      delete _flags['include-variants'];
+    }
     return _flags;
   }
 }
@@ -186,17 +190,17 @@ CrossPublishCommand.flags = {
     char: 'b',
     hidden: true,
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
+      "Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by default.",
     default: 'true',
     parse: printFlagDeprecation(['--bulkPublish', '-b'], ['--bulk-publish']),
   }),
   'bulk-publish': flags.string({
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
+      "Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by default.",
     default: 'true',
   }),
   'api-version': flags.string({
-    description: 'API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].',
+    description: 'API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].',
   }),
   contentType: flags.string({
     char: 't',
@@ -240,12 +244,12 @@ CrossPublishCommand.flags = {
   }),
   deliveryToken: flags.string({
     char: 'x',
-    description: 'Delivery token for source environment',
+    description: 'The delivery token of the source environment.',
     hidden: true,
     parse: printFlagDeprecation(['--deliveryToken', '-x'], ['--delivery-token']),
   }),
   'delivery-token': flags.string({
-    description: 'Delivery token for source environment',
+    description: 'The delivery token of the source environment.',
   }),
   config: flags.string({ char: 'c', description: 'Path to the config file' }),
   yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
@@ -257,6 +261,10 @@ CrossPublishCommand.flags = {
   }),
   onlyAssets: flags.boolean({ description: 'Unpublish only assets', default: false }),
   onlyEntries: flags.boolean({ description: 'Unpublish only entries', default: false }),
+  'include-variants': flags.boolean({
+    description: 'Include Variants flag will publish all associated variant entries.',
+    default: false,
+  }),
 };
 
 CrossPublishCommand.examples = [
@@ -278,8 +286,11 @@ CrossPublishCommand.examples = [
   'Using --stack-api-key flag',
   'csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] --stack-api-key [STACK API KEY] --delivery-token [DELIVERY TOKEN]',
   '',
+  'Using --include-variants flag',
+  'csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] --stack-api-key [STACK API KEY] --delivery-token [DELIVERY TOKEN] [--include-variants]',
+  '',
 ];
 
-CrossPublishCommand.usage = `cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]`;
+CrossPublishCommand.usage = `cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries] [--include-variants]`;
 
 module.exports = CrossPublishCommand;
