@@ -16,14 +16,14 @@
   "devDependencies": {
     "@oclif/test": "^4.0.9",
     "@types/chai": "^4.3.20",
-    "@types/mocha": "^10.0.8",
+    "@types/mocha": "^10.0.9",
     "chai": "^4.5.0",
     "debug": "^4.3.7",
     "dotenv": "^16.4.5",
     "eslint": "^7.32.0",
     "eslint-config-oclif": "^4.0.0",
     "globby": "^10.0.2",
-    "mocha": "^10.7.3",
+    "mocha": "^10.8.2",
     "nyc": "^15.1.0",
     "oclif": "^3.17.2"
   },
