@@ -3,11 +3,11 @@ import { AnyProperty } from './utils';
 export type VariantEntryStruct = {
   uid: string;
   title: string;
-  variant_id: string;
   locale: string;
   _version: number;
   _variant: {
-    uid: string;
+    _uid: string;
+    _instance_uid: string;
     _change_set: string[];
     _base_entry_version: number;
   };
@@ -50,12 +50,11 @@ export type PublishVariantEntryDto = {
   entry: {
     environments: string[];
     locales: string[];
-    publish_with_base_entry: boolean;
     variants: {
       uid: string;
       version?: number;
     }[];
-  }
+  };
   locale: string;
   version?: number;
 } & AnyProperty;

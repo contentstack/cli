@@ -96,3 +96,11 @@ export async function askEarlyAccessHeaderAlias(): Promise<string> {
     validate: inquireRequireFieldValidation,
   });
 }
+
+export const askOrgID = async (): Promise<string> => {
+  return cliux.inquire<string>({
+    type: 'input',
+    message: 'Provide the organization UID',
+    name: 'org',
+  });
+};

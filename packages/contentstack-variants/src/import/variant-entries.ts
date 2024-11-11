@@ -29,7 +29,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
   public entriesMapperPath: string;
   public variantEntryBasePath!: string;
   public variantIdList!: Record<string, unknown>;
-  public personalizationConfig: ImportConfig['modules']['personalization'];
+  public personalizeConfig: ImportConfig['modules']['personalize'];
 
   public taxonomies!: Record<string, unknown>;
   public assetUrlMapper!: Record<string, any>;
@@ -49,15 +49,14 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       headers: {
         api_key: config.apiKey,
         branch: config.branchName,
-        authtoken: config.auth_token,
         organization_uid: config.org_uid,
-        'X-Project-Uid': config.modules.personalization.project_id,
+        'X-Project-Uid': config.modules.personalize.project_id,
       },
-    }; 
+    };
     super(Object.assign(omit(config, ['helpers']), conf));
-    this.entriesMapperPath = resolve(sanitizePath(config.backupDir), sanitizePath(config.branchName || ''), 'mapper', 'entries');
-    this.personalizationConfig = this.config.modules.personalization;
-    this.entriesDirPath = resolve(sanitizePath(config.backupDir), sanitizePath(config.branchName || ''), sanitizePath(config.modules.entries.dirName));
+    this.entriesMapperPath = resolve(sanitizePath(config.backupDir), 'mapper', 'entries');
+    this.personalizeConfig = this.config.modules.personalize;
+    this.entriesDirPath = resolve(sanitizePath(config.backupDir), sanitizePath(config.modules.entries.dirName));
     this.failedVariantPath = resolve(sanitizePath(this.entriesMapperPath), 'failed-entry-variants.json');
     this.failedVariantEntries = new Map();
   }
@@ -75,13 +74,13 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     const variantIdPath = resolve(
       sanitizePath(this.config.backupDir),
       'mapper',
-      sanitizePath(this.personalizationConfig.dirName),
-      sanitizePath(this.personalizationConfig.experiences.dirName),
+      sanitizePath(this.personalizeConfig.dirName),
+      sanitizePath(this.personalizeConfig.experiences.dirName),
       'variants-uid-mapping.json',
     );
 
     if (!existsSync(filePath)) {
-      log(this.config, this.messages.IMPORT_ENTRY_NOT_FOUND, 'info');
+      log(this.config, this.messages.VARIANT_ENTRY_FILE_NOT_FOUND, 'info');
       return;
     }
 
@@ -107,7 +106,12 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       'terms',
       'success.json',
     );
-    const marketplaceAppMapperPath = resolve(sanitizePath(this.config.backupDir), 'mapper', 'marketplace_apps', 'uid-mapping.json');
+    const marketplaceAppMapperPath = resolve(
+      sanitizePath(this.config.backupDir),
+      'mapper',
+      'marketplace_apps',
+      'uid-mapping.json',
+    );
     const envPath = resolve(sanitizePath(this.config.backupDir), 'environments', 'environments.json');
     // NOTE Read and store list of variant IDs
     this.variantIdList = (fsUtil.readFile(variantIdPath, true) || {}) as Record<string, unknown>;
@@ -124,7 +128,8 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     this.assetUidMapper = (fsUtil.readFile(assetUidMapperPath, true) || {}) as Record<string, any>;
     this.assetUrlMapper = (fsUtil.readFile(assetUrlMapperPath, true) || {}) as Record<string, any>;
     this.environments = (fsUtil.readFile(envPath, true) || {}) as Record<string, any>;
-
+    // set the token
+    await this.variantInstance.init();
     for (const entriesForVariant of entriesForVariants) {
       await this.importVariantEntries(entriesForVariant);
     }
@@ -141,10 +146,23 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     const { content_type, locale, entry_uid } = entriesForVariant;
     const ctConfig = this.config.modules['content-types'];
     const contentType: ContentTypeStruct = JSON.parse(
-      readFileSync(resolve(sanitizePath(this.config.backupDir), sanitizePath(ctConfig.dirName), `${sanitizePath(content_type)}.json`), 'utf8'),
+      readFileSync(
+        resolve(
+          sanitizePath(this.config.backupDir),
+          sanitizePath(ctConfig.dirName),
+          `${sanitizePath(content_type)}.json`,
+        ),
+        'utf8',
+      ),
     );
-    const variantEntryBasePath = join(sanitizePath(this.entriesDirPath), sanitizePath(content_type), sanitizePath(locale), sanitizePath(variantEntry.dirName), sanitizePath(entry_uid));
-    const fs = new FsUtility({ basePath: variantEntryBasePath });
+    const variantEntryBasePath = join(
+      sanitizePath(this.entriesDirPath),
+      sanitizePath(content_type),
+      sanitizePath(locale),
+      sanitizePath(variantEntry.dirName),
+      sanitizePath(entry_uid),
+    );
+    const fs = new FsUtility({ basePath: variantEntryBasePath, createDirIfNotExist: false });
 
     for (const _ in fs.indexFileContent) {
       try {
@@ -192,17 +210,25 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
 
       for (let [, variantEntry] of entries(batch)) {
         const onSuccess = ({ response, apiData: { entryUid, variantUid }, log }: any) => {
-          log(this.config, `Created entry variant: '${variantUid}' of entry uid ${entryUid}`, 'info');
+          log(
+            this.config,
+            `Created entry variant: '${variantUid}' of entry uid ${entryUid} locale '${locale}'`,
+            'info',
+          );
         };
 
         const onReject = ({ error, apiData, log }: any) => {
           const { entryUid, variantUid } = apiData;
           this.failedVariantEntries.set(variantUid, apiData);
-          log(this.config, `Failed to create entry variant: '${variantUid}' of entry uid ${entryUid}`, 'error');
+          log(
+            this.config,
+            `Failed to create entry variant: '${variantUid}' of entry uid ${entryUid} locale '${locale}'`,
+            'error',
+          );
           log(this.config, error, 'error');
         };
         // NOTE Find new variant Id by old Id
-        const variant_id = this.variantIdList[variantEntry.variant_id] as string;
+        const variantId = this.variantIdList[variantEntry._variant._uid] as string;
         // NOTE Replace all the relation data UID's
         variantEntry = this.handleVariantEntryRelationalData(contentType, variantEntry);
         const changeSet = this.serializeChangeSet(variantEntry);
@@ -211,19 +237,19 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
           ...changeSet,
         };
 
-        if (variant_id) {
+        if (variantId) {
           const promise = this.variantInstance.createVariantEntry(
             createVariantReq,
             {
               locale,
               entry_uid: entryUid,
-              variant_id,
+              variant_id: variantId,
               content_type_uid: content_type,
             },
             {
               reject: onReject.bind(this),
               resolve: onSuccess.bind(this),
-              variantUid: variantEntry.uid,
+              variantUid: variantId,
               log: log,
             },
           );
@@ -341,7 +367,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
    * @param variantEntry - The entry variant to update.
    */
   updateFileFields(variantEntry: VariantEntryStruct) {
-    const setValue = (currentObj: VariantEntryStruct, keys: Array<string>) => {
+    const setValue = (currentObj: VariantEntryStruct, keys: string[]) => {
       if (!currentObj || keys.length === 0) return;
 
       const [firstKey, ...restKeys] = keys;
@@ -353,7 +379,14 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       } else if (currentObj && typeof currentObj === 'object') {
         if (firstKey in currentObj) {
           if (keys.length === 1) {
-            currentObj[firstKey] = { uid: currentObj[firstKey], filename: 'dummy.jpeg' };
+            // Check if the current property is already an object with uid and filename
+            const existingValue = currentObj[firstKey];
+
+            if (existingValue && typeof existingValue === 'object' && existingValue.uid) {
+              currentObj[firstKey] = { uid: existingValue.uid, filename: 'dummy.jpeg' };
+            } else {
+              currentObj[firstKey] = { uid: currentObj[firstKey], filename: 'dummy.jpeg' };
+            }
           } else {
             setValue(currentObj[firstKey], restKeys);
           }
@@ -361,13 +394,12 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       }
     };
 
-    const pathsToUpdate = variantEntry?._metadata?.references
-      .filter((ref: any) => ref._content_type_uid === 'sys_assets')
-      .map((ref: any) => ref.path);
+    const pathsToUpdate =
+      variantEntry?._metadata?.references
+        ?.filter((ref: any) => ref._content_type_uid === 'sys_assets')
+        .map((ref: any) => ref.path) || [];
 
-    if (pathsToUpdate) {
-      pathsToUpdate.forEach((path: string) => setValue(variantEntry, path.split('.')));
-    }
+    pathsToUpdate.forEach((path: string) => setValue(variantEntry, path.split('.')));
   }
 
   /**
@@ -379,24 +411,25 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
    */
   async publishVariantEntries(batch: VariantEntryStruct[], entryUid: string, content_type: string) {
     const allPromise = [];
+    log(
+      this.config,
+      `Publishing variant entries for entry uid '${entryUid}' of Content Type '${content_type}'`,
+      'info',
+    );
     for (let [, variantEntry] of entries(batch)) {
-      const variantUid = variantEntry.uid;
-      const oldVariantUid = variantEntry.variant_id || '';
+      const variantEntryUID = variantEntry.uid;
+      const oldVariantUid = variantEntry._variant._uid || '';
       const newVariantUid = this.variantIdList[oldVariantUid] as string;
 
       if (!newVariantUid) {
-        log(
-          this.config,
-          `${this.messages.VARIANT_ID_NOT_FOUND}. Skipping entry variant publish for ${variantUid}`,
-          'info',
-        );
+        log(this.config, `${this.messages.VARIANT_ID_NOT_FOUND}. Skipping entry variant publish`, 'info');
         continue;
       }
 
-      if (this.failedVariantEntries.has(variantUid)) {
+      if (this.failedVariantEntries.has(variantEntryUID)) {
         log(
           this.config,
-          `${this.messages.VARIANT_UID_NOT_FOUND}. Skipping entry variant publish for ${variantUid}`,
+          `${this.messages.VARIANT_UID_NOT_FOUND}. Skipping entry variant publish for ${variantEntryUID}`,
           'info',
         );
         continue;
@@ -408,10 +441,18 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       }
 
       const onSuccess = ({ response, apiData: { entryUid, variantUid }, log }: any) => {
-        log(this.config, `Entry variant: '${variantUid}' of entry uid ${entryUid} published successfully!`, 'info');
+        log(
+          this.config,
+          `Entry variant: '${variantUid}' of entry '${entryUid}' published on locales '${locales.join(',')}'`,
+          'info',
+        );
       };
       const onReject = ({ error, apiData: { entryUid, variantUid }, log }: any) => {
-        log(this.config, `Failed to publish entry variant: '${variantUid}' of entry uid ${entryUid}`, 'error');
+        log(
+          this.config,
+          `Failed to publish entry variant: '${variantUid}' of entry uid ${entryUid} on locales '${locales.join(',')}'`,
+          'error',
+        );
         log(this.config, formatError(error), 'error');
       };
 
@@ -423,11 +464,9 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         entry: {
           environments,
           locales,
-          publish_with_base_entry: false,
           variants: [{ uid: newVariantUid, version: 1 }],
         },
         locale: variantEntry.locale,
-        version: 1,
       };
 
       const promise = this.variantInstance.publishVariantEntry(
@@ -440,13 +479,14 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
           reject: onReject.bind(this),
           resolve: onSuccess.bind(this),
           log: log,
-          variantUid,
+          variantUid: newVariantUid,
         },
       );
 
       allPromise.push(promise);
     }
     await Promise.allSettled(allPromise);
+    log(this.config, `Published variant entries for entry uid '${entryUid}' of Content Type '${content_type}'`, 'info');
   }
 
   /**

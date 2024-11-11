@@ -33,7 +33,7 @@ export default class ExportCommand extends Command {
   static flags: FlagInput = {
     config: flags.string({
       char: 'c',
-      description: '[optional] path of the config',
+      description: '[optional] Path of the config',
     }),
     'stack-uid': flags.string({
       char: 's',
@@ -43,7 +43,7 @@ export default class ExportCommand extends Command {
     }),
     'stack-api-key': flags.string({
       char: 'k',
-      description: 'API key of the source stack',
+      description: 'API Key of the source stack',
     }),
     data: flags.string({
       description: 'path or location to store the data',
@@ -52,11 +52,11 @@ export default class ExportCommand extends Command {
     }),
     'data-dir': flags.string({
       char: 'd',
-      description: 'path or location to store the data',
+      description: 'The path or the location in your file system to store the exported content. For e.g., ./content',
     }),
     alias: flags.string({
       char: 'a',
-      description: 'alias of the management token',
+      description: 'The management token alias of the source stack from which you will export content.',
     }),
     'management-token-alias': flags.string({
       description: 'alias of the management token',
@@ -71,28 +71,28 @@ export default class ExportCommand extends Command {
     }),
     module: flags.string({
       char: 'm',
-      description: '[optional] specific module name',
+      description: '[optional] Specific module name. If not specified, the export command will export all the modules to the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, and taxonomies.',
       parse: printFlagDeprecation(['-m'], ['--module']),
     }),
     'content-types': flags.string({
       char: 't',
-      description: '[optional] content type',
+      description: '[optional]  The UID of the content type(s) whose content you want to export. In case of multiple content types, specify the IDs separated by spaces.',
       multiple: true,
       parse: printFlagDeprecation(['-t'], ['--content-types']),
     }),
     branch: flags.string({
       char: 'B',
       // default: 'main',
-      description: '[optional] branch name',
+      description: '[optional] The name of the branch where you want to export your content. If you don\'t mention the branch name, then by default the content will be exported from all the branches of your stack.',
       parse: printFlagDeprecation(['-B'], ['--branch']),
     }),
     'secured-assets': flags.boolean({
-      description: '[optional] use when assets are secured',
+      description: '[optional] Use this flag for assets that are secured.',
     }),
     yes: flags.boolean({
       char: 'y',
       required: false,
-      description: '[optional] Override marketplace apps related prompts',
+      description: '[optional] Force override all Marketplace prompts.',
     }),
   };
 
@@ -107,6 +107,7 @@ export default class ExportCommand extends Command {
       exportConfig.host = this.cmaHost;
       exportConfig.region = this.region;
       exportConfig.developerHubBaseUrl = this.developerHubUrl;
+      if (this.personalizeUrl) exportConfig.modules.personalize.baseURL[exportConfig.region.name] = this.personalizeUrl;
       exportDir = exportConfig.cliLogsPath || exportConfig.data || exportConfig.exportDir;
       const managementAPIClient: ContentstackClient = await managementSDKClient(exportConfig);
       const moduleExporter = new ModuleExporter(managementAPIClient, exportConfig);
