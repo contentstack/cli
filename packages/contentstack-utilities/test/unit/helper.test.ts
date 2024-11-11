@@ -1,6 +1,6 @@
 import { cliux, validatePath } from '../../lib';
-import { expect } from '@oclif/test';
-import { fancy } from '@contentstack/cli-dev-dependencies';
+import { expect } from 'chai';
+import { fancy } from 'fancy-test';
 
 describe('Testing the Validate function', () => {
   describe('When there is no input', () => {

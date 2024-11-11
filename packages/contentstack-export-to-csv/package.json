@@ -10,11 +10,11 @@
     "chalk": "^4.1.2",
     "fast-csv": "^4.3.6",
     "inquirer": "8.2.6",
-    "inquirer-checkbox-plus-prompt": "1.0.1",
+    "inquirer-checkbox-plus-prompt": "1.4.2",
     "mkdirp": "^3.0.1"
   },
   "devDependencies": {
-    "@oclif/test": "^2.5.6",
+    "@oclif/test": "^4.1.0",
     "@types/chai": "^4.3.20",
     "@types/mocha": "^10.0.9",
     "chai": "^4.5.0",
@@ -47,8 +47,8 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
-    "test:unit": "mocha --timeout 10000 --forbid-only \"test/unit/**/*.test.js\" \"test/util/common-utils.test.js\"",
-    "test:unit:report": "nyc --extension .js mocha --forbid-only \"test/unit/**/*.test.js\" \"test/util/common-utils.test.js\"",
+    "test:unit": "mocha --timeout 10000 --forbid-only \"test/unit/**/*.test.js\" \"test/util/*.test.js\"",
+    "test:unit:report": "nyc --extension .js mocha --forbid-only \"test/unit/**/*.test.js\" \"test/util/*.test.js\"",
     "version": "oclif readme && git add README.md",
     "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
   },

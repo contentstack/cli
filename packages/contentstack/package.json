@@ -41,7 +41,7 @@
     "@contentstack/management": "~1.18.3",
     "@contentstack/cli-variants": "~1.1.2",
     "@oclif/core": "^3.27.0",
-    "@oclif/plugin-help": "^5.2.20",
+    "@oclif/plugin-help": "^5",
     "@oclif/plugin-not-found": "^2.4.3",
     "@oclif/plugin-plugins": "^5.4.15",
     "chalk": "^4.1.2",
@@ -55,7 +55,7 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
-    "@oclif/test": "^2.5.6",
+    "@oclif/test": "^4.1.0",
     "@types/chai": "^4.3.20",
     "@types/inquirer": "^9.0.7",
     "@types/mkdirp": "^1.0.2",

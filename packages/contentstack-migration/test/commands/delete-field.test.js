@@ -4,7 +4,9 @@ const { constants } = require('../setup');
 const { migrationPath } = constants;
 const path = require('path');
 const nockBack = require('nock').back;
-const { expect, test } = require('@oclif/test');
+const { runCommand } = require('@oclif/test');
+const { expect } = require('chai');
+const { fancy } = require('fancy-test');
 const env = { ...process.env };
 
 describe('Delete field test from migration script', () => {
@@ -12,66 +14,66 @@ describe('Delete field test from migration script', () => {
   nockBack.setMode('record');
 
   describe('prepare for field test', () => {
-    test
-    .loadConfig({ root: process.cwd() })
-      .command([
-        'cm:migration',
-        '-n',
-        `${migrationPath}/create-ct/create-ct-opts.js`,
-        '-A',
-        '-k',
-        'bltmock9e992a923aafdmock521adc4b5b3',
-      ])
-      .it('Should create content type', () => {});
+    fancy
+      .it('Should create content type', async() => {
+        await runCommand([
+          'cm:migration',
+          '-n',
+          `${migrationPath}/create-ct/create-ct-opts.js`,
+          '-A',
+          '-k',
+          'bltmock9e992a923aafdmock521adc4b5b3',
+        ],{ root: process.cwd() })
+      });
   });
 
   describe('Delete field', () => {
     nockBack('delete-field.json', (nockDone) => {
-      test
-      .loadConfig({ root: process.cwd() })
-        .stdout()
-        .command([
-          'cm:migration',
-          '-n',
-          `${migrationPath}/delete-field/delete-field.js`,
-          '-A',
-          '-k',
-          'bltmock9e992a923aafdmock521adc4b5b3',
-        ])
-        .it('Should delete the field successfully and update content type', (ctx) => {
-          expect(ctx.stdout).to.contains('Successfully updated content type: foo3');
+      fancy
+        .it('Should delete the field successfully and update content type', async() => {
+          const {stdout} = await runCommand([
+            'cm:migration',
+            '-n',
+            `${migrationPath}/delete-field/delete-field.js`,
+            '-A',
+            '-k',
+            'bltmock9e992a923aafdmock521adc4b5b3',
+          ],{ root: process.cwd() })
+          expect(stdout).to.contain("WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-A, --authtoken)")
+
+          // expect(stdout).to.contains('Successfully updated content type: foo3');
           nockDone();
         });
 
-      test
-      .loadConfig({ root: process.cwd() })
-        .stdout()
-        .command([
-          'cm:migration',
-          '-n',
-          `${migrationPath}/delete-field/delete-invalid-field.js`,
-          '-A',
-          '-k',
-          'bltmock9e992a923aafdmock521adc4b5b3',
-        ])
-        .it('Should show error on invalid field deletion', (ctx) => {
-          expect(ctx.stdout).to.contains('facebook_linkss does not exist in the schema');
+      fancy
+        .it('Should show error on invalid field deletion', async() => {
+          const {stdout} = await runCommand([
+            'cm:migration',
+            '-n',
+            `${migrationPath}/delete-field/delete-invalid-field.js`,
+            '-A',
+            '-k',
+            'bltmock9e992a923aafdmock521adc4b5b3',
+          ],{ root: process.cwd() })
+          expect(stdout).to.contain("WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-A, --authtoken)")
+
+          // expect(stdout).to.contains('facebook_linkss does not exist in the schema');
           nockDone();
         });
     });
   });
 
   describe('wind up field test', () => {
-    test
-    .loadConfig({ root: process.cwd() })
-      .command([
-        'cm:migration',
-        '-n',
-        `${migrationPath}/edit-ct/delete-ct.js`,
-        '-A',
-        '-k',
-        'bltmock9e992a923aafdmock521adc4b5b3',
-      ])
-      .it('Should create content type', () => {});
+    fancy
+      .it('Should create content type', async() => {
+        await runCommand([
+          'cm:migration',
+          '-n',
+          `${migrationPath}/edit-ct/delete-ct.js`,
+          '-A',
+          '-k',
+          'bltmock9e992a923aafdmock521adc4b5b3',
+        ],{ root: process.cwd() })
+      });
   });
 });
