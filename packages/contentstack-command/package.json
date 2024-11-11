@@ -21,7 +21,7 @@
     "contentstack": "^3.22.1"
   },
   "devDependencies": {
-    "@oclif/test": "^4.0.9",
+    "@oclif/test": "^4.1.0",
     "@types/chai": "^4.3.20",
     "@types/mkdirp": "^1.0.2",
     "@types/mocha": "^8.2.3",

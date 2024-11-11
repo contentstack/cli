@@ -29,7 +29,7 @@
     "@contentstack/cli-config": "~1.8.0",
     "@contentstack/cli-dev-dependencies": "~1.2.4",
     "@oclif/plugin-help": "^5.2.20",
-    "@oclif/test": "^4.0.9",
+    "@oclif/test": "^4.1.0",
     "@types/flat": "^5.0.5",
     "assert": "^2.1.0",
     "chai": "^4.5.0",
