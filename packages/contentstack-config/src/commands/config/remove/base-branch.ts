@@ -5,8 +5,8 @@ import { interactive } from '../../../utils';
 export default class RemoveBranchConfigCommand extends Command {
   static description = 'Remove branch config for CLI';
   static flags: FlagInput = {
-    'stack-api-key': flags.string({ char: 'k', description: 'Stack API Key' }),
-    yes: flags.boolean({ char: 'y', description: 'Force Remove' }),
+    'stack-api-key': flags.string({ char: 'k', description: 'Stack API key.' }),
+    yes: flags.boolean({ char: 'y', description: 'Force remove.' }),
   };
   static examples = ['$ csdx config:remove:base-branch', '$ csdx config:remove:base-branch --stack-api-key <value>'];
 

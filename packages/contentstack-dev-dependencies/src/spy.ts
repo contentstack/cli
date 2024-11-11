@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import { test } from '@oclif/test';
+// import { test } from '@oclif/test';
 import { FancyTypes } from 'fancy-test';
 import upperFirst from 'lodash/upperFirst';
 
@@ -37,6 +37,6 @@ export function spy<T, K extends keyof T>(object: T, path: K, prefix?: string) {
   };
 }
 
-export const fancy = test.register('spy', spy) as unknown as TestWitSpyType;
+// export const fancy = test.register('spy', spy) as unknown as TestWitSpyType;
 
-export default fancy;
+// export default fancy;

@@ -21,73 +21,73 @@ But, if retry-failed flag is set, then only a logfile is required
 `;
 
 PublishOnlyUnpublished.flags = {
-  alias: flags.string({ char: 'a', description: 'Alias(name) for the management token' }),
+  alias: flags.string({ char: 'a', description: 'Alias (name) of the management token. You must use either the --alias flag or the --stack-api-key flag.' }),
   'stack-api-key': flags.string({
     char: 'k',
-    description: 'Stack api key to be used',
+    description: 'API key of the source stack. You must use either the --stack-api-key flag or the --alias flag.',
   }),
   retryFailed: flags.string({
     char: 'r',
     hidden: true,
-    description: 'Retry publishing failed entries from the logfile',
+    description: '(optional) Use this option to retry publishing the failed entries from the logfile. It is optional. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags.',
     parse: printFlagDeprecation(['--retryFailed', '-r'], ['--retry-failed']),
   }),
   'retry-failed': flags.string({
-    description: 'Retry publishing failed entries from the logfile',
+    description: '(optional) Use this option to retry publishing the failed entries from the logfile. It is optional. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags.',
   }),
   bulkPublish: flags.string({
     char: 'b',
     hidden: true,
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
+      "Set this flag to use Contentstack\'s Bulk Publish APIs. It is true, by default.",
     default: 'true',
     parse: printFlagDeprecation(['--bulkPublish', '-b'], ['--bulk-publish']),
   }),
   'bulk-publish': flags.string({
     char: 'b',
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
+      "Set this flag to use Contentstack\'s Bulk Publish APIs. It is true, by default.",
     default: 'true',
   }),
   'api-version': flags.string({
-    description : "API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
+    description : "API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2]..",
   }),
   sourceEnv: flags.string({
     char: 's',
     hidden: true,
-    description: 'Source Env',
+    description: 'The name of the source environment where the entries were initially published.',
     parse: printFlagDeprecation(['--sourceEnv', '-s'], ['--source-env']),
   }),
   'source-env': flags.string({
-    description: 'Source Env',
+    description: 'The name of the source environment where the entries were initially published.',
   }),
   contentTypes: flags.string({
     char: 't',
-    description: 'The Content-Types from which entries need to be published',
+    description: 'The UID of the content type(s) whose entries you want to publish in bulk. In case of multiple content types, specify their IDs separated by spaces.',
     multiple: true,
     hidden: true,
     parse: printFlagDeprecation(['--contentTypes', '-t'], ['--content-types']),
   }),
   'content-types': flags.string({
-    description: 'The Contenttypes from which entries will be published',
+    description: 'The UID of the content type(s) whose entries you want to publish in bulk. In case of multiple content types, specify their IDs separated by spaces.',
     multiple: true,
   }),
   locale: flags.string({
     hidden: true,
     char: 'l',
-    description: 'Source locale',
+    description: 'Locale in which entries will be published, e.g., en-us',
     parse: printFlagDeprecation(['-l'], ['--locales']),
   }),
   locales: flags.string({
-    description: 'Source locale',
+    description: 'Locale in which entries will be published, e.g., en-us',
   }),
-  environments: flags.string({ char: 'e', description: 'Destination environments', multiple: true }),
-  config: flags.string({ char: 'c', description: 'Path to the config file' }),
-  yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
+  environments: flags.string({ char: 'e', description: 'The name of the environment on which entries will be published. In case of multiple environments, specify their names separated by spaces.', multiple: true }),
+  config: flags.string({ char: 'c', description: '(optional)  The path of the optional configuration JSON file containing all the options for a single run. Refer to the configure command to create a configuration file.' }),
+  yes: flags.boolean({ char: 'y', description: 'Set it to true to process the command with the current configuration.' }),
   branch: flags.string({
     char: 'B',
     default: 'main',
-    description: 'Specify the branch to fetch the content (by default the main branch is selected)',
+    description: 'The name of the branch where you want to perform the bulk publish operation. If you don\'t mention the branch name, then by default the entries from main branch will be published.',
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
 };
