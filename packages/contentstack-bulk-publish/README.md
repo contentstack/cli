@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-cm-bulk-publish
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-bulk-publish/1.6.0 darwin-arm64 node-v22.2.0
+@contentstack/cli-cm-bulk-publish/1.7.0 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -65,29 +65,6 @@ USAGE
     <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]
 
 FLAGS
-  -B, --branch=<value>           [default: main] The name of the branch where you want to perform the bulk publish
-                                 operation. If you don’t mention the branch name, then by default the assets from the
-                                 main branch will be published.
-  -a, --alias=<value>            Alias (name) for the management token. You must use either the --alias flag or the
-                                 --stack-api-key flag.
-  -c, --config=<value>           (optional) The path of the optional configuration JSON file containing all the options
-                                 for a single run. Refer to the configure command to create a configuration file.
-  -e, --environments=<value>...  The name of the environment on which entries will be published. In case of multiple
-                                 environments, specify their names separated by spaces.
-  -k, --stack-api-key=<value>    API key of the source stack. You must use either the --stack-api-key flag or the
-                                 --alias flag.
-  -l, --locales=<value>...       Locales in which assets will be published, e.g., en-us. In the case of multiple
-                                 locales, specify the codes separated by spaces.
-  -y, --yes                      Set it to true to process the command with the current configuration.
-  --api-version=<value>          API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-  --bulk-publish=<value>         [default: true] Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by
-                                 default.
-  --delivery-token=<value>       The delivery token of the source environment.
-  --folder-uid=<value>           (optional) The UID of the Assets’ folder from which the assets need to be published.
-                                 The default value is cs_root.
-  --retry-failed=<value>         Use this option to retry publishing the failed assets from the logfile. Specify the
-                                 name of the logfile that lists failed publish calls. If this option is used, it will
-                                 override all other flags.
   -B, --branch=<value>           [default: main] The name of the branch where you want to perform the bulk publish
                                  operation. If you don’t mention the branch name, then by default the assets from the
                                  main branch will be published.
