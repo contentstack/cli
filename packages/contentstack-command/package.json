@@ -18,10 +18,10 @@
   },
   "dependencies": {
     "@contentstack/cli-utilities": "~1.8.0",
-    "contentstack": "^3.21.0"
+    "contentstack": "^3.22.1"
   },
   "devDependencies": {
-    "@oclif/test": "^4.0.9",
+    "@oclif/test": "^4.1.0",
     "@types/chai": "^4.3.20",
     "@types/mkdirp": "^1.0.2",
     "@types/mocha": "^8.2.3",
@@ -30,8 +30,8 @@
     "chai": "^4.5.0",
     "eslint": "^8.57.1",
     "eslint-config-oclif": "^4.0.0",
-    "eslint-config-oclif-typescript": "^3.1.11",
-    "mocha": "10.1.0",
+    "eslint-config-oclif-typescript": "^3.1.12",
+    "mocha": "10.8.2",
     "nyc": "^15.1.0",
     "rimraf": "^2.7.1",
     "sinon": "^19.0.2",

@@ -19,11 +19,13 @@ class UnpublishCommand extends Command {
     unpublishFlags.onlyAssets = false;
     unpublishFlags.onlyEntries = true;
     unpublishFlags.apiVersion = unpublishFlags['api-version'] || '3';
+    unpublishFlags.includeVariants = unpublishFlags['include-variants'] || false;
     delete unpublishFlags['api-version'];
     delete unpublishFlags['retry-failed'];
     delete unpublishFlags['bulk-unpublish'];
     delete unpublishFlags['content-type'];
     delete unpublishFlags['delivery-token'];
+    delete unpublishFlags['include-variants'];
 
     let updatedFlags;
     try {
@@ -59,7 +61,6 @@ class UnpublishCommand extends Command {
           updatedFlags.deliveryToken = await cliux.prompt('Enter delivery token of your source environment');
         }
         updatedFlags.bulkUnpublish = updatedFlags.bulkUnpublish === 'false' ? false : true;
-
         stack = await getStack(config);
       }
       if (!updatedFlags.deliveryToken && updatedFlags.deliveryToken.length === 0) {
@@ -176,6 +177,10 @@ UnpublishCommand.flags = {
   'delivery-token': flags.string({
     description: 'The delivery token of the source environment.',
   }),
+  'include-variants': flags.boolean({ 
+    default: false, // set the default value to false
+    description: 'Include Variants flag will unpublish all associated variant entries.' 
+  }),
 };
 
 UnpublishCommand.examples = [
@@ -195,6 +200,9 @@ UnpublishCommand.examples = [
   '',
   'Using --stack-api-key flag',
   'csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --stack-api-key [STACK API KEY] --delivery-token [DELIVERY TOKEN]',
+  '',
+  'Using --include-variants flag',
+  'csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --stack-api-key [STACK API KEY] --delivery-token [DELIVERY TOKEN] --include-variants',
 ];
 
 module.exports = UnpublishCommand;
