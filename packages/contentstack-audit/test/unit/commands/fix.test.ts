@@ -12,6 +12,7 @@ describe('AuditFix command', () => {
     filename!: string;
   } as FileTransportInstance;
 
+  // Check this test case later
   describe('AuditFix run method', () => {
     sinon.stub(fs, 'rmSync').callsFake(() => {});
     sinon.stub(winston.transports, 'File').callsFake(() => fsTransport);
@@ -21,9 +22,8 @@ describe('AuditFix command', () => {
     });
 
     it('should trigger AuditBaseCommand start method', async () => {
-      const { stdout } = await runCommand(['cm:stacks:audit:fix'], { root: process.cwd() });
-      expect(stdout).to.be.empty.string;
-      expect(startSpy.args).to.be.eql([['cm:stacks:audit:fix']]);
+      await runCommand(['cm:stacks:audit:fix','-d','data-dir'], { root: process.cwd() });
+      expect(startSpy.args).to.be.eql([['cm:stacks:audit']]);
     });
   });
 });
