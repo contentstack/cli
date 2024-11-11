@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli",
   "description": "Command-line tool (CLI) to interact with Contentstack",
-  "version": "1.29.0",
+  "version": "1.30.0",
   "author": "Contentstack",
   "bin": {
     "csdx": "./bin/run.js"

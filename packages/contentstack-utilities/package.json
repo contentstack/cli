@@ -34,7 +34,7 @@
   "dependencies": {
     "@contentstack/management": "~1.18.0",
     "@contentstack/marketplace-sdk": "^1.2.1",
-    "@oclif/core": "^3.26.5",
+    "@oclif/core": "^3.27.0",
     "axios": "^1.7.4",
     "chalk": "^4.0.0",
     "cli-cursor": "^3.1.0",
