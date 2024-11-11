@@ -27,14 +27,14 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
   static flags: FlagInput = {
     username: flags.string({
       char: 'u',
-      description: 'User name',
+      description: 'Email address of your Contentstack account.',
       multiple: false,
       required: false,
       exclusive: ['oauth'],
     }),
     password: flags.string({
       char: 'p',
-      description: 'Password',
+      description: 'Password of your Contentstack app',
       multiple: false,
       required: false,
       exclusive: ['oauth'],
@@ -66,6 +66,9 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
       }
     } catch (error) {
       let errorMessage = formatError(error) || 'Something went wrong while logging. Please try again.';
+      if (typeof errorMessage === 'object' && Object.keys(errorMessage)?.length === 0) {
+        console.log(error);
+      }
       this.logger.error('login failed', errorMessage);
       cliux.error('CLI_AUTH_LOGIN_FAILED');
       cliux.error(errorMessage);
