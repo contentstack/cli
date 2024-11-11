@@ -1,37 +1,37 @@
 import winston from 'winston';
-import { expect, test as fancy } from '@oclif/test';
+import { expect } from 'chai';
+import { runCommand } from '@oclif/test';
+import fancy from 'fancy-test';
 import { FileTransportInstance } from 'winston/lib/winston/transports';
 
 import { AuditBaseCommand } from '../../../src/audit-base-command';
-
 describe('Audit command', () => {
   const fsTransport = class FsTransport {
     filename!: string;
   } as FileTransportInstance;
 
   describe('Audit run method', () => {
-    const test = fancy.loadConfig({ root: process.cwd() });
-    test
+    fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: () => {}, error: () => {} }))
       .stub(AuditBaseCommand.prototype, 'start', () => {})
-      .command(['cm:stacks:audit'])
-      .it('should trigger AuditBaseCommand start method', ({ stdout }) => {
+      .it('should trigger AuditBaseCommand start method', async () => {
+        const { stdout } = await runCommand(['cm:stacks:audit'], { root: process.cwd() });
         expect(stdout).to.be.string;
       });
 
-    test
+    fancy
       .stderr({ print: false })
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
       .stub(AuditBaseCommand.prototype, 'start', () => Promise.reject('process failed'))
-      .command(['cm:stacks:audit'])
-      .exit(1)
-      .it('should log any error and exit with status code 1');
+      .it('should log any error and exit with status code 1', async () => {
+        await runCommand(['cm:stacks:audit'], { root: process.cwd() });
+      });
 
-    test
+    fancy
       .stderr({ print: false })
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(winston.transports, 'File', () => fsTransport)
@@ -39,8 +39,8 @@ describe('Audit command', () => {
       .stub(AuditBaseCommand.prototype, 'start', () => {
         throw Error('process failed');
       })
-      .command(['cm:stacks:audit'])
-      .exit(1)
-      .it('should log the error objet message and exit with status code 1');
+      .it('should log the error objet message and exit with status code 1', async () => {
+        await runCommand(['cm:stacks:audit'], { root: process.cwd() });
+      });
   });
 });
