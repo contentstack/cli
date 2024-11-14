@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.29.0 darwin-arm64 node-v22.8.0
+@contentstack/cli/1.30.0 darwin-arm64 node-v22.8.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -50,15 +50,15 @@ USAGE
 * [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value-1)
 * [`csdx cm:bulk-publish:clear`](#csdx-cmbulk-publishclear)
 * [`csdx cm:bulk-publish:configure`](#csdx-cmbulk-publishconfigure)
-* [`csdx cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]`](#csdx-cmbulk-publishcross-publish--a-value---retry-failed-value---bulk-publish-value---content-type-value---locales-value---source-env-value---environments-value---delivery-token-value--c-value--y---branch-value---onlyassets---onlyentries)
-* [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value)
+* [`csdx cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries] [--include-variants]`](#csdx-cmbulk-publishcross-publish--a-value---retry-failed-value---bulk-publish-value---content-type-value---locales-value---source-env-value---environments-value---delivery-token-value--c-value--y---branch-value---onlyassets---onlyentries---include-variants)
+* [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value---entry-uid-value---include-variants)
 * [`csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-modified--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
 * [`csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-non-localized-fields--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value--e-value--c-value--y---branch-value)
 * [`csdx cm:bulk-publish:revert`](#csdx-cmbulk-publishrevert)
 * [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries)
 * [`csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-only-unpublished--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
 * [`csdx cm:entries:migrate-html-rte`](#csdx-cmentriesmigrate-html-rte)
-* [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value-1)
+* [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value---entry-uid-value---include-variants-1)
 * [`csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-modified--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value-1)
 * [`csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-non-localized-fields--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value--e-value--c-value--y---branch-value-1)
 * [`csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-only-unpublished--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value-1)
@@ -217,8 +217,8 @@ USAGE
   $ csdx auth:login [-u <value> | --oauth] [-p <value> | ]
 
 FLAGS
-  -p, --password=<value>  Password
-  -u, --username=<value>  User name
+  -p, --password=<value>  Password of your Contentstack app
+  -u, --username=<value>  Email address of your Contentstack account.
       --oauth             Enables single sign-on (SSO) in Contentstack CLI
 
 DESCRIPTION
@@ -309,7 +309,7 @@ USAGE
   $ csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]
 
 FLAGS
-  -a, --alias=<value>          Name of the token alias
+  -a, --alias=<value>          Alias (name) you want to assign to the token
   -d, --delivery               Set this flag to save delivery token
   -e, --environment=<value>    Environment name for delivery token
   -k, --stack-api-key=<value>  Stack API Key
@@ -355,8 +355,8 @@ USAGE
   $ csdx auth:tokens:remove [-a <value>] [-i]
 
 FLAGS
-  -a, --alias=<value>  Token alias
-  -i, --ignore         Ignore
+  -a, --alias=<value>  Alias (name) of the token to delete.
+  -i, --ignore         Ignores if the token is not present.
 
 DESCRIPTION
   Removes selected tokens
@@ -399,21 +399,29 @@ USAGE
     <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]
 
 FLAGS
-  -B, --branch=<value>           [default: main] Specify the branch to fetch the content (by default the main branch is
-                                 selected)
-  -a, --alias=<value>            Alias(name) for the management token
-  -c, --config=<value>           Path to the config file
-  -e, --environments=<value>...  Environments where assets will be published
-  -k, --stack-api-key=<value>    Stack api key to be used
-  -l, --locales=<value>...       Locales to where assets will be published
-  -y, --yes                      Agree to process the command with the current configuration
-      --api-version=<value>      API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-      --bulk-publish=<value>     [default: true] By default this flag is set as true. It indicates that contentstack's
-                                 bulkpublish API will be used to publish the assets
-      --delivery-token=<value>   Delivery token for source environment
-      --folder-uid=<value>       [default: cs_root] Folder-uid from where the assets will be published
-      --retry-failed=<value>     Retry publishing failed assets from the logfile (optional, will override all other
-                                 flags)
+  -B, --branch=<value>           [default: main] The name of the branch where you want to perform the bulk publish
+                                 operation. If you don’t mention the branch name, then by default the assets from the
+                                 main branch will be published.
+  -a, --alias=<value>            Alias (name) for the management token. You must use either the --alias flag or the
+                                 --stack-api-key flag.
+  -c, --config=<value>           (optional) The path of the optional configuration JSON file containing all the options
+                                 for a single run. Refer to the configure command to create a configuration file.
+  -e, --environments=<value>...  The name of the environment on which entries will be published. In case of multiple
+                                 environments, specify their names separated by spaces.
+  -k, --stack-api-key=<value>    API key of the source stack. You must use either the --stack-api-key flag or the
+                                 --alias flag.
+  -l, --locales=<value>...       Locales in which assets will be published, e.g., en-us. In the case of multiple
+                                 locales, specify the codes separated by spaces.
+  -y, --yes                      Set it to true to process the command with the current configuration.
+      --api-version=<value>      API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
+      --bulk-publish=<value>     [default: true] Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by
+                                 default.
+      --delivery-token=<value>   The delivery token of the source environment.
+      --folder-uid=<value>       (optional) The UID of the Assets’ folder from which the assets need to be published.
+                                 The default value is cs_root.
+      --retry-failed=<value>     Use this option to retry publishing the failed assets from the logfile. Specify the
+                                 name of the logfile that lists failed publish calls. If this option is used, it will
+                                 override all other flags.
       --source-env=<value>       Source environment
 
 DESCRIPTION
@@ -479,19 +487,25 @@ USAGE
     <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--api-version <value>] [--delivery-token <value>]
 
 FLAGS
-  -a, --alias=<value>           Alias(name) for the management token
-  -c, --config=<value>          Path to the config file
-  -e, --environment=<value>     Source Environment
-  -k, --stack-api-key=<value>   Stack api key to be used
-  -y, --yes                     Agree to process the command with the current configuration
-      --api-version=<value>     API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-      --branch=<value>          [default: main] Specify the branch to fetch the content (by default the main branch is
-                                selected)
-      --bulk-unpublish=<value>  [default: true] By default this flag is set as true. It indicates that contentstack's
-                                bulkpublish API will be used to unpublish the assets
-      --delivery-token=<value>  Delivery Token for source environment
-      --locale=<value>          Locale filter
-      --retry-failed=<value>    Retry unpublishing failed assets from the logfile
+  -a, --alias=<value>           Alias (name) of the management token. You must use either the --alias flag or the
+                                --stack-api-key flag.
+  -c, --config=<value>          (optional) Path of an optional configuration JSON file containing all the options for a
+                                single run. Refer to the configure command to create a configuration file.
+  -e, --environment=<value>     The name of the environment from where entries/assets need to be unpublished.
+  -k, --stack-api-key=<value>   API key of the source stack. You must use either the --stack-api-key flag or the --alias
+                                flag.
+  -y, --yes                     Set it to true to process the command with the current configuration.
+      --api-version=<value>     API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
+      --branch=<value>          [default: main] The name of the branch where you want to perform the bulk unpublish
+                                operation. If you don’t mention the branch name, then by default the content from the
+                                main branch will be unpublished.
+      --bulk-unpublish=<value>  [default: true] Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by
+                                default.
+      --delivery-token=<value>  The delivery token of the source environment.
+      --locale=<value>          Locale from which entries/assets will be unpublished, e.g., en-us.
+      --retry-failed=<value>    (optional) Use this option to retry unpublishing the failed entries from the logfile.
+                                Specify the name of the logfile that lists failed unpublish calls. If this option is
+                                used, it will override all other flags.
 
 DESCRIPTION
   Unpublish assets from given environment
@@ -582,8 +596,8 @@ USAGE
   $ csdx cm:branches
 
 FLAGS
-  -k, --stack-api-key=<value>  Stack API Key
-      --verbose                Verbose
+  -k, --stack-api-key=<value>  Stack API key
+      --verbose                Verbose, display information in detailed format.
 
 DESCRIPTION
   List the branches
@@ -610,8 +624,8 @@ USAGE
 
 FLAGS
   -k, --stack-api-key=<value>  Stack API key
-      --source=<value>         Source branch from which new branch to be created
-      --uid=<value>            Branch UID to be created
+      --source=<value>         Source branch from which a new branch is to be created.
+      --uid=<value>            Branch UID (unique name) to be created.
 
 DESCRIPTION
   Create a new branch
@@ -664,12 +678,13 @@ USAGE
   $ csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]
 
 FLAGS
-  -k, --stack-api-key=<value>   Provide Stack API key to show difference between branches
-      --base-branch=<value>     Base branch
-      --compare-branch=<value>  Compare branch
-      --format=<option>         [default: compact-text] [Optional] Type of flags to show branches differences
+  -k, --stack-api-key=<value>   [optional] Provide the Stack API key to show the difference between branches.
+      --base-branch=<value>     [optional] Base branch (Target branch).
+      --compare-branch=<value>  [optional] Compare branch (Source branch).
+      --format=<option>         [default: compact-text] [default: compact-text] [optional] Type of flags to show the
+                                difference between two branches. <options: compact-text, detailed-text>
                                 <options: compact-text|detailed-text>
-      --module=<option>         Module
+      --module=<option>         [optional] Module. <options: content-types, global-fields, all>
                                 <options: content-types|global-fields|all>
 
 DESCRIPTION
@@ -713,13 +728,13 @@ USAGE
     [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]
 
 FLAGS
-  -k, --stack-api-key=<value>        Provide Stack API key to show difference between branches
-      --base-branch=<value>          Base branch
-      --comment=<value>              Merge comment
-      --compare-branch=<value>       Compare branch name
-      --export-summary-path=<value>  Export summary file path
-      --no-revert                    If passed, will not create the new revert branch
-      --use-merge-summary=<value>    Path of merge summary file
+  -k, --stack-api-key=<value>        [optional] Provide stack API key to show the difference between the branches.
+      --base-branch=<value>          [optional] Base branch (Target branch).
+      --comment=<value>              [optional] Pass a comment.
+      --compare-branch=<value>       [optional] Compare branch (Source branch).
+      --export-summary-path=<value>  [optional] Export summary file path.
+      --no-revert                    [optional] If passed, will not create the new revert branch.
+      --use-merge-summary=<value>    [optional] Path of merge summary file.
 
 DESCRIPTION
   Merge changes from a branch
@@ -766,21 +781,30 @@ USAGE
     [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]
 
 FLAGS
-  -B, --branch=<value>            [default: main] Specify the branch to fetch the content (by default the main branch is
-                                  selected)
-  -a, --alias=<value>             Alias(name) for the management token
-  -c, --config=<value>            Path to the config file
-  -e, --environments=<value>...   Environments where entries will be published
-  -k, --stack-api-key=<value>     Stack api key to be used
-  -l, --locales=<value>...        Locales where entries will be published
-  -t, --contentTypes=<value>...   The Contenttypes from which entries will be published
-  -y, --yes                       Agree to process the command with the current configuration
-      --api-version=<value>       API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-      --bulk-publish=<value>      [default: true] This flag is set to true by default. It indicates that contentstack's
-                                  bulkpublish API will be used to publish the entries
-      --content-types=<value>...  The Contenttypes from which entries will be published
-      --force                     Update and publish all entries even if no fields have been added
-      --retry-failed=<value>      Retry publishing failed entries from the logfile (optional, overrides all other flags)
+  -B, --branch=<value>            [default: main] The name of the branch where you want to perform the bulk publish
+                                  operation. If you don’t mention the branch name, then by default the content from the
+                                  main branch will be published.
+  -a, --alias=<value>             Alias (name) of the management token. You must use either the --alias flag or the
+                                  --stack-api-key flag.
+  -c, --config=<value>            (optional) The path of the optional configuration JSON file containing all the options
+                                  for a single run. Refer to the configure command to create a configuration file.
+  -e, --environments=<value>...   The name of the environment on which entries will be published. In case of multiple
+                                  environments, specify their names separated by spaces.
+  -k, --stack-api-key=<value>     API key of the source stack. You must use either the --stack-api-key flag or the
+                                  --alias flag.
+  -l, --locales=<value>...        Locales in which entries will be published, e.g., en-us. In the case of multiple
+                                  locales, specify the codes separated by spaces.
+  -t, --contentTypes=<value>...   The Contenttypes from which entries will be published.
+  -y, --yes                       Set it to true to process the command with the current configuration.
+      --api-version=<value>       API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
+      --bulk-publish=<value>      [default: true] Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by
+                                  default.
+      --content-types=<value>...  The UID of the content type ID whose entries you want to publish in bulk. In case of
+                                  multiple content types, specify their IDs separated by spaces.
+      --force                     Update and publish all entries even if no fields have been added.
+      --retry-failed=<value>      Use this option to retry publishing the failed entries from the logfile. Specify the
+                                  name of the logfile that lists failed publish calls. If this option is used, it will
+                                  override all other flags.
 
 DESCRIPTION
   Add fields from updated content types to their respective entries
@@ -839,21 +863,29 @@ USAGE
     [--source-env <value>]
 
 FLAGS
-  -B, --branch=<value>           [default: main] Specify the branch to fetch the content (by default the main branch is
-                                 selected)
-  -a, --alias=<value>            Alias(name) for the management token
-  -c, --config=<value>           Path to the config file
-  -e, --environments=<value>...  Environments where assets will be published
-  -k, --stack-api-key=<value>    Stack api key to be used
-  -l, --locales=<value>...       Locales to where assets will be published
-  -y, --yes                      Agree to process the command with the current configuration
-      --api-version=<value>      API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-      --bulk-publish=<value>     [default: true] By default this flag is set as true. It indicates that contentstack's
-                                 bulkpublish API will be used to publish the assets
-      --delivery-token=<value>   Delivery token for source environment
-      --folder-uid=<value>       [default: cs_root] Folder-uid from where the assets will be published
-      --retry-failed=<value>     Retry publishing failed assets from the logfile (optional, will override all other
-                                 flags)
+  -B, --branch=<value>           [default: main] The name of the branch where you want to perform the bulk publish
+                                 operation. If you don’t mention the branch name, then by default the assets from the
+                                 main branch will be published.
+  -a, --alias=<value>            Alias (name) for the management token. You must use either the --alias flag or the
+                                 --stack-api-key flag.
+  -c, --config=<value>           (optional) The path of the optional configuration JSON file containing all the options
+                                 for a single run. Refer to the configure command to create a configuration file.
+  -e, --environments=<value>...  The name of the environment on which entries will be published. In case of multiple
+                                 environments, specify their names separated by spaces.
+  -k, --stack-api-key=<value>    API key of the source stack. You must use either the --stack-api-key flag or the
+                                 --alias flag.
+  -l, --locales=<value>...       Locales in which assets will be published, e.g., en-us. In the case of multiple
+                                 locales, specify the codes separated by spaces.
+  -y, --yes                      Set it to true to process the command with the current configuration.
+      --api-version=<value>      API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
+      --bulk-publish=<value>     [default: true] Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by
+                                 default.
+      --delivery-token=<value>   The delivery token of the source environment.
+      --folder-uid=<value>       (optional) The UID of the Assets’ folder from which the assets need to be published.
+                                 The default value is cs_root.
+      --retry-failed=<value>     Use this option to retry publishing the failed assets from the logfile. Specify the
+                                 name of the logfile that lists failed publish calls. If this option is used, it will
+                                 override all other flags.
       --source-env=<value>       Source environment
 
 DESCRIPTION
@@ -944,8 +976,10 @@ USAGE
   $ csdx cm:bulk-publish:configure [-a <value>] [-k <value>]
 
 FLAGS
-  -a, --alias=<value>          Alias(name) for the management token
-  -k, --stack-api-key=<value>  Stack api key to be used
+  -a, --alias=<value>          Name (alias) of the management token you want to use. You must use either the --alias
+                               flag or the --stack-api-key flag.
+  -k, --stack-api-key=<value>  API key of the source stack. You must use either the --stack-api-key flag or the --alias
+                               flag.
 
 DESCRIPTION
   The configure command is used to generate a configuration file for publish scripts.
@@ -963,7 +997,7 @@ EXAMPLES
   $ csdx cm:stacks:publish-configure --stack-api-key <stack_api_key>
 ```
 
-## `csdx cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]`
+## `csdx cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries] [--include-variants]`
 
 Publish entries and assets from one environment to other environments
 
@@ -971,7 +1005,7 @@ Publish entries and assets from one environment to other environments
 USAGE
   $ csdx cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>]
     [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y]
-    [--branch <value>] [--onlyAssets] [--onlyEntries]
+    [--branch <value>] [--onlyAssets] [--onlyEntries] [--include-variants]
 
 FLAGS
   -B, --branch=<value>           [default: main] Specify the branch to fetch the content (by default the main branch is
@@ -980,12 +1014,13 @@ FLAGS
   -c, --config=<value>           Path to the config file
   -k, --stack-api-key=<value>    Stack api key to be used
   -y, --yes                      Agree to process the command with the current configuration
-      --api-version=<value>      API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-      --bulk-publish=<value>     [default: true] This flag is set to true by default. It indicates that contentstack's
-                                 bulkpublish API will be used to publish the entries
+      --api-version=<value>      API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
+      --bulk-publish=<value>     [default: true] Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by
+                                 default.
       --content-type=<value>...  The Contenttypes from which entries will be published
-      --delivery-token=<value>   Delivery token for source environment
+      --delivery-token=<value>   The delivery token of the source environment.
       --environments=<value>...  Destination Environments
+      --include-variants         Include Variants flag will publish all associated variant entries.
       --locales=<value>          Source locale
       --onlyAssets               Unpublish only assets
       --onlyEntries              Unpublish only entries
@@ -1036,11 +1071,17 @@ EXAMPLES
   Using --stack-api-key flag
 
   $ csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] --stack-api-key [STACK API KEY] --delivery-token [DELIVERY TOKEN]
+
+
+
+  Using --include-variants flag
+
+  $ csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] --stack-api-key [STACK API KEY] --delivery-token [DELIVERY TOKEN] [--include-variants]
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
 
-## `csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`
+## `csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants]`
 
 Publish entries from multiple contenttypes to multiple environments and locales
 
@@ -1048,28 +1089,37 @@ Publish entries from multiple contenttypes to multiple environments and locales
 USAGE
   $ csdx cm:bulk-publish:entries cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>]
     [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch
-    <value>] [--delivery-token <value>] [--source-env <value>]
+    <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants]
 
 FLAGS
-  -B, --branch=<value>             [default: main] Specify the branch to fetch the content (by default the main branch
-                                   is selected)
-  -a, --alias=<value>              Alias(name) for the management token
-  -c, --config=<value>             Path for the external config file (A new config file can be generated at the current
-                                   working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`)
-  -e, --environments=<value>...    Environments where entries will be published
-  -k, --stack-api-key=<value>      Stack api key to be used
-  -l, --locales=<value>...         Locales where entries will be published
-  -y, --yes                        Agree to process the command with the current configuration
-      --api-version=<value>        API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-      --bulk-publish=<value>       [default: true] This flag is set to true by default. It indicates that contentstack's
-                                   bulkpublish API will be used to publish the entries
-      --content-types=<value>...   The Contenttypes from which entries need to be published
-      --delivery-token=<value>     Delivery token for source environment
-      --publish-all-content-types  (optional) Publish all contenttypes (cannot be set when contentTypes flag is set)
-      --retry-failed=<value>       (optional) Retry failed entries from the logfile (overrides all other flags) This
-                                   flag is used to retry publishing entries that failed to publish in a previous
-                                   attempt. A log file for the previous session will be required for processing the
-                                   failed entries
+  -B, --branch=<value>             [default: main] The name of the branch where you want to perform the bulk publish
+                                   operation. If you don’t mention the branch name, then by default the content from
+                                   main branch will be published.
+  -a, --alias=<value>              Alias (name) of the management token. You must use either the --alias flag or the
+                                   --stack-api-key flag.
+  -c, --config=<value>             (optional) The path of the optional configuration JSON file containing all the
+                                   options for a single run. Refer to the configure command to create a configuration
+                                   file.
+  -e, --environments=<value>...    The name of the environment on which entries will be published. In case of multiple
+                                   environments, specify their names separated by spaces.
+  -k, --stack-api-key=<value>      API key of the source stack. You must use either the --stack-api-key flag or the
+                                   --alias flag.
+  -l, --locales=<value>...         Locales in which entries will be published, e.g., en-us. In the case of multiple
+                                   locales, specify the codes separated by spaces.
+  -y, --yes                        Set it to true to process the command with the current configuration.
+      --api-version=<value>        API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
+      --bulk-publish=<value>       [default: true] Set this flag to use Contentstack's Bulk Publish APIs. This flag is
+                                   set to true, by default.
+      --content-types=<value>...   The UID of the content type(s) whose entries you want to publish in bulk. In case of
+                                   multiple content types, specify the IDs separated by spaces.
+      --delivery-token=<value>     The delivery token of the source environment.
+      --entry-uid=<value>          Entry Uid for publish all associated variant entries.
+      --include-variants           Include Variants flag will publish all associated variant entries with base entry.
+      --publish-all-content-types  (optional) Set it to true to bulk publish entries from all content types. If the
+                                   --content-types option is already used, then you cannot use this option.
+      --retry-failed=<value>       (optional) Use this option to retry publishing the failed entries/ assets from the
+                                   logfile. Specify the name of the logfile that lists failed publish calls. If this
+                                   option is used, it will override all other flags.
       --source-env=<value>         Source environment
 
 DESCRIPTION
@@ -1124,6 +1174,18 @@ EXAMPLES
   Using --stack-api-key
 
   $ csdx cm:entries:publish -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN]
+
+
+
+  Using --include-variants
+
+  $ csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN] [--include-variants]
+
+
+
+  Using --entry-uid and --include-variants
+
+  $ csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN] --entry-uid [ENTRY UID] [--include-variants]
 ```
 
 ## `csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`
@@ -1137,20 +1199,29 @@ USAGE
     <value>]
 
 FLAGS
-  -B, --branch=<value>            [default: main] Specify the branch to fetch the content (by default the main branch is
-                                  selected)
-  -a, --alias=<value>             Alias(name) for the management token
-  -c, --config=<value>            Path to the config file
-  -e, --environments=<value>...   Destination environments
-  -k, --stack-api-key=<value>     Stack api key to be used
-  -l, --locales=<value>...        Locales where edited entries will be published
-  -y, --yes                       Agree to process the command with the current configuration
-      --api-version=<value>       API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-      --bulk-publish=<value>      [default: true] This flag is set to true by default. It indicates that contentstack's
-                                  bulkpublish API will be used to publish the entries
-      --content-types=<value>...  The Contenttypes which will be checked for edited entries
-      --retry-failed=<value>      Retry publishing failed entries from the logfile (optional, overrides all other flags)
-      --source-env=<value>        Environment from which edited entries will be published
+  -B, --branch=<value>            [default: main] The name of the branch where you want to perform the bulk publish
+                                  operation. If you don't mention the branch name, then by default the entries from main
+                                  branch will be published.
+  -a, --alias=<value>             Alias (name) of the management token. You must use either the --alias flag or the
+                                  --stack-api-key flag.
+  -c, --config=<value>            (optional) The path of the optional configuration JSON file containing all the options
+                                  for a single run. Refer to the configure command to create a configuration file.
+  -e, --environments=<value>...   The name of the environment(s) on which the entries will be published. In case of
+                                  multiple environments, specify their names separated by spaces.
+  -k, --stack-api-key=<value>     API key of the source stack. You must use either the --stack-api-key flag or the
+                                  --alias flag.
+  -l, --locales=<value>...        Locales in which entries will be published, e.g., en-us. In the case of multiple
+                                  locales, specify the codes separated by spaces.
+  -y, --yes                       Set it to true to process the command with the current configuration.
+      --api-version=<value>       API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
+      --bulk-publish=<value>      [default: true] Set this flag to use Contentstack's Bulk Publish APIs. It is true, by
+                                  default.
+      --content-types=<value>...  The UID of the content type(s) whose edited entries you want to publish in bulk. In
+                                  case of multiple content types, specify the IDs separated by spaces.
+      --retry-failed=<value>      (optional) Use this option to retry publishing the failed entries/assets from the
+                                  logfile. Specify the name of the logfile that lists failed publish calls. If this
+                                  option is used, it will override all other flags
+      --source-env=<value>        The name of the source environment where the entries were initially published.
 
 DESCRIPTION
   Publish edited entries from a specified content type to the given locales and environments
@@ -1212,19 +1283,27 @@ USAGE
     <value>]
 
 FLAGS
-  -B, --branch=<value>            [default: main] Specify the branch to fetch the content (by default the main branch is
-                                  selected)
-  -a, --alias=<value>             Alias(name) for the management token
-  -c, --config=<value>            Path to the config file
-  -e, --environments=<value>...   Destination environments
-  -k, --stack-api-key=<value>     Stack api key to be used
-  -y, --yes                       Agree to process the command with the current configuration
-      --api-version=<value>       API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-      --bulk-publish=<value>      [default: true] This flag is set to true by default. It indicates that contentstack's
-                                  bulkpublish API will be used to publish the entries
-      --content-types=<value>...  The Contenttypes from which entries will be published
-      --retry-failed=<value>      Retry publishing failed entries from the logfile
-      --source-env=<value>        Source Environment
+  -B, --branch=<value>            [default: main] The name of the branch where you want to perform the bulk publish
+                                  operation. If you don’t mention the branch name, then by default the content from the
+                                  main branch will be published.
+  -a, --alias=<value>             Alias (name) of the management token. You must use either the --alias flag or the
+                                  --stack-api-key flag.
+  -c, --config=<value>            (optional) The path of the optional configuration JSON file containing all the options
+                                  for a single run. Refer to the configure command to create a configuration file.
+  -e, --environments=<value>...   The name of the environment on which entries will be published. In case of multiple
+                                  environments, specify their names separated by spaces.
+  -k, --stack-api-key=<value>     API key of the source stack. You must use either the --stack-api-key flag or the
+                                  --alias flag.
+  -y, --yes                       Set it to true to process the command with the current configuration.
+      --api-version=<value>       API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
+      --bulk-publish=<value>      [default: true] Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by
+                                  default.
+      --content-types=<value>...  The UID of the content type whose entries you want to publish in bulk. In case of
+                                  multiple content types, specify their IDs separated by spaces.
+      --retry-failed=<value>      Use this option to retry publishing the failed entries from the logfile. Specify the
+                                  name of the logfile that lists failed publish calls. If this option is used, it will
+                                  override all other flags.
+      --source-env=<value>        The name of the source environment.
 
 DESCRIPTION
   Publish non-localized fields for the given content types, from a particular source environment to the specified
@@ -1281,8 +1360,10 @@ USAGE
   $ csdx cm:bulk-publish:revert [--retry-failed <value>] [--log-file <value>]
 
 FLAGS
-  --log-file=<value>      logfile to be used to revert
-  --retry-failed=<value>  retry publishing failed entries from the logfile
+  --log-file=<value>      Path of the success logfile of a particular publish action.
+  --retry-failed=<value>  (optional)  Use this option to retry publishing the failed entries from the logfile. Specify
+                          the name of the logfile that lists failed publish calls. If this option is used, it will
+                          override all other flags.
 
 DESCRIPTION
   Revert publish operations by using a log file
@@ -1323,11 +1404,11 @@ FLAGS
   -k, --stack-api-key=<value>   Stack api key to be used
   -l, --locale=<value>          Locale filter
   -y, --yes                     Agree to process the command with the current configuration
-      --api-version=<value>     API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
+      --api-version=<value>     API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
       --bulk-unpublish=<value>  [default: true] This flag is set to true by default. It indicates that contentstack's
                                 bulkpublish API will be used to unpublish the entries and assets
       --content-type=<value>    Content type filter
-      --delivery-token=<value>  Delivery token for source environment
+      --delivery-token=<value>  The delivery token of the source environment.
       --retry-failed=<value>    Retry publishing failed entries from the logfile (optional, overrides all other flags)
 
 DESCRIPTION
@@ -1413,20 +1494,29 @@ USAGE
     [--branch <value>]
 
 FLAGS
-  -B, --branch=<value>            [default: main] Specify the branch to fetch the content (by default the main branch is
-                                  selected)
-  -a, --alias=<value>             Alias(name) for the management token
-  -b, --bulk-publish=<value>      [default: true] This flag is set to true by default. It indicates that contentstack's
-                                  bulkpublish API will be used to publish the entries
-  -c, --config=<value>            Path to the config file
-  -e, --environments=<value>...   Destination environments
-  -k, --stack-api-key=<value>     Stack api key to be used
-  -y, --yes                       Agree to process the command with the current configuration
-      --api-version=<value>       API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-      --content-types=<value>...  The Contenttypes from which entries will be published
-      --locales=<value>           Source locale
-      --retry-failed=<value>      Retry publishing failed entries from the logfile
-      --source-env=<value>        Source Env
+  -B, --branch=<value>            [default: main] The name of the branch where you want to perform the bulk publish
+                                  operation. If you don't mention the branch name, then by default the entries from main
+                                  branch will be published.
+  -a, --alias=<value>             Alias (name) of the management token. You must use either the --alias flag or the
+                                  --stack-api-key flag.
+  -b, --bulk-publish=<value>      [default: true] Set this flag to use Contentstack's Bulk Publish APIs. It is true, by
+                                  default.
+  -c, --config=<value>            (optional)  The path of the optional configuration JSON file containing all the
+                                  options for a single run. Refer to the configure command to create a configuration
+                                  file.
+  -e, --environments=<value>...   The name of the environment on which entries will be published. In case of multiple
+                                  environments, specify their names separated by spaces.
+  -k, --stack-api-key=<value>     API key of the source stack. You must use either the --stack-api-key flag or the
+                                  --alias flag.
+  -y, --yes                       Set it to true to process the command with the current configuration.
+      --api-version=<value>       API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2]..
+      --content-types=<value>...  The UID of the content type(s) whose entries you want to publish in bulk. In case of
+                                  multiple content types, specify their IDs separated by spaces.
+      --locales=<value>           Locale in which entries will be published, e.g., en-us
+      --retry-failed=<value>      (optional) Use this option to retry publishing the failed entries from the logfile. It
+                                  is optional. Specify the name of the logfile that lists failed publish calls. If this
+                                  option is used, it will override all other flags.
+      --source-env=<value>        The name of the source environment where the entries were initially published.
 
 DESCRIPTION
   Publish unpublished entries from the source environment, to other environments and locales
@@ -1486,19 +1576,21 @@ USAGE
     <value>] [--batch-limit <value>]
 
 FLAGS
-  -a, --alias=<value>          Alias(name) for the management token
-  -c, --config-path=<value>    Path to config file
-  -y, --yes                    Agree to process the command with the current configuration
-      --batch-limit=<value>    [default: 50] Provide batch limit for updating entries
-      --branch=<value>         [optional] branch name
-      --content-type=<value>   The content type from which entries will be migrated
-      --delay=<value>          [default: 1000] Provide delay in ms between two entry update
-      --global-field           This flag is set to false by default. It indicates that current content type is a
-                               globalfield
-      --html-path=<value>      Provide path of HTML RTE to migrate
-      --json-path=<value>      Provide path of JSON RTE to migrate
-      --locale=<value>         The locale from which entries will be migrated
-      --stack-api-key=<value>  Stack api key to be used
+  -a, --alias=<value>          Enter the alias name. You must use either the --alias flag or the --stack-api-key flag.
+  -c, --config-path=<value>    Specify the path where your config file is located.
+  -y, --yes                    Avoids reconfirmation of your configuration.
+      --batch-limit=<value>    [default: 50] Provide batch limit for updating entries (default: 50).
+      --branch=<value>         The name of the branch to be used.
+      --content-type=<value>   Specify the UID of the content type for which you want to migrate HTML RTE content.
+      --delay=<value>          [default: 1000] To set the interval time between the migration of HTML RTE to JSON RTE in
+                               subsequent entries of a content type. The default value is 1,000 milliseconds.
+      --global-field           Checks whether the specified UID belongs to a content type or a global field. This flag
+                               is set to false by default.
+      --html-path=<value>      Enter the path to the HTML RTE whose content you want to migrate.
+      --json-path=<value>      Enter the path to the JSON RTE to which you want to migrate the HTML RTE content.
+      --locale=<value>         The locale from which entries will be migrated.
+      --stack-api-key=<value>  API key of the source stack. You must use either the --stack-api-key flag or the --alias
+                               flag.
 
 DESCRIPTION
   Migration script to migrate content from HTML RTE to JSON RTE
@@ -1536,7 +1628,7 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-migrate-rte](https://github.com/contentstack/cli/blob/main/packages/contentstack-migrate-rte/src/commands/cm/entries/migrate-html-rte.js)_
 
-## `csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`
+## `csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants]`
 
 Publish entries from multiple contenttypes to multiple environments and locales
 
@@ -1544,28 +1636,37 @@ Publish entries from multiple contenttypes to multiple environments and locales
 USAGE
   $ csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types]
     [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token
-    <value>] [--source-env <value>]
+    <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants]
 
 FLAGS
-  -B, --branch=<value>             [default: main] Specify the branch to fetch the content (by default the main branch
-                                   is selected)
-  -a, --alias=<value>              Alias(name) for the management token
-  -c, --config=<value>             Path for the external config file (A new config file can be generated at the current
-                                   working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`)
-  -e, --environments=<value>...    Environments where entries will be published
-  -k, --stack-api-key=<value>      Stack api key to be used
-  -l, --locales=<value>...         Locales where entries will be published
-  -y, --yes                        Agree to process the command with the current configuration
-      --api-version=<value>        API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-      --bulk-publish=<value>       [default: true] This flag is set to true by default. It indicates that contentstack's
-                                   bulkpublish API will be used to publish the entries
-      --content-types=<value>...   The Contenttypes from which entries need to be published
-      --delivery-token=<value>     Delivery token for source environment
-      --publish-all-content-types  (optional) Publish all contenttypes (cannot be set when contentTypes flag is set)
-      --retry-failed=<value>       (optional) Retry failed entries from the logfile (overrides all other flags) This
-                                   flag is used to retry publishing entries that failed to publish in a previous
-                                   attempt. A log file for the previous session will be required for processing the
-                                   failed entries
+  -B, --branch=<value>             [default: main] The name of the branch where you want to perform the bulk publish
+                                   operation. If you don’t mention the branch name, then by default the content from
+                                   main branch will be published.
+  -a, --alias=<value>              Alias (name) of the management token. You must use either the --alias flag or the
+                                   --stack-api-key flag.
+  -c, --config=<value>             (optional) The path of the optional configuration JSON file containing all the
+                                   options for a single run. Refer to the configure command to create a configuration
+                                   file.
+  -e, --environments=<value>...    The name of the environment on which entries will be published. In case of multiple
+                                   environments, specify their names separated by spaces.
+  -k, --stack-api-key=<value>      API key of the source stack. You must use either the --stack-api-key flag or the
+                                   --alias flag.
+  -l, --locales=<value>...         Locales in which entries will be published, e.g., en-us. In the case of multiple
+                                   locales, specify the codes separated by spaces.
+  -y, --yes                        Set it to true to process the command with the current configuration.
+      --api-version=<value>        API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
+      --bulk-publish=<value>       [default: true] Set this flag to use Contentstack's Bulk Publish APIs. This flag is
+                                   set to true, by default.
+      --content-types=<value>...   The UID of the content type(s) whose entries you want to publish in bulk. In case of
+                                   multiple content types, specify the IDs separated by spaces.
+      --delivery-token=<value>     The delivery token of the source environment.
+      --entry-uid=<value>          Entry Uid for publish all associated variant entries.
+      --include-variants           Include Variants flag will publish all associated variant entries with base entry.
+      --publish-all-content-types  (optional) Set it to true to bulk publish entries from all content types. If the
+                                   --content-types option is already used, then you cannot use this option.
+      --retry-failed=<value>       (optional) Use this option to retry publishing the failed entries/ assets from the
+                                   logfile. Specify the name of the logfile that lists failed publish calls. If this
+                                   option is used, it will override all other flags.
       --source-env=<value>         Source environment
 
 DESCRIPTION
@@ -1620,6 +1721,18 @@ EXAMPLES
   Using --stack-api-key
 
   $ csdx cm:entries:publish -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN]
+
+
+
+  Using --include-variants
+
+  $ csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN] [--include-variants]
+
+
+
+  Using --entry-uid and --include-variants
+
+  $ csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN] --entry-uid [ENTRY UID] [--include-variants]
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/entries/publish.js)_
@@ -1634,20 +1747,29 @@ USAGE
     [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]
 
 FLAGS
-  -B, --branch=<value>            [default: main] Specify the branch to fetch the content (by default the main branch is
-                                  selected)
-  -a, --alias=<value>             Alias(name) for the management token
-  -c, --config=<value>            Path to the config file
-  -e, --environments=<value>...   Destination environments
-  -k, --stack-api-key=<value>     Stack api key to be used
-  -l, --locales=<value>...        Locales where edited entries will be published
-  -y, --yes                       Agree to process the command with the current configuration
-      --api-version=<value>       API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-      --bulk-publish=<value>      [default: true] This flag is set to true by default. It indicates that contentstack's
-                                  bulkpublish API will be used to publish the entries
-      --content-types=<value>...  The Contenttypes which will be checked for edited entries
-      --retry-failed=<value>      Retry publishing failed entries from the logfile (optional, overrides all other flags)
-      --source-env=<value>        Environment from which edited entries will be published
+  -B, --branch=<value>            [default: main] The name of the branch where you want to perform the bulk publish
+                                  operation. If you don't mention the branch name, then by default the entries from main
+                                  branch will be published.
+  -a, --alias=<value>             Alias (name) of the management token. You must use either the --alias flag or the
+                                  --stack-api-key flag.
+  -c, --config=<value>            (optional) The path of the optional configuration JSON file containing all the options
+                                  for a single run. Refer to the configure command to create a configuration file.
+  -e, --environments=<value>...   The name of the environment(s) on which the entries will be published. In case of
+                                  multiple environments, specify their names separated by spaces.
+  -k, --stack-api-key=<value>     API key of the source stack. You must use either the --stack-api-key flag or the
+                                  --alias flag.
+  -l, --locales=<value>...        Locales in which entries will be published, e.g., en-us. In the case of multiple
+                                  locales, specify the codes separated by spaces.
+  -y, --yes                       Set it to true to process the command with the current configuration.
+      --api-version=<value>       API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
+      --bulk-publish=<value>      [default: true] Set this flag to use Contentstack's Bulk Publish APIs. It is true, by
+                                  default.
+      --content-types=<value>...  The UID of the content type(s) whose edited entries you want to publish in bulk. In
+                                  case of multiple content types, specify the IDs separated by spaces.
+      --retry-failed=<value>      (optional) Use this option to retry publishing the failed entries/assets from the
+                                  logfile. Specify the name of the logfile that lists failed publish calls. If this
+                                  option is used, it will override all other flags
+      --source-env=<value>        The name of the source environment where the entries were initially published.
 
 DESCRIPTION
   Publish edited entries from a specified content type to the given locales and environments
@@ -1710,19 +1832,27 @@ USAGE
     [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]
 
 FLAGS
-  -B, --branch=<value>            [default: main] Specify the branch to fetch the content (by default the main branch is
-                                  selected)
-  -a, --alias=<value>             Alias(name) for the management token
-  -c, --config=<value>            Path to the config file
-  -e, --environments=<value>...   Destination environments
-  -k, --stack-api-key=<value>     Stack api key to be used
-  -y, --yes                       Agree to process the command with the current configuration
-      --api-version=<value>       API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-      --bulk-publish=<value>      [default: true] This flag is set to true by default. It indicates that contentstack's
-                                  bulkpublish API will be used to publish the entries
-      --content-types=<value>...  The Contenttypes from which entries will be published
-      --retry-failed=<value>      Retry publishing failed entries from the logfile
-      --source-env=<value>        Source Environment
+  -B, --branch=<value>            [default: main] The name of the branch where you want to perform the bulk publish
+                                  operation. If you don’t mention the branch name, then by default the content from the
+                                  main branch will be published.
+  -a, --alias=<value>             Alias (name) of the management token. You must use either the --alias flag or the
+                                  --stack-api-key flag.
+  -c, --config=<value>            (optional) The path of the optional configuration JSON file containing all the options
+                                  for a single run. Refer to the configure command to create a configuration file.
+  -e, --environments=<value>...   The name of the environment on which entries will be published. In case of multiple
+                                  environments, specify their names separated by spaces.
+  -k, --stack-api-key=<value>     API key of the source stack. You must use either the --stack-api-key flag or the
+                                  --alias flag.
+  -y, --yes                       Set it to true to process the command with the current configuration.
+      --api-version=<value>       API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
+      --bulk-publish=<value>      [default: true] Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by
+                                  default.
+      --content-types=<value>...  The UID of the content type whose entries you want to publish in bulk. In case of
+                                  multiple content types, specify their IDs separated by spaces.
+      --retry-failed=<value>      Use this option to retry publishing the failed entries from the logfile. Specify the
+                                  name of the logfile that lists failed publish calls. If this option is used, it will
+                                  override all other flags.
+      --source-env=<value>        The name of the source environment.
 
 DESCRIPTION
   Publish non-localized fields for the given content types, from a particular source environment to the specified
@@ -1782,20 +1912,29 @@ USAGE
     [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]
 
 FLAGS
-  -B, --branch=<value>            [default: main] Specify the branch to fetch the content (by default the main branch is
-                                  selected)
-  -a, --alias=<value>             Alias(name) for the management token
-  -b, --bulk-publish=<value>      [default: true] This flag is set to true by default. It indicates that contentstack's
-                                  bulkpublish API will be used to publish the entries
-  -c, --config=<value>            Path to the config file
-  -e, --environments=<value>...   Destination environments
-  -k, --stack-api-key=<value>     Stack api key to be used
-  -y, --yes                       Agree to process the command with the current configuration
-      --api-version=<value>       API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-      --content-types=<value>...  The Contenttypes from which entries will be published
-      --locales=<value>           Source locale
-      --retry-failed=<value>      Retry publishing failed entries from the logfile
-      --source-env=<value>        Source Env
+  -B, --branch=<value>            [default: main] The name of the branch where you want to perform the bulk publish
+                                  operation. If you don't mention the branch name, then by default the entries from main
+                                  branch will be published.
+  -a, --alias=<value>             Alias (name) of the management token. You must use either the --alias flag or the
+                                  --stack-api-key flag.
+  -b, --bulk-publish=<value>      [default: true] Set this flag to use Contentstack's Bulk Publish APIs. It is true, by
+                                  default.
+  -c, --config=<value>            (optional)  The path of the optional configuration JSON file containing all the
+                                  options for a single run. Refer to the configure command to create a configuration
+                                  file.
+  -e, --environments=<value>...   The name of the environment on which entries will be published. In case of multiple
+                                  environments, specify their names separated by spaces.
+  -k, --stack-api-key=<value>     API key of the source stack. You must use either the --stack-api-key flag or the
+                                  --alias flag.
+  -y, --yes                       Set it to true to process the command with the current configuration.
+      --api-version=<value>       API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2]..
+      --content-types=<value>...  The UID of the content type(s) whose entries you want to publish in bulk. In case of
+                                  multiple content types, specify their IDs separated by spaces.
+      --locales=<value>           Locale in which entries will be published, e.g., en-us
+      --retry-failed=<value>      (optional) Use this option to retry publishing the failed entries from the logfile. It
+                                  is optional. Specify the name of the logfile that lists failed publish calls. If this
+                                  option is used, it will override all other flags.
+      --source-env=<value>        The name of the source environment where the entries were initially published.
 
 DESCRIPTION
   Publish unpublished entries from the source environment, to other environments and locales
@@ -1854,23 +1993,29 @@ Unpublish entries from the given environment
 USAGE
   $ csdx cm:entries:unpublish [-a <value>] [-k <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch
     <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--api-version <value>] [--content-type <value>]
-    [--delivery-token <value>]
+    [--delivery-token <value>] [--include-variants]
 
 FLAGS
-  -a, --alias=<value>           Alias(name) for the management token
-  -c, --config=<value>          Path to the config file
-  -e, --environment=<value>     Source Environment
-  -k, --stack-api-key=<value>   Stack api key to be used
-  -y, --yes                     Agree to process the command with the current configuration
-      --api-version=<value>     API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-      --branch=<value>          [default: main] Specify the branch to fetch the content (by default the main branch is
-                                selected)
-      --bulk-unpublish=<value>  [default: true] This flag is set to true by default. It indicates that contentstack's
-                                bulkpublish API will be used to unpublish the entries
-      --content-type=<value>    Content type filter
-      --delivery-token=<value>  Delivery token for source environment
-      --locale=<value>          Locale filter
-      --retry-failed=<value>    Retry publishing failed entries from the logfile
+  -a, --alias=<value>           Alias (name) for the management token. You must use either the --alias flag or the
+                                --stack-api-key flag.
+  -c, --config=<value>          (optional) Path to the configuration JSON file containing all options for a single run.
+                                Refer to the configure command to create a configuration file.
+  -e, --environment=<value>     The name of the environment from where entries/assets need to be unpublished.
+  -k, --stack-api-key=<value>   API key of the source stack. You must use either the --stack-api-key flag or the --alias
+                                flag.
+  -y, --yes                     Set to true to process the command with the current configuration.
+      --api-version=<value>     API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
+      --branch=<value>          [default: main] Specify the branch to fetch the content. If not mentioned, the main
+                                branch will be used by default.
+      --bulk-unpublish=<value>  [default: true] This flag is set to true by default. It indicates that Contentstack's
+                                Bulk Publish APIs will be used to unpublish the entries.
+      --content-type=<value>    The UID of the content type whose entries you want to unpublish in bulk.
+      --delivery-token=<value>  The delivery token of the source environment.
+      --include-variants        Include Variants flag will unpublish all associated variant entries.
+      --locale=<value>          Locale from which entries/assets will be unpublished, e.g., en-us.
+      --retry-failed=<value>    (optional) Use this option to retry unpublishing the failed entries from the logfile.
+                                Specify the name of the logfile that lists failed unpublish calls. If used, this option
+                                will override all other flags.
 
 DESCRIPTION
   Unpublish entries from the given environment
@@ -1911,6 +2056,12 @@ EXAMPLES
   Using --stack-api-key flag
 
   $ csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --stack-api-key [STACK API KEY] --delivery-token [DELIVERY TOKEN]
+
+
+
+  Using --include-variants flag
+
+  $ csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --stack-api-key [STACK API KEY] --delivery-token [DELIVERY TOKEN] --include-variants
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/entries/unpublish.js)_
@@ -1925,21 +2076,30 @@ USAGE
     <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]
 
 FLAGS
-  -B, --branch=<value>            [default: main] Specify the branch to fetch the content (by default the main branch is
-                                  selected)
-  -a, --alias=<value>             Alias(name) for the management token
-  -c, --config=<value>            Path to the config file
-  -e, --environments=<value>...   Environments where entries will be published
-  -k, --stack-api-key=<value>     Stack api key to be used
-  -l, --locales=<value>...        Locales where entries will be published
-  -t, --contentTypes=<value>...   The Contenttypes from which entries will be published
-  -y, --yes                       Agree to process the command with the current configuration
-      --api-version=<value>       API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-      --bulk-publish=<value>      [default: true] This flag is set to true by default. It indicates that contentstack's
-                                  bulkpublish API will be used to publish the entries
-      --content-types=<value>...  The Contenttypes from which entries will be published
-      --force                     Update and publish all entries even if no fields have been added
-      --retry-failed=<value>      Retry publishing failed entries from the logfile (optional, overrides all other flags)
+  -B, --branch=<value>            [default: main] The name of the branch where you want to perform the bulk publish
+                                  operation. If you don’t mention the branch name, then by default the content from the
+                                  main branch will be published.
+  -a, --alias=<value>             Alias (name) of the management token. You must use either the --alias flag or the
+                                  --stack-api-key flag.
+  -c, --config=<value>            (optional) The path of the optional configuration JSON file containing all the options
+                                  for a single run. Refer to the configure command to create a configuration file.
+  -e, --environments=<value>...   The name of the environment on which entries will be published. In case of multiple
+                                  environments, specify their names separated by spaces.
+  -k, --stack-api-key=<value>     API key of the source stack. You must use either the --stack-api-key flag or the
+                                  --alias flag.
+  -l, --locales=<value>...        Locales in which entries will be published, e.g., en-us. In the case of multiple
+                                  locales, specify the codes separated by spaces.
+  -t, --contentTypes=<value>...   The Contenttypes from which entries will be published.
+  -y, --yes                       Set it to true to process the command with the current configuration.
+      --api-version=<value>       API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
+      --bulk-publish=<value>      [default: true] Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by
+                                  default.
+      --content-types=<value>...  The UID of the content type ID whose entries you want to publish in bulk. In case of
+                                  multiple content types, specify their IDs separated by spaces.
+      --force                     Update and publish all entries even if no fields have been added.
+      --retry-failed=<value>      Use this option to retry publishing the failed entries from the logfile. Specify the
+                                  name of the logfile that lists failed publish calls. If this option is used, it will
+                                  override all other flags.
 
 DESCRIPTION
   Add fields from updated content types to their respective entries
@@ -1999,15 +2159,22 @@ USAGE
     [--content-types <value>] [--branch <value>] [--secured-assets]
 
 FLAGS
-  -B, --branch=<value>            [optional] branch name
-  -a, --alias=<value>             alias of the management token
-  -c, --config=<value>            [optional] path of the config
-  -d, --data-dir=<value>          path or location to store the data
-  -k, --stack-api-key=<value>     API key of the source stack
-  -m, --module=<value>            [optional] specific module name
-  -t, --content-types=<value>...  [optional] content type
-  -y, --yes                       [optional] Override marketplace apps related prompts
-      --secured-assets            [optional] use when assets are secured
+  -B, --branch=<value>            [optional] The name of the branch where you want to export your content. If you don't
+                                  mention the branch name, then by default the content will be exported from all the
+                                  branches of your stack.
+  -a, --alias=<value>             The management token alias of the source stack from which you will export content.
+  -c, --config=<value>            [optional] Path of the config
+  -d, --data-dir=<value>          The path or the location in your file system to store the exported content. For e.g.,
+                                  ./content
+  -k, --stack-api-key=<value>     API Key of the source stack
+  -m, --module=<value>            [optional] Specific module name. If not specified, the export command will export all
+                                  the modules to the stack. The available modules are assets, content-types, entries,
+                                  environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks,
+                                  workflows, custom-roles, and taxonomies.
+  -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
+                                  of multiple content types, specify the IDs separated by spaces.
+  -y, --yes                       [optional] Force override all Marketplace prompts.
+      --secured-assets            [optional] Use this flag for assets that are secured.
 
 DESCRIPTION
   Export content from a stack
@@ -2042,20 +2209,21 @@ USAGE
     [--taxonomy-uid <value>] [--delimiter <value>]
 
 FLAGS
-  -a, --alias=<value>          Alias of the management token
-  -k, --stack-api-key=<value>  API key of the source stack
-  -n, --stack-name=<value>     Name of the stack that needs to be created as csv filename.
-      --action=<option>        Option to export data (entries, users, teams, taxonomies)
+  -a, --alias=<value>          Alias of the management token.
+  -k, --stack-api-key=<value>  API Key of the source stack.
+  -n, --stack-name=<value>     Name of the stack that needs to be created as CSV filename.
+      --action=<option>        Option to export data (entries, users, teams, taxonomies). [options:
+                               entries|users|teams|taxonomies]
                                <options: entries|users|teams|taxonomies>
-      --branch=<value>         Branch from which entries need to be exported
-      --content-type=<value>   Content type for which entries needs to be exported
-      --delimiter=<value>      [default: ,] [optional] Provide a delimiter to separate individual data fields within the
-                               CSV file.
-      --locale=<value>         Locale for which entries need to be exported
-      --org=<value>            Provide organization UID to clone org users
-      --org-name=<value>       Name of the organization that needs to be created as csv filename.
-      --taxonomy-uid=<value>   Provide the taxonomy UID of the related terms you want to export
-      --team-uid=<value>       Uid of the team whose user data and stack roles are required
+      --branch=<value>         Branch from which entries will be exported.
+      --content-type=<value>   Content type of entries that will be exported.
+      --delimiter=<value>      [default: ,] [default: ,] [optional] Provide a delimiter to separate individual data
+                               fields within the CSV file. For example: cm:export-to-csv --delimiter '|'
+      --locale=<value>         Locale of entries that will be exported.
+      --org=<value>            Provide organization UID to clone org users.
+      --org-name=<value>       Name of the organization that needs to be created as CSV filename.
+      --taxonomy-uid=<value>   Provide the taxonomy UID of the related terms you want to export.
+      --team-uid=<value>       Provide the UID of a specific team in an organization.
 
 DESCRIPTION
   Export entries, taxonomies, terms or organization users to csv using this command
@@ -2148,21 +2316,33 @@ USAGE
     [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]
 
 FLAGS
-  -B, --branch=<value>                    [optional] branch name
-  -a, --alias=<value>                     alias of the management token
-  -b, --backup-dir=<value>                [optional] backup directory name when using specific module
-  -c, --config=<value>                    [optional] path of config file
-  -d, --data-dir=<value>                  path and location where data is stored
+  -B, --branch=<value>                    The name of the branch where you want to import your content. If you don't
+                                          mention the branch name, then by default the content will be imported to the
+                                          main branch.
+  -a, --alias=<value>                     The management token of the destination stack where you will import the
+                                          content.
+  -b, --backup-dir=<value>                [optional] Backup directory name when using specific module.
+  -c, --config=<value>                    [optional] Path of config file.
+  -d, --data-dir=<value>                  The path or the location in your file system where the content, you intend to
+                                          import, is stored. For example, -d "C:\Users\Name\Desktop\cli\content". If the
+                                          export folder has branches involved, then the path should point till the
+                                          particular branch. For example, “-d
+                                          "C:\Users\Name\Desktop\cli\content\branch_name"
   -k, --stack-api-key=<value>             API key of the target stack
-  -m, --module=<value>                    [optional] specific module name
-  -y, --yes                               [optional] Override marketplace prompts
-      --exclude-global-modules            Excludes the branch-independent module from the import operation
-      --import-webhook-status=<option>    [default: disable] [optional] Webhook state
+  -m, --module=<value>                    [optional] Specify the module to import into the target stack. If not
+                                          specified, the import command will import all the modules into the stack. The
+                                          available modules are assets, content-types, entries, environments,
+                                          extensions, marketplace-apps, global-fields, labels, locales, webhooks,
+                                          workflows, custom-roles, and taxonomies.
+  -y, --yes                               [optional] Force override all Marketplace prompts.
+      --exclude-global-modules            Excludes the branch-independent module from the import operation.
+      --import-webhook-status=<option>    [default: disable] [optional] This webhook state keeps the same state of
+                                          webhooks as the source stack.
                                           <options: disable|current>
       --personalize-project-name=<value>  Personalize project name.
       --replace-existing                  Replaces the existing module in the target stack.
       --skip-app-recreation               [optional] Skip private apps recreation if already exist
-      --skip-audit                        Skips the audit fix.
+      --skip-audit                        Skips the audit fix that occurs during an import operation.
       --skip-existing                     Skips the module exists warning messages.
 
 DESCRIPTION
@@ -2200,19 +2380,21 @@ USAGE
     <value>] [--batch-limit <value>]
 
 FLAGS
-  -a, --alias=<value>          Alias(name) for the management token
-  -c, --config-path=<value>    Path to config file
-  -y, --yes                    Agree to process the command with the current configuration
-      --batch-limit=<value>    [default: 50] Provide batch limit for updating entries
-      --branch=<value>         [optional] branch name
-      --content-type=<value>   The content type from which entries will be migrated
-      --delay=<value>          [default: 1000] Provide delay in ms between two entry update
-      --global-field           This flag is set to false by default. It indicates that current content type is a
-                               globalfield
-      --html-path=<value>      Provide path of HTML RTE to migrate
-      --json-path=<value>      Provide path of JSON RTE to migrate
-      --locale=<value>         The locale from which entries will be migrated
-      --stack-api-key=<value>  Stack api key to be used
+  -a, --alias=<value>          Enter the alias name. You must use either the --alias flag or the --stack-api-key flag.
+  -c, --config-path=<value>    Specify the path where your config file is located.
+  -y, --yes                    Avoids reconfirmation of your configuration.
+      --batch-limit=<value>    [default: 50] Provide batch limit for updating entries (default: 50).
+      --branch=<value>         The name of the branch to be used.
+      --content-type=<value>   Specify the UID of the content type for which you want to migrate HTML RTE content.
+      --delay=<value>          [default: 1000] To set the interval time between the migration of HTML RTE to JSON RTE in
+                               subsequent entries of a content type. The default value is 1,000 milliseconds.
+      --global-field           Checks whether the specified UID belongs to a content type or a global field. This flag
+                               is set to false by default.
+      --html-path=<value>      Enter the path to the HTML RTE whose content you want to migrate.
+      --json-path=<value>      Enter the path to the JSON RTE to which you want to migrate the HTML RTE content.
+      --locale=<value>         The locale from which entries will be migrated.
+      --stack-api-key=<value>  API key of the source stack. You must use either the --stack-api-key flag or the --alias
+                               flag.
 
 DESCRIPTION
   Migration script to migrate content from HTML RTE to JSON RTE
@@ -2258,14 +2440,18 @@ USAGE
     [--config-file <value>] [--config <value>] [--multiple]
 
 FLAGS
-  -B, --branch=<value>         Use this flag to add the branch name where you want to perform the migration.
-  -a, --alias=<value>          Use this flag to add the management token alias.
-  -k, --stack-api-key=<value>  With this flag add the API key of your stack.
-      --config=<value>...      [optional] inline configuration, <key1>:<value1>
-      --config-file=<value>    [optional] Path of the JSON configuration file
-      --file-path=<value>      Use this flag to provide the path of the file of the migration script provided by the
-                               user.
-      --multiple               This flag helps you to migrate multiple content files in a single instance.
+  -B, --branch=<value>         Use this flag to add the branch name where you want to perform the migration. (target
+                               branch name)
+  -a, --alias=<value>          Use this flag to add the management token alias. You must use either the --alias flag or
+                               the --stack-api-key flag.
+  -k, --stack-api-key=<value>  Use this flag to add the API key of your stack. You must use either the --stack-api-key
+                               flag or the --alias flag.
+      --config=<value>...      [optional] Inline configuration, <key1>:<value1>. Passing an external configuration makes
+                               the script re-usable.
+      --config-file=<value>    [optional] Path of the JSON configuration file.
+      --file-path=<value>      Use this flag to provide the path of the file of the migration script.
+      --multiple               This flag helps you to migrate multiple content files in a single instance. Mention the
+                               folder path where your migration script files are stored.
 
 DESCRIPTION
   Contentstack migration script.
@@ -2335,20 +2521,22 @@ USAGE
 
 FLAGS
   -c, --config=<value>                              Path for the external configuration
-  -n, --stack-name=<value>                          Name for the new stack to store the cloned content.
-  -y, --yes                                         [Optional] Override marketplace prompts
-      --destination-management-token-alias=<value>  Source API key of the target stack token alias.
+  -n, --stack-name=<value>                          Provide a name for the new stack to store the cloned content.
+  -y, --yes                                         Force override all Marketplace prompts.
+      --destination-management-token-alias=<value>  Destination management token alias.
       --destination-stack-api-key=<value>           Destination stack API Key
-      --import-webhook-status=<option>              [default: disable] [Optional] Webhook state
+      --import-webhook-status=<option>              [default: disable] [Optional] The status of the import webhook.
+                                                    <options: disable, current>
                                                     <options: disable|current>
-      --skip-audit                                  Skips the audit fix.
+      --skip-audit                                  (optional) Skips the audit fix that occurs during an import
+                                                    operation.
       --source-branch=<value>                       Branch of the source stack.
-      --source-management-token-alias=<value>       Source API key of the target stack token alias.
+      --source-management-token-alias=<value>       Source management token alias.
       --source-stack-api-key=<value>                Source stack API Key
       --target-branch=<value>                       Branch of the target stack.
-      --type=<option>                               Type of data to clone
-                                                    a) Structure (all modules except entries & assets)
-                                                    b) Structure with content (all modules including entries & assets)
+      --type=<option>                               Type of data to clone. You can select option a or b.
+                                                    a) Structure (all modules except entries & assets).
+                                                    b) Structure with content (all modules including entries & assets).
 
                                                     <options: a|b>
 
@@ -2479,20 +2667,22 @@ USAGE
 
 FLAGS
   -c, --config=<value>                              Path for the external configuration
-  -n, --stack-name=<value>                          Name for the new stack to store the cloned content.
-  -y, --yes                                         [Optional] Override marketplace prompts
-      --destination-management-token-alias=<value>  Source API key of the target stack token alias.
+  -n, --stack-name=<value>                          Provide a name for the new stack to store the cloned content.
+  -y, --yes                                         Force override all Marketplace prompts.
+      --destination-management-token-alias=<value>  Destination management token alias.
       --destination-stack-api-key=<value>           Destination stack API Key
-      --import-webhook-status=<option>              [default: disable] [Optional] Webhook state
+      --import-webhook-status=<option>              [default: disable] [Optional] The status of the import webhook.
+                                                    <options: disable, current>
                                                     <options: disable|current>
-      --skip-audit                                  Skips the audit fix.
+      --skip-audit                                  (optional) Skips the audit fix that occurs during an import
+                                                    operation.
       --source-branch=<value>                       Branch of the source stack.
-      --source-management-token-alias=<value>       Source API key of the target stack token alias.
+      --source-management-token-alias=<value>       Source management token alias.
       --source-stack-api-key=<value>                Source stack API Key
       --target-branch=<value>                       Branch of the target stack.
-      --type=<option>                               Type of data to clone
-                                                    a) Structure (all modules except entries & assets)
-                                                    b) Structure with content (all modules including entries & assets)
+      --type=<option>                               Type of data to clone. You can select option a or b.
+                                                    a) Structure (all modules except entries & assets).
+                                                    b) Structure with content (all modules including entries & assets).
 
                                                     <options: a|b>
 
@@ -2530,15 +2720,22 @@ USAGE
     <value>] [--branch <value>] [--secured-assets]
 
 FLAGS
-  -B, --branch=<value>            [optional] branch name
-  -a, --alias=<value>             alias of the management token
-  -c, --config=<value>            [optional] path of the config
-  -d, --data-dir=<value>          path or location to store the data
-  -k, --stack-api-key=<value>     API key of the source stack
-  -m, --module=<value>            [optional] specific module name
-  -t, --content-types=<value>...  [optional] content type
-  -y, --yes                       [optional] Override marketplace apps related prompts
-      --secured-assets            [optional] use when assets are secured
+  -B, --branch=<value>            [optional] The name of the branch where you want to export your content. If you don't
+                                  mention the branch name, then by default the content will be exported from all the
+                                  branches of your stack.
+  -a, --alias=<value>             The management token alias of the source stack from which you will export content.
+  -c, --config=<value>            [optional] Path of the config
+  -d, --data-dir=<value>          The path or the location in your file system to store the exported content. For e.g.,
+                                  ./content
+  -k, --stack-api-key=<value>     API Key of the source stack
+  -m, --module=<value>            [optional] Specific module name. If not specified, the export command will export all
+                                  the modules to the stack. The available modules are assets, content-types, entries,
+                                  environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks,
+                                  workflows, custom-roles, and taxonomies.
+  -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
+                                  of multiple content types, specify the IDs separated by spaces.
+  -y, --yes                       [optional] Force override all Marketplace prompts.
+      --secured-assets            [optional] Use this flag for assets that are secured.
 
 DESCRIPTION
   Export content from a stack
@@ -2574,21 +2771,33 @@ USAGE
     <value>] [--branch <value>] [--import-webhook-status disable|current]
 
 FLAGS
-  -B, --branch=<value>                    [optional] branch name
-  -a, --alias=<value>                     alias of the management token
-  -b, --backup-dir=<value>                [optional] backup directory name when using specific module
-  -c, --config=<value>                    [optional] path of config file
-  -d, --data-dir=<value>                  path and location where data is stored
+  -B, --branch=<value>                    The name of the branch where you want to import your content. If you don't
+                                          mention the branch name, then by default the content will be imported to the
+                                          main branch.
+  -a, --alias=<value>                     The management token of the destination stack where you will import the
+                                          content.
+  -b, --backup-dir=<value>                [optional] Backup directory name when using specific module.
+  -c, --config=<value>                    [optional] Path of config file.
+  -d, --data-dir=<value>                  The path or the location in your file system where the content, you intend to
+                                          import, is stored. For example, -d "C:\Users\Name\Desktop\cli\content". If the
+                                          export folder has branches involved, then the path should point till the
+                                          particular branch. For example, “-d
+                                          "C:\Users\Name\Desktop\cli\content\branch_name"
   -k, --stack-api-key=<value>             API key of the target stack
-  -m, --module=<value>                    [optional] specific module name
-  -y, --yes                               [optional] Override marketplace prompts
-      --exclude-global-modules            Excludes the branch-independent module from the import operation
-      --import-webhook-status=<option>    [default: disable] [optional] Webhook state
+  -m, --module=<value>                    [optional] Specify the module to import into the target stack. If not
+                                          specified, the import command will import all the modules into the stack. The
+                                          available modules are assets, content-types, entries, environments,
+                                          extensions, marketplace-apps, global-fields, labels, locales, webhooks,
+                                          workflows, custom-roles, and taxonomies.
+  -y, --yes                               [optional] Force override all Marketplace prompts.
+      --exclude-global-modules            Excludes the branch-independent module from the import operation.
+      --import-webhook-status=<option>    [default: disable] [optional] This webhook state keeps the same state of
+                                          webhooks as the source stack.
                                           <options: disable|current>
       --personalize-project-name=<value>  Personalize project name.
       --replace-existing                  Replaces the existing module in the target stack.
       --skip-app-recreation               [optional] Skip private apps recreation if already exist
-      --skip-audit                        Skips the audit fix.
+      --skip-audit                        Skips the audit fix that occurs during an import operation.
       --skip-existing                     Skips the module exists warning messages.
 
 DESCRIPTION
@@ -2627,14 +2836,18 @@ USAGE
     [--config <value>] [--multiple]
 
 FLAGS
-  -B, --branch=<value>         Use this flag to add the branch name where you want to perform the migration.
-  -a, --alias=<value>          Use this flag to add the management token alias.
-  -k, --stack-api-key=<value>  With this flag add the API key of your stack.
-      --config=<value>...      [optional] inline configuration, <key1>:<value1>
-      --config-file=<value>    [optional] Path of the JSON configuration file
-      --file-path=<value>      Use this flag to provide the path of the file of the migration script provided by the
-                               user.
-      --multiple               This flag helps you to migrate multiple content files in a single instance.
+  -B, --branch=<value>         Use this flag to add the branch name where you want to perform the migration. (target
+                               branch name)
+  -a, --alias=<value>          Use this flag to add the management token alias. You must use either the --alias flag or
+                               the --stack-api-key flag.
+  -k, --stack-api-key=<value>  Use this flag to add the API key of your stack. You must use either the --stack-api-key
+                               flag or the --alias flag.
+      --config=<value>...      [optional] Inline configuration, <key1>:<value1>. Passing an external configuration makes
+                               the script re-usable.
+      --config-file=<value>    [optional] Path of the JSON configuration file.
+      --file-path=<value>      Use this flag to provide the path of the file of the migration script.
+      --multiple               This flag helps you to migrate multiple content files in a single instance. Mention the
+                               folder path where your migration script files are stored.
 
 DESCRIPTION
   Contentstack migration script.
@@ -2749,8 +2962,10 @@ USAGE
   $ csdx cm:stacks:publish-configure [-a <value>] [-k <value>]
 
 FLAGS
-  -a, --alias=<value>          Alias(name) for the management token
-  -k, --stack-api-key=<value>  Stack api key to be used
+  -a, --alias=<value>          Name (alias) of the management token you want to use. You must use either the --alias
+                               flag or the --stack-api-key flag.
+  -k, --stack-api-key=<value>  API key of the source stack. You must use either the --stack-api-key flag or the --alias
+                               flag.
 
 DESCRIPTION
   The configure command is used to generate a configuration file for publish scripts.
@@ -2779,8 +2994,10 @@ USAGE
   $ csdx cm:stacks:publish-revert [--retry-failed <value>] [--log-file <value>]
 
 FLAGS
-  --log-file=<value>      logfile to be used to revert
-  --retry-failed=<value>  retry publishing failed entries from the logfile
+  --log-file=<value>      Path of the success logfile of a particular publish action.
+  --retry-failed=<value>  (optional)  Use this option to retry publishing the failed entries from the logfile. Specify
+                          the name of the logfile that lists failed publish calls. If this option is used, it will
+                          override all other flags.
 
 DESCRIPTION
   Revert publish operations by using a log file
@@ -2861,11 +3078,11 @@ FLAGS
   -k, --stack-api-key=<value>   Stack api key to be used
   -l, --locale=<value>          Locale filter
   -y, --yes                     Agree to process the command with the current configuration
-      --api-version=<value>     API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
+      --api-version=<value>     API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
       --bulk-unpublish=<value>  [default: true] This flag is set to true by default. It indicates that contentstack's
                                 bulkpublish API will be used to unpublish the entries and assets
       --content-type=<value>    Content type filter
-      --delivery-token=<value>  Delivery token for source environment
+      --delivery-token=<value>  The delivery token of the source environment.
       --retry-failed=<value>    Retry publishing failed entries from the logfile (optional, overrides all other flags)
 
 DESCRIPTION
@@ -3040,8 +3257,8 @@ USAGE
   $ csdx config:remove:base-branch [-k <value>] [-y]
 
 FLAGS
-  -k, --stack-api-key=<value>  Stack API Key
-  -y, --yes                    Force Remove
+  -k, --stack-api-key=<value>  Stack API key.
+  -y, --yes                    Force remove.
 
 DESCRIPTION
   Remove branch config for CLI
@@ -3063,8 +3280,9 @@ USAGE
   $ csdx config:remove:ea-header [--header-alias <value>] [-y]
 
 FLAGS
-  -y, --yes                   Force Remove
-      --header-alias=<value>  Early access header alias
+  -y, --yes                   (optional) Force the removal of Early Access header configuration by skipping the
+                              confirmation.
+      --header-alias=<value>  (optional) Provide the Early Access header alias name.
 
 DESCRIPTION
   Remove Early Access header
@@ -3087,8 +3305,9 @@ USAGE
   $ csdx config:remove:early-access-header [--header-alias <value>] [-y]
 
 FLAGS
-  -y, --yes                   Force Remove
-      --header-alias=<value>  Early access header alias
+  -y, --yes                   (optional) Force the removal of Early Access header configuration by skipping the
+                              confirmation.
+      --header-alias=<value>  (optional) Provide the Early Access header alias name.
 
 DESCRIPTION
   Remove Early Access header
@@ -3133,8 +3352,8 @@ USAGE
   $ csdx config:set:base-branch [-k <value>] [--base-branch <value>]
 
 FLAGS
-  -k, --stack-api-key=<value>  Stack API Key
-      --base-branch=<value>    Base Branch
+  -k, --stack-api-key=<value>  Stack API key
+      --base-branch=<value>    Base branch (Target branch).
 
 DESCRIPTION
   Set branch for CLI
@@ -3156,8 +3375,8 @@ USAGE
   $ csdx config:set:ea-header [--header-alias <value>] [--header <value>]
 
 FLAGS
-  --header=<value>        Early access header value
-  --header-alias=<value>  Early access header alias
+  --header=<value>        (optional) Provide the Early Access header alias name.
+  --header-alias=<value>  (optional) Provide the Early Access header value.
 
 DESCRIPTION
   Set Early Access header
@@ -3180,8 +3399,8 @@ USAGE
   $ csdx config:set:early-access-header [--header-alias <value>] [--header <value>]
 
 FLAGS
-  --header=<value>        Early access header value
-  --header-alias=<value>  Early access header alias
+  --header=<value>        (optional) Provide the Early Access header alias name.
+  --header-alias=<value>  (optional) Provide the Early Access header value.
 
 DESCRIPTION
   Set Early Access header
@@ -3264,15 +3483,15 @@ EXAMPLES
 
   $ csdx config:set:region GCP-NA
 
-  $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India"
+  $ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India"
 
-  $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India" --developer-hub <developer_hub_url>
+  $ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url>
 
-  $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India" --personalize <personalize_url>
+  $ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --personalize <custom_personalize_url>
 
-  $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India" --launch <launch_url>
+  $ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --launch <custom_launch_url>
 
-  $ csdx config:set:region --cda <contentstack_cda_endpoint> --cma <contentstack_cma_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India" --developer-hub <developer_hub_url> --personalize <personalize_url> --launch <launch_url>
+  $ csdx config:set:region --cda <custom_cda_host_url> --cma <custom_cma_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url> --launch <custom_launch_url> --personalize <custom_personalize_url>
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/region.ts)_
@@ -3309,21 +3528,22 @@ USAGE
     variables to the list|Import variables from the local env file] [-a <value>] [--env-variables <value>]
 
 FLAGS
-  -a, --alias=<value>           [Optional] Alias(name) for the delivery token
-  -e, --environment=<value>     [Optional] Environment name for the Launch project
-  -n, --name=<value>            [Optional] Name of the project
-      --branch=<value>          [Optional] GitHub branch name
-      --build-command=<value>   [Optional] Build Command
-      --env-variables=<value>   [Optional] Provide the environment variables in the key:value format, separated by comma
-                                Ex:APP_ENV:prod, TEST_ENV:testVal
-      --framework=<option>      [Optional] Type of framework
+  -a, --alias=<value>           [optional] Alias (name) for the delivery token.
+  -e, --environment=<value>     [optional] Environment name for the Launch project.
+  -n, --name=<value>            [optional] Name of the project.
+      --branch=<value>          [optional] GitHub branch name.
+      --build-command=<value>   [optional] Build Command.
+      --env-variables=<value>   [optional] Provide the environment variables in the key:value format, separated by
+                                comma. For example: APP_ENV:prod, TEST_ENV:testVal.
+      --framework=<option>      [optional] Type of framework. <options: Gatsby|NextJS|Other>
                                 <options: Gatsby|NextJs|CRA (Create React App)|CSR (Client-Side
                                 Rendered)|Angular|VueJs|Other>
-      --org=<value>             [Optional] Provide the organization UID to create a new project or deployment
-      --out-dir=<value>         [Optional] Output Directory
-      --type=<option>           [Optional] Choose the type of adapters
+      --org=<value>             [optional] Provide the organization UID to create a new project or deployment.
+      --out-dir=<value>         [optional] Output Directory.
+      --type=<option>           [optional] Type of adapters. <options: GitHub|FileUpload>
                                 <options: GitHub|FileUpload>
-      --variable-type=<option>  [Optional] Provide a variable type.
+      --variable-type=<option>  [optional] Provide a variable type. <options: Import variables from a stack|Manually add
+                                custom variables to the list|Import variables from the local env file>
                                 <options: Import variables from a stack|Manually add custom variables to the list|Import
                                 variables from the local env file>
 
@@ -3524,8 +3744,8 @@ USAGE
   $ csdx login [-u <value> | --oauth] [-p <value> | ]
 
 FLAGS
-  -p, --password=<value>  Password
-  -u, --username=<value>  User name
+  -p, --password=<value>  Password of your Contentstack app
+  -u, --username=<value>  Email address of your Contentstack account.
       --oauth             Enables single sign-on (SSO) in Contentstack CLI
 
 DESCRIPTION

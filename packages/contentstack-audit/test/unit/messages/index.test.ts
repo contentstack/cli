@@ -1,5 +1,5 @@
 import { fancy } from 'fancy-test';
-import { expect } from '@oclif/test';
+import { expect } from 'chai';
 
 import { $t, auditMsg } from '../../../src/messages';
 

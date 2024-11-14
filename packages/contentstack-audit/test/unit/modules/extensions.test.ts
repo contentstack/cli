@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 import { fancy } from 'fancy-test';
-import { expect } from '@oclif/test';
+import { expect } from 'chai';
 import cloneDeep from 'lodash/cloneDeep';
 import { ux } from '@contentstack/cli-utilities';
 
@@ -27,12 +27,12 @@ const fixedSchema = [
     config: {},
     type: 'field',
     data_type: 'number',
-    "fixStatus": "Fixed",
+    fixStatus: 'Fixed',
     content_types: ['ct6'],
     multiple: false,
     scope: {
       content_types: ['ct6'],
-    }
+    },
   },
   {
     stackHeaders: {
@@ -50,12 +50,12 @@ const fixedSchema = [
     config: {},
     type: 'field',
     data_type: 'text',
-    "fixStatus": "Fixed",
+    fixStatus: 'Fixed',
     multiple: false,
     content_types: ['ct8'],
     scope: {
       content_types: ['ct8'],
-    }
+    },
   },
   {
     stackHeaders: {
@@ -66,7 +66,7 @@ const fixedSchema = [
     created_at: '2024-02-22T09:44:27.030Z',
     updated_at: '2024-02-22T09:44:27.030Z',
     created_by: 'u1',
-    "fixStatus": "Fixed",
+    fixStatus: 'Fixed',
     updated_by: 'u1',
     tags: [],
     _version: 1,
@@ -77,10 +77,10 @@ const fixedSchema = [
     content_types: ['ct6'],
     type: 'widget',
     scope: {
-      content_types: ["ct4", "ct3", "ct2", "ct1",'ct6'],
+      content_types: ['ct4', 'ct3', 'ct2', 'ct1', 'ct6'],
     },
   },
-]
+];
 describe('Extensions scope containing content_types uids', () => {
   describe('run method with invalid path for extensions', () => {
     const ext = new Extensions({
@@ -182,7 +182,7 @@ describe('Extensions scope containing content_types uids', () => {
               content_types: ['ct6'],
               type: 'widget',
               scope: {
-                content_types: ["ct4", "ct3", "ct2", "ct1", "ct6"],
+                content_types: ['ct4', 'ct3', 'ct2', 'ct1', 'ct6'],
               },
             },
           ]);
@@ -265,68 +265,67 @@ describe('Extensions scope containing content_types uids', () => {
           expect(missingRefs).eql(fixedSchema);
           expect(ext.missingCts).eql(new Set(['ct6', 'ct8']));
           expect(ext.fixedExtensions).eql({
-            "ext5": {
-              "stackHeaders": {
-                "api_key": "apiKey"
+            ext5: {
+              stackHeaders: {
+                api_key: 'apiKey',
               },
-              "urlPath": "/extensions/ext5",
-              "uid": "ext5",
-              "created_at": "2024-02-22T09:44:27.030Z",
-              "updated_at": "2024-02-22T09:44:27.030Z",
-              "created_by": "u1",
-              "updated_by": "u1",
-              "tags": [],
-              "_version": 1,
-              "title": "Text Intelligence",
-              "config": {
-                "token": "your_token_here"
+              urlPath: '/extensions/ext5',
+              uid: 'ext5',
+              created_at: '2024-02-22T09:44:27.030Z',
+              updated_at: '2024-02-22T09:44:27.030Z',
+              created_by: 'u1',
+              updated_by: 'u1',
+              tags: [],
+              _version: 1,
+              title: 'Text Intelligence',
+              config: {
+                token: 'your_token_here',
               },
-              "type": "widget",
-              "scope": {
-                "content_types": ["ct4", "ct3", "ct2", "ct1"]
-              }
+              type: 'widget',
+              scope: {
+                content_types: ['ct4', 'ct3', 'ct2', 'ct1'],
+              },
             },
-            "ext6": {
-              "stackHeaders": {
-                "api_key": "apiKey"
+            ext6: {
+              stackHeaders: {
+                api_key: 'apiKey',
               },
-              "urlPath": "/extensions/ext6",
-              "uid": "ext6",
-              "created_at": "2024-02-22T09:44:01.784Z",
-              "updated_at": "2024-02-22T09:44:01.784Z",
-              "created_by": "u1",
-              "updated_by": "u1",
-              "tags": [],
-              "_version": 1,
-              "title": "Ace Editor",
-              "config": {},
-              "type": "field",
-              "data_type": "reference",
-              "multiple": true
+              urlPath: '/extensions/ext6',
+              uid: 'ext6',
+              created_at: '2024-02-22T09:44:01.784Z',
+              updated_at: '2024-02-22T09:44:01.784Z',
+              created_by: 'u1',
+              updated_by: 'u1',
+              tags: [],
+              _version: 1,
+              title: 'Ace Editor',
+              config: {},
+              type: 'field',
+              data_type: 'reference',
+              multiple: true,
             },
-            "ext7": {
-              "stackHeaders": {
-                "api_key": "apiKey"
+            ext7: {
+              stackHeaders: {
+                api_key: 'apiKey',
               },
-              "urlPath": "/extensions/ext7",
-              "uid": "ext7",
-              "created_at": "2024-02-22T09:43:35.589Z",
-              "updated_at": "2024-02-22T09:43:35.589Z",
-              "created_by": "u1",
-              "updated_by": "u1",
-              "tags": [],
-              "_version": 1,
-              "title": "Gatsby Preview",
-              "config": {
-                "siteUrl": "your_site_url"
+              urlPath: '/extensions/ext7',
+              uid: 'ext7',
+              created_at: '2024-02-22T09:43:35.589Z',
+              updated_at: '2024-02-22T09:43:35.589Z',
+              created_by: 'u1',
+              updated_by: 'u1',
+              tags: [],
+              _version: 1,
+              title: 'Gatsby Preview',
+              config: {
+                siteUrl: 'your_site_url',
               },
-              "type": "widget",
-              "scope": {
-                "content_types": ["ct3", "ct5"]
-              }
-            }
-          }
-          );
+              type: 'widget',
+              scope: {
+                content_types: ['ct3', 'ct5'],
+              },
+            },
+          });
         },
       );
   });
