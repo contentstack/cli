@@ -211,26 +211,26 @@ StackCloneCommand.flags = {
   'source-management-token-alias': flags.string({
     required: false,
     multiple: false,
-    description: 'Source API key of the target stack token alias.',
+    description: 'Source management token alias.',
   }),
   'destination-management-token-alias': flags.string({
     required: false,
     multiple: false,
-    description: 'Source API key of the target stack token alias.',
+    description: 'Destination management token alias.',
   }),
   'stack-name': flags.string({
     char: 'n',
     required: false,
     multiple: false,
-    description: 'Name for the new stack to store the cloned content.',
+    description: 'Provide a name for the new stack to store the cloned content.',
   }),
   type: flags.string({
     required: false,
     multiple: false,
     options: ['a', 'b'],
-    description: `Type of data to clone
-a) Structure (all modules except entries & assets)
-b) Structure with content (all modules including entries & assets)
+    description: ` Type of data to clone. You can select option a or b.
+a) Structure (all modules except entries & assets).
+b) Structure with content (all modules including entries & assets).
     `,
   }),
   'source-stack-api-key': flags.string({
@@ -240,7 +240,7 @@ b) Structure with content (all modules including entries & assets)
     description: 'Destination stack API Key',
   }),
   'import-webhook-status': flags.string({
-    description: '[Optional] Webhook state',
+    description: '[Optional] The status of the import webhook. <options: disable, current>',
     options: ['disable', 'current'],
     required: false,
     default: 'disable',
@@ -248,10 +248,10 @@ b) Structure with content (all modules including entries & assets)
   yes: flags.boolean({
     char: 'y',
     required: false,
-    description: '[Optional] Override marketplace prompts',
+    description: 'Force override all Marketplace prompts.',
   }),
   'skip-audit': flags.boolean({
-    description: 'Skips the audit fix.',
+    description: ' (optional) Skips the audit fix that occurs during an import operation.',
   }),
   config: flags.string({
     char: 'c',

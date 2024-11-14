@@ -48,7 +48,7 @@ $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-export/1.14.1 darwin-arm64 node-v22.2.0
+@contentstack/cli-cm-export/1.14.1 darwin-arm64 node-v22.8.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -72,15 +72,22 @@ USAGE
     <value>] [--branch <value>] [--secured-assets]
 
 FLAGS
-  -B, --branch=<value>            [optional] branch name
-  -a, --alias=<value>             alias of the management token
-  -c, --config=<value>            [optional] path of the config
-  -d, --data-dir=<value>          path or location to store the data
-  -k, --stack-api-key=<value>     API key of the source stack
-  -m, --module=<value>            [optional] specific module name
-  -t, --content-types=<value>...  [optional] content type
-  -y, --yes                       [optional] Override marketplace apps related prompts
-  --secured-assets                [optional] use when assets are secured
+  -B, --branch=<value>            [optional] The name of the branch where you want to export your content. If you don't
+                                  mention the branch name, then by default the content will be exported from all the
+                                  branches of your stack.
+  -a, --alias=<value>             The management token alias of the source stack from which you will export content.
+  -c, --config=<value>            [optional] Path of the config
+  -d, --data-dir=<value>          The path or the location in your file system to store the exported content. For e.g.,
+                                  ./content
+  -k, --stack-api-key=<value>     API Key of the source stack
+  -m, --module=<value>            [optional] Specific module name. If not specified, the export command will export all
+                                  the modules to the stack. The available modules are assets, content-types, entries,
+                                  environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks,
+                                  workflows, custom-roles, and taxonomies.
+  -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
+                                  of multiple content types, specify the IDs separated by spaces.
+  -y, --yes                       [optional] Force override all Marketplace prompts.
+  --secured-assets                [optional] Use this flag for assets that are secured.
 
 DESCRIPTION
   Export content from a stack
@@ -114,15 +121,22 @@ USAGE
     <value>] [--branch <value>] [--secured-assets]
 
 FLAGS
-  -B, --branch=<value>            [optional] branch name
-  -a, --alias=<value>             alias of the management token
-  -c, --config=<value>            [optional] path of the config
-  -d, --data-dir=<value>          path or location to store the data
-  -k, --stack-api-key=<value>     API key of the source stack
-  -m, --module=<value>            [optional] specific module name
-  -t, --content-types=<value>...  [optional] content type
-  -y, --yes                       [optional] Override marketplace apps related prompts
-  --secured-assets                [optional] use when assets are secured
+  -B, --branch=<value>            [optional] The name of the branch where you want to export your content. If you don't
+                                  mention the branch name, then by default the content will be exported from all the
+                                  branches of your stack.
+  -a, --alias=<value>             The management token alias of the source stack from which you will export content.
+  -c, --config=<value>            [optional] Path of the config
+  -d, --data-dir=<value>          The path or the location in your file system to store the exported content. For e.g.,
+                                  ./content
+  -k, --stack-api-key=<value>     API Key of the source stack
+  -m, --module=<value>            [optional] Specific module name. If not specified, the export command will export all
+                                  the modules to the stack. The available modules are assets, content-types, entries,
+                                  environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks,
+                                  workflows, custom-roles, and taxonomies.
+  -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
+                                  of multiple content types, specify the IDs separated by spaces.
+  -y, --yes                       [optional] Force override all Marketplace prompts.
+  --secured-assets                [optional] Use this flag for assets that are secured.
 
 DESCRIPTION
   Export content from a stack
