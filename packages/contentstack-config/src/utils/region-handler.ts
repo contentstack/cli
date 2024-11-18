@@ -59,7 +59,7 @@ const regions = {
     uiHost: 'https://gcp-na-app.contentstack.com',
     name: 'GCP-NA',
     'developerHubUrl': 'https://gcp-na-developerhub-api.contentstack.com',
-    'launchHubUrl': 'Not available',
+    'launchHubUrl': 'https://gcp-na-launch-api.contentstack.com',
     'personalizeUrl': 'https://gcp-na-personalize-api.contentstack.com',
   },
 };
