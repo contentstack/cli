@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { execFileSync } = require('child_process');
+const { spawnSync } = require('child_process');
 const path = require('path');
 const { sanitizePath } = require('@contentstack/cli-utilities');
 const os = require('os');
@@ -72,7 +72,9 @@ function executeShellCommand(command, directory = '') {
   try {
     if (command.startsWith('npm i')) {
       const [cmd, ...args] = command.split(' ');
-      execFileSync(cmd, args, { stdio: 'inherit', cwd: directory });
+      const result = spawnSync(cmd, args, { stdio: 'inherit', cwd: directory, shell: true });
+      
+      if (result.error) throw result.error;
       console.log(`Command executed successfully: ${command}`);
     } else {
       console.log(`Command should only be 'npm i <package-name>'`);
@@ -81,7 +83,6 @@ function executeShellCommand(command, directory = '') {
     console.error(`Command execution failed. Error: ${error.message}`);
   }
 }
-
 async function installModules(filePath, multiple) {
   const files = multiple ? [] : [path.basename(filePath)];
   const dirPath = multiple ? filePath : path.dirname(filePath);
