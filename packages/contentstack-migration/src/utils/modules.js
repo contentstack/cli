@@ -74,13 +74,13 @@ function executeShellCommand(command, directory = '') {
       const [cmd, ...args] = command.split(' ');
       const result = spawnSync(cmd, args, { stdio: 'inherit', cwd: directory, shell: true });
       
-      if (result.error) throw result.error;
+      if (result?.error) throw result.error;
       console.log(`Command executed successfully: ${command}`);
     } else {
       console.log(`Command should only be 'npm i <package-name>'`);
     }
   } catch (error) {
-    console.error(`Command execution failed. Error: ${error.message}`);
+    console.error(`Command execution failed. Error: ${error?.message}`);
   }
 }
 async function installModules(filePath, multiple) {
