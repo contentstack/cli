@@ -86,7 +86,7 @@ importers:
       '@oclif/core': 3.27.0
       '@oclif/plugin-help': 5.2.20_ogreqof3k35xezedraj6pnd45y
       '@oclif/plugin-not-found': 2.4.3_ogreqof3k35xezedraj6pnd45y
-      '@oclif/plugin-plugins': 5.4.15
+      '@oclif/plugin-plugins': 5.4.17
       chalk: 4.1.2
       debug: 4.3.7
       figlet: 1.8.0
@@ -97,7 +97,7 @@ importers:
       uuid: 9.0.1
       winston: 3.17.0
     devDependencies:
-      '@oclif/test': 4.1.0_@oclif+core@3.27.0
+      '@oclif/test': 4.1.1_@oclif+core@3.27.0
       '@types/chai': 4.3.20
       '@types/inquirer': 9.0.7
       '@types/mkdirp': 1.0.2
@@ -157,7 +157,7 @@ importers:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/plugin-help': 5.2.20_qh5aoajehayk656fvrs5ardgyy
-      '@oclif/plugin-plugins': 5.4.15
+      '@oclif/plugin-plugins': 5.4.17
       chalk: 4.1.2
       fast-csv: 4.3.6
       fs-extra: 11.2.0
@@ -166,7 +166,7 @@ importers:
       winston: 3.17.0
     devDependencies:
       '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
-      '@oclif/test': 4.1.0
+      '@oclif/test': 4.1.1
       '@types/chai': 4.3.20
       '@types/fs-extra': 11.0.4
       '@types/mocha': 10.0.9
@@ -227,7 +227,7 @@ importers:
     devDependencies:
       '@fancy-test/nock': 0.1.1
       '@oclif/plugin-help': 5.2.20_ogreqof3k35xezedraj6pnd45y
-      '@oclif/test': 4.1.0
+      '@oclif/test': 4.1.1
       '@types/chai': 4.3.20
       '@types/inquirer': 9.0.7
       '@types/mkdirp': 1.0.2
@@ -282,7 +282,7 @@ importers:
       mkdirp: 1.0.4
       tar: 6.2.1
     devDependencies:
-      '@oclif/test': 4.1.0
+      '@oclif/test': 4.1.1
       '@types/inquirer': 9.0.7
       '@types/mkdirp': 1.0.2
       '@types/node': 14.18.63
@@ -363,7 +363,7 @@ importers:
       '@contentstack/cli-config': link:../contentstack-config
       '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
       '@oclif/plugin-help': 5.2.20_typescript@4.9.5
-      '@oclif/test': 4.1.0_@oclif+core@3.27.0
+      '@oclif/test': 4.1.1_@oclif+core@3.27.0
       '@types/flat': 5.0.5
       assert: 2.1.0
       chai: 4.5.0
@@ -412,7 +412,7 @@ importers:
       nock: 13.5.6
       winston: 3.17.0
     devDependencies:
-      '@oclif/test': 4.1.0
+      '@oclif/test': 4.1.1
       chai: 4.5.0
       eslint: 8.57.1
       eslint-config-oclif: 4.0.0_eslint@8.57.1
@@ -468,7 +468,7 @@ importers:
       rimraf: 5.0.10
       winston: 3.17.0
     devDependencies:
-      '@oclif/test': 4.1.0
+      '@oclif/test': 4.1.1
       chai: 4.5.0
       eslint: 8.57.1
       eslint-config-oclif: 4.0.0_eslint@8.57.1
@@ -501,9 +501,9 @@ importers:
       typescript: ^4.9.5
     dependencies:
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      contentstack: 3.22.1
+      contentstack: 3.22.2
     devDependencies:
-      '@oclif/test': 4.1.0
+      '@oclif/test': 4.1.1
       '@types/chai': 4.3.20
       '@types/mkdirp': 1.0.2
       '@types/mocha': 8.2.3
@@ -560,7 +560,7 @@ importers:
       mkdirp: 1.0.4
       winston: 3.17.0
     devDependencies:
-      '@oclif/test': 4.1.0
+      '@oclif/test': 4.1.1
       '@types/chai': 4.3.20
       '@types/inquirer': 9.0.7
       '@types/mkdirp': 1.0.2
@@ -595,7 +595,7 @@ importers:
       typescript: ^4.9.5
     dependencies:
       '@oclif/core': 3.27.0
-      '@oclif/test': 4.1.0_@oclif+core@3.27.0
+      '@oclif/test': 4.1.1_@oclif+core@3.27.0
       fancy-test: 2.0.42
       lodash: 4.17.21
     devDependencies:
@@ -671,7 +671,7 @@ importers:
       '@contentstack/cli-config': link:../contentstack-config
       '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
       '@oclif/plugin-help': 5.2.20_typescript@4.9.5
-      '@oclif/test': 4.1.0_@oclif+core@3.27.0
+      '@oclif/test': 4.1.1_@oclif+core@3.27.0
       '@types/big-json': 3.2.5
       '@types/mkdirp': 1.0.2
       '@types/progress-stream': 2.0.5
@@ -719,7 +719,7 @@ importers:
       inquirer-checkbox-plus-prompt: 1.4.2_inquirer@8.2.6
       mkdirp: 3.0.1
     devDependencies:
-      '@oclif/test': 4.1.0
+      '@oclif/test': 4.1.1
       '@types/chai': 4.3.20
       '@types/mocha': 10.0.9
       chai: 4.5.0
@@ -798,7 +798,7 @@ importers:
       uuid: 9.0.1
       winston: 3.17.0
     devDependencies:
-      '@oclif/test': 4.1.0_@oclif+core@3.27.0
+      '@oclif/test': 4.1.1_@oclif+core@3.27.0
       '@types/big-json': 3.2.5
       '@types/bluebird': 3.5.42
       '@types/chai': 4.3.20
@@ -862,12 +862,12 @@ importers:
       typescript: ^4.9.5
       winston: ^3.17.0
     dependencies:
-      '@apollo/client': 3.11.9_graphql@16.9.0
+      '@apollo/client': 3.11.10_graphql@16.9.0
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/core': 3.27.0
       '@oclif/plugin-help': 5.2.20_lmilhoolc66wzdtep3wqgfj6km
-      '@oclif/plugin-plugins': 5.4.15
+      '@oclif/plugin-plugins': 5.4.17
       '@types/express': 4.17.21
       '@types/express-serve-static-core': 4.19.6
       adm-zip: 0.5.16
@@ -883,7 +883,7 @@ importers:
       open: 8.4.2
       winston: 3.17.0
     devDependencies:
-      '@oclif/test': 4.1.0_@oclif+core@3.27.0
+      '@oclif/test': 4.1.1_@oclif+core@3.27.0
       '@types/adm-zip': 0.5.6
       '@types/chai': 4.3.20
       '@types/esm': 3.2.2
@@ -937,7 +937,7 @@ importers:
       sinon: 19.0.2
       uuid: 9.0.1
     devDependencies:
-      '@oclif/test': 4.1.0
+      '@oclif/test': 4.1.1
       chai: 4.5.0
       eslint: 8.57.1
       eslint-config-oclif: 4.0.0_eslint@8.57.1
@@ -984,7 +984,7 @@ importers:
       listr: 0.14.3
       winston: 3.17.0
     devDependencies:
-      '@oclif/test': 4.1.0
+      '@oclif/test': 4.1.1
       chai: 4.5.0
       eslint: 8.57.1
       globby: 10.0.2
@@ -1134,7 +1134,7 @@ importers:
       xdg-basedir: 4.0.0
     devDependencies:
       '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
-      '@oclif/test': 4.1.0_@oclif+core@3.27.0
+      '@oclif/test': 4.1.1_@oclif+core@3.27.0
       '@types/chai': 4.3.20
       '@types/inquirer': 9.0.7
       '@types/mkdirp': 1.0.2
@@ -1182,7 +1182,7 @@ importers:
       winston: 3.17.0
     devDependencies:
       '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
-      '@oclif/test': 4.1.0
+      '@oclif/test': 4.1.1
       '@types/chai': 4.3.20
       '@types/node': 20.17.6
       chai: 4.5.0
@@ -1203,8 +1203,8 @@ packages:
       '@jridgewell/trace-mapping': 0.3.25
     dev: true
 
-  /@apollo/client/3.11.9_graphql@16.9.0:
-    resolution: {integrity: sha512-aQ6VL+CPO1G4DLS/3FelfA+nl+ZQCP5qeN1NS6J8xh9wumUM/2W1ccneqCYmbTMDtoSunxE1BV2W6u0FF4axwQ==}
+  /@apollo/client/3.11.10_graphql@16.9.0:
+    resolution: {integrity: sha512-IfGc+X4il0rDqVQBBWdxIKM+ciDCiDzBq9+Bg9z4tJMi87uF6po4v+ddiac1wP0ARgVPsFwEIGxK7jhN4pW8jg==}
     peerDependencies:
       graphql: ^15.0.0 || ^16.0.0
       graphql-ws: ^5.5.5
@@ -1639,7 +1639,7 @@ packages:
       axios: 1.7.7
       form-data: 3.0.2
       lodash: 4.17.21
-      qs: 6.13.0
+      qs: 6.13.1
     transitivePeerDependencies:
       - debug
     dev: false
@@ -1651,7 +1651,7 @@ packages:
       axios: 1.7.7_debug@4.3.7
       form-data: 3.0.2
       lodash: 4.17.21
-      qs: 6.13.0
+      qs: 6.13.1
     transitivePeerDependencies:
       - debug
     dev: false
@@ -1664,8 +1664,8 @@ packages:
       - debug
     dev: false
 
-  /@contentstack/utils/1.3.13:
-    resolution: {integrity: sha512-Lp4UIHMdSxMjCmcK93L987Kxa/wnucRlR7CjVBMd1bD8auJSPFh7E3aP9fnvzjzSWockBRYbXkOq6KLojgXlPA==}
+  /@contentstack/utils/1.3.15:
+    resolution: {integrity: sha512-m/FNx8LwSquMWo+KQ+zyBALEQTeFuldpLkqTrWXPEtmkPMCNnrF3aLcYHmcpLs7B1nux3wPRD6njhMDUU57giQ==}
     dev: false
 
   /@cspotcode/source-map-support/0.8.1:
@@ -2743,8 +2743,8 @@ packages:
       wordwrap: 1.0.0
       wrap-ansi: 7.0.0
 
-  /@oclif/core/4.0.31:
-    resolution: {integrity: sha512-7oyIZv/C1TP+fPc2tSzVPYqG1zU+nel1QvJxjAWyVhud0J8B5SpKZnryedxs3nlSVPJ6K1MT31C9esupCBYgZw==}
+  /@oclif/core/4.0.32:
+    resolution: {integrity: sha512-O3jfIAhqaJxXI2dzF81PLTMhKpFFA0Nyz8kfBnc9WYDJnvdmXK0fVAOSpwpi2mHTow/9FXxY6Kww8+Kbe7/sag==}
     engines: {node: '>=18.0.0'}
     dependencies:
       ansi-escapes: 4.3.2
@@ -2893,11 +2893,11 @@ packages:
       - typescript
     dev: true
 
-  /@oclif/plugin-plugins/5.4.15:
-    resolution: {integrity: sha512-0cnTFaRWdXkWgKTrwgjoggcq/A3MaIl1GkDs3BFFjesYlFEs5Fb2HcN42rY+2ja4jBkXrjXBkLS+9faAtdCH6A==}
+  /@oclif/plugin-plugins/5.4.17:
+    resolution: {integrity: sha512-V5W5jiGfWYEFS1v6j0+l0sTkRdvuHpZm9zKyEzC1i6IFFx4S4oR2IMjTwJRopyGH2TZDNVQOGilp3Cxu73pbsQ==}
     engines: {node: '>=18.0.0'}
     dependencies:
-      '@oclif/core': 4.0.31
+      '@oclif/core': 4.0.32
       ansis: 3.3.2
       debug: 4.3.7
       npm: 10.9.0
@@ -3002,8 +3002,8 @@ packages:
       - typescript
     dev: true
 
-  /@oclif/test/4.1.0:
-    resolution: {integrity: sha512-2ugir6NhRsWJqHM9d2lMEWNiOTD678Jlx5chF/fg6TCAlc7E6E/6+zt+polrCTnTIpih5P/HxOtDekgtjgARwQ==}
+  /@oclif/test/4.1.1:
+    resolution: {integrity: sha512-eltLnzdRKXaCQbwl7fSWHUHaHGvYNld0gpKjav6QHvM03w7NV7k4jYMEwQXwf+qmh9LuaFyADDi/tpZfrWNQVQ==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@oclif/core': '>= 3.0.0'
@@ -3014,8 +3014,8 @@ packages:
       - supports-color
     dev: true
 
-  /@oclif/test/4.1.0_@oclif+core@3.27.0:
-    resolution: {integrity: sha512-2ugir6NhRsWJqHM9d2lMEWNiOTD678Jlx5chF/fg6TCAlc7E6E/6+zt+polrCTnTIpih5P/HxOtDekgtjgARwQ==}
+  /@oclif/test/4.1.1_@oclif+core@3.27.0:
+    resolution: {integrity: sha512-eltLnzdRKXaCQbwl7fSWHUHaHGvYNld0gpKjav6QHvM03w7NV7k4jYMEwQXwf+qmh9LuaFyADDi/tpZfrWNQVQ==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@oclif/core': '>= 3.0.0'
@@ -4560,7 +4560,7 @@ packages:
     dependencies:
       call-bind: 1.0.7
       define-properties: 1.2.1
-      es-abstract: 1.23.3
+      es-abstract: 1.23.5
       es-object-atoms: 1.0.0
       get-intrinsic: 1.2.4
       is-string: 1.0.7
@@ -4576,7 +4576,7 @@ packages:
     dependencies:
       call-bind: 1.0.7
       define-properties: 1.2.1
-      es-abstract: 1.23.3
+      es-abstract: 1.23.5
       es-errors: 1.3.0
       es-object-atoms: 1.0.0
       es-shim-unscopables: 1.0.2
@@ -4588,7 +4588,7 @@ packages:
     dependencies:
       call-bind: 1.0.7
       define-properties: 1.2.1
-      es-abstract: 1.23.3
+      es-abstract: 1.23.5
       es-shim-unscopables: 1.0.2
     dev: true
 
@@ -4598,7 +4598,7 @@ packages:
     dependencies:
       call-bind: 1.0.7
       define-properties: 1.2.1
-      es-abstract: 1.23.3
+      es-abstract: 1.23.5
       es-shim-unscopables: 1.0.2
     dev: true
 
@@ -4609,7 +4609,7 @@ packages:
       array-buffer-byte-length: 1.0.1
       call-bind: 1.0.7
       define-properties: 1.2.1
-      es-abstract: 1.23.3
+      es-abstract: 1.23.5
       es-errors: 1.3.0
       get-intrinsic: 1.2.4
       is-array-buffer: 3.0.4
@@ -4899,7 +4899,7 @@ packages:
     hasBin: true
     dependencies:
       caniuse-lite: 1.0.30001680
-      electron-to-chromium: 1.5.55
+      electron-to-chromium: 1.5.62
       node-releases: 2.0.18
       update-browserslist-db: 1.1.1_browserslist@4.24.2
     dev: true
@@ -5243,7 +5243,7 @@ packages:
       parse5: 7.2.1
       parse5-htmlparser2-tree-adapter: 7.1.0
       parse5-parser-stream: 7.1.2
-      undici: 6.20.1
+      undici: 6.21.0
       whatwg-mimetype: 4.0.0
     dev: false
 
@@ -5637,17 +5637,17 @@ packages:
     resolution: {integrity: sha512-nTjqfcBFEipKdXCv4YDQWCfmcLZKm81ldF0pAopTvyrFGVbcR6P/VAAd5G7N+0tTr8QqiU0tFadD6FK4NtJwOA==}
     engines: {node: '>= 0.6'}
 
-  /contentstack/3.22.1:
-    resolution: {integrity: sha512-E2WiBbTw5vzHXy9KwxL4rcw2LrFaNl2KcvlPC3Tn4KEQoRsoKFx+/bFoq5tKwpuAcuch6M6IhA2Qkt1JS52gcA==}
+  /contentstack/3.22.2:
+    resolution: {integrity: sha512-rEP/SM9orgbmirB7p0pa0lDGNHO7D3HaH2TIkMhSqdQia02Ov3Tmwcqnv7CJb7+mbXBsHWH5D7Bj5w9MHnhrDg==}
     engines: {node: '>= 10.14.2'}
     dependencies:
-      '@contentstack/utils': 1.3.13
+      '@contentstack/utils': 1.3.15
       cheerio: 1.0.0
       es6-promise: 4.2.8
       fetch-mock: 11.1.5
       isomorphic-fetch: 3.0.0
       localStorage: 1.0.4
-      qs: 6.13.0
+      qs: 6.13.1
     transitivePeerDependencies:
       - encoding
       - node-fetch
@@ -6160,8 +6160,8 @@ packages:
     dependencies:
       jake: 10.9.2
 
-  /electron-to-chromium/1.5.55:
-    resolution: {integrity: sha512-6maZ2ASDOTBtjt9FhqYPRnbvKU5tjG0IN9SztUOWYw2AzNDNpKJYLJmlK0/En4Hs/aiWnB+JZ+gW19PIGszgKg==}
+  /electron-to-chromium/1.5.62:
+    resolution: {integrity: sha512-t8c+zLmJHa9dJy96yBZRXGQYoiCEnHYgFwn1asvSPZSUdVxnB62A4RASd7k41ytG3ErFBA0TpHlKg9D9SQBmLg==}
     dev: true
 
   /elegant-spinner/1.0.1:
@@ -6253,8 +6253,8 @@ packages:
     resolution: {integrity: sha512-YxIFEJuhgcICugOUvRx5th0UM+ActZ9sjY0QJmeVwsQdvosZ7kYzc9QqS0Da3R5iUmgU5meGIxh0xBeZpMVeLw==}
     dev: true
 
-  /es-abstract/1.23.3:
-    resolution: {integrity: sha512-e+HfNH61Bj1X9/jLc5v1owaLYuHdeHHSQlkhCBiTK8rBvKaULl/beGMxwrMXjpYrv4pz22BlY570vVePA2ho4A==}
+  /es-abstract/1.23.5:
+    resolution: {integrity: sha512-vlmniQ0WNPwXqA0BnmwV3Ng7HxiGlh6r5U6JcTMNx8OilcAGqVJBHJcPjqOMaczU9fRuRK5Px2BdVyPRnKMMVQ==}
     engines: {node: '>= 0.4'}
     dependencies:
       array-buffer-byte-length: 1.0.1
@@ -7912,7 +7912,7 @@ packages:
     dependencies:
       call-bind: 1.0.7
       define-properties: 1.2.1
-      es-abstract: 1.23.3
+      es-abstract: 1.23.5
       functions-have-names: 1.2.3
 
   /functional-red-black-tree/1.0.1:
@@ -10942,7 +10942,7 @@ packages:
     resolution: {integrity: sha512-RM5oyBy45cLEoHqCeh+MNuFAxO0vTFBLskvQbOKnEE7YTTSN4tbN8QWDIPQ6L+WvKsB/qLEGpYe2ZZ9d4W9OIQ==}
     engines: {node: '>=8'}
     dependencies:
-      process-on-spawn: 1.0.0
+      process-on-spawn: 1.1.0
     dev: true
 
   /node-releases/2.0.18:
@@ -11306,7 +11306,7 @@ packages:
       make-dir: 3.1.0
       node-preload: 0.2.1
       p-map: 3.0.0
-      process-on-spawn: 1.0.0
+      process-on-spawn: 1.1.0
       resolve-from: 5.0.0
       rimraf: 3.0.2
       signal-exit: 3.0.7
@@ -11370,7 +11370,7 @@ packages:
     dependencies:
       call-bind: 1.0.7
       define-properties: 1.2.1
-      es-abstract: 1.23.3
+      es-abstract: 1.23.5
       es-object-atoms: 1.0.0
     dev: true
 
@@ -11380,7 +11380,7 @@ packages:
     dependencies:
       call-bind: 1.0.7
       define-properties: 1.2.1
-      es-abstract: 1.23.3
+      es-abstract: 1.23.5
     dev: true
 
   /object.values/1.2.0:
@@ -12175,8 +12175,8 @@ packages:
   /process-nextick-args/2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
 
-  /process-on-spawn/1.0.0:
-    resolution: {integrity: sha512-1WsPDsUSMmZH5LeMLegqkPDrsGgsWwk1Exipy2hvB0o/F0ASzbpIctSCcZIK1ykJvtTJULEH+20WOFjMvGnCTg==}
+  /process-on-spawn/1.1.0:
+    resolution: {integrity: sha512-JOnOPQ/8TZgjs1JIH/m9ni7FfimjNa/PRx7y/Wb5qdItsnhO0jE4AT7fC0HjC28DUQWDr50dwSYZLdRMlqDq3Q==}
     engines: {node: '>=8'}
     dependencies:
       fromentries: 1.3.2
@@ -12320,6 +12320,13 @@ packages:
 
   /qs/6.13.0:
     resolution: {integrity: sha512-+38qI9SOr8tfZ4QmJNplMUxqjbe7LKvvZgWdExBOmd+egZTtjLB67Gu0HRX3u/XOq7UU2Nx6nsjvS16Z9uwfpg==}
+    engines: {node: '>=0.6'}
+    dependencies:
+      side-channel: 1.0.6
+    dev: false
+
+  /qs/6.13.1:
+    resolution: {integrity: sha512-EJPeIn0CYrGu+hli1xilKAPXODtJ12T0sP63Ijx2/khC2JtuaN3JyNIpvmnkmaEtha9ocbG4A4cMcr+TvqvwQg==}
     engines: {node: '>=0.6'}
     dependencies:
       side-channel: 1.0.6
@@ -13087,7 +13094,7 @@ packages:
         optional: true
     dependencies:
       array-back: 6.2.2
-      typical: 7.2.0
+      typical: 7.3.0
     dev: true
 
   /sort-keys/4.2.0:
@@ -13270,7 +13277,7 @@ packages:
     dependencies:
       call-bind: 1.0.7
       define-properties: 1.2.1
-      es-abstract: 1.23.3
+      es-abstract: 1.23.5
       es-object-atoms: 1.0.0
 
   /string.prototype.trimend/1.0.8:
@@ -13988,7 +13995,7 @@ packages:
     dependencies:
       call-bind: 1.0.7
       define-properties: 1.2.1
-      es-abstract: 1.23.3
+      es-abstract: 1.23.5
       es-errors: 1.3.0
       typed-array-buffer: 1.0.2
       typed-array-byte-offset: 1.0.2
@@ -14017,8 +14024,8 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /typical/7.2.0:
-    resolution: {integrity: sha512-W1+HdVRUl8fS3MZ9ogD51GOb46xMmhAZzR0WPw5jcgIZQJVvkddYzAl4YTU6g5w33Y1iRQLdIi2/1jhi2RNL0g==}
+  /typical/7.3.0:
+    resolution: {integrity: sha512-ya4mg/30vm+DOWfBg4YK3j2WD6TWtRkCbasOJr40CseYENzCUby/7rIvXA99JGsQHeNxLbnXdyLLxKSv3tauFw==}
     engines: {node: '>=12.17'}
     dev: true
 
@@ -14049,8 +14056,8 @@ packages:
   /undici-types/6.19.8:
     resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
 
-  /undici/6.20.1:
-    resolution: {integrity: sha512-AjQF1QsmqfJys+LXfGTNum+qw4S88CojRInG/6t31W/1fk6G59s92bnAvGz5Cmur+kQv2SURXEvvudLmbrE8QA==}
+  /undici/6.21.0:
+    resolution: {integrity: sha512-BUgJXc752Kou3oOIuU1i+yZZypyZRqNPW0vqoMPl8VaoalSfeR0D8/t4iAS3yirs79SSMTxTag+ZC86uswv+Cw==}
     engines: {node: '>=18.17'}
     dev: false
 
