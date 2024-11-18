@@ -28,7 +28,7 @@
     "inquirer": "8.2.6",
     "lodash": "^4.17.21",
     "mkdirp": "^1.0.4",
-    "winston": "^3.16.0"
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@oclif/test": "^4.1.0",
