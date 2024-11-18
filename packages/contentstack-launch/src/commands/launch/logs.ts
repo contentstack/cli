@@ -78,6 +78,7 @@ export default class Logs extends BaseCommand<typeof Logs> {
     });
     if (this.flags.type === 's') {
       this.$event.on('server-logs', (event: EmitMessage) => {
+        console.log('event', event);
         this.showLogs(event);
       });
       await logPolling.serverLogs();
