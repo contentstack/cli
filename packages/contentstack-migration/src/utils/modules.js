@@ -61,24 +61,18 @@ function installDependencies(dependencies, directory) {
     if (!internalModules.has(dep)) {
       const pkg = dep.startsWith('@') ? dep : dep.split('/')[0];
       if (!installedDependencies.has(pkg)) {
-        executeShellCommand(`npm i ${pkg}`, directory);
+        executeShellCommand(pkg, directory);
         installedDependencies.add(pkg);
       }
     }
   });
 }
 
-function executeShellCommand(command, directory = '') {
+function executeShellCommand(pkg, directory = '') {
   try {
-    if (command.startsWith('npm i')) {
-      const [cmd, ...args] = command.split(' ');
-      const result = spawnSync(cmd, args, { stdio: 'inherit', cwd: directory, shell: true });
-      
-      if (result?.error) throw result.error;
-      console.log(`Command executed successfully: ${command}`);
-    } else {
-      console.log(`Command should only be 'npm i <package-name>'`);
-    }
+    const result = spawnSync(`npm`, ['i', pkg], { stdio: 'inherit', cwd: directory, shell: false });
+    if (result?.error) throw result.error;
+    console.log(`Command executed successfully: ${command}`);
   } catch (error) {
     console.error(`Command execution failed. Error: ${error?.message}`);
   }
