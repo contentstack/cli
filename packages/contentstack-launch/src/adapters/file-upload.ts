@@ -8,7 +8,7 @@ import includes from 'lodash/includes';
 import isEmpty from 'lodash/isEmpty';
 import { basename, resolve } from 'path';
 import { cliux, configHandler, HttpClient, ux } from '@contentstack/cli-utilities';
-import { createReadStream, existsSync, PathLike, statSync } from 'fs';
+import { createReadStream, existsSync, PathLike, statSync, readFileSync } from 'fs';
 
 import { print } from '../util';
 import BaseClass from './base-class';
@@ -63,7 +63,6 @@ export default class FileUpload extends BaseClass {
    */
   async createNewProject(): Promise<void> {
     const { framework, projectName, buildCommand, outputDirectory, environmentName } = this.config;
-
     await this.apolloClient
       .mutate({
         mutation: importProjectMutation,
@@ -215,7 +214,7 @@ export default class FileUpload extends BaseClass {
 
       switch (true) {
         case state.isDirectory(): // NOTE folder
-          await zip.addLocalFolderPromise(entryPath, { zipPath: entry });
+          zip.addLocalFolder(entryPath, entry);
           break;
         case state.isFile(): // NOTE check is file
           zip.addLocalFile(entryPath);
@@ -264,7 +263,7 @@ export default class FileUpload extends BaseClass {
    * @memberof FileUpload
    */
   async uploadFile(fileName: string, filePath: PathLike): Promise<void> {
-    const { uploadUrl, fields, headers } = this.signedUploadUrlData;
+    const { uploadUrl, fields, headers, method } = this.signedUploadUrlData;
     const formData = new FormData();
 
     if (!isEmpty(fields)) {
@@ -274,8 +273,8 @@ export default class FileUpload extends BaseClass {
 
       formData.append('file', createReadStream(filePath), fileName);
       await this.submitFormData(formData, uploadUrl);
-    } else if (!isEmpty(headers)) {
-      await this.uploadWithHttpClient(filePath, uploadUrl, headers, fileName);
+    } else if (method === 'PUT') {
+      await this.uploadWithHttpClient(filePath, uploadUrl, headers);
     }
   }
 
@@ -307,21 +306,21 @@ export default class FileUpload extends BaseClass {
     filePath: PathLike,
     uploadUrl: string,
     headers: Array<{ key: string; value: string }>,
-    fileName: string,
   ): Promise<void> {
     ux.action.start('Starting file upload...');
     const httpClient = new HttpClient();
-    const form = new FormData();
-    form.append('file', createReadStream(filePath), fileName);
+    const file = readFileSync(filePath);
 
     // Convert headers array to a headers object
-    const headerObject = headers.reduce((acc, { key, value }) => {
+    const headerObject = headers?.reduce((acc, { key, value }) => {
       acc[key] = value;
       return acc;
     }, {} as Record<string, string>);
 
     try {
-      const response = await httpClient.headers(headerObject).put(uploadUrl, form);
+      httpClient.headers({ 'Content-Type': 'application/zip' });
+      if (headerObject !== undefined) httpClient.headers(headerObject);
+      const response = (await httpClient.put(uploadUrl, file)) as any;
       const { status } = response;
 
       if (status >= 200 && status < 300) {
@@ -329,6 +328,7 @@ export default class FileUpload extends BaseClass {
       } else {
         ux.action.stop('File upload failed!');
         this.log('File upload failed. Please try again.', 'error');
+        this.log(`Error: ${status}, ${response?.statusText}`, 'error');
         this.exit(1);
       }
     } catch (error) {
