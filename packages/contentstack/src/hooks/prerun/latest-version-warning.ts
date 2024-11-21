@@ -8,7 +8,7 @@ const versionUpgradeWarningFrequency: IVersionUpgradeWarningFrequency = {
 export default async function (_opts): Promise<void> {
   const now = Date.now();
   const today = new Date().toISOString().split('T')[0];
-  const logger: LoggerService = new LoggerService(process.cwd(), 'cli-log');
+  const logger: LoggerService = new LoggerService(process.env.CS_CLI_LOG_PATH || process.cwd(), 'cli-log');
   let cache: IVersionUpgradeCache = { lastChecked: 0, lastWarnedDate: '', latestVersion: '' };
 
   if (!configHandler.get('versionUpgradeWarningFrequency')) {
