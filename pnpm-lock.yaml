@@ -38,6 +38,7 @@ importers:
       '@types/mkdirp': ^1.0.2
       '@types/mocha': ^8.2.3
       '@types/node': ^14.18.63
+      '@types/semver': ^7.5.8
       '@types/sinon': ^10.0.20
       chai: ^4.5.0
       chalk: ^4.1.2
@@ -103,6 +104,7 @@ importers:
       '@types/mkdirp': 1.0.2
       '@types/mocha': 8.2.3
       '@types/node': 14.18.63
+      '@types/semver': 7.5.8
       '@types/sinon': 10.0.20
       chai: 4.5.0
       eslint: 8.57.1
