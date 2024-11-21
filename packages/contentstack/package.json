@@ -61,6 +61,7 @@
     "@types/mkdirp": "^1.0.2",
     "@types/mocha": "^8.2.3",
     "@types/node": "^14.18.63",
+    "@types/semver": "^7.5.8",
     "@types/sinon": "^10.0.20",
     "chai": "^4.5.0",
     "eslint": "^8.57.1",
@@ -153,7 +154,8 @@
     "hooks": {
       "prerun": [
         "./lib/hooks/prerun/command-deprecation-check",
-        "./lib/hooks/prerun/default-rate-limit-check"
+        "./lib/hooks/prerun/default-rate-limit-check",
+        "./lib/hooks/prerun/latest-version-warning"
       ],
       "init": [
         "./lib/hooks/init/context-init",
