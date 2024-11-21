@@ -1,13 +1,7 @@
 import { cliux, configHandler, HttpClient, LoggerService } from '@contentstack/cli-utilities';
 import * as semver from 'semver';
-interface ICacheData {
-  lastChecked: number;
-  lastWarnedDate: string;
-  latestVersion: string;
-}
-interface IVersionUpgradeWarningFrequency {
-  versionSyncDuration: number;
-}
+import { IVersionUpgradeCache, IVersionUpgradeWarningFrequency } from '../../interfaces';
+
 const versionUpgradeWarningFrequency: IVersionUpgradeWarningFrequency = {
   versionSyncDuration: 3 * 24 * 60 * 60 * 1000,
 };
@@ -16,7 +10,7 @@ export default async function (_opts): Promise<void> {
   const today = new Date().toISOString().split('T')[0];
   let logger!: LoggerService;
   logger = new LoggerService(process.cwd(), 'cli-log');
-  let cache: ICacheData = { lastChecked: 0, lastWarnedDate: '', latestVersion: '' };
+  let cache: IVersionUpgradeCache = { lastChecked: 0, lastWarnedDate: '', latestVersion: '' };
 
   if (!configHandler.get('versionUpgradeWarningFrequency')) {
     configHandler.set('versionUpgradeWarningFrequency', versionUpgradeWarningFrequency);
