@@ -28,7 +28,12 @@ export default async function (_opts): Promise<void> {
 
   if (now - cache.lastChecked > versionUpgradeWarningFrequencyConfig.versionSyncDuration) {
     try {
-      const latestVersion = (await httpClient.get(`https://registry.npmjs.org/@contentstack/cli/latest`)).data.version;
+      const latestVersion = (await httpClient.get(`https://registry.npmjs.org/@contentstack/cli/latest`))?.data
+        ?.version;
+      if (!latestVersion) {
+        logger.error('Failed to retrieve the latest version from the registry.');
+        return;
+      }
       cache.latestVersion = latestVersion;
       cache.lastChecked = now;
 
