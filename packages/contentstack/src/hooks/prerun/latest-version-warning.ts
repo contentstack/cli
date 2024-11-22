@@ -45,7 +45,7 @@ export default async function (_opts): Promise<void> {
     }
   }
 
-  // Show warning if an update is available and last warning was > 3 hours ago
+  // Show warning if an update is available and last warning was yesterday
   if (semver.gt(cache.latestVersion, this.config.version) && cache.lastWarnedDate !== today) {
     cliux.print(
       `You are using version ${this.config.version}, but the latest version is ${cache.latestVersion}. Please update your CLI for the best experience.`,
