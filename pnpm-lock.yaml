@@ -56,6 +56,7 @@ importers:
       oclif: ^3.17.2
       open: ^8.4.2
       rimraf: ^2.7.1
+      semver: ^7.6.3
       shelljs: ^0.8.5
       short-uuid: ^4.2.2
       sinon: ^19.0.2
@@ -94,6 +95,7 @@ importers:
       inquirer: 8.2.6
       node-machine-id: 1.1.12
       open: 8.4.2
+      semver: 7.6.3
       short-uuid: 4.2.2
       uuid: 9.0.1
       winston: 3.17.0
