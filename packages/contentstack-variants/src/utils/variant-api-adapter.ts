@@ -197,7 +197,7 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
     try {
       this.apiClient.headers({ api_version: undefined });
       const res = await this.apiClient.put<VariantEntryStruct>(endpoint, { entry: input });
-      const data = this.handleVariantAPIRes(res);
+      const data = await this.handleVariantAPIRes(res);
 
       if (res.status >= 200 && res.status < 300) {
         onSuccess(data);
@@ -238,7 +238,7 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
     try {
       this.apiClient.headers({ api_version: 3.2 });
       const res = await this.apiClient.post<any>(endpoint, input);
-      const data = this.handleVariantAPIRes(res);
+      const data = await this.handleVariantAPIRes(res);
 
       if (res.status >= 200 && res.status < 300) {
         onSuccess(data);
