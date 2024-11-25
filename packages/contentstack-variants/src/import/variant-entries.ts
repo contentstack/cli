@@ -426,7 +426,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         continue;
       }
 
-      if (!this.failedVariantEntries.has(variantEntryUID)) {
+      if (this.failedVariantEntries.has(variantEntryUID)) {
         log(
           this.config,
           `${this.messages.VARIANT_UID_NOT_FOUND}. Skipping entry variant publish for ${variantEntryUID}`,
