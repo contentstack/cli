@@ -33,3 +33,12 @@ export interface Context {
 export interface CLIConfig extends Config {
   context: Context;
 }
+
+export interface IVersionUpgradeCache {
+  lastChecked: number;
+  lastWarnedDate: string;
+  latestVersion: string;
+}
+export interface IVersionUpgradeWarningFrequency {
+  versionSyncDuration: number;
+}
