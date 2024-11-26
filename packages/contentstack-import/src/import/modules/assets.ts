@@ -265,15 +265,21 @@ export default class ImportAssets extends BaseClass {
     const serializeData = (apiOptions: ApiOptions) => {
       const { apiData: asset } = apiOptions;
       const publishDetails = filter(asset.publish_details, ({ environment }) => {
-        return this.environments.hasOwnProperty(environment);
+        return this.environments?.hasOwnProperty(environment);
       });
-      const environments = uniq(map(publishDetails, ({ environment }) => this.environments[environment].name));
-      const locales = uniq(map(publishDetails, 'locale'));
+      if (publishDetails.length) {
+        const environments = uniq(map(publishDetails, ({ environment }) => this.environments[environment].name));
+        const locales = uniq(map(publishDetails, 'locale'));
+        if (environments.length === 0 || locales.length === 0) {
+          apiOptions.entity = undefined
+          return apiOptions;
+        }
+        asset.locales = locales;
+        asset.environments = environments;
+        apiOptions.apiData.publishDetails = { locales, environments };
+      }
 
-      asset.locales = locales;
-      asset.environments = environments;
       apiOptions.uid = this.assetsUidMap[asset.uid] as string;
-      apiOptions.apiData.publishDetails = { locales, environments };
 
       if (!apiOptions.uid) apiOptions.entity = undefined;
 
