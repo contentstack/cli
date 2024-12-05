@@ -45,7 +45,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     const conf: APIConfig = {
       config,
       baseURL: config.modules.personalize.baseURL[config.region.name],
-      headers: { 'X-Project-Uid': config.modules.personalize.project_id},
+      headers: { 'X-Project-Uid': config.modules.personalize.project_id },
       cmaConfig: {
         baseURL: config.region.cma + `/v3`,
         headers: { api_key: config.apiKey },
@@ -162,7 +162,11 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
    * function import experience versions from a JSON file and creates them in the project.
    */
   async importExperienceVersions(experience: ExperienceStruct, oldExperienceUid: string) {
-    const versionsPath = resolve(sanitizePath(this.experiencesDirPath), 'versions', `${sanitizePath(oldExperienceUid)}.json`);
+    const versionsPath = resolve(
+      sanitizePath(this.experiencesDirPath),
+      'versions',
+      `${sanitizePath(oldExperienceUid)}.json`,
+    );
 
     if (!existsSync(versionsPath)) {
       return;
@@ -231,6 +235,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     try {
       const promises = this.pendingVariantAndVariantGrpForExperience.map(async (expUid) => {
         const expRes = await this.getExperience(expUid);
+        console.log('🚀 ~ Experiences ~ promises ~ expRes:', expRes);
         if (expRes?._cms) {
           this.cmsVariants[expUid] = expRes._cms?.variants ?? {};
           this.cmsVariantGroups[expUid] = expRes._cms?.variantGroup ?? {};
@@ -299,10 +304,16 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
       const experienceVariantIds: any = fsUtil.readFile(this.experienceVariantsIdsPath, true) || [];
       const variantUIDMapper: Record<string, string> = {};
       for (let experienceVariantId of experienceVariantIds) {
+        console.log('🚀 ~ Experiences ~ createVariantIdMapper ~ experienceVariantId:', experienceVariantId);
         const [experienceId, variantShortId, oldVariantId] = experienceVariantId.split('-');
         const latestVariantId = this.cmsVariants[this.experiencesUidMapper[experienceId]]?.[variantShortId];
+        console.log('🚀 ~ Experiences ~ createVariantIdMapper ~ latestVariantId:', latestVariantId);
         if (latestVariantId) {
           variantUIDMapper[oldVariantId] = latestVariantId;
+          console.log(
+            '🚀 ~ Experiences ~ createVariantIdMapper ~  variantUIDMapper[oldVariantId]:',
+            variantUIDMapper[oldVariantId],
+          );
         }
       }
 
