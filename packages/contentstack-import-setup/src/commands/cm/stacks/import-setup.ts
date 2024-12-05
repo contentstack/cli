@@ -40,14 +40,18 @@ export default class ImportSetupCommand extends Command {
     }),
   };
 
-  static aliases: string[] = ['cm:import'];
+  static aliases: string[] = ['cm:import-setup'];
 
-  static usage: string = 'cm:stacks:import [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]';
+  static usage: string = 'cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]';
 
   async run(): Promise<void> {
     try {
       const { flags } = await this.parse(ImportSetupCommand);
       let importSetupConfig = await setupImportConfig(flags);
+      // Note setting host to create cma client
+      importSetupConfig.host = this.cmaHost;
+      importSetupConfig.region = this.region;
+      importSetupConfig.developerHubBaseUrl = this.developerHubUrl;
       const managementAPIClient: ContentstackClient = await managementSDKClient(importSetupConfig);
       const importSetup = new ImportSetup(importSetupConfig, managementAPIClient);
       await importSetup.start();
