@@ -32,6 +32,7 @@ const createSignedUploadUrlMutation: DocumentNode = gql`
         key
         value
       }
+      method
     }
   }
 `;

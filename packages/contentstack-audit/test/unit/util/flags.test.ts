@@ -1,5 +1,5 @@
-import { expect } from '@oclif/test';
-import { fancy } from '@contentstack/cli-dev-dependencies';
+import { expect } from 'chai';
+import { fancy } from 'fancy-test';
 
 import { getTableFlags } from '../../../src/util';
 
@@ -16,15 +16,13 @@ describe('getTableFlags method', () => {
       expect(actual).has.ownProperty('no-truncate');
     });
 
-  fancy
-    .stdout({ print: process.env.PRINT === 'true' || false })
-    .it('should return only specified columns', () => {
-      const actual = getTableFlags(['columns', 'csv']);
+  fancy.stdout({ print: process.env.PRINT === 'true' || false }).it('should return only specified columns', () => {
+    const actual = getTableFlags(['columns', 'csv']);
 
-      expect(actual).has.ownProperty('columns');
-      expect(actual).has.ownProperty('csv');
-      expect(actual).has.not.ownProperty('no-truncate');
-      expect(actual).has.not.ownProperty('sort');
-      expect(actual).has.not.ownProperty('filter');
-    });
+    expect(actual).has.ownProperty('columns');
+    expect(actual).has.ownProperty('csv');
+    expect(actual).has.not.ownProperty('no-truncate');
+    expect(actual).has.not.ownProperty('sort');
+    expect(actual).has.not.ownProperty('filter');
+  });
 });
