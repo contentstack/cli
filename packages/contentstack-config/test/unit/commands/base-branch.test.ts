@@ -1,4 +1,4 @@
-import { expect, should } from 'chai';
+import { expect } from 'chai';
 import { stub } from 'sinon';
 import { configHandler } from '@contentstack/cli-utilities';
 import BranchGetCommand from '../../../src/commands/config/get/base-branch';
@@ -6,6 +6,8 @@ import BranchSetCommand from '../../../src/commands/config/set/base-branch';
 import { cliux } from '@contentstack/cli-utilities';
 import { setConfigMockData } from '../mock/index';
 import { interactive } from '../../../src/utils/index';
+import { askBaseBranch, askConfirmation, askStackAPIKey } from '../../../src/utils/interactive';
+import * as sinon from 'sinon';
 
 const config = configHandler;
 describe('base-branch command', function () {
@@ -52,5 +54,38 @@ describe('base-branch command', function () {
     await BranchGetCommand.run([]);
     expect(branchStub.calledOnce).to.be.true;
     branchStub.restore();
+  });
+});
+
+describe('Base Branch Handler', function () {
+  let inquireStub;
+  beforeEach(function () {
+    inquireStub = sinon.stub(cliux, 'inquire');
+  });
+  afterEach(function () {
+    inquireStub.restore();
+  });
+
+  it('askStackAPIKey should return API key', async function () {
+    inquireStub.returns(Promise.resolve('dummy-api-key'));
+    const result = await askStackAPIKey();
+    expect(result).to.equal('dummy-api-key');
+  });
+
+  it('askBaseBranch should return base branch', async function () {
+    inquireStub.returns(Promise.resolve('main'));
+    const result = await askBaseBranch();
+    expect(result).to.equal('main');
+  });
+  it('should return true when confirmed', async function () {
+    inquireStub.returns(Promise.resolve(true));
+    const result = await askConfirmation();
+    expect(result).to.be.true;
+  });
+
+  it('should return false when not confirmed', async function () {
+    inquireStub.returns(Promise.resolve(false));
+    const result = await askConfirmation();
+    expect(result).to.be.false;
   });
 });

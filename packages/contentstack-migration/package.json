@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-migration",
-  "version": "1.6.3",
+  "version": "1.6.4",
   "author": "@contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
@@ -14,10 +14,10 @@
     "dot-object": "^2.1.5",
     "dotenv": "^16.4.5",
     "listr": "^0.14.3",
-    "winston": "^3.15.0"
+    "winston": "^3.17.0"
   },
   "devDependencies": {
-    "@oclif/test": "^2.5.6",
+    "@oclif/test": "^4.1.0",
     "chai": "^4.5.0",
     "eslint": "^8.57.1",
     "globby": "^10.0.2",

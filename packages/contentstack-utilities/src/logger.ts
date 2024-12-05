@@ -32,7 +32,7 @@ export class LoggerService {
             console.log('warning: failed to log the result');
           }
           // parse message
-          info.message = messageHandler.parse(info.message);
+          info.message = messageHandler.parse(info.message as string);
           let message = `${LoggerService.dateFormat()} : ${name}: ${info.level} : ${info.message}`;
           message = info.obj ? message + `:${stringifiedParam}` : message;
           message = this.data ? message + `:${JSON.stringify(this.data)}` : message;
