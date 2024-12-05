@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-cm-bulk-publish",
   "description": "Contentstack CLI plugin for bulk publish actions",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
@@ -13,16 +13,16 @@
     "inquirer": "8.2.6",
     "lodash": "^4.17.21",
     "mkdirp": "^1.0.4",
-    "nock": "^13.5.5",
-    "winston": "^3.15.0"
+    "nock": "^13.5.6",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
-    "@oclif/test": "^2.5.6",
+    "@oclif/test": "^4.1.0",
     "chai": "^4.5.0",
     "eslint": "^8.57.1",
     "eslint-config-oclif": "^4.0.0",
     "globby": "^10.0.2",
-    "mocha": "^10.7.3",
+    "mocha": "^10.8.2",
     "nyc": "^15.1.0",
     "oclif": "^3.17.2",
     "tslib": "^1.14.1"
