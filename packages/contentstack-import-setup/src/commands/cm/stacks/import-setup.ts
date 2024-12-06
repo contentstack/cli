@@ -8,10 +8,11 @@ import {
   FlagInput,
   ContentstackClient,
   pathValidator,
+  formatError,
 } from '@contentstack/cli-utilities';
 
 import { ImportConfig } from '../../../types';
-import { setupImportConfig, formatError, log } from '../../../utils';
+import { setupImportConfig, log } from '../../../utils';
 import { ImportSetup } from '../../../import';
 
 export default class ImportSetupCommand extends Command {

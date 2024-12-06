@@ -55,7 +55,7 @@ export default class marketplaceAppImportSetup {
 
         log(this.config, `Generated required setup files for marketplaceApp`, 'success');
       } else {
-        log(this.config, 'No marketplaceApps found in the content folder!', 'error');
+        log(this.config, 'No marketplaceApps found in the content folder!', 'info');
       }
     } catch (error) {
       log(this.config, `Error generating marketplaceApp mapper: ${formatError(error)}`, 'error');
