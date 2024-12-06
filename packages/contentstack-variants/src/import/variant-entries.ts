@@ -195,11 +195,13 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     variantEntries: VariantEntryStruct[],
     entriesForVariant: EntryDataForVariantEntries,
   ) {
+    console.log('🚀 ~ variantEntries:', variantEntries);
     let batchNo = 0;
     const variantEntryConfig = this.config.modules.variantEntry;
     const { content_type, locale, entry_uid } = entriesForVariant;
     const entryUid = this.entriesUidMapper[entry_uid];
     const batches = chunk(variantEntries, variantEntryConfig.apiConcurrency || 5);
+    console.log('🚀 ~ batches:', batches);
 
     if (isEmpty(batches)) return;
 
