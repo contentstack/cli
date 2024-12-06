@@ -141,8 +141,12 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         const jobRes = await this.validateVariantGroupAndVariantsCreated();
         fsUtil.writeFile(this.cmsVariantPath, this.cmsVariants);
         fsUtil.writeFile(this.cmsVariantGroupPath, this.cmsVariantGroups);
-        if (jobRes)
+        if (jobRes) {
           this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Variant & Variant groups' }), 'info');
+        } else {
+          console.log('🚀 ~ Experiences ~ import ~ jobRes:', jobRes);
+          this.personalizeConfig.importData = false;
+        }
 
         if (this.personalizeConfig.importData) {
           this.log(this.config, this.messages.UPDATING_CT_IN_EXP, 'info');
