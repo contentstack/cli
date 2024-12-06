@@ -314,21 +314,15 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     try {
       const experienceVariantIds: any = fsUtil.readFile(this.experienceVariantsIdsPath, true) || [];
       const variantUIDMapper: Record<string, string> = {};
-      let isLatestVariantIdValid = false;
       for (let experienceVariantId of experienceVariantIds) {
         const [experienceId, variantShortId, oldVariantId] = experienceVariantId.split('-');
         const latestVariantId = this.cmsVariants[this.experiencesUidMapper[experienceId]]?.[variantShortId];
         if (latestVariantId) {
           variantUIDMapper[oldVariantId] = latestVariantId;
-          isLatestVariantIdValid = true;
-        } else {
-          isLatestVariantIdValid = false;
-          this.log(this.config, `Variant ID ${experienceId} not found`, 'info');
         }
       }
-      if (isLatestVariantIdValid) {
-        fsUtil.writeFile(this.variantUidMapperFilePath, variantUIDMapper);
-      }
+
+      fsUtil.writeFile(this.variantUidMapperFilePath, variantUIDMapper);
     } catch (error) {
       throw error;
     }
