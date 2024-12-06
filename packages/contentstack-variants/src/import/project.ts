@@ -46,7 +46,6 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
       await this.init();
       for (const project of projects) {
         const createProject = async (newName: void | string): Promise<ProjectStruct> => {
-          console.log('🚀 ~ Project ~ createProject ~ project.name:', project.name);
           return await this.createProject({
             name: newName || project.name,
             description: project.description,

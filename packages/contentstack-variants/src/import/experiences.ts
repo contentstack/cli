@@ -144,7 +144,6 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         if (jobRes) {
           this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Variant & Variant groups' }), 'info');
         } else {
-          console.log('🚀 ~ Experiences ~ import ~ jobRes:', jobRes);
           this.personalizeConfig.importData = false;
         }
 
@@ -239,7 +238,6 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     try {
       const promises = this.pendingVariantAndVariantGrpForExperience.map(async (expUid) => {
         const expRes = await this.getExperience(expUid);
-        console.log('🚀 ~ Experiences ~ promises ~ expRes:', expRes);
         if (expRes?._cms) {
           this.cmsVariants[expUid] = expRes._cms?.variants ?? {};
           this.cmsVariantGroups[expUid] = expRes._cms?.variantGroup ?? {};
@@ -308,9 +306,10 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
       const experienceVariantIds: any = fsUtil.readFile(this.experienceVariantsIdsPath, true) || [];
       const variantUIDMapper: Record<string, string> = {};
       for (let experienceVariantId of experienceVariantIds) {
-        console.log('🚀 ~ Experiences ~ createVariantIdMapper ~ experienceVariantId:', experienceVariantId);
         const [experienceId, variantShortId, oldVariantId] = experienceVariantId.split('-');
         const latestVariantId = this.cmsVariants[this.experiencesUidMapper[experienceId]]?.[variantShortId];
+        console.log('🚀 ~ Experiences ~ createVariantIdMapper ~ this.experiencesUidMapper:', this.experiencesUidMapper);
+        console.log('🚀 ~ Experiences ~ createVariantIdMapper ~ this.cmsVariants:', this.cmsVariants);
         console.log('🚀 ~ Experiences ~ createVariantIdMapper ~ latestVariantId:', latestVariantId);
         if (latestVariantId) {
           variantUIDMapper[oldVariantId] = latestVariantId;
