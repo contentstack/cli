@@ -47,7 +47,7 @@ export default class TaxonomiesImportSetup {
         for (const taxonomy of Object.values(taxonomies) as any) {
           let targetTaxonomy: any = await this.getTaxonomies(taxonomy);
           if (!targetTaxonomy) {
-            log(this.config, `Taxonomies with uid '${taxonomy.uid}' not found in the stack!`, 'error');
+            log(this.config, `Taxonomies with uid '${taxonomy.uid}' not found in the stack!`, 'info');
             continue;
           }
           targetTaxonomy = this.sanitizeTaxonomyAttribs(targetTaxonomy);
