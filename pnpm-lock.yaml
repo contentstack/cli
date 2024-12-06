@@ -19,6 +19,7 @@ importers:
       '@contentstack/cli-cm-export': ~1.14.1
       '@contentstack/cli-cm-export-to-csv': ~1.7.3
       '@contentstack/cli-cm-import': ~1.19.3
+      '@contentstack/cli-cm-import-setup': 1.0.0-beta.1
       '@contentstack/cli-cm-migrate-rte': ~1.4.20
       '@contentstack/cli-cm-seed': ~1.10.0
       '@contentstack/cli-command': ~1.3.2
@@ -76,6 +77,7 @@ importers:
       '@contentstack/cli-cm-export': link:../contentstack-export
       '@contentstack/cli-cm-export-to-csv': link:../contentstack-export-to-csv
       '@contentstack/cli-cm-import': link:../contentstack-import
+      '@contentstack/cli-cm-import-setup': link:../contentstack-import-setup
       '@contentstack/cli-cm-migrate-rte': link:../contentstack-migrate-rte
       '@contentstack/cli-cm-seed': link:../contentstack-seed
       '@contentstack/cli-command': link:../contentstack-command
@@ -823,6 +825,91 @@ importers:
       oclif: 3.17.2_vk2nahlbg3l2zm6o274jd7fsaa
       rimraf: 2.7.1
       sinon: 19.0.2
+      tmp: 0.2.3
+      ts-node: 10.9.2_ogreqof3k35xezedraj6pnd45y
+      typescript: 4.9.5
+
+  packages/contentstack-import-setup:
+    specifiers:
+      '@contentstack/cli-command': ~1.3.2
+      '@contentstack/cli-utilities': ~1.8.0
+      '@oclif/core': ^3.26.5
+      '@oclif/test': ^2.5.6
+      '@types/big-json': ^3.2.0
+      '@types/bluebird': ^3.5.38
+      '@types/chai': ^4.2.18
+      '@types/fs-extra': ^11.0.1
+      '@types/mkdirp': ^1.0.2
+      '@types/mocha': ^8.2.2
+      '@types/node': ^14.14.32
+      '@types/sinon': ^10.0.2
+      '@types/tar': ^6.1.3
+      '@types/uuid': ^9.0.7
+      '@typescript-eslint/eslint-plugin': ^5.48.2
+      big-json: ^3.2.0
+      bluebird: ^3.7.2
+      chai: ^4.2.0
+      chalk: ^4.1.2
+      debug: ^4.1.0
+      eslint: ^8.18.0
+      eslint-config-oclif: ^4.0.0
+      fs-extra: ^11.1.1
+      globby: ^10.0.2
+      lodash: ^4.17.20
+      marked: ^4.0.17
+      merge: ^2.1.1
+      mkdirp: ^1.0.4
+      mocha: ^10.0.0
+      nyc: ^15.1.0
+      oclif: ^3.8.1
+      promise-limit: ^2.7.0
+      rimraf: ^2.7.1
+      sinon: ^11.1.1
+      tmp: ^0.2.2
+      ts-node: ^10.9.1
+      tslib: ^2.4.1
+      typescript: ^4.9.3
+      uuid: ^9.0.1
+      winston: ^3.7.2
+    dependencies:
+      '@contentstack/cli-command': link:../contentstack-command
+      '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@oclif/core': 3.27.0
+      big-json: 3.2.0
+      bluebird: 3.7.2
+      chalk: 4.1.2
+      debug: 4.3.7
+      fs-extra: 11.2.0
+      lodash: 4.17.21
+      marked: 4.3.0
+      merge: 2.1.1
+      mkdirp: 1.0.4
+      promise-limit: 2.7.0
+      tslib: 2.8.1
+      uuid: 9.0.1
+      winston: 3.17.0
+    devDependencies:
+      '@oclif/test': 2.5.6_ogreqof3k35xezedraj6pnd45y
+      '@types/big-json': 3.2.5
+      '@types/bluebird': 3.5.42
+      '@types/chai': 4.3.20
+      '@types/fs-extra': 11.0.4
+      '@types/mkdirp': 1.0.2
+      '@types/mocha': 8.2.3
+      '@types/node': 14.18.63
+      '@types/sinon': 10.0.20
+      '@types/tar': 6.1.13
+      '@types/uuid': 9.0.8
+      '@typescript-eslint/eslint-plugin': 5.62.0_avq3eyf5kaj6ssrwo7fvkrwnji
+      chai: 4.5.0
+      eslint: 8.57.1
+      eslint-config-oclif: 4.0.0_eslint@8.57.1
+      globby: 10.0.2
+      mocha: 10.7.3
+      nyc: 15.1.0
+      oclif: 3.17.2_vk2nahlbg3l2zm6o274jd7fsaa
+      rimraf: 2.7.1
+      sinon: 11.1.2
       tmp: 0.2.3
       ts-node: 10.9.2_ogreqof3k35xezedraj6pnd45y
       typescript: 4.9.5
@@ -3006,6 +3093,20 @@ packages:
       - typescript
     dev: true
 
+  /@oclif/test/2.5.6_ogreqof3k35xezedraj6pnd45y:
+    resolution: {integrity: sha512-AcusFApdU6/akXaofhBDrY4IM9uYzlOD9bYCCM0NwUXOv1m6320hSp2DT/wkj9H1gsvKbJXZHqgtXsNGZTWLFg==}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      '@oclif/core': 2.16.0_ogreqof3k35xezedraj6pnd45y
+      fancy-test: 2.0.42
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+      - supports-color
+      - typescript
+    dev: true
+
   /@oclif/test/4.1.2:
     resolution: {integrity: sha512-N8eibgRnH/5TTExC/RxjpLuVbyAy0bGXKHdJxD75tLxH01Ygds90gnSDtkNm14z6kPH90ac+A+LwY1IFZmg1bg==}
     engines: {node: '>=18.0.0'}
@@ -3207,6 +3308,12 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
+  /@sinonjs/commons/1.8.6:
+    resolution: {integrity: sha512-Ky+XkAkqPZSm3NLBeUng77EBQl3cmeJhITaGHdYH8kjVB+aun3S4XBRti2zt17mtt0mIUDiNxYeoJm6drVvBJQ==}
+    dependencies:
+      type-detect: 4.0.8
+    dev: true
+
   /@sinonjs/commons/3.0.1:
     resolution: {integrity: sha512-K3mCHKQ9sVh8o1C9cxkwxaOmXoAMlDxC1mYyHrjqOWEcBjYr76t96zL2zlj5dUGZ3HSw240X1qgH3Mjf1yJWpQ==}
     dependencies:
@@ -3218,10 +3325,30 @@ packages:
       '@sinonjs/commons': 3.0.1
     dev: true
 
+  /@sinonjs/fake-timers/11.3.1:
+    resolution: {integrity: sha512-EVJO7nW5M/F5Tur0Rf2z/QoMo+1Ia963RiMtapiQrEWvY0iBUvADo8Beegwjpnle5BHkyHuoxSTW3jF43H1XRA==}
+    dependencies:
+      '@sinonjs/commons': 3.0.1
+    dev: true
+
   /@sinonjs/fake-timers/13.0.5:
     resolution: {integrity: sha512-36/hTbH2uaWuGVERyC6da9YwGWnzUZXuPro/F2LfsdOsLnCojz/iSH8MxUt/FD2S5XBSVPhmArFUXcpCQ2Hkiw==}
     dependencies:
       '@sinonjs/commons': 3.0.1
+
+  /@sinonjs/fake-timers/7.1.2:
+    resolution: {integrity: sha512-iQADsW4LBMISqZ6Ci1dupJL9pprqwcVFTcOsEmQOEhW+KLCVn/Y4Jrvg2k19fIHCp+iFprriYPTdRcQR8NbUPg==}
+    dependencies:
+      '@sinonjs/commons': 1.8.6
+    dev: true
+
+  /@sinonjs/samsam/6.1.3:
+    resolution: {integrity: sha512-nhOb2dWPeb1sd3IQXL/dVPnKHDOAFfvichtBf4xV00/rU1QbPCQqKMbvIheIjqwVjh7qIgf2AHTHi391yMOMpQ==}
+    dependencies:
+      '@sinonjs/commons': 1.8.6
+      lodash.get: 4.4.2
+      type-detect: 4.1.0
+    dev: true
 
   /@sinonjs/samsam/8.0.2:
     resolution: {integrity: sha512-v46t/fwnhejRSFTGqbpn9u+LQ9xJDse10gNnPgAcxgdoCDMXj/G2asWAC/8Qs+BAZDicX+MNZouXT1A7c83kVw==}
@@ -10845,6 +10972,16 @@ packages:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
     dev: true
 
+  /nise/5.1.9:
+    resolution: {integrity: sha512-qOnoujW4SV6e40dYxJOb3uvuoPHtmLzIk4TFo+j0jPJoC+5Z9xja5qH5JZobEPsa8+YYphMrOSwnrshEhG2qww==}
+    dependencies:
+      '@sinonjs/commons': 3.0.1
+      '@sinonjs/fake-timers': 11.3.1
+      '@sinonjs/text-encoding': 0.7.3
+      just-extend: 6.2.0
+      path-to-regexp: 6.3.0
+    dev: true
+
   /nise/6.1.1:
     resolution: {integrity: sha512-aMSAzLVY7LyeM60gvBS423nBmIPP+Wy7St7hsb+8/fc1HmeoHJfLO8CKse4u3BtOZvQLJghYPI2i/1WZrEj5/g==}
     dependencies:
@@ -12075,6 +12212,10 @@ packages:
     resolution: {integrity: sha512-7lf7qcQidTku0Gu3YDPc8DJ1q7OOucfa/BSsIwjuh56VU7katFvuM8hULfkwB3Fns/rsVF7PwPKVw1sl5KQS9w==}
     dev: false
 
+  /path-to-regexp/6.3.0:
+    resolution: {integrity: sha512-Yhpw4T9C6hPpgPeA28us07OJeqZ5EzQTkbfwuhsUg0c237RomFoETJgmp2sa3F/41gfLE6G5cqcYwznmeEeOlQ==}
+    dev: true
+
   /path-to-regexp/8.2.0:
     resolution: {integrity: sha512-TdrF7fW9Rphjq4RjrW0Kp2AW0Ahwu9sRGTkS6bvDi0SCwZlEZYmcfDbEsTz8RVk0EHIS/Vd1bv3JhG+1xZuAyQ==}
     engines: {node: '>=16'}
@@ -13049,6 +13190,18 @@ packages:
     resolution: {integrity: sha512-JA//kQgZtbuY83m+xT+tXJkmJncGMTFT+C+g2h2R9uxkYIrE2yy9sgmcLhCnw57/WSD+Eh3J97FPEDFnbXnDUg==}
     dependencies:
       is-arrayish: 0.3.2
+
+  /sinon/11.1.2:
+    resolution: {integrity: sha512-59237HChms4kg7/sXhiRcUzdSkKuydDeTiamT/jesUVHshBgL8XAmhgFo0GfK6RruMDM/iRSij1EybmMog9cJw==}
+    deprecated: 16.1.1
+    dependencies:
+      '@sinonjs/commons': 1.8.6
+      '@sinonjs/fake-timers': 7.1.2
+      '@sinonjs/samsam': 6.1.3
+      diff: 5.2.0
+      nise: 5.1.9
+      supports-color: 7.2.0
+    dev: true
 
   /sinon/19.0.2:
     resolution: {integrity: sha512-euuToqM+PjO4UgXeLETsfQiuoyPXlqFezr6YZDFwHR3t4qaX0fZUe1MfPMznTL5f8BWrVS89KduLdMUsxFCO6g==}
