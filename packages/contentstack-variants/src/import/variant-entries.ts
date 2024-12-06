@@ -229,6 +229,8 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         };
         // NOTE Find new variant Id by old Id
         const variantId = this.variantIdList[variantEntry._variant._uid] as string;
+        console.log('🚀 ~ this.variantIdList:', this.variantIdList);
+        console.log('🚀 ~ variantId:', variantId);
         // NOTE Replace all the relation data UID's
         variantEntry = this.handleVariantEntryRelationalData(contentType, variantEntry);
         const changeSet = this.serializeChangeSet(variantEntry);
