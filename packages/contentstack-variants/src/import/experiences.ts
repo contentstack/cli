@@ -252,9 +252,18 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         if (retryCount !== this.maxValidateRetry) {
           await this.delay(this.expCheckIntervalDuration);
           // Filter out the processed elements
+          console.log(
+            '🚀 ~ Experiences ~ validateVariantGroupAndVariantsCreated ~ this.pendingVariantAndVariantGrpForExperience:',
+            this.pendingVariantAndVariantGrpForExperience,
+          );
           this.pendingVariantAndVariantGrpForExperience = this.pendingVariantAndVariantGrpForExperience.filter(
             (uid) => !this.cmsVariants[uid],
           );
+          console.log(
+            '🚀 ~ Experiences ~ validateVariantGroupAndVariantsCreated ~ this.pendingVariantAndVariantGrpForExperience: AFTER FILTER',
+            this.pendingVariantAndVariantGrpForExperience,
+          );
+
           return this.validateVariantGroupAndVariantsCreated(retryCount);
         } else {
           this.log(this.config, this.messages.PERSONALIZE_JOB_FAILURE, 'error');
@@ -305,22 +314,21 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     try {
       const experienceVariantIds: any = fsUtil.readFile(this.experienceVariantsIdsPath, true) || [];
       const variantUIDMapper: Record<string, string> = {};
+      let isLatestVariantIdValid = false;
       for (let experienceVariantId of experienceVariantIds) {
         const [experienceId, variantShortId, oldVariantId] = experienceVariantId.split('-');
         const latestVariantId = this.cmsVariants[this.experiencesUidMapper[experienceId]]?.[variantShortId];
-        console.log('🚀 ~ Experiences ~ createVariantIdMapper ~ this.experiencesUidMapper:', this.experiencesUidMapper);
-        console.log('🚀 ~ Experiences ~ createVariantIdMapper ~ this.cmsVariants:', this.cmsVariants);
-        console.log('🚀 ~ Experiences ~ createVariantIdMapper ~ latestVariantId:', latestVariantId);
         if (latestVariantId) {
           variantUIDMapper[oldVariantId] = latestVariantId;
-          console.log(
-            '🚀 ~ Experiences ~ createVariantIdMapper ~  variantUIDMapper[oldVariantId]:',
-            variantUIDMapper[oldVariantId],
-          );
+          isLatestVariantIdValid = true;
+        } else {
+          isLatestVariantIdValid = false;
+          this.log(this.config, `Variant ID ${experienceId} not found`, 'info');
         }
       }
-
-      fsUtil.writeFile(this.variantUidMapperFilePath, variantUIDMapper);
+      if (isLatestVariantIdValid) {
+        fsUtil.writeFile(this.variantUidMapperFilePath, variantUIDMapper);
+      }
     } catch (error) {
       throw error;
     }
