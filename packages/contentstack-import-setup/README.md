@@ -5,9 +5,8 @@ It is Contentstack’s CLI plugin to import content in the stack. To learn how t
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)it -m
 
 <!-- toc -->
-
-- [Usage](#usage)
-- [Commands](#commands)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 For switching to EU region update the hosts at config/default.js
@@ -43,7 +42,6 @@ For switching to AZURE-EU region update the hosts at config/default.js
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @contentstack/cli-cm-import-setup
 $ csdx COMMAND
@@ -55,15 +53,13 @@ USAGE
   $ csdx COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`](#csdx-cmstacksimport--k-value--d-value--a-value---modules-valuevalue)
-- [`csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`](#csdx-cmstacksimport--k-value--d-value--a-value---modules-valuevalue-1)
+* [`csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`](#csdx-cmstacksimport-setup--k-value--d-value--a-value---modules-valuevalue)
+* [`csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`](#csdx-cmstacksimport-setup--k-value--d-value--a-value---modules-valuevalue-1)
 
 ## `csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`
 
@@ -84,7 +80,7 @@ DESCRIPTION
   Import content from a stack
 
 ALIASES
-  $ csdx cm:import
+  $ csdx cm:import-setup
 
 EXAMPLES
   $ csdx cm:stacks:import-setup --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>
@@ -109,12 +105,11 @@ DESCRIPTION
   Import content from a stack
 
 ALIASES
-  $ csdx cm:import
+  $ csdx cm:import-setup
 
 EXAMPLES
   $ csdx cm:stacks:import-setup --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>
 ```
 
 _See code: [src/commands/cm/stacks/import-setup.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-import-setup/src/commands/cm/stacks/import-setup.ts)_
-
 <!-- commandsstop -->
