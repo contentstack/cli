@@ -1,7 +1,7 @@
 import Module from 'module';
 import { ImportConfig, Modules } from '../types';
-import { backupHandler, formatError, log } from '../utils';
-import { ContentstackClient } from '@contentstack/cli-utilities';
+import { backupHandler, log } from '../utils';
+import { ContentstackClient, formatError } from '@contentstack/cli-utilities';
 
 export default class ImportSetup {
   protected config: ImportConfig;
