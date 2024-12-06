@@ -72,9 +72,9 @@ export default class AssetImportSetup extends BaseImportSetup {
         this.duplicateAssets[uid] = items.map((asset: any) => {
           return { uid: asset.uid, title: asset.title, url: asset.url };
         });
-        log(this.config, `Multiple assets found with title '${title}'`, 'error');
+        log(this.config, `Multiple assets found with title '${title}'`, 'info');
       } else {
-        log(this.config, `Asset with title '${title}' not found in the stack!`, 'error');
+        log(this.config, `Asset with title '${title}' not found in the stack!`, 'info');
       }
     };
     const onReject = ({ error, apiData: { title } = undefined }: any) => {
@@ -116,6 +116,7 @@ export default class AssetImportSetup extends BaseImportSetup {
     }
     if (!isEmpty(this.duplicateAssets)) {
       fsUtil.writeFile(this.duplicateAssetPath, this.duplicateAssets);
+      log(this.config, `Duplicate asset files store here ${this.duplicateAssetPath}`, 'info');
     }
   }
 }

@@ -67,6 +67,7 @@ USAGE
 * [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets)
 * [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
 * [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
+* [`csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`](#csdx-cmstacksimport-setup--k-value--d-value--a-value---modules-valuevalue)
 * [`csdx cm:migrate-rte`](#csdx-cmmigrate-rte)
 * [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple)
 * [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value---locale-value)
@@ -76,7 +77,7 @@ USAGE
 * [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent-1)
 * [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets-1)
 * [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent-1)
-* [`csdx cm:stacks:import [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`](#csdx-cmstacksimport--k-value--d-value--a-value---modules-valuevalue)
+* [`csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`](#csdx-cmstacksimport-setup--k-value--d-value--a-value---modules-valuevalue-1)
 * [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple-1)
 * [`csdx cm:stacks:publish`](#csdx-cmstackspublish)
 * [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
@@ -2370,6 +2371,31 @@ EXAMPLES
   $ csdx cm:stacks:import --branch <branch name>  --yes --skip-audit
 ```
 
+## `csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`
+
+Import content from a stack
+
+```
+USAGE
+  $ csdx cm:import-setup cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]
+
+FLAGS
+  -a, --alias=<value>          alias of the management token
+  -d, --data-dir=<value>       path and location where data is stored
+  -k, --stack-api-key=<value>  API key of the target stack
+      --modules=<option>       [optional] specific module name
+                               <options: content-types|entries|both>
+
+DESCRIPTION
+  Import content from a stack
+
+ALIASES
+  $ csdx cm:import-setup
+
+EXAMPLES
+  $ csdx cm:stacks:import-setup --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>
+```
+
 ## `csdx cm:migrate-rte`
 
 Migration script to migrate content from HTML RTE to JSON RTE
@@ -2827,13 +2853,13 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/src/commands/cm/stacks/import.ts)_
 
-## `csdx cm:stacks:import [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`
+## `csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`
 
 Import content from a stack
 
 ```
 USAGE
-  $ csdx cm:stacks:import-setup cm:stacks:import [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]
+  $ csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]
 
 FLAGS
   -a, --alias=<value>          alias of the management token
@@ -2846,7 +2872,7 @@ DESCRIPTION
   Import content from a stack
 
 ALIASES
-  $ csdx cm:import
+  $ csdx cm:import-setup
 
 EXAMPLES
   $ csdx cm:stacks:import-setup --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>
@@ -3840,7 +3866,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.17/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.19/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:add PLUGIN`
 
@@ -3914,7 +3940,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.17/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.19/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN`
 
@@ -3963,7 +3989,7 @@ EXAMPLES
     $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.17/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.19/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PATH`
 
@@ -3994,7 +4020,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.17/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.19/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:remove [PLUGIN]`
 
@@ -4035,7 +4061,7 @@ FLAGS
   --reinstall  Reinstall all plugins after uninstalling.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.17/src/commands/plugins/reset.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.19/src/commands/plugins/reset.ts)_
 
 ## `csdx plugins:uninstall [PLUGIN]`
 
@@ -4063,7 +4089,7 @@ EXAMPLES
   $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.17/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.19/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:unlink [PLUGIN]`
 
@@ -4107,7 +4133,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.17/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.19/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
