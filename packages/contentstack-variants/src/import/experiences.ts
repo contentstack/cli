@@ -239,9 +239,6 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
       const promises = this.pendingVariantAndVariantGrpForExperience.map(async (expUid) => {
         const expRes = await this.getExperience(expUid);
         if (expRes?._cms && expRes?._cms?.variantGroup && Object.keys(expRes._cms.variants).length > 0) {
-          console.log('🚀 ~ Experiences ~ promises ~ expRes:Variant', expRes._cms.variants);
-          console.log('🚀 ~ Experiences ~ promises ~ expRes:Group', expRes._cms.variantGroup);
-
           this.cmsVariants[expUid] = expRes._cms?.variants ?? {};
           this.cmsVariantGroups[expUid] = expRes._cms?.variantGroup ?? {};
           return expUid; // Return the expUid for filtering later
@@ -311,7 +308,6 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
       for (let experienceVariantId of experienceVariantIds) {
         const [experienceId, variantShortId, oldVariantId] = experienceVariantId.split('-');
         const latestVariantId = this.cmsVariants[this.experiencesUidMapper[experienceId]]?.[variantShortId];
-        console.log('🚀 ~ Experiences ~ createVariantIdMapper ~ this.experiencesUidMapper:', this.experiencesUidMapper);
         if (latestVariantId) {
           variantUIDMapper[oldVariantId] = latestVariantId;
         }
