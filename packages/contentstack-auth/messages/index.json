@@ -23,7 +23,7 @@
   "CLI_AUTH_WHOAMI_DESCRIPTION": "Display current users email address",
   "CLI_AUTH_TOKENS_ADD_ASK_TOKEN_ALIAS": "Provide alias to store token",
   "CLI_AUTH_TOKENS_ADD_CONFIRM_ALIAS_REPLACE": "Alias is already exists, do you want to replace?",
-  "CLI_AUTH_TOKENS_ADD_ENTER_API_KEY": "Enter the api key",
+  "CLI_AUTH_TOKENS_ADD_ENTER_API_KEY": "Enter the API key",
   "CLI_AUTH_TOKENS_ADD_ENTER_TOKEN": "Enter the token",
   "CLI_AUTH_TOKENS_ADD_ENTER_ENVIRONMENT": "Enter the environment name",
   "CLI_AUTH_TOKENS_ADD_REPLACE_SUCCESS": "Successfully replaced the token",
