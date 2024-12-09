@@ -195,13 +195,11 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     variantEntries: VariantEntryStruct[],
     entriesForVariant: EntryDataForVariantEntries,
   ) {
-    console.log('🚀 ~ variantEntries:', variantEntries);
     let batchNo = 0;
     const variantEntryConfig = this.config.modules.variantEntry;
     const { content_type, locale, entry_uid } = entriesForVariant;
     const entryUid = this.entriesUidMapper[entry_uid];
     const batches = chunk(variantEntries, variantEntryConfig.apiConcurrency || 5);
-    console.log('🚀 ~ batches:', batches);
 
     if (isEmpty(batches)) return;
 
@@ -231,8 +229,6 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         };
         // NOTE Find new variant Id by old Id
         const variantId = this.variantIdList[variantEntry._variant._uid] as string;
-        console.log('🚀 ~ this.variantIdList:', this.variantIdList);
-        console.log('🚀 ~ variantId:', variantId);
         // NOTE Replace all the relation data UID's
         variantEntry = this.handleVariantEntryRelationalData(contentType, variantEntry);
         const changeSet = this.serializeChangeSet(variantEntry);
