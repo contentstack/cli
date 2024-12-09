@@ -470,7 +470,7 @@ FLAGS
                                selected)
   -a, --alias=<value>          Alias(name) for the management token
   -c, --config=<value>         Path to the config file
-  -k, --stack-api-key=<value>  Stack api key to be used
+  -k, --stack-api-key=<value>  Stack API key to be used
   -y, --yes                    Agree to process the command with the current configuration
   --api-version=<value>        API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>       [default: true] Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by
@@ -856,7 +856,7 @@ FLAGS
   -a, --alias=<value>          Alias(name) for the management token
   -c, --config=<value>         Path to the config file
   -e, --environment=<value>    Source Environment
-  -k, --stack-api-key=<value>  Stack api key to be used
+  -k, --stack-api-key=<value>  Stack API key to be used
   -l, --locale=<value>         Locale filter
   -y, --yes                    Agree to process the command with the current configuration
   --api-version=<value>        API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
@@ -1705,7 +1705,7 @@ FLAGS
   -a, --alias=<value>          Alias(name) for the management token
   -c, --config=<value>         Path to the config file
   -e, --environment=<value>    Source Environment
-  -k, --stack-api-key=<value>  Stack api key to be used
+  -k, --stack-api-key=<value>  Stack API key to be used
   -l, --locale=<value>         Locale filter
   -y, --yes                    Agree to process the command with the current configuration
   --api-version=<value>        API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
