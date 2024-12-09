@@ -40,7 +40,7 @@ export default class SeedCommand extends Command {
     }),
     'stack-api-key': flags.string({
       char: 'k',
-      description: 'Provide stack api key to seed content to',
+      description: 'Provide stack API key to seed content to',
       multiple: false,
       required: false,
       exclusive: ['org'],
