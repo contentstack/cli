@@ -45,7 +45,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     const conf: APIConfig = {
       config,
       baseURL: config.modules.personalize.baseURL[config.region.name],
-      headers: { 'X-Project-Uid': config.modules.personalize.project_id},
+      headers: { 'X-Project-Uid': config.modules.personalize.project_id },
       cmaConfig: {
         baseURL: config.region.cma + `/v3`,
         headers: { api_key: config.apiKey },
@@ -141,8 +141,11 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         const jobRes = await this.validateVariantGroupAndVariantsCreated();
         fsUtil.writeFile(this.cmsVariantPath, this.cmsVariants);
         fsUtil.writeFile(this.cmsVariantGroupPath, this.cmsVariantGroups);
-        if (jobRes)
+        if (jobRes) {
           this.log(this.config, this.$t(this.messages.CREATE_SUCCESS, { module: 'Variant & Variant groups' }), 'info');
+        } else {
+          this.personalizeConfig.importData = false;
+        }
 
         if (this.personalizeConfig.importData) {
           this.log(this.config, this.messages.UPDATING_CT_IN_EXP, 'info');
@@ -162,7 +165,11 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
    * function import experience versions from a JSON file and creates them in the project.
    */
   async importExperienceVersions(experience: ExperienceStruct, oldExperienceUid: string) {
-    const versionsPath = resolve(sanitizePath(this.experiencesDirPath), 'versions', `${sanitizePath(oldExperienceUid)}.json`);
+    const versionsPath = resolve(
+      sanitizePath(this.experiencesDirPath),
+      'versions',
+      `${sanitizePath(oldExperienceUid)}.json`,
+    );
 
     if (!existsSync(versionsPath)) {
       return;
@@ -231,7 +238,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     try {
       const promises = this.pendingVariantAndVariantGrpForExperience.map(async (expUid) => {
         const expRes = await this.getExperience(expUid);
-        if (expRes?._cms) {
+        if (expRes?._cms && expRes?._cms?.variantGroup && Object.keys(expRes._cms.variants).length > 0) {
           this.cmsVariants[expUid] = expRes._cms?.variants ?? {};
           this.cmsVariantGroups[expUid] = expRes._cms?.variantGroup ?? {};
           return expUid; // Return the expUid for filtering later
