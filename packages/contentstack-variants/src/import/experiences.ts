@@ -115,15 +115,21 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         const experiences = fsUtil.readFile(this.experiencesPath, true) as ExperienceStruct[];
 
         for (const experience of experiences) {
+          console.log('🚀 ~ Experiences ~ import ~ experience:', experience);
           const { uid, ...restExperienceData } = experience;
+          console.log('🚀 ~ Experiences ~ import ~ restExperienceData:', restExperienceData);
+          console.log('🚀 ~ Experiences ~ import ~ uid:', uid);
           //check whether reference audience exists or not that referenced in variations having __type equal to AudienceBasedVariation & targeting
           let experienceReqObj: CreateExperienceInput = lookUpAudiences(restExperienceData, this.audiencesUid);
           //check whether events exists or not that referenced in metrics
           experienceReqObj = lookUpEvents(experienceReqObj, this.eventsUid);
+          console.log('🚀 ~ Experiences ~ import ~ experienceReqObj:', experienceReqObj);
 
           const expRes = (await this.createExperience(experienceReqObj)) as ExperienceStruct;
           //map old experience uid to new experience uid
+          console.log('🚀 ~ Experiences ~ import ~ expRes:', expRes);
           this.experiencesUidMapper[uid] = expRes?.uid ?? '';
+          console.log('🚀 ~ Experiences ~ import ~ this.experiencesUidMapper:', this.experiencesUidMapper);
 
           try {
             // import versions of experience
