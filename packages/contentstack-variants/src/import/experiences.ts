@@ -115,21 +115,15 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         const experiences = fsUtil.readFile(this.experiencesPath, true) as ExperienceStruct[];
 
         for (const experience of experiences) {
-          console.log('🚀 ~ Experiences ~ import ~ experience:', experience);
           const { uid, ...restExperienceData } = experience;
-          console.log('🚀 ~ Experiences ~ import ~ restExperienceData:', restExperienceData);
-          console.log('🚀 ~ Experiences ~ import ~ uid:', uid);
           //check whether reference audience exists or not that referenced in variations having __type equal to AudienceBasedVariation & targeting
           let experienceReqObj: CreateExperienceInput = lookUpAudiences(restExperienceData, this.audiencesUid);
           //check whether events exists or not that referenced in metrics
           experienceReqObj = lookUpEvents(experienceReqObj, this.eventsUid);
-          console.log('🚀 ~ Experiences ~ import ~ experienceReqObj:', experienceReqObj);
 
           const expRes = (await this.createExperience(experienceReqObj)) as ExperienceStruct;
           //map old experience uid to new experience uid
-          console.log('🚀 ~ Experiences ~ import ~ expRes:', expRes);
           this.experiencesUidMapper[uid] = expRes?.uid ?? '';
-          console.log('🚀 ~ Experiences ~ import ~ this.experiencesUidMapper:', this.experiencesUidMapper);
 
           try {
             // import versions of experience
@@ -244,7 +238,10 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     try {
       const promises = this.pendingVariantAndVariantGrpForExperience.map(async (expUid) => {
         const expRes = await this.getExperience(expUid);
-        if (expRes?._cms) {
+        if (expRes?._cms && expRes?._cms?.variantGroup && expRes?._cms?.variants) {
+          console.log('🚀 ~ Experiences ~ promises ~ expRes:', expRes._cms.variants);
+          console.log('🚀 ~ Experiences ~ promises ~ expRes:', expRes._cms.variantGroup);
+
           this.cmsVariants[expUid] = expRes._cms?.variants ?? {};
           this.cmsVariantGroups[expUid] = expRes._cms?.variantGroup ?? {};
           return expUid; // Return the expUid for filtering later
@@ -258,18 +255,9 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         if (retryCount !== this.maxValidateRetry) {
           await this.delay(this.expCheckIntervalDuration);
           // Filter out the processed elements
-          console.log(
-            '🚀 ~ Experiences ~ validateVariantGroupAndVariantsCreated ~ this.pendingVariantAndVariantGrpForExperience:',
-            this.pendingVariantAndVariantGrpForExperience,
-          );
           this.pendingVariantAndVariantGrpForExperience = this.pendingVariantAndVariantGrpForExperience.filter(
             (uid) => !this.cmsVariants[uid],
           );
-          console.log(
-            '🚀 ~ Experiences ~ validateVariantGroupAndVariantsCreated ~ this.pendingVariantAndVariantGrpForExperience: AFTER FILTER',
-            this.pendingVariantAndVariantGrpForExperience,
-          );
-
           return this.validateVariantGroupAndVariantsCreated(retryCount);
         } else {
           this.log(this.config, this.messages.PERSONALIZE_JOB_FAILURE, 'error');
@@ -293,10 +281,6 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         return;
       }
       const experienceCTsMap = fsUtil.readFile(this.experienceCTsPath, true) as Record<string, string[]>;
-      console.log(
-        '🚀 ~ Experiences ~ Object.entries ~ this.experiencesUidMapper: BEFORE MAP',
-        this.experiencesUidMapper,
-      );
       return await Promise.allSettled(
         Object.entries(this.experiencesUidMapper).map(async ([oldExpUid, newExpUid]) => {
           if (experienceCTsMap[oldExpUid]?.length) {
@@ -318,7 +302,6 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
       this.log(this.config, `Error while attaching content type with experience`, 'error');
       this.log(this.config, error, 'error');
     }
-    console.log('🚀 ~ Experiences ~ Object.entries ~ this.experiencesUidMapper: AFTER MAP', this.experiencesUidMapper);
   }
 
   async createVariantIdMapper() {
@@ -328,6 +311,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
       for (let experienceVariantId of experienceVariantIds) {
         const [experienceId, variantShortId, oldVariantId] = experienceVariantId.split('-');
         const latestVariantId = this.cmsVariants[this.experiencesUidMapper[experienceId]]?.[variantShortId];
+        console.log('🚀 ~ Experiences ~ createVariantIdMapper ~ this.experiencesUidMapper:', this.experiencesUidMapper);
         if (latestVariantId) {
           variantUIDMapper[oldVariantId] = latestVariantId;
         }
