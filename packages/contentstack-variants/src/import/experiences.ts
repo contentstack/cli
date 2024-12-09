@@ -238,7 +238,8 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     try {
       const promises = this.pendingVariantAndVariantGrpForExperience.map(async (expUid) => {
         const expRes = await this.getExperience(expUid);
-        if (expRes?._cms && expRes?._cms?.variantGroup && Object.keys(expRes._cms.variants).length > 0) {
+        const variants = expRes?._cms?.variants ?? {};
+        if (expRes?._cms && expRes?._cms?.variantGroup && Object.keys(variants).length > 0) {
           this.cmsVariants[expUid] = expRes._cms?.variants ?? {};
           this.cmsVariantGroups[expUid] = expRes._cms?.variantGroup ?? {};
           return expUid; // Return the expUid for filtering later
