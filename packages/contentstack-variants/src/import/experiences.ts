@@ -293,6 +293,10 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         return;
       }
       const experienceCTsMap = fsUtil.readFile(this.experienceCTsPath, true) as Record<string, string[]>;
+      console.log(
+        '🚀 ~ Experiences ~ Object.entries ~ this.experiencesUidMapper: BEFORE MAP',
+        this.experiencesUidMapper,
+      );
       return await Promise.allSettled(
         Object.entries(this.experiencesUidMapper).map(async ([oldExpUid, newExpUid]) => {
           if (experienceCTsMap[oldExpUid]?.length) {
@@ -314,6 +318,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
       this.log(this.config, `Error while attaching content type with experience`, 'error');
       this.log(this.config, error, 'error');
     }
+    console.log('🚀 ~ Experiences ~ Object.entries ~ this.experiencesUidMapper: AFTER MAP', this.experiencesUidMapper);
   }
 
   async createVariantIdMapper() {
