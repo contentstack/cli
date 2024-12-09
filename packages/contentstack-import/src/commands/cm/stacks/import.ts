@@ -80,7 +80,7 @@ export default class ImportCommand extends Command {
     }),
     branch: flags.string({
       char: 'B',
-      description: 'The name of the branch where you want to import your content. If you don\'t mention the branch name, then by default the content will be imported to the **main** branch.',
+      description: 'The name of the branch where you want to import your content. If you don\'t mention the branch name, then by default the content will be imported to the main branch.',
       parse: printFlagDeprecation(['-B'], ['--branch']),
     }),
     'import-webhook-status': flags.string({
