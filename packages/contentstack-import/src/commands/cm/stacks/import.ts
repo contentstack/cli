@@ -31,7 +31,7 @@ export default class ImportCommand extends Command {
   static flags: FlagInput = {
     config: flags.string({
       char: 'c',
-      description: '[optional] Path of config file.',
+      description: '[optional] The path of the configuration JSON file containing all the options for a single run.',
     }),
     'stack-uid': flags.string({
       char: 's',
@@ -41,7 +41,7 @@ export default class ImportCommand extends Command {
     }),
     'stack-api-key': flags.string({
       char: 'k',
-      description: 'API key of the target stack',
+      description: 'API Key of the target stack',
     }),
     data: flags.string({
       description: 'path and location where data is stored',
@@ -80,11 +80,11 @@ export default class ImportCommand extends Command {
     }),
     branch: flags.string({
       char: 'B',
-      description: 'The name of the branch where you want to import your content. If you don\'t mention the branch name, then by default the content will be imported to the main branch.',
+      description: 'The name of the branch where you want to import your content. If you don\'t mention the branch name, then by default the content will be imported to the **main** branch.',
       parse: printFlagDeprecation(['-B'], ['--branch']),
     }),
     'import-webhook-status': flags.string({
-      description: '[optional] This webhook state keeps the same state of webhooks as the source stack.',
+      description: '[default: disable] (optional) This webhook state keeps the same state of webhooks as the source stack. <options: disable|current>',
       options: ['disable', 'current'],
       required: false,
       default: 'disable',
@@ -95,7 +95,7 @@ export default class ImportCommand extends Command {
       description: '[optional] Force override all Marketplace prompts.',
     }),
     'skip-app-recreation': flags.boolean({
-      description: '[optional] Skip private apps recreation if already exist',
+      description: '(optional) Skips the recreation of private apps if they already exist.',
     }),
     'replace-existing': flags.boolean({
       required: false,
@@ -108,7 +108,7 @@ export default class ImportCommand extends Command {
     }),
     'personalize-project-name': flags.string({
       required: false,
-      description: 'Personalize project name.',
+      description: '(optional) Provide a unique name for the Personalize project.',
     }),
     'skip-audit': flags.boolean({
       description: 'Skips the audit fix that occurs during an import operation.',

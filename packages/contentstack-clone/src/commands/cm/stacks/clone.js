@@ -240,7 +240,7 @@ b) Structure with content (all modules including entries & assets).
     description: 'Destination stack API Key',
   }),
   'import-webhook-status': flags.string({
-    description: '[Optional] The status of the import webhook. <options: disable, current>',
+    description: '[default: disable] (optional) The status of the import webhook. <options: disable|current>',
     options: ['disable', 'current'],
     required: false,
     default: 'disable',
