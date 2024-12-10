@@ -234,13 +234,13 @@ b) Structure with content (all modules including entries & assets).
     `,
   }),
   'source-stack-api-key': flags.string({
-    description: 'Source stack API Key',
+    description: 'Source stack API key',
   }),
   'destination-stack-api-key': flags.string({
-    description: 'Destination stack API Key',
+    description: 'Destination stack API key',
   }),
   'import-webhook-status': flags.string({
-    description: '[Optional] The status of the import webhook. <options: disable, current>',
+    description: '[default: disable] (optional) The status of the import webhook. <options: disable|current>',
     options: ['disable', 'current'],
     required: false,
     default: 'disable',

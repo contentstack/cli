@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-auth/1.3.22 darwin-arm64 node-v22.8.0
+@contentstack/cli-auth/1.3.22 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -49,9 +49,9 @@ USAGE
   $ csdx auth:login [-u <value> | --oauth] [-p <value> | ]
 
 FLAGS
-  -p, --password=<value>  Password of your Contentstack app
+  -p, --password=<value>  Password of your Contentstack app.
   -u, --username=<value>  Email address of your Contentstack account.
-  --oauth                 Enables single sign-on (SSO) in Contentstack CLI
+  --oauth                 Enables single sign-on (SSO) in Contentstack CLI.
 
 DESCRIPTION
   User sessions login
@@ -82,7 +82,7 @@ USAGE
   $ csdx auth:logout [-y]
 
 FLAGS
-  -y, --yes  Force log out by skipping the confirmation
+  -y, --yes  Force log out by skipping the confirmation.
 
 DESCRIPTION
   User session logout
@@ -230,9 +230,9 @@ USAGE
   $ csdx login [-u <value> | --oauth] [-p <value> | ]
 
 FLAGS
-  -p, --password=<value>  Password of your Contentstack app
+  -p, --password=<value>  Password of your Contentstack app.
   -u, --username=<value>  Email address of your Contentstack account.
-  --oauth                 Enables single sign-on (SSO) in Contentstack CLI
+  --oauth                 Enables single sign-on (SSO) in Contentstack CLI.
 
 DESCRIPTION
   User sessions login
@@ -261,7 +261,7 @@ USAGE
   $ csdx logout [-y]
 
 FLAGS
-  -y, --yes  Force log out by skipping the confirmation
+  -y, --yes  Force log out by skipping the confirmation.
 
 DESCRIPTION
   User session logout
