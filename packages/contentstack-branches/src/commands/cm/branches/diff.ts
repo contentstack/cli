@@ -37,7 +37,7 @@ export default class BranchDiffCommand extends Command {
     }),
     'stack-api-key': flags.string({
       char: 'k',
-      description: '[optional] Provide the Stack API key to show the difference between branches.',
+      description: '[optional] Provide the stack API key to show the difference between branches.',
     }),
     format: flags.string({
       default: 'compact-text',

@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-cm-bulk-publish
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-bulk-publish/1.7.0 darwin-arm64 node-v22.8.0
+@contentstack/cli-cm-bulk-publish/1.7.0 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -470,7 +470,7 @@ FLAGS
                                selected)
   -a, --alias=<value>          Alias(name) for the management token
   -c, --config=<value>         Path to the config file
-  -k, --stack-api-key=<value>  Stack api key to be used
+  -k, --stack-api-key=<value>  Stack API key to be used
   -y, --yes                    Agree to process the command with the current configuration
   --api-version=<value>        API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>       [default: true] Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by
@@ -856,7 +856,7 @@ FLAGS
   -a, --alias=<value>          Alias(name) for the management token
   -c, --config=<value>         Path to the config file
   -e, --environment=<value>    Source Environment
-  -k, --stack-api-key=<value>  Stack api key to be used
+  -k, --stack-api-key=<value>  Stack API key to be used
   -l, --locale=<value>         Locale filter
   -y, --yes                    Agree to process the command with the current configuration
   --api-version=<value>        API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
@@ -1705,7 +1705,7 @@ FLAGS
   -a, --alias=<value>          Alias(name) for the management token
   -c, --config=<value>         Path to the config file
   -e, --environment=<value>    Source Environment
-  -k, --stack-api-key=<value>  Stack api key to be used
+  -k, --stack-api-key=<value>  Stack API key to be used
   -l, --locale=<value>         Locale filter
   -y, --yes                    Agree to process the command with the current configuration
   --api-version=<value>        API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].

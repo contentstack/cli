@@ -25,7 +25,7 @@ export default class SeedCommand extends Command {
   static flags: FlagInput = {
     repo: flags.string({
       char: 'r',
-      description: 'GitHub account or GitHub account/repository',
+      description: 'GitHub organization name or GitHub user name/repository name.',
       multiple: false,
       required: false,
       parse: printFlagDeprecation(['-r'], ['--repo']),
@@ -40,7 +40,7 @@ export default class SeedCommand extends Command {
     }),
     'stack-api-key': flags.string({
       char: 'k',
-      description: 'Provide stack api key to seed content to',
+      description: 'Provide stack API key to seed content to',
       multiple: false,
       required: false,
       exclusive: ['org'],
@@ -54,7 +54,7 @@ export default class SeedCommand extends Command {
     }),
     'fetch-limit': flags.string({
       char: 'l',
-      description: 'Limit for number of Organizations or stacks to be fetched',
+      description: 'Limit for number of organizations or stacks to be fetched.',
       multiple: false,
       required: false,
       hidden: true,
@@ -62,13 +62,13 @@ export default class SeedCommand extends Command {
     yes: flags.string({
       char: 'y',
       required: false,
-      description: '[Optional] Skip stack confirmation',
+      description: '[Optional] Skip the stack confirmation.',
     }),
 
     //To be deprecated
     stack: flags.string({
       char: 's',
-      description: 'Provide stack UID to seed content to',
+      description: 'Provide the stack UID to seed content.',
       multiple: false,
       required: false,
       exclusive: ['org', 'name'],
