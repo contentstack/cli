@@ -2,7 +2,7 @@
 
 It is Contentstack’s CLI plugin to import content in the stack. To learn how to export and import content in Contentstack, refer to the [Migration guide](https://www.contentstack.com/docs/developers/cli/migration/).
 
-[![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)it -m 
+[![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)it -m
 
 <!-- toc -->
 * [Usage](#usage)
@@ -47,7 +47,7 @@ $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-import/1.19.3 darwin-arm64 node-v22.8.0
+@contentstack/cli-cm-import/1.19.3 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -75,13 +75,14 @@ FLAGS
                                       the branch name, then by default the content will be imported to the main branch.
   -a, --alias=<value>                 The management token of the destination stack where you will import the content.
   -b, --backup-dir=<value>            [optional] Backup directory name when using specific module.
-  -c, --config=<value>                [optional] Path of config file.
+  -c, --config=<value>                [optional] The path of the configuration JSON file containing all the options for
+                                      a single run.
   -d, --data-dir=<value>              The path or the location in your file system where the content, you intend to
                                       import, is stored. For example, -d "C:\Users\Name\Desktop\cli\content". If the
                                       export folder has branches involved, then the path should point till the
                                       particular branch. For example, “-d
                                       "C:\Users\Name\Desktop\cli\content\branch_name"
-  -k, --stack-api-key=<value>         API key of the target stack
+  -k, --stack-api-key=<value>         API Key of the target stack
   -m, --module=<value>                [optional] Specify the module to import into the target stack. If not specified,
                                       the import command will import all the modules into the stack. The available
                                       modules are assets, content-types, entries, environments, extensions,
@@ -89,12 +90,12 @@ FLAGS
                                       custom-roles, and taxonomies.
   -y, --yes                           [optional] Force override all Marketplace prompts.
   --exclude-global-modules            Excludes the branch-independent module from the import operation.
-  --import-webhook-status=<option>    [default: disable] [optional] This webhook state keeps the same state of webhooks
-                                      as the source stack.
+  --import-webhook-status=<option>    [default: disable] [default: disable] (optional) This webhook state keeps the same
+                                      state of webhooks as the source stack. <options: disable|current>
                                       <options: disable|current>
-  --personalize-project-name=<value>  Personalize project name.
+  --personalize-project-name=<value>  (optional) Provide a unique name for the Personalize project.
   --replace-existing                  Replaces the existing module in the target stack.
-  --skip-app-recreation               [optional] Skip private apps recreation if already exist
+  --skip-app-recreation               (optional) Skips the recreation of private apps if they already exist.
   --skip-audit                        Skips the audit fix that occurs during an import operation.
   --skip-existing                     Skips the module exists warning messages.
 
@@ -136,13 +137,14 @@ FLAGS
                                       the branch name, then by default the content will be imported to the main branch.
   -a, --alias=<value>                 The management token of the destination stack where you will import the content.
   -b, --backup-dir=<value>            [optional] Backup directory name when using specific module.
-  -c, --config=<value>                [optional] Path of config file.
+  -c, --config=<value>                [optional] The path of the configuration JSON file containing all the options for
+                                      a single run.
   -d, --data-dir=<value>              The path or the location in your file system where the content, you intend to
                                       import, is stored. For example, -d "C:\Users\Name\Desktop\cli\content". If the
                                       export folder has branches involved, then the path should point till the
                                       particular branch. For example, “-d
                                       "C:\Users\Name\Desktop\cli\content\branch_name"
-  -k, --stack-api-key=<value>         API key of the target stack
+  -k, --stack-api-key=<value>         API Key of the target stack
   -m, --module=<value>                [optional] Specify the module to import into the target stack. If not specified,
                                       the import command will import all the modules into the stack. The available
                                       modules are assets, content-types, entries, environments, extensions,
@@ -150,12 +152,12 @@ FLAGS
                                       custom-roles, and taxonomies.
   -y, --yes                           [optional] Force override all Marketplace prompts.
   --exclude-global-modules            Excludes the branch-independent module from the import operation.
-  --import-webhook-status=<option>    [default: disable] [optional] This webhook state keeps the same state of webhooks
-                                      as the source stack.
+  --import-webhook-status=<option>    [default: disable] [default: disable] (optional) This webhook state keeps the same
+                                      state of webhooks as the source stack. <options: disable|current>
                                       <options: disable|current>
-  --personalize-project-name=<value>  Personalize project name.
+  --personalize-project-name=<value>  (optional) Provide a unique name for the Personalize project.
   --replace-existing                  Replaces the existing module in the target stack.
-  --skip-app-recreation               [optional] Skip private apps recreation if already exist
+  --skip-app-recreation               (optional) Skips the recreation of private apps if they already exist.
   --skip-audit                        Skips the audit fix that occurs during an import operation.
   --skip-existing                     Skips the module exists warning messages.
 

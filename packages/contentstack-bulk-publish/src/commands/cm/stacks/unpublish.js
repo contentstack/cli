@@ -169,7 +169,7 @@ UnpublishCommand.flags = {
   }),
   'stack-api-key': flags.string({
     char: 'k',
-    description: 'Stack api key to be used',
+    description: 'Stack API key to be used',
   }),
   environment: flags.string({
     char: 'e',

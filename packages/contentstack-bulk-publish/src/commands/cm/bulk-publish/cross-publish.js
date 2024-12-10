@@ -174,7 +174,7 @@ CrossPublishCommand.flags = {
   alias: flags.string({ char: 'a', description: 'Alias(name) for the management token' }),
   'stack-api-key': flags.string({
     char: 'k',
-    description: 'Stack api key to be used',
+    description: 'Stack API key to be used',
     required: false,
   }),
   retryFailed: flags.string({
