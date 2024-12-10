@@ -17,7 +17,7 @@ class ExportToCsvCommand extends Command {
       required: false,
       multiple: false,
       options: ['entries', 'users', 'teams', 'taxonomies'],
-      description: 'Option to export data (entries, users, teams, taxonomies). [options: entries|users|teams|taxonomies]',
+      description: 'Option to export data (entries, users, teams, taxonomies). <options: entries|users|teams|taxonomies>',
     }),
     alias: flags.string({
       char: 'a',
@@ -67,7 +67,7 @@ class ExportToCsvCommand extends Command {
       description: 'Provide the taxonomy UID of the related terms you want to export.',
     }),
     delimiter: flags.string({
-      description: '[default: ,] [optional] Provide a delimiter to separate individual data fields within the CSV file. For example: cm:export-to-csv --delimiter \'|\'',
+      description: '[optional] Provide a delimiter to separate individual data fields within the CSV file. For example: cm:export-to-csv --delimiter \'|\'',
       default: ',',
     }),
   };  

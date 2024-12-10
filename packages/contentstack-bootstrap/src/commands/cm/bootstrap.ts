@@ -66,7 +66,7 @@ export default class BootstrapCommand extends Command {
     }),
     'stack-name': flags.string({
       char: 'n',
-      description: 'Name of a new stack that will be created.',
+      description: 'Name of the new stack that will be created.',
       multiple: false,
       required: false,
       exclusive: ['stack-api-key'],
