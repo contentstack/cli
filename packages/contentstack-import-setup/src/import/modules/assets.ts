@@ -3,7 +3,7 @@ import { log, fsUtil } from '../../utils';
 import { join } from 'path';
 import { AssetRecord, ImportConfig, ModuleClassParams } from '../../types';
 import { isEmpty, orderBy, values } from 'lodash';
-import { formatError, FsUtility } from '@contentstack/cli-utilities';
+import { formatError, FsUtility, sanitizePath } from '@contentstack/cli-utilities';
 import BaseImportSetup from './base-setup';
 
 export default class AssetImportSetup extends BaseImportSetup {
@@ -20,13 +20,13 @@ export default class AssetImportSetup extends BaseImportSetup {
 
   constructor({ config, stackAPIClient, dependencies }: ModuleClassParams) {
     super({ config, stackAPIClient, dependencies });
-    this.assetsFolderPath = join(this.config.contentDir, 'assets');
-    this.assetsFilePath = join(this.config.contentDir, 'assets', 'assets.json');
+    this.assetsFolderPath = join(sanitizePath(this.config.contentDir), 'assets');
+    this.assetsFilePath = join(sanitizePath(this.config.contentDir), 'assets', 'assets.json');
     this.assetsConfig = config.modules.assets;
-    this.mapperDirPath = join(this.config.backupDir, 'mapper', 'assets');
-    this.assetUidMapperPath = join(this.config.backupDir, 'mapper', 'assets', 'uid-mapping.json');
-    this.assetUrlMapperPath = join(this.config.backupDir, 'mapper', 'assets', 'url-mapping.json');
-    this.duplicateAssetPath = join(this.config.backupDir, 'mapper', 'assets', 'duplicate-assets.json');
+    this.mapperDirPath = join(sanitizePath(this.config.backupDir), 'mapper', 'assets');
+    this.assetUidMapperPath = join(sanitizePath(this.config.backupDir), 'mapper', 'assets', 'uid-mapping.json');
+    this.assetUrlMapperPath = join(sanitizePath(this.config.backupDir), 'mapper', 'assets', 'url-mapping.json');
+    this.duplicateAssetPath = join(sanitizePath(this.config.backupDir), 'mapper', 'assets', 'duplicate-assets.json');
     this.assetUidMapper = {};
     this.assetUrlMapper = {};
     this.duplicateAssets = {};
