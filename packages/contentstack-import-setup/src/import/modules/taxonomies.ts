@@ -4,6 +4,7 @@ import isEmpty from 'lodash/isEmpty';
 
 import { log, fsUtil } from '../../utils';
 import { ImportConfig, ModuleClassParams, TaxonomyQueryParams } from '../../types';
+import { sanitizePath } from '@contentstack/cli-utilities';
 
 export default class TaxonomiesImportSetup {
   private config: ImportConfig;
@@ -21,12 +22,12 @@ export default class TaxonomiesImportSetup {
   constructor({ config, stackAPIClient }: ModuleClassParams) {
     this.config = config;
     this.stackAPIClient = stackAPIClient;
-    this.taxonomiesFilePath = join(this.config.contentDir, 'taxonomies', 'taxonomies.json');
+    this.taxonomiesFilePath = join(sanitizePath(this.config.contentDir), 'taxonomies', 'taxonomies.json');
     this.taxonomiesConfig = config.modules.taxonomies;
-    this.taxonomiesMapperDirPath = join(this.config.backupDir, 'mapper', 'taxonomies');
-    this.taxSuccessPath = join(this.taxonomiesMapperDirPath, 'success.json');
-    this.termsMapperDirPath = join(this.taxonomiesMapperDirPath, 'terms');
-    this.termsSuccessPath = join(this.termsMapperDirPath, 'success.json');
+    this.taxonomiesMapperDirPath = join(sanitizePath(this.config.backupDir), 'mapper', 'taxonomies');
+    this.taxSuccessPath = join(sanitizePath(this.taxonomiesMapperDirPath), 'success.json');
+    this.termsMapperDirPath = join(sanitizePath(this.taxonomiesMapperDirPath), 'terms');
+    this.termsSuccessPath = join(sanitizePath(this.termsMapperDirPath), 'success.json');
     this.taxonomiesMapper = {};
     this.termsMapper = {};
   }
