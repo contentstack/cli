@@ -3,7 +3,7 @@ import { log, fsUtil } from '../../utils';
 import { join } from 'path';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import { isEmpty } from 'lodash';
-import { formatError } from '@contentstack/cli-utilities';
+import { formatError, sanitizePath } from '@contentstack/cli-utilities';
 
 export default class ExtensionImportSetup {
   private config: ImportConfig;
@@ -19,9 +19,9 @@ export default class ExtensionImportSetup {
   constructor({ config, stackAPIClient }: ModuleClassParams) {
     this.config = config;
     this.stackAPIClient = stackAPIClient;
-    this.extensionsFilePath = join(this.config.contentDir, 'extensions', 'extensions.json');
+    this.extensionsFilePath = join(sanitizePath(this.config.contentDir), 'extensions', 'extensions.json');
     this.extensionsConfig = config.modules.extensions;
-    this.extUidMapperPath = join(this.config.backupDir, 'mapper', 'extensions', 'uid-mapping.json');
+    this.extUidMapperPath = join(sanitizePath(this.config.backupDir), 'mapper', 'extensions', 'uid-mapping.json');
     this.extensionMapper = {};
   }
 
@@ -35,7 +35,7 @@ export default class ExtensionImportSetup {
       const extensions: any = await fsUtil.readFile(this.extensionsFilePath);
       if (!isEmpty(extensions)) {
         // 2. Create mapper directory
-        const mapperFilePath = join(this.config.backupDir, 'mapper', 'extensions');
+        const mapperFilePath = join(sanitizePath(this.config.backupDir), 'mapper', 'extensions');
         fsUtil.makeDirectory(mapperFilePath); // Use fsUtil
 
         for (const extension of Object.values(extensions) as any) {
