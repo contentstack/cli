@@ -9,6 +9,7 @@ import {
   ContentstackMarketplaceClient,
   NodeCrypto,
   createDeveloperHubUrl,
+  sanitizePath,
 } from '@contentstack/cli-utilities';
 
 export default class marketplaceAppImportSetup {
@@ -29,9 +30,13 @@ export default class marketplaceAppImportSetup {
   constructor({ config, stackAPIClient }: ModuleClassParams) {
     this.config = config;
     this.stackAPIClient = stackAPIClient;
-    this.marketplaceAppsFilePath = join(this.config.contentDir, 'marketplace_apps', 'marketplace_apps.json');
+    this.marketplaceAppsFilePath = join(
+      sanitizePath(this.config.contentDir),
+      'marketplace_apps',
+      'marketplace_apps.json',
+    );
     this.marketplaceAppsConfig = config.modules['marketplace-apps'];
-    this.marketplaceAppsUidMapperPath = join(this.config.backupDir, 'mapper', 'marketplace_apps');
+    this.marketplaceAppsUidMapperPath = join(sanitizePath(this.config.backupDir), 'mapper', 'marketplace_apps');
     this.marketplaceAppMapper = { app_uid: {}, installation_uid: {}, extension_uid: {} };
   }
 
