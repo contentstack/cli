@@ -213,6 +213,9 @@ async function getSyncEntries(
       if (queryParamsObj.type) {
         syncData['type'] = queryParamsObj.type;
       }
+      if(queryParamsObj.content_type_uid) {
+        syncData['content_type_uid'] = queryParamsObj.content_type_uid;
+      }
 
       const entriesResponse = await Stack.sync(syncData);
       if (entriesResponse.items.length > 0) {
