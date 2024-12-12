@@ -146,6 +146,8 @@ enum OutputColumn {
   'Entry UID' ="Entry UID",
   'Content Type UID'= 'Content Type UID',
   "Locale"="Locale",
+  "Content Type" = "ct",
+  "locale"="locale",
 }
 
 export {
