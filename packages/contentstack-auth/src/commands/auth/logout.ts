@@ -20,13 +20,13 @@ export default class LogoutCommand extends BaseCommand<typeof LogoutCommand> {
   static flags: FlagInput = {
     yes: flags.boolean({
       char: 'y',
-      description: 'Force log out by skipping the confirmation',
+      description: 'Force log out by skipping the confirmation.',
       required: false,
       default: false,
     }),
     force: flags.boolean({
       char: 'f',
-      description: 'Force log out by skipping the confirmation',
+      description: 'Force log out by skipping the confirmation.',
       required: false,
       hidden: true,
       default: false,

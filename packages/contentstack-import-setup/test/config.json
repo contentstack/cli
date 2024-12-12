@@ -1,0 +1,35 @@
+{
+    "IS_TS": false,
+    "UNIT_EXECUTION_ORDER": [],
+    "INTEGRATION_EXECUTION_ORDER": [
+        "management-token.test.js",
+        "assets.test.js",
+        "content-types.test.js",
+        "custom-roles.test.js",
+        "entries.test.js",
+        "environments.test.js",
+        "extensions.test.js",
+        "global-fields.test.js",
+        "locales.test.js",
+        "webhooks.test.js",
+        "workflows.test.js",
+        "auth-token.test.js",
+        "auth-token-modules/assets.test.js",
+        "auth-token-modules/content-types.test.js",
+        "auth-token-modules/custom-roles.test.js",
+        "auth-token-modules/entries.test.js",
+        "auth-token-modules/environments.test.js",
+        "auth-token-modules/extensions.test.js",
+        "auth-token-modules/global-fields.test.js",
+        "auth-token-modules/locales.test.js",
+        "auth-token-modules/webhooks.test.js",
+        "auth-token-modules/workflows.test.js"
+    ],
+    "ENABLE_PREREQUISITES": true,
+    "REGIONS": [
+        "NA",
+        "EU",
+        "AZURE-NA",
+        "AZURE-EU"
+    ]
+}

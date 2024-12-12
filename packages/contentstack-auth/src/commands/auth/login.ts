@@ -34,13 +34,13 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
     }),
     password: flags.string({
       char: 'p',
-      description: 'Password of your Contentstack app',
+      description: 'Password of your Contentstack app.',
       multiple: false,
       required: false,
       exclusive: ['oauth'],
     }),
     oauth: flags.boolean({
-      description: 'Enables single sign-on (SSO) in Contentstack CLI',
+      description: 'Enables single sign-on (SSO) in Contentstack CLI.',
       required: false,
       default: false,
       exclusive: ['username', 'password'],

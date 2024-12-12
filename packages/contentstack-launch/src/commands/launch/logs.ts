@@ -39,10 +39,7 @@ export default class Logs extends BaseCommand<typeof Logs> {
       default: 's',
       multiple: false,
       options: ['d', 's'],
-      description: `Choose type of flags to show logs
-      d) Deployment logs
-      s) Server logs
-      `,
+      description: 'Type of flags to show logs. By default, these are server logs. Options [d - deployment logs, s - server logs]',
     }),
     org: Flags.string({
       description: '[Optional] Provide the organization UID',

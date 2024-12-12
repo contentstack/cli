@@ -37,7 +37,7 @@ $ npm install -g @contentstack/cli-cm-branches
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-branches/1.2.0 darwin-arm64 node-v22.8.0
+@contentstack/cli-cm-branches/1.2.0 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -145,7 +145,7 @@ USAGE
   $ csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]
 
 FLAGS
-  -k, --stack-api-key=<value>  [optional] Provide the Stack API key to show the difference between branches.
+  -k, --stack-api-key=<value>  [optional] Provide the stack API key to show the difference between branches.
   --base-branch=<value>        [optional] Base branch (Target branch).
   --compare-branch=<value>     [optional] Compare branch (Source branch).
   --format=<option>            [default: compact-text] [default: compact-text] [optional] Type of flags to show the

@@ -24,12 +24,12 @@ USAGE
 
 FLAGS
   -a, --alias=<value>          Alias of the management token
-  -k, --stack-api-key=<value>  Provide stack api key to seed content to
+  -k, --stack-api-key=<value>  Provide stack API key to seed content to
   -n, --stack-name=<value>     Name of a new stack that needs to be created.
   -o, --org=<value>            Provide Organization UID to create a new stack
-  -r, --repo=<value>           GitHub account or GitHub account/repository
-  -s, --stack=<value>          Provide stack UID to seed content to
-  -y, --yes=<value>            [Optional] Skip stack confirmation
+  -r, --repo=<value>           GitHub organization name or GitHub user name/repository name.
+  -s, --stack=<value>          Provide the stack UID to seed content.
+  -y, --yes=<value>            [Optional] Skip the stack confirmation.
 
 DESCRIPTION
   Create a stack from existing content types, entries, assets, etc
@@ -60,12 +60,12 @@ USAGE
 
 FLAGS
   -a, --alias=<value>          Alias of the management token
-  -k, --stack-api-key=<value>  Provide stack api key to seed content to
+  -k, --stack-api-key=<value>  Provide stack API key to seed content to
   -n, --stack-name=<value>     Name of a new stack that needs to be created.
   -o, --org=<value>            Provide Organization UID to create a new stack
-  -r, --repo=<value>           GitHub account or GitHub account/repository
-  -s, --stack=<value>          Provide stack UID to seed content to
-  -y, --yes=<value>            [Optional] Skip stack confirmation
+  -r, --repo=<value>           GitHub organization name or GitHub user name/repository name.
+  -s, --stack=<value>          Provide the stack UID to seed content.
+  -y, --yes=<value>            [Optional] Skip the stack confirmation.
 
 DESCRIPTION
   Create a stack from existing content types, entries, assets, etc

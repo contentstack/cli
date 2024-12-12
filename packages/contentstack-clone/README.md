@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli-cm-clone
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-clone/1.13.0 darwin-arm64 node-v22.8.0
+@contentstack/cli-cm-clone/1.13.0 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -55,14 +55,14 @@ FLAGS
   -n, --stack-name=<value>                      Provide a name for the new stack to store the cloned content.
   -y, --yes                                     Force override all Marketplace prompts.
   --destination-management-token-alias=<value>  Destination management token alias.
-  --destination-stack-api-key=<value>           Destination stack API Key
-  --import-webhook-status=<option>              [default: disable] [Optional] The status of the import webhook.
-                                                <options: disable, current>
+  --destination-stack-api-key=<value>           Destination stack API key
+  --import-webhook-status=<option>              [default: disable] [default: disable] (optional) The status of the
+                                                import webhook. <options: disable|current>
                                                 <options: disable|current>
   --skip-audit                                  (optional) Skips the audit fix that occurs during an import operation.
   --source-branch=<value>                       Branch of the source stack.
   --source-management-token-alias=<value>       Source management token alias.
-  --source-stack-api-key=<value>                Source stack API Key
+  --source-stack-api-key=<value>                Source stack API key
   --target-branch=<value>                       Branch of the target stack.
   --type=<option>                               Type of data to clone. You can select option a or b.
                                                 a) Structure (all modules except entries & assets).
@@ -107,14 +107,14 @@ FLAGS
   -n, --stack-name=<value>                      Provide a name for the new stack to store the cloned content.
   -y, --yes                                     Force override all Marketplace prompts.
   --destination-management-token-alias=<value>  Destination management token alias.
-  --destination-stack-api-key=<value>           Destination stack API Key
-  --import-webhook-status=<option>              [default: disable] [Optional] The status of the import webhook.
-                                                <options: disable, current>
+  --destination-stack-api-key=<value>           Destination stack API key
+  --import-webhook-status=<option>              [default: disable] [default: disable] (optional) The status of the
+                                                import webhook. <options: disable|current>
                                                 <options: disable|current>
   --skip-audit                                  (optional) Skips the audit fix that occurs during an import operation.
   --source-branch=<value>                       Branch of the source stack.
   --source-management-token-alias=<value>       Source management token alias.
-  --source-stack-api-key=<value>                Source stack API Key
+  --source-stack-api-key=<value>                Source stack API key
   --target-branch=<value>                       Branch of the target stack.
   --type=<option>                               Type of data to clone. You can select option a or b.
                                                 a) Structure (all modules except entries & assets).
