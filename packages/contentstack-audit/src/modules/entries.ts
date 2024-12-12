@@ -130,6 +130,27 @@ export default class Entries {
 
             this.lookForReference([{ locale: code, uid, name: title }], ctSchema, this.entries[entryUid]);
 
+            if (this.missingRefs[this.currentUid]?.length) {
+              this.missingRefs[this.currentUid].forEach((entry: any) => {
+                entry.ct = ctSchema.uid;
+                entry.locale = code;
+              });
+            }
+
+            if (this.missingSelectFeild[this.currentUid]?.length) {
+              this.missingSelectFeild[this.currentUid].forEach((entry: any) => {
+                entry.ct = ctSchema.uid;
+                entry.locale = code;
+              });
+            }
+
+            if (this.missingMandatoryFields[this.currentUid]?.length) {
+              this.missingMandatoryFields[this.currentUid].forEach((entry: any) => {
+                entry.ct = ctSchema.uid;
+                entry.locale = code;
+              });
+            }
+
             const fields = this.missingMandatoryFields[uid];
             const isPublished = entry.publish_details?.length > 0;
             if ((this.fix && fields.length && isPublished) || (!this.fix && fields)) {
@@ -167,7 +188,6 @@ export default class Entries {
     // this.log('', 'info'); // Adding empty line
 
     this.removeEmptyVal();
-
     return {
       missingEntryRefs: this.missingRefs,
       missingSelectFeild: this.missingSelectFeild,
