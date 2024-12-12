@@ -28,8 +28,13 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
   async import() {
     const personalize = this.config.modules.personalize;
     const { dirName, fileName } = personalize.projects;
-    const projectPath = join(sanitizePath(this.config.data), sanitizePath(personalize.dirName), sanitizePath(dirName), sanitizePath(fileName));
-    
+    const projectPath = join(
+      sanitizePath(this.config.data),
+      sanitizePath(personalize.dirName),
+      sanitizePath(dirName),
+      sanitizePath(fileName),
+    );
+
     if (existsSync(projectPath)) {
       const projects = JSON.parse(readFileSync(projectPath, 'utf8')) as CreateProjectInput[];
 
@@ -46,7 +51,10 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
             description: project.description,
             connectedStackApiKey: this.config.apiKey,
           }).catch(async (error) => {
-            if (error.includes('personalization.PROJECTS.DUPLICATE_NAME') || error.includes('personalize.PROJECTS.DUPLICATE_NAME')) {
+            if (
+              error.includes('personalization.PROJECTS.DUPLICATE_NAME') ||
+              error.includes('personalize.PROJECTS.DUPLICATE_NAME')
+            ) {
               const projectName = await askProjectName('Copy Of ' + (newName || project.name));
               return await createProject(projectName);
             }
