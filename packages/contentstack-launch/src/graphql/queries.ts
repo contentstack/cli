@@ -130,7 +130,7 @@ const serverlessLogsQuery: DocumentNode = gql`
   query GetServerlessLogs($query: QueryLogMessagesInputType!) {
     getServerlessLogs(query: $query) {
       logs {
-        level
+        source
         message
         timestamp
       }
