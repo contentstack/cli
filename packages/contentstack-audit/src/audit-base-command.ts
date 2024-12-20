@@ -315,6 +315,14 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
                 minWidth: 7,
                 header: 'Title',
               },
+              ct: {
+                minWidth: 7,
+                header: "Content Type"
+              },
+              locale: {
+                minWidth: 7,
+                header: "Locale"
+              },
               display_name: {
                 minWidth: 7,
                 header: 'Field name',
