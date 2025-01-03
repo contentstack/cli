@@ -13,6 +13,13 @@ import BaseClass, { ApiOptions } from './base-class';
 import { updateFieldRules } from '../../utils/content-type-helper';
 import { sanitizePath } from '@contentstack/cli-utilities';
 
+type GlobalFieldData = {
+  uid: string;
+  title: string;
+  schema: Array<{ data_type: string }>;
+};
+const nestedGlobalFieldsVersion = '3.2';
+
 export default class ContentTypesImport extends BaseClass {
   private cTsMapperPath: string;
   private cTsFolderPath: string;
@@ -232,7 +239,7 @@ export default class ContentTypesImport extends BaseClass {
       log(this.importConfig, `Updated the global field ${uid} with content type references`, 'info');
     };
     const onReject = ({ error, apiData: { uid } = undefined }: any) => {
-      log(this.importConfig, `failed to update the global field '${uid}' ${formatError(error)}`, 'error');
+      log(this.importConfig, `Failed to update the global field '${uid}' ${formatError(error)}`, 'error');
     };
     return await this.makeConcurrentCall({
       processName: 'Update pending global fields',
@@ -260,18 +267,35 @@ export default class ContentTypesImport extends BaseClass {
       apiData: { uid },
     } = apiOptions;
     const globalField = find(this.gFs, { uid });
+    const hasNested = this.hasNestedGlobalFields(globalField as GlobalFieldData);
     lookupExtension(
       this.importConfig,
       globalField.schema,
       this.importConfig.preserveStackVersion,
       this.installedExtensions,
     );
-    apiOptions.apiData = globalField;
-    const globalFieldPayload = this.stack.globalField(uid);
+    const globalFieldPayload = this.stack.globalField(
+      uid,
+      hasNested ? { api_version: nestedGlobalFieldsVersion } : undefined,
+    );
     Object.assign(globalFieldPayload, cloneDeep(globalField));
     apiOptions.apiData = globalFieldPayload;
     return apiOptions;
   }
+  
+  /**
+   * Check if a global field has nested global fields
+   * @param {GlobalFieldData} globalField The global field data
+   * @returns {boolean} True if nested global fields are present, otherwise false
+   */
+  hasNestedGlobalFields(globalField: GlobalFieldData): boolean {
+    if (!globalField || !globalField.schema) {
+      return false;
+    }
+    // Check for nested global fields in the schema
+    return globalField.schema.some((field: any) => field.data_type === 'global_field');
+  }
+  
 
   async updatePendingExtensions(): Promise<any> {
     let apiContent = fsUtil.readFile(this.extPendingPath) as Record<string, any>[];

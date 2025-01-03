@@ -12,7 +12,7 @@ import { GlobalFieldData } from '@contentstack/management/types/stack/globalFiel
 import { fsUtil, log, formatError, fileHelper, lookupExtension, removeReferenceFields } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
-
+const nestedGlobalFieldsVersion = '3.2';
 export default class ImportGlobalFields extends BaseClass {
   private gFsMapperPath: string;
   private gFsFolderPath: string;
@@ -140,17 +140,18 @@ export default class ImportGlobalFields extends BaseClass {
       if (flag.supressed) {
         this.pendingGFs.push(globalField.uid);
       }
+      const hasNested = this.hasNestedGlobalFields(globalField as GlobalFieldData);
       return this.stack
-        .globalField()
+        .globalField(null, hasNested ? { api_version: nestedGlobalFieldsVersion} : undefined)
         .create({ global_field: globalField as GlobalFieldData })
-        .then((response) => {
+        .then((response: GlobalFieldData) => {
           apiParams.resolve({
             response,
             apiData: globalField,
           });
           resolve(true);
         })
-        .catch((error) => {
+        .catch((error: unknown) => {
           apiParams.reject({
             error,
             apiData: globalField,
@@ -193,13 +194,27 @@ export default class ImportGlobalFields extends BaseClass {
   }
 
   /**
+   * Check if a global field has nested global fields
+   * @param {GlobalFieldData} globalField The global field data
+   * @returns {boolean} True if nested global fields are present, otherwise false
+   */
+  hasNestedGlobalFields(globalField: GlobalFieldData): boolean {
+    if (!globalField || !globalField.schema) {
+      return false;
+    }
+    // Check for nested global fields in the schema
+    return globalField.schema.some((field: any) => field.data_type === 'global_field');
+  }
+
+  /**
    * @method serializeUpdateGFs
    * @param {ApiOptions} apiOptions ApiOptions
    * @returns {ApiOptions} ApiOptions
    */
   serializeReplaceGFs(apiOptions: ApiOptions): ApiOptions {
     const { apiData: globalField } = apiOptions;
-    const globalFieldPayload = this.stack.globalField(globalField.uid);
+    const hasNested = this.hasNestedGlobalFields(apiOptions.apiData as GlobalFieldData)
+    const globalFieldPayload = this.stack.globalField(globalField.uid, hasNested ? { api_version: nestedGlobalFieldsVersion } : undefined);
     Object.assign(globalFieldPayload, cloneDeep(globalField), {
       stackHeaders: globalFieldPayload.stackHeaders,
     });
