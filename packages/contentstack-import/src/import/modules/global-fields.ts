@@ -6,7 +6,7 @@
  */
 
 import * as path from 'path';
-import { isEmpty, cloneDeep } from 'lodash';
+import { isEmpty, cloneDeep, map, find } from 'lodash';
 import { cliux, sanitizePath } from '@contentstack/cli-utilities';
 import { GlobalFieldData } from '@contentstack/management/types/stack/globalField';
 import { fsUtil, log, formatError, fileHelper, lookupExtension, removeReferenceFields } from '../../utils';
@@ -75,6 +75,10 @@ export default class ImportGlobalFields extends BaseClass {
 
     await this.importGFs();
     fsUtil.writeFile(this.gFsPendingPath, this.pendingGFs);
+
+    await this.updatePendingGFs().catch((error) => {
+      log(this.importConfig, `Error while updating pending global field ${formatError(error)}`, 'error');
+    });
 
     if (this.importConfig.replaceExisting && this.existingGFs.length > 0) {
       await this.replaceGFs().catch((error: Error) => {
@@ -159,6 +163,52 @@ export default class ImportGlobalFields extends BaseClass {
           reject(true);
         });
     });
+  }
+
+  async updatePendingGFs(): Promise<any> {
+    this.pendingGFs = fsUtil.readFile(this.gFsPendingPath) as any;
+    this.gFs = fsUtil.readFile(path.resolve(this.gFsFolderPath, this.gFsConfig.fileName)) as Record<string, unknown>[];
+    const onSuccess = ({ response: globalField, apiData: { uid } = undefined }: any) => {
+      log(this.importConfig, `Updated the global field ${uid} with content type references`, 'info');
+    };
+    const onReject = ({ error, apiData: { uid } = undefined }: any) => {
+      log(this.importConfig, `Failed to update the global field '${uid}' ${formatError(error)}`, 'error');
+    };
+    return await this.makeConcurrentCall({
+      processName: 'Update pending global fields',
+      apiContent: map(this.pendingGFs, (uid: string) => {
+        return { uid };
+      }),
+      apiParams: {
+        serializeData: this.serializeUpdateGFs.bind(this),
+        reject: onReject.bind(this),
+        resolve: onSuccess.bind(this),
+        entity: 'update-gfs',
+        includeParamOnCompletion: true,
+      },
+      concurrencyLimit: this.reqConcurrency,
+    });
+  }
+
+  serializeUpdateGFs(apiOptions: ApiOptions): ApiOptions {
+    const {
+      apiData: { uid },
+    } = apiOptions;
+    const globalField = find(this.gFs, { uid });
+    const hasNested = this.hasNestedGlobalFields(globalField as GlobalFieldData);
+    lookupExtension(
+      this.importConfig,
+      globalField.schema,
+      this.importConfig.preserveStackVersion,
+      this.installedExtensions,
+    );
+    const globalFieldPayload = this.stack.globalField(
+      uid,
+      hasNested ? { api_version: nestedGlobalFieldsVersion } : undefined,
+    );
+    Object.assign(globalFieldPayload, cloneDeep(globalField));
+    apiOptions.apiData = globalFieldPayload;
+    return apiOptions;
   }
 
   async replaceGFs(): Promise<any> {
