@@ -73,11 +73,11 @@ export default class ImportGlobalFields extends BaseClass {
       ((await fsUtil.readFile(this.marketplaceAppMapperPath)) as any) || { extension_uid: {} }
     ).extension_uid;
 
-    await this.importGFs();
+    await this.seedGFs();
     fsUtil.writeFile(this.gFsPendingPath, this.pendingGFs);
 
-    await this.updatePendingGFs().catch((error) => {
-      log(this.importConfig, `Error while updating pending global field ${formatError(error)}`, 'error');
+    await this.updateGFs().catch((error) => {
+      log(this.importConfig, `Error while updating global field ${formatError(error)}`, 'error');
     });
 
     if (this.importConfig.replaceExisting && this.existingGFs.length > 0) {
@@ -89,8 +89,8 @@ export default class ImportGlobalFields extends BaseClass {
     log(this.config, 'Global fields import has been completed!', 'info');
   }
 
-  async importGFs() {
-    const onSuccess = ({ response: globalField, apiData: { uid } = undefined }: any) => {
+  async seedGFs() {
+    const onSuccess = async ({ response: globalField, apiData: { uid } = undefined }: any) => {
       this.createdGFs.push(globalField);
       this.gFsUidMapper[uid] = globalField;
       fsUtil.writeFile(this.gFsUidMapperPath, this.gFsUidMapper);
@@ -128,6 +128,24 @@ export default class ImportGlobalFields extends BaseClass {
     );
   }
 
+  async removeNestedGlobalFields(schema: any[], flag: { supressed: boolean }) {
+    if (!Array.isArray(schema)) {
+      return;
+    }
+    for (let i = schema.length - 1; i >= 0; i--) {
+      const field = schema[i];
+      if (field.data_type === 'global_field') {
+        // Remove the field from the schema
+        schema.splice(i, 1);
+        flag.supressed = true;
+      } else if (field.schema) {
+        // Recursively check nested schemas
+        await this.removeNestedGlobalFields(field.schema, flag);
+      }
+    }
+  }
+  
+
   async createGFs({
     apiParams,
     element: globalField,
@@ -141,12 +159,14 @@ export default class ImportGlobalFields extends BaseClass {
       lookupExtension(this.config, globalField.schema, this.config.preserveStackVersion, this.installedExtensions);
       let flag = { supressed: false };
       await removeReferenceFields(globalField.schema, flag, this.stack);
+      if (Array.isArray(globalField.schema)) {
+        await this.removeNestedGlobalFields(globalField.schema, flag);
+      }
       if (flag.supressed) {
         this.pendingGFs.push(globalField.uid);
       }
-      const hasNested = this.hasNestedGlobalFields(globalField as GlobalFieldData);
       return this.stack
-        .globalField(null, hasNested ? { api_version: nestedGlobalFieldsVersion} : undefined)
+        .globalField(null, { api_version: nestedGlobalFieldsVersion})
         .create({ global_field: globalField as GlobalFieldData })
         .then((response: GlobalFieldData) => {
           apiParams.resolve({
@@ -165,17 +185,17 @@ export default class ImportGlobalFields extends BaseClass {
     });
   }
 
-  async updatePendingGFs(): Promise<any> {
+  async updateGFs(): Promise<any> {
     this.pendingGFs = fsUtil.readFile(this.gFsPendingPath) as any;
     this.gFs = fsUtil.readFile(path.resolve(this.gFsFolderPath, this.gFsConfig.fileName)) as Record<string, unknown>[];
     const onSuccess = ({ response: globalField, apiData: { uid } = undefined }: any) => {
-      log(this.importConfig, `Updated the global field ${uid} with content type references`, 'info');
+      log(this.importConfig, `Updated the global field ${uid}`, 'info');
     };
     const onReject = ({ error, apiData: { uid } = undefined }: any) => {
       log(this.importConfig, `Failed to update the global field '${uid}' ${formatError(error)}`, 'error');
     };
     return await this.makeConcurrentCall({
-      processName: 'Update pending global fields',
+      processName: 'Update global fields',
       apiContent: map(this.pendingGFs, (uid: string) => {
         return { uid };
       }),
@@ -195,7 +215,6 @@ export default class ImportGlobalFields extends BaseClass {
       apiData: { uid },
     } = apiOptions;
     const globalField = find(this.gFs, { uid });
-    const hasNested = this.hasNestedGlobalFields(globalField as GlobalFieldData);
     lookupExtension(
       this.importConfig,
       globalField.schema,
@@ -203,8 +222,7 @@ export default class ImportGlobalFields extends BaseClass {
       this.installedExtensions,
     );
     const globalFieldPayload = this.stack.globalField(
-      uid,
-      hasNested ? { api_version: nestedGlobalFieldsVersion } : undefined,
+      uid, { api_version: nestedGlobalFieldsVersion },
     );
     Object.assign(globalFieldPayload, cloneDeep(globalField));
     apiOptions.apiData = globalFieldPayload;
@@ -244,27 +262,13 @@ export default class ImportGlobalFields extends BaseClass {
   }
 
   /**
-   * Check if a global field has nested global fields
-   * @param {GlobalFieldData} globalField The global field data
-   * @returns {boolean} True if nested global fields are present, otherwise false
-   */
-  hasNestedGlobalFields(globalField: GlobalFieldData): boolean {
-    if (!globalField || !globalField.schema) {
-      return false;
-    }
-    // Check for nested global fields in the schema
-    return globalField.schema.some((field: any) => field.data_type === 'global_field');
-  }
-
-  /**
    * @method serializeUpdateGFs
    * @param {ApiOptions} apiOptions ApiOptions
    * @returns {ApiOptions} ApiOptions
    */
   serializeReplaceGFs(apiOptions: ApiOptions): ApiOptions {
     const { apiData: globalField } = apiOptions;
-    const hasNested = this.hasNestedGlobalFields(apiOptions.apiData as GlobalFieldData)
-    const globalFieldPayload = this.stack.globalField(globalField.uid, hasNested ? { api_version: nestedGlobalFieldsVersion } : undefined);
+    const globalFieldPayload = this.stack.globalField(globalField.uid, { api_version: nestedGlobalFieldsVersion });
     Object.assign(globalFieldPayload, cloneDeep(globalField), {
       stackHeaders: globalFieldPayload.stackHeaders,
     });
