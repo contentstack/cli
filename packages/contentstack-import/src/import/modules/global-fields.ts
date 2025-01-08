@@ -98,7 +98,7 @@ export default class ImportGlobalFields extends BaseClass {
   }
 
   async seedGFs(): Promise<any> {
-    const onSuccess = async ({ response: globalField, apiData: { uid } = undefined }: any) => {
+    const onSuccess = ({ response: globalField, apiData: { uid } = undefined }: any) => {
       this.createdGFs.push(globalField);
       this.gFsUidMapper[uid] = globalField;
       log(this.importConfig, `${uid} Global field seeded`, 'info');
