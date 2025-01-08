@@ -19,6 +19,7 @@ import { RoleData } from '@contentstack/management/types/stack/role';
 
 import { log } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
+const nestedGlobalFieldsVersion = '3.2';
 
 export type AdditionalKeys = {
   backupDir: string;
@@ -316,7 +317,7 @@ export default abstract class BaseClass {
       case 'update-cts':
         return apiData.update().then(onSuccess).catch(onReject);
       case 'create-gfs':
-        return this.stack.globalField().create(apiData).then(onSuccess).catch(onReject); 
+        return this.stack.globalField({api_version: nestedGlobalFieldsVersion}).create(apiData).then(onSuccess).catch(onReject); 
       case 'update-gfs':
         return apiData.update().then(onSuccess).catch(onReject);
       case 'create-environments':
