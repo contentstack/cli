@@ -82,10 +82,6 @@ export default class ImportGlobalFields extends BaseClass {
     await this.updateGFs();
     log(this.importConfig, 'Updated Global Fields', 'success');
 
-    // await this.updateGFs().catch((error) => {
-    //   log(this.importConfig, `Error while updating global field ${formatError(error)}`, 'error');
-    // });
-
     if (this.importConfig.replaceExisting && this.existingGFs.length > 0) {
       await this.replaceGFs().catch((error: Error) => {
         log(this.importConfig, `Error while replacing global fields ${formatError(error)}`, 'error');
