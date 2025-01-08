@@ -95,7 +95,7 @@ export default class ImportGlobalFields extends BaseClass {
     const onSuccess = ({ response: globalField, apiData: { uid } = undefined }: any) => {
       this.createdGFs.push(globalField);
       this.gFsUidMapper[uid] = globalField;
-      log(this.importConfig, `Global field ${globalField.uid}  created successfully`, 'success');
+      log(this.importConfig, `Global field ${globalField.uid} created successfully`, 'success');
     };
     const onReject = ({ error, apiData: globalField = undefined }: any) => {
       const uid = globalField?.uid;
@@ -174,12 +174,15 @@ export default class ImportGlobalFields extends BaseClass {
     removeReferenceFields(globalField.schema, flag, this.stack);
     if (flag.supressed) {
       this.pendingGFs.push(globalField.uid);
+      apiOptions.entity = undefined;
+    } 
+    else{
+      const globalFieldPayload = this.stack.globalField(globalField.uid, { api_version: '3.2' });
+      Object.assign(globalFieldPayload, cloneDeep(globalField), {
+        stackHeaders: globalFieldPayload.stackHeaders,
+      });
+      apiOptions.apiData = globalFieldPayload;
     }
-    const globalFieldPayload = this.stack.globalField(globalField.uid, { api_version: '3.2' });
-    Object.assign(globalFieldPayload, cloneDeep(globalField), {
-      stackHeaders: globalFieldPayload.stackHeaders,
-    });
-    apiOptions.apiData = globalFieldPayload;
     return apiOptions;
   }
 
