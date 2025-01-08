@@ -18,7 +18,6 @@ type GlobalFieldData = {
   title: string;
   schema: Array<{ data_type: string }>;
 };
-const nestedGlobalFieldsVersion = '3.2';
 
 export default class ContentTypesImport extends BaseClass {
   private cTsMapperPath: string;
@@ -274,7 +273,7 @@ export default class ContentTypesImport extends BaseClass {
       this.installedExtensions,
     );
     const globalFieldPayload = this.stack.globalField(
-      uid, { api_version: nestedGlobalFieldsVersion },
+      uid, { api_version: '3.2' },
     );
     Object.assign(globalFieldPayload, cloneDeep(globalField));
     apiOptions.apiData = globalFieldPayload;
