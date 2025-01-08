@@ -14,7 +14,7 @@ import { ImportConfig, ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
 import { gfSchemaTemplate } from '../../utils/global-field-helper';
 
-const nestedGlobalFieldsVersion = '3.2';
+
 export default class ImportGlobalFields extends BaseClass {
   private gFsMapperPath: string;
   private gFsFolderPath: string;
@@ -102,13 +102,13 @@ export default class ImportGlobalFields extends BaseClass {
       log(this.importConfig, `${globalField.uid} Global field seeded`, 'info');
     };
     const onReject = ({ error, apiData: globalField = undefined }: any) => {
-      const uid = globalField.uid;
+      const uid = globalField?.uid;
       if (error?.errors?.title) {
         if (this.importConfig.replaceExisting) {
           this.existingGFs.push(globalField);
         }
         if (!this.importConfig.skipExisting) {
-          log(this.importConfig, `Global fields '${globalField.uid}' already exist`, 'info');
+          log(this.importConfig, `Global fields '${globalField?.global_field?.uid}' already exist`, 'info');
         }
       } else {
         log(this.importConfig, `Global fields '${uid}' failed to import`, 'error');
@@ -179,7 +179,7 @@ export default class ImportGlobalFields extends BaseClass {
     if (flag.supressed) {
       this.pendingGFs.push(globalField.uid);
     }
-    const globalFieldPayload = this.stack.globalField(globalField.uid, { api_version: nestedGlobalFieldsVersion });
+    const globalFieldPayload = this.stack.globalField(globalField.uid, { api_version: '3.2' });
     Object.assign(globalFieldPayload, cloneDeep(globalField), {
       stackHeaders: globalFieldPayload.stackHeaders,
     });
@@ -226,7 +226,7 @@ export default class ImportGlobalFields extends BaseClass {
    */
   serializeReplaceGFs(apiOptions: ApiOptions): ApiOptions {
     const { apiData: globalField } = apiOptions;
-    const globalFieldPayload = this.stack.globalField(globalField.uid, { api_version: nestedGlobalFieldsVersion });
+    const globalFieldPayload = this.stack.globalField(globalField.uid, { api_version: '3.2' });
     Object.assign(globalFieldPayload, cloneDeep(globalField), {
       stackHeaders: globalFieldPayload.stackHeaders,
     });
