@@ -179,6 +179,7 @@ export default class LogPolling {
           environmentUid: this.config.environment,
           startTime: this.startTime,
           endTime: this.endTime,
+          deploymentUid: this.config.deployment,
         },
       },
       pollInterval: this.config.pollingInterval,
@@ -201,6 +202,7 @@ export default class LogPolling {
           environmentUid: string | undefined;
           startTime: number;
           endTime: number;
+          deploymentUid: string | undefined;
         };
       }
     >,
@@ -232,6 +234,7 @@ export default class LogPolling {
           environmentUid: this.config.environment,
           startTime: this.startTime,
           endTime: this.endTime,
+          deploymentUid: this.config.deployment,
         },
       });
     });
