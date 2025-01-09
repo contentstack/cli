@@ -167,11 +167,11 @@ export default class ImportGlobalFields extends BaseClass {
    * @param {ApiOptions} apiOptions ApiOptions
    * @returns {ApiOptions} ApiOptions
    */
-  serializeUpdateGFs(apiOptions: ApiOptions): ApiOptions {
+  async serializeUpdateGFs(apiOptions: ApiOptions): Promise<ApiOptions> {
     const { apiData: globalField } = apiOptions;
     lookupExtension(this.config, globalField.schema, this.config.preserveStackVersion, this.installedExtensions);
     let flag = { supressed: false };
-    removeReferenceFields(globalField.schema, flag, this.stack);
+    await removeReferenceFields(globalField.schema, flag, this.stack);
     if (flag.supressed) {
       this.pendingGFs.push(globalField.uid);
       apiOptions.entity = undefined;
