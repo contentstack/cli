@@ -65,7 +65,7 @@ export default class Logger {
     }
 
     const filename = normalize(
-      resolve(this.config.basePath, 'logs', `${logType}.log`),
+      resolve(this.config.basePath, 'Audit logs', `${logType}.log`),
     ).replace(/^(\.\.(\/|\\|$))+/, '');
     const transports: winston.transport[] = [
       new winston.transports.File({
