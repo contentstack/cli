@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.32.2 darwin-arm64 node-v22.8.0
+@contentstack/cli/1.32.2 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -2381,11 +2381,12 @@ USAGE
   $ csdx cm:import-setup cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]
 
 FLAGS
+  -B, --branch=<value>         The name of the target stack's branch
   -a, --alias=<value>          alias of the management token
   -d, --data-dir=<value>       path and location where data is stored
   -k, --stack-api-key=<value>  API key of the target stack
-      --modules=<option>       [optional] specific module name
-                               <options: content-types|entries|both>
+      --modules=<option>...    [optional] specific module name
+                               <options: global-fields|content-types|entries>
 
 DESCRIPTION
   Import content from a stack
@@ -2394,7 +2395,11 @@ ALIASES
   $ csdx cm:import-setup
 
 EXAMPLES
-  $ csdx cm:stacks:import-setup --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>
+  $ csdx cm:stacks:import-setup --stack-api-key <target_stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>
+
+  $ csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name>
+
+  $ csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name> -b <branch_name>
 ```
 
 ## `csdx cm:migrate-rte`
@@ -2864,11 +2869,12 @@ USAGE
   $ csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]
 
 FLAGS
+  -B, --branch=<value>         The name of the target stack's branch
   -a, --alias=<value>          alias of the management token
   -d, --data-dir=<value>       path and location where data is stored
   -k, --stack-api-key=<value>  API key of the target stack
-      --modules=<option>       [optional] specific module name
-                               <options: content-types|entries|both>
+      --modules=<option>...    [optional] specific module name
+                               <options: global-fields|content-types|entries>
 
 DESCRIPTION
   Import content from a stack
@@ -2877,7 +2883,11 @@ ALIASES
   $ csdx cm:import-setup
 
 EXAMPLES
-  $ csdx cm:stacks:import-setup --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>
+  $ csdx cm:stacks:import-setup --stack-api-key <target_stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>
+
+  $ csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name>
+
+  $ csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name> -b <branch_name>
 ```
 
 _See code: [@contentstack/cli-cm-import-setup](https://github.com/contentstack/cli/blob/main/packages/contentstack-import-setup/src/commands/cm/stacks/import-setup.ts)_

@@ -19,7 +19,9 @@ export default class ImportSetupCommand extends Command {
   static description = messageHandler.parse('Import content from a stack');
 
   static examples: string[] = [
-    `csdx cm:stacks:import-setup --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>`,
+    `csdx cm:stacks:import-setup --stack-api-key <target_stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>`,
+    `csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name>`,
+    `csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name> -b <branch_name>`,
   ];
 
   static flags: FlagInput = {
@@ -36,8 +38,14 @@ export default class ImportSetupCommand extends Command {
       description: 'alias of the management token',
     }),
     modules: flags.string({
-      options: ['content-types', 'entries', 'both'], // only allow the value to be from a discrete set
+      options: ['global-fields', 'content-types', 'entries'], // only allow the value to be from a discrete set
       description: '[optional] specific module name',
+      multiple: true,
+    }),
+    branch: flags.string({
+      char: 'B',
+      description: "The name of the target stack's branch",
+      parse: printFlagDeprecation(['-B'], ['--branch']),
     }),
   };
 
