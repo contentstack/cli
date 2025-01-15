@@ -1,6 +1,7 @@
 import { checkSync } from 'recheck';
 import authHandler from './auth-handler';
 import { HttpClient, cliux, configHandler } from '.';
+import { normalize } from 'path';
 export const isAuthenticated = () => authHandler.isAuthenticated();
 export const doesBranchExist = async (stack, branchName) => {
   return stack
@@ -52,8 +53,13 @@ export const validatePath = (input: string) => {
 // To escape special characters in a string
 export const escapeRegExp = (str: string) => str?.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+const sanitizePathRegex = (str:string) => str?.replace(/^(\.\.(\/|\\|$))+/, '').replace(/^(\.(\/|\\|$))+/, '/')
+
 // To remove the relative path
-export const sanitizePath = (str: string) => str?.replace(/^(\.\.(\/|\\|$))+/, '');
+export const sanitizePath = (str: string) => {
+  const decodedStr = decodeURIComponent(str);
+  return normalize(sanitizePathRegex(decodedStr))
+};
 
 // To validate the UIDs of assets
 export const validateUids = (uid) => /^[a-zA-Z0-9]+$/.test(uid);
