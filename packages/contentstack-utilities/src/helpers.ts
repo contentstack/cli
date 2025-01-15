@@ -53,12 +53,16 @@ export const validatePath = (input: string) => {
 // To escape special characters in a string
 export const escapeRegExp = (str: string) => str?.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-const sanitizePathRegex = (str:string) => str?.replace(/^(\.\.(\/|\\|$))+/, '').replace(/^(\.(\/|\\|$))+/, '/')
+const sanitizePathRegex = (str: string) =>
+  str
+    ?.replace(/\\/g, '/') // Convert Windows-style backslashes to forward slashes
+    .replace(/\/+/g, '/') // Collapse multiple slashes into one
+    .replace(/(?:^|\/)\.+(\/|$)/g, '/'); // Remove any `.` or `..` path segments
 
 // To remove the relative path
 export const sanitizePath = (str: string) => {
   const decodedStr = decodeURIComponent(str);
-  return normalize(sanitizePathRegex(decodedStr))
+  return normalize(sanitizePathRegex(decodedStr));
 };
 
 // To validate the UIDs of assets
