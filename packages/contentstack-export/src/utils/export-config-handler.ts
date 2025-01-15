@@ -1,6 +1,6 @@
 import merge from 'merge';
 import * as path from 'path';
-import { configHandler, isAuthenticated, FlagInput, cliux } from '@contentstack/cli-utilities';
+import { configHandler, isAuthenticated, FlagInput, cliux, sanitizePath } from '@contentstack/cli-utilities';
 import defaultConfig from '../config';
 import { readFile } from './file-helper';
 import { askExportDir, askAPIKey } from './interactive';
@@ -15,8 +15,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
     const externalConfig = await readFile(exportCmdFlags['config']);
     config = merge.recursive(config, externalConfig);
   }
-  config.exportDir = exportCmdFlags['data'] || exportCmdFlags['data-dir'] || config.data || (await askExportDir());
-
+  config.exportDir = sanitizePath(exportCmdFlags['data'] || exportCmdFlags['data-dir'] || config.data || (await askExportDir()));
   const pattern = /[*$%#<>{}!&?]/g;
   if (pattern.test(config.exportDir)) {
     cliux.print(`\nPlease add a directory path without any of the special characters: (*,&,{,},[,],$,%,<,>,?,!)`, {
