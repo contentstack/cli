@@ -182,15 +182,7 @@ export default class ImportGlobalFields extends BaseClass {
       }
       return this.stack
         .globalField(globalField.uid, { api_version: '3.2' })
-        .fetch()
-        .then((originalGlobalField) => {
-          Object.assign(originalGlobalField, {
-            title: globalField.title,
-            schema: globalField.schema,
-            description: globalField.description,
-          });
-          return originalGlobalField.update()
-        })
+        .update({ global_field: globalField })
         .then((response: GlobalField) => {
           apiParams.resolve({
             response,
@@ -220,7 +212,6 @@ export default class ImportGlobalFields extends BaseClass {
       stackHeaders: globalFieldPayload.stackHeaders,
     });
     apiOptions.apiData = globalFieldPayload;
-    console.log('apiOptions', apiOptions);
     return apiOptions;
   }
 
