@@ -159,6 +159,52 @@ export default class ImportGlobalFields extends BaseClass {
         includeParamOnCompletion: true,
       },
       concurrencyLimit: this.reqConcurrency,
+    },
+    this.updateSerializedGFs.bind(this),
+    );
+  }
+
+  async updateSerializedGFs({
+    apiParams,
+    element: globalField,
+    isLastRequest,
+  }: {
+    apiParams: ApiOptions;
+    element: Record<string, string>;
+    isLastRequest: boolean;
+  }) {
+    return new Promise(async (resolve, reject) => {
+      lookupExtension(this.config, globalField.schema, this.config.preserveStackVersion, this.installedExtensions);
+      let flag = { supressed: false };
+      await removeReferenceFields(globalField.schema, flag, this.stack);
+      if (flag.supressed) {
+        this.pendingGFs.push(globalField.uid);
+      }
+      return this.stack
+        .globalField(globalField.uid, { api_version: '3.2' })
+        .fetch()
+        .then((originalGlobalField) => {
+          Object.assign(originalGlobalField, {
+            title: globalField.title,
+            schema: globalField.schema,
+            description: globalField.description,
+          });
+          return originalGlobalField.update()
+        })
+        .then((response: GlobalField) => {
+          apiParams.resolve({
+            response,
+            apiData: globalField,
+          });
+          resolve(true);
+        })
+        .catch((error: unknown) => {
+          apiParams.reject({
+            error,
+            apiData: globalField,
+          });
+          reject(true);
+        });
     });
   }
 
@@ -169,20 +215,12 @@ export default class ImportGlobalFields extends BaseClass {
    */
   async serializeUpdateGFs(apiOptions: ApiOptions): Promise<ApiOptions> {
     const { apiData: globalField } = apiOptions;
-    lookupExtension(this.config, globalField.schema, this.config.preserveStackVersion, this.installedExtensions);
-    let flag = { supressed: false };
-    await removeReferenceFields(globalField.schema, flag, this.stack);
-    if (flag.supressed) {
-      this.pendingGFs.push(globalField.uid);
-      apiOptions.entity = undefined;
-    } 
-    else{
-      const globalFieldPayload = this.stack.globalField(globalField.uid, { api_version: '3.2' });
-      Object.assign(globalFieldPayload, cloneDeep(globalField), {
-        stackHeaders: globalFieldPayload.stackHeaders,
-      });
-      apiOptions.apiData = globalFieldPayload;
-    }
+    const globalFieldPayload = this.stack.globalField(globalField.uid, { api_version: '3.2' });
+    Object.assign(globalFieldPayload, cloneDeep(globalField), {
+      stackHeaders: globalFieldPayload.stackHeaders,
+    });
+    apiOptions.apiData = globalFieldPayload;
+    console.log('apiOptions', apiOptions);
     return apiOptions;
   }
 
@@ -219,7 +257,7 @@ export default class ImportGlobalFields extends BaseClass {
   }
 
   /**
-   * @method serializeUpdateGFs
+   * @method serializeReplaceGFs
    * @param {ApiOptions} apiOptions ApiOptions
    * @returns {ApiOptions} ApiOptions
    */
