@@ -152,7 +152,6 @@ export default class ImportGlobalFields extends BaseClass {
       processName: 'Update Global Fields',
       apiContent: this.gFs,
       apiParams: {
-        serializeData: this.serializeUpdateGFs.bind(this),
         reject: onReject.bind(this),
         resolve: onSuccess.bind(this),
         entity: 'update-gfs',
@@ -198,21 +197,6 @@ export default class ImportGlobalFields extends BaseClass {
           reject(true);
         });
     });
-  }
-
-  /**
-   * @method serializeUpdateGFs
-   * @param {ApiOptions} apiOptions ApiOptions
-   * @returns {ApiOptions} ApiOptions
-   */
-  async serializeUpdateGFs(apiOptions: ApiOptions): Promise<ApiOptions> {
-    const { apiData: globalField } = apiOptions;
-    const globalFieldPayload = this.stack.globalField(globalField.uid, { api_version: '3.2' });
-    Object.assign(globalFieldPayload, cloneDeep(globalField), {
-      stackHeaders: globalFieldPayload.stackHeaders,
-    });
-    apiOptions.apiData = globalFieldPayload;
-    return apiOptions;
   }
 
   async replaceGFs(): Promise<any> {

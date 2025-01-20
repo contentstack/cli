@@ -13,12 +13,6 @@ import BaseClass, { ApiOptions } from './base-class';
 import { updateFieldRules } from '../../utils/content-type-helper';
 import { sanitizePath } from '@contentstack/cli-utilities';
 
-type GlobalFieldData = {
-  uid: string;
-  title: string;
-  schema: Array<{ data_type: string }>;
-};
-
 export default class ContentTypesImport extends BaseClass {
   private cTsMapperPath: string;
   private cTsFolderPath: string;
