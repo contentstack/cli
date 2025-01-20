@@ -315,6 +315,8 @@ export default abstract class BaseClass {
         return this.stack.contentType().create(apiData).then(onSuccess).catch(onReject);
       case 'update-cts':
         return apiData.update().then(onSuccess).catch(onReject);
+      case 'create-gfs':
+        return this.stack.globalField({api_version: '3.2'}).create(apiData).then(onSuccess).catch(onReject); 
       case 'update-gfs':
         return apiData.update().then(onSuccess).catch(onReject);
       case 'create-environments':
