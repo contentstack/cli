@@ -65,9 +65,9 @@ export default class TaxonomiesImportSetup {
           fsUtil.writeFile(this.termsSuccessPath, this.termsMapper);
         }
 
-        log(this.config, `Generated required setup files for taxonomies`, 'success');
+        log(this.config, `The required setup files for taxonomies have been generated successfully.`, 'success');
       } else {
-        log(this.config, 'No taxonomies found in the content folder!', 'info');
+        log(this.config, 'No taxonomies found in the content folder.', 'info');
       }
     } catch (error) {
       log(this.config, `Error generating taxonomies mapper: ${error.message}`, 'error');

@@ -12,9 +12,9 @@ export default class GlobalFieldsImportSetup extends BaseImportSetup {
   async start() {
     try {
       await this.setupDependencies();
-      log(this.config, `Generate required setup files for global fields`, 'success');
+      log(this.config, `The required setup files for global fields have been generated successfully.`, 'success');
     } catch (error) {
-      log(this.config, `Error generating ${error.message}`, 'error');
+      log(this.config, `Error occurred while generating the global field mapper: ${error.message}.`, 'error');
     }
   }
 }

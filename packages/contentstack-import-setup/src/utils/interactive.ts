@@ -18,7 +18,7 @@ export const askSelectedModules = async (): Promise<string> => {
   return cliux.inquire<string>({
     type: 'list',
     name: 'selectedModule',
-    message: 'Please select a module to generate the mapper files',
+    message: 'Please select a module to generate the mapper files.',
     choices: [
       { name: 'Global Fields', value: 'global-fields' },
       { name: 'Content types', value: 'content-types' },

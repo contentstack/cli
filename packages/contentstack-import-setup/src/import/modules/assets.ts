@@ -41,9 +41,9 @@ export default class AssetImportSetup extends BaseImportSetup {
     try {
       fsUtil.makeDirectory(this.mapperDirPath);
       await this.fetchAndMapAssets();
-      log(this.config, `Generated required setup files for asset`, 'success');
+      log(this.config, `The required setup files for the asset have been generated successfully.`, 'success');
     } catch (error) {
-      log(this.config, `Error generating asset mapper: ${formatError(error)}`, 'error');
+      log(this.config, `Error occurred while generating the asset mapper: ${formatError(error)}.`, 'error');
     }
   }
 
@@ -67,18 +67,18 @@ export default class AssetImportSetup extends BaseImportSetup {
       if (items.length === 1) {
         this.assetUidMapper[uid] = items[0].uid;
         this.assetUrlMapper[url] = items[0].url;
-        log(this.config, `Mapped asset: '${title}'`, 'info');
+        log(this.config, `Mapped asset successfully: '${title}'`, 'info');
       } else if (items.length > 1) {
         this.duplicateAssets[uid] = items.map((asset: any) => {
           return { uid: asset.uid, title: asset.title, url: asset.url };
         });
-        log(this.config, `Multiple assets found with title '${title}'`, 'info');
+        log(this.config, `Multiple assets found with the title '${title}'.`, 'info');
       } else {
         log(this.config, `Asset with title '${title}' not found in the stack!`, 'info');
       }
     };
     const onReject = ({ error, apiData: { title } = undefined }: any) => {
-      log(this.config, `${title} asset mapping failed.!`, 'error');
+      log(this.config, `Failed to map the asset '${title}'.`, 'error');
       log(this.config, formatError(error), 'error');
     };
 
@@ -116,7 +116,7 @@ export default class AssetImportSetup extends BaseImportSetup {
     }
     if (!isEmpty(this.duplicateAssets)) {
       fsUtil.writeFile(this.duplicateAssetPath, this.duplicateAssets);
-      log(this.config, `Duplicate asset files store here ${this.duplicateAssetPath}`, 'info');
+      log(this.config, `Duplicate asset files are stored at: ${this.duplicateAssetPath}.`, 'info');
     }
   }
 }
