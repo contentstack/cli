@@ -20,7 +20,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.33.0 darwin-arm64 node-v22.8.0
+@contentstack/cli/1.34.0 darwin-arm64 node-v22.8.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -3641,7 +3641,7 @@ EXAMPLES
   $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --variable-type="Manually add custom variables to the list" --env-variables="APP_ENV:prod, TEST_ENV:testVal"
 ```
 
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/src/commands/launch/index.ts)_
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/index.ts)_
 
 ## `csdx launch:deployments`
 
@@ -3669,7 +3669,7 @@ EXAMPLES
   $ csdx launch:deployments -e "environment number or uid" --org=<org UID> --project=<Project UID>
 ```
 
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/src/commands/launch/deployments.ts)_
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/deployments.ts)_
 
 ## `csdx launch:environments`
 
@@ -3696,7 +3696,7 @@ EXAMPLES
   $ csdx launch:environments --org=<org UID> --project=<Project UID>
 ```
 
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/src/commands/launch/environments.ts)_
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/environments.ts)_
 
 ## `csdx launch:functions`
 
@@ -3726,7 +3726,7 @@ EXAMPLES
   $ csdx launch:functions --config <path/to/launch/config/file> --port=port
 ```
 
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/src/commands/launch/functions.ts)_
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/functions.ts)_
 
 ## `csdx launch:logs`
 
@@ -3770,7 +3770,7 @@ EXAMPLES
   $ csdx launch:logs --environment=environment --config <path/to/launch/config/file> --deployment=deployment
 ```
 
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/src/commands/launch/logs.ts)_
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/logs.ts)_
 
 ## `csdx launch:open`
 
@@ -3802,7 +3802,7 @@ EXAMPLES
   $ csdx launch:open --environment=environment --data-dir <path/of/current/working/dir>
 ```
 
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/src/commands/launch/open.ts)_
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/open.ts)_
 
 ## `csdx login`
 
@@ -3881,7 +3881,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.22/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.25/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:add PLUGIN`
 
@@ -3955,7 +3955,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.22/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.25/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN`
 
@@ -4004,7 +4004,7 @@ EXAMPLES
     $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.22/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.25/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PATH`
 
@@ -4035,7 +4035,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.22/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.25/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:remove [PLUGIN]`
 
@@ -4076,7 +4076,7 @@ FLAGS
   --reinstall  Reinstall all plugins after uninstalling.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.22/src/commands/plugins/reset.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.25/src/commands/plugins/reset.ts)_
 
 ## `csdx plugins:uninstall [PLUGIN]`
 
@@ -4104,7 +4104,7 @@ EXAMPLES
   $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.22/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.25/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:unlink [PLUGIN]`
 
@@ -4148,7 +4148,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.22/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.25/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
