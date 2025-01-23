@@ -68,7 +68,7 @@ export default class ImportSetup {
         const moduleInstance = new ModuleClass(modulePayload);
         await moduleInstance.start();
       } catch (error) {
-        log(this.config, `Error importing '${moduleName}': ${formatError(error)}`, 'error');
+        log(this.config, `Error occurred while importing '${moduleName}'`, 'error');
         throw error;
       }
     }
