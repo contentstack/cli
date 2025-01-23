@@ -297,19 +297,37 @@ export default class ContentType {
    */
   async validateGlobalField(tree: Record<string, unknown>[], field: GlobalFieldDataType): Promise<void> {
     // NOTE Any GlobalField related logic can be added here
-    if (!field.schema && !this.fix) {
-      this.missingRefs[this.currentUid].push({
-        tree,
-        ct_uid: this.currentUid,
-        name: this.currentTitle,
-        data_type: field.data_type,
-        display_name: field.display_name,
-        missingRefs: 'Empty schema found',
-        treeStr: tree.map(({ name }) => name).join(' ➜ '),
-      });
-
-      return void 0;
+    if(this.moduleName==='global-fields') {
+      let { reference_to } = field;
+      const refExist = find(this.schema, { uid: reference_to });
+      if(!refExist){
+        this.missingRefs[this.currentUid].push({
+          tree,
+          ct_uid: this.currentUid,
+          name: this.currentTitle,
+          data_type: field.data_type,
+          display_name: field.display_name,
+          missingRefs: 'Referred Global Field Does not Exist',
+          treeStr: tree.map(({ name }) => name).join(' ➜ '),
+        });
+      }
     }
+    else {
+      if (!field.schema && !this.fix) {
+        this.missingRefs[this.currentUid].push({
+          tree,
+          ct_uid: this.currentUid,
+          name: this.currentTitle,
+          data_type: field.data_type,
+          display_name: field.display_name,
+          missingRefs: 'Empty schema found',
+          treeStr: tree.map(({ name }) => name).join(' ➜ '),
+        });
+  
+        return void 0;
+      }
+    }
+    
 
     await this.lookForReference(tree, field);
   }
@@ -503,7 +521,7 @@ export default class ContentType {
           missingRefs: [reference_to],
           treeStr: tree.map(({ name }) => name).join(' ➜ '),
         });
-      } else if (!field.schema) {
+      } else if (!field.schema && this.moduleName==='content-types') {
         const gfSchema = find(this.gfSchema, { uid: field.reference_to })?.schema;
 
         if (gfSchema) {
@@ -517,6 +535,24 @@ export default class ContentType {
             ct_uid: this.currentUid,
             name: this.currentTitle,
             missingRefs: 'Empty schema found',
+            treeStr: tree.map(({ name }) => name).join(' ➜ '),
+          });
+        }
+      } else if (!field.schema && this.moduleName==='global-fields') {
+        console.log(this.moduleName,this.currentTitle,field)
+        const gfSchema = find(this.gfSchema, { uid: field.reference_to })?.schema;
+        console.log("gfSchema",gfSchema)
+        if (gfSchema) {
+          field.schema = gfSchema as GlobalFieldSchemaTypes[];
+
+          this.missingRefs[this.currentUid].push({
+            tree,
+            data_type,
+            display_name,
+            fixStatus: 'Fixed',
+            ct_uid: this.currentUid,
+            name: this.currentTitle,
+            missingRefs: 'Referred Global Field Does not exist',
             treeStr: tree.map(({ name }) => name).join(' ➜ '),
           });
         }
