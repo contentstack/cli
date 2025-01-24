@@ -53,14 +53,20 @@ export default class ContentType {
     this.gfSchema = gfSchema;
     this.moduleName = this.validateModules(moduleName!, this.config.moduleConfig);
     this.fileName = config.moduleConfig[this.moduleName].fileName;
-    this.folderPath = resolve(sanitizePath(config.basePath), sanitizePath(config.moduleConfig[this.moduleName].dirName));
+    this.folderPath = resolve(
+      sanitizePath(config.basePath),
+      sanitizePath(config.moduleConfig[this.moduleName].dirName),
+    );
   }
 
-  validateModules(moduleName: keyof typeof auditConfig.moduleConfig, moduleConfig: Record<string, unknown>): keyof typeof auditConfig.moduleConfig {
+  validateModules(
+    moduleName: keyof typeof auditConfig.moduleConfig,
+    moduleConfig: Record<string, unknown>,
+  ): keyof typeof auditConfig.moduleConfig {
     if (Object.keys(moduleConfig).includes(moduleName)) {
       return moduleName;
     }
-    return 'content-types'
+    return 'content-types';
   }
   /**
    * The `run` function checks if a folder path exists, sets the schema based on the module name,
@@ -121,7 +127,7 @@ export default class ContentType {
     if (existsSync(extensionPath)) {
       try {
         this.extensions = Object.keys(JSON.parse(readFileSync(extensionPath, 'utf8')));
-      } catch (error) { }
+      } catch (error) {}
     }
 
     if (existsSync(marketplacePath)) {
@@ -134,7 +140,7 @@ export default class ContentType {
           ) as string[];
           this.extensions.push(...metaData);
         }
-      } catch (error) { }
+      } catch (error) {}
     }
   }
 
@@ -270,19 +276,19 @@ export default class ContentType {
 
     return missingRefs.length
       ? [
-        {
-          tree,
-          data_type,
-          missingRefs,
-          display_name,
-          ct_uid: this.currentUid,
-          name: this.currentTitle,
-          treeStr: tree
-            .map(({ name }) => name)
-            .filter((val) => val)
-            .join(' ➜ '),
-        },
-      ]
+          {
+            tree,
+            data_type,
+            missingRefs,
+            display_name,
+            ct_uid: this.currentUid,
+            name: this.currentTitle,
+            treeStr: tree
+              .map(({ name }) => name)
+              .filter((val) => val)
+              .join(' ➜ '),
+          },
+        ]
       : [];
   }
 
@@ -297,37 +303,36 @@ export default class ContentType {
    */
   async validateGlobalField(tree: Record<string, unknown>[], field: GlobalFieldDataType): Promise<void> {
     // NOTE Any GlobalField related logic can be added here
-    if(this.moduleName==='global-fields') {
+    if (this.moduleName === 'global-fields') {
       let { reference_to } = field;
       const refExist = find(this.schema, { uid: reference_to });
-      if(!refExist){
+      if (!refExist) {
         this.missingRefs[this.currentUid].push({
           tree,
-          ct_uid: this.currentUid,
+          ct: this.currentUid,
           name: this.currentTitle,
           data_type: field.data_type,
           display_name: field.display_name,
           missingRefs: 'Referred Global Field Does not Exist',
           treeStr: tree.map(({ name }) => name).join(' ➜ '),
         });
+        return void 0;
       }
-    }
-    else {
+    } else if (this.moduleName === 'content-types') {
       if (!field.schema && !this.fix) {
         this.missingRefs[this.currentUid].push({
           tree,
-          ct_uid: this.currentUid,
+          ct: this.currentUid,
           name: this.currentTitle,
           data_type: field.data_type,
           display_name: field.display_name,
           missingRefs: 'Empty schema found',
           treeStr: tree.map(({ name }) => name).join(' ➜ '),
         });
-  
+
         return void 0;
       }
     }
-    
 
     await this.lookForReference(tree, field);
   }
@@ -416,19 +421,19 @@ export default class ContentType {
 
     return missingRefs.length
       ? [
-        {
-          tree,
-          data_type,
-          missingRefs,
-          display_name,
-          ct_uid: this.currentUid,
-          name: this.currentTitle,
-          treeStr: tree
-            .map(({ name }) => name)
-            .filter((val) => val)
-            .join(' ➜ '),
-        },
-      ]
+          {
+            tree,
+            data_type,
+            missingRefs,
+            display_name,
+            ct_uid: this.currentUid,
+            name: this.currentTitle,
+            treeStr: tree
+              .map(({ name }) => name)
+              .filter((val) => val)
+              .join(' ➜ '),
+          },
+        ]
       : [];
   }
 
@@ -521,7 +526,7 @@ export default class ContentType {
           missingRefs: [reference_to],
           treeStr: tree.map(({ name }) => name).join(' ➜ '),
         });
-      } else if (!field.schema && this.moduleName==='content-types') {
+      } else if (!field.schema && this.moduleName === 'content-types') {
         const gfSchema = find(this.gfSchema, { uid: field.reference_to })?.schema;
 
         if (gfSchema) {
@@ -538,10 +543,8 @@ export default class ContentType {
             treeStr: tree.map(({ name }) => name).join(' ➜ '),
           });
         }
-      } else if (!field.schema && this.moduleName==='global-fields') {
-        console.log(this.moduleName,this.currentTitle,field)
+      } else if (!field.schema && this.moduleName === 'global-fields') {
         const gfSchema = find(this.gfSchema, { uid: field.reference_to })?.schema;
-        console.log("gfSchema",gfSchema)
         if (gfSchema) {
           field.schema = gfSchema as GlobalFieldSchemaTypes[];
 
