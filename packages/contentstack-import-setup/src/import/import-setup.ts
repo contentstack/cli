@@ -2,6 +2,7 @@ import Module from 'module';
 import { ImportConfig, Modules } from '../types';
 import { backupHandler, log } from '../utils';
 import { ContentstackClient, formatError } from '@contentstack/cli-utilities';
+import { validateBranch } from '../utils';
 
 export default class ImportSetup {
   protected config: ImportConfig;
@@ -67,7 +68,7 @@ export default class ImportSetup {
         const moduleInstance = new ModuleClass(modulePayload);
         await moduleInstance.start();
       } catch (error) {
-        log(this.config, `Error importing '${moduleName}': ${formatError(error)}`, 'error');
+        log(this.config, `Error occurred while importing '${moduleName}'`, 'error');
         throw error;
       }
     }
@@ -91,6 +92,10 @@ export default class ImportSetup {
       if (backupDir) {
         this.config.backupDir = backupDir;
       }
+      if (this.config.branchName) {
+        await validateBranch(this.stackAPIClient, this.config, this.config.branchName);
+      }
+
       await this.generateDependencyTree();
       await this.runModuleImports();
     } catch (error) {
