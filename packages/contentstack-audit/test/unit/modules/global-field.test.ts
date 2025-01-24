@@ -18,7 +18,6 @@ describe('Global Fields', () => {
       gfSchema: cloneDeep(require('../mock/contents/global_fields/Global_fields_2.json')),
       config: Object.assign(config, { basePath: resolve(__dirname, '..', 'mock', 'contents'), flags: {} }),
     });
-    console.log(gfInstance.folderPath,"CUNT")
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(ux, 'confirm', async () => true)
@@ -46,7 +45,6 @@ describe('Global Fields', () => {
       .it('Should output the global feild where nested feilds are not present', async () => {
         try {
           const missingRefs = await gfInstance.run();
-          console.log(JSON.stringify(missingRefs))
           expect(JSON.stringify(missingRefs)).to.be.equal(
             '{\n  nested_global_field_2: [\n    {\n      tree: [\n        {\n          uid: "nested_global_field_2",\n          name: "Nested Global Field 2",\n        },\n        {\n          uid: "global_field",\n          name: "Global",\n        },\n      ],\n      ct: "nested_global_field_2",\n      name: "Nested Global Field 2",\n      data_type: "global_field",\n      display_name: "Global",\n      missingRefs: "Referred Global Field Does not Exist",\n      treeStr: "Nested Global Field 2 ➜ Global",\n    },\n  ],\n  global_field_sample_2: [\n    {\n      tree: [\n        {\n          uid: "global_field_sample_2",\n          name: "global_field_sample_2",\n        },\n        {\n          uid: "group",\n          name: "Group",\n        },\n        {\n          uid: "group",\n          name: "Group",\n        },\n        {\n          uid: "global_field",\n          name: "Global",\n        },\n      ],\n      ct: "global_field_sample_2",\n      name: "global_field_sample_2",\n      data_type: "global_field",\n      display_name: "Global",\n      missingRefs: "Referred Global Field Does not Exist",\n      treeStr: "global_field_sample_2 ➜ Group ➜ Group ➜ Global",\n    },\n  ],\n}',
           );
