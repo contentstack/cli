@@ -14,37 +14,40 @@ $ csdx plugins:install @contentstack/cli-audit
 ## How to use this plugin
 
 <!-- usage -->
+
 ```sh-session
 $ npm install -g @contentstack/cli-audit
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli-audit/1.7.4 darwin-arm64 node-v22.8.0
+@contentstack/cli-audit/1.7.4 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
+
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-* [`csdx audit`](#csdx-audit)
-* [`csdx audit:fix`](#csdx-auditfix)
-* [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
-* [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix)
-* [`csdx help [COMMANDS]`](#csdx-help-commands)
-* [`csdx plugins`](#csdx-plugins)
-* [`csdx plugins:add PLUGIN`](#csdx-pluginsadd-plugin)
-* [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
-* [`csdx plugins:install PLUGIN`](#csdx-pluginsinstall-plugin)
-* [`csdx plugins:link PATH`](#csdx-pluginslink-path)
-* [`csdx plugins:remove [PLUGIN]`](#csdx-pluginsremove-plugin)
-* [`csdx plugins:reset`](#csdx-pluginsreset)
-* [`csdx plugins:uninstall [PLUGIN]`](#csdx-pluginsuninstall-plugin)
-* [`csdx plugins:unlink [PLUGIN]`](#csdx-pluginsunlink-plugin)
-* [`csdx plugins:update`](#csdx-pluginsupdate)
+
+- [`csdx audit`](#csdx-audit)
+- [`csdx audit:fix`](#csdx-auditfix)
+- [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
+- [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix)
+- [`csdx help [COMMANDS]`](#csdx-help-commands)
+- [`csdx plugins`](#csdx-plugins)
+- [`csdx plugins:add PLUGIN`](#csdx-pluginsadd-plugin)
+- [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
+- [`csdx plugins:install PLUGIN`](#csdx-pluginsinstall-plugin)
+- [`csdx plugins:link PATH`](#csdx-pluginslink-path)
+- [`csdx plugins:remove [PLUGIN]`](#csdx-pluginsremove-plugin)
+- [`csdx plugins:reset`](#csdx-pluginsreset)
+- [`csdx plugins:uninstall [PLUGIN]`](#csdx-pluginsuninstall-plugin)
+- [`csdx plugins:unlink [PLUGIN]`](#csdx-pluginsunlink-plugin)
+- [`csdx plugins:update`](#csdx-pluginsupdate)
 
 ## `csdx audit`
 
@@ -537,4 +540,5 @@ DESCRIPTION
 ```
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.25/src/commands/plugins/update.ts)_
+
 <!-- commandsstop -->
