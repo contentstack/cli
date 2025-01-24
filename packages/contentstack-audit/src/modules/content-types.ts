@@ -322,7 +322,7 @@ export default class ContentType {
       if (!field.schema && !this.fix) {
         this.missingRefs[this.currentUid].push({
           tree,
-          ct: this.currentUid,
+          ct_uid: this.currentUid,
           name: this.currentTitle,
           data_type: field.data_type,
           display_name: field.display_name,
