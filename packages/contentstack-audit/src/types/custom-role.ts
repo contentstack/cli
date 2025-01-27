@@ -17,6 +17,7 @@ export interface CustomRole {
 }
 
 export interface Rule {
+  branch_aliases: any;
   module: string;
   environments?: string[];
   locales?: string[];

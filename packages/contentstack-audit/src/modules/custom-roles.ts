@@ -71,6 +71,9 @@ export default class CustomRoles {
           if (rule.module === 'branch') {
             branchesToBeRemoved = rule?.branches?.filter((branch) => branch !== this.config?.branch) || [];
           }
+          if (rule.module === 'branch_alias') {
+            branchesToBeRemoved = [...branchesToBeRemoved, ...rule?.branch_aliases?.filter((branch_aliases: any) => branch_aliases !== this.config?.branch) || []];
+          }
         });
       }
 
@@ -82,6 +85,9 @@ export default class CustomRoles {
           tempCR.rules.forEach((rule: Rule) => {
             if (rule.module === 'branch') {
               rule.branches = branchesToBeRemoved;
+            }
+            if (rule.module === 'branch_alias') {
+              rule.branch_aliases = branchesToBeRemoved;
             }
           });
         }
@@ -139,11 +145,39 @@ export default class CustomRoles {
           return [...acc, ...relevantBranches];
         }, []);
 
+      
+        const fixedBrancheAliases = customRole.rules
+        ?.filter((rule) => rule.module === 'branch_alias' && rule.branch_aliases?.length)
+        ?.reduce((acc: string[], rule) => {
+          const relevantBranches =
+            rule.branch_aliases?.filter((branch_alias: any) => {
+              if (branch_alias !== this.config.branch) {
+                this.log(
+                  $t(commonMsg.CR_BRANCH_ALIAS_REMOVAL, {
+                    uid: customRole.uid,
+                    name: customRole.name,
+                    branch_alias,
+                  }),
+                  { color: 'yellow' },
+                );
+                return false;
+              }
+              return true;
+            }) || [];
+          return [...acc, ...relevantBranches];
+        }, []);
       if (fixedBranches?.length) {
         newCustomRoleSchema[customRole.uid].rules
           ?.filter((rule: Rule) => rule.module === 'branch')
           ?.forEach((rule) => {
             rule.branches = fixedBranches;
+          });
+      }
+      if (fixedBrancheAliases?.length) {
+        newCustomRoleSchema[customRole.uid].rules
+          ?.filter((rule: Rule) => rule.module === 'branch_alias')
+          ?.forEach((rule) => {
+            rule.branch_aliases = fixedBranches;
           });
       }
     });
