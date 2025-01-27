@@ -20,6 +20,7 @@ const commonMsg = {
   EXTENSION_FIX_CONFIRMATION: `Would you like to overwrite existing file?`,
   WF_BRANCH_REMOVAL: `Removing the branch '{branch} from workflow with UID {uid} and name {name} will be removed.'`,
   CR_BRANCH_REMOVAL: `Removing the branch '{branch} from custom role with UID {uid} and name {name} will be removed.'`,
+  CR_BRANCH_ALIAS_REMOVAL: `Removing the branch alias '{branch} from custom role with UID {uid} and name {name} will be removed.'`,
 };
 
 const auditMsg = {
