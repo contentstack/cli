@@ -10,9 +10,9 @@ export default class EntriesImportSetup extends BaseImportSetup {
   async start() {
     try {
       await this.setupDependencies();
-      log(this.config, `Generate required setup files for entries`, 'success');
+      log(this.config, `The required setup files for entries have been generated successfully.`, 'success');
     } catch (error) {
-      log(this.config, `Error generating ${error.message}`, 'error');
+      log(this.config, `Error occurred while generating the entry mapper: ${error.message}.`, 'error');
     }
   }
 }

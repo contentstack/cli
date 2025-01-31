@@ -13,9 +13,9 @@ export default class ContentTypesImportSetup extends BaseImportSetup {
   async start() {
     try {
       await this.setupDependencies();
-      log(this.config, `Generate required setup files for content types`, 'success');
+      log(this.config, `The required setup files for content types have been generated successfully.`, 'success');
     } catch (error) {
-      log(this.config, `Error generating ${error.message}`, 'error');
+      log(this.config, `Error occurred while generating the content type mapper: ${error.message}.`, 'error');
     }
   }
 }
