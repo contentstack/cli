@@ -14,7 +14,7 @@
     "posttest": "npm run lint",
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
-    "test:unit": "mocha --forbid-only \"test/unit/**/helper.test.ts\"",
+    "test:unit": "mocha --forbid-only \"test/unit/**/*.test.ts\"",
     "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
   },
   "repository": {
@@ -40,7 +40,6 @@
     "cli-cursor": "^3.1.0",
     "cli-table": "^0.3.11",
     "conf": "^10.2.0",
-    "debug": "^4.4.0",
     "dotenv": "^16.4.7",
     "figures": "^3.2.0",
     "inquirer": "8.2.6",
@@ -60,8 +59,6 @@
     "xdg-basedir": "^4.0.0"
   },
   "devDependencies": {
-    "@contentstack/cli-dev-dependencies": "^1.2.4",
-    "@oclif/test": "^4.1.6",
     "@types/chai": "^4.3.20",
     "@types/inquirer": "^9.0.7",
     "@types/mkdirp": "^1.0.2",
@@ -74,15 +71,10 @@
     "eslint-config-oclif": "^4.0.0",
     "eslint-config-oclif-typescript": "^3.1.13",
     "fancy-test": "^2.0.42",
-    "globby": "^10.0.2",
     "mocha": "10.8.2",
-    "nock": "^13.5.6",
     "nyc": "^15.1.0",
-    "rimraf": "^2.7.1",
     "sinon": "^19.0.2",
-    "tmp": "^0.2.3",
     "ts-node": "^10.9.2",
-    "tslib": "^2.8.1",
     "typescript": "^4.9.5"
   }
 }
