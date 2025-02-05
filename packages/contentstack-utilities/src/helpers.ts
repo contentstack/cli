@@ -62,7 +62,10 @@ const sanitizePathRegex = (str: string) =>
 // To remove the relative path
 export const sanitizePath = (str: string) => {
   const decodedStr = decodeURIComponent(str);
-  return normalize(sanitizePathRegex(decodedStr));
+  return decodedStr
+    ?.replace(/^([\/\\]){2,}/, "./") // Normalize leading slashes/backslashes to ''
+    .replace(/[\/\\]+/g, "/") // Replace multiple slashes/backslashes with a single '/'
+    .replace(/(\.\.(\/|\\|$))+/g, ""); // Remove directory traversal (../ or ..\)
 };
 
 // To validate the UIDs of assets
