@@ -27,4 +27,27 @@ function fetchBulkPublishLimit(orgUid) {
   return bulkPublishLimit;
 }
 
-module.exports = { fetchBulkPublishLimit };
+/**
+ * Handles the rate limit checking and adds delay if necessary.
+ * @param {Object} error - The error object containing the response headers.
+ * @param {Object} data - The data being processed, including the batch size.
+ * @param {Function} delay - The delay function to use for waiting.
+ * @param {number} xRateLimitRemaining - The xRateLimitRemaining containing the remaining balance.
+ * @returns {boolean} - Returns `true` if delay was applied, `false` otherwise.
+ */
+async function handleRateLimit(error, data, delay, xRateLimitRemaining) {
+  // Check if rate limit is exhausted or batch size exceeds remaining limit
+  if (xRateLimitRemaining === 0 || data.length > xRateLimitRemaining) {
+    cliux.print(
+      'Bulk rate limit reached or batch size exceeds remaining limit. Retrying in 2 seconds...',
+      { color: 'yellow' },
+    );
+    await delay(2000); // Wait for 2 seconds before retrying
+    return true; 
+  } else {
+    return false;
+  }
+}
+
+
+module.exports = { fetchBulkPublishLimit, handleRateLimit };
