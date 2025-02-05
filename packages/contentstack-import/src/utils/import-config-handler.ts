@@ -20,13 +20,13 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
     config = merge.recursive(config, externalConfig);
   }
 
-  config.contentDir = importCmdFlags['data'] || importCmdFlags['data-dir'] || config.data || (await askContentDir());
+  config.contentDir = sanitizePath(importCmdFlags['data'] || importCmdFlags['data-dir'] || config.data || (await askContentDir()));
   const pattern = /[*$%#<>{}!&?]/g;
   if (pattern.test(config.contentDir)) {
     cliux.print(`\nPlease add a directory path without any of the special characters: (*,&,{,},[,],$,%,<,>,?,!)`, {
       color: 'yellow',
     });
-    config.contentDir = await askContentDir();
+    config.contentDir = sanitizePath(await askContentDir());
   }
   config.contentDir = config.contentDir.replace(/['"]/g, '');
   config.contentDir = path.resolve(config.contentDir);

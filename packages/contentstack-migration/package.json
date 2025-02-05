@@ -15,7 +15,7 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
-    "@oclif/test": "^4.1.6",
+    "@oclif/test": "^4.1.9",
     "chai": "^4.5.0",
     "eslint": "^8.57.1",
     "jsdoc-to-markdown": "^8.0.3",
