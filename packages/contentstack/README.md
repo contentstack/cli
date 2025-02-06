@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.34.0 darwin-arm64 node-v22.2.0
+@contentstack/cli/1.35.0 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -3601,8 +3601,9 @@ Launch related operations
 USAGE
   $ csdx launch [--type GitHub|FileUpload] [--framework Gatsby|NextJs|CRA (Create React App)|CSR
     (Client-Side Rendered)|Angular|VueJs|Other] [--org <value>] [-n <value>] [-e <value>] [--branch <value>]
-    [--build-command <value>] [--out-dir <value>] [--variable-type Import variables from a stack|Manually add custom
-    variables to the list|Import variables from the local env file] [-a <value>] [--env-variables <value>]
+    [--build-command <value>] [--out-dir <value>] [--server-command <value>] [--variable-type Import variables from a
+    stack|Manually add custom variables to the list|Import variables from the local env file] [-a <value>]
+    [--env-variables <value>] [--redeploy-latest] [--redeploy-last-upload]
 
 FLAGS
   -a, --alias=<value>           [optional] Alias (name) for the delivery token.
@@ -3617,6 +3618,9 @@ FLAGS
                                 Rendered)|Angular|VueJs|Other>
       --org=<value>             [optional] Provide the organization UID to create a new project or deployment.
       --out-dir=<value>         [optional] Output Directory.
+      --redeploy-last-upload    [optional] Redeploy with last file upload
+      --redeploy-latest         [optional] Redeploy latest commit/code
+      --server-command=<value>  [optional] Server Command.
       --type=<option>           [optional] Type of adapters. <options: GitHub|FileUpload>
                                 <options: GitHub|FileUpload>
       --variable-type=<option>  [optional] Provide a variable type. <options: Import variables from a stack|Manually add
@@ -3638,9 +3642,15 @@ EXAMPLES
 
   $ csdx launch --data-dir <path/of/current/working/dir> --type <options: GitHub|FileUpload>
 
+  $ csdx launch --data-dir <path/of/current/working/dir> --redeploy-latest
+
+  $ csdx launch --data-dir <path/of/current/working/dir> --redeploy-latest --redeploy-last-upload
+
   $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload>
 
   $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value>
+
+  $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --server-command=<value>
 
   $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --variable-type="Import variables from a stack" --alias=<value>
 
@@ -3887,7 +3897,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.26/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.30/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:add PLUGIN`
 
@@ -3961,7 +3971,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.26/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.30/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN`
 
@@ -4010,7 +4020,7 @@ EXAMPLES
     $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.26/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.30/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PATH`
 
@@ -4041,7 +4051,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.26/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.30/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:remove [PLUGIN]`
 
@@ -4082,7 +4092,7 @@ FLAGS
   --reinstall  Reinstall all plugins after uninstalling.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.26/src/commands/plugins/reset.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.30/src/commands/plugins/reset.ts)_
 
 ## `csdx plugins:uninstall [PLUGIN]`
 
@@ -4110,7 +4120,7 @@ EXAMPLES
   $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.26/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.30/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:unlink [PLUGIN]`
 
@@ -4154,7 +4164,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.26/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.30/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
@@ -4188,7 +4198,7 @@ EXAMPLES
 
 ## `csdx tsgen`
 
-generate TypeScript typings from a Stack
+Generate TypeScript typings from a Stack
 
 ```
 USAGE
@@ -4208,7 +4218,7 @@ FLAGS
                                types.
 
 DESCRIPTION
-  generate TypeScript typings from a Stack
+  Generate TypeScript typings from a Stack
 
 EXAMPLES
   $ csdx tsgen -a "delivery token alias" -o "contentstack/generated.d.ts"
@@ -4222,7 +4232,7 @@ EXAMPLES
   $ csdx tsgen -a "delivery token alias" -o "contentstack/generated.d.ts" --api-type graphql --namespace "GraphQL"
 ```
 
-_See code: [contentstack-cli-tsgen](https://github.com/Contentstack-Solutions/contentstack-cli-tsgen/blob/v3.0.1/src/commands/tsgen.ts)_
+_See code: [contentstack-cli-tsgen](https://github.com/Contentstack-Solutions/contentstack-cli-tsgen/blob/v3.1.0/src/commands/tsgen.ts)_
 
 ## `csdx whoami`
 
