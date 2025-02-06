@@ -119,6 +119,8 @@ export default class marketplaceAppImportSetup {
             });
           }
         });
+      } else {
+        log(this.config, `No matching Marketplace app found in the target stack with name ${sourceAppName}`, 'info');
       }
     });
   }
