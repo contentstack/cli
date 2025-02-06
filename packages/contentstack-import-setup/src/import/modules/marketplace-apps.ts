@@ -58,12 +58,12 @@ export default class marketplaceAppImportSetup {
         this.createMapper(sourceMarketplaceApps, targetMarketplaceApps);
         await fsUtil.writeFile(join(this.marketplaceAppsUidMapperPath, 'uid-mapping.json'), this.marketplaceAppMapper);
 
-        log(this.config, `Generated required setup files for marketplaceApp`, 'success');
+        log(this.config, `The required setup files for Marketplace apps have been generated successfully.`, 'success');
       } else {
-        log(this.config, 'No marketplaceApps found in the content folder!', 'info');
+        log(this.config, 'No Marketplace apps found in the content folder.', 'info');
       }
     } catch (error) {
-      log(this.config, `Error generating marketplaceApp mapper: ${formatError(error)}`, 'error');
+      log(this.config, `Error occurred while generating the Marketplace app mapper: ${error.message}.`, 'error');
     }
   }
 
