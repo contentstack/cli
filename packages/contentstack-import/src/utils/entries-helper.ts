@@ -214,7 +214,7 @@ export const lookupEntries = function (
         entry = entry.replace(uidRegex, escapedMappedUid);
         mapped.push(uid);
       } else {
-        log(`Skipping the entry uid ${uid} since the regex is not valid`,'error');
+        log(`Skipping the entry uid ${uid} since the regex is not valid`, 'warn');
       }
     } else {
       unmapped.push(uid);
