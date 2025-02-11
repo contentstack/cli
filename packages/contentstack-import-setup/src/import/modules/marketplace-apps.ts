@@ -85,9 +85,14 @@ export default class marketplaceAppImportSetup {
   createMapper(sourceMarketplaceApps: any, targetMarketplaceApps: any) {
     sourceMarketplaceApps.forEach((sourceApp: any) => {
       // Find matching target item based on manifest.name
-      const targetApp = targetMarketplaceApps.find(
-        (targetApp: any) => get(targetApp, 'manifest.name') === get(sourceApp, 'manifest.name'),
-      );
+      // TBD: This logic is not foolproof, need to find a better way to match source and target apps
+      // Reason: While importing apps, if an app exist in the target with the same name, it will be a conflict and will not be imported
+      // So, import command gives an option to import the app with a different name by appending ◈ to the app name. Considering this we are matching the app name without the ◈ character
+      const getAppName = (app: any) => get(app, 'manifest.name', '').split('◈')[0];
+
+      const sourceAppName = getAppName(sourceApp);
+
+      const targetApp = targetMarketplaceApps.find((app: any) => getAppName(app) === sourceAppName);
 
       if (targetApp) {
         // Map app_uid from source and target
@@ -114,6 +119,8 @@ export default class marketplaceAppImportSetup {
             });
           }
         });
+      } else {
+        log(this.config, `No matching Marketplace app found in the target stack with name ${sourceAppName}`, 'info');
       }
     });
   }
