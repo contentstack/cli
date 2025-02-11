@@ -210,7 +210,7 @@ export const lookupEntries = function (
       const escapedMappedUid = escapeRegExp(mappedUids[uid]);
       const uidRegex = new RegExp(`\\b${sanitizedUid}\\b`, 'img');
       let { status } = validateRegex(uidRegex);
-      if (status !== 'safe') {
+      if (status === 'safe') {
         entry = entry.replace(uidRegex, escapedMappedUid);
         mapped.push(uid);
       } else {
