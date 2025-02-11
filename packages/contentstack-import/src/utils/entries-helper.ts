@@ -8,6 +8,7 @@ import * as _ from 'lodash';
 import config from '../config';
 import * as fileHelper from './file-helper';
 import { escapeRegExp, validateRegex } from '@contentstack/cli-utilities';
+import { log } from './log';
 
 import { EntryJsonRTEFieldDataType } from '../types/entries';
 
@@ -212,6 +213,8 @@ export const lookupEntries = function (
       if (status === 'safe') {
         entry = entry.replace(uidRegex, escapedMappedUid);
         mapped.push(uid);
+      } else {
+        log(`Skipping the entry uid ${uid} since the regex is not valid`,'error');
       }
     } else {
       unmapped.push(uid);
