@@ -10,6 +10,7 @@ import * as fileHelper from './file-helper';
 import { escapeRegExp, validateRegex } from '@contentstack/cli-utilities';
 
 import { EntryJsonRTEFieldDataType } from '../types/entries';
+import { log } from './log';
 
 // update references in entry object
 export const lookupEntries = function (
@@ -212,6 +213,8 @@ export const lookupEntries = function (
       if (status === 'safe') {
         entry = entry.replace(uidRegex, escapedMappedUid);
         mapped.push(uid);
+      } else {
+        log(`Skipping the entry uid ${uid} since the regex is not valid`, 'warn');
       }
     } else {
       unmapped.push(uid);
