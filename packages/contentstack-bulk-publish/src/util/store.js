@@ -1,5 +1,4 @@
 const fs = require('fs');
-const path = require('path');
 const config = require('../config/index.js');
 const chalk = require('chalk');
 const {pathValidator} = require('@contentstack/cli-utilities')
