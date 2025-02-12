@@ -8,9 +8,9 @@ import * as _ from 'lodash';
 import config from '../config';
 import * as fileHelper from './file-helper';
 import { escapeRegExp, validateRegex } from '@contentstack/cli-utilities';
+import { log } from './log';
 
 import { EntryJsonRTEFieldDataType } from '../types/entries';
-import { log } from './log';
 
 // update references in entry object
 export const lookupEntries = function (
