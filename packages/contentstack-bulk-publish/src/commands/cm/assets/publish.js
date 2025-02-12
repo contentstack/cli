@@ -94,7 +94,6 @@ class AssetsPublishCommand extends Command {
             updatedFlags.destEnv = updatedFlags.environments;
             updatedFlags.environment = updatedFlags['source-env'];
             updatedFlags.onlyAssets = true;
-            console.log(updatedFlags)
             if (updatedFlags.locales instanceof Array) {
               updatedFlags.locales.forEach((locale) => {
                 updatedFlags.locale = locale;
