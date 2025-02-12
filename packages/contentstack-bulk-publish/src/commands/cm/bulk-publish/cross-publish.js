@@ -43,8 +43,16 @@ class CrossPublishCommand extends Command {
           this.error('Please use `--alias` or `--stack-api-key` to proceed.', { exit: 2 });
         }
         if (!updatedFlags.deliveryToken) {
-          updatedFlags.deliveryToken = await cliux.prompt('Enter delivery token of your source environment');
+          updatedFlags.deliveryToken = await cliux.prompt('Enter delivery token alias of your source environment');
         }
+        if (updatedFlags.deliveryToken) {
+          const configToken = this.getToken(updatedFlags.deliveryToken)
+          if(configToken) {
+            updatedFlags.deliveryToken = configToken.token;
+          } else {
+            this.error(`Delivery Token alias does not exist run the csdx auth:tokens command to verify`,{ exit: 2 })
+          }
+      }
         updatedFlags.bulkPublish = updatedFlags.bulkPublish === 'false' ? false : true;
         updatedFlags.includeVariants = updatedFlags.includeVariants === false ? false : true;
         stack = await getStack(config);
