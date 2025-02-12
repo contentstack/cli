@@ -5,7 +5,6 @@
 /* eslint-disable camelcase */
 const { configHandler } = require('@contentstack/cli-utilities');
 const { getQueue } = require('../util/queue');
-const defaults = require('../config/defaults.json');
 const { performBulkUnPublish, UnpublishEntry, UnpublishAsset, initializeLogger } = require('../consumer/publish');
 const retryFailedLogs = require('../util/retryfailed');
 const { validateFile } = require('../util/fs');
