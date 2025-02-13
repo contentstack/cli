@@ -7,7 +7,7 @@ const path = require('path');
 const { formatError } = require('../util');
 const apiVersionForNRP = '3.2';
 const nrpApiVersionWarning = `Provided apiVersion is invalid. ${apiVersionForNRP} is only supported value. Continuing with regular bulk-publish for now.`;
-const { handleRateLimit } = require('../util/common-utility');
+const { handleRateLimit, fetchBulkPublishLimit } = require('../util/common-utility');
 const { getLoggerInstance, addLogs, getLogsDirPath } = require('../util/logger');
 const { sanitizePath } = require('@contentstack/cli-utilities');
 const { delay } = require('bluebird');
@@ -235,9 +235,10 @@ async function performBulkPublish(data, _config, queue) {
   // add validation for user uid
   // if user not logged in, then user uid won't be available and NRP too won't work
   let conf;
-  let xRateLimitRemaining;
   const bulkPublishObj = data.obj;
   const stack = bulkPublishObj.stack;
+  let bulkPublishLimit = fetchBulkPublishLimit(stack?.org_uid);
+  let xRateLimitRemaining = bulkPublishLimit;
   let payload = {};
   switch (bulkPublishObj.Type) {
     case 'entry':
