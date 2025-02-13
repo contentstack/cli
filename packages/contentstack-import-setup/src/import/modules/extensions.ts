@@ -51,7 +51,7 @@ export default class ExtensionImportSetup {
 
         log(this.config, `The required setup files for extensions have been generated successfully.`, 'success');
       } else {
-        log(this.config, 'No extensions found in the content folder.', 'error');
+        log(this.config, 'No extensions found in the content folder.', 'info');
       }
     } catch (error) {
       log(this.config, `Error occurred while generating the extension mapper: ${formatError(error)}.`, 'error');

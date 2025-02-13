@@ -27,23 +27,34 @@ export default class ImportSetup {
    */
   protected async generateDependencyTree() {
     type ModulesKey = keyof typeof this.config.modules;
+    const visited: Set<string> = new Set();
+    const assignedDependencies: Set<string> = new Set(); // Track assigned dependencies
 
-    const getAllDependencies = (module: ModulesKey, visited: Set<string> = new Set()): Modules[] => {
+    const getAllDependencies = (module: ModulesKey): Modules[] => {
       if (visited.has(module)) return [];
 
       visited.add(module);
-      let dependencies: Modules[] = this.config.modules[module as ModulesKey]?.dependencies || [];
+      const dependencies: Modules[] = this.config.modules[module]?.dependencies || [];
+
+      let allDeps: Modules[] = [...dependencies];
 
       for (const dependency of dependencies) {
-        dependencies = dependencies.concat(getAllDependencies(dependency as ModulesKey, visited));
+        allDeps.push(...getAllDependencies(dependency as ModulesKey));
       }
 
-      return dependencies;
+      return allDeps;
     };
 
+    this.dependencyTree = {}; // Reset before building
+
     for (const module of this.config.selectedModules) {
-      const allDependencies = getAllDependencies(module as ModulesKey);
-      this.dependencyTree[module] = Array.from(new Set(allDependencies));
+      let allDependencies = getAllDependencies(module as ModulesKey);
+      allDependencies = allDependencies.filter((dep) => !assignedDependencies.has(dep)); // Remove assigned ones
+
+      this.dependencyTree[module] = allDependencies;
+
+      // Mark these dependencies as assigned so they won't be included in later modules
+      allDependencies.forEach((dep) => assignedDependencies.add(dep));
     }
   }
 
