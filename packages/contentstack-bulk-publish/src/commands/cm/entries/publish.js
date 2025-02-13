@@ -84,6 +84,14 @@ class PublishEntriesCommand extends Command {
 
           if (updatedFlags['source-env']) {
             updatedFlags.deliveryToken = updatedFlags['delivery-token'];
+            if (updatedFlags.deliveryToken) {
+              const configToken = this.getToken(updatedFlags.deliveryToken)
+              if(configToken) {
+                updatedFlags.deliveryToken = configToken.token;
+              } else {
+                this.error(`Delivery Token alias does not exist run the csdx auth:tokens command to verify`,{ exit: 2 })
+              }
+            }
             updatedFlags.destEnv = updatedFlags.environments;
             updatedFlags.environment = updatedFlags['source-env'];
             updatedFlags.onlyEntries = true;
