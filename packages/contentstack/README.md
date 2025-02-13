@@ -45,7 +45,6 @@ USAGE
 * [`csdx cm:branches:delete [-uid <value>] [-k <value>]`](#csdx-cmbranchesdelete--uid-value--k-value)
 * [`csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]`](#csdx-cmbranchesdiff---base-branch-value---compare-branch-value--k-value--module-value)
 * [`csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>] [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]`](#csdx-cmbranchesmerge--k-value--compare-branch-value---no-revert---export-summary-path-value---use-merge-summary-value---comment-value---base-branch-value)
-* [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
 * [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value)
 * [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value-1)
 * [`csdx cm:bulk-publish:clear`](#csdx-cmbulk-publishclear)
@@ -759,20 +758,6 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/merge.ts)_
-
-## `csdx cm:bulk-publish`
-
-Bulk Publish script for managing entries and assets
-
-```
-USAGE
-  $ csdx cm:bulk-publish
-
-DESCRIPTION
-  Bulk Publish script for managing entries and assets
-```
-
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/index.js)_
 
 ## `csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`
 
@@ -4232,7 +4217,7 @@ EXAMPLES
   $ csdx tsgen -a "delivery token alias" -o "contentstack/generated.d.ts" --api-type graphql --namespace "GraphQL"
 ```
 
-_See code: [contentstack-cli-tsgen](https://github.com/Contentstack-Solutions/contentstack-cli-tsgen/blob/v3.1.0/src/commands/tsgen.ts)_
+_See code: [contentstack-cli-tsgen](https://github.com/Contentstack-Solutions/contentstack-cli-tsgen/blob/v3.3.0/src/commands/tsgen.ts)_
 
 ## `csdx whoami`
 

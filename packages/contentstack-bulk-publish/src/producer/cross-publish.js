@@ -336,7 +336,6 @@ async function start(
     }
     process.exit(0);
   });
-
   if (retryFailed) {
     if (typeof retryFailed === 'string' && retryFailed.length > 0) {
       if (!validateFile(retryFailed, ['cross-publish', 'bulk-cross-publish'])) {
