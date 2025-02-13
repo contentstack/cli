@@ -94,7 +94,7 @@ export default class ImportMarketplaceApps {
       return Promise.resolve();
     }
     await fsUtil.makeDirectory(this.mapperDirPath);
-    this.developerHubBaseUrl = this.importConfig.developerHubBaseUrl || (await getDeveloperHubUrl(this.importConfig))
+    this.developerHubBaseUrl = this.importConfig.developerHubBaseUrl || (await getDeveloperHubUrl(this.importConfig));
     this.importConfig.developerHubBaseUrl = this.developerHubBaseUrl;
 
     // NOTE init marketplace app sdk
@@ -282,7 +282,8 @@ export default class ImportMarketplaceApps {
       .marketplace(this.importConfig.org_uid)
       .installation(app.uid)
       .fetch()
-      .catch(() => {}); // NOTE Keeping this to avoid Unhandled exception
+      .catch(() => {}); // NOTE Keeping this to avoid Unhandled exce
+    // ption
 
     return !isEmpty(installation);
   }
