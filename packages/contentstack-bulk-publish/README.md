@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-cm-bulk-publish
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-bulk-publish/1.7.2 darwin-arm64 node-v22.2.0
+@contentstack/cli-cm-bulk-publish/1.8.0 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -31,7 +31,6 @@ USAGE
 <!-- commands -->
 * [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value)
 * [`csdx cm:assets:unpublish`](#csdx-cmassetsunpublish)
-* [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
 * [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value)
 * [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value-1)
 * [`csdx cm:bulk-publish:clear`](#csdx-cmbulk-publishclear)
@@ -215,20 +214,6 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cm/assets/unpublish.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/assets/unpublish.js)_
-
-## `csdx cm:bulk-publish`
-
-Bulk Publish script for managing entries and assets
-
-```
-USAGE
-  $ csdx cm:bulk-publish
-
-DESCRIPTION
-  Bulk Publish script for managing entries and assets
-```
-
-_See code: [src/commands/cm/bulk-publish/index.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/index.js)_
 
 ## `csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`
 
