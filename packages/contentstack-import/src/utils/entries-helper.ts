@@ -206,11 +206,10 @@ export const lookupEntries = function (
   let entry = JSON.stringify(data.entry);
   uids?.forEach(function (uid: any) {
     if (mappedUids.hasOwnProperty(uid)) {
-      const sanitizedUid = escapeRegExp(uid);
       const escapedMappedUid = escapeRegExp(mappedUids[uid]);
-      const uidRegex = new RegExp(`\\b${sanitizedUid}\\b`, 'img');
-      let { status } = validateRegex(uidRegex);
-      if (status === 'safe') {
+      // Use a static regex for alphanumeric only uids
+      const uidRegex = /^[a-zA-Z0-9]+$/; // Static regex that matches alphanumeric uids
+      if (uid.match(uidRegex)) {  // Validate against the static regex
         entry = entry.replace(uidRegex, escapedMappedUid);
         mapped.push(uid);
       } else {
