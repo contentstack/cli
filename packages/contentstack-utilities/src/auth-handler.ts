@@ -4,7 +4,8 @@ import configHandler from './config-handler';
 import dotenv from 'dotenv';
 import * as ContentstackManagementSDK from '@contentstack/management';
 import messageHandler from './message-handler';
-const http = require('http');
+// const http = require('http');
+import https from 'https';
 const url = require('url');
 import open from 'open';
 import {LoggerService} from './logger';
@@ -119,7 +120,7 @@ class AuthHandler {
   async createHTTPServer(): Promise<object> {
     return new Promise((resolve, reject) => {
       try {
-        const server = http.createServer((req, res) => {
+        const server = https.createServer((req, res) => {
           const reqURL = req.url;
           const queryObject = url.parse(reqURL, true).query;
           if (queryObject.code) {
