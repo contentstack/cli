@@ -68,7 +68,6 @@ export default class ContentTypesExport extends BaseClass {
     if (skip) {
       this.qs.skip = skip;
     }
-    delete this.stackAPIClient.stackHeaders.api_version;
     const contentTypeSearchResponse = await this.stackAPIClient.contentType().query(this.qs).find();
     if (Array.isArray(contentTypeSearchResponse.items) && contentTypeSearchResponse.items.length > 0) {
       let updatedContentTypes = this.sanitizeAttribs(contentTypeSearchResponse.items);

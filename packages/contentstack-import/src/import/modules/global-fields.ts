@@ -6,14 +6,12 @@
  */
 
 import * as path from 'path';
-import { isEmpty, cloneDeep, map, find } from 'lodash';
+import { isEmpty, cloneDeep } from 'lodash';
 import { cliux, sanitizePath } from '@contentstack/cli-utilities';
-import { GlobalFieldData, GlobalField } from '@contentstack/management/types/stack/globalField';
+import { GlobalFieldData } from '@contentstack/management/types/stack/globalField';
 import { fsUtil, log, formatError, fileHelper, lookupExtension, removeReferenceFields } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
-import { gfSchemaTemplate } from '../../utils/global-field-helper';
-
 
 export default class ImportGlobalFields extends BaseClass {
   private gFsMapperPath: string;
@@ -75,12 +73,8 @@ export default class ImportGlobalFields extends BaseClass {
       ((await fsUtil.readFile(this.marketplaceAppMapperPath)) as any) || { extension_uid: {} }
     ).extension_uid;
 
-    await this.seedGFs();
-    if (this.seedGFs?.length) fsUtil.writeFile(this.gFsPendingPath, this.pendingGFs);
-    log(this.importConfig, 'Created Global Fields', 'success');
-
-    await this.updateGFs();
-    log(this.importConfig, 'Updated Global Fields', 'success');
+    await this.importGFs();
+    fsUtil.writeFile(this.gFsPendingPath, this.pendingGFs);
 
     if (this.importConfig.replaceExisting && this.existingGFs.length > 0) {
       await this.replaceGFs().catch((error: Error) => {
@@ -91,20 +85,21 @@ export default class ImportGlobalFields extends BaseClass {
     log(this.config, 'Global fields import has been completed!', 'info');
   }
 
-  async seedGFs(): Promise<any> {
+  async importGFs() {
     const onSuccess = ({ response: globalField, apiData: { uid } = undefined }: any) => {
       this.createdGFs.push(globalField);
       this.gFsUidMapper[uid] = globalField;
-      log(this.importConfig, `Global field ${globalField.global_field.uid} created successfully`, 'success');
+      fsUtil.writeFile(this.gFsUidMapperPath, this.gFsUidMapper);
+      log(this.config, 'Global field ' + uid + ' created successfully', 'success');
     };
     const onReject = ({ error, apiData: globalField = undefined }: any) => {
-      const uid = globalField?.uid;
+      const uid = globalField.uid;
       if (error?.errors?.title) {
         if (this.importConfig.replaceExisting) {
           this.existingGFs.push(globalField);
         }
         if (!this.importConfig.skipExisting) {
-          log(this.importConfig, `Global fields '${globalField?.global_field?.uid}' already exist`, 'info');
+          log(this.importConfig, `Global fields '${uid}' already exist`, 'info');
         }
       } else {
         log(this.importConfig, `Global fields '${uid}' failed to import`, 'error');
@@ -112,58 +107,24 @@ export default class ImportGlobalFields extends BaseClass {
         this.failedGFs.push({ uid });
       }
     };
-    return await this.makeConcurrentCall({
-      processName: 'Import global fields',
-      apiContent: this.gFs,
-      apiParams: {
-        serializeData: this.serializeGFs.bind(this),
-        reject: onReject.bind(this),
-        resolve: onSuccess.bind(this),
-        entity: 'create-gfs',
-        includeParamOnCompletion: true,
-      },
-      concurrencyLimit: this.reqConcurrency,
-    });
-  }
 
-  /**
-   * @method serializeGFs
-   * @param {ApiOptions} apiOptions ApiOptions
-   * @returns {ApiOptions} ApiOptions
-   */
-  serializeGFs(apiOptions: ApiOptions): ApiOptions {
-    const { apiData: globalField } = apiOptions;
-    const updatedGF = cloneDeep(gfSchemaTemplate);
-    updatedGF.global_field.uid = globalField.uid;
-    updatedGF.global_field.title = globalField.title;
-    apiOptions.apiData = updatedGF;
-    return apiOptions;
-  }
-
-  async updateGFs(): Promise<any> {
-    const onSuccess = ({ response: globalField, apiData: { uid } = undefined }: any) => {
-      log(this.importConfig, `Updated the global field ${uid}`, 'info');
-    };
-    const onReject = ({ error, apiData: { uid } = undefined }: any) => {
-      log(this.importConfig, `Failed to update the global field '${uid}' ${formatError(error)}`, 'error');
-    };
-    
-    return await this.makeConcurrentCall({
-      processName: 'Update Global Fields',
-      apiContent: this.gFs,
-      apiParams: {
-        reject: onReject.bind(this),
-        resolve: onSuccess.bind(this),
-        entity: 'update-gfs',
-        includeParamOnCompletion: true,
+    return await this.makeConcurrentCall(
+      {
+        processName: 'Import global fields',
+        apiContent: this.gFs,
+        apiParams: {
+          reject: onReject.bind(this),
+          resolve: onSuccess.bind(this),
+          entity: 'create-gfs',
+          includeParamOnCompletion: true,
+        },
+        concurrencyLimit: this.reqConcurrency,
       },
-      concurrencyLimit: this.reqConcurrency,
-    },
-    this.updateSerializedGFs.bind(this),
+      this.createGFs.bind(this),
     );
   }
 
-  async updateSerializedGFs({
+  async createGFs({
     apiParams,
     element: globalField,
     isLastRequest,
@@ -180,16 +141,16 @@ export default class ImportGlobalFields extends BaseClass {
         this.pendingGFs.push(globalField.uid);
       }
       return this.stack
-        .globalField(globalField.uid, { api_version: '3.2' })
-        .update({ global_field: globalField })
-        .then((response: GlobalField) => {
+        .globalField()
+        .create({ global_field: globalField as GlobalFieldData })
+        .then((response) => {
           apiParams.resolve({
             response,
             apiData: globalField,
           });
           resolve(true);
         })
-        .catch((error: unknown) => {
+        .catch((error) => {
           apiParams.reject({
             error,
             apiData: globalField,
@@ -232,13 +193,13 @@ export default class ImportGlobalFields extends BaseClass {
   }
 
   /**
-   * @method serializeReplaceGFs
+   * @method serializeUpdateGFs
    * @param {ApiOptions} apiOptions ApiOptions
    * @returns {ApiOptions} ApiOptions
    */
   serializeReplaceGFs(apiOptions: ApiOptions): ApiOptions {
     const { apiData: globalField } = apiOptions;
-    const globalFieldPayload = this.stack.globalField(globalField.uid, { api_version: '3.2' });
+    const globalFieldPayload = this.stack.globalField(globalField.uid);
     Object.assign(globalFieldPayload, cloneDeep(globalField), {
       stackHeaders: globalFieldPayload.stackHeaders,
     });
