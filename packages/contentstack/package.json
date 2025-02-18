@@ -40,7 +40,7 @@
     "@contentstack/cli-migration": "~1.6.5",
     "@contentstack/cli-utilities": "~1.8.1",
     "@contentstack/cli-variants": "~1.1.5",
-    "@contentstack/management": "~1.19.2",
+    "@contentstack/management": "~1.18.4",
     "@oclif/core": "^3.27.0",
     "@oclif/plugin-help": "^5.2.20",
     "@oclif/plugin-not-found": "^2.4.3",

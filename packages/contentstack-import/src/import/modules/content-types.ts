@@ -232,7 +232,7 @@ export default class ContentTypesImport extends BaseClass {
       log(this.importConfig, `Updated the global field ${uid} with content type references`, 'info');
     };
     const onReject = ({ error, apiData: { uid } = undefined }: any) => {
-      log(this.importConfig, `Failed to update the global field '${uid}' ${formatError(error)}`, 'error');
+      log(this.importConfig, `failed to update the global field '${uid}' ${formatError(error)}`, 'error');
     };
     return await this.makeConcurrentCall({
       processName: 'Update pending global fields',
@@ -266,9 +266,8 @@ export default class ContentTypesImport extends BaseClass {
       this.importConfig.preserveStackVersion,
       this.installedExtensions,
     );
-    const globalFieldPayload = this.stack.globalField(
-      uid, { api_version: '3.2' },
-    );
+    apiOptions.apiData = globalField;
+    const globalFieldPayload = this.stack.globalField(uid);
     Object.assign(globalFieldPayload, cloneDeep(globalField));
     apiOptions.apiData = globalFieldPayload;
     return apiOptions;
