@@ -95,7 +95,7 @@ export default class ImportGlobalFields extends BaseClass {
     const onSuccess = ({ response: globalField, apiData: { uid } = undefined }: any) => {
       this.createdGFs.push(globalField);
       this.gFsUidMapper[uid] = globalField;
-      log(this.importConfig, `Global field ${globalField.uid} created successfully`, 'success');
+      log(this.importConfig, `Global field ${globalField.global_field.uid} created successfully`, 'success');
     };
     const onReject = ({ error, apiData: globalField = undefined }: any) => {
       const uid = globalField?.uid;
