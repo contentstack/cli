@@ -22,6 +22,8 @@ import {
 
 describe('Entries module', () => {
   let constructorParam: ModuleConstructorParam & CtConstructorParam;
+  let ctStub: Sinon.SinonStub;
+  let gfStub: Sinon.SinonStub;
 
   beforeEach(() => {
     constructorParam = {
@@ -31,6 +33,17 @@ describe('Entries module', () => {
       gfSchema: cloneDeep(require('../mock/contents/global_fields/globalfields.json')),
       config: Object.assign(config, { basePath: resolve(__dirname, '..', 'mock', 'contents'), flags: {} }),
     };
+  });
+
+  before(() => {
+    ctStub = Sinon.stub(ContentType.prototype, 'run').resolves({ ct1: [{}] });
+    gfStub = Sinon.stub(GlobalField.prototype, 'run').resolves({ gf1: [{}] });
+  });
+
+  after(() => {
+    Sinon.restore(); // Clears Sinon spies/stubs/mocks
+    ctStub.restore();
+    gfStub.restore();
   });
 
   describe('run method', () => {
@@ -93,16 +106,11 @@ describe('Entries module', () => {
   describe('fixPrerequisiteData method', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
-      .stub(ContentType.prototype, 'run', async () => ({ ct1: [{}] }))
-      .stub(GlobalField.prototype, 'run', async () => ({ gf1: [{}] }))
-
       .it('should call content type and global fields fix functionality', async () => {
-        const ctRun = Sinon.spy(ContentType.prototype, 'run');
-        const gfRun = Sinon.spy(GlobalField.prototype, 'run');
         const ctInstance = new Entries(constructorParam);
         await ctInstance.fixPrerequisiteData();
-        expect(ctRun.callCount).to.be.equals(1);
-        expect(gfRun.callCount).to.be.equals(1);
+        expect(ctStub.callCount).to.be.equals(1);
+        expect(gfStub.callCount).to.be.equals(1);
         expect(ctInstance.ctSchema).deep.contain({ ct1: [{}] });
         expect(ctInstance.gfSchema).deep.contain({ gf1: [{}] });
       });
