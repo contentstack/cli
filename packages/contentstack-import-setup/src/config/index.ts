@@ -47,7 +47,7 @@ const config: DefaultConfig = {
     'global-fields': {
       dirName: 'global_fields',
       fileName: 'globalfields.json',
-      dependencies: ['marketplace-apps'],
+      dependencies: ['extensions', 'marketplace-apps'],
     },
     'marketplace-apps': {
       dirName: 'marketplace_apps',

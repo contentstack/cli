@@ -16,10 +16,14 @@ import { setupImportConfig, log } from '../../../utils';
 import { ImportSetup } from '../../../import';
 
 export default class ImportSetupCommand extends Command {
-  static description = messageHandler.parse('Import content from a stack');
+  static description = messageHandler.parse(
+    'Helps to generate mappers and backup folder for importing (overwriting) specific modules',
+  );
 
   static examples: string[] = [
-    `csdx cm:stacks:import-setup --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>`,
+    `csdx cm:stacks:import-setup --stack-api-key <target_stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>`,
+    `csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name>`,
+    `csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name> -b <branch_name>`,
   ];
 
   static flags: FlagInput = {
@@ -29,15 +33,23 @@ export default class ImportSetupCommand extends Command {
     }),
     'data-dir': flags.string({
       char: 'd',
-      description: 'path and location where data is stored',
+      description: `The path or the location in your file system where the content, you intend to import, is stored. For example, -d "C:\\Users\\Name\\Desktop\\cli\\content". If the export folder has branches involved, then the path should point till the particular branch. For example, “-d "C:\\Users\\Name\\Desktop\\cli\\content\\branch_name"`,
     }),
     alias: flags.string({
       char: 'a',
-      description: 'alias of the management token',
+      description: 'The management token of the destination stack where you will import the content.',
     }),
-    modules: flags.string({
-      options: ['content-types', 'entries', 'both'], // only allow the value to be from a discrete set
-      description: '[optional] specific module name',
+    module: flags.string({
+      options: ['global-fields', 'content-types', 'entries'], // only allow the value to be from a discrete set
+      description:
+        '[optional] Specify the modules/module to import into the target stack. currently options are global-fields, content-types, entries',
+      multiple: true,
+    }),
+    branch: flags.string({
+      char: 'B',
+      description:
+        "The name of the branch where you want to import your content. If you don't mention the branch name, then by default the content will be imported to the main branch.",
+      parse: printFlagDeprecation(['-B'], ['--branch']),
     }),
   };
 
@@ -58,18 +70,18 @@ export default class ImportSetupCommand extends Command {
       await importSetup.start();
       log(
         importSetupConfig,
-        `Successfully created backup folder and mapper files for the stack with the API key ${importSetupConfig.apiKey}.`,
+        `Backup folder and mapper files have been successfully created for the stack using the API key ${importSetupConfig.apiKey}.`,
         'success',
       );
       log(
         importSetupConfig,
-        `The backup folder created at '${pathValidator(path.join(importSetupConfig.backupDir))}'`,
+        `The backup folder has been created at '${pathValidator(path.join(importSetupConfig.backupDir))}'.`,
         'success',
       );
     } catch (error) {
       log(
         { data: '' } as ImportConfig,
-        `Failed to create backup folder and mapper files - ${formatError(error)}`,
+        `Failed to create the backup folder and mapper files: ${formatError(error)}`,
         'error',
       );
     }
