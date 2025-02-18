@@ -78,16 +78,9 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
 
   if (importCmdFlags['branch']) {
     config.branchName = importCmdFlags['branch'];
-    config.branchDir = path.join(sanitizePath(config.contentDir), sanitizePath(config.branchName));
   }
 
-  const selectedModule = importCmdFlags['modules'] || (await askSelectedModules());
-  if (selectedModule === 'both') {
-    config.selectedModules = ['content-types', 'entries'];
-  } else {
-    config.selectedModules = [selectedModule];
-  }
-
+  config.selectedModules = importCmdFlags['module'] || [await askSelectedModules()];
   if (importCmdFlags['backup-dir']) {
     config.useBackedupDir = importCmdFlags['backup-dir'];
   }

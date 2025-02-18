@@ -41,7 +41,7 @@ export default class ExtensionImportSetup {
         for (const extension of Object.values(extensions) as any) {
           const targetExtension: any = await this.getExtension(extension);
           if (!targetExtension) {
-            log(this.config, `Extension with title '${extension.title}' not found in the stack!`, 'info');
+            log(this.config, `Extension with the title '${extension.title}' not found in the stack.`, 'info');
             continue;
           }
           this.extensionMapper[extension.uid] = targetExtension.uid;
@@ -49,12 +49,12 @@ export default class ExtensionImportSetup {
 
         await fsUtil.writeFile(this.extUidMapperPath, this.extensionMapper);
 
-        log(this.config, `Generated required setup files for extension`, 'success');
+        log(this.config, `The required setup files for extensions have been generated successfully.`, 'success');
       } else {
-        log(this.config, 'No extensions found in the content folder!', 'error');
+        log(this.config, 'No extensions found in the content folder.', 'info');
       }
     } catch (error) {
-      log(this.config, `Error generating extension mapper: ${formatError(error)}`, 'error');
+      log(this.config, `Error occurred while generating the extension mapper: ${formatError(error)}.`, 'error');
     }
   }
 

@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.33.0 darwin-arm64 node-v22.8.0
+@contentstack/cli/1.35.2 darwin-arm64 node-v22.2.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -2375,27 +2375,37 @@ EXAMPLES
 
 ## `csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`
 
-Import content from a stack
+Helps to generate mappers and backup folder for importing (overwriting) specific modules
 
 ```
 USAGE
   $ csdx cm:import-setup cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]
 
 FLAGS
-  -a, --alias=<value>          alias of the management token
-  -d, --data-dir=<value>       path and location where data is stored
+  -B, --branch=<value>         The name of the branch where you want to import your content. If you don't mention the
+                               branch name, then by default the content will be imported to the main branch.
+  -a, --alias=<value>          The management token of the destination stack where you will import the content.
+  -d, --data-dir=<value>       The path or the location in your file system where the content, you intend to import, is
+                               stored. For example, -d "C:\Users\Name\Desktop\cli\content". If the export folder has
+                               branches involved, then the path should point till the particular branch. For example,
+                               “-d "C:\Users\Name\Desktop\cli\content\branch_name"
   -k, --stack-api-key=<value>  API key of the target stack
-      --modules=<option>       [optional] specific module name
-                               <options: content-types|entries|both>
+      --module=<option>...     [optional] Specify the modules/module to import into the target stack. currently options
+                               are global-fields, content-types, entries
+                               <options: global-fields|content-types|entries>
 
 DESCRIPTION
-  Import content from a stack
+  Helps to generate mappers and backup folder for importing (overwriting) specific modules
 
 ALIASES
   $ csdx cm:import-setup
 
 EXAMPLES
-  $ csdx cm:stacks:import-setup --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>
+  $ csdx cm:stacks:import-setup --stack-api-key <target_stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>
+
+  $ csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name>
+
+  $ csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name> -b <branch_name>
 ```
 
 ## `csdx cm:migrate-rte`
@@ -2858,27 +2868,37 @@ _See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blo
 
 ## `csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`
 
-Import content from a stack
+Helps to generate mappers and backup folder for importing (overwriting) specific modules
 
 ```
 USAGE
   $ csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]
 
 FLAGS
-  -a, --alias=<value>          alias of the management token
-  -d, --data-dir=<value>       path and location where data is stored
+  -B, --branch=<value>         The name of the branch where you want to import your content. If you don't mention the
+                               branch name, then by default the content will be imported to the main branch.
+  -a, --alias=<value>          The management token of the destination stack where you will import the content.
+  -d, --data-dir=<value>       The path or the location in your file system where the content, you intend to import, is
+                               stored. For example, -d "C:\Users\Name\Desktop\cli\content". If the export folder has
+                               branches involved, then the path should point till the particular branch. For example,
+                               “-d "C:\Users\Name\Desktop\cli\content\branch_name"
   -k, --stack-api-key=<value>  API key of the target stack
-      --modules=<option>       [optional] specific module name
-                               <options: content-types|entries|both>
+      --module=<option>...     [optional] Specify the modules/module to import into the target stack. currently options
+                               are global-fields, content-types, entries
+                               <options: global-fields|content-types|entries>
 
 DESCRIPTION
-  Import content from a stack
+  Helps to generate mappers and backup folder for importing (overwriting) specific modules
 
 ALIASES
   $ csdx cm:import-setup
 
 EXAMPLES
-  $ csdx cm:stacks:import-setup --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>
+  $ csdx cm:stacks:import-setup --stack-api-key <target_stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>
+
+  $ csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name>
+
+  $ csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name> -b <branch_name>
 ```
 
 _See code: [@contentstack/cli-cm-import-setup](https://github.com/contentstack/cli/blob/main/packages/contentstack-import-setup/src/commands/cm/stacks/import-setup.ts)_
@@ -3581,8 +3601,9 @@ Launch related operations
 USAGE
   $ csdx launch [--type GitHub|FileUpload] [--framework Gatsby|NextJs|CRA (Create React App)|CSR
     (Client-Side Rendered)|Angular|VueJs|Other] [--org <value>] [-n <value>] [-e <value>] [--branch <value>]
-    [--build-command <value>] [--out-dir <value>] [--variable-type Import variables from a stack|Manually add custom
-    variables to the list|Import variables from the local env file] [-a <value>] [--env-variables <value>]
+    [--build-command <value>] [--out-dir <value>] [--server-command <value>] [--variable-type Import variables from a
+    stack|Manually add custom variables to the list|Import variables from the local env file] [-a <value>]
+    [--env-variables <value>] [--redeploy-latest] [--redeploy-last-upload]
 
 FLAGS
   -a, --alias=<value>           [optional] Alias (name) for the delivery token.
@@ -3597,6 +3618,9 @@ FLAGS
                                 Rendered)|Angular|VueJs|Other>
       --org=<value>             [optional] Provide the organization UID to create a new project or deployment.
       --out-dir=<value>         [optional] Output Directory.
+      --redeploy-last-upload    [optional] Redeploy with last file upload
+      --redeploy-latest         [optional] Redeploy latest commit/code
+      --server-command=<value>  [optional] Server Command.
       --type=<option>           [optional] Type of adapters. <options: GitHub|FileUpload>
                                 <options: GitHub|FileUpload>
       --variable-type=<option>  [optional] Provide a variable type. <options: Import variables from a stack|Manually add
@@ -3618,16 +3642,22 @@ EXAMPLES
 
   $ csdx launch --data-dir <path/of/current/working/dir> --type <options: GitHub|FileUpload>
 
+  $ csdx launch --data-dir <path/of/current/working/dir> --redeploy-latest
+
+  $ csdx launch --data-dir <path/of/current/working/dir> --redeploy-latest --redeploy-last-upload
+
   $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload>
 
   $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value>
+
+  $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --server-command=<value>
 
   $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --variable-type="Import variables from a stack" --alias=<value>
 
   $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --variable-type="Manually add custom variables to the list" --env-variables="APP_ENV:prod, TEST_ENV:testVal"
 ```
 
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/src/commands/launch/index.ts)_
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/index.ts)_
 
 ## `csdx launch:deployments`
 
@@ -3655,7 +3685,7 @@ EXAMPLES
   $ csdx launch:deployments -e "environment number or uid" --org=<org UID> --project=<Project UID>
 ```
 
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/src/commands/launch/deployments.ts)_
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/deployments.ts)_
 
 ## `csdx launch:environments`
 
@@ -3682,7 +3712,7 @@ EXAMPLES
   $ csdx launch:environments --org=<org UID> --project=<Project UID>
 ```
 
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/src/commands/launch/environments.ts)_
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/environments.ts)_
 
 ## `csdx launch:functions`
 
@@ -3712,7 +3742,7 @@ EXAMPLES
   $ csdx launch:functions --config <path/to/launch/config/file> --port=port
 ```
 
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/src/commands/launch/functions.ts)_
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/functions.ts)_
 
 ## `csdx launch:logs`
 
@@ -3756,7 +3786,7 @@ EXAMPLES
   $ csdx launch:logs --environment=environment --config <path/to/launch/config/file> --deployment=deployment
 ```
 
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/src/commands/launch/logs.ts)_
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/logs.ts)_
 
 ## `csdx launch:open`
 
@@ -3788,7 +3818,7 @@ EXAMPLES
   $ csdx launch:open --environment=environment --data-dir <path/of/current/working/dir>
 ```
 
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/src/commands/launch/open.ts)_
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/open.ts)_
 
 ## `csdx login`
 
@@ -3867,7 +3897,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.22/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.31/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:add PLUGIN`
 
@@ -3941,7 +3971,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.22/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.31/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN`
 
@@ -3990,7 +4020,7 @@ EXAMPLES
     $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.22/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.31/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PATH`
 
@@ -4021,7 +4051,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.22/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.31/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:remove [PLUGIN]`
 
@@ -4062,7 +4092,7 @@ FLAGS
   --reinstall  Reinstall all plugins after uninstalling.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.22/src/commands/plugins/reset.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.31/src/commands/plugins/reset.ts)_
 
 ## `csdx plugins:uninstall [PLUGIN]`
 
@@ -4090,7 +4120,7 @@ EXAMPLES
   $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.22/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.31/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:unlink [PLUGIN]`
 
@@ -4134,7 +4164,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.22/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.31/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
@@ -4168,7 +4198,7 @@ EXAMPLES
 
 ## `csdx tsgen`
 
-generate TypeScript typings from a Stack
+Generate TypeScript typings from a Stack
 
 ```
 USAGE
@@ -4188,7 +4218,7 @@ FLAGS
                                types.
 
 DESCRIPTION
-  generate TypeScript typings from a Stack
+  Generate TypeScript typings from a Stack
 
 EXAMPLES
   $ csdx tsgen -a "delivery token alias" -o "contentstack/generated.d.ts"
@@ -4202,7 +4232,7 @@ EXAMPLES
   $ csdx tsgen -a "delivery token alias" -o "contentstack/generated.d.ts" --api-type graphql --namespace "GraphQL"
 ```
 
-_See code: [contentstack-cli-tsgen](https://github.com/Contentstack-Solutions/contentstack-cli-tsgen/blob/v3.0.1/src/commands/tsgen.ts)_
+_See code: [contentstack-cli-tsgen](https://github.com/Contentstack-Solutions/contentstack-cli-tsgen/blob/v3.1.0/src/commands/tsgen.ts)_
 
 ## `csdx whoami`
 

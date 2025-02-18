@@ -109,7 +109,8 @@ export const formatError = function (error: any) {
   }
 
   // Determine the error message
-  let message = parsedError.errorMessage || parsedError.error_message || parsedError.message || parsedError;
+  let message =
+    parsedError.errorMessage || parsedError.error_message || parsedError?.code || parsedError.message || parsedError;
   if (typeof message === 'object') {
     message = JSON.stringify(message);
   }
