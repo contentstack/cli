@@ -148,8 +148,8 @@ async function start({ retryFailed, bulkPublish, environments, folderUid, locale
   } else if (folderUid) {
     setConfig(config, bulkPublish);
     const bulkPublishLimit = fetchBulkPublishLimit(stack?.org_uid);
-    for (const element of locales) {
-      await getAssets(stack, folderUid, bulkPublish, environments, element, apiVersion, bulkPublishLimit);
+    for (const locale of locales) {
+      await getAssets(stack, folderUid, bulkPublish, environments, locale, apiVersion, bulkPublishLimit);
     }
   }
 }
