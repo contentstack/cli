@@ -5,7 +5,6 @@
 /* eslint-disable max-params */
 const { configHandler } = require('@contentstack/cli-utilities');
 const { getQueue } = require('../util/queue');
-const defaults = require('../config/defaults.json');
 const { performBulkPublish, publishEntry, publishAsset, initializeLogger } = require('../consumer/publish');
 const retryFailedLogs = require('../util/retryfailed');
 const { validateFile } = require('../util/fs');
@@ -313,7 +312,6 @@ async function start(
   {
     retryFailed,
     bulkPublish,
-    _filter,
     deliveryToken,
     contentTypes,
     environment,
