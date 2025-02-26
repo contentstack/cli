@@ -89,15 +89,20 @@ const config = {
     'locale',
     'environment',
     'ctUid',
-    'ctLocale'
+    'ctLocale',
+    'entry_uid',
+    'publish_locale',
+    'publish_environment',
+    'asset_uid'
   ],
   ReportTitleForEntries: {
     Entries_Select_feild: 'Entries_Select_feild',
     Entries_Mandatory_feild: 'Entries_Mandatory_feild',
     Entries_Title_feild: 'Entries_Title_feild',
-    Entry_Missing_Locale_and_Env: 'Entry_Missing_Locale_and_Env'
+    Entry_Missing_Locale_and_Env: 'Entry_Missing_Locale_and_Env',
+    Entry_Missing_Locale_and_Env_in_Publish_Details: 'Entry_Missing_Locale_and_Env_in_Publish_Details'
   },
-  feild_level_modules: ['Entries_Title_feild', 'Entries_Mandatory_feild', 'Entries_Select_feild', 'Entry_Missing_Locale_and_Env'],
+  feild_level_modules: ['Entries_Title_feild', 'Entries_Mandatory_feild', 'Entries_Select_feild', 'Entry_Missing_Locale_and_Env_in_Publish_Details'],
 };
 
 export default config;

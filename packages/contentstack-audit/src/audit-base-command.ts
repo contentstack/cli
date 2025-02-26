@@ -118,7 +118,9 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       !isEmpty(missingCtRefsInWorkflow) ||
       !isEmpty(missingCtRefsInExtensions) ||
       !isEmpty(missingSelectFeild) || 
-      !isEmpty(missingRefInCustomRoles)
+      !isEmpty(missingRefInCustomRoles) ||
+      !isEmpty(missingEnvLocalesInAssets) ||
+      !isEmpty(missingEnvLocalesInEntries)
     );
   }
 
@@ -188,7 +190,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
           await this.prepareReport('Entries_Title_feild', missingTitleFields);
 
-          await this.prepareReport('Entry_Missing_Locale_and_Env', missingEnvLocalesInEntries);
+          await this.prepareReport('Entry_Missing_Locale_and_Env_in_Publish_Details', missingEnvLocalesInEntries);
 
           break;
         case 'workflows':
