@@ -194,10 +194,10 @@ export default class Entries {
                   { color: 'red' },
                 );
                 if (!Object.keys(this.missingEnvLocale).includes(entryUid)) {
-                  this.missingEnvLocale[entryUid] = [{ uid: entryUid, locale: pd.locale, environment: pd.environment, ctUid: ctSchema.uid, ctLocale: code }];
+                  this.missingEnvLocale[entryUid] = [{ entry_uid: entryUid, publish_locale: pd.locale, publish_environment: pd.environment, ctUid: ctSchema.uid, ctLocale: code }];
                 } else {
                   this.missingEnvLocale[entryUid].push(
-                    { uid: entryUid, locale: pd.locale, environment: pd.environment, ctUid: ctSchema.uid, ctLocale: code },
+                    { entry_uid: entryUid, publish_locale: pd.locale, publish_environment: pd.environment, ctUid: ctSchema.uid, ctLocale: code },
                   );
                 }
                 return false;
