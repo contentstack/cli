@@ -193,13 +193,12 @@ export default class Entries {
                   }),
                   { color: 'red' },
                 );
-                if (!this.missingEnvLocale[entryUid]) {
+                if (!Object.keys(this.missingEnvLocale).includes(entryUid)) {
                   this.missingEnvLocale[entryUid] = [{ uid: entryUid, locale: pd.locale, environment: pd.environment, ctUid: ctSchema.uid, ctLocale: code }];
                 } else {
-                  this.missingEnvLocale[entryUid].push([
-                    ...this.missingEnvLocale[entryUid],
+                  this.missingEnvLocale[entryUid].push(
                     { uid: entryUid, locale: pd.locale, environment: pd.environment, ctUid: ctSchema.uid, ctLocale: code },
-                  ]);
+                  );
                 }
                 return false;
               }
@@ -910,7 +909,7 @@ export default class Entries {
 
   validateMandatoryFields(tree: Record<string, unknown>[], fieldStructure: any, entry: any) {
     const { display_name, multiple, data_type, mandatory, field_metadata, uid } = fieldStructure;
-
+    
     const isJsonRteEmpty = () => {
       const jsonNode = multiple
         ? entry[uid]?.[0]?.children?.[0]?.children?.[0]?.text
