@@ -74,8 +74,10 @@ export default class Assets {
     }
 
     for (let propName in this.missingEnvLocales) {
-      if (!this.missingEnvLocales[propName].length) {
-        delete this.missingEnvLocales[propName];
+      if (Array.isArray(this.missingEnvLocales[propName])) {
+        if (!this.missingEnvLocales[propName].length) {
+          delete this.missingEnvLocales[propName];
+        }
       }
     }
 
@@ -150,9 +152,15 @@ export default class Assets {
               { color: 'yellow' },
             );
             if (!Object.keys(this.missingEnvLocales).includes(assetUid)) {
-              this.missingEnvLocales[assetUid] = [{ uid: assetUid, locale: pd.locale, environment: pd.environment }];
+              this.missingEnvLocales[assetUid] = [
+                { asset_uid: assetUid, publish_locale: pd.locale, publish_environment: pd.environment },
+              ];
             } else {
-              this.missingEnvLocales[assetUid].push({ uid: assetUid, locale: pd.locale, environment: pd.environment });
+              this.missingEnvLocales[assetUid].push({
+                asset_uid: assetUid,
+                publish_locale: pd.locale,
+                publish_environment: pd.environment,
+              });
             }
             this.log($t(auditMsg.SCAN_ASSET_SUCCESS_MSG, { uid: assetUid }), { color: 'green' });
             return false;

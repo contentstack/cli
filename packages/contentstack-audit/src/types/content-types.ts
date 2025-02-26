@@ -155,6 +155,10 @@ enum OutputColumn {
   'environment' = 'environment',
   'ctUid' = 'ctUid',
   'ctLocale' = 'ctLocale',
+  'entry_uid' = 'entry_uid',
+  'publish_locale' = 'publish_locale',
+  'publish_environment' = 'publish_environment',
+  'asset_uid' = 'asset_uid'
 }
 
 export {
