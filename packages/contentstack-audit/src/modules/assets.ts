@@ -136,9 +136,8 @@ export default class Assets {
       const assets = (await fsUtility.readChunkFiles.next()) as Record<string, EntryStruct>;
       this.assets = assets;
       for (const assetUid in assets) {
-
-        if(this.assets[assetUid]?.publish_details && !Array.isArray(this.assets[assetUid].publish_details)) {
-            this.log($t(auditMsg.ASSET_NOT_EXIST, { uid: assetUid }), { color: 'red' });
+        if (this.assets[assetUid]?.publish_details && !Array.isArray(this.assets[assetUid].publish_details)) {
+          this.log($t(auditMsg.ASSET_NOT_EXIST, { uid: assetUid }), { color: 'red' });
         }
 
         this.assets[assetUid].publish_details = this.assets[assetUid]?.publish_details.filter((pd: any) => {
@@ -150,13 +149,10 @@ export default class Assets {
               $t(auditMsg.SCAN_ASSET_WARN_MSG, { uid: assetUid, locale: pd.locale, environment: pd.environment }),
               { color: 'yellow' },
             );
-            if (!this.missingEnvLocales[assetUid]) {
+            if (!Object.keys(this.missingEnvLocales).includes(assetUid)) {
               this.missingEnvLocales[assetUid] = [{ uid: assetUid, locale: pd.locale, environment: pd.environment }];
             } else {
-              this.missingEnvLocales[assetUid].push([
-                ...this.missingEnvLocales[assetUid],
-                { uid: assetUid, locale: pd.locale, environment: pd.environment },
-              ]);
+              this.missingEnvLocales[assetUid].push({ uid: assetUid, locale: pd.locale, environment: pd.environment });
             }
             this.log($t(auditMsg.SCAN_ASSET_SUCCESS_MSG, { uid: assetUid }), { color: 'green' });
             return false;
