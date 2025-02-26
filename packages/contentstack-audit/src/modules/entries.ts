@@ -174,8 +174,13 @@ export default class Entries {
             }
 
             const localKey = this.locales.map((locale: any) => locale.code);
-            this.entries[entryUid].publish_details = this.entries[entryUid].publish_details.filter((pd: any) => {
-              if (localKey.includes(pd.locale) && this.environments.includes(pd.environment)) {
+
+            if(this.entries[entryUid]?.publish_details && !Array.isArray(this.entries[entryUid].publish_details)) {
+              this.log($t(auditMsg.ENTRY_PUBLISH_DETAILS_NOT_EXIST, { uid: entryUid }), { color: 'red' });
+            }
+
+            this.entries[entryUid].publish_details = this.entries[entryUid]?.publish_details.filter((pd: any) => {
+              if (localKey?.includes(pd.locale) && this.environments?.includes(pd.environment)) {
                 return true;
               } else {
                 this.log(
@@ -196,8 +201,6 @@ export default class Entries {
                     { uid: entryUid, locale: pd.locale, environment: pd.environment, ctUid: ctSchema.uid, ctLocale: code },
                   ]);
                 }
-                console.log(this.missingEnvLocale);
-                this.log(`Either the publish Detail does not exist or locale ${entryUid}`);
                 return false;
               }
             });

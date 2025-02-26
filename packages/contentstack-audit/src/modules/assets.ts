@@ -105,7 +105,6 @@ export default class Assets {
       this.config.moduleConfig.environments.fileName,
     );
     this.environments = existsSync(environmentPath) ? keys(JSON.parse(readFileSync(environmentPath, 'utf8'))) : [];
-    console.log(JSON.stringify(this.environments), JSON.stringify(this.locales));
   }
 
   /**
@@ -137,8 +136,13 @@ export default class Assets {
       const assets = (await fsUtility.readChunkFiles.next()) as Record<string, EntryStruct>;
       this.assets = assets;
       for (const assetUid in assets) {
-        this.assets[assetUid].publish_details = this.assets[assetUid].publish_details.filter((pd: any) => {
-          if (this.locales.includes(pd.locale) && this.environments.includes(pd.environment)) {
+
+        if(this.assets[assetUid]?.publish_details && !Array.isArray(this.assets[assetUid].publish_details)) {
+            this.log($t(auditMsg.ASSET_NOT_EXIST, { uid: assetUid }), { color: 'red' });
+        }
+
+        this.assets[assetUid].publish_details = this.assets[assetUid]?.publish_details.filter((pd: any) => {
+          if (this.locales?.includes(pd?.locale) && this.environments?.includes(pd?.environment)) {
             this.log($t(auditMsg.SCAN_ASSET_SUCCESS_MSG, { uid: assetUid }), { color: 'green' });
             return true;
           } else {
