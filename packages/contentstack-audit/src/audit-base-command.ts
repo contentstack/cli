@@ -12,7 +12,7 @@ import config from './config';
 import { print } from './util/log';
 import { auditMsg } from './messages';
 import { BaseCommand } from './base-command';
-import { Entries, GlobalField, ContentType, Extensions, Workflows } from './modules';
+import { Entries, GlobalField, ContentType, Extensions, Workflows, Assets } from './modules';
 import {
   CommandNames,
   ContentTypeStruct,
@@ -58,7 +58,9 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingSelectFeild,
       missingMandatoryFields,
       missingTitleFields,
-      missingRefInCustomRoles
+      missingRefInCustomRoles,
+      missingEnvLocalesInAssets,
+      missingEnvLocalesInEntries
     } = await this.scanAndFix();
 
     this.showOutputOnScreen([
@@ -76,6 +78,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       { module: 'Entries Title Field', missingRefs: missingTitleFields },
     ]);
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Custom Roles', missingRefs: missingRefInCustomRoles }]);
+    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Assets', missingRefs: missingEnvLocalesInAssets }]);
+    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Entries Missing Locale and Environments', missingRefs: missingEnvLocalesInEntries }])
     if (
       !isEmpty(missingCtRefs) ||
       !isEmpty(missingGfRefs) ||
@@ -84,7 +88,9 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       !isEmpty(missingCtRefsInExtensions) ||
       !isEmpty(missingSelectFeild) ||
       !isEmpty(missingTitleFields) ||
-      !isEmpty(missingRefInCustomRoles) 
+      !isEmpty(missingRefInCustomRoles) ||
+      !isEmpty(missingEnvLocalesInAssets) ||
+      !isEmpty(missingEnvLocalesInEntries)
     ) {
       if (this.currentCommand === 'cm:stacks:audit') {
         this.log(this.$t(auditMsg.FINAL_REPORT_PATH, { path: this.sharedConfig.reportPath }), 'warn');
@@ -133,7 +139,9 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingEntry,
       missingMandatoryFields,
       missingTitleFields,
-      missingRefInCustomRoles;
+      missingRefInCustomRoles,
+      missingEnvLocalesInAssets,
+      missingEnvLocalesInEntries;
 
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       print([
@@ -153,6 +161,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         fix: this.currentCommand === 'cm:stacks:audit:fix',
       };
       switch (module) {
+        case 'assets':
+          missingEnvLocalesInAssets = await new Assets(cloneDeep(constructorParam)).run();
+          await this.prepareReport(module, missingEnvLocalesInAssets);
+          break;
         case 'content-types':
           missingCtRefs = await new ContentType(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingCtRefs);
@@ -167,6 +179,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           missingSelectFeild = missingEntry.missingSelectFeild ?? {};
           missingMandatoryFields = missingEntry.missingMandatoryFields ?? {};
           missingTitleFields = missingEntry.missingTitleFields ?? {};
+          missingEnvLocalesInEntries = missingEntry.missingEnvLocale??{};
           await this.prepareReport(module, missingEntryRefs);
 
           await this.prepareReport(`Entries_Select_feild`, missingSelectFeild);
@@ -174,6 +187,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           await this.prepareReport('Entries_Mandatory_feild', missingMandatoryFields);
 
           await this.prepareReport('Entries_Title_feild', missingTitleFields);
+
+          await this.prepareReport('Entry_Missing_Locale_and_Env', missingEnvLocalesInEntries);
 
           break;
         case 'workflows':
@@ -220,6 +235,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingMandatoryFields,
       missingTitleFields,
       missingRefInCustomRoles,
+      missingEnvLocalesInAssets,
+      missingEnvLocalesInEntries
     };
   }
 
