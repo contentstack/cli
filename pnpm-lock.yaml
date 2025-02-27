@@ -1417,7 +1417,9 @@ packages:
       '@contentstack/cli-utilities': 1.8.1_debug@4.4.0
       contentstack: 3.24.2
     transitivePeerDependencies:
+      - '@jest/globals'
       - debug
+      - jest
     dev: false
 
   /@contentstack/cli-launch/1.5.2_wzzhxhjvv6dmiulvh3ck3nwabq:
@@ -1448,7 +1450,6 @@ packages:
       lodash: 4.17.21
       open: 8.4.2
       rollup: 4.34.8
-      rollup: 4.34.8
       winston: 3.17.0
     transitivePeerDependencies:
       - '@jest/globals'
@@ -1456,7 +1457,6 @@ packages:
       - '@swc/wasm'
       - '@types/node'
       - '@types/react'
-      - debug
       - debug
       - encoding
       - graphql-ws
@@ -1466,16 +1466,12 @@ packages:
       - subscriptions-transport-ws
       - supports-color
       - tslib
-      - tslib
       - typescript
     dev: false
 
   /@contentstack/cli-utilities/1.8.1_debug@4.4.0:
     resolution: {integrity: sha512-fBj9t9xGux9jGXlQ6MymPJ2MOqXqcIny3N6MwG5J6ppW86Ps4tBfgrnRuODSBTc0GGjup4Jg84Q3zyJyF3pJfg==}
-  /@contentstack/cli-utilities/1.8.1_debug@4.4.0:
-    resolution: {integrity: sha512-fBj9t9xGux9jGXlQ6MymPJ2MOqXqcIny3N6MwG5J6ppW86Ps4tBfgrnRuODSBTc0GGjup4Jg84Q3zyJyF3pJfg==}
     dependencies:
-      '@contentstack/management': 1.18.4_debug@4.4.0
       '@contentstack/management': 1.18.4_debug@4.4.0
       '@contentstack/marketplace-sdk': 1.2.5_debug@4.4.0
       '@oclif/core': 3.27.0
@@ -3419,7 +3415,11 @@ packages:
   /@types/connect/3.4.38:
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
     dependencies:
-      '@types/node': 20.17.17
+      '@types/node': 20.17.19
+    dev: false
+
+  /@types/estree/1.0.6:
+    resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
     dev: false
 
   /@types/expect/1.20.4:
