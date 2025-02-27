@@ -7,7 +7,7 @@ import messageHandler from './message-handler';
 const http = require('http');
 const url = require('url');
 import open from 'open';
-import {LoggerService} from './logger';
+import { LoggerService } from './logger';
 const crypto = require('crypto');
 dotenv.config();
 
@@ -16,6 +16,7 @@ dotenv.config();
  * Auth handler
  */
 class AuthHandler {
+  private developerHubUrl: string;
   private _host;
   private codeVerifier: string;
   private OAuthBaseURL: string;
@@ -35,7 +36,7 @@ class AuthHandler {
   private authorisationTypeOAUTHValue: string;
   private authorisationTypeAUTHValue: string;
   private allAuthConfigItems: any;
-  private logger:any;
+  private logger: any;
   set host(contentStackHost) {
     this._host = contentStackHost;
   }
@@ -88,6 +89,21 @@ class AuthHandler {
       );
     }
   }
+
+  setDeveloperHubURL() {
+    if (this.developerHubUrl) {
+      return;  // Return if already set
+    }
+    
+    if (configHandler.get('region')['developerHubUrl']) {
+      this.developerHubUrl = configHandler.get('region')['developerHubUrl'] || '';
+    } else {
+      throw new Error(
+        'Invalid developerHubUrl URL while authenticating. Please set your region correctly using the command - csdx config:set:region',
+      );
+    }
+  }
+  
 
   /*
    *
@@ -239,10 +255,10 @@ class AuthHandler {
         redirect_uri: this.OAuthRedirectURL,
         code: code,
       };
-      this.setOAuthBaseURL();
+      this.setDeveloperHubURL();
       const httpClient = new HttpClient().headers(headers).asFormParams();
       httpClient
-        .post(`${this.OAuthBaseURL}/apps-api/apps/token`, payload)
+        .post(`${this.developerHubUrl}/apps/token`, payload)
         .then(({ data }) => {
           return this.getUserDetails(data);
         })
@@ -351,10 +367,10 @@ class AuthHandler {
           redirect_uri: this.OAuthRedirectURL,
           refresh_token: configOauthRefreshToken,
         };
-        this.setOAuthBaseURL();
+        this.setDeveloperHubURL();
         const httpClient = new HttpClient().headers(headers).asFormParams();
         httpClient
-          .post(`${this.OAuthBaseURL}/apps-api/apps/token`, payload)
+          .post(`${this.developerHubUrl}/apps/token`, payload)
           .then(({ data }) => {
             if (data.error || (data.statusCode != 200 && data.message)) {
               let errorMessage = '';
@@ -416,9 +432,9 @@ class AuthHandler {
   }
 
   async oauthLogout(): Promise<object> {
-    const authorization: string = await this.getOauthAppAuthorization() || "";
-    const response: {} = await this.revokeOauthAppAuthorization(authorization)
-    return response || {}
+    const authorization: string = (await this.getOauthAppAuthorization()) || '';
+    const response: {} = await this.revokeOauthAppAuthorization(authorization);
+    return response || {};
   }
 
   /**
@@ -429,24 +445,22 @@ class AuthHandler {
     const headers = {
       authorization: `Bearer ${configHandler.get(this.oauthAccessTokenKeyName)}`,
       organization_uid: configHandler.get(this.oauthOrgUidKeyName),
-      'Content-type': 'application/json'
-    }
-    const httpClient = new HttpClient().headers(headers)
-    await this.setOAuthBaseURL();
-    return httpClient
-      .get(`${this.OAuthBaseURL}/apps-api/manifests/${this.OAuthAppId}/authorizations`)
-      .then(({data}) => {
-        if (data?.data?.length > 0) {
-          const userUid = configHandler.get(this.oauthUserUidKeyName)
-          const currentUserAuthorization = data?.data?.filter(element => element.user.uid === userUid) || [];
-          if (currentUserAuthorization.length === 0) {
-            throw new Error(messageHandler.parse("CLI_AUTH_LOGOUT_NO_AUTHORIZATIONS_USER"))
-          }
-          return currentUserAuthorization[0].authorization_uid  // filter authorizations by current logged in user
-        } else {
-          throw new Error(messageHandler.parse("CLI_AUTH_LOGOUT_NO_AUTHORIZATIONS"))
+      'Content-type': 'application/json',
+    };
+    const httpClient = new HttpClient().headers(headers);
+    this.setDeveloperHubURL();
+    return httpClient.get(`${this.developerHubUrl}/manifests/${this.OAuthAppId}/authorizations`).then(({ data }) => {
+      if (data?.data?.length > 0) {
+        const userUid = configHandler.get(this.oauthUserUidKeyName);
+        const currentUserAuthorization = data?.data?.filter((element) => element.user.uid === userUid) || [];
+        if (currentUserAuthorization.length === 0) {
+          throw new Error(messageHandler.parse('CLI_AUTH_LOGOUT_NO_AUTHORIZATIONS_USER'));
         }
-      })
+        return currentUserAuthorization[0].authorization_uid; // filter authorizations by current logged in user
+      } else {
+        throw new Error(messageHandler.parse('CLI_AUTH_LOGOUT_NO_AUTHORIZATIONS'));
+      }
+    });
   }
 
   async revokeOauthAppAuthorization(authorizationId): Promise<object> {
@@ -454,15 +468,15 @@ class AuthHandler {
       const headers = {
         authorization: `Bearer ${configHandler.get(this.oauthAccessTokenKeyName)}`,
         organization_uid: configHandler.get(this.oauthOrgUidKeyName),
-        'Content-type': 'application/json'
-      }
-      const httpClient = new HttpClient().headers(headers)
-      await this.setOAuthBaseURL();
+        'Content-type': 'application/json',
+      };
+      const httpClient = new HttpClient().headers(headers);
+      this.setDeveloperHubURL();
       return httpClient
-        .delete(`${this.OAuthBaseURL}/apps-api/manifests/${this.OAuthAppId}/authorizations/${authorizationId}`)
-        .then(({data}) => {
-          return data
-        })
+        .delete(`${this.developerHubUrl}/manifests/${this.OAuthAppId}/authorizations/${authorizationId}`)
+        .then(({ data }) => {
+          return data;
+        });
     }
   }
 

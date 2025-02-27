@@ -428,7 +428,7 @@ const config: DefaultConfig = {
   getEncryptionKeyMaxRetry: 3,
   // useBackedupDir: '',
   // backupConcurrency: 10,
-  onlyTSModules: ['taxonomies'],
+  onlyTSModules: ['taxonomies', 'personalize'],
   auditConfig: {
     noLog: false, // Skip logs printing on terminal
     skipConfirm: true, // Skip confirmation if any
