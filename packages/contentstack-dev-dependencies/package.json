@@ -21,7 +21,7 @@
   "author": "contentstack",
   "license": "MIT",
   "dependencies": {
-    "@oclif/core": "^3.27.0",
+    "@oclif/core": "^4.2.7",
     "lodash": "^4.17.21",
     "fancy-test": "^2.0.42",
     "@oclif/test": "^4.1.6"

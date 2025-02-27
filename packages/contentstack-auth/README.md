@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-auth/1.3.23 darwin-arm64 node-v22.2.0
+@contentstack/cli-auth/1.3.23 darwin-arm64 node-v22.13.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -51,7 +51,7 @@ USAGE
 FLAGS
   -p, --password=<value>  Password of your Contentstack app.
   -u, --username=<value>  Email address of your Contentstack account.
-  --oauth                 Enables single sign-on (SSO) in Contentstack CLI.
+      --oauth             Enables single sign-on (SSO) in Contentstack CLI.
 
 DESCRIPTION
   User sessions login
@@ -106,19 +106,7 @@ Lists all existing tokens added to the session
 
 ```
 USAGE
-  $ csdx auth:tokens [--columns <value> | -x] [--filter <value>] [--no-header | [--csv | --no-truncate]]
-    [--output csv|json|yaml |  | ] [--sort <value>]
-
-FLAGS
-  -x, --extended     show extra columns
-  --columns=<value>  only show provided columns (comma-separated)
-  --csv              output is csv format [alias: --output=csv]
-  --filter=<value>   filter property by partial string matching, ex: name=foo
-  --no-header        hide table header from output
-  --no-truncate      do not truncate output to fit screen
-  --output=<option>  output in a more machine friendly format
-                     <options: csv|json|yaml>
-  --sort=<value>     property to sort by (prepend '-' for descending)
+  $ csdx auth:tokens
 
 DESCRIPTION
   Lists all existing tokens added to the session
@@ -232,7 +220,7 @@ USAGE
 FLAGS
   -p, --password=<value>  Password of your Contentstack app.
   -u, --username=<value>  Email address of your Contentstack account.
-  --oauth                 Enables single sign-on (SSO) in Contentstack CLI.
+      --oauth             Enables single sign-on (SSO) in Contentstack CLI.
 
 DESCRIPTION
   User sessions login
@@ -283,19 +271,7 @@ Lists all existing tokens added to the session
 
 ```
 USAGE
-  $ csdx tokens [--columns <value> | -x] [--filter <value>] [--no-header | [--csv | --no-truncate]]
-    [--output csv|json|yaml |  | ] [--sort <value>]
-
-FLAGS
-  -x, --extended     show extra columns
-  --columns=<value>  only show provided columns (comma-separated)
-  --csv              output is csv format [alias: --output=csv]
-  --filter=<value>   filter property by partial string matching, ex: name=foo
-  --no-header        hide table header from output
-  --no-truncate      do not truncate output to fit screen
-  --output=<option>  output in a more machine friendly format
-                     <options: csv|json|yaml>
-  --sort=<value>     property to sort by (prepend '-' for descending)
+  $ csdx tokens
 
 DESCRIPTION
   Lists all existing tokens added to the session

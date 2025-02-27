@@ -5,7 +5,7 @@ export default class TokensListCommand extends BaseCommand<typeof TokensListComm
   static aliases = ['tokens'];
   static examples = ['$ csdx auth:tokens'];
   static description = 'Lists all existing tokens added to the session';
-  static flags: Record<string, any> = cliux.uxTable.flags(); // use the cli table flags as it displays tokens in table
+  // static flags: Record<string, any> = cliux.uxTable.flags(); // use the cli table flags as it displays tokens in table
 
   async run(): Promise<any> {
     try {
@@ -45,7 +45,7 @@ export default class TokensListCommand extends BaseCommand<typeof TokensListComm
           },
           {
             printLine: cliux.print,
-            ...flags, // parsed flags
+            // ...flags, // parsed flags
           },
         );
       } else {

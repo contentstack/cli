@@ -23,10 +23,10 @@
     "@oclif/test": "^4.1.6",
     "chai": "^4.5.0",
     "eslint": "^8.57.1",
-    "eslint-config-oclif": "^4.0.0",
+    "eslint-config-oclif": "^6.0.15",
     "mocha": "^10.8.2",
     "nyc": "^15.1.0",
-    "oclif": "^3.17.2",
+    "oclif": "^4.17.30",
     "sinon": "^19.0.2"
   },
   "engines": {
