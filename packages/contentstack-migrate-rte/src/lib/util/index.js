@@ -194,7 +194,7 @@ async function confirmConfig(config, skipConfirmation) {
     return Promise.resolve(true);
   }
   prettyPrint(config);
-  return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
+  return await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
 }
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 

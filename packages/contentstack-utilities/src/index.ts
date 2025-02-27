@@ -69,8 +69,6 @@ export {
   flush,
   ux,
   execute,
-  stderr,
-  stdout,
 } from '@oclif/core';
 export { FlagInput, ArgInput, FlagDefinition } from '@oclif/core/lib/interfaces/parser';
 
