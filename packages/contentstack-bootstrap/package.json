@@ -32,11 +32,11 @@
     "@types/tar": "^6.1.13",
     "chai": "^4.5.0",
     "eslint": "^8.57.1",
-    "eslint-config-oclif": "^4.0.0",
+    "eslint-config-oclif": "^6.0.15",
     "eslint-config-oclif-typescript": "^3.1.13",
     "mocha": "10.8.2",
     "nyc": "^15.1.0",
-    "oclif": "^3.17.2",
+    "oclif": "^4.17.30",
     "tmp": "^0.2.3",
     "ts-node": "^8.10.2",
     "typescript": "^4.9.5"

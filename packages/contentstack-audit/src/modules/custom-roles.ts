@@ -2,7 +2,7 @@ import { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { cloneDeep } from 'lodash';
 import { LogFn, ConfigType, CtConstructorParam, ModuleConstructorParam, CustomRole, Rule } from '../types';
-import { sanitizePath, ux } from '@contentstack/cli-utilities';
+import { cliux, sanitizePath } from '@contentstack/cli-utilities';
 
 import auditConfig from '../config';
 import { $t, auditMsg, commonMsg } from '../messages';
@@ -157,7 +157,7 @@ export default class CustomRoles {
       (this.config.flags['copy-dir'] ||
         this.config.flags['external-config']?.skipConfirm ||
         this.config.flags.yes ||
-        (await ux.confirm(commonMsg.FIX_CONFIRMATION)))
+        (await cliux.confirm(commonMsg.FIX_CONFIRMATION)))
     ) {
       writeFileSync(
         join(this.folderPath, this.config.moduleConfig[this.moduleName].fileName),
