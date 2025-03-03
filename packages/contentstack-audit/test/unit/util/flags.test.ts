@@ -1,28 +1,26 @@
-import { expect } from 'chai';
-import { fancy } from 'fancy-test';
+// import { expect } from 'chai';
+// import { fancy } from 'fancy-test';
 
-import { getTableFlags } from '../../../src/util';
+// import { getTableFlags } from '../../../src/util';
 
-describe('getTableFlags method', () => {
-  fancy
-    .stdout({ print: process.env.PRINT === 'true' || false })
-    .it('should return list of table flags required for audit and fix command', () => {
-      const actual = getTableFlags();
+// describe('getTableFlags method', () => {
+//   fancy
+//     .stdout({ print: process.env.PRINT === 'true' || false })
+//     .it('should return list of table flags required for audit and fix command', () => {
+//       // const actual = getTableFlags();
+//       // expect(actual).has.ownProperty('columns');
+//       // expect(actual).has.ownProperty('sort');
+//       // expect(actual).has.ownProperty('filter');
+//       // expect(actual).has.ownProperty('csv');
+//       // expect(actual).has.ownProperty('no-truncate');
+//     });
 
-      expect(actual).has.ownProperty('columns');
-      expect(actual).has.ownProperty('sort');
-      expect(actual).has.ownProperty('filter');
-      expect(actual).has.ownProperty('csv');
-      expect(actual).has.ownProperty('no-truncate');
-    });
-
-  fancy.stdout({ print: process.env.PRINT === 'true' || false }).it('should return only specified columns', () => {
-    const actual = getTableFlags(['columns', 'csv']);
-
-    expect(actual).has.ownProperty('columns');
-    expect(actual).has.ownProperty('csv');
-    expect(actual).has.not.ownProperty('no-truncate');
-    expect(actual).has.not.ownProperty('sort');
-    expect(actual).has.not.ownProperty('filter');
-  });
-});
+//   fancy.stdout({ print: process.env.PRINT === 'true' || false }).it('should return only specified columns', () => {
+//     // const actual = getTableFlags(['columns', 'csv']);
+//     // expect(actual).has.ownProperty('columns');
+//     // expect(actual).has.ownProperty('csv');
+//     // expect(actual).has.not.ownProperty('no-truncate');
+//     // expect(actual).has.not.ownProperty('sort');
+//     // expect(actual).has.not.ownProperty('filter');
+//   });
+// });

@@ -1,8 +1,9 @@
 import chalk, { Chalk } from 'chalk';
 import { default as inquirer, QuestionCollection, Answers } from 'inquirer';
-import { Table } from '@oclif/core/lib/cli-ux';
 import { ux as cliux, Args, Flags, Command } from '@oclif/core';
 import { Ora, default as ora } from 'ora';
+import cliProgress from 'cli-progress';
+import cliTable from 'tty-table';
 
 import messageHandler from './message-handler';
 import { PrintOptions, InquirePayload, CliUXPromptOptions } from './interfaces';
@@ -19,10 +20,6 @@ class CLIInterface {
     this.loading = false;
   }
 
-  get uxTable(): typeof Table.table {
-    return cliux.table;
-  }
-
   init(context) {}
 
   registerSearchPlugin(): void {
@@ -37,19 +34,19 @@ class CLIInterface {
       if (opts.color) chalkFn = chalkFn[opts.color] as Chalk;
       if (opts.bold) chalkFn = chalkFn.bold as Chalk;
 
-      cliux.log(chalkFn(messageHandler.parse(message)));
+      cliux.stdout(chalkFn(messageHandler.parse(message)));
       return;
     }
 
-    cliux.log(messageHandler.parse(message));
+    cliux.stdout(messageHandler.parse(message));
   }
 
   success(message: string): void {
-    cliux.log(chalk.green(messageHandler.parse(message)));
+    cliux.stdout(chalk.green(messageHandler.parse(message)));
   }
 
   error(message: string, ...params: any): void {
-    cliux.log(chalk.red(messageHandler.parse(message) + (params && params.length > 0 ? ': ' : '')), ...params);
+    cliux.stdout(chalk.red(messageHandler.parse(message) + (params && params.length > 0 ? ': ' : '')), ...params);
   }
 
   loader(message: string = ''): void {
@@ -63,12 +60,19 @@ class CLIInterface {
 
   table(
     data: Record<string, unknown>[],
-    columns: Table.table.Columns<Record<string, unknown>>,
-    options?: Table.table.Options,
+    columns: Record<string, Record<string, number>>,
+    options?: Record<string, unknown>,
   ): void {
-    cliux.log('\n');
-    cliux.table(data, columns, options);
-    cliux.log('\n');
+    // parse headers to new table format
+    const headers: cliTable.Header[] = Object.keys(columns).map((columnTitle) => {
+      return { value: columnTitle };
+    });
+    const table = cliTable(headers, data, { ...options }).render();
+    cliux.stdout(table);
+  }
+
+  table2(headers: cliTable.Header[], data: Record<string, unknown>[] | string[], options?: cliTable.Options) {
+    cliTable(headers, data, options);
   }
 
   async inquire<T>(inquirePayload: InquirePayload | Array<InquirePayload>): Promise<T> {
@@ -81,16 +85,24 @@ class CLIInterface {
     }
   }
 
-  prompt(name: string, options?: CliUXPromptOptions): Promise<any> {
-    return cliux.prompt(name, options);
+  async prompt(message: string, options?: CliUXPromptOptions): Promise<any> {
+    return await this.inquire({
+      type: 'input',
+      name: 'prompt',
+      message,
+    });
   }
 
-  confirm(message?: string): Promise<boolean> {
-    return cliux.confirm(message as string);
+  async confirm(message?: string): Promise<boolean> {
+    return await this.inquire({
+      type: 'confirm',
+      name: 'prompt',
+      message,
+    });
   }
 
   progress(options?: any): any {
-    return cliux.progress(options);
+    return new cliProgress.SingleBar(options);
   }
 
   loaderV2(message: string = '', spinner?: any): Ora | void {

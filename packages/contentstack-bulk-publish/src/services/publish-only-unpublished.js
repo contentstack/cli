@@ -100,7 +100,7 @@ async function confirmFlags(data) {
   if (data.yes) {
     return true;
   }
-  return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
+  return await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
 }
 
 function flagsAdapter(flags) {

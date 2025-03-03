@@ -3,7 +3,7 @@ import find from 'lodash/find';
 import values from 'lodash/values';
 import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
-import { ux, FsUtility, sanitizePath } from '@contentstack/cli-utilities';
+import { FsUtility, sanitizePath, cliux } from '@contentstack/cli-utilities';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 
 import auditConfig from '../config';
@@ -271,7 +271,7 @@ export default class Entries {
 
     if (this.fix) {
       if (!this.config.flags['copy-dir'] && !this.config.flags['external-config']?.skipConfirm) {
-        canWrite = this.config.flags.yes || (await ux.confirm(commonMsg.FIX_CONFIRMATION));
+        canWrite = this.config.flags.yes || (await cliux.confirm(commonMsg.FIX_CONFIRMATION));
       }
 
       if (canWrite) {
@@ -304,11 +304,11 @@ export default class Entries {
     for (const child of field?.schema ?? []) {
       const { uid } = child;
       this.missingMandatoryFields[this.currentUid].push(
-        ...(this.validateMandatoryFields(
+        ...this.validateMandatoryFields(
           [...tree, { uid: field.uid, name: child.display_name, field: uid }],
           child,
           entry,
-        )),
+        ),
       );
       if (!entry?.[uid] && !child.hasOwnProperty('display_type')) {
         continue;
@@ -743,7 +743,12 @@ export default class Entries {
    */
   validateSelectField(tree: Record<string, unknown>[], fieldStructure: SelectFeildStruct, field: any) {
     const { display_name, enum: selectOptions, multiple, min_instance, display_type, data_type } = fieldStructure;
-    if (field === null || field === '' || (Array.isArray(field) && field.length === 0) || (!field && data_type !== 'number')) {
+    if (
+      field === null ||
+      field === '' ||
+      (Array.isArray(field) && field.length === 0) ||
+      (!field && data_type !== 'number')
+    ) {
       let missingCTSelectFieldValues = 'Not Selected';
       return [
         {
@@ -882,7 +887,7 @@ export default class Entries {
       if (data_type === 'number' && !multiple) {
         fieldValue = entry[uid] || entry[uid] === 0 ? true : false;
       }
-      if (Array.isArray(entry[uid]) &&  data_type === 'reference') {
+      if (Array.isArray(entry[uid]) && data_type === 'reference') {
         fieldValue = entry[uid]?.length ? true : false;
       }
       return fieldValue === '' || !fieldValue;
@@ -910,27 +915,27 @@ export default class Entries {
   }
 
   /**
-   * this is called in case the select field has multiple optins to chose from 
+   * this is called in case the select field has multiple optins to chose from
    * @param field It contains the value to be searched
    * @param selectOptions It contains the options that were added in CT
    * @returns An Array of entry containing only the values that were present in CT, An array of not present entries
    */
   findNotPresentSelectField(field: any, selectOptions: any) {
-    if(!field){
-      field = []
+    if (!field) {
+      field = [];
     }
     let present = [];
     let notPresent = [];
     const choicesMap = new Map(selectOptions.choices.map((choice: { value: any }) => [choice.value, choice]));
-      for (const value of field) {
-        const choice: any = choicesMap.get(value);
-  
-        if (choice) {
-          present.push(choice.value);
-        } else {
-          notPresent.push(value);
-        }
+    for (const value of field) {
+      const choice: any = choicesMap.get(value);
+
+      if (choice) {
+        present.push(choice.value);
+      } else {
+        notPresent.push(value);
       }
+    }
     return { filteredFeild: present, notPresent };
   }
 
@@ -1295,7 +1300,7 @@ export default class Entries {
               this.missingTitleFields[entryUid] = {
                 'Entry UID': entryUid,
                 'Content Type UID': uid,
-                "Locale": code,
+                Locale: code,
               };
               this.log(
                 `The 'title' field in Entry with UID '${entryUid}' of Content Type '${uid}' in Locale '${code}' is empty.`,
