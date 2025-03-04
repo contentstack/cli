@@ -673,6 +673,7 @@ export default class EntriesImport extends BaseClass {
 
       log(this.importConfig, `${title} entry of content type ${cTUid} in locale ${locale} failed to update`, 'error');
       log(this.importConfig, formatError(error), 'error');
+      log(this.importConfig, error, 'error');
       this.failedEntries.push({
         content_type: cTUid,
         locale,
@@ -764,6 +765,8 @@ export default class EntriesImport extends BaseClass {
         'error',
       );
       log(this.importConfig, formatError(error), 'error');
+      log(this.importConfig, error, 'error');
+      console.log(entry);
       apiOptions.apiData = null;
     }
     return apiOptions;
