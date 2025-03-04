@@ -45,6 +45,20 @@ describe('Custom roles module', () => {
         await customRoleInstance.run();
         expect(logSpy.callCount).to.be.equals(1);
       });
+
+    fancy
+      .stdout({ print: process.env.PRINT === 'true' || false })
+      .stub(CustomRoles.prototype, 'writeFixContent', async () => {})
+      .it('should call writeFixContent', async () => {
+        const customRoleInstance = new CustomRoles({
+          ...constructorParam,
+          config: { ...constructorParam.config, branch: 'test' },
+          fix: true,
+        });
+        const logSpy = Sinon.spy(customRoleInstance, 'writeFixContent');
+        await customRoleInstance.run();
+        expect(logSpy.callCount).to.be.equals(1);
+      });
   });
 
   after(() => {
