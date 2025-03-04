@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-utilities",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "description": "Utilities for contentstack projects",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -50,7 +50,7 @@
     "mkdirp": "^1.0.4",
     "open": "^8.4.2",
     "ora": "^5.4.1",
-    "recheck": "^4.4.5",
+    "recheck": "^4.5.0",
     "rxjs": "^6.6.7",
     "traverse": "^0.6.11",
     "unique-string": "^2.0.0",
