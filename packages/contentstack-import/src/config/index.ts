@@ -89,7 +89,6 @@ const config: DefaultConfig = {
     assets: {
       dirName: 'assets',
       assetBatchLimit: 1,
-      publishAssets: true,
       fileName: 'assets.json',
       importSameStructure: true,
       uploadAssetsConcurrency: 2,
@@ -421,7 +420,6 @@ const config: DefaultConfig = {
   overwriteSupportedModules: ['extensions', 'global-fields', 'content-types'],
   rateLimit: 5,
   preserveStackVersion: false,
-  entriesPublish: true,
   concurrency: 1,
   importConcurrency: 5,
   fetchConcurrency: 5,
