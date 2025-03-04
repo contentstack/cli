@@ -50,7 +50,7 @@
     "mkdirp": "^1.0.4",
     "open": "^8.4.2",
     "ora": "^5.4.1",
-    "recheck": "^4.5.0",
+    "recheck": "~4.4.5",
     "rxjs": "^6.6.7",
     "traverse": "^0.6.11",
     "unique-string": "^2.0.0",
