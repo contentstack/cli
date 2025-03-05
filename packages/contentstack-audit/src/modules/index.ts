@@ -4,4 +4,5 @@ import ContentType from './content-types';
 import Workflows from './workflows';
 import Extensions from './extensions';
 import CustomRoles from './custom-roles';
-export { Entries, GlobalField, ContentType, Workflows, Extensions, CustomRoles };
+import Assets from './assets';
+export { Entries, GlobalField, ContentType, Workflows, Extensions, Assets, CustomRoles };
