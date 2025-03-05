@@ -181,7 +181,7 @@ export default class EntriesImport extends BaseClass {
       log(this.importConfig, 'Entries imported successfully', 'success');
 
       // Publishing entries
-      if (this.importConfig.entriesPublish) {
+      if (!this.importConfig.skipEntriesPublish) {
         log(this.importConfig, 'Publishing entries', 'info');
         this.envs = fileHelper.readFileSync(this.envPath);
         for (let entryRequestOption of entryRequestOptions) {
