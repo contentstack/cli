@@ -47,7 +47,7 @@ $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-import/1.19.5 darwin-arm64 node-v22.14.0
+@contentstack/cli-cm-import/1.20.0 darwin-x64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -96,7 +96,9 @@ FLAGS
   --personalize-project-name=<value>  (optional) Provide a unique name for the Personalize project.
   --replace-existing                  Replaces the existing module in the target stack.
   --skip-app-recreation               (optional) Skips the recreation of private apps if they already exist.
+  --skip-assets-publish               Skips the assets from being published during an import process.
   --skip-audit                        Skips the audit fix that occurs during an import operation.
+  --skip-entries-publish              Skips the entries from being published during an import process.
   --skip-existing                     Skips the module exists warning messages.
 
 DESCRIPTION
@@ -158,7 +160,9 @@ FLAGS
   --personalize-project-name=<value>  (optional) Provide a unique name for the Personalize project.
   --replace-existing                  Replaces the existing module in the target stack.
   --skip-app-recreation               (optional) Skips the recreation of private apps if they already exist.
+  --skip-assets-publish               Skips the assets from being published during an import process.
   --skip-audit                        Skips the audit fix that occurs during an import operation.
+  --skip-entries-publish              Skips the entries from being published during an import process.
   --skip-existing                     Skips the module exists warning messages.
 
 DESCRIPTION

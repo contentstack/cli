@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.35.5 darwin-arm64 node-v22.14.0
+@contentstack/cli/1.36.0 darwin-x64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -3559,6 +3559,8 @@ EXAMPLES
   $ csdx config:set:region AZURE-EU
 
   $ csdx config:set:region GCP-NA
+
+  $ csdx config:set:region GCP-EU
 
   $ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India"
 
