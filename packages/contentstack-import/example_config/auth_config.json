@@ -14,5 +14,7 @@
   "securedAssets": false,
   "developerHubBaseUrl": "",
   "createBackupDir": "./temp",
-  "cliLogsPath": "./tmp"
+  "cliLogsPath": "./tmp",
+  "maxContentLength": 100000000,
+  "maxBodyLength": 100000000
 }
