@@ -10,6 +10,8 @@ const config: DefaultConfig = {
   // host:'https://azure-eu-api.contentstack.com/v3',
   // use below hosts for gcp-na region
   // host:'https://gcp-na-api.contentstack.com',
+  // use below hosts for gcp-eu region
+  // host:'https://gcp-eu-api.contentstack.com',
   // pass locale, only to migrate entries from that locale
   // not passing `locale` will migrate all the locales present
   // locales: ['fr-fr'],
