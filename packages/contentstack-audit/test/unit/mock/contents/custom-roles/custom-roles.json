@@ -1,0 +1,84 @@
+{
+  "uidcs1123": {
+    "urlPath": "/roles/uid123",
+    "stackHeaders": { "api_key": "uid123", "branch": "main" },
+    "name": "Test role 1",
+    "description": "",
+    "rules": [
+      { "module": "environment", "environments": ["uidenv123"], "acl": { "read": true } },
+      { "module": "locale", "locales": ["uidloc123"], "acl": { "read": true } },
+      { "module": "content_type", "content_types": ["$all"], "acl": { "read": true, "sub_acl": { "read": true } } },
+      { "module": "entry", "content_type": "about", "entries": ["uident123"], "acl": { "read": true } },
+      { "module": "branch", "branches": ["main"], "acl": { "read": true } }
+    ],
+    "users": [],
+    "uid": "uid123",
+    "owner": "vikram@contentstack.com",
+    "stack": {
+      "created_at": "2024-11-14T23:18:46.087Z",
+      "updated_at": "2025-02-28T00:38:09.298Z",
+      "uid": "uid123",
+      "name": "Datasync-manager",
+      "org_uid": "uid123",
+      "api_key": "uid123",
+      "master_locale": "en-us",
+      "is_asset_download_public": true,
+      "owner_uid": "uid123",
+      "user_uids": ["uid123", "uid123"],
+      "master_key": "uid123"
+    },
+    "permissions": {
+      "content_types": [
+        { "uid": "about", "SYS_ACL": { "read": true } },
+        { "uid": "about", "SYS_ACL": { "read": true } },
+        { "uid": "header", "SYS_ACL": { "read": true, "sub_acl": { "read": true } } },
+        { "uid": "header", "SYS_ACL": { "read": true, "sub_acl": { "read": true } } }
+      ],
+      "environments": [{ "uid": "uid123", "SYS_ACL": { "read": true } }],
+      "locales": [{ "uid": "uid123", "SYS_ACL": { "read": true } }]
+    },
+    "SYS_ACL": {}
+  },
+  "uidcs2123": {
+    "urlPath": "/roles/uid123",
+    "stackHeaders": { "api_key": "uid123", "branch": "main" },
+    "name": "Role 2",
+    "description": "",
+    "rules": [
+      { "module": "environment", "environments": ["uid123"], "acl": { "read": true } },
+      { "module": "locale", "locales": ["uid123"], "acl": { "read": true } },
+      { "module": "content_type", "content_types": ["$all"], "acl": { "read": true, "sub_acl": { "read": true } } },
+      { "module": "entry", "content_type": "header", "entries": ["uid123"], "acl": { "read": true } },
+      { "module": "branch", "branches": ["dev"], "acl": { "read": true } }
+    ],
+    "users": [],
+    "uid": "uid123",
+    "created_at": "2025-03-02T16:22:56.080Z",
+    "updated_at": "2025-03-02T16:22:56.080Z",
+    "owner": "vikram@contentstack.com",
+    "stack": {
+      "created_at": "2024-11-14T23:18:46.087Z",
+      "updated_at": "2025-02-28T00:38:09.298Z",
+      "uid": "uid123",
+      "name": "Datasync-manager",
+      "org_uid": "uid123",
+      "api_key": "uid123",
+      "master_locale": "en-us",
+      "is_asset_download_public": true,
+      "owner_uid": "uid123",
+      "user_uids": ["uid123", "uid123"],
+      "master_key": "uid123"
+    },
+    "permissions": {
+      "content_types": [
+        { "uid": "about", "SYS_ACL": { "read": true, "sub_acl": { "read": true } } },
+        { "uid": "about", "SYS_ACL": { "read": true, "sub_acl": { "read": true } } },
+        { "uid": "header", "SYS_ACL": { "read": true } },
+        { "uid": "header", "SYS_ACL": { "read": true } }
+      ],
+      "environments": [{ "uid": "uid123", "SYS_ACL": { "read": true } }],
+      "locales": [{ "uid": "uid123", "SYS_ACL": { "read": true } }]
+    },
+    "SYS_ACL": {}
+  }
+}

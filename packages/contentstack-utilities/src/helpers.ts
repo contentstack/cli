@@ -75,7 +75,10 @@ export const validateUids = (uid) => /^[a-zA-Z0-9]+$/.test(uid);
 export const validateFileName = (fileName) => /^[a-zA-Z0-9-_\.]+$/.test(fileName);
 
 // Validate Regex for ReDDos
-export const validateRegex = (str) => checkSync(str, '');
+export const validateRegex = (str: unknown) => {
+  const stringValue = typeof str === 'string' ? str : str.toString();
+  return checkSync(stringValue, '');
+};
 
 export const formatError = function (error: any) {
   let parsedError: any;
