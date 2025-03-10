@@ -6,7 +6,6 @@
 
 import * as winston from 'winston';
 import * as path from 'path';
-import mkdirp from 'mkdirp';
 import { ImportConfig } from '../types';
 import { sanitizePath } from '@contentstack/cli-utilities';
 
@@ -137,7 +136,7 @@ function init(_logPath: string) {
 }
 
 export const log = async (config: ImportConfig, message: any, type: string) => {
-  config.cliLogsPath = config.cliLogsPath || config.data || path.join(__dirname, 'logs');
+  config.cliLogsPath = sanitizePath(config.cliLogsPath || config.data || path.join(__dirname, 'logs'));
   // ignoring the type argument, as we are not using it to create a logfile anymore
   if (type !== 'error') {
     // removed type argument from init method
