@@ -44,7 +44,7 @@ export function entryCreateScript(contentType) {
     function getValueByPath(obj, path) {
       return path.split('[').reduce((o, key) => o && o[key.replace(/\]$/, '')], obj);
     }
-  
+
     function updateValueByPath(obj, path, newValue) {
       path.split('[').reduce((o, key, index, arr) => {
         if (index === arr.length - 1) {
@@ -54,10 +54,10 @@ export function entryCreateScript(contentType) {
         }
       }, obj);
     }
-  
+
     const findReference = function (schema, path, flag) {
       let references = [];
-  
+
       for (const i in schema) {
         const currentPath = path ? path + '[' + schema[i].uid : schema[i].uid;
         if (schema[i].data_type === 'group' || schema[i].data_type === 'global_field') {
@@ -77,7 +77,7 @@ export function entryCreateScript(contentType) {
           references.push(currentPath);
         }
       }
-  
+
       return references;
     };
 
@@ -169,7 +169,7 @@ export function entryCreateScript(contentType) {
       }
       parent.pop();
     }
-  
+
     function findAssetIdsFromHtmlRte(entryObj, ctSchema) {
       const regex = /<img asset_uid=\\"([^"]+)\\"/g;
       let match;
@@ -179,7 +179,7 @@ export function entryCreateScript(contentType) {
         cAssetDetails.push({uid: match[1]});
       }
     }
-  
+
     function findFileUrls(schema, _entry) {
       let markdownRegEx;
       let markdownMatch;
@@ -191,7 +191,7 @@ export function entryCreateScript(contentType) {
         text = JSON.stringify(_entry);
       }
       markdownRegEx = new RegExp(
-        '(https://(assets|(eu-|azure-na-|azure-eu-|gcp-na-)?images).contentstack.(io|com)/v3/assets/(.*?)/(.*?)/(.*?)/(.*?)(?="))',
+        '(https://(assets|(eu-|azure-na-|azure-eu-|gcp-na-|gcp-eu-)?images).contentstack.(io|com)/v3/assets/(.*?)/(.*?)/(.*?)/(.*?)(?="))',
         'g',
       );
       while ((markdownMatch = markdownRegEx.exec(text)) !== null) {
@@ -207,7 +207,7 @@ export function entryCreateScript(contentType) {
         }
       }
     }
-  
+
     function findAssetIdsFromJsonRte(entryObj, ctSchema) {
       if(ctSchema !== undefined){
         for (const element of ctSchema) {
@@ -253,7 +253,7 @@ export function entryCreateScript(contentType) {
         }
       }
     }
-  
+
     function gatherJsonRteAssetIds(jsonRteData) {
       jsonRteData.children.forEach((element) => {
         if (element.type) {
@@ -297,7 +297,7 @@ export function entryCreateScript(contentType) {
         }
       });
     }
-  
+
     const updateAssetDetailsInEntries = function (entry) {
       let updatedEntry = Object.assign({},entry);
       entry = updateFileFields(updatedEntry, entry, null)
@@ -310,7 +310,7 @@ export function entryCreateScript(contentType) {
          entry = entry.replace(assetUrl, mappedAssetUrl);
         }
       });
-  
+
       assetUIDs.forEach(function (assetUid) {
         let uid = assetUIDMapper[assetUid];
         if (typeof uid !== 'undefined') {
@@ -335,11 +335,11 @@ export function entryCreateScript(contentType) {
                 parent[pos] = '';
               }
             };
-    
+
             if (parent.uid && assetUIDMapper[parent.uid]) {
               parent.uid = assetUIDMapper[parent.uid];
             }
-    
+
             if (
               object &&
               isObject(parent[pos]) &&
@@ -356,7 +356,7 @@ export function entryCreateScript(contentType) {
               ) {
                 parent = omit(parent, ['asset']);
               }
-    
+
               if (object.uid && assetUIDMapper[object.uid]) {
                 object.uid = assetUIDMapper[object.uid];
               }
@@ -373,12 +373,12 @@ export function entryCreateScript(contentType) {
       } else if (isArray(object) && object.length) {
         for (let i = 0; i <= object.length; i++){
           updateFileFields(object[i], object, i);
-        }    
+        }
         parent[pos] = compact(object);
       }
       return object;
     }
-  
+
     const checkAndDownloadAsset = async function (cAsset) {
       const assetUID = cAsset?.uid;
       if (cAsset && assetUID) {
@@ -431,24 +431,24 @@ export function entryCreateScript(contentType) {
       }
       return cAsset;
     };
-  
+
     const uploadAssets = async function () {
       const assetFolderMap = JSON.parse(fs.readFileSync(path.resolve(filePath, 'folder-mapper.json'), 'utf8'));
       const stackAPIClient = managementAPIClient.stack({ api_key: stackSDKInstance.api_key, branch_uid: branch });
       for (let i = 0; i < downloadedAssets?.length; i++) {
         const asset = downloadedAssets[i];
         let requestOption = {};
-  
+
         requestOption.parent_uid = assetFolderMap[asset.parent_uid] || asset.parent_uid;
-  
+
         if (asset.hasOwnProperty('description') && typeof asset.description === 'string') {
           requestOption.description = asset.description;
         }
-  
+
         if (asset.hasOwnProperty('tags') && Array.isArray(asset.tags)) {
           requestOption.tags = asset.tags;
         }
-  
+
         if (asset.hasOwnProperty('title') && typeof asset.title === 'string') {
           requestOption.title = asset.title;
         }
@@ -464,7 +464,7 @@ export function entryCreateScript(contentType) {
         assetUrlMapper[asset.url] = res && res.url;
       }
     };
-    
+
     function handleErrorMsg(err) {
       if (err?.errorMessage) {
        console.log(err.errorMessage);
@@ -479,14 +479,14 @@ export function entryCreateScript(contentType) {
         limit,
         include_count: true,
       };
-  
+
       const entriesSearchResponse = await managementAPIClient
         .stack({ api_key: stackSDKInstance.api_key, branch_uid: branchName })
         .contentType(contentType)
         .entry()
         .query(requestObject)
         .find();
-  
+
       if (entriesSearchResponse?.items?.length > 0) {
         skip += limit || 100;
         entries = [...entries, ...entriesSearchResponse.items];
@@ -507,12 +507,12 @@ export function entryCreateScript(contentType) {
         task: async () => {
 
           const compareBranchEntries = await getEntries(compareBranch, '${contentType}')
-          
+
           const compareFilteredProperties = compareBranchEntries.map((entry) => {
             keysToRemove.map((key) => delete entry[key]);
             return entry;
           });
-          
+
           let contentType = await managementAPIClient
           .stack({ api_key: stackSDKInstance.api_key, branch_uid: compareBranch })
           .contentType('${contentType}')
@@ -553,7 +553,7 @@ export function entryCreateScript(contentType) {
             for (let i in references) {
               let compareEntryRef = getValueByPath(entryDetails, references[i]);
               let baseEntryRef = getValueByPath(baseEntry, references[i]);
-  
+
               if (compareEntryRef && compareEntryRef.length > 0 && baseEntryRef && baseEntryRef.length >= 0) {
                 let compareRefEntry = await managementAPIClient
                   .stack({ api_key: stackSDKInstance.api_key, branch_uid: compareBranch })
@@ -565,7 +565,7 @@ export function entryCreateScript(contentType) {
                   .entry()
                   .query({ query: { title: compareRefEntry.title } })
                   .find();
-  
+
                   if(baseRefEntry?.items?.length > 0 && baseRefEntry.items[0]?.uid){
                     updateValueByPath(entryDetails, references[i], baseRefEntry.items[0].uid);
                   }

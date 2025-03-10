@@ -89,6 +89,14 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   if (importCmdFlags['backup-dir']) {
     config.useBackedupDir = importCmdFlags['backup-dir'];
   }
+  
+  if (importCmdFlags['skip-assets-publish']) {
+    config.skipAssetsPublish = importCmdFlags['skip-assets-publish'];
+  }
+
+  if (importCmdFlags['skip-entries-publish']) {
+    config.skipEntriesPublish = importCmdFlags['skip-entries-publish'];
+  }
 
   // Note to support old modules
   config.target_stack = config.apiKey;
