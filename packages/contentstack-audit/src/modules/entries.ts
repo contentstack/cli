@@ -850,7 +850,7 @@ export default class Entries {
 
     let missingCTSelectFieldValues;
     let isMissingValuePresent = false;
-
+    let selectedValue: string | string [] | number | number[] | any = '';
     if (multiple) {
       let obj = this.findNotPresentSelectField(entry, selectOptions);
       let { notPresent, filteredFeild } = obj;
@@ -868,6 +868,7 @@ export default class Entries {
             .slice(0, missingInstances)
             .map((choice) => choice.value);
           entry.push(...newValues);
+          selectedValue = newValues;
           this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: newValues.join(' '), uid }), 'error');
         }
       } else {
@@ -875,6 +876,7 @@ export default class Entries {
           isMissingValuePresent = true;
           const defaultValue = selectOptions.choices.length > 0 ? selectOptions.choices[0].value : null;
           entry.push(defaultValue);
+          selectedValue = defaultValue;
           this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: defaultValue as string, uid }), 'error');
         }
       }
@@ -885,6 +887,7 @@ export default class Entries {
         isMissingValuePresent = true;
         let defaultValue = selectOptions.choices.length > 0 ? selectOptions.choices[0].value : null;
         entry = defaultValue;
+        selectedValue = defaultValue;
         this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: defaultValue as string, uid }), 'error');
       }
     }
@@ -895,6 +898,7 @@ export default class Entries {
         display_name,
         display_type,
         missingCTSelectFieldValues,
+        selectedValue,
         min_instance: min_instance ?? 'NA',
         tree,
         treeStr: tree
