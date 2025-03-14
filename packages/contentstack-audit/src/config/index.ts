@@ -93,7 +93,8 @@ const config = {
     'entry_uid',
     'publish_locale',
     'publish_environment',
-    'asset_uid'
+    'asset_uid',
+    'selectedValue'
   ],
   ReportTitleForEntries: {
     Entries_Select_feild: 'Entries_Select_feild',
