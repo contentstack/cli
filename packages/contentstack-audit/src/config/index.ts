@@ -93,7 +93,8 @@ const config = {
     'entry_uid',
     'publish_locale',
     'publish_environment',
-    'asset_uid'
+    'asset_uid',
+    'selectedValue'
   ],
   ReportTitleForEntries: {
     Entries_Select_feild: 'Entries_Select_feild',
@@ -103,6 +104,7 @@ const config = {
     Entry_Missing_Locale_and_Env_in_Publish_Details: 'Entry_Missing_Locale_and_Env_in_Publish_Details'
   },
   feild_level_modules: ['Entries_Title_feild', 'Entries_Mandatory_feild', 'Entries_Select_feild', 'Entry_Missing_Locale_and_Env_in_Publish_Details'],
+  fixSelectField: false
 };
 
 export default config;
