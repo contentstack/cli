@@ -917,7 +917,7 @@ export default class Entries {
 
   validateMandatoryFields(tree: Record<string, unknown>[], fieldStructure: any, entry: any) {
     const { display_name, multiple, data_type, mandatory, field_metadata, uid } = fieldStructure;
-    
+
     const isJsonRteEmpty = () => {
       const jsonNode = multiple
         ? entry[uid]?.[0]?.children?.[0]?.children?.[0]?.text
@@ -928,6 +928,9 @@ export default class Entries {
     const isEntryEmpty = () => {
       let fieldValue = multiple ? entry[uid]?.length : entry;
       if (data_type === 'number' && !multiple) {
+        fieldValue = entry[uid] || entry[uid] === 0 ? true : false;
+      }
+      if (data_type === 'text' && !multiple) {
         fieldValue = entry[uid] || entry[uid] === 0 ? true : false;
       }
       if (Array.isArray(entry[uid]) && data_type === 'reference') {
