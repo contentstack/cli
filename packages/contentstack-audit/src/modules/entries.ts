@@ -332,6 +332,7 @@ export default class Entries {
     field: ContentTypeStruct | GlobalFieldDataType | ModularBlockType | GroupFieldDataType,
     entry: EntryFieldType,
   ) {
+   
     if (this.fix) {
       entry = this.runFixOnSchema(tree, field.schema as ContentTypeSchemaType[], entry);
     }
@@ -846,6 +847,9 @@ export default class Entries {
    * @returns
    */
   fixSelectField(tree: Record<string, unknown>[], field: SelectFeildStruct, entry: any) {
+    if(!this.config.fixSelectField) {
+      return entry;
+    }
     const { enum: selectOptions, multiple, min_instance, display_type, display_name, uid } = field;
 
     let missingCTSelectFieldValues;
