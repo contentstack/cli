@@ -104,6 +104,7 @@ const config = {
     Entry_Missing_Locale_and_Env_in_Publish_Details: 'Entry_Missing_Locale_and_Env_in_Publish_Details'
   },
   feild_level_modules: ['Entries_Title_feild', 'Entries_Mandatory_feild', 'Entries_Select_feild', 'Entry_Missing_Locale_and_Env_in_Publish_Details'],
+  fixSelectField: false
 };
 
 export default config;
