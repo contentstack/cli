@@ -117,6 +117,14 @@ export default class ImportCommand extends Command {
       description: 'Excludes the branch-independent module from the import operation.',
       default: false,
     }),
+    'skip-assets-publish': flags.boolean({
+      description: 'Skips asset publishing during the import process.',
+      default: false,
+    }),
+    'skip-entries-publish': flags.boolean({
+      description: 'Skips entry publishing during the import process',
+      default: false,
+    }),
   };
 
   static aliases: string[] = ['cm:import'];
