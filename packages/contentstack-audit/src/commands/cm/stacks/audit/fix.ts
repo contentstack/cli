@@ -4,7 +4,7 @@ import config from '../../../../config';
 import { ConfigType } from '../../../../types';
 import { auditFixMsg, auditMsg } from '../../../../messages';
 import { AuditBaseCommand } from '../../../../audit-base-command';
-import { getJsonInputFlags } from '../../../../util';
+import { getJsonInputFlags, tableFlags } from '../../../../util';
 
 const jsonFlag = getJsonInputFlags({ hidden: true });
 
@@ -53,7 +53,7 @@ export default class AuditFix extends AuditBaseCommand {
       description: 'Use this flag to skip confirmation',
     }),
     'external-config': jsonFlag(),
-    // ...getTableFlags(),
+    ...tableFlags,
   };
 
   /**
