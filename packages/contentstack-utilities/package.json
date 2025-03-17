@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-utilities",
-  "version": "1.8.4",
+  "version": "1.9.0",
   "description": "Utilities for contentstack projects",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -32,7 +32,7 @@
   "author": "contentstack",
   "license": "MIT",
   "dependencies": {
-    "@contentstack/management": "~1.18.4",
+    "@contentstack/management": "file:/Users/aman.kumar/Documents/datasync-repo/contentstack-management-javascript/contentstack-management-1.19.5.tgz",
     "@contentstack/marketplace-sdk": "^1.2.5",
     "@oclif/core": "^3.27.0",
     "axios": "^1.8.2",
