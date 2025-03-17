@@ -1,4 +1,4 @@
-import { cliux, configHandler } from '@contentstack/cli-utilities';
+import { cliux, configHandler, TableHeader } from '@contentstack/cli-utilities';
 import { Command } from '@contentstack/cli-command';
 import { RateLimitConfig } from '../../../interfaces';
 
@@ -17,22 +17,22 @@ export default class RateLimitGetCommand extends Command {
         'Bulk Limit': formatLimit(limits.bulkLimit),
       }));
 
-      const columns = {
-        Org: {
-          minWidth: 10,
+      const headers: TableHeader[] = [
+        {
+          value: 'Org',
         },
-        'Get Limit': {
-          minWidth: 20,
+        {
+          value: 'Get Limit',
         },
-        Limit: {
-          minWidth: 20,
+        {
+          value: 'Limit',
         },
-        'Bulk Limit': {
-          minWidth: 20,
+        {
+          value: 'Bulk Limit',
         },
-      };
+      ];
 
-      cliux.table(tableData, columns, { printLine: cliux.print });
+      cliux.table(headers, tableData);
     } catch (error) {
       this.log('Unable to retrieve the rate limits configuration', error instanceof Error ? error.message : error);
     }

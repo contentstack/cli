@@ -3,6 +3,7 @@ import { FlagInput, Flags, ux } from '@contentstack/cli-utilities';
 import config from '../../../../config';
 import { auditMsg } from '../../../../messages';
 import { AuditBaseCommand } from '../../../../audit-base-command';
+import { tableFlags } from '../../../../util';
 // import { getTableFlags } from '../../../../util';
 
 export default class Audit extends AuditBaseCommand {
@@ -31,7 +32,7 @@ export default class Audit extends AuditBaseCommand {
       options: config.modules,
       description: auditMsg.MODULES,
     }),
-    // ...getTableFlags(),
+    ...tableFlags,
   };
 
   /**
