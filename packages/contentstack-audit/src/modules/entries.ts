@@ -412,6 +412,13 @@ export default class Entries {
           }
           break;
       }
+      this.missingMandatoryFields[this.currentUid].push(
+        ...this.validateMandatoryFields(
+          [...tree, { uid: field.uid, name: child.display_name, field: uid }],
+          child,
+          entry,
+        ),
+      );
     }
   }
 
