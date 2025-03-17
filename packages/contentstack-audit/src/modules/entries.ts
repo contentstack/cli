@@ -854,7 +854,7 @@ export default class Entries {
 
     let missingCTSelectFieldValues;
     let isMissingValuePresent = false;
-    let selectedValue: string | string [] | number | number[] | any = '';
+    let selectedValue: unknown = '';
     if (multiple) {
       let obj = this.findNotPresentSelectField(entry, selectOptions);
       let { notPresent, filteredFeild } = obj;
