@@ -383,6 +383,9 @@ export default class ContentType {
     const missingRefs: string[] = [];
     let { reference_to, display_name, data_type } = field;
 
+    if(!Array.isArray(reference_to)) {
+      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, data_type, display_name }), { color: 'green' });
+    }
     for (const reference of reference_to ?? []) {
       // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
       if (this.config.skipRefs.includes(reference)) {
