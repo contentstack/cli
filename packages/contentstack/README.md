@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.35.2 darwin-arm64 node-v22.13.1
+@contentstack/cli/1.37.0 darwin-arm64 node-v22.13.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -100,12 +100,6 @@ USAGE
 * [`csdx config:set:rate-limit`](#csdx-configsetrate-limit)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMAND]`](#csdx-help-command)
-* [`csdx launch`](#csdx-launch)
-* [`csdx launch:deployments`](#csdx-launchdeployments)
-* [`csdx launch:environments`](#csdx-launchenvironments)
-* [`csdx launch:functions`](#csdx-launchfunctions)
-* [`csdx launch:logs`](#csdx-launchlogs)
-* [`csdx launch:open`](#csdx-launchopen)
 * [`csdx login`](#csdx-login)
 * [`csdx logout`](#csdx-logout)
 * [`csdx plugins`](#csdx-plugins)
@@ -129,12 +123,23 @@ Perform audits and find possible errors in the exported Contentstack data
 ```
 USAGE
   $ csdx audit [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles...]
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets...] [-c <value>] [--sort <value>]
+    [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
-                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles>
+                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets>
   --report-path=<value>  Path to store the audit reports
+
+TABLE FLAGS
+  -c, --columns=<value>  Specify columns to display, comma-separated.
+      --csv              Output results in CSV format.
+      --filter=<value>   Filter rows by a column value (e.g., name=foo).
+      --no-header        Hide table headers in output.
+      --no-truncate      Prevent truncation of long text in columns.
+      --output=<option>  Specify output format: csv, json, or yaml.
+                         <options: csv|json|yaml>
+      --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 COMMON FLAGS
   -c, --config=<value>    Path of the external config
@@ -166,8 +171,9 @@ Perform audits and fix possible errors in the exported Contentstack data.
 ```
 USAGE
   $ csdx audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles...] [--copy-path <value> --copy-dir]
-    [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...]
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets...] [--copy-path <value> --copy-dir]
+    [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [-c <value>] [--sort
+    <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --copy-dir              Create backup from the original data.
@@ -175,8 +181,18 @@ FLAGS
   --fix-only=<option>...  Provide the list of fix options
                           <options: reference|global_field|json:rte|json:extension|blocks|group|content_types>
   --modules=<option>...   Provide the list of modules to be audited
-                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles>
+                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets>
   --report-path=<value>   Path to store the audit reports
+
+TABLE FLAGS
+  -c, --columns=<value>  Specify columns to display, comma-separated.
+      --csv              Output results in CSV format.
+      --filter=<value>   Filter rows by a column value (e.g., name=foo).
+      --no-header        Hide table headers in output.
+      --no-truncate      Prevent truncation of long text in columns.
+      --output=<option>  Specify output format: csv, json, or yaml.
+                         <options: csv|json|yaml>
+      --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 COMMON FLAGS
   -c, --config=<value>    Path of the external config
@@ -269,7 +285,18 @@ Lists all existing tokens added to the session
 
 ```
 USAGE
-  $ csdx auth:tokens
+  $ csdx auth:tokens [-c <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header]
+    [--output csv|json|yaml]
+
+TABLE FLAGS
+  -c, --columns=<value>  Specify columns to display, comma-separated.
+      --csv              Output results in CSV format.
+      --filter=<value>   Filter rows by a column value (e.g., name=foo).
+      --no-header        Hide table headers in output.
+      --no-truncate      Prevent truncation of long text in columns.
+      --output=<option>  Specify output format: csv, json, or yaml.
+                         <options: csv|json|yaml>
+      --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 DESCRIPTION
   Lists all existing tokens added to the session
@@ -2326,7 +2353,9 @@ FLAGS
       --personalize-project-name=<value>  (optional) Provide a unique name for the Personalize project.
       --replace-existing                  Replaces the existing module in the target stack.
       --skip-app-recreation               (optional) Skips the recreation of private apps if they already exist.
+      --skip-assets-publish               Skips asset publishing during the import process.
       --skip-audit                        Skips the audit fix that occurs during an import operation.
+      --skip-entries-publish              Skips entry publishing during the import process
       --skip-existing                     Skips the module exists warning messages.
 
 DESCRIPTION
@@ -2588,12 +2617,23 @@ Perform audits and find possible errors in the exported Contentstack data
 ```
 USAGE
   $ csdx cm:stacks:audit [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles...]
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets...] [-c <value>] [--sort <value>]
+    [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
-                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles>
+                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets>
   --report-path=<value>  Path to store the audit reports
+
+TABLE FLAGS
+  -c, --columns=<value>  Specify columns to display, comma-separated.
+      --csv              Output results in CSV format.
+      --filter=<value>   Filter rows by a column value (e.g., name=foo).
+      --no-header        Hide table headers in output.
+      --no-truncate      Prevent truncation of long text in columns.
+      --output=<option>  Specify output format: csv, json, or yaml.
+                         <options: csv|json|yaml>
+      --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 COMMON FLAGS
   -c, --config=<value>    Path of the external config
@@ -2627,8 +2667,9 @@ Perform audits and fix possible errors in the exported Contentstack data.
 ```
 USAGE
   $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles...] [--copy-path <value> --copy-dir]
-    [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...]
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets...] [--copy-path <value> --copy-dir]
+    [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [-c <value>] [--sort
+    <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --copy-dir              Create backup from the original data.
@@ -2636,8 +2677,18 @@ FLAGS
   --fix-only=<option>...  Provide the list of fix options
                           <options: reference|global_field|json:rte|json:extension|blocks|group|content_types>
   --modules=<option>...   Provide the list of modules to be audited
-                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles>
+                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets>
   --report-path=<value>   Path to store the audit reports
+
+TABLE FLAGS
+  -c, --columns=<value>  Specify columns to display, comma-separated.
+      --csv              Output results in CSV format.
+      --filter=<value>   Filter rows by a column value (e.g., name=foo).
+      --no-header        Hide table headers in output.
+      --no-truncate      Prevent truncation of long text in columns.
+      --output=<option>  Specify output format: csv, json, or yaml.
+                         <options: csv|json|yaml>
+      --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 COMMON FLAGS
   -c, --config=<value>    Path of the external config
@@ -2809,7 +2860,9 @@ FLAGS
       --personalize-project-name=<value>  (optional) Provide a unique name for the Personalize project.
       --replace-existing                  Replaces the existing module in the target stack.
       --skip-app-recreation               (optional) Skips the recreation of private apps if they already exist.
+      --skip-assets-publish               Skips asset publishing during the import process.
       --skip-audit                        Skips the audit fix that occurs during an import operation.
+      --skip-entries-publish              Skips entry publishing during the import process
       --skip-existing                     Skips the module exists warning messages.
 
 DESCRIPTION
@@ -3532,6 +3585,8 @@ EXAMPLES
 
   $ csdx config:set:region GCP-NA
 
+  $ csdx config:set:region GCP-EU
+
   $ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India"
 
   $ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url>
@@ -3564,246 +3619,6 @@ DESCRIPTION
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.26/src/commands/help.ts)_
-
-## `csdx launch`
-
-Launch related operations
-
-```
-USAGE
-  $ csdx launch [-d <value>] [-c <value>] [--type GitHub|FileUpload] [--framework Gatsby|NextJs|CRA (Create
-    React App)|CSR (Client-Side Rendered)|Angular|VueJs|Other] [--org <value>] [-n <value>] [-e <value>] [--branch
-    <value>] [--build-command <value>] [--out-dir <value>] [--server-command <value>] [--variable-type Import variables
-    from a stack|Manually add custom variables to the list|Import variables from the local env file] [-a <value>]
-    [--env-variables <value>] [--redeploy-latest] [--redeploy-last-upload]
-
-FLAGS
-  -a, --alias=<value>           [optional] Alias (name) for the delivery token.
-  -c, --config=<value>          Path to the local '.cs-launch.json' file
-  -d, --data-dir=<value>        Current working directory
-  -e, --environment=<value>     [optional] Environment name for the Launch project.
-  -n, --name=<value>            [optional] Name of the project.
-      --branch=<value>          [optional] GitHub branch name.
-      --build-command=<value>   [optional] Build Command.
-      --env-variables=<value>   [optional] Provide the environment variables in the key:value format, separated by
-                                comma. For example: APP_ENV:prod, TEST_ENV:testVal.
-      --framework=<option>      [optional] Type of framework. <options: Gatsby|NextJS|Other>
-                                <options: Gatsby|NextJs|CRA (Create React App)|CSR (Client-Side
-                                Rendered)|Angular|VueJs|Other>
-      --org=<value>             [optional] Provide the organization UID to create a new project or deployment.
-      --out-dir=<value>         [optional] Output Directory.
-      --redeploy-last-upload    [optional] Redeploy with last file upload
-      --redeploy-latest         [optional] Redeploy latest commit/code
-      --server-command=<value>  [optional] Server Command.
-      --type=<option>           [optional] Type of adapters. <options: GitHub|FileUpload>
-                                <options: GitHub|FileUpload>
-      --variable-type=<option>  [optional] Provide a variable type. <options: Import variables from a stack|Manually add
-                                custom variables to the list|Import variables from the local env file>
-                                <options: Import variables from a stack|Manually add custom variables to the list|Import
-                                variables from the local env file>
-
-DESCRIPTION
-  Launch related operations
-
-EXAMPLES
-  $ csdx launch
-
-  $ csdx launch --data-dir <path/of/current/working/dir>
-
-  $ csdx launch --config <path/to/launch/config/file>
-
-  $ csdx launch --type <options: GitHub|FileUpload>
-
-  $ csdx launch --data-dir <path/of/current/working/dir> --type <options: GitHub|FileUpload>
-
-  $ csdx launch --data-dir <path/of/current/working/dir> --redeploy-latest
-
-  $ csdx launch --data-dir <path/of/current/working/dir> --redeploy-latest --redeploy-last-upload
-
-  $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload>
-
-  $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value>
-
-  $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --server-command=<value>
-
-  $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --variable-type="Import variables from a stack" --alias=<value>
-
-  $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --variable-type="Manually add custom variables to the list" --env-variables="APP_ENV:prod, TEST_ENV:testVal"
-```
-
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/index.ts)_
-
-## `csdx launch:deployments`
-
-Show list of deployments for an environment
-
-```
-USAGE
-  $ csdx launch:deployments [-d <value>] [-c <value>] [--org <value>] [--project <value>] [-e <value>]
-
-FLAGS
-  -c, --config=<value>       Path to the local '.cs-launch.json' file
-  -d, --data-dir=<value>     Current working directory
-  -e, --environment=<value>  Environment name or UID
-      --org=<value>          [Optional] Provide the organization UID
-      --project=<value>      [Optional] Provide the project UID
-
-DESCRIPTION
-  Show list of deployments for an environment
-
-EXAMPLES
-  $ csdx launch:deployments
-
-  $ csdx launch:deployments -d "current working directory"
-
-  $ csdx launch:deployments -c "path to the local config file"
-
-  $ csdx launch:deployments -e "environment number or uid" --org=<org UID> --project=<Project UID>
-```
-
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/deployments.ts)_
-
-## `csdx launch:environments`
-
-Show list of environments for a project
-
-```
-USAGE
-  $ csdx launch:environments [-d <value>] [-c <value>] [--org <value>] [--project <value>]
-
-FLAGS
-  -c, --config=<value>    Path to the local '.cs-launch.json' file
-  -d, --data-dir=<value>  Current working directory
-      --org=<value>       [Optional] Provide the organization UID
-      --project=<value>   [Optional] Provide the project UID
-
-DESCRIPTION
-  Show list of environments for a project
-
-EXAMPLES
-  $ csdx launch:environments
-
-  $ csdx launch:environments -d "current working directory"
-
-  $ csdx launch:environments -c "path to the local config file"
-
-  $ csdx launch:environments --org=<org UID> --project=<Project UID>
-```
-
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/environments.ts)_
-
-## `csdx launch:functions`
-
-Serve cloud functions
-
-```
-USAGE
-  $ csdx launch:functions [-d <value>] [-c <value>] [-p <value>]
-
-FLAGS
-  -c, --config=<value>    Path to the local '.cs-launch.json' file
-  -d, --data-dir=<value>  Current working directory
-  -p, --port=<value>      [default: 3000] Port number
-
-DESCRIPTION
-  Serve cloud functions
-
-EXAMPLES
-  $ csdx launch:functions
-
-  $ csdx launch:functions --port=port
-
-  $ csdx launch:functions --data-dir <path/of/current/working/dir>
-
-  $ csdx launch:functions --config <path/to/launch/config/file>
-
-  $ csdx launch:functions --data-dir <path/of/current/working/dir> -p "port number"
-
-  $ csdx launch:functions --config <path/to/launch/config/file> --port=port
-```
-
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/functions.ts)_
-
-## `csdx launch:logs`
-
-Show deployment or server logs
-
-```
-USAGE
-  $ csdx launch:logs [-d <value>] [-c <value>] [-e <value>] [--deployment <value>] [--type d|s] [--org <value>]
-    [--project <value>]
-
-FLAGS
-  -c, --config=<value>       Path to the local '.cs-launch.json' file
-  -d, --data-dir=<value>     Current working directory
-  -e, --environment=<value>  Environment name or UID
-      --deployment=<value>   Deployment number or UID
-      --org=<value>          [Optional] Provide the organization UID
-      --project=<value>      [Optional] Provide the project UID
-      --type=<option>        [default: s] Type of flags to show logs. By default, these are server logs. Options [d -
-                             deployment logs, s - server logs]
-                             <options: d|s>
-
-DESCRIPTION
-  Show deployment or server logs
-
-EXAMPLES
-  $ csdx launch:logs
-
-  $ csdx launch:logs --data-dir <path/of/current/working/dir>
-
-  $ csdx launch:logs --data-dir <path/of/current/working/dir> --type <options: d|s>
-
-  $ csdx launch:logs --config <path/to/launch/config/file> --type <options: d|s>
-
-  $ csdx launch:logs --deployment=deployment
-
-  $ csdx launch:logs --environment=environment
-
-  $ csdx launch:logs --environment=environment --deployment=deployment
-
-  $ csdx launch:logs --environment=environment --type <options: d|s>
-
-  $ csdx launch:logs --environment=environment --data-dir <path/of/current/working/dir> --deployment=deployment
-
-  $ csdx launch:logs --environment=environment --config <path/to/launch/config/file> --deployment=deployment
-```
-
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/logs.ts)_
-
-## `csdx launch:open`
-
-Open a website for an environment
-
-```
-USAGE
-  $ csdx launch:open [-d <value>] [-c <value>] [--org <value>] [--project <value>] [-e <value>]
-
-FLAGS
-  -c, --config=<value>       Path to the local '.cs-launch.json' file
-  -d, --data-dir=<value>     Current working directory
-  -e, --environment=<value>  Environment name or UID
-      --org=<value>          [Optional] Provide the organization UID
-      --project=<value>      [Optional] Provide the project UID
-
-DESCRIPTION
-  Open a website for an environment
-
-EXAMPLES
-  $ csdx launch:open
-
-  $ csdx launch:open --config <path/to/launch/config/file>
-
-  $ csdx launch:open --data-dir <path/of/current/working/dir>
-
-  $ csdx launch:open --environment=environment
-
-  $ csdx launch:open --environment=environment --config <path/to/launch/config/file>
-
-  $ csdx launch:open --environment=environment --data-dir <path/of/current/working/dir>
-```
-
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/open.ts)_
 
 ## `csdx login`
 
@@ -3882,7 +3697,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.34/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.36/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:add PLUGIN`
 
@@ -3956,7 +3771,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.34/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.36/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN`
 
@@ -4005,7 +3820,7 @@ EXAMPLES
     $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.34/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.36/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PATH`
 
@@ -4036,7 +3851,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.34/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.36/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:remove [PLUGIN]`
 
@@ -4077,7 +3892,7 @@ FLAGS
   --reinstall  Reinstall all plugins after uninstalling.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.34/src/commands/plugins/reset.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.36/src/commands/plugins/reset.ts)_
 
 ## `csdx plugins:uninstall [PLUGIN]`
 
@@ -4105,7 +3920,7 @@ EXAMPLES
   $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.34/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.36/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:unlink [PLUGIN]`
 
@@ -4149,7 +3964,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.34/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.36/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
@@ -4157,7 +3972,18 @@ Lists all existing tokens added to the session
 
 ```
 USAGE
-  $ csdx tokens
+  $ csdx tokens [-c <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header]
+    [--output csv|json|yaml]
+
+TABLE FLAGS
+  -c, --columns=<value>  Specify columns to display, comma-separated.
+      --csv              Output results in CSV format.
+      --filter=<value>   Filter rows by a column value (e.g., name=foo).
+      --no-header        Hide table headers in output.
+      --no-truncate      Prevent truncation of long text in columns.
+      --output=<option>  Specify output format: csv, json, or yaml.
+                         <options: csv|json|yaml>
+      --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 DESCRIPTION
   Lists all existing tokens added to the session

@@ -31,6 +31,7 @@ export * from './interfaces';
 export * from './date-time';
 export * from './add-locale';
 export * from './path-validator';
+export { default as CLITable, TableFlags, TableHeader, TableOptions, TableData } from './cli-table';
 
 // Marketplace SDK export
 export {
