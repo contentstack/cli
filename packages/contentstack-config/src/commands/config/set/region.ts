@@ -42,10 +42,10 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     'developer-hub': _flags.string({
       description: 'Custom host to set for Developer hub API',
     }),
-    'personalize': _flags.string({
+    personalize: _flags.string({
       description: 'Custom host to set for Personalize API',
     }),
-    'launch': _flags.string({
+    launch: _flags.string({
       description: 'Custom host to set for Launch API',
     }),
   };
@@ -56,11 +56,12 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     '$ csdx config:set:region AZURE-NA',
     '$ csdx config:set:region AZURE-EU',
     '$ csdx config:set:region GCP-NA',
+    '$ csdx config:set:region GCP-EU',
     '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India"',
     '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url>',
     '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --personalize <custom_personalize_url>',
     '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --launch <custom_launch_url>',
-    '$ csdx config:set:region --cda <custom_cda_host_url> --cma <custom_cma_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url> --launch <custom_launch_url> --personalize <custom_personalize_url>',    
+    '$ csdx config:set:region --cda <custom_cda_host_url> --cma <custom_cma_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url> --launch <custom_launch_url> --personalize <custom_personalize_url>',
   ];
 
   static args: ArgInput = {
@@ -117,7 +118,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
         this.logger.error('failed to set the region', error);
         cliux.error(`Failed to set region due to: ${error.message}`);
       }
-    } else if (['NA', 'EU', 'AZURE-NA', 'AZURE-EU', 'GCP-NA'].includes(selectedRegion)) {
+    } else if (['NA', 'EU', 'AZURE-NA', 'AZURE-EU', 'GCP-NA', 'GCP-EU'].includes(selectedRegion)) {
       const regionDetails: Region = regionHandler.setRegion(selectedRegion);
       await authHandler.setConfigData('logout'); //Todo: Handle this logout flow well through logout command call
       cliux.success(`Region has been set to ${regionDetails.name}`);
@@ -138,6 +139,6 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     }
     transformedUrl = transformedUrl.startsWith('dev11') ? transformedUrl.replace('dev11', 'dev') : transformedUrl;
     transformedUrl = transformedUrl.endsWith('io') ? transformedUrl.replace('io', 'com') : transformedUrl;
-    return `https://${transformedUrl}`
+    return `https://${transformedUrl}`;
   }
 }

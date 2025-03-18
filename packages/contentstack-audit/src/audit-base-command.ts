@@ -5,14 +5,14 @@ import { v4 as uuid } from 'uuid';
 import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
 import cloneDeep from 'lodash/cloneDeep';
-import { cliux, sanitizePath } from '@contentstack/cli-utilities';
+import { cliux, sanitizePath, TableFlags, TableHeader } from '@contentstack/cli-utilities';
 import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'fs';
 
 import config from './config';
 import { print } from './util/log';
 import { auditMsg } from './messages';
 import { BaseCommand } from './base-command';
-import { Entries, GlobalField, ContentType, Extensions, Workflows } from './modules';
+import { Entries, GlobalField, ContentType, Extensions, Workflows, Assets } from './modules';
 import {
   CommandNames,
   ContentTypeStruct,
@@ -59,6 +59,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingMandatoryFields,
       missingTitleFields,
       missingRefInCustomRoles,
+      missingEnvLocalesInAssets,
+      missingEnvLocalesInEntries,
     } = await this.scanAndFix();
 
     this.showOutputOnScreen([
@@ -74,6 +76,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     ]);
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Entries Title Field', missingRefs: missingTitleFields }]);
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Custom Roles', missingRefs: missingRefInCustomRoles }]);
+    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Assets', missingRefs: missingEnvLocalesInAssets }]);
+    this.showOutputOnScreenWorkflowsAndExtension([
+      { module: 'Entries Missing Locale and Environments', missingRefs: missingEnvLocalesInEntries },
+    ]);
     if (
       !isEmpty(missingCtRefs) ||
       !isEmpty(missingGfRefs) ||
@@ -82,7 +88,9 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       !isEmpty(missingCtRefsInExtensions) ||
       !isEmpty(missingSelectFeild) ||
       !isEmpty(missingTitleFields) ||
-      !isEmpty(missingRefInCustomRoles)
+      !isEmpty(missingRefInCustomRoles) ||
+      !isEmpty(missingEnvLocalesInAssets) ||
+      !isEmpty(missingEnvLocalesInEntries)
     ) {
       if (this.currentCommand === 'cm:stacks:audit') {
         this.log(this.$t(auditMsg.FINAL_REPORT_PATH, { path: this.sharedConfig.reportPath }), 'warn');
@@ -110,7 +118,9 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       !isEmpty(missingCtRefsInWorkflow) ||
       !isEmpty(missingCtRefsInExtensions) ||
       !isEmpty(missingSelectFeild) ||
-      !isEmpty(missingRefInCustomRoles)
+      !isEmpty(missingRefInCustomRoles) ||
+      !isEmpty(missingEnvLocalesInAssets) ||
+      !isEmpty(missingEnvLocalesInEntries)
     );
   }
 
@@ -131,7 +141,9 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingEntry,
       missingMandatoryFields,
       missingTitleFields,
-      missingRefInCustomRoles;
+      missingRefInCustomRoles,
+      missingEnvLocalesInAssets,
+      missingEnvLocalesInEntries;
 
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       print([
@@ -151,6 +163,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         fix: this.currentCommand === 'cm:stacks:audit:fix',
       };
       switch (module) {
+        case 'assets':
+          missingEnvLocalesInAssets = await new Assets(cloneDeep(constructorParam)).run();
+          await this.prepareReport(module, missingEnvLocalesInAssets);
+          break;
         case 'content-types':
           missingCtRefs = await new ContentType(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingCtRefs);
@@ -165,6 +181,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           missingSelectFeild = missingEntry.missingSelectFeild ?? {};
           missingMandatoryFields = missingEntry.missingMandatoryFields ?? {};
           missingTitleFields = missingEntry.missingTitleFields ?? {};
+          missingEnvLocalesInEntries = missingEntry.missingEnvLocale ?? {};
           await this.prepareReport(module, missingEntryRefs);
 
           await this.prepareReport(`Entries_Select_feild`, missingSelectFeild);
@@ -172,6 +189,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           await this.prepareReport('Entries_Mandatory_feild', missingMandatoryFields);
 
           await this.prepareReport('Entries_Title_feild', missingTitleFields);
+
+          await this.prepareReport('Entry_Missing_Locale_and_Env_in_Publish_Details', missingEnvLocalesInEntries);
 
           break;
         case 'workflows':
@@ -218,6 +237,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingMandatoryFields,
       missingTitleFields,
       missingRefInCustomRoles,
+      missingEnvLocalesInAssets,
+      missingEnvLocalesInEntries,
     };
   }
 
@@ -306,48 +327,42 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
             },
           ]);
           const tableValues = Object.values(missingRefs).flat();
-          cliux.table(
-            tableValues,
+
+          const tableHeaders: TableHeader[] = [
             {
-              name: {
-                minWidth: 7,
-                // header: 'Title',
-              },
-              ct: {
-                minWidth: 7,
-                // header: 'Content Type',
-              },
-              locale: {
-                minWidth: 7,
-                // header: 'Locale',
-              },
-              display_name: {
-                minWidth: 7,
-                // header: 'Field name',
-              },
-              data_type: {
-                minWidth: 7,
-                // header: 'Field type',
-              },
-              missingRefs: {
-                minWidth: 7,
-                // header: 'Missing references',
-                // get: (row) => {
-                //   return chalk.red(
-                //     typeof row.missingRefs === 'object' ? JSON.stringify(row.missingRefs) : row.missingRefs,
-                //   );
-                // },
-              },
-              // ...(tableValues[0]?.fixStatus ? this.fixStatus : {}),
-              treeStr: {
-                minWidth: 7,
-                // header: 'Path',
+              value: 'name',
+              alias: 'Title',
+            },
+            {
+              value: 'ct',
+              alias: 'Content Type',
+            },
+            {
+              value: 'locale',
+              alias: 'Locale',
+            },
+            {
+              value: 'display_name',
+              alias: 'Field name',
+            },
+            {
+              value: 'data_type',
+              alias: 'Field type',
+            },
+            {
+              value: 'missingRefs',
+              alias: 'Missing references',
+              formatter: (cellValue: any) => {
+                return chalk.red(typeof cellValue === 'object' ? JSON.stringify(cellValue) : cellValue);
               },
             },
             {
-              ...this.flags,
+              value: 'treeStr',
+              alias: 'Path',
             },
-          );
+          ];
+
+          cliux.table(tableHeaders, tableValues, { ...(this.flags as TableFlags) });
           this.log(''); // NOTE adding new line
         }
       }
@@ -371,34 +386,28 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       const tableValues = Object.values(missingRefs).flat();
       missingRefs = Object.values(missingRefs).flat();
       const tableKeys = Object.keys(missingRefs[0]);
-      const arrayOfObjects = tableKeys.map((key) => {
-        if (config.OutputTableKeys.includes(key)) {
-          return {
-            [key]: {
-              minWidth: 7,
-              header: key,
-              get: (row: Record<string, unknown>) => {
-                if (key === 'fixStatus') {
-                  return chalk.green(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
-                } else if (
-                  key === 'content_types' ||
-                  key === 'branches' ||
-                  key === 'missingCTSelectFieldValues' ||
-                  key === 'missingFieldUid'
-                ) {
-                  return chalk.red(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
-                } else {
-                  return chalk.white(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
-                }
-              },
-            },
-          };
-        }
-        return {};
-      });
-      const mergedObject = Object.assign({}, ...arrayOfObjects);
 
-      cliux.table(tableValues, mergedObject, { ...this.flags });
+      const tableHeaders: TableHeader[] = tableKeys
+        .filter((key) => config.OutputTableKeys.includes(key)) // Remove invalid keys early
+        .map((key: string) => ({
+          value: key,
+          formatter: (cellValue: any) => {
+            if (key === 'fixStatus') {
+              return chalk.green(typeof cellValue === 'object' ? JSON.stringify(cellValue) : cellValue);
+            } else if (
+              key === 'content_types' ||
+              key === 'branches' ||
+              key === 'missingCTSelectFieldValues' ||
+              key === 'missingFieldUid'
+            ) {
+              return chalk.red(typeof cellValue === 'object' ? JSON.stringify(cellValue) : cellValue);
+            } else {
+              return chalk.white(typeof cellValue === 'object' ? JSON.stringify(cellValue) : cellValue);
+            }
+          },
+        }));
+
+      cliux.table(tableHeaders, tableValues, { ...(this.flags as TableFlags) });
       this.log(''); // Adding a new line
     }
   }

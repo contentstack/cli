@@ -32,22 +32,55 @@ function removePublishDetails(elements) {
   return elements;
 }
 
-function displayEntriesDetails(sanitizedData) {
-  sanitizedData.forEach((entry) => {
-    console.log(chalk.green(`Entry UID '${entry.uid}' of CT '${entry.content_type}' in locale '${entry.locale}'`));
-  });
+function displayEntriesDetails(sanitizedData, action, mapping = []) {
+  if (action === 'bulk_publish') {
+    sanitizedData.forEach((entry) => {
+      entry?.publish_details.forEach((pd) => {
+        if (Object.keys(mapping).includes(pd.environment)) {
+          console.log(
+            chalk.green(
+              `Entry UID '${entry.uid}' of CT '${entry.content_type}' in locale '${entry.locale}' version '${pd.version}' in environment '${pd.environment}'`,
+            ),
+          )
+        }
+      });
+      if(!Array.isArray(entry.publish_details)){
+        console.log(chalk.green(`Entry UID '${entry.uid}' of CT '${entry.content_type}' in locale '${entry.locale}'`));
+      }
+    });
+  } else if (action === 'bulk_unpublish') {
+    sanitizedData.forEach((entry) => {
+      console.log(chalk.green(`Entry UID '${entry.uid}' of CT '${entry.content_type}' in locale '${entry.locale}'`));
+    });
+  }
 }
 
-function displayAssetsDetails(sanitizedData) {
-  sanitizedData.forEach((asset) => {
-    console.log(
-      chalk.green(
-        `Asset UID '${asset.uid}' ${asset.version ? `and version '${asset.version}'` : ''} ${
-          asset.locale ? `in locale '${asset.locale}'` : ''
-        }`,
-      ),
-    );
-  });
+function displayAssetsDetails(sanitizedData, action, mapping) {
+  if (action === 'bulk_publish') {
+    sanitizedData.forEach((asset) => {
+      asset?.publish_details.forEach((pd) => {
+        if (Object.keys(mapping).includes(pd.environment)) {
+        console.log(
+          chalk.green(
+            `Asset UID '${asset.uid}' ${pd.version ? `and version '${pd.version}'` : ''} ${
+              asset.locale ? `in locale '${asset.locale}'` : ''
+            } in environment ${pd.environment}`,
+          ),
+        );
+      }
+      });
+    });
+  } else if (action === 'bulk_unpublish') {
+    sanitizedData.forEach((asset) => {
+      console.log(
+        chalk.green(
+          `Asset UID '${asset.uid}' ${asset.version ? `and version '${asset.version}'` : ''} ${
+            asset.locale ? `in locale '${asset.locale}'` : ''
+          }`,
+        ),
+      );
+    });
+  }
 }
 async function publishEntry(data, _config, queue) {
   const lang = [];
@@ -230,6 +263,21 @@ async function UnpublishAsset(data, _config, queue) {
     });
 }
 
+async function getEnvironment(stack, environment) {
+  const mapping = {};
+  if (Array.isArray(environment) && environment.length) {
+    for (let i = 0; i < environment.length; i++) {
+      const key = await stack.environment(environment[i]).fetch();
+      console.log(key);
+      mapping[key.uid] = environment[i];
+    }
+  } else {
+    const key = await stack.environment(environment[i]).fetch();
+    mapping[key.uid] = environment[i];
+  }
+  return mapping;
+}
+
 async function performBulkPublish(data, _config, queue) {
   // add validation for user uid
   // if user not logged in, then user uid won't be available and NRP too won't work
@@ -237,6 +285,7 @@ async function performBulkPublish(data, _config, queue) {
   const bulkPublishObj = data.obj;
   const stack = bulkPublishObj.stack;
   let payload = {};
+  const mapping = await getEnvironment(stack, bulkPublishObj.environments);
   switch (bulkPublishObj.Type) {
     case 'entry':
       conf = {
@@ -261,12 +310,11 @@ async function performBulkPublish(data, _config, queue) {
         .publish(payload)
         .then((bulkPublishEntriesResponse) => {
           if (!bulkPublishEntriesResponse.error_message) {
-            const sanitizedData = removePublishDetails(bulkPublishObj.entries);
             console.log(
               chalk.green(`Bulk entries sent for publish`),
               bulkPublishEntriesResponse.job_id ? chalk.yellow(`job_id: ${bulkPublishEntriesResponse.job_id}`) : '',
             );
-            displayEntriesDetails(sanitizedData);
+            displayEntriesDetails(bulkPublishObj.entries, 'bulk_publish', mapping);
             delete bulkPublishObj.stack;
             addLogs(
               logger,
@@ -284,8 +332,7 @@ async function performBulkPublish(data, _config, queue) {
           } else {
             delete bulkPublishObj.stack;
             console.log(chalk.red(`Bulk entries failed to publish with error ${formatError(error)}`));
-            let sanitizedData = removePublishDetails(bulkPublishObj.entries);
-            displayEntriesDetails(sanitizedData);
+            displayEntriesDetails(bulkPublishObj.entries, 'bulk_publish', mapping);
             addLogs(
               logger,
               { options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host },
@@ -322,8 +369,7 @@ async function performBulkPublish(data, _config, queue) {
                 bulkPublishAssetsResponse.job_id ? chalk.yellow(`job_id: ${bulkPublishAssetsResponse.job_id}`) : '',
               ),
             );
-            let sanitizedData = removePublishDetails(bulkPublishObj.assets);
-            displayAssetsDetails(sanitizedData);
+            displayAssetsDetails(bulkPublishObj.assets, 'bulk_publish', mapping);
             delete bulkPublishObj.stack;
             addLogs(
               logger,
@@ -342,8 +388,7 @@ async function performBulkPublish(data, _config, queue) {
             delete bulkPublishObj.stack;
             console.log(chalk.red(`Bulk assets failed to publish with error ${formatError(error)}`));
 
-            let sanitizedData = removePublishDetails(bulkPublishObj.assets);
-            displayAssetsDetails(sanitizedData);
+            displayAssetsDetails(sanitizedData, 'bulk_publish', mapping);
             addLogs(
               logger,
               { options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host },
@@ -395,8 +440,7 @@ async function performBulkUnPublish(data, _config, queue) {
                   : '',
               ),
             );
-            let sanitizedData = removePublishDetails(bulkUnPublishObj.entries);
-            displayEntriesDetails(sanitizedData);
+            displayEntriesDetails(bulkUnPublishObj.entries, 'bulk_unpublish');
             addLogs(
               logger,
               { options: bulkUnPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host },
@@ -413,8 +457,7 @@ async function performBulkUnPublish(data, _config, queue) {
           } else {
             delete bulkUnPublishObj.stack;
             console.log(chalk.red(`Bulk entries failed to Unpublish with error ${formatError(error)}`));
-            let sanitizedData = removePublishDetails(bulkUnPublishObj.entries);
-            displayEntriesDetails(sanitizedData);
+            displayEntriesDetails(bulkUnPublishObj.entries, 'bulk_unpublish');
             addLogs(
               logger,
               { options: bulkUnPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host },
@@ -446,14 +489,13 @@ async function performBulkUnPublish(data, _config, queue) {
         .then((bulkUnPublishAssetsResponse) => {
           if (!bulkUnPublishAssetsResponse.error_message) {
             delete bulkUnPublishObj.stack;
-            let sanitizedData = removePublishDetails(bulkUnPublishObj.assets);
             console.log(
               chalk.green(
                 `Bulk assets sent for Unpublish`,
                 bulkUnPublishAssetsResponse.job_id ? chalk.yellow(`job_id: ${bulkUnPublishAssetsResponse.job_id}`) : '',
               ),
             );
-            displayAssetsDetails(sanitizedData);
+            displayAssetsDetails(bulkUnPublishObj.assets, 'bulk_unpublish');
             addLogs(
               logger,
               { options: bulkUnPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host },
@@ -470,8 +512,7 @@ async function performBulkUnPublish(data, _config, queue) {
           } else {
             delete bulkUnPublishObj.stack;
             console.log(chalk.red(`Bulk assets failed to Unpublish with error ${formatError(error)}`));
-            let sanitizedData = removePublishDetails(bulkUnPublishObj.assets);
-            displayAssetsDetails(sanitizedData);
+            displayAssetsDetails(bulkUnPublishObj.assets, 'bulk_unpublish');
             addLogs(
               logger,
               { options: bulkUnPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host },

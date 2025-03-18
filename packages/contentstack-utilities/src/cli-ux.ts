@@ -3,7 +3,7 @@ import { default as inquirer, QuestionCollection, Answers } from 'inquirer';
 import { ux as cliux, Args, Flags, Command } from '@oclif/core';
 import { Ora, default as ora } from 'ora';
 import cliProgress from 'cli-progress';
-import cliTable from 'tty-table';
+import CLITable, { TableFlags, TableHeader, TableData, TableOptions } from './cli-table';
 
 import messageHandler from './message-handler';
 import { PrintOptions, InquirePayload, CliUXPromptOptions } from './interfaces';
@@ -58,21 +58,25 @@ class CLIInterface {
     this.loading = !this.loading;
   }
 
-  table(
+  tableold(
     data: Record<string, unknown>[],
     columns: Record<string, Record<string, number>>,
     options?: Record<string, unknown>,
   ): void {
     // parse headers to new table format
-    const headers: cliTable.Header[] = Object.keys(columns).map((columnTitle) => {
+    const headers: TableHeader[] = Object.keys(columns).map((columnTitle) => {
       return { value: columnTitle };
     });
-    const table = cliTable(headers, data, { ...options }).render();
-    cliux.stdout(table);
+    CLITable.render(headers, data, { ...options });
   }
 
-  table2(headers: cliTable.Header[], data: Record<string, unknown>[] | string[], options?: cliTable.Options) {
-    cliTable(headers, data, options);
+  table<T extends Record<string, unknown>>(
+    headers: TableHeader[],
+    data: TableData<T>,
+    flags?: TableFlags,
+    options?: TableOptions,
+  ): void {
+    CLITable.render(headers, data, flags, options);
   }
 
   async inquire<T>(inquirePayload: InquirePayload | Array<InquirePayload>): Promise<T> {

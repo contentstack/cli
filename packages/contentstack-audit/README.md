@@ -19,7 +19,7 @@ $ npm install -g @contentstack/cli-audit
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli-audit/1.7.5 darwin-arm64 node-v22.13.1
+@contentstack/cli-audit/1.9.0 darwin-arm64 node-v22.13.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -53,12 +53,23 @@ Perform audits and find possible errors in the exported Contentstack data
 ```
 USAGE
   $ csdx audit [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles...]
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets...] [-c <value>] [--sort <value>]
+    [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
-                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles>
+                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets>
   --report-path=<value>  Path to store the audit reports
+
+TABLE FLAGS
+  -c, --columns=<value>  Specify columns to display, comma-separated.
+      --csv              Output results in CSV format.
+      --filter=<value>   Filter rows by a column value (e.g., name=foo).
+      --no-header        Hide table headers in output.
+      --no-truncate      Prevent truncation of long text in columns.
+      --output=<option>  Specify output format: csv, json, or yaml.
+                         <options: csv|json|yaml>
+      --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 COMMON FLAGS
   -c, --config=<value>    Path of the external config
@@ -90,8 +101,9 @@ Perform audits and fix possible errors in the exported Contentstack data.
 ```
 USAGE
   $ csdx audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles...] [--copy-path <value> --copy-dir]
-    [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...]
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets...] [--copy-path <value> --copy-dir]
+    [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [-c <value>] [--sort
+    <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --copy-dir              Create backup from the original data.
@@ -99,8 +111,18 @@ FLAGS
   --fix-only=<option>...  Provide the list of fix options
                           <options: reference|global_field|json:rte|json:extension|blocks|group|content_types>
   --modules=<option>...   Provide the list of modules to be audited
-                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles>
+                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets>
   --report-path=<value>   Path to store the audit reports
+
+TABLE FLAGS
+  -c, --columns=<value>  Specify columns to display, comma-separated.
+      --csv              Output results in CSV format.
+      --filter=<value>   Filter rows by a column value (e.g., name=foo).
+      --no-header        Hide table headers in output.
+      --no-truncate      Prevent truncation of long text in columns.
+      --output=<option>  Specify output format: csv, json, or yaml.
+                         <options: csv|json|yaml>
+      --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 COMMON FLAGS
   -c, --config=<value>    Path of the external config
@@ -134,12 +156,23 @@ Perform audits and find possible errors in the exported Contentstack data
 ```
 USAGE
   $ csdx cm:stacks:audit [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles...]
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets...] [-c <value>] [--sort <value>]
+    [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
-                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles>
+                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets>
   --report-path=<value>  Path to store the audit reports
+
+TABLE FLAGS
+  -c, --columns=<value>  Specify columns to display, comma-separated.
+      --csv              Output results in CSV format.
+      --filter=<value>   Filter rows by a column value (e.g., name=foo).
+      --no-header        Hide table headers in output.
+      --no-truncate      Prevent truncation of long text in columns.
+      --output=<option>  Specify output format: csv, json, or yaml.
+                         <options: csv|json|yaml>
+      --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 COMMON FLAGS
   -c, --config=<value>    Path of the external config
@@ -173,8 +206,9 @@ Perform audits and fix possible errors in the exported Contentstack data.
 ```
 USAGE
   $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles...] [--copy-path <value> --copy-dir]
-    [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...]
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets...] [--copy-path <value> --copy-dir]
+    [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [-c <value>] [--sort
+    <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --copy-dir              Create backup from the original data.
@@ -182,8 +216,18 @@ FLAGS
   --fix-only=<option>...  Provide the list of fix options
                           <options: reference|global_field|json:rte|json:extension|blocks|group|content_types>
   --modules=<option>...   Provide the list of modules to be audited
-                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles>
+                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets>
   --report-path=<value>   Path to store the audit reports
+
+TABLE FLAGS
+  -c, --columns=<value>  Specify columns to display, comma-separated.
+      --csv              Output results in CSV format.
+      --filter=<value>   Filter rows by a column value (e.g., name=foo).
+      --no-header        Hide table headers in output.
+      --no-truncate      Prevent truncation of long text in columns.
+      --output=<option>  Specify output format: csv, json, or yaml.
+                         <options: csv|json|yaml>
+      --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 COMMON FLAGS
   -c, --config=<value>    Path of the external config
@@ -230,7 +274,7 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.26/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.27/src/commands/help.ts)_
 
 ## `csdx plugins`
 
@@ -253,7 +297,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.34/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.36/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:add PLUGIN`
 
@@ -327,7 +371,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.34/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.36/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN`
 
@@ -376,7 +420,7 @@ EXAMPLES
     $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.34/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.36/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PATH`
 
@@ -407,7 +451,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.34/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.36/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:remove [PLUGIN]`
 
@@ -448,7 +492,7 @@ FLAGS
   --reinstall  Reinstall all plugins after uninstalling.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.34/src/commands/plugins/reset.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.36/src/commands/plugins/reset.ts)_
 
 ## `csdx plugins:uninstall [PLUGIN]`
 
@@ -476,7 +520,7 @@ EXAMPLES
   $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.34/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.36/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:unlink [PLUGIN]`
 
@@ -520,5 +564,5 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.34/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.36/src/commands/plugins/update.ts)_
 <!-- commandsstop -->
