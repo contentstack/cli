@@ -384,7 +384,8 @@ export default class ContentType {
     let { reference_to, display_name, data_type } = field;
 
     if(!Array.isArray(reference_to)) {
-      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, data_type, display_name }), { color: 'green' });
+      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, data_type, display_name }),'error');
+      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, display_name }), 'info');
     }
     for (const reference of reference_to ?? []) {
       // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
@@ -639,7 +640,8 @@ export default class ContentType {
     const missingRefs: string[] = [];
     const { reference_to, data_type, display_name } = field;
     if(!Array.isArray(reference_to)) {
-      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, data_type, display_name }), { color: 'green' });
+      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, display_name }), 'error');
+      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, display_name }), 'info');
     }
     for (const reference of reference_to ?? []) {
       // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
