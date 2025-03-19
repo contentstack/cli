@@ -53,14 +53,20 @@ export default class ContentType {
     this.gfSchema = gfSchema;
     this.moduleName = this.validateModules(moduleName!, this.config.moduleConfig);
     this.fileName = config.moduleConfig[this.moduleName].fileName;
-    this.folderPath = resolve(sanitizePath(config.basePath), sanitizePath(config.moduleConfig[this.moduleName].dirName));
+    this.folderPath = resolve(
+      sanitizePath(config.basePath),
+      sanitizePath(config.moduleConfig[this.moduleName].dirName),
+    );
   }
 
-  validateModules(moduleName: keyof typeof auditConfig.moduleConfig, moduleConfig: Record<string, unknown>): keyof typeof auditConfig.moduleConfig {
+  validateModules(
+    moduleName: keyof typeof auditConfig.moduleConfig,
+    moduleConfig: Record<string, unknown>,
+  ): keyof typeof auditConfig.moduleConfig {
     if (Object.keys(moduleConfig).includes(moduleName)) {
       return moduleName;
     }
-    return 'content-types'
+    return 'content-types';
   }
   /**
    * The `run` function checks if a folder path exists, sets the schema based on the module name,
@@ -121,7 +127,7 @@ export default class ContentType {
     if (existsSync(extensionPath)) {
       try {
         this.extensions = Object.keys(JSON.parse(readFileSync(extensionPath, 'utf8')));
-      } catch (error) { }
+      } catch (error) {}
     }
 
     if (existsSync(marketplacePath)) {
@@ -134,7 +140,7 @@ export default class ContentType {
           ) as string[];
           this.extensions.push(...metaData);
         }
-      } catch (error) { }
+      } catch (error) {}
     }
   }
 
@@ -270,19 +276,19 @@ export default class ContentType {
 
     return missingRefs.length
       ? [
-        {
-          tree,
-          data_type,
-          missingRefs,
-          display_name,
-          ct_uid: this.currentUid,
-          name: this.currentTitle,
-          treeStr: tree
-            .map(({ name }) => name)
-            .filter((val) => val)
-            .join(' ➜ '),
-        },
-      ]
+          {
+            tree,
+            data_type,
+            missingRefs,
+            display_name,
+            ct_uid: this.currentUid,
+            name: this.currentTitle,
+            treeStr: tree
+              .map(({ name }) => name)
+              .filter((val) => val)
+              .join(' ➜ '),
+          },
+        ]
       : [];
   }
 
@@ -383,38 +389,46 @@ export default class ContentType {
     const missingRefs: string[] = [];
     let { reference_to, display_name, data_type } = field;
 
-    if(!Array.isArray(reference_to)) {
-      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, data_type, display_name }),'error');
+    if (!Array.isArray(reference_to)) {
+      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, data_type, display_name }), 'error');
       this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, display_name }), 'info');
-    }
-    for (const reference of reference_to ?? []) {
-      // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
-      if (this.config.skipRefs.includes(reference)) {
-        continue;
+      if (!this.config.skipRefs.includes(reference_to)) {
+        const refExist = find(this.ctSchema, { uid: reference_to });
+
+        if (!refExist) {
+          missingRefs.push(reference_to);
+        }
       }
+    } else {
+      for (const reference of reference_to ?? []) {
+        // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
+        if (this.config.skipRefs.includes(reference)) {
+          continue;
+        }
 
-      const refExist = find(this.ctSchema, { uid: reference });
+        const refExist = find(this.ctSchema, { uid: reference });
 
-      if (!refExist) {
-        missingRefs.push(reference);
+        if (!refExist) {
+          missingRefs.push(reference);
+        }
       }
     }
 
     return missingRefs.length
       ? [
-        {
-          tree,
-          data_type,
-          missingRefs,
-          display_name,
-          ct_uid: this.currentUid,
-          name: this.currentTitle,
-          treeStr: tree
-            .map(({ name }) => name)
-            .filter((val) => val)
-            .join(' ➜ '),
-        },
-      ]
+          {
+            tree,
+            data_type,
+            missingRefs,
+            display_name,
+            ct_uid: this.currentUid,
+            name: this.currentTitle,
+            treeStr: tree
+              .map(({ name }) => name)
+              .filter((val) => val)
+              .join(' ➜ '),
+          },
+        ]
       : [];
   }
 
@@ -639,20 +653,30 @@ export default class ContentType {
     let fixStatus;
     const missingRefs: string[] = [];
     const { reference_to, data_type, display_name } = field;
-    if(!Array.isArray(reference_to)) {
+    if (!Array.isArray(reference_to)) {
       this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, display_name }), 'error');
       this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, display_name }), 'info');
-    }
-    for (const reference of reference_to ?? []) {
-      // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
-      if (this.config.skipRefs.includes(reference)) {
-        continue;
+      if (!this.config.skipRefs.includes(reference_to)) {
+        const refExist = find(this.ctSchema, { uid: reference_to });
+
+        if (!refExist) {
+          missingRefs.push(reference_to);
+        }
       }
 
-      const refExist = find(this.ctSchema, { uid: reference });
+      field.reference_to = [reference_to];
+    } else {
+      for (const reference of reference_to ?? []) {
+        // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
+        if (this.config.skipRefs.includes(reference)) {
+          continue;
+        }
 
-      if (!refExist) {
-        missingRefs.push(reference);
+        const refExist = find(this.ctSchema, { uid: reference });
+
+        if (!refExist) {
+          missingRefs.push(reference);
+        }
       }
     }
 
