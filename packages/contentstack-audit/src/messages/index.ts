@@ -37,6 +37,12 @@ const auditMsg = {
   AUDIT_CMD_DESCRIPTION: 'Perform audits and find possible errors in the exported Contentstack data',
   SCAN_WF_SUCCESS_MSG: 'Successfully completed the scanning of workflow with UID {uid} and name {name}.',
   SCAN_CR_SUCCESS_MSG: 'Successfully completed the scanning of custom role with UID {uid} and name {name}.',
+  SCAN_ASSET_SUCCESS_MSG: `Successfully completed the scanning of Asset with UID '{uid}'.`,
+  SCAN_ASSET_WARN_MSG: `The locale '{locale}' or environment '{environment}' are not present for asset with uid '{uid}'`,
+  ENTRY_PUBLISH_DETAILS: `Removing the publish detials for entry '{uid}' of ct '{ctuid}' in locale '{locale}' as locale '{publocale}' or environment '{environment}' does not exist`,
+  CT_REFERENCE_FIELD: `The mentioned Reference field is not Array field reference is '{reference_to}' having display name '{display_name}''`,
+  ASSET_NOT_EXIST: `The publish_details either does not exist or is not an array for asset uid '{uid}'`,
+  ENTRY_PUBLISH_DETAILS_NOT_EXIST: `The publish_details either does not exist or is not an array for entry uid '{uid}'`,
 };
 
 const auditFixMsg = {
@@ -49,6 +55,7 @@ const auditFixMsg = {
   WF_FIX_MSG: 'Successfully removed the workflow {uid} named {name}.',
   ENTRY_MANDATORY_FIELD_FIX: `Removing the publish details from the entry with UID '{uid}' in Locale '{locale}'...`,
   ENTRY_SELECT_FIELD_FIX: `Adding the value '{value}' in the select field of entry UID '{uid}'...`,
+  ASSET_FIX: `Fixed publish detials for Asset with UID '{uid}'`,
 };
 
 const messages: typeof errors &
