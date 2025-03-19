@@ -665,6 +665,10 @@ export default class ContentType {
       }
 
       field.reference_to = [reference_to];
+      field.field_metadata = {
+        ...field.field_metadata,
+        ref_multiple_content_type: true
+      }
     } else {
       for (const reference of reference_to ?? []) {
         // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
