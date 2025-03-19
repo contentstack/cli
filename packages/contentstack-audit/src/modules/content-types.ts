@@ -667,7 +667,7 @@ export default class ContentType {
       field.reference_to = [reference_to];
       field.field_metadata = {
         ...field.field_metadata,
-        ref_multiple_content_type: true
+        ref_multiple_content_types: true
       }
     } else {
       for (const reference of reference_to ?? []) {
