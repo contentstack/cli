@@ -39,7 +39,7 @@ type CommonDataTypeStruct = {
     ref_multiple: boolean;
     allow_json_rte: boolean;
   } & AnyProperty;
-  mandatory: boolean
+  mandatory: boolean;
 };
 
 type RefErrorReturnType = {
@@ -113,12 +113,16 @@ type GroupFieldSchemaTypes =
   | ExtensionOrAppFieldDataType
   | SelectFeildStruct;
 
-type GlobalFieldSchemaTypes = ReferenceFieldDataType | GroupFieldDataType | ExtensionOrAppFieldDataType | SelectFeildStruct;
+type GlobalFieldSchemaTypes =
+  | ReferenceFieldDataType
+  | GroupFieldDataType
+  | ExtensionOrAppFieldDataType
+  | SelectFeildStruct;
 
 type ModularBlocksSchemaTypes = ReferenceFieldDataType | JsonRTEFieldDataType | SelectFeildStruct;
 
 type SelectFeildStruct = CommonDataTypeStruct & {
-  display_type:string;
+  display_type: string;
   enum: {
     advanced: string;
     choices: Record<string, unknown>[];
@@ -143,11 +147,20 @@ enum OutputColumn {
   'Minimum Required Instaces' = 'min_instance',
   'missingFieldUid' = 'missingFieldUid',
   'isPublished' = 'isPublished',
-  'Entry UID' ="Entry UID",
-  'Content Type UID'= 'Content Type UID',
-  "Locale"="Locale",
-  "Content Type" = "ct",
-  "locale"="locale",
+  'Entry UID' = 'Entry UID',
+  'Content Type UID' = 'Content Type UID',
+  'Locale' = 'Locale',
+  'Content Type' = 'ct',
+  'locale' = 'locale',
+  'environment' = 'environment',
+  'ctUid' = 'ctUid',
+  'ctLocale' = 'ctLocale',
+  'entry_uid' = 'entry_uid',
+  'publish_locale' = 'publish_locale',
+  'publish_environment' = 'publish_environment',
+  'asset_uid' = 'asset_uid',
+  'selectedValue' = 'selectedValue',
+  'fixStatus' = 'fixStatus'
 }
 
 export {
