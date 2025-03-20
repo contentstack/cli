@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.36.0 darwin-arm64 node-v23.6.0
+@contentstack/cli/1.37.0 darwin-arm64 node-v23.6.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -119,7 +119,6 @@ USAGE
 * [`csdx plugins:unlink [PLUGIN]`](#csdx-pluginsunlink-plugin)
 * [`csdx plugins:update`](#csdx-pluginsupdate)
 * [`csdx tokens`](#csdx-tokens)
-* [`csdx tsgen`](#csdx-tsgen)
 * [`csdx whoami`](#csdx-whoami)
 
 ## `csdx audit`
@@ -4201,44 +4200,6 @@ ALIASES
 EXAMPLES
   $ csdx auth:tokens
 ```
-
-## `csdx tsgen`
-
-Generate TypeScript typings from a Stack
-
-```
-USAGE
-  $ csdx tsgen -a <value> -o <value> [-p <value>] [-d] [--branch <value>] [--include-system-fields]
-    [--api-type rest|graphql] [--namespace <value>]
-
-FLAGS
-  -a, --token-alias=<value>    (required) delivery token alias
-  -d, --[no-]doc               include documentation comments
-  -o, --output=<value>         (required) full path to output
-  -p, --prefix=<value>         interface prefix, e.g. "I"
-      --api-type=<option>      [default: rest] [Optional] Please enter an API type to generate the type definitions.
-                               <options: rest|graphql>
-      --branch=<value>         branch
-      --include-system-fields  include system fields in generated types
-      --namespace=<value>      [Optional]Please enter a namespace for the GraphQL API type to organize the generated
-                               types.
-
-DESCRIPTION
-  Generate TypeScript typings from a Stack
-
-EXAMPLES
-  $ csdx tsgen -a "delivery token alias" -o "contentstack/generated.d.ts"
-
-  $ csdx tsgen -a "delivery token alias" -o "contentstack/generated.d.ts" -p "I"
-
-  $ csdx tsgen -a "delivery token alias" -o "contentstack/generated.d.ts" --no-doc
-
-  $ csdx tsgen -a "delivery token alias" -o "contentstack/generated.d.ts" --api-type graphql
-
-  $ csdx tsgen -a "delivery token alias" -o "contentstack/generated.d.ts" --api-type graphql --namespace "GraphQL"
-```
-
-_See code: [contentstack-cli-tsgen](https://github.com/Contentstack-Solutions/contentstack-cli-tsgen/blob/v3.3.0/src/commands/tsgen.ts)_
 
 ## `csdx whoami`
 
