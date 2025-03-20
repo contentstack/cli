@@ -152,8 +152,7 @@
       "@contentstack/cli-cm-branches",
       "@contentstack/cli-launch",
       "@contentstack/cli-audit",
-      "@contentstack/cli-cm-import-setup",
-      "contentstack-cli-tsgen"
+      "@contentstack/cli-cm-import-setup"
     ],
     "hooks": {
       "prerun": [
