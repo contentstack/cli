@@ -158,10 +158,10 @@ export default class CLITable {
 
     // **Render Table**
     const config = {
-      truncate: flags && !flags['no-truncate'],
+      truncate: !flags?.['no-header'],
       borderStyle: 'solid',
       paddingBottom: 0,
-      showHeader: flags && !flags['no-header'],
+      showHeader: !flags?.['no-header'],
     };
 
     cliux.print(cliTable(headers, tableData, config).render());
