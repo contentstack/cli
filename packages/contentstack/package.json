@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli",
   "description": "Command-line tool (CLI) to interact with Contentstack",
-  "version": "1.36.0",
+  "version": "1.37.0",
   "author": "Contentstack",
   "bin": {
     "csdx": "./bin/run.js"
@@ -46,7 +46,6 @@
     "@oclif/plugin-not-found": "^2.4.3",
     "@oclif/plugin-plugins": "^5.4.24",
     "chalk": "^4.1.2",
-    "contentstack-cli-tsgen": "^3.0.1",
     "debug": "^4.4.0",
     "figlet": "^1.8.0",
     "inquirer": "8.2.6",
