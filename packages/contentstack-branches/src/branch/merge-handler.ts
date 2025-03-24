@@ -108,6 +108,10 @@ export default class MergeHandler {
           deleted: [],
         };
         const selectedItems = await selectCustomPreferences(module, this.branchCompareData[module]);
+        if (!selectedItems.length) {
+          cliux.print(chalk.red('No items were selected'));
+          process.exit(1);
+        }
         forEach(selectedItems, (item) => {
           this.mergeSettings.mergeContent[module][item.status].push(item.value);
           this.mergeSettings.itemMergeStrategies.push(item.value);
