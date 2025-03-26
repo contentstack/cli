@@ -177,4 +177,5 @@ const sensitiveKeys = [
   /token/i,
   /api[-._]?key/i,
   /management[-._]?token/i,
+  /delivery[-._]?token/i,
 ];
