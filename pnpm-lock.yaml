@@ -10,24 +10,24 @@ importers:
 
   packages/contentstack:
     specifiers:
-      '@contentstack/cli-audit': ~1.9.0
-      '@contentstack/cli-auth': ~1.3.24
-      '@contentstack/cli-cm-bootstrap': ~1.13.2
-      '@contentstack/cli-cm-branches': ~1.3.0
-      '@contentstack/cli-cm-bulk-publish': ~1.7.3
-      '@contentstack/cli-cm-clone': ~1.13.2
-      '@contentstack/cli-cm-export': ~1.15.1
-      '@contentstack/cli-cm-export-to-csv': ~1.7.3
-      '@contentstack/cli-cm-import': ~1.20.1
-      '@contentstack/cli-cm-import-setup': 1.1.1
-      '@contentstack/cli-cm-migrate-rte': ~1.4.21
-      '@contentstack/cli-cm-seed': ~1.10.2
-      '@contentstack/cli-command': ~1.3.3
-      '@contentstack/cli-config': ~1.10.0
+      '@contentstack/cli-audit': ~1.9.1
+      '@contentstack/cli-auth': ~1.3.25
+      '@contentstack/cli-cm-bootstrap': ~1.13.3
+      '@contentstack/cli-cm-branches': ~1.3.1
+      '@contentstack/cli-cm-bulk-publish': ~1.7.4
+      '@contentstack/cli-cm-clone': ~1.13.3
+      '@contentstack/cli-cm-export': ~1.15.2
+      '@contentstack/cli-cm-export-to-csv': ~1.7.4
+      '@contentstack/cli-cm-import': ~1.20.2
+      '@contentstack/cli-cm-import-setup': 1.1.2
+      '@contentstack/cli-cm-migrate-rte': ~1.4.22
+      '@contentstack/cli-cm-seed': ~1.10.3
+      '@contentstack/cli-command': ~1.3.4
+      '@contentstack/cli-config': ~1.10.1
       '@contentstack/cli-launch': ^1.6.0
-      '@contentstack/cli-migration': ~1.6.5
+      '@contentstack/cli-migration': ~1.6.6
       '@contentstack/cli-utilities': ~1.9.0
-      '@contentstack/cli-variants': ~1.1.5
+      '@contentstack/cli-variants': ~1.1.6
       '@contentstack/management': ~1.18.4
       '@oclif/core': ^3.27.0
       '@oclif/plugin-help': ^5.2.20
@@ -129,7 +129,7 @@ importers:
 
   packages/contentstack-audit:
     specifiers:
-      '@contentstack/cli-command': ~1.3.3
+      '@contentstack/cli-command': ~1.3.4
       '@contentstack/cli-utilities': ~1.9.0
       '@oclif/plugin-help': ^5.2.20
       '@oclif/plugin-plugins': ^5.4.34
@@ -188,7 +188,7 @@ importers:
 
   packages/contentstack-auth:
     specifiers:
-      '@contentstack/cli-command': ~1.3.3
+      '@contentstack/cli-command': ~1.3.4
       '@contentstack/cli-utilities': ~1.9.0
       '@fancy-test/nock': ^0.1.1
       '@oclif/plugin-help': ^5.2.20
@@ -235,8 +235,8 @@ importers:
 
   packages/contentstack-bootstrap:
     specifiers:
-      '@contentstack/cli-cm-seed': ~1.10.2
-      '@contentstack/cli-command': ~1.3.3
+      '@contentstack/cli-cm-seed': ~1.10.3
+      '@contentstack/cli-command': ~1.3.4
       '@contentstack/cli-utilities': ~1.9.0
       '@oclif/test': ^4.1.6
       '@types/inquirer': ^9.0.7
@@ -282,7 +282,7 @@ importers:
 
   packages/contentstack-branches:
     specifiers:
-      '@contentstack/cli-command': ~1.3.3
+      '@contentstack/cli-command': ~1.3.4
       '@contentstack/cli-dev-dependencies': ~1.2.4
       '@contentstack/cli-utilities': ~1.9.0
       '@oclif/core': ^3.27.0
@@ -327,7 +327,7 @@ importers:
 
   packages/contentstack-bulk-publish:
     specifiers:
-      '@contentstack/cli-command': ~1.3.3
+      '@contentstack/cli-command': ~1.3.4
       '@contentstack/cli-utilities': ~1.9.0
       '@oclif/test': ^4.1.6
       chai: ^4.5.0
@@ -361,9 +361,9 @@ importers:
   packages/contentstack-clone:
     specifiers:
       '@colors/colors': ^1.6.0
-      '@contentstack/cli-cm-export': ~1.15.0
-      '@contentstack/cli-cm-import': ~1.20.0
-      '@contentstack/cli-command': ~1.3.3
+      '@contentstack/cli-cm-export': ~1.15.2
+      '@contentstack/cli-cm-import': ~1.20.1
+      '@contentstack/cli-command': ~1.3.4
       '@contentstack/cli-utilities': ~1.9.0
       '@oclif/test': ^4.1.6
       chai: ^4.5.0
@@ -438,7 +438,7 @@ importers:
 
   packages/contentstack-config:
     specifiers:
-      '@contentstack/cli-command': ~1.3.3
+      '@contentstack/cli-command': ~1.3.4
       '@contentstack/cli-utilities': ~1.9.0
       '@oclif/test': ^4.1.6
       '@types/chai': ^4.3.20
@@ -504,12 +504,12 @@ importers:
 
   packages/contentstack-export:
     specifiers:
-      '@contentstack/cli-auth': ~1.3.24
-      '@contentstack/cli-command': ~1.3.3
-      '@contentstack/cli-config': ~1.10.0
+      '@contentstack/cli-auth': ~1.3.25
+      '@contentstack/cli-command': ~1.3.4
+      '@contentstack/cli-config': ~1.10.1
       '@contentstack/cli-dev-dependencies': ~1.2.4
       '@contentstack/cli-utilities': ~1.9.0
-      '@contentstack/cli-variants': ~1.1.5
+      '@contentstack/cli-variants': ~1.1.6
       '@oclif/core': ^3.27.0
       '@oclif/plugin-help': ^5.2.20
       '@oclif/test': ^4.1.6
@@ -571,7 +571,7 @@ importers:
 
   packages/contentstack-export-to-csv:
     specifiers:
-      '@contentstack/cli-command': ~1.3.3
+      '@contentstack/cli-command': ~1.3.4
       '@contentstack/cli-utilities': ~1.9.0
       '@oclif/test': ^4.1.9
       '@types/chai': ^4.3.20
@@ -608,10 +608,10 @@ importers:
 
   packages/contentstack-import:
     specifiers:
-      '@contentstack/cli-audit': ~1.9.0
-      '@contentstack/cli-command': ~1.3.3
+      '@contentstack/cli-audit': ~1.9.1
+      '@contentstack/cli-command': ~1.3.4
       '@contentstack/cli-utilities': ~1.9.0
-      '@contentstack/cli-variants': ~1.1.5
+      '@contentstack/cli-variants': ~1.1.6
       '@contentstack/management': ~1.18.4
       '@oclif/core': ^3.27.0
       '@oclif/test': ^4.1.6
@@ -683,7 +683,7 @@ importers:
 
   packages/contentstack-import-setup:
     specifiers:
-      '@contentstack/cli-command': ~1.3.3
+      '@contentstack/cli-command': ~1.3.4
       '@contentstack/cli-utilities': ~1.9.0
       '@oclif/core': ^3.27.0
       '@types/big-json': ^3.2.5
@@ -744,7 +744,7 @@ importers:
 
   packages/contentstack-migrate-rte:
     specifiers:
-      '@contentstack/cli-command': ~1.3.3
+      '@contentstack/cli-command': ~1.3.4
       '@contentstack/cli-utilities': ~1.9.0
       '@contentstack/json-rte-serializer': ~2.0.12
       '@oclif/test': ^4.1.9
@@ -785,7 +785,7 @@ importers:
 
   packages/contentstack-migration:
     specifiers:
-      '@contentstack/cli-command': ~1.3.3
+      '@contentstack/cli-command': ~1.3.4
       '@contentstack/cli-utilities': ~1.9.0
       '@oclif/test': ^4.1.9
       async: ^3.2.6
@@ -822,8 +822,8 @@ importers:
 
   packages/contentstack-seed:
     specifiers:
-      '@contentstack/cli-cm-import': ~1.20.0
-      '@contentstack/cli-command': ~1.3.3
+      '@contentstack/cli-cm-import': ~1.20.1
+      '@contentstack/cli-command': ~1.3.4
       '@contentstack/cli-utilities': ~1.9.0
       '@contentstack/management': ~1.18.4
       '@types/inquirer': ^9.0.7
