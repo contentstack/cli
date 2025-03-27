@@ -1,0 +1,33 @@
+name: Unit Test & Reports
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  # Create a job for each plugin dynamically
+  test-plugins:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        plugin: 
+          - contentstack-audit
+          - contentstack-export-to-csv
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22' 
+
+      - name: Install dependencies
+        run: |
+          npm install  
+
+      - name: Run tests for the plugin
+        run: |
+          cd packages/${{ matrix.plugin }}  # Navigate to the plugin directory
+          npm test:unit  # Run unit tests for the plugin  
