@@ -10,5 +10,7 @@
   "moduleName": "content-types",
   "fetchConcurrency": 5,
   "writeConcurrency": 5,
-  "securedAssets": false
+  "securedAssets": false,
+  "maxContentLength": 100000000,
+  "maxBodyLength": 100000000
 }

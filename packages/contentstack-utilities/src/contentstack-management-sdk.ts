@@ -15,8 +15,8 @@ class ManagementSDKInitiator {
   async createAPIClient(config): Promise<ContentstackClient> {
     const option: ContentstackConfig = {
       host: config.host,
-      maxContentLength: 100000000,
-      maxBodyLength: 1000000000,
+      maxContentLength: config.maxContentLength || 100000000,
+      maxBodyLength: config.maxBodyLength || 1000000000,
       maxRequests: 10,
       retryLimit: 3,
       timeout: 60000,

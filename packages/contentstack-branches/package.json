@@ -1,12 +1,12 @@
 {
   "name": "@contentstack/cli-cm-branches",
   "description": "Contentstack CLI plugin to do branches operations",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@contentstack/cli-command": "~1.3.3",
-    "@contentstack/cli-utilities": "~1.8.1",
+    "@contentstack/cli-utilities": "~1.9.0",
     "@oclif/core": "^3.27.0",
     "chalk": "^4.1.2",
     "just-diff": "^6.0.2",

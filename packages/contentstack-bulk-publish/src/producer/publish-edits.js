@@ -8,7 +8,6 @@ const { getQueue } = require('../util/queue');
 const { performBulkPublish, publishEntry, initializeLogger } = require('../consumer/publish');
 const retryFailedLogs = require('../util/retryfailed');
 const { validateFile } = require('../util/fs');
-const { setDelayForBulkPublish } = require('../util');
 const { isEmpty } = require('../util');
 const { fetchBulkPublishLimit } = require('../util/common-utility');
 
