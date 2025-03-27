@@ -55,6 +55,9 @@ export const escapeRegExp = (str: string) => str?.replace(/[.*+?^${}()|[\]\\]/g,
 
 // To remove the relative path
 export const sanitizePath = (str: string) => {
+  if (typeof str !== 'string') 
+    return;
+  
   const decodedStr = decodeURIComponent(str);
   return decodedStr
     ?.replace(/^([\/\\]){2,}/, "./") // Normalize leading slashes/backslashes to ''
