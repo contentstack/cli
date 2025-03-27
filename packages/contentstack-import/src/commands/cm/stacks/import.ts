@@ -162,11 +162,6 @@ export default class ImportCommand extends Command {
           }
         } catch (error) {
           // Branch not enabled, just the let flow continue
-          log(
-            importConfig,
-            `The branch is not enabled for this stack - ${formatError(error)}`,
-            'error',
-          );
         }
       }
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
