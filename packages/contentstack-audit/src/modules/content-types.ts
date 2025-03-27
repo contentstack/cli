@@ -540,10 +540,9 @@ export default class ContentType {
         });
       } else if (!field.schema && this.moduleName === 'content-types') {
         const gfSchema = find(this.gfSchema, { uid: field.reference_to })?.schema;
-
         if (gfSchema) {
           field.schema = gfSchema as GlobalFieldSchemaTypes[];
-
+        } else {
           this.missingRefs[this.currentUid].push({
             tree,
             data_type,
@@ -558,8 +557,11 @@ export default class ContentType {
       } else if (!field.schema && this.moduleName === 'global-fields') {
         const gfSchema = find(this.gfSchema, { uid: field.reference_to })?.schema;
         if (gfSchema) {
+
           field.schema = gfSchema as GlobalFieldSchemaTypes[];
 
+       
+        } else {
           this.missingRefs[this.currentUid].push({
             tree,
             data_type,
@@ -572,7 +574,6 @@ export default class ContentType {
           });
         }
       }
-
       return refExist ? field : null;
     }
 
