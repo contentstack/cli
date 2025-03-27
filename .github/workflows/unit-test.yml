@@ -25,6 +25,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          cd packages/${{ matrix.plugin }}  # Navigate to the plugin directory
           npm install  
 
       - name: Run tests for the plugin
