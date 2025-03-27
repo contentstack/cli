@@ -40,6 +40,11 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Install dependencies for the plugin
+        run: |
+          cd packages/${{ matrix.plugin }}
+          npm install
+
       - name: Run tests for the plugin
         run: |
           cd packages/${{ matrix.plugin }}
