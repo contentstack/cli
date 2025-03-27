@@ -30,4 +30,4 @@ jobs:
       - name: Run tests for the plugin
         run: |
           cd packages/${{ matrix.plugin }}  # Navigate to the plugin directory
-          npm test:unit  # Run unit tests for the plugin  
+          npm run test:unit  # Run unit tests for the plugin  
