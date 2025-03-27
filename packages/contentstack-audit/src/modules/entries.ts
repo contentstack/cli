@@ -175,7 +175,7 @@ export default class Entries {
 
             const localKey = this.locales.map((locale: any) => locale.code);
 
-            if(this.entries[entryUid]?.publish_details && !Array.isArray(this.entries[entryUid].publish_details)) {
+            if (this.entries[entryUid]?.publish_details && !Array.isArray(this.entries[entryUid].publish_details)) {
               this.log($t(auditMsg.ENTRY_PUBLISH_DETAILS_NOT_EXIST, { uid: entryUid }), { color: 'red' });
             }
 
@@ -194,11 +194,23 @@ export default class Entries {
                   { color: 'red' },
                 );
                 if (!Object.keys(this.missingEnvLocale).includes(entryUid)) {
-                  this.missingEnvLocale[entryUid] = [{ entry_uid: entryUid, publish_locale: pd.locale, publish_environment: pd.environment, ctUid: ctSchema.uid, ctLocale: code }];
+                  this.missingEnvLocale[entryUid] = [
+                    {
+                      entry_uid: entryUid,
+                      publish_locale: pd.locale,
+                      publish_environment: pd.environment,
+                      ctUid: ctSchema.uid,
+                      ctLocale: code,
+                    },
+                  ];
                 } else {
-                  this.missingEnvLocale[entryUid].push(
-                    { entry_uid: entryUid, publish_locale: pd.locale, publish_environment: pd.environment, ctUid: ctSchema.uid, ctLocale: code },
-                  );
+                  this.missingEnvLocale[entryUid].push({
+                    entry_uid: entryUid,
+                    publish_locale: pd.locale,
+                    publish_environment: pd.environment,
+                    ctUid: ctSchema.uid,
+                    ctLocale: code,
+                  });
                 }
                 return false;
               }
@@ -630,18 +642,29 @@ export default class Entries {
     if (this.fix) return [];
 
     const missingRefs: Record<string, any>[] = [];
-    const { uid: data_type, display_name } = fieldStructure;
+    const { uid: data_type, display_name, reference_to } = fieldStructure;
 
     for (const index in field ?? []) {
-      const reference = field[index];
+      const reference: any = field[index];
       const { uid } = reference;
+      if (!uid && reference.startsWith('blt')) {
+        const refExist = find(this.entryMetaData, { uid: reference });
+        if (!refExist) {
+          if(Array.isArray(reference_to) && reference_to.length===1) {
+            missingRefs.push({uid:reference, _content_type_uid: reference_to[0]});
+          } else {
+            missingRefs.push(reference);
+          }
+        }
+      }
       // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
       // if (this.config.skipRefs.includes(reference)) continue;
+      else {
+        const refExist = find(this.entryMetaData, { uid });
 
-      const refExist = find(this.entryMetaData, { uid });
-
-      if (!refExist) {
-        missingRefs.push(reference);
+        if (!refExist) {
+          missingRefs.push(reference);
+        }
       }
     }
 
@@ -846,11 +869,14 @@ export default class Entries {
    * @returns
    */
   fixSelectField(tree: Record<string, unknown>[], field: SelectFeildStruct, entry: any) {
+    if (!this.config.fixSelectField) {
+      return entry;
+    }
     const { enum: selectOptions, multiple, min_instance, display_type, display_name, uid } = field;
 
     let missingCTSelectFieldValues;
     let isMissingValuePresent = false;
-
+    let selectedValue: unknown = '';
     if (multiple) {
       let obj = this.findNotPresentSelectField(entry, selectOptions);
       let { notPresent, filteredFeild } = obj;
@@ -868,6 +894,7 @@ export default class Entries {
             .slice(0, missingInstances)
             .map((choice) => choice.value);
           entry.push(...newValues);
+          selectedValue = newValues;
           this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: newValues.join(' '), uid }), 'error');
         }
       } else {
@@ -875,6 +902,7 @@ export default class Entries {
           isMissingValuePresent = true;
           const defaultValue = selectOptions.choices.length > 0 ? selectOptions.choices[0].value : null;
           entry.push(defaultValue);
+          selectedValue = defaultValue;
           this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: defaultValue as string, uid }), 'error');
         }
       }
@@ -885,6 +913,7 @@ export default class Entries {
         isMissingValuePresent = true;
         let defaultValue = selectOptions.choices.length > 0 ? selectOptions.choices[0].value : null;
         entry = defaultValue;
+        selectedValue = defaultValue;
         this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: defaultValue as string, uid }), 'error');
       }
     }
@@ -895,6 +924,7 @@ export default class Entries {
         display_name,
         display_type,
         missingCTSelectFieldValues,
+        selectedValue,
         min_instance: min_instance ?? 'NA',
         tree,
         treeStr: tree
@@ -909,7 +939,7 @@ export default class Entries {
 
   validateMandatoryFields(tree: Record<string, unknown>[], fieldStructure: any, entry: any) {
     const { display_name, multiple, data_type, mandatory, field_metadata, uid } = fieldStructure;
-    
+
     const isJsonRteEmpty = () => {
       const jsonNode = multiple
         ? entry[uid]?.[0]?.children?.[0]?.children?.[0]?.text
@@ -920,6 +950,9 @@ export default class Entries {
     const isEntryEmpty = () => {
       let fieldValue = multiple ? entry[uid]?.length : entry;
       if (data_type === 'number' && !multiple) {
+        fieldValue = entry[uid] || entry[uid] === 0 ? true : false;
+      }
+      if (data_type === 'text' && !multiple) {
         fieldValue = entry[uid] || entry[uid] === 0 ? true : false;
       }
       if (Array.isArray(entry[uid]) && data_type === 'reference') {
@@ -1186,16 +1219,29 @@ export default class Entries {
       entry = JSON.parse(stringReference);
     }
     entry = entry
-      ?.map((reference) => {
+      ?.map((reference: any) => {
         const { uid } = reference;
-        const refExist = find(this.entryMetaData, { uid });
-
-        if (!refExist) {
-          missingRefs.push(reference);
-          return null;
+        const { reference_to } = field;
+        if (!uid && reference.startsWith('blt')) {
+          const refExist = find(this.entryMetaData, { uid: reference });
+          if (!refExist) {
+            if(Array.isArray(reference_to) && reference_to.length===1) {
+              missingRefs.push({uid:reference, _content_type_uid: reference_to[0]});
+            } else {
+              missingRefs.push(reference);
+            }
+          } else {
+            return { uid: reference, _content_type_uid: refExist.ctUid };
+          }
+        } else {
+          const refExist = find(this.entryMetaData, { uid });
+          if (!refExist) {
+            missingRefs.push(reference);
+            return null;
+          } else {
+            return reference;
+          }
         }
-
-        return reference;
       })
       .filter((val) => val) as EntryReferenceFieldDataType[];
 
@@ -1353,7 +1399,7 @@ export default class Entries {
                 `error`,
               );
             }
-            this.entryMetaData.push({ uid: entryUid, title });
+            this.entryMetaData.push({ uid: entryUid, title, ctUid:uid });
           }
         }
       }
