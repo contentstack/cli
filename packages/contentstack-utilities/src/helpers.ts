@@ -1,4 +1,5 @@
 import { checkSync } from 'recheck';
+import traverse from 'traverse';
 import authHandler from './auth-handler';
 import { HttpClient, cliux, configHandler } from '.';
 export const isAuthenticated = () => authHandler.isAuthenticated();
@@ -67,7 +68,10 @@ export const validateUids = (uid) => /^[a-zA-Z0-9]+$/.test(uid);
 export const validateFileName = (fileName) => /^[a-zA-Z0-9-_\.]+$/.test(fileName);
 
 // Validate Regex for ReDDos
-export const validateRegex = (str) => checkSync(str, '');
+export const validateRegex = (str: unknown) => {
+  const stringValue = typeof str === 'string' ? str : str.toString();
+  return checkSync(stringValue, '');
+};
 
 export const formatError = function (error: any) {
   let parsedError: any;
@@ -101,7 +105,8 @@ export const formatError = function (error: any) {
   }
 
   // Determine the error message
-  let message = parsedError.errorMessage || parsedError.error_message || parsedError.message || parsedError;
+  let message =
+    parsedError.errorMessage || parsedError.error_message || parsedError?.code || parsedError.message || parsedError;
   if (typeof message === 'object') {
     message = JSON.stringify(message);
   }
@@ -134,3 +139,48 @@ export const formatError = function (error: any) {
 
   return message;
 };
+
+/**
+ * The function checks if a given key string matches any of the sensitive keys defined in an array.
+ * @param {string} keyStr - The parameter `keyStr` is a string that represents a key.
+ * @returns a boolean value. It returns true if the keyStr matches any of the regular expressions in
+ * the sensitiveKeys array, and false otherwise.
+ */
+const isSensitiveKey = function (keyStr: string) {
+  if (keyStr && typeof keyStr === 'string') {
+    return sensitiveKeys.some((regex) => regex.test(keyStr));
+  }
+};
+
+/**
+ * The function redactObject takes an object as input and replaces any sensitive keys with the string
+ * '[REDACTED]'.
+ * @param {any} obj - The `obj` parameter is an object that you want to redact sensitive information
+ * from.
+ */
+export const redactObject = function (obj: any) {
+  traverse(obj).forEach(function redactor() {
+    // Check if the current key is sensitive
+    if (isSensitiveKey(this.key)) {
+      // Update the current value with '[REDACTED]'
+      this.update('[REDACTED]');
+    }
+  });
+
+  return obj;
+};
+
+/* The `sensitiveKeys` array is used to store regular expressions that match sensitive keys. These
+  keys are used to redact sensitive information from log messages. When logging an object, any keys
+  that match the regular expressions in the `sensitiveKeys` array will be replaced with the string
+  '[REDACTED]'. This helps to prevent sensitive information from being logged or displayed. */
+const sensitiveKeys = [
+  /authtoken/i,
+  /^email$/,
+  /^password$/i,
+  /secret/i,
+  /token/i,
+  /api[-._]?key/i,
+  /management[-._]?token/i,
+  /delivery[-._]?token/i,
+];
