@@ -43,6 +43,10 @@ jobs:
       - name: Install dependencies for the plugin
         working-directory: ./packages/${{ matrix.plugin }}
         run: npm install
+      
+      - name: Prepack the plugin
+        working-directory: ./packages/${{ matrix.plugin }}
+        run: npm run prepack
 
       - name: Debug environment
         run: |
