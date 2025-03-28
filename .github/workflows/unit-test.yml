@@ -24,10 +24,10 @@ jobs:
   # Test plugins dynamically
   test-plugins:
     runs-on: ubuntu-latest
-    needs: install-dependencies  # Ensures this job runs after dependencies are installed
+    needs: install-dependencies # Ensures this job runs after dependencies are installed
     strategy:
       matrix:
-        plugin: 
+        plugin:
           - contentstack-audit
           - contentstack-export-to-csv
 
@@ -39,11 +39,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          
+      - name: Check contents of plugin directory
+        run: |
+          cd packages/${{ matrix.plugin }}
+          ls -la
 
       - name: Install dependencies for the plugin
         run: |
           cd packages/${{ matrix.plugin }}
-          npm install
+          ls -la
 
       - name: Run tests for the plugin
         run: |
