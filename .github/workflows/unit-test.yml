@@ -44,6 +44,15 @@ jobs:
         working-directory: ./packages/${{ matrix.plugin }}
         run: npm install
 
+      - name: Debug environment
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Node version: $(node -v)"
+          echo "NPM version: $(npm -v)"
+          echo "Installed packages:"
+          npm ls @contentstack/cli-utilities
+
+
       - name: Run tests for the plugin
         working-directory: ./packages/${{ matrix.plugin }}
         run: npm run test:unit
