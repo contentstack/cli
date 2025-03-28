@@ -54,7 +54,7 @@ jobs:
           echo "Node version: $(node -v)"
           echo "NPM version: $(npm -v)"
           echo "Installed packages:"
-          npm ls @contentstack/cli-utilities
+          npm ls 
 
 
       - name: Run tests for the plugin
