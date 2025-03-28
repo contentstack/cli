@@ -1,4 +1,4 @@
-name: Unit Test & Reports
+name: Run Unit Tests
 
 on:
   pull_request:
@@ -15,11 +15,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '22.x'
 
       - name: Install dependencies for all plugins
         run: |
-          npm run setup-repo-old
+          npm install
 
   # Test plugins dynamically
   test-plugins:
