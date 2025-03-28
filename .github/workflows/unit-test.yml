@@ -38,19 +38,12 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          
-      - name: Check contents of plugin directory
-        run: |
-          cd packages/${{ matrix.plugin }}
-          ls -la
+          node-version: '22.x'
 
       - name: Install dependencies for the plugin
-        run: |
-          cd packages/${{ matrix.plugin }}
-          ls -la
+        working-directory: ./packages/${{ matrix.plugin }}
+        run: npm install
 
       - name: Run tests for the plugin
-        run: |
-          cd packages/${{ matrix.plugin }}
-          npm run test:unit
+        working-directory: ./packages/${{ matrix.plugin }}
+        run: npm run test:unit
