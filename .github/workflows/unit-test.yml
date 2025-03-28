@@ -19,7 +19,7 @@ jobs:
 
       - name: Install dependencies for all plugins
         run: |
-          npm install
+          npm run setup-repo-old
 
   # Test plugins dynamically
   test-plugins:
@@ -40,13 +40,13 @@ jobs:
         with:
           node-version: '22.x'
 
-      - name: Install dependencies for the plugin
-        working-directory: ./packages/${{ matrix.plugin }}
-        run: npm install
+      # - name: Install dependencies for the plugin
+      #   working-directory: ./packages/${{ matrix.plugin }}
+      #   run: npm install
       
-      - name: Prepack the plugin
-        working-directory: ./packages/${{ matrix.plugin }}
-        run: npm run prepack
+      # - name: Prepack the plugin
+      #   working-directory: ./packages/${{ matrix.plugin }}
+      #   run: npm run prepack
 
       - name: Debug environment
         run: |
