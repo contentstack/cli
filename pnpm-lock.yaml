@@ -24,7 +24,7 @@ importers:
       '@contentstack/cli-cm-seed': ~1.10.3
       '@contentstack/cli-command': ~1.3.3
       '@contentstack/cli-config': ~1.10.1
-      '@contentstack/cli-launch': 1.7.0
+      '@contentstack/cli-launch': 1.6.0
       '@contentstack/cli-migration': ~1.6.6
       '@contentstack/cli-utilities': ~1.9.0
       '@contentstack/cli-variants': ~1.1.6
@@ -82,7 +82,7 @@ importers:
       '@contentstack/cli-cm-seed': link:../contentstack-seed
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-config': link:../contentstack-config
-      '@contentstack/cli-launch': 1.7.0_wzzhxhjvv6dmiulvh3ck3nwabq
+      '@contentstack/cli-launch': 1.6.0_wzzhxhjvv6dmiulvh3ck3nwabq
       '@contentstack/cli-migration': link:../contentstack-migration
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/cli-variants': link:../contentstack-variants
@@ -1420,8 +1420,8 @@ packages:
       - jest
     dev: false
 
-  /@contentstack/cli-launch/1.7.0_wzzhxhjvv6dmiulvh3ck3nwabq:
-    resolution: {integrity: sha512-34bp0m9Ed3/oLiCUmXz6RG34f68rj+PyJA1MrxNRo5iJroaclmuD08i3o2iMBOGKuyAAfOZR+gkU0ytyMakXEw==}
+  /@contentstack/cli-launch/1.6.0_wzzhxhjvv6dmiulvh3ck3nwabq:
+    resolution: {integrity: sha512-DJ3Fn4IrSOplZQ/czNr8QA12h7aG+Xm4MSLjkcGmhf+K6ifWs6DnyDc6hpT/jCU6uzojCiHjiOaZnGjM2FMIKg==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
@@ -1439,7 +1439,7 @@ packages:
       '@types/express-serve-static-core': 4.19.6
       adm-zip: 0.5.16
       chalk: 4.1.2
-      cross-fetch: 4.1.0
+      cross-fetch: 3.2.0
       dotenv: 16.4.7
       express: 4.21.2
       form-data: 4.0.2
@@ -5697,8 +5697,8 @@ packages:
   /create-require/1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
 
-  /cross-fetch/4.1.0:
-    resolution: {integrity: sha512-uKm5PU+MHTootlWEY+mZ4vvXoCn4fLQxT9dSc1sXVMSFkINTJVN8cAQROpwcKm8bJ/c7rgZVIBWzH5T78sNZZw==}
+  /cross-fetch/3.2.0:
+    resolution: {integrity: sha512-Q+xVJLoGOeIMXZmbUK4HYk+69cQH6LudR0Vu/pRm2YlU/hDV9CiS0gKUMaWY5f2NeUH9C1nV3bsTlCo0FsTV1Q==}
     dependencies:
       node-fetch: 2.7.0
     transitivePeerDependencies:
