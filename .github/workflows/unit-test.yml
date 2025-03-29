@@ -1,0 +1,62 @@
+name: Run Unit Tests
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  # Install dependencies once globally
+  install-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Install dependencies for all plugins
+        run: |
+          npm run setup-repo-old
+
+  # Test plugins dynamically
+  test-plugins:
+    runs-on: ubuntu-latest
+    needs: install-dependencies # Ensures this job runs after dependencies are installed
+    strategy:
+      matrix:
+        plugin:
+          - contentstack-audit
+          - contentstack-export-to-csv
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      # - name: Install dependencies for the plugin
+      #   working-directory: ./packages/${{ matrix.plugin }}
+      #   run: npm install
+      
+      # - name: Prepack the plugin
+      #   working-directory: ./packages/${{ matrix.plugin }}
+      #   run: npm run prepack
+
+      - name: Debug environment
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Node version: $(node -v)"
+          echo "NPM version: $(npm -v)"
+          echo "Installed packages:"
+          npm ls 
+
+
+      - name: Run tests for the plugin
+        working-directory: ./packages/${{ matrix.plugin }}
+        run: npm run test:unit
