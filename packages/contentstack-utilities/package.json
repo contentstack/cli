@@ -32,7 +32,7 @@
   "author": "contentstack",
   "license": "MIT",
   "dependencies": {
-    "@contentstack/management": "file:/Users/aman.kumar/Documents/datasync-repo/contentstack-management-javascript/contentstack-management-1.19.5.tgz",
+    "@contentstack/management": "~1.20.0",
     "@contentstack/marketplace-sdk": "^1.2.5",
     "@oclif/core": "^3.27.0",
     "axios": "^1.8.2",
