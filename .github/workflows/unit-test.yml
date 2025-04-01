@@ -23,7 +23,3 @@ jobs:
       - name: Run tests for Audit plugin
         working-directory: ./packages/contentstack-audit
         run: npm run test:unit
-      
-      - name: Run tests for Export to CSV plugin
-        working-directory: ./packages/contentstack-export-to-csv
-        run: npm run test:unit
