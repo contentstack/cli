@@ -2,7 +2,7 @@ const config = {
   showTerminalOutput: true,
   skipRefs: ['sys_assets'],
   skipFieldTypes: ['taxonomy', 'group'],
-  modules: ['content-types', 'global-fields', 'entries', 'extensions', 'workflows', 'custom-roles', 'assets'],
+  modules: ['content-types', 'global-fields', 'entries', 'extensions', 'workflows', 'custom-roles', 'assets', 'field-rules'],
   'fix-fields': ['reference', 'global_field', 'json:rte', 'json:extension', 'blocks', 'group', 'content_types'],
   moduleConfig: {
     'content-types': {
@@ -103,7 +103,7 @@ const config = {
     Entry_Missing_Locale_and_Env: 'Entry_Missing_Locale_and_Env',
     Entry_Missing_Locale_and_Env_in_Publish_Details: 'Entry_Missing_Locale_and_Env_in_Publish_Details'
   },
-  feild_level_modules: ['Entries_Title_feild', 'Entries_Mandatory_feild', 'Entries_Select_feild', 'Entry_Missing_Locale_and_Env_in_Publish_Details'],
+  feild_level_modules: ['Entries_Title_feild', 'Entries_Mandatory_feild', 'Entries_Select_feild', 'Entry_Missing_Locale_and_Env_in_Publish_Details', 'field-rules'],
   fixSelectField: false
 };
 

@@ -7,12 +7,11 @@ import { join, resolve } from 'path';
 import cloneDeep from 'lodash/cloneDeep';
 import { cliux, sanitizePath, ux } from '@contentstack/cli-utilities';
 import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'fs';
-
 import config from './config';
 import { print } from './util/log';
 import { auditMsg } from './messages';
 import { BaseCommand } from './base-command';
-import { Entries, GlobalField, ContentType, Extensions, Workflows, Assets } from './modules';
+import { Entries, GlobalField, ContentType, Extensions, Workflows, Assets, FieldRule } from './modules';
 import {
   CommandNames,
   ContentTypeStruct,
@@ -60,7 +59,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingTitleFields,
       missingRefInCustomRoles,
       missingEnvLocalesInAssets,
-      missingEnvLocalesInEntries
+      missingEnvLocalesInEntries,
+      missingFieldRules
     } = await this.scanAndFix();
 
     this.showOutputOnScreen([
@@ -70,6 +70,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     ]);
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Extensions', missingRefs: missingCtRefsInExtensions }]);
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Workflows', missingRefs: missingCtRefsInWorkflow }]);
+
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Entries Select Field', missingRefs: missingSelectFeild }]);
     this.showOutputOnScreenWorkflowsAndExtension([
       { module: 'Entries Mandatory Field', missingRefs: missingMandatoryFields },
@@ -80,6 +81,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Custom Roles', missingRefs: missingRefInCustomRoles }]);
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Assets', missingRefs: missingEnvLocalesInAssets }]);
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Entries Missing Locale and Environments', missingRefs: missingEnvLocalesInEntries }])
+    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Field Rules', missingRefs: missingFieldRules }])
+    
     if (
       !isEmpty(missingCtRefs) ||
       !isEmpty(missingGfRefs) ||
@@ -90,7 +93,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       !isEmpty(missingTitleFields) ||
       !isEmpty(missingRefInCustomRoles) ||
       !isEmpty(missingEnvLocalesInAssets) ||
-      !isEmpty(missingEnvLocalesInEntries)
+      !isEmpty(missingEnvLocalesInEntries) || 
+      !isEmpty(missingSelectFeild)
     ) {
       if (this.currentCommand === 'cm:stacks:audit') {
         this.log(this.$t(auditMsg.FINAL_REPORT_PATH, { path: this.sharedConfig.reportPath }), 'warn');
@@ -120,7 +124,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       !isEmpty(missingSelectFeild) || 
       !isEmpty(missingRefInCustomRoles) ||
       !isEmpty(missingEnvLocalesInAssets) ||
-      !isEmpty(missingEnvLocalesInEntries)
+      !isEmpty(missingEnvLocalesInEntries) ||
+      !isEmpty(missingFieldRules)
     );
   }
 
@@ -143,7 +148,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingTitleFields,
       missingRefInCustomRoles,
       missingEnvLocalesInAssets,
-      missingEnvLocalesInEntries;
+      missingEnvLocalesInEntries,
+      missingFieldRules;
 
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       print([
@@ -211,6 +217,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           missingRefInCustomRoles = await new CustomRoles(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingRefInCustomRoles);
           break;
+        case 'field-rules':
+          missingFieldRules = await new FieldRule(cloneDeep(constructorParam)).run();
+          await this.prepareReport(module, missingFieldRules);
+          break;
       }
 
       print([
@@ -238,7 +248,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingTitleFields,
       missingRefInCustomRoles,
       missingEnvLocalesInAssets,
-      missingEnvLocalesInEntries
+      missingEnvLocalesInEntries,
+      missingFieldRules
     };
   }
 
@@ -435,7 +446,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    * @returns The function `prepareReport` returns a Promise that resolves to `void`.
    */
   prepareReport(
-    moduleName: keyof typeof config.moduleConfig | keyof typeof config.ReportTitleForEntries,
+    moduleName: keyof typeof config.moduleConfig | keyof typeof config.ReportTitleForEntries | 'field-rules',
     listOfMissingRefs: Record<string, any>,
   ): Promise<void> {
     if (isEmpty(listOfMissingRefs)) return Promise.resolve(void 0);
@@ -462,7 +473,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    * @returns The function `prepareCSV` returns a Promise that resolves to `void`.
    */
   prepareCSV(
-    moduleName: keyof typeof config.moduleConfig | keyof typeof config.ReportTitleForEntries,
+    moduleName: keyof typeof config.moduleConfig | keyof typeof config.ReportTitleForEntries | 'field-rules',
     listOfMissingRefs: Record<string, any>,
   ): Promise<void> {
     if (Object.keys(config.moduleConfig).includes(moduleName) || config.feild_level_modules.includes(moduleName)) {
