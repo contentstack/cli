@@ -1,0 +1,29 @@
+name: Run Unit Tests
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Install dependencies for all plugins
+        run: |
+          npm run setup-repo-old
+
+      - name: Run tests for Audit plugin
+        working-directory: ./packages/contentstack-audit
+        run: npm run test:unit
+      
+      - name: Run tests for Export to CSV plugin
+        working-directory: ./packages/contentstack-export-to-csv
+        run: npm run test:unit
