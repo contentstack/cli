@@ -20,10 +20,20 @@ jobs:
         run: |
           npm run setup-repo-old
 
+      - name: Fetch latest references
+        run: |
+          git fetch --prune
+
       - name: Identify Changed Plugins
         id: changes
         run: |
           echo "Finding changed files..."
+          # Ensure both commit references are valid
+          if [[ -z "${{ github.event.before }}" || -z "${{ github.sha }}" ]]; then
+            echo "Error: Missing commit references"
+            exit 1
+          fi
+
           CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
           echo "Changed files:"
           echo "$CHANGED_FILES"
