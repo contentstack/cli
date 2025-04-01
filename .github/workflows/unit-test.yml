@@ -58,5 +58,5 @@ jobs:
 
 
       - name: Run tests for the plugin
-        working-directory: ./packages/${{ matrix.plugin }}
+        working-directory: /home/runner/work/cli/cli/packages/${{ matrix.plugin }}
         run: npm run test:unit
