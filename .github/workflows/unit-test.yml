@@ -28,8 +28,8 @@ jobs:
     strategy:
       matrix:
         plugin:
-          - contentstack-audit
-          - contentstack-export-to-csv
+          - cli-audit
+          - cli-cm-export-to-csv
 
     steps:
       - name: Checkout code
@@ -41,14 +41,14 @@ jobs:
           node-version: '22.x'
 
       - name: Install dependencies for the plugin
-        working-directory: /home/runner/work/cli/cli/packages/${{ matrix.plugin }}
+        working-directory: /home/runner/work/cli/cli/node_modules/@contentstack/${{ matrix.plugin }}
         run: npm install
       
       - name: Check current directory
         run: pwd
 
       - name: List files in plugin directory
-        run: ls -R /home/runner/work/cli/cli/packages/${{ matrix.plugin }}
+        run: ls -R /home/runner/work/cli/cli
 
 
       - name: Run tests for the plugin
