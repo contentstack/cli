@@ -75,7 +75,7 @@
     "version": "oclif readme && git add README.md",
     "clean": "rm -rf ./lib ./node_modules tsconfig.tsbuildinfo oclif.manifest.json",
     "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\"",
-    "test:unit": "mocha --timeout 10000 --forbid-only \"test/unit/**/*.test.js\""
+    "test:unit": "mocha --timeout 10000 --forbid-only \"test/unit/**/*.test.ts\""
   },
   "engines": {
     "node": ">=16"
