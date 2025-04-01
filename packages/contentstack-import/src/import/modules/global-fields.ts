@@ -201,8 +201,7 @@ export default class ImportGlobalFields extends BaseClass {
     const { apiData: globalField } = apiOptions;
     const globalFieldPayload = this.stack.globalField(globalField.uid);
     Object.assign(globalFieldPayload, cloneDeep(globalField), {
-      //NOTE: stackHeaders is not available in globalFields in latest management sdk(Bug)
-      // stackHeaders: globalFieldPayload.stackHeaders,
+      stackHeaders: globalFieldPayload.stackHeaders,
     });
     apiOptions.apiData = globalFieldPayload;
     return apiOptions;
