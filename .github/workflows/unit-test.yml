@@ -40,9 +40,9 @@ jobs:
         with:
           node-version: '22.x'
 
-      # - name: Install dependencies for the plugin
-      #   working-directory: ./packages/${{ matrix.plugin }}
-      #   run: npm install
+      - name: Install dependencies for the plugin
+        working-directory: /home/runner/work/cli/cli/packages/${{ matrix.plugin }}
+        run: npm install
       
       # - name: Prepack the plugin
       #   working-directory: ./packages/${{ matrix.plugin }}
