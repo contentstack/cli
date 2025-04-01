@@ -44,7 +44,7 @@ jobs:
         run: pwd
 
       - name: List files in plugin directory
-        run: ls -R /home/runner/work/cli/cli/node_modules/@contentstack
+        run: ls -R /home/runner/work/cli
 
 
       - name: Run tests for the plugin
