@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-migration",
-  "version": "1.6.5",
+  "version": "1.6.6",
   "author": "@contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
