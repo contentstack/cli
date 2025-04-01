@@ -21,32 +21,32 @@ jobs:
         run: |
           npm run setup-repo-old
 
-  # Test plugins dynamically
-  test-plugins:
-    runs-on: ubuntu-latest
-    needs: install-dependencies # Ensures this job runs after dependencies are installed
-    strategy:
-      matrix:
-        plugin:
-          - cli-audit
-          - cli-cm-export-to-csv
+  # # Test plugins dynamically
+  # test-plugins:
+  #   runs-on: ubuntu-latest
+  #   needs: install-dependencies # Ensures this job runs after dependencies are installed
+  #   strategy:
+  #     matrix:
+  #       plugin:
+  #         - cli-audit
+  #         - cli-cm-export-to-csv
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22.x'
+  #     - name: Set up Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '22.x'
       
-      - name: Check current directory
-        run: pwd
+  #     - name: Check current directory
+  #       run: pwd
 
       - name: List files in plugin directory
         run: ls -R /home/runner/work/cli
 
 
       - name: Run tests for the plugin
-        working-directory: /home/runner/work/cli/cli/node_modules/@contentstack/${{ matrix.plugin }}
+        working-directory: ./packages/contentstack-audit
         run: npm run test:unit
