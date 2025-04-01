@@ -48,14 +48,6 @@ jobs:
       #   working-directory: ./packages/${{ matrix.plugin }}
       #   run: npm run prepack
 
-      - name: Debug environment
-        run: |
-          echo "Current directory: $(pwd)"
-          echo "Node version: $(node -v)"
-          echo "NPM version: $(npm -v)"
-          echo "Installed packages:"
-          npm ls 
-
 
       - name: Run tests for the plugin
         working-directory: /home/runner/work/cli/cli/packages/${{ matrix.plugin }}
