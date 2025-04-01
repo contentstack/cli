@@ -44,7 +44,7 @@ export default class ContentType {
   protected schema: ContentTypeStruct[] = [];
   protected missingRefs: Record<string, any> = {};
   public moduleName: keyof typeof auditConfig.moduleConfig;
-
+  public f:any = []
   constructor({ log, fix, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
     this.log = log;
     this.config = config;
@@ -91,7 +91,7 @@ export default class ContentType {
       this.currentTitle = schema.title;
       this.missingRefs[this.currentUid] = [];
       const { uid, title } = schema;
-      await this.lookForReference([{ uid, name: title }], schema);
+      await this.lookForReference([{ uid, name: title }], schema, null);
       this.log(
         $t(auditMsg.SCAN_CT_SUCCESS_MSG, { title, module: this.config.moduleConfig[this.moduleName].name }),
         'info',
@@ -179,14 +179,18 @@ export default class ContentType {
   async lookForReference(
     tree: Record<string, unknown>[],
     field: ContentTypeStruct | GlobalFieldDataType | ModularBlockType | GroupFieldDataType,
+    parent: any = null
   ): Promise<void> {
     const fixTypes = this.config.flags['fix-only'] ?? this.config['fix-fields'];
 
     if (this.fix) {
       field.schema = this.runFixOnSchema(tree, field.schema as ContentTypeSchemaType[]);
     }
-
     for (let child of field.schema ?? []) {
+      if(parent) {
+        this.f.push(parent+"."+child.uid)
+      }
+      
       if (!fixTypes.includes(child.data_type) && child.data_type !== 'json') continue;
 
       switch (child.data_type) {
@@ -317,7 +321,7 @@ export default class ContentType {
       return void 0;
     }
 
-    await this.lookForReference(tree, field);
+    await this.lookForReference(tree, field, field.uid);
   }
 
   /**
@@ -351,7 +355,7 @@ export default class ContentType {
     for (const block of blocks) {
       const { uid, title } = block;
 
-      await this.lookForReference([...tree, { uid, name: title }], block);
+      await this.lookForReference([...tree, { uid, name: title }], block, block.uid);
     }
   }
 
@@ -367,7 +371,7 @@ export default class ContentType {
    */
   async validateGroupField(tree: Record<string, unknown>[], field: GroupFieldDataType): Promise<void> {
     // NOTE Any Group Field related logic can be added here (Ex data serialization or picking any metadata for report etc.,)
-    await this.lookForReference(tree, field);
+    await this.lookForReference(tree, field, field.uid);
   }
 
   /**

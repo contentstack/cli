@@ -115,6 +115,7 @@ export default class Entries {
             const { uid, title } = entry;
             this.currentUid = uid;
             this.currentTitle = title;
+            this.currentTitle = this.removeEmojiAndImages(this.currentTitle)
 
             if (!this.missingRefs[this.currentUid]) {
               this.missingRefs[this.currentUid] = [];
@@ -131,7 +132,7 @@ export default class Entries {
               this.removeMissingKeysOnEntry(ctSchema.schema as ContentTypeSchemaType[], this.entries[entryUid]);
             }
 
-            this.lookForReference([{ locale: code, uid, name: title }], ctSchema, this.entries[entryUid]);
+            this.lookForReference([{ locale: code, uid, name: this.removeEmojiAndImages(title) }], ctSchema, this.entries[entryUid]);
 
             if (this.missingRefs[this.currentUid]?.length) {
               this.missingRefs[this.currentUid].forEach((entry: any) => {
@@ -650,8 +651,8 @@ export default class Entries {
       if (!uid && reference.startsWith('blt')) {
         const refExist = find(this.entryMetaData, { uid: reference });
         if (!refExist) {
-          if(Array.isArray(reference_to) && reference_to.length===1) {
-            missingRefs.push({uid:reference, _content_type_uid: reference_to[0]});
+          if (Array.isArray(reference_to) && reference_to.length === 1) {
+            missingRefs.push({ uid: reference, _content_type_uid: reference_to[0] });
           } else {
             missingRefs.push(reference);
           }
@@ -799,6 +800,13 @@ export default class Entries {
    * @returns if there is missing field returns field and path
    * Else empty array
    */
+  removeEmojiAndImages(str: string) {
+    return str.replace(
+      /[\p{Emoji}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Emoji_Modifier_Base}\p{Emoji_Component}]+/gu,
+      '',
+    );
+  }
+
   validateSelectField(tree: Record<string, unknown>[], fieldStructure: SelectFeildStruct, field: any) {
     const { display_name, enum: selectOptions, multiple, min_instance, display_type, data_type } = fieldStructure;
     if (
@@ -1225,8 +1233,8 @@ export default class Entries {
         if (!uid && reference.startsWith('blt')) {
           const refExist = find(this.entryMetaData, { uid: reference });
           if (!refExist) {
-            if(Array.isArray(reference_to) && reference_to.length===1) {
-              missingRefs.push({uid:reference, _content_type_uid: reference_to[0]});
+            if (Array.isArray(reference_to) && reference_to.length === 1) {
+              missingRefs.push({ uid: reference, _content_type_uid: reference_to[0] });
             } else {
               missingRefs.push(reference);
             }
@@ -1399,7 +1407,7 @@ export default class Entries {
                 `error`,
               );
             }
-            this.entryMetaData.push({ uid: entryUid, title, ctUid:uid });
+            this.entryMetaData.push({ uid: entryUid, title, ctUid: uid });
           }
         }
       }

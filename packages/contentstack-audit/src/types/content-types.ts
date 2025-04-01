@@ -9,9 +9,11 @@ type ContentTypeSchemaType =
   | JsonRTEFieldDataType
   | GroupFieldDataType
   | ModularBlocksDataType
-  | SelectFeildStruct;
+  | SelectFeildStruct
+  | any;
 
 type ContentTypeStruct = {
+  field_rules: any;
   uid: string;
   title: string;
   description: string;
@@ -160,7 +162,9 @@ enum OutputColumn {
   'publish_environment' = 'publish_environment',
   'asset_uid' = 'asset_uid',
   'selectedValue' = 'selectedValue',
-  'fixStatus' = 'fixStatus'
+  'fixStatus' = 'fixStatus',
+  'Content_type_uid' = 'ct_uid',
+  'action' = 'action'
 }
 
 export {
