@@ -107,7 +107,7 @@ export default class FieldRule {
               if (!this.schemaMap.includes(actions.target_field)) {
                 this.log($t(auditMsg.FIELD_RULE_TARGET_ABSENT, { target_field: actions.target_field, ctUid: schema.uid }), 'error');
                 console.log(this.missingRefs[this.currentUid])
-                this.missingRefs[this.currentUid].push({action: actions, ct_uid: this.currentUid, fixStatus:'fixed'});
+                this.missingRefs[this.currentUid].push({action: actions, ctUid: this.currentUid, fixStatus:'Fixed'});
                 return
               } else {
                 this.log($t(auditMsg.FIELD_RULE_TARGE_SCAN_MESSAGE, {num: count.toString() , ctUid: schema.uid }), 'info');
@@ -120,7 +120,7 @@ export default class FieldRule {
                 this.log($t(auditMsg.FIELD_RULE_CONDITION_ABSENT, { condition_field: actions.operand_field}), 'error');
                 this.missingRefs[this.currentUid].push({
                   action: actions,
-                  ct_uid: this.currentUid,
+                  ctUid: this.currentUid,
                   fixStatus: "Fixed"
                 });
                 return
@@ -143,7 +143,7 @@ export default class FieldRule {
             fr.actions.forEach((actions: { target_field: any }) => {
               if (!this.schemaMap.includes(actions.target_field)) {
                 this.log($t(auditMsg.FIELD_RULE_TARGET_ABSENT, { target_field: actions.target_field, ctUid: schema.uid }), 'error');
-                this.missingRefs[this.currentUid].push({action: actions, ct_uid: this.currentUid});
+                this.missingRefs[this.currentUid].push({action: actions, ctUid: this.currentUid});
               } else {
                 this.log($t(auditMsg.FIELD_RULE_TARGE_SCAN_MESSAGE, {num: count.toString() , ctUid: schema.uid }), 'info');
               }
@@ -154,7 +154,7 @@ export default class FieldRule {
                 this.log($t(auditMsg.FIELD_RULE_CONDITION_ABSENT, { condition_field: actions.operand_field }), 'error');
                 this.missingRefs[this.currentUid].push({
                   action: actions,
-                  ct_uid: this.currentUid
+                  ctUid: this.currentUid
                 });
               } else {
                 this.log($t(auditMsg.FIELD_RULE_CONDITION_SCAN_MESSAGE, {num: count.toString() , ctUid: schema.uid }), 'info');

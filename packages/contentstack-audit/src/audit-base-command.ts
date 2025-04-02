@@ -416,7 +416,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
                   key === 'content_types' ||
                   key === 'branches' ||
                   key === 'missingCTSelectFieldValues' ||
-                  key === 'missingFieldUid'
+                  key === 'missingFieldUid' ||
+                  key === 'action'
                 ) {
                   return chalk.red(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
                 } else {
