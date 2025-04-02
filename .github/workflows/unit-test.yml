@@ -47,10 +47,12 @@ jobs:
 
       - name: Run Unit Tests for Affected Plugins
         run: |
-          # Only run tests for contentstack-audit if it's affected
-          if [[ "$${{ steps.changes.outputs.affected_plugins }}" == *"contentstack-audit"* ]]; then
-            echo "Running tests for contentstack-audit..."
-            npm run test:unit --prefix ./packages/contentstack-audit
-          else
-            echo "contentstack-audit has not changed. Skipping tests."
-          fi
+          for plugin in ${{ steps.changes.outputs.affected_plugins }}; do
+            echo "Checking if tests should run for $plugin..."
+            if [[ "$plugin" == "contentstack-audit" ]]; then
+              echo "Running tests for contentstack-audit..."
+              npm run test:unit --prefix ./packages/contentstack-audit
+            else
+              echo "contentstack-audit has not changed. Skipping tests."
+            fi
+          done
