@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-variants",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Variants plugin",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
