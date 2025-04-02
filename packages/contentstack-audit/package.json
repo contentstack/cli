@@ -30,11 +30,11 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
-    "@oclif/test": "^4.1.11",
+    "@oclif/test": "^4.1.12",
     "@types/chai": "^4.3.20",
     "@types/fs-extra": "^11.0.4",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^20.17.19",
+    "@types/node": "^20.17.28",
     "@types/uuid": "^9.0.8",
     "chai": "^4.5.0",
     "eslint": "^8.57.1",
@@ -44,7 +44,7 @@
     "nyc": "^15.1.0",
     "oclif": "^3.17.2",
     "shx": "^0.3.4",
-    "sinon": "^19.0.2",
+    "sinon": "^19.0.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   },
@@ -74,7 +74,8 @@
     "test": "mocha --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif readme && git add README.md",
     "clean": "rm -rf ./lib ./node_modules tsconfig.tsbuildinfo oclif.manifest.json",
-    "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
+    "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\"",
+    "test:unit": "mocha --timeout 10000 --forbid-only \"test/unit/**/*.test.ts\""
   },
   "engines": {
     "node": ">=16"
