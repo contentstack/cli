@@ -7,7 +7,7 @@
   "dependencies": {
     "@contentstack/cli-cm-import": "~1.21.0",
     "@contentstack/cli-command": "~1.4.0",
-    "@contentstack/cli-utilities": "~1.9.0",
+    "@contentstack/cli-utilities": "~1.10.0",
     "@contentstack/management": "~1.18.4",
     "inquirer": "8.2.6",
     "mkdirp": "^1.0.4",
@@ -21,7 +21,7 @@
     "@types/node": "^14.18.63",
     "@types/tar": "^6.1.13",
     "@types/tmp": "^0.2.6",
-    "axios": "^1.7.9",
+    "axios": "^1.8.2",
     "eslint": "^8.57.1",
     "eslint-config-oclif": "^6.0.15",
     "eslint-config-oclif-typescript": "^3.1.13",

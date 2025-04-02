@@ -389,16 +389,28 @@ export default class ContentType {
     const missingRefs: string[] = [];
     let { reference_to, display_name, data_type } = field;
 
-    for (const reference of reference_to ?? []) {
-      // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
-      if (this.config.skipRefs.includes(reference)) {
-        continue;
+    if (!Array.isArray(reference_to)) {
+      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, data_type, display_name }), 'error');
+      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, display_name }), 'info');
+      if (!this.config.skipRefs.includes(reference_to)) {
+        const refExist = find(this.ctSchema, { uid: reference_to });
+
+        if (!refExist) {
+          missingRefs.push(reference_to);
+        }
       }
+    } else {
+      for (const reference of reference_to ?? []) {
+        // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
+        if (this.config.skipRefs.includes(reference)) {
+          continue;
+        }
 
-      const refExist = find(this.ctSchema, { uid: reference });
+        const refExist = find(this.ctSchema, { uid: reference });
 
-      if (!refExist) {
-        missingRefs.push(reference);
+        if (!refExist) {
+          missingRefs.push(reference);
+        }
       }
     }
 
@@ -641,19 +653,34 @@ export default class ContentType {
     let fixStatus;
     const missingRefs: string[] = [];
     const { reference_to, data_type, display_name } = field;
-    if(!Array.isArray(reference_to)) {
-      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, data_type, display_name }), { color: 'green' });
-    }
-    for (const reference of reference_to ?? []) {
-      // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
-      if (this.config.skipRefs.includes(reference)) {
-        continue;
+    if (!Array.isArray(reference_to)) {
+      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, display_name }), 'error');
+      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, display_name }), 'info');
+      if (!this.config.skipRefs.includes(reference_to)) {
+        const refExist = find(this.ctSchema, { uid: reference_to });
+
+        if (!refExist) {
+          missingRefs.push(reference_to);
+        }
       }
 
-      const refExist = find(this.ctSchema, { uid: reference });
+      field.reference_to = [reference_to];
+      field.field_metadata = {
+        ...field.field_metadata,
+        ref_multiple_content_types: true,
+      };
+    } else {
+      for (const reference of reference_to ?? []) {
+        // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
+        if (this.config.skipRefs.includes(reference)) {
+          continue;
+        }
 
-      if (!refExist) {
-        missingRefs.push(reference);
+        const refExist = find(this.ctSchema, { uid: reference });
+
+        if (!refExist) {
+          missingRefs.push(reference);
+        }
       }
     }
 

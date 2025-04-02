@@ -1,8 +1,6 @@
 import { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
-
 import { FsUtility, sanitizePath, cliux } from '@contentstack/cli-utilities';
-
 import {
   LogFn,
   ConfigType,
