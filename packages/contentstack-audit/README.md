@@ -53,27 +53,27 @@ Perform audits and find possible errors in the exported Contentstack data
 ```
 USAGE
   $ csdx audit [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets...] [-c <value>] [--sort <value>]
-    [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets...] [--columns <value>] [--sort
+    <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets>
   --report-path=<value>  Path to store the audit reports
 
-TABLE FLAGS
-  -c, --columns=<value>  Specify columns to display, comma-separated.
-      --csv              Output results in CSV format.
-      --filter=<value>   Filter rows by a column value (e.g., name=foo).
-      --no-header        Hide table headers in output.
-      --no-truncate      Prevent truncation of long text in columns.
-      --output=<option>  Specify output format: csv, json, or yaml.
-                         <options: csv|json|yaml>
-      --sort=<value>     Sort the table by a column. Use "-" for descending.
-
 COMMON FLAGS
   -c, --config=<value>    Path of the external config
   -d, --data-dir=<value>  Path where the data is stored
+
+TABLE FLAGS
+  --columns=<value>  Specify columns to display, comma-separated.
+  --csv              Output results in CSV format.
+  --filter=<value>   Filter rows by a column value (e.g., name=foo).
+  --no-header        Hide table headers in output.
+  --no-truncate      Prevent truncation of long text in columns.
+  --output=<option>  Specify output format: csv, json, or yaml.
+                     <options: csv|json|yaml>
+  --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 DESCRIPTION
   Perform audits and find possible errors in the exported Contentstack data
@@ -102,8 +102,8 @@ Perform audits and fix possible errors in the exported Contentstack data.
 USAGE
   $ csdx audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
     content-types|global-fields|entries|extensions|workflows|custom-roles|assets...] [--copy-path <value> --copy-dir]
-    [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [-c <value>] [--sort
-    <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
+    [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value>]
+    [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --copy-dir              Create backup from the original data.
@@ -114,19 +114,19 @@ FLAGS
                           <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets>
   --report-path=<value>   Path to store the audit reports
 
-TABLE FLAGS
-  -c, --columns=<value>  Specify columns to display, comma-separated.
-      --csv              Output results in CSV format.
-      --filter=<value>   Filter rows by a column value (e.g., name=foo).
-      --no-header        Hide table headers in output.
-      --no-truncate      Prevent truncation of long text in columns.
-      --output=<option>  Specify output format: csv, json, or yaml.
-                         <options: csv|json|yaml>
-      --sort=<value>     Sort the table by a column. Use "-" for descending.
-
 COMMON FLAGS
   -c, --config=<value>    Path of the external config
   -d, --data-dir=<value>  Path where the data is stored
+
+TABLE FLAGS
+  --columns=<value>  Specify columns to display, comma-separated.
+  --csv              Output results in CSV format.
+  --filter=<value>   Filter rows by a column value (e.g., name=foo).
+  --no-header        Hide table headers in output.
+  --no-truncate      Prevent truncation of long text in columns.
+  --output=<option>  Specify output format: csv, json, or yaml.
+                     <options: csv|json|yaml>
+  --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 DESCRIPTION
   Perform audits and fix possible errors in the exported Contentstack data.
@@ -156,27 +156,27 @@ Perform audits and find possible errors in the exported Contentstack data
 ```
 USAGE
   $ csdx cm:stacks:audit [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets...] [-c <value>] [--sort <value>]
-    [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets...] [--columns <value>] [--sort
+    <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets>
   --report-path=<value>  Path to store the audit reports
 
-TABLE FLAGS
-  -c, --columns=<value>  Specify columns to display, comma-separated.
-      --csv              Output results in CSV format.
-      --filter=<value>   Filter rows by a column value (e.g., name=foo).
-      --no-header        Hide table headers in output.
-      --no-truncate      Prevent truncation of long text in columns.
-      --output=<option>  Specify output format: csv, json, or yaml.
-                         <options: csv|json|yaml>
-      --sort=<value>     Sort the table by a column. Use "-" for descending.
-
 COMMON FLAGS
   -c, --config=<value>    Path of the external config
   -d, --data-dir=<value>  Path where the data is stored
+
+TABLE FLAGS
+  --columns=<value>  Specify columns to display, comma-separated.
+  --csv              Output results in CSV format.
+  --filter=<value>   Filter rows by a column value (e.g., name=foo).
+  --no-header        Hide table headers in output.
+  --no-truncate      Prevent truncation of long text in columns.
+  --output=<option>  Specify output format: csv, json, or yaml.
+                     <options: csv|json|yaml>
+  --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 DESCRIPTION
   Perform audits and find possible errors in the exported Contentstack data
@@ -207,8 +207,8 @@ Perform audits and fix possible errors in the exported Contentstack data.
 USAGE
   $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
     content-types|global-fields|entries|extensions|workflows|custom-roles|assets...] [--copy-path <value> --copy-dir]
-    [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [-c <value>] [--sort
-    <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
+    [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value>]
+    [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --copy-dir              Create backup from the original data.
@@ -219,19 +219,19 @@ FLAGS
                           <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets>
   --report-path=<value>   Path to store the audit reports
 
-TABLE FLAGS
-  -c, --columns=<value>  Specify columns to display, comma-separated.
-      --csv              Output results in CSV format.
-      --filter=<value>   Filter rows by a column value (e.g., name=foo).
-      --no-header        Hide table headers in output.
-      --no-truncate      Prevent truncation of long text in columns.
-      --output=<option>  Specify output format: csv, json, or yaml.
-                         <options: csv|json|yaml>
-      --sort=<value>     Sort the table by a column. Use "-" for descending.
-
 COMMON FLAGS
   -c, --config=<value>    Path of the external config
   -d, --data-dir=<value>  Path where the data is stored
+
+TABLE FLAGS
+  --columns=<value>  Specify columns to display, comma-separated.
+  --csv              Output results in CSV format.
+  --filter=<value>   Filter rows by a column value (e.g., name=foo).
+  --no-header        Hide table headers in output.
+  --no-truncate      Prevent truncation of long text in columns.
+  --output=<option>  Specify output format: csv, json, or yaml.
+                     <options: csv|json|yaml>
+  --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 DESCRIPTION
   Perform audits and fix possible errors in the exported Contentstack data.
