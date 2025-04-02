@@ -137,7 +137,7 @@ function init(_logPath: string) {
 }
 
 export const log = async (config: ExportConfig, message: any, type: string) => {
-  const logsPath = config.cliLogsPath || config.data;
+  const logsPath = sanitizePath(config.cliLogsPath || config.data);
   // ignoring the type argument, as we are not using it to create a logfile anymore
   if (type !== 'error') {
     // removed type argument from init method
