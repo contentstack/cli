@@ -60,6 +60,7 @@ export default class Entries {
   protected missingMandatoryFields: Record<string, any> = {};
   protected missingTitleFields: Record<string, any> = {};
   protected missingEnvLocale: Record<string, any> = {};
+  protected missingMultipleField: Record<string, any> = {};
   public environments: string[] = [];
   public entryMetaData: Record<string, any>[] = [];
   public moduleName: keyof typeof auditConfig.moduleConfig = 'entries';
@@ -241,6 +242,7 @@ export default class Entries {
       missingMandatoryFields: this.missingMandatoryFields,
       missingTitleFields: this.missingTitleFields,
       missingEnvLocale: this.missingEnvLocale,
+      missingMultipleFields: this.missingMultipleField
     };
   }
 
@@ -350,7 +352,26 @@ export default class Entries {
     }
 
     for (const child of field?.schema ?? []) {
-      const { uid } = child;
+      const { uid, multiple, data_type } = child;
+
+      if(multiple && entry[uid] && !Array.isArray(entry[uid])) {
+       if (!this.missingMultipleField[this.currentUid]) {
+         this.missingMultipleField[this.currentUid] = [];
+       }
+        
+        this.missingMultipleField[this.currentUid].push({
+          uid: this.currentUid,
+          name: this.currentTitle,
+          field_uid: uid,
+          data_type,
+          multiple,
+          tree,
+          treeStr: tree
+            .map(({ name }) => name)
+            .filter((val) => val)
+            .join(' ➜ '),
+        });
+      } 
       this.missingMandatoryFields[this.currentUid].push(
         ...this.validateMandatoryFields(
           [...tree, { uid: field.uid, name: child.display_name, field: uid }],
@@ -717,10 +738,30 @@ export default class Entries {
   runFixOnSchema(tree: Record<string, unknown>[], schema: ContentTypeSchemaType[], entry: EntryFieldType) {
     // NOTE Global field Fix
     schema.forEach((field) => {
-      const { uid, data_type } = field;
+      const { uid, data_type, multiple } = field;
 
       if (!Object(entry).hasOwnProperty(uid)) {
         return;
+      }
+
+      if (multiple && entry[uid] && !Array.isArray(entry[uid])) {
+        this.missingMultipleField[this.currentUid] ??= [];
+
+        this.missingMultipleField[this.currentUid].push({
+          uid: this.currentUid,
+          name: this.currentTitle,
+          field_uid: uid,
+          data_type,
+          multiple,
+          tree,
+          treeStr: tree
+            .map(({ name }) => name)
+            .filter(Boolean)
+            .join(' ➜ '),
+          'fixStatus': 'Fixed',
+        });
+
+        entry[uid] = [entry[uid]];
       }
 
       switch (data_type) {

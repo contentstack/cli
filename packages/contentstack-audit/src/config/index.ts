@@ -120,6 +120,7 @@ const config = {
     'Entries_Select_feild',
     'Entry_Missing_Locale_and_Env_in_Publish_Details',
     'field-rules',
+    'Entry_Multiple_Fields'
   ],
   fixSelectField: false,
 };
