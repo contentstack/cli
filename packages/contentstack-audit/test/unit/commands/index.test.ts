@@ -10,7 +10,7 @@ describe('Audit command', () => {
     filename!: string;
   } as FileTransportInstance;
 
-  describe('Audit run method', () => {
+  describe('Audit run method:', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(winston.transports, 'File', () => fsTransport)
