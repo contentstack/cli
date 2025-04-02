@@ -3649,11 +3649,9 @@ EXAMPLES
 
   $ csdx launch --data-dir <path/of/current/working/dir> --redeploy-latest
 
-  $ csdx launch --data-dir <path/of/current/working/dir> --redeploy-last-upload
+  $ csdx launch --data-dir <path/of/current/working/dir> --redeploy-latest --redeploy-last-upload
 
   $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload>
-
-  $ csdx launch --environment=<value> --redeploy-latest
 
   $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value>
 
@@ -3727,11 +3725,10 @@ Serve cloud functions
 
 ```
 USAGE
-  $ csdx launch:functions [-p <value>] [-d <value>]
+  $ csdx launch:functions [-p <value>]
 
 FLAGS
-  -d, --data-dir=<value>  Current working directory
-  -p, --port=<value>      [default: 3000] Port number
+  -p, --port=<value>  [default: 3000] Port number
 
 DESCRIPTION
   Serve cloud functions
@@ -3743,7 +3740,11 @@ EXAMPLES
 
   $ csdx launch:functions --data-dir <path/of/current/working/dir>
 
+  $ csdx launch:functions --config <path/to/launch/config/file>
+
   $ csdx launch:functions --data-dir <path/of/current/working/dir> -p "port number"
+
+  $ csdx launch:functions --config <path/to/launch/config/file> --port=port
 ```
 
 _See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/functions.ts)_
