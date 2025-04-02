@@ -1,7 +1,6 @@
 import { CLITable, FlagDefinition, Flags } from '@contentstack/cli-utilities';
 
 import { JSONFlagOptions } from '../types';
-// import { tableColumnDescriptions } from '../messages';
 
 const defaultJSONOptions = { description: 'Provide JSON input' };
 
