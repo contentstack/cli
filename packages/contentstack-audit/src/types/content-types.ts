@@ -17,6 +17,7 @@ type ContentTypeStruct = {
   description: string;
   schema?: ContentTypeSchemaType[];
   mandatory: boolean;
+  multiple: boolean;
 };
 
 type ModuleConstructorParam = {
@@ -40,6 +41,7 @@ type CommonDataTypeStruct = {
     allow_json_rte: boolean;
   } & AnyProperty;
   mandatory: boolean;
+  multiple: boolean;
 };
 
 type RefErrorReturnType = {
@@ -160,7 +162,9 @@ enum OutputColumn {
   'publish_environment' = 'publish_environment',
   'asset_uid' = 'asset_uid',
   'selectedValue' = 'selectedValue',
-  'fixStatus' = 'fixStatus'
+  'fixStatus' = 'fixStatus',
+  'field_uid' = 'field_uid',
+  'multiple' = 'multiple'
 }
 
 export {
