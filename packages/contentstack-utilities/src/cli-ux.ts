@@ -58,18 +58,6 @@ class CLIInterface {
     this.loading = !this.loading;
   }
 
-  tableold(
-    data: Record<string, unknown>[],
-    columns: Record<string, Record<string, number>>,
-    options?: Record<string, unknown>,
-  ): void {
-    // parse headers to new table format
-    const headers: TableHeader[] = Object.keys(columns).map((columnTitle) => {
-      return { value: columnTitle };
-    });
-    CLITable.render(headers, data, { ...options });
-  }
-
   table<T extends Record<string, unknown>>(
     headers: TableHeader[],
     data: TableData<T>,

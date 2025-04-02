@@ -45,7 +45,6 @@ export default class CLITable {
   static getTableFlags(columns: string[] = ['columns', 'sort', 'filter', 'csv', 'no-truncate']): FlagInput<TableFlags> {
     const flags = {
       columns: Flags.string({
-        char: 'c',
         description: 'Specify columns to display, comma-separated.',
         helpGroup: 'TABLE',
       }),
@@ -79,13 +78,10 @@ export default class CLITable {
     // Return only requested flags
     return Object.entries(flags)
       .filter(([key]) => columns.includes(key))
-      .reduce(
-        (acc, [key, value]) => {
-          acc[key] = value;
-          return acc;
-        },
-        {} as Record<string, any>,
-      );
+      .reduce((acc, [key, value]) => {
+        acc[key] = value;
+        return acc;
+      }, {} as Record<string, any>);
   }
 
   static render(headers: TableHeader[], data: Record<string, unknown>[], flags: TableFlags, options?: TableOptions) {
@@ -116,15 +112,12 @@ export default class CLITable {
         const selectedColumns = flags.columns.split(',');
         headers = headers.filter((header) => selectedColumns.includes(header.value));
         tableData = tableData.map((row) =>
-          selectedColumns.reduce(
-            (acc, key) => {
-              if (row[key] !== undefined) {
-                acc[key] = row[key];
-              }
-              return acc;
-            },
-            {} as Record<string, unknown>,
-          ),
+          selectedColumns.reduce((acc, key) => {
+            if (row[key] !== undefined) {
+              acc[key] = row[key];
+            }
+            return acc;
+          }, {} as Record<string, unknown>),
         );
       }
       // **Sort Data**
