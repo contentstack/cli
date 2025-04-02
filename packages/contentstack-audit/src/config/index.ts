@@ -101,9 +101,10 @@ const config = {
     Entries_Mandatory_feild: 'Entries_Mandatory_feild',
     Entries_Title_feild: 'Entries_Title_feild',
     Entry_Missing_Locale_and_Env: 'Entry_Missing_Locale_and_Env',
-    Entry_Missing_Locale_and_Env_in_Publish_Details: 'Entry_Missing_Locale_and_Env_in_Publish_Details'
+    Entry_Missing_Locale_and_Env_in_Publish_Details: 'Entry_Missing_Locale_and_Env_in_Publish_Details',
+    Entry_Multiple_Fields: 'Entry_Multiple_Fields'
   },
-  feild_level_modules: ['Entries_Title_feild', 'Entries_Mandatory_feild', 'Entries_Select_feild', 'Entry_Missing_Locale_and_Env_in_Publish_Details'],
+  feild_level_modules: ['Entries_Title_feild', 'Entries_Mandatory_feild', 'Entries_Select_feild', 'Entry_Missing_Locale_and_Env_in_Publish_Details', 'Entry_Multiple_Fields'],
   fixSelectField: false
 };
 
