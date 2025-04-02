@@ -158,7 +158,9 @@ enum OutputColumn {
   'entry_uid' = 'entry_uid',
   'publish_locale' = 'publish_locale',
   'publish_environment' = 'publish_environment',
-  'asset_uid' = 'asset_uid'
+  'asset_uid' = 'asset_uid',
+  'selectedValue' = 'selectedValue',
+  'fixStatus' = 'fixStatus',
 }
 
 export {

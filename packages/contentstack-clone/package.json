@@ -9,7 +9,7 @@
     "@contentstack/cli-cm-export": "~1.16.0",
     "@contentstack/cli-cm-import": "~1.21.0",
     "@contentstack/cli-command": "~1.4.0",
-    "@contentstack/cli-utilities": "~1.9.0",
+    "@contentstack/cli-utilities": "~1.10.0",
     "chalk": "^4.1.2",
     "inquirer": "8.2.6",
     "lodash": "^4.17.21",

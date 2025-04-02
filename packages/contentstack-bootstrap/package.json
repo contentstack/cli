@@ -19,7 +19,7 @@
   "dependencies": {
     "@contentstack/cli-cm-seed": "~1.11.0",
     "@contentstack/cli-command": "~1.4.0",
-    "@contentstack/cli-utilities": "~1.9.0",
+    "@contentstack/cli-utilities": "~1.10.0",
     "inquirer": "8.2.6",
     "mkdirp": "^1.0.4",
     "tar": "^6.2.1 "

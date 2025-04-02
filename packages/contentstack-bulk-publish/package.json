@@ -6,7 +6,7 @@
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@contentstack/cli-command": "~1.4.0",
-    "@contentstack/cli-utilities": "~1.9.0",
+    "@contentstack/cli-utilities": "~1.10.0",
     "chalk": "^4.1.2",
     "dotenv": "^16.4.7",
     "inquirer": "8.2.6",
