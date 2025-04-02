@@ -106,11 +106,12 @@ export default class FieldRule {
             fr.actions = fr.actions.map((actions: { target_field: any }) => {
               if (!this.schemaMap.includes(actions.target_field)) {
                 this.log($t(auditMsg.FIELD_RULE_TARGET_ABSENT, { target_field: actions.target_field, ctUid: schema.uid }), 'error');
-                console.log(this.missingRefs[this.currentUid])
-                this.missingRefs[this.currentUid].push({action: actions, ctUid: this.currentUid, fixStatus:'Fixed'});
+                this.missingRefs[this.currentUid].push({ctUid: this.currentUid, action: actions, fixStatus:'Fixed'});
+                this.log($t(auditFixMsg.FIELD_RULE_FIX_MESSAGE, {num: count.toString() , ctUid: schema.uid }), 'info');
+                this.log($t(auditMsg.FIELD_RULE_TARGET_SCAN_MESSAGE, {num: count.toString() , ctUid: schema.uid }), 'info');
                 return
               } else {
-                this.log($t(auditMsg.FIELD_RULE_TARGE_SCAN_MESSAGE, {num: count.toString() , ctUid: schema.uid }), 'info');
+                this.log($t(auditMsg.FIELD_RULE_TARGET_SCAN_MESSAGE, {num: count.toString() , ctUid: schema.uid }), 'info');
                 return actions;
               }
             }).filter((v: any)=>v);
@@ -119,18 +120,20 @@ export default class FieldRule {
               if (!this.schemaMap.includes(actions.operand_field)) {
                 this.log($t(auditMsg.FIELD_RULE_CONDITION_ABSENT, { condition_field: actions.operand_field}), 'error');
                 this.missingRefs[this.currentUid].push({
-                  action: actions,
                   ctUid: this.currentUid,
+                  action: actions,
                   fixStatus: "Fixed"
                 });
+                this.log($t(auditFixMsg.FIELD_RULE_FIX_MESSAGE, {num: count.toString() , ctUid: schema.uid }), 'info');
+                this.log($t(auditMsg.FIELD_RULE_TARGET_SCAN_MESSAGE, {num: count.toString() , ctUid: schema.uid }), 'info');
                 return
               } else {
                 this.log($t(auditMsg.FIELD_RULE_CONDITION_SCAN_MESSAGE, {num: count.toString() , ctUid: schema.uid }), 'info');
                 return actions;
               }
             }).filter((v:any)=>v);
+
             count = count+1;
-            console.log(fr.actions.length, fr.conditions.length, "LENGTH");
             if(fr.actions.length && fr.conditions.length) {
               return fr;
             }
@@ -145,7 +148,7 @@ export default class FieldRule {
                 this.log($t(auditMsg.FIELD_RULE_TARGET_ABSENT, { target_field: actions.target_field, ctUid: schema.uid }), 'error');
                 this.missingRefs[this.currentUid].push({action: actions, ctUid: this.currentUid});
               } else {
-                this.log($t(auditMsg.FIELD_RULE_TARGE_SCAN_MESSAGE, {num: count.toString() , ctUid: schema.uid }), 'info');
+                this.log($t(auditMsg.FIELD_RULE_TARGET_SCAN_MESSAGE, {num: count.toString() , ctUid: schema.uid }), 'info');
               }
             });
   
