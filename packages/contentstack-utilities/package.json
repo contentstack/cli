@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-utilities",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "description": "Utilities for contentstack projects",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -35,7 +35,7 @@
     "@contentstack/management": "~1.18.4",
     "@contentstack/marketplace-sdk": "^1.2.5",
     "@oclif/core": "^4.2.7",
-    "axios": "^1.7.9",
+    "axios": "^1.8.2",
     "chalk": "^4.1.2",
     "cli-cursor": "^3.1.0",
     "cli-progress": "^3.12.0",

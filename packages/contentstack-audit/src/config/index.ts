@@ -40,16 +40,16 @@ const config = {
       dirName: 'custom-roles',
       fileName: 'custom-roles.json',
     },
-    'assets': {
+    assets: {
       name: 'assets',
       dirName: 'assets',
       fileName: 'assets.json',
     },
-    'environments': {
+    environments: {
       name: 'environments',
       dirName: 'environments',
       fileName: 'environments.json',
-    }
+    },
   },
   entries: {
     systemKeys: [
@@ -93,16 +93,23 @@ const config = {
     'entry_uid',
     'publish_locale',
     'publish_environment',
-    'asset_uid'
+    'asset_uid',
+    'selectedValue',
   ],
   ReportTitleForEntries: {
     Entries_Select_feild: 'Entries_Select_feild',
     Entries_Mandatory_feild: 'Entries_Mandatory_feild',
     Entries_Title_feild: 'Entries_Title_feild',
     Entry_Missing_Locale_and_Env: 'Entry_Missing_Locale_and_Env',
-    Entry_Missing_Locale_and_Env_in_Publish_Details: 'Entry_Missing_Locale_and_Env_in_Publish_Details'
+    Entry_Missing_Locale_and_Env_in_Publish_Details: 'Entry_Missing_Locale_and_Env_in_Publish_Details',
   },
-  feild_level_modules: ['Entries_Title_feild', 'Entries_Mandatory_feild', 'Entries_Select_feild', 'Entry_Missing_Locale_and_Env_in_Publish_Details'],
+  feild_level_modules: [
+    'Entries_Title_feild',
+    'Entries_Mandatory_feild',
+    'Entries_Select_feild',
+    'Entry_Missing_Locale_and_Env_in_Publish_Details',
+  ],
+  fixSelectField: false,
 };
 
 export default config;
