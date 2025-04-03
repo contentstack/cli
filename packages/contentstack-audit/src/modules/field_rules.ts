@@ -2,7 +2,7 @@ import map from 'lodash/map';
 import { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 
-import { FsUtility, Locale, sanitizePath, ux } from '@contentstack/cli-utilities';
+import { FsUtility, Locale, sanitizePath, cliux } from '@contentstack/cli-utilities';
 
 import {
   LogFn,
@@ -286,7 +286,7 @@ export default class FieldRule {
 
     if (!this.inMemoryFix && this.fix) {
       if (!this.config.flags['copy-dir'] && !this.config.flags['external-config']?.skipConfirm) {
-        canWrite = this.config.flags.yes ?? (await ux.confirm(commonMsg.FIX_CONFIRMATION));
+        canWrite = this.config.flags.yes ?? (await cliux.confirm(commonMsg.FIX_CONFIRMATION));
       }
 
       if (canWrite) {
