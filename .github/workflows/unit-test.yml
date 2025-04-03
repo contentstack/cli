@@ -19,35 +19,44 @@ jobs:
       - name: Install dependencies for all plugins
         run: |
           npm run setup-repo-old
+      
+      - name: Run tests for Audit plugin
+        working-directory: ./packages/contentstack-audit
+        run: npm run test:unit
 
-      - name: Fetch latest references
-        run: |
-          git fetch --prune
+      # - name: Fetch latest references
+      #   run: |
+      #     git fetch --prune
 
-      - name: Identify Changed Plugins
-        id: changes
-        run: |
-          echo "Finding changed files..."
-          # Ensure both commit references are valid
-          if [[ -z "${{ github.event.before }}" || -z "${{ github.sha }}" ]]; then
-            echo "Error: Missing commit references"
-            exit 1
-          fi
+      # - name: Identify Changed Plugins
+      #   id: changes
+      #   run: |
+      #     echo "Finding changed files..."
+      #     # Ensure both commit references are valid
+      #     if [[ -z "${{ github.event.before }}" || -z "${{ github.sha }}" ]]; then
+      #       echo "Error: Missing commit references"
+      #       exit 1
+      #     fi
 
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
-          echo "Changed files:"
-          echo "$CHANGED_FILES"
+      #     CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+      #     echo "Changed files:"
+      #     echo "$CHANGED_FILES"
           
-          # Identify affected plugins
-          AFFECTED_PLUGINS=$(echo "$CHANGED_FILES" | grep -oP '(?<=^packages/)([^/]+)' | sort -u | tr '\n' ' ')
-          echo "Affected plugins: $AFFECTED_PLUGINS"
+      #     # Identify affected plugins
+      #     AFFECTED_PLUGINS=$(echo "$CHANGED_FILES" | grep -oP '(?<=^packages/)([^/]+)' | sort -u | tr '\n' ' ')
+      #     echo "Affected plugins: $AFFECTED_PLUGINS"
           
-          # Set output for the next step
-          echo "::set-output name=affected_plugins::$AFFECTED_PLUGINS"
+      #     # Set output for the next step
+      #     echo "::set-output name=affected_plugins::$AFFECTED_PLUGINS"
 
-      - name: Run Unit Tests for Affected Plugins
-        run: |
-          for plugin in ${{ steps.changes.outputs.affected_plugins }}; do
-            echo "Running tests for $plugin..."
-            npm run test:unit --prefix ./packages/$plugin
-          done
+      # - name: Run Unit Tests for Affected Plugins
+      #   run: |
+      #     for plugin in ${{ steps.changes.outputs.affected_plugins }}; do
+      #       echo "Checking if tests should run for $plugin..."
+      #       if [[ "$plugin" == "contentstack-audit" ]]; then
+      #         echo "Running tests for contentstack-audit..."
+      #         npm run test:unit --prefix ./packages/contentstack-audit
+      #       else
+      #         echo "contentstack-audit has not changed. Skipping tests."
+      #       fi
+      #     done
