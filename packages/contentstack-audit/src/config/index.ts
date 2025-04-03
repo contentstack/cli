@@ -40,16 +40,16 @@ const config = {
       dirName: 'custom-roles',
       fileName: 'custom-roles.json',
     },
-    'assets': {
+    assets: {
       name: 'assets',
       dirName: 'assets',
       fileName: 'assets.json',
     },
-    'environments': {
+    environments: {
       name: 'environments',
       dirName: 'environments',
       fileName: 'environments.json',
-    }
+    },
   },
   entries: {
     systemKeys: [
@@ -94,7 +94,7 @@ const config = {
     'publish_locale',
     'publish_environment',
     'asset_uid',
-    'selectedValue'
+    'selectedValue',
   ],
   ReportTitleForEntries: {
     Entries_Select_feild: 'Entries_Select_feild',
