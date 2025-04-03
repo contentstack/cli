@@ -61,6 +61,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingRefInCustomRoles,
       missingEnvLocalesInAssets,
       missingEnvLocalesInEntries,
+      missingMultipleFields
     } = await this.scanAndFix();
 
     this.showOutputOnScreen([
@@ -77,9 +78,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Entries Title Field', missingRefs: missingTitleFields }]);
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Custom Roles', missingRefs: missingRefInCustomRoles }]);
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Assets', missingRefs: missingEnvLocalesInAssets }]);
-    this.showOutputOnScreenWorkflowsAndExtension([
-      { module: 'Entries Missing Locale and Environments', missingRefs: missingEnvLocalesInEntries },
-    ]);
+    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Entries Missing Locale and Environments', missingRefs: missingEnvLocalesInEntries }])
+    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Entries Changed Multiple Fields', missingRefs: missingMultipleFields }])
     if (
       !isEmpty(missingCtRefs) ||
       !isEmpty(missingGfRefs) ||
@@ -90,7 +90,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       !isEmpty(missingTitleFields) ||
       !isEmpty(missingRefInCustomRoles) ||
       !isEmpty(missingEnvLocalesInAssets) ||
-      !isEmpty(missingEnvLocalesInEntries)
+      !isEmpty(missingEnvLocalesInEntries) ||
+      !isEmpty(missingMultipleFields)
     ) {
       if (this.currentCommand === 'cm:stacks:audit') {
         this.log(this.$t(auditMsg.FINAL_REPORT_PATH, { path: this.sharedConfig.reportPath }), 'warn');
@@ -143,7 +144,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingTitleFields,
       missingRefInCustomRoles,
       missingEnvLocalesInAssets,
-      missingEnvLocalesInEntries;
+      missingEnvLocalesInEntries,
+      missingMultipleFields;
 
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       print([
@@ -181,7 +183,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           missingSelectFeild = missingEntry.missingSelectFeild ?? {};
           missingMandatoryFields = missingEntry.missingMandatoryFields ?? {};
           missingTitleFields = missingEntry.missingTitleFields ?? {};
-          missingEnvLocalesInEntries = missingEntry.missingEnvLocale ?? {};
+          missingEnvLocalesInEntries = missingEntry.missingEnvLocale??{};
+          missingMultipleFields = missingEntry.missingMultipleFields??{};
           await this.prepareReport(module, missingEntryRefs);
 
           await this.prepareReport(`Entries_Select_feild`, missingSelectFeild);
@@ -191,6 +194,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           await this.prepareReport('Entries_Title_feild', missingTitleFields);
 
           await this.prepareReport('Entry_Missing_Locale_and_Env_in_Publish_Details', missingEnvLocalesInEntries);
+
+          await this.prepareReport('Entry_Multiple_Fields', missingMultipleFields);
 
           break;
         case 'workflows':
@@ -239,6 +244,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingRefInCustomRoles,
       missingEnvLocalesInAssets,
       missingEnvLocalesInEntries,
+      missingMultipleFields
     };
   }
 

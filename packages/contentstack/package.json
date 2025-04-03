@@ -38,7 +38,7 @@
     "@contentstack/cli-config": "~1.11.0",
     "@contentstack/cli-migration": "~1.7.0",
     "@contentstack/cli-utilities": "~1.10.0",
-    "@contentstack/cli-variants": "~1.1.5",
+    "@contentstack/cli-variants": "~1.2.0",
     "@contentstack/management": "~1.18.4",
     "@oclif/core": "^4.2.7",
     "@oclif/plugin-help": "^6.2.25",
