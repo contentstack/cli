@@ -87,20 +87,6 @@ export default class CLITable {
   static render(headers: TableHeader[], data: Record<string, unknown>[], flags: TableFlags, options?: TableOptions) {
     let tableData = [...data];
 
-    // **Transform Data: Map headers' `value` (key) to `title` (display name)**
-    // const headerMap = new Map(headers.map(({ value, title }) => [value, title || value]));
-
-    // tableData = tableData.map((row) =>
-    //   Object.entries(row).reduce(
-    //     (acc, [key, value]) => {
-    //       const displayName = headerMap[key] || key; // Use header title if available
-    //       acc[displayName] = value;
-    //       return acc;
-    //     },
-    //     {} as Record<string, unknown>,
-    //   ),
-    // );
-
     if (flags) {
       // **Filter Data**
       if (flags.filter) {
