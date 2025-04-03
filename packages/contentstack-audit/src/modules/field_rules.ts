@@ -15,11 +15,12 @@ import {
   ModularBlocksDataType,
   ModuleConstructorParam,
   EntryStruct,
+  FieldRuleStruct,
 } from '../types';
 import auditConfig from '../config';
 import { $t, auditFixMsg, auditMsg, commonMsg } from '../messages';
 import { MarketplaceAppsInstallationData } from '../types/extension';
-import { keys, values } from 'lodash';
+import { values } from 'lodash';
 
 /* The `ContentType` class is responsible for scanning content types, looking for references, and
 generating a report in JSON and CSV formats. */
@@ -43,9 +44,7 @@ export default class FieldRule {
   protected entries!: Record<string, EntryStruct>;
   protected missingSelectFeild: Record<string, any> = {};
   protected missingMandatoryFields: Record<string, any> = {};
-  protected missingTitleFields: Record<string, any> = {};
   protected missingEnvLocale: Record<string, any> = {};
-  public environments: string[] = [];
   public entryMetaData: Record<string, any>[] = [];
   public action: string[] = ['show', 'hide'];
   constructor({ log, fix, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
@@ -99,73 +98,10 @@ export default class FieldRule {
 
       this.missingRefs[this.currentUid] = [];
 
-      if(this.fix) {
-        if (Array.isArray(schema.field_rules)) {
-          let count = 0;
-          schema.field_rules = schema.field_rules.map((fr) => {
-            fr.actions = fr.actions.map((actions: { target_field: any }) => {
-              if (!this.schemaMap.includes(actions.target_field)) {
-                this.log($t(auditMsg.FIELD_RULE_TARGET_ABSENT, { target_field: actions.target_field, ctUid: schema.uid }), 'error');
-                this.missingRefs[this.currentUid].push({ctUid: this.currentUid, action: actions, fixStatus:'Fixed'});
-                this.log($t(auditFixMsg.FIELD_RULE_FIX_MESSAGE, {num: count.toString() , ctUid: schema.uid }), 'info');
-                this.log($t(auditMsg.FIELD_RULE_TARGET_SCAN_MESSAGE, {num: count.toString() , ctUid: schema.uid }), 'info');
-                return
-              } else {
-                this.log($t(auditMsg.FIELD_RULE_TARGET_SCAN_MESSAGE, {num: count.toString() , ctUid: schema.uid }), 'info');
-                return actions;
-              }
-            }).filter((v: any)=>v);
-  
-            fr.conditions = fr.conditions.map((actions: { operand_field: any }) => {
-              if (!this.schemaMap.includes(actions.operand_field)) {
-                this.log($t(auditMsg.FIELD_RULE_CONDITION_ABSENT, { condition_field: actions.operand_field}), 'error');
-                this.missingRefs[this.currentUid].push({
-                  ctUid: this.currentUid,
-                  action: actions,
-                  fixStatus: "Fixed"
-                });
-                this.log($t(auditFixMsg.FIELD_RULE_FIX_MESSAGE, {num: count.toString() , ctUid: schema.uid }), 'info');
-                this.log($t(auditMsg.FIELD_RULE_TARGET_SCAN_MESSAGE, {num: count.toString() , ctUid: schema.uid }), 'info');
-                return
-              } else {
-                this.log($t(auditMsg.FIELD_RULE_CONDITION_SCAN_MESSAGE, {num: count.toString() , ctUid: schema.uid }), 'info');
-                return actions;
-              }
-            }).filter((v:any)=>v);
-
-            count = count+1;
-            if(fr.actions.length && fr.conditions.length) {
-              return fr;
-            }
-          }).filter((v:any)=>v);
-        }
+      if (this.fix) {
+        this.fixFieldRules(schema);
       } else {
-        if (Array.isArray(schema.field_rules)) {
-          let count = 0;
-          schema.field_rules.forEach((fr) => {
-            fr.actions.forEach((actions: { target_field: any }) => {
-              if (!this.schemaMap.includes(actions.target_field)) {
-                this.log($t(auditMsg.FIELD_RULE_TARGET_ABSENT, { target_field: actions.target_field, ctUid: schema.uid }), 'error');
-                this.missingRefs[this.currentUid].push({action: actions, ctUid: this.currentUid});
-              } else {
-                this.log($t(auditMsg.FIELD_RULE_TARGET_SCAN_MESSAGE, {num: count.toString() , ctUid: schema.uid }), 'info');
-              }
-            });
-  
-            fr.conditions.forEach((actions: { operand_field: any }) => {
-              if (!this.schemaMap.includes(actions.operand_field)) {
-                this.log($t(auditMsg.FIELD_RULE_CONDITION_ABSENT, { condition_field: actions.operand_field }), 'error');
-                this.missingRefs[this.currentUid].push({
-                  action: actions,
-                  ctUid: this.currentUid
-                });
-              } else {
-                this.log($t(auditMsg.FIELD_RULE_CONDITION_SCAN_MESSAGE, {num: count.toString() , ctUid: schema.uid }), 'info');
-              }
-            });
-            count = count+1;
-          });
-        }
+        this.validateFieldRules(schema);
       }
 
       this.schemaMap = [];
@@ -173,7 +109,6 @@ export default class FieldRule {
         $t(auditMsg.SCAN_CT_SUCCESS_MSG, { title, module: this.config.moduleConfig[this.moduleName].name }),
         'info',
       );
-
     }
 
     if (this.fix) {
@@ -189,12 +124,136 @@ export default class FieldRule {
     return this.missingRefs;
   }
 
+  validateFieldRules(schema: Record<string, unknown>): void {
+    if (Array.isArray(schema.field_rules)) {
+      let count = 0;
+      schema.field_rules.forEach((fr) => {
+        fr.actions.forEach((actions: { target_field: any }) => {
+          if (!this.schemaMap.includes(actions.target_field)) {
+            this.log(
+              $t(auditMsg.FIELD_RULE_TARGET_ABSENT, {
+                target_field: actions.target_field,
+                ctUid: schema.uid as string,
+              }),
+              'error',
+            );
+
+            this.addMissingReferences(actions);
+          }
+          this.log(
+            $t(auditMsg.FIELD_RULE_TARGET_SCAN_MESSAGE, { num: count.toString(), ctUid: schema.uid as string }),
+            'info',
+          );
+        });
+
+        fr.conditions.forEach((actions: { operand_field: any }) => {
+          if (!this.schemaMap.includes(actions.operand_field)) {
+
+            this.addMissingReferences(actions);
+
+            this.log($t(auditMsg.FIELD_RULE_CONDITION_ABSENT, { condition_field: actions.operand_field }), 'error');
+            
+          }
+          this.log(
+            $t(auditMsg.FIELD_RULE_CONDITION_SCAN_MESSAGE, { num: count.toString(), ctUid: schema.uid as string }),
+            'info',
+          );
+        });
+        count = count + 1;
+      });
+    }
+  }
+
+  fixFieldRules(schema: Record<string, unknown>): void {
+    if (Array.isArray(schema.field_rules)) {
+      let count = 0;
+      schema.field_rules = schema.field_rules
+        .map((fr: FieldRuleStruct) => {
+          fr.actions = fr.actions
+            ?.map((actions: { action: string; target_field: string }) => {
+              if (!this.schemaMap.includes(actions.target_field)) {
+                this.log(
+                  $t(auditMsg.FIELD_RULE_TARGET_ABSENT, {
+                    target_field: actions.target_field,
+                    ctUid: schema.uid as string,
+                  }),
+                  'error',
+                );
+
+                this.addMissingReferences(actions, 'Fixed');
+                this.log(
+                  $t(auditFixMsg.FIELD_RULE_FIX_MESSAGE, { num: count.toString(), ctUid: schema.uid as string }),
+                  'info',
+                );
+                this.log(
+                  $t(auditMsg.FIELD_RULE_TARGET_SCAN_MESSAGE, { num: count.toString(), ctUid: schema.uid as string }),
+                  'info',
+                );
+                return null;
+              } else {
+                this.log(
+                  $t(auditMsg.FIELD_RULE_TARGET_SCAN_MESSAGE, { num: count.toString(), ctUid: schema.uid as string }),
+                  'info',
+                );
+                return actions;
+              }
+            })
+            .filter((v): v is { action: string; target_field: string } => v !== undefined);
+
+          fr.conditions = fr.conditions
+            ?.map((actions: { operand_field: any }) => {
+              if (!this.schemaMap.includes(actions.operand_field)) {
+                this.log($t(auditMsg.FIELD_RULE_CONDITION_ABSENT, { condition_field: actions.operand_field }), 'error');
+                this.addMissingReferences(actions, 'Fixed');
+                this.log(
+                  $t(auditFixMsg.FIELD_RULE_FIX_MESSAGE, { num: count.toString(), ctUid: schema.uid as string }),
+                  'info',
+                );
+                this.log(
+                  $t(auditMsg.FIELD_RULE_CONDITION_SCAN_MESSAGE, { num: count.toString(), ctUid: schema.uid as string }),
+                  'info',
+                );
+                return;
+              } else {
+                this.log(
+                  $t(auditMsg.FIELD_RULE_CONDITION_SCAN_MESSAGE, {
+                    num: count.toString(),
+                    ctUid: schema.uid as string,
+                  }),
+                  'info',
+                );
+                return actions;
+              }
+            })
+            .filter((v): v is { value: string; operand_field: string; operator: string } => v !== undefined);
+
+          count = count + 1;
+          if (fr.actions?.length && fr.conditions?.length) {
+            return fr;
+          }
+        })
+        .filter((v: any) => v);
+    }
+  }
+
+
+  addMissingReferences(actions: Record<string, unknown>, fixStatus?: string) {
+    if (fixStatus) {
+      this.missingRefs[this.currentUid].push({
+        ctUid: this.currentUid,
+        action: actions,
+        fixStatus: 'Fixed',
+      });
+    } else {
+      this.missingRefs[this.currentUid].push({ action: actions, ctUid: this.currentUid });
+    }
+  }
   /**
    * @method prerequisiteData
    * The `prerequisiteData` function reads and parses JSON files to retrieve extension and marketplace
    * app data, and stores them in the `extensions` array.
    */
-  async prerequisiteData() {
+  async prerequisiteData(): Promise<void> {
     const extensionPath = resolve(this.config.basePath, 'extensions', 'extensions.json');
     const marketplacePath = resolve(this.config.basePath, 'marketplace_apps', 'marketplace_apps.json');
 
@@ -222,7 +281,7 @@ export default class FieldRule {
    * The function checks if it can write the fix content to a file and if so, it writes the content as
    * JSON to the specified file path.
    */
-  async writeFixContent() {
+  async writeFixContent(): Promise<void> {
     let canWrite = true;
 
     if (!this.inMemoryFix && this.fix) {
@@ -239,27 +298,16 @@ export default class FieldRule {
     }
   }
 
-  /**
-   * The function `lookForReference` iterates through a given schema and performs validation checks
-   * based on the data type of each field.
-   * @param {Record<string, unknown>[]} tree - An array of objects representing the tree structure of
-   * the content type or field being validated. Each object in the array should have a "uid" property
-   * representing the unique identifier of the content type or field, and a "name" property
-   * representing the display name of the content type or field.
-   * @param {ContentTypeStruct | GlobalFieldDataType | ModularBlockType | GroupFieldDataType}  - -
-   * `tree`: An array of objects representing the tree structure of the content type or field. Each
-   * object in the array should have a `uid` and `name` property.
-   */
   async lookForReference(
     tree: Record<string, unknown>[],
     field: ContentTypeStruct | GlobalFieldDataType | ModularBlockType | GroupFieldDataType,
-    parent: any = null,
+    parent: string | null = null,
   ): Promise<void> {
     const fixTypes = this.config.flags['fix-only'] ?? this.config['fix-fields'];
 
     for (let child of field.schema ?? []) {
       if (parent !== null) {
-        this.schemaMap.push(parent + '.' + child.uid);
+        this.schemaMap.push(`${parent}.${child?.uid}`);
       } else {
         this.schemaMap.push(child.uid);
       }
@@ -271,58 +319,39 @@ export default class FieldRule {
           await this.validateGlobalField(
             [...tree, { uid: child.uid, name: child.display_name }],
             child as GlobalFieldDataType,
-            parent ? parent + '.' + child.uid : child.uid,
+            parent ? `${parent}.${child?.uid}` : child?.uid,
           );
           break;
         case 'blocks':
           await this.validateModularBlocksField(
             [...tree, { uid: child.uid, name: child.display_name }],
             child as ModularBlocksDataType,
-            parent ? parent + '.' + child.uid : child.uid,
+            parent ? `${parent}.${child?.uid}` : child?.uid,
           );
           break;
         case 'group':
           await this.validateGroupField(
             [...tree, { uid: child.uid, name: child.display_name }],
             child as GroupFieldDataType,
-            parent ? parent + '.' + child.uid : child.uid,
+            parent ?`${parent}.${child?.uid}` : child?.uid,
           );
           break;
       }
     }
   }
 
-
-  /**
-   * The function "validateGlobalField" asynchronously validates a global field by looking for a
-   * reference in a tree data structure.
-   * @param {Record<string, unknown>[]} tree - The `tree` parameter is an array of objects. Each object
-   * represents a node in a tree structure. The tree structure can be represented as a hierarchical
-   * structure where each object can have child nodes.
-   * @param {GlobalFieldDataType} field - The `field` parameter is of type `GlobalFieldDataType`. It
-   * represents the field that needs to be validated.
-   */
-  async validateGlobalField(tree: Record<string, unknown>[], field: GlobalFieldDataType, parent: any): Promise<void> {
-
+  async validateGlobalField(
+    tree: Record<string, unknown>[],
+    field: GlobalFieldDataType,
+    parent: string | null,
+  ): Promise<void> {
     await this.lookForReference(tree, field, parent);
   }
 
-
-
-  /**
-   * The function validates the modular blocks field by traversing each module and looking for
-   * references.
-   * @param {Record<string, unknown>[]} tree - An array of objects representing the tree structure of
-   * the modular blocks. Each object in the array represents a node in the tree and contains properties
-   * like "uid" and "name".
-   * @param {ModularBlocksDataType} field - The `field` parameter is of type `ModularBlocksDataType`.
-   * It represents a modular blocks field and contains an array of blocks. Each block has properties
-   * like `uid` and `title`.
-   */
   async validateModularBlocksField(
     tree: Record<string, unknown>[],
     field: ModularBlocksDataType,
-    parent: any,
+    parent: string | null,
   ): Promise<void> {
     const { blocks } = field;
     for (const block of blocks) {
@@ -332,21 +361,14 @@ export default class FieldRule {
     }
   }
 
-  /**
-   * The function `validateGroupField` is an asynchronous function that validates a group field by
-   * looking for a reference in a tree data structure.
-   * @param {Record<string, unknown>[]} tree - The `tree` parameter is an array of objects that
-   * represents a tree structure. Each object in the array represents a node in the tree, and it
-   * contains key-value pairs where the keys are field names and the values are the corresponding field
-   * values.
-   * @param {GroupFieldDataType} field - The `field` parameter is of type `GroupFieldDataType`. It
-   * represents the group field that needs to be validated.
-   */
-  async validateGroupField(tree: Record<string, unknown>[], field: GroupFieldDataType, parent: any): Promise<void> {
+  async validateGroupField(
+    tree: Record<string, unknown>[],
+    field: GroupFieldDataType,
+    parent: string | null,
+  ): Promise<void> {
     // NOTE Any Group Field related logic can be added here (Ex data serialization or picking any metadata for report etc.,)
     await this.lookForReference(tree, field, parent);
   }
-
 
   async prepareEntryMetaData() {
     this.log(auditMsg.PREPARING_ENTRY_METADATA, 'info');
@@ -359,16 +381,7 @@ export default class FieldRule {
       this.locales.push(...values(JSON.parse(readFileSync(localesPath, 'utf8'))));
     }
 
-    const environmentPath = resolve(
-      this.config.basePath,
-      this.config.moduleConfig.environments.dirName,
-      this.config.moduleConfig.environments.fileName,
-    );
-    this.environments = existsSync(environmentPath) ? keys(JSON.parse(readFileSync(environmentPath, 'utf8'))) : [];
-    const entriesFolderPath = resolve(
-      sanitizePath(this.config.basePath),
-      'entries',
-    )
+    const entriesFolderPath = resolve(sanitizePath(this.config.basePath), 'entries');
     for (const { code } of this.locales) {
       for (const { uid } of this.ctSchema) {
         let basePath = join(entriesFolderPath, uid, code);
@@ -379,23 +392,6 @@ export default class FieldRule {
           const entries = (await fsUtility.readChunkFiles.next()) as Record<string, EntryStruct>;
           for (const entryUid in entries) {
             let { title } = entries[entryUid];
-
-            if (entries[entryUid].hasOwnProperty('title') && !title) {
-              this.missingTitleFields[entryUid] = {
-                'Entry UID': entryUid,
-                'Content Type UID': uid,
-                Locale: code,
-              };
-              this.log(
-                `The 'title' field in Entry with UID '${entryUid}' of Content Type '${uid}' in Locale '${code}' is empty.`,
-                `error`,
-              );
-            } else if (!title) {
-              this.log(
-                `The 'title' field in Entry with UID '${entryUid}' of Content Type '${uid}' in Locale '${code}' is empty.`,
-                `error`,
-              );
-            }
             this.entryMetaData.push({ uid: entryUid, title, ctUid: uid });
           }
         }
