@@ -31,6 +31,7 @@ export * from './interfaces';
 export * from './date-time';
 export * from './add-locale';
 export * from './path-validator';
+export { default as CLITable, TableFlags, TableHeader, TableOptions, TableData } from './cli-table';
 
 // Marketplace SDK export
 export {
@@ -69,8 +70,6 @@ export {
   flush,
   ux,
   execute,
-  stderr,
-  stdout,
 } from '@oclif/core';
 export { FlagInput, ArgInput, FlagDefinition } from '@oclif/core/lib/interfaces/parser';
 
