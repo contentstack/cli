@@ -400,7 +400,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
       print([{ bold: true, color: 'cyan', message: ` ${module}` }]);
 
-      const tableValues = missingRefs.flat();
+      const tableValues = Object.values(missingRefs).flat();
       missingRefs = Object.values(missingRefs).flat();
       const tableKeys = Object.keys(missingRefs[0]);
 
