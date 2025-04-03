@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-auth/1.3.25 darwin-arm64 node-v22.14.0
+@contentstack/cli-auth/1.4.0 darwin-arm64 node-v22.13.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -51,7 +51,7 @@ USAGE
 FLAGS
   -p, --password=<value>  Password of your Contentstack app.
   -u, --username=<value>  Email address of your Contentstack account.
-  --oauth                 Enables single sign-on (SSO) in Contentstack CLI.
+      --oauth             Enables single sign-on (SSO) in Contentstack CLI.
 
 DESCRIPTION
   User sessions login
@@ -106,19 +106,18 @@ Lists all existing tokens added to the session
 
 ```
 USAGE
-  $ csdx auth:tokens [--columns <value> | -x] [--filter <value>] [--no-header | [--csv | --no-truncate]]
-    [--output csv|json|yaml |  | ] [--sort <value>]
+  $ csdx auth:tokens [--columns <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate]
+    [--no-header] [--output csv|json|yaml]
 
-FLAGS
-  -x, --extended     show extra columns
-  --columns=<value>  only show provided columns (comma-separated)
-  --csv              output is csv format [alias: --output=csv]
-  --filter=<value>   filter property by partial string matching, ex: name=foo
-  --no-header        hide table header from output
-  --no-truncate      do not truncate output to fit screen
-  --output=<option>  output in a more machine friendly format
+TABLE FLAGS
+  --columns=<value>  Specify columns to display, comma-separated.
+  --csv              Output results in CSV format.
+  --filter=<value>   Filter rows by a column value (e.g., name=foo).
+  --no-header        Hide table headers in output.
+  --no-truncate      Prevent truncation of long text in columns.
+  --output=<option>  Specify output format: csv, json, or yaml.
                      <options: csv|json|yaml>
-  --sort=<value>     property to sort by (prepend '-' for descending)
+  --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 DESCRIPTION
   Lists all existing tokens added to the session
@@ -232,7 +231,7 @@ USAGE
 FLAGS
   -p, --password=<value>  Password of your Contentstack app.
   -u, --username=<value>  Email address of your Contentstack account.
-  --oauth                 Enables single sign-on (SSO) in Contentstack CLI.
+      --oauth             Enables single sign-on (SSO) in Contentstack CLI.
 
 DESCRIPTION
   User sessions login
@@ -283,19 +282,18 @@ Lists all existing tokens added to the session
 
 ```
 USAGE
-  $ csdx tokens [--columns <value> | -x] [--filter <value>] [--no-header | [--csv | --no-truncate]]
-    [--output csv|json|yaml |  | ] [--sort <value>]
+  $ csdx tokens [--columns <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate]
+    [--no-header] [--output csv|json|yaml]
 
-FLAGS
-  -x, --extended     show extra columns
-  --columns=<value>  only show provided columns (comma-separated)
-  --csv              output is csv format [alias: --output=csv]
-  --filter=<value>   filter property by partial string matching, ex: name=foo
-  --no-header        hide table header from output
-  --no-truncate      do not truncate output to fit screen
-  --output=<option>  output in a more machine friendly format
+TABLE FLAGS
+  --columns=<value>  Specify columns to display, comma-separated.
+  --csv              Output results in CSV format.
+  --filter=<value>   Filter rows by a column value (e.g., name=foo).
+  --no-header        Hide table headers in output.
+  --no-truncate      Prevent truncation of long text in columns.
+  --output=<option>  Specify output format: csv, json, or yaml.
                      <options: csv|json|yaml>
-  --sort=<value>     property to sort by (prepend '-' for descending)
+  --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 DESCRIPTION
   Lists all existing tokens added to the session
