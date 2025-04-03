@@ -165,75 +165,73 @@ export default class FieldRule {
   }
 
   fixFieldRules(schema: Record<string, unknown>): void {
-    if (Array.isArray(schema.field_rules)) {
-      let count = 0;
-      schema.field_rules = schema.field_rules
-        .map((fr: FieldRuleStruct) => {
-          fr.actions = fr.actions
-            ?.map((actions: { action: string; target_field: string }) => {
-              if (!this.schemaMap.includes(actions.target_field)) {
-                this.log(
-                  $t(auditMsg.FIELD_RULE_TARGET_ABSENT, {
-                    target_field: actions.target_field,
-                    ctUid: schema.uid as string,
-                  }),
-                  'error',
-                );
-
-                this.addMissingReferences(actions, 'Fixed');
-                this.log(
-                  $t(auditFixMsg.FIELD_RULE_FIX_MESSAGE, { num: count.toString(), ctUid: schema.uid as string }),
-                  'info',
-                );
-                this.log(
-                  $t(auditMsg.FIELD_RULE_TARGET_SCAN_MESSAGE, { num: count.toString(), ctUid: schema.uid as string }),
-                  'info',
-                );
-                return null;
-              } else {
-                this.log(
-                  $t(auditMsg.FIELD_RULE_TARGET_SCAN_MESSAGE, { num: count.toString(), ctUid: schema.uid as string }),
-                  'info',
-                );
-                return actions;
-              }
-            })
-            .filter((v): v is { action: string; target_field: string } => v !== undefined);
-
-          fr.conditions = fr.conditions
-            ?.map((actions: { operand_field: any }) => {
-              if (!this.schemaMap.includes(actions.operand_field)) {
-                this.log($t(auditMsg.FIELD_RULE_CONDITION_ABSENT, { condition_field: actions.operand_field }), 'error');
-                this.addMissingReferences(actions, 'Fixed');
-                this.log(
-                  $t(auditFixMsg.FIELD_RULE_FIX_MESSAGE, { num: count.toString(), ctUid: schema.uid as string }),
-                  'info',
-                );
-                this.log(
-                  $t(auditMsg.FIELD_RULE_CONDITION_SCAN_MESSAGE, { num: count.toString(), ctUid: schema.uid as string }),
-                  'info',
-                );
-                return;
-              } else {
-                this.log(
-                  $t(auditMsg.FIELD_RULE_CONDITION_SCAN_MESSAGE, {
-                    num: count.toString(),
-                    ctUid: schema.uid as string,
-                  }),
-                  'info',
-                );
-                return actions;
-              }
-            })
-            .filter((v): v is { value: string; operand_field: string; operator: string } => v !== undefined);
-
-          count = count + 1;
-          if (fr.actions?.length && fr.conditions?.length) {
-            return fr;
+    if (!Array.isArray(schema.field_rules)) return;
+  
+    schema.field_rules = schema.field_rules
+      .map((fr: FieldRuleStruct, index: number) => {
+        const validActions = fr.actions?.filter(action => {
+          const isValid = this.schemaMap.includes(action.target_field);
+          const logMsg = isValid 
+            ? auditMsg.FIELD_RULE_TARGET_SCAN_MESSAGE
+            : auditMsg.FIELD_RULE_TARGET_ABSENT;
+          
+          this.log(
+            $t(logMsg, { 
+              num: index.toString(), 
+              ctUid: schema.uid as string,
+              ...(action.target_field && { target_field: action.target_field })
+            }),
+            isValid ? 'info' : 'error'
+          );
+  
+          if (!isValid) {
+            this.addMissingReferences(action, 'Fixed');
+            this.log(
+              $t(auditFixMsg.FIELD_RULE_FIX_MESSAGE, { 
+                num: index.toString(), 
+                ctUid: schema.uid as string 
+              }),
+              'info'
+            );
           }
-        })
-        .filter((v: any) => v);
-    }
+          return isValid;
+        }) ?? [];
+  
+        const validConditions = fr.conditions?.filter(condition => {
+          const isValid = this.schemaMap.includes(condition.operand_field);
+          const logMsg = isValid 
+            ? auditMsg.FIELD_RULE_CONDITION_SCAN_MESSAGE
+            : auditMsg.FIELD_RULE_CONDITION_ABSENT;
+          
+          this.log(
+            $t(logMsg, { 
+              num: index.toString(), 
+              ctUid: schema.uid as string,
+              ...(condition.operand_field && { condition_field: condition.operand_field })
+            }),
+            isValid ? 'info' : 'error'
+          );
+  
+          if (!isValid) {
+            this.addMissingReferences(condition, 'Fixed');
+            this.log(
+              $t(auditFixMsg.FIELD_RULE_FIX_MESSAGE, { 
+                num: index.toString(), 
+                ctUid: schema.uid as string 
+              }),
+              'info'
+            );
+          }
+          return isValid;
+        }) ?? [];
+  
+        return (validActions.length && validConditions.length) ? {
+          ...fr,
+          actions: validActions,
+          conditions: validConditions
+        } : null;
+      })
+      .filter(Boolean);
   }
 
 
