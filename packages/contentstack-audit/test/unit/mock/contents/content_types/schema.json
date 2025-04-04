@@ -15,7 +15,14 @@
       }
     ],
     "description": "",
-    "options": { "is_page": false, "singleton": false, "sub_title": [], "title": "title" }
+    "options": { "is_page": false, "singleton": false, "sub_title": [], "title": "title" },
+    "field_rules": [
+      {
+        "conditions": [{ "operand_field": "title", "operator": "equals", "value": "Test" }],
+        "actions": [{ "action": "show", "target_field": "desc" }],
+        "rule_type": "entry"
+      }
+    ]
   },
   {
     "title": "Page 3",
@@ -33,7 +40,14 @@
       }
     ],
     "description": "",
-    "options": { "is_page": false, "singleton": false, "sub_title": [], "title": "title" }
+    "options": { "is_page": false, "singleton": false, "sub_title": [], "title": "title" },
+    "field_rules": [
+      {
+        "conditions": [{ "operand_field": "global.gf_text", "operator": "equals", "value": "Global" }],
+        "actions": [{ "action": "hide", "target_field": "global.missing" }],
+        "rule_type": "entry"
+      }
+    ]
   },
   {
     "title": "Page 4",
@@ -51,7 +65,27 @@
       }
     ],
     "description": "",
-    "options": { "is_page": false, "singleton": false, "sub_title": [], "title": "title" }
+    "options": { "is_page": false, "singleton": false, "sub_title": [], "title": "title" },
+    "field_rules": [
+      {
+        "conditions": [{ "operand_field": "name", "operator": "equals", "value": "Test" }],
+        "actions": [
+          { "action": "show", "target_field": "group.group_text" },
+          { "action": "hide", "target_field": "missing_field" }
+        ],
+        "rule_type": "entry"
+      },
+      {
+        "conditions": [{ "operand_field": "blocks.block_1.block_text", "operator": "equals", "value": "Block" }],
+        "actions": [{ "action": "show", "target_field": "invalid_block_field" }],
+        "rule_type": "entry"
+      },
+      {
+        "conditions": [{ "operand_field": "invalid_condition", "operator": "equals", "value": "Test" }],
+        "actions": [{ "action": "show", "target_field": "name" }],
+        "rule_type": "entry"
+      }
+    ]
   },
   {
     "title": "Page 1",
