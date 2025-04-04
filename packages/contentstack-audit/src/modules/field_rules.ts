@@ -75,13 +75,11 @@ export default class FieldRule {
    * iterates over the schema and looks for references, and returns a list of missing references.
    * @returns the `missingRefs` object.
    */
-  async run(returnFixSchema = false) {
-    this.inMemoryFix = returnFixSchema;
-
+  async run() {
     if (!existsSync(this.folderPath)) {
       this.log(`Skipping ${this.moduleName} audit`, 'warn');
       this.log($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
-      return returnFixSchema ? [] : {};
+      return {};
     }
 
     this.schema = this.moduleName === 'content-types' ? this.ctSchema : this.gfSchema;
@@ -282,7 +280,7 @@ export default class FieldRule {
   async writeFixContent(): Promise<void> {
     let canWrite = true;
 
-    if (!this.inMemoryFix && this.fix) {
+    if (this.fix) {
       if (!this.config.flags['copy-dir'] && !this.config.flags['external-config']?.skipConfirm) {
         canWrite = this.config.flags.yes ?? (await cliux.confirm(commonMsg.FIX_CONFIRMATION));
       }
@@ -381,7 +379,7 @@ export default class FieldRule {
 
     const entriesFolderPath = resolve(sanitizePath(this.config.basePath), 'entries');
     for (const { code } of this.locales) {
-      for (const { uid } of this.ctSchema) {
+      for (const { uid } of this.ctSchema??[]) {
         let basePath = join(entriesFolderPath, uid, code);
         let fsUtility = new FsUtility({ basePath, indexFileName: 'index.json' });
         let indexer = fsUtility.indexFileContent;
