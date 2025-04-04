@@ -2,7 +2,16 @@ const config = {
   showTerminalOutput: true,
   skipRefs: ['sys_assets'],
   skipFieldTypes: ['taxonomy', 'group'],
-  modules: ['content-types', 'global-fields', 'entries', 'extensions', 'workflows', 'custom-roles', 'assets'],
+  modules: [
+    'content-types',
+    'global-fields',
+    'entries',
+    'extensions',
+    'workflows',
+    'custom-roles',
+    'assets',
+    'field-rules',
+  ],
   'fix-fields': ['reference', 'global_field', 'json:rte', 'json:extension', 'blocks', 'group', 'content_types'],
   moduleConfig: {
     'content-types': {
@@ -95,6 +104,8 @@ const config = {
     'publish_environment',
     'asset_uid',
     'selectedValue',
+    'ct_uid',
+    'action',
   ],
   ReportTitleForEntries: {
     Entries_Select_feild: 'Entries_Select_feild',
@@ -102,10 +113,17 @@ const config = {
     Entries_Title_feild: 'Entries_Title_feild',
     Entry_Missing_Locale_and_Env: 'Entry_Missing_Locale_and_Env',
     Entry_Missing_Locale_and_Env_in_Publish_Details: 'Entry_Missing_Locale_and_Env_in_Publish_Details',
-    Entry_Multiple_Fields: 'Entry_Multiple_Fields'
+    Entry_Multiple_Fields:"Entry_Multiple_Fields"
   },
-  feild_level_modules: ['Entries_Title_feild', 'Entries_Mandatory_feild', 'Entries_Select_feild', 'Entry_Missing_Locale_and_Env_in_Publish_Details', 'Entry_Multiple_Fields'],
-  fixSelectField: false
+  feild_level_modules: [
+    'Entries_Title_feild',
+    'Entries_Mandatory_feild',
+    'Entries_Select_feild',
+    'Entry_Missing_Locale_and_Env_in_Publish_Details',
+    'field-rules',
+    'Entry_Multiple_Fields'
+  ],
+  fixSelectField: false,
 };
 
 export default config;

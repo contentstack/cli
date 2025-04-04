@@ -44,7 +44,6 @@ export default class ContentType {
   protected schema: ContentTypeStruct[] = [];
   protected missingRefs: Record<string, any> = {};
   public moduleName: keyof typeof auditConfig.moduleConfig;
-
   constructor({ log, fix, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
     this.log = log;
     this.config = config;
@@ -185,8 +184,8 @@ export default class ContentType {
     if (this.fix) {
       field.schema = this.runFixOnSchema(tree, field.schema as ContentTypeSchemaType[]);
     }
-
     for (let child of field.schema ?? []) {
+      
       if (!fixTypes.includes(child.data_type) && child.data_type !== 'json') continue;
 
       switch (child.data_type) {
