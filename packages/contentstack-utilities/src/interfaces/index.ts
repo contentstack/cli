@@ -1,5 +1,10 @@
-import { IPromptOptions } from '@oclif/core/lib/cli-ux';
-
+export interface IPromptOptions {
+  prompt?: string;
+  type?: 'normal' | 'mask' | 'hide' | 'single';
+  timeout?: number;
+  required?: boolean;
+  default?: string;
+}
 export interface PrintOptions {
   bold?: boolean;
   color?: string;

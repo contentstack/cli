@@ -40,9 +40,13 @@ const auditMsg = {
   SCAN_ASSET_SUCCESS_MSG: `Successfully completed the scanning of Asset with UID '{uid}'.`,
   SCAN_ASSET_WARN_MSG: `The locale '{locale}' or environment '{environment}' are not present for asset with uid '{uid}'`,
   ENTRY_PUBLISH_DETAILS: `Removing the publish detials for entry '{uid}' of ct '{ctuid}' in locale '{locale}' as locale '{publocale}' or environment '{environment}' does not exist`,
-  CT_REFERENCE_FIELD: `The mentioned Reference Field is not Array field name 'reference_to' having display name 'display_name'`,
+  CT_REFERENCE_FIELD: `The mentioned Reference field is not Array field reference is '{reference_to}' having display name '{display_name}''`,
   ASSET_NOT_EXIST: `The publish_details either does not exist or is not an array for asset uid '{uid}'`,
   ENTRY_PUBLISH_DETAILS_NOT_EXIST: `The publish_details either does not exist or is not an array for entry uid '{uid}'`,
+  FIELD_RULE_CONDITION_ABSENT: `The operand field '{condition_field}' is not present in the schema of the content-type {ctUid}`,
+  FIELD_RULE_TARGET_ABSENT: `The target field '{target_field}' is not present in the schema of the content-type {ctUid}`,
+  FIELD_RULE_CONDITION_SCAN_MESSAGE: `Completed Scanning of Field Rule '{num}' condition of Content-type '{ctUid}'`,
+  FIELD_RULE_TARGET_SCAN_MESSAGE: `Completed Scanning of Field Rule '{num}' target of Content-type '{ctUid}'`
 };
 
 const auditFixMsg = {
@@ -56,6 +60,7 @@ const auditFixMsg = {
   ENTRY_MANDATORY_FIELD_FIX: `Removing the publish details from the entry with UID '{uid}' in Locale '{locale}'...`,
   ENTRY_SELECT_FIELD_FIX: `Adding the value '{value}' in the select field of entry UID '{uid}'...`,
   ASSET_FIX: `Fixed publish detials for Asset with UID '{uid}'`,
+  FIELD_RULE_FIX_MESSAGE: `Fixed Field Rule '{num}' target of Content-type '{ctUid}`,
 };
 
 const messages: typeof errors &
