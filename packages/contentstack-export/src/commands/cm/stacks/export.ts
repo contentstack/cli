@@ -9,6 +9,7 @@ import {
   ContentstackClient,
   FlagInput,
   pathValidator,
+  sanitizePath,
 } from '@contentstack/cli-utilities';
 import { ModuleExporter } from '../../../export';
 import { setupExportConfig, log, formatError, writeExportMetaFile } from '../../../utils';
@@ -108,7 +109,7 @@ export default class ExportCommand extends Command {
       exportConfig.region = this.region;
       exportConfig.developerHubBaseUrl = this.developerHubUrl;
       if (this.personalizeUrl) exportConfig.modules.personalize.baseURL[exportConfig.region.name] = this.personalizeUrl;
-      exportDir = exportConfig.cliLogsPath || exportConfig.data || exportConfig.exportDir;
+      exportDir = sanitizePath(exportConfig.cliLogsPath || exportConfig.data || exportConfig.exportDir);
       const managementAPIClient: ContentstackClient = await managementSDKClient(exportConfig);
       const moduleExporter = new ModuleExporter(managementAPIClient, exportConfig);
       await moduleExporter.start();
