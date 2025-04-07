@@ -6,6 +6,7 @@ import http from 'http';
 import url from 'url';
 import { LoggerService } from './logger';
 import managementSDKClient, { ContentstackClient } from './contentstack-management-sdk';
+import { formatError } from './helpers';
 
 dotenv.config();
 
@@ -182,6 +183,11 @@ class AuthHandler {
         cliux.print('Waiting for the authorization server to respond...');
         return { true: true };
       });
+      // Listen for errors
+      server.on('error', (err) => {
+        cliux.error('Error occurred while creating the server:');
+        cliux.error('Server encountered an error:', formatError(err));
+      });
     } catch (error) {
       cliux.error(error);
       throw error;
@@ -251,11 +257,11 @@ class AuthHandler {
     configHandler.set(this.oauthAccessTokenKeyName, userData.access_token);
     configHandler.set(this.oauthRefreshTokenKeyName, userData.refresh_token);
     configHandler.set(this.oauthDateTimeKeyName, new Date());
-    if(type === 'oauth'){
+    if (type === 'oauth') {
       configHandler.set(this.authEmailKeyName, userData.email);
-    configHandler.set(this.oauthUserUidKeyName, userData.user_uid);
-    configHandler.set(this.oauthOrgUidKeyName, userData.organization_uid);
-    configHandler.set(this.authorisationTypeKeyName, this.authorisationTypeOAUTHValue);
+      configHandler.set(this.oauthUserUidKeyName, userData.user_uid);
+      configHandler.set(this.oauthOrgUidKeyName, userData.organization_uid);
+      configHandler.set(this.authorisationTypeKeyName, this.authorisationTypeOAUTHValue);
     }
   }
 
@@ -266,7 +272,8 @@ class AuthHandler {
   }
 
   unsetConfigData(type = 'default') {
-    const removeItems = type === 'refreshToken' ? this.allAuthConfigItems.refreshToken : this.allAuthConfigItems.default;
+    const removeItems =
+      type === 'refreshToken' ? this.allAuthConfigItems.refreshToken : this.allAuthConfigItems.default;
     removeItems.forEach((element) => configHandler.delete(element));
   }
 
