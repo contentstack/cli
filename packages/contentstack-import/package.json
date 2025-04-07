@@ -8,7 +8,7 @@
     "@contentstack/cli-audit": "~1.11.0",
     "@contentstack/cli-command": "~1.4.0",
     "@contentstack/cli-utilities": "~1.10.0",
-    "@contentstack/management": "~1.18.4",
+    "@contentstack/management": "~1.20.1",
     "@contentstack/cli-variants": "~1.2.0",
     "@oclif/core": "^4.2.7",
     "big-json": "^3.2.0",
