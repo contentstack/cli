@@ -92,8 +92,13 @@ describe('Rate Limit Commands', () => {
         },
       });
       const config = { org: 'test-org-id', utilize: ['70'], 'limit-name': ['getLimit'] };
-      await handler.setRateLimit(config);
-      expect(errorMessage).to.include('Error: Unable to set the rate limit');
+      try {
+        await handler.setRateLimit(config);
+        expect.fail('Expected an error to be thrown');
+      } catch (error) {
+        expect(error).to.be.an('error');
+        expect(error.message).to.equal('Error: Client Error');
+      }
     });
 
     it('Set Rate Limit: should handle unauthenticated user', async () => {
