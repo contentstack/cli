@@ -22,7 +22,7 @@ describe('AuditFix command', () => {
     });
 
     it('should trigger AuditBaseCommand start method', async () => {
-      await runCommand(['cm:stacks:audit:fix','-d','data-dir'], { root: process.cwd() });
+      await runCommand(['cm:stacks:audit:fix', '-d', 'data-dir'], { root: process.cwd() });
       expect(startSpy.args).to.be.eql([['cm:stacks:audit']]);
     });
   });
