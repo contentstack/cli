@@ -294,13 +294,17 @@ jobs:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack/package.json
       - uses: actions/checkout@v4
+        if: ${{ steps.publish-core.conclusion == 'success'  }}
         with:
           ref: 'prod-qa-pipeline'
       - run: echo ${{ steps.publish-core.outputs.version  }} > version.md
+        if: ${{ steps.publish-core.conclusion == 'success'  }}
       - uses: EndBug/add-and-commit@v9
+        if: ${{ steps.publish-core.conclusion == 'success'  }}
         with:
           message: 'Released version'
       - name: Create Release
+        if: ${{ steps.publish-core.conclusion == 'success'  }}
         id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
