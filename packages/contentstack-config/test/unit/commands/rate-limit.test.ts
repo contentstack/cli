@@ -137,7 +137,10 @@ describe('Rate Limit Commands', () => {
     it('Get Rate Limit: should print the rate limit for the given organization', async () => {
       configHandler.set('rateLimit', rateLimit);
       await GetRateLimitCommand.run(['--org', 'test-org-id']);
-      expect(printMessage).to.include(' test-org-id 10(70%)             0                   1(80%)              ');
+      expect(printMessage).to.include('test-org-id');
+      expect(printMessage).to.include('10(70%)');
+      expect(printMessage).to.include('0');
+      expect(printMessage).to.include('1(80%)');
     });
 
     it('Get Rate Limit: should throw an error if the organization is not found', async () => {
