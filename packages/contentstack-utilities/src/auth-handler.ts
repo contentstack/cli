@@ -185,7 +185,6 @@ class AuthHandler {
       });
       // Listen for errors
       server.on('error', (err) => {
-        cliux.error('Error occurred while creating the server:');
         cliux.error('Server encountered an error:', formatError(err));
       });
     } catch (error) {
