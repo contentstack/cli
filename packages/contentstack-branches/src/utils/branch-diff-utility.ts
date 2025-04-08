@@ -196,15 +196,21 @@ function printCompactTextView(branchTextRes: BranchCompactTextRes): void {
   if (branchTextRes.modified?.length || branchTextRes.added?.length || branchTextRes.deleted?.length) {
     cliux.print(' ');
     forEach(branchTextRes.added, (diff: BranchDiffRes) => {
-      cliux.print(chalk.green(`+ '${diff.title}' ${startCase(camelCase(diff.type))}`));
+      if (diff.merge_strategy !== 'ignore') {
+        cliux.print(chalk.green(`+ '${diff.title}' ${startCase(camelCase(diff.type))}`));
+      }
     });
 
     forEach(branchTextRes.modified, (diff: BranchDiffRes) => {
-      cliux.print(chalk.blue(`± '${diff.title}' ${startCase(camelCase(diff.type))}`));
+      if (diff.merge_strategy !== 'ignore') {
+        cliux.print(chalk.blue(`± '${diff.title}' ${startCase(camelCase(diff.type))}`));
+      }
     });
 
     forEach(branchTextRes.deleted, (diff: BranchDiffRes) => {
-      cliux.print(chalk.red(`- '${diff.title}' ${startCase(camelCase(diff.type))}`));
+      if (diff.merge_strategy !== 'ignore') {
+        cliux.print(chalk.red(`- '${diff.title}' ${startCase(camelCase(diff.type))}`));
+      }
     });
   }
 }
