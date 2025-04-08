@@ -56,25 +56,49 @@ describe('Rate Limit Commands', () => {
     });
 
     it('Set Rate Limit: should handle invalid utilization percentages', async () => {
+      const exitStub = stub(SetRateLimitCommand.prototype, 'exit'); // Stub the exit method
+
       const args = ['--org', 'test-org-id', '--utilize', '150', '--limit-name', 'getLimit'];
       await SetRateLimitCommand.run(args);
+
       expect(errorMessage).to.equal('Utilize percentages must be numbers between 0 and 100.');
+
+      expect(exitStub.calledWith(1)).to.be.true;
+
+      // Restore the stub after the test
+      exitStub.restore();
     });
 
     it('Set Rate Limit: should handle mismatch between utilize percentages and limit names', async () => {
+      const exitStub = stub(SetRateLimitCommand.prototype, 'exit'); // Stub the exit method
+
       const args = ['--org', 'test-org-id', '--utilize', '70', '--limit-name', 'getLimit,postLimit'];
       await SetRateLimitCommand.run(args);
+
       expect(errorMessage).to.equal(
         'The number of utilization percentages must match the number of limit names provided.',
       );
+
+      expect(exitStub.calledWith(1)).to.be.true;
+
+      // Restore the stub after the test
+      exitStub.restore();
     });
 
     it('Set Rate Limit: should handle invalid number of limit names', async () => {
+      const exitStub = stub(SetRateLimitCommand.prototype, 'exit'); // Stub the exit method
+
       const args = ['--org', 'test-org-id', '--utilize', '70,80', '--limit-name', 'getLimit'];
       await SetRateLimitCommand.run(args);
+
       expect(errorMessage).to.equal(
         'The number of utilization percentages must match the number of limit names provided.',
       );
+
+      expect(exitStub.calledWith(1)).to.be.true;
+
+      // Restore the stub after the test
+      exitStub.restore();
     });
 
     it('Set Rate Limit: should prompt for the organization UID', async () => {
@@ -104,14 +128,21 @@ describe('Rate Limit Commands', () => {
     it('Set Rate Limit: should handle unauthenticated user', async () => {
       const isAuthenticatedStub = stub().returns(false);
       authenticated = isAuthenticatedStub;
+      // Stub the exit method to prevent process exit
+      const exitStub = stub(SetRateLimitCommand.prototype, 'exit');
       const args = ['--org', 'test-org-id', '--utilize', '70,80', '--limit-name', 'getLimit,bulkLimit'];
-      try {
-        await SetRateLimitCommand.run(args);
-      } catch (error) {
-        expect(errorMessage).to.equal('You are not logged in. Please login with command $ csdx auth:login');
-        expect(error?.code).to.equal(1);
-      }
+      await SetRateLimitCommand.run(args);
+
+      // Assert that the correct error message was printed
+      expect(printMessage).to.equal('You are not logged in. Please login with command $ csdx auth:login');
+
+      // Ensure exit was called with code 1
+      expect(exitStub.calledWith(1)).to.be.true;
+
+      // Restore the stub
+      exitStub.restore();
     });
+
     it('should set default rate limit for organization', async () => {
       const config = { org: 'test-org-id', default: true };
       await rateLimitHandler.setRateLimit(config);
