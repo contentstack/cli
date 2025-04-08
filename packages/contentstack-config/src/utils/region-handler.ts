@@ -81,7 +81,7 @@ class UserConfig {
    * @returns {object} region object with cma, cda, region property
    */
   setRegion(region) {
-    let selectedRegion = regions[region];
+    const selectedRegion = regions[region];
     if (selectedRegion) {
       configHandler.set('region', selectedRegion);
       return selectedRegion;
@@ -151,8 +151,7 @@ class UserConfig {
    * @returns { object } JSON object with only valid keys for region
    */
   sanitizeRegionObject(regionObject) {
-    let sanitizedRegion;
-    sanitizedRegion = {
+    const sanitizedRegion = {
       cma: regionObject.cma,
       cda: regionObject.cda,
       uiHost: regionObject.uiHost,
