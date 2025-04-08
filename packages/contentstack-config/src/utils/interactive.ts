@@ -1,4 +1,3 @@
-import { isEmpty } from 'lodash';
 import { cliux, messageHandler } from '@contentstack/cli-utilities';
 
 export const askRegions = async (): Promise<string> => {
@@ -9,12 +8,14 @@ export const askRegions = async (): Promise<string> => {
     choices: [
       { name: 'NA', value: 'NA' },
       { name: 'EU', value: 'EU' },
+      { name: 'AWS-NA', value: 'NA' },
+      { name: 'AWS-EU', value: 'EU' },
       { name: 'AZURE-NA', value: 'AZURE-NA' },
       { name: 'AZURE-EU', value: 'AZURE-EU' },
       { name: 'GCP-NA', value: 'GCP-NA' },
       { name: 'GCP-EU', value: 'GCP-EU' },
       { name: 'Custom', value: 'custom' },
-      { name: 'exit', value: 'exit' },
+      { name: 'Exit', value: 'exit' },
     ],
   });
 };

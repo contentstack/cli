@@ -53,6 +53,8 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     '$ csdx config:set:region',
     '$ csdx config:set:region NA',
     '$ csdx config:set:region EU',
+    '$ csdx config:set:region AWS-NA',
+    '$ csdx config:set:region AWS-EU',
     '$ csdx config:set:region AZURE-NA',
     '$ csdx config:set:region AZURE-EU',
     '$ csdx config:set:region GCP-NA',
