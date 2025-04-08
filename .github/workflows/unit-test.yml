@@ -19,11 +19,14 @@ jobs:
       - name: Install dependencies for all plugins
         run: |
           npm run setup-repo-old
-      
+
       - name: Run tests for Audit plugin
         working-directory: ./packages/contentstack-audit
         run: npm run test:unit
 
+      - name: Run tests for Contentstack Config
+        working-directory: ./packages/contentstack-config
+        run: npm run test
       # - name: Fetch latest references
       #   run: |
       #     git fetch --prune
@@ -41,11 +44,11 @@ jobs:
       #     CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
       #     echo "Changed files:"
       #     echo "$CHANGED_FILES"
-          
+
       #     # Identify affected plugins
       #     AFFECTED_PLUGINS=$(echo "$CHANGED_FILES" | grep -oP '(?<=^packages/)([^/]+)' | sort -u | tr '\n' ' ')
       #     echo "Affected plugins: $AFFECTED_PLUGINS"
-          
+
       #     # Set output for the next step
       #     echo "::set-output name=affected_plugins::$AFFECTED_PLUGINS"
 
