@@ -37,7 +37,7 @@ $ npm install -g @contentstack/cli-cm-branches
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-branches/1.3.1 darwin-arm64 node-v22.14.0
+@contentstack/cli-cm-branches/1.4.0 darwin-arm64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -64,7 +64,7 @@ USAGE
 
 FLAGS
   -k, --stack-api-key=<value>  Stack API key
-  --verbose                    Verbose, display information in detailed format.
+      --verbose                Verbose, display information in detailed format.
 
 DESCRIPTION
   List the branches
@@ -91,8 +91,8 @@ USAGE
 
 FLAGS
   -k, --stack-api-key=<value>  Stack API key
-  --source=<value>             Source branch from which a new branch is to be created.
-  --uid=<value>                Branch UID (unique name) to be created.
+      --source=<value>         Source branch from which a new branch is to be created.
+      --uid=<value>            Branch UID (unique name) to be created.
 
 DESCRIPTION
   Create a new branch
@@ -119,7 +119,7 @@ USAGE
 FLAGS
   -k, --stack-api-key=<value>  Stack API key
   -y, --yes                    Force the deletion of the branch by skipping the confirmation
-  --uid=<value>                Branch UID to be deleted
+      --uid=<value>            Branch UID to be deleted
 
 DESCRIPTION
   Delete a branch
@@ -145,14 +145,14 @@ USAGE
   $ csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]
 
 FLAGS
-  -k, --stack-api-key=<value>  [optional] Provide the stack API key to show the difference between branches.
-  --base-branch=<value>        [optional] Base branch (Target branch).
-  --compare-branch=<value>     [optional] Compare branch (Source branch).
-  --format=<option>            [default: compact-text] [default: compact-text] [optional] Type of flags to show the
-                               difference between two branches. <options: compact-text, detailed-text>
-                               <options: compact-text|detailed-text>
-  --module=<option>            [optional] Module. <options: content-types, global-fields, all>
-                               <options: content-types|global-fields|all>
+  -k, --stack-api-key=<value>   [optional] Provide the stack API key to show the difference between branches.
+      --base-branch=<value>     [optional] Base branch (Target branch).
+      --compare-branch=<value>  [optional] Compare branch (Source branch).
+      --format=<option>         [default: compact-text] [default: compact-text] [optional] Type of flags to show the
+                                difference between two branches. <options: compact-text, detailed-text>
+                                <options: compact-text|detailed-text>
+      --module=<option>         [optional] Module. <options: content-types, global-fields, all>
+                                <options: content-types|global-fields|all>
 
 DESCRIPTION
   Differences between two branches
@@ -195,13 +195,13 @@ USAGE
     [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]
 
 FLAGS
-  -k, --stack-api-key=<value>    [optional] Provide stack API key to show the difference between the branches.
-  --base-branch=<value>          [optional] Base branch (Target branch).
-  --comment=<value>              [optional] Pass a comment.
-  --compare-branch=<value>       [optional] Compare branch (Source branch).
-  --export-summary-path=<value>  [optional] Export summary file path.
-  --no-revert                    [optional] If passed, will not create the new revert branch.
-  --use-merge-summary=<value>    [optional] Path of merge summary file.
+  -k, --stack-api-key=<value>        [optional] Provide stack API key to show the difference between the branches.
+      --base-branch=<value>          [optional] Base branch (Target branch).
+      --comment=<value>              [optional] Pass a comment.
+      --compare-branch=<value>       [optional] Compare branch (Source branch).
+      --export-summary-path=<value>  [optional] Export summary file path.
+      --no-revert                    [optional] If passed, will not create the new revert branch.
+      --use-merge-summary=<value>    [optional] Path of merge summary file.
 
 DESCRIPTION
   Merge changes from a branch
