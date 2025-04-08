@@ -47,7 +47,7 @@ $ npm install -g @contentstack/cli-cm-import-setup
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-import-setup/1.1.2 darwin-arm64 node-v22.14.0
+@contentstack/cli-cm-import-setup/1.2.0 darwin-arm64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -59,7 +59,7 @@ USAGE
 
 <!-- commands -->
 * [`csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`](#csdx-cmstacksimport-setup--k-value--d-value--a-value---modules-valuevalue)
-* [`csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`](#csdx-cmstacksimport-setup--k-value--d-value--a-value---modules-valuevalue-1)
+* [`csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`](#csdx-cmstacksimport-setup--k-value--d-value--a-value---modules-valuevalue)
 
 ## `csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`
 
@@ -67,7 +67,7 @@ Helps to generate mappers and backup folder for importing (overwriting) specific
 
 ```
 USAGE
-  $ csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]
+  $ csdx cm:import-setup cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]
 
 FLAGS
   -B, --branch=<value>         The name of the branch where you want to import your content. If you don't mention the
@@ -78,7 +78,7 @@ FLAGS
                                branches involved, then the path should point till the particular branch. For example,
                                “-d "C:\Users\Name\Desktop\cli\content\branch_name"
   -k, --stack-api-key=<value>  API key of the target stack
-  --module=<option>...         [optional] Specify the modules/module to import into the target stack. currently options
+      --module=<option>...     [optional] Specify the modules/module to import into the target stack. currently options
                                are global-fields, content-types, entries
                                <options: global-fields|content-types|entries>
 
@@ -113,7 +113,7 @@ FLAGS
                                branches involved, then the path should point till the particular branch. For example,
                                “-d "C:\Users\Name\Desktop\cli\content\branch_name"
   -k, --stack-api-key=<value>  API key of the target stack
-  --module=<option>...         [optional] Specify the modules/module to import into the target stack. currently options
+      --module=<option>...     [optional] Specify the modules/module to import into the target stack. currently options
                                are global-fields, content-types, entries
                                <options: global-fields|content-types|entries>
 

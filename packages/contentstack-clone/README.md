@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli-cm-clone
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-clone/1.13.3 darwin-arm64 node-v22.14.0
+@contentstack/cli-cm-clone/1.14.0 darwin-arm64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -38,7 +38,7 @@ USAGE
 
 <!-- commands -->
 * [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent)
-* [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent-1)
+* [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent)
 
 ## `csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`
 
@@ -46,29 +46,30 @@ Clone data (structure/content or both) of a stack into another stack
 
 ```
 USAGE
-  $ csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>]
-    [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>]
-    [--destination-stack-api-key <value>] [--import-webhook-status disable|current]
+  $ csdx cm:stack-clone cm:stacks:clone [--source-branch <value>] [--target-branch <value>]
+    [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b]
+    [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]
 
 FLAGS
-  -c, --config=<value>                          Path for the external configuration
-  -n, --stack-name=<value>                      Provide a name for the new stack to store the cloned content.
-  -y, --yes                                     Force override all Marketplace prompts.
-  --destination-management-token-alias=<value>  Destination management token alias.
-  --destination-stack-api-key=<value>           Destination stack API key
-  --import-webhook-status=<option>              [default: disable] [default: disable] (optional) The status of the
-                                                import webhook. <options: disable|current>
-                                                <options: disable|current>
-  --skip-audit                                  (optional) Skips the audit fix that occurs during an import operation.
-  --source-branch=<value>                       Branch of the source stack.
-  --source-management-token-alias=<value>       Source management token alias.
-  --source-stack-api-key=<value>                Source stack API key
-  --target-branch=<value>                       Branch of the target stack.
-  --type=<option>                               Type of data to clone. You can select option a or b.
-                                                a) Structure (all modules except entries & assets).
-                                                b) Structure with content (all modules including entries & assets).
+  -c, --config=<value>                              Path for the external configuration
+  -n, --stack-name=<value>                          Provide a name for the new stack to store the cloned content.
+  -y, --yes                                         Force override all Marketplace prompts.
+      --destination-management-token-alias=<value>  Destination management token alias.
+      --destination-stack-api-key=<value>           Destination stack API key
+      --import-webhook-status=<option>              [default: disable] [default: disable] (optional) The status of the
+                                                    import webhook. <options: disable|current>
+                                                    <options: disable|current>
+      --skip-audit                                  (optional) Skips the audit fix that occurs during an import
+                                                    operation.
+      --source-branch=<value>                       Branch of the source stack.
+      --source-management-token-alias=<value>       Source management token alias.
+      --source-stack-api-key=<value>                Source stack API key
+      --target-branch=<value>                       Branch of the target stack.
+      --type=<option>                               Type of data to clone. You can select option a or b.
+                                                    a) Structure (all modules except entries & assets).
+                                                    b) Structure with content (all modules including entries & assets).
 
-                                                <options: a|b>
+                                                    <options: a|b>
 
 DESCRIPTION
   Clone data (structure/content or both) of a stack into another stack
@@ -98,29 +99,30 @@ Clone data (structure/content or both) of a stack into another stack
 
 ```
 USAGE
-  $ csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>]
-    [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>]
+  $ csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias
+    <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>]
     [--destination-stack-api-key <value>] [--import-webhook-status disable|current]
 
 FLAGS
-  -c, --config=<value>                          Path for the external configuration
-  -n, --stack-name=<value>                      Provide a name for the new stack to store the cloned content.
-  -y, --yes                                     Force override all Marketplace prompts.
-  --destination-management-token-alias=<value>  Destination management token alias.
-  --destination-stack-api-key=<value>           Destination stack API key
-  --import-webhook-status=<option>              [default: disable] [default: disable] (optional) The status of the
-                                                import webhook. <options: disable|current>
-                                                <options: disable|current>
-  --skip-audit                                  (optional) Skips the audit fix that occurs during an import operation.
-  --source-branch=<value>                       Branch of the source stack.
-  --source-management-token-alias=<value>       Source management token alias.
-  --source-stack-api-key=<value>                Source stack API key
-  --target-branch=<value>                       Branch of the target stack.
-  --type=<option>                               Type of data to clone. You can select option a or b.
-                                                a) Structure (all modules except entries & assets).
-                                                b) Structure with content (all modules including entries & assets).
+  -c, --config=<value>                              Path for the external configuration
+  -n, --stack-name=<value>                          Provide a name for the new stack to store the cloned content.
+  -y, --yes                                         Force override all Marketplace prompts.
+      --destination-management-token-alias=<value>  Destination management token alias.
+      --destination-stack-api-key=<value>           Destination stack API key
+      --import-webhook-status=<option>              [default: disable] [default: disable] (optional) The status of the
+                                                    import webhook. <options: disable|current>
+                                                    <options: disable|current>
+      --skip-audit                                  (optional) Skips the audit fix that occurs during an import
+                                                    operation.
+      --source-branch=<value>                       Branch of the source stack.
+      --source-management-token-alias=<value>       Source management token alias.
+      --source-stack-api-key=<value>                Source stack API key
+      --target-branch=<value>                       Branch of the target stack.
+      --type=<option>                               Type of data to clone. You can select option a or b.
+                                                    a) Structure (all modules except entries & assets).
+                                                    b) Structure with content (all modules including entries & assets).
 
-                                                <options: a|b>
+                                                    <options: a|b>
 
 DESCRIPTION
   Clone data (structure/content or both) of a stack into another stack

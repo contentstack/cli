@@ -9,9 +9,11 @@ type ContentTypeSchemaType =
   | JsonRTEFieldDataType
   | GroupFieldDataType
   | ModularBlocksDataType
-  | SelectFeildStruct;
+  | SelectFeildStruct
+  | any;
 
 type ContentTypeStruct = {
+  field_rules: any;
   uid: string;
   title: string;
   description: string;
@@ -163,8 +165,10 @@ enum OutputColumn {
   'asset_uid' = 'asset_uid',
   'selectedValue' = 'selectedValue',
   'fixStatus' = 'fixStatus',
+  'Content_type_uid' = 'ct_uid',
+  'action' = 'action',
   'field_uid' = 'field_uid',
-  'multiple' = 'multiple'
+  'multiple' = 'multiple',
 }
 
 export {
@@ -185,4 +189,18 @@ export {
   GlobalFieldSchemaTypes,
   WorkflowExtensionsRefErrorReturnType,
   SelectFeildStruct,
+  FieldRuleStruct,
+};
+
+type FieldRuleStruct = {
+  match_type: string;
+  actions: Array<{
+    action: string;
+    target_field: string;
+  }> | undefined;
+  conditions: Array<{
+    value: string;
+    operand_field: string;
+    operator: string;
+  }> | undefined;
 };
