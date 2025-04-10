@@ -10,7 +10,7 @@ importers:
 
   packages/contentstack:
     specifiers:
-      '@contentstack/cli-audit': ~1.10.0
+      '@contentstack/cli-audit': ~1.11.0
       '@contentstack/cli-auth': ~1.4.0
       '@contentstack/cli-cm-bootstrap': ~1.14.0
       '@contentstack/cli-cm-branches': ~1.4.0
@@ -27,7 +27,7 @@ importers:
       '@contentstack/cli-migration': ~1.7.0
       '@contentstack/cli-utilities': ~1.10.0
       '@contentstack/cli-variants': ~1.2.0
-      '@contentstack/management': ~1.18.4
+      '@contentstack/management': ~1.20.1
       '@oclif/core': ^4.2.7
       '@oclif/plugin-help': ^6.2.25
       '@oclif/plugin-not-found': ^3.2.42
@@ -84,7 +84,7 @@ importers:
       '@contentstack/cli-migration': link:../contentstack-migration
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/cli-variants': link:../contentstack-variants
-      '@contentstack/management': 1.18.4_debug@4.4.0
+      '@contentstack/management': 1.20.1_debug@4.4.0
       '@oclif/core': 4.2.10
       '@oclif/plugin-help': 6.2.27
       '@oclif/plugin-not-found': 3.2.49_@types+node@14.18.63
@@ -174,8 +174,8 @@ importers:
       '@types/uuid': 9.0.8
       chai: 4.5.0
       eslint: 8.57.1
-      eslint-config-oclif: 6.0.42_hzt6xcfnpp4qecssyxfdrtmoeu
-      eslint-config-oclif-typescript: 3.1.14_hzt6xcfnpp4qecssyxfdrtmoeu
+      eslint-config-oclif: 6.0.42_jihedaljdcwb335y544ngwxjiy
+      eslint-config-oclif-typescript: 3.1.14_jihedaljdcwb335y544ngwxjiy
       mocha: 10.8.2
       nyc: 15.1.0
       oclif: 4.17.43_@types+node@20.17.30
@@ -410,7 +410,7 @@ importers:
       '@types/mkdirp': ^1.0.2
       '@types/mocha': ^8.2.3
       '@types/node': ^14.18.63
-      contentstack: ^3.22.1
+      contentstack: ^3.25.2
       eslint: ^8.57.1
       eslint-config-oclif: ^6.0.15
       eslint-config-oclif-typescript: ^3.1.13
@@ -606,11 +606,11 @@ importers:
 
   packages/contentstack-import:
     specifiers:
-      '@contentstack/cli-audit': ~1.10.0
+      '@contentstack/cli-audit': ~1.11.0
       '@contentstack/cli-command': ~1.4.0
       '@contentstack/cli-utilities': ~1.10.0
       '@contentstack/cli-variants': ~1.2.0
-      '@contentstack/management': ~1.18.4
+      '@contentstack/management': ~1.20.1
       '@oclif/core': ^4.2.7
       '@oclif/test': ^4.1.6
       '@types/big-json': ^3.2.5
@@ -646,7 +646,7 @@ importers:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/cli-variants': link:../contentstack-variants
-      '@contentstack/management': 1.18.4_debug@4.4.0
+      '@contentstack/management': 1.20.1_debug@4.4.0
       '@oclif/core': 4.2.10
       big-json: 3.2.0
       bluebird: 3.7.2
@@ -823,7 +823,7 @@ importers:
       '@contentstack/cli-cm-import': ~1.21.0
       '@contentstack/cli-command': ~1.4.0
       '@contentstack/cli-utilities': ~1.10.0
-      '@contentstack/management': ~1.18.4
+      '@contentstack/management': ~1.20.1
       '@types/inquirer': ^9.0.7
       '@types/jest': ^26.0.24
       '@types/mkdirp': ^1.0.2
@@ -847,7 +847,7 @@ importers:
       '@contentstack/cli-cm-import': link:../contentstack-import
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@contentstack/management': 1.18.4
+      '@contentstack/management': 1.20.1
       inquirer: 8.2.6
       mkdirp: 1.0.4
       tar: 6.2.1
@@ -871,7 +871,7 @@ importers:
 
   packages/contentstack-utilities:
     specifiers:
-      '@contentstack/management': ~1.18.4
+      '@contentstack/management': ~1.20.1
       '@contentstack/marketplace-sdk': ^1.2.5
       '@oclif/core': ^4.2.7
       '@types/chai': ^4.3.20
@@ -918,7 +918,7 @@ importers:
       winston: ^3.17.0
       xdg-basedir: ^4.0.0
     dependencies:
-      '@contentstack/management': 1.18.4
+      '@contentstack/management': 1.20.1
       '@contentstack/marketplace-sdk': 1.2.6
       '@oclif/core': 4.2.10
       axios: 1.8.4
@@ -1981,26 +1981,32 @@ packages:
       uuid: 8.3.2
     dev: false
 
-  /@contentstack/management/1.18.4:
-    resolution: {integrity: sha512-EfdshNUq0s20qKdLa4NlB/nPdl5TnEObQ6jOdSfCpJr1g+4120Rv+YTuCbFRK05dYwcpg0WE6YIhaF5indhzVQ==}
+  /@contentstack/management/1.20.1:
+    resolution: {integrity: sha512-fni8T1OoA0AdYz2GIxqsoQLJMe7uK9nTaOrnNg5blIiFEIyf+FRk7AnrhThSWB//x6czRNJhqfcc+mBhQdGXuQ==}
     engines: {node: '>=8.0.0'}
     dependencies:
+      assert: 2.1.0
       axios: 1.8.4
-      form-data: 3.0.3
+      buffer: 6.0.3
+      form-data: 4.0.2
       lodash: 4.17.21
       qs: 6.14.0
+      stream-browserify: 3.0.0
     transitivePeerDependencies:
       - debug
     dev: false
 
-  /@contentstack/management/1.18.4_debug@4.4.0:
-    resolution: {integrity: sha512-EfdshNUq0s20qKdLa4NlB/nPdl5TnEObQ6jOdSfCpJr1g+4120Rv+YTuCbFRK05dYwcpg0WE6YIhaF5indhzVQ==}
+  /@contentstack/management/1.20.1_debug@4.4.0:
+    resolution: {integrity: sha512-fni8T1OoA0AdYz2GIxqsoQLJMe7uK9nTaOrnNg5blIiFEIyf+FRk7AnrhThSWB//x6czRNJhqfcc+mBhQdGXuQ==}
     engines: {node: '>=8.0.0'}
     dependencies:
+      assert: 2.1.0
       axios: 1.8.4_debug@4.4.0
-      form-data: 3.0.3
+      buffer: 6.0.3
+      form-data: 4.0.2
       lodash: 4.17.21
       qs: 6.14.0
+      stream-browserify: 3.0.0
     transitivePeerDependencies:
       - debug
     dev: false
@@ -4113,13 +4119,13 @@ packages:
     dependencies:
       '@babel/parser': 7.27.0
       '@babel/types': 7.27.0
-      '@types/babel__generator': 7.27.0
+      '@types/babel__generator': 7.6.8
       '@types/babel__template': 7.4.4
       '@types/babel__traverse': 7.20.7
     dev: true
 
-  /@types/babel__generator/7.27.0:
-    resolution: {integrity: sha512-ufFd2Xi92OAVPYsy+P4n7/U7e68fex0+Ee8gSG9KX7eo084CWiQ4sdxktvdl0bOPupXtVJPY19zk6EwWqUQ8lg==}
+  /@types/babel__generator/7.6.8:
+    resolution: {integrity: sha512-ASsj+tpEDsEiFr1arWrlN6V3mdfjRMZt6LtK/Vp/kreFLnr5QH5+DhvD5nINYZXzwJvXeGq+05iUXcAzVrqWtw==}
     dependencies:
       '@babel/types': 7.27.0
     dev: true
@@ -5643,6 +5649,16 @@ packages:
     engines: {node: '>=0.8'}
     dev: false
 
+  /assert/2.1.0:
+    resolution: {integrity: sha512-eLHpSK/Y4nhMJ07gDaAzoX/XAKS8PSaojml3M0DM4JpV1LAi5JOJ/p6H/XWrl8L+DzVEvVCW1z3vWAaB9oTsQw==}
+    dependencies:
+      call-bind: 1.0.8
+      is-nan: 1.3.2
+      object-is: 1.1.6
+      object.assign: 4.1.7
+      util: 0.12.5
+    dev: false
+
   /assertion-error/1.1.0:
     resolution: {integrity: sha512-jgsaNduz+ndvGyFt3uSuWqvy4lCnIJiovtouQN5JZHOKCS2QuhEdbcQHFhVksz2N2U9hXJo8odG7ETyWlEeuDw==}
     dev: true
@@ -5857,8 +5873,8 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001712
-      electron-to-chromium: 1.5.132
+      caniuse-lite: 1.0.30001707
+      electron-to-chromium: 1.5.129
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3_browserslist@4.24.4
     dev: true
@@ -5881,6 +5897,13 @@ packages:
 
   /buffer/5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
+    dependencies:
+      base64-js: 1.5.1
+      ieee754: 1.2.1
+    dev: false
+
+  /buffer/6.0.3:
+    resolution: {integrity: sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==}
     dependencies:
       base64-js: 1.5.1
       ieee754: 1.2.1
@@ -5977,8 +6000,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /caniuse-lite/1.0.30001712:
-    resolution: {integrity: sha512-MBqPpGYYdQ7/hfKiet9SCI+nmN5/hp4ZzveOJubl5DTAMa5oggjAuoi0Z4onBpKPFI2ePGnQuQIzF3VxDjDJig==}
+  /caniuse-lite/1.0.30001707:
+    resolution: {integrity: sha512-3qtRjw/HQSMlDWf+X79N206fepf4SOOU6SQLMaq/0KkZLmSjPxAkBOQQ+FxbHKfHmYLZFfdWsO3KA90ceHPSnw==}
     dev: true
 
   /capital-case/1.0.4:
@@ -6817,8 +6840,8 @@ packages:
     dependencies:
       jake: 10.9.2
 
-  /electron-to-chromium/1.5.132:
-    resolution: {integrity: sha512-QgX9EBvWGmvSRa74zqfnG7+Eno0Ak0vftBll0Pt2/z5b3bEGYL6OUXLgKPtvx73dn3dvwrlyVkjPKRRlhLYTEg==}
+  /electron-to-chromium/1.5.129:
+    resolution: {integrity: sha512-JlXUemX4s0+9f8mLqib/bHH8gOHf5elKS6KeWG3sk3xozb/JTq/RLXIv8OKUWiK4Ah00Wm88EFj5PYkFr4RUPA==}
     dev: true
 
   /elegant-spinner/1.0.1:
@@ -7193,16 +7216,16 @@ packages:
       - typescript
     dev: true
 
-  /eslint-config-oclif/6.0.42_hzt6xcfnpp4qecssyxfdrtmoeu:
+  /eslint-config-oclif/6.0.42_jihedaljdcwb335y544ngwxjiy:
     resolution: {integrity: sha512-uG1wBVCqT7thYtlUaOdAmVF+2mcygGce571cXXlLzdYvm6g08id7PcrZ7z51FDDbp0a6MvQ6dRdfJwkLqtEzFg==}
     engines: {node: '>=18.18.0'}
     dependencies:
       '@eslint/compat': 1.2.8_eslint@8.57.1
       '@eslint/eslintrc': 3.3.1
       '@eslint/js': 9.24.0
-      '@stylistic/eslint-plugin': 3.1.0_hzt6xcfnpp4qecssyxfdrtmoeu
-      '@typescript-eslint/eslint-plugin': 8.29.0_iuxu3e5y6iadlvdtfni6wes7wy
-      '@typescript-eslint/parser': 8.29.0_hzt6xcfnpp4qecssyxfdrtmoeu
+      '@stylistic/eslint-plugin': 3.1.0_jihedaljdcwb335y544ngwxjiy
+      '@typescript-eslint/eslint-plugin': 8.29.0_nh6ccgqp3ahtsgpuvjb5hg4d7i
+      '@typescript-eslint/parser': 8.29.0_jihedaljdcwb335y544ngwxjiy
       eslint-config-oclif: 5.2.2_eslint@8.57.1
       eslint-config-xo: 0.46.0_hzt6xcfnpp4qecssyxfdrtmoeu
       eslint-config-xo-space: 0.35.0_eslint@8.57.1
@@ -8542,16 +8565,6 @@ packages:
     engines: {node: '>= 14.17'}
     dev: true
 
-  /form-data/3.0.3:
-    resolution: {integrity: sha512-q5YBMeWy6E2Un0nMGWMgI65MAKtaylxfNJGJxpGh45YDciZB4epbWpaAfImil6CPAPTYB4sh0URQNDRIZG5F2w==}
-    engines: {node: '>= 6'}
-    dependencies:
-      asynckit: 0.4.0
-      combined-stream: 1.0.8
-      es-set-tostringtag: 2.1.0
-      mime-types: 2.1.35
-    dev: false
-
   /form-data/4.0.2:
     resolution: {integrity: sha512-hGfm/slu0ZabnNt4oaRZ6uREyfCj6P4fT/n6A1rGV+Z0VdGXjfOhVUpkn6qVQONHGIFwmveGXyDs75+nr6FM8w==}
     engines: {node: '>= 6'}
@@ -9180,6 +9193,14 @@ packages:
       p-is-promise: 3.0.0
     dev: false
 
+  /is-arguments/1.2.0:
+    resolution: {integrity: sha512-7bVbi0huj/wrIAOzb8U1aszg9kdi3KN/CyU19CTI7tAoZYEZoL9yCDXpbXN+uPsuWnP02cyug1gleqq+TU+YCA==}
+    engines: {node: '>= 0.4'}
+    dependencies:
+      call-bound: 1.0.4
+      has-tostringtag: 1.0.2
+    dev: false
+
   /is-array-buffer/3.0.5:
     resolution: {integrity: sha512-DDfANUiiG2wC1qawP66qlTugJeL5HyzMpfr8lLK+jMQirGzNod0B12cFB/9q838Ru27sBwfw78/rdoU7RERz6A==}
     engines: {node: '>= 0.4'}
@@ -9324,6 +9345,14 @@ packages:
   /is-map/2.0.3:
     resolution: {integrity: sha512-1Qed0/Hr2m+YqxnM09CjA2d/i6YZNfF6R2oRAOj36eUdS6qIV/huPJNSEpKbupewFs+ZsJlxsjjPbc0/afW6Lw==}
     engines: {node: '>= 0.4'}
+
+  /is-nan/1.3.2:
+    resolution: {integrity: sha512-E+zBKpQ2t6MEo1VsonYmluk9NxGrbzpeeLC2xIViuO2EjU2xsXsBPwTr3Ykv9l08UYEVEdWeRZNouaZqF6RN0w==}
+    engines: {node: '>= 0.4'}
+    dependencies:
+      call-bind: 1.0.8
+      define-properties: 1.2.1
+    dev: false
 
   /is-number-object/1.1.1:
     resolution: {integrity: sha512-lZhclumE1G6VYD8VHe35wFaIif+CTy5SJIi5+3y4psDgWu4wPDoBhF8NxUOinEc7pHgiTsT6MaBb92rKhhD+Xw==}
@@ -11071,6 +11100,14 @@ packages:
     resolution: {integrity: sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==}
     engines: {node: '>= 0.4'}
 
+  /object-is/1.1.6:
+    resolution: {integrity: sha512-F8cZ+KfGlSGi09lJT7/Nd6KJZ9ygtvYC0/UYYLI9nmQKLMnydpB9yvbv9K1uSkEu7FU9vYPmVwLg328tX+ot3Q==}
+    engines: {node: '>= 0.4'}
+    dependencies:
+      call-bind: 1.0.8
+      define-properties: 1.2.1
+    dev: false
+
   /object-keys/1.1.1:
     resolution: {integrity: sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==}
     engines: {node: '>= 0.4'}
@@ -12432,6 +12469,13 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
+  /stream-browserify/3.0.0:
+    resolution: {integrity: sha512-H73RAHsVBapbim0tU2JwwOiXUj+fikfiaoYAKHF3VJfA0pe2BCzkhAHBlLG6REzE+2WNZcxOXjK7lkso+9euLA==}
+    dependencies:
+      inherits: 2.0.4
+      readable-stream: 3.6.2
+    dev: false
+
   /stream-connect/1.0.2:
     resolution: {integrity: sha512-68Kl+79cE0RGKemKkhxTSg8+6AGrqBt+cbZAXevg2iJ6Y3zX4JhA/sZeGzLpxW9cXhmqAcE7KnJCisUmIUfnFQ==}
     engines: {node: '>=0.10.0'}
@@ -12877,7 +12921,7 @@ packages:
       lodash.memoize: 4.1.2
       make-error: 1.3.6
       semver: 7.7.1
-      type-fest: 4.39.1
+      type-fest: 4.39.0
       typescript: 4.9.5
       yargs-parser: 21.1.1
     dev: true
@@ -13068,8 +13112,8 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /type-fest/4.39.1:
-    resolution: {integrity: sha512-uW9qzd66uyHYxwyVBYiwS4Oi0qZyUqwjU+Oevr6ZogYiXt99EOYtwvzMSLw1c3lYo2HzJsep/NB23iEVEgjG/w==}
+  /type-fest/4.39.0:
+    resolution: {integrity: sha512-w2IGJU1tIgcrepg9ZJ82d8UmItNQtOFJG0HCUE3SzMokKkTsruVDALl2fAdiEzJlfduoU+VyXJWIIUZ+6jV+nw==}
     engines: {node: '>=16'}
     dev: true
 
@@ -13338,6 +13382,16 @@ packages:
 
   /util-deprecate/1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
+    dev: false
+
+  /util/0.12.5:
+    resolution: {integrity: sha512-kZf/K6hEIrWHI6XqOFUiiMa+79wE/D8Q+NCNAWclkyg3b4d2k7s0QGepNjiABc+aR3N1PAyHL7p6UcLY6LmrnA==}
+    dependencies:
+      inherits: 2.0.4
+      is-arguments: 1.2.0
+      is-generator-function: 1.1.0
+      is-typed-array: 1.1.15
+      which-typed-array: 1.1.19
     dev: false
 
   /uuid/8.3.2:
