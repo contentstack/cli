@@ -80,7 +80,7 @@ export default class ReadModulesAndGetData {
 
   }
 
-  async readUsingFsModule(path: string): Promise<any> {
+  async readUsingFsModule(path: string): Promise<Record<string,any>>{
     const data = existsSync(path) ? (JSON.parse(readFileSync(path, 'utf-8'))) : [];
     return data;
   }
