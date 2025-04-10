@@ -70,10 +70,10 @@
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm run lint",
     "compile": "shx rm -rf lib && tsc -b",
-    "prepack": "pnpm compile && oclif manifest && oclif readme",
+    "prepack": "npm run build && oclif manifest && oclif readme",
     "test": "mocha --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif readme && git add README.md",
-    "clean": "rm -rf ./lib ./node_modules tsconfig.tsbuildinfo oclif.manifest.json",
+    "clean": "rm -rf ./lib tsconfig.tsbuildinfo oclif.manifest.json",
     "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\"",
     "test:unit": "mocha --timeout 10000 --forbid-only \"test/unit/**/*.test.ts\""
   },
