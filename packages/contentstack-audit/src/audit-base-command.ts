@@ -11,7 +11,18 @@ import config from './config';
 import { print } from './util/log';
 import { auditMsg } from './messages';
 import { BaseCommand } from './base-command';
-import { Entries, GlobalField, ContentType, Extensions, Workflows, Assets, FieldRule } from './modules';
+import {
+  Entries,
+  GlobalField,
+  ContentType,
+  Extensions,
+  Workflows,
+  Assets,
+  FieldRule,
+  ReadModulesAndGetData,
+  CustomRoles,
+} from './modules';
+
 import {
   CommandNames,
   ContentTypeStruct,
@@ -19,11 +30,11 @@ import {
   RefErrorReturnType,
   WorkflowExtensionsRefErrorReturnType,
 } from './types';
-import CustomRoles from './modules/custom-roles';
+import { size } from 'lodash';
 
 export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseCommand> {
   private currentCommand!: CommandNames;
-
+  private summaryDataToPrint: Record<string,any> = [];
   get fixStatus() {
     return {
       fixStatus: {
@@ -61,28 +72,41 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingEnvLocalesInAssets,
       missingEnvLocalesInEntries,
       missingFieldRules,
-      missingMultipleFields
+      missingMultipleFields,
     } = await this.scanAndFix();
 
-    this.showOutputOnScreen([
-      { module: 'Content types', missingRefs: missingCtRefs },
-      { module: 'Global Fields', missingRefs: missingGfRefs },
-      { module: 'Entries', missingRefs: missingEntryRefs },
-    ]);
-    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Extensions', missingRefs: missingCtRefsInExtensions }]);
-    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Workflows', missingRefs: missingCtRefsInWorkflow }]);
+    if (this.flags['show-console-output'] || this.flags['s']) {
+      this.showOutputOnScreen([
+        { module: 'Content types', missingRefs: missingCtRefs },
+        { module: 'Global Fields', missingRefs: missingGfRefs },
+        { module: 'Entries', missingRefs: missingEntryRefs },
+      ]);
+      this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Extensions', missingRefs: missingCtRefsInExtensions }]);
+      this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Workflows', missingRefs: missingCtRefsInWorkflow }]);
 
-    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Entries Select Field', missingRefs: missingSelectFeild }]);
-    this.showOutputOnScreenWorkflowsAndExtension([
-      { module: 'Entries Mandatory Field', missingRefs: missingMandatoryFields },
-    ]);
-    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Entries Title Field', missingRefs: missingTitleFields }]);
-    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Custom Roles', missingRefs: missingRefInCustomRoles }]);
-    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Assets', missingRefs: missingEnvLocalesInAssets }]);
-    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Entries Missing Locale and Environments', missingRefs: missingEnvLocalesInEntries }])
-    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Field Rules', missingRefs: missingFieldRules }])
-    
-    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Entries Changed Multiple Fields', missingRefs: missingMultipleFields }])
+      this.showOutputOnScreenWorkflowsAndExtension([
+        { module: 'Entries Select Field', missingRefs: missingSelectFeild },
+      ]);
+      this.showOutputOnScreenWorkflowsAndExtension([
+        { module: 'Entries Mandatory Field', missingRefs: missingMandatoryFields },
+      ]);
+      this.showOutputOnScreenWorkflowsAndExtension([
+        { module: 'Entries Title Field', missingRefs: missingTitleFields },
+      ]);
+      this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Custom Roles', missingRefs: missingRefInCustomRoles }]);
+      this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Assets', missingRefs: missingEnvLocalesInAssets }]);
+      this.showOutputOnScreenWorkflowsAndExtension([
+        { module: 'Entries Missing Locale and Environments', missingRefs: missingEnvLocalesInEntries },
+      ]);
+      this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Field Rules', missingRefs: missingFieldRules }]);
+
+      this.showOutputOnScreenWorkflowsAndExtension([
+        { module: 'Entries Changed Multiple Fields', missingRefs: missingMultipleFields },
+      ]);
+
+      this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Summary', missingRefs: this.summaryDataToPrint }]);
+    }
+
     if (
       !isEmpty(missingCtRefs) ||
       !isEmpty(missingGfRefs) ||
@@ -93,8 +117,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       !isEmpty(missingTitleFields) ||
       !isEmpty(missingRefInCustomRoles) ||
       !isEmpty(missingEnvLocalesInAssets) ||
-      !isEmpty(missingEnvLocalesInEntries) || 
-      !isEmpty(missingFieldRules) || 
+      !isEmpty(missingEnvLocalesInEntries) ||
+      !isEmpty(missingFieldRules) ||
       !isEmpty(missingMultipleFields)
     ) {
       if (this.currentCommand === 'cm:stacks:audit') {
@@ -151,8 +175,18 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingEnvLocalesInAssets,
       missingEnvLocalesInEntries,
       missingFieldRules,
-      missingMultipleFields;
+      missingMultipleFields,
+      DataModuleWise: Record<string, any>;
 
+    const constructorParam: any = {
+      ctSchema,
+      gfSchema,
+      log: this.log,
+      config: this.sharedConfig,
+      fix: this.currentCommand === 'cm:stacks:audit:fix',
+    };
+
+    DataModuleWise = await new ReadModulesAndGetData(cloneDeep(constructorParam)).run();
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       print([
         {
@@ -162,26 +196,23 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         },
       ]);
 
-      const constructorParam = {
-        ctSchema,
-        gfSchema,
-        log: this.log,
-        moduleName: module,
-        config: this.sharedConfig,
-        fix: this.currentCommand === 'cm:stacks:audit:fix',
-      };
+      constructorParam['moduleName'] = module;
+
       switch (module) {
         case 'assets':
           missingEnvLocalesInAssets = await new Assets(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingEnvLocalesInAssets);
+          await this.getAffectedData('assets', DataModuleWise['assets'], missingEnvLocalesInAssets);
           break;
         case 'content-types':
           missingCtRefs = await new ContentType(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingCtRefs);
+          await this.getAffectedData('content-types', DataModuleWise['content-types'], missingCtRefs);
           break;
         case 'global-fields':
           missingGfRefs = await new GlobalField(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingGfRefs);
+          await this.getAffectedData('global-fields', DataModuleWise['global-fields'], missingGfRefs);
           break;
         case 'entries':
           missingEntry = await new Entries(cloneDeep(constructorParam)).run();
@@ -189,8 +220,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           missingSelectFeild = missingEntry.missingSelectFeild ?? {};
           missingMandatoryFields = missingEntry.missingMandatoryFields ?? {};
           missingTitleFields = missingEntry.missingTitleFields ?? {};
-          missingEnvLocalesInEntries = missingEntry.missingEnvLocale??{};
-          missingMultipleFields = missingEntry.missingMultipleFields??{};
+          missingEnvLocalesInEntries = missingEntry.missingEnvLocale ?? {};
+          missingMultipleFields = missingEntry.missingMultipleFields ?? {};
           await this.prepareReport(module, missingEntryRefs);
 
           await this.prepareReport(`Entries_Select_feild`, missingSelectFeild);
@@ -202,6 +233,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           await this.prepareReport('Entry_Missing_Locale_and_Env_in_Publish_Details', missingEnvLocalesInEntries);
 
           await this.prepareReport('Entry_Multiple_Fields', missingMultipleFields);
+          await this.getAffectedData('entries', DataModuleWise['entries'], missingEntry);
 
           break;
         case 'workflows':
@@ -213,21 +245,26 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
             fix: this.currentCommand === 'cm:stacks:audit:fix',
           }).run();
           await this.prepareReport(module, missingCtRefsInWorkflow);
+          await this.getAffectedData('workflows', DataModuleWise['workflows'], missingCtRefsInWorkflow);
+
           break;
         case 'extensions':
           missingCtRefsInExtensions = await new Extensions(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingCtRefsInExtensions);
+          await this.getAffectedData('extensions', DataModuleWise['extensions'], missingCtRefsInExtensions);
           break;
         case 'custom-roles':
           missingRefInCustomRoles = await new CustomRoles(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingRefInCustomRoles);
+          await this.getAffectedData('custom-roles', DataModuleWise['custom-roles'], missingRefInCustomRoles);
+
           break;
         case 'field-rules':
           missingFieldRules = await new FieldRule(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingFieldRules);
+          await this.getAffectedData('field-rules', DataModuleWise['content-types'], missingFieldRules);
           break;
       }
-
       print([
         {
           bold: true,
@@ -242,6 +279,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       ]);
     }
 
+    this.prepareReport('Summary', this.summaryDataToPrint);
+    this.prepareCSV('Summary', this.summaryDataToPrint);
     return {
       missingCtRefs,
       missingGfRefs,
@@ -255,7 +294,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingEnvLocalesInAssets,
       missingEnvLocalesInEntries,
       missingFieldRules,
-      missingMultipleFields
+      missingMultipleFields,
     };
   }
 
@@ -409,14 +448,15 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         .map((key: string) => ({
           value: key,
           formatter: (cellValue: any) => {
-            if (key === 'fixStatus') {
+            if (key === 'fixStatus' || key === 'Fixable') {
               return chalk.green(typeof cellValue === 'object' ? JSON.stringify(cellValue) : cellValue);
             } else if (
               key === 'content_types' ||
               key === 'branches' ||
               key === 'missingCTSelectFieldValues' ||
               key === 'missingFieldUid' ||
-              key === 'action'
+              key === 'action' ||
+              key === 'Non-Fixable'
             ) {
               return chalk.red(typeof cellValue === 'object' ? JSON.stringify(cellValue) : cellValue);
             } else {
@@ -441,7 +481,11 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    * @returns The function `prepareReport` returns a Promise that resolves to `void`.
    */
   prepareReport(
-    moduleName: keyof typeof config.moduleConfig | keyof typeof config.ReportTitleForEntries | 'field-rules',
+    moduleName:
+      | keyof typeof config.moduleConfig
+      | keyof typeof config.ReportTitleForEntries
+      | 'field-rules'
+      | 'Summary',
     listOfMissingRefs: Record<string, any>,
   ): Promise<void> {
     if (isEmpty(listOfMissingRefs)) return Promise.resolve(void 0);
@@ -471,7 +515,11 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    * @returns The function `prepareCSV` returns a Promise that resolves to `void`.
    */
   prepareCSV(
-    moduleName: keyof typeof config.moduleConfig | keyof typeof config.ReportTitleForEntries | 'field-rules',
+    moduleName:
+      | keyof typeof config.moduleConfig
+      | keyof typeof config.ReportTitleForEntries
+      | 'field-rules'
+      | 'Summary',
     listOfMissingRefs: Record<string, any>,
   ): Promise<void> {
     if (Object.keys(config.moduleConfig).includes(moduleName) || config.feild_level_modules.includes(moduleName)) {
@@ -524,5 +572,60 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         return reject();
       });
     }
+  }
+
+  async getAffectedData(
+    Module: string,
+    dataExported: any,
+    listOfMissingRefs: Record<string, any>,
+    isFixable: boolean = true,
+  ) {
+    if (Module === 'entries') {
+      const key = Object.keys(listOfMissingRefs);
+      const uidSet = new Set();
+      const nonFixable = new Set();
+      key.forEach((k) => {
+        if (k != 'missingTitleFields') Object.keys(listOfMissingRefs[k]).forEach((kv2) => uidSet.add(kv2));
+        else
+          Object.keys(listOfMissingRefs[k]).forEach((kv) => {
+            if (uidSet.has(kv)) {
+              uidSet.delete(kv);
+              nonFixable.add(kv);
+            }
+          });
+      });
+      dataExported = {
+        Module,
+        ...dataExported,
+        Passed: dataExported['Total'] - size(uidSet),
+        Fixable: size(uidSet) - size(nonFixable),
+        'Non-Fixable': size(nonFixable),
+      };
+    } else {
+      if (Object.keys(listOfMissingRefs).length) {
+        const uidSet = new Set(Object.keys(listOfMissingRefs));
+        dataExported = {
+          Module,
+          ...dataExported,
+          Passed: dataExported['Total'] - size(uidSet),
+        };
+        if (isFixable) {
+          dataExported['Fixable'] = size(uidSet);
+          dataExported['Non-Fixable'] = 0;
+        } else {
+          dataExported['Fixable'] = 0;
+          dataExported['Non-Fixable'] = size(uidSet);
+        }
+      } else {
+        dataExported = {
+          Module,
+          ...dataExported,
+          Passed: dataExported['Total'],
+        };
+        (dataExported['Fixable'] = 0), (dataExported['Non-Fixable'] = 0);
+      }
+    }
+
+    this.summaryDataToPrint.push(dataExported);
   }
 }

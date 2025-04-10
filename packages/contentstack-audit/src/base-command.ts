@@ -39,6 +39,11 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       helpGroup: 'COMMON',
       description: commonMsg.DATA_DIR,
     }),
+    'show-console-output': Flags.boolean({
+      char: 's',
+      helpGroup: 'COMMON',
+      description: commonMsg.SHOW_CONSOLE_OUTPUT,
+    }),
   };
 
   /**
