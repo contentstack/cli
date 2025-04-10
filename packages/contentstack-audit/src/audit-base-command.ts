@@ -30,11 +30,10 @@ import {
   RefErrorReturnType,
   WorkflowExtensionsRefErrorReturnType,
 } from './types';
-import { size } from 'lodash';
 
 export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseCommand> {
   private currentCommand!: CommandNames;
-  private summaryDataToPrint: Record<string,any> = [];
+  private readonly summaryDataToPrint: Record<string, any> = [];
   get fixStatus() {
     return {
       fixStatus: {
@@ -202,17 +201,17 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         case 'assets':
           missingEnvLocalesInAssets = await new Assets(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingEnvLocalesInAssets);
-          await this.getAffectedData('assets', DataModuleWise['assets'], missingEnvLocalesInAssets);
+          this.getAffectedData('assets', DataModuleWise['assets'], missingEnvLocalesInAssets);
           break;
         case 'content-types':
           missingCtRefs = await new ContentType(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingCtRefs);
-          await this.getAffectedData('content-types', DataModuleWise['content-types'], missingCtRefs);
+          this.getAffectedData('content-types', DataModuleWise['content-types'], missingCtRefs);
           break;
         case 'global-fields':
           missingGfRefs = await new GlobalField(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingGfRefs);
-          await this.getAffectedData('global-fields', DataModuleWise['global-fields'], missingGfRefs);
+          this.getAffectedData('global-fields', DataModuleWise['global-fields'], missingGfRefs);
           break;
         case 'entries':
           missingEntry = await new Entries(cloneDeep(constructorParam)).run();
@@ -233,7 +232,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           await this.prepareReport('Entry_Missing_Locale_and_Env_in_Publish_Details', missingEnvLocalesInEntries);
 
           await this.prepareReport('Entry_Multiple_Fields', missingMultipleFields);
-          await this.getAffectedData('entries', DataModuleWise['entries'], missingEntry);
+          this.getAffectedData('entries', DataModuleWise['entries'], missingEntry);
 
           break;
         case 'workflows':
@@ -245,26 +244,27 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
             fix: this.currentCommand === 'cm:stacks:audit:fix',
           }).run();
           await this.prepareReport(module, missingCtRefsInWorkflow);
-          await this.getAffectedData('workflows', DataModuleWise['workflows'], missingCtRefsInWorkflow);
+          this.getAffectedData('workflows', DataModuleWise['workflows'], missingCtRefsInWorkflow);
 
           break;
         case 'extensions':
           missingCtRefsInExtensions = await new Extensions(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingCtRefsInExtensions);
-          await this.getAffectedData('extensions', DataModuleWise['extensions'], missingCtRefsInExtensions);
+          this.getAffectedData('extensions', DataModuleWise['extensions'], missingCtRefsInExtensions);
           break;
         case 'custom-roles':
           missingRefInCustomRoles = await new CustomRoles(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingRefInCustomRoles);
-          await this.getAffectedData('custom-roles', DataModuleWise['custom-roles'], missingRefInCustomRoles);
+          this.getAffectedData('custom-roles', DataModuleWise['custom-roles'], missingRefInCustomRoles);
 
           break;
         case 'field-rules':
           missingFieldRules = await new FieldRule(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingFieldRules);
-          await this.getAffectedData('field-rules', DataModuleWise['content-types'], missingFieldRules);
+          this.getAffectedData('field-rules', DataModuleWise['content-types'], missingFieldRules);
           break;
       }
+
       print([
         {
           bold: true,
@@ -574,58 +574,44 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     }
   }
 
-  async getAffectedData(
-    Module: string,
-    dataExported: any,
+  getAffectedData(
+    module: string,
+    dataExported: Record<string, any>,
     listOfMissingRefs: Record<string, any>,
     isFixable: boolean = true,
-  ) {
-    if (Module === 'entries') {
-      const key = Object.keys(listOfMissingRefs);
-      const uidSet = new Set();
-      const nonFixable = new Set();
-      key.forEach((k) => {
-        if (k != 'missingTitleFields') Object.keys(listOfMissingRefs[k]).forEach((kv2) => uidSet.add(kv2));
-        else
-          Object.keys(listOfMissingRefs[k]).forEach((kv) => {
-            if (uidSet.has(kv)) {
-              uidSet.delete(kv);
-              nonFixable.add(kv);
+  ): void {
+    const result: Record<string, any> = { Module: module, ...dataExported };
+
+    if (module === 'entries') {
+      const missingRefs = Object.entries(listOfMissingRefs);
+      const uidSet = new Set<string>();
+      const nonFixable = new Set<string>();
+
+      for (const [key, refs] of missingRefs) {
+        const uids = Object.keys(refs);
+        if (key !== 'missingTitleFields') {
+          uids.forEach((uid) => uidSet.add(uid));
+        } else {
+          uids.forEach((uid) => {
+            if (uidSet.has(uid)) {
+              uidSet.delete(uid);
+              nonFixable.add(uid);
             }
           });
-      });
-      dataExported = {
-        Module,
-        ...dataExported,
-        Passed: dataExported['Total'] - size(uidSet),
-        Fixable: size(uidSet) - size(nonFixable),
-        'Non-Fixable': size(nonFixable),
-      };
-    } else {
-      if (Object.keys(listOfMissingRefs).length) {
-        const uidSet = new Set(Object.keys(listOfMissingRefs));
-        dataExported = {
-          Module,
-          ...dataExported,
-          Passed: dataExported['Total'] - size(uidSet),
-        };
-        if (isFixable) {
-          dataExported['Fixable'] = size(uidSet);
-          dataExported['Non-Fixable'] = 0;
-        } else {
-          dataExported['Fixable'] = 0;
-          dataExported['Non-Fixable'] = size(uidSet);
         }
-      } else {
-        dataExported = {
-          Module,
-          ...dataExported,
-          Passed: dataExported['Total'],
-        };
-        (dataExported['Fixable'] = 0), (dataExported['Non-Fixable'] = 0);
       }
+
+      result.Passed = dataExported.Total - uidSet.size;
+      result.Fixable = uidSet.size - nonFixable.size;
+      result['Non-Fixable'] = nonFixable.size;
+    } else {
+      const missingCount = Object.keys(listOfMissingRefs).length;
+      result.Passed = dataExported.Total - missingCount;
+
+      result.Fixable = missingCount > 0 && isFixable ? missingCount : 0;
+      result['Non-Fixable'] = missingCount > 0 && !isFixable ? missingCount : 0;
     }
 
-    this.summaryDataToPrint.push(dataExported);
+    this.summaryDataToPrint.push(result);
   }
 }
