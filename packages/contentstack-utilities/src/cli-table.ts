@@ -77,6 +77,7 @@ export default class CLITable {
 
     // Return only requested flags
     return Object.entries(flags)
+      .filter(([key]) => columns.includes(key))
       .reduce(
         (acc, [key, value]) => {
           acc[key] = value;
