@@ -19,13 +19,15 @@ import {
   Workflows,
   Assets,
   FieldRule,
-  ReadModulesAndGetData,
+  ModuleDataReader,
   CustomRoles,
 } from './modules';
 
 import {
   CommandNames,
   ContentTypeStruct,
+  CtConstructorParam,
+  ModuleConstructorParam,
   OutputColumn,
   RefErrorReturnType,
   WorkflowExtensionsRefErrorReturnType,
@@ -74,7 +76,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingMultipleFields,
     } = await this.scanAndFix();
 
-    if (this.flags['show-console-output'] || this.flags['s']) {
+    if (this.flags['show-console-output']) {
       this.showOutputOnScreen([
         { module: 'Content types', missingRefs: missingCtRefs },
         { module: 'Global Fields', missingRefs: missingGfRefs },
@@ -103,8 +105,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         { module: 'Entries Changed Multiple Fields', missingRefs: missingMultipleFields },
       ]);
 
-      this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Summary', missingRefs: this.summaryDataToPrint }]);
     }
+    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Summary', missingRefs: this.summaryDataToPrint }]);
 
     if (
       !isEmpty(missingCtRefs) ||
@@ -174,10 +176,9 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingEnvLocalesInAssets,
       missingEnvLocalesInEntries,
       missingFieldRules,
-      missingMultipleFields,
-      DataModuleWise: Record<string, any>;
+      missingMultipleFields;
 
-    const constructorParam: any = {
+    const constructorParam: ModuleConstructorParam & CtConstructorParam = {
       ctSchema,
       gfSchema,
       log: this.log,
@@ -185,7 +186,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       fix: this.currentCommand === 'cm:stacks:audit:fix',
     };
 
-    DataModuleWise = await new ReadModulesAndGetData(cloneDeep(constructorParam)).run();
+    let dataModuleWise: Record<string,any> = await new ModuleDataReader(cloneDeep(constructorParam)).run();
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       print([
         {
@@ -201,17 +202,17 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         case 'assets':
           missingEnvLocalesInAssets = await new Assets(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingEnvLocalesInAssets);
-          this.getAffectedData('assets', DataModuleWise['assets'], missingEnvLocalesInAssets);
+          this.getAffectedData('assets', dataModuleWise['assets'], missingEnvLocalesInAssets);
           break;
         case 'content-types':
           missingCtRefs = await new ContentType(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingCtRefs);
-          this.getAffectedData('content-types', DataModuleWise['content-types'], missingCtRefs);
+          this.getAffectedData('content-types', dataModuleWise['content-types'], missingCtRefs);
           break;
         case 'global-fields':
           missingGfRefs = await new GlobalField(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingGfRefs);
-          this.getAffectedData('global-fields', DataModuleWise['global-fields'], missingGfRefs);
+          this.getAffectedData('global-fields', dataModuleWise['global-fields'], missingGfRefs);
           break;
         case 'entries':
           missingEntry = await new Entries(cloneDeep(constructorParam)).run();
@@ -232,7 +233,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           await this.prepareReport('Entry_Missing_Locale_and_Env_in_Publish_Details', missingEnvLocalesInEntries);
 
           await this.prepareReport('Entry_Multiple_Fields', missingMultipleFields);
-          this.getAffectedData('entries', DataModuleWise['entries'], missingEntry);
+          this.getAffectedData('entries', dataModuleWise['entries'], missingEntry);
 
           break;
         case 'workflows':
@@ -244,24 +245,24 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
             fix: this.currentCommand === 'cm:stacks:audit:fix',
           }).run();
           await this.prepareReport(module, missingCtRefsInWorkflow);
-          this.getAffectedData('workflows', DataModuleWise['workflows'], missingCtRefsInWorkflow);
+          this.getAffectedData('workflows', dataModuleWise['workflows'], missingCtRefsInWorkflow);
 
           break;
         case 'extensions':
           missingCtRefsInExtensions = await new Extensions(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingCtRefsInExtensions);
-          this.getAffectedData('extensions', DataModuleWise['extensions'], missingCtRefsInExtensions);
+          this.getAffectedData('extensions', dataModuleWise['extensions'], missingCtRefsInExtensions);
           break;
         case 'custom-roles':
           missingRefInCustomRoles = await new CustomRoles(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingRefInCustomRoles);
-          this.getAffectedData('custom-roles', DataModuleWise['custom-roles'], missingRefInCustomRoles);
+          this.getAffectedData('custom-roles', dataModuleWise['custom-roles'], missingRefInCustomRoles);
 
           break;
         case 'field-rules':
           missingFieldRules = await new FieldRule(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingFieldRules);
-          this.getAffectedData('field-rules', DataModuleWise['content-types'], missingFieldRules);
+          this.getAffectedData('field-rules', dataModuleWise['content-types'], missingFieldRules);
           break;
       }
 

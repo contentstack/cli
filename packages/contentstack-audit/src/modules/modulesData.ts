@@ -11,7 +11,7 @@ import {
 import { keys, values } from 'lodash';
 
 
-export default class ReadModulesAndGetData {
+export default class ModuleDataReader {
   public log: LogFn;
   public config: ConfigType;
   public folderPath: string;
@@ -31,17 +31,17 @@ export default class ReadModulesAndGetData {
     this.folderPath = resolve(sanitizePath(config.basePath));
   }
 
-  async readModulesExceptEntry(moduleName: string): Promise<number> {
-    let data =0;
+  async getModuleItemCount(moduleName: string): Promise<number> {
+    let count = 0;
     switch (moduleName) {
       case "content-types":
-        data = this.ctSchema.length;
+        count = this.ctSchema.length;
         break;
       case 'global-fields':
-        data = this.gfSchema.length;
+        count = this.gfSchema.length;
         break;
       case 'assets': 
-        data = keys(await this.ReadEntryAssetsModule(this.folderPath,'assets')).length;
+        count = keys(await this.readEntryAssetsModule(this.folderPath,'assets')).length;
         break;
       case 'entries':
         {
@@ -53,21 +53,18 @@ export default class ReadModulesAndGetData {
           if (existsSync(localesPath)) {
             this.locales.push(...values(JSON.parse(readFileSync(localesPath, 'utf8'))));
           }
-          let count = 0;
           for (const {code} of this.locales) {
             for (const ctSchema of this.ctSchema) {
               const basePath = join(this.folderPath,'entries', ctSchema.uid, code);
-              data = await this.ReadEntryAssetsModule(basePath, 'index');
-              count = count + data;
+              count = count + await this.readEntryAssetsModule(basePath, 'index') || 0;
             }
           }
-          data = count;
         }
         break;
       case 'custom-roles':
       case 'extensions':
       case 'workflows':
-        data = keys(await (this.readUsingFsModule(
+        count = keys(await (this.readUsingFsModule(
           resolve(
             this.folderPath,
             sanitizePath(this.config.moduleConfig[moduleName].dirName),
@@ -76,7 +73,7 @@ export default class ReadModulesAndGetData {
         ))).length;
         break;
     }
-    return data;
+    return count;
 
   }
 
@@ -85,7 +82,7 @@ export default class ReadModulesAndGetData {
     return data;
   }
 
-  async ReadEntryAssetsModule(basePath: string, module: string): Promise<number> {
+  async readEntryAssetsModule(basePath: string, module: string): Promise<number> {
     let fsUtility = new FsUtility({ basePath, indexFileName: `${module}.json` });
     let indexer = fsUtility.indexFileContent;
     let count = 0;
@@ -99,7 +96,7 @@ export default class ReadModulesAndGetData {
   async run(): Promise<Object> {
     await Promise.allSettled(
       Object.keys(this.config.moduleConfig).map(async (module) => {
-        this.auditData[module] = { Total: await this.readModulesExceptEntry(module) };
+        this.auditData[module] = { Total: await this.getModuleItemCount(module) };
       })
     );
     return this.auditData;
