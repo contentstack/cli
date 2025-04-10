@@ -22,7 +22,7 @@
     "prepack": "pnpm compile && oclif manifest && oclif readme"
   },
   "dependencies": {
-    "@contentstack/cli-audit": "~1.10.0",
+    "@contentstack/cli-audit": "~1.11.0",
     "@contentstack/cli-auth": "~1.4.0",
     "@contentstack/cli-cm-bootstrap": "~1.14.0",
     "@contentstack/cli-cm-branches": "~1.4.0",
@@ -39,7 +39,7 @@
     "@contentstack/cli-migration": "~1.7.0",
     "@contentstack/cli-utilities": "~1.10.0",
     "@contentstack/cli-variants": "~1.2.0",
-    "@contentstack/management": "~1.18.4",
+    "@contentstack/management": "~1.20.1",
     "@oclif/core": "^4.2.7",
     "@oclif/plugin-help": "^6.2.25",
     "@oclif/plugin-not-found": "^3.2.42",

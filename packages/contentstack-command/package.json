@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@contentstack/cli-utilities": "~1.10.0",
-    "contentstack": "^3.22.1"
+    "contentstack": "^3.25.2"
   },
   "devDependencies": {
     "@oclif/test": "^4.1.6",
