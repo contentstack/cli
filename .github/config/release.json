@@ -1,8 +1,8 @@
 {
-  "releaseAll": false,
+  "releaseAll": true,
   "plugins": {
-    "utilities": true,
-    "command": true,
+    "utilities": false,
+    "command": false,
     "config": false,
     "auth": false,
     "export": false,
