@@ -18,9 +18,9 @@
     "/oclif.manifest.json"
   ],
   "dependencies": {
-    "@contentstack/cli-command": "~1.4.0",
+    "@contentstack/cli-command": "~1.5.0",
     "@oclif/plugin-help": "^6.2.27",
-    "@contentstack/cli-utilities": "~1.10.0",
+    "@contentstack/cli-utilities": "~1.11.0",
     "@oclif/plugin-plugins": "^5.4.36",
     "chalk": "^4.1.2",
     "fast-csv": "^4.3.6",
@@ -69,11 +69,11 @@
     "lint": "eslint . --ext .ts --config .eslintrc",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm run lint",
-    "compile": "shx rm -rf lib && tsc -b",
-    "prepack": "npm run build && oclif manifest && oclif readme",
+    "compile": "shx rm -rf lib tsconfig.tsbuildinfo && tsc -b",
+    "prepack": "pnpm compile && oclif manifest && oclif readme",
     "test": "mocha --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif readme && git add README.md",
-    "clean": "rm -rf ./lib ./node_modules tsconfig.tsbuildinfo oclif.manifest.json",
+    "clean": "rm -rf ./lib ./node_modules .tsbuildinfo oclif.manifest.json",
     "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\"",
     "test:unit": "mocha --timeout 10000 --forbid-only \"test/unit/**/*.test.ts\""
   },
