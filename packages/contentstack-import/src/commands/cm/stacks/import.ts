@@ -148,6 +148,22 @@ export default class ImportCommand extends Command {
       backupDir = importConfig.cliLogsPath || importConfig.backupDir;
 
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
+
+      if (!flags.branch) {
+        try {
+          const branches = await managementAPIClient
+            .stack({ api_key: importConfig.apiKey })
+            .branch()
+            .query()
+            .find()
+            .then(({ items }: any) => items)
+          if (branches.length) {
+            flags.branch = 'main';
+          }
+        } catch (error) {
+          // Branch not enabled, just the let flow continue
+        }
+      }
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       const result = await moduleImporter.start();
 

@@ -1,14 +1,13 @@
 import cliux from './cli-ux';
-import HttpClient from './http-client';
 import configHandler from './config-handler';
 import dotenv from 'dotenv';
-import * as ContentstackManagementSDK from '@contentstack/management';
-import messageHandler from './message-handler';
-const http = require('http');
-const url = require('url');
 import open from 'open';
+import http from 'http';
+import url from 'url';
 import { LoggerService } from './logger';
-const crypto = require('crypto');
+import managementSDKClient, { ContentstackClient } from './contentstack-management-sdk';
+import { formatError } from './helpers';
+
 dotenv.config();
 
 /**
@@ -16,14 +15,12 @@ dotenv.config();
  * Auth handler
  */
 class AuthHandler {
-  private developerHubUrl: string;
   private _host;
-  private codeVerifier: string;
   private OAuthBaseURL: string;
   private OAuthAppId: string;
   private OAuthClientId: string;
   private OAuthRedirectURL: string;
-  private OAuthScope: string;
+  private OAuthScope: string[];
   private OAuthResponseType: string;
   private authTokenKeyName: string;
   private authEmailKeyName: string;
@@ -37,16 +34,19 @@ class AuthHandler {
   private authorisationTypeAUTHValue: string;
   private allAuthConfigItems: any;
   private logger: any;
+  private oauthHandler: any;
+  private managementAPIClient: ContentstackClient;
+  private isRefreshingToken: boolean = false; // Flag to track if a refresh operation is in progress
+
   set host(contentStackHost) {
     this._host = contentStackHost;
   }
 
   constructor() {
-    this.codeVerifier = crypto.randomBytes(32).toString('hex');
     this.OAuthAppId = process.env.OAUTH_APP_ID || '6400aa06db64de001a31c8a9';
     this.OAuthClientId = process.env.OAUTH_CLIENT_ID || 'Ie0FEfTzlfAHL4xM';
     this.OAuthRedirectURL = process.env.OAUTH_APP_REDIRECT_URL || 'http://localhost:8184';
-    this.OAuthScope = '';
+    this.OAuthScope = [];
     this.OAuthResponseType = 'code';
     this.authTokenKeyName = 'authtoken';
     this.authEmailKeyName = 'email';
@@ -90,393 +90,249 @@ class AuthHandler {
     }
   }
 
-  setDeveloperHubURL() {
-    if (this.developerHubUrl) {
-      return;  // Return if already set
-    }
-    
-    if (configHandler.get('region')['developerHubUrl']) {
-      this.developerHubUrl = configHandler.get('region')['developerHubUrl'] || '';
-    } else {
-      throw new Error(
-        'Invalid developerHubUrl URL while authenticating. Please set your region correctly using the command - csdx config:set:region',
-      );
-    }
+  async initSDK() {
+    this.managementAPIClient = await managementSDKClient({ host: this._host });
+    this.oauthHandler = this.managementAPIClient.oauth({
+      appId: this.OAuthAppId,
+      clientId: this.OAuthClientId,
+      redirectUri: this.OAuthRedirectURL,
+      scope: this.OAuthScope,
+      responseType: this.OAuthResponseType,
+    });
+    this.restoreOAuthConfig();
   }
-  
 
   /*
    *
    * Login into Contentstack
    * @returns {Promise} Promise object returns {} on success
    */
-  async oauth(): Promise<object> {
-    return new Promise((resolve, reject) => {
+  async oauth(): Promise<void> {
+    try {
       this.initLog();
-      this.createHTTPServer()
-        .then(() => {
-          this.openOAuthURL()
-            .then(() => {
-              //set timeout for authorization
-              resolve({});
-            })
-            .catch((error) => {
-              this.logger.error('OAuth login failed', error.message);
-              reject(error);
-            });
-        })
-        .catch((error) => {
-          this.logger.error('OAuth login failed', error.message);
-          reject(error);
-        });
-    });
+      await this.initSDK();
+      await this.createHTTPServer();
+      await this.openOAuthURL();
+    } catch (error) {
+      this.logger.error('OAuth login failed', error.message);
+      throw error;
+    }
   }
 
-  async createHTTPServer(): Promise<object> {
-    return new Promise((resolve, reject) => {
-      try {
-        const server = http.createServer((req, res) => {
-          const reqURL = req.url;
-          const queryObject = url.parse(reqURL, true).query;
-          if (queryObject.code) {
-            cliux.print('Auth code successfully fetched.');
-            this.getAccessToken(queryObject.code)
-              .then(async () => {
-                await this.setOAuthBaseURL();
-                cliux.print('Access token fetched using auth code successfully.');
-                cliux.print(
-                  `You can review the access permissions on the page - ${this.OAuthBaseURL}/#!/marketplace/authorized-apps`,
-                );
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.end(`<style>
-                body {
-                  font-family: Arial, sans-serif;
-                  text-align: center;
-                  margin-top: 100px;
-                }
-              
-                p {
-                  color: #475161;
-                  margin-bottom: 20px;
-                }
-                p button {
-                  background-color: #6c5ce7;
-                  color: #fff;
-                  border: 1px solid transparent;
-                  border-radius: 4px;
-                  font-weight: 600;
-                  line-height: 100%;
-                  text-align: center;
-                  min-height: 2rem;
-                  padding: 0.3125rem 1rem;
-                }
-              </style>
-              <h1 style="color: #6c5ce7">Successfully authorized!</h1>
-              <p style="color: #475161; font-size: 16px; font-weight: 600">You can close this window now.</p>
-              <p>
-                You can review the access permissions on the
-                <a
-                  style="color: #6c5ce7; text-decoration: none"
-                  href="${this.OAuthBaseURL}/#!/marketplace/authorized-apps"
-                  target="_blank"
-                  >Authorized Apps page</a
-                >.
-              </p>`);
+  async createHTTPServer(): Promise<void> {
+    try {
+      const server = http.createServer(async (req, res) => {
+        const queryObject = url.parse(req.url, true).query;
 
-                stopServer();
-              })
-              .catch((error) => {
-                cliux.error(
-                  'Error occoured while login with OAuth, please login with command - csdx auth:login --oauth',
-                );
-                cliux.error(error);
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.end(
-                  `<h1>Sorry!</h1><h2>Something went wrong, please login with command - csdx auth:login --oauth(</h2>`,
-                );
-                stopServer();
-              });
-          } else {
-            cliux.error('Error occoured while login with OAuth, please login with command - csdx auth:login --oauth');
-            res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.end(
-              `<h1>Sorry!</h1><h2>Something went wrong, please login with command - csdx auth:login --oauth(</h2>`,
-            );
-            stopServer();
-          }
-        });
-
-        const stopServer = () => {
-          server.close();
-          process.exit();
-        };
-
-        server.listen(8184, () => {
-          cliux.print('Waiting for the authorization server to respond...');
-          resolve({ true: true });
-        });
-      } catch (error) {
-        cliux.error(error);
-        reject(error);
-      }
-    });
-  }
-
-  async openOAuthURL(): Promise<object> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const digest = crypto.createHash('sha256').update(this.codeVerifier).digest();
-        const codeChallenge = digest.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-        await this.setOAuthBaseURL();
-        let url = `${this.OAuthBaseURL}/#!/apps/${this.OAuthAppId}/authorize?response_type=${this.OAuthResponseType}&client_id=${this.OAuthClientId}&redirect_uri=${this.OAuthRedirectURL}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
-
-        if (this.OAuthScope) {
-          url += `&scope=${encodeURIComponent(this.OAuthScope)}`;
+        if (!queryObject.code) {
+          cliux.error('Error occoured while login with OAuth, please login with command - csdx auth:login --oauth');
+          return sendErrorResponse(res);
         }
-        cliux.print(
-          'This will automatically start the browser and open the below URL, if it does not, you can copy and paste the below URL in the browser without terminating this command.',
-          { color: 'yellow' },
-        );
-        cliux.print(url, { color: 'green' });
-        resolve(open(url));
-      } catch (error) {
-        reject(error);
-      }
-    });
+
+        cliux.print('Auth code successfully fetched.');
+
+        try {
+          await this.getAccessToken(queryObject.code as string);
+          await this.setOAuthBaseURL();
+
+          cliux.print('Access token fetched using auth code successfully.');
+          cliux.print(
+            `You can review the access permissions on the page - ${this.OAuthBaseURL}/#!/marketplace/authorized-apps`,
+          );
+
+          sendSuccessResponse(res);
+          stopServer();
+        } catch (error) {
+          cliux.error('Error occoured while login with OAuth, please login with command - csdx auth:login --oauth');
+          cliux.error(error);
+          sendErrorResponse(res);
+          stopServer();
+        }
+      });
+
+      const sendSuccessResponse = (res: any) => {
+        const successHtml = `
+          <style>
+            body { font-family: Arial, sans-serif; text-align: center; margin-top: 100px; }
+            p { color: #475161; margin-bottom: 20px; }
+            p button { background-color: #6c5ce7; color: #fff; border: 1px solid transparent; border-radius: 4px; font-weight: 600; line-height: 100%; text-align: center; min-height: 2rem; padding: 0.3125rem 1rem; }
+          </style>
+          <h1 style="color: #6c5ce7">Successfully authorized!</h1>
+          <p style="color: #475161; font-size: 16px; font-weight: 600">You can close this window now.</p>
+          <p>
+            You can review the access permissions on the
+            <a style="color: #6c5ce7; text-decoration: none" href="${this.OAuthBaseURL}/#!/marketplace/authorized-apps" target="_blank">Authorized Apps page</a>.
+          </p>`;
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(successHtml);
+      };
+
+      const sendErrorResponse = (res: any) => {
+        const errorHtml = `
+          <h1>Sorry!</h1><h2>Something went wrong, please login with command.</h2>`;
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(errorHtml);
+      };
+
+      const stopServer = () => {
+        server.close();
+        process.exit();
+      };
+
+      server.listen(8184, () => {
+        cliux.print('Waiting for the authorization server to respond...');
+        return { true: true };
+      });
+      // Listen for errors
+      server.on('error', (err) => {
+        cliux.error('Server encountered an error:', formatError(err));
+      });
+    } catch (error) {
+      cliux.error(error);
+      throw error;
+    }
   }
 
-  async getAccessToken(code: string): Promise<object> {
-    return new Promise((resolve, reject) => {
-      const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
-      const payload = {
-        grant_type: 'authorization_code',
-        client_id: this.OAuthClientId,
-        code_verifier: this.codeVerifier,
-        redirect_uri: this.OAuthRedirectURL,
-        code: code,
-      };
-      this.setDeveloperHubURL();
-      const httpClient = new HttpClient().headers(headers).asFormParams();
-      httpClient
-        .post(`${this.developerHubUrl}/apps/token`, payload)
-        .then(({ data }) => {
-          return this.getUserDetails(data);
-        })
-        .then((data) => {
-          if (data['access_token'] && data['refresh_token']) {
-            return this.setConfigData('oauth', data);
-          } else {
-            reject('Invalid request');
-          }
-        })
-        .then(resolve)
-        .catch((error) => {
-          cliux.error('An error occoured while fetching the access token, run the command - csdx auth:login --oauth');
-          cliux.error(error);
-          reject(error);
-        });
-    });
+  async openOAuthURL(): Promise<void> {
+    try {
+      const url = await this.oauthHandler.authorize();
+      cliux.print(
+        'This will automatically start the browser and open the below URL, if it does not, you can copy and paste the below URL in the browser without terminating this command.',
+        { color: 'yellow' },
+      );
+      cliux.print(url, { color: 'green' });
+      await open(url);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAccessToken(code: string): Promise<void> {
+    try {
+      const data = await this.oauthHandler.exchangeCodeForToken(code);
+      const userData = await this.getUserDetails(data);
+      if (userData['access_token'] && userData['refresh_token']) {
+        await this.setConfigData('oauth', userData);
+      } else {
+        throw new Error('Invalid request');
+      }
+    } catch (error) {
+      cliux.error('An error occurred while fetching the access token, run the command - csdx auth:login --oauth');
+      cliux.error(error);
+      throw error;
+    }
   }
 
   async setConfigData(type: string, userData: any = {}): Promise<object> {
-    return new Promise(async (resolve, reject) => {
-      //Delete the old configstore auth data
-      this.unsetConfigData(type)
-        .then(() => {
-          switch (type) {
-            case 'oauth':
-              if (userData.access_token && userData.refresh_token) {
-                //Set the new OAuth tokens info
-                configHandler.set(this.oauthAccessTokenKeyName, userData.access_token);
-                configHandler.set(this.oauthRefreshTokenKeyName, userData.refresh_token);
-                configHandler.set(this.authEmailKeyName, userData.email);
-                configHandler.set(this.oauthDateTimeKeyName, new Date());
-                configHandler.set(this.oauthUserUidKeyName, userData.user_uid);
-                configHandler.set(this.oauthOrgUidKeyName, userData.organization_uid);
-                configHandler.set(this.authorisationTypeKeyName, this.authorisationTypeOAUTHValue);
-
-                resolve(userData);
-              } else {
-                reject('Invalid request');
-              }
-              break;
-
-            case 'refreshToken':
-              if (userData.access_token && userData.refresh_token) {
-                //Set the new OAuth tokens info
-                configHandler.set(this.oauthAccessTokenKeyName, userData.access_token);
-                configHandler.set(this.oauthRefreshTokenKeyName, userData.refresh_token);
-                configHandler.set(this.oauthDateTimeKeyName, new Date());
-                resolve(userData);
-              } else {
-                reject('Invalid request');
-              }
-              break;
-
-            case 'basicAuth':
-              if (userData.authtoken && userData.email) {
-                //Set the new auth tokens info
-                configHandler.set(this.authTokenKeyName, userData.authtoken);
-                configHandler.set(this.authEmailKeyName, userData.email);
-                configHandler.set(this.authorisationTypeKeyName, this.authorisationTypeAUTHValue);
-                resolve(userData);
-              } else {
-                reject('Invalid request');
-              }
-              break;
-
-            case 'logout':
-              resolve(userData);
-              break;
-
-            default:
-              reject('Invalid request');
-              break;
+    try {
+      this.unsetConfigData(type);
+      switch (type) {
+        case 'oauth':
+        case 'refreshToken':
+          if (userData.access_token && userData.refresh_token) {
+            this.setOAuthConfigData(userData, type);
+            return userData;
+          } else {
+            throw new Error('Invalid request');
           }
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
+        case 'basicAuth':
+          if (userData.authtoken && userData.email) {
+            this.setBasicAuthConfigData(userData);
+            return userData;
+          } else {
+            throw new Error('Invalid request');
+          }
+        case 'logout':
+          return userData;
+        default:
+          throw new Error('Invalid request');
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 
-  async unsetConfigData(type = 'default'): Promise<void> {
-    return new Promise(async (resolve, reject) => {
-      //Delete the old auth tokens info
-      let removeItems: string[] = this.allAuthConfigItems.default;
-      if (type === 'refreshToken') {
-        removeItems = this.allAuthConfigItems.refreshToken;
-      }
-      removeItems.forEach((element) => {
-        configHandler.delete(element);
-      });
-      resolve();
-    });
+  setOAuthConfigData(userData: any, type: string) {
+    configHandler.set(this.oauthAccessTokenKeyName, userData.access_token);
+    configHandler.set(this.oauthRefreshTokenKeyName, userData.refresh_token);
+    configHandler.set(this.oauthDateTimeKeyName, new Date());
+    if (type === 'oauth') {
+      configHandler.set(this.authEmailKeyName, userData.email);
+      configHandler.set(this.oauthUserUidKeyName, userData.user_uid);
+      configHandler.set(this.oauthOrgUidKeyName, userData.organization_uid);
+      configHandler.set(this.authorisationTypeKeyName, this.authorisationTypeOAUTHValue);
+    }
+  }
+
+  setBasicAuthConfigData(userData: any) {
+    configHandler.set(this.authTokenKeyName, userData.authtoken);
+    configHandler.set(this.authEmailKeyName, userData.email);
+    configHandler.set(this.authorisationTypeKeyName, this.authorisationTypeAUTHValue);
+  }
+
+  unsetConfigData(type = 'default') {
+    const removeItems =
+      type === 'refreshToken' ? this.allAuthConfigItems.refreshToken : this.allAuthConfigItems.default;
+    removeItems.forEach((element) => configHandler.delete(element));
   }
 
   async refreshToken(): Promise<object> {
-    return new Promise((resolve, reject) => {
+    try {
+      if (!this.oauthHandler) {
+        await this.initSDK(); // Initialize oauthHandler if not already initialized
+      }
+
       const configOauthRefreshToken = configHandler.get(this.oauthRefreshTokenKeyName);
       const configAuthorisationType = configHandler.get(this.authorisationTypeKeyName);
 
-      if (configAuthorisationType === this.authorisationTypeOAUTHValue && configOauthRefreshToken) {
-        const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
-        const payload = {
-          grant_type: 'refresh_token',
-          client_id: this.OAuthClientId,
-          redirect_uri: this.OAuthRedirectURL,
-          refresh_token: configOauthRefreshToken,
-        };
-        this.setDeveloperHubURL();
-        const httpClient = new HttpClient().headers(headers).asFormParams();
-        httpClient
-          .post(`${this.developerHubUrl}/apps/token`, payload)
-          .then(({ data }) => {
-            if (data.error || (data.statusCode != 200 && data.message)) {
-              let errorMessage = '';
-              if (data.message) {
-                if (data.message[0]) {
-                  errorMessage = data.message[0];
-                } else {
-                  errorMessage = data.message;
-                }
-              } else {
-                errorMessage = data.error;
-              }
-              reject(errorMessage);
-            } else {
-              if (data['access_token'] && data['refresh_token']) {
-                return this.setConfigData('refreshToken', data);
-              } else {
-                reject('Invalid request');
-              }
-            }
-          })
-          .then(resolve)
-          .catch((error) => {
-            cliux.error('An error occoured while refreshing the token');
-            cliux.error(error);
-            reject(error);
-          });
-      } else {
-        cliux.error('Invalid/Empty refresh token, run the command- csdx auth:login --oauth');
-        reject('Invalid/Empty refresh token');
+      if (configAuthorisationType !== this.authorisationTypeOAUTHValue || !configOauthRefreshToken) {
+        cliux.error('Invalid refresh token, run the command- csdx auth:login --oauth');
+        throw new Error('Invalid refresh token');
       }
-    });
+
+      const data = await this.oauthHandler.refreshAccessToken(configOauthRefreshToken);
+
+      if (data['access_token'] && data['refresh_token']) {
+        await this.setConfigData('refreshToken', data);
+        return data; // Returning the data from the refresh token operation
+      } else {
+        throw new Error('Invalid request');
+      }
+    } catch (error) {
+      cliux.error('An error occurred while refreshing the token');
+      cliux.error(error);
+      throw error; // Throwing the error to be handled by the caller
+    }
   }
 
   async getUserDetails(data): Promise<object> {
-    return new Promise((resolve, reject) => {
-      const accessToken = data.access_token;
-      if (accessToken) {
-        const param = {
-          host: this._host,
-          authorization: `Bearer ${accessToken}`,
-        };
-
-        const managementAPIClient = ContentstackManagementSDK.client(param);
-        managementAPIClient
-          .getUser()
-          .then((user) => {
-            data.email = user?.email || '';
-            resolve(data);
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      } else {
-        cliux.error('Invalid/Empty access token, run the command - csdx auth:login --oauth');
-        reject('Invalid/Empty access token');
+    if (data.access_token) {
+      try {
+        const user = await this.managementAPIClient.getUser();
+        data.email = user?.email || '';
+        return data;
+      } catch (error) {
+        cliux.error('Error fetching user details.');
+        cliux.error(error);
+        throw error;
       }
-    });
+    } else {
+      cliux.error('Invalid/Empty access token.');
+      throw new Error('Invalid/Empty access token');
+    }
   }
 
   async oauthLogout(): Promise<object> {
-    const authorization: string = (await this.getOauthAppAuthorization()) || '';
-    const response: {} = await this.revokeOauthAppAuthorization(authorization);
-    return response || {};
-  }
-
-  /**
-   * Fetches all authorizations for the Oauth App, returns authorizationUid for current user.
-   * @returns authorizationUid for the current user
-   */
-  async getOauthAppAuthorization(): Promise<string | undefined> {
-    const headers = {
-      authorization: `Bearer ${configHandler.get(this.oauthAccessTokenKeyName)}`,
-      organization_uid: configHandler.get(this.oauthOrgUidKeyName),
-      'Content-type': 'application/json',
-    };
-    const httpClient = new HttpClient().headers(headers);
-    this.setDeveloperHubURL();
-    return httpClient.get(`${this.developerHubUrl}/manifests/${this.OAuthAppId}/authorizations`).then(({ data }) => {
-      if (data?.data?.length > 0) {
-        const userUid = configHandler.get(this.oauthUserUidKeyName);
-        const currentUserAuthorization = data?.data?.filter((element) => element.user.uid === userUid) || [];
-        if (currentUserAuthorization.length === 0) {
-          throw new Error(messageHandler.parse('CLI_AUTH_LOGOUT_NO_AUTHORIZATIONS_USER'));
-        }
-        return currentUserAuthorization[0].authorization_uid; // filter authorizations by current logged in user
-      } else {
-        throw new Error(messageHandler.parse('CLI_AUTH_LOGOUT_NO_AUTHORIZATIONS'));
+    try {
+      if (!this.oauthHandler) {
+        await this.initSDK();
       }
-    });
-  }
-
-  async revokeOauthAppAuthorization(authorizationId): Promise<object> {
-    if (authorizationId.length > 1) {
-      const headers = {
-        authorization: `Bearer ${configHandler.get(this.oauthAccessTokenKeyName)}`,
-        organization_uid: configHandler.get(this.oauthOrgUidKeyName),
-        'Content-type': 'application/json',
-      };
-      const httpClient = new HttpClient().headers(headers);
-      this.setDeveloperHubURL();
-      return httpClient
-        .delete(`${this.developerHubUrl}/manifests/${this.OAuthAppId}/authorizations/${authorizationId}`)
-        .then(({ data }) => {
-          return data;
-        });
+      const response = await this.oauthHandler.logout();
+      return response || {};
+    } catch (error) {
+      cliux.error('An error occurred while logging out');
+      cliux.error(error);
+      throw error;
     }
   }
 
@@ -502,6 +358,11 @@ class AuthHandler {
   checkExpiryAndRefresh = (force: boolean = false) => this.compareOAuthExpiry(force);
 
   async compareOAuthExpiry(force: boolean = false) {
+    // Avoid recursive refresh operations
+    if (this.isRefreshingToken) {
+      cliux.print('Refresh operation already in progress');
+      return Promise.resolve();
+    }
     const oauthDateTime = configHandler.get(this.oauthDateTimeKeyName);
     const authorisationType = configHandler.get(this.authorisationTypeKeyName);
     if (oauthDateTime && authorisationType === this.authorisationTypeOAUTHValue) {
@@ -517,12 +378,41 @@ class AuthHandler {
           return Promise.resolve();
         } else {
           cliux.print('Token expired, refreshing the token');
-          return this.refreshToken();
+          // Set the flag before refreshing the token
+          this.isRefreshingToken = true;
+
+          try {
+            await this.refreshToken();
+          } catch (error) {
+            cliux.error('Error refreshing token');
+            throw error;
+          } finally {
+            // Reset the flag after refresh operation is completed
+            this.isRefreshingToken = false;
+          }
+
+          return Promise.resolve();
         }
       }
     } else {
       cliux.print('No OAuth set');
-      return this.unsetConfigData();
+      this.unsetConfigData();
+    }
+  }
+
+  restoreOAuthConfig() {
+    const oauthAccessToken = configHandler.get(this.oauthAccessTokenKeyName);
+    const oauthRefreshToken = configHandler.get(this.oauthRefreshTokenKeyName);
+    const oauthDateTime = configHandler.get(this.oauthDateTimeKeyName);
+    const oauthUserUid = configHandler.get(this.oauthUserUidKeyName);
+    const oauthOrgUid = configHandler.get(this.oauthOrgUidKeyName);
+
+    if (oauthAccessToken && !this.oauthHandler.getAccessToken()) this.oauthHandler.setAccessToken(oauthAccessToken);
+    if (oauthRefreshToken && !this.oauthHandler.getRefreshToken()) this.oauthHandler.setRefreshToken(oauthRefreshToken);
+    if (oauthUserUid && !this.oauthHandler.getUserUID()) this.oauthHandler.setUserUID(oauthUserUid);
+    if (oauthOrgUid && !this.oauthHandler.getOrganizationUID()) this.oauthHandler.setOrganizationUID(oauthOrgUid);
+    if (oauthDateTime && !this.oauthHandler.getTokenExpiryTime()) {
+      this.oauthHandler.setTokenExpiryTime(oauthDateTime);
     }
   }
 }

@@ -15,7 +15,7 @@ class AssetsPublishCommand extends Command {
     assetsFlags.folderUid = assetsFlags['folder-uid'] || assetsFlags.folderUid;
     assetsFlags.bulkPublish = assetsFlags['bulk-publish'] || assetsFlags.bulkPublish;
     assetsFlags.apiVersion = assetsFlags['api-version'] || '3'; // setting default value for apiVersion
-    delete assetsFlags['api-version']
+    delete assetsFlags['api-version'];
     delete assetsFlags['retry-failed'];
     delete assetsFlags['folder-uid'];
     delete assetsFlags['bulk-publish'];
@@ -143,7 +143,7 @@ class AssetsPublishCommand extends Command {
     if (data.yes) {
       return true;
     }
-    return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
+    return await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
 }
 
@@ -157,7 +157,8 @@ But, if retryFailed flag is set, then only a logfile is required
 AssetsPublishCommand.flags = {
   alias: flags.string({
     char: 'a',
-    description: 'Alias (name) for the management token. You must use either the --alias flag or the --stack-api-key flag.',
+    description:
+      'Alias (name) for the management token. You must use either the --alias flag or the --stack-api-key flag.',
   }),
   'stack-api-key': flags.string({
     char: 'k',
@@ -165,15 +166,18 @@ AssetsPublishCommand.flags = {
     required: false,
   }),
   'retry-failed': flags.string({
-    description: 'Use this option to retry publishing the failed assets from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags.',
+    description:
+      'Use this option to retry publishing the failed assets from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags.',
   }),
   environments: flags.string({
     char: 'e',
-    description: 'The name of the environment on which entries will be published. In case of multiple environments, specify their names separated by spaces.',
+    description:
+      'The name of the environment on which entries will be published. In case of multiple environments, specify their names separated by spaces.',
     multiple: true,
   }),
   'folder-uid': flags.string({
-    description: '(optional) The UID of the Assets’ folder from which the assets need to be published. The default value is cs_root.',
+    description:
+      '(optional) The UID of the Assets’ folder from which the assets need to be published. The default value is cs_root.',
     exclusive: ['source-env'],
   }),
   'bulk-publish': flags.string({
@@ -182,7 +186,8 @@ AssetsPublishCommand.flags = {
   }),
   config: flags.string({
     char: 'c',
-    description: '(optional) The path of the optional configuration JSON file containing all the options for a single run. Refer to the configure command to create a configuration file.',
+    description:
+      '(optional) The path of the optional configuration JSON file containing all the options for a single run. Refer to the configure command to create a configuration file.',
   }),
   yes: flags.boolean({
     char: 'y',
@@ -190,17 +195,19 @@ AssetsPublishCommand.flags = {
   }),
   locales: flags.string({
     char: 'l',
-    description: 'Locales in which assets will be published, e.g., en-us. In the case of multiple locales, specify the codes separated by spaces.',
+    description:
+      'Locales in which assets will be published, e.g., en-us. In the case of multiple locales, specify the codes separated by spaces.',
     multiple: true,
     parse: printFlagDeprecation(['-l'], ['--locales']),
   }),
   branch: flags.string({
     char: 'B',
     default: 'main',
-    description: 'The name of the branch where you want to perform the bulk publish operation. If you don’t mention the branch name, then by default the assets from the main branch will be published.',
+    description:
+      'The name of the branch where you want to perform the bulk publish operation. If you don’t mention the branch name, then by default the assets from the main branch will be published.',
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
-  
+
   // To be deprecated
   retryFailed: flags.string({
     char: 'r',
@@ -217,13 +224,14 @@ AssetsPublishCommand.flags = {
   }),
   bulkPublish: flags.string({
     char: 'b',
-    description: "By default this flag is set as true. It indicates that Contentstack's bulk publish API will be used to publish the entries.",
+    description:
+      "By default this flag is set as true. It indicates that Contentstack's bulk publish API will be used to publish the entries.",
     default: 'true',
     hidden: true,
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
   'api-version': flags.string({
-    description: "API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
+    description: 'API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].',
   }),
   'delivery-token': flags.string({ description: 'The delivery token of the source environment.' }),
   'source-env': flags.string({ description: 'Source environment' }),

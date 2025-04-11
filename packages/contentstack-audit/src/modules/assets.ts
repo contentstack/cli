@@ -1,8 +1,6 @@
 import { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
-
-import { FsUtility, sanitizePath, ux } from '@contentstack/cli-utilities';
-
+import { FsUtility, sanitizePath, cliux } from '@contentstack/cli-utilities';
 import {
   LogFn,
   ConfigType,
@@ -118,7 +116,7 @@ export default class Assets {
 
     if (this.fix) {
       if (!this.config.flags['copy-dir'] && !this.config.flags['external-config']?.skipConfirm) {
-        canWrite = this.config.flags.yes || (await ux.confirm(commonMsg.FIX_CONFIRMATION));
+        canWrite = this.config.flags.yes || (await cliux.confirm(commonMsg.FIX_CONFIRMATION));
       }
 
       if (canWrite) {

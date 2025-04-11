@@ -134,11 +134,17 @@ export default class EntriesExport extends BaseClass {
       },
     };
 
-    const entriesSearchResponse = await this.stackAPIClient
-      .contentType(options.contentType)
-      .entry()
-      .query(requestObject)
-      .find();
+    let entriesSearchResponse;
+    try {
+      entriesSearchResponse = await this.stackAPIClient
+        .contentType(options.contentType)
+        .entry()
+        .query(requestObject)
+        .find();
+    } catch (error) {
+      log(this.exportConfig, `Failed to export entries ${formatError(error)}`, 'error');
+      throw new Error('Failed to export entries');
+    }
 
     if (Array.isArray(entriesSearchResponse.items) && entriesSearchResponse.items.length > 0) {
       if (options.skip === 0) {

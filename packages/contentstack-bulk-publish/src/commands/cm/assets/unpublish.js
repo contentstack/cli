@@ -18,7 +18,7 @@ class UnpublishCommand extends Command {
     unpublishFlags.apiVersion = unpublishFlags['api-version'] || '3';
     unpublishFlags.onlyAssets = true;
     unpublishFlags.onlyEntries = false;
-    delete unpublishFlags['api-version']
+    delete unpublishFlags['api-version'];
     delete unpublishFlags['retry-failed'];
     delete unpublishFlags['bulk-unpublish'];
     delete unpublishFlags['delivery-token'];
@@ -121,7 +121,7 @@ class UnpublishCommand extends Command {
       return true;
     }
 
-    return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
+    return await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
 }
 
@@ -134,7 +134,8 @@ But, if retry-failed flag is set, then only a logfile is required`;
 UnpublishCommand.flags = {
   alias: flags.string({
     char: 'a',
-    description: 'Alias (name) of the management token. You must use either the --alias flag or the --stack-api-key flag.',
+    description:
+      'Alias (name) of the management token. You must use either the --alias flag or the --stack-api-key flag.',
   }),
   'stack-api-key': flags.string({
     char: 'k',
@@ -147,7 +148,8 @@ UnpublishCommand.flags = {
   }),
   config: flags.string({
     char: 'c',
-    description: '(optional) Path of an optional configuration JSON file containing all the options for a single run. Refer to the configure command to create a configuration file.',
+    description:
+      '(optional) Path of an optional configuration JSON file containing all the options for a single run. Refer to the configure command to create a configuration file.',
   }),
   yes: flags.boolean({
     char: 'y',
@@ -158,10 +160,12 @@ UnpublishCommand.flags = {
   }),
   branch: flags.string({
     default: 'main',
-    description: 'The name of the branch where you want to perform the bulk unpublish operation. If you don’t mention the branch name, then by default the content from the main branch will be unpublished.',
+    description:
+      'The name of the branch where you want to perform the bulk unpublish operation. If you don’t mention the branch name, then by default the content from the main branch will be unpublished.',
   }),
   'retry-failed': flags.string({
-    description: '(optional) Use this option to retry unpublishing the failed entries from the logfile. Specify the name of the logfile that lists failed unpublish calls. If this option is used, it will override all other flags.',
+    description:
+      '(optional) Use this option to retry unpublishing the failed entries from the logfile. Specify the name of the logfile that lists failed unpublish calls. If this option is used, it will override all other flags.',
   }),
   'bulk-unpublish': flags.string({
     description: 'Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by default.',
