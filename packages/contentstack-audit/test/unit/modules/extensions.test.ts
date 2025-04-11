@@ -2,7 +2,7 @@ import { resolve } from 'path';
 import { fancy } from 'fancy-test';
 import { expect } from 'chai';
 import cloneDeep from 'lodash/cloneDeep';
-import { ux } from '@contentstack/cli-utilities';
+import { ux, cliux } from '@contentstack/cli-utilities';
 
 import config from '../../../src/config';
 import { Extensions } from '../../../src/modules';
@@ -255,7 +255,7 @@ describe('Extensions scope containing content_types uids', () => {
 
     fancy
       .stdout({ print: process.env.PRINT === 'true' || true })
-      .stub(ux, 'confirm', async () => true)
+      .stub(cliux, 'confirm', async () => true)
       .stub(ext, 'writeFileSync', () => {})
       .it(
         'missingCts in extension to extensionSchema containing, extensions with fixed scope, missing Cts to the Cts that are not present in Ct Schema, And the fixed extensions that would be overwritten in the file',
@@ -342,9 +342,10 @@ describe('Extensions scope containing content_types uids', () => {
     });
     fancy
       .stdout({ print: process.env.PRINT === 'true' || true })
-      .stub(ux, 'confirm', async () => true)
+      .stub(cliux, 'confirm', async () => true)
       .stub(ext, 'writeFixContent', async () => {})
       .stub(ext, 'writeFileSync', () => {})
+      .stub(ext, 'writeFixContent', async () => {}) 
       .it(
         'missingCts in extension to extensionSchema containing, extensions with fixed scope, missing Cts to the Cts that are not present in Ct Schema, Not overwriting to the file',
         async () => {

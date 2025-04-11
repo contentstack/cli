@@ -2,7 +2,7 @@ import path, { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { cloneDeep } from 'lodash';
 import { LogFn, ConfigType, ContentTypeStruct, CtConstructorParam, ModuleConstructorParam, Extension } from '../types';
-import { ux, sanitizePath } from '@contentstack/cli-utilities';
+import { sanitizePath, cliux } from '@contentstack/cli-utilities';
 
 import auditConfig from '../config';
 import { $t, auditMsg, commonMsg } from '../messages';
@@ -36,17 +36,23 @@ export default class Extensions {
     this.extensionsSchema = [];
     this.moduleName = this.validateModules(moduleName!, this.config.moduleConfig);
     this.fileName = config.moduleConfig[this.moduleName].fileName;
-    this.folderPath = resolve(sanitizePath(config.basePath), sanitizePath(config.moduleConfig[this.moduleName].dirName));
+    this.folderPath = resolve(
+      sanitizePath(config.basePath),
+      sanitizePath(config.moduleConfig[this.moduleName].dirName),
+    );
     this.ctUidSet = new Set(['$all']);
     this.missingCtInExtensions = [];
     this.missingCts = new Set();
     this.extensionsPath = '';
   }
-  validateModules(moduleName: keyof typeof auditConfig.moduleConfig, moduleConfig: Record<string, unknown>): keyof typeof auditConfig.moduleConfig {
+  validateModules(
+    moduleName: keyof typeof auditConfig.moduleConfig,
+    moduleConfig: Record<string, unknown>,
+  ): keyof typeof auditConfig.moduleConfig {
     if (Object.keys(moduleConfig).includes(moduleName)) {
       return moduleName;
     }
-    return 'extensions'
+    return 'extensions';
   }
 
   async run() {
@@ -101,7 +107,7 @@ export default class Extensions {
         newExtensionSchema[uid].scope.content_types = fixedCts;
       } else {
         this.log($t(commonMsg.EXTENSION_FIX_WARN, { title: title, uid }), { color: 'yellow' });
-        const shouldDelete = this.config.flags.yes || (await ux.confirm(commonMsg.EXTENSION_FIX_CONFIRMATION));
+        const shouldDelete = this.config.flags.yes || (await cliux.confirm(commonMsg.EXTENSION_FIX_CONFIRMATION));
         if (shouldDelete) {
           delete newExtensionSchema[uid];
         }
@@ -116,7 +122,7 @@ export default class Extensions {
       (this.config.flags['copy-dir'] ||
         this.config.flags['external-config']?.skipConfirm ||
         this.config.flags.yes ||
-        (await ux.confirm(commonMsg.FIX_CONFIRMATION)))
+        (await cliux.confirm(commonMsg.FIX_CONFIRMATION)))
     ) {
       writeFileSync(
         join(this.folderPath, this.config.moduleConfig[this.moduleName].fileName),

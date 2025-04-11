@@ -1,0 +1,65 @@
+name: Run Unit Tests
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Install dependencies for all plugins
+        run: |
+          npm run setup-repo-old
+
+      - name: Run tests for Audit plugin
+        working-directory: ./packages/contentstack-audit
+        run: npm run test:unit
+
+      - name: Run tests for Contentstack Config
+        working-directory: ./packages/contentstack-config
+        run: npm run test
+      # - name: Fetch latest references
+      #   run: |
+      #     git fetch --prune
+
+      # - name: Identify Changed Plugins
+      #   id: changes
+      #   run: |
+      #     echo "Finding changed files..."
+      #     # Ensure both commit references are valid
+      #     if [[ -z "${{ github.event.before }}" || -z "${{ github.sha }}" ]]; then
+      #       echo "Error: Missing commit references"
+      #       exit 1
+      #     fi
+
+      #     CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+      #     echo "Changed files:"
+      #     echo "$CHANGED_FILES"
+
+      #     # Identify affected plugins
+      #     AFFECTED_PLUGINS=$(echo "$CHANGED_FILES" | grep -oP '(?<=^packages/)([^/]+)' | sort -u | tr '\n' ' ')
+      #     echo "Affected plugins: $AFFECTED_PLUGINS"
+
+      #     # Set output for the next step
+      #     echo "::set-output name=affected_plugins::$AFFECTED_PLUGINS"
+
+      # - name: Run Unit Tests for Affected Plugins
+      #   run: |
+      #     for plugin in ${{ steps.changes.outputs.affected_plugins }}; do
+      #       echo "Checking if tests should run for $plugin..."
+      #       if [[ "$plugin" == "contentstack-audit" ]]; then
+      #         echo "Running tests for contentstack-audit..."
+      #         npm run test:unit --prefix ./packages/contentstack-audit
+      #       else
+      #         echo "contentstack-audit has not changed. Skipping tests."
+      #       fi
+      #     done
