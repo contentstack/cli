@@ -3582,6 +3582,10 @@ EXAMPLES
 
   $ csdx config:set:region EU
 
+  $ csdx config:set:region AWS-NA
+
+  $ csdx config:set:region AWS-EU
+
   $ csdx config:set:region AZURE-NA
 
   $ csdx config:set:region AZURE-EU

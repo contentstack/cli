@@ -4,7 +4,7 @@
   "version": "1.21.0",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
-
+  "dependencies": {
     "@contentstack/cli-audit": "~1.11.0",
     "@contentstack/cli-command": "~1.4.0",
     "@contentstack/cli-utilities": "~1.10.0",
