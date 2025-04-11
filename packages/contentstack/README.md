@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.38.0 darwin-arm64 node-v22.13.1
+@contentstack/cli/1.39.0 darwin-arm64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -47,7 +47,7 @@ USAGE
 * [`csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>] [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]`](#csdx-cmbranchesmerge--k-value--compare-branch-value---no-revert---export-summary-path-value---use-merge-summary-value---comment-value---base-branch-value)
 * [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
 * [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value)
-* [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value-1)
+* [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value)
 * [`csdx cm:bulk-publish:clear`](#csdx-cmbulk-publishclear)
 * [`csdx cm:bulk-publish:configure`](#csdx-cmbulk-publishconfigure)
 * [`csdx cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries] [--include-variants]`](#csdx-cmbulk-publishcross-publish--a-value---retry-failed-value---bulk-publish-value---content-type-value---locales-value---source-env-value---environments-value---delivery-token-value--c-value--y---branch-value---onlyassets---onlyentries---include-variants)
@@ -58,12 +58,12 @@ USAGE
 * [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries)
 * [`csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-only-unpublished--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
 * [`csdx cm:entries:migrate-html-rte`](#csdx-cmentriesmigrate-html-rte)
-* [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value---entry-uid-value---include-variants-1)
-* [`csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-modified--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value-1)
-* [`csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-non-localized-fields--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value--e-value--c-value--y---branch-value-1)
-* [`csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-only-unpublished--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value-1)
+* [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value---entry-uid-value---include-variants)
+* [`csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-modified--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
+* [`csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-non-localized-fields--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value--e-value--c-value--y---branch-value)
+* [`csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-only-unpublished--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
 * [`csdx cm:entries:unpublish`](#csdx-cmentriesunpublish)
-* [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value-1)
+* [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value)
 * [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets)
 * [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
 * [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
@@ -74,17 +74,17 @@ USAGE
 * [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent)
 * [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
 * [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix)
-* [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent-1)
-* [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets-1)
-* [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent-1)
-* [`csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`](#csdx-cmstacksimport-setup--k-value--d-value--a-value---modules-valuevalue-1)
-* [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple-1)
+* [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent)
+* [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets)
+* [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
+* [`csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`](#csdx-cmstacksimport-setup--k-value--d-value--a-value---modules-valuevalue)
+* [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple)
 * [`csdx cm:stacks:publish`](#csdx-cmstackspublish)
 * [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
 * [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
 * [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
-* [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value---locale-value-1)
-* [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries-1)
+* [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value---locale-value)
+* [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries)
 * [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
 * [`csdx config:get:ea-header`](#csdx-configgetea-header)
 * [`csdx config:get:early-access-header`](#csdx-configgetearly-access-header)
@@ -99,7 +99,7 @@ USAGE
 * [`csdx config:set:early-access-header`](#csdx-configsetearly-access-header)
 * [`csdx config:set:rate-limit`](#csdx-configsetrate-limit)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
-* [`csdx help [COMMANDS]`](#csdx-help-commands)
+* [`csdx help [COMMAND]`](#csdx-help-command)
 * [`csdx launch`](#csdx-launch)
 * [`csdx launch:deployments`](#csdx-launchdeployments)
 * [`csdx launch:environments`](#csdx-launchenvironments)
@@ -127,21 +127,29 @@ Perform audits and find possible errors in the exported Contentstack data
 
 ```
 USAGE
-  $ csdx audit [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets...] [--columns <value> | ] [--sort
-    <value>] [--filter <value>] [--csv | --no-truncate]
+  $ csdx audit [-c <value>] [-d <value>] [--report-path <value>] [--modules
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules...] [--columns <value>]
+    [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
-                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets>
+                         <options:
+                         content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules>
   --report-path=<value>  Path to store the audit reports
 
+COMMON FLAGS
+  -c, --config=<value>    Path of the external config
+  -d, --data-dir=<value>  Path where the data is stored
+
 TABLE FLAGS
-  --columns=<value>  Show only the specified columns (comma-separated)
-  --csv              The output is in the CSV format [alias: --output=csv]
-  --filter=<value>   Filter property by partial string matching. For example: name=foo
-  --no-truncate      The output is not truncated to fit the screen
-  --sort=<value>     Property to sort by (prepend '-' for descending)
+  --columns=<value>  Specify columns to display, comma-separated.
+  --csv              Output results in CSV format.
+  --filter=<value>   Filter rows by a column value (e.g., name=foo).
+  --no-header        Hide table headers in output.
+  --no-truncate      Prevent truncation of long text in columns.
+  --output=<option>  Specify output format: csv, json, or yaml.
+                     <options: csv|json|yaml>
+  --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 DESCRIPTION
   Perform audits and find possible errors in the exported Contentstack data
@@ -168,10 +176,10 @@ Perform audits and fix possible errors in the exported Contentstack data.
 
 ```
 USAGE
-  $ csdx audit:fix [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets...] [--copy-path <value> --copy-dir]
-    [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value> | ]
-    [--sort <value>] [--filter <value>] [--csv | --no-truncate]
+  $ csdx audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules...] [--copy-path <value>
+    --copy-dir] [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns
+    <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --copy-dir              Create backup from the original data.
@@ -179,15 +187,23 @@ FLAGS
   --fix-only=<option>...  Provide the list of fix options
                           <options: reference|global_field|json:rte|json:extension|blocks|group|content_types>
   --modules=<option>...   Provide the list of modules to be audited
-                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets>
+                          <options:
+                          content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules>
   --report-path=<value>   Path to store the audit reports
 
+COMMON FLAGS
+  -c, --config=<value>    Path of the external config
+  -d, --data-dir=<value>  Path where the data is stored
+
 TABLE FLAGS
-  --columns=<value>  Show only the specified columns (comma-separated)
-  --csv              The output is in the CSV format [alias: --output=csv]
-  --filter=<value>   Filter property by partial string matching. For example: name=foo
-  --no-truncate      The output is not truncated to fit the screen
-  --sort=<value>     Property to sort by (prepend '-' for descending)
+  --columns=<value>  Specify columns to display, comma-separated.
+  --csv              Output results in CSV format.
+  --filter=<value>   Filter rows by a column value (e.g., name=foo).
+  --no-header        Hide table headers in output.
+  --no-truncate      Prevent truncation of long text in columns.
+  --output=<option>  Specify output format: csv, json, or yaml.
+                     <options: csv|json|yaml>
+  --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 DESCRIPTION
   Perform audits and fix possible errors in the exported Contentstack data.
@@ -276,19 +292,18 @@ Lists all existing tokens added to the session
 
 ```
 USAGE
-  $ csdx auth:tokens [--columns <value> | -x] [--filter <value>] [--no-header | [--csv | --no-truncate]]
-    [--output csv|json|yaml |  | ] [--sort <value>]
+  $ csdx auth:tokens [--columns <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate]
+    [--no-header] [--output csv|json|yaml]
 
-FLAGS
-  -x, --extended         show extra columns
-      --columns=<value>  only show provided columns (comma-separated)
-      --csv              output is csv format [alias: --output=csv]
-      --filter=<value>   filter property by partial string matching, ex: name=foo
-      --no-header        hide table header from output
-      --no-truncate      do not truncate output to fit screen
-      --output=<option>  output in a more machine friendly format
-                         <options: csv|json|yaml>
-      --sort=<value>     property to sort by (prepend '-' for descending)
+TABLE FLAGS
+  --columns=<value>  Specify columns to display, comma-separated.
+  --csv              Output results in CSV format.
+  --filter=<value>   Filter rows by a column value (e.g., name=foo).
+  --no-header        Hide table headers in output.
+  --no-truncate      Prevent truncation of long text in columns.
+  --output=<option>  Specify output format: csv, json, or yaml.
+                     <options: csv|json|yaml>
+  --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 DESCRIPTION
   Lists all existing tokens added to the session
@@ -2608,21 +2623,29 @@ Perform audits and find possible errors in the exported Contentstack data
 
 ```
 USAGE
-  $ csdx cm:stacks:audit [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets...] [--columns <value> | ] [--sort
-    <value>] [--filter <value>] [--csv | --no-truncate]
+  $ csdx cm:stacks:audit [-c <value>] [-d <value>] [--report-path <value>] [--modules
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules...] [--columns <value>]
+    [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
-                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets>
+                         <options:
+                         content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules>
   --report-path=<value>  Path to store the audit reports
 
+COMMON FLAGS
+  -c, --config=<value>    Path of the external config
+  -d, --data-dir=<value>  Path where the data is stored
+
 TABLE FLAGS
-  --columns=<value>  Show only the specified columns (comma-separated)
-  --csv              The output is in the CSV format [alias: --output=csv]
-  --filter=<value>   Filter property by partial string matching. For example: name=foo
-  --no-truncate      The output is not truncated to fit the screen
-  --sort=<value>     Property to sort by (prepend '-' for descending)
+  --columns=<value>  Specify columns to display, comma-separated.
+  --csv              Output results in CSV format.
+  --filter=<value>   Filter rows by a column value (e.g., name=foo).
+  --no-header        Hide table headers in output.
+  --no-truncate      Prevent truncation of long text in columns.
+  --output=<option>  Specify output format: csv, json, or yaml.
+                     <options: csv|json|yaml>
+  --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 DESCRIPTION
   Perform audits and find possible errors in the exported Contentstack data
@@ -2651,10 +2674,10 @@ Perform audits and fix possible errors in the exported Contentstack data.
 
 ```
 USAGE
-  $ csdx cm:stacks:audit:fix [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets...] [--copy-path <value> --copy-dir]
-    [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value> | ]
-    [--sort <value>] [--filter <value>] [--csv | --no-truncate]
+  $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules...] [--copy-path <value>
+    --copy-dir] [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns
+    <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --copy-dir              Create backup from the original data.
@@ -2662,15 +2685,23 @@ FLAGS
   --fix-only=<option>...  Provide the list of fix options
                           <options: reference|global_field|json:rte|json:extension|blocks|group|content_types>
   --modules=<option>...   Provide the list of modules to be audited
-                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets>
+                          <options:
+                          content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules>
   --report-path=<value>   Path to store the audit reports
 
+COMMON FLAGS
+  -c, --config=<value>    Path of the external config
+  -d, --data-dir=<value>  Path where the data is stored
+
 TABLE FLAGS
-  --columns=<value>  Show only the specified columns (comma-separated)
-  --csv              The output is in the CSV format [alias: --output=csv]
-  --filter=<value>   Filter property by partial string matching. For example: name=foo
-  --no-truncate      The output is not truncated to fit the screen
-  --sort=<value>     Property to sort by (prepend '-' for descending)
+  --columns=<value>  Specify columns to display, comma-separated.
+  --csv              Output results in CSV format.
+  --filter=<value>   Filter rows by a column value (e.g., name=foo).
+  --no-header        Hide table headers in output.
+  --no-truncate      Prevent truncation of long text in columns.
+  --output=<option>  Specify output format: csv, json, or yaml.
+                     <options: csv|json|yaml>
+  --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 DESCRIPTION
   Perform audits and fix possible errors in the exported Contentstack data.
@@ -3578,16 +3609,16 @@ EXAMPLES
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/region.ts)_
 
-## `csdx help [COMMANDS]`
+## `csdx help [COMMAND]`
 
 Display help for csdx.
 
 ```
 USAGE
-  $ csdx help [COMMANDS...] [-n]
+  $ csdx help [COMMAND...] [-n]
 
 ARGUMENTS
-  COMMANDS...  Command to show help for.
+  COMMAND...  Command to show help for.
 
 FLAGS
   -n, --nested-commands  Include all nested commands in the output.
@@ -3596,7 +3627,7 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.20/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.27/src/commands/help.ts)_
 
 ## `csdx launch`
 
@@ -3604,14 +3635,16 @@ Launch related operations
 
 ```
 USAGE
-  $ csdx launch [--type GitHub|FileUpload] [--framework Gatsby|NextJs|CRA (Create React App)|CSR
-    (Client-Side Rendered)|Angular|VueJs|Other] [--org <value>] [-n <value>] [-e <value>] [--branch <value>]
-    [--build-command <value>] [--out-dir <value>] [--server-command <value>] [--variable-type Import variables from a
-    stack|Manually add custom variables to the list|Import variables from the local env file] [-a <value>]
+  $ csdx launch [-d <value>] [-c <value>] [--type GitHub|FileUpload] [--framework Gatsby|NextJs|CRA (Create
+    React App)|CSR (Client-Side Rendered)|Angular|VueJs|Other] [--org <value>] [-n <value>] [-e <value>] [--branch
+    <value>] [--build-command <value>] [--out-dir <value>] [--server-command <value>] [--variable-type Import variables
+    from a stack|Manually add custom variables to the list|Import variables from the local env file] [-a <value>]
     [--env-variables <value>] [--redeploy-latest] [--redeploy-last-upload]
 
 FLAGS
   -a, --alias=<value>           [optional] Alias (name) for the delivery token.
+  -c, --config=<value>          Path to the local '.cs-launch.json' file
+  -d, --data-dir=<value>        Current working directory
   -e, --environment=<value>     [optional] Environment name for the Launch project.
   -n, --name=<value>            [optional] Name of the project.
       --branch=<value>          [optional] GitHub branch name.
@@ -3672,9 +3705,11 @@ Show list of deployments for an environment
 
 ```
 USAGE
-  $ csdx launch:deployments [--org <value>] [--project <value>] [-e <value>]
+  $ csdx launch:deployments [-d <value>] [-c <value>] [--org <value>] [--project <value>] [-e <value>]
 
 FLAGS
+  -c, --config=<value>       Path to the local '.cs-launch.json' file
+  -d, --data-dir=<value>     Current working directory
   -e, --environment=<value>  Environment name or UID
       --org=<value>          [Optional] Provide the organization UID
       --project=<value>      [Optional] Provide the project UID
@@ -3700,11 +3735,13 @@ Show list of environments for a project
 
 ```
 USAGE
-  $ csdx launch:environments [--org <value>] [--project <value>]
+  $ csdx launch:environments [-d <value>] [-c <value>] [--org <value>] [--project <value>]
 
 FLAGS
-  --org=<value>      [Optional] Provide the organization UID
-  --project=<value>  [Optional] Provide the project UID
+  -c, --config=<value>    Path to the local '.cs-launch.json' file
+  -d, --data-dir=<value>  Current working directory
+      --org=<value>       [Optional] Provide the organization UID
+      --project=<value>   [Optional] Provide the project UID
 
 DESCRIPTION
   Show list of environments for a project
@@ -3730,7 +3767,8 @@ USAGE
   $ csdx launch:functions [-p <value>] [-d <value>]
 
 FLAGS
-  -d, --data-dir=<value>  Current working directory
+  -d, --data-dir=<value>  [default: /Users/aman.kumar/Documents/cli-repo/cli/packages/contentstack] Current working
+                          directory
   -p, --port=<value>      [default: 3000] Port number
 
 DESCRIPTION
@@ -3754,9 +3792,12 @@ Show deployment or server logs
 
 ```
 USAGE
-  $ csdx launch:logs [-e <value>] [--deployment <value>] [--type d|s] [--org <value>] [--project <value>]
+  $ csdx launch:logs [-d <value>] [-c <value>] [-e <value>] [--deployment <value>] [--type d|s] [--org <value>]
+    [--project <value>]
 
 FLAGS
+  -c, --config=<value>       Path to the local '.cs-launch.json' file
+  -d, --data-dir=<value>     Current working directory
   -e, --environment=<value>  Environment name or UID
       --deployment=<value>   Deployment number or UID
       --org=<value>          [Optional] Provide the organization UID
@@ -3798,9 +3839,11 @@ Open a website for an environment
 
 ```
 USAGE
-  $ csdx launch:open [--org <value>] [--project <value>] [-e <value>]
+  $ csdx launch:open [-d <value>] [-c <value>] [--org <value>] [--project <value>] [-e <value>]
 
 FLAGS
+  -c, --config=<value>       Path to the local '.cs-launch.json' file
+  -d, --data-dir=<value>     Current working directory
   -e, --environment=<value>  Environment name or UID
       --org=<value>          [Optional] Provide the organization UID
       --project=<value>      [Optional] Provide the project UID
@@ -4176,19 +4219,18 @@ Lists all existing tokens added to the session
 
 ```
 USAGE
-  $ csdx tokens [--columns <value> | -x] [--filter <value>] [--no-header | [--csv | --no-truncate]]
-    [--output csv|json|yaml |  | ] [--sort <value>]
+  $ csdx tokens [--columns <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate]
+    [--no-header] [--output csv|json|yaml]
 
-FLAGS
-  -x, --extended         show extra columns
-      --columns=<value>  only show provided columns (comma-separated)
-      --csv              output is csv format [alias: --output=csv]
-      --filter=<value>   filter property by partial string matching, ex: name=foo
-      --no-header        hide table header from output
-      --no-truncate      do not truncate output to fit screen
-      --output=<option>  output in a more machine friendly format
-                         <options: csv|json|yaml>
-      --sort=<value>     property to sort by (prepend '-' for descending)
+TABLE FLAGS
+  --columns=<value>  Specify columns to display, comma-separated.
+  --csv              Output results in CSV format.
+  --filter=<value>   Filter rows by a column value (e.g., name=foo).
+  --no-header        Hide table headers in output.
+  --no-truncate      Prevent truncation of long text in columns.
+  --output=<option>  Specify output format: csv, json, or yaml.
+                     <options: csv|json|yaml>
+  --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 DESCRIPTION
   Lists all existing tokens added to the session

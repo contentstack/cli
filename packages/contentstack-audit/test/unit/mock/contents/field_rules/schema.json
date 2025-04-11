@@ -1,0 +1,90 @@
+{
+  "page_2": [
+    {
+      "action": {
+        "action": "show",
+        "target_field": "desc"
+      },
+      "ctUid": "page_2"
+    },
+    {
+      "action": {
+        "operand_field": "title",
+        "operator": "equals",
+        "value": "Test"
+      },
+      "ctUid": "page_2"
+    }
+  ],
+  "page_3": [
+    {
+      "action": {
+        "action": "hide",
+        "target_field": "global.missing"
+      },
+      "ctUid": "page_3"
+    },
+    {
+      "action": {
+        "operand_field": "global.gf_text",
+        "operator": "equals",
+        "value": "Global"
+      },
+      "ctUid": "page_3"
+    }
+  ],
+  "page_4": [
+    {
+      "action": {
+        "action": "show",
+        "target_field": "group.group_text"
+      },
+      "ctUid": "page_4"
+    },
+    {
+      "action": {
+        "action": "hide",
+        "target_field": "missing_field"
+      },
+      "ctUid": "page_4"
+    },
+    {
+      "action": {
+        "operand_field": "name",
+        "operator": "equals",
+        "value": "Test"
+      },
+      "ctUid": "page_4"
+    },
+    {
+      "action": {
+        "action": "show",
+        "target_field": "invalid_block_field"
+      },
+      "ctUid": "page_4"
+    },
+    {
+      "action": {
+        "operand_field": "blocks.block_1.block_text",
+        "operator": "equals",
+        "value": "Block"
+      },
+      "ctUid": "page_4"
+    },
+    {
+      "action": {
+        "action": "show",
+        "target_field": "name"
+      },
+      "ctUid": "page_4"
+    },
+    {
+      "action": {
+        "operand_field": "invalid_condition",
+        "operator": "equals",
+        "value": "Test"
+      },
+      "ctUid": "page_4"
+    }
+  ]
+}

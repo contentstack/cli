@@ -17,7 +17,7 @@ describe('Audit command', () => {
       .stub(winston, 'createLogger', () => ({ log: () => {}, error: () => {} }))
       .stub(AuditBaseCommand.prototype, 'start', () => {})
       .it('should trigger AuditBaseCommand start method', async () => {
-        const { stdout } = await runCommand(['cm:stacks:audit'], { root: process.cwd() });
+        const { stdout } = await runCommand(['cm:stacks:audit', 'd', 'mock'], { root: process.cwd() });
         expect(stdout).to.be.string;
       });
 
@@ -28,7 +28,7 @@ describe('Audit command', () => {
       .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
       .stub(AuditBaseCommand.prototype, 'start', () => Promise.reject('process failed'))
       .it('should log any error and exit with status code 1', async () => {
-        await runCommand(['cm:stacks:audit'], { root: process.cwd() });
+        await runCommand(['cm:stacks:audit', 'd', 'mock'], { root: process.cwd() });
       });
 
     fancy
@@ -36,11 +36,11 @@ describe('Audit command', () => {
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
-      .stub(AuditBaseCommand.prototype, 'start', () => {
-        throw Error('process failed');
+      .stub(AuditBaseCommand.prototype, 'start', async () => {
+        Promise.reject('process failed');
       })
       .it('should log the error objet message and exit with status code 1', async () => {
-        await runCommand(['cm:stacks:audit'], { root: process.cwd() });
+        await runCommand(['cm:stacks:audit', 'd', 'mock'], { root: process.cwd() });
       });
   });
 });

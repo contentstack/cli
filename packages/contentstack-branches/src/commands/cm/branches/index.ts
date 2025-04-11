@@ -1,5 +1,12 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, messageHandler, managementSDKClient, flags, isAuthenticated } from '@contentstack/cli-utilities';
+import {
+  cliux,
+  messageHandler,
+  managementSDKClient,
+  flags,
+  isAuthenticated,
+  TableHeader,
+} from '@contentstack/cli-utilities';
 import { getbranchesList, getbranchConfig, interactive, handleErrorMsg } from '../../../utils/index';
 import chalk from 'chalk';
 export default class BranchListCommand extends Command {
@@ -60,29 +67,25 @@ export default class BranchListCommand extends Command {
               : cliux.print(Branch, { color: 'blue' });
           });
         } else {
-          cliux.table(
-            branches,
+          const tableHeaders: TableHeader[] = [
             {
-              Branch: {
-                minWidth: 8,
-              },
-              Source: {
-                minWidth: 8,
-              },
-              Aliases: {
-                minWidth: 8,
-              },
-              Created: {
-                minWidth: 8,
-              },
-              Updated: {
-                minWidth: 8,
-              },
+              value: 'Branch',
             },
             {
-              printLine: cliux.print,
+              value: 'Source',
             },
-          );
+            {
+              value: 'Aliases',
+            },
+            {
+              value: 'Created',
+            },
+            {
+              value: 'Updated',
+            },
+          ];
+
+          cliux.table(tableHeaders, branches);
         }
       }
     } catch (error) {

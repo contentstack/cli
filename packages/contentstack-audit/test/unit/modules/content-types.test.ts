@@ -4,7 +4,7 @@ import { resolve } from 'path';
 import { fancy } from 'fancy-test';
 import { expect } from 'chai';
 import cloneDeep from 'lodash/cloneDeep';
-import { ux } from '@contentstack/cli-utilities';
+import { cliux } from '@contentstack/cli-utilities';
 
 import config from '../../../src/config';
 import { ContentType } from '../../../src/modules';
@@ -137,7 +137,7 @@ describe('Content types', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(fs, 'writeFileSync', () => {})
-      .stub(ux, 'confirm', async () => true)
+      .stub(cliux, 'confirm', async () => true)
       .it('should not write the file', async () => {
         const ctInstance = new ContentType({ ...constructorParam, fix: true });
         const fsSpy = sinon.spy(fs, 'writeFileSync');
@@ -149,9 +149,9 @@ describe('Content types', () => {
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(fs, 'writeFileSync', () => {})
       .it('should prompt and ask confirmation', async () => {
-        sinon.replace(ux, 'confirm', async () => false);
+        sinon.replace(cliux, 'confirm', async () => false);
         const ctInstance = new ContentType({ ...constructorParam, fix: true });
-        const spy = sinon.spy(ux, 'confirm');
+        const spy = sinon.spy(cliux, 'confirm');
         await ctInstance.writeFixContent();
         expect(spy.callCount).to.be.equals(1);
       });

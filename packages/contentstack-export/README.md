@@ -48,7 +48,7 @@ $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-export/1.15.2 darwin-arm64 node-v22.13.1
+@contentstack/cli-cm-export/1.16.0 darwin-arm64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -60,7 +60,7 @@ USAGE
 
 <!-- commands -->
 * [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets)
-* [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets-1)
+* [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets)
 
 ## `csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`
 
@@ -68,8 +68,8 @@ Export content from a stack
 
 ```
 USAGE
-  $ csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types
-    <value>] [--branch <value>] [--secured-assets]
+  $ csdx cm:export cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>]
+    [--content-types <value>] [--branch <value>] [--secured-assets]
 
 FLAGS
   -B, --branch=<value>            [optional] The name of the branch where you want to export your content. If you don't
@@ -87,7 +87,7 @@ FLAGS
   -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
                                   of multiple content types, specify the IDs separated by spaces.
   -y, --yes                       [optional] Force override all Marketplace prompts.
-  --secured-assets                [optional] Use this flag for assets that are secured.
+      --secured-assets            [optional] Use this flag for assets that are secured.
 
 DESCRIPTION
   Export content from a stack
@@ -136,7 +136,7 @@ FLAGS
   -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
                                   of multiple content types, specify the IDs separated by spaces.
   -y, --yes                       [optional] Force override all Marketplace prompts.
-  --secured-assets                [optional] Use this flag for assets that are secured.
+      --secured-assets            [optional] Use this flag for assets that are secured.
 
 DESCRIPTION
   Export content from a stack

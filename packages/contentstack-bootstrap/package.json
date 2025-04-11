@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-cm-bootstrap",
   "description": "Bootstrap contentstack apps",
-  "version": "1.13.3",
+  "version": "1.14.0",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "scripts": {
@@ -17,9 +17,9 @@
     "test:report": "nyc --reporter=lcov mocha \"test/**/*.test.js\""
   },
   "dependencies": {
-    "@contentstack/cli-cm-seed": "~1.10.3",
-    "@contentstack/cli-command": "~1.3.3",
-    "@contentstack/cli-utilities": "~1.9.0",
+    "@contentstack/cli-cm-seed": "~1.11.0",
+    "@contentstack/cli-command": "~1.5.0",
+    "@contentstack/cli-utilities": "~1.11.0",
     "inquirer": "8.2.6",
     "mkdirp": "^1.0.4",
     "tar": "^6.2.1 "
@@ -32,11 +32,11 @@
     "@types/tar": "^6.1.13",
     "chai": "^4.5.0",
     "eslint": "^8.57.1",
-    "eslint-config-oclif": "^4.0.0",
+    "eslint-config-oclif": "^6.0.15",
     "eslint-config-oclif-typescript": "^3.1.13",
     "mocha": "10.8.2",
     "nyc": "^15.1.0",
-    "oclif": "^3.17.2",
+    "oclif": "^4.17.30",
     "tmp": "^0.2.3",
     "ts-node": "^8.10.2",
     "typescript": "^4.9.5"
