@@ -7,6 +7,7 @@ export interface InquirePayload {
   name: string;
   message: string;
   choices?: Array<any>;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   transformer?: Function;
 }
 
@@ -27,8 +28,8 @@ export interface Limit {
 
 export interface RateLimitConfig {
   getLimit?: Limit;
-  limit?: Limit
-  bulkLimit?: Limit
+  limit?: Limit;
+  bulkLimit?: Limit;
 }
 
 export interface SetRateLimitConfig {
