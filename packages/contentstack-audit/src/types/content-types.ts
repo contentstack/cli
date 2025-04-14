@@ -169,6 +169,11 @@ enum OutputColumn {
   'action' = 'action',
   'field_uid' = 'field_uid',
   'multiple' = 'multiple',
+  Module="Module",
+  "Total"="Total",
+  "Passed"="Passed",
+  "Fixable"="Fixable",
+  "Non-Fixable"="Non-Fixable"   
 }
 
 export {
