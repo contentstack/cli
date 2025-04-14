@@ -2,7 +2,7 @@ import fs from 'fs';
 import { resolve } from 'path';
 import { expect } from 'chai';
 import cloneDeep from 'lodash/cloneDeep';
-import { ux } from '@contentstack/cli-utilities';
+import { cliux } from '@contentstack/cli-utilities';
 import fancy from 'fancy-test';
 import Sinon from 'sinon';
 import config from '../../../src/config';
@@ -112,7 +112,7 @@ describe('Entries module', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(fs, 'writeFileSync', () => {})
-      .stub(ux, 'confirm', async () => true)
+      .stub(cliux, 'confirm', async () => true)
       .it('should ask confirmation adn write content in given path', async ({}) => {
         const writeFileSync = Sinon.spy(fs, 'writeFileSync');
         const ctInstance = new Entries({ ...constructorParam, fix: true });

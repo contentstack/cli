@@ -43,6 +43,10 @@ const auditMsg = {
   CT_REFERENCE_FIELD: `The mentioned Reference field is not Array field reference is '{reference_to}' having display name '{display_name}''`,
   ASSET_NOT_EXIST: `The publish_details either does not exist or is not an array for asset uid '{uid}'`,
   ENTRY_PUBLISH_DETAILS_NOT_EXIST: `The publish_details either does not exist or is not an array for entry uid '{uid}'`,
+  FIELD_RULE_CONDITION_ABSENT: `The operand field '{condition_field}' is not present in the schema of the content-type {ctUid}`,
+  FIELD_RULE_TARGET_ABSENT: `The target field '{target_field}' is not present in the schema of the content-type {ctUid}`,
+  FIELD_RULE_CONDITION_SCAN_MESSAGE: `Completed Scanning of Field Rule '{num}' condition of Content-type '{ctUid}'`,
+  FIELD_RULE_TARGET_SCAN_MESSAGE: `Completed Scanning of Field Rule '{num}' target of Content-type '{ctUid}'`
 };
 
 const auditFixMsg = {
@@ -56,6 +60,7 @@ const auditFixMsg = {
   ENTRY_MANDATORY_FIELD_FIX: `Removing the publish details from the entry with UID '{uid}' in Locale '{locale}'...`,
   ENTRY_SELECT_FIELD_FIX: `Adding the value '{value}' in the select field of entry UID '{uid}'...`,
   ASSET_FIX: `Fixed publish detials for Asset with UID '{uid}'`,
+  FIELD_RULE_FIX_MESSAGE: `Fixed Field Rule '{num}' target of Content-type '{ctUid}`,
 };
 
 const messages: typeof errors &
