@@ -6,4 +6,6 @@ import Extensions from './extensions';
 import CustomRoles from './custom-roles';
 import Assets from './assets';
 import FieldRule from './field_rules';
-export { Entries, GlobalField, ContentType, Workflows, Extensions, Assets, CustomRoles, FieldRule };
+import ModuleDataReader from './modulesData';
+
+export { Entries, GlobalField, ContentType, Workflows, Extensions, Assets, CustomRoles, FieldRule, ModuleDataReader };

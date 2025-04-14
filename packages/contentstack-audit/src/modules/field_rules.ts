@@ -241,7 +241,7 @@ export default class FieldRule {
         fixStatus: 'Fixed',
       });
     } else {
-      this.missingRefs[this.currentUid].push({ action: actions, ctUid: this.currentUid });
+      this.missingRefs[this.currentUid].push({ ctUid: this.currentUid, action: actions });
     }
   }
   /**
