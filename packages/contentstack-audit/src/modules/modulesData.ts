@@ -41,7 +41,7 @@ export default class ModuleDataReader {
         count = this.gfSchema.length;
         break;
       case 'assets': 
-        count = keys(await this.readEntryAssetsModule(this.folderPath,'assets')).length;
+        count = await this.readEntryAssetsModule(join(this.folderPath,'assets'),'assets') || 0;
         break;
       case 'entries':
         {

@@ -110,6 +110,8 @@ const config = {
     "Total",
     "Fixable",
     "Non-Fixable",
+    "Fixed",
+    "Not-Fixed",
     "Passed",
   ],
   ReportTitleForEntries: {

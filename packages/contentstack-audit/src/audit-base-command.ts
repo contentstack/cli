@@ -104,7 +104,6 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       this.showOutputOnScreenWorkflowsAndExtension([
         { module: 'Entries Changed Multiple Fields', missingRefs: missingMultipleFields },
       ]);
-
     }
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Summary', missingRefs: this.summaryDataToPrint }]);
 
@@ -186,7 +185,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       fix: this.currentCommand === 'cm:stacks:audit:fix',
     };
 
-    let dataModuleWise: Record<string,any> = await new ModuleDataReader(cloneDeep(constructorParam)).run();
+    let dataModuleWise: Record<string, any> = await new ModuleDataReader(cloneDeep(constructorParam)).run();
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       print([
         {
@@ -449,7 +448,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         .map((key: string) => ({
           value: key,
           formatter: (cellValue: any) => {
-            if (key === 'fixStatus' || key === 'Fixable') {
+            if (key === 'fixStatus' || key === 'Fixable' || key === 'Fixed') {
               return chalk.green(typeof cellValue === 'object' ? JSON.stringify(cellValue) : cellValue);
             } else if (
               key === 'content_types' ||
@@ -457,7 +456,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
               key === 'missingCTSelectFieldValues' ||
               key === 'missingFieldUid' ||
               key === 'action' ||
-              key === 'Non-Fixable'
+              key === 'Non-Fixable' || 
+              key === 'Not-Fixed'
             ) {
               return chalk.red(typeof cellValue === 'object' ? JSON.stringify(cellValue) : cellValue);
             } else {
@@ -590,27 +590,45 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
       for (const [key, refs] of missingRefs) {
         const uids = Object.keys(refs);
-        if (key !== 'missingTitleFields') {
-          uids.forEach((uid) => uidSet.add(uid));
-        } else {
+
+        if (
+          key === 'missingTitleFields' ||
+          (!this.sharedConfig.fixSelectField &&
+            key === 'missingSelectFeild' &&
+            this.currentCommand === 'cm:stacks:audit:fix')
+        ) {
           uids.forEach((uid) => {
             if (uidSet.has(uid)) {
               uidSet.delete(uid);
               nonFixable.add(uid);
+            } else {
+              nonFixable.add(uid);
             }
           });
+        } else {
+          uids.forEach((uid) => uidSet.add(uid));
         }
       }
 
-      result.Passed = dataExported.Total - uidSet.size;
-      result.Fixable = uidSet.size - nonFixable.size;
-      result['Non-Fixable'] = nonFixable.size;
+      result.Passed = dataExported.Total - (uidSet.size + nonFixable.size);
+      if (this.currentCommand === 'cm:stacks:audit:fix') {
+        result.Fixed = uidSet.size;
+        result['Not-Fixed'] = nonFixable.size;
+      } else {
+        result.Fixable = uidSet.size;
+        result['Non-Fixable'] = nonFixable.size;
+      }
     } else {
       const missingCount = Object.keys(listOfMissingRefs).length;
       result.Passed = dataExported.Total - missingCount;
 
-      result.Fixable = missingCount > 0 && isFixable ? missingCount : 0;
-      result['Non-Fixable'] = missingCount > 0 && !isFixable ? missingCount : 0;
+      if (this.currentCommand === 'cm:stacks:audit:fix') {
+        result.Fixed = missingCount > 0 && isFixable ? missingCount : 0;
+        result['Not-Fixed'] = missingCount > 0 && !isFixable ? missingCount : 0;
+      } else {
+        result.Fixable = missingCount > 0 && isFixable ? missingCount : 0;
+        result['Non-Fixable'] = missingCount > 0 && !isFixable ? missingCount : 0;
+      }
     }
 
     this.summaryDataToPrint.push(result);
