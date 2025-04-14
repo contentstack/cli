@@ -2,6 +2,7 @@ import os from 'os';
 import path from 'path';
 import forEach from 'lodash/forEach';
 import { cliux } from '@contentstack/cli-utilities';
+import chalk from 'chalk';
 import { MergeInputOptions, MergeSummary } from '../interfaces';
 import {
   selectMergeStrategy,
@@ -107,6 +108,10 @@ export default class MergeHandler {
           deleted: [],
         };
         const selectedItems = await selectCustomPreferences(module, this.branchCompareData[module]);
+        if (!selectedItems.length) {
+          cliux.print(chalk.red('No items were selected'));
+          process.exit(1);
+        }
         forEach(selectedItems, (item) => {
           this.mergeSettings.mergeContent[module][item.status].push(item.value);
           this.mergeSettings.itemMergeStrategies.push(item.value);
@@ -132,8 +137,11 @@ export default class MergeHandler {
     } else if (this.strategy === 'overwrite_with_compare') {
       this.mergeSettings.strategy = 'overwrite_with_compare';
     }
-
-    await this.displayMergeSummary();
+    if (this.checkEmptySelection()) {
+      cliux.print(chalk.red('No items selected'));
+    } else {
+      await this.displayMergeSummary();
+    }
 
     if (!this.executeOption) {
       const executionResponse = await selectMergeExecution();
@@ -150,6 +158,17 @@ export default class MergeHandler {
         this.executeOption = executionResponse;
       }
     }
+  }
+
+  checkEmptySelection() {
+    for (let module in this.branchCompareData) {
+      if (this.mergeSettings.mergeContent[module]?.modified?.length
+        || this.mergeSettings.mergeContent[module]?.added?.length
+        || this.mergeSettings.mergeContent[module]?.deleted?.length) {
+        return false;
+      }
+    }
+    return true;
   }
 
   displayMergeSummary() {
