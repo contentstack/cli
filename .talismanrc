@@ -109,4 +109,8 @@ fileignoreconfig:
   checksum: e345a745f027c76081df71e4fe9872c1f4adac076689b036e195b84041807b59
 - filename: packages/contentstack-launch/src/util/create-git-meta.ts
   checksum: 8cbd32dbbd2989c7c082f8a0b7615916125d211bce25531e9a882b8ebd5674af
+- filename: package-lock.json
+  checksum: 69c8b74543f9734af3c6253917c69db95aa5cb86a394a811cf0035b1f381cc41
+- filename: pnpm-lock.yaml
+  checksum: 172a6756c4e5e39b64a29085ab95ab03645641495da0464df52cc4769d9d4c44
 version: ""
