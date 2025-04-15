@@ -173,7 +173,9 @@ enum OutputColumn {
   "Total"="Total",
   "Passed"="Passed",
   "Fixable"="Fixable",
-  "Non-Fixable"="Non-Fixable"   
+  "Non-Fixable"="Non-Fixable",
+  "Fixed" = "Fixed",
+  "Not-Fixed" = "Not-Fixed",
 }
 
 export {
