@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.39.0 darwin-arm64 node-v22.14.0
+@contentstack/cli/1.40.0 darwin-arm64 node-v23.6.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -127,7 +127,7 @@ Perform audits and find possible errors in the exported Contentstack data
 
 ```
 USAGE
-  $ csdx audit [-c <value>] [-d <value>] [-s] [--report-path <value>] [--modules
+  $ csdx audit [-c <value>] [-d <value>] [--show-console-output] [--report-path <value>] [--modules
     content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules...] [--columns <value>]
     [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
@@ -140,7 +140,7 @@ FLAGS
 COMMON FLAGS
   -c, --config=<value>       Path of the external config
   -d, --data-dir=<value>     Path where the data is stored
-  -s, --show-console-output  Display the audit and audit fix result for individual modules
+      --show-console-output  Display the audit and audit fix result for individual modules
 
 TABLE FLAGS
   --columns=<value>  Specify columns to display, comma-separated.
@@ -177,7 +177,7 @@ Perform audits and fix possible errors in the exported Contentstack data.
 
 ```
 USAGE
-  $ csdx audit:fix [-c <value>] [-d <value>] [-s] [--report-path <value>] [--modules
+  $ csdx audit:fix [-c <value>] [-d <value>] [--show-console-output] [--report-path <value>] [--modules
     content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules...] [--copy-path <value>
     --copy-dir] [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns
     <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
@@ -195,7 +195,7 @@ FLAGS
 COMMON FLAGS
   -c, --config=<value>       Path of the external config
   -d, --data-dir=<value>     Path where the data is stored
-  -s, --show-console-output  Display the audit and audit fix result for individual modules
+      --show-console-output  Display the audit and audit fix result for individual modules
 
 TABLE FLAGS
   --columns=<value>  Specify columns to display, comma-separated.
@@ -2625,7 +2625,7 @@ Perform audits and find possible errors in the exported Contentstack data
 
 ```
 USAGE
-  $ csdx cm:stacks:audit [-c <value>] [-d <value>] [-s] [--report-path <value>] [--modules
+  $ csdx cm:stacks:audit [-c <value>] [-d <value>] [--show-console-output] [--report-path <value>] [--modules
     content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules...] [--columns <value>]
     [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
@@ -2638,7 +2638,7 @@ FLAGS
 COMMON FLAGS
   -c, --config=<value>       Path of the external config
   -d, --data-dir=<value>     Path where the data is stored
-  -s, --show-console-output  Display the audit and audit fix result for individual modules
+      --show-console-output  Display the audit and audit fix result for individual modules
 
 TABLE FLAGS
   --columns=<value>  Specify columns to display, comma-separated.
@@ -2677,7 +2677,7 @@ Perform audits and fix possible errors in the exported Contentstack data.
 
 ```
 USAGE
-  $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>] [-s] [--report-path <value>] [--modules
+  $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>] [--show-console-output] [--report-path <value>] [--modules
     content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules...] [--copy-path <value>
     --copy-dir] [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns
     <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
@@ -2695,7 +2695,7 @@ FLAGS
 COMMON FLAGS
   -c, --config=<value>       Path of the external config
   -d, --data-dir=<value>     Path where the data is stored
-  -s, --show-console-output  Display the audit and audit fix result for individual modules
+      --show-console-output  Display the audit and audit fix result for individual modules
 
 TABLE FLAGS
   --columns=<value>  Specify columns to display, comma-separated.
@@ -3775,8 +3775,7 @@ USAGE
   $ csdx launch:functions [-p <value>] [-d <value>]
 
 FLAGS
-  -d, --data-dir=<value>  [default: /Users/aman.kumar/Documents/cli-repo/cli/packages/contentstack] Current working
-                          directory
+  -d, --data-dir=<value>  [default: /Users/raj.pandey/fuckyouFuck/cli/packages/contentstack] Current working directory
   -p, --port=<value>      [default: 3000] Port number
 
 DESCRIPTION
