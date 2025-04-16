@@ -32,7 +32,7 @@ export class RateLimitHandler {
       const features = organizations.plan?.features || [];
 
       const limitsToUpdate: { [key: string]: Limit } = { ...rateLimit[config.org] };
-      let utilizationMap = {};
+      const utilizationMap = {};
       limitNames.forEach((name, index) => {
         if (utilizeValues[index] !== undefined) {
           utilizationMap[name] = utilizeValues[index];
