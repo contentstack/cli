@@ -61,7 +61,7 @@ class RevertCommand extends Command {
     if (data.yes) {
       return true;
     }
-    return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
+    return await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
 }
 
@@ -71,13 +71,17 @@ A log file name is required to execute revert command
 `;
 
 RevertCommand.flags = {
-  'retry-failed': flags.string({ description: '(optional)  Use this option to retry publishing the failed entries from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags.' }),
+  'retry-failed': flags.string({
+    description:
+      '(optional)  Use this option to retry publishing the failed entries from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags.',
+  }),
   'log-file': flags.string({ description: 'Path of the success logfile of a particular publish action.' }),
 
   //To be deprecated
   retryFailed: flags.string({
     char: 'r',
-    description: '(optional)  Use this option to retry publishing the failed entries from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags.',
+    description:
+      '(optional)  Use this option to retry publishing the failed entries from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags.',
     hidden: true,
     parse: printFlagDeprecation(['-r', '--retryFailed'], ['--retry-failed']),
   }),

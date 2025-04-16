@@ -181,7 +181,7 @@ export default class EntriesImport extends BaseClass {
       log(this.importConfig, 'Entries imported successfully', 'success');
 
       // Publishing entries
-      if (this.importConfig.entriesPublish) {
+      if (!this.importConfig.skipEntriesPublish) {
         log(this.importConfig, 'Publishing entries', 'info');
         this.envs = fileHelper.readFileSync(this.envPath);
         for (let entryRequestOption of entryRequestOptions) {
@@ -950,31 +950,38 @@ export default class EntriesImport extends BaseClass {
       if (chunk) {
         let apiContent = values(chunk as Record<string, any>[]);
         let apiContentDuplicate: any = [];
-        apiContentDuplicate = apiContent.flatMap((content: Record<string, any>) =>
-          content?.publish_details?.map((publish: Record<string, any>) => ({
-            ...content,
-            locale: publish.locale,
-            publish_details: [publish],
-          }))
-        );   
-        apiContent = apiContentDuplicate;
-        await this.makeConcurrentCall({
-          apiContent,
-          processName,
-          indexerCount,
-          currentIndexer: +index,
-          apiParams: {
-            reject: onReject,
-            resolve: onSuccess,
-            entity: 'publish-entries',
-            includeParamOnCompletion: true,
-            serializeData: this.serializePublishEntries.bind(this),
-            additionalInfo: { contentType, locale, cTUid },
-          },
-          concurrencyLimit: this.importConcurrency,
-        }).then(() => {
-          log(this.importConfig, `Published entries for content type ${cTUid} in locale ${locale}`, 'success');
+        apiContentDuplicate = apiContent.flatMap((content: Record<string, any>) => {
+          if (content?.publish_details?.length > 0) {
+            return content.publish_details.map((publish: Record<string, any>) => ({
+              ...content,
+              locale: publish.locale,
+              publish_details: [publish],
+            }));
+          }
+          return []; // Return an empty array if publish_details is empty
         });
+        apiContent = apiContentDuplicate;
+        if (apiContent?.length === 0) {
+          continue;
+        } else {
+          await this.makeConcurrentCall({
+            apiContent,
+            processName,
+            indexerCount,
+            currentIndexer: +index,
+            apiParams: {
+              reject: onReject,
+              resolve: onSuccess,
+              entity: 'publish-entries',
+              includeParamOnCompletion: true,
+              serializeData: this.serializePublishEntries.bind(this),
+              additionalInfo: { contentType, locale, cTUid },
+            },
+            concurrencyLimit: this.importConcurrency,
+          }).then(() => {
+            log(this.importConfig, `Published entries for content type ${cTUid} in locale ${locale}`, 'success');
+          });
+        }
       }
     }
   }
@@ -1011,7 +1018,7 @@ export default class EntriesImport extends BaseClass {
       apiOptions.apiData = null;
       return apiOptions;
     }
-    if(requestObject.environments.length === 0 || requestObject.locales.length === 0 ){
+    if (requestObject.environments.length === 0 || requestObject.locales.length === 0) {
       apiOptions.apiData = null;
       return apiOptions;
     }

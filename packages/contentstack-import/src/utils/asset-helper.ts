@@ -359,7 +359,7 @@ function findFileUrls(schema: any, _entry: any, assetUrls: any) {
     text = JSON.stringify(_entry);
   }
   markdownRegEx = new RegExp(
-    '(https://(assets|(eu-|azure-na-|azure-eu-|gcp-na-)?images).contentstack.(io|com)/v3/assets/(.*?)/(.*?)/(.*?)/(.*?)(?="))',
+    '(https://(assets|(eu-|azure-na-|azure-eu-|gcp-na-|gcp-eu-)?images).contentstack.(io|com)/v3/assets/(.*?)/(.*?)/(.*?)/(.*?)(?="))',
     'g',
   );
   while ((markdownMatch = markdownRegEx.exec(text)) !== null) {

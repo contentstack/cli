@@ -19,9 +19,9 @@ class NonlocalizedFieldChangesCommand extends Command {
       nonlocalizedFieldChangesFlags['source-env'] || nonlocalizedFieldChangesFlags.sourceEnv;
     nonlocalizedFieldChangesFlags.contentTypes =
       nonlocalizedFieldChangesFlags['content-types'] || nonlocalizedFieldChangesFlags.contentTypes;
-      nonlocalizedFieldChangesFlags.apiVersion = nonlocalizedFieldChangesFlags['api-version'] || '3';
-      
-    delete nonlocalizedFieldChangesFlags['api-version']
+    nonlocalizedFieldChangesFlags.apiVersion = nonlocalizedFieldChangesFlags['api-version'] || '3';
+
+    delete nonlocalizedFieldChangesFlags['api-version'];
     delete nonlocalizedFieldChangesFlags['retry-failed'];
     delete nonlocalizedFieldChangesFlags['bulk-publish'];
     delete nonlocalizedFieldChangesFlags['source-env'];
@@ -116,7 +116,7 @@ class NonlocalizedFieldChangesCommand extends Command {
     if (data.yes) {
       return true;
     }
-    return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
+    return await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
 }
 
@@ -129,7 +129,8 @@ But, if retryFailed flag is set, then only a logfile is required`;
 NonlocalizedFieldChangesCommand.flags = {
   alias: flags.string({
     char: 'a',
-    description: 'Alias (name) of the management token. You must use either the --alias flag or the --stack-api-key flag.',
+    description:
+      'Alias (name) of the management token. You must use either the --alias flag or the --stack-api-key flag.',
   }),
   'stack-api-key': flags.string({
     char: 'k',
@@ -137,27 +138,31 @@ NonlocalizedFieldChangesCommand.flags = {
     required: false,
   }),
   'retry-failed': flags.string({
-    description: 'Use this option to retry publishing the failed entries from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags.',
+    description:
+      'Use this option to retry publishing the failed entries from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags.',
   }),
   'bulk-publish': flags.string({
-    description: "Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by default.",
+    description: 'Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by default.',
     default: 'true',
   }),
   'source-env': flags.string({
     description: 'The name of the source environment.',
   }),
   'content-types': flags.string({
-    description: 'The UID of the content type whose entries you want to publish in bulk. In case of multiple content types, specify their IDs separated by spaces.',
+    description:
+      'The UID of the content type whose entries you want to publish in bulk. In case of multiple content types, specify their IDs separated by spaces.',
     multiple: true,
   }),
   environments: flags.string({
     char: 'e',
-    description: 'The name of the environment on which entries will be published. In case of multiple environments, specify their names separated by spaces.',
+    description:
+      'The name of the environment on which entries will be published. In case of multiple environments, specify their names separated by spaces.',
     multiple: true,
   }),
   config: flags.string({
     char: 'c',
-    description: '(optional) The path of the optional configuration JSON file containing all the options for a single run. Refer to the configure command to create a configuration file.',
+    description:
+      '(optional) The path of the optional configuration JSON file containing all the options for a single run. Refer to the configure command to create a configuration file.',
   }),
   yes: flags.boolean({
     char: 'y',
@@ -166,7 +171,8 @@ NonlocalizedFieldChangesCommand.flags = {
   branch: flags.string({
     char: 'B',
     default: 'main',
-    description: 'The name of the branch where you want to perform the bulk publish operation. If you don’t mention the branch name, then by default the content from the main branch will be published.',
+    description:
+      'The name of the branch where you want to perform the bulk publish operation. If you don’t mention the branch name, then by default the content from the main branch will be published.',
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
 
@@ -179,13 +185,14 @@ NonlocalizedFieldChangesCommand.flags = {
   }),
   bulkPublish: flags.string({
     char: 'b',
-    description: "This flag is set to true by default. It indicates that Contentstack's bulk publish API will be used to publish the entries.",
+    description:
+      "This flag is set to true by default. It indicates that Contentstack's bulk publish API will be used to publish the entries.",
     default: 'true',
     hidden: true,
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
   'api-version': flags.string({
-    description: "API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
+    description: 'API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].',
   }),
   sourceEnv: flags.string({
     char: 's',

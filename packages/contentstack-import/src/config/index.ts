@@ -10,6 +10,8 @@ const config: DefaultConfig = {
   // host:'https://azure-eu-api.contentstack.com/v3',
   // use below hosts for gcp-na region
   // host:'https://gcp-na-api.contentstack.com',
+  // use below hosts for gcp-eu region
+  // host:'https://gcp-eu-api.contentstack.com',
   // pass locale, only to migrate entries from that locale
   // not passing `locale` will migrate all the locales present
   // locales: ['fr-fr'],
@@ -21,6 +23,7 @@ const config: DefaultConfig = {
     'https://azure-na-api.contentstack.com': 'https://azure-na-developerhub-api.contentstack.com',
     'https://azure-eu-api.contentstack.com': 'https://azure-eu-developerhub-api.contentstack.com',
     'https://gcp-na-api.contentstack.com': 'https://gcp-na-developerhub-api.contentstack.com',
+    'https://gcp-eu-api.contentstack.com': 'https://gcp-eu-developerhub-api.contentstack.com',
   },
   modules: {
     apiConcurrency: 5,
@@ -86,7 +89,6 @@ const config: DefaultConfig = {
     assets: {
       dirName: 'assets',
       assetBatchLimit: 1,
-      publishAssets: true,
       fileName: 'assets.json',
       importSameStructure: true,
       uploadAssetsConcurrency: 2,
@@ -418,7 +420,6 @@ const config: DefaultConfig = {
   overwriteSupportedModules: ['extensions', 'global-fields', 'content-types'],
   rateLimit: 5,
   preserveStackVersion: false,
-  entriesPublish: true,
   concurrency: 1,
   importConcurrency: 5,
   fetchConcurrency: 5,
@@ -428,7 +429,7 @@ const config: DefaultConfig = {
   getEncryptionKeyMaxRetry: 3,
   // useBackedupDir: '',
   // backupConcurrency: 10,
-  onlyTSModules: ['taxonomies'],
+  onlyTSModules: ['taxonomies', 'personalize'],
   auditConfig: {
     noLog: false, // Skip logs printing on terminal
     skipConfirm: true, // Skip confirmation if any

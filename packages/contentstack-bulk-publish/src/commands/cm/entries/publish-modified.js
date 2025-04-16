@@ -17,7 +17,7 @@ class PublishModifiedCommand extends Command {
     entryEditsFlags.bulkPublish = entryEditsFlags['bulk-publish'] || entryEditsFlags.bulkPublish;
     entryEditsFlags.sourceEnv = entryEditsFlags['source-env'] || entryEditsFlags.sourceEnv;
     entryEditsFlags.apiVersion = entryEditsFlags['api-version'] || '3';
-    delete entryEditsFlags['api-version']
+    delete entryEditsFlags['api-version'];
     delete entryEditsFlags['retry-failed'];
     delete entryEditsFlags['content-types'];
     delete entryEditsFlags['bulk-publish'];
@@ -112,7 +112,7 @@ class PublishModifiedCommand extends Command {
     if (data.yes) {
       return true;
     }
-    return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
+    return await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
 }
 
@@ -125,7 +125,11 @@ But, if retry-failed flag is set, then only a logfile is required
 `;
 
 PublishModifiedCommand.flags = {
-  alias: flags.string({ char: 'a', description: 'Alias (name) of the management token. You must use either the --alias flag or the --stack-api-key flag.' }),
+  alias: flags.string({
+    char: 'a',
+    description:
+      'Alias (name) of the management token. You must use either the --alias flag or the --stack-api-key flag.',
+  }),
   'stack-api-key': flags.string({
     char: 'k',
     description: 'API key of the source stack. You must use either the --stack-api-key flag or the --alias flag.',
@@ -133,27 +137,27 @@ PublishModifiedCommand.flags = {
   }),
   retryFailed: flags.string({
     char: 'r',
-    description: '(optional) Use this option to retry publishing the failed entries/assets from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags',
+    description:
+      '(optional) Use this option to retry publishing the failed entries/assets from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags',
     hidden: true,
     parse: printFlagDeprecation(['-r', '--retryFailed'], ['--retry-failed']),
   }),
   'retry-failed': flags.string({
-    description: '(optional) Use this option to retry publishing the failed entries/assets from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags',
+    description:
+      '(optional) Use this option to retry publishing the failed entries/assets from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags',
   }),
   bulkPublish: flags.string({
     char: 'b',
-    description:
-      "Set this flag to use Contentstack\'s Bulk Publish APIs. It is true, by default.",
+    description: "Set this flag to use Contentstack\'s Bulk Publish APIs. It is true, by default.",
     hidden: true,
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
   'bulk-publish': flags.string({
-    description:
-      "Set this flag to use Contentstack\'s Bulk Publish APIs. It is true, by default.",
+    description: "Set this flag to use Contentstack\'s Bulk Publish APIs. It is true, by default.",
     default: 'true',
   }),
   'api-version': flags.string({
-    description : "API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
+    description: 'API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].',
   }),
   sourceEnv: flags.string({
     char: 's',
@@ -166,28 +170,44 @@ PublishModifiedCommand.flags = {
   }),
   contentTypes: flags.string({
     char: 't',
-    description: 'The UID of the content type(s) whose edited entries you want to publish in bulk. In case of multiple content types, specify the IDs separated by spaces.',
+    description:
+      'The UID of the content type(s) whose edited entries you want to publish in bulk. In case of multiple content types, specify the IDs separated by spaces.',
     multiple: true,
     parse: printFlagDeprecation(['-t', '--contentTypes'], ['--content-types']),
     hidden: true,
   }),
   'content-types': flags.string({
-    description: 'The UID of the content type(s) whose edited entries you want to publish in bulk. In case of multiple content types, specify the IDs separated by spaces.',
+    description:
+      'The UID of the content type(s) whose edited entries you want to publish in bulk. In case of multiple content types, specify the IDs separated by spaces.',
     multiple: true,
   }),
   locales: flags.string({
     char: 'l',
-    description: 'Locales in which entries will be published, e.g., en-us. In the case of multiple locales, specify the codes separated by spaces.',
+    description:
+      'Locales in which entries will be published, e.g., en-us. In the case of multiple locales, specify the codes separated by spaces.',
     multiple: true,
     parse: printFlagDeprecation(['-l'], ['--locales']),
   }),
-  environments: flags.string({ char: 'e', description: 'The name of the environment(s) on which the entries will be published. In case of multiple environments, specify their names separated by spaces.', multiple: true }),
-  config: flags.string({ char: 'c', description: '(optional) The path of the optional configuration JSON file containing all the options for a single run. Refer to the configure command to create a configuration file.' }),
-  yes: flags.boolean({ char: 'y', description: 'Set it to true to process the command with the current configuration.' }),
+  environments: flags.string({
+    char: 'e',
+    description:
+      'The name of the environment(s) on which the entries will be published. In case of multiple environments, specify their names separated by spaces.',
+    multiple: true,
+  }),
+  config: flags.string({
+    char: 'c',
+    description:
+      '(optional) The path of the optional configuration JSON file containing all the options for a single run. Refer to the configure command to create a configuration file.',
+  }),
+  yes: flags.boolean({
+    char: 'y',
+    description: 'Set it to true to process the command with the current configuration.',
+  }),
   branch: flags.string({
     char: 'B',
     default: 'main',
-    description: 'The name of the branch where you want to perform the bulk publish operation. If you don\'t mention the branch name, then by default the entries from main branch will be published.',
+    description:
+      "The name of the branch where you want to perform the bulk publish operation. If you don't mention the branch name, then by default the entries from main branch will be published.",
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
 };

@@ -3,7 +3,7 @@ import find from 'lodash/find';
 import values from 'lodash/values';
 import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
-import { ux, FsUtility, sanitizePath } from '@contentstack/cli-utilities';
+import { FsUtility, sanitizePath, cliux } from '@contentstack/cli-utilities';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 
 import auditConfig from '../config';
@@ -40,6 +40,7 @@ import {
 import { print } from '../util';
 import GlobalField from './global-fields';
 import { MarketplaceAppsInstallationData } from '../types/extension';
+import { keys } from 'lodash';
 
 export default class Entries {
   public log: LogFn;
@@ -58,6 +59,9 @@ export default class Entries {
   protected missingSelectFeild: Record<string, any> = {};
   protected missingMandatoryFields: Record<string, any> = {};
   protected missingTitleFields: Record<string, any> = {};
+  protected missingEnvLocale: Record<string, any> = {};
+  protected missingMultipleField: Record<string, any> = {};
+  public environments: string[] = [];
   public entryMetaData: Record<string, any>[] = [];
   public moduleName: keyof typeof auditConfig.moduleConfig = 'entries';
 
@@ -112,6 +116,7 @@ export default class Entries {
             const { uid, title } = entry;
             this.currentUid = uid;
             this.currentTitle = title;
+            this.currentTitle = this.removeEmojiAndImages(this.currentTitle)
 
             if (!this.missingRefs[this.currentUid]) {
               this.missingRefs[this.currentUid] = [];
@@ -128,7 +133,7 @@ export default class Entries {
               this.removeMissingKeysOnEntry(ctSchema.schema as ContentTypeSchemaType[], this.entries[entryUid]);
             }
 
-            this.lookForReference([{ locale: code, uid, name: title }], ctSchema, this.entries[entryUid]);
+            this.lookForReference([{ locale: code, uid, name: this.removeEmojiAndImages(title) }], ctSchema, this.entries[entryUid]);
 
             if (this.missingRefs[this.currentUid]?.length) {
               this.missingRefs[this.currentUid].forEach((entry: any) => {
@@ -170,6 +175,49 @@ export default class Entries {
               delete this.missingMandatoryFields[uid];
             }
 
+            const localKey = this.locales.map((locale: any) => locale.code);
+
+            if (this.entries[entryUid]?.publish_details && !Array.isArray(this.entries[entryUid].publish_details)) {
+              this.log($t(auditMsg.ENTRY_PUBLISH_DETAILS_NOT_EXIST, { uid: entryUid }), { color: 'red' });
+            }
+
+            this.entries[entryUid].publish_details = this.entries[entryUid]?.publish_details.filter((pd: any) => {
+              if (localKey?.includes(pd.locale) && this.environments?.includes(pd.environment)) {
+                return true;
+              } else {
+                this.log(
+                  $t(auditMsg.ENTRY_PUBLISH_DETAILS, {
+                    uid: entryUid,
+                    ctuid: ctSchema.uid,
+                    locale: code,
+                    publocale: pd.locale,
+                    environment: pd.environment,
+                  }),
+                  { color: 'red' },
+                );
+                if (!Object.keys(this.missingEnvLocale).includes(entryUid)) {
+                  this.missingEnvLocale[entryUid] = [
+                    {
+                      entry_uid: entryUid,
+                      publish_locale: pd.locale,
+                      publish_environment: pd.environment,
+                      ctUid: ctSchema.uid,
+                      ctLocale: code,
+                    },
+                  ];
+                } else {
+                  this.missingEnvLocale[entryUid].push({
+                    entry_uid: entryUid,
+                    publish_locale: pd.locale,
+                    publish_environment: pd.environment,
+                    ctUid: ctSchema.uid,
+                    ctLocale: code,
+                  });
+                }
+                return false;
+              }
+            });
+
             const message = $t(auditMsg.SCAN_ENTRY_SUCCESS_MSG, {
               title,
               local: code,
@@ -193,6 +241,8 @@ export default class Entries {
       missingSelectFeild: this.missingSelectFeild,
       missingMandatoryFields: this.missingMandatoryFields,
       missingTitleFields: this.missingTitleFields,
+      missingEnvLocale: this.missingEnvLocale,
+      missingMultipleFields: this.missingMultipleField
     };
   }
 
@@ -271,7 +321,7 @@ export default class Entries {
 
     if (this.fix) {
       if (!this.config.flags['copy-dir'] && !this.config.flags['external-config']?.skipConfirm) {
-        canWrite = this.config.flags.yes || (await ux.confirm(commonMsg.FIX_CONFIRMATION));
+        canWrite = this.config.flags.yes || (await cliux.confirm(commonMsg.FIX_CONFIRMATION));
       }
 
       if (canWrite) {
@@ -302,13 +352,32 @@ export default class Entries {
     }
 
     for (const child of field?.schema ?? []) {
-      const { uid } = child;
+      const { uid, multiple, data_type } = child;
+
+      if(multiple && entry[uid] && !Array.isArray(entry[uid])) {
+       if (!this.missingMultipleField[this.currentUid]) {
+         this.missingMultipleField[this.currentUid] = [];
+       }
+        
+        this.missingMultipleField[this.currentUid].push({
+          uid: this.currentUid,
+          name: this.currentTitle,
+          field_uid: uid,
+          data_type,
+          multiple,
+          tree,
+          treeStr: tree
+            .map(({ name }) => name)
+            .filter((val) => val)
+            .join(' ➜ '),
+        });
+      } 
       this.missingMandatoryFields[this.currentUid].push(
-        ...(this.validateMandatoryFields(
+        ...this.validateMandatoryFields(
           [...tree, { uid: field.uid, name: child.display_name, field: uid }],
           child,
           entry,
-        )),
+        ),
       );
       if (!entry?.[uid] && !child.hasOwnProperty('display_type')) {
         continue;
@@ -595,18 +664,29 @@ export default class Entries {
     if (this.fix) return [];
 
     const missingRefs: Record<string, any>[] = [];
-    const { uid: data_type, display_name } = fieldStructure;
+    const { uid: data_type, display_name, reference_to } = fieldStructure;
 
     for (const index in field ?? []) {
-      const reference = field[index];
+      const reference: any = field[index];
       const { uid } = reference;
+      if (!uid && reference.startsWith('blt')) {
+        const refExist = find(this.entryMetaData, { uid: reference });
+        if (!refExist) {
+          if (Array.isArray(reference_to) && reference_to.length === 1) {
+            missingRefs.push({ uid: reference, _content_type_uid: reference_to[0] });
+          } else {
+            missingRefs.push(reference);
+          }
+        }
+      }
       // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
       // if (this.config.skipRefs.includes(reference)) continue;
+      else {
+        const refExist = find(this.entryMetaData, { uid });
 
-      const refExist = find(this.entryMetaData, { uid });
-
-      if (!refExist) {
-        missingRefs.push(reference);
+        if (!refExist) {
+          missingRefs.push(reference);
+        }
       }
     }
 
@@ -658,10 +738,30 @@ export default class Entries {
   runFixOnSchema(tree: Record<string, unknown>[], schema: ContentTypeSchemaType[], entry: EntryFieldType) {
     // NOTE Global field Fix
     schema.forEach((field) => {
-      const { uid, data_type } = field;
+      const { uid, data_type, multiple } = field;
 
       if (!Object(entry).hasOwnProperty(uid)) {
         return;
+      }
+
+      if (multiple && entry[uid] && !Array.isArray(entry[uid])) {
+        this.missingMultipleField[this.currentUid] ??= [];
+
+        this.missingMultipleField[this.currentUid].push({
+          uid: this.currentUid,
+          name: this.currentTitle,
+          field_uid: uid,
+          data_type,
+          multiple,
+          tree,
+          treeStr: tree
+            .map(({ name }) => name)
+            .filter(Boolean)
+            .join(' ➜ '),
+          'fixStatus': 'Fixed',
+        });
+
+        entry[uid] = [entry[uid]];
       }
 
       switch (data_type) {
@@ -741,9 +841,21 @@ export default class Entries {
    * @returns if there is missing field returns field and path
    * Else empty array
    */
+  removeEmojiAndImages(str: string) {
+    return str.replace(
+      /[\p{Emoji}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Emoji_Modifier_Base}\p{Emoji_Component}]+/gu,
+      '',
+    );
+  }
+
   validateSelectField(tree: Record<string, unknown>[], fieldStructure: SelectFeildStruct, field: any) {
     const { display_name, enum: selectOptions, multiple, min_instance, display_type, data_type } = fieldStructure;
-    if (field === null || field === '' || (Array.isArray(field) && field.length === 0) || (!field && data_type !== 'number')) {
+    if (
+      field === null ||
+      field === '' ||
+      (Array.isArray(field) && field.length === 0) ||
+      (!field && data_type !== 'number')
+    ) {
       let missingCTSelectFieldValues = 'Not Selected';
       return [
         {
@@ -806,11 +918,14 @@ export default class Entries {
    * @returns
    */
   fixSelectField(tree: Record<string, unknown>[], field: SelectFeildStruct, entry: any) {
+    if (!this.config.fixSelectField) {
+      return entry;
+    }
     const { enum: selectOptions, multiple, min_instance, display_type, display_name, uid } = field;
 
     let missingCTSelectFieldValues;
     let isMissingValuePresent = false;
-
+    let selectedValue: unknown = '';
     if (multiple) {
       let obj = this.findNotPresentSelectField(entry, selectOptions);
       let { notPresent, filteredFeild } = obj;
@@ -828,6 +943,7 @@ export default class Entries {
             .slice(0, missingInstances)
             .map((choice) => choice.value);
           entry.push(...newValues);
+          selectedValue = newValues;
           this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: newValues.join(' '), uid }), 'error');
         }
       } else {
@@ -835,6 +951,7 @@ export default class Entries {
           isMissingValuePresent = true;
           const defaultValue = selectOptions.choices.length > 0 ? selectOptions.choices[0].value : null;
           entry.push(defaultValue);
+          selectedValue = defaultValue;
           this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: defaultValue as string, uid }), 'error');
         }
       }
@@ -845,6 +962,7 @@ export default class Entries {
         isMissingValuePresent = true;
         let defaultValue = selectOptions.choices.length > 0 ? selectOptions.choices[0].value : null;
         entry = defaultValue;
+        selectedValue = defaultValue;
         this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: defaultValue as string, uid }), 'error');
       }
     }
@@ -855,6 +973,7 @@ export default class Entries {
         display_name,
         display_type,
         missingCTSelectFieldValues,
+        selectedValue,
         min_instance: min_instance ?? 'NA',
         tree,
         treeStr: tree
@@ -882,7 +1001,10 @@ export default class Entries {
       if (data_type === 'number' && !multiple) {
         fieldValue = entry[uid] || entry[uid] === 0 ? true : false;
       }
-      if (Array.isArray(entry[uid]) &&  data_type === 'reference') {
+      if (data_type === 'text' && !multiple) {
+        fieldValue = entry[uid] || entry[uid] === 0 ? true : false;
+      }
+      if (Array.isArray(entry[uid]) && data_type === 'reference') {
         fieldValue = entry[uid]?.length ? true : false;
       }
       return fieldValue === '' || !fieldValue;
@@ -910,27 +1032,27 @@ export default class Entries {
   }
 
   /**
-   * this is called in case the select field has multiple optins to chose from 
+   * this is called in case the select field has multiple optins to chose from
    * @param field It contains the value to be searched
    * @param selectOptions It contains the options that were added in CT
    * @returns An Array of entry containing only the values that were present in CT, An array of not present entries
    */
   findNotPresentSelectField(field: any, selectOptions: any) {
-    if(!field){
-      field = []
+    if (!field) {
+      field = [];
     }
     let present = [];
     let notPresent = [];
     const choicesMap = new Map(selectOptions.choices.map((choice: { value: any }) => [choice.value, choice]));
-      for (const value of field) {
-        const choice: any = choicesMap.get(value);
-  
-        if (choice) {
-          present.push(choice.value);
-        } else {
-          notPresent.push(value);
-        }
+    for (const value of field) {
+      const choice: any = choicesMap.get(value);
+
+      if (choice) {
+        present.push(choice.value);
+      } else {
+        notPresent.push(value);
       }
+    }
     return { filteredFeild: present, notPresent };
   }
 
@@ -1146,16 +1268,29 @@ export default class Entries {
       entry = JSON.parse(stringReference);
     }
     entry = entry
-      ?.map((reference) => {
+      ?.map((reference: any) => {
         const { uid } = reference;
-        const refExist = find(this.entryMetaData, { uid });
-
-        if (!refExist) {
-          missingRefs.push(reference);
-          return null;
+        const { reference_to } = field;
+        if (!uid && reference.startsWith('blt')) {
+          const refExist = find(this.entryMetaData, { uid: reference });
+          if (!refExist) {
+            if (Array.isArray(reference_to) && reference_to.length === 1) {
+              missingRefs.push({ uid: reference, _content_type_uid: reference_to[0] });
+            } else {
+              missingRefs.push(reference);
+            }
+          } else {
+            return { uid: reference, _content_type_uid: refExist.ctUid };
+          }
+        } else {
+          const refExist = find(this.entryMetaData, { uid });
+          if (!refExist) {
+            missingRefs.push(reference);
+            return null;
+          } else {
+            return reference;
+          }
         }
-
-        return reference;
       })
       .filter((val) => val) as EntryReferenceFieldDataType[];
 
@@ -1280,6 +1415,12 @@ export default class Entries {
       this.locales.push(...values(JSON.parse(readFileSync(localesPath, 'utf8'))));
     }
 
+    const environmentPath = resolve(
+      this.config.basePath,
+      this.config.moduleConfig.environments.dirName,
+      this.config.moduleConfig.environments.fileName,
+    );
+    this.environments = existsSync(environmentPath) ? keys(JSON.parse(readFileSync(environmentPath, 'utf8'))) : [];
     for (const { code } of this.locales) {
       for (const { uid } of this.ctSchema) {
         let basePath = join(this.folderPath, uid, code);
@@ -1295,7 +1436,7 @@ export default class Entries {
               this.missingTitleFields[entryUid] = {
                 'Entry UID': entryUid,
                 'Content Type UID': uid,
-                "Locale": code,
+                Locale: code,
               };
               this.log(
                 `The 'title' field in Entry with UID '${entryUid}' of Content Type '${uid}' in Locale '${code}' is empty.`,
@@ -1307,7 +1448,7 @@ export default class Entries {
                 `error`,
               );
             }
-            this.entryMetaData.push({ uid: entryUid, title });
+            this.entryMetaData.push({ uid: entryUid, title, ctUid: uid });
           }
         }
       }

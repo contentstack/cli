@@ -52,7 +52,6 @@ export default interface DefaultConfig {
     assets: {
       dirName: string;
       assetBatchLimit: number;
-      publishAssets: boolean;
       fileName: string;
       importSameStructure: boolean;
       uploadAssetsConcurrency: number;
@@ -177,7 +176,6 @@ export default interface DefaultConfig {
   };
   rateLimit: number;
   preserveStackVersion: boolean;
-  entriesPublish: boolean;
   concurrency: number;
   importConcurrency: number;
   fetchConcurrency: number;
@@ -199,4 +197,6 @@ export default interface DefaultConfig {
     } & Record<string, any>; // To overwrite any build-in config. And this config is equal to --config flag.
   };
   globalModules: string[];
+  skipAssetsPublish?: boolean;
+  skipEntriesPublish?: boolean;
 }

@@ -65,7 +65,7 @@ export default class ImportAssets extends BaseClass {
     await this.importAssets();
 
     // NOTE Step 4: Publish assets
-    if (this.assetConfig.publishAssets) await this.publish();
+    if (!this.importConfig.skipAssetsPublish) await this.publish();
   }
 
   /**

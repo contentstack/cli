@@ -4,7 +4,7 @@ import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 
-import { sanitizePath, ux } from '@contentstack/cli-utilities';
+import { sanitizePath, cliux } from '@contentstack/cli-utilities';
 
 import {
   LogFn,
@@ -44,7 +44,6 @@ export default class ContentType {
   protected schema: ContentTypeStruct[] = [];
   protected missingRefs: Record<string, any> = {};
   public moduleName: keyof typeof auditConfig.moduleConfig;
-
   constructor({ log, fix, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
     this.log = log;
     this.config = config;
@@ -53,14 +52,20 @@ export default class ContentType {
     this.gfSchema = gfSchema;
     this.moduleName = this.validateModules(moduleName!, this.config.moduleConfig);
     this.fileName = config.moduleConfig[this.moduleName].fileName;
-    this.folderPath = resolve(sanitizePath(config.basePath), sanitizePath(config.moduleConfig[this.moduleName].dirName));
+    this.folderPath = resolve(
+      sanitizePath(config.basePath),
+      sanitizePath(config.moduleConfig[this.moduleName].dirName),
+    );
   }
 
-  validateModules(moduleName: keyof typeof auditConfig.moduleConfig, moduleConfig: Record<string, unknown>): keyof typeof auditConfig.moduleConfig {
+  validateModules(
+    moduleName: keyof typeof auditConfig.moduleConfig,
+    moduleConfig: Record<string, unknown>,
+  ): keyof typeof auditConfig.moduleConfig {
     if (Object.keys(moduleConfig).includes(moduleName)) {
       return moduleName;
     }
-    return 'content-types'
+    return 'content-types';
   }
   /**
    * The `run` function checks if a folder path exists, sets the schema based on the module name,
@@ -121,7 +126,7 @@ export default class ContentType {
     if (existsSync(extensionPath)) {
       try {
         this.extensions = Object.keys(JSON.parse(readFileSync(extensionPath, 'utf8')));
-      } catch (error) { }
+      } catch (error) {}
     }
 
     if (existsSync(marketplacePath)) {
@@ -134,7 +139,7 @@ export default class ContentType {
           ) as string[];
           this.extensions.push(...metaData);
         }
-      } catch (error) { }
+      } catch (error) {}
     }
   }
 
@@ -147,7 +152,7 @@ export default class ContentType {
 
     if (!this.inMemoryFix && this.fix) {
       if (!this.config.flags['copy-dir'] && !this.config.flags['external-config']?.skipConfirm) {
-        canWrite = this.config.flags.yes ?? (await ux.confirm(commonMsg.FIX_CONFIRMATION));
+        canWrite = this.config.flags.yes ?? (await cliux.confirm(commonMsg.FIX_CONFIRMATION));
       }
 
       if (canWrite) {
@@ -179,8 +184,8 @@ export default class ContentType {
     if (this.fix) {
       field.schema = this.runFixOnSchema(tree, field.schema as ContentTypeSchemaType[]);
     }
-
     for (let child of field.schema ?? []) {
+      
       if (!fixTypes.includes(child.data_type) && child.data_type !== 'json') continue;
 
       switch (child.data_type) {
@@ -270,19 +275,19 @@ export default class ContentType {
 
     return missingRefs.length
       ? [
-        {
-          tree,
-          data_type,
-          missingRefs,
-          display_name,
-          ct_uid: this.currentUid,
-          name: this.currentTitle,
-          treeStr: tree
-            .map(({ name }) => name)
-            .filter((val) => val)
-            .join(' ➜ '),
-        },
-      ]
+          {
+            tree,
+            data_type,
+            missingRefs,
+            display_name,
+            ct_uid: this.currentUid,
+            name: this.currentTitle,
+            treeStr: tree
+              .map(({ name }) => name)
+              .filter((val) => val)
+              .join(' ➜ '),
+          },
+        ]
       : [];
   }
 
@@ -383,34 +388,46 @@ export default class ContentType {
     const missingRefs: string[] = [];
     let { reference_to, display_name, data_type } = field;
 
-    for (const reference of reference_to ?? []) {
-      // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
-      if (this.config.skipRefs.includes(reference)) {
-        continue;
+    if (!Array.isArray(reference_to)) {
+      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, data_type, display_name }), 'error');
+      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, display_name }), 'info');
+      if (!this.config.skipRefs.includes(reference_to)) {
+        const refExist = find(this.ctSchema, { uid: reference_to });
+
+        if (!refExist) {
+          missingRefs.push(reference_to);
+        }
       }
+    } else {
+      for (const reference of reference_to ?? []) {
+        // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
+        if (this.config.skipRefs.includes(reference)) {
+          continue;
+        }
 
-      const refExist = find(this.ctSchema, { uid: reference });
+        const refExist = find(this.ctSchema, { uid: reference });
 
-      if (!refExist) {
-        missingRefs.push(reference);
+        if (!refExist) {
+          missingRefs.push(reference);
+        }
       }
     }
 
     return missingRefs.length
       ? [
-        {
-          tree,
-          data_type,
-          missingRefs,
-          display_name,
-          ct_uid: this.currentUid,
-          name: this.currentTitle,
-          treeStr: tree
-            .map(({ name }) => name)
-            .filter((val) => val)
-            .join(' ➜ '),
-        },
-      ]
+          {
+            tree,
+            data_type,
+            missingRefs,
+            display_name,
+            ct_uid: this.currentUid,
+            name: this.currentTitle,
+            treeStr: tree
+              .map(({ name }) => name)
+              .filter((val) => val)
+              .join(' ➜ '),
+          },
+        ]
       : [];
   }
 
@@ -635,17 +652,34 @@ export default class ContentType {
     let fixStatus;
     const missingRefs: string[] = [];
     const { reference_to, data_type, display_name } = field;
+    if (!Array.isArray(reference_to)) {
+      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, display_name }), 'error');
+      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, display_name }), 'info');
+      if (!this.config.skipRefs.includes(reference_to)) {
+        const refExist = find(this.ctSchema, { uid: reference_to });
 
-    for (const reference of reference_to ?? []) {
-      // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
-      if (this.config.skipRefs.includes(reference)) {
-        continue;
+        if (!refExist) {
+          missingRefs.push(reference_to);
+        }
       }
 
-      const refExist = find(this.ctSchema, { uid: reference });
+      field.reference_to = [reference_to];
+      field.field_metadata = {
+        ...field.field_metadata,
+        ref_multiple_content_types: true,
+      };
+    } else {
+      for (const reference of reference_to ?? []) {
+        // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
+        if (this.config.skipRefs.includes(reference)) {
+          continue;
+        }
 
-      if (!refExist) {
-        missingRefs.push(reference);
+        const refExist = find(this.ctSchema, { uid: reference });
+
+        if (!refExist) {
+          missingRefs.push(reference);
+        }
       }
     }
 

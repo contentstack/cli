@@ -118,11 +118,11 @@ class UnpublishCommand extends Command {
       return true;
     }
     if (!data.contentType) {
-      return cliux.confirm(
+      return await cliux.confirm(
         'Do you want to continue with this configuration. This will unpublish all the entries from all content types? [yes or no]',
       );
     } else {
-      return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
+      return await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
     }
   }
 }
@@ -136,7 +136,8 @@ But, if retry-failed flag is set, then only a logfile is required`;
 UnpublishCommand.flags = {
   alias: flags.string({
     char: 'a',
-    description: 'Alias (name) for the management token. You must use either the --alias flag or the --stack-api-key flag.',
+    description:
+      'Alias (name) for the management token. You must use either the --alias flag or the --stack-api-key flag.',
   }),
   'stack-api-key': flags.string({
     char: 'k',
@@ -148,7 +149,8 @@ UnpublishCommand.flags = {
   }),
   config: flags.string({
     char: 'c',
-    description: '(optional) Path to the configuration JSON file containing all options for a single run. Refer to the configure command to create a configuration file.',
+    description:
+      '(optional) Path to the configuration JSON file containing all options for a single run. Refer to the configure command to create a configuration file.',
   }),
   yes: flags.boolean({
     char: 'y',
@@ -162,10 +164,12 @@ UnpublishCommand.flags = {
     description: 'Specify the branch to fetch the content. If not mentioned, the main branch will be used by default.',
   }),
   'retry-failed': flags.string({
-    description: '(optional) Use this option to retry unpublishing the failed entries from the logfile. Specify the name of the logfile that lists failed unpublish calls. If used, this option will override all other flags.',
+    description:
+      '(optional) Use this option to retry unpublishing the failed entries from the logfile. Specify the name of the logfile that lists failed unpublish calls. If used, this option will override all other flags.',
   }),
   'bulk-unpublish': flags.string({
-    description: "This flag is set to true by default. It indicates that Contentstack's Bulk Publish APIs will be used to unpublish the entries.",
+    description:
+      "This flag is set to true by default. It indicates that Contentstack's Bulk Publish APIs will be used to unpublish the entries.",
     default: 'true',
   }),
   'api-version': flags.string({
@@ -177,9 +181,9 @@ UnpublishCommand.flags = {
   'delivery-token': flags.string({
     description: 'The delivery token of the source environment.',
   }),
-  'include-variants': flags.boolean({ 
+  'include-variants': flags.boolean({
     default: false, // set the default value to false
-    description: 'Include Variants flag will unpublish all associated variant entries.' 
+    description: 'Include Variants flag will unpublish all associated variant entries.',
   }),
 };
 
