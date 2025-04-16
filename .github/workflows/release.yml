@@ -14,7 +14,7 @@ jobs:
           version: 7
       - uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
+          node-version: '22.x'
           cache: 'pnpm'
       - name: Reading Configuration
         id: release_config
@@ -186,7 +186,6 @@ jobs:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-import-setup/package.json
           access: public
-          tag: beta
       - name: Installing dependencies of export to csv
         id: export-to-csv-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_export-to-csv == 'true'}}
@@ -294,14 +293,19 @@ jobs:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack/package.json
       - uses: actions/checkout@v4
+        if: ${{ steps.publish-core.conclusion == 'success'  }}
         with:
           ref: 'prod-qa-pipeline'
       - run: echo ${{ steps.publish-core.outputs.version  }} > version.md
+        if: ${{ steps.publish-core.conclusion == 'success'  }}
       - uses: EndBug/add-and-commit@v9
+        if: ${{ steps.publish-core.conclusion == 'success'  }}
         with:
           message: 'Released version'
       - name: Create Release
+        if: ${{ steps.publish-core.conclusion == 'success'  }}
         id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release create v${{ steps.publish-core.outputs.version }} --title "Release ${{ steps.publish-core.outputs.version }}" --generate-notes
+          VERSION: ${{ steps.publish-core.outputs.version }}
+        run: gh release create v"$VERSION" --title "Release $VERSION" --generate-notes

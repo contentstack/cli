@@ -10,24 +10,19 @@ export default class GetEarlyAccessHeaderCommand extends Command {
     try {
       let config = configHandler.get(`earlyAccessHeaders`);
       if (config && Object.keys(config).length > 0) {
-        let tableHeaders = Object.keys(config).map((key) => ({
+        let tableData = Object.keys(config).map((key) => ({
           ['Alias']: key,
           ['Early access header']: config[key],
         }));
-        cliux.table(
-          tableHeaders,
+        const tableHeaders = [
           {
-            Alias: {
-              minWidth: 8,
-            },
-            'Early access header': {
-              minWidth: 8,
-            },
+            value: 'Alias',
           },
           {
-            printLine: cliux.print,
+            value: 'Early access header',
           },
-        );
+        ];
+        cliux.table(tableHeaders, tableData);
       } else {
         cliux.print(`No Early Access header found!`, { color: 'red' });
       }

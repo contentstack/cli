@@ -9,14 +9,17 @@ type ContentTypeSchemaType =
   | JsonRTEFieldDataType
   | GroupFieldDataType
   | ModularBlocksDataType
-  | SelectFeildStruct;
+  | SelectFeildStruct
+  | any;
 
 type ContentTypeStruct = {
+  field_rules: any;
   uid: string;
   title: string;
   description: string;
   schema?: ContentTypeSchemaType[];
   mandatory: boolean;
+  multiple: boolean;
 };
 
 type ModuleConstructorParam = {
@@ -39,7 +42,8 @@ type CommonDataTypeStruct = {
     ref_multiple: boolean;
     allow_json_rte: boolean;
   } & AnyProperty;
-  mandatory: boolean
+  mandatory: boolean;
+  multiple: boolean;
 };
 
 type RefErrorReturnType = {
@@ -113,12 +117,16 @@ type GroupFieldSchemaTypes =
   | ExtensionOrAppFieldDataType
   | SelectFeildStruct;
 
-type GlobalFieldSchemaTypes = ReferenceFieldDataType | GroupFieldDataType | ExtensionOrAppFieldDataType | SelectFeildStruct;
+type GlobalFieldSchemaTypes =
+  | ReferenceFieldDataType
+  | GroupFieldDataType
+  | ExtensionOrAppFieldDataType
+  | SelectFeildStruct;
 
 type ModularBlocksSchemaTypes = ReferenceFieldDataType | JsonRTEFieldDataType | SelectFeildStruct;
 
 type SelectFeildStruct = CommonDataTypeStruct & {
-  display_type:string;
+  display_type: string;
   enum: {
     advanced: string;
     choices: Record<string, unknown>[];
@@ -143,11 +151,31 @@ enum OutputColumn {
   'Minimum Required Instaces' = 'min_instance',
   'missingFieldUid' = 'missingFieldUid',
   'isPublished' = 'isPublished',
-  'Entry UID' ="Entry UID",
-  'Content Type UID'= 'Content Type UID',
-  "Locale"="Locale",
-  "Content Type" = "ct",
-  "locale"="locale",
+  'Entry UID' = 'Entry UID',
+  'Content Type UID' = 'Content Type UID',
+  'Locale' = 'Locale',
+  'Content Type' = 'ct',
+  'locale' = 'locale',
+  'environment' = 'environment',
+  'ctUid' = 'ctUid',
+  'ctLocale' = 'ctLocale',
+  'entry_uid' = 'entry_uid',
+  'publish_locale' = 'publish_locale',
+  'publish_environment' = 'publish_environment',
+  'asset_uid' = 'asset_uid',
+  'selectedValue' = 'selectedValue',
+  'fixStatus' = 'fixStatus',
+  'Content_type_uid' = 'ct_uid',
+  'action' = 'action',
+  'field_uid' = 'field_uid',
+  'multiple' = 'multiple',
+  Module="Module",
+  "Total"="Total",
+  "Passed"="Passed",
+  "Fixable"="Fixable",
+  "Non-Fixable"="Non-Fixable",
+  "Fixed" = "Fixed",
+  "Not-Fixed" = "Not-Fixed",
 }
 
 export {
@@ -168,4 +196,18 @@ export {
   GlobalFieldSchemaTypes,
   WorkflowExtensionsRefErrorReturnType,
   SelectFeildStruct,
+  FieldRuleStruct,
+};
+
+type FieldRuleStruct = {
+  match_type: string;
+  actions: Array<{
+    action: string;
+    target_field: string;
+  }> | undefined;
+  conditions: Array<{
+    value: string;
+    operand_field: string;
+    operator: string;
+  }> | undefined;
 };

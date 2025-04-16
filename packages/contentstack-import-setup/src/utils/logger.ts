@@ -8,7 +8,7 @@ import * as winston from 'winston';
 import * as path from 'path';
 import mkdirp from 'mkdirp';
 import { ImportConfig } from '../types';
-import { sanitizePath } from '@contentstack/cli-utilities';
+import { sanitizePath, redactObject } from '@contentstack/cli-utilities';
 
 const slice = Array.prototype.slice;
 
@@ -24,7 +24,10 @@ function returnString(args: any[]) {
       .map(function (item) {
         if (item && typeof item === 'object') {
           try {
-            return JSON.stringify(item).replace(/authtoken\":\d"blt................/g, 'authtoken":"blt....');
+            const redactedObject = redactObject(item);
+            if(redactedObject && typeof redactedObject === 'object') {
+              return JSON.stringify(redactedObject);
+            }
           } catch (error) {}
           return item;
         }
@@ -137,7 +140,7 @@ function init(_logPath: string) {
 }
 
 export const log = async (config: ImportConfig, message: any, type: string) => {
-  config.cliLogsPath = config.cliLogsPath || config.data || path.join(__dirname, 'logs');
+  config.cliLogsPath = sanitizePath(config.cliLogsPath || config.data || path.join(__dirname, 'logs'));
   // ignoring the type argument, as we are not using it to create a logfile anymore
   if (type !== 'error') {
     // removed type argument from init method

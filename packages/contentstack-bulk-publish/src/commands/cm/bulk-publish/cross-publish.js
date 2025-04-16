@@ -119,7 +119,7 @@ class CrossPublishCommand extends Command {
     if (data.yes) {
       return true;
     }
-    return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
+    return await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
 
   flagsAdapter(_flags) {
@@ -189,14 +189,12 @@ CrossPublishCommand.flags = {
   bulkPublish: flags.string({
     char: 'b',
     hidden: true,
-    description:
-      "Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by default.",
+    description: 'Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by default.',
     default: 'true',
     parse: printFlagDeprecation(['--bulkPublish', '-b'], ['--bulk-publish']),
   }),
   'bulk-publish': flags.string({
-    description:
-      "Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by default.",
+    description: 'Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by default.',
     default: 'true',
   }),
   'api-version': flags.string({
