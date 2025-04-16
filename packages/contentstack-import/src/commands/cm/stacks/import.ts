@@ -70,7 +70,8 @@ export default class ImportCommand extends Command {
     module: flags.string({
       required: false,
       char: 'm',
-      description: '[optional] Specify the module to import into the target stack. If not specified, the import command will import all the modules into the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, and taxonomies.',
+      description:
+        '[optional] Specify the module to import into the target stack. If not specified, the import command will import all the modules into the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, and taxonomies.',
       parse: printFlagDeprecation(['-m'], ['--module']),
     }),
     'backup-dir': flags.string({
@@ -80,11 +81,13 @@ export default class ImportCommand extends Command {
     }),
     branch: flags.string({
       char: 'B',
-      description: 'The name of the branch where you want to import your content. If you don\'t mention the branch name, then by default the content will be imported to the main branch.',
+      description:
+        "The name of the branch where you want to import your content. If you don't mention the branch name, then by default the content will be imported to the main branch.",
       parse: printFlagDeprecation(['-B'], ['--branch']),
     }),
     'import-webhook-status': flags.string({
-      description: '[default: disable] (optional) This webhook state keeps the same state of webhooks as the source stack. <options: disable|current>',
+      description:
+        '[default: disable] (optional) This webhook state keeps the same state of webhooks as the source stack. <options: disable|current>',
       options: ['disable', 'current'],
       required: false,
       default: 'disable',
@@ -96,6 +99,7 @@ export default class ImportCommand extends Command {
     }),
     'skip-app-recreation': flags.boolean({
       description: '(optional) Skips the recreation of private apps if they already exist.',
+      parse: printFlagDeprecation(['--skip-app-recreation']),
     }),
     'replace-existing': flags.boolean({
       required: false,
@@ -156,7 +160,7 @@ export default class ImportCommand extends Command {
             .branch()
             .query()
             .find()
-            .then(({ items }: any) => items)
+            .then(({ items }: any) => items);
           if (branches.length) {
             flags.branch = 'main';
           }
