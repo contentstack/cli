@@ -10,5 +10,7 @@
   "fetchConcurrency": 5,
   "writeConcurrency": 5,
   "securedAssets": false,
-  "createBackupDir": "./temp"
+  "createBackupDir": "./temp",
+  "maxContentLength": 100000000,
+  "maxBodyLength": 100000000
 }

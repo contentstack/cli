@@ -117,6 +117,14 @@ export default class ImportCommand extends Command {
       description: 'Excludes the branch-independent module from the import operation.',
       default: false,
     }),
+    'skip-assets-publish': flags.boolean({
+      description: 'Skips asset publishing during the import process.',
+      default: false,
+    }),
+    'skip-entries-publish': flags.boolean({
+      description: 'Skips entry publishing during the import process',
+      default: false,
+    }),
   };
 
   static aliases: string[] = ['cm:import'];
@@ -140,6 +148,22 @@ export default class ImportCommand extends Command {
       backupDir = importConfig.cliLogsPath || importConfig.backupDir;
 
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
+
+      if (!flags.branch) {
+        try {
+          const branches = await managementAPIClient
+            .stack({ api_key: importConfig.apiKey })
+            .branch()
+            .query()
+            .find()
+            .then(({ items }: any) => items)
+          if (branches.length) {
+            flags.branch = 'main';
+          }
+        } catch (error) {
+          // Branch not enabled, just the let flow continue
+        }
+      }
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       const result = await moduleImporter.start();
 

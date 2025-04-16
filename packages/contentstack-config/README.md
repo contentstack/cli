@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-config/1.9.1 darwin-arm64 node-v22.2.0
+@contentstack/cli-config/1.11.0 darwin-arm64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -165,9 +165,9 @@ USAGE
   $ csdx config:remove:ea-header [--header-alias <value>] [-y]
 
 FLAGS
-  -y, --yes               (optional) Force the removal of Early Access header configuration by skipping the
-                          confirmation.
-  --header-alias=<value>  (optional) Provide the Early Access header alias name.
+  -y, --yes                   (optional) Force the removal of Early Access header configuration by skipping the
+                              confirmation.
+      --header-alias=<value>  (optional) Provide the Early Access header alias name.
 
 DESCRIPTION
   Remove Early Access header
@@ -190,9 +190,9 @@ USAGE
   $ csdx config:remove:early-access-header [--header-alias <value>] [-y]
 
 FLAGS
-  -y, --yes               (optional) Force the removal of Early Access header configuration by skipping the
-                          confirmation.
-  --header-alias=<value>  (optional) Provide the Early Access header alias name.
+  -y, --yes                   (optional) Force the removal of Early Access header configuration by skipping the
+                              confirmation.
+      --header-alias=<value>  (optional) Provide the Early Access header alias name.
 
 DESCRIPTION
   Remove Early Access header
@@ -238,7 +238,7 @@ USAGE
 
 FLAGS
   -k, --stack-api-key=<value>  Stack API key
-  --base-branch=<value>        Base branch (Target branch).
+      --base-branch=<value>    Base branch (Target branch).
 
 DESCRIPTION
   Set branch for CLI
@@ -307,7 +307,7 @@ Set rate-limit for CLI
 
 ```
 USAGE
-  $ csdx config:set:rate-limit [--org <value>] [--utilize <value>] [--limit-name <value>] [--default]
+  $ csdx config:set:rate-limit [--org <value>] [--utilize <value>] [--limit-name <value>...] [--default]
 
 FLAGS
   --default                Reset to default rate limit
@@ -341,16 +341,16 @@ ARGUMENTS
   REGION  Name for the region
 
 FLAGS
-  -d, --cda=<value>        Custom host to set for content delivery API, if this flag is added then cma, ui-host and name
-                           flags are required
-  -m, --cma=<value>        Custom host to set for content management API, , if this flag is added then cda, ui-host and
-                           name flags are required
-  -n, --name=<value>       Name for the region, if this flag is added then cda, cma and ui-host flags are required
-  --developer-hub=<value>  Custom host to set for Developer hub API
-  --launch=<value>         Custom host to set for Launch API
-  --personalize=<value>    Custom host to set for Personalize API
-  --ui-host=<value>        Custom UI host to set for CLI, if this flag is added then cda, cma and name flags are
-                           required
+  -d, --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and
+                               name flags are required
+  -m, --cma=<value>            Custom host to set for content management API, , if this flag is added then cda, ui-host
+                               and name flags are required
+  -n, --name=<value>           Name for the region, if this flag is added then cda, cma and ui-host flags are required
+      --developer-hub=<value>  Custom host to set for Developer hub API
+      --launch=<value>         Custom host to set for Launch API
+      --personalize=<value>    Custom host to set for Personalize API
+      --ui-host=<value>        Custom UI host to set for CLI, if this flag is added then cda, cma and name flags are
+                               required
 
 DESCRIPTION
   Set region for CLI
@@ -367,6 +367,8 @@ EXAMPLES
   $ csdx config:set:region AZURE-EU
 
   $ csdx config:set:region GCP-NA
+
+  $ csdx config:set:region GCP-EU
 
   $ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India"
 

@@ -21,7 +21,7 @@ $ npm install -g @contentstack/cli-migration
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-migration/1.6.5 darwin-arm64 node-v22.2.0
+@contentstack/cli-migration/1.7.0 darwin-arm64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -33,7 +33,7 @@ USAGE
 
 <!-- commands -->
 * [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple)
-* [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple-1)
+* [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple)
 
 ## `csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`
 
@@ -41,8 +41,8 @@ Contentstack migration script.
 
 ```
 USAGE
-  $ csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>]
-    [--config <value>] [--multiple]
+  $ csdx cm:migration cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>]
+    [--config-file <value>] [--config <value>] [--multiple]
 
 FLAGS
   -B, --branch=<value>         Use this flag to add the branch name where you want to perform the migration. (target
@@ -51,11 +51,11 @@ FLAGS
                                the --stack-api-key flag.
   -k, --stack-api-key=<value>  Use this flag to add the API key of your stack. You must use either the --stack-api-key
                                flag or the --alias flag.
-  --config=<value>...          [optional] Inline configuration, <key1>:<value1>. Passing an external configuration makes
+      --config=<value>...      [optional] Inline configuration, <key1>:<value1>. Passing an external configuration makes
                                the script re-usable.
-  --config-file=<value>        [optional] Path of the JSON configuration file.
-  --file-path=<value>          Use this flag to provide the path of the file of the migration script.
-  --multiple                   This flag helps you to migrate multiple content files in a single instance. Mention the
+      --config-file=<value>    [optional] Path of the JSON configuration file.
+      --file-path=<value>      Use this flag to provide the path of the file of the migration script.
+      --multiple               This flag helps you to migrate multiple content files in a single instance. Mention the
                                folder path where your migration script files are stored.
 
 DESCRIPTION
@@ -94,11 +94,11 @@ FLAGS
                                the --stack-api-key flag.
   -k, --stack-api-key=<value>  Use this flag to add the API key of your stack. You must use either the --stack-api-key
                                flag or the --alias flag.
-  --config=<value>...          [optional] Inline configuration, <key1>:<value1>. Passing an external configuration makes
+      --config=<value>...      [optional] Inline configuration, <key1>:<value1>. Passing an external configuration makes
                                the script re-usable.
-  --config-file=<value>        [optional] Path of the JSON configuration file.
-  --file-path=<value>          Use this flag to provide the path of the file of the migration script.
-  --multiple                   This flag helps you to migrate multiple content files in a single instance. Mention the
+      --config-file=<value>    [optional] Path of the JSON configuration file.
+      --file-path=<value>      Use this flag to provide the path of the file of the migration script.
+      --multiple               This flag helps you to migrate multiple content files in a single instance. Mention the
                                folder path where your migration script files are stored.
 
 DESCRIPTION

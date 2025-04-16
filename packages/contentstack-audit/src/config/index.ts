@@ -2,7 +2,16 @@ const config = {
   showTerminalOutput: true,
   skipRefs: ['sys_assets'],
   skipFieldTypes: ['taxonomy', 'group'],
-  modules: ['content-types', 'global-fields', 'entries', 'extensions', 'workflows', 'custom-roles'],
+  modules: [
+    'content-types',
+    'global-fields',
+    'entries',
+    'extensions',
+    'workflows',
+    'custom-roles',
+    'assets',
+    'field-rules',
+  ],
   'fix-fields': ['reference', 'global_field', 'json:rte', 'json:extension', 'blocks', 'group', 'content_types'],
   moduleConfig: {
     'content-types': {
@@ -40,6 +49,16 @@ const config = {
       dirName: 'custom-roles',
       fileName: 'custom-roles.json',
     },
+    assets: {
+      name: 'assets',
+      dirName: 'assets',
+      fileName: 'assets.json',
+    },
+    environments: {
+      name: 'environments',
+      dirName: 'environments',
+      fileName: 'environments.json',
+    },
   },
   entries: {
     systemKeys: [
@@ -76,13 +95,43 @@ const config = {
     'min_instance',
     'missingFieldUid',
     'isPublished',
+    'locale',
+    'environment',
+    'ctUid',
+    'ctLocale',
+    'entry_uid',
+    'publish_locale',
+    'publish_environment',
+    'asset_uid',
+    'selectedValue',
+    'ct_uid',
+    'action',
+    "Module",
+    "Total",
+    "Fixable",
+    "Non-Fixable",
+    "Fixed",
+    "Not-Fixed",
+    "Passed",
   ],
   ReportTitleForEntries: {
     Entries_Select_feild: 'Entries_Select_feild',
     Entries_Mandatory_feild: 'Entries_Mandatory_feild',
     Entries_Title_feild: 'Entries_Title_feild',
+    Entry_Missing_Locale_and_Env: 'Entry_Missing_Locale_and_Env',
+    Entry_Missing_Locale_and_Env_in_Publish_Details: 'Entry_Missing_Locale_and_Env_in_Publish_Details',
+    Entry_Multiple_Fields:"Entry_Multiple_Fields"
   },
-  feild_level_modules: ['Entries_Title_feild', 'Entries_Mandatory_feild', 'Entries_Select_feild'],
+  feild_level_modules: [
+    'Entries_Title_feild',
+    'Entries_Mandatory_feild',
+    'Entries_Select_feild',
+    'Entry_Missing_Locale_and_Env_in_Publish_Details',
+    'field-rules',
+    'Entry_Multiple_Fields',
+    'Summary'
+  ],
+  fixSelectField: false,
 };
 
 export default config;
