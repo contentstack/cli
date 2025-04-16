@@ -7,9 +7,10 @@ const path = require('path');
 const { formatError } = require('../util');
 const apiVersionForNRP = '3.2';
 const nrpApiVersionWarning = `Provided apiVersion is invalid. ${apiVersionForNRP} is only supported value. Continuing with regular bulk-publish for now.`;
-
+const { handleRateLimit, fetchBulkPublishLimit } = require('../util/common-utility');
 const { getLoggerInstance, addLogs, getLogsDirPath } = require('../util/logger');
 const { sanitizePath } = require('@contentstack/cli-utilities');
+const { delay } = require('bluebird');
 const logsDir = getLogsDirPath();
 
 let logger;
@@ -284,6 +285,8 @@ async function performBulkPublish(data, _config, queue) {
   let conf;
   const bulkPublishObj = data.obj;
   const stack = bulkPublishObj.stack;
+  let bulkPublishLimit = fetchBulkPublishLimit(stack?.org_uid);
+  let xRateLimitRemaining = bulkPublishLimit;
   let payload = {};
   const mapping = await getEnvironment(stack, bulkPublishObj.environments);
   switch (bulkPublishObj.Type) {
@@ -310,6 +313,8 @@ async function performBulkPublish(data, _config, queue) {
         .publish(payload)
         .then((bulkPublishEntriesResponse) => {
           if (!bulkPublishEntriesResponse.error_message) {
+            xRateLimitRemaining = parseInt(bulkPublishEntriesResponse.stackHeaders.responseHeaders['x-ratelimit-remaining'], 10);
+            const sanitizedData = removePublishDetails(bulkPublishObj.entries);
             console.log(
               chalk.green(`Bulk entries sent for publish`),
               bulkPublishEntriesResponse.job_id ? chalk.yellow(`job_id: ${bulkPublishEntriesResponse.job_id}`) : '',
@@ -325,10 +330,14 @@ async function performBulkPublish(data, _config, queue) {
             throw bulkPublishEntriesResponse;
           }
         })
-        .catch((error) => {
+        .catch(async (error) => {
           if (error.errorCode === 429 && data.retry < 2) {
             data.retry++;
-            queue.Enqueue(data);
+            // Call the handleRateLimit function
+            const delayApplied = await handleRateLimit(error, data, delay, xRateLimitRemaining);
+            if (delayApplied) {
+              queue.Enqueue(data);
+            }
           } else {
             delete bulkPublishObj.stack;
             console.log(chalk.red(`Bulk entries failed to publish with error ${formatError(error)}`));
@@ -363,6 +372,7 @@ async function performBulkPublish(data, _config, queue) {
         .publish(payload)
         .then((bulkPublishAssetsResponse) => {
           if (!bulkPublishAssetsResponse.error_message) {
+            xRateLimitRemaining = parseInt(bulkPublishEntriesResponse.stackHeaders.responseHeaders['x-ratelimit-remaining'], 10);
             console.log(
               chalk.green(
                 `Bulk assets sent for publish`,
@@ -380,10 +390,14 @@ async function performBulkPublish(data, _config, queue) {
             throw bulkPublishAssetsResponse;
           }
         })
-        .catch((error) => {
+        .catch(async (error) => {
           if (error.errorCode === 429 && data.retry < 2) {
             data.retry++;
-            queue.Enqueue(data);
+            // Call the handleRateLimit function
+            const delayApplied = await handleRateLimit(error, data, delay, xRateLimitRemaining);
+            if (delayApplied) {
+              queue.Enqueue(data);
+            }
           } else {
             delete bulkPublishObj.stack;
             console.log(chalk.red(`Bulk assets failed to publish with error ${formatError(error)}`));
@@ -425,47 +439,55 @@ async function performBulkUnPublish(data, _config, queue) {
           }
         }
       }
-      stack
-        .bulkOperation()
-        .unpublish(payload)
-        .then((bulkUnPublishEntriesResponse) => {
-          if (!bulkUnPublishEntriesResponse.error_message) {
-            delete bulkUnPublishObj.stack;
 
-            console.log(
-              chalk.green(
-                `Bulk entries sent for Unpublish`,
-                bulkUnPublishEntriesResponse.job_id
-                  ? chalk.yellow(`job_id: ${bulkUnPublishEntriesResponse.job_id}`)
-                  : '',
-              ),
-            );
-            displayEntriesDetails(bulkUnPublishObj.entries, 'bulk_unpublish');
-            addLogs(
-              logger,
-              { options: bulkUnPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host },
-              'info',
-            );
-          } else {
-            throw bulkUnPublishEntriesResponse;
-          }
-        })
-        .catch((error) => {
-          if (error.errorCode === 429 && data.retry < 2) {
-            data.retry++;
+      try {
+        const bulkUnPublishEntriesResponse = await stack.bulkOperation().unpublish(payload);
+
+        if (!bulkUnPublishEntriesResponse.error_message) {
+          xRateLimitRemaining = parseInt(bulkPublishEntriesResponse.stackHeaders.responseHeaders['x-ratelimit-remaining'], 10);
+          delete bulkUnPublishObj.stack;
+          console.log(
+            chalk.green(
+              `Bulk entries sent for Unpublish`,
+              bulkUnPublishEntriesResponse.job_id
+                ? chalk.yellow(`job_id: ${bulkUnPublishEntriesResponse.job_id}`)
+                : '',
+            ),
+          );
+
+          let sanitizedData = removePublishDetails(bulkUnPublishObj.entries);
+          displayEntriesDetails(sanitizedData);
+          addLogs(logger, {
+            options: bulkUnPublishObj,
+            api_key: stack.stackHeaders.api_key,
+            alias: stack.alias,
+            host: stack.host,
+          }, 'info');
+        } else {
+          throw bulkUnPublishEntriesResponse;
+        }
+      } catch (error) {
+        if (error.errorCode === 429 && data.retry < 2) {
+          data.retry++;
+          // Call the handleRateLimit function
+          const delayApplied = await handleRateLimit(error, data, delay, xRateLimitRemaining);
+          if (delayApplied) {
             queue.Enqueue(data);
-          } else {
-            delete bulkUnPublishObj.stack;
-            console.log(chalk.red(`Bulk entries failed to Unpublish with error ${formatError(error)}`));
-            displayEntriesDetails(bulkUnPublishObj.entries, 'bulk_unpublish');
-            addLogs(
+          }
+        } else {
+          delete bulkUnPublishObj.stack;
+          console.log(chalk.red(`Bulk entries failed to Unpublish with error ${formatError(error)}`));
+          let sanitizedData = removePublishDetails(bulkUnPublishObj.entries);
+          displayEntriesDetails(sanitizedData);
+          addLogs(
               logger,
               { options: bulkUnPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host },
               'error',
             );
-          }
-        });
+        }
+      }
       break;
+
     case 'asset':
       conf = {
         assets: removePublishDetails(bulkUnPublishObj.assets),
@@ -476,11 +498,38 @@ async function performBulkUnPublish(data, _config, queue) {
       if (bulkUnPublishObj.apiVersion) {
         if (!isNaN(bulkUnPublishObj.apiVersion) && bulkUnPublishObj.apiVersion === apiVersionForNRP) {
           payload['api_version'] = bulkUnPublishObj.apiVersion;
+        } else if (bulkUnPublishObj.apiVersion !== '3') {
+          console.log(chalk.yellow(nrpApiVersionWarning));
+        }
+      }
+
+      try {
+        const bulkUnPublishAssetsResponse = await stack.bulkOperation().unpublish(payload);
+
+        if (!bulkUnPublishAssetsResponse.error_message) {
+          xRateLimitRemaining = parseInt(bulkPublishEntriesResponse.stackHeaders.responseHeaders['x-ratelimit-remaining'], 10);
+          delete bulkUnPublishObj.stack;
+          let sanitizedData = removePublishDetails(bulkUnPublishObj.assets);
+          console.log(
+            chalk.green(
+              `Bulk assets sent for Unpublish`,
+              bulkUnPublishAssetsResponse.job_id ? chalk.yellow(`job_id: ${bulkUnPublishAssetsResponse.job_id}`) : '',
+            ),
+          );
+
+          displayAssetsDetails(sanitizedData);
+          addLogs(logger, {
+            options: bulkUnPublishObj,
+            api_key: stack.stackHeaders.api_key,
+            alias: stack.alias,
+            host: stack.host,
+          }, 'info');
         } else {
           if (bulkUnPublishObj.apiVersion !== '3') {
             // because 3 is the default value for api-version, and it exists for the purpose of display only
             console.log(chalk.yellow(nrpApiVersionWarning));
           }
+          throw bulkUnPublishAssetsResponse;
         }
       }
       stack
@@ -508,7 +557,11 @@ async function performBulkUnPublish(data, _config, queue) {
         .catch((error) => {
           if (error.errorCode === 429 && data.retry < 2) {
             data.retry++;
+            // Call the handleRateLimit function
+          const delayApplied = await handleRateLimit(error, data, delay, xRateLimitRemaining);
+          if (delayApplied) {
             queue.Enqueue(data);
+          }
           } else {
             delete bulkUnPublishObj.stack;
             console.log(chalk.red(`Bulk assets failed to Unpublish with error ${formatError(error)}`));
@@ -519,7 +572,19 @@ async function performBulkUnPublish(data, _config, queue) {
               'error',
             );
           }
-        });
+        } else {
+          delete bulkUnPublishObj.stack;
+          console.log(chalk.red(`Bulk assets failed to Unpublish with error ${formatError(error)}`));
+          let sanitizedData = removePublishDetails(bulkUnPublishObj.assets);
+          displayAssetsDetails(sanitizedData);
+          addLogs(logger, {
+            options: bulkUnPublishObj,
+            api_key: stack.stackHeaders.api_key,
+            alias: stack.alias,
+            host: stack.host,
+          }, 'error');
+        }
+      }
       break;
     default:
       console.log('No such type');
