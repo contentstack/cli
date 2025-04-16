@@ -23,7 +23,7 @@ importers:
       '@contentstack/cli-cm-migrate-rte': ~1.5.0
       '@contentstack/cli-cm-seed': ~1.11.0
       '@contentstack/cli-command': ~1.5.0
-      '@contentstack/cli-config': ~1.11.0
+      '@contentstack/cli-config': ~1.11.1
       '@contentstack/cli-launch': ^1.8.0
       '@contentstack/cli-migration': ~1.7.0
       '@contentstack/cli-utilities': ~1.11.0
@@ -506,7 +506,7 @@ importers:
     specifiers:
       '@contentstack/cli-auth': ~1.4.0
       '@contentstack/cli-command': ~1.5.0
-      '@contentstack/cli-config': ~1.11.0
+      '@contentstack/cli-config': ~1.11.1
       '@contentstack/cli-dev-dependencies': ~1.3.0
       '@contentstack/cli-utilities': ~1.11.0
       '@contentstack/cli-variants': ~1.2.0
