@@ -106,6 +106,13 @@ const config = {
     'selectedValue',
     'ct_uid',
     'action',
+    "Module",
+    "Total",
+    "Fixable",
+    "Non-Fixable",
+    "Fixed",
+    "Not-Fixed",
+    "Passed",
   ],
   ReportTitleForEntries: {
     Entries_Select_feild: 'Entries_Select_feild',
@@ -121,7 +128,8 @@ const config = {
     'Entries_Select_feild',
     'Entry_Missing_Locale_and_Env_in_Publish_Details',
     'field-rules',
-    'Entry_Multiple_Fields'
+    'Entry_Multiple_Fields',
+    'Summary'
   ],
   fixSelectField: false,
 };
