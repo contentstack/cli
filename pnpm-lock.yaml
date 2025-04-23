@@ -13,7 +13,7 @@ importers:
       '@contentstack/cli-audit': ~1.12.1
       '@contentstack/cli-auth': ~1.4.0
       '@contentstack/cli-cm-bootstrap': ~1.14.0
-      '@contentstack/cli-cm-branches': ~1.4.0
+      '@contentstack/cli-cm-branches': ~1.4.1
       '@contentstack/cli-cm-bulk-publish': ~1.8.0
       '@contentstack/cli-cm-clone': ~1.14.0
       '@contentstack/cli-cm-export': ~1.16.0
