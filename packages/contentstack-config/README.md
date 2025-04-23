@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-config/1.11.0 darwin-arm64 node-v22.14.0
+@contentstack/cli-config/1.12.0 darwin-arm64 node-v23.6.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -361,6 +361,10 @@ EXAMPLES
   $ csdx config:set:region NA
 
   $ csdx config:set:region EU
+
+  $ csdx config:set:region AWS-NA
+
+  $ csdx config:set:region AWS-EU
 
   $ csdx config:set:region AZURE-NA
 
