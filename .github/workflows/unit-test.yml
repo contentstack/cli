@@ -27,6 +27,9 @@ jobs:
       - name: Run tests for Contentstack Config
         working-directory: ./packages/contentstack-config
         run: npm run test
+
+      - name: Run tests for Contentstack Migrate RTE
+        working-directory: ./packages/contentstack-migrate-rte
       # - name: Fetch latest references
       #   run: |
       #     git fetch --prune
