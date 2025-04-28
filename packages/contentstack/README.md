@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.40.0 darwin-arm64 node-v22.14.0
+@contentstack/cli/1.40.1 darwin-arm64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -3646,8 +3646,8 @@ USAGE
   $ csdx launch [-d <value>] [-c <value>] [--type GitHub|FileUpload] [--framework Gatsby|NextJs|CRA (Create
     React App)|CSR (Client-Side Rendered)|Angular|VueJs|Other] [--org <value>] [-n <value>] [-e <value>] [--branch
     <value>] [--build-command <value>] [--out-dir <value>] [--server-command <value>] [--variable-type Import variables
-    from a stack|Manually add custom variables to the list|Import variables from the local env file] [-a <value>]
-    [--env-variables <value>] [--redeploy-latest] [--redeploy-last-upload]
+    from a stack|Manually add custom variables to the list|Import variables from the .env.local file|Skip adding
+    environment variables] [-a <value>] [--env-variables <value>] [--redeploy-latest] [--redeploy-last-upload]
 
 FLAGS
   -a, --alias=<value>           [optional] Alias (name) for the delivery token.
@@ -3670,9 +3670,10 @@ FLAGS
       --type=<option>           [optional] Type of adapters. <options: GitHub|FileUpload>
                                 <options: GitHub|FileUpload>
       --variable-type=<option>  [optional] Provide a variable type. <options: Import variables from a stack|Manually add
-                                custom variables to the list|Import variables from the local env file>
+                                custom variables to the list|Import variables from the .env.local file|Skip adding
+                                environment variables>
                                 <options: Import variables from a stack|Manually add custom variables to the list|Import
-                                variables from the local env file>
+                                variables from the .env.local file|Skip adding environment variables>
 
 DESCRIPTION
   Launch related operations
@@ -3775,8 +3776,7 @@ USAGE
   $ csdx launch:functions [-p <value>] [-d <value>]
 
 FLAGS
-  -d, --data-dir=<value>  [default: /Users/aman.kumar/Documents/datasync-repo/cli/packages/contentstack] Current working
-                          directory
+  -d, --data-dir=<value>  [default: /Users/sunil.lakshman/Documents/cli/packages/contentstack] Current working directory
   -p, --port=<value>      [default: 3000] Port number
 
 DESCRIPTION
