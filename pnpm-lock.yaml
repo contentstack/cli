@@ -908,7 +908,7 @@ importers:
       open: ^8.4.2
       ora: ^5.4.1
       papaparse: ^5.5.2
-      recheck: ~4.4.5
+      recheck: ~4.5.0
       rxjs: ^6.6.7
       sinon: ^19.0.2
       traverse: ^0.6.11
@@ -941,7 +941,7 @@ importers:
       open: 8.4.2
       ora: 5.4.1
       papaparse: 5.5.2
-      recheck: 4.4.5
+      recheck: 4.5.0
       rxjs: 6.6.7
       traverse: 0.6.11
       tty-table: 4.2.3
@@ -3517,7 +3517,6 @@ packages:
   /@pkgr/core/0.1.2:
     resolution: {integrity: sha512-fdDH1LSGfZdTH2sxdpVMw31BanV28K/Gry0cVFxaNP77neJSkd82mM8ErPNYs9e+0O7SdHBLTDzDgwUuy18RnQ==}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
-    dev: true
 
   /@pnpm/config.env-replace/1.1.0:
     resolution: {integrity: sha512-htyl8TWnKL7K/ESFa1oW2UB5lVDxuF5DpM7tBi6Hu2LNL3mWkIzNLG6N4zoCUP1lCKNxWy/3iu8mS8MvToGd6w==}
@@ -12643,6 +12642,12 @@ packages:
     dev: false
     optional: true
 
+  /recheck-jar/4.5.0:
+    resolution: {integrity: sha512-Ad7oCQmY8cQLzd3QVNXjzZ+S6MbImGhR4AaW2yiGzteOfMV45522rt6nSzFyt8p3mCEaMcm/4MoZrMSxUcCbrA==}
+    requiresBuild: true
+    dev: false
+    optional: true
+
   /recheck-linux-x64/4.4.5:
     resolution: {integrity: sha512-s8OVPCpiSGw+tLCxH3eei7Zp2AoL22kXqLmEtWXi0AnYNwfuTjZmeLn2aQjW8qhs8ZPSkxS7uRIRTeZqR5Fv/Q==}
     cpu: [x64]
@@ -12651,8 +12656,32 @@ packages:
     dev: false
     optional: true
 
+  /recheck-linux-x64/4.5.0:
+    resolution: {integrity: sha512-52kXsR/v+IbGIKYYFZfSZcgse/Ci9IA2HnuzrtvRRcfODkcUGe4n72ESQ8nOPwrdHFg9i4j9/YyPh1HWWgpJ6A==}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /recheck-macos-arm64/4.5.0:
+    resolution: {integrity: sha512-qIyK3dRuLkORQvv0b59fZZRXweSmjjWaoA4K8Kgifz0anMBH4pqsDV6plBlgjcRmW9yC12wErIRzifREaKnk2w==}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: false
+    optional: true
+
   /recheck-macos-x64/4.4.5:
     resolution: {integrity: sha512-Ouup9JwwoKCDclt3Na8+/W2pVbt8FRpzjkDuyM32qTR2TOid1NI+P1GA6/VQAKEOjvaxgGjxhcP/WqAjN+EULA==}
+    cpu: [x64]
+    os: [darwin]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /recheck-macos-x64/4.5.0:
+    resolution: {integrity: sha512-1wp/eiLxcjC/Ex4wurlrS/LGzt8IiF4TiK5sEjldu4HVAKdNCnnmsS9a5vFpfcikDz4ZuZlLlTi1VbQTxHlwZg==}
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
@@ -12667,6 +12696,14 @@ packages:
     dev: false
     optional: true
 
+  /recheck-windows-x64/4.5.0:
+    resolution: {integrity: sha512-ekBKwAp0oKkMULn5zgmHEYLwSJfkfb95AbTtbDkQazNkqYw9PRD/mVyFUR6Ff2IeRyZI0gxy+N2AKBISWydhug==}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: false
+    optional: true
+
   /recheck/4.4.5:
     resolution: {integrity: sha512-J80Ykhr+xxWtvWrfZfPpOR/iw2ijvb4WY8d9AVoN8oHsPP07JT1rCAalUSACMGxM1cvSocb6jppWFjVS6eTTrA==}
     engines: {node: '>=14'}
@@ -12675,6 +12712,19 @@ packages:
       recheck-linux-x64: 4.4.5
       recheck-macos-x64: 4.4.5
       recheck-windows-x64: 4.4.5
+    dev: false
+
+  /recheck/4.5.0:
+    resolution: {integrity: sha512-kPnbOV6Zfx9a25AZ++28fI1q78L/UVRQmmuazwVRPfiiqpMs+WbOU69Shx820XgfKWfak0JH75PUvZMFtRGSsw==}
+    engines: {node: '>=20'}
+    dependencies:
+      synckit: 0.9.2
+    optionalDependencies:
+      recheck-jar: 4.5.0
+      recheck-linux-x64: 4.5.0
+      recheck-macos-arm64: 4.5.0
+      recheck-macos-x64: 4.5.0
+      recheck-windows-x64: 4.5.0
     dev: false
 
   /rechoir/0.6.2:
@@ -13608,7 +13658,6 @@ packages:
     dependencies:
       '@pkgr/core': 0.1.2
       tslib: 2.8.1
-    dev: true
 
   /table-layout/0.4.5:
     resolution: {integrity: sha512-zTvf0mcggrGeTe/2jJ6ECkJHAQPIYEwDoqsiqBjI24mvRmQbInK5jq33fyypaCBxX08hMkfmdOqj6haT33EqWw==}
