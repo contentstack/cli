@@ -18,6 +18,7 @@
     "@oclif/test": "^4.1.6",
     "chai": "^4.5.0",
     "eslint": "^8.57.1",
+    "eslint-config-oclif": "^6.0.46",
     "jsdoc-to-markdown": "^8.0.3",
     "nock": "^13.5.6",
     "nyc": "^15.1.0",
