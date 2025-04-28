@@ -36,12 +36,12 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     const token = authenticationHandler.accessToken;
     if (authenticationHandler.isOauthEnabled) {
       this.apiClient.headers({ authorization: token });
-      if(this.adapterConfig.cmaConfig) {
+      if (this.adapterConfig.cmaConfig) {
         this.cmaAPIClient?.headers({ authorization: token });
       }
     } else {
       this.apiClient.headers({ authtoken: token });
-      if(this.adapterConfig.cmaConfig) {
+      if (this.adapterConfig.cmaConfig) {
         this.cmaAPIClient?.headers({ authtoken: token });
       }
     }
@@ -91,12 +91,18 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
 
   async getExperience(experienceUid: string): Promise<ExperienceStruct | void> {
     const getExperiencesEndPoint = `/experiences/${experienceUid}`;
+    if (this.apiClient.requestConfig?.().data) {
+      delete this.apiClient.requestConfig?.().data; // explicitly prevent any accidental body
+    }
     const data = await this.apiClient.get(getExperiencesEndPoint);
     return (await this.handleVariantAPIRes(data)) as ExperienceStruct;
   }
 
   async getExperienceVersions(experienceUid: string): Promise<ExperienceStruct | void> {
     const getExperiencesVersionsEndPoint = `/experiences/${experienceUid}/versions`;
+    if (this.apiClient.requestConfig?.().data) {
+      delete this.apiClient.requestConfig?.().data; // explicitly prevent any accidental body
+    }
     const data = await this.apiClient.get(getExperiencesVersionsEndPoint);
     return (await this.handleVariantAPIRes(data)) as ExperienceStruct;
   }
@@ -231,11 +237,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
 
     const errorMsg = data?.errors
       ? formatErrors(data.errors)
-      : data?.error ||
-        data?.error_message ||
-        data?.message ||
-        'Something went wrong while processing variant entries request!';
-
+      : data?.error || data?.error_message || data?.message || data;
     throw errorMsg;
   }
 }
