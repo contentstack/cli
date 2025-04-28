@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-migration",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "author": "@contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
@@ -46,7 +46,6 @@
   "repository": "contentstack/cli",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
-    "posttest": "eslint ./src",
     "generate-api-ref-md-doc": "nyc jsdoc2md ./src/modules/* > ./docs/api-reference.md",
     "prepack": "oclif manifest && oclif readme && pnpm generate-api-ref-md-doc",
     "test": "nyc mocha \"test/**/*.test.js\"",
