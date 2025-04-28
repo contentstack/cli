@@ -185,7 +185,6 @@ export default class ContentType {
       field.schema = this.runFixOnSchema(tree, field.schema as ContentTypeSchemaType[]);
     }
     for (let child of field.schema ?? []) {
-      
       if (!fixTypes.includes(child.data_type) && child.data_type !== 'json') continue;
 
       switch (child.data_type) {
@@ -487,8 +486,13 @@ export default class ContentType {
       })
       .filter((val: any) => {
         if (this.config.skipFieldTypes.includes(val?.data_type)) return true;
-        if (val?.schema && isEmpty(val?.schema)) return false;
-        if (val?.reference_to && isEmpty(val?.reference_to) && val.data_type==='reference') return false;
+        if (
+          val?.schema &&
+          isEmpty(val?.schema) &&
+          (!val?.data_type || this.config['schema-fields-data-type'].includes(val.data_type))
+        )
+          return false;
+        if (val?.reference_to && isEmpty(val?.reference_to) && val.data_type === 'reference') return false;
 
         return !!val;
       }) as ContentTypeSchemaType[];
