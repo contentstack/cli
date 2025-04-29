@@ -5,11 +5,11 @@ import { resolve as pResolve } from 'node:path';
 
 import BaseClass from './base-class';
 import { log, fsUtil } from '../../utils';
-import { TaxonomiesConfig, ModuleClassParams } from '../../types';
+import { ModuleClassParams, ExportConfig } from '../../types';
 
 export default class ExportTaxonomies extends BaseClass {
   private taxonomies: Record<string, Record<string, string>>;
-  private taxonomiesConfig: TaxonomiesConfig;
+  private taxonomiesConfig: ExportConfig['modules']['taxonomies'];
   private qs: {
     include_count: boolean;
     skip: number;
