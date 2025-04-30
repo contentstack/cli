@@ -266,6 +266,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         return true;
       }
     } catch (error) {
+      this.log(this.config, `Error while validating variant group and variants creation:`, 'error');
       throw error;
     }
   }

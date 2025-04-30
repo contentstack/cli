@@ -13,6 +13,7 @@ export interface BranchDiffRes {
   title: string;
   type: string;
   status: string;
+  merge_strategy?: string;
 }
 
 export interface BranchDiffSummary {
