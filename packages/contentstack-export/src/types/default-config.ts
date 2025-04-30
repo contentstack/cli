@@ -173,6 +173,7 @@ export default interface DefaultConfig {
       fileName: string;
       invalidKeys: string[];
       dependencies?: Modules[];
+      limit: number;
     };
     events: {
       dirName: string;
