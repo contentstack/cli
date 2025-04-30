@@ -211,6 +211,7 @@ const config: DefaultConfig = {
       dirName: 'taxonomies',
       fileName: 'taxonomies.json',
       invalidKeys: ['updated_at', 'created_by', 'updated_by', 'stackHeaders', 'urlPath', 'created_at'],
+      limit: 100,
     },
     events: {
       dirName: 'events',
