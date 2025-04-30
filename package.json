@@ -19,7 +19,7 @@
     "clean-repo": "rm -rf ./package-lock.json ./node_modules ./packages/**/node_modules ./packages/**/.nyc_output ./packages/**/package-lock.json",
     "preinstall-clean": "npm run clean-repo && npm cache clean --force && npx pnpm store prune",
     "setup-repo": "npm run preinstall-clean && npm i && npm run package-lock-only && npm run clean && pnpm install --no-frozen-lockfile && npm run prepack",
-    "prepare": "husky && chmod +x .husky/pre-commit"
+    "husky-check": "husky && chmod +x .husky/pre-commit"
   },
   "license": "MIT",
   "workspaces": [
