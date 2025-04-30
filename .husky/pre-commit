@@ -30,7 +30,7 @@ talisman_failed=false
 
 # Run Snyk vulnerability scan
 echo "Running Snyk vulnerability scan..."
-snyk test --all-projects > snyk_output.log 2>&1
+snyk test --all-projects --fail-on=all > snyk_output.log 2>&1
 snyk_exit_code=$?
 
 if [ $snyk_exit_code -eq 0 ]; then
