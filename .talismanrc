@@ -85,10 +85,6 @@ fileignoreconfig:
   checksum: 1c1f05989f22d06b600fba7456c1935a385997292c770d573165b9a07e1a3b8a
 - filename: packages/contentstack-import/test/integration/auth-token-modules/webhooks.test.js
   checksum: f41c4c354482293e4d6e52923d451266b150ba675e61681e21ba83ebf5dd8382
-- filename: pnpm-lock.yaml
-  checksum: 8bc914084e311432154f0e3bd05e2bbb60516460e09b9f8a6356c69d335b38b2
-- filename: package-lock.json
-  checksum: 64cca4648257efc253c34babd3d857eadc2e4a42c8e84959f2005ec4dae0ed8a
 - filename: packages/contentstack-launch/src/commands/launch/environments.ts
   checksum: a9f5fc3fad1915ca8812f1159c4019b957db59f7b4c8e2da0d214e45b8835ef7
 - filename: packages/contentstack-launch/tsconfig.tsbuildinfo
@@ -109,4 +105,12 @@ fileignoreconfig:
   checksum: e345a745f027c76081df71e4fe9872c1f4adac076689b036e195b84041807b59
 - filename: packages/contentstack-launch/src/util/create-git-meta.ts
   checksum: 8cbd32dbbd2989c7c082f8a0b7615916125d211bce25531e9a882b8ebd5674af
+- filename: .husky/pre-commit
+  checksum: b7cfe41015e9a2e2acb3a374389beddcd812d93bfceec90ce06dce54b0ed9e2b
+- filename: packages/contentstack/package.json
+  checksum: 9b0fdd100effcdbb5ee3809f7f102bfd11c88dd76e49db5103434f3aa29473dd
+- filename: pnpm-lock.yaml
+  checksum: c05453cf95a43e5fd5913808d6438ba7fb087a89838ac2f6ad1966957907c21c
+- filename: package-lock.json
+  checksum: 7d7b7d6d7de87a58347c4772acc536006be8459df9a4232258f6976fe2704f89
 version: ""
