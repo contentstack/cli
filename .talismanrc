@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: .github/workflows/secrets-scan.yml
+  checksum: d79ec3f3288964f7d117b9ad319a54c0ebc152e35f69be8fde95522034fdfb2a
 - filename: packages/contentstack-export/.env
   checksum: b057ae11234ac9411fe5dfa54ac3b029a71db51b4c334dce8677ab6fc1e41ecf
 - filename: packages/contentstack-export/test/integration/environments.test.js
