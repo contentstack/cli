@@ -3,7 +3,7 @@
  */
 import fs from 'fs';
 import path from 'path';
-import forEach from 'lodash/forEach'
+import forEach from 'lodash/forEach';
 import { configHandler, cliux, messageHandler, sanitizePath } from '@contentstack/cli-utilities';
 import { MergeParams } from '../interfaces';
 
@@ -73,7 +73,7 @@ export async function getMergeQueueStatus(stackAPIClient, payload): Promise<any>
     .mergeQueue(mergeJobUID)
     .fetch()
     .then((data) => data)
-    .catch((err) => handleErrorMsg(err));
+    .catch((err) => handleErrorMsg(err, () => getMergeQueueStatus(stackAPIClient, payload)));
 }
 
 export async function executeMergeRequest(stackAPIClient, payload): Promise<any> {
@@ -95,10 +95,18 @@ export async function executeMergeRequest(stackAPIClient, payload): Promise<any>
     .branch()
     .merge(itemMergeStrategies, queryParams)
     .then((data) => data)
-    .catch((err) => handleErrorMsg(err));
+    .catch((err) => handleErrorMsg(err, () => executeMergeRequest(stackAPIClient, payload)));
 }
 
-export function handleErrorMsg(err) {
+export async function handleErrorMsg(err, retryCallback?: () => Promise<any>) {
+  // Handle rate limit exceeded (status code 429)
+  if (err?.status === 429 || err?.response?.status === 429) {
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // 1 sec delay
+    if (retryCallback) {
+      return retryCallback(); // Retry the request
+    }
+  }
+
   if (err?.errorMessage) {
     cliux.print(`Error: ${err.errorMessage}`, { color: 'red' });
   } else if (err?.message) {
@@ -116,7 +124,7 @@ export function validateCompareData(branchCompareData) {
     forEach(branchCompareData.content_types, (value, key) => {
       if (value?.length > 0) {
         validCompareData = true;
-       }
+      }
     });
   }
 
@@ -124,7 +132,7 @@ export function validateCompareData(branchCompareData) {
     forEach(branchCompareData.global_fields, (value, key) => {
       if (value?.length > 0) {
         validCompareData = true;
-       }
+      }
     });
   }
 
