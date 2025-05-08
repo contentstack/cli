@@ -439,6 +439,7 @@ const config: DefaultConfig = {
   },
   //'taxonomies', 'environments', 'marketplace_apps', workflows, custom-roles --> Add this incase need to extend to the other global modules
   globalModules: ['webhooks'],
+  entriesPublish: true,
 };
 
 export default config;
