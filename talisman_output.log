@@ -1,0 +1,567 @@
+
+[1m[31mTalisman Report:[0m[0m
++-------------------+----------------------------------------------------+----------+
+|       FILE        |                       ERRORS                       | SEVERITY |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-ssZX7+bEWPXjfmKRJTDzoP18Uyz8b0dCHLpvV1L... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-oLBCq/wOzMEv4HhEDxttl5km0KGuptqnl4MlzzD... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-6D5iQbL0MqlJ7B5aaHdP21k9+3H/od0jHjHSXeg... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-KrYDEc6HaJE+Mx5lrwq6uhJxj1RYYfggQ+X+zQe... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-5mjrWPa4iaBK9/HDEIVN8lGxsnjk60eBjwGaJV0... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-TD84TXS/iDWcf+ggCq3n6yx36p1WXB2qgyHkbP/... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-LfReL9TnOOunJWeZbDXPePFEnvJE+jcA7iY/Its... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-L2EK5fy2+7El7j7TcRcuwr2lzU5tQfXsfscg+dt... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-s6ng/rZj7WP8GGgxBXsoPZYlSu7MZAm9O8OLgSS... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-9Tt5zmhiK2nBfJv52Is5gNtW6bhK0W20GRhckg4... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-eBICjQUnqaoiHl9/AHKVPt/YkrifDddAUNGWUj+... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-vVphifJ5Ab2JUjB27UvdNV51ezxTn3f/jNbC/Y+... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-YW1hySBolALMII6C8y7Z0CRG2UX1dGJjLEBNFee... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-bQbh3hTrp+3XEuu8G5DkPDK9u3nnIabw2N1Gpql... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-bum1hLVBrn2lJCi423Z2fMUYtsbkGI2s4N+2RI2... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-AMtKnllIWKgoo7hiJfphLYotEwTERfjVMO2+cKA... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-w/qLwL3iq0KOPQNat0Kb7sKndl9BtceigINwBU7... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-zqHOrvLRdsUdN/ehYfZ9Tf8svhbiLLz5VaWUz22... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-kiuqjV2ozoyI6w34+KMhZU+YVOLTPgh1Kp1DSpu... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-Tk8jK0gOIUBvEPTz/wwSlP1V70zVQ3QYqsLPAjQ... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-HoBaun4t3vAFhMj/I7L/HNBKBrAYu7Sb5bTFINx... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-IOUcw6stjqYBMhLoAXlLVipYpAqLlA17jcyI0Oz... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-Qlr8jVUL5U8Ej+84ElUTGeOok6hQXcJdx5IOSRo... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-6wxi+f/uvddm2PVRG1gDkjnukfwhEtu3JUAvGqQ... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-ndcLGD1nHEVJdWRl0lK8SfC0dN4j3X4gcGXEJxK... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-A9qnsy9zQ8G89vrPPlNG9d1d8QcKRGqJKqwyGgS... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-wmBJqn1DRXnZu3b4EkE6CWnoWMo1ZMvlfkqU5zP... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-mT2R1De1fBT3vgm00ELVFoaArblW3PqGUCVteGG... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-zVoRfpmBVPodYlnMjgVjfGoEZagyRF5IPn3Uo6Z... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-KfW6T6nQHHM/vZBBdGn6fMyG/MgX5lq82TDdX4H... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-TacXL50ZHOeTUvN9LbHjS3muvvJNpzZp9cAtGRK... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-JbGWp36IG9dgxtvC6+YXwt5WDZYfuamWFtVfK6f... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9fl... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-TUtMJYRPyUb/9aU8f3K0mjmjf6M9N5Woshn2CS6... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-IaaGWsQqfsQWVLqMn9OB92MNN7zukfVA4s7KKAI... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-UnJfnIpc/+JO0/+KRVQNGU+y5taA5vCbwN8+azk... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-2+1thGUUWWjLTYTHZWK1n8Yga0ijBz1XAhUXcKy... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-0gSFWUPNXNopqtIPQvlD5WgXYI5GY2kP2cCvoT8... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-9yHn519/8KvTU5BjTVEEeIM3w9/2yXNKoD82Jif... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-1gn1Up5YXka3YYAHGKpbideQ5Yjf1tDa9qYcgys... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-qMlSxKbpRlAridDExk92nSobyDdpPijUq2DW6oD... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-D2hP9eA+Sqx1kBZgzxZh0y1trbuU+JoDkiEwqhQ... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-YvjJow9FxbhFFKDSuFnVCe2WxXk1zWc22fFePVN... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-FCvFTm0sWV8Fxhpp2McP5/W53GPllQ9QeQ7SiqG... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-QYLs8299NA7WM/bZAdp+CviYYkVoYXlDW2rzliy... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-oFT0FrKHgF53f4vOsZGi2Hh3I35PfSmVs4IBFLF... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-y8YTNIeKoyhGd9O0Jiyzyyqk8gdjnumGTQPsz0x... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-xfYCBMxveHrRMnAWl1ZlPXOZjzkN82THFvLhQhF... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-LPDZ85aEJyYSd18/DkjNh4/y1ntkE5KwUHWTiqg... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-ZCYtZciz1IWJB4U61UPu4KEaqyfj+r5T1Q5mqPo... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-+EzkxvLNfiUeKMgy/3luqfsCWFRXLb7U6wNQTk6... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-2duaNA1CnwYogXDcc9TCD9RqEmaLducqcrPoURl... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-dyybb3AcajC7uha6CvhdVRJqaKyn7w2YKqKyAN3... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-+GPzk8PlG0sPpzdU5ZvIRMPidzAnZDl/s9L+y13... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-BL1eyu/XWsFGTtDWOYULQEs4KR0qdtYfCxYAUYR... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-k/1pb70eD638anoi0e8wUGAlbMJXyvdV4p62Ko+... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-5cvg6CtKwfgdmVqY1WIiXKc3Q1bkRqGLi+2W/6a... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-02qvAaxv8tp7fBa/mw1ga98OGm+eCbqzJOKoRt7... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-Au9nRL8VNUut/XSzbQA38+M78dzP4D+eqg3gfJH... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-D76uU73ulSXrD1UXF4KE2TMxVVwhsnCgfAyTg9k... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-DT9ck5YIRU+8GYzzU5kT3eHGA5iL+1Zd0EutOmT... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-/t88Ty3d5JWQbWYgaOGCCYfXRwV1+be02WqYYlL... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-Rx/WycZ60HOaqLKAi6cHRKKI7zxWbJ31Mhntmtw... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuI... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-aisnrDP4GNe06UcKFnV5bfMNPBUw4jsLGaWwWfn... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-Snk314V5ayFLhp3fkUREub6WtjBfPdCPY1Ln8/8... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-aU5EJuIN2WDemCcAp2vFBfp/m4EAhWJnUNSSw0i... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-xRc4oEhT6eaBpU1XF7AjpOFD+xQmXNB5OVKwp4t... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-8Ofs/AUQh8MaEcrlq5xOX0CQ9ypTF5dl78mjlMN... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-RmkhL8CAyCRPXCE28MMH0z2PNWQBNk2Q09ZdxM9... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-uaW0WwXKpL9blXE2o0bRhoL2EGXIrZxQ2ZQ4mgc... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-61g9pCh0Vnh7IutZjtLGGpTA355+OPn2TyDv/6i... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-OZs6gsjF4vMp32qrCbiVSkrFmXtG/AZhY3t0iAM... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-eFLP2yjiK+xMRGcv9k9jOWV08HB+/Cgg1ND91zS... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-hnYH4GS7lYD3Z59LO9RZAIXQPmuW+rNnTjCheSw... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-sgpksPriMyXqhVUcV0v3YaEm6JxRma0DiLDTXjG... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-2KF+pD9iR8keMae6Le2+GHckUhRBRPhgpQeR7RY... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-JkdNEq+DFxZfUwxvB58tHMHBHVgX23ew41g1OQi... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-13unNoZ8NzUmnndhPTkWPWbX3vtHodYmy+I9kuL... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-Gzf1Hn2Aoe8VZzevHostPX23U7N5+4D36WJNHK8... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-47N4hxa01a4x6XnJoskMKTS8XZ0CZMd8YTbINbi... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-8t6aL4MD+rXSHHZUR1z19+9OFJ2rl1wGKvckN47... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-C+AyHBzfpsOEYRFjztcYUFsH4S7UsE9cDtHCtma... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-de6TFZYIvJwRNjmW3+gaXiZ2DaWL5D5yGmSYzkd... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-urjaEZubdIkacKc930hUDOfQPysezKla/O9qV+O... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-KlE8IC0HFOC33taNt1zR8qNlBYHj31qGT1UqWqt... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-j8CgxvfM0kbnhu4XgjnCWJQyyBOeBI1Zq91Z850... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-Ybc/1qUampKuRF4tQXc7G7QY9YRyeVSykfK36Y5... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-3FCIrnrt03CCsZqSYAOW/k9n625pjpuMzVfeI+Z... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-QNU7BFHEvHMp2ESSY3SozIkBPaPBDTsfVNGx3Xh... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-5W6vNYkhgfh7URiXTO1E9a0cy4fSgfE4+Hl5agb... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-B7LKIz+0+p348JoAL4X/YxGx9zOx3sR+o6Hj15Y... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-lG7Xa+BmBNwpjmVUbmyKxdQJ3Q6whHjMjzQplOs... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-tD46wKHd+KJvsmije4bUskNuvWKFcTOIM9tZ/Rr... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-Bjv/HG8RRWLNkXwQQemdsWw4Mg+IJ29LK+bJPW2... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-dt1llVSGEsGKvzeIO76HToiYPNPYPkmjhMHhP00... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-bwspbWB04XJpeElvsp+DCylKfF4trJDa2Y9Go8O... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-W7AppgQD3fP1aBmo8wWo0id5zeR2/aYRy067vZs... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-EqOy3xaEGQpsKxLlzYstDRJ8eY90CbyBP4cl+w7... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-AsJtI9KiFoEGAhcEKZyzzPfrszAQGcf4HSYKmen... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-FTbcajmltovWMjj3tksDQdD23b2w6gH+A0DYA1Y... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-3AnHfsMdq9Wg7+3BeR1HuLWI9+DMA/SoHVpCWq6... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-2k6fgUNOZ1Rn0gEjvGPGrDEINLG8qSBHsN7xlkk... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-2XR1WRglLVmoIFts7bODUTgBdVyvkfKNkydHrls... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-DPuYjZQDXmKr/sNvy9Spu8R/ESa2e22wXZzSAY6... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-jc/4IxGNedXkmG4mx4nJTILb6TMjL66D41vyeaP... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-O5Id6tGadAZEMThM6L9HmVf5hQUXNSxLVKeGJYW... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-pU9VD7anSCOIoBFnhTGfOzlVFQIA1XXiQpH/Cez... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-8S9hXau6nQ/sYVtC3D6ISIDoJzS1NsCK+gluVhL... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-1rYQTCLFFzOI5Nl0c8LUpJT8HxpwVRn9E4CkMsY... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-CgPD5kFGWsb8HJ5K7rfWlifao87m4ph8uioU7OT... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-FDToo4Wo82hIdgc1CQ+NQD0hEhmpPjrZ3hiUgwg... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-auPpttCq6BDEG8ZAuHJIplGw6GODhjw+/11e7Ij... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-KIHbLJqu73RGr/hnbrO9uBeixNGuvSQjul/jdFv... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-F1Z+5UCFpmQUzJa11agbyPVMbpgT/qA3/SKyJ1j... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-rOOkP2ZUMx1yL4fCxXQKDHQ8ZXwisb2OycOQVKH... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-5BWFViu6bkpwltEbr+WmHj5UfYdZUc/tF7o0AOp... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-gCdSY54n7k+driCadyMNv8JSPzYLeDVM/ikZRtv... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-I9XlJawFdSMvWjDt6wksMCrgns5ggLNfFwFvnSh... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-/jU9ettcntkBFmWUzzGgsClEi2ZFiikMX5eEQsm... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-B2MdzyWxCE2+SqiZHAjPphft+/2x2FlO9YBx7eK... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-t2vouuYQKEKSLtJaa5bB4jHeha2HJczQ6E5IXPD... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-Hx0MOjPh6uK9oq9nVsATZKE/Wlbai7KFjfCuw9U... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-l19WpE2m9hSuyP06+FbuUUf1G+R0SFLrtQfbRb9... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-VARTJ9CYeuQYb0pZEPbzi740OWFgpHe7AYJ2WFZ... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-eB5zbQh5h+VenMPM3fh+nw1YExi5nMr6HUCR62E... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-ueGLflrrnvwB3xuo/uGob5pd5FN7l0MsLf0Z87o... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-tfUOg6DTP4rhQ3VjOO6B4wyrJnGOX85requAXvq... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-nLTrUKm2UyiL7rlhapu/Zl45FwNgkZGaCpZbIHa... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-hvpoI6korhJMnej285dSg6nu1+e6uxs7zG3BYAm... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-TdrF7fW9Rphjq4RjrW0Kp2AW0Ahwu9sRGTkS6bv... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-UMq2kxdXCzinFFPsXc9o2ozIpYCCOiEC46MG3yE... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-DMricUmwGZUVr++AEAe2uiVM7UoO9MAVZMDu05U... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-OdqJE9UDRPwWsrHjLN2F8bPxvwJBK22EHLWtanu... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-/AuWwMP+YqiPbsJx5D6TfgRTc4kTLjsh5SOcd4b... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Expected file to not contain                       | high     |
+|                   | base64 encoded texts such as:                      |          |
+|                   | "sha512-DnDEcDUnVAUYSa7U03QvrXbj1MZj00xoyi/a3lR... |          |
++-------------------+----------------------------------------------------+----------+
+| package-lock.json | Potential secret pattern :                         | low      |
+|                   | "@typescript-eslint/visitor-keys":                 |          |
+|                   | "8.32.0"                                           |          |
++-------------------+----------------------------------------------------+----------+
+
+
+[33mIf you are absolutely sure that you want to ignore the above files from talisman detectors, consider pasting the following format in .talismanrc file in the project root[0m
+
+fileignoreconfig:
+- filename: package-lock.json
+  checksum: 0cb373716595912a75e9fd356e7a90a67eb1d2de712c454701231e2d5dd3caf7
+version: "1.0"
+
+Talisman done in 2.720796167s
