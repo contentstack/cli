@@ -19,3 +19,4 @@ yarn.lock
 contents-*
 *.http
 *.todo
+talisman_output.log

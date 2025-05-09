@@ -72,7 +72,7 @@ function executeShellCommand(pkg, directory = '') {
   try {
     const result = spawnSync(`npm`, ['i', pkg], { stdio: 'inherit', cwd: directory, shell: false });
     if (result?.error) throw result.error;
-    console.log(`Command executed successfully: ${command}`);
+    console.log(`Command executed successfully`);
   } catch (error) {
     console.error(`Command execution failed. Error: ${error?.message}`);
   }
