@@ -79,24 +79,23 @@ async function branchCompareSDK(payload: BranchDiffPayload, skip?: number, limit
   const module = payload.module || 'all';
 
   switch (module) {
-    case 'content_types' || 'content_type':
+    case 'content_types':
+    case 'content_type':
       return await branchQuery
         .contentTypes(queryParams)
         .then((data) => data)
         .catch((err) => handleErrorMsg(err, payload.spinner));
-      break;
-    case 'global_fields' || 'global_field':
+    case 'global_fields':
+    case 'global_field':
       return await branchQuery
         .globalFields(queryParams)
         .then((data) => data)
         .catch((err) => handleErrorMsg(err, payload.spinner));
-      break;
     case 'all':
       return await branchQuery
         .all(queryParams)
         .then((data) => data)
         .catch((err) => handleErrorMsg(err, payload.spinner));
-      break;
     default:
       handleErrorMsg({ errorMessage: 'Invalid module!' }, payload.spinner);
   }
