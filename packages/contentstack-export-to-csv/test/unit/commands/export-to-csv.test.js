@@ -8,7 +8,8 @@ const { configHandler } = require('@contentstack/cli-utilities');
 const { runCommand } = require('@oclif/test')
 const sinon = require('sinon');
 
-const { cma } = configHandler.get('region');
+const regionConfig = configHandler.get('region') || {};
+const cma = regionConfig.cma || 'https://api.contentstack.io/v3';
 let sandbox;
 
 describe('Export to CSV functionality', () => {
