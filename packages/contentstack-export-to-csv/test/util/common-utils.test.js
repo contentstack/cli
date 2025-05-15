@@ -5,7 +5,8 @@ const { configHandler, managementSDKClient } = require('@contentstack/cli-utilit
 const mockData = require('../mock-data/common.mock.json');
 const { getStacks, chooseBranch } = require('../../src/util/index');
 const nock = require('nock');
-const { cma } = configHandler.get('region');
+const regionConfig = configHandler.get('region') || {};
+const cma = regionConfig.cma || 'https://api.contentstack.io/v3';
 
 describe('common utils', () => {
   let managementSdk;
