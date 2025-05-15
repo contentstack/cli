@@ -13,6 +13,7 @@ const config = {
     'field-rules',
   ],
   'fix-fields': ['reference', 'global_field', 'json:rte', 'json:extension', 'blocks', 'group', 'content_types'],
+  'schema-fields-data-type': ['blocks','group','global_field'],
   moduleConfig: {
     'content-types': {
       name: 'content type',
@@ -110,6 +111,8 @@ const config = {
     "Total",
     "Fixable",
     "Non-Fixable",
+    "Fixed",
+    "Not-Fixed",
     "Passed",
   ],
   ReportTitleForEntries: {

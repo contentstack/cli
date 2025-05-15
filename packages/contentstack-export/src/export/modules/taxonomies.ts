@@ -5,15 +5,16 @@ import { resolve as pResolve } from 'node:path';
 
 import BaseClass from './base-class';
 import { log, fsUtil } from '../../utils';
-import { TaxonomiesConfig, ModuleClassParams } from '../../types';
+import { ModuleClassParams, ExportConfig } from '../../types';
 
 export default class ExportTaxonomies extends BaseClass {
   private taxonomies: Record<string, Record<string, string>>;
-  private taxonomiesConfig: TaxonomiesConfig;
+  private taxonomiesConfig: ExportConfig['modules']['taxonomies'];
   private qs: {
     include_count: boolean;
     skip: number;
-    asc: string;
+    asc?: string;
+    limit: number;
   };
   public taxonomiesFolderPath: string;
 
@@ -21,6 +22,7 @@ export default class ExportTaxonomies extends BaseClass {
     super({ exportConfig, stackAPIClient });
     this.taxonomies = {};
     this.taxonomiesConfig = exportConfig.modules.taxonomies;
+    this.qs = { include_count: true, limit: this.taxonomiesConfig.limit || 100, skip: 0 };
   }
 
   async start(): Promise<void> {
@@ -66,7 +68,7 @@ export default class ExportTaxonomies extends BaseClass {
 
         if (items?.length) {
           this.sanitizeTaxonomiesAttribs(items);
-          skip += this.taxonomiesConfig.limit || 100;
+          skip += this.qs.limit || 100;
           if (skip >= taxonomiesCount) {
             return;
           }

@@ -308,7 +308,12 @@ export default abstract class BaseClass {
       case 'update-locale':
         return this.stack
           .locale(apiData.code)
-          .update({ locale: pick(apiData, [...this.modulesConfig.locales.requiredKeys]) as LocaleData })
+          .fetch()
+          .then((locale) => {
+            locale.name = apiData.name;
+            locale.fallback_locale = apiData.fallback_locale;
+            return locale.update();
+          })
           .then(onSuccess)
           .catch(onReject);
       case 'create-cts':
