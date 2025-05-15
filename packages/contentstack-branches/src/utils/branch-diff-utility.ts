@@ -79,24 +79,23 @@ async function branchCompareSDK(payload: BranchDiffPayload, skip?: number, limit
   const module = payload.module || 'all';
 
   switch (module) {
-    case 'content_types' || 'content_type':
+    case 'content_types':
+    case 'content_type':
       return await branchQuery
         .contentTypes(queryParams)
         .then((data) => data)
         .catch((err) => handleErrorMsg(err, payload.spinner));
-      break;
-    case 'global_fields' || 'global_field':
+    case 'global_fields':
+    case 'global_field':
       return await branchQuery
         .globalFields(queryParams)
         .then((data) => data)
         .catch((err) => handleErrorMsg(err, payload.spinner));
-      break;
     case 'all':
       return await branchQuery
         .all(queryParams)
         .then((data) => data)
         .catch((err) => handleErrorMsg(err, payload.spinner));
-      break;
     default:
       handleErrorMsg({ errorMessage: 'Invalid module!' }, payload.spinner);
   }
@@ -196,15 +195,21 @@ function printCompactTextView(branchTextRes: BranchCompactTextRes): void {
   if (branchTextRes.modified?.length || branchTextRes.added?.length || branchTextRes.deleted?.length) {
     cliux.print(' ');
     forEach(branchTextRes.added, (diff: BranchDiffRes) => {
-      cliux.print(chalk.green(`+ '${diff.title}' ${startCase(camelCase(diff.type))}`));
+      if (diff.merge_strategy !== 'ignore') {
+        cliux.print(chalk.green(`+ '${diff.title}' ${startCase(camelCase(diff.type))}`));
+      }
     });
 
     forEach(branchTextRes.modified, (diff: BranchDiffRes) => {
-      cliux.print(chalk.blue(`± '${diff.title}' ${startCase(camelCase(diff.type))}`));
+      if (diff.merge_strategy !== 'ignore') {
+        cliux.print(chalk.blue(`± '${diff.title}' ${startCase(camelCase(diff.type))}`));
+      }
     });
 
     forEach(branchTextRes.deleted, (diff: BranchDiffRes) => {
-      cliux.print(chalk.red(`- '${diff.title}' ${startCase(camelCase(diff.type))}`));
+      if (diff.merge_strategy !== 'ignore') {
+        cliux.print(chalk.red(`- '${diff.title}' ${startCase(camelCase(diff.type))}`));
+      }
     });
   }
 }

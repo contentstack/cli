@@ -2,6 +2,7 @@ import os from 'os';
 import path from 'path';
 import forEach from 'lodash/forEach';
 import { cliux } from '@contentstack/cli-utilities';
+import chalk from 'chalk';
 import { MergeInputOptions, MergeSummary } from '../interfaces';
 import {
   selectMergeStrategy,
@@ -107,11 +108,13 @@ export default class MergeHandler {
           deleted: [],
         };
         const selectedItems = await selectCustomPreferences(module, this.branchCompareData[module]);
-        forEach(selectedItems, (item) => {
-          this.mergeSettings.mergeContent[module][item.status].push(item.value);
-          this.mergeSettings.itemMergeStrategies.push(item.value);
-        });
-        this.mergeSettings.strategy = 'ignore';
+        if (selectedItems?.length) {
+          forEach(selectedItems, (item) => {
+            this.mergeSettings.mergeContent[module][item.status].push(item.value);
+            this.mergeSettings.itemMergeStrategies.push(item.value);
+          });
+          this.mergeSettings.strategy = 'ignore';
+        }
       }
     } else if (this.strategy === 'merge_prefer_base') {
       if (this.strategySubOption === 'new') {
@@ -133,8 +136,24 @@ export default class MergeHandler {
       this.mergeSettings.strategy = 'overwrite_with_compare';
     }
 
-    await this.displayMergeSummary();
-
+    const { allEmpty, moduleStatus } = this.checkEmptySelection();
+    const strategyName = this.mergeSettings.strategy;
+    
+    if (allEmpty) {
+      cliux.print(chalk.red(`No items selected according to the '${strategyName}' strategy.`));
+      process.exit(1);
+    }
+    
+    for (const [type, { exists, empty }] of Object.entries(moduleStatus)) {
+      if (exists && empty) {
+        const readable = type === 'contentType' ? 'Content Types' : 'Global fields';
+        cliux.print('\n')
+        cliux.print(chalk.yellow(`Note: No ${readable} selected according to the '${strategyName}' strategy.`));
+      }
+    }
+    
+    this.displayMergeSummary();
+  
     if (!this.executeOption) {
       const executionResponse = await selectMergeExecution();
       if (executionResponse === 'previous') {
@@ -152,6 +171,71 @@ export default class MergeHandler {
     }
   }
 
+  /**
+   * Checks whether the selection of modules in the compare branch data is empty.
+   *
+   * This method evaluates the branch compare data and determines if there are any changes
+   * (added, modified, or deleted) in the modules based on the merge strategy defined in the
+   * merge settings. It categorizes the status of each module as either existing and empty or
+   * not empty.
+   *
+   * @returns An object containing:
+   * - `allEmpty`: A boolean indicating whether all modules are either non-existent or empty.
+   * - `moduleStatus`: A record mapping module types (`contentType` and `globalField`) to their
+   *   respective statuses, which include:
+   *   - `exists`: A boolean indicating whether the module exists in the branch comparison data.
+   *   - `empty`: A boolean indicating whether the module has no changes (added, modified, or deleted).
+   */
+  checkEmptySelection(): {
+    allEmpty: boolean;
+    moduleStatus: Record<string, { exists: boolean; empty: boolean }>;
+  } {
+    const strategy = this.mergeSettings.strategy;
+  
+    const useMergeContent = new Set(['custom_preferences', 'ignore']);
+    const modifiedOnlyStrategies = new Set(['merge_modified_only_prefer_base', 'merge_modified_only_prefer_compare']);
+    const addedOnlyStrategies = new Set(['merge_new_only']);
+  
+    const moduleStatus: Record<string, { exists: boolean; empty: boolean }> = {
+      contentType: { exists: false, empty: true },
+      globalField: { exists: false, empty: true },
+    };
+  
+    for (const module in this.branchCompareData) {
+      const content = useMergeContent.has(strategy)
+        ? this.mergeSettings.mergeContent[module]
+        : this.branchCompareData[module];
+  
+      if (!content) continue;
+  
+      const isGlobalField = module === 'global_fields';
+      const type = isGlobalField ? 'globalField' : 'contentType';
+      moduleStatus[type].exists = true;
+  
+      let hasChanges = false;
+      if (modifiedOnlyStrategies.has(strategy)) {
+        hasChanges = Array.isArray(content.modified) && content.modified.length > 0;
+      } else if (addedOnlyStrategies.has(strategy)) {
+        hasChanges = Array.isArray(content.added) && content.added.length > 0;
+      } else {
+        hasChanges =
+          (Array.isArray(content.modified) && content.modified.length > 0) ||
+          (Array.isArray(content.added) && content.added.length > 0) ||
+          (Array.isArray(content.deleted) && content.deleted.length > 0);
+      }
+  
+      if (hasChanges) {
+        moduleStatus[type].empty = false;
+      }
+    }
+  
+    const allEmpty = Object.values(moduleStatus).every(
+      (status) => !status.exists || status.empty
+    );
+  
+    return { allEmpty, moduleStatus };
+  }
+  
   displayMergeSummary() {
     if (this.mergeSettings.strategy !== 'ignore') {
       for (let module in this.branchCompareData) {
@@ -250,10 +334,10 @@ export default class MergeHandler {
     };
 
     const mergePreferencesMap = {
-      'existing_new': 'merge_existing_new',
-      'new': 'merge_new',
-      'existing': 'merge_existing',
-      'ask_preference': 'custom',
+      existing_new: 'merge_existing_new',
+      new: 'merge_new',
+      existing: 'merge_existing',
+      ask_preference: 'custom',
     };
     const selectedMergePreference = mergePreferencesMap[mergePreference];
 
@@ -282,7 +366,10 @@ export default class MergeHandler {
 
     if (scriptFolderPath !== undefined) {
       cliux.success(`\nSuccess! We have generated entry migration files in the folder ${scriptFolderPath}`);
-      cliux.print('\nWARNING!!! Migration is not intended to be run more than once. Migrated(entries/assets) will be duplicated if run more than once', { color: 'yellow' });
+      cliux.print(
+        '\nWARNING!!! Migration is not intended to be run more than once. Migrated(entries/assets) will be duplicated if run more than once',
+        { color: 'yellow' },
+      );
 
       let migrationCommand: string;
       if (os.platform() === 'win32') {
