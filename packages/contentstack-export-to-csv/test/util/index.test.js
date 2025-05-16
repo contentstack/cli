@@ -14,7 +14,7 @@ const {
   determineUserOrgRole,
 } = require('../../src/util/index');
 const sinon = require('sinon');
-const util = require('../../src/util')
+const util = require('../../src/util');
 
 describe('Test Util functions', () => {
   let managementAPIClientMock;
