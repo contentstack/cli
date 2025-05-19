@@ -75,7 +75,9 @@ export default class EntriesExport extends BaseClass {
             this.exportVariantEntry = true;
           }
 
+          console.log('🚀 ~ EntriesExport ~ start ~ this.exportVariantEntry:', this.exportVariantEntry);
           this.variantEntries = new Export.VariantEntries(Object.assign(this.exportConfig, { project_id }));
+          console.log('🚀 ~ EntriesExport ~ start ~ this.variantEntries:', this.variantEntries);
         } catch (error) {
           log(this.exportConfig, `Failed to export variant entries ${error}`, 'error');
         }
@@ -190,6 +192,10 @@ export default class EntriesExport extends BaseClass {
 
       options.skip += this.entriesConfig.limit || 100;
       if (options.skip >= entriesSearchResponse.count) {
+        console.log(
+          '🚀 ~ EntriesExport ~ getEntries ~ options.skip >= entriesSearchResponse.count:',
+          options.skip >= entriesSearchResponse.count,
+        );
         return Promise.resolve(true);
       }
       return await this.getEntries(options);
