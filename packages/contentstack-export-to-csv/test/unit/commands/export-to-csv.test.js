@@ -8,11 +8,16 @@ const { configHandler } = require('@contentstack/cli-utilities');
 const { runCommand } = require('@oclif/test')
 const sinon = require('sinon');
 
-const { cma } = configHandler.get('region');
+const regionConfig = configHandler.get('region') || {};
+const cma = regionConfig.cma || 'https://api.contentstack.io/v3';
 let sandbox;
 
 describe('Export to CSV functionality', () => {
   beforeEach(() => {
+     if (!configHandler.get('authorisationType')) {
+      configHandler.set('authorisationType', 'BASIC');
+      configHandler.set('delete', true);
+    }
     sandbox = sinon.createSandbox()
     sandbox.stub(fs, 'createWriteStream').returns(new PassThrough())
     nock(cma)
@@ -21,6 +26,10 @@ describe('Export to CSV functionality', () => {
   });
 
   afterEach(() => {
+     if (configHandler.get('delete')) {
+      configHandler.delete('delete');
+      configHandler.delete('authorisationType');
+    }
     sandbox.restore();
     nock.cleanAll();
   });
@@ -204,9 +213,17 @@ describe('Export to CSV functionality', () => {
 
 describe("Testing teams support in CLI export-to-csv", () => {
   beforeEach(() => {
+      if (!configHandler.get('authorisationType')) {
+      configHandler.set('authorisationType', 'BASIC');
+      configHandler.set('delete', true);
+    }
     sandbox = sinon.createSandbox();
   });
   afterEach(() => {
+    if (configHandler.get('delete')) {
+      configHandler.delete('delete');
+      configHandler.delete('authorisationType');
+    }
     sandbox.restore();
     nock.cleanAll();
   });

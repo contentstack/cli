@@ -270,7 +270,7 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
 
     const errorMsg = data?.errors
       ? formatErrors(data.errors)
-      : data?.error_message || data?.message || 'Something went wrong while processing entry variant request!';
+      : data?.error_message || data?.message || data;
 
     throw errorMsg;
   }
