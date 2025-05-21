@@ -76,8 +76,6 @@ class AuthenticationHandler {
               if (u.host) hostName = u.host;
             }
             hostName = hostName || region.cma;
-            console.log('🚀 ~ Region config:', configHandler.get('region'));
-            console.log('🚀 ~ Current OAuth token:', configHandler.get('oauthAccessToken'));
             await this.refreshToken(hostName);
             return this.refreshAccessToken(error, maxRetryCount); // Retry after refreshing the token
           }
@@ -95,9 +93,6 @@ class AuthenticationHandler {
   }
 
   refreshToken(hostName: string): Promise<boolean> {
-    console.log('🚀 ~ Attempting to refresh token for host:', hostName);
-    console.log('🚀 ~ Auth type:', this.authType);
-
     return new Promise<boolean>((resolve) => {
       if (this.authType === 'BASIC') {
         // NOTE Handle basic auth 401 here
@@ -107,18 +102,15 @@ class AuthenticationHandler {
         });
         process.exit();
       } else if (this.authType === 'OAUTH') {
-        console.log('🚀 ~ Starting OAuth refresh...');
         authHandler.host = hostName;
         // NOTE Handle OAuth refresh token
         authHandler
           .compareOAuthExpiry(true)
           .then(() => {
-            console.log('🚀 ~ Token refreshed successfully');
             this.token = `Bearer ${configHandler.get('oauthAccessToken')}`;
             resolve(true);
           })
           .catch((error: any) => {
-            console.log('🚀 ~ Token refresh failed:', error);
             resolve(false);
           });
       } else {
