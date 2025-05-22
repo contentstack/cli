@@ -1,13 +1,16 @@
 import { cliux as ux, authHandler, configHandler } from './index';
+import Logger from './logger';
 
 class AuthenticationHandler {
   private authType: string;
   private isOAuth: boolean;
   private token: string | null = null;
+  private logger: Logger;
 
   constructor() {
     this.authType = configHandler.get('authorisationType');
     this.isOAuth = this.authType === 'OAUTH';
+    this.logger = new Logger({ basePath: process.env.CS_CLI_LOG_PATH || './logs' });
   }
 
   async getAuthDetails(): Promise<void> {
@@ -52,9 +55,10 @@ class AuthenticationHandler {
   }
 
   async refreshAccessToken(error: any, maxRetryCount = 1): Promise<void> {
-    console.log('🚀 ~ Refresh attempt:', maxRetryCount);
-    console.log('🚀 ~ Error status:', error.response?.status);
-    console.log('🚀 ~ Error details:', error.response?.data);
+    this.logger.log({ message: 'Refresh attempt', level: 'debug', obj: { maxRetryCount } });
+    this.logger.log({ message: 'Error status', level: 'debug', obj: { status: error.response?.status } });
+    this.logger.log({ message: 'Error details', level: 'debug', obj: { data: error.response?.data } });
+
     if (error.response && error.response.status) {
       if (maxRetryCount >= 3) {
         ux.print('Max retry count reached, please login to proceed', {
