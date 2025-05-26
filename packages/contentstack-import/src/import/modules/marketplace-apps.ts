@@ -238,7 +238,7 @@ export default class ImportMarketplaceApps {
     if (canCreatePrivateApp) {
       log(this.importConfig, 'Starting developer hub private apps re-creation', 'success');
       for (let app of privateApps) {
-        if (this.importConfig.skipPrivateAppRecreationIfExist && (await this.isPrivateAppExistInDeveloperHub(app))) {
+        if (await this.isPrivateAppExistInDeveloperHub(app)) {
           // NOTE Found app already exist in the same org
           this.appUidMapping[app.uid] = app.uid;
           cliux.print(`App '${app.manifest.name}' already exist. skipping app recreation.!`, { color: 'yellow' });
