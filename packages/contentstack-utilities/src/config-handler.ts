@@ -63,6 +63,23 @@ class Config {
     }
   }
 
+  isConfigFileValid(configPath: string): boolean {
+    try {
+      const content = readFileSync(configPath, 'utf8');
+      JSON.parse(content);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  safeDeleteConfigIfInvalid(configFilePath: string) {
+    if (existsSync(configFilePath) && !this.isConfigFileValid(configFilePath)) {
+      console.warn(chalk.yellow(`Warning: Detected corrupted config at ${configFilePath}. Removing...`));
+      unlinkSync(configFilePath);
+    }
+  }
+
   removeOldConfigStoreFile() {
     if (existsSync(oldConfigPath)) {
       unlinkSync(oldConfigPath); // NOTE remove old configstore file
@@ -110,8 +127,10 @@ class Config {
   private getEncryptedConfig(configData?: Record<string, unknown>, skip = false) {
     const getEncryptedDataElseFallBack = () => {
       try {
+        
         // NOTE reading current code base encrypted file if exist
         const encryptionKey: any = this.getObfuscationKey();
+        this.safeDeleteConfigIfInvalid(oldConfigPath);
         this.config = new Conf({ configName: CONFIG_NAME, encryptionKey, cwd });
 
         if (Object.keys(configData || {})?.length) {
@@ -133,6 +152,7 @@ class Config {
 
     try {
       if (skip === false) {
+        this.safeDeleteConfigIfInvalid(oldConfigPath);
         const config = new Conf({ configName: CONFIG_NAME });
         const oldConfigData = this.getConfigDataAndUnlinkConfigFile(config);
         this.getEncryptedConfig(oldConfigData, true);
@@ -150,6 +170,7 @@ class Config {
 
   private getDecryptedConfig(configData?: Record<string, unknown>) {
     try {
+      this.safeDeleteConfigIfInvalid(oldConfigPath);
       this.config = new Conf({ configName: CONFIG_NAME, cwd });
 
       if (Object.keys(configData || {})?.length) {
@@ -160,6 +181,7 @@ class Config {
 
       try {
         const encryptionKey: any = this.getObfuscationKey();
+        this.safeDeleteConfigIfInvalid(oldConfigPath);
         let config = new Conf({ configName: CONFIG_NAME, encryptionKey, cwd });
         const oldConfigData = this.getConfigDataAndUnlinkConfigFile(config);
         this.getDecryptedConfig(oldConfigData); // NOTE NOTE reinitialize the config with old data and new decrypted file
