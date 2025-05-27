@@ -18,10 +18,10 @@
   },
   "dependencies": {
     "@contentstack/cli-utilities": "~1.11.1",
-    "contentstack": "^3.25.2"
+    "contentstack": "^3.25.3"
   },
   "devDependencies": {
-    "@oclif/test": "^4.1.6",
+    "@oclif/test": "^4.1.13",
     "@types/mkdirp": "^1.0.2",
     "@types/mocha": "^8.2.3",
     "@types/node": "^14.18.63",

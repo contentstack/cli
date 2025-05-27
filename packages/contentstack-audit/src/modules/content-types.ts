@@ -560,10 +560,7 @@ export default class ContentType {
       } else if (!field.schema && this.moduleName === 'global-fields') {
         const gfSchema = find(this.gfSchema, { uid: field.reference_to })?.schema;
         if (gfSchema) {
-
           field.schema = gfSchema as GlobalFieldSchemaTypes[];
-
-       
         } else {
           this.missingRefs[this.currentUid].push({
             tree,
@@ -615,7 +612,11 @@ export default class ContentType {
         // NOTE Global field section
         if (reference_to) {
           const refExist = find(this.gfSchema, { uid: reference_to });
+          if (!refExist) {
+            this.missingRefs[this.currentUid].push(refErrorObj);
 
+            return false;
+          }
           if (!refExist) {
             this.missingRefs[this.currentUid].push(refErrorObj);
 
