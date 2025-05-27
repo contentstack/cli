@@ -149,7 +149,7 @@ export default class ContentType {
    */
   async writeFixContent() {
     let canWrite = true;
-
+    
     if (!this.inMemoryFix && this.fix) {
       if (!this.config.flags['copy-dir'] && !this.config.flags['external-config']?.skipConfirm) {
         canWrite = this.config.flags.yes ?? (await cliux.confirm(commonMsg.FIX_CONFIRMATION));
@@ -573,6 +573,10 @@ export default class ContentType {
             treeStr: tree.map(({ name }) => name).join(' ➜ '),
           });
         }
+      }
+
+      if(field.schema && !isEmpty(field.schema)){
+        field.schema = this.runFixOnSchema(tree, field.schema as ContentTypeSchemaType[]);
       }
       return refExist ? field : null;
     }
