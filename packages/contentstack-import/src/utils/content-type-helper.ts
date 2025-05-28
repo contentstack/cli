@@ -86,6 +86,7 @@ export const removeReferenceFields = async function (
   flag = { supressed: false },
   stackAPIClient: any,
 ): Promise<boolean | void> {
+  if(schema && schema.length){
   for (let i = 0; i < schema.length; i++) {
     if (schema[i].data_type === 'group') {
       await removeReferenceFields(schema[i].schema, flag, stackAPIClient);
@@ -160,6 +161,7 @@ export const removeReferenceFields = async function (
       schema[i].reference_to = ['sys_assets'];
     }
   }
+}
 };
 
 export const updateFieldRules = function (contentType: any) {
