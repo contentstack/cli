@@ -20,7 +20,9 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
     config = merge.recursive(config, externalConfig);
   }
 
-  config.contentDir = sanitizePath(importCmdFlags['data'] || importCmdFlags['data-dir'] || config.data || (await askContentDir()));
+  config.contentDir = sanitizePath(
+    importCmdFlags['data'] || importCmdFlags['data-dir'] || config.data || (await askContentDir()),
+  );
   const pattern = /[*$%#<>{}!&?]/g;
   if (pattern.test(config.contentDir)) {
     cliux.print(`\nPlease add a directory path without any of the special characters: (*,&,{,},[,],$,%,<,>,?,!)`, {
@@ -75,7 +77,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   config.skipAudit = importCmdFlags['skip-audit'];
   config.forceStopMarketplaceAppsPrompt = importCmdFlags.yes;
   config.importWebhookStatus = importCmdFlags['import-webhook-status'];
-  config.skipPrivateAppRecreationIfExist = importCmdFlags['skip-app-recreation'];
+  config.skipPrivateAppRecreationIfExist = !importCmdFlags['skip-app-recreation'];
 
   if (importCmdFlags['branch']) {
     config.branchName = importCmdFlags['branch'];
@@ -89,7 +91,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   if (importCmdFlags['backup-dir']) {
     config.useBackedupDir = importCmdFlags['backup-dir'];
   }
-  
+
   if (importCmdFlags['skip-assets-publish']) {
     config.skipAssetsPublish = importCmdFlags['skip-assets-publish'];
   }
