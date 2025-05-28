@@ -13,6 +13,7 @@ export default class GlobalFieldsExport extends BaseClass {
     asc: string;
     skip?: number;
     limit?: number;
+    include_global_field_schema?: boolean;
   };
   private globalFieldsConfig: {
     dirName?: string;
@@ -34,6 +35,7 @@ export default class GlobalFieldsExport extends BaseClass {
       asc: 'updated_at',
       include_count: true,
       limit: this.globalFieldsConfig.limit,
+      include_global_field_schema: true
     };
     this.globalFieldsDirPath = path.resolve(
       sanitizePath(exportConfig.data),
