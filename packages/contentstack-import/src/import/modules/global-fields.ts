@@ -180,22 +180,26 @@ export default class ImportGlobalFields extends BaseClass {
         this.pendingGFs.push(globalField.uid);
       }
       return this.stack
-        .globalField(globalField.uid, { api_version: '3.2' })
-        .update({ global_field: globalField })
-        .then((response: GlobalField) => {
-          apiParams.resolve({
-            response,
-            apiData: globalField,
-          });
-          resolve(true);
-        })
-        .catch((error: unknown) => {
-          apiParams.reject({
-            error,
-            apiData: globalField,
-          });
-          reject(true);
+      .globalField(globalField.uid, { api_version: '3.2' })
+      .fetch()
+      .then((response: GlobalField) => {
+        Object.assign(response, globalField);
+        return response.update();
+      })
+      .then((response: GlobalField) => {
+        apiParams.resolve({
+          response,
+          apiData: globalField,
         });
+        resolve(true);
+      })
+      .catch((error: unknown) => {
+        apiParams.reject({
+          error,
+          apiData: globalField,
+        });
+        reject(true);
+      });
     });
   }
 
