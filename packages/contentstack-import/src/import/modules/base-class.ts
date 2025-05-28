@@ -323,7 +323,15 @@ export default abstract class BaseClass {
       case 'create-gfs':
         return this.stack.globalField({api_version: '3.2'}).create(apiData).then(onSuccess).catch(onReject); 
       case 'update-gfs':
-        return apiData.update().then(onSuccess).catch(onReject);
+        console.log('Updating global field', apiData);
+        return this.stack
+          .globalField(apiData.uid)
+          .fetch()
+          .then(async (response) => {
+            response.parent = apiData;
+            await response.update().then(onSuccess).catch(onReject);
+          })
+          .catch(onReject);
       case 'create-environments':
         return this.stack
           .environment()
