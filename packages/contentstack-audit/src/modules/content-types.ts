@@ -149,7 +149,7 @@ export default class ContentType {
    */
   async writeFixContent() {
     let canWrite = true;
-
+    
     if (!this.inMemoryFix && this.fix) {
       if (!this.config.flags['copy-dir'] && !this.config.flags['external-config']?.skipConfirm) {
         canWrite = this.config.flags.yes ?? (await cliux.confirm(commonMsg.FIX_CONFIRMATION));
@@ -460,7 +460,7 @@ export default class ContentType {
   runFixOnSchema(tree: Record<string, unknown>[], schema: ContentTypeSchemaType[]) {
     // NOTE Global field Fix
     return schema
-      .map((field) => {
+      ?.map((field) => {
         const { data_type } = field;
         const fixTypes = this.config.flags['fix-only'] ?? this.config['fix-fields'];
 
@@ -560,10 +560,7 @@ export default class ContentType {
       } else if (!field.schema && this.moduleName === 'global-fields') {
         const gfSchema = find(this.gfSchema, { uid: field.reference_to })?.schema;
         if (gfSchema) {
-
           field.schema = gfSchema as GlobalFieldSchemaTypes[];
-
-       
         } else {
           this.missingRefs[this.currentUid].push({
             tree,
@@ -576,6 +573,10 @@ export default class ContentType {
             treeStr: tree.map(({ name }) => name).join(' ➜ '),
           });
         }
+      }
+
+      if(field.schema && !isEmpty(field.schema)){
+        field.schema = this.runFixOnSchema(tree, field.schema as ContentTypeSchemaType[]);
       }
       return refExist ? field : null;
     }
@@ -593,7 +594,7 @@ export default class ContentType {
    */
   fixModularBlocksReferences(tree: Record<string, unknown>[], blocks: ModularBlockType[]) {
     return blocks
-      .map((block) => {
+      ?.map((block) => {
         const { reference_to, schema, title: display_name } = block;
         tree = [...tree, { uid: block.uid, name: block.title }];
         const refErrorObj = {
@@ -606,7 +607,7 @@ export default class ContentType {
           treeStr: tree.map(({ name }) => name).join(' ➜ '),
         };
 
-        if (!schema) {
+        if (!schema && this.moduleName === 'content-types') {
           this.missingRefs[this.currentUid].push(refErrorObj);
 
           return false;
@@ -615,7 +616,11 @@ export default class ContentType {
         // NOTE Global field section
         if (reference_to) {
           const refExist = find(this.gfSchema, { uid: reference_to });
+          if (!refExist) {
+            this.missingRefs[this.currentUid].push(refErrorObj);
 
+            return false;
+          }
           if (!refExist) {
             this.missingRefs[this.currentUid].push(refErrorObj);
 
@@ -625,7 +630,7 @@ export default class ContentType {
 
         block.schema = this.runFixOnSchema(tree, block.schema as ContentTypeSchemaType[]);
 
-        if (isEmpty(block.schema)) {
+        if (isEmpty(block.schema) && this.moduleName === 'content-types') {
           this.missingRefs[this.currentUid].push({
             ...refErrorObj,
             missingRefs: 'Empty schema found',
