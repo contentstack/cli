@@ -113,9 +113,11 @@ fileignoreconfig:
   - filename: packages/contentstack/package.json
     checksum: 9b0fdd100effcdbb5ee3809f7f102bfd11c88dd76e49db5103434f3aa29473dd
   - filename: pnpm-lock.yaml
-    checksum: 2edf846869b73d6fd640d9f660f9fdd664e721946a891554dad5297c75a1bfba
+    checksum: 85b652e6a8d386a7209294e67f91a570dbf9f96be396995d44cf4dbb54d073a4
   - filename: package-lock.json
-    checksum: b56cee2f980b6281cbb170534c27e1daa6313dd71b7f1b59226b8b9f3411881e
+    checksum: c1556f7d4bcc426e0b821961b922a465c9f1cf8ef38e858e8beeeb591356746b
+  - filename: packages/contentstack-audit/src/audit-base-command.ts
+    checksum: 4544ad2869041340969c66500268c61f969e2ad907891c9a62b94fdae47134de
   - filename: packages/contentstack-migrate-rte/test/commands/json-migration.test.js
     checksum: 1f5ee5b39119667bd4830f9dbbbf757fb922f4ec3b7f6fad06bbfbf214fe7f73
 version: '1.0'
