@@ -323,7 +323,6 @@ export default abstract class BaseClass {
       case 'create-gfs':
         return this.stack.globalField({api_version: '3.2'}).create(apiData).then(onSuccess).catch(onReject); 
       case 'update-gfs':
-        console.log('Updating global field', apiData);
         return this.stack
           .globalField(apiData.uid)
           .fetch()
