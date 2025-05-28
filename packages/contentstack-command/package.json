@@ -17,7 +17,7 @@
     "format": "eslint src/**/*.ts --fix"
   },
   "dependencies": {
-    "@contentstack/cli-utilities": "~1.11.0",
+    "@contentstack/cli-utilities": "~1.11.1",
     "contentstack": "^3.25.2"
   },
   "devDependencies": {
