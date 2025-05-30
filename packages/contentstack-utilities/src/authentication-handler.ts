@@ -53,6 +53,7 @@ class AuthenticationHandler {
 
   async refreshAccessToken(error: any, maxRetryCount = 1): Promise<void> {
     if (error.response && error.response.status) {
+      console.error(error.response);
       if (maxRetryCount >= 3) {
         ux.print('Max retry count reached, please login to proceed', {
           color: 'yellow',
@@ -108,7 +109,6 @@ class AuthenticationHandler {
             resolve(true);
           })
           .catch((error: any) => {
-            console.log(error);
             resolve(false);
           });
       } else {
