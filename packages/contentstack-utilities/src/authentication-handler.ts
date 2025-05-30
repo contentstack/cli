@@ -76,6 +76,7 @@ class AuthenticationHandler {
 
         case 429:
         case 408:
+          console.log('API(429/408) case error:-', error.response);
           if (maxRetryCount >= 3) {
             ux.print('Max retry count reached, please login to proceed', {
               color: 'yellow',
