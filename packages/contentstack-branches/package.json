@@ -7,7 +7,7 @@
   "dependencies": {
     "@contentstack/cli-command": "~1.5.0",
     "@oclif/core": "^4.3.0",
-    "@contentstack/cli-utilities": "~1.11.1",
+    "@contentstack/cli-utilities": "~1.11.2",
     "chalk": "^4.1.2",
     "just-diff": "^6.0.2",
     "lodash": "^4.17.21"
