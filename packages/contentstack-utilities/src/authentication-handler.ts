@@ -53,16 +53,6 @@ class AuthenticationHandler {
 
   async refreshAccessToken(error: any, maxRetryCount = 1): Promise<void> {
     if (error.response && error.response.status) {
-      console.error(error.response);
-      if (maxRetryCount >= 3) {
-        ux.print('Max retry count reached, please login to proceed', {
-          color: 'yellow',
-        });
-        process.exit(1);
-      }
-
-      maxRetryCount++; // Increment for the next retry attempt
-
       switch (error.response.status) {
         case 401:
           // NOTE: Refresh the token if the type is OAuth.
@@ -74,12 +64,25 @@ class AuthenticationHandler {
               if (u.host) hostName = u.host;
             }
             hostName = hostName || region.cma;
-            await this.refreshToken(hostName);
-            return this.refreshAccessToken(error, maxRetryCount); // Retry after refreshing the token
+            const refreshed = await this.refreshToken(hostName);
+            if (refreshed) {
+              return this.refreshAccessToken(error, maxRetryCount); // Retry after refreshing the token
+            }
+            console.log('API(401) case error:-', error.response);
+            // For Basic Auth, exit immediately without retrying
+            return;
           }
+          break;
 
         case 429:
         case 408:
+          if (maxRetryCount >= 3) {
+            ux.print('Max retry count reached, please login to proceed', {
+              color: 'yellow',
+            });
+            process.exit(1);
+          }
+          maxRetryCount++; // Increment for the next retry attempt
           // These cases require a wait, adding a delay before retrying
           await new Promise((resolve) => setTimeout(resolve, 1000)); // wait for 1 second
           return this.refreshAccessToken(error, maxRetryCount); // Retry
@@ -93,8 +96,6 @@ class AuthenticationHandler {
   refreshToken(hostName: string): Promise<boolean> {
     return new Promise<boolean>((resolve) => {
       if (this.authType === 'BASIC') {
-        // NOTE Handle basic auth 401 here
-        resolve(false);
         ux.print('Session timed out, please login to proceed', {
           color: 'yellow',
         });
@@ -109,10 +110,10 @@ class AuthenticationHandler {
             resolve(true);
           })
           .catch((error: any) => {
+            console.log(error);
             resolve(false);
           });
       } else {
-        resolve(false);
         ux.print('You do not have the permissions to perform this action, please login to proceed', {
           color: 'yellow',
         });
