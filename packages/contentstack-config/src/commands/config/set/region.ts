@@ -139,7 +139,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     if (transformedUrl.startsWith('http')) {
       transformedUrl = transformedUrl.split('//')[1];
     }
-    transformedUrl = transformedUrl.startsWith('dev11') ? transformedUrl.replace('dev11', 'dev') : transformedUrl;
+    transformedUrl = transformedUrl.replace(/^dev\d+/, 'dev') // Replaces any 'dev1', 'dev2', etc. with 'dev'
     transformedUrl = transformedUrl.endsWith('io') ? transformedUrl.replace('io', 'com') : transformedUrl;
     return `https://${transformedUrl}`;
   }
