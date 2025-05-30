@@ -204,18 +204,21 @@ export default class ImportGlobalFields extends BaseClass {
   }
 
   async replaceGFs(): Promise<any> {
-    const onSuccess = ({ response: globalField, apiData: { uid } = { uid: null } }: any) => {
+    const onSuccess = ({ response: globalField, apiData }: any) => {
+      const uid = apiData?.uid ?? apiData?.global_field?.uid ?? 'unknown';
       this.createdGFs.push(globalField);
       this.gFsUidMapper[uid] = globalField;
       fsUtil.writeFile(this.gFsUidMapperPath, this.gFsUidMapper);
-      log(this.config, 'Global field ' + uid + ' replaced successfully', 'success');
+      log(this.config, `Global field '${uid}' replaced successfully`, 'success');
     };
 
-    const onReject = ({ error, apiData: { uid } }: any) => {
+    const onReject = ({ error, apiData }: any) => {
+      const uid = apiData?.uid ?? apiData?.global_field?.uid ?? 'unknown';
       log(this.importConfig, `Global fields '${uid}' failed to replace`, 'error');
       log(this.importConfig, formatError(error), 'error');
       this.failedGFs.push({ uid });
     };
+
 
     await this.makeConcurrentCall(
       {

@@ -323,11 +323,12 @@ export default abstract class BaseClass {
       case 'create-gfs':
         return this.stack.globalField({api_version: '3.2'}).create(apiData).then(onSuccess).catch(onReject); 
       case 'update-gfs':
+        let globalFieldUid = apiData.uid ?? apiData.global_field?.uid;
         return this.stack
-          .globalField(apiData.uid)
+          .globalField(globalFieldUid, {api_version: '3.2'})
           .fetch()
           .then(async (response) => {
-            response.parent = apiData;
+            response.parent = apiData?.uid ? apiData : apiData.global_field;
             await response.update().then(onSuccess).catch(onReject);
           })
           .catch(onReject);
