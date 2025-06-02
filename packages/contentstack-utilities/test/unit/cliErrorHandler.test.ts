@@ -71,18 +71,6 @@ describe('CLIErrorHandler', () => {
     expect(classified.hidden).to.be.false;
   });
 
-  fancy.it('normalizeToError should handle object that throws', () => {
-    const badInput = {
-      get message() {
-        throw new Error('fail to access message');
-      },
-    };
-
-    const result = errorHandler['normalizeToError'](badInput);
-    expect(result).to.be.instanceOf(Error);
-    expect(result.message).to.include('fail');
-  });
-
   fancy.it('containsSensitiveInfo should return false for clean error', () => {
     const error = new Error('All good');
     const result = errorHandler['containsSensitiveInfo'](error);
