@@ -41,7 +41,7 @@ describe('CLIErrorHandler', () => {
     (error as any).request = {
       method: 'GET',
       url: 'http://api.test/resource',
-      headers: { authorization: 'Bearer token' },
+      headers: { authorization: 'token' },
       data: { q: 'test' },
     };
     (error as any).response = {
