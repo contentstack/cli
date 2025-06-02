@@ -1,3 +1,5 @@
+import { logLevels } from "../constants/logging";
+
 export interface IPromptOptions {
   prompt?: string;
   type?: 'normal' | 'mask' | 'hide' | 'single';
@@ -72,3 +74,44 @@ export interface Locale {
 }
 
 export interface CliUXPromptOptions extends IPromptOptions {}
+
+export interface LoggerConfig {
+  basePath: string;               // Base path for log storage
+  processName?: string;           // Optional name of the plugin/process
+  consoleLoggingEnabled?: boolean; // Should logs be printed to console
+  consoleLogLevel?: LogType;      // Console log level (info, debug, etc.)
+  logLevel?: LogType;             // File log level
+}
+
+export interface PrintOptions {
+  bold?: boolean;
+  color?: string;
+}
+
+export type LogType = 'info' | 'warn' | 'error' | 'debug';
+export type LogsType = LogType | PrintOptions | undefined;
+export type MessageType = string | Error | Record<string, any> | Record<string, any>[];
+
+export type LogLevel = keyof typeof logLevels;
+
+export type ClassifiedError = {
+  type: string;
+  message: string;
+  error: Record<string, any>;
+  debug?: Record<string, any>;
+  meta?: Record<string, string | undefined>;
+  context?: string;
+  hidden?: boolean;
+};
+
+export type ErrorContext = {
+  operation?: string;
+  component?: string;
+  userId?: string;
+  requestId?: string;
+  email?: string;
+  sessionId?: string;
+  orgId?: string;
+  apiKey?: string;
+};
+
