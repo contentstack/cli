@@ -18,7 +18,8 @@ import { ERROR_TYPES } from '../constants/errorTypes';
  *
  * @remarks
  * This class is designed to handle a wide range of error types, including generic
- * JavaScript errors, API errors, and custom error objects. 
+ * JavaScript errors, API errors, and custom error objects. It also supports
+ * optional debugging and context metadata for enhanced error reporting.
  *
  * @example
  * ```typescript
