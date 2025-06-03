@@ -205,7 +205,12 @@ class Config {
   }
 
   get(key): string | any {
-    return this.config?.get(key);
+    try{
+      return this.config?.get(key);
+    }catch (error) {
+      console.error('Error getting config:', error);
+      throw error;
+    }
   }
 
   set(key, value) {
