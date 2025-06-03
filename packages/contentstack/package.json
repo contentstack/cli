@@ -38,7 +38,7 @@
     "@contentstack/cli-config": "~1.12.1",
     "@contentstack/cli-launch": "^1.9.1",
     "@contentstack/cli-migration": "~1.7.2",
-    "@contentstack/cli-utilities": "~1.11.2",
+    "@contentstack/cli-utilities": "~1.12.0",
     "@contentstack/cli-variants": "~1.2.1",
     "@contentstack/management": "~1.21.3",
     "@oclif/core": "^4.3.0",
