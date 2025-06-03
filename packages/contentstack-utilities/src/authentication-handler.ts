@@ -6,8 +6,14 @@ class AuthenticationHandler {
   private token: string | null = null;
 
   constructor() {
-    this.authType = configHandler.get('authorisationType');
-    this.isOAuth = this.authType === 'OAUTH';
+    try{
+      this.authType = configHandler.get('authorisationType');
+      this.isOAuth = this.authType === 'OAUTH';
+    }catch (error) {
+      console.error('Error initializing AuthenticationHandler:', error);
+      this.authType = 'BASIC'; 
+      this.isOAuth = false; 
+    }
   }
 
   async getAuthDetails(): Promise<void> {
