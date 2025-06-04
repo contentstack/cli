@@ -223,8 +223,15 @@ export default class EntriesImport extends BaseClass {
       log(this.importConfig, `${uid} content type references removed temporarily`, 'success');
     };
     const onReject = ({ error, apiData: { uid } }: any) => {
+      log(this.importConfig, `Error while removing mandatory content type references of ${uid}`, 'error');
       log(this.importConfig, formatError(error), 'error');
-      throw new Error(`${uid} content type references removal failed`);
+      try {
+        log(this.importConfig, JSON.stringify(error), 'error');
+      } catch (e) {
+        console.log(error);
+      }
+
+      // throw new Error(`${uid} content type references removal failed`);
     };
     return await this.makeConcurrentCall({
       processName: 'Update content types (removing mandatory references temporarily)',
@@ -412,6 +419,11 @@ export default class EntriesImport extends BaseClass {
         log(this.importConfig, `${title} entry of content type ${cTUid} in locale ${locale} failed to create`, 'error');
         log(this.importConfig, formatError(error), 'error');
         this.failedEntries.push({ content_type: cTUid, locale, entry: { uid, title } });
+        try {
+          log(this.importConfig, JSON.stringify(error), 'error');
+        } catch (e) {
+          console.log(error);
+        }
       }
     };
 
@@ -673,6 +685,12 @@ export default class EntriesImport extends BaseClass {
 
       log(this.importConfig, `${title} entry of content type ${cTUid} in locale ${locale} failed to update`, 'error');
       log(this.importConfig, formatError(error), 'error');
+      try {
+        log(this.importConfig, JSON.stringify(error), 'error');
+      } catch (e) {
+        console.log(error);
+      }
+
       this.failedEntries.push({
         content_type: cTUid,
         locale,

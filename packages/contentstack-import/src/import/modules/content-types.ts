@@ -180,8 +180,15 @@ export default class ContentTypesImport extends BaseClass {
       log(this.importConfig, `'${uid}' updated with references`, 'success');
     };
     const onReject = ({ error, apiData: { uid } }: any) => {
+      log(this.importConfig, `Error while removing mandatory content type references of ${uid}`, 'error');
       log(this.importConfig, formatError(error), 'error');
-      throw new Error(`Content type '${uid}' update error`);
+      try {
+        log(this.importConfig, JSON.stringify(error), 'error');
+      } catch (e) {
+        console.log(error);
+      }
+
+      // throw new Error(`Content type '${uid}' update error`);
     };
     return await this.makeConcurrentCall({
       processName: 'Update content types',
@@ -266,9 +273,7 @@ export default class ContentTypesImport extends BaseClass {
       this.importConfig.preserveStackVersion,
       this.installedExtensions,
     );
-    const globalFieldPayload = this.stack.globalField(
-      uid, { api_version: '3.2' },
-    );
+    const globalFieldPayload = this.stack.globalField(uid, { api_version: '3.2' });
     Object.assign(globalFieldPayload, cloneDeep(globalField));
     apiOptions.apiData = globalFieldPayload;
     return apiOptions;
