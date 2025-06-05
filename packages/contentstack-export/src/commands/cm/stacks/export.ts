@@ -10,10 +10,13 @@ import {
   FlagInput,
   pathValidator,
   sanitizePath,
+  configHandler,
+  v2Logger,
+  handleAndLogError
 } from '@contentstack/cli-utilities';
 import { ModuleExporter } from '../../../export';
-import { setupExportConfig, log, formatError, writeExportMetaFile } from '../../../utils';
-import { ExportConfig } from '../../../types';
+import { setupExportConfig, writeExportMetaFile } from '../../../utils';
+import { Context, ExportConfig } from '../../../types';
 
 export default class ExportCommand extends Command {
   static description: string = messageHandler.parse('Export content from a stack');
@@ -72,19 +75,22 @@ export default class ExportCommand extends Command {
     }),
     module: flags.string({
       char: 'm',
-      description: '[optional] Specific module name. If not specified, the export command will export all the modules to the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, and taxonomies.',
+      description:
+        '[optional] Specific module name. If not specified, the export command will export all the modules to the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, and taxonomies.',
       parse: printFlagDeprecation(['-m'], ['--module']),
     }),
     'content-types': flags.string({
       char: 't',
-      description: '[optional]  The UID of the content type(s) whose content you want to export. In case of multiple content types, specify the IDs separated by spaces.',
+      description:
+        '[optional]  The UID of the content type(s) whose content you want to export. In case of multiple content types, specify the IDs separated by spaces.',
       multiple: true,
       parse: printFlagDeprecation(['-t'], ['--content-types']),
     }),
     branch: flags.string({
       char: 'B',
       // default: 'main',
-      description: '[optional] The name of the branch where you want to export your content. If you don\'t mention the branch name, then by default the content will be exported from all the branches of your stack.',
+      description:
+        "[optional] The name of the branch where you want to export your content. If you don't mention the branch name, then by default the content will be exported from all the branches of your stack.",
       parse: printFlagDeprecation(['-B'], ['--branch']),
     }),
     'secured-assets': flags.boolean({
@@ -101,14 +107,17 @@ export default class ExportCommand extends Command {
 
   async run(): Promise<void> {
     let exportDir: string = pathValidator('logs');
+    let exportConfig: ExportConfig;
     try {
       const { flags } = await this.parse(ExportCommand);
-      let exportConfig = await setupExportConfig(flags);
-      // Note setting host to create cma client
-      exportConfig.host = this.cmaHost;
-      exportConfig.region = this.region;
-      if(this.developerHubUrl) exportConfig.developerHubBaseUrl = this.developerHubUrl;
-      if (this.personalizeUrl) exportConfig.modules.personalize.baseURL[exportConfig.region.name] = this.personalizeUrl;
+      exportConfig = await setupExportConfig(flags);
+      // Prepare the context object
+      const context = this.createExportContext();
+      exportConfig.context = context;
+
+      // Assign exportConfig variables
+      this.assignExportConfig(exportConfig);
+
       exportDir = sanitizePath(exportConfig.cliLogsPath || exportConfig.data || exportConfig.exportDir);
       const managementAPIClient: ContentstackClient = await managementSDKClient(exportConfig);
       const moduleExporter = new ModuleExporter(managementAPIClient, exportConfig);
@@ -116,15 +125,39 @@ export default class ExportCommand extends Command {
       if (!exportConfig.branches?.length) {
         writeExportMetaFile(exportConfig);
       }
-      log(exportConfig, `The content of the stack ${exportConfig.apiKey} has been exported successfully!`, 'success');
-      log(
-        exportConfig,
-        `The log has been stored at '${pathValidator(path.join(exportDir, 'logs', 'export'))}'`,
-        'success',
-      );
+      v2Logger.success(`The content of the stack ${exportConfig.apiKey} has been exported successfully!`,exportConfig.context)
+      v2Logger.success(`The log has been stored at '${pathValidator(path.join(process.cwd(), 'logs'))}'`, exportConfig.context)
     } catch (error) {
-      log({ data: exportDir } as ExportConfig, `Failed to export stack content - ${formatError(error)}`, 'error');
-      log({ data: exportDir } as ExportConfig, `The log has been stored at ${exportDir}`, 'info');
+      handleAndLogError(error, { ...exportConfig.context });
+    }
+  }
+  
+  // Create export context object
+  private createExportContext(): Context {
+    return {
+      command: this.context.info.command,
+      module: '',
+      userId: configHandler.get('userId'),
+      email: configHandler.get('email'),
+      sessionId: this.context.sessionId,
+      clientId: this.context.clientId,
+      apiKey: configHandler.get('apiKey') || '',
+      orgId: configHandler.get('organization_uid') || '',
+    };
+  }
+
+  // Assign values to exportConfig
+  private assignExportConfig(exportConfig: ExportConfig): void {
+    // Note setting host to create cma client
+    exportConfig.host = this.cmaHost;
+    exportConfig.region = this.region;
+
+    if (this.developerHubUrl) {
+      exportConfig.developerHubBaseUrl = this.developerHubUrl;
+    }
+
+    if (this.personalizeUrl) {
+      exportConfig.modules.personalize.baseURL[exportConfig.region.name] = this.personalizeUrl;
     }
   }
 }

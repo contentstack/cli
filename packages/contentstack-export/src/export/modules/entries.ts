@@ -1,11 +1,17 @@
 import * as path from 'path';
-import { ContentstackClient, FsUtility } from '@contentstack/cli-utilities';
-import { LogType, Export, ExportProjects } from '@contentstack/cli-variants';
-
-import { log, formatError, fsUtil } from '../../utils';
-import { ExportConfig, ModuleClassParams } from '../../types';
-import BaseClass, { ApiOptions } from './base-class';
+import {
+  ContentstackClient,
+  FsUtility,
+  handleAndLogError,
+  messageHandler,
+  v2Logger,
+} from '@contentstack/cli-utilities';
+import { Export, ExportProjects } from '@contentstack/cli-variants';
 import { sanitizePath } from '@contentstack/cli-utilities';
+
+import { fsUtil } from '../../utils';
+import BaseClass, { ApiOptions } from './base-class';
+import { ExportConfig, ModuleClassParams } from '../../types';
 
 export default class EntriesExport extends BaseClass {
   private stackAPIClient: ReturnType<ContentstackClient['stack']>;
@@ -52,15 +58,15 @@ export default class EntriesExport extends BaseClass {
       'schema.json',
     );
     this.projectInstance = new ExportProjects(this.exportConfig);
+    this.exportConfig.context.module = 'entries';
   }
 
   async start() {
     try {
-      log(this.exportConfig, 'Starting entries export', 'info');
       const locales = fsUtil.readFile(this.localesFilePath) as Array<Record<string, unknown>>;
       const contentTypes = fsUtil.readFile(this.schemaFilePath) as Array<Record<string, unknown>>;
       if (contentTypes.length === 0) {
-        log(this.exportConfig, 'No content types found to export entries', 'info');
+        v2Logger.info(messageHandler.parse('CONTENT_TYPE_NO_TYPES'), this.exportConfig.context);
         return;
       }
 
@@ -77,7 +83,7 @@ export default class EntriesExport extends BaseClass {
 
           this.variantEntries = new Export.VariantEntries(Object.assign(this.exportConfig, { project_id }));
         } catch (error) {
-          log(this.exportConfig, `Failed to export variant entries ${error}`, 'error');
+          handleAndLogError(error, { ...this.exportConfig.context });
         }
       }
 
@@ -85,16 +91,18 @@ export default class EntriesExport extends BaseClass {
       for (let entryRequestOption of entryRequestOptions) {
         await this.getEntries(entryRequestOption);
         this.entriesFileHelper?.completeFile(true);
-        log(
-          this.exportConfig,
-          `Exported entries of type '${entryRequestOption.contentType}' locale '${entryRequestOption.locale}'`,
-          'success',
+        v2Logger.success(
+          messageHandler.parse(
+            'ENTRIES_EXPORT_COMPLETE',
+            entryRequestOption.contentType,
+            entryRequestOption.locale,
+          ),
+          this.exportConfig.context,
         );
       }
-      log(this.exportConfig, 'Entries exported successfully', 'success');
+      v2Logger.success(messageHandler.parse('ENTRIES_EXPORT_SUCCESS'), this.exportConfig.context);
     } catch (error) {
-      log(this.exportConfig, `Failed to export entries ${formatError(error)}`, 'error');
-      throw new Error('Failed to export entries');
+      handleAndLogError(error, { ...this.exportConfig.context });
     }
   }
 
@@ -142,8 +150,11 @@ export default class EntriesExport extends BaseClass {
         .query(requestObject)
         .find();
     } catch (error) {
-      log(this.exportConfig, `Failed to export entries ${formatError(error)}`, 'error');
-      throw new Error('Failed to export entries');
+      handleAndLogError(error, {
+        ...this.exportConfig.context,
+        contentType: options.contentType,
+        locale: options.locale,
+      });
     }
 
     if (Array.isArray(entriesSearchResponse.items) && entriesSearchResponse.items.length > 0) {
@@ -205,15 +216,20 @@ export default class EntriesExport extends BaseClass {
         path.join(sanitizePath(options.versionedEntryPath), sanitizePath(`${entry.uid}.json`)),
         response,
       );
-      log(
-        this.exportConfig,
-        `Exported versioned entries of type '${options.contentType}' locale '${options.locale}'`,
-        'success',
+      v2Logger.success(
+        messageHandler.parse('ENTRIES_VERSIONED_EXPORT_SUCCESS', options.contentType, entry.uid, options.locale),
+        this.exportConfig.context,
       );
     };
     const onReject = ({ error, apiData: { uid } = undefined }: any) => {
-      log(this.exportConfig, `failed to export versions of entry ${uid}`, 'error');
-      log(this.exportConfig, formatError(error), 'error');
+      handleAndLogError(
+        error,
+        {
+          ...this.exportConfig.context,
+          uid,
+        },
+        messageHandler.parse('ENTRIES_EXPORT_VERSIONS_FAILED', uid),
+      );
     };
 
     return await this.makeConcurrentCall(

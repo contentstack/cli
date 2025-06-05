@@ -1,5 +1,6 @@
 import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
+import { v2Logger, handleAndLogError } from '@contentstack/cli-utilities';
 
 import { formatError, fsUtil, PersonalizationAdapter, log } from '../utils';
 import { PersonalizeConfig, ExportConfig, AudienceStruct, AudiencesConfig } from '../types';
@@ -29,23 +30,25 @@ export default class ExportAudiences extends PersonalizationAdapter<ExportConfig
 
   async start() {
     try {
-      log(this.exportConfig, 'Starting audiences export', 'info');
+      v2Logger.info('Starting audiences export', this.exportConfig.context);
       await this.init();
       await fsUtil.makeDirectory(this.audiencesFolderPath);
       this.audiences = (await this.getAudiences()) as AudienceStruct[];
 
       if (!this.audiences?.length) {
-        log(this.exportConfig, 'No Audiences found with the given project!', 'info');
+        v2Logger.info('No Audiences found with the given project!', this.exportConfig.context);
         return;
       } else {
         this.sanitizeAttribs();
         fsUtil.writeFile(pResolve(this.audiencesFolderPath, this.audiencesConfig.fileName), this.audiences);
-        log(this.exportConfig, 'All the audiences have been exported successfully!', 'success');
+        v2Logger.success(
+          `Audiences exported successfully! Total audiences: ${this.audiences.length}`,
+          this.exportConfig.context,
+        );
         return;
       }
     } catch (error) {
-      log(this.exportConfig, `Failed to export audiences!`, 'error');
-      log(this.config, error, 'error');
+      handleAndLogError(error, { ...this.exportConfig.context });
     }
   }
 

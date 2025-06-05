@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { sanitizePath } from '@contentstack/cli-utilities';
+import { sanitizePath, v2Logger, handleAndLogError } from '@contentstack/cli-utilities';
 import { ExportConfig, PersonalizeConfig } from '../types';
 import { PersonalizationAdapter, log, fsUtil, formatError } from '../utils';
 
@@ -25,22 +25,22 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
 
   async start() {
     try {
-      log(this.exportConfig, 'Starting projects export', 'info');
+      v2Logger.info(`Starting projects export`, this.exportConfig.context);
       await this.init();
       await fsUtil.makeDirectory(this.projectFolderPath);
       const project = await this.projects({ connectedStackApiKey: this.exportConfig.apiKey });
       if (!project || project?.length < 1) {
-        log(this.exportConfig, 'No Personalize Project connected with the given stack', 'info');
+        v2Logger.info(`No Personalize Project connected with the given stack`, this.exportConfig.context);
         this.exportConfig.personalizationEnabled = false;
         return;
       }
       this.exportConfig.personalizationEnabled = true;
       this.exportConfig.project_id = project[0]?.uid;
       fsUtil.writeFile(path.resolve(sanitizePath(this.projectFolderPath), 'projects.json'), project);
-      log(this.exportConfig, 'Project exported successfully!', 'success');
+      v2Logger.success(`Projects exported successfully!`, this.exportConfig.context);
     } catch (error) {
       if (error !== 'Forbidden') {
-        log(this.exportConfig, `Failed to export projects!`, 'error');
+        v2Logger.error('Failed to export projects!', this.exportConfig.context);
       }
       throw error;
     }

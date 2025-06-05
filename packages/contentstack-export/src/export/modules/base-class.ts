@@ -5,8 +5,8 @@ import chunk from 'lodash/chunk';
 import isEmpty from 'lodash/isEmpty';
 import entries from 'lodash/entries';
 import isEqual from 'lodash/isEqual';
+import { v2Logger } from '@contentstack/cli-utilities';
 
-import { log } from '../../utils';
 import { ExportConfig, ModuleClassParams } from '../../types';
 
 export type ApiOptions = {
@@ -134,7 +134,10 @@ export default abstract class BaseClass {
   async logMsgAndWaitIfRequired(module: string, start: number, batchNo: number): Promise<void> {
     const end = Date.now();
     const exeTime = end - start;
-    log(this.exportConfig, `Batch No. ${batchNo} of ${module} is complete.`, 'success');
+    v2Logger.success(
+      `Batch No. ${batchNo} of ${module} is complete. Time taken: ${exeTime} milliseconds`,
+      this.exportConfig.context,
+    );
 
     if (this.exportConfig.modules.assets.displayExecutionTime) {
       console.log(

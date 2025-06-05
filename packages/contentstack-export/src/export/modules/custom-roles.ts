@@ -3,9 +3,10 @@ import find from 'lodash/find';
 import forEach from 'lodash/forEach';
 import values from 'lodash/values';
 import { resolve as pResolve } from 'node:path';
+import { handleAndLogError, messageHandler, v2Logger } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
-import { log, formatError, fsUtil } from '../../utils';
+import { fsUtil } from '../../utils';
 import { CustomRoleConfig, ModuleClassParams } from '../../types';
 
 export default class ExportCustomRoles extends BaseClass {
@@ -24,10 +25,10 @@ export default class ExportCustomRoles extends BaseClass {
     this.existingRoles = { Admin: 1, Developer: 1, 'Content Manager': 1 };
     this.localesMap = {};
     this.sourceLocalesMap = {};
+    this.exportConfig.context.module = 'custom-roles';
   }
 
   async start(): Promise<void> {
-    log(this.exportConfig, 'Starting custom roles export', 'info');
 
     this.rolesFolderPath = pResolve(
       this.exportConfig.data,
@@ -46,16 +47,16 @@ export default class ExportCustomRoles extends BaseClass {
       .role()
       .fetchAll({ include_rules: true, include_permissions: true })
       .then((data: any) => data)
-      .catch((err: any) => log(this.exportConfig, `Failed to fetch roles. ${formatError(err)}`, 'error'));
+      .catch((err: any) => handleAndLogError(err, { ...this.exportConfig.context }));
     const customRoles = roles.items.filter((role: any) => !this.existingRoles[role.name]);
 
     if (!customRoles.length) {
-      log(this.exportConfig, 'No custom roles were found in the Stack', 'info');
+      v2Logger.info(messageHandler.parse('ROLES_NO_CUSTOM_ROLES'), this.exportConfig.context);
       return;
     }
 
     customRoles.forEach((role: any) => {
-      log(this.exportConfig, `'${role?.name}' role was exported successfully`, 'info');
+      v2Logger.info(`Exporting role: ${role.name}`, this.exportConfig.context);
       this.customRoles[role.uid] = role;
     });
     fsUtil.writeFile(pResolve(this.rolesFolderPath, this.customRolesConfig.fileName), this.customRoles);
@@ -67,7 +68,7 @@ export default class ExportCustomRoles extends BaseClass {
       .query({})
       .find()
       .then((data: any) => data)
-      .catch((err: any) => log(this.exportConfig, `Failed to fetch locales. ${formatError(err)}`, 'error'));
+      .catch((err: any) => handleAndLogError(err, { ...this.exportConfig.context }));
     for (const locale of locales.items) {
       this.sourceLocalesMap[locale.uid] = locale;
     }
@@ -75,12 +76,12 @@ export default class ExportCustomRoles extends BaseClass {
 
   async getCustomRolesLocales() {
     for (const role of values(this.customRoles)) {
-      const customRole = role as Record<string, any>; 
+      const customRole = role as Record<string, any>;
       const rulesLocales = find(customRole.rules, (rule: any) => rule.module === 'locale');
       if (rulesLocales?.locales?.length) {
         forEach(rulesLocales.locales, (locale: any) => {
           this.localesMap[locale] = 1;
-        })
+        });
       }
     }
 
