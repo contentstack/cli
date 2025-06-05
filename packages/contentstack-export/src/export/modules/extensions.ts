@@ -1,9 +1,10 @@
 import omit from 'lodash/omit';
 import isEmpty from 'lodash/isEmpty';
 import { resolve as pResolve } from 'node:path';
+import { handleAndLogError, messageHandler, v2Logger } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
-import { log, formatError, fsUtil } from '../../utils';
+import { fsUtil } from '../../utils';
 import { ExtensionsConfig, ModuleClassParams } from '../../types';
 
 export default class ExportExtensions extends BaseClass {
@@ -20,11 +21,10 @@ export default class ExportExtensions extends BaseClass {
     this.extensions = {};
     this.extensionConfig = exportConfig.modules.extensions;
     this.qs = { include_count: true };
+    this.exportConfig.context.module = 'extensions';
   }
 
   async start(): Promise<void> {
-    log(this.exportConfig, 'Starting extension export', 'info');
-
     this.extensionsFolderPath = pResolve(
       this.exportConfig.data,
       this.exportConfig.branchName || '',
@@ -35,10 +35,13 @@ export default class ExportExtensions extends BaseClass {
     await this.getExtensions();
 
     if (this.extensions === undefined || isEmpty(this.extensions)) {
-      log(this.exportConfig, 'No extensions found', 'info');
+      v2Logger.info(messageHandler.parse('EXTENSION_NOT_FOUND'), this.exportConfig.context);
     } else {
       fsUtil.writeFile(pResolve(this.extensionsFolderPath, this.extensionConfig.fileName), this.extensions);
-      log(this.exportConfig, 'All the extensions have been exported successfully!', 'success');
+      v2Logger.success(
+        messageHandler.parse('EXTENSION_EXPORT_COMPLETE', Object.keys(this.extensions).length ),
+        this.exportConfig.context,
+      );
     }
   }
 
@@ -62,8 +65,7 @@ export default class ExportExtensions extends BaseClass {
         }
       })
       .catch((error: any) => {
-        log(this.exportConfig, `Failed to export extensions. ${formatError(error)}`, 'error');
-        log(this.exportConfig, error, 'error');
+        handleAndLogError(error, { ...this.exportConfig.context });
       });
   }
 
@@ -72,7 +74,7 @@ export default class ExportExtensions extends BaseClass {
       const extUid = extensions[index].uid;
       const extTitle = extensions[index]?.title;
       this.extensions[extUid] = omit(extensions[index], ['SYS_ACL']);
-      log(this.exportConfig, `'${extTitle}' extension was exported successfully`, 'success');
+      v2Logger.info(messageHandler.parse('EXTENSION_EXPORT_SUCCESS', extTitle), this.exportConfig.context);
     }
   }
 }

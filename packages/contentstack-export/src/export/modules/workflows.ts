@@ -1,9 +1,10 @@
 import omit from 'lodash/omit';
 import isEmpty from 'lodash/isEmpty';
 import { resolve as pResolve } from 'node:path';
+import { handleAndLogError, messageHandler, v2Logger } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
-import { log, formatError, fsUtil } from '../../utils';
+import { fsUtil } from '../../utils';
 import { WorkflowConfig, ModuleClassParams } from '../../types';
 
 export default class ExportWorkFlows extends BaseClass {
@@ -20,11 +21,10 @@ export default class ExportWorkFlows extends BaseClass {
     this.workflows = {};
     this.workflowConfig = exportConfig.modules.workflows;
     this.qs = { include_count: true };
+    this.exportConfig.context.module = 'workflows';
   }
 
   async start(): Promise<void> {
-    log(this.exportConfig, 'Starting workflows export', 'info');
-
     this.webhooksFolderPath = pResolve(
       this.exportConfig.data,
       this.exportConfig.branchName || '',
@@ -35,10 +35,13 @@ export default class ExportWorkFlows extends BaseClass {
     await this.getWorkflows();
 
     if (this.workflows === undefined || isEmpty(this.workflows)) {
-      log(this.exportConfig, 'No workflows found', 'info');
+      v2Logger.info(messageHandler.parse('WORKFLOW_NOT_FOUND'), this.exportConfig.context);
     } else {
       fsUtil.writeFile(pResolve(this.webhooksFolderPath, this.workflowConfig.fileName), this.workflows);
-      log(this.exportConfig, 'All the workflows have been exported successfully!', 'success');
+      v2Logger.success(
+        messageHandler.parse('WORKFLOW_EXPORT_COMPLETE', Object.keys(this.workflows).length ),
+        this.exportConfig.context,
+      );
     }
   }
 
@@ -64,8 +67,7 @@ export default class ExportWorkFlows extends BaseClass {
         }
       })
       .catch((error: any) => {
-        log(this.exportConfig, `Failed to export workflows.${formatError(error)}`, 'error');
-        log(this.exportConfig, error, 'error');
+        handleAndLogError(error, { ...this.exportConfig.context });
       });
   }
 
@@ -75,7 +77,10 @@ export default class ExportWorkFlows extends BaseClass {
       const workflowUid = workflows[index].uid;
       const workflowName = workflows[index]?.name || '';
       this.workflows[workflowUid] = omit(workflows[index], this.workflowConfig.invalidKeys);
-      log(this.exportConfig, `'${workflowName}' workflow was exported successfully`, 'success');
+      v2Logger.success(
+        messageHandler.parse('WORKFLOW_EXPORT_SUCCESS', workflowName),
+        this.exportConfig.context,
+      );
     }
   }
 
@@ -95,7 +100,10 @@ export default class ExportWorkFlows extends BaseClass {
       .fetch({ include_rules: true, include_permissions: true })
       .then((data: any) => data)
       .catch((err: any) =>
-        log(this.exportConfig, `Failed to fetch roles.${formatError(err)}`, 'error'),
+        handleAndLogError(
+          err,
+          { ...this.exportConfig.context }
+        ),
       );
   }
 }

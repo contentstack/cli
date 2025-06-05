@@ -1,9 +1,10 @@
 import omit from 'lodash/omit';
 import isEmpty from 'lodash/isEmpty';
 import { resolve as pResolve } from 'node:path';
+import { handleAndLogError, messageHandler, v2Logger } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
-import { log, formatError, fsUtil } from '../../utils';
+import { fsUtil } from '../../utils';
 import { WebhookConfig, ModuleClassParams } from '../../types';
 
 export default class ExportWebhooks extends BaseClass {
@@ -21,11 +22,10 @@ export default class ExportWebhooks extends BaseClass {
     this.webhooks = {};
     this.webhookConfig = exportConfig.modules.webhooks;
     this.qs = { include_count: true, asc: 'updated_at' };
+    this.exportConfig.context.module = 'webhooks';
   }
 
   async start(): Promise<void> {
-    log(this.exportConfig, 'Starting webhooks export', 'info');
-
     this.webhooksFolderPath = pResolve(
       this.exportConfig.data,
       this.exportConfig.branchName || '',
@@ -35,10 +35,13 @@ export default class ExportWebhooks extends BaseClass {
     await fsUtil.makeDirectory(this.webhooksFolderPath);
     await this.getWebhooks();
     if (this.webhooks === undefined || isEmpty(this.webhooks)) {
-      log(this.exportConfig, 'No webhooks found', 'info');
+      v2Logger.info(messageHandler.parse('WEBHOOK_NOT_FOUND'), this.exportConfig.context);
     } else {
       fsUtil.writeFile(pResolve(this.webhooksFolderPath, this.webhookConfig.fileName), this.webhooks);
-      log(this.exportConfig, 'All the webhooks have been exported successfully!', 'success');
+      v2Logger.success(
+        messageHandler.parse('WEBHOOK_EXPORT_COMPLETE', Object.keys(this.webhooks).length),
+        this.exportConfig.context,
+      );
     }
   }
 
@@ -62,8 +65,7 @@ export default class ExportWebhooks extends BaseClass {
         }
       })
       .catch((error: any) => {
-        log(this.exportConfig, `Failed to export webhooks.${formatError(error)}`, 'error');
-        log(this.exportConfig, error, 'error');
+        handleAndLogError(error, { ...this.exportConfig.context });
       });
   }
 
@@ -72,7 +74,7 @@ export default class ExportWebhooks extends BaseClass {
       const webhookUid = webhooks[index].uid;
       const webhookName = webhooks[index]?.name;
       this.webhooks[webhookUid] = omit(webhooks[index], ['SYS_ACL']);
-      log(this.exportConfig, `'${webhookName}' webhook was exported successfully`, 'success');
+      v2Logger.success(messageHandler.parse('WEBHOOK_EXPORT_SUCCESS', webhookName), this.exportConfig.context);
     }
   }
 }

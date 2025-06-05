@@ -1,6 +1,6 @@
 import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
-import { sanitizePath } from '@contentstack/cli-utilities';
+import { sanitizePath, v2Logger, handleAndLogError } from '@contentstack/cli-utilities';
 import { formatError, fsUtil, PersonalizationAdapter, log } from '../utils';
 import { PersonalizeConfig, ExportConfig, AttributesConfig, AttributeStruct } from '../types';
 
@@ -29,24 +29,26 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
 
   async start() {
     try {
-      log(this.exportConfig, 'Starting attributes export', 'info');
+      v2Logger.info('Starting attributes export', this.exportConfig.context);
       await this.init();
       await fsUtil.makeDirectory(this.attributesFolderPath);
       this.attributes = (await this.getAttributes()) as AttributeStruct[];
 
       if (!this.attributes?.length) {
-        log(this.exportConfig, 'No Attributes found with the given project!', 'info');
+        v2Logger.info('No Attributes found with the given project!', this.exportConfig.context);
       } else {
         this.sanitizeAttribs();
         fsUtil.writeFile(
           pResolve(sanitizePath(this.attributesFolderPath), sanitizePath(this.attributesConfig.fileName)),
           this.attributes,
         );
-        log(this.exportConfig, 'All the attributes have been exported successfully!', 'success');
+        v2Logger.success(
+          `Attributes exported successfully! Total attributes: ${this.attributes.length}`,
+          this.exportConfig.context,
+        );
       }
     } catch (error) {
-      log(this.exportConfig, `Failed to export attributes!`, 'error');
-      log(this.config, error, 'error');
+      handleAndLogError(error, { ...this.exportConfig.context });
     }
   }
 

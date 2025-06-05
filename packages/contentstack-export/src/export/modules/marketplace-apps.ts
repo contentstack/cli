@@ -5,17 +5,20 @@ import omitBy from 'lodash/omitBy';
 import entries from 'lodash/entries';
 import isEmpty from 'lodash/isEmpty';
 import { resolve as pResolve } from 'node:path';
+import { Command } from '@contentstack/cli-command';
 import {
   cliux,
   NodeCrypto,
   isAuthenticated,
   marketplaceSDKClient,
   ContentstackMarketplaceClient,
+  v2Logger,
+  messageHandler,
+  handleAndLogError,
 } from '@contentstack/cli-utilities';
 
+import { fsUtil, getOrgUid, createNodeCryptoInstance, getDeveloperHubUrl } from '../../utils';
 import { ModuleClassParams, MarketplaceAppsConfig, ExportConfig, Installation, Manifest } from '../../types';
-import { log, fsUtil, getOrgUid, formatError, createNodeCryptoInstance, getDeveloperHubUrl } from '../../utils';
-import { Command } from '@contentstack/cli-command';
 
 export default class ExportMarketplaceApps {
   protected marketplaceAppConfig: MarketplaceAppsConfig;
@@ -30,6 +33,7 @@ export default class ExportMarketplaceApps {
   constructor({ exportConfig }: Omit<ModuleClassParams, 'stackAPIClient' | 'moduleName'>) {
     this.exportConfig = exportConfig;
     this.marketplaceAppConfig = exportConfig.modules.marketplace_apps;
+    this.exportConfig.context.module = 'marketplace-apps';
   }
 
   async start(): Promise<void> {
@@ -40,8 +44,6 @@ export default class ExportMarketplaceApps {
       );
       return Promise.resolve();
     }
-
-    log(this.exportConfig, 'Starting marketplace app export', 'info');
 
     this.marketplaceAppPath = pResolve(
       this.exportConfig.data,
@@ -85,7 +87,7 @@ export default class ExportMarketplaceApps {
    */
   async getAppManifestAndAppConfig(): Promise<void> {
     if (isEmpty(this.installedApps)) {
-      log(this.exportConfig, 'No marketplace apps found', 'info');
+      v2Logger.info(messageHandler.parse('MARKETPLACE_APPS_NOT_FOUND'), this.exportConfig.context);
     } else {
       for (const [index, app] of entries(this.installedApps)) {
         if (app.manifest.visibility === 'private') {
@@ -99,7 +101,10 @@ export default class ExportMarketplaceApps {
 
       fsUtil.writeFile(pResolve(this.marketplaceAppPath, this.marketplaceAppConfig.fileName), this.installedApps);
 
-      log(this.exportConfig, 'All the marketplace apps have been exported successfully', 'info');
+      v2Logger.success(
+        messageHandler.parse('MARKETPLACE_APPS_EXPORT_COMPLETE', Object.keys(this.installedApps).length),
+        this.exportConfig.context,
+      );
     }
   }
 
@@ -118,7 +123,13 @@ export default class ExportMarketplaceApps {
       .app(appInstallation.manifest.uid)
       .fetch({ include_oauth: true })
       .catch((error) => {
-        log(this.exportConfig, error, 'error');
+        handleAndLogError(
+          error,
+          {
+            ...this.exportConfig.context,
+          },
+          messageHandler.parse('MARKETPLACE_APP_MANIFEST_EXPORT_FAILED', appInstallation.manifest.name),
+        );
       });
 
     if (manifest) {
@@ -140,7 +151,7 @@ export default class ExportMarketplaceApps {
     const appName = appInstallation?.manifest?.name;
     const appUid = appInstallation?.manifest?.uid;
     const app = appName || appUid;
-    log(this.exportConfig, `Exporting ${app} app and it's config.`, 'info');
+    v2Logger.info(messageHandler.parse('MARKETPLACE_APP_CONFIG_EXPORT', app), this.exportConfig.context);
 
     await this.appSdk
       .marketplace(this.exportConfig.org_uid)
@@ -160,18 +171,28 @@ export default class ExportMarketplaceApps {
 
           if (!isEmpty(data?.server_configuration)) {
             this.installedApps[index]['server_configuration'] = this.nodeCrypto.encrypt(data.server_configuration);
-            log(this.exportConfig, `Exported ${app} app and it's config.`, 'success');
+            v2Logger.success(messageHandler.parse('MARKETPLACE_APP_CONFIG_SUCCESS', app), this.exportConfig.context);
           } else {
-            log(this.exportConfig, `Exported ${app} app`, 'success');
+            v2Logger.success(messageHandler.parse('MARKETPLACE_APP_EXPORT_SUCCESS', app), this.exportConfig.context);
           }
         } else if (error) {
-          log(this.exportConfig, `Error on exporting ${app} app and it's config.`, 'error');
-          log(this.exportConfig, error, 'error');
+          handleAndLogError(
+            error,
+            {
+              ...this.exportConfig.context,
+            },
+            messageHandler.parse('MARKETPLACE_APP_CONFIG_EXPORT_FAILED', app),
+          );
         }
       })
       .catch((error: any) => {
-        log(this.exportConfig, `Failed to export ${app} app config ${formatError(error)}`, 'error');
-        log(this.exportConfig, error, 'error');
+        handleAndLogError(
+          error,
+          {
+            ...this.exportConfig.context,
+          },
+          messageHandler.parse('MARKETPLACE_APP_CONFIG_EXPORT_FAILED', app),
+        );
       });
   }
 
@@ -188,8 +209,9 @@ export default class ExportMarketplaceApps {
       .installation()
       .fetchAll({ target_uids: this.exportConfig.source_stack, skip })
       .catch((error) => {
-        log(this.exportConfig, `Failed to export marketplace-apps ${formatError(error)}`, 'error');
-        log(this.exportConfig, error, 'error');
+        handleAndLogError(error, {
+          ...this.exportConfig.context,
+        });
       });
 
     if (collection) {

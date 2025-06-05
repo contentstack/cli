@@ -11,11 +11,17 @@ import includes from 'lodash/includes';
 import progress from 'progress-stream';
 import { createWriteStream } from 'node:fs';
 import { resolve as pResolve } from 'node:path';
-import { FsUtility, getDirectories, configHandler } from '@contentstack/cli-utilities';
+import {
+  FsUtility,
+  getDirectories,
+  configHandler,
+  v2Logger,
+  handleAndLogError,
+  messageHandler,
+} from '@contentstack/cli-utilities';
 
 import { ModuleClassParams } from '../../types';
 import config from '../../config';
-import { log } from '../../utils';
 import BaseClass, { CustomPromiseHandler, CustomPromiseHandlerInput } from './base-class';
 
 export default class ExportAssets extends BaseClass {
@@ -26,6 +32,7 @@ export default class ExportAssets extends BaseClass {
 
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
+    this.exportConfig.context.module = 'assets';
   }
 
   get commonQueryParam(): Record<string, unknown> {
@@ -56,8 +63,7 @@ export default class ExportAssets extends BaseClass {
 
     // NOTE step 4: Download all assets
     await this.downloadAssets();
-
-    log(this.exportConfig, 'Assets exported successfully.!', 'info');
+    v2Logger.success(messageHandler.parse('ASSET_EXPORT_COMPLETE'), this.exportConfig.context);
   }
 
   /**
@@ -77,8 +83,7 @@ export default class ExportAssets extends BaseClass {
       if (!isEmpty(items)) this.assetsFolder.push(...items);
     };
     const onReject = ({ error }: any) => {
-      log(this.exportConfig, 'Export asset folder query failed', 'error');
-      log(this.exportConfig, error, 'error');
+      handleAndLogError(error, { ...this.exportConfig.context });
     };
 
     return this.makeConcurrentCall({
@@ -98,7 +103,10 @@ export default class ExportAssets extends BaseClass {
           this.assetsFolder,
         );
       }
-      log(this.exportConfig, 'Assets folder Exported successfully.!', 'info');
+      v2Logger.info(
+        messageHandler.parse('ASSET_FOLDERS_EXPORT_COMPLETE', this.assetsFolder.length),
+        this.exportConfig.context,
+      );
     });
   }
 
@@ -133,8 +141,7 @@ export default class ExportAssets extends BaseClass {
     }
 
     const onReject = ({ error }: any) => {
-      log(this.exportConfig, 'Export asset query failed', 'error');
-      log(this.exportConfig, error.message, 'error');
+      handleAndLogError(error, { ...this.exportConfig.context }, messageHandler.parse('ASSET_QUERY_FAILED'));
     };
 
     const onSuccess = ({ response: { items } }: any) => {
@@ -163,7 +170,7 @@ export default class ExportAssets extends BaseClass {
       concurrencyLimit: this.assetConfig.fetchConcurrency,
     }).then(() => {
       fs?.completeFile(true);
-      log(this.exportConfig, 'Assets metadata exported successfully.!', 'info');
+      v2Logger.info(messageHandler.parse('ASSET_METADATA_EXPORT_COMPLETE'), this.exportConfig.context);
     });
   }
 
@@ -221,8 +228,7 @@ export default class ExportAssets extends BaseClass {
         });
     };
     const onReject = ({ error }: any) => {
-      log(this.exportConfig, 'Export versioned asset query failed', 'error');
-      log(this.exportConfig, error, 'error');
+      handleAndLogError(error, { ...this.exportConfig.context }, messageHandler.parse('ASSET_VERSIONED_QUERY_FAILED'));
     };
 
     return this.makeConcurrentCall(
@@ -241,7 +247,7 @@ export default class ExportAssets extends BaseClass {
       promisifyHandler,
     ).then(() => {
       fs?.completeFile(true);
-      log(this.exportConfig, 'Assets folder Exported successfully.!', 'info');
+      v2Logger.info(messageHandler.parse('ASSET_VERSIONED_METADATA_EXPORT_COMPLETE'), this.exportConfig.context);
     });
   }
 
@@ -265,8 +271,7 @@ export default class ExportAssets extends BaseClass {
       .count()
       .then(({ assets }: any) => assets)
       .catch((error: Error) => {
-        log(this.exportConfig, 'Get count query failed', 'error');
-        log(this.exportConfig, error, 'error');
+        handleAndLogError(error, { ...this.exportConfig.context }, messageHandler.parse('ASSET_COUNT_QUERY_FAILED'));
       });
   }
 
@@ -306,8 +311,11 @@ export default class ExportAssets extends BaseClass {
 
       const assetWriterStream = createWriteStream(assetFilePath);
       assetWriterStream.on('error', (error) => {
-        log(this.exportConfig, `Downloaded failed ${asset.filename}: ${asset.uid}!`, 'error');
-        log(this.exportConfig, error, 'error');
+        handleAndLogError(
+          error,
+          { ...this.exportConfig.context, uid: asset.uid, filename: asset.fileName },
+          messageHandler.parse('ASSET_DOWNLOAD_FAILED', asset.filename, asset.uid),
+        );
       });
       /**
        * NOTE if pipe not working as expected add the following code below to fix the issue
@@ -330,13 +338,19 @@ export default class ExportAssets extends BaseClass {
         data.pipe(assetWriterStream);
       }
 
-      log(this.exportConfig, `Downloaded ${asset.filename}: ${asset.uid} successfully!`, 'success');
+      v2Logger.success(
+        messageHandler.parse('ASSET_DOWNLOAD_SUCCESS', asset.filename, asset.uid),
+        this.exportConfig.context,
+      );
     };
 
     const onReject = ({ error, additionalInfo }: any) => {
       const { asset } = additionalInfo;
-      log(this.exportConfig, `Downloaded failed ${asset.filename}: ${asset.uid}!`, 'error');
-      log(this.exportConfig, error, 'error');
+      handleAndLogError(
+        error,
+        { ...this.exportConfig.context, uid: asset.uid, filename: asset.filename },
+        messageHandler.parse('ASSET_DOWNLOAD_FAILED', asset.filename, asset.uid),
+      );
     };
 
     const promisifyHandler: CustomPromiseHandler = (input: CustomPromiseHandlerInput) => {
@@ -364,7 +378,7 @@ export default class ExportAssets extends BaseClass {
       },
       promisifyHandler,
     ).then(() => {
-      log(this.exportConfig, 'Assets download completed successfully.!', 'info');
+      v2Logger.success(messageHandler.parse('ASSET_DOWNLOAD_COMPLETE'), this.exportConfig.context);
     });
   }
 }

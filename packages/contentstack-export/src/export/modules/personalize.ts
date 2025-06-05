@@ -6,8 +6,8 @@ import {
   ExportAudiences,
   AnyProperty,
 } from '@contentstack/cli-variants';
+import { handleAndLogError, messageHandler, v2Logger } from '@contentstack/cli-utilities';
 
-import { log } from '../../utils';
 import { ModuleClassParams, ExportConfig } from '../../types';
 
 export default class ExportPersonalize {
@@ -16,17 +16,18 @@ export default class ExportPersonalize {
   constructor({ exportConfig }: ModuleClassParams) {
     this.exportConfig = exportConfig;
     this.personalizeConfig = exportConfig.modules.personalize;
+    this.exportConfig.context.module = 'personalize';
   }
 
   async start(): Promise<void> {
     try {
       if (!this.personalizeConfig.baseURL[this.exportConfig.region.name]) {
-        log(this.exportConfig, 'Skipping Personalize project export, personalize url is not set', 'info');
+        v2Logger.info(messageHandler.parse('PERSONALIZE_URL_NOT_SET'), this.exportConfig.context);
         this.exportConfig.personalizationEnabled = false;
         return;
       }
       if (this.exportConfig.management_token) {
-        log(this.exportConfig, 'Skipping Personalize project export when using management token', 'info');
+        v2Logger.info(messageHandler.parse('PERSONALIZE_SKIPPING_WITH_MANAGEMENT_TOKEN'), this.exportConfig.context);
         this.exportConfig.personalizationEnabled = false;
         return;
       }
@@ -46,15 +47,18 @@ export default class ExportPersonalize {
           if (moduleMapper[module]) {
             await moduleMapper[module].start();
           } else {
-            log(this.exportConfig, `No implementation found for the module ${module}`, 'info');
+            v2Logger.info(
+              messageHandler.parse('PERSONALIZE_MODULE_NOT_IMPLEMENTED', module),
+              this.exportConfig.context,
+            );
           }
         }
       }
     } catch (error) {
       if (error === 'Forbidden') {
-        log(this.exportConfig, "Personalize is not enabled in the given organization!", 'info');
+        v2Logger.info(messageHandler.parse('PERSONALIZE_NOT_ENABLED'), this.exportConfig.context);
       } else {
-        log(this.exportConfig, error, 'error');
+        handleAndLogError(error, { ...this.exportConfig.context });
       }
       this.exportConfig.personalizationEnabled = false;
     }
