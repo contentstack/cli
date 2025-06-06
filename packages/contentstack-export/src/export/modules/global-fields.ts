@@ -3,7 +3,7 @@ import {
   ContentstackClient,
   handleAndLogError,
   messageHandler,
-  v2Logger,
+  log,
   sanitizePath,
 } from '@contentstack/cli-utilities';
 
@@ -57,7 +57,7 @@ export default class GlobalFieldsExport extends BaseClass {
       await fsUtil.makeDirectory(this.globalFieldsDirPath);
       await this.getGlobalFields();
       fsUtil.writeFile(path.join(this.globalFieldsDirPath, this.globalFieldsConfig.fileName), this.globalFields);
-      v2Logger.success(
+      log.success(
         messageHandler.parse('GLOBAL_FIELDS_EXPORT_COMPLETE', this.globalFields.length),
         this.exportConfig.context,
       );

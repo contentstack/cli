@@ -1,7 +1,7 @@
 import omit from 'lodash/omit';
 import isEmpty from 'lodash/isEmpty';
 import { resolve as pResolve } from 'node:path';
-import { handleAndLogError, messageHandler, v2Logger } from '@contentstack/cli-utilities';
+import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
 import { fsUtil } from '../../utils';
@@ -35,10 +35,10 @@ export default class ExportWebhooks extends BaseClass {
     await fsUtil.makeDirectory(this.webhooksFolderPath);
     await this.getWebhooks();
     if (this.webhooks === undefined || isEmpty(this.webhooks)) {
-      v2Logger.info(messageHandler.parse('WEBHOOK_NOT_FOUND'), this.exportConfig.context);
+      log.info(messageHandler.parse('WEBHOOK_NOT_FOUND'), this.exportConfig.context);
     } else {
       fsUtil.writeFile(pResolve(this.webhooksFolderPath, this.webhookConfig.fileName), this.webhooks);
-      v2Logger.success(
+      log.success(
         messageHandler.parse('WEBHOOK_EXPORT_COMPLETE', Object.keys(this.webhooks).length),
         this.exportConfig.context,
       );
@@ -74,7 +74,7 @@ export default class ExportWebhooks extends BaseClass {
       const webhookUid = webhooks[index].uid;
       const webhookName = webhooks[index]?.name;
       this.webhooks[webhookUid] = omit(webhooks[index], ['SYS_ACL']);
-      v2Logger.success(messageHandler.parse('WEBHOOK_EXPORT_SUCCESS', webhookName), this.exportConfig.context);
+      log.success(messageHandler.parse('WEBHOOK_EXPORT_SUCCESS', webhookName), this.exportConfig.context);
     }
   }
 }

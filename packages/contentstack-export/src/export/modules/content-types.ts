@@ -3,7 +3,7 @@ import {
   ContentstackClient,
   handleAndLogError,
   messageHandler,
-  v2Logger,
+  log,
   sanitizePath,
 } from '@contentstack/cli-utilities';
 
@@ -63,7 +63,7 @@ export default class ContentTypesExport extends BaseClass {
       await fsUtil.makeDirectory(this.contentTypesDirPath);
       await this.getContentTypes();
       await this.writeContentTypes(this.contentTypes);
-      v2Logger.success(messageHandler.parse('CONTENT_TYPE_EXPORT_COMPLETE'), this.exportConfig.context);
+      log.success(messageHandler.parse('CONTENT_TYPE_EXPORT_COMPLETE'), this.exportConfig.context);
     } catch (error) {
       handleAndLogError(error, { ...this.exportConfig.context });
       throw new Error(messageHandler.parse('CONTENT_TYPE_EXPORT_FAILED'));
@@ -85,7 +85,7 @@ export default class ContentTypesExport extends BaseClass {
       }
       return await this.getContentTypes(skip);
     } else {
-      v2Logger.info(messageHandler.parse('CONTENT_TYPE_NO_TYPES'), this.exportConfig.context);
+      log.info(messageHandler.parse('CONTENT_TYPE_NO_TYPES'), this.exportConfig.context);
     }
   }
 

@@ -10,7 +10,7 @@ import {
   pathValidator,
   sanitizePath,
   configHandler,
-  v2Logger,
+  log,
   handleAndLogError,
   getLogPath
 } from '@contentstack/cli-utilities';
@@ -126,8 +126,8 @@ export default class ExportCommand extends Command {
       if (!exportConfig.branches?.length) {
         writeExportMetaFile(exportConfig);
       }
-      v2Logger.success(`The content of the stack ${exportConfig.apiKey} has been exported successfully!`,exportConfig.context)
-      v2Logger.info(`The log has been stored at '${getLogPath()}'`, exportConfig.context)
+      log.success(`The content of the stack ${exportConfig.apiKey} has been exported successfully!`,exportConfig.context)
+      log.success(`The log has been stored at '${getLogPath()}'`, exportConfig.context)
     } catch (error) {
       handleAndLogError(error, { ...exportConfig.context });
     }

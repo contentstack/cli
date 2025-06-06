@@ -1,6 +1,6 @@
 import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
-import { v2Logger, handleAndLogError } from '@contentstack/cli-utilities';
+import { log, handleAndLogError } from '@contentstack/cli-utilities';
 
 import { fsUtil, PersonalizationAdapter } from '../utils';
 import { PersonalizeConfig, ExportConfig, EventStruct, EventsConfig } from '../types';
@@ -30,18 +30,18 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
 
   async start() {
     try {
-      v2Logger.info('Starting events export', this.exportConfig.context);
+      log.info('Starting events export', this.exportConfig.context);
       await this.init();
       await fsUtil.makeDirectory(this.eventsFolderPath);
       this.events = (await this.getEvents()) as EventStruct[];
 
       if (!this.events?.length) {
-        v2Logger.info('No Events found with the given project!', this.exportConfig.context);
+        log.info('No Events found with the given project!', this.exportConfig.context);
         return;
       } else {
         this.sanitizeAttribs();
         fsUtil.writeFile(pResolve(this.eventsFolderPath, this.eventsConfig.fileName), this.events);
-        v2Logger.success(
+        log.success(
           `Events exported successfully! Total events: ${this.events.length}`,
           this.exportConfig.context,
         );

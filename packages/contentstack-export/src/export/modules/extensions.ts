@@ -1,7 +1,7 @@
 import omit from 'lodash/omit';
 import isEmpty from 'lodash/isEmpty';
 import { resolve as pResolve } from 'node:path';
-import { handleAndLogError, messageHandler, v2Logger } from '@contentstack/cli-utilities';
+import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
 import { fsUtil } from '../../utils';
@@ -35,10 +35,10 @@ export default class ExportExtensions extends BaseClass {
     await this.getExtensions();
 
     if (this.extensions === undefined || isEmpty(this.extensions)) {
-      v2Logger.info(messageHandler.parse('EXTENSION_NOT_FOUND'), this.exportConfig.context);
+      log.info(messageHandler.parse('EXTENSION_NOT_FOUND'), this.exportConfig.context);
     } else {
       fsUtil.writeFile(pResolve(this.extensionsFolderPath, this.extensionConfig.fileName), this.extensions);
-      v2Logger.success(
+      log.success(
         messageHandler.parse('EXTENSION_EXPORT_COMPLETE', Object.keys(this.extensions).length ),
         this.exportConfig.context,
       );
@@ -74,7 +74,7 @@ export default class ExportExtensions extends BaseClass {
       const extUid = extensions[index].uid;
       const extTitle = extensions[index]?.title;
       this.extensions[extUid] = omit(extensions[index], ['SYS_ACL']);
-      v2Logger.info(messageHandler.parse('EXTENSION_EXPORT_SUCCESS', extTitle), this.exportConfig.context);
+      log.info(messageHandler.parse('EXTENSION_EXPORT_SUCCESS', extTitle), this.exportConfig.context);
     }
   }
 }

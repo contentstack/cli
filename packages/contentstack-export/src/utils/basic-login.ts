@@ -7,7 +7,7 @@
  * MIT Licensed
  */
 
-import { v2Logger, managementSDKClient, authHandler } from '@contentstack/cli-utilities';
+import { log, managementSDKClient, authHandler } from '@contentstack/cli-utilities';
 import { ExternalConfig } from '../types';
 
 const login = async (config: ExternalConfig): Promise<any> => {
@@ -22,18 +22,18 @@ const login = async (config: ExternalConfig): Promise<any> => {
         'X-User-Agent': 'contentstack-export/v',
       };
       await authHandler.setConfigData('basicAuth', response.user);
-      v2Logger.success(`Contentstack account authenticated successfully!`, config.context);
+      log.success(`Contentstack account authenticated successfully!`, config.context);
       return config;
     } else {
-      v2Logger.error(`Failed to login, Invalid credentials`, config.context);
+      log.error(`Failed to login, Invalid credentials`, config.context);
       process.exit(1);
     }
   } else if (!config.email && !config.password && config.source_stack && config.access_token) {
-    v2Logger.info(
+    log.info(
       `Content types, entries, assets, labels, global fields, extensions modules will be exported`,
       config.context,
     );
-    v2Logger.info(
+    log.info(
       `Email, password, or management token is not set in the config, cannot export Webhook and label modules`,
       config.context,
     );

@@ -1,6 +1,6 @@
 import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
-import { v2Logger, handleAndLogError } from '@contentstack/cli-utilities';
+import { log, handleAndLogError } from '@contentstack/cli-utilities';
 
 import { fsUtil, PersonalizationAdapter } from '../utils';
 import { PersonalizeConfig, ExportConfig, AudienceStruct, AudiencesConfig } from '../types';
@@ -30,18 +30,18 @@ export default class ExportAudiences extends PersonalizationAdapter<ExportConfig
 
   async start() {
     try {
-      v2Logger.info('Starting audiences export', this.exportConfig.context);
+      log.info('Starting audiences export', this.exportConfig.context);
       await this.init();
       await fsUtil.makeDirectory(this.audiencesFolderPath);
       this.audiences = (await this.getAudiences()) as AudienceStruct[];
 
       if (!this.audiences?.length) {
-        v2Logger.info('No Audiences found with the given project!', this.exportConfig.context);
+        log.info('No Audiences found with the given project!', this.exportConfig.context);
         return;
       } else {
         this.sanitizeAttribs();
         fsUtil.writeFile(pResolve(this.audiencesFolderPath, this.audiencesConfig.fileName), this.audiences);
-        v2Logger.success(
+        log.success(
           `Audiences exported successfully! Total audiences: ${this.audiences.length}`,
           this.exportConfig.context,
         );

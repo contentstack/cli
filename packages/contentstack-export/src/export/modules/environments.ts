@@ -1,7 +1,7 @@
 import { resolve as pResolve } from 'node:path';
 import omit from 'lodash/omit';
 import isEmpty from 'lodash/isEmpty';
-import { handleAndLogError, messageHandler, v2Logger } from '@contentstack/cli-utilities';
+import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
 import { fsUtil } from '../../utils';
@@ -35,10 +35,10 @@ export default class ExportEnvironments extends BaseClass {
     await this.getEnvironments();
 
     if (this.environments === undefined || isEmpty(this.environments)) {
-      v2Logger.info(messageHandler.parse('ENVIRONMENT_NOT_FOUND'), this.exportConfig.context);
+      log.info(messageHandler.parse('ENVIRONMENT_NOT_FOUND'), this.exportConfig.context);
     } else {
       fsUtil.writeFile(pResolve(this.environmentsFolderPath, this.environmentConfig.fileName), this.environments);
-      v2Logger.success(
+      log.success(
         messageHandler.parse('ENVIRONMENT_EXPORT_COMPLETE', Object.keys(this.environments).length),
         this.exportConfig.context,
       );
@@ -74,7 +74,7 @@ export default class ExportEnvironments extends BaseClass {
       const extUid = environments[index].uid;
       const envName = environments[index]?.name;
       this.environments[extUid] = omit(environments[index], ['ACL']);
-      v2Logger.success(messageHandler.parse('ENVIRONMENT_EXPORT_SUCCESS', envName ), this.exportConfig.context);
+      log.success(messageHandler.parse('ENVIRONMENT_EXPORT_SUCCESS', envName ), this.exportConfig.context);
     }
   }
 }

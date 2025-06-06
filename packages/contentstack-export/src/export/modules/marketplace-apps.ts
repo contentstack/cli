@@ -12,7 +12,7 @@ import {
   isAuthenticated,
   marketplaceSDKClient,
   ContentstackMarketplaceClient,
-  v2Logger,
+  log,
   messageHandler,
   handleAndLogError,
 } from '@contentstack/cli-utilities';
@@ -87,7 +87,7 @@ export default class ExportMarketplaceApps {
    */
   async getAppManifestAndAppConfig(): Promise<void> {
     if (isEmpty(this.installedApps)) {
-      v2Logger.info(messageHandler.parse('MARKETPLACE_APPS_NOT_FOUND'), this.exportConfig.context);
+      log.info(messageHandler.parse('MARKETPLACE_APPS_NOT_FOUND'), this.exportConfig.context);
     } else {
       for (const [index, app] of entries(this.installedApps)) {
         if (app.manifest.visibility === 'private') {
@@ -101,7 +101,7 @@ export default class ExportMarketplaceApps {
 
       fsUtil.writeFile(pResolve(this.marketplaceAppPath, this.marketplaceAppConfig.fileName), this.installedApps);
 
-      v2Logger.success(
+      log.success(
         messageHandler.parse('MARKETPLACE_APPS_EXPORT_COMPLETE', Object.keys(this.installedApps).length),
         this.exportConfig.context,
       );
@@ -151,7 +151,7 @@ export default class ExportMarketplaceApps {
     const appName = appInstallation?.manifest?.name;
     const appUid = appInstallation?.manifest?.uid;
     const app = appName || appUid;
-    v2Logger.info(messageHandler.parse('MARKETPLACE_APP_CONFIG_EXPORT', app), this.exportConfig.context);
+    log.info(messageHandler.parse('MARKETPLACE_APP_CONFIG_EXPORT', app), this.exportConfig.context);
 
     await this.appSdk
       .marketplace(this.exportConfig.org_uid)
@@ -171,9 +171,9 @@ export default class ExportMarketplaceApps {
 
           if (!isEmpty(data?.server_configuration)) {
             this.installedApps[index]['server_configuration'] = this.nodeCrypto.encrypt(data.server_configuration);
-            v2Logger.success(messageHandler.parse('MARKETPLACE_APP_CONFIG_SUCCESS', app), this.exportConfig.context);
+            log.success(messageHandler.parse('MARKETPLACE_APP_CONFIG_SUCCESS', app), this.exportConfig.context);
           } else {
-            v2Logger.success(messageHandler.parse('MARKETPLACE_APP_EXPORT_SUCCESS', app), this.exportConfig.context);
+            log.success(messageHandler.parse('MARKETPLACE_APP_EXPORT_SUCCESS', app), this.exportConfig.context);
           }
         } else if (error) {
           handleAndLogError(

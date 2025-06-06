@@ -4,7 +4,7 @@ import {
   FsUtility,
   handleAndLogError,
   messageHandler,
-  v2Logger,
+  log,
 } from '@contentstack/cli-utilities';
 import { Export, ExportProjects } from '@contentstack/cli-variants';
 import { sanitizePath } from '@contentstack/cli-utilities';
@@ -66,7 +66,7 @@ export default class EntriesExport extends BaseClass {
       const locales = fsUtil.readFile(this.localesFilePath) as Array<Record<string, unknown>>;
       const contentTypes = fsUtil.readFile(this.schemaFilePath) as Array<Record<string, unknown>>;
       if (contentTypes.length === 0) {
-        v2Logger.info(messageHandler.parse('CONTENT_TYPE_NO_TYPES'), this.exportConfig.context);
+        log.info(messageHandler.parse('CONTENT_TYPE_NO_TYPES'), this.exportConfig.context);
         return;
       }
 
@@ -91,7 +91,7 @@ export default class EntriesExport extends BaseClass {
       for (let entryRequestOption of entryRequestOptions) {
         await this.getEntries(entryRequestOption);
         this.entriesFileHelper?.completeFile(true);
-        v2Logger.success(
+        log.success(
           messageHandler.parse(
             'ENTRIES_EXPORT_COMPLETE',
             entryRequestOption.contentType,
@@ -100,7 +100,7 @@ export default class EntriesExport extends BaseClass {
           this.exportConfig.context,
         );
       }
-      v2Logger.success(messageHandler.parse('ENTRIES_EXPORT_SUCCESS'), this.exportConfig.context);
+      log.success(messageHandler.parse('ENTRIES_EXPORT_SUCCESS'), this.exportConfig.context);
     } catch (error) {
       handleAndLogError(error, { ...this.exportConfig.context });
     }
@@ -216,7 +216,7 @@ export default class EntriesExport extends BaseClass {
         path.join(sanitizePath(options.versionedEntryPath), sanitizePath(`${entry.uid}.json`)),
         response,
       );
-      v2Logger.success(
+      log.success(
         messageHandler.parse('ENTRIES_VERSIONED_EXPORT_SUCCESS', options.contentType, entry.uid, options.locale),
         this.exportConfig.context,
       );
