@@ -136,7 +136,7 @@ export default class Entries {
             }
 
             this.lookForReference(
-              [{ locale: code, uid, name: this.removeEmojiAndImages(title) }],
+              [{ locale: code, uid, name: this.removeEmojiAndImages(this.currentTitle) }],
               ctSchema,
               this.entries[entryUid],
             );
