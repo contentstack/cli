@@ -131,5 +131,192 @@
       }
     ],
     "description": ""
+  },
+  {
+    "title": "Nested Global Field 2",
+    "uid": "nested_global_field_2",
+    "schema": [
+      {
+        "data_type": "text",
+        "display_name": "Single Line Textbox",
+        "uid": "single_line",
+        "mandatory": false,
+        "non_localizable": false,
+        "multiple": false,
+        "unique": false
+      },
+      {
+        "data_type": "global_field",
+        "display_name": "Global",
+        "uid": "global_field",
+        "reference_to": "nested_global_field_1",
+        "mandatory": false,
+        "non_localizable": false,
+        "multiple": false,
+        "unique": false
+      }
+    ],
+    "description": ""
+  },
+  {
+    "title": "Nested Global Field 3",
+    "uid": "nested_global_field_3",
+    "schema": [
+      {
+        "data_type": "text",
+        "display_name": "Single Line Textbox",
+        "uid": "single_line",
+        "mandatory": false,
+        "non_localizable": false,
+        "multiple": false,
+        "unique": false
+      },
+      {
+        "data_type": "global_field",
+        "display_name": "Global",
+        "uid": "global_field",
+        "reference_to": "nested_global_field_2",
+        "mandatory": false,
+        "non_localizable": false,
+        "multiple": false,
+        "unique": false
+      }
+    ],
+    "description": ""
+  },
+  {
+    "title": "Nested Global Field 4",
+    "uid": "nested_global_field_4",
+    "schema": [
+      {
+        "data_type": "text",
+        "display_name": "Single Line Textbox",
+        "uid": "single_line",
+        "mandatory": false,
+        "non_localizable": false,
+        "multiple": false,
+        "unique": false
+      },
+      {
+        "data_type": "global_field",
+        "display_name": "Global",
+        "uid": "global_field",
+        "reference_to": "nested_global_field_2",
+        "mandatory": false,
+        "non_localizable": false,
+        "multiple": false,
+        "unique": false
+      }
+    ],
+    "description": ""
+  },
+  {
+    "title": "Nested Global Fields 999",
+    "uid": "nested_global_field999",
+    "schema": [
+      {
+        "data_type": "text",
+        "display_name": "Single Line Textbox",
+        "uid": "single_line",
+        "field_metadata": { "description": "", "default_value": "", "version": 3 },
+        "format": "",
+        "error_messages": { "format": "" },
+        "mandatory": false,
+        "multiple": false,
+        "non_localizable": false,
+        "unique": false
+      },
+      {
+        "data_type": "global_field",
+        "display_name": "Global",
+        "reference_to": "nested_global_field_2",
+        "field_metadata": { "description": "" },
+        "uid": "global_field",
+        "mandatory": false,
+        "multiple": false,
+        "non_localizable": false,
+        "unique": false
+      }
+    ],
+    "description": ""
+  },
+  {
+    "title": "Nested Global Fields eight",
+    "uid": "nested_global_field888",
+    "schema": [
+      {
+        "data_type": "text",
+        "display_name": "Single Line Textbox",
+        "uid": "single_line",
+        "field_metadata": { "description": "", "default_value": "", "version": 3 },
+        "format": "",
+        "error_messages": { "format": "" },
+        "mandatory": false,
+        "multiple": false,
+        "non_localizable": false,
+        "unique": false
+      },
+      {
+        "data_type": "global_field",
+        "display_name": "Global",
+        "reference_to": "nested_global_field_2",
+        "field_metadata": { "description": "" },
+        "uid": "global_field",
+        "mandatory": false,
+        "multiple": false,
+        "non_localizable": false,
+        "unique": false
+      }
+    ],
+    "description": ""
+  },
+  {
+    "title": "sample_global_field_1",
+    "uid": "sample_global_field_1",
+    "schema": [
+      {
+        "data_type": "text",
+        "display_name": "Single Line Textbox",
+        "uid": "single_line",
+        "field_metadata": { "description": "", "default_value": "" },
+        "format": "",
+        "error_messages": { "format": "" },
+        "mandatory": false,
+        "multiple": false,
+        "non_localizable": false,
+        "unique": false
+      }
+    ],
+    "description": ""
+  },
+  {
+    "title": "global_field_sample_2",
+    "uid": "global_field_sample_2",
+    "schema": [
+      {
+        "data_type": "group",
+        "display_name": "Group",
+        "field_metadata": { "description": "", "instruction": "" },
+        "schema": [
+          {
+            "data_type": "global_field",
+            "display_name": "Global",
+            "reference_to": "nested_global_field_1",
+            "field_metadata": { "description": "" },
+            "uid": "global_field",
+            "mandatory": false,
+            "multiple": false,
+            "non_localizable": false,
+            "unique": false
+          }
+        ],
+        "uid": "group",
+        "mandatory": false,
+        "multiple": false,
+        "non_localizable": false,
+        "unique": false
+      }
+    ],
+    "description": ""
   }
 ]

@@ -259,6 +259,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
           break;
         case 'field-rules':
+          // NOTE: We are using the fixed content-type for validation of field rules
+          const data =  this.getCtAndGfSchema();
+          constructorParam.ctSchema = data.ctSchema;
+          constructorParam.gfSchema = data.gfSchema;
           missingFieldRules = await new FieldRule(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingFieldRules);
           this.getAffectedData('field-rules', dataModuleWise['content-types'], missingFieldRules);
@@ -456,7 +460,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
               key === 'missingCTSelectFieldValues' ||
               key === 'missingFieldUid' ||
               key === 'action' ||
-              key === 'Non-Fixable' || 
+              key === 'Non-Fixable' ||
               key === 'Not-Fixed'
             ) {
               return chalk.red(typeof cellValue === 'object' ? JSON.stringify(cellValue) : cellValue);
