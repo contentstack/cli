@@ -3,7 +3,7 @@ import { default as Logger } from './logger';
 import { CLIErrorHandler } from './cliErrorHandler';
 import { ErrorContext } from '../interfaces';
 
-const v2Logger = new Logger({ basePath: process.env.CS_CLI_LOG_PATH || path.join(process.cwd(), 'logs') });
+const v2Logger = new Logger({ basePath: getLogPath() });
 const cliErrorHandler = new CLIErrorHandler(true); // Enable debug mode for error classification
 
 /**
@@ -51,4 +51,9 @@ function handleAndLogError(error: unknown, context?: ErrorContext, errorMessage?
   }
 }
 
-export { v2Logger, cliErrorHandler, handleAndLogError };
+function getLogPath(): string {
+  return process.env.CS_CLI_LOG_PATH || path.join(process.cwd(), 'logs');
+}
+
+
+export { v2Logger, cliErrorHandler, handleAndLogError, getLogPath };

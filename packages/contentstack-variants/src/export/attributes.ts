@@ -1,7 +1,7 @@
 import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
 import { sanitizePath, v2Logger, handleAndLogError } from '@contentstack/cli-utilities';
-import { formatError, fsUtil, PersonalizationAdapter, log } from '../utils';
+import { formatError, fsUtil, PersonalizationAdapter } from '../utils';
 import { PersonalizeConfig, ExportConfig, AttributesConfig, AttributeStruct } from '../types';
 
 export default class ExportAttributes extends PersonalizationAdapter<ExportConfig> {

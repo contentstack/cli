@@ -2,9 +2,8 @@ import { existsSync, mkdirSync } from 'fs';
 import { join, resolve } from 'path';
 import { FsUtility, sanitizePath, v2Logger, handleAndLogError } from '@contentstack/cli-utilities';
 
-import { APIConfig, AdapterType, ExportConfig, LogType } from '../types';
+import { APIConfig, AdapterType, ExportConfig } from '../types';
 import VariantAdapter, { VariantHttpClient } from '../utils/variant-api-adapter';
-import { fsUtil, log } from '../utils';
 
 export default class VariantEntries extends VariantAdapter<VariantHttpClient<ExportConfig>> {
   public entriesDirPath: string;

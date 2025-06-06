@@ -4,12 +4,12 @@
  * MIT Licensed
  */
 
-import promiseLimit from 'promise-limit';
 import * as path from 'path';
-import { isAuthenticated } from '@contentstack/cli-utilities';
-import { ExternalConfig, ExportConfig } from '../types';
+import promiseLimit from 'promise-limit';
+import { isAuthenticated, getLogPath, sanitizePath } from '@contentstack/cli-utilities';
+
 import { fsUtil } from './file-helper';
-import { sanitizePath } from '@contentstack/cli-utilities';
+import { ExternalConfig, ExportConfig } from '../types';
 
 export const validateConfig = function (config: ExternalConfig) {
   if (!config.host || !config.cdn) {
@@ -84,7 +84,7 @@ export const executeTask = function (
 export const writeExportMetaFile = (exportConfig: ExportConfig, metaFilePath?: string) => {
   const exportMeta = {
     contentVersion: exportConfig.contentVersion,
-    logsPath: path.join(process.cwd(), 'logs'),
+    logsPath: getLogPath(),
   };
   fsUtil.writeFile(path.join(sanitizePath(metaFilePath || exportConfig.exportDir), 'export-info.json'), exportMeta);
 };

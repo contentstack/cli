@@ -1,4 +1,3 @@
-import path from 'path';
 import { Command } from '@contentstack/cli-command';
 import {
   cliux,
@@ -12,11 +11,13 @@ import {
   sanitizePath,
   configHandler,
   v2Logger,
-  handleAndLogError
+  handleAndLogError,
+  getLogPath
 } from '@contentstack/cli-utilities';
+
 import { ModuleExporter } from '../../../export';
-import { setupExportConfig, writeExportMetaFile } from '../../../utils';
 import { Context, ExportConfig } from '../../../types';
+import { setupExportConfig, writeExportMetaFile } from '../../../utils';
 
 export default class ExportCommand extends Command {
   static description: string = messageHandler.parse('Export content from a stack');
@@ -112,7 +113,7 @@ export default class ExportCommand extends Command {
       const { flags } = await this.parse(ExportCommand);
       exportConfig = await setupExportConfig(flags);
       // Prepare the context object
-      const context = this.createExportContext();
+      const context = this.createExportContext(exportConfig.apiKey);
       exportConfig.context = context;
 
       // Assign exportConfig variables
@@ -126,14 +127,14 @@ export default class ExportCommand extends Command {
         writeExportMetaFile(exportConfig);
       }
       v2Logger.success(`The content of the stack ${exportConfig.apiKey} has been exported successfully!`,exportConfig.context)
-      v2Logger.success(`The log has been stored at '${pathValidator(path.join(process.cwd(), 'logs'))}'`, exportConfig.context)
+      v2Logger.info(`The log has been stored at '${getLogPath()}'`, exportConfig.context)
     } catch (error) {
       handleAndLogError(error, { ...exportConfig.context });
     }
   }
   
   // Create export context object
-  private createExportContext(): Context {
+  private createExportContext(apiKey: string): Context {
     return {
       command: this.context.info.command,
       module: '',
@@ -141,7 +142,7 @@ export default class ExportCommand extends Command {
       email: configHandler.get('email'),
       sessionId: this.context.sessionId,
       clientId: this.context.clientId,
-      apiKey: configHandler.get('apiKey') || '',
+      apiKey: apiKey || '',
       orgId: configHandler.get('organization_uid') || '',
     };
   }

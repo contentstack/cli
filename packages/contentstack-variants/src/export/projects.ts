@@ -1,7 +1,7 @@
 import * as path from 'path';
-import { sanitizePath, v2Logger, handleAndLogError } from '@contentstack/cli-utilities';
+import { sanitizePath, v2Logger } from '@contentstack/cli-utilities';
 import { ExportConfig, PersonalizeConfig } from '../types';
-import { PersonalizationAdapter, log, fsUtil, formatError } from '../utils';
+import { PersonalizationAdapter, fsUtil, } from '../utils';
 
 export default class ExportProjects extends PersonalizationAdapter<ExportConfig> {
   private projectFolderPath: string;

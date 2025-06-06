@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { sanitizePath, v2Logger, handleAndLogError } from '@contentstack/cli-utilities';
 import { PersonalizeConfig, ExportConfig, ExperienceStruct } from '../types';
-import { formatError, fsUtil, log, PersonalizationAdapter } from '../utils';
+import { fsUtil, PersonalizationAdapter } from '../utils';
 
 export default class ExportExperiences extends PersonalizationAdapter<ExportConfig> {
   private experiencesFolderPath: string;
