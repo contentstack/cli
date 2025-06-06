@@ -3,7 +3,7 @@ import find from 'lodash/find';
 import forEach from 'lodash/forEach';
 import values from 'lodash/values';
 import { resolve as pResolve } from 'node:path';
-import { handleAndLogError, messageHandler, v2Logger } from '@contentstack/cli-utilities';
+import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
 import { fsUtil } from '../../utils';
@@ -51,12 +51,12 @@ export default class ExportCustomRoles extends BaseClass {
     const customRoles = roles.items.filter((role: any) => !this.existingRoles[role.name]);
 
     if (!customRoles.length) {
-      v2Logger.info(messageHandler.parse('ROLES_NO_CUSTOM_ROLES'), this.exportConfig.context);
+      log.info(messageHandler.parse('ROLES_NO_CUSTOM_ROLES'), this.exportConfig.context);
       return;
     }
 
     customRoles.forEach((role: any) => {
-      v2Logger.info(messageHandler.parse('ROLES_EXPORTING_ROLE', role.name), this.exportConfig.context);
+      log.info(messageHandler.parse('ROLES_EXPORTING_ROLE', role.name), this.exportConfig.context);
       this.customRoles[role.uid] = role;
     });
     fsUtil.writeFile(pResolve(this.rolesFolderPath, this.customRolesConfig.fileName), this.customRoles);

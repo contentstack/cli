@@ -1,7 +1,7 @@
 import omit from 'lodash/omit';
 import isEmpty from 'lodash/isEmpty';
 import { resolve as pResolve } from 'node:path';
-import { handleAndLogError, messageHandler, v2Logger } from '@contentstack/cli-utilities';
+import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
 import { fsUtil } from '../../utils';
@@ -34,10 +34,10 @@ export default class ExportLabels extends BaseClass {
     await fsUtil.makeDirectory(this.labelsFolderPath);
     await this.getLabels();
     if (this.labels === undefined || isEmpty(this.labels)) {
-      v2Logger.info(messageHandler.parse('LABELS_NOT_FOUND'), this.exportConfig.context);
+      log.info(messageHandler.parse('LABELS_NOT_FOUND'), this.exportConfig.context);
     } else {
       fsUtil.writeFile(pResolve(this.labelsFolderPath, this.labelConfig.fileName), this.labels);
-      v2Logger.success(
+      log.success(
         messageHandler.parse('LABELS_EXPORT_COMPLETE', Object.keys(this.labels).length),
         this.exportConfig.context,
       );
@@ -73,7 +73,7 @@ export default class ExportLabels extends BaseClass {
       const labelUid = labels[index].uid;
       const labelName = labels[index]?.name;
       this.labels[labelUid] = omit(labels[index], this.labelConfig.invalidKeys);
-      v2Logger.info(messageHandler.parse('LABEL_EXPORT_SUCCESS', labelName), this.exportConfig.context);
+      log.info(messageHandler.parse('LABEL_EXPORT_SUCCESS', labelName), this.exportConfig.context);
     }
   }
 }

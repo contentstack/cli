@@ -1,7 +1,7 @@
 import omit from 'lodash/omit';
 import isEmpty from 'lodash/isEmpty';
 import { resolve as pResolve } from 'node:path';
-import { handleAndLogError, messageHandler, v2Logger } from '@contentstack/cli-utilities';
+import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
 import { fsUtil } from '../../utils';
@@ -35,10 +35,10 @@ export default class ExportWorkFlows extends BaseClass {
     await this.getWorkflows();
 
     if (this.workflows === undefined || isEmpty(this.workflows)) {
-      v2Logger.info(messageHandler.parse('WORKFLOW_NOT_FOUND'), this.exportConfig.context);
+      log.info(messageHandler.parse('WORKFLOW_NOT_FOUND'), this.exportConfig.context);
     } else {
       fsUtil.writeFile(pResolve(this.webhooksFolderPath, this.workflowConfig.fileName), this.workflows);
-      v2Logger.success(
+      log.success(
         messageHandler.parse('WORKFLOW_EXPORT_COMPLETE', Object.keys(this.workflows).length ),
         this.exportConfig.context,
       );
@@ -77,7 +77,7 @@ export default class ExportWorkFlows extends BaseClass {
       const workflowUid = workflows[index].uid;
       const workflowName = workflows[index]?.name || '';
       this.workflows[workflowUid] = omit(workflows[index], this.workflowConfig.invalidKeys);
-      v2Logger.success(
+      log.success(
         messageHandler.parse('WORKFLOW_EXPORT_SUCCESS', workflowName),
         this.exportConfig.context,
       );

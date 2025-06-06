@@ -3,7 +3,7 @@ import {
   ContentstackClient,
   handleAndLogError,
   messageHandler,
-  v2Logger,
+  log,
   sanitizePath,
 } from '@contentstack/cli-utilities';
 
@@ -63,7 +63,7 @@ export default class LocaleExport extends BaseClass {
       await this.getLocales();
       fsUtil.writeFile(path.join(this.localesPath, this.localeConfig.fileName), this.locales);
       fsUtil.writeFile(path.join(this.localesPath, this.masterLocaleConfig.fileName), this.masterLocale);
-      v2Logger.success(
+      log.success(
         messageHandler.parse(
           'LOCALES_EXPORT_COMPLETE',
           Object.keys(this.locales).length,

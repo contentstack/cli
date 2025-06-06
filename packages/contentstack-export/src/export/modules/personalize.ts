@@ -6,7 +6,7 @@ import {
   ExportAudiences,
   AnyProperty,
 } from '@contentstack/cli-variants';
-import { handleAndLogError, messageHandler, v2Logger } from '@contentstack/cli-utilities';
+import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
 
 import { ModuleClassParams, ExportConfig } from '../../types';
 
@@ -22,12 +22,12 @@ export default class ExportPersonalize {
   async start(): Promise<void> {
     try {
       if (!this.personalizeConfig.baseURL[this.exportConfig.region.name]) {
-        v2Logger.info(messageHandler.parse('PERSONALIZE_URL_NOT_SET'), this.exportConfig.context);
+        log.info(messageHandler.parse('PERSONALIZE_URL_NOT_SET'), this.exportConfig.context);
         this.exportConfig.personalizationEnabled = false;
         return;
       }
       if (this.exportConfig.management_token) {
-        v2Logger.info(messageHandler.parse('PERSONALIZE_SKIPPING_WITH_MANAGEMENT_TOKEN'), this.exportConfig.context);
+        log.info(messageHandler.parse('PERSONALIZE_SKIPPING_WITH_MANAGEMENT_TOKEN'), this.exportConfig.context);
         this.exportConfig.personalizationEnabled = false;
         return;
       }
@@ -47,7 +47,7 @@ export default class ExportPersonalize {
           if (moduleMapper[module]) {
             await moduleMapper[module].start();
           } else {
-            v2Logger.info(
+            log.info(
               messageHandler.parse('PERSONALIZE_MODULE_NOT_IMPLEMENTED', module),
               this.exportConfig.context,
             );
@@ -56,7 +56,7 @@ export default class ExportPersonalize {
       }
     } catch (error) {
       if (error === 'Forbidden') {
-        v2Logger.info(messageHandler.parse('PERSONALIZE_NOT_ENABLED'), this.exportConfig.context);
+        log.info(messageHandler.parse('PERSONALIZE_NOT_ENABLED'), this.exportConfig.context);
       } else {
         handleAndLogError(error, { ...this.exportConfig.context });
       }

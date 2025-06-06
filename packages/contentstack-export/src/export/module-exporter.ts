@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { ContentstackClient, handleAndLogError, messageHandler, v2Logger } from '@contentstack/cli-utilities';
-import { setupBranches, setupExportDir, log, formatError, writeExportMetaFile } from '../utils';
+import { ContentstackClient, handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
+import { setupBranches, setupExportDir, writeExportMetaFile } from '../utils';
 import startModuleExport from './modules';
 import startJSModuleExport from './modules-js';
 import { ExportConfig, Modules } from '../types';
@@ -38,10 +38,10 @@ class ModuleExporter {
         this.exportConfig.branchName = branch.uid;
         this.stackAPIClient.stackHeaders.branch = branch.uid;
         this.exportConfig.branchDir = path.join(this.exportConfig.exportDir, branch.uid);
-        v2Logger.info(`Exporting content from branch ${branch.uid}`, this.exportConfig.context);
+        log.info(`Exporting content from branch ${branch.uid}`, this.exportConfig.context);
         writeExportMetaFile(this.exportConfig, this.exportConfig.branchDir);
         await this.export();
-        v2Logger.success(
+        log.success(
           `The content of branch ${branch.uid} has been exported successfully!`,
           this.exportConfig.context,
         );
@@ -57,7 +57,7 @@ class ModuleExporter {
   }
 
   async export() {
-    v2Logger.info(
+    log.info(
       `Started to export content, version is ${this.exportConfig.contentVersion}`,
       this.exportConfig.context,
     );
@@ -69,7 +69,7 @@ class ModuleExporter {
   }
 
   async exportByModuleByName(moduleName: Modules) {
-    v2Logger.info(`Exporting module: ${moduleName}`, this.exportConfig.context);
+    log.info(`Exporting module: ${moduleName}`, this.exportConfig.context);
     // export the modules by name
     // calls the module runner which inturn calls the module itself
     let exportedModuleResponse;

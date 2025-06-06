@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { sanitizePath, v2Logger, handleAndLogError } from '@contentstack/cli-utilities';
+import { sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 import { PersonalizeConfig, ExportConfig, ExperienceStruct } from '../types';
 import { fsUtil, PersonalizationAdapter } from '../utils';
 
@@ -32,13 +32,13 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
       // get all experiences
       // loop through experiences and get content types attached to it
       // write experiences in to a file
-      v2Logger.info('Starting experiences export', this.exportConfig.context);
+      log.info('Starting experiences export', this.exportConfig.context);
       await this.init();
       await fsUtil.makeDirectory(this.experiencesFolderPath);
       await fsUtil.makeDirectory(path.resolve(sanitizePath(this.experiencesFolderPath), 'versions'));
       const experiences: Array<ExperienceStruct> = (await this.getExperiences()) || [];
       if (!experiences || experiences?.length < 1) {
-        v2Logger.info('No Experiences found with the given project!', this.exportConfig.context);
+        log.info('No Experiences found with the given project!', this.exportConfig.context);
         return;
       }
       fsUtil.writeFile(path.resolve(sanitizePath(this.experiencesFolderPath), 'experiences.json'), experiences);
@@ -62,7 +62,7 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
               experienceVersions,
             );
           } else {
-            v2Logger.info(
+            log.info(
               `No versions found for experience '${experience.name}'`,
               this.exportConfig.context,
             );
@@ -99,7 +99,7 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
         path.resolve(sanitizePath(this.experiencesFolderPath), 'experiences-content-types.json'),
         experienceToContentTypesMap,
       );
-      v2Logger.success('Experiences exported successfully!', this.exportConfig.context);
+      log.success('Experiences exported successfully!', this.exportConfig.context);
     } catch (error) {
       handleAndLogError(error, {...this.exportConfig.context});
     }

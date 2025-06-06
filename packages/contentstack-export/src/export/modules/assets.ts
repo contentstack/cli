@@ -15,7 +15,7 @@ import {
   FsUtility,
   getDirectories,
   configHandler,
-  v2Logger,
+  log,
   handleAndLogError,
   messageHandler,
 } from '@contentstack/cli-utilities';
@@ -63,7 +63,7 @@ export default class ExportAssets extends BaseClass {
 
     // NOTE step 4: Download all assets
     await this.downloadAssets();
-    v2Logger.success(messageHandler.parse('ASSET_EXPORT_COMPLETE'), this.exportConfig.context);
+    log.success(messageHandler.parse('ASSET_EXPORT_COMPLETE'), this.exportConfig.context);
   }
 
   /**
@@ -103,7 +103,7 @@ export default class ExportAssets extends BaseClass {
           this.assetsFolder,
         );
       }
-      v2Logger.info(
+      log.info(
         messageHandler.parse('ASSET_FOLDERS_EXPORT_COMPLETE', this.assetsFolder.length),
         this.exportConfig.context,
       );
@@ -170,7 +170,7 @@ export default class ExportAssets extends BaseClass {
       concurrencyLimit: this.assetConfig.fetchConcurrency,
     }).then(() => {
       fs?.completeFile(true);
-      v2Logger.info(messageHandler.parse('ASSET_METADATA_EXPORT_COMPLETE'), this.exportConfig.context);
+      log.info(messageHandler.parse('ASSET_METADATA_EXPORT_COMPLETE'), this.exportConfig.context);
     });
   }
 
@@ -247,7 +247,7 @@ export default class ExportAssets extends BaseClass {
       promisifyHandler,
     ).then(() => {
       fs?.completeFile(true);
-      v2Logger.info(messageHandler.parse('ASSET_VERSIONED_METADATA_EXPORT_COMPLETE'), this.exportConfig.context);
+      log.info(messageHandler.parse('ASSET_VERSIONED_METADATA_EXPORT_COMPLETE'), this.exportConfig.context);
     });
   }
 
@@ -338,7 +338,7 @@ export default class ExportAssets extends BaseClass {
         data.pipe(assetWriterStream);
       }
 
-      v2Logger.success(
+      log.success(
         messageHandler.parse('ASSET_DOWNLOAD_SUCCESS', asset.filename, asset.uid),
         this.exportConfig.context,
       );
@@ -378,7 +378,7 @@ export default class ExportAssets extends BaseClass {
       },
       promisifyHandler,
     ).then(() => {
-      v2Logger.success(messageHandler.parse('ASSET_DOWNLOAD_COMPLETE'), this.exportConfig.context);
+      log.success(messageHandler.parse('ASSET_DOWNLOAD_COMPLETE'), this.exportConfig.context);
     });
   }
 }

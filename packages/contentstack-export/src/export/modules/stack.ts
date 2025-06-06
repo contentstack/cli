@@ -1,6 +1,6 @@
 import find from 'lodash/find';
 import { resolve as pResolve } from 'node:path';
-import { handleAndLogError, isAuthenticated, managementSDKClient, v2Logger } from '@contentstack/cli-utilities';
+import { handleAndLogError, isAuthenticated, managementSDKClient, log } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
 import { fsUtil } from '../../utils';
@@ -66,7 +66,7 @@ export default class ExportStack extends BaseClass {
           if (masterLocalObj) {
             return masterLocalObj;
           } else if (skip >= count) {
-            v2Logger.error(
+            log.error(
               `Master locale not found in the stack ${this.exportConfig.source_stack}. Please ensure that the stack has a master locale.`,
               this.exportConfig.context,
             );
@@ -92,7 +92,7 @@ export default class ExportStack extends BaseClass {
       .fetch()
       .then((resp: any) => {
         fsUtil.writeFile(pResolve(this.stackFolderPath, this.stackConfig.fileName), resp);
-        v2Logger.success(
+        log.success(
           `Stack details exported successfully for stack ${this.exportConfig.source_stack}`,
           this.exportConfig.context,
         );

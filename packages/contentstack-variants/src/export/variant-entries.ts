@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync } from 'fs';
 import { join, resolve } from 'path';
-import { FsUtility, sanitizePath, v2Logger, handleAndLogError } from '@contentstack/cli-utilities';
+import { FsUtility, sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 
 import { APIConfig, AdapterType, ExportConfig } from '../types';
 import VariantAdapter, { VariantHttpClient } from '../utils/variant-api-adapter';
@@ -77,7 +77,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
         });
         if (existsSync(variantEntryBasePath)) {
           variantEntriesFs.completeFile(true);
-          v2Logger.info(
+          log.info(
             `Exported variant entries of type '${entry.title} (${entry.uid})' locale '${locale}'`,
             this.config.context,
           );

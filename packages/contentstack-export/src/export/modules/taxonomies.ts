@@ -2,7 +2,7 @@ import omit from 'lodash/omit';
 import keys from 'lodash/keys';
 import isEmpty from 'lodash/isEmpty';
 import { resolve as pResolve } from 'node:path';
-import { handleAndLogError, messageHandler, v2Logger } from '@contentstack/cli-utilities';
+import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
 import { fsUtil } from '../../utils';
@@ -39,13 +39,13 @@ export default class ExportTaxonomies extends BaseClass {
     //fetch all taxonomies and write into taxonomies folder
     await this.getAllTaxonomies();
     if (this.taxonomies === undefined || isEmpty(this.taxonomies)) {
-      v2Logger.info(messageHandler.parse('TAXONOMY_NOT_FOUND'), this.exportConfig.context);
+      log.info(messageHandler.parse('TAXONOMY_NOT_FOUND'), this.exportConfig.context);
       return;
     } else {
       fsUtil.writeFile(pResolve(this.taxonomiesFolderPath, 'taxonomies.json'), this.taxonomies);
       await this.exportTaxonomies();
     }
-    v2Logger.success(
+    log.success(
       messageHandler.parse('TAXONOMY_EXPORT_COMPLETE', keys(this.taxonomies).length ),
       this.exportConfig.context,
     );
@@ -104,7 +104,7 @@ export default class ExportTaxonomies extends BaseClass {
     const onSuccess = ({ response, uid }: any) => {
       const filePath = pResolve(this.taxonomiesFolderPath, `${uid}.json`);
       fsUtil.writeFile(filePath, response);
-      v2Logger.success(
+      log.success(
         messageHandler.parse('TAXONOMY_EXPORT_SUCCESS', uid),
         this.exportConfig.context,
       );
