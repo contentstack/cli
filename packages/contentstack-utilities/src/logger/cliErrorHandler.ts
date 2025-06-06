@@ -76,7 +76,7 @@ export default class CLIErrorHandler {
         hidden,
       };
 
-      if (this.isDebug) {
+      if (isApi || this.isDebug) {
         result.debug = this.extractDebugPayload(normalized, context);
       }
 
