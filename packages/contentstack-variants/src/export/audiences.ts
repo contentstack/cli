@@ -2,7 +2,7 @@ import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
 import { v2Logger, handleAndLogError } from '@contentstack/cli-utilities';
 
-import { formatError, fsUtil, PersonalizationAdapter, log } from '../utils';
+import { fsUtil, PersonalizationAdapter } from '../utils';
 import { PersonalizeConfig, ExportConfig, AudienceStruct, AudiencesConfig } from '../types';
 
 export default class ExportAudiences extends PersonalizationAdapter<ExportConfig> {

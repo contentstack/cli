@@ -20,8 +20,8 @@ import {
   messageHandler,
 } from '@contentstack/cli-utilities';
 
-import { ModuleClassParams } from '../../types';
 import config from '../../config';
+import { ModuleClassParams } from '../../types';
 import BaseClass, { CustomPromiseHandler, CustomPromiseHandlerInput } from './base-class';
 
 export default class ExportAssets extends BaseClass {
