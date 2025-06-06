@@ -32,7 +32,7 @@ export default class ExportStack extends BaseClass {
       }
     }
 
-    await this.exportStack();
+    await this.exportStackSettings();
 
     if (!this.exportConfig.hasOwnProperty('master_locale')) {
       return this.getLocales();
@@ -82,28 +82,28 @@ export default class ExportStack extends BaseClass {
       });
   }
 
-  async exportStack(): Promise<any> {
+  async exportStackSettings(): Promise<any> {
     log(this.exportConfig, 'Exporting stack details', 'success');
     
     try {
-      const stackData = await this.stack.fetch();
+      const stackData = await this.stack.settings();
       
       // Always export to root directory
       const rootStackPath = pResolve(this.exportConfig.data, this.stackConfig.dirName);
       await fsUtil.makeDirectory(rootStackPath);
-      await fsUtil.writeFile(pResolve(rootStackPath, this.stackConfig.fileName), stackData);
-      log(this.exportConfig, `Exported stack details to root directory successfully!`, 'success');
+      await fsUtil.writeFile(pResolve(rootStackPath, "settings.json"), stackData);
+      log(this.exportConfig, `Exported stack settings details to root directory successfully!`, 'success');
 
       // If branch is enabled, also export to branch directory
       if (this.exportConfig.branchEnabled && this.exportConfig.branchDir) {
       await fsUtil.makeDirectory(this.stackFolderPath);
-      await fsUtil.writeFile(pResolve(this.stackFolderPath, this.stackConfig.fileName), stackData);
-        log(this.exportConfig, `Exported stack details to branch directory successfully!`, 'success');
+      await fsUtil.writeFile(pResolve(this.stackFolderPath, "settings.json"), stackData);
+        log(this.exportConfig, `Exported stack settings details to branch directory successfully!`, 'success');
       }
       
       return stackData;
     } catch (error) {
-      log(this.exportConfig, `Failed to export stack. ${formatError(error)}`, 'error');
+      log(this.exportConfig, `Failed to export stack settings. ${formatError(error)}`, 'error');
       throw error;
     }
   }
