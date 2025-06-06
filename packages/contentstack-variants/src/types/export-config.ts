@@ -3,7 +3,7 @@
  * because it will create a circular dependency and cause the prepack/build command to fail.
  * Therefore, we are duplicating the following types from the export.
  */
-import { AnyProperty } from './utils';
+import { AnyProperty, Context } from './utils';
 
 export type Modules =
   | 'stack'
@@ -32,6 +32,7 @@ export type masterLocale = {
 };
 
 export interface DefaultConfig {
+  context: Context;
   contentVersion: number;
   versioning: boolean;
   host: string;

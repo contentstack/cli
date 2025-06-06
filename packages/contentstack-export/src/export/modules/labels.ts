@@ -1,9 +1,10 @@
 import omit from 'lodash/omit';
 import isEmpty from 'lodash/isEmpty';
 import { resolve as pResolve } from 'node:path';
+import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
-import { log, formatError, fsUtil } from '../../utils';
+import { fsUtil } from '../../utils';
 import { LabelConfig, ModuleClassParams } from '../../types';
 
 export default class ExportLabels extends BaseClass {
@@ -20,11 +21,10 @@ export default class ExportLabels extends BaseClass {
     this.labels = {};
     this.labelConfig = exportConfig.modules.labels;
     this.qs = { include_count: true };
+    this.exportConfig.context.module = 'labels';
   }
 
   async start(): Promise<void> {
-    log(this.exportConfig, 'Starting labels export', 'info');
-
     this.labelsFolderPath = pResolve(
       this.exportConfig.data,
       this.exportConfig.branchName || '',
@@ -34,10 +34,13 @@ export default class ExportLabels extends BaseClass {
     await fsUtil.makeDirectory(this.labelsFolderPath);
     await this.getLabels();
     if (this.labels === undefined || isEmpty(this.labels)) {
-      log(this.exportConfig, 'No labels found', 'info');
+      log.info(messageHandler.parse('LABELS_NOT_FOUND'), this.exportConfig.context);
     } else {
       fsUtil.writeFile(pResolve(this.labelsFolderPath, this.labelConfig.fileName), this.labels);
-      log(this.exportConfig, 'All the labels have been exported successfully!', 'success');
+      log.success(
+        messageHandler.parse('LABELS_EXPORT_COMPLETE', Object.keys(this.labels).length),
+        this.exportConfig.context,
+      );
     }
   }
 
@@ -61,8 +64,7 @@ export default class ExportLabels extends BaseClass {
         }
       })
       .catch((error: any) => {
-        log(this.exportConfig, `Failed to export labels. ${formatError(error)}`, 'error');
-        log(this.exportConfig, error, 'error');
+        handleAndLogError(error, { ...this.exportConfig.context });
       });
   }
 
@@ -71,7 +73,7 @@ export default class ExportLabels extends BaseClass {
       const labelUid = labels[index].uid;
       const labelName = labels[index]?.name;
       this.labels[labelUid] = omit(labels[index], this.labelConfig.invalidKeys);
-      log(this.exportConfig, `'${labelName}' label was exported successfully`, 'success');
+      log.info(messageHandler.parse('LABEL_EXPORT_SUCCESS', labelName), this.exportConfig.context);
     }
   }
 }

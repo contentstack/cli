@@ -88,7 +88,7 @@ export interface PrintOptions {
   color?: string;
 }
 
-export type LogType = 'info' | 'warn' | 'error' | 'debug';
+export type LogType = 'info' | 'warn' | 'error' | 'debug' | 'hidden' | 'success';
 export type LogsType = LogType | PrintOptions | undefined;
 export type MessageType = string | Error | Record<string, any> | Record<string, any>[];
 
@@ -102,9 +102,10 @@ export type ClassifiedError = {
   meta?: Record<string, string | undefined>;
   context?: string;
   hidden?: boolean;
+  stackTrace?: Record<string, any>;
 };
 
-export type ErrorContext = {
+export interface ErrorContextBase {
   operation?: string;
   component?: string;
   userId?: string;
@@ -113,5 +114,10 @@ export type ErrorContext = {
   sessionId?: string;
   orgId?: string;
   apiKey?: string;
+}
+
+// This allows both known keys and any custom key like `uid`, `filename`, etc.
+export type ErrorContext = ErrorContextBase & {
+  [key: string]: unknown;
 };
 

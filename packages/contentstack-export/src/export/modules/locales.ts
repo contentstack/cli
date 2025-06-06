@@ -1,9 +1,15 @@
 import * as path from 'path';
-import { ContentstackClient } from '@contentstack/cli-utilities';
-import { log, formatError, fsUtil } from '../../utils';
-import { ExportConfig, ModuleClassParams } from '../../types';
+import {
+  ContentstackClient,
+  handleAndLogError,
+  messageHandler,
+  log,
+  sanitizePath,
+} from '@contentstack/cli-utilities';
+
+import { fsUtil } from '../../utils';
 import BaseClass from './base-class';
-import { sanitizePath } from '@contentstack/cli-utilities';
+import { ExportConfig, ModuleClassParams } from '../../types';
 
 export default class LocaleExport extends BaseClass {
   private stackAPIClient: ReturnType<ContentstackClient['stack']>;
@@ -41,22 +47,32 @@ export default class LocaleExport extends BaseClass {
         BASE: this.localeConfig.requiredKeys,
       },
     };
-    this.localesPath = path.resolve(sanitizePath(exportConfig.data), sanitizePath(exportConfig.branchName || ''),sanitizePath(this.localeConfig.dirName));
+    this.localesPath = path.resolve(
+      sanitizePath(exportConfig.data),
+      sanitizePath(exportConfig.branchName || ''),
+      sanitizePath(this.localeConfig.dirName),
+    );
     this.locales = {};
     this.masterLocale = {};
+    this.exportConfig.context.module = 'locales';
   }
 
   async start() {
     try {
-      log(this.exportConfig, 'Starting locale export', 'success');
       await fsUtil.makeDirectory(this.localesPath);
       await this.getLocales();
       fsUtil.writeFile(path.join(this.localesPath, this.localeConfig.fileName), this.locales);
       fsUtil.writeFile(path.join(this.localesPath, this.masterLocaleConfig.fileName), this.masterLocale);
-      log(this.exportConfig, 'Completed locale export', 'success');
+      log.success(
+        messageHandler.parse(
+          'LOCALES_EXPORT_COMPLETE',
+          Object.keys(this.locales).length,
+          Object.keys(this.masterLocale).length,
+        ),
+        this.exportConfig.context,
+      );
     } catch (error) {
-      log(this.exportConfig, `Failed to export locales. ${formatError(error)}`, 'error');
-      throw new Error('Failed to export locales');
+      handleAndLogError(error, { ...this.exportConfig.context });
     }
   }
 
