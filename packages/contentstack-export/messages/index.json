@@ -64,5 +64,6 @@
 
 "BRANCH_EXPORT_FAILED": "Failed to export contents from branch (UID: %s)",
 
-"ROLES_NO_CUSTOM_ROLES": "No custom roles found in the current stack"
+"ROLES_NO_CUSTOM_ROLES": "No custom roles found in the current stack",
+"ROLES_EXPORTING_ROLE": "Exporting role '%s'"
 }
