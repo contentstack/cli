@@ -66,14 +66,15 @@ export default class Logger {
           format: winston.format.combine(
             winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
             winston.format.printf((info) => {
+              const redactedInfo = this.redact(info); // Apply redaction here
               const colorizer = winston.format.colorize();
 
               // Handle success type specifically
-              const levelToColorize = info.level;
+              const levelToColorize = redactedInfo.level;
               const levelText = levelToColorize.toUpperCase();
 
-              const timestamp = info.timestamp;
-              const message = info.message;
+              const timestamp = redactedInfo.timestamp;
+              const message = redactedInfo.message;
 
               let fullLine = `[${timestamp}] ${levelText}: ${message}`;
               return colorizer.colorize(levelToColorize, fullLine);
@@ -109,10 +110,6 @@ export default class Logger {
     } catch (error) {
       return info;
     }
-  }
-
-  private isLogEntry(obj: any): obj is LogEntry {
-    return typeof obj === 'object' && 'level' in obj && 'message' in obj;
   }
 
   private shouldLog(level: LogType, target: 'console' | 'file'): boolean {
