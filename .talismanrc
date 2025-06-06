@@ -134,4 +134,14 @@ fileignoreconfig:
     checksum: 023cf08f215cd0778599fb8478c94419373d4687f04421c4eb99d87de86a4a3e
   - filename: packages/contentstack-utilities/src/logger/logger.ts
     checksum: 09f3b73dd995bafc253265c676f06308513e6b1842d9bc01d39e6b6945a54c7d
+  - filename: packages/contentstack-export/src/export/modules/environments.ts
+    checksum: 71dd1965e4ba66cefca578838cba125da0c8e4ef02fd95276b8236f66c018dce
+  - filename: packages/contentstack-export/src/utils/basic-login.ts
+    checksum: f95d4c0976729bd17238bf64713b3851d8852dbf60591210412c12ddaddd60c9
+  - filename: packages/contentstack-utilities/src/interfaces/index.ts
+    checksum: 70079d81524ae4c196ffc77f13306184a8944b2903b881947dd06120150f31b0
+  - filename: packages/contentstack-export/src/commands/cm/stacks/export.ts
+    checksum: d826ec9fd7729ffcfd0f42399dad7560a8a881cabfdd95693511f5e6b1cb07c7
+  - filename: packages/contentstack-utilities/src/logger/logger.ts
+    checksum: b56504c1e4fb31b676cc1931eb30afc7b9466f03890fe3c76977309e1fd066a6
 version: "1.0"

@@ -56,7 +56,7 @@ export default class ExportCustomRoles extends BaseClass {
     }
 
     customRoles.forEach((role: any) => {
-      v2Logger.info(`Exporting role: ${role.name}`, this.exportConfig.context);
+      v2Logger.info(messageHandler.parse('ROLES_EXPORTING_ROLE', role.name), this.exportConfig.context);
       this.customRoles[role.uid] = role;
     });
     fsUtil.writeFile(pResolve(this.rolesFolderPath, this.customRolesConfig.fileName), this.customRoles);
