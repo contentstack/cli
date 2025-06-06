@@ -842,7 +842,7 @@ export default class Entries {
    * Else empty array
    */
   removeEmojiAndImages(str: string) {
-    return str.replace(
+    return str?.replace(
       /[\p{Emoji}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Emoji_Modifier_Base}\p{Emoji_Component}]+/gu,
       '',
     );
