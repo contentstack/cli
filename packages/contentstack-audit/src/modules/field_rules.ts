@@ -83,7 +83,7 @@ export default class FieldRule {
     }
 
     this.schema = this.moduleName === 'content-types' ? this.ctSchema : this.gfSchema;
-
+    
     await this.prerequisiteData();
     await this.prepareEntryMetaData();
     for (const schema of this.schema ?? []) {

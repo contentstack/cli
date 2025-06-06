@@ -39,6 +39,10 @@ jobs:
       - name: Run tests for Contentstack Export To CSV
         working-directory: ./packages/contentstack-export-to-csv
         run: npm run test:unit
+
+      - name: Run tests for Contentstack Bootstrap
+        working-directory: ./packages/contentstack-bootstrap
+        run: npm run test
       # - name: Fetch latest references
       #   run: |
       #     git fetch --prune

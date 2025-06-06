@@ -36,48 +36,46 @@ export const setupEnvironments = async (
     .find();
 
   //create management token if not present
-  if(!managementToken){
+  if (!managementToken) {
     const managementBody = {
-      "token":{
-          "name":"sample app",
-          "description":"This is a sample management token.",
-          "scope":[
-              {
-                  "module":"content_type",
-                  "acl":{
-                      "read":true,
-                      "write":true
-                  }
-              },
-              {
-                  "module":"branch",
-                  "branches":[
-                      "main"
-                  ],
-                  "acl":{
-                      "read":true
-                  }
-              }
-          ],
-          "expires_on": "3000-01-01",
-          "is_email_notification_enabled":false
-      }
-  }
-  managementTokenResult = await managementAPIClient
-    .stack({ api_key: api_key })
-    .managementToken()
-    .create(managementBody);
-  if(!managementTokenResult.uid){
-    cliux.print(
-      `Info: Failed to generate a management token.\nNote: Management token is not available in your plan. Please contact the admin for support.`,
-      {
-        color: 'yellow',
+      token: {
+        name: 'sample app',
+        description: 'This is a sample management token.',
+        scope: [
+          {
+            module: 'content_type',
+            acl: {
+              read: true,
+              write: true,
+            },
+          },
+          {
+            module: 'branch',
+            branches: ['main'],
+            acl: {
+              read: true,
+            },
+          },
+        ],
+        expires_on: '3000-01-01',
+        is_email_notification_enabled: false,
       },
-    );
-    if ((await continueBootstrapCommand()) === 'no') {
-      return;
+    };
+    managementTokenResult = await managementAPIClient
+      .stack({ api_key: api_key })
+      .managementToken()
+      .create(managementBody);
+    if (!managementTokenResult.uid) {
+      cliux.print(
+        `Info: Failed to generate a management token.\nNote: Management token is not available in your plan. Please contact the admin for support.`,
+        {
+          color: 'yellow',
+        },
+      );
+      if ((await continueBootstrapCommand()) === 'no') {
+        return;
+      }
     }
-  } 
   }
   if (Array.isArray(environmentResult.items) && environmentResult.items.length > 0) {
     for (const environment of environmentResult.items) {
@@ -184,13 +182,11 @@ const envFileHandler = async (
   let filePath;
   let fileName;
   let customHost;
-  let previewHost: string;
-  let appHost: string;
   const managementAPIHost = region?.cma?.substring('8');
   const regionName = region && region.name && region.name.toLowerCase();
-  previewHost = region?.uiHost?.substring(8)?.replace('app', 'rest-preview');
+  const previewHost = region?.uiHost?.substring(8)?.replace('app', 'rest-preview');
   const cdnHost = region?.cda?.substring('8');
-  appHost = region?.uiHost?.substring(8);
+  const appHost = region?.uiHost?.substring(8);
   const isUSRegion = regionName === 'us' || regionName === 'na';
   if (regionName !== 'eu' && !isUSRegion) {
     customHost = region?.cma?.substring(8);
@@ -252,8 +248,11 @@ const envFileHandler = async (
         customHost ? customHost : managementAPIHost
       }${
         !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
-      }\nCONTENTSTACK_APP_HOST=${appHost}\nCONTENTSTACK_MANAGEMENT_TOKEN=${managementTokenResult.uid}\nCONTENTSTACK_HOST=${cdnHost}`;
+      }\nCONTENTSTACK_APP_HOST=${appHost}\nCONTENTSTACK_MANAGEMENT_TOKEN=${
+        managementTokenResult.uid
+      }\nCONTENTSTACK_HOST=${cdnHost}`;
       result = await writeEnvFile(content, filePath);
+      break;
     case 'gatsby':
     case 'gatsby-starter':
       fileName = `.env.${environmentVariables.environment}`;
