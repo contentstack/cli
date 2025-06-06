@@ -141,7 +141,7 @@ fileignoreconfig:
   - filename: packages/contentstack-utilities/src/interfaces/index.ts
     checksum: 70079d81524ae4c196ffc77f13306184a8944b2903b881947dd06120150f31b0
   - filename: packages/contentstack-export/src/commands/cm/stacks/export.ts
-    checksum: d826ec9fd7729ffcfd0f42399dad7560a8a881cabfdd95693511f5e6b1cb07c7
+    checksum: 4ea47b064ec18532da5fa7e5df47ad173fb7e878eb7899c934d4e1cdf1192956
   - filename: packages/contentstack-utilities/src/logger/logger.ts
     checksum: b56504c1e4fb31b676cc1931eb30afc7b9466f03890fe3c76977309e1fd066a6
 version: "1.0"
