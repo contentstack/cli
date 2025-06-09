@@ -12,6 +12,6 @@ export const levelColors = {
   error: 'red',
   warn: 'yellow',
   success: 'green',  // Custom color for success
-  info: 'blue',
-  debug: 'white'
+  info: 'white',
+  debug: 'blue'
 };

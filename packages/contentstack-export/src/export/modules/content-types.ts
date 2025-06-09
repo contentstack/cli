@@ -1,9 +1,15 @@
 import * as path from 'path';
-import { ContentstackClient } from '@contentstack/cli-utilities';
-import { log, formatError, fsUtil, executeTask } from '../../utils';
-import { ExportConfig, ModuleClassParams } from '../../types';
+import {
+  ContentstackClient,
+  handleAndLogError,
+  messageHandler,
+  log,
+  sanitizePath,
+} from '@contentstack/cli-utilities';
+
 import BaseClass from './base-class';
-import { sanitizePath } from '@contentstack/cli-utilities';
+import { fsUtil, executeTask } from '../../utils';
+import { ExportConfig, ModuleClassParams } from '../../types';
 
 export default class ContentTypesExport extends BaseClass {
   private stackAPIClient: ReturnType<ContentstackClient['stack']>;
@@ -14,7 +20,7 @@ export default class ContentTypesExport extends BaseClass {
     skip?: number;
     limit?: number;
     include_global_field_schema: boolean;
-    uid?: Record<string, string[]>
+    uid?: Record<string, string[]>;
   };
   private contentTypesConfig: {
     dirName?: string;
@@ -38,29 +44,29 @@ export default class ContentTypesExport extends BaseClass {
       include_global_field_schema: true,
     };
 
-     // If content type id is provided then use it as part of query
-     if (Array.isArray(this.exportConfig.contentTypes) && this.exportConfig.contentTypes.length > 0) {
+    // If content type id is provided then use it as part of query
+    if (Array.isArray(this.exportConfig.contentTypes) && this.exportConfig.contentTypes.length > 0) {
       this.qs.uid = { $in: this.exportConfig.contentTypes };
-     }
-    
+    }
+
     this.contentTypesDirPath = path.resolve(
       sanitizePath(exportConfig.data),
       sanitizePath(exportConfig.branchName || ''),
       sanitizePath(this.contentTypesConfig.dirName),
     );
     this.contentTypes = [];
+    this.exportConfig.context.module = 'content-types';
   }
 
   async start() {
     try {
-      log(this.exportConfig, 'Starting content type export', 'success');
       await fsUtil.makeDirectory(this.contentTypesDirPath);
       await this.getContentTypes();
       await this.writeContentTypes(this.contentTypes);
-      log(this.exportConfig, 'Content type(s) exported successfully', 'success');
+      log.success(messageHandler.parse('CONTENT_TYPE_EXPORT_COMPLETE'), this.exportConfig.context);
     } catch (error) {
-      log(this.exportConfig, `Failed to export content types ${formatError(error)}`, 'error');
-      throw new Error('Failed to export content types');
+      handleAndLogError(error, { ...this.exportConfig.context });
+      throw new Error(messageHandler.parse('CONTENT_TYPE_EXPORT_FAILED'));
     }
   }
 
@@ -79,7 +85,7 @@ export default class ContentTypesExport extends BaseClass {
       }
       return await this.getContentTypes(skip);
     } else {
-      log(this.exportConfig, 'No content types returned for the given query', 'info');
+      log.info(messageHandler.parse('CONTENT_TYPE_NO_TYPES'), this.exportConfig.context);
     }
   }
 
@@ -99,7 +105,10 @@ export default class ContentTypesExport extends BaseClass {
   async writeContentTypes(contentTypes: Record<string, unknown>[]) {
     function write(contentType: Record<string, unknown>) {
       return fsUtil.writeFile(
-        path.join(sanitizePath(this.contentTypesDirPath), sanitizePath(`${contentType.uid === 'schema' ? 'schema|1' : contentType.uid}.json`)),
+        path.join(
+          sanitizePath(this.contentTypesDirPath),
+          sanitizePath(`${contentType.uid === 'schema' ? 'schema|1' : contentType.uid}.json`),
+        ),
         contentType,
       );
     }

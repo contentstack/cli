@@ -1,9 +1,9 @@
 import find from 'lodash/find';
 import { resolve as pResolve } from 'node:path';
-import { isAuthenticated, managementSDKClient } from '@contentstack/cli-utilities';
+import { handleAndLogError, isAuthenticated, managementSDKClient, log } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
-import { log, formatError, fsUtil } from '../../utils';
+import { fsUtil } from '../../utils';
 import { StackConfig, ModuleClassParams } from '../../types';
 
 export default class ExportStack extends BaseClass {
@@ -19,6 +19,7 @@ export default class ExportStack extends BaseClass {
     this.stackConfig = exportConfig.modules.stack;
     this.qs = { include_count: true };
     this.stackFolderPath = pResolve(this.exportConfig.data, this.stackConfig.dirName);
+    this.exportConfig.context.module = 'stack';
   }
 
   async start(): Promise<void> {
@@ -65,7 +66,11 @@ export default class ExportStack extends BaseClass {
           if (masterLocalObj) {
             return masterLocalObj;
           } else if (skip >= count) {
-            log(this.exportConfig, 'Master locale not found', 'error');
+            log.error(
+              `Master locale not found in the stack ${this.exportConfig.source_stack}. Please ensure that the stack has a master locale.`,
+              this.exportConfig.context,
+            );
+
             return;
           } else {
             return await this.getLocales(skip);
@@ -73,23 +78,28 @@ export default class ExportStack extends BaseClass {
         }
       })
       .catch((error: any) => {
-        log(this.exportConfig, `Failed to export locales. ${formatError(error)}`, 'error');
-        log(this.exportConfig, error, 'error');
+        handleAndLogError(
+          error,
+          { ...this.exportConfig.context },
+          `Failed to fetch locales for stack ${this.exportConfig.source_stack}`,
+        );
       });
   }
 
   async exportStack(): Promise<any> {
-    log(this.exportConfig, 'Exporting stack details', 'success');
     await fsUtil.makeDirectory(this.stackFolderPath);
     return this.stack
       .fetch()
       .then((resp: any) => {
         fsUtil.writeFile(pResolve(this.stackFolderPath, this.stackConfig.fileName), resp);
-        log(this.exportConfig, 'Exported stack details successfully!', 'success');
+        log.success(
+          `Stack details exported successfully for stack ${this.exportConfig.source_stack}`,
+          this.exportConfig.context,
+        );
         return resp;
       })
       .catch((error: any) => {
-        log(this.exportConfig, `Failed to export stack. ${formatError(error)}`, 'error');
+        handleAndLogError(error, { ...this.exportConfig.context });
       });
   }
 }

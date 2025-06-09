@@ -1,9 +1,15 @@
 import * as path from 'path';
-import { ContentstackClient } from '@contentstack/cli-utilities';
-import { log, formatError, fsUtil } from '../../utils';
+import {
+  ContentstackClient,
+  handleAndLogError,
+  messageHandler,
+  log,
+  sanitizePath,
+} from '@contentstack/cli-utilities';
+
+import { fsUtil } from '../../utils';
 import { ExportConfig, ModuleClassParams } from '../../types';
 import BaseClass from './base-class';
-import { sanitizePath } from '@contentstack/cli-utilities';
 
 export default class GlobalFieldsExport extends BaseClass {
   private stackAPIClient: ReturnType<ContentstackClient['stack']>;
@@ -35,7 +41,7 @@ export default class GlobalFieldsExport extends BaseClass {
       asc: 'updated_at',
       include_count: true,
       limit: this.globalFieldsConfig.limit,
-      include_global_field_schema: true
+      include_global_field_schema: true,
     };
     this.globalFieldsDirPath = path.resolve(
       sanitizePath(exportConfig.data),
@@ -43,18 +49,20 @@ export default class GlobalFieldsExport extends BaseClass {
       sanitizePath(this.globalFieldsConfig.dirName),
     );
     this.globalFields = [];
+    this.exportConfig.context.module = 'global-fields';
   }
 
   async start() {
     try {
-      log(this.exportConfig, 'Starting global fields export', 'success');
       await fsUtil.makeDirectory(this.globalFieldsDirPath);
       await this.getGlobalFields();
       fsUtil.writeFile(path.join(this.globalFieldsDirPath, this.globalFieldsConfig.fileName), this.globalFields);
-      log(this.exportConfig, 'Completed global fields export', 'success');
+      log.success(
+        messageHandler.parse('GLOBAL_FIELDS_EXPORT_COMPLETE', this.globalFields.length),
+        this.exportConfig.context,
+      );
     } catch (error) {
-      log(this.exportConfig, `Failed to export global fields. ${formatError(error)}`, 'error');
-      throw new Error('Failed to export global fields');
+      handleAndLogError(error, { ...this.exportConfig.context });
     }
   }
 
@@ -62,7 +70,7 @@ export default class GlobalFieldsExport extends BaseClass {
     if (skip) {
       this.qs.skip = skip;
     }
-    let globalFieldsFetchResponse = await this.stackAPIClient.globalField({api_version: '3.2'}).query(this.qs).find();
+    let globalFieldsFetchResponse = await this.stackAPIClient.globalField({ api_version: '3.2' }).query(this.qs).find();
     if (Array.isArray(globalFieldsFetchResponse.items) && globalFieldsFetchResponse.items.length > 0) {
       this.sanitizeAttribs(globalFieldsFetchResponse.items);
       skip += this.globalFieldsConfig.limit || 100;
