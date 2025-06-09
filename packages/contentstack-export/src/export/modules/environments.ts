@@ -1,9 +1,10 @@
 import { resolve as pResolve } from 'node:path';
 import omit from 'lodash/omit';
 import isEmpty from 'lodash/isEmpty';
+import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
-import { log, formatError, fsUtil } from '../../utils';
+import { fsUtil } from '../../utils';
 import { EnvironmentConfig, ModuleClassParams } from '../../types';
 
 export default class ExportEnvironments extends BaseClass {
@@ -20,12 +21,10 @@ export default class ExportEnvironments extends BaseClass {
     this.environments = {};
     this.environmentConfig = exportConfig.modules.environments;
     this.qs = { include_count: true };
+    this.exportConfig.context.module = 'environments';
   }
 
-
   async start(): Promise<void> {
-    log(this.exportConfig, 'Starting environment export', 'info');
-
     this.environmentsFolderPath = pResolve(
       this.exportConfig.data,
       this.exportConfig.branchName || '',
@@ -36,10 +35,13 @@ export default class ExportEnvironments extends BaseClass {
     await this.getEnvironments();
 
     if (this.environments === undefined || isEmpty(this.environments)) {
-      log(this.exportConfig, 'No environments found', 'info');
+      log.info(messageHandler.parse('ENVIRONMENT_NOT_FOUND'), this.exportConfig.context);
     } else {
       fsUtil.writeFile(pResolve(this.environmentsFolderPath, this.environmentConfig.fileName), this.environments);
-      log(this.exportConfig, 'All the environments have been exported successfully!', 'success');
+      log.success(
+        messageHandler.parse('ENVIRONMENT_EXPORT_COMPLETE', Object.keys(this.environments).length),
+        this.exportConfig.context,
+      );
     }
   }
 
@@ -63,8 +65,7 @@ export default class ExportEnvironments extends BaseClass {
         }
       })
       .catch((error: any) => {
-        log(this.exportConfig, `Failed to export environments. ${formatError(error)}`, 'error');
-        log(this.exportConfig, error, 'error');
+        handleAndLogError(error, { ...this.exportConfig.context });
       });
   }
 
@@ -73,7 +74,7 @@ export default class ExportEnvironments extends BaseClass {
       const extUid = environments[index].uid;
       const envName = environments[index]?.name;
       this.environments[extUid] = omit(environments[index], ['ACL']);
-      log(this.exportConfig, `'${envName}' environment was exported successfully`, 'success');
+      log.success(messageHandler.parse('ENVIRONMENT_EXPORT_SUCCESS', envName ), this.exportConfig.context);
     }
   }
 }

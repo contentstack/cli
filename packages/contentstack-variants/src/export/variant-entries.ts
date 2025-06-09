@@ -1,10 +1,9 @@
 import { existsSync, mkdirSync } from 'fs';
 import { join, resolve } from 'path';
-import { FsUtility, sanitizePath } from '@contentstack/cli-utilities';
+import { FsUtility, sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 
-import { APIConfig, AdapterType, ExportConfig, LogType } from '../types';
+import { APIConfig, AdapterType, ExportConfig } from '../types';
 import VariantAdapter, { VariantHttpClient } from '../utils/variant-api-adapter';
-import { fsUtil, log } from '../utils';
 
 export default class VariantEntries extends VariantAdapter<VariantHttpClient<ExportConfig>> {
   public entriesDirPath: string;
@@ -24,7 +23,11 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
       },
     };
     super(Object.assign(config, conf));
-    this.entriesDirPath = resolve(sanitizePath(config.data), sanitizePath(config.branchName || ''), sanitizePath(config.modules.entries.dirName));
+    this.entriesDirPath = resolve(
+      sanitizePath(config.data),
+      sanitizePath(config.branchName || ''),
+      sanitizePath(config.modules.entries.dirName),
+    );
   }
 
   /**
@@ -38,7 +41,13 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
     await this.variantInstance.init();
     for (let index = 0; index < entries.length; index++) {
       const entry = entries[index];
-      const variantEntryBasePath = join(sanitizePath(this.entriesDirPath), sanitizePath(content_type_uid), sanitizePath(locale), sanitizePath(variantEntry.dirName), sanitizePath(entry.uid));
+      const variantEntryBasePath = join(
+        sanitizePath(this.entriesDirPath),
+        sanitizePath(content_type_uid),
+        sanitizePath(locale),
+        sanitizePath(variantEntry.dirName),
+        sanitizePath(entry.uid),
+      );
       const variantEntriesFs = new FsUtility({
         isArray: true,
         keepMetadata: false,
@@ -68,19 +77,17 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
         });
         if (existsSync(variantEntryBasePath)) {
           variantEntriesFs.completeFile(true);
-          log(
-            this.config,
+          log.info(
             `Exported variant entries of type '${entry.title} (${entry.uid})' locale '${locale}'`,
-            'info',
+            this.config.context,
           );
         }
       } catch (error) {
-        log(
-          this.config,
+        handleAndLogError(
+          error,
+          { ...this.config.context },
           `Error exporting variant entries of type '${entry.title} (${entry.uid})' locale '${locale}'`,
-          'error',
         );
-        log(this.config, error, 'error');
       }
     }
   }

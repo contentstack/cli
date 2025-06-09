@@ -1,7 +1,7 @@
 import * as path from 'path';
-import { sanitizePath } from '@contentstack/cli-utilities';
+import { sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 import { PersonalizeConfig, ExportConfig, ExperienceStruct } from '../types';
-import { formatError, fsUtil, log, PersonalizationAdapter } from '../utils';
+import { fsUtil, PersonalizationAdapter } from '../utils';
 
 export default class ExportExperiences extends PersonalizationAdapter<ExportConfig> {
   private experiencesFolderPath: string;
@@ -32,13 +32,13 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
       // get all experiences
       // loop through experiences and get content types attached to it
       // write experiences in to a file
-      log(this.exportConfig, 'Starting experiences export', 'info');
+      log.info('Starting experiences export', this.exportConfig.context);
       await this.init();
       await fsUtil.makeDirectory(this.experiencesFolderPath);
       await fsUtil.makeDirectory(path.resolve(sanitizePath(this.experiencesFolderPath), 'versions'));
       const experiences: Array<ExperienceStruct> = (await this.getExperiences()) || [];
       if (!experiences || experiences?.length < 1) {
-        log(this.exportConfig, 'No Experiences found with the give project', 'info');
+        log.info('No Experiences found with the given project!', this.exportConfig.context);
         return;
       }
       fsUtil.writeFile(path.resolve(sanitizePath(this.experiencesFolderPath), 'experiences.json'), experiences);
@@ -62,10 +62,17 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
               experienceVersions,
             );
           } else {
-            log(this.exportConfig, `No versions found for experience ${experience.name}`, 'info');
+            log.info(
+              `No versions found for experience '${experience.name}'`,
+              this.exportConfig.context,
+            );
           }
         } catch (error) {
-          log(this.exportConfig, `Failed to fetch versions of experience ${experience.name}`, 'error');
+          handleAndLogError(
+            error,
+            {...this.exportConfig.context},
+            `Failed to fetch versions of experience ${experience.name}`
+          );
         }
 
         try {
@@ -76,7 +83,11 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
             experienceToContentTypesMap[experience.uid] = variantGroup.content_types;
           }
         } catch (error) {
-          log(this.exportConfig, `Failed to fetch content types of experience ${experience.name}`, 'error');
+          handleAndLogError(
+            error,
+            {...this.exportConfig.context},
+            `Failed to fetch content types of experience ${experience.name}`
+          );
         }
       }
       fsUtil.writeFile(
@@ -88,10 +99,9 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
         path.resolve(sanitizePath(this.experiencesFolderPath), 'experiences-content-types.json'),
         experienceToContentTypesMap,
       );
-      log(this.exportConfig, 'All the experiences have been exported successfully!', 'success');
+      log.success('Experiences exported successfully!', this.exportConfig.context);
     } catch (error) {
-      log(this.exportConfig, `Failed to export experiences!`, 'error');
-      log(this.config, error, 'error');
+      handleAndLogError(error, {...this.exportConfig.context});
     }
   }
 }

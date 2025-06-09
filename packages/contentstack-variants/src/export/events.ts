@@ -1,7 +1,8 @@
 import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
+import { log, handleAndLogError } from '@contentstack/cli-utilities';
 
-import { formatError, fsUtil, PersonalizationAdapter, log } from '../utils';
+import { fsUtil, PersonalizationAdapter } from '../utils';
 import { PersonalizeConfig, ExportConfig, EventStruct, EventsConfig } from '../types';
 
 export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
@@ -29,23 +30,25 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
 
   async start() {
     try {
-      log(this.exportConfig, 'Starting events export', 'info');
+      log.info('Starting events export', this.exportConfig.context);
       await this.init();
       await fsUtil.makeDirectory(this.eventsFolderPath);
       this.events = (await this.getEvents()) as EventStruct[];
 
       if (!this.events?.length) {
-        log(this.exportConfig, 'No Events found with the given project!', 'info');
+        log.info('No Events found with the given project!', this.exportConfig.context);
         return;
       } else {
         this.sanitizeAttribs();
         fsUtil.writeFile(pResolve(this.eventsFolderPath, this.eventsConfig.fileName), this.events);
-        log(this.exportConfig, 'All the events have been exported successfully!', 'success');
+        log.success(
+          `Events exported successfully! Total events: ${this.events.length}`,
+          this.exportConfig.context,
+        );
         return;
       }
     } catch (error) {
-      log(this.exportConfig, `Failed to export events!`, 'error');
-      log(this.config, error, 'error');
+      handleAndLogError(error, { ...this.exportConfig.context });
     }
   }
 

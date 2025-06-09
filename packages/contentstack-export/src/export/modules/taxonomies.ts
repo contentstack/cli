@@ -2,9 +2,10 @@ import omit from 'lodash/omit';
 import keys from 'lodash/keys';
 import isEmpty from 'lodash/isEmpty';
 import { resolve as pResolve } from 'node:path';
+import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
-import { log, fsUtil } from '../../utils';
+import { fsUtil } from '../../utils';
 import { ModuleClassParams, ExportConfig } from '../../types';
 
 export default class ExportTaxonomies extends BaseClass {
@@ -23,11 +24,10 @@ export default class ExportTaxonomies extends BaseClass {
     this.taxonomies = {};
     this.taxonomiesConfig = exportConfig.modules.taxonomies;
     this.qs = { include_count: true, limit: this.taxonomiesConfig.limit || 100, skip: 0 };
+    this.exportConfig.context.module = 'taxonomies';
   }
 
   async start(): Promise<void> {
-    log(this.exportConfig, 'Starting taxonomies export', 'info');
-
     //create taxonomies folder
     this.taxonomiesFolderPath = pResolve(
       this.exportConfig.data,
@@ -39,14 +39,16 @@ export default class ExportTaxonomies extends BaseClass {
     //fetch all taxonomies and write into taxonomies folder
     await this.getAllTaxonomies();
     if (this.taxonomies === undefined || isEmpty(this.taxonomies)) {
-      log(this.exportConfig, 'No taxonomies found!', 'info');
+      log.info(messageHandler.parse('TAXONOMY_NOT_FOUND'), this.exportConfig.context);
       return;
     } else {
       fsUtil.writeFile(pResolve(this.taxonomiesFolderPath, 'taxonomies.json'), this.taxonomies);
       await this.exportTaxonomies();
     }
-
-    log(this.exportConfig, `All taxonomies exported successfully!`, 'success');
+    log.success(
+      messageHandler.parse('TAXONOMY_EXPORT_COMPLETE', keys(this.taxonomies).length ),
+      this.exportConfig.context,
+    );
   }
 
   /**
@@ -76,7 +78,7 @@ export default class ExportTaxonomies extends BaseClass {
         }
       })
       .catch((error: any) => {
-        this.handleErrorMsg(error);
+        handleAndLogError(error, { ...this.exportConfig.context });
       });
   }
 
@@ -102,18 +104,14 @@ export default class ExportTaxonomies extends BaseClass {
     const onSuccess = ({ response, uid }: any) => {
       const filePath = pResolve(this.taxonomiesFolderPath, `${uid}.json`);
       fsUtil.writeFile(filePath, response);
-      log(this.exportConfig, `'${uid}' taxonomy exported successfully!`, 'success');
+      log.success(
+        messageHandler.parse('TAXONOMY_EXPORT_SUCCESS', uid),
+        this.exportConfig.context,
+      );
     };
 
     const onReject = ({ error, uid }: any) => {
-      if (error?.errorMessage) {
-        log(this.exportConfig, `Failed to export taxonomy - '${uid}'! ${error.errorMessage}`, 'error');
-      } else if (error?.message) {
-        const errorMsg = error?.errors?.taxonomy || error?.errors?.term || error?.message;
-        log(this.exportConfig, `Failed to export taxonomy - '${uid}'! ${errorMsg}`, 'error');
-      } else {
-        log(this.exportConfig, `Failed to export taxonomy - '${uid}'! ${error}`, 'error');
-      }
+      handleAndLogError(error, { ...this.exportConfig.context, uid });
     };
 
     for (let index = 0; index < taxonomiesUID?.length; index++) {
@@ -124,17 +122,6 @@ export default class ExportTaxonomies extends BaseClass {
         uid: taxonomyUID,
         module: 'export-taxonomy',
       });
-    }
-  }
-
-  handleErrorMsg(err: any) {
-    if (err?.errorMessage) {
-      log(this.exportConfig, `Failed to export! ${err.errorMessage}`, 'error');
-    } else if (err?.message) {
-      const errorMsg = err?.errors?.taxonomy || err?.errors?.term || err?.message;
-      log(this.exportConfig, `Failed to export! ${errorMsg}`, 'error');
-    } else {
-      log(this.exportConfig, `Failed to export! ${err}`, 'error');
     }
   }
 }

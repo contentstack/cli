@@ -3,7 +3,7 @@ import { default as Logger } from './logger';
 import { CLIErrorHandler } from './cliErrorHandler';
 import { ErrorContext } from '../interfaces';
 
-const v2Logger = new Logger({ basePath: process.env.CS_CLI_LOG_PATH || path.join(process.cwd(), 'logs') });
+const v2Logger = new Logger({ basePath: getLogPath() });
 const cliErrorHandler = new CLIErrorHandler(true); // Enable debug mode for error classification
 
 /**
@@ -22,13 +22,13 @@ const cliErrorHandler = new CLIErrorHandler(true); // Enable debug mode for erro
  * - If debug information is available, it is logged separately with a more specific
  *   debug type and additional details.
  */
-function handleAndLogError(error: unknown, context?: ErrorContext): void {
-  const classified = cliErrorHandler.classifyError(error, context);
+function handleAndLogError(error: unknown, context?: ErrorContext, errorMessage?: string): void {
+  const classified = cliErrorHandler.classifyError(error, context, errorMessage);
 
   // Always log the error
   v2Logger.logError({
     type: classified.type,
-    message: classified.message,
+    message: errorMessage || classified.message,
     error: classified.error,
     context: classified.context,
     hidden: classified.hidden,
@@ -43,7 +43,7 @@ function handleAndLogError(error: unknown, context?: ErrorContext): void {
       debug: {
         ...classified.debug,
         // Ensure stack trace is included if not already there
-        stackTrace: classified.debug.stackTrace || classified.error.stack,
+        stackTrace: classified?.debug?.stackTrace || classified.error.stack,
       },
       context: classified.context,
       meta: classified.meta,
@@ -51,4 +51,9 @@ function handleAndLogError(error: unknown, context?: ErrorContext): void {
   }
 }
 
-export { v2Logger, cliErrorHandler, handleAndLogError };
+function getLogPath(): string {
+  return process.env.CS_CLI_LOG_PATH || path.join(process.cwd(), 'logs');
+}
+
+
+export { v2Logger, cliErrorHandler, handleAndLogError, getLogPath };

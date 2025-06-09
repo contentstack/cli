@@ -60,7 +60,7 @@ export default class CLIErrorHandler {
    * @throws This method handles its own errors and will return a `ClassifiedError` with type
    *         `ERROR_TYPES.NORMALIZATION` if it fails to normalize or classify the input error.
    */
-  classifyError(error: unknown, context?: ErrorContext): ClassifiedError {
+  classifyError(error: unknown, context?: ErrorContext, errMessage?: string): ClassifiedError {
     try {
       const normalized = this.normalizeToError(error);
       const isApi = this.isApiError(normalized);
@@ -69,7 +69,7 @@ export default class CLIErrorHandler {
 
       const result: ClassifiedError = {
         type,
-        message: normalized.message || 'Unhandled error',
+        message: errMessage || normalized.message || 'Unhandled error',
         error: this.extractErrorPayload(normalized),
         context: context ? JSON.stringify(context) : undefined,
         meta: this.extractMeta(context),
@@ -113,8 +113,9 @@ export default class CLIErrorHandler {
   }
 
   private isApiError(error: Error): boolean {
+    if ((error as AxiosError).isAxiosError) return true;
+
     return (
-      (error as AxiosError).isAxiosError ||
       typeof (error as any).status === 'number' ||
       typeof (error as any).statusText === 'string' ||
       (error as any).request !== undefined
@@ -171,10 +172,6 @@ export default class CLIErrorHandler {
       endpoint,
     };
 
-    if (this.isDebug) {
-      payload.stack = error.stack;
-    }
-
     return payload;
   }
 
@@ -184,7 +181,7 @@ export default class CLIErrorHandler {
     const status = error.status || error.response?.status;
     const statusText = error.statusText || error.response?.statusText;
     const data = error.data || error.response?.data || error.errors || error.error;
-
+    
     return {
       command: context?.operation,
       module: context?.component,
