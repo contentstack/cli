@@ -18,9 +18,7 @@ export default class ExportStack extends BaseClass {
     super({ exportConfig, stackAPIClient });
     this.stackConfig = exportConfig.modules.stack;
     this.qs = { include_count: true };
-    this.stackFolderPath = exportConfig.branchEnabled && exportConfig.branchDir
-      ? pResolve(exportConfig.branchDir, this.stackConfig.dirName)
-      : pResolve(exportConfig.data, this.stackConfig.dirName);
+    this.stackFolderPath = pResolve(this.exportConfig.data, this.stackConfig.dirName);
   }
 
   async start(): Promise<void> {
@@ -32,8 +30,15 @@ export default class ExportStack extends BaseClass {
       }
     }
 
+    // Always export stack settings first
     await this.exportStackSettings();
 
+    // If preserveStackVersion is true, export stack details
+    if (this.exportConfig.preserveStackVersion) {
+      await this.exportStack();
+    }
+
+    // If master locale is not set, get locales
     if (!this.exportConfig.hasOwnProperty('master_locale')) {
       return this.getLocales();
     }
@@ -44,9 +49,7 @@ export default class ExportStack extends BaseClass {
     return await tempAPIClient
       .stack({ api_key: this.exportConfig.source_stack })
       .fetch()
-      .catch((error: any) => {
-        log(this.exportConfig, `Failed to fetch stack details. ${formatError(error)}`, 'error');
-      });
+      .catch((error: any) => {});
   }
 
   async getLocales(skip: number = 0) {
@@ -83,22 +86,25 @@ export default class ExportStack extends BaseClass {
   }
 
   async exportStackSettings(): Promise<any> {
-    log(this.exportConfig, 'Exporting stack details', 'success');
+    log(this.exportConfig, 'Exporting stack settings', 'success');
     
     try {
       const stackData = await this.stack.settings();
-      
-      // Always export to root directory
+
+      // Export to root directory
       const rootStackPath = pResolve(this.exportConfig.data, this.stackConfig.dirName);
       await fsUtil.makeDirectory(rootStackPath);
       await fsUtil.writeFile(pResolve(rootStackPath, "settings.json"), stackData);
-      log(this.exportConfig, `Exported stack settings details to root directory successfully!`, 'success');
+      log(this.exportConfig, `Exported stack settings to root directory successfully!`, 'success');
 
-      // If branch is enabled, also export to branch directory
-      if (this.exportConfig.branchEnabled && this.exportConfig.branchDir) {
-      await fsUtil.makeDirectory(this.stackFolderPath);
-      await fsUtil.writeFile(pResolve(this.stackFolderPath, "settings.json"), stackData);
-        log(this.exportConfig, `Exported stack settings details to branch directory successfully!`, 'success');
+      // Export to all branches if branches exist
+      if (this.exportConfig.branches && this.exportConfig.branches.length > 0) {
+        for (const branch of this.exportConfig.branches) {
+          const branchStackPath = pResolve(this.exportConfig.data, branch.uid, this.stackConfig.dirName);
+          await fsUtil.makeDirectory(branchStackPath);
+          await fsUtil.writeFile(pResolve(branchStackPath, "settings.json"), stackData);
+          log(this.exportConfig, `Exported stack settings for branch ${branch.uid} successfully!`, 'success');
+        }
       }
       
       return stackData;
@@ -106,5 +112,31 @@ export default class ExportStack extends BaseClass {
       log(this.exportConfig, `Failed to export stack settings. ${formatError(error)}`, 'error');
       throw error;
     }
+  }
+
+  async exportStack(): Promise<any> {
+    log(this.exportConfig, 'Exporting stack details', 'success');
+    
+    const stackData = await this.stack.fetch();
+    if (!stackData) {
+      log(this.exportConfig, 'No stack data received', 'error');
+      return;
+    }
+
+    const rootStackPath = pResolve(this.exportConfig.data, this.stackConfig.dirName);
+    await fsUtil.makeDirectory(rootStackPath);
+    await fsUtil.writeFile(pResolve(rootStackPath, this.stackConfig.fileName), stackData);
+    log(this.exportConfig, 'Exported stack details to root directory successfully!', 'success');
+
+    if (this.exportConfig.branches && this.exportConfig.branches.length > 0) {
+      for (const branch of this.exportConfig.branches) {
+        const branchStackPath = pResolve(this.exportConfig.data, branch.uid, this.stackConfig.dirName);
+        await fsUtil.makeDirectory(branchStackPath);
+        await fsUtil.writeFile(pResolve(branchStackPath, this.stackConfig.fileName), stackData);
+        log(this.exportConfig, `Exported stack details for branch ${branch.uid} successfully!`, 'success');
+      }
+    }
+
+    return stackData;
   }
 }
