@@ -20,3 +20,4 @@ contents-*
 *.http
 *.todo
 talisman_output.log
+snyk_output.log
