@@ -116,9 +116,7 @@ export default class Entries {
             const { uid, title } = entry;
             this.currentUid = uid;
             this.currentTitle = title;
-            if (this.currentTitle) {
-              this.currentTitle = this.removeEmojiAndImages(this.currentTitle);
-            }
+            this.currentTitle = this.removeEmojiAndImages(this.currentTitle)
 
             if (!this.missingRefs[this.currentUid]) {
               this.missingRefs[this.currentUid] = [];
@@ -135,11 +133,7 @@ export default class Entries {
               this.removeMissingKeysOnEntry(ctSchema.schema as ContentTypeSchemaType[], this.entries[entryUid]);
             }
 
-            this.lookForReference(
-              [{ locale: code, uid, name: this.removeEmojiAndImages(this.currentTitle) }],
-              ctSchema,
-              this.entries[entryUid],
-            );
+            this.lookForReference([{ locale: code, uid, name: this.removeEmojiAndImages(title) }], ctSchema, this.entries[entryUid]);
 
             if (this.missingRefs[this.currentUid]?.length) {
               this.missingRefs[this.currentUid].forEach((entry: any) => {
@@ -248,7 +242,7 @@ export default class Entries {
       missingMandatoryFields: this.missingMandatoryFields,
       missingTitleFields: this.missingTitleFields,
       missingEnvLocale: this.missingEnvLocale,
-      missingMultipleFields: this.missingMultipleField,
+      missingMultipleFields: this.missingMultipleField
     };
   }
 
@@ -360,11 +354,11 @@ export default class Entries {
     for (const child of field?.schema ?? []) {
       const { uid, multiple, data_type } = child;
 
-      if (multiple && entry[uid] && !Array.isArray(entry[uid])) {
-        if (!this.missingMultipleField[this.currentUid]) {
-          this.missingMultipleField[this.currentUid] = [];
-        }
-
+      if(multiple && entry[uid] && !Array.isArray(entry[uid])) {
+       if (!this.missingMultipleField[this.currentUid]) {
+         this.missingMultipleField[this.currentUid] = [];
+       }
+        
         this.missingMultipleField[this.currentUid].push({
           uid: this.currentUid,
           name: this.currentTitle,
@@ -377,7 +371,7 @@ export default class Entries {
             .filter((val) => val)
             .join(' ➜ '),
         });
-      }
+      } 
       this.missingMandatoryFields[this.currentUid].push(
         ...this.validateMandatoryFields(
           [...tree, { uid: field.uid, name: child.display_name, field: uid }],
@@ -764,7 +758,7 @@ export default class Entries {
             .map(({ name }) => name)
             .filter(Boolean)
             .join(' ➜ '),
-          fixStatus: 'Fixed',
+          'fixStatus': 'Fixed',
         });
 
         entry[uid] = [entry[uid]];
@@ -848,7 +842,7 @@ export default class Entries {
    * Else empty array
    */
   removeEmojiAndImages(str: string) {
-    return str?.replace(
+    return str.replace(
       /[\p{Emoji}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Emoji_Modifier_Base}\p{Emoji_Component}]+/gu,
       '',
     );
