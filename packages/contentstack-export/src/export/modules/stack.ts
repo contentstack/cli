@@ -87,14 +87,14 @@ export default class ExportStack extends BaseClass {
 
   async exportStackSettings(): Promise<any> {
     log(this.exportConfig, 'Exporting stack settings', 'success');
-    
+
     try {
       const stackData = await this.stack.settings();
 
       // Export to root directory
       const rootStackPath = pResolve(this.exportConfig.data, this.stackConfig.dirName);
       await fsUtil.makeDirectory(rootStackPath);
-      await fsUtil.writeFile(pResolve(rootStackPath, "settings.json"), stackData);
+      await fsUtil.writeFile(pResolve(rootStackPath, 'settings.json'), stackData);
       log(this.exportConfig, `Exported stack settings to root directory successfully!`, 'success');
 
       // Export to all branches if branches exist
@@ -102,11 +102,11 @@ export default class ExportStack extends BaseClass {
         for (const branch of this.exportConfig.branches) {
           const branchStackPath = pResolve(this.exportConfig.data, branch.uid, this.stackConfig.dirName);
           await fsUtil.makeDirectory(branchStackPath);
-          await fsUtil.writeFile(pResolve(branchStackPath, "settings.json"), stackData);
+          await fsUtil.writeFile(pResolve(branchStackPath, 'settings.json'), stackData);
           log(this.exportConfig, `Exported stack settings for branch ${branch.uid} successfully!`, 'success');
         }
       }
-      
+
       return stackData;
     } catch (error) {
       log(this.exportConfig, `Failed to export stack settings. ${formatError(error)}`, 'error');
@@ -116,7 +116,7 @@ export default class ExportStack extends BaseClass {
 
   async exportStack(): Promise<any> {
     log(this.exportConfig, 'Exporting stack details', 'success');
-    
+
     const stackData = await this.stack.fetch();
     if (!stackData) {
       log(this.exportConfig, 'No stack data received', 'error');
