@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.41.1 darwin-arm64 node-v22.14.0
+@contentstack/cli/1.41.1 darwin-x64 node-v22.16.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -2525,7 +2525,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
 
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
@@ -2979,7 +2979,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
 
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
@@ -3588,13 +3588,11 @@ DESCRIPTION
 EXAMPLES
   $ csdx config:set:region
 
-  $ csdx config:set:region NA
-
-  $ csdx config:set:region EU
-
   $ csdx config:set:region AWS-NA
 
   $ csdx config:set:region AWS-EU
+
+  $ csdx config:set:region AWS-AU
 
   $ csdx config:set:region AZURE-NA
 
@@ -3776,8 +3774,8 @@ USAGE
   $ csdx launch:functions [-p <value>] [-d <value>]
 
 FLAGS
-  -d, --data-dir=<value>  [default: /Users/harshitha.d/Documents/Untitled/cli/packages/contentstack] Current working
-                          directory
+  -d, --data-dir=<value>  [default: /]
+                          Current working directory
   -p, --port=<value>      [default: 3000] Port number
 
 DESCRIPTION
