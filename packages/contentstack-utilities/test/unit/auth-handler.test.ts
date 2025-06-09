@@ -79,7 +79,7 @@ describe('Auth Handler', () => {
 
       expect(createHTTPServerStub.calledOnce).to.be.true;
       expect(openOAuthURLStub.calledOnce).to.be.true;
-      expect(result).to.deep.equal({});
+      expect(result).to.be.undefined;
     });
   });
 
@@ -127,7 +127,6 @@ describe('Auth Handler', () => {
 
       sandbox.stub(authHandler, 'setOAuthBaseURL').resolves();
       sandbox.stub(crypto, 'createHash').returns({ update: () => {}, digest: () => {} });
-      sandbox.stub(authHandler, 'codeVerifier').value('CODE_VERIFIER');
       sandbox.stub(authHandler, 'OAuthBaseURL').value('https://example.com');
       sandbox.stub(authHandler, 'OAuthAppId').value('APP_ID');
       sandbox.stub(authHandler, 'OAuthResponseType').value('response_type');
@@ -355,13 +354,15 @@ describe('Auth Handler', () => {
       const data = {
         access_token: '',
       };
-
-      const userDetailsPromise = authHandler.getUserDetails(data);
-
-      return userDetailsPromise.catch((error) => {
-        expect(error).to.equal('Invalid/Empty access token');
-      });
-    });
+    
+      try {
+        await authHandler.getUserDetails(data);
+        throw new Error('Expected getUserDetails to throw'); // ensure failure if no error is thrown
+      } catch (error) {
+        expect(error).to.be.instanceOf(Error);
+        expect(error.message).to.equal('Invalid/Empty access token');
+      }
+    }); 
   });
 
   describe('isAuthenticated', () => {

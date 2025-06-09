@@ -21,10 +21,10 @@
   "author": "contentstack",
   "license": "MIT",
   "dependencies": {
-    "@oclif/core": "^4.2.7",
+    "@oclif/core": "^4.3.0",
     "lodash": "^4.17.21",
     "fancy-test": "^2.0.42",
-    "@oclif/test": "^4.1.6"
+    "@oclif/test": "^4.1.13"
   },
   "devDependencies": {
     "@types/node": "^14.18.63",

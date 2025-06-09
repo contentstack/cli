@@ -110,12 +110,28 @@ fileignoreconfig:
     checksum: 8cbd32dbbd2989c7c082f8a0b7615916125d211bce25531e9a882b8ebd5674af
   - filename: .husky/pre-commit
     checksum: 7a12030ddfea18d6f85edc25f1721fb2009df00fdd42bab66b05de25ab3e32b2
+  - filename: packages/contentstack-bootstrap/src/bootstrap/utils.ts
+    checksum: 0b0af505ce1a74eb8df519f106291e319eb3ea74003ca63e03527f59a8821d39
+  - filename: packages/contentstack-bootstrap/test/bootstrap.test.js
+    checksum: 5f0355a5048183d61b605cbc160e6727a9de32832d9159e903fee49f9ab751d5
   - filename: packages/contentstack/package.json
     checksum: 9b0fdd100effcdbb5ee3809f7f102bfd11c88dd76e49db5103434f3aa29473dd
   - filename: pnpm-lock.yaml
-    checksum: 2edf846869b73d6fd640d9f660f9fdd664e721946a891554dad5297c75a1bfba
-  - filename: package-lock.json
-    checksum: 0c00a0335d48791b0736aae44c900c3e729de728c0bb62489d0697c9a2ed4200
+    checksum: 579849ef155d487ed7d1a8d30dab6ea906da2d571c725b3b033543a9a609f75c
+  - filename: packages/contentstack-audit/src/audit-base-command.ts
+    checksum: bd99d269c0b6694577f4751fa96b3d85856e41bbef624b4ec1196630d6c1d168
   - filename: packages/contentstack-migrate-rte/test/commands/json-migration.test.js
     checksum: 1f5ee5b39119667bd4830f9dbbbf757fb922f4ec3b7f6fad06bbfbf214fe7f73
-version: '1.0'
+  - filename: packages/contentstack-bootstrap/src/bootstrap/utils.ts
+    checksum: 0b0af505ce1a74eb8df519f106291e319eb3ea74003ca63e03527f59a8821d39
+  - filename: packages/contentstack-bootstrap/test/bootstrap.test.js
+    checksum: 5f0355a5048183d61b605cbc160e6727a9de32832d9159e903fee49f9ab751d5
+  - filename: package-lock.json
+    checksum: 35c1a3c35a923ddf97a42edc85708a1bee9352710ebe135b6be6a32c95bde908
+  - filename: packages/contentstack-utilities/test/unit/logger.test.ts
+    checksum: c773181ea55c49d91363adacf0424b84c927e3cffd6bef1444ec2559ddf1b3b0
+  - filename: packages/contentstack-utilities/src/logger/cliErrorHandler.ts
+    checksum: 023cf08f215cd0778599fb8478c94419373d4687f04421c4eb99d87de86a4a3e
+  - filename: packages/contentstack-utilities/src/logger/logger.ts
+    checksum: 09f3b73dd995bafc253265c676f06308513e6b1842d9bc01d39e6b6945a54c7d
+version: "1.0"
