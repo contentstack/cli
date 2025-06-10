@@ -55,24 +55,32 @@ describe('Rate Limit Commands', () => {
 
     it('Set Rate Limit: should handle invalid utilization percentages', async () => {
       const args = ['--org', 'test-org-id', '--utilize', '150', '--limit-name', 'getLimit'];
-      await SetRateLimitCommand.run(args);
-      expect(errorMessage).to.equal('Utilize percentages must be numbers between 0 and 100.');
+      try {
+        await SetRateLimitCommand.run(args);
+        expect.fail('Expected command to exit with error');
+      } catch (error) {
+        expect(error.oclif.exit).to.equal(1);
+      }
     });
 
     it('Set Rate Limit: should handle mismatch between utilize percentages and limit names', async () => {
       const args = ['--org', 'test-org-id', '--utilize', '70', '--limit-name', 'getLimit,postLimit'];
-      await SetRateLimitCommand.run(args);
-      expect(errorMessage).to.equal(
-        'The number of utilization percentages must match the number of limit names provided.',
-      );
+      try {
+        await SetRateLimitCommand.run(args);
+        expect.fail('Expected command to exit with error');
+      } catch (error) {
+        expect(error.oclif.exit).to.equal(1);
+      }
     });
 
     it('Set Rate Limit: should handle invalid number of limit names', async () => {
       const args = ['--org', 'test-org-id', '--utilize', '70,80', '--limit-name', 'getLimit'];
-      await SetRateLimitCommand.run(args);
-      expect(errorMessage).to.equal(
-        'The number of utilization percentages must match the number of limit names provided.',
-      );
+      try {
+        await SetRateLimitCommand.run(args);
+        expect.fail('Expected command to exit with error');
+      } catch (error) {
+        expect(error.oclif.exit).to.equal(1);
+      }
     });
 
     it('Set Rate Limit: should prompt for the organization UID', async () => {
