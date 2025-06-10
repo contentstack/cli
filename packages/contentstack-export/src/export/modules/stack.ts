@@ -23,15 +23,14 @@ export default class ExportStack extends BaseClass {
 
   async start(): Promise<void> {
     if (isAuthenticated()) {
+      // Always export stack settings first
+      await this.exportStackSettings();
       const stackData = await this.getStack();
       if (stackData?.org_uid) {
         this.exportConfig.org_uid = stackData.org_uid;
         this.exportConfig.sourceStackName = stackData.name;
       }
     }
-
-    // Always export stack settings first
-    await this.exportStackSettings();
 
     // If preserveStackVersion is true, export stack details
     if (this.exportConfig.preserveStackVersion) {
