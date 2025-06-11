@@ -127,7 +127,7 @@ fileignoreconfig:
   - filename: packages/contentstack-bootstrap/test/bootstrap.test.js
     checksum: 5f0355a5048183d61b605cbc160e6727a9de32832d9159e903fee49f9ab751d5
   - filename: package-lock.json
-    checksum: 56aa8138e41c76bbab7c06c25f303b43b131b0a016fadc623ae175f57d195091
+    checksum: 825ea75a58e5521c8ed3479fc24729f24950a48d834cf11de6e90f0b32ba5cda
   - filename: packages/contentstack-utilities/test/unit/logger.test.ts
     checksum: c773181ea55c49d91363adacf0424b84c927e3cffd6bef1444ec2559ddf1b3b0
   - filename: packages/contentstack-utilities/src/logger/cliErrorHandler.ts
