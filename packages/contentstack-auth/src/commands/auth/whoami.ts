@@ -1,5 +1,4 @@
-import { Command } from '@contentstack/cli-command';
-import { cliux, formatError } from '@contentstack/cli-utilities';
+import { cliux, log, handleAndLogError, messageHandler } from '@contentstack/cli-utilities';
 import { BaseCommand } from '../../base-command';
 
 export default class WhoamiCommand extends BaseCommand<typeof WhoamiCommand> {
@@ -14,15 +13,13 @@ export default class WhoamiCommand extends BaseCommand<typeof WhoamiCommand> {
       if (this.email) {
         cliux.print('CLI_AUTH_WHOAMI_LOGGED_IN_AS', { color: 'white' });
         cliux.print(this.email, { color: 'green' });
-        this.logger.info('Currently logged in user', this.email);
+        log.info(messageHandler.parse('CLI_AUTH_WHOAMI_LOGGED_IN_AS', this.email), this.contextDetails);
       } else {
-        cliux.error('CLI_AUTH_WHOAMI_FAILED');
+        log.error(messageHandler.parse('CLI_AUTH_WHOAMI_FAILED'), this.contextDetails);
       }
     } catch (error) {
-      let errorMessage = formatError(error) || 'Something went wrong. Please try again.';
-      this.logger.error('whoami error', errorMessage);
       cliux.print('CLI_AUTH_WHOAMI_FAILED', { color: 'yellow' });
-      cliux.print(errorMessage, { color: 'red' });
+      handleAndLogError(error, { ...this.contextDetails });
     }
   }
 }
