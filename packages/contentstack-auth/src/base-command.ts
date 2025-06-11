@@ -1,5 +1,6 @@
 import { Command } from '@contentstack/cli-command';
-import { FlagInput, Flags, Interfaces, LoggerService } from '@contentstack/cli-utilities';
+import { configHandler, FlagInput, Flags, Interfaces, LoggerService } from '@contentstack/cli-utilities';
+import { Context } from './interfaces';
 
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
 export type Flags<T extends typeof Command> = Interfaces.InferredFlags<(typeof BaseCommand)['baseFlags'] & T['flags']>;
@@ -8,7 +9,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   public logger!: LoggerService;
   protected args!: Args<T>;
   protected flags!: Flags<T>;
-
+  public contextDetails!: Context;
 
   /**
    * The `init` function initializes the command by parsing arguments and flags, registering search
@@ -18,6 +19,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     await super.init();
     // Init logger
     this.logger = new LoggerService(process.cwd(), 'cli-log');
+    this.contextDetails = this.createExportContext();
   }
 
   /**
@@ -44,5 +46,19 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   protected async finally(_: Error | undefined): Promise<any> {
     // called after run and catch regardless of whether or not the command errored
     return super.finally(_);
+  }
+
+  // Create export context object
+  protected createExportContext(apiKey?: string): Context {
+    return {
+      command: this.context.info.command,
+      module: '',
+      userId: configHandler.get('userId'),
+      email: configHandler.get('email'),
+      sessionId: this.context.sessionId,
+      clientId: this.context.clientId,
+      apiKey: apiKey || '',
+      orgId: configHandler.get('organization_uid') || '',
+    };
   }
 }

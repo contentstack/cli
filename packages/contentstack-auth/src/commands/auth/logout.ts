@@ -1,4 +1,3 @@
-import { Command } from '@contentstack/cli-command';
 import {
   cliux,
   configHandler,
@@ -7,7 +6,9 @@ import {
   authHandler as oauthHandler,
   managementSDKClient,
   FlagInput,
-  formatError,
+  log, 
+  handleAndLogError,
+  messageHandler
 } from '@contentstack/cli-utilities';
 
 import { authHandler } from '../../utils';
@@ -50,7 +51,7 @@ export default class LogoutCommand extends BaseCommand<typeof LogoutCommand> {
     try {
       const managementAPIClient = await managementSDKClient({ host: this.cmaHost, skipTokenValidity: true });
       authHandler.client = managementAPIClient;
-      if (confirm === true && (await oauthHandler.isAuthenticated())) {
+      if (confirm === true && (oauthHandler.isAuthenticated())) {
         cliux.loader('CLI_AUTH_LOGOUT_LOADER_START');
         if (await oauthHandler.isAuthorisationTypeBasic()) {
           await authHandler.logout(configHandler.get('authtoken'));
@@ -58,17 +59,13 @@ export default class LogoutCommand extends BaseCommand<typeof LogoutCommand> {
           await oauthHandler.oauthLogout();
         }
         cliux.loader('');
-        this.logger.info('successfully logged out');
-        cliux.success('CLI_AUTH_LOGOUT_SUCCESS');
+        log.success(messageHandler.parse('CLI_AUTH_LOGOUT_SUCCESS'), this.contextDetails);
       } else {
-        cliux.success('CLI_AUTH_LOGOUT_ALREADY');
+        log.success(messageHandler.parse('CLI_AUTH_LOGOUT_ALREADY'), this.contextDetails);
       }
     } catch (error) {
-      let errorMessage = formatError(error) || 'Something went wrong while logging out. Please try again.';
-
-      this.logger.error('Logout failed', errorMessage);
       cliux.print('CLI_AUTH_LOGOUT_FAILED', { color: 'yellow' });
-      cliux.print(errorMessage, { color: 'red' });
+      handleAndLogError(error, { ...this.contextDetails });
     } finally {
       if (confirm === true) {
         await oauthHandler.setConfigData('logout');
