@@ -1,5 +1,11 @@
-import { Command } from '@contentstack/cli-command';
-import { cliux, configHandler, formatError, CLITable, TableFlags, FlagInput } from '@contentstack/cli-utilities';
+import {
+  cliux,
+  configHandler,
+  CLITable,
+  TableFlags,
+  FlagInput,
+  handleAndLogError,
+} from '@contentstack/cli-utilities';
 import { BaseCommand } from '../../../base-command';
 export default class TokensListCommand extends BaseCommand<typeof TokensListCommand> {
   static aliases = ['tokens'];
@@ -55,10 +61,8 @@ export default class TokensListCommand extends BaseCommand<typeof TokensListComm
         cliux.print('CLI_AUTH_TOKENS_LIST_NO_TOKENS');
       }
     } catch (error) {
-      let errorMessage = formatError(error) || 'Something went wrong while fetching tokens. Please try again.';
-      this.logger.error('Token list error', errorMessage);
       cliux.print('CLI_AUTH_TOKENS_LIST_FAILED', { color: 'yellow' });
-      cliux.print(errorMessage, { color: 'red' });
+      handleAndLogError(error, { ...this.contextDetails });
     }
   }
 }

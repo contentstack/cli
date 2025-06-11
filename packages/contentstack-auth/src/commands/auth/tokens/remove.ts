@@ -1,5 +1,4 @@
-import { Command } from '@contentstack/cli-command';
-import { cliux, configHandler, flags, FlagInput, formatError } from '@contentstack/cli-utilities';
+import { cliux, configHandler, flags, FlagInput, log, handleAndLogError } from '@contentstack/cli-utilities';
 import { BaseCommand } from '../../../base-command';
 
 export default class TokensRemoveCommand extends BaseCommand<typeof TokensRemoveCommand> {
@@ -14,7 +13,6 @@ export default class TokensRemoveCommand extends BaseCommand<typeof TokensRemove
     const { flags: removeTokenFlags } = await this.parse(TokensRemoveCommand);
     const alias = removeTokenFlags.alias;
     const ignore = removeTokenFlags.ignore;
-
     try {
       const token = configHandler.get(`tokens.${alias}`);
       const tokens = configHandler.get('tokens');
@@ -48,20 +46,18 @@ export default class TokensRemoveCommand extends BaseCommand<typeof TokensRemove
       }
       
       selectedTokens.forEach((ele)=>{
-        this.logger.info('selected tokens',ele);
+        log.info(`Selected token: ${ele}`, this.contextDetails);
       })
     
       selectedTokens.forEach((element) => {
         const selectedToken = element.split(':')[0];
         configHandler.delete(`tokens.${selectedToken}`);
         cliux.success('CLI_AUTH_TOKENS_REMOVE_SUCCESS');
-        this.logger.info('Token removed successfully !!', element);
+        log.info(`Token removed: ${selectedToken}`, this.contextDetails);
       });
     } catch (error) {
-      let errorMessage = formatError(error) || 'Something went wrong while removing token. Please try again.';
-      this.logger.error('Token remove error', errorMessage);
       cliux.print('CLI_AUTH_TOKENS_REMOVE_FAILED', { color: 'yellow' });
-      cliux.print(errorMessage, { color: 'red' });
+      handleAndLogError(error, {...this.contextDetails} )
     }
   }
 }

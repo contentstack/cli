@@ -1,4 +1,3 @@
-import { Command } from '@contentstack/cli-command';
 import {
   cliux,
   configHandler,
@@ -8,10 +7,12 @@ import {
   HttpClient,
   messageHandler,
   Flags,
-  formatError,
+  log,
+  handleAndLogError,
 } from '@contentstack/cli-utilities';
-import { askTokenType } from '../../../utils/interactive';
 import { BaseCommand } from '../../../base-command';
+import { askTokenType } from '../../../utils/interactive';
+
 export default class TokensAddCommand extends BaseCommand<typeof TokensAddCommand> {
   static description = 'Adds management/delivery tokens to your session to use it with other CLI commands';
 
@@ -100,7 +101,7 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
 
     const type = isDelivery || Boolean(environment) ? 'delivery' : 'management';
 
-    this.logger.info(`adding ${type} token`);
+    log.info(`Adding ${type} token with alias: ${alias}, apiKey: ${apiKey}, environment: ${environment}`);
 
     try {
       if (!alias) {
@@ -114,7 +115,7 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
           name: 'confirm',
         });
         if (!shouldAliasReplace) {
-          this.logger.info('Exiting from the process of replacing the token');
+          log.info('Exiting from the process of replacing the token');
           cliux.print('CLI_AUTH_EXIT_PROCESS');
           return;
         }
@@ -160,10 +161,8 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
         cliux.success('CLI_AUTH_TOKENS_ADD_SUCCESS');
       }
     } catch (error) {
-      let errorMessage = formatError(error) || 'Something went wrong while adding token. Please try again.';
-      this.logger.error('token add error', errorMessage);
       cliux.print('CLI_AUTH_TOKENS_ADD_FAILED', { color: 'yellow' });
-      cliux.error(errorMessage);
+      handleAndLogError(error, {...this.contextDetails});
     }
   }
 }
