@@ -60,9 +60,9 @@ export const sanitizePath = (str: string) => {
   
   const decodedStr = decodeURIComponent(str);
   return decodedStr
-    ?.replace(/^([\/\\]){2,}/, "./") // Normalize leading slashes/backslashes to ''
-    .replace(/[\/\\]+/g, "/") // Replace multiple slashes/backslashes with a single '/'
-    .replace(/(\.\.(\/|\\|$))+/g, ""); // Remove directory traversal (../ or ..\)
+    ?.replace(/^([\/\\]){2,}/, './') // Normalize leading slashes/backslashes to ''
+    .replace(/[\/\\]+/g, '/') // Replace multiple slashes/backslashes with a single '/'
+    .replace(/(\.\.(\/|\\|$))+/g, ''); // Remove directory traversal (../ or ..\)
 };
 
 // To validate the UIDs of assets
@@ -131,6 +131,7 @@ export const formatError = function (error: any) {
       authorization: 'Authentication',
       api_key: 'Stack API key',
       uid: 'Content Type',
+      // deepcode ignore HardcodedNonCryptoSecret: <please specify a reason of ignoring this>
       access_token: 'Delivery Token',
     };
 
