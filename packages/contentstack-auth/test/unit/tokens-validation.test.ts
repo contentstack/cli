@@ -9,7 +9,7 @@ describe('Tokens Validation', () => {
   const invalidDeliveryToken = '';
   const validManagementToken = '';
   const invalidManagementToken = '';
-  const validEnvironemnt = '';
+  const validEnvironment = '';
   const invalidEnvironemnt = 'invalid';
   const validRegion = 'AWS-NA';
   const validHost = '';
@@ -50,7 +50,7 @@ describe('Tokens Validation', () => {
         return contentStackClient;
       }),
       fetch: sinon.stub().callsFake(() => {
-        if (contentStackClient.environmentName === validEnvironemnt) {
+        if (contentStackClient.environmentName === validEnvironment) {
           return Promise.resolve({ name: contentStackClient.environmentName });
         } else if (!contentStackClient.environmentName && contentStackClient.apiKey === validAPIkey) {
           return Promise.resolve({ api_key: contentStackClient.apiKey });
@@ -83,7 +83,7 @@ describe('Tokens Validation', () => {
         contentStackClientStub,
         validAPIkey,
         validDeliveryToken,
-        validEnvironemnt,
+        validEnvironment,
         validRegion,
         validHost,
       );
@@ -96,7 +96,7 @@ describe('Tokens Validation', () => {
         contentStackClient,
         validAPIkey,
         invalidDeliveryToken,
-        validEnvironemnt,
+        validEnvironment,
         validRegion,
         validHost,
       );
@@ -105,7 +105,7 @@ describe('Tokens Validation', () => {
   });
   describe('#Environment', function () {
     it('Valid environment, should return true', async function () {
-      const result = await tokenValidation.validateEnvironment(contentStackClient, validAPIkey, validEnvironemnt);
+      const result = await tokenValidation.validateEnvironment(contentStackClient, validAPIkey, validEnvironment);
       expect(result.valid).to.be.true;
     });
     it('invalid environment, should return false', async function () {

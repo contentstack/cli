@@ -10,4 +10,6 @@ fileignoreconfig:
     checksum: a59bd1d2eb42c70e8b6a935d9de4851a89baefa03ab8bf5824e6691191afd936
   - filename: packages/contentstack-import/test/integration/environments.test.js
     checksum: 7d1ecf94b2a09e062dc3e94fa66ebc3bcf8ff963212b1b57c4b2031a2c6f494c
+  - filename: packages/contentstack-auth/test/unit/tokens-validation.test.ts
+    checksum: 676052e30d31a771ce68302d89b050d176bbef50f3abc7e9cdd4384f0e274e10
 version: "1.0"
