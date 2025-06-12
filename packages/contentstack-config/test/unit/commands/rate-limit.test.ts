@@ -37,8 +37,6 @@ describe('Rate Limit Commands', () => {
     };
     rateLimitHandler.setClient(mockClient);
     restore();
-
-    restore();
   });
 
   afterEach(() => {

@@ -19,11 +19,11 @@ describe('Utils', function () {
 
   describe('User config', function () {
     it('set region, should be successful', function () {
-      const result: Region = userConfig.setRegion('NA');
-      expect(result.name).equal('NA');
+      const result: Region = userConfig.setRegion('AWS-NA');
+      expect(result.name).equal('AWS-NA');
     });
     it('get region, should be successful', function () {
-      expect(userConfig.getRegion().name).equal('NA');
+      expect(userConfig.getRegion().name).equal('AWS-NA');
     });
     it('set custom region, should be successful', function () {
       const customRegion = {

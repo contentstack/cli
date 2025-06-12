@@ -155,7 +155,7 @@ const config: DefaultConfig = {
     },
     personalize: {
       baseURL: {
-        NA: 'https://personalize-api.contentstack.com',
+        'AWS-NA': 'https://personalize-api.contentstack.com',
       },
       importData: true,
       dirName: 'personalize',

@@ -6,10 +6,9 @@ export const askRegions = async (): Promise<string> => {
     name: 'selectedRegion',
     message: 'CLI_CONFIG_SELECT_REGION',
     choices: [
-      { name: 'NA', value: 'NA' },
-      { name: 'EU', value: 'EU' },
       { name: 'AWS-NA', value: 'AWS-NA' },
       { name: 'AWS-EU', value: 'AWS-EU' },
+      { name: 'AWS-AU', value: 'AWS-AU' },
       { name: 'AZURE-NA', value: 'AZURE-NA' },
       { name: 'AZURE-EU', value: 'AZURE-EU' },
       { name: 'GCP-NA', value: 'GCP-NA' },

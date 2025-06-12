@@ -15,10 +15,13 @@ const { DELIMITER, KEY_VAL_DELIMITER } = process.env;
 const { ENCRYPTION_KEY } = getEnvData();
 
 const REGION_MAP = {
-  NA: 'NA',
-  NA_AZ: 'AZURE-NA',
-  EU_AZ: 'AZURE-EU',
-  EU: 'EU',
+  AWS_NA: 'AWS-NA',
+  AWS_EU: 'AWS-EU',
+  AWS_AU: 'AWS-AU',
+  AZURE_NA: 'AZURE-NA',
+  AZURE_EU: 'AZURE-EU',
+  GCP_NA: 'GCP-NA',
+  GCP_EU: 'GCP-EU'
 };
 
 module.exports = (region) => {
