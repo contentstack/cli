@@ -18,9 +18,9 @@ importers:
       '@contentstack/cli-cm-branches': ~1.4.3
       '@contentstack/cli-cm-bulk-publish': ~1.8.1
       '@contentstack/cli-cm-clone': ~1.14.2
-      '@contentstack/cli-cm-export': ~1.16.2
+      '@contentstack/cli-cm-export': ~1.16.3
       '@contentstack/cli-cm-export-to-csv': ~1.8.2
-      '@contentstack/cli-cm-import': ~1.23.0
+      '@contentstack/cli-cm-import': ~1.23.1
       '@contentstack/cli-cm-import-setup': 1.2.1
       '@contentstack/cli-cm-migrate-rte': ~1.5.2
       '@contentstack/cli-cm-seed': ~1.11.2
@@ -363,8 +363,8 @@ importers:
   packages/contentstack-clone:
     specifiers:
       '@colors/colors': ^1.6.0
-      '@contentstack/cli-cm-export': ~1.16.2
-      '@contentstack/cli-cm-import': ~1.23.0
+      '@contentstack/cli-cm-export': ~1.16.3
+      '@contentstack/cli-cm-import': ~1.23.1
       '@contentstack/cli-command': ~1.5.0
       '@contentstack/cli-utilities': ~1.12.0
       '@oclif/test': ^4.1.13
@@ -826,7 +826,7 @@ importers:
 
   packages/contentstack-seed:
     specifiers:
-      '@contentstack/cli-cm-import': ~1.23.0
+      '@contentstack/cli-cm-import': ~1.23.1
       '@contentstack/cli-command': ~1.5.0
       '@contentstack/cli-utilities': ~1.12.0
       '@contentstack/management': ~1.21.4
@@ -2010,11 +2010,11 @@ packages:
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
     engines: {node: '>=0.1.90'}
 
-  /@contentstack/cli-command/1.5.0:
-    resolution: {integrity: sha512-h58YkIgUj3VL9clUB7xpToyjmxRVCRuD/yfoDvzm/ODWD/ooEq5ScCx5meBeM1m2jU/qDrDl95FE0ideseecwQ==}
+  /@contentstack/cli-command/1.5.1:
+    resolution: {integrity: sha512-GJHPXH/e4bw2sftpFUGQFao3H0Btp3wEsjyukqOtlFlY3ZjzwqVRGAJTncte2NfkQUjnqlxIxRhJKE645nWSzg==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      '@contentstack/cli-utilities': 1.11.1
+      '@contentstack/cli-utilities': 1.12.0
       contentstack: 3.25.3
     transitivePeerDependencies:
       - '@jest/globals'
@@ -2022,11 +2022,11 @@ packages:
       - jest
     dev: true
 
-  /@contentstack/cli-command/1.5.0_debug@4.4.1:
-    resolution: {integrity: sha512-h58YkIgUj3VL9clUB7xpToyjmxRVCRuD/yfoDvzm/ODWD/ooEq5ScCx5meBeM1m2jU/qDrDl95FE0ideseecwQ==}
+  /@contentstack/cli-command/1.5.1_debug@4.4.1:
+    resolution: {integrity: sha512-GJHPXH/e4bw2sftpFUGQFao3H0Btp3wEsjyukqOtlFlY3ZjzwqVRGAJTncte2NfkQUjnqlxIxRhJKE645nWSzg==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      '@contentstack/cli-utilities': 1.11.1_debug@4.4.1
+      '@contentstack/cli-utilities': 1.12.0_debug@4.4.1
       contentstack: 3.25.3
     transitivePeerDependencies:
       - '@jest/globals'
@@ -2038,7 +2038,7 @@ packages:
     resolution: {integrity: sha512-sku0ivaF0viI25q7nbIfnwG1ZdGTaylJKcpgol4TQeKsD1qVUFhqqFvS+M6Na42E9cbZEWKICiS3XLJyiDATIQ==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      '@contentstack/cli-command': 1.5.0
+      '@contentstack/cli-command': 1.5.1
       '@contentstack/cli-utilities': 1.12.0
       lodash: 4.17.21
     transitivePeerDependencies:
@@ -2053,7 +2053,7 @@ packages:
     hasBin: true
     dependencies:
       '@apollo/client': 3.13.8_graphql@16.11.0
-      '@contentstack/cli-command': 1.5.0_debug@4.4.1
+      '@contentstack/cli-command': 1.5.1_debug@4.4.1
       '@contentstack/cli-utilities': 1.12.0_debug@4.4.1
       '@oclif/core': 4.3.1
       '@oclif/plugin-help': 6.2.28
@@ -2089,78 +2089,6 @@ packages:
       - supports-color
       - tslib
       - typescript
-    dev: false
-
-  /@contentstack/cli-utilities/1.11.1:
-    resolution: {integrity: sha512-d2i17OeHMc2WOkkwuzVNmplD0y/d1GV4v21PZre/A66xcB/COaBn8rvvsKjo18RIUl6vY72PsrzNq6xRc7AOfg==}
-    dependencies:
-      '@contentstack/management': 1.20.3
-      '@contentstack/marketplace-sdk': 1.2.8
-      '@oclif/core': 4.3.1
-      axios: 1.9.0
-      chalk: 4.1.2
-      cli-cursor: 3.1.0
-      cli-progress: 3.12.0
-      cli-table: 0.3.11
-      conf: 10.2.0
-      dotenv: 16.5.0
-      figures: 3.2.0
-      inquirer: 8.2.6
-      inquirer-search-checkbox: 1.0.0
-      inquirer-search-list: 1.2.6
-      js-yaml: 4.1.0
-      klona: 2.0.6
-      lodash: 4.17.21
-      mkdirp: 1.0.4
-      open: 8.4.2
-      ora: 5.4.1
-      papaparse: 5.5.3
-      recheck: 4.4.5
-      rxjs: 6.6.7
-      traverse: 0.6.11
-      tty-table: 4.2.3
-      unique-string: 2.0.0
-      uuid: 9.0.1
-      winston: 3.17.0
-      xdg-basedir: 4.0.0
-    transitivePeerDependencies:
-      - debug
-    dev: true
-
-  /@contentstack/cli-utilities/1.11.1_debug@4.4.1:
-    resolution: {integrity: sha512-d2i17OeHMc2WOkkwuzVNmplD0y/d1GV4v21PZre/A66xcB/COaBn8rvvsKjo18RIUl6vY72PsrzNq6xRc7AOfg==}
-    dependencies:
-      '@contentstack/management': 1.20.3_debug@4.4.1
-      '@contentstack/marketplace-sdk': 1.2.8_debug@4.4.1
-      '@oclif/core': 4.3.1
-      axios: 1.9.0_debug@4.4.1
-      chalk: 4.1.2
-      cli-cursor: 3.1.0
-      cli-progress: 3.12.0
-      cli-table: 0.3.11
-      conf: 10.2.0
-      dotenv: 16.5.0
-      figures: 3.2.0
-      inquirer: 8.2.6
-      inquirer-search-checkbox: 1.0.0
-      inquirer-search-list: 1.2.6
-      js-yaml: 4.1.0
-      klona: 2.0.6
-      lodash: 4.17.21
-      mkdirp: 1.0.4
-      open: 8.4.2
-      ora: 5.4.1
-      papaparse: 5.5.3
-      recheck: 4.4.5
-      rxjs: 6.6.7
-      traverse: 0.6.11
-      tty-table: 4.2.3
-      unique-string: 2.0.0
-      uuid: 9.0.1
-      winston: 3.17.0
-      xdg-basedir: 4.0.0
-    transitivePeerDependencies:
-      - debug
     dev: false
 
   /@contentstack/cli-utilities/1.12.0:
@@ -2250,36 +2178,6 @@ packages:
       lodash.kebabcase: 4.1.1
       slate: 0.103.0
       uuid: 8.3.2
-    dev: false
-
-  /@contentstack/management/1.20.3:
-    resolution: {integrity: sha512-ddPLEYRCBfcezTx7X85oO63aTLn7ZglBXDhp7ofJdFefwF52LTWKni71Scxn5NX5CrniSNqNAquPKZBnfOVl0Q==}
-    engines: {node: '>=8.0.0'}
-    dependencies:
-      assert: 2.1.0
-      axios: 1.9.0
-      buffer: 6.0.3
-      form-data: 4.0.2
-      lodash: 4.17.21
-      qs: 6.14.0
-      stream-browserify: 3.0.0
-    transitivePeerDependencies:
-      - debug
-    dev: true
-
-  /@contentstack/management/1.20.3_debug@4.4.1:
-    resolution: {integrity: sha512-ddPLEYRCBfcezTx7X85oO63aTLn7ZglBXDhp7ofJdFefwF52LTWKni71Scxn5NX5CrniSNqNAquPKZBnfOVl0Q==}
-    engines: {node: '>=8.0.0'}
-    dependencies:
-      assert: 2.1.0
-      axios: 1.9.0_debug@4.4.1
-      buffer: 6.0.3
-      form-data: 4.0.2
-      lodash: 4.17.21
-      qs: 6.14.0
-      stream-browserify: 3.0.0
-    transitivePeerDependencies:
-      - debug
     dev: false
 
   /@contentstack/management/1.21.4:
