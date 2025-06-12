@@ -11,7 +11,7 @@ describe('Tokens Validation', () => {
   const invalidManagementToken = '';
   const validEnvironemnt = '';
   const invalidEnvironemnt = 'invalid';
-  const validRegion = 'NA';
+  const validRegion = 'AWS-NA';
   const validHost = '';
   let contentStackClient: {
     stack: any;
