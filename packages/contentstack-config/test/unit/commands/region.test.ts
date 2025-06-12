@@ -18,9 +18,9 @@ describe('Region command', function () {
     launchHubUrl: 'https://launch-api.contentstack.com',
     personalizeUrl: 'https://personalization-api.contentstack.com',
   };
-  let cliuxPrintStub;
-  let configGetStub;
-  let configSetStub;
+  let cliuxPrintStub: sinon.SinonStub;
+  let configGetStub: sinon.SinonStub;
+  let configSetStub: sinon.SinonStub;
   beforeEach(function () {
     configGetStub = sinon.stub(config, 'get').callsFake((key) => {
       if (key === 'region') return region.name;
@@ -177,8 +177,8 @@ describe('Region command', function () {
   });
 
   it('should set a valid region', function () {
-    const region = UserConfig.setRegion('NA');
-    expect(region).to.have.property('name', 'NA');
+    const region = UserConfig.setRegion('AWS-NA');
+    expect(region).to.have.property('name', 'AWS-NA');
   });
 
   it('should get the default region if none is set', function () {
@@ -187,7 +187,7 @@ describe('Region command', function () {
       return undefined;
     });
     const region = UserConfig.getRegion();
-    expect(region).to.have.property('name', 'NA');
+    expect(region).to.have.property('name', 'AWS-NA');
   });
 
   it('should set a custom region with valid data', function () {
@@ -308,9 +308,9 @@ describe('Region Handler', function () {
   });
 
   it('askRegions should return selected region', async function () {
-    inquireStub.returns(Promise.resolve('NA'));
+    inquireStub.returns(Promise.resolve('AWS-NA'));
     const result = await askRegions();
-    expect(result).to.equal('NA');
+    expect(result).to.equal('AWS-NA');
   });
 
   it('askCustomRegion should return custom region details', async function () {

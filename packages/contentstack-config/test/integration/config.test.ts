@@ -22,11 +22,11 @@ describe('ContentStack-Config Plugin Tests', () => {
     expect(output).to.include('CMA HOST:');
   });
 
-  it("Should execute 'config:set:region NA' and set NA region", () => {
-    const result = spawnSync('csdx', ['config:set:region', 'NA'], { encoding: 'utf-8' });
+  it("Should execute 'config:set:region AWS-NA' and set AWS-NA region", () => {
+    const result = spawnSync('csdx', ['config:set:region', 'AWS-NA'], { encoding: 'utf-8' });
     const output = result.stdout + result.stderr;
 
-    expect(output).to.include('Region has been set to NA');
+    expect(output).to.include('Region has been set to AWS-NA');
     expect(output).to.include('CDA HOST: https://cdn.contentstack.io');
     expect(output).to.include('CMA HOST: https://api.contentstack.io');
   });

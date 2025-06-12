@@ -149,7 +149,7 @@ const config: DefaultConfig = {
     },
     personalize: {
       baseURL: {
-        NA: 'https://personalize-api.contentstack.com',
+        'AWS-NA': 'https://personalize-api.contentstack.com',
       },
       dirName: 'personalize',
       exportOrder: ['attributes', 'audiences', 'events', 'experiences'],
