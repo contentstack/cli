@@ -5,5 +5,5 @@ fileignoreconfig:
   - filename: package-lock.json
     checksum: 563bfe30f9c5a79ccd7fe9d455442fad803de044e5fee543a415f5798b198129
   - filename: packages/contentstack-utilities/src/helpers.ts
-    checksum: 1992c93c51b5854199e4b569fa3b90e7adab4e46c1824af5ed26f4bfba0caaf4
+    checksum: 54b0927001dfbb16beb8c8dd574fa5ae8c86feb8e060b026633bceaec14ec6b1
 version: "1.0"
