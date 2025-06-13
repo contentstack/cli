@@ -42,8 +42,16 @@ describe('Log Set Command', () => {
       }),
     ).to.be.true;
 
-    expect(successMessage[0]).to.include('CLI_CONFIG_LOG_LEVEL_SET');
-    expect(successMessage[1]).to.include('CLI_CONFIG_LOG_PATH_SET');
+    sinon.stub(messageHandler, 'parse').callsFake((key: string) => {
+      const messages = {
+        'CLI_CONFIG_LOG_LEVEL_SET': "Log level set to 'debug'",
+        'CLI_CONFIG_LOG_PATH_SET': "Log path set to './logs/app.log'",
+      };
+      return messages[key];
+    });
+
+    expect(successMessage[0]).to.include("Log level set to 'debug'");
+    expect(successMessage[1]).to.include("Log path set to './logs/app.log'");
   });
 
   it('should prompt for log level and path when flags are not provided', async () => {
