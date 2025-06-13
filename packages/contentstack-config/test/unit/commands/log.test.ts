@@ -42,8 +42,8 @@ describe('Log Set Command', () => {
       }),
     ).to.be.true;
 
-    expect(successMessage.join('\n')).to.include('Log level set to: debug');
-    expect(successMessage.join('\n')).to.include('Log path set to: ./logs/app.log');
+    expect(successMessage[0]).to.include('CLI_CONFIG_LOG_LEVEL_SET');
+    expect(successMessage[1]).to.include('CLI_CONFIG_LOG_PATH_SET');
   });
 
   it('should prompt for log level and path when flags are not provided', async () => {
@@ -64,9 +64,9 @@ describe('Log Set Command', () => {
         path: './custom/logs/app.log',
       }),
     ).to.be.true;
-
-    expect(successMessage.join('\n')).to.include('Log level set to: info');
-    expect(successMessage.join('\n')).to.include('Log path set to: ./custom/logs/app.log');
+;
+    expect(successMessage[0]).to.include('CLI_CONFIG_LOG_LEVEL_SET');
+    expect(successMessage[1]).to.include('CLI_CONFIG_LOG_PATH_SET');
   });
 
   it('should preserve existing config values when only setting level', async () => {
@@ -86,6 +86,9 @@ describe('Log Set Command', () => {
         path: './existing/logs/app.log',
       }),
     ).to.be.true;
+
+    expect(successMessage[0]).to.include('CLI_CONFIG_LOG_LEVEL_SET');
+    expect(successMessage[1]).to.include('CLI_CONFIG_LOG_PATH_SET');
   });
 
   it('should preserve existing config values when only setting path', async () => {
@@ -105,6 +108,10 @@ describe('Log Set Command', () => {
         path: './new/logs/app.log',
       }),
     ).to.be.true;
+
+    const successMessages = successMessage.join('\n');
+    expect(successMessages).to.include('CLI_CONFIG_LOG_LEVEL_SET');
+    expect(successMessages).to.include('CLI_CONFIG_LOG_PATH_SET');
   });
 
   it('should handle errors gracefully', async () => {
