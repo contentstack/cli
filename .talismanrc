@@ -117,7 +117,7 @@ fileignoreconfig:
   - filename: packages/contentstack/package.json
     checksum: 9b0fdd100effcdbb5ee3809f7f102bfd11c88dd76e49db5103434f3aa29473dd
   - filename: pnpm-lock.yaml
-    checksum: 36c2ea27373817a1498cc1698ae588cfc87c3961ae24e42a4154c0b2a42782d5
+    checksum: f416e17fb0409ac6c8498fa44c5d84ca460a4d0acd14139e89701e0e001b3bfe
   - filename: packages/contentstack-audit/src/audit-base-command.ts
     checksum: bd99d269c0b6694577f4751fa96b3d85856e41bbef624b4ec1196630d6c1d168
   - filename: packages/contentstack-migrate-rte/test/commands/json-migration.test.js
@@ -127,11 +127,13 @@ fileignoreconfig:
   - filename: packages/contentstack-bootstrap/test/bootstrap.test.js
     checksum: 5f0355a5048183d61b605cbc160e6727a9de32832d9159e903fee49f9ab751d5
   - filename: package-lock.json
-    checksum: b3061364331292cbe5b4a91109664f0a0646c7d62f36027d57bffd96d5868479
+    checksum: 290d420891b9612fd6b4f134cb849770704f10b58d83f7ad05a4f88204818778
   - filename: packages/contentstack-utilities/test/unit/logger.test.ts
     checksum: c773181ea55c49d91363adacf0424b84c927e3cffd6bef1444ec2559ddf1b3b0
   - filename: packages/contentstack-utilities/src/logger/cliErrorHandler.ts
     checksum: 023cf08f215cd0778599fb8478c94419373d4687f04421c4eb99d87de86a4a3e
   - filename: packages/contentstack-utilities/src/logger/logger.ts
     checksum: 09f3b73dd995bafc253265c676f06308513e6b1842d9bc01d39e6b6945a54c7d
+  - filename: packages/contentstack-export/src/export/modules/assets.ts
+    checksum: c7f19e6c4a212329d981cebce9a9a8393923dd7c85feb762ddcdca678f7a9349
 version: "1.0"
