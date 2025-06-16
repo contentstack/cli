@@ -228,10 +228,11 @@ async function getSyncEntries(
         await bulkAction(stack, entriesResponse.items, bulkUnpublish, environment, locale, apiVersion, bulkPublishLimit, false);
       }
       
-      if (entriesResponse.items.length === 0) {
+      if (!entriesResponse.pagination_token) {
         if (!changedFlag) console.log('No Entries/Assets Found published on specified environment');
         return resolve();
       }
+
       setTimeout(async () => {
         await getSyncEntries(
           stack,
@@ -244,9 +245,11 @@ async function getSyncEntries(
           apiVersion,
           bulkPublishLimit,
           variantsFlag,
-          null,
+          entriesResponse.pagination_token,
         );
       }, 3000);
+
+      return resolve();
     } catch (error) {
       reject(error);
     }
