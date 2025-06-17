@@ -2,7 +2,6 @@ import traverse from 'traverse';
 import { klona } from 'klona/full';
 import { normalize } from 'path';
 import * as winston from 'winston';
-import { LogEntry } from 'winston';
 import { levelColors, logLevels } from '../constants/logging';
 import { LoggerConfig, LogLevel, LogType } from '../interfaces/index';
 
@@ -20,11 +19,11 @@ export default class Logger {
     /management[-._]?token/i,
     /sessionid/i,
     /orgid/i,
+    /stack/i
   ];
 
   constructor(config: LoggerConfig) {
     this.config = config;
-    // Add the custom colors first
     winston.addColors(levelColors);
     this.loggers = {
       error: this.getLoggerInstance('error'),
@@ -37,10 +36,7 @@ export default class Logger {
 
   getLoggerInstance(level: 'error' | 'info' | 'warn' | 'debug' | 'hidden' = 'info'): winston.Logger {
     const filePath = normalize(process.env.CS_CLI_LOG_PATH || this.config.basePath).replace(/^(\.\.(\/|\\|$))+/, '');
-    if (level === 'hidden') {
-      return this.createLogger('error', filePath);
-    }
-    return this.createLogger(level, filePath);
+    return this.createLogger(level === 'hidden' ? 'error' : level, filePath);
   }
 
   private get loggerOptions(): winston.transports.FileTransportOptions {
@@ -55,7 +51,7 @@ export default class Logger {
   private createLogger(level: LogLevel, filePath: string): winston.Logger {
     return winston.createLogger({
       levels: logLevels,
-      level: level,
+      level,
       transports: [
         new winston.transports.File({
           ...this.loggerOptions,
@@ -66,18 +62,11 @@ export default class Logger {
           format: winston.format.combine(
             winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
             winston.format.printf((info) => {
-              const redactedInfo = this.redact(info); // Apply redaction here
+              const redactedInfo = this.redact(info);
               const colorizer = winston.format.colorize();
-
-              // Handle success type specifically
-              const levelToColorize = redactedInfo.level;
-              const levelText = levelToColorize.toUpperCase();
-
-              const timestamp = redactedInfo.timestamp;
-              const message = redactedInfo.message;
-
-              let fullLine = `[${timestamp}] ${levelText}: ${message}`;
-              return colorizer.colorize(levelToColorize, fullLine);
+              const levelText = redactedInfo.level.toUpperCase();
+              const { timestamp, message } = redactedInfo;
+              return colorizer.colorize(redactedInfo.level, `[${timestamp}] ${levelText}: ${message}`);
             }),
           ),
         }),
@@ -86,7 +75,7 @@ export default class Logger {
   }
 
   private isSensitiveKey(keyStr: string): boolean {
-    return keyStr && typeof keyStr === 'string' ? this.sensitiveKeys.some((regex) => regex.test(keyStr)) : false;
+    return typeof keyStr === 'string' ? this.sensitiveKeys.some((regex) => regex.test(keyStr)) : false;
   }
 
   private redactObject(obj: any): void {
@@ -102,21 +91,18 @@ export default class Logger {
     try {
       const copy = klona(info);
       this.redactObject(copy);
-
       const splat = copy[Symbol.for('splat')];
       if (splat) this.redactObject(splat);
-
       return copy;
-    } catch (error) {
+    } catch {
       return info;
     }
   }
 
   private shouldLog(level: LogType, target: 'console' | 'file'): boolean {
     const configLevel = target === 'console' ? this.config.consoleLogLevel : this.config.logLevel;
-    const minLevel = configLevel ? logLevels[configLevel] : 2; // default: info
-    const entryLevel = logLevels[level];
-    return entryLevel <= minLevel;
+    const minLevel = configLevel ? logLevels[configLevel] : 2;
+    return logLevels[level] <= minLevel;
   }
 
   /* === Public Log Methods === */
@@ -157,7 +143,7 @@ export default class Logger {
     type: string;
     message: string;
     error: any;
-    context?: string;
+    context?: Record<string, any>;
     hidden?: boolean;
     meta?: Record<string, any>;
   }): void {
@@ -168,8 +154,8 @@ export default class Logger {
       meta: {
         type: params.type,
         error: params.error,
-        context: params.context,
-        ...params.meta,
+        ...(params.context || {}),
+        ...(params.meta || {}),
       },
     };
     const targetLevel: LogType = params.hidden ? 'debug' : 'error';
@@ -183,7 +169,7 @@ export default class Logger {
     type: string;
     message: string;
     warn?: any;
-    context?: string;
+    context?: Record<string, any>;
     meta?: Record<string, any>;
   }): void {
     const logPayload = {
@@ -192,8 +178,9 @@ export default class Logger {
       timestamp: new Date(),
       meta: {
         type: params.type,
-        context: params.context,
-        ...params.meta,
+        warn: params.warn,
+        ...(params.context || {}),
+        ...(params.meta || {}),
       },
     };
     if (this.shouldLog('warn', 'console') || this.shouldLog('warn', 'file')) {
@@ -205,7 +192,7 @@ export default class Logger {
     type: string;
     message: string;
     info?: any;
-    context?: string;
+    context?: Record<string, any>;
     meta?: Record<string, any>;
   }): void {
     const logPayload = {
@@ -215,8 +202,8 @@ export default class Logger {
       meta: {
         type: params.type,
         info: params.info,
-        context: params.context,
-        ...params.meta,
+        ...(params.context || {}),
+        ...(params.meta || {}),
       },
     };
     if (this.shouldLog('info', 'console') || this.shouldLog('info', 'file')) {
@@ -228,7 +215,7 @@ export default class Logger {
     type: string;
     message: string;
     data?: any;
-    context?: string;
+    context?: Record<string, any>;
     meta?: Record<string, any>;
   }): void {
     const logPayload = {
@@ -238,8 +225,8 @@ export default class Logger {
       meta: {
         type: params.type,
         data: params.data,
-        context: params.context,
-        ...params.meta,
+        ...(params.context || {}),
+        ...(params.meta || {}),
       },
     };
     if (this.shouldLog('success', 'console') || this.shouldLog('success', 'file')) {
@@ -251,7 +238,7 @@ export default class Logger {
     type: string;
     message: string;
     debug?: any;
-    context?: string;
+    context?: Record<string, any>;
     meta?: Record<string, any>;
   }): void {
     const logPayload = {
@@ -261,8 +248,8 @@ export default class Logger {
       meta: {
         type: params.type,
         debug: params.debug,
-        context: params.context,
-        ...params.meta,
+        ...(params.context || {}),
+        ...(params.meta || {}),
       },
     };
     if (this.shouldLog('debug', 'console') || this.shouldLog('debug', 'file')) {

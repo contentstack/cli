@@ -78,11 +78,7 @@ export default class ExportStack extends BaseClass {
         }
       })
       .catch((error: any) => {
-        handleAndLogError(
-          error,
-          { ...this.exportConfig.context },
-          `Failed to fetch locales for stack ${this.exportConfig.source_stack}`,
-        );
+        throw new Error(`Failed to fetch locales for stack ${this.exportConfig.source_stack}`);
       });
   }
 

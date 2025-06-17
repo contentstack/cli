@@ -71,8 +71,10 @@ export default class CLIErrorHandler {
         type,
         message: errMessage || normalized.message || 'Unhandled error',
         error: this.extractErrorPayload(normalized),
-        context: context ? JSON.stringify(context) : undefined,
-        meta: this.extractMeta(context),
+        meta: {
+          ...(context || {}),
+          ...this.extractMeta(context),
+        } as Record<string, string | undefined>,
         hidden,
       };
 
@@ -86,8 +88,10 @@ export default class CLIErrorHandler {
         type: ERROR_TYPES.NORMALIZATION,
         message: 'Failed to normalize or classify error',
         error: { message: String(e) },
-        context: context ? JSON.stringify(context) : undefined,
-        meta: this.extractMeta(context),
+        meta: {
+          ...(context || {}),
+          ...this.extractMeta(context),
+        } as Record<string, string | undefined>,
         hidden: false,
       };
     }
@@ -123,36 +127,26 @@ export default class CLIErrorHandler {
   }
 
   private determineErrorType(error: Error & Record<string, any>): string {
-    const status = error.status || error.response?.status;
-
-    //Ignore 4XX errors
+    const status = error.status ?? error.response?.status;
+    const axiosError = error as AxiosError;
+  
+    const isNetworkError = ['ECONNREFUSED', 'ENOTFOUND', 'ETIMEDOUT'].includes(error.code);
+  
     if (status >= 400 && status < 500) {
       return ERROR_TYPES.API_ERROR;
-    }
-
-    //Server-side HTTP errors
-    if (status >= 500) {
+    } else if (status >= 500) {
       return ERROR_TYPES.SERVER_ERROR;
-    }
-
-    //Network-related error
-    if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND' || error.code === 'ETIMEDOUT') {
+    } else if (isNetworkError) {
       return ERROR_TYPES.NETWORK;
-    }
-
-    //Database error
-    if (error.name === 'DatabaseError') {
+    } else if (error.name === 'DatabaseError') {
       return ERROR_TYPES.DATABASE;
-    }
-
-    //Axios errors without 4XX
-    if ((error as AxiosError).isAxiosError) {
+    } else if (axiosError?.isAxiosError) {
       return ERROR_TYPES.NETWORK;
+    } else {
+      return ERROR_TYPES.APPLICATION;
     }
-
-    //Default
-    return ERROR_TYPES.APPLICATION;
   }
+  
 
   private extractErrorPayload(error: Error & Record<string, any>): Record<string, any> {
     const code = error.code || error.errorCode;
