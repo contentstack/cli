@@ -73,6 +73,7 @@ export default class LocaleExport extends BaseClass {
       );
     } catch (error) {
       handleAndLogError(error, { ...this.exportConfig.context });
+      throw new Error('Failed to export locales');
     }
   }
 

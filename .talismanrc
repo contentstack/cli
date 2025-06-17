@@ -150,4 +150,6 @@ fileignoreconfig:
     checksum: 40f7a6bdfb4c1d5c19d213feffdf9c76eb2fca451567a2fb1cc26338b2163b26
   - filename: packages/contentstack-auth/src/utils/tokens-validation.ts
     checksum: fd7c4ebb6d6d955647012454357c360a292d122227a0d130b39dfd56c41f7529
+  - filename: packages/contentstack-utilities/src/logger/logger.ts
+    checksum: 892727d0fc86c09b2e386479b4bee3c08d8ce641ba1f8c8e54923d359fb923c5
 version: "1.0"

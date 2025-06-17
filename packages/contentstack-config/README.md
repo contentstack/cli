@@ -326,12 +326,12 @@ Set logging configuration for CLI
 
 ```
 USAGE
-  $ csdx config:set:log [--log-level debug|info|warn|error] [--log-path <value>]
+  $ csdx config:set:log [--level debug|info|warn|error] [--path <value>]
 
 FLAGS
-  --log-level=<option>  Set log level (debug, info, warn, error)
-                        <options: debug|info|warn|error>
-  --log-path=<value>    Set log file path
+  --level=<option>  Set log level (debug, info, warn, error)
+                    <options: debug|info|warn|error>
+  --path=<value>    Set log file path
 
 DESCRIPTION
   Set logging configuration for CLI
@@ -339,7 +339,7 @@ DESCRIPTION
 EXAMPLES
   $ csdx config:set:log
 
-  $ csdx config:set:log --log-level debug --log-path ./logs/app.log
+  $ csdx config:set:log --level debug --path ./logs/app.log
 ```
 
 _See code: [src/commands/config/set/log.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/log.ts)_
