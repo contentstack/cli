@@ -1,9 +1,10 @@
 import * as path from 'path';
 import { default as Logger } from './logger';
-import { CLIErrorHandler } from './cliErrorHandler';
+import { CLIErrorHandler } from './cli-error-handler';
 import { ErrorContext } from '../interfaces';
+import { configHandler } from '..';
 
-const v2Logger = new Logger({ basePath: getLogPath() });
+const v2Logger = new Logger({ basePath: getLogPath(), logLevel: configHandler.get('log.level') || 'info' });
 const cliErrorHandler = new CLIErrorHandler(true); // Enable debug mode for error classification
 
 /**
@@ -30,7 +31,7 @@ function handleAndLogError(error: unknown, context?: ErrorContext, errorMessage?
     type: classified.type,
     message: errorMessage || classified.message,
     error: classified.error,
-    context: classified.context,
+    context: typeof classified.context === 'string' ? { message: classified.context } : classified.context,
     hidden: classified.hidden,
     meta: classified.meta,
   });
@@ -45,14 +46,14 @@ function handleAndLogError(error: unknown, context?: ErrorContext, errorMessage?
         // Ensure stack trace is included if not already there
         stackTrace: classified?.debug?.stackTrace || classified.error.stack,
       },
-      context: classified.context,
+      context: typeof classified.context === 'string' ? { message: classified.context } : classified.context,
       meta: classified.meta,
     });
   }
 }
 
 function getLogPath(): string {
-  return process.env.CS_CLI_LOG_PATH || path.join(process.cwd(), 'logs');
+  return process.env.CS_CLI_LOG_PATH || configHandler.get('log.path') || path.join(process.cwd(), 'logs');
 }
 
 
