@@ -18,6 +18,6 @@
   "CLI_BRANCH_REQUIRED_FIELD": "Please enter the required field details",
   "CLI_CONFIG_LOG_NO_CONFIG": "No config found, please set by running command $ csdx config:set:log",
   "CLI_CONFIG_LOG_SET_SUCCESS": "Log config set successfully",
-  "CLI_CONFIG_LOG_LEVEL_SET": "Log level set to '%s'",
-  "CLI_CONFIG_LOG_PATH_SET": "Log path set to '%s'"
+  "CLI_CONFIG_LOG_LEVEL_SET": "Log level: '%s'",
+  "CLI_CONFIG_LOG_PATH_SET": "Log path: '%s'"
 }
