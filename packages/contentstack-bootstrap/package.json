@@ -10,7 +10,7 @@
     "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",
-    "prepack": "pnpm compile && oclif manifest && oclif readme",
+    "prepack": "pnpm run compile && oclif manifest && oclif readme",
     "version": "oclif readme && git add README.md",
     "test": "npm run build && npm run test:e2e",
     "test:e2e": "nyc mocha \"test/**/*.test.js\"",
