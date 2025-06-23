@@ -38,9 +38,9 @@ export default class LogSetCommand extends Command {
       if (logPath) currentLoggingConfig.path = logPath;
 
       configHandler.set('log', currentLoggingConfig);
-      cliux.print(messageHandler.parse('CLI_CONFIG_LOG_SET_SUCCESS'), { color: 'green' });
       cliux.success(messageHandler.parse('CLI_CONFIG_LOG_LEVEL_SET', logLevel));
       cliux.success(messageHandler.parse('CLI_CONFIG_LOG_PATH_SET', logPath));
+      cliux.print(messageHandler.parse('CLI_CONFIG_LOG_SET_SUCCESS'), { color: 'green' });
     } catch (error) {
       cliux.error('error', error);
     }
