@@ -23,10 +23,18 @@ const cwd = process.env.CS_CLI_CONFIG_PATH;
 
 class Config {
   private config: Conf;
+  private static instance: Config;
 
   constructor() {
     this.init();
     this.importOldConfig();
+  }
+
+  public static getInstance(): Config {
+    if (!Config.instance) {
+      Config.instance = new Config();
+    }
+    return Config.instance;
   }
 
   init() {
@@ -127,7 +135,6 @@ class Config {
   private getEncryptedConfig(configData?: Record<string, unknown>, skip = false) {
     const getEncryptedDataElseFallBack = () => {
       try {
-        
         // NOTE reading current code base encrypted file if exist
         const encryptionKey: any = this.getObfuscationKey();
         this.safeDeleteConfigIfInvalid(oldConfigPath);
@@ -223,4 +230,4 @@ class Config {
   }
 }
 
-export default new Config();
+export default Config.getInstance();
