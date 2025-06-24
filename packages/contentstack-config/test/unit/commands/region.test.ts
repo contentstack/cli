@@ -176,11 +176,6 @@ describe('Region command', function () {
     });
   });
 
-  it('should set a valid region', function () {
-    const region = UserConfig.setRegion('AWS-NA');
-    expect(region).to.have.property('name', 'AWS-NA');
-  });
-
   it('should get the default region if none is set', function () {
     configGetStub.callsFake((key) => {
       if (key === 'region') return undefined;

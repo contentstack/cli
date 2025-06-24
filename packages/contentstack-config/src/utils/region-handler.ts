@@ -113,7 +113,7 @@ class UserConfig {
   /**
    *
    * Set region to config store
-   * @param {string} region It Can be AWS-NA, AWS-EU
+   * @param {string} region It Can be AWS-NA, AWS-EU, AWS-AU, AZURE-NA, AZURE-EU, GCP-NA, GCP-EU
    * @returns {object} region object with cma, cda, region property
    */
   setRegion(region) {
