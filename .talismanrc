@@ -117,7 +117,7 @@ fileignoreconfig:
   - filename: packages/contentstack/package.json
     checksum: 9b0fdd100effcdbb5ee3809f7f102bfd11c88dd76e49db5103434f3aa29473dd
   - filename: pnpm-lock.yaml
-    checksum: 36c2ea27373817a1498cc1698ae588cfc87c3961ae24e42a4154c0b2a42782d5
+    checksum: 3706ef2e4b652af37d4b5d992fe12a5e98683ba1b5e3e7873e21a8d5a2e10d0a
   - filename: packages/contentstack-audit/src/audit-base-command.ts
     checksum: bd99d269c0b6694577f4751fa96b3d85856e41bbef624b4ec1196630d6c1d168
   - filename: packages/contentstack-migrate-rte/test/commands/json-migration.test.js
