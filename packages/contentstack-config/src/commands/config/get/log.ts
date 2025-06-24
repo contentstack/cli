@@ -2,7 +2,7 @@ import { Command } from '@contentstack/cli-command';
 import { cliux, configHandler, messageHandler, TableHeader } from '@contentstack/cli-utilities';
 
 export default class LogGetCommand extends Command {
-  static description = 'Get current logging configuration for CLI';
+  static description = 'Get logging configuration for CLI';
 
   static examples = ['csdx config:get:log'];
 

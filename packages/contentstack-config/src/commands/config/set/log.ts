@@ -7,11 +7,11 @@ export default class LogSetCommand extends Command {
 
   static flags: FlagInput = {
     'level': flags.string({
-      description: 'Set log level (debug, info, warn, error)',
+      description: 'Set the log level for the CLI.',
       options: ['debug', 'info', 'warn', 'error'],
     }),
     'path': flags.string({
-      description: 'Set log file path',
+      description: ' Specify the file path where logs should be saved.',
     }),
   };
 
