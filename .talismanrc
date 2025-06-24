@@ -6,12 +6,12 @@ fileignoreconfig:
     checksum: 474467984a5dbec5b9cf3fac76eeef3672e1e9e47ef2b91370503491ef239791
   - filename: pnpm-lock.yaml
     checksum: 7144a9442db6520f8e95d095afe857efa5e1c6c9391957094be28d50f36d942b
-  - filename: packages/contentstack-utilities/src/helpers.ts
-    checksum: 1992c93c51b5854199e4b569fa3b90e7adab4e46c1824af5ed26f4bfba0caaf4
   - filename: packages/contentstack-import/test/integration/auth-token-modules/environments.test.js
     checksum: a59bd1d2eb42c70e8b6a935d9de4851a89baefa03ab8bf5824e6691191afd936
   - filename: packages/contentstack-import/test/integration/environments.test.js
     checksum: 7d1ecf94b2a09e062dc3e94fa66ebc3bcf8ff963212b1b57c4b2031a2c6f494c
   - filename: packages/contentstack-auth/test/unit/tokens-validation.test.ts
-    checksum: 676052e30d31a771ce68302d89b050d176bbef50f3abc7e9cdd4384f0e274e10
-version: "1.0"
+    checksum: 54b0927001dfbb16beb8c8dd574fa5ae8c86feb8e060b026633bceaec14ec6b1
+  - filename: packages/contentstack-utilities/src/helpers.ts
+    checksum: 54b0927001dfbb16beb8c8dd574fa5ae8c86feb8e060b026633bceaec14ec6b1
+version: '1.0'
