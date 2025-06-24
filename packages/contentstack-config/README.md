@@ -103,14 +103,14 @@ _See code: [src/commands/config/get/early-access-header.ts](https://github.com/c
 
 ## `csdx config:get:log`
 
-Get current logging configuration for CLI
+Get logging configuration for CLI
 
 ```
 USAGE
   $ csdx config:get:log
 
 DESCRIPTION
-  Get current logging configuration for CLI
+  Get logging configuration for CLI
 
 EXAMPLES
   $ csdx config:get:log
@@ -329,9 +329,9 @@ USAGE
   $ csdx config:set:log [--level debug|info|warn|error] [--path <value>]
 
 FLAGS
-  --level=<option>  Set log level (debug, info, warn, error)
+  --level=<option>  Set the log level for the CLI.
                     <options: debug|info|warn|error>
-  --path=<value>    Set log file path
+  --path=<value>    Specify the file path where logs should be saved.
 
 DESCRIPTION
   Set logging configuration for CLI
