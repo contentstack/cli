@@ -43,7 +43,7 @@ describe('Utils', function () {
       const livePreviewEnabled = true;
       const clonedDirectory = await getDirectory();
       const region = {
-        name: 'NA',
+        name: 'AWS-NA',
         cda: 'https://cdn.contentstack.com',
         cma: 'https://api.contentstack.com',
         uiHost: 'https://app.contentstack.com'
@@ -106,7 +106,7 @@ describe('Utils', function () {
       const livePreviewEnabled = false;
       const clonedDirectory = await getDirectory();
       const region = {
-        name: 'NA',
+        name: 'AWS-NA',
         cda: 'https://cdn.contentstack.com',
         cma: 'https://api.contentstack.com',
         uiHost: 'https://app.contentstack.com',
@@ -165,7 +165,7 @@ describe('Utils', function () {
       };
       const clonedDirectory = await getDirectory();
       const region = {
-        name: 'NA',
+        name: 'AWS-NA',
         cda: 'https://app.contentstack.com',
         cma: 'https://api.contentstack.com',
       };
@@ -194,6 +194,7 @@ describe('Utils', function () {
         expect(error).to.be.instanceOf(Error);
       }
     });
+
     it('Create env with invalid app config, should throw an error', async () => {
       const environments = {};
       const token = 'mock-delivery-token';
@@ -203,7 +204,7 @@ describe('Utils', function () {
       };
       const clonedDirectory = await getDirectory();
       const region = {
-        name: 'NA',
+        name: 'AWS-NA',
         cda: 'https://app.contentstack.com',
         cma: 'https://app.contentstack.com',
       };
@@ -240,7 +241,7 @@ describe('Utils', function () {
       };
       const clonedDirectory = await getDirectory();
       const region = {
-        name: 'NA',
+        name: 'AWS-NA',
         cda: 'https://app.contentstack.com',
         cma: 'https://app.contentstack.com',
       };
