@@ -43,4 +43,6 @@ fileignoreconfig:
     checksum: f3b6c73302f5883a40dad4e878a37bfc9780c39743c3745402037baa0cd7eab4
   - filename: packages/contentstack-import/test/integration/management-token.test.js
     checksum: 095187d8b5fee8466f39a13e5cbc9f3c78f3dd0eb07d2c5af3929aca8aff8f2d
+  - filename: package-lock.json
+    checksum: 1ed3d88e1c938913f186925dbbceb6f42a0ee19137a7dfac45186312cd9e00b8
 version: ''
