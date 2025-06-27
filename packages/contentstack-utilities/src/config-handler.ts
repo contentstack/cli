@@ -20,13 +20,28 @@ const pathPrefix = path.join('configstore', `${CONFIG_NAME}.json`);
 const oldConfigPath = path.join(oldConfigDirectory, pathPrefix);
 
 const cwd = process.env.CS_CLI_CONFIG_PATH;
+let configInstance: Config | null = null;
 
 class Config {
   private config: Conf;
+  private static instance: Config;
 
   constructor() {
     this.init();
     this.importOldConfig();
+  }
+
+  public static getInstance(): Config {
+    // Ignore if running in development or build
+    if (process.env.NODE_ENV === 'development') {
+      return null;
+    }
+
+    if (!configInstance) {
+      configInstance = new Config();;
+    }
+
+    return configInstance;
   }
 
   init() {
@@ -127,7 +142,6 @@ class Config {
   private getEncryptedConfig(configData?: Record<string, unknown>, skip = false) {
     const getEncryptedDataElseFallBack = () => {
       try {
-        
         // NOTE reading current code base encrypted file if exist
         const encryptionKey: any = this.getObfuscationKey();
         this.safeDeleteConfigIfInvalid(oldConfigPath);
@@ -223,4 +237,4 @@ class Config {
   }
 }
 
-export default new Config();
+export default Config.getInstance();

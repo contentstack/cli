@@ -44,7 +44,7 @@
     "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
-    "prepack": "pnpm compile && oclif manifest && oclif readme",
+    "prepack": "pnpm run compile && oclif manifest && oclif readme",
     "version": "oclif readme && git add README.md",
     "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "pretest": "tsc -p test",
