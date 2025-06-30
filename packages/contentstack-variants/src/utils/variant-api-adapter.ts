@@ -8,6 +8,7 @@ import {
   ContentstackConfig,
   managementSDKClient,
   authenticationHandler,
+  log,
 } from '@contentstack/cli-utilities';
 
 import {
@@ -32,23 +33,33 @@ import { formatErrors } from './error-helper';
 
 export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implements VariantInterface<C, HttpClient> {
   public baseURL: string;
+  public exportConfig?: ExportConfig;
+
   constructor(config: APIConfig, options?: HttpClientOptions) {
     super(config, options);
     this.baseURL = config.baseURL?.includes('http') ? `${config.baseURL}/v3` : `https://${config.baseURL}/v3`;
     this.apiClient.baseUrl(this.baseURL);
+    log.debug(`VariantHttpClient initialized with base URL: ${this.baseURL}`, this.exportConfig?.context );
   }
 
   async init(): Promise<void> {
+    log.debug('Initializing VariantHttpClient...', this.exportConfig?.context );
     await authenticationHandler.getAuthDetails();
     const token = authenticationHandler.accessToken;
+    log.debug(`Authentication type: ${authenticationHandler.isOauthEnabled ? 'OAuth' : 'Token'}`, this.exportConfig?.context );
+    
     if (authenticationHandler.isOauthEnabled) {
+      log.debug('Setting OAuth authorization header', this.exportConfig?.context );
       this.apiClient.headers({ authorization: token });
     } else {
+      log.debug('Setting authtoken header', this.exportConfig?.context );
       this.apiClient.headers({ authtoken: token });
     }
+    log.debug('VariantHttpClient initialization completed', this.exportConfig?.context );
   }
 
   async variantEntry(options: VariantOptions) {
+    log.debug('VariantEntry method called (placeholder implementation)', { module: 'variant-api-adapter' });
     // TODO single entry variant
     return { entry: {} };
   }
@@ -85,16 +96,24 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
       include_publish_details = variantConfig.query.include_publish_details || true,
     } = options;
 
+    log.debug(`Fetching variant entries for content type: ${content_type_uid}, entry: ${entry_uid}, locale: ${locale}`, this.exportConfig?.context );
+    log.debug(`Query parameters - skip: ${skip}, limit: ${limit}, include_variant: ${include_variant}, include_count: ${include_count}, include_publish_details: ${include_publish_details}`, this.exportConfig?.context );
+
     if (variantConfig.serveMockData && callback) {
+      log.debug('Using mock data for variant entries', this.exportConfig?.context );
       let data = [] as Record<string, any>[];
 
       if (existsSync(variantConfig.mockDataPath)) {
+        log.debug(`Loading mock data from: ${variantConfig.mockDataPath}`, this.exportConfig?.context );
         data = require(variantConfig.mockDataPath) as Record<string, any>[];
       }
       callback(data);
       return;
     }
-    if (!locale) return;
+    if (!locale) {
+      log.debug('No locale provided, skipping variant entries fetch', this.exportConfig?.context );
+      return;
+    }
 
     const start = Date.now();
     let endpoint = `/content_types/${content_type_uid}/entries/${entry_uid}/variants?locale=${locale}`;
@@ -134,12 +153,17 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
       endpoint = endpoint.concat(query);
     }
 
+    log.debug(`Making API call to: ${endpoint}`, this.exportConfig?.context );
     const data = await this.apiClient.get(endpoint);
     const response = (await this.handleVariantAPIRes(data)) as { entries: VariantEntryStruct[]; count: number };
 
+    log.debug(`Received ${response.entries?.length || 0} variant entries out of total ${response.count}`, this.exportConfig?.context );
+
     if (callback) {
+      log.debug('Executing callback with variant entries', this.exportConfig?.context );
       callback(response.entries);
     } else {
+      log.debug('Adding variant entries to collection', this.exportConfig?.context );
       entries = entries.concat(response.entries);
     }
 
@@ -149,6 +173,7 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
 
       if (exeTime < 1000) {
         // 1 API call per second
+        log.debug(`Rate limiting: waiting ${1000 - exeTime}ms before next request`, this.exportConfig?.context );
         await this.delay(1000 - exeTime);
       }
       if (!options.skip) {
@@ -156,10 +181,14 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
       }
 
       options.skip += limit;
+      log.debug(`Continuing to fetch variant entries with skip: ${options.skip}`, this.exportConfig?.context );
       return await this.variantEntries(options, entries);
     }
 
-    if (returnResult) return { entries };
+    if (returnResult) {
+      log.debug('Returning variant entries result', this.exportConfig?.context );
+      return { entries };
+    }
   }
 
   /**
@@ -178,6 +207,9 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
     const { reject, resolve, variantUid, log } = apiParams;
     const variantConfig = (this.config as ImportConfig).modules.variantEntry;
     const { locale = variantConfig.query.locale || 'en-us', variant_id, entry_uid, content_type_uid } = options;
+    
+    log.debug(`Creating variant entry for content type: ${content_type_uid}, entry: ${entry_uid}, variant: ${variant_id}`, this.exportConfig?.context );
+    
     let endpoint = `content_types/${content_type_uid}/entries/${entry_uid}/variants/${variant_id}?locale=${locale}`;
 
     const query = this.constructQuery(omit(variantConfig.query, ['locale']));
@@ -186,13 +218,20 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
       endpoint = endpoint.concat(query);
     }
 
-    const onSuccess = (response: any) => resolve({ response, apiData: { variantUid, entryUid: entry_uid }, log });
-    const onReject = (error: any) =>
+    log.debug(`Making API call to: ${endpoint}`, this.exportConfig?.context );
+
+    const onSuccess = (response: any) => {
+      log.debug(`Variant entry created successfully: ${variantUid}`, this.exportConfig?.context );
+      resolve({ response, apiData: { variantUid, entryUid: entry_uid }, log });
+    };
+    const onReject = (error: any) => {
+      log.debug(`Failed to create variant entry: ${variantUid}`, this.exportConfig?.context );
       reject({
         error,
         apiData: { variantUid, entryUid: entry_uid },
         log,
       });
+    };
 
     try {
       this.apiClient.headers({ api_version: undefined });
@@ -224,16 +263,25 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
   ) {
     const { reject, resolve, log, variantUid } = apiParams;
     const { entry_uid, content_type_uid } = options;
+    
+    log.debug(`Publishing variant entry for content type: ${content_type_uid}, entry: ${entry_uid}`, this.exportConfig?.context );
+    
     let endpoint = `content_types/${content_type_uid}/entries/${entry_uid}/publish`;
 
-    const onSuccess = (response: any) =>
+    log.debug(`Making API call to: ${endpoint}`, this.exportConfig?.context );
+
+    const onSuccess = (response: any) => {
+      log.debug(`Variant entry published successfully: ${entry_uid}`, this.exportConfig?.context );
       resolve({ response, apiData: { entryUid: entry_uid, variantUid, locales: input.entry.locales }, log });
-    const onReject = (error: any) =>
+    };
+    const onReject = (error: any) => {
+      log.debug(`Failed to publish variant entry: ${entry_uid}`, this.exportConfig?.context );
       reject({
         error,
         apiData: { entryUid: entry_uid, variantUid, locales: input.entry.locales },
         log,
       });
+    };
 
     try {
       this.apiClient.headers({ api_version: 3.2 });
@@ -260,11 +308,14 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
     res: APIResponse,
   ): Promise<VariantEntryStruct | { entries: VariantEntryStruct[]; count: number } | string | any> {
     const { status, data } = res;
+    log.debug(`API response status: ${status}`, this.exportConfig?.context );
 
     if (status >= 200 && status < 300) {
+      log.debug('API request successful', this.exportConfig?.context );
       return data;
     }
 
+    log.debug(`API request failed with status: ${status}`, this.exportConfig?.context );
     // Refresh the access token if the response status is 401
     await authenticationHandler.refreshAccessToken(res);
 
@@ -272,6 +323,7 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
       ? formatErrors(data.errors)
       : data?.error_message || data?.message || data;
 
+    log.debug(`API error: ${errorMsg}`, this.exportConfig?.context );
     throw errorMsg;
   }
 }
@@ -281,17 +333,22 @@ export class VariantManagementSDK<T>
   implements VariantInterface<T, ContentstackClient>
 {
   public override apiClient!: ContentstackClient;
+  public exportConfig?: any;
 
   async init(): Promise<void> {
+    log.debug('Initializing VariantManagementSDK...', this.exportConfig?.context );
     this.apiClient = await managementSDKClient(this.config);
+    log.debug('VariantManagementSDK initialized successfully', this.exportConfig?.context );
   }
 
   async variantEntry(options: VariantOptions) {
+    log.debug('VariantEntry method called (SDK placeholder implementation)', this.exportConfig?.context );
     // TODO SDK implementation
     return { entry: {} };
   }
 
   async variantEntries(options: VariantsOption) {
+    log.debug('VariantEntries method called (SDK placeholder implementation)', this.exportConfig?.context );
     // TODO SDK implementation
     return { entries: [{}] };
   }
@@ -301,6 +358,7 @@ export class VariantManagementSDK<T>
     options: CreateVariantEntryOptions,
     apiParams: Record<string, any>,
   ): Promise<VariantEntryStruct | string | void> {
+    log.debug('CreateVariantEntry method called (SDK placeholder implementation)', this.exportConfig?.context );
     // FIXME placeholder
     return Promise.resolve({} as VariantEntryStruct);
   }
@@ -308,17 +366,23 @@ export class VariantManagementSDK<T>
   async handleVariantAPIRes(
     res: APIResponse,
   ): Promise<VariantEntryStruct | { entries: VariantEntryStruct[]; count: number } | string> {
+    log.debug('HandleVariantAPIRes method called (SDK implementation)', this.exportConfig?.context );
     return res.data;
   }
 
-  constructQuery(query: Record<string, any>): string | void {}
+  constructQuery(query: Record<string, any>): string | void {
+    log.debug('ConstructQuery method called (SDK placeholder implementation)', this.exportConfig?.context );
+  }
 
-  async delay(ms: number): Promise<void> {}
+  async delay(ms: number): Promise<void> {
+    log.debug(`Delay method called for ${ms}ms (SDK placeholder implementation)`, this.exportConfig?.context );
+  }
 }
 
 export class VariantAdapter<T> {
   protected variantInstance;
   public readonly messages: typeof messages;
+  public exportConfig?: any;
 
   constructor(config: ContentstackConfig & AnyProperty & AdapterType<T, ContentstackConfig>);
   constructor(config: APIConfig & AdapterType<T, APIConfig & AnyProperty>, options?: HttpClientOptions);
@@ -326,15 +390,20 @@ export class VariantAdapter<T> {
     config: APIConfig & AdapterType<T, (APIConfig & AnyProperty) | ContentstackConfig>,
     options?: HttpClientOptions,
   ) {
+    log.debug('Initializing VariantAdapter...', this.exportConfig?.context );
+    
     if (config.httpClient) {
+      log.debug('Using HTTP client variant instance', this.exportConfig?.context );
       const { httpClient, Adapter, ...restConfig } = config;
       this.variantInstance = new Adapter(restConfig, options);
     } else {
+      log.debug('Using SDK variant instance', this.exportConfig?.context );
       const { Adapter, ...restConfig } = config;
       this.variantInstance = new Adapter(restConfig);
     }
 
     this.messages = messages;
+    log.debug('VariantAdapter initialized successfully', this.exportConfig?.context );
   }
 }
 

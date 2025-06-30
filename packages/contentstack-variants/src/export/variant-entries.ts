@@ -38,9 +38,18 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
   async exportVariantEntry(options: { locale: string; contentTypeUid: string; entries: Record<string, any>[] }) {
     const variantEntry = this.config.modules.variantEntry;
     const { entries, locale, contentTypeUid: content_type_uid } = options;
+    
+    log.debug(`Starting variant entries export for content type: ${content_type_uid}, locale: ${locale}`, this.config.context);
+    log.debug(`Processing ${entries.length} entries for variant export`, this.config.context);
+    
+    log.debug('Initializing variant instance...', this.config.context);
     await this.variantInstance.init();
+    log.debug('Variant instance initialized successfully', this.config.context);
+    
     for (let index = 0; index < entries.length; index++) {
       const entry = entries[index];
+      log.debug(`Processing variant entries for entry: ${entry.title} (${entry.uid}) - ${index + 1}/${entries.length}`, this.config.context);
+      
       const variantEntryBasePath = join(
         sanitizePath(this.entriesDirPath),
         sanitizePath(content_type_uid),
@@ -48,6 +57,8 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
         sanitizePath(variantEntry.dirName),
         sanitizePath(entry.uid),
       );
+      log.debug(`Variant entry base path: ${variantEntryBasePath}`, this.config.context);
+      
       const variantEntriesFs = new FsUtility({
         isArray: true,
         keepMetadata: false,
@@ -57,17 +68,24 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
         chunkFileSize: variantEntry.chunkFileSize || 1,
         createDirIfNotExist: false,
       });
+      log.debug('Initialized FsUtility for variant entries', this.config.context);
 
       const callback = (variantEntries: Record<string, any>[]) => {
+        log.debug(`Callback received ${variantEntries?.length || 0} variant entries for entry: ${entry.uid}`, this.config.context);
         if (variantEntries?.length) {
           if (!existsSync(variantEntryBasePath)) {
+            log.debug(`Creating directory: ${variantEntryBasePath}`, this.config.context);
             mkdirSync(variantEntryBasePath, { recursive: true });
           }
+          log.debug(`Writing ${variantEntries.length} variant entries to file`, this.config.context);
           variantEntriesFs.writeIntoFile(variantEntries);
+        } else {
+          log.debug(`No variant entries found for entry: ${entry.uid}`, this.config.context);
         }
       };
 
       try {
+        log.debug(`Fetching variant entries for entry: ${entry.uid}`, this.config.context);
         await this.variantInstance.variantEntries({
           callback,
           getAllData: true,
@@ -75,14 +93,19 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
           entry_uid: entry.uid,
           locale,
         });
+        
         if (existsSync(variantEntryBasePath)) {
+          log.debug(`Completing file for entry: ${entry.uid}`, this.config.context);
           variantEntriesFs.completeFile(true);
           log.info(
             `Exported variant entries of type '${entry.title} (${entry.uid})' locale '${locale}'`,
             this.config.context,
           );
+        } else {
+          log.debug(`No variant entries directory created for entry: ${entry.uid}`, this.config.context);
         }
       } catch (error) {
+        log.debug(`Error occurred while exporting variant entries for entry: ${entry.uid}`, this.config.context);
         handleAndLogError(
           error,
           { ...this.config.context },
@@ -90,5 +113,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
         );
       }
     }
+    
+    log.debug(`Completed variant entries export for content type: ${content_type_uid}, locale: ${locale}`, this.config.context);
   }
 }

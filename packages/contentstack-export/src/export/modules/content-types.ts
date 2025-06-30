@@ -60,23 +60,35 @@ export default class ContentTypesExport extends BaseClass {
 
   async start() {
     try {
+      log.debug('Starting content types export process...', this.exportConfig.context);
       await fsUtil.makeDirectory(this.contentTypesDirPath);
+      log.debug(`Created directory at path: ${this.contentTypesDirPath}`, this.exportConfig.context);
+
       await this.getContentTypes();
       await this.writeContentTypes(this.contentTypes);
+
       log.success(messageHandler.parse('CONTENT_TYPE_EXPORT_COMPLETE'), this.exportConfig.context);
     } catch (error) {
       handleAndLogError(error, { ...this.exportConfig.context });
-      throw new Error(messageHandler.parse('CONTENT_TYPE_EXPORT_FAILED'));
     }
   }
 
   async getContentTypes(skip = 0): Promise<any> {
     if (skip) {
       this.qs.skip = skip;
+      log.debug(`Fetching content types with skip: ${skip}`, this.exportConfig.context);
     }
+
+    log.debug(`Querying content types with parameters: ${JSON.stringify(this.qs, null, 2)}`, this.exportConfig.context);
     const contentTypeSearchResponse = await this.stackAPIClient.contentType().query(this.qs).find();
+
+    log.debug(
+      `Fetched ${contentTypeSearchResponse.items?.length || 0} content types out of total ${contentTypeSearchResponse.count}`,
+      this.exportConfig.context,
+    );
+
     if (Array.isArray(contentTypeSearchResponse.items) && contentTypeSearchResponse.items.length > 0) {
-      let updatedContentTypes = this.sanitizeAttribs(contentTypeSearchResponse.items);
+      const updatedContentTypes = this.sanitizeAttribs(contentTypeSearchResponse.items);
       this.contentTypes.push(...updatedContentTypes);
 
       skip += this.contentTypesConfig.limit || 100;
@@ -90,9 +102,12 @@ export default class ContentTypesExport extends BaseClass {
   }
 
   sanitizeAttribs(contentTypes: Record<string, unknown>[]): Record<string, unknown>[] {
-    let updatedContentTypes: Record<string, unknown>[] = [];
+    log.debug(`Sanitizing ${contentTypes.length} content types`, this.exportConfig.context);
+
+    const updatedContentTypes: Record<string, unknown>[] = [];
+
     contentTypes.forEach((contentType) => {
-      for (let key in contentType) {
+      for (const key in contentType) {
         if (this.contentTypesConfig.validKeys.indexOf(key) === -1) {
           delete contentType[key];
         }
@@ -103,16 +118,26 @@ export default class ContentTypesExport extends BaseClass {
   }
 
   async writeContentTypes(contentTypes: Record<string, unknown>[]) {
+    log.debug(`Writing ${contentTypes.length} content types to disk`, this.exportConfig.context);
+
     function write(contentType: Record<string, unknown>) {
-      return fsUtil.writeFile(
-        path.join(
-          sanitizePath(this.contentTypesDirPath),
-          sanitizePath(`${contentType.uid === 'schema' ? 'schema|1' : contentType.uid}.json`),
-        ),
-        contentType,
+      const filename = `${contentType.uid === 'schema' ? 'schema|1' : contentType.uid}.json`;
+      const fullPath = path.join(
+        sanitizePath(this.contentTypesDirPath),
+        sanitizePath(filename),
       );
+
+      log.debug(`Writing content type to: ${fullPath}`, this.exportConfig.context);
+      return fsUtil.writeFile(fullPath, contentType);
     }
-    await executeTask(contentTypes, write.bind(this), { concurrency: this.exportConfig.writeConcurrency });
-    return fsUtil.writeFile(path.join(this.contentTypesDirPath, 'schema.json'), contentTypes);
+
+    await executeTask(contentTypes, write.bind(this), {
+      concurrency: this.exportConfig.writeConcurrency,
+    });
+
+    const schemaFilePath = path.join(this.contentTypesDirPath, 'schema.json');
+    log.debug(`Writing aggregate schema to: ${schemaFilePath}`, this.exportConfig.context);
+
+    return fsUtil.writeFile(schemaFilePath, contentTypes);
   }
 }
