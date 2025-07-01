@@ -113,7 +113,7 @@ export default class ExportCommand extends Command {
       const exportConfig = await setupExportConfig(flags);
       // Prepare the context object
       const context = this.createExportContext(exportConfig.apiKey);
-      exportConfig.context = context;
+      exportConfig.context = {...context};
 
       // Assign exportConfig variables
       this.assignExportConfig(exportConfig);
