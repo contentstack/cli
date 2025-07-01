@@ -11,7 +11,7 @@ export const validateEnvironment = async (
   apiKey: string,
   environment: string,
 ): Promise<any> => {
-  log.debug('Starting environment validation', { module: 'tokens-validation', apiKey: apiKey ? 'provided' : 'not-provided', environment });
+  log.debug('Starting environment validation', { module: 'tokens-validation', apiKeyStatus: apiKey ? 'provided' : 'not-provided', environment });
   
   let result: { valid: boolean; message: string };
   try {
@@ -43,7 +43,7 @@ export const validateEnvironment = async (
  * @returns
  */
 export const validateAPIKey = async (contentStackClient: any, apiKey: string): Promise<any> => {
-  log.debug('Starting API key validation', { module: 'tokens-validation', apiKey: apiKey ? 'provided' : 'not-provided' });
+  log.debug('Starting API key validation', { module: 'tokens-validation', apiKeyStatus: apiKey ? 'provided' : 'not-provided' });
   
   let result: { valid: boolean; message: string };
   try {

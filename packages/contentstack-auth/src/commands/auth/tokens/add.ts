@@ -178,7 +178,7 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
       if (type === 'management') {
         log.debug('Validating management token', {
           ...this.contextDetails,
-          apiKey: apiKey ? 'provided' : 'not-provided',
+          apiKeyStatus: apiKey ? 'provided' : 'not-provided',
         });
         // FIXME - Once the SDK refresh token issue is resolved, need to revert this back to SDK call
         const httpClient = new HttpClient({ headers: { api_key: apiKey, authorization: token } });

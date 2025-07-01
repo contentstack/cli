@@ -128,13 +128,18 @@ describe('Log Set Command', () => {
 
 describe('Log Get Command', () => {
   let printMessage: string[] = [];
+  let tableMessage: any[] = [];
   let errorMessage: any;
 
   beforeEach(() => {
     printMessage = [];
+    tableMessage = [];
     errorMessage = null;
 
     sinon.stub(cliux, 'print').callsFake((msg: string) => printMessage.push(msg));
+    sinon.stub(cliux, 'table').callsFake((headers: any, data: any) => {
+      tableMessage.push({ headers, data });
+    });
     sinon.stub(cliux, 'error').callsFake((_, err) => {
       errorMessage = err;
     });
@@ -150,9 +155,17 @@ describe('Log Get Command', () => {
 
     await cmd.run();
 
-    expect(printMessage.join('\n')).to.include('Logging Configuration:');
-    expect(printMessage.join('\n')).to.include('Log Level: debug');
-    expect(printMessage.join('\n')).to.include('Log Path  : ./logs/app.log');
+    expect(tableMessage).to.have.length(1);
+    expect(tableMessage[0].headers).to.deep.equal([
+      { value: 'Log Level' },
+      { value: 'Log Path' }
+    ]);
+    expect(tableMessage[0].data).to.deep.equal([
+      {
+        'Log Level': 'debug',
+        'Log Path': './logs/app.log'
+      }
+    ]);
   });
 
   it('should display only log level when path is not configured', async () => {
@@ -161,8 +174,17 @@ describe('Log Get Command', () => {
 
     await cmd.run();
 
-    expect(printMessage.join('\n')).to.include('Log Level: info');
-    expect(printMessage.join('\n')).to.not.include('Log Path');
+    expect(tableMessage).to.have.length(1);
+    expect(tableMessage[0].headers).to.deep.equal([
+      { value: 'Log Level' },
+      { value: 'Log Path' }
+    ]);
+    expect(tableMessage[0].data).to.deep.equal([
+      {
+        'Log Level': 'info',
+        'Log Path': 'Not set'
+      }
+    ]);
   });
 
   it('should display only log path when level is not configured', async () => {
@@ -171,8 +193,17 @@ describe('Log Get Command', () => {
 
     await cmd.run();
 
-    expect(printMessage.join('\n')).to.include('Log Path  : ./custom/logs/app.log');
-    expect(printMessage.join('\n')).to.not.include('Log Level');
+    expect(tableMessage).to.have.length(1);
+    expect(tableMessage[0].headers).to.deep.equal([
+      { value: 'Log Level' },
+      { value: 'Log Path' }
+    ]);
+    expect(tableMessage[0].data).to.deep.equal([
+      {
+        'Log Level': 'Not set',
+        'Log Path': './custom/logs/app.log'
+      }
+    ]);
   });
 
   it('should display error message when no config is found', async () => {
