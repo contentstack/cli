@@ -1,5 +1,5 @@
 import { Command } from '@contentstack/cli-command';
-import { configHandler, FlagInput, Flags, Interfaces, LoggerService } from '@contentstack/cli-utilities';
+import { configHandler, Flags, Interfaces, LoggerService, log } from '@contentstack/cli-utilities';
 import { Context } from './interfaces';
 
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
@@ -56,7 +56,6 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       userId: configHandler.get('userId'),
       email: configHandler.get('email'),
       sessionId: this.context.sessionId,
-      clientId: this.context.clientId,
       apiKey: apiKey || '',
       orgId: configHandler.get('organization_uid') || '',
     };
