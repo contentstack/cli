@@ -19,7 +19,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     await super.init();
     // Init logger
     this.logger = new LoggerService(process.cwd(), 'cli-log');
-    this.contextDetails = this.createExportContext();
+    this.contextDetails = { ...this.createExportContext() };
   }
 
   /**
