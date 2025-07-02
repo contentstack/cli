@@ -19,7 +19,7 @@ export default class Logger {
     /management[-._]?token/i,
     /sessionid/i,
     /orgid/i,
-    /stack/i
+    /stack/i,
   ];
 
   constructor(config: LoggerConfig) {
@@ -150,7 +150,6 @@ export default class Logger {
     const logPayload = {
       level: logLevels.error,
       message: params.message,
-      timestamp: new Date(),
       meta: {
         type: params.type,
         error: params.error,
@@ -158,10 +157,16 @@ export default class Logger {
         ...(params.meta || {}),
       },
     };
-    const targetLevel: LogType = params.hidden ? 'debug' : 'error';
 
-    if (this.shouldLog(targetLevel, 'console') || this.shouldLog(targetLevel, 'file')) {
-      this.loggers[targetLevel].error(logPayload);
+    // Always log to error file, but respect hidden parameter for console
+    if (this.shouldLog('error', 'file')) {
+      this.loggers.error.error(logPayload);
+    }
+    
+    // For console, use debug level if hidden, otherwise error level
+    const consoleLevel: LogType = params.hidden ? 'debug' : 'error';
+    if (this.shouldLog(consoleLevel, 'console')) {
+      this.loggers[consoleLevel].error(logPayload);
     }
   }
 
@@ -244,7 +249,6 @@ export default class Logger {
     const logPayload = {
       level: logLevels.debug,
       message: params.message,
-      timestamp: new Date(),
       meta: {
         type: params.type,
         debug: params.debug,
