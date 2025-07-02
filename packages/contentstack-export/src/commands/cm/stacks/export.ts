@@ -108,13 +108,12 @@ export default class ExportCommand extends Command {
 
   async run(): Promise<void> {
     let exportDir: string = pathValidator('logs');
-    let exportConfig: ExportConfig;
     try {
       const { flags } = await this.parse(ExportCommand);
-      exportConfig = await setupExportConfig(flags);
+      const exportConfig = await setupExportConfig(flags);
       // Prepare the context object
       const context = this.createExportContext(exportConfig.apiKey);
-      exportConfig.context = context;
+      exportConfig.context = {...context};
 
       // Assign exportConfig variables
       this.assignExportConfig(exportConfig);
@@ -127,9 +126,10 @@ export default class ExportCommand extends Command {
         writeExportMetaFile(exportConfig);
       }
       log.success(`The content of the stack ${exportConfig.apiKey} has been exported successfully!`,exportConfig.context)
+      log.info(`The exported content has been stored at '${exportDir}'`, exportConfig.context);
       log.success(`The log has been stored at '${getLogPath()}'`, exportConfig.context)
     } catch (error) {
-      handleAndLogError(error, { ...exportConfig.context });
+      handleAndLogError(error);
     }
   }
   
@@ -141,9 +141,9 @@ export default class ExportCommand extends Command {
       userId: configHandler.get('userId'),
       email: configHandler.get('email'),
       sessionId: this.context.sessionId,
-      clientId: this.context.clientId,
       apiKey: apiKey || '',
       orgId: configHandler.get('organization_uid') || '',
+      authMethod: this.context.authMethod || 'basic',
     };
   }
 
