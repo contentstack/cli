@@ -16,6 +16,7 @@ const command = new Command();
 const { isEmpty } = require('../util');
 const { fetchBulkPublishLimit } = require('../util/common-utility');
 const VARIANTS_UNPUBLISH_API_VERSION = '3.2';
+const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 let bulkUnPublishSet = [];
 let bulkUnPulishAssetSet = [];
@@ -196,7 +197,6 @@ async function getSyncEntries(
       }
 
       const Stack = new command.deliveryAPIClient.Stack(deliveryAPIOptions);
-
       Stack.setHost(config.cda);
 
       const syncData = {};
@@ -227,28 +227,29 @@ async function getSyncEntries(
         // Call bulkAction for entries without variants
         await bulkAction(stack, entriesResponse.items, bulkUnpublish, environment, locale, apiVersion, bulkPublishLimit, false);
       }
-      
-      if (entriesResponse.items.length === 0) {
+      if (entriesResponse.items.length === 0 && !entriesResponse.pagination_token) {
         if (!changedFlag) console.log('No Entries/Assets Found published on specified environment');
         return resolve();
       }
-      setTimeout(async () => {
-        await getSyncEntries(
-          stack,
-          config,
-          locale,
-          queryParams,
-          bulkUnpublish,
-          environment,
-          deliveryToken,
-          apiVersion,
-          bulkPublishLimit,
-          variantsFlag,
-          null,
-        );
-      }, 3000);
+
+      await delay(3000);
+      await getSyncEntries(
+        stack,
+        config,
+        locale,
+        queryParams,
+        bulkUnpublish,
+        environment,
+        deliveryToken,
+        apiVersion,
+        bulkPublishLimit,
+        variantsFlag,
+        entriesResponse.pagination_token,
+      );
+
+      return resolve();
     } catch (error) {
-      reject(error);
+      return reject(error);
     }
   });
 }
