@@ -1,12 +1,12 @@
 fileignoreconfig:
   - filename: pnpm-lock.yaml
-    checksum: 63d408024e8d1f64b0f23a4db8107c1ee0f450f4b8233ba7831e50f596e39d24
+    checksum: 144fd75cbb336e8c93b3e58dc45ec4d3ea7c699f6dc9d9e5af1ae6a310720c0a
   - filename: packages/contentstack-import/test/integration/auth-token-modules/environments.test.js
     checksum: bc6f06b75d082aaf99e2f2f4b932b143765e2f14086967fb8973fe1b2ca6c03e
   - filename: packages/contentstack-import/test/integration/environments.test.js
     checksum: e71f033dad8944ffeafdf22d0514bda1d20c43e8fea0d62c96e774f3414beb31
   - filename: package-lock.json
-    checksum: 8a1af78f7abed40e4894fbc1b82f3b5ffffea76550250c4e9c3d0dda12e59db7
+    checksum: 80377071a9029f9c83130053890ca943185bbf252840f4feb73ea1734cc51779
   - filename: packages/contentstack-auth/test/unit/tokens-validation.test.ts
     checksum: 676052e30d31a771ce68302d89b050d176bbef50f3abc7e9cdd4384f0e274e10
   - filename: packages/contentstack-import/test/integration/auth-token.test.js
@@ -51,4 +51,6 @@ fileignoreconfig:
     checksum: 9c79540ab8522736f17c3ae1c9bfea07784b6ed0aa41f5617c90ba6812b91e72
   - filename: packages/contentstack-import/test/integration/auth-token-modules/global-fields.test.js
     checksum: db5b7aedcd89d783760eb988a2369243c34edc9c12e93a41b2b08fb0da02afdc
+  - filename: packages/contentstack-export/src/export/modules/assets.ts
+    checksum: c7f19e6c4a212329d981cebce9a9a8393923dd7c85feb762ddcdca678f7a9349
 version: ''
