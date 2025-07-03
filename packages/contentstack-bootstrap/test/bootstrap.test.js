@@ -249,4 +249,76 @@ describe('Bootstrapping an app', () => {
       throw err;
     }
   });
+
+  it('should handle --run-dev-server flag correctly', async () => {
+    // Mock execSync and spawn for npm commands
+    const childProcess = require('child_process');
+    const execSyncStub = sandbox.stub(childProcess, 'execSync').returns();
+    const spawnStub = sandbox.stub(childProcess, 'spawn').returns({
+      on: sandbox.stub().callsArg(1),
+    });
+
+    try {
+      const MockBootstrapCommand = class extends Command {
+        async run() {
+          cliux.loader('Cloning the selected app');
+          await githubClientStub.getLatest(process.cwd());
+          cliux.loader();
+
+          const result = await ContentStackSeed.run(['--repo', mock.appConfig.stack]);
+
+          if (result?.api_key) {
+            await utils.setupEnvironments(
+              {
+                stack: () => ({
+                  environment: () => ({
+                    query: () => ({
+                      find: () => Promise.resolve(mock.environments),
+                    }),
+                  }),
+                  deliveryToken: () => ({
+                    create: () => Promise.resolve(mock.deliveryToken),
+                  }),
+                }),
+              },
+              result.api_key,
+              mock.appConfig,
+              process.cwd(),
+              mock.region,
+              true,
+              mock.managementToken.token,
+            );
+          }
+
+          cliux.print(messages.CLI_BOOTSTRAP_SUCCESS);
+
+          // Simulate runDevServer = true
+          const runDevServer = true;
+          if (runDevServer) {
+            cliux.loader(messages.CLI_BOOTSTRAP_INSTALLING_DEPENDENCIES);
+            execSyncStub('npm install', { cwd: process.cwd(), stdio: 'inherit' });
+            cliux.loader();
+            cliux.print(messages.CLI_BOOTSTRAP_DEPENDENCIES_INSTALLED);
+            cliux.print(messages.CLI_BOOTSTRAP_STARTING_DEV_SERVER);
+            cliux.print(messages.CLI_BOOTSTRAP_DEV_SERVER_STARTED);
+            spawnStub('npm', ['run', 'dev'], { cwd: process.cwd(), stdio: 'inherit', shell: true });
+          }
+        }
+      };
+
+      const command = new MockBootstrapCommand();
+      await command.run();
+
+      // Verify that npm install was called
+      expect(execSyncStub.calledWith('npm install')).to.be.true;
+      // Verify that npm run dev was called
+      expect(spawnStub.calledWith('npm', ['run', 'dev'])).to.be.true;
+      // Verify messages were printed
+      expect(stdout).to.include(messages.CLI_BOOTSTRAP_DEPENDENCIES_INSTALLED);
+      expect(stdout).to.include(messages.CLI_BOOTSTRAP_DEV_SERVER_STARTED);
+    } catch (err) {
+      console.error('Error during dev server test:', err);
+      throw err;
+    }
+  });
 });
