@@ -132,4 +132,8 @@ fileignoreconfig:
     checksum: 09f3b73dd995bafc253265c676f06308513e6b1842d9bc01d39e6b6945a54c7d
   - filename: packages/contentstack-export/src/export/modules/assets.ts
     checksum: c7f19e6c4a212329d981cebce9a9a8393923dd7c85feb762ddcdca678f7a9349
-version: "1.0"
+  - filename: packages/contentstack-bootstrap/messages/index.json
+    checksum: c435ceaa709a7504da303a6ea674e07a89030d8ad4152e7917cd17e7f3e58052
+  - filename: packages/contentstack-bootstrap/src/config.ts
+    checksum: 65d300dc729fb84f5446c0b14921555db01fe5c90be3d297e3d0418a37b3696a
+version: '1.0'
