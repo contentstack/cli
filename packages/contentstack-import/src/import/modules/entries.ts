@@ -57,7 +57,7 @@ export default class EntriesImport extends BaseClass {
   public taxonomies: Record<string, unknown>;
   public rteCTs: any;
   public rteCTsWithRef: any;
-  public entriesForVariant: { content_type: string; locale: string; entry_uid: string }[] = [];
+  public entriesForVariant: Array<{ content_type: string; locale: string; entry_uid: string }> = [];
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -387,7 +387,9 @@ export default class EntriesImport extends BaseClass {
     const onReject = ({ error, apiData: entry, additionalInfo }: any) => {
       const { title, uid } = entry;
       // NOTE Remove from list if any entry import failed
-      remove(this.entriesForVariant, { locale, entry_uid: uid });
+      this.entriesForVariant = this.entriesForVariant.filter(
+        (item) => !(item.locale === locale && item.entry_uid === uid),
+      );
       // NOTE: write existing entries into files to handler later
       if (error.errorCode === 119) {
         if (error?.errors?.title || error?.errors?.uid) {
@@ -538,7 +540,9 @@ export default class EntriesImport extends BaseClass {
     };
     const onReject = ({ error, apiData: { uid, title } }: any) => {
       // NOTE Remove from list if any entry import failed
-      remove(this.entriesForVariant, { locale, entry_uid: uid });
+      this.entriesForVariant = this.entriesForVariant.filter(
+        (item) => !(item.locale === locale && item.entry_uid === uid),
+      );
 
       log(this.importConfig, `${title} entry of content type ${cTUid} in locale ${locale} failed to replace`, 'error');
       log(this.importConfig, formatError(error), 'error');
@@ -669,7 +673,9 @@ export default class EntriesImport extends BaseClass {
     };
     const onReject = ({ error, apiData: { uid, title } }: any) => {
       // NOTE Remove from list if any entry import failed
-      remove(this.entriesForVariant, { locale, entry_uid: uid });
+      this.entriesForVariant = this.entriesForVariant.filter(
+        (item) => !(item.locale === locale && item.entry_uid === uid),
+      );
 
       log(this.importConfig, `${title} entry of content type ${cTUid} in locale ${locale} failed to update`, 'error');
       log(this.importConfig, formatError(error), 'error');
@@ -817,19 +823,17 @@ export default class EntriesImport extends BaseClass {
   async removeAutoCreatedEntries(): Promise<void> {
     const onSuccess = ({ response, apiData: { entryUid } }: any) => {
       // NOTE Remove entry from list
-      remove(this.entriesForVariant, {
-        entry_uid: entryUid,
-        locale: this.importConfig?.master_locale?.code,
-      });
+      this.entriesForVariant = this.entriesForVariant.filter(
+        (item) => !(item.entry_uid === entryUid && item.locale === this.importConfig?.master_locale?.code),
+      );
 
       log(this.importConfig, `Auto created entry in master locale removed - entry uid ${entryUid} `, 'success');
     };
     const onReject = ({ error, apiData: { entryUid } }: any) => {
       // NOTE Remove entry from list
-      remove(this.entriesForVariant, {
-        entry_uid: entryUid,
-        locale: this.importConfig?.master_locale?.code,
-      });
+      this.entriesForVariant = this.entriesForVariant.filter(
+        (item) => !(item.entry_uid === entryUid && item.locale === this.importConfig?.master_locale?.code),
+      );
 
       log(
         this.importConfig,

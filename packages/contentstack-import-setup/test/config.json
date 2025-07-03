@@ -27,9 +27,12 @@
     ],
     "ENABLE_PREREQUISITES": true,
     "REGIONS": [
-        "NA",
-        "EU",
+        "AWS-NA",
+        "AWS-EU",
+        "AWS-AU",
         "AZURE-NA",
-        "AZURE-EU"
+        "AZURE-EU",
+        "GCP-NA",
+        "GCP-EU"
     ]
 }
