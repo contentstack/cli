@@ -27,13 +27,13 @@ export default class ExportStack extends BaseClass {
 
   async start(): Promise<void> {
     if (isAuthenticated()) {
-      await this.exportStackSettings();
       const stackData = await this.getStack();
       if (stackData?.org_uid) {
         this.exportConfig.org_uid = stackData.org_uid;
         this.exportConfig.sourceStackName = stackData.name;
       }
     }
+    await this.exportStackSettings();
     if (!this.exportConfig.preserveStackVersion && !this.exportConfig.hasOwnProperty('master_locale')) {
       //fetch master locale details
       return this.getLocales();
