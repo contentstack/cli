@@ -16,7 +16,7 @@ importers:
       '@contentstack/cli-auth': ~1.4.1
       '@contentstack/cli-cm-bootstrap': ~1.14.1
       '@contentstack/cli-cm-branches': ~1.4.3
-      '@contentstack/cli-cm-bulk-publish': ~1.8.1
+      '@contentstack/cli-cm-bulk-publish': ~1.8.2
       '@contentstack/cli-cm-clone': ~1.14.2
       '@contentstack/cli-cm-export': ~1.16.3
       '@contentstack/cli-cm-export-to-csv': ~1.8.2
@@ -541,7 +541,7 @@ importers:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/cli-variants': link:../contentstack-variants
-      '@oclif/core': 4.3.3
+      '@oclif/core': 4.4.0
       async: 3.2.6
       big-json: 3.2.0
       bluebird: 3.7.2
@@ -557,7 +557,7 @@ importers:
       '@contentstack/cli-config': link:../contentstack-config
       '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
       '@oclif/plugin-help': 6.2.28
-      '@oclif/test': 4.1.13_@oclif+core@4.3.3
+      '@oclif/test': 4.1.13_@oclif+core@4.4.0
       '@types/big-json': 3.2.5
       '@types/mkdirp': 1.0.2
       '@types/progress-stream': 2.0.5
@@ -2031,7 +2031,7 @@ packages:
       '@apollo/client': 3.13.8_graphql@16.11.0
       '@contentstack/cli-command': 1.5.1_debug@4.4.1
       '@contentstack/cli-utilities': 1.12.0_debug@4.4.1
-      '@oclif/core': 4.3.3
+      '@oclif/core': 4.4.0
       '@oclif/plugin-help': 6.2.28
       '@oclif/plugin-plugins': 5.4.39
       '@rollup/plugin-commonjs': 28.0.3_rollup@4.41.1
@@ -2072,7 +2072,7 @@ packages:
     dependencies:
       '@contentstack/management': 1.21.4_debug@4.4.1
       '@contentstack/marketplace-sdk': 1.2.8_debug@4.4.1
-      '@oclif/core': 4.3.3
+      '@oclif/core': 4.4.0
       axios: 1.9.0_debug@4.4.1
       chalk: 4.1.2
       cli-cursor: 3.1.0
@@ -3480,8 +3480,8 @@ packages:
       wordwrap: 1.0.0
       wrap-ansi: 7.0.0
 
-  /@oclif/core/4.3.3:
-    resolution: {integrity: sha512-A0mk4nlVE+r34fl91OdglXVPwhhfzM59IhSxnOigqMkwxFgT8z3i2WlUgzmazzvzSccs2KM4N2HkTS3NEvW96g==}
+  /@oclif/core/4.4.0:
+    resolution: {integrity: sha512-wH5g3SLmbRutnr7UzQBSozRFEAZ7U9YGB/wFuBRr0ZghTgv5DE+KQaf6ZtU7iFb9pvkvoVRnT5XheNAtbjRDaQ==}
     engines: {node: '>=18.0.0'}
     dependencies:
       ansi-escapes: 4.3.2
@@ -3567,7 +3567,7 @@ packages:
     resolution: {integrity: sha512-k5FBGxjXsSj56075MFVx5I9MAJa082evyPqLUBOjXL9w91q3k/89U+kTCfFNTQga8DykxhMP/7UTuDFV+d/Dhg==}
     engines: {node: '>=18.0.0'}
     dependencies:
-      '@oclif/core': 4.3.3
+      '@oclif/core': 4.4.0
       ansis: 3.17.0
       debug: 4.4.1
       http-call: 5.3.0
@@ -3601,13 +3601,13 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@oclif/test/4.1.13_@oclif+core@4.3.3:
+  /@oclif/test/4.1.13_@oclif+core@4.4.0:
     resolution: {integrity: sha512-pulrTiJRhoAKizFf6y5WeHvM2JyoRiZKV0H8qqYEoE0UHDKqInNmfGJyp8Ip6lTVQeMv1U8YCAXOS/HiWPVWeg==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@oclif/core': '>= 3.0.0'
     dependencies:
-      '@oclif/core': 4.3.3
+      '@oclif/core': 4.4.0
       ansis: 3.17.0
       debug: 4.4.1
     transitivePeerDependencies:
@@ -8254,7 +8254,7 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 8.33.1_hzt6xcfnpp4qecssyxfdrtmoeu
+      '@typescript-eslint/parser': 8.33.1_avq3eyf5kaj6ssrwo7fvkrwnji
       debug: 3.2.7
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
@@ -8314,7 +8314,7 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 6.21.0_hzt6xcfnpp4qecssyxfdrtmoeu
+      '@typescript-eslint/parser': 6.21.0_avq3eyf5kaj6ssrwo7fvkrwnji
       debug: 3.2.7
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
@@ -8380,7 +8380,7 @@ packages:
         optional: true
     dependencies:
       '@rtsao/scc': 1.1.0
-      '@typescript-eslint/parser': 6.21.0_hzt6xcfnpp4qecssyxfdrtmoeu
+      '@typescript-eslint/parser': 6.21.0_avq3eyf5kaj6ssrwo7fvkrwnji
       array-includes: 3.1.9
       array.prototype.findlastindex: 1.2.6
       array.prototype.flat: 1.3.3
@@ -8417,7 +8417,7 @@ packages:
         optional: true
     dependencies:
       '@rtsao/scc': 1.1.0
-      '@typescript-eslint/parser': 8.33.1_hzt6xcfnpp4qecssyxfdrtmoeu
+      '@typescript-eslint/parser': 8.33.1_avq3eyf5kaj6ssrwo7fvkrwnji
       array-includes: 3.1.9
       array.prototype.findlastindex: 1.2.6
       array.prototype.flat: 1.3.3
