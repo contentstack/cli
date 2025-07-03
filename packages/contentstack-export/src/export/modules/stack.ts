@@ -18,11 +18,16 @@ export default class ExportStack extends BaseClass {
     super({ exportConfig, stackAPIClient });
     this.stackConfig = exportConfig.modules.stack;
     this.qs = { include_count: true };
-    this.stackFolderPath = pResolve(this.exportConfig.data, this.stackConfig.dirName);
+    this.stackFolderPath = pResolve(
+      this.exportConfig.data,
+      this.exportConfig.branchName || '',
+      this.stackConfig.dirName,
+    );
   }
 
   async start(): Promise<void> {
     if (isAuthenticated()) {
+      await this.exportStackSettings();
       const stackData = await this.getStack();
       if (stackData?.org_uid) {
         this.exportConfig.org_uid = stackData.org_uid;
@@ -90,6 +95,21 @@ export default class ExportStack extends BaseClass {
       })
       .catch((error: any) => {
         log(this.exportConfig, `Failed to export stack. ${formatError(error)}`, 'error');
+      });
+  }
+
+  async exportStackSettings(): Promise<any> {
+    log(this.exportConfig, 'Exporting stack settings', 'success');
+    await fsUtil.makeDirectory(this.stackFolderPath);
+    return this.stack
+      .settings()
+      .then((resp: any) => {
+        fsUtil.writeFile(pResolve(this.stackFolderPath, 'settings.json'), resp);
+        log(this.exportConfig, 'Exported stack settings successfully!', 'success');
+        return resp;
+      })
+      .catch((error: any) => {
+        log(this.exportConfig, `Failed to export stack settings. ${formatError(error)}`, 'error');
       });
   }
 }
