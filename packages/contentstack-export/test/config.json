@@ -3,6 +3,6 @@
   "UNIT_EXECUTION_ORDER": [],
   "INTEGRATION_EXECUTION_ORDER": [],
   "ENABLE_PREREQUISITES": true,
-  "REGIONS": ["NA", "EU", "AZURE-NA", "AZURE-EU"],
+  "REGIONS": ["AWS-NA", "AWS-EU", "AWS-AU", "AZURE-NA", "AZURE-EU", "GCP-NA", "GCP-EU"],
   "apiKey": "***REMOVED***"
 }
