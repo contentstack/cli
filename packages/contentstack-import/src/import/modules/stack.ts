@@ -3,9 +3,8 @@ import { log, formatError, fileHelper, fsUtil } from '../../utils';
 import BaseClass from './base-class';
 import { ModuleClassParams } from '../../types';
 
-export default class ImportStackSettings extends BaseClass {
+export default class ImportStack extends BaseClass { // classname
   private stackSettingsPath: string;
-  private branchStackSettingsPath: string | null;
   private envUidMapperPath: string;
   private stackSettings: Record<string, any> | null = null;
   private envUidMapper: Record<string, string> = {};
@@ -13,14 +12,11 @@ export default class ImportStackSettings extends BaseClass {
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
     this.stackSettingsPath = join(this.importConfig.backupDir, 'stack', 'settings.json');
-    this.branchStackSettingsPath = this.importConfig.branchName
-      ? join(this.importConfig.backupDir, 'branches', this.importConfig.branchName, 'stack', 'settings.json')
-      : null;
     this.envUidMapperPath = join(this.importConfig.backupDir, 'mapper', 'environments', 'uid-mapping.json');
   }
 
   async start(): Promise<void> {
-    log(this.importConfig, 'Migrating stack settings...', 'info');
+    log(this.importConfig, 'Migrating stack...', 'info');
     
     if (fileHelper.fileExistsSync(this.envUidMapperPath)) {
       this.envUidMapper = fsUtil.readFile(this.envUidMapperPath, true) as Record<string, string>;
@@ -28,12 +24,10 @@ export default class ImportStackSettings extends BaseClass {
       throw new Error('Please run the environments migration first.');
     }
 
-    if (this.branchStackSettingsPath && fileHelper.fileExistsSync(this.branchStackSettingsPath)) {
-      this.stackSettings = fsUtil.readFile(this.branchStackSettingsPath, true) as Record<string, any>;
-    } else if (fileHelper.fileExistsSync(this.stackSettingsPath)) {
+    if (fileHelper.fileExistsSync(this.stackSettingsPath)) {
       this.stackSettings = fsUtil.readFile(this.stackSettingsPath, true) as Record<string, any>;
     } else {
-      log(this.importConfig, 'No stack settings Found!', 'info');
+      log(this.importConfig, 'No stack Found!', 'info');
       return;
     }
 
@@ -45,9 +39,9 @@ export default class ImportStackSettings extends BaseClass {
 
     try {
       await this.stack.addSettings(this.stackSettings);
-      log(this.importConfig, 'Successfully imported stack settings', 'success');
+      log(this.importConfig, 'Successfully imported stack', 'success');
     } catch (error) {
-      log(this.importConfig, `Stack setttings failed to be import! ${formatError(error)}`, 'error');
+      log(this.importConfig, `Stack failed to be imported! ${formatError(error)}`, 'error');
     }
   }
 } 
