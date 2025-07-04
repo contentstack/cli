@@ -33,7 +33,11 @@ export default class ExportStack extends BaseClass {
         this.exportConfig.sourceStackName = stackData.name;
       }
     }
-    await this.exportStackSettings();
+    if (this.exportConfig.management_token) {
+      log(this.exportConfig, 'Skipping stack settings export: Operation is not supported when using a management token.', 'info');
+    } else {
+      await this.exportStackSettings();
+    }
     if (!this.exportConfig.preserveStackVersion && !this.exportConfig.hasOwnProperty('master_locale')) {
       //fetch master locale details
       return this.getLocales();
