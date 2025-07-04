@@ -6,7 +6,7 @@ fileignoreconfig:
   - filename: packages/contentstack-import/test/integration/environments.test.js
     checksum: e71f033dad8944ffeafdf22d0514bda1d20c43e8fea0d62c96e774f3414beb31
   - filename: package-lock.json
-    checksum: 8699ac1d7b2d3af92b6a95cbb9898ad5bb4e7eb17527824cd6ecdd14e6cfde5a
+    checksum: 19a7a4177060648a9f1ff4e4ef31b8b794f0de5bd82cc2f417d703945a53628d
   - filename: packages/contentstack-auth/test/unit/tokens-validation.test.ts
     checksum: 676052e30d31a771ce68302d89b050d176bbef50f3abc7e9cdd4384f0e274e10
   - filename: packages/contentstack-import/test/integration/auth-token.test.js
