@@ -156,7 +156,13 @@ const config: DefaultConfig = {
     },
     personalize: {
       baseURL: {
-        NA: 'https://personalize-api.contentstack.com',
+        'AWS-NA': 'https://personalize-api.contentstack.com',
+        'AWS-EU': 'https://eu-personalize-api.contentstack.com',
+        'AWS-AU': 'https://au-personalize-api.contentstack.com',
+        'AZURE-NA': 'https://azure-na-personalize-api.contentstack.com',
+        'AZURE-EU': 'https://azure-eu-personalize-api.contentstack.com',
+        'GCP-NA': 'https://gcp-na-personalize-api.contentstack.com',
+        'GCP-EU': 'https://gcp-eu-personalize-api.contentstack.com',
       },
       importData: true,
       dirName: 'personalize',
