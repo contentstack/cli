@@ -1,4 +1,4 @@
-import { flags, isAuthenticated, FlagInput, managementSDKClient, cliux, formatError } from '@contentstack/cli-utilities';
+import { flags, isAuthenticated, FlagInput, managementSDKClient, cliux } from '@contentstack/cli-utilities';
 import { RateLimitHandler } from '../../../utils/rate-limit-handler';
 import { BaseCommand } from '../../../base-command';
 import { askOrgID } from '../../../utils/interactive';
@@ -83,7 +83,6 @@ export default class SetRateLimitCommand extends BaseCommand<typeof SetRateLimit
       await limitHandler.setRateLimit(config);
     } catch (error) {
       cliux.error(`Error: Something went wrong while setting rate limit for org: ${org}`);
-      cliux.error(formatError(error));
       cliux.error(error);
     }
   }

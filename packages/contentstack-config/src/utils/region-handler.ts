@@ -53,6 +53,24 @@ const regions = {
     launchHubUrl: 'https://eu-launch-api.contentstack.com',
     personalizeUrl: 'https://eu-personalize-api.contentstack.com',
   },
+  AU: {
+    name: 'AU',
+    cma: 'https://au-api.contentstack.com',
+    cda: 'https://au-cdn.contentstack.com',
+    uiHost: 'https://au-app.contentstack.com',
+    developerHubUrl: 'https://au-developerhub-api.contentstack.com',
+    launchHubUrl: 'https://au-launch-api.contentstack.com',
+    personalizeUrl: 'https://au-personalize-api.contentstack.com',
+  },
+  'AWS-AU': {
+    name: 'AWS-AU',
+    cma: 'https://au-api.contentstack.com',
+    cda: 'https://au-cdn.contentstack.com',
+    uiHost: 'https://au-app.contentstack.com',
+    developerHubUrl: 'https://au-developerhub-api.contentstack.com',
+    launchHubUrl: 'https://au-launch-api.contentstack.com',
+    personalizeUrl: 'https://au-personalize-api.contentstack.com',
+  },
   'AZURE-NA': {
     name: 'AZURE-NA',
     cma: 'https://azure-na-api.contentstack.com',
@@ -95,7 +113,7 @@ class UserConfig {
   /**
    *
    * Set region to config store
-   * @param {string} region It Can be NA, EU
+   * @param {string} region It Can be AWS-NA, AWS-EU, AWS-AU, AZURE-NA, AZURE-EU, GCP-NA, GCP-EU
    * @returns {object} region object with cma, cda, region property
    */
   setRegion(region) {
@@ -115,8 +133,8 @@ class UserConfig {
     const regionDetails = configHandler.get('region');
     if (regionDetails) return regionDetails;
 
-    // returns NA region if not found in config
-    return regions.NA;
+    // returns AWS-NA region if not found in config
+    return regions['AWS-NA'];
   }
 
   /**

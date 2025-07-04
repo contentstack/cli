@@ -10,7 +10,7 @@ const { APP_ENV, DELIMITER, KEY_VAL_DELIMITER } = process.env;
 const { Command } = require('@contentstack/cli-command');
 const command = new Command();
 
-let envData = { NA: {}, EU: {}, 'AZURE-NA': {}, 'AZURE-EU': {}, env_pushed: false };
+let envData = { 'AWS-NA': {}, 'AWS-EU': {}, 'AWS-AU': {}, 'AZURE-NA': {}, 'AZURE-EU': {}, 'GCP-NA': {}, 'GCP-EU': {}, env_pushed: false };
 
 class Helper extends Command {
   async run() {
@@ -18,7 +18,7 @@ class Helper extends Command {
   }
 }
 
-const initEnvData = (regions = ['NA', 'EU', 'AZURE-NA', 'AZURE-EU']) => {
+const initEnvData = (regions = ['AWS-NA', 'AWS-EU', 'AWS-AU', 'AZURE-NA', 'AZURE-EU', 'GCP-NA', 'GCP-EU']) => {
   if (!envData.env_pushed) envData = { ...envData, ...process.env, env_pushed: true };
 
   const { APP_ENV, DELIMITER, KEY_VAL_DELIMITER } = envData;
