@@ -52,19 +52,19 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
       throw new Error(`No management token found on given alias ${managementTokenAlias}`);
     }
 
-    log.debug('Management token configuration successful', { ...context });
+    log.debug('Management token configuration successful');
   }
 
   if (!config.management_token) {
     if (!isAuthenticated()) {
-      log.debug('User not authenticated, checking for basic auth credentials', context);
+      log.debug('User not authenticated, checking for basic auth credentials');
       if (config.username && config.password) {
-        log.debug('Using basic authentication with username/password', context);
+        log.debug('Using basic authentication with username/password');
         await login(config);
         authMethod = 'basic_auth';
-        log.debug('Basic authentication successful', { ...context });
+        log.debug('Basic authentication successful');
       } else {
-        log.debug('No authentication method available', context);
+        log.debug('No authentication method available');
         throw new Error('Please login or provide an alias for the management token');
       }
     } else {
@@ -73,10 +73,10 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
 
       if (isOAuthUser) {
         authMethod = 'Oauth';
-        log.debug('User authenticated via OAuth', { ...context });
+        log.debug('User authenticated via OAuth');
       } else {
         authMethod = 'Basic Auth';
-        log.debug('User authenticated via auth token', { ...context });
+        log.debug('User authenticated via auth token');
       }
 
       config.apiKey =
