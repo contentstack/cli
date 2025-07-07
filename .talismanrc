@@ -1,139 +1,56 @@
 fileignoreconfig:
-  - filename: .github/workflows/secrets-scan.yml
-    ignore_detectors:
-      - filecontent
-  - filename: packages/contentstack-export/.env
-    checksum: b057ae11234ac9411fe5dfa54ac3b029a71db51b4c334dce8677ab6fc1e41ecf
-  - filename: packages/contentstack-export/test/integration/environments.test.js
-    checksum: fb3760705545f4d672efcd86640441ba6ddc42b69ecf1aef2db9f6c9fd545aa3
-  - filename: packages/contentstack-import/.env.sample
-    checksum: 0d6b520e59241f40e3999047dbf308905b0ce0c933865cac8f3453f464d6ddc1
-  - filename: packages/contentstack-import/test/integration/auth-token-modules/environments.test.js
-    checksum: f2f4e81e754a37d597bf7d432c397f19c10204dd253f427f9b633147ef8b4fa0
-  - filename: packages/contentstack-import/test/integration/environments.test.js
-    checksum: 0f66f696dbb0bd328532398a559df0e4eb1b4e395e5457cd1d55761f55fa9d4b
-  - filename: packages/contentstack-export/test/integration/clean-up.test.js
-    checksum: 51d9127d98972ba890d77a3ce25e2e3afc5963e9547bcd96648af0daf42e5d91
-  - filename: packages/contentstack-export/test/integration/assets.test.js
-    checksum: b0551e2667693d9800ea37873a018e74a9de34d00e888a5c77bb25f237d0390a
-  - filename: packages/contentstack-export/test/integration/content-types.test.js
-    checksum: e546611b8ca3b91eef3cdcf0def7a407706dbfa328dfab75298adc5e99cd9126
-  - filename: packages/contentstack-export/test/integration/init.test.js
-    checksum: acf2f842960d0ac14b8ea7dfe29e921aca1ffddd814520526c5a527ed7c207e9
-  - filename: packages/contentstack-export/test/integration/entries.test.js
-    checksum: 6d79a28d9fe40b197b9aba0c2b175c5bac2719330e36c4029efcfd99c0b753bc
-  - filename: packages/contentstack-export/test/integration/extensions.test.js
-    checksum: 12c729d89a44961ea1291e45d5b35446d298770c7529eef1b54e9a381a5c0b95
-  - filename: packages/contentstack-export/test/integration/custom-roles.test.js
-    checksum: 8d55673098b48885707c1e6c76712cce2b3f4290b701e47b06b3f19c97cd9cce
-  - filename: packages/contentstack-export/test/integration/labels.test.js
-    checksum: c222ffab43134f6a946ddd1299cfb51a5814e4b2973cd3f46c7bafc5e54deeb8
-  - filename: packages/contentstack-export/test/integration/locales.test.js
-    checksum: 09704b368fc294d272ec534057f255be7f2163dccf7c0fb633eab2c90747f73b
-  - filename: packages/contentstack-export/test/integration/global-fields.test.js
-    checksum: 88916475ed109bf556164a061907c1458c8732ff84a7ac799b25d1818b684ce2
-  - filename: packages/contentstack-export/test/integration/marketplace-apps.test.js
-    checksum: 44c0bec62c7a6595684ade6fbf345b86a4e2ba62123a5d1c5efa87d798fb3b3e
-  - filename: packages/contentstack-export/test/integration/webhooks.test.js
-    checksum: af5d0f6f6d6f5a5e57dc9dd4c9a6415cc6f87ea94c523a4456292204cf94df7d
-  - filename: packages/contentstack-import/test/integration/locales.test.js
-    checksum: 535c19c2f72d335df20dd6c39beecd7791af0e931cfb3c3bfb9b32897ba9984f
-  - filename: packages/contentstack-import/test/integration/management-token.test.js
-    checksum: 38f4a5015e525d13b4782fbeff726103b30fc718d5b3e38f544310aec9b442b7
-  - filename: packages/contentstack-export/test/integration/workflows.test.js
-    checksum: fc86976f89c6d5d51943929fcafc030560fca2a868b742e43f64cde25bf77ad9
-  - filename: packages/contentstack-export/test/integration/utils/helper.js
-    checksum: f187f9f5b0f6b3ceb6c22f0ec93d08c68d38aff87a49c1de8803792eadd8ba8f
-  - filename: packages/contentstack-import/test/integration/webhooks.test.js
-    checksum: 172adffdde8575609a7782b3374d071bd4ee11774b4019beded0ea1a97900c42
-  - filename: packages/contentstack-utilities/types/index.d.ts
-    checksum: aed7069f6bff928bcdf84c773ef33e883db89d768f83b791d430eaff543ba33b
-  - filename: packages/contentstack-import/test/integration/workflows.test.js
-    checksum: 9c37be03cad2630706df1199350e17bbbadba19c63d3736e25e3d32d2ec89c60
-  - filename: packages/contentstack-import/test/integration/utils/helper.js
-    checksum: eed26f2fb07b3369dc8e474f9fbe45dd4f4aa60f63ec7b779e6061a863e9ea17
-  - filename: packages/contentstack-import/test/integration/auth-token-modules/assets.test.js
-    checksum: 5502c031c4d4a024fccf4fb1289d5983c27c1972629f8adc136bc6d33d11bdbc
-  - filename: packages/contentstack-import/test/integration/assets.test.js
-    checksum: 547e601910f8eeb094e51425a881af6bb59cb18a23f6dad16c79c1294e2182cd
-  - filename: packages/contentstack-import/test/integration/auth-token-modules/content-types.test.js
-    checksum: 022b6fc5fb5a2044c42d82bc51d83ab2b3cb315cf402dc223f2ea0a7a1b81cc9
-  - filename: packages/contentstack-import/test/integration/auth-token-modules/custom-roles.test.js
-    checksum: 9c973633d4927ffcbe45712760d32c4299d5731376dff6b8335c745fef4ce307
-  - filename: packages/contentstack-import/test/integration/auth-token-modules/entries.test.js
-    checksum: 11a5fbd92e17f064b55989c4c5c80d6144f1e0348c1b32c899fe92d72dfdd437
-  - filename: packages/contentstack-import/test/integration/content-types.test.js
-    checksum: a2f426ff6f0e11e8a56c6cb85ff9e78a1db717506dc59ccba86730bdbdff7fc0
-  - filename: packages/contentstack-import/test/integration/extensions.test.js
-    checksum: 1cb29b60cb629372a782a3f19fdb26f29563e99c0e571e24bd4f81f1655ef8c5
-  - filename: packages/contentstack-import/test/integration/auth-token-modules/extensions.test.js
-    checksum: 901e5e702103056c503176cdd8366f83d0720128a72145188401d13c312d995c
-  - filename: packages/contentstack-import/test/integration/entries.test.js
-    checksum: 9058a902d097577734fd658e41d3e5c3383cc7891a6efc76614a3d7cba287c09
-  - filename: packages/contentstack-import/test/integration/auth-token-modules/global-fields.test.js
-    checksum: 546cb9cd32bcda685f81b0b20263aa589ac69684fd6f1a9423e25f0856d0f9f7
-  - filename: packages/contentstack-import/test/integration/auth-token-modules/workflows.test.js
-    checksum: 69d6115078c805ea933d815d6032de843618497ca1281bb24c486b2e95002f5c
-  - filename: packages/contentstack-import/test/integration/clean-up.test.js
-    checksum: 827dc2102b03b4c1a0ef77fa12b821ed69e549f360a35bcb6aa4010d3fbe4cf0
-  - filename: packages/contentstack-import/test/integration/init.test.js
-    checksum: acad0ab08cfd3a6ceb7569fdce23586ddb36249e3597da8970a8c9ebe68a3500
-  - filename: packages/contentstack-import/test/integration/custom-roles.test.js
-    checksum: 694056f3b237e31b54745297f46e7b1c363377d1868572b109588963f6be2c9b
-  - filename: packages/contentstack-import/test/integration/auth-token-modules/locales.test.js
-    checksum: 142276d6e683c11d6c68ba212ab9dc8f0ba74175d7e4b914266e888770fdd70d
-  - filename: packages/contentstack-import/test/integration/auth-token.test.js
-    checksum: 1d9e3c40d10b8f0ebc117c3b8a5bd3a4616472ff5ebbeb19b5a5cc0ba90a829b
-  - filename: packages/contentstack-import/test/integration/global-fields.test.js
-    checksum: 1c1f05989f22d06b600fba7456c1935a385997292c770d573165b9a07e1a3b8a
-  - filename: packages/contentstack-import/test/integration/auth-token-modules/webhooks.test.js
-    checksum: f41c4c354482293e4d6e52923d451266b150ba675e61681e21ba83ebf5dd8382
-  - filename: packages/contentstack-launch/src/commands/launch/environments.ts
-    checksum: a9f5fc3fad1915ca8812f1159c4019b957db59f7b4c8e2da0d214e45b8835ef7
-  - filename: packages/contentstack-launch/tsconfig.tsbuildinfo
-    checksum: 0c363e5b14b8e5c3b696d81aeeac4b8ae3cf98bbe255d90600c4c1f4757f33a2
-  - filename: packages/contentstack-launch/src/adapters/file-upload.ts
-    checksum: e17a1112b724b51ce3e3c4a1eed19c4f84b5c2f9cb70a9a49c075ed08f2fef97
-  - filename: packages/contentstack-launch/src/adapters/github.ts
-    checksum: b82c72f8d1dc52dc099075905b038cea23e3547edcc2938eefcac7129c0656a4
-  - filename: packages/contentstack-launch/src/commands/launch/base-command.ts
-    checksum: b3cafb6f98c27abf4024639a3ca029861de8f80789dc98754dd694500782d968
-  - filename: packages/contentstack-launch/src/adapters/base-class.ts
-    checksum: d95e179bf489e552faa4d6cebb05473a2f92ceaccb9284a429ebf5ab61ec5ca0
-  - filename: packages/contentstack-launch/src/util/cloud-function/errors/cloud-function.errors.ts
-    checksum: e2da74b8b0f25ff58639aab329da77b3408838136f5bcd16c671bc113057a036
-  - filename: packages/contentstack-utilities/src/auth-handler.ts
-    checksum: b1f05a05bd25543ba3bbd9941b0d498e3291bf320574d9676f154716530fc552
-  - filename: packages/contentstack-utilities/src/config-handler.ts
-    checksum: e345a745f027c76081df71e4fe9872c1f4adac076689b036e195b84041807b59
-  - filename: packages/contentstack-launch/src/util/create-git-meta.ts
-    checksum: 8cbd32dbbd2989c7c082f8a0b7615916125d211bce25531e9a882b8ebd5674af
-  - filename: .husky/pre-commit
-    checksum: 7a12030ddfea18d6f85edc25f1721fb2009df00fdd42bab66b05de25ab3e32b2
-  - filename: packages/contentstack-bootstrap/src/bootstrap/utils.ts
-    checksum: 0b0af505ce1a74eb8df519f106291e319eb3ea74003ca63e03527f59a8821d39
-  - filename: packages/contentstack-bootstrap/test/bootstrap.test.js
-    checksum: 5f0355a5048183d61b605cbc160e6727a9de32832d9159e903fee49f9ab751d5
-  - filename: packages/contentstack/package.json
-    checksum: 9b0fdd100effcdbb5ee3809f7f102bfd11c88dd76e49db5103434f3aa29473dd
   - filename: pnpm-lock.yaml
-    checksum: f416e17fb0409ac6c8498fa44c5d84ca460a4d0acd14139e89701e0e001b3bfe
-  - filename: packages/contentstack-audit/src/audit-base-command.ts
-    checksum: bd99d269c0b6694577f4751fa96b3d85856e41bbef624b4ec1196630d6c1d168
-  - filename: packages/contentstack-migrate-rte/test/commands/json-migration.test.js
-    checksum: 1f5ee5b39119667bd4830f9dbbbf757fb922f4ec3b7f6fad06bbfbf214fe7f73
-  - filename: packages/contentstack-bootstrap/src/bootstrap/utils.ts
-    checksum: 0b0af505ce1a74eb8df519f106291e319eb3ea74003ca63e03527f59a8821d39
-  - filename: packages/contentstack-bootstrap/test/bootstrap.test.js
-    checksum: 5f0355a5048183d61b605cbc160e6727a9de32832d9159e903fee49f9ab751d5
+    checksum: 144fd75cbb336e8c93b3e58dc45ec4d3ea7c699f6dc9d9e5af1ae6a310720c0a
+  - filename: packages/contentstack-import/test/integration/auth-token-modules/environments.test.js
+    checksum: bc6f06b75d082aaf99e2f2f4b932b143765e2f14086967fb8973fe1b2ca6c03e
+  - filename: packages/contentstack-import/test/integration/environments.test.js
+    checksum: e71f033dad8944ffeafdf22d0514bda1d20c43e8fea0d62c96e774f3414beb31
   - filename: package-lock.json
-    checksum: 290d420891b9612fd6b4f134cb849770704f10b58d83f7ad05a4f88204818778
-  - filename: packages/contentstack-utilities/test/unit/logger.test.ts
-    checksum: c773181ea55c49d91363adacf0424b84c927e3cffd6bef1444ec2559ddf1b3b0
-  - filename: packages/contentstack-utilities/src/logger/cliErrorHandler.ts
-    checksum: 023cf08f215cd0778599fb8478c94419373d4687f04421c4eb99d87de86a4a3e
-  - filename: packages/contentstack-utilities/src/logger/logger.ts
-    checksum: 09f3b73dd995bafc253265c676f06308513e6b1842d9bc01d39e6b6945a54c7d
+    checksum: 8699ac1d7b2d3af92b6a95cbb9898ad5bb4e7eb17527824cd6ecdd14e6cfde5a
+  - filename: packages/contentstack-auth/test/unit/tokens-validation.test.ts
+    checksum: 676052e30d31a771ce68302d89b050d176bbef50f3abc7e9cdd4384f0e274e10
+  - filename: packages/contentstack-import/test/integration/auth-token.test.js
+    checksum: 05a5a9917440203efc6db1c5d46ba2c7ce61db4648c379db28b36e08cfe049ef
+  - filename: packages/contentstack-import/test/integration/workflows.test.js
+    checksum: 07cfe3cbb586d30b143a0169e7001a1f91ce50a1a5ae4485b2518c2181973cf7
+  - filename: packages/contentstack-import/test/integration/extensions.test.js
+    checksum: 2e62534faf6b3c5d9fd9bc001fd45e900430e835f899a2afd70b781098d2add7
+  - filename: packages/contentstack-utilities/src/helpers.ts
+    checksum: 216d92b3ccd1dce271a5b93f80af992f1bb3ac72b2b8639d2eb671bf1db91072
+  - filename: packages/contentstack-import/test/integration/global-fields.test.js
+    checksum: 16ead9a66c7834e4d24ca27eb11c6a1c70a02304c39a6c0483802e1851438903
+  - filename: packages/contentstack-import/test/integration/content-types.test.js
+    checksum: 0f15d1b877cc99ac27cd89ad31082c00f902667e631e1941d5d97d73e74d39e2
+  - filename: packages/contentstack-import/test/integration/assets.test.js
+    checksum: ca95054274b7262f3e0325ed312dac3fc09965acf4097a79184a42913c08ecb7
+  - filename: packages/contentstack-import/test/integration/auth-token-modules/assets.test.js
+    checksum: 844ac7242268fab10c0fd22cfd4e98284d6461de95d55d22925f61e1b1f29433
+  - filename: packages/contentstack-import/test/integration/locales.test.js
+    checksum: f3b6c73302f5883a40dad4e878a37bfc9780c39743c3745402037baa0cd7eab4
+  - filename: packages/contentstack-import/test/integration/custom-roles.test.js
+    checksum: 58d77f9139c9c01a4471d9ce821fbc683eaea4650787bfc510959e7817084ed6
+  - filename: packages/contentstack-import/test/integration/auth-token-modules/content-types.test.js
+    checksum: b24e5dee9677453088b2ecbd5c70b077cf99756f8fe927c4f38670e6041da94d
+  - filename: packages/contentstack-import/test/integration/entries.test.js
+    checksum: 5e33da22b28afd09ce105a6714a90e27c1e2ad559e6b9d8b41f59de02e83894c
+  - filename: packages/contentstack-import/test/integration/management-token.test.js
+    checksum: 095187d8b5fee8466f39a13e5cbc9f3c78f3dd0eb07d2c5af3929aca8aff8f2d
+  - filename: packages/contentstack-import/test/integration/auth-token-modules/custom-roles.test.js
+    checksum: 429bd7cfe81f22266da6230eae538c36a846b0267de17d0e55f611a9311eef78
+  - filename: packages/contentstack-import/test/integration/auth-token-modules/locales.test.js
+    checksum: e3ae0c7c1e7cf15d74918711f8939e46e9257b2525bf936e41d85d6328d4a018
+  - filename: packages/contentstack-import/test/integration/webhooks.test.js
+    checksum: eb11a310516a3cdfd5c2dc77bdfe7143eb268b1ab1e0e33babbe9352c5b72c38
+  - filename: packages/contentstack-import/test/integration/auth-token-modules/webhooks.test.js
+    checksum: 06290dce8c950c394d061427ad5ecce10e5f36644372d46ee542bffa09a76185
+  - filename: packages/contentstack-import/test/integration/auth-token-modules/workflows.test.js
+    checksum: 1c77d21cff245157bc9a9863cc264d29bd81591447de3b27ae3aff67239e2937
+  - filename: packages/contentstack-import/test/integration/auth-token-modules/entries.test.js
+    checksum: 75f2c3b007488e9dd0ff43bcc624f9edc9a3daf1dbb1dfd24203a488a986937d
+  - filename: packages/contentstack-import/test/integration/auth-token-modules/extensions.test.js
+    checksum: 9c79540ab8522736f17c3ae1c9bfea07784b6ed0aa41f5617c90ba6812b91e72
+  - filename: packages/contentstack-import/test/integration/auth-token-modules/global-fields.test.js
+    checksum: db5b7aedcd89d783760eb988a2369243c34edc9c12e93a41b2b08fb0da02afdc
   - filename: packages/contentstack-export/src/export/modules/assets.ts
     checksum: c7f19e6c4a212329d981cebce9a9a8393923dd7c85feb762ddcdca678f7a9349
-version: "1.0"
+version: ''

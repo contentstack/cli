@@ -268,7 +268,6 @@ async function getEnvironment(stack, environment) {
   if (Array.isArray(environment) && environment.length) {
     for (let i = 0; i < environment.length; i++) {
       const key = await stack.environment(environment[i]).fetch();
-      console.log(key);
       mapping[key.uid] = environment[i];
     }
   } else {

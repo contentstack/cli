@@ -42,7 +42,7 @@ module.exports = (region) => {
     test
       .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
       .stdout({ print: PRINT_LOGS || false })
-      .command(RegionSetCommand, [`${region.REGION || 'NA'}`])
+      .command(RegionSetCommand, [`${region.REGION || 'AWS-NA'}`])
       .do(() => {
         messageFilePath = join(__dirname, '..', '..', '..', 'contentstack-utilities', 'messages/auth.json');
         messageHandler.init({ messageFilePath });
