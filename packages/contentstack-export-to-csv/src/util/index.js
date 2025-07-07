@@ -399,6 +399,50 @@ function sanitizeData(flatData) {
   return flatData;
 }
 
+function getAssetsCount(stack, isDir = false) {
+  const queryParam = {
+    limit: 1,
+    asc: 'created_at',
+    include_count: false,
+    skip: 10 ** 100,
+  };
+
+  if (isDir) queryParam.query = { is_dir: true };
+
+  return stack
+    .asset()
+    .query(queryParam)
+    .count()
+    .then(({ assets }) => assets)
+    .catch((error) => {
+      console.log('Error fetching assets count:', error);
+    });
+}
+
+async function getAssetsAndFolders(stack, total, isDir = false) {
+  let skip = 0;
+  let limit = 100;
+  const assets = [];
+  while (skip <= total) {
+    const queryParam = {
+      limit,
+      query: { is_dir: isDir },
+      skip,
+      asc: 'created_at',
+      include_count: true,
+    };
+
+    try {
+      const { items } = await stack.asset().query(queryParam).find();
+      assets.push(...items);
+      skip = skip + limit;
+      console.log(`Fetched ${skip} assets out of ${total}`);
+    } catch (error) {
+      console.error('Error fetching assets:', error);
+    }
+  }
+  return assets;
+}
 function cleanEntries(entries, language, environments, contentTypeUid) {
   const filteredEntries = entries.filter((entry) => {
     return entry['locale'] === language;
@@ -472,7 +516,7 @@ function startupQuestions() {
         type: 'list',
         name: 'action',
         message: 'Choose Action',
-        choices: [config.exportEntries, config.exportUsers, config.exportTeams, config.exportTaxonomies, 'Exit'],
+        choices: [config.exportEntries, config.exportUsers, config.exportTeams, config.exportTaxonomies, config.exportAssets, 'Exit'],
       },
     ];
     inquirer
@@ -1253,4 +1297,6 @@ module.exports = {
   getTaxonomy,
   getStacks,
   createImportableCSV,
+  getAssetsAndFolders,
+  getAssetsCount
 };

@@ -6,7 +6,7 @@ const {
   isAuthenticated,
   cliux,
   doesBranchExist,
-  isManagementTokenValid
+  isManagementTokenValid,
 } = require('@contentstack/cli-utilities');
 const util = require('../../util');
 const config = require('../../util/config');
@@ -16,8 +16,9 @@ class ExportToCsvCommand extends Command {
     action: flags.string({
       required: false,
       multiple: false,
-      options: ['entries', 'users', 'teams', 'taxonomies'],
-      description: 'Option to export data (entries, users, teams, taxonomies). <options: entries|users|teams|taxonomies>',
+      options: ['entries', 'users', 'teams', 'taxonomies', 'assets'],
+      description:
+        'Option to export data (entries, users, teams, taxonomies). <options: entries|users|teams|taxonomies|assets>',
     }),
     alias: flags.string({
       char: 'a',
@@ -70,7 +71,7 @@ class ExportToCsvCommand extends Command {
       description: '[optional] Provide a delimiter to separate individual data fields within the CSV file. For example: cm:export-to-csv --delimiter \'|\'',
       default: ',',
     }),
-  };  
+  };
 
   async run() {
     try {
@@ -88,7 +89,7 @@ class ExportToCsvCommand extends Command {
           branch: branchUid,
           "team-uid": teamUid,
           'taxonomy-uid': taxonomyUID,
-          delimiter
+          delimiter,
         },
       } = await this.parse(ExportToCsvCommand);
 
@@ -222,15 +223,15 @@ class ExportToCsvCommand extends Command {
         }
         case config.exportTeams:
         case 'teams': {
-          try{
+          try {
             let organization;
             if (org) {
               organization = { uid: org, name: orgName || org };
             } else {
               organization = await util.chooseOrganization(managementAPIClient, action); // prompt for organization
             }
-          
-            await util.exportTeams(managementAPIClient,organization,teamUid, delimiter);
+
+            await util.exportTeams(managementAPIClient, organization, teamUid, delimiter);
           } catch (error) {
             if (error.message || error.errorMessage) {
               cliux.error(util.formatError(error));
@@ -253,6 +254,60 @@ class ExportToCsvCommand extends Command {
           stackAPIClient = this.getStackClient(managementAPIClient, stack);
           await this.createTaxonomyAndTermCsvFile(stackAPIClient, stackName, stack, taxonomyUID, delimiter);
           break;
+        }
+        case config.exportAssets:
+        case 'assets': {
+          let stack;
+          let stackAPIClient;
+          if (managementTokenAlias) {
+            const { stackDetails, apiClient } = await this.getAliasDetails(managementTokenAlias, stackName);
+            managementAPIClient = apiClient;
+            stack = stackDetails;
+          } else {
+            stack = await this.getStackDetails(managementAPIClient, stackAPIKey, org);
+          }
+
+          stackAPIClient = this.getStackClient(managementAPIClient, stack);
+
+          const [assetsCount, assetsFolderCount] = await Promise.all([
+            util.getAssetsCount(stackAPIClient),
+            util.getAssetsCount(stackAPIClient, true),
+          ]);
+
+          console.log(`Total assets found: ${assetsCount}`);
+          console.log(`Total asset folders found: ${assetsFolderCount}`);
+
+          if (assetsCount > 0) {
+            const assets = await util.getAssetsAndFolders(stackAPIClient, assetsCount);
+            const filteredAssets = assets.map((asset) => {
+              const { uid, title, _version, parent_uid, filename, file_size } = asset;
+              return {
+                uid,
+                title,
+                parent_uid,
+                _version,
+                filename,
+                file_size,
+              };
+            });
+            util.write(this, filteredAssets, 'Assets.csv', 'Assets', delimiter);
+          }
+
+          if (assetsFolderCount > 0) {
+            const assetsFolders = await util.getAssetsAndFolders(stackAPIClient, assetsCount, true);
+
+            const filterAssetFolders = assetsFolders.map((assetFolder) => {
+              const { uid, name, _version, parent_uid } = assetFolder;
+              return {
+                uid,
+                name,
+                _version,
+                parent_uid,
+              };
+            });
+
+            util.write(this, filterAssetFolders, 'AssetsFolder.csv', 'Assets Folders', delimiter);
+          }
         }
       }
     } catch (error) {
@@ -438,7 +493,7 @@ class ExportToCsvCommand extends Command {
       const fileName = `${stackName ?? stack.name}_taxonomies.csv`;
       const { taxonomiesData, headers } = await util.createImportableCSV(payload, taxonomies);
       if (taxonomiesData?.length) {
-        util.write(this, taxonomiesData, fileName, 'taxonomies',delimiter, headers);
+        util.write(this, taxonomiesData, fileName, 'taxonomies', delimiter, headers);
       }
     }
   }
