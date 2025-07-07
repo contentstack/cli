@@ -436,7 +436,6 @@ async function getAssetsAndFolders(stack, total, isDir = false) {
       const { items } = await stack.asset().query(queryParam).find();
       assets.push(...items);
       skip = skip + limit;
-      console.log(`Fetched ${skip} assets out of ${total}`);
     } catch (error) {
       console.error('Error fetching assets:', error);
     }
