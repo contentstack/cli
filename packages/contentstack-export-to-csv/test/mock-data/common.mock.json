@@ -396,5 +396,53 @@
       }
     ]
   },
-  "taxonomyCSVData": "`taxonomy1,taxonomy1,,,,,,,\n,,,term1,term1,,,,\n,,,,,term1_2,term1_2,,\n,,,term2,term2,,,,\n,,,,,term2_2,term2_2,,\n,,,,,,,term2_2_1,term2_2_1\n,,,,,term2_1,term2_1,,`"
+  "taxonomyCSVData": "`taxonomy1,taxonomy1,,,,,,,\n,,,term1,term1,,,,\n,,,,,term1_2,term1_2,,\n,,,term2,term2,,,,\n,,,,,term2_2,term2_2,,\n,,,,,,,term2_2_1,term2_2_1\n,,,,,term2_1,term2_1,,`",
+  "assets": [
+    {
+      "uid": "asset_uid_1",
+      "title": "Test Asset 1",
+      "_version": 1,
+      "parent_uid": null,
+      "filename": "test-image-1.jpg",
+      "file_size": 1024000,
+      "created_by": "user1",
+      "updated_by": "user1",
+      "created_at": "2023-08-08T13:52:46.592Z",
+      "updated_at": "2023-08-08T13:52:46.592Z"
+    },
+    {
+      "uid": "asset_uid_2",
+      "title": "Test Asset 2",
+      "_version": 1,
+      "parent_uid": "folder_uid_1",
+      "filename": "test-image-2.png",
+      "file_size": 2048000,
+      "created_by": "user2",
+      "updated_by": "user2",
+      "created_at": "2023-08-08T13:52:46.592Z",
+      "updated_at": "2023-08-08T13:52:46.592Z"
+    }
+  ],
+  "assetFolders": [
+    {
+      "uid": "folder_uid_1",
+      "name": "Test Folder 1",
+      "_version": 1,
+      "parent_uid": null,
+      "created_by": "user1",
+      "updated_by": "user1",
+      "created_at": "2023-08-08T13:52:46.592Z",
+      "updated_at": "2023-08-08T13:52:46.592Z"
+    },
+    {
+      "uid": "folder_uid_2",
+      "name": "Test Folder 2",
+      "_version": 1,
+      "parent_uid": "folder_uid_1",
+      "created_by": "user2",
+      "updated_by": "user2",
+      "created_at": "2023-08-08T13:52:46.592Z",
+      "updated_at": "2023-08-08T13:52:46.592Z"
+    }
+  ]
 }
