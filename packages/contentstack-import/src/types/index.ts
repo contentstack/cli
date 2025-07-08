@@ -105,6 +105,17 @@ export interface TaxonomiesConfig {
   dependencies?: Modules[];
 }
 
+export interface Context {
+  command: string;
+  module: string;
+  userId: string | undefined;
+  email: string | undefined;
+  sessionId: string | undefined;
+  clientId: string | undefined;
+  apiKey: string;
+  orgId: string;
+}
+
 export { default as DefaultConfig } from './default-config';
 export { default as ImportConfig } from './import-config';
 

@@ -8,11 +8,15 @@ import {
   FlagInput,
   ContentstackClient,
   pathValidator,
+  log,
+  handleAndLogError,
+  configHandler,
+  getLogPath,
 } from '@contentstack/cli-utilities';
 
-import { ImportConfig } from '../../../types';
+import { Context, ImportConfig } from '../../../types';
 import { ModuleImporter } from '../../../import';
-import { setupImportConfig, formatError, log } from '../../../utils';
+import { setupImportConfig } from '../../../utils';
 
 export default class ImportCommand extends Command {
   static description = messageHandler.parse('Import content from a stack');
@@ -143,11 +147,15 @@ export default class ImportCommand extends Command {
     let backupDir: string;
     try {
       const { flags } = await this.parse(ImportCommand);
-      let importConfig = await setupImportConfig(flags);
+      let importConfig: ImportConfig = await setupImportConfig(flags);
+      // Prepare the context object
+      const context = this.createImportContext(importConfig.apiKey);
+      importConfig.context = {...context};
+      
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;
       importConfig.region = this.region;
-      if(this.developerHubUrl) importConfig.developerHubBaseUrl = this.developerHubUrl;
+      if (this.developerHubUrl) importConfig.developerHubBaseUrl = this.developerHubUrl;
       if (this.personalizeUrl) importConfig.modules.personalize.baseURL[importConfig.region.name] = this.personalizeUrl;
       backupDir = importConfig.cliLogsPath || importConfig.backupDir;
 
@@ -171,38 +179,31 @@ export default class ImportCommand extends Command {
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       const result = await moduleImporter.start();
 
-      if (!result?.noSuccessMsg) {
-        log(
-          importConfig,
-          importConfig.stackName
-            ? `Successfully imported the content to the stack named ${importConfig.stackName} with the API key ${importConfig.apiKey} .`
-            : `The content has been imported to the stack ${importConfig.apiKey} successfully!`,
-          'success',
-        );
+      if (!result?.noSuccessMsg) {       
+        const successMessage = importConfig.stackName
+        ? `Successfully imported the content to the stack named ${importConfig.stackName} with the API key ${importConfig.apiKey} .`
+        : `The content has been imported to the stack ${importConfig.apiKey} successfully!`;
+        log.success(successMessage, importConfig.context);
       }
 
-      log(
-        importConfig,
-        `The log has been stored at '${pathValidator(
-          path.join(importConfig.cliLogsPath || importConfig.backupDir, 'logs', 'import'),
-        )}'`,
-        'success',
-      );
+      log.success(`The log has been stored at '${getLogPath()}'`, importConfig.context)
     } catch (error) {
-      log(
-        { data: backupDir ?? pathValidator(path.join(backupDir || __dirname, 'logs', 'import')) } as ImportConfig,
-        `Failed to import stack content - ${formatError(error)}`,
-        'error',
-      );
-      log(
-        { data: backupDir } as ImportConfig,
-        `The log has been stored at ${
-          { data: backupDir }
-            ? pathValidator(path.join(backupDir || __dirname, 'logs', 'import'))
-            : pathValidator(path.join(__dirname, 'logs'))
-        }`,
-        'info',
-      );
+      handleAndLogError(error);
+      log.info(`The log has been stored at '${getLogPath()}'`)
     }
+  }
+
+  // Create export context object
+  private createImportContext(apiKey: string): Context {
+    return {
+      command: this.context.info.command,
+      module: '',
+      userId: configHandler.get('userId'),
+      email: configHandler.get('email'),
+      sessionId: this.context.sessionId,
+      clientId: this.context.clientId,
+      apiKey: apiKey || '',
+      orgId: configHandler.get('organization_uid') || '',
+    };
   }
 }

@@ -130,6 +130,7 @@ export default class ExportCommand extends Command {
       log.success(`The log has been stored at '${getLogPath()}'`, exportConfig.context)
     } catch (error) {
       handleAndLogError(error);
+      log.info(`The log has been stored at '${getLogPath()}'`)
     }
   }
   

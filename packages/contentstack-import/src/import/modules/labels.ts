@@ -3,7 +3,8 @@ import values from 'lodash/values';
 import omit from 'lodash/omit';
 import { join } from 'node:path';
 
-import { log, formatError, fsUtil, fileHelper } from '../../utils';
+import { fsUtil, fileHelper } from '../../utils';
+import { log, handleAndLogError } from '@contentstack/cli-utilities';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, LabelConfig } from '../../types';
 
@@ -21,6 +22,7 @@ export default class Importlabels extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
+    this.importConfig.context.module = 'labels';
     this.labelsConfig = importConfig.modules.labels;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'labels');
     this.labelsFolderPath = join(this.importConfig.backupDir, this.labelsConfig.dirName);
@@ -31,6 +33,10 @@ export default class Importlabels extends BaseClass {
     this.failedLabel = [];
     this.createdLabel = [];
     this.labelUidMapper = {};
+    
+    log.debug('Initialized ImportLabels class', this.importConfig.context);
+    log.debug(`Labels folder path: ${this.labelsFolderPath}`, this.importConfig.context);
+    log.debug(`Mapper directory path: ${this.mapperDirPath}`, this.importConfig.context);
   }
 
   /**
@@ -38,40 +44,56 @@ export default class Importlabels extends BaseClass {
    * @returns {Promise<void>} Promise<void>
    */
   async start(): Promise<void> {
-    log(this.importConfig, 'Migrating labels', 'info');
-
+    log.info('Starting labels import process', this.importConfig.context);
+    log.debug('Checking for labels folder existence', this.importConfig.context);
+    
     //Step1 check folder exists or not
     if (fileHelper.fileExistsSync(this.labelsFolderPath)) {
+      log.debug(`Found labels folder: ${this.labelsFolderPath}`, this.importConfig.context);
       this.labels = fsUtil.readFile(join(this.labelsFolderPath, 'labels.json'), true) as Record<string, unknown>;
+      log.debug(`Loaded ${Object.keys(this.labels).length} labels from file`, this.importConfig.context);
     } else {
-      log(this.importConfig, `No labels found - '${this.labelsFolderPath}'`, 'info');
+      log.info(`No labels found - '${this.labelsFolderPath}'`, this.importConfig.context);
       return;
     }
 
     //create labels in mapper directory
+    log.debug('Creating labels mapper directory', this.importConfig.context);
     await fsUtil.makeDirectory(this.mapperDirPath);
+    log.debug('Loading existing label UID mappings', this.importConfig.context);
     this.labelUidMapper = fileHelper.fileExistsSync(this.labelUidMapperPath)
       ? (fsUtil.readFile(join(this.labelUidMapperPath), true) as Record<string, unknown>)
       : {};
 
+    if (Object.keys(this.labelUidMapper).length > 0) {
+      log.debug(`Loaded existing label UID mappings: ${Object.keys(this.labelUidMapper).length} entries`, this.importConfig.context);
+    } else {
+      log.debug('No existing label UID mappings found', this.importConfig.context);
+    }
+
+    log.debug('Starting labels import', this.importConfig.context);
     await this.importlabels();
     //update parent in created label
+    log.debug('Starting labels update process', this.importConfig.context);
     await this.updateLabels();
 
+    log.debug('Processing labels import results', this.importConfig.context);
     if (this.createdLabel?.length) {
       fsUtil.writeFile(this.createdLabelPath, this.createdLabel);
+      log.debug(`Written ${this.createdLabel.length} successful labels to file`, this.importConfig.context);
     }
 
     if (this.failedLabel?.length) {
       fsUtil.writeFile(this.labelFailsPath, this.failedLabel);
+      log.debug(`Written ${this.failedLabel.length} failed labels to file`, this.importConfig.context);
     }
 
-    log(this.importConfig, 'Labels have been imported successfully!', 'success');
+    log.success('Labels have been imported successfully!', this.importConfig.context);
   }
 
   async importlabels() {
     if (this.labels === undefined || isEmpty(this.labels)) {
-      log(this.importConfig, 'No Labels Found', 'info');
+      log.info('No Labels Found', this.importConfig.context);
       return;
     }
 
@@ -79,7 +101,7 @@ export default class Importlabels extends BaseClass {
 
     const onSuccess = ({ response, apiData: { uid, name } = { uid: null, name: '' } }: any) => {
       this.labelUidMapper[uid] = response;
-      log(this.importConfig, `Label '${name}' imported successfully`, 'success');
+      log.success(`Label '${name}' imported successfully`, this.importConfig.context);
       fsUtil.writeFile(this.labelUidMapperPath, this.labelUidMapper);
     };
 
@@ -87,10 +109,10 @@ export default class Importlabels extends BaseClass {
       const err = error?.message ? JSON.parse(error.message) : error;
       const { name } = apiData;
       if (err?.errors?.name) {
-        log(this.importConfig, `Label '${name}' already exists`, 'info');
+        log.info(`Label '${name}' already exists`, this.importConfig.context);
       } else {
         this.failedLabel.push(apiData);
-        log(this.importConfig, `Label '${name}' failed to be import. ${formatError(error)}`, 'error');
+        handleAndLogError(error, { ...this.importConfig.context, name }, `Label '${name}' failed to be import`);
       }
     };
 
@@ -119,13 +141,16 @@ export default class Importlabels extends BaseClass {
    */
   serializelabels(apiOptions: ApiOptions): ApiOptions {
     const { apiData: label } = apiOptions;
+    log.debug(`Serializing label: ${label.name} (${label.uid})`, this.importConfig.context);
 
     if (this.labelUidMapper.hasOwnProperty(label.uid)) {
-      log(this.importConfig, `Label '${label.name}' already exists. Skipping it to avoid duplicates!`, 'info');
+      log.info(`Label '${label.name}' already exists. Skipping it to avoid duplicates!`, this.importConfig.context);
+      log.debug(`Skipping label serialization for: ${label.uid}`, this.importConfig.context);
       apiOptions.entity = undefined;
     } else {
       let labelReq = label;
       if (label?.parent?.length != 0) {
+        log.debug(`Label '${label.name}' has parent labels, removing parent for initial creation`, this.importConfig.context);
         labelReq = omit(label, ['parent']);
       }
       apiOptions.apiData = labelReq;
@@ -134,18 +159,23 @@ export default class Importlabels extends BaseClass {
   }
 
   async updateLabels() {
+    log.debug('Starting labels update process', this.importConfig.context);
     if (!isEmpty(this.labels)) {
       const apiContent = values(this.labels);
+      log.debug(`Updating ${apiContent.length} labels`, this.importConfig.context);
 
       const onSuccess = ({ response, apiData: { uid, name } = { uid: null, name: '' } }: any) => {
         this.createdLabel.push(response);
-        log(this.importConfig, `Label '${name}' updated successfully`, 'success');
+        log.success(`Label '${name}' updated successfully`, this.importConfig.context);
+        log.debug(`Label update completed: ${name} (${uid})`, this.importConfig.context);
       };
 
       const onReject = ({ error, apiData }: any) => {
-        log(this.importConfig, `Failed to update label '${apiData?.name}'. ${formatError(error)}`, 'error');
+        log.debug(`Label '${apiData?.name}' update failed`, this.importConfig.context);
+        handleAndLogError(error, { ...this.importConfig.context, name: apiData?.name }, `Failed to update label '${apiData?.name}'`);
       };
 
+      log.debug(`Using concurrency limit for updates: ${this.importConfig.fetchConcurrency || 1}`, this.importConfig.context);
       await this.makeConcurrentCall(
         {
           apiContent,
@@ -162,7 +192,11 @@ export default class Importlabels extends BaseClass {
         undefined,
         false,
       );
+    } else {
+      log.debug('No labels to update', this.importConfig.context);
     }
+    
+    log.debug('Labels update process completed', this.importConfig.context);
   }
 
   /**
@@ -173,24 +207,31 @@ export default class Importlabels extends BaseClass {
   serializeUpdateLabels(apiOptions: ApiOptions): ApiOptions {
     const { apiData: label } = apiOptions;
     const labelUid = label.uid;
+    log.debug(`Serializing label update: ${label.name} (${labelUid})`, this.importConfig.context);
+    
     if (this.labelUidMapper.hasOwnProperty(labelUid)) {
       const newLabel = this.labelUidMapper[labelUid] as Record<string, any>;
       if (label?.parent?.length > 0) {
+        log.debug(`Label '${label.name}' has ${label.parent.length} parent labels to update`, this.importConfig.context);
         for (let i = 0; i < label?.parent?.length; i++) {
           const parentUid = label.parent[i];
           if (this.labelUidMapper.hasOwnProperty(parentUid)) {
             const mappedLabel = this.labelUidMapper[parentUid] as Record<string, any>;
             label.parent[i] = mappedLabel.uid;
+            log.debug(`Parent label mapping: ${parentUid} → ${mappedLabel.uid}`, this.importConfig.context);
           }
         }
         const createdLabelRes = this.labelUidMapper[labelUid] as Record<string, any>;
         createdLabelRes.parent = label.parent;
         apiOptions.apiData = createdLabelRes;
+        log.debug(`Updated label '${label.name}' with parent references`, this.importConfig.context);
       } else {
+        log.debug(`Label '${label.name}' has no parent labels, adding to created list`, this.importConfig.context);
         apiOptions.entity = undefined;
         this.createdLabel.push(newLabel);
       }
     } else {
+      log.debug(`Label '${label.name}' not found in UID mapper, skipping update`, this.importConfig.context);
       apiOptions.entity = undefined;
     }
     return apiOptions;
