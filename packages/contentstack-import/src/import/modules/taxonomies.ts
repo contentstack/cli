@@ -49,7 +49,7 @@ export default class ImportTaxonomies extends BaseClass {
         string,
         unknown
       >;
-      log.debug(`Loaded ${Object.keys(this.taxonomies || {}).length} taxonomies from file`, this.importConfig.context);
+      log.debug(`Loaded ${Object.keys(this.taxonomies || {}).length} taxonomy entries from file`, this.importConfig.context);
     } else {
       log.info(`No Taxonomies Found! - '${this.taxonomiesFolderPath}'`, this.importConfig.context);
       return;

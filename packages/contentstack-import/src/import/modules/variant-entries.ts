@@ -61,7 +61,7 @@ export default class ImportVarientEntries {
         };
         
         log.debug('Helper methods initialized successfully', this.config.context);
-                  log.debug(`Helper methods available: ${Object.keys(helpers || {}).join(', ')}`, this.config.context);
+                  log.debug(`Helper method types available: ${Object.keys(helpers || {}).join(', ')}`, this.config.context);
         
         log.debug('Creating VariantEntries instance', this.config.context);
         const variantEntriesImporter = new Import.VariantEntries(Object.assign(this.config, { helpers }));

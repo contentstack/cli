@@ -56,7 +56,7 @@ export default class ImportWorkflows extends BaseClass {
         string,
         unknown
       >;
-      log.debug(`Loaded ${Object.keys(this.workflows || {}).length} workflows from file`, this.importConfig.context);
+      log.debug(`Loaded ${Object.keys(this.workflows || {}).length} workflow entries from file`, this.importConfig.context);
     } else {
       log.info(`No Workflows Found - '${this.workflowsFolderPath}'`, this.importConfig.context);
       return;
@@ -71,7 +71,7 @@ export default class ImportWorkflows extends BaseClass {
       : {};
 
     if (Object.keys(this.workflowUidMapper)?.length > 0) {
-      log.debug(`Loaded existing workflow UID mappings: ${Object.keys(this.workflowUidMapper || {}).length} entries`, this.importConfig.context);
+      log.debug(`Loaded existing workflow UID references: ${Object.keys(this.workflowUidMapper || {}).length} entries`, this.importConfig.context);
     } else {
       log.debug('No existing workflow UID mappings found', this.importConfig.context);
     }
@@ -120,7 +120,7 @@ export default class ImportWorkflows extends BaseClass {
       log.debug(`Role mapping: ${role.name} → ${role.uid}`, this.importConfig.context);
     }
     
-    log.debug(`Created role name mappings for ${Object.keys(this.roleNameMap || {}).length} roles`, this.importConfig.context);
+    log.debug(`Created role name references for ${Object.keys(this.roleNameMap || {}).length} roles`, this.importConfig.context);
   }
 
   async importWorkflows() {
