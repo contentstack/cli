@@ -33,10 +33,6 @@ export default class Importlabels extends BaseClass {
     this.failedLabel = [];
     this.createdLabel = [];
     this.labelUidMapper = {};
-
-    log.debug('Initialized ImportLabels class', this.importConfig.context);
-    log.debug(`Labels folder path: ${this.labelsFolderPath}`, this.importConfig.context);
-    log.debug(`Mapper directory path: ${this.mapperDirPath}`, this.importConfig.context);
   }
 
   /**
@@ -44,13 +40,22 @@ export default class Importlabels extends BaseClass {
    * @returns {Promise<void>} Promise<void>
    */
   async start(): Promise<void> {
-    log.info('Starting labels import process', this.importConfig.context);
     log.debug('Checking for labels folder existence', this.importConfig.context);
 
     //Step1 check folder exists or not
     if (fileHelper.fileExistsSync(this.labelsFolderPath)) {
       log.debug(`Found labels folder: ${this.labelsFolderPath}`, this.importConfig.context);
       this.labels = fsUtil.readFile(join(this.labelsFolderPath, 'labels.json'), true) as Record<string, unknown>;
+
+      // Check if labels file was read successfully
+      if (!this.labels) {
+        log.info(
+          `No labels found in file - '${join(this.labelsFolderPath, 'labels.json')}'`,
+          this.importConfig.context,
+        );
+        return;
+      }
+
       const labelCount = Object.keys(this.labels || {}).length;
       log.debug(`Loaded ${labelCount} label items from file`, this.importConfig.context);
     } else {
@@ -63,10 +68,10 @@ export default class Importlabels extends BaseClass {
     await fsUtil.makeDirectory(this.mapperDirPath);
     log.debug('Loading existing label UID mappings', this.importConfig.context);
     this.labelUidMapper = fileHelper.fileExistsSync(this.labelUidMapperPath)
-      ? (fsUtil.readFile(join(this.labelUidMapperPath), true) as Record<string, unknown>)
+      ? (fsUtil.readFile(join(this.labelUidMapperPath), true) as Record<string, unknown>) || {}
       : {};
 
-    if (Object.keys(this.labelUidMapper).length > 0) {
+    if (Object.keys(this.labelUidMapper || {}).length > 0) {
       const labelUidCount = Object.keys(this.labelUidMapper || {}).length;
       log.debug(`Loaded existing label UID data: ${labelUidCount} items`, this.importConfig.context);
     } else {
