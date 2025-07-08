@@ -18,8 +18,6 @@ export default class ImportPersonalize {
    */
   async start(): Promise<void> {
     try {
-      log.debug('Validating personalize configuration', this.config.context);
-
       if (!this.personalizeConfig.baseURL[this.config.region.name]) {
         log.debug(`No baseURL found for region: ${this.config.region.name}`, this.config.context);
         log.info('Skipping Personalize project import, personalize url is not set', this.config.context);
