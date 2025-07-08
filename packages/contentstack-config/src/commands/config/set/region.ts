@@ -51,10 +51,9 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
   };
   static examples = [
     '$ csdx config:set:region',
-    '$ csdx config:set:region NA',
-    '$ csdx config:set:region EU',
     '$ csdx config:set:region AWS-NA',
     '$ csdx config:set:region AWS-EU',
+    '$ csdx config:set:region AWS-AU',
     '$ csdx config:set:region AZURE-NA',
     '$ csdx config:set:region AZURE-EU',
     '$ csdx config:set:region GCP-NA',
@@ -120,7 +119,11 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
         this.logger.error('failed to set the region', error);
         cliux.error(`Failed to set region due to: ${error.message}`);
       }
-    } else if (['NA', 'EU', 'AWS-NA', 'AWS-EU', 'AZURE-NA', 'AZURE-EU', 'GCP-NA', 'GCP-EU'].includes(selectedRegion)) {
+    } else if (
+      ['NA', 'EU', 'AU', 'AWS-NA', 'AWS-EU', 'AWS-AU', 'AZURE-NA', 'AZURE-EU', 'GCP-NA', 'GCP-EU'].includes(
+        selectedRegion,
+      )
+    ) {
       const regionDetails: Region = regionHandler.setRegion(selectedRegion);
       await authHandler.setConfigData('logout'); //Todo: Handle this logout flow well through logout command call
       cliux.success(`Region has been set to ${regionDetails.name}`);
@@ -139,7 +142,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     if (transformedUrl.startsWith('http')) {
       transformedUrl = transformedUrl.split('//')[1];
     }
-    transformedUrl = transformedUrl.replace(/^dev\d+/, 'dev') // Replaces any 'dev1', 'dev2', etc. with 'dev'
+    transformedUrl = transformedUrl.replace(/^dev\d+/, 'dev'); // Replaces any 'dev1', 'dev2', etc. with 'dev'
     transformedUrl = transformedUrl.endsWith('io') ? transformedUrl.replace('io', 'com') : transformedUrl;
     return `https://${transformedUrl}`;
   }

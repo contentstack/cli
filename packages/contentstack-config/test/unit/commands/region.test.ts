@@ -18,9 +18,9 @@ describe('Region command', function () {
     launchHubUrl: 'https://launch-api.contentstack.com',
     personalizeUrl: 'https://personalization-api.contentstack.com',
   };
-  let cliuxPrintStub;
-  let configGetStub;
-  let configSetStub;
+  let cliuxPrintStub: sinon.SinonStub;
+  let configGetStub: sinon.SinonStub;
+  let configSetStub: sinon.SinonStub;
   beforeEach(function () {
     configGetStub = sinon.stub(config, 'get').callsFake((key) => {
       if (key === 'region') return region.name;
@@ -57,9 +57,123 @@ describe('Region command', function () {
     }
     expect(result.message).to.include('CLI_CONFIG_GET_REGION_NOT_FOUND EEXIT: 1');
   });
-  it('should set a valid region', function () {
-    const region = UserConfig.setRegion('NA');
-    expect(region).to.have.property('name', 'NA');
+
+  // Test cases for predefined regions
+  describe('Predefined Regions', function () {
+    it('should set NA region', function () {
+      const result = UserConfig.setRegion('NA');
+      expect(result).to.have.property('name', 'NA');
+      expect(result.cma).to.equal('https://api.contentstack.io');
+      expect(result.cda).to.equal('https://cdn.contentstack.io');
+      expect(result.uiHost).to.equal('https://app.contentstack.com');
+      expect(result.developerHubUrl).to.equal('https://developerhub-api.contentstack.com');
+      expect(result.personalizeUrl).to.equal('https://personalize-api.contentstack.com');
+      expect(result.launchHubUrl).to.equal('https://launch-api.contentstack.com');
+    });
+
+    it('should set EU region', function () {
+      const result = UserConfig.setRegion('EU');
+      expect(result).to.have.property('name', 'EU');
+      expect(result.cma).to.equal('https://eu-api.contentstack.com');
+      expect(result.cda).to.equal('https://eu-cdn.contentstack.com');
+      expect(result.uiHost).to.equal('https://eu-app.contentstack.com');
+      expect(result.developerHubUrl).to.equal('https://eu-developerhub-api.contentstack.com');
+      expect(result.personalizeUrl).to.equal('https://eu-personalize-api.contentstack.com');
+      expect(result.launchHubUrl).to.equal('https://eu-launch-api.contentstack.com');
+    });
+
+    it('should set AU region', function () {
+      const result = UserConfig.setRegion('AU');
+      expect(result).to.have.property('name', 'AU');
+      expect(result.cma).to.equal('https://au-api.contentstack.com');
+      expect(result.cda).to.equal('https://au-cdn.contentstack.com');
+      expect(result.uiHost).to.equal('https://au-app.contentstack.com');
+      expect(result.developerHubUrl).to.equal('https://au-developerhub-api.contentstack.com');
+      expect(result.personalizeUrl).to.equal('https://au-personalize-api.contentstack.com');
+      expect(result.launchHubUrl).to.equal('https://au-launch-api.contentstack.com');
+    });
+
+    it('should set AWS-NA region', function () {
+      const result = UserConfig.setRegion('AWS-NA');
+      expect(result).to.have.property('name', 'AWS-NA');
+      expect(result.cma).to.equal('https://api.contentstack.io');
+      expect(result.cda).to.equal('https://cdn.contentstack.io');
+      expect(result.uiHost).to.equal('https://app.contentstack.com');
+      expect(result.developerHubUrl).to.equal('https://developerhub-api.contentstack.com');
+      expect(result.personalizeUrl).to.equal('https://personalize-api.contentstack.com');
+      expect(result.launchHubUrl).to.equal('https://launch-api.contentstack.com');
+    });
+
+    it('should set AWS-EU region', function () {
+      const result = UserConfig.setRegion('AWS-EU');
+      expect(result).to.have.property('name', 'AWS-EU');
+      expect(result.cma).to.equal('https://eu-api.contentstack.com');
+      expect(result.cda).to.equal('https://eu-cdn.contentstack.com');
+      expect(result.uiHost).to.equal('https://eu-app.contentstack.com');
+      expect(result.developerHubUrl).to.equal('https://eu-developerhub-api.contentstack.com');
+      expect(result.personalizeUrl).to.equal('https://eu-personalize-api.contentstack.com');
+      expect(result.launchHubUrl).to.equal('https://eu-launch-api.contentstack.com');
+    });
+
+    it('should set AWS-AU region', function () {
+      const result = UserConfig.setRegion('AWS-AU');
+      expect(result).to.have.property('name', 'AWS-AU');
+      expect(result.cma).to.equal('https://au-api.contentstack.com');
+      expect(result.cda).to.equal('https://au-cdn.contentstack.com');
+      expect(result.uiHost).to.equal('https://au-app.contentstack.com');
+      expect(result.developerHubUrl).to.equal('https://au-developerhub-api.contentstack.com');
+      expect(result.personalizeUrl).to.equal('https://au-personalize-api.contentstack.com');
+      expect(result.launchHubUrl).to.equal('https://au-launch-api.contentstack.com');
+    });
+
+    it('should set AZURE-NA region', function () {
+      const result = UserConfig.setRegion('AZURE-NA');
+      expect(result).to.have.property('name', 'AZURE-NA');
+      expect(result.cma).to.equal('https://azure-na-api.contentstack.com');
+      expect(result.cda).to.equal('https://azure-na-cdn.contentstack.com');
+      expect(result.uiHost).to.equal('https://azure-na-app.contentstack.com');
+      expect(result.developerHubUrl).to.equal('https://azure-na-developerhub-api.contentstack.com');
+      expect(result.personalizeUrl).to.equal('https://azure-na-personalize-api.contentstack.com');
+      expect(result.launchHubUrl).to.equal('https://azure-na-launch-api.contentstack.com');
+    });
+
+    it('should set AZURE-EU region', function () {
+      const result = UserConfig.setRegion('AZURE-EU');
+      expect(result).to.have.property('name', 'AZURE-EU');
+      expect(result.cma).to.equal('https://azure-eu-api.contentstack.com');
+      expect(result.cda).to.equal('https://azure-eu-cdn.contentstack.com');
+      expect(result.uiHost).to.equal('https://azure-eu-app.contentstack.com');
+      expect(result.developerHubUrl).to.equal('https://azure-eu-developerhub-api.contentstack.com');
+      expect(result.personalizeUrl).to.equal('https://azure-eu-personalize-api.contentstack.com');
+      expect(result.launchHubUrl).to.equal('https://azure-eu-launch-api.contentstack.com');
+    });
+
+    it('should set GCP-NA region', function () {
+      const result = UserConfig.setRegion('GCP-NA');
+      expect(result).to.have.property('name', 'GCP-NA');
+      expect(result.cma).to.equal('https://gcp-na-api.contentstack.com');
+      expect(result.cda).to.equal('https://gcp-na-cdn.contentstack.com');
+      expect(result.uiHost).to.equal('https://gcp-na-app.contentstack.com');
+      expect(result.developerHubUrl).to.equal('https://gcp-na-developerhub-api.contentstack.com');
+      expect(result.personalizeUrl).to.equal('https://gcp-na-personalize-api.contentstack.com');
+      expect(result.launchHubUrl).to.equal('https://gcp-na-launch-api.contentstack.com');
+    });
+
+    it('should set GCP-EU region', function () {
+      const result = UserConfig.setRegion('GCP-EU');
+      expect(result).to.have.property('name', 'GCP-EU');
+      expect(result.cma).to.equal('https://gcp-eu-api.contentstack.com');
+      expect(result.cda).to.equal('https://gcp-eu-cdn.contentstack.com');
+      expect(result.uiHost).to.equal('https://gcp-eu-app.contentstack.com');
+      expect(result.developerHubUrl).to.equal('https://gcp-eu-developerhub-api.contentstack.com');
+      expect(result.personalizeUrl).to.equal('https://gcp-eu-personalize-api.contentstack.com');
+      expect(result.launchHubUrl).to.equal('https://gcp-eu-launch-api.contentstack.com');
+    });
+
+    it('should return undefined for invalid region', function () {
+      const result = UserConfig.setRegion('INVALID-REGION');
+      expect(result).to.be.undefined;
+    });
   });
 
   it('should get the default region if none is set', function () {
@@ -68,7 +182,7 @@ describe('Region command', function () {
       return undefined;
     });
     const region = UserConfig.getRegion();
-    expect(region).to.have.property('name', 'NA');
+    expect(region).to.have.property('name', 'AWS-NA');
   });
 
   it('should set a custom region with valid data', function () {
@@ -112,9 +226,71 @@ describe('Region command', function () {
     expect(UserConfig.validateRegion(validRegion)).to.be.true;
     expect(UserConfig.validateRegion(invalidRegion)).to.be.false;
   });
-  //   it('Set region by flag, should be successful', async function () {});
-  //   it('Set region by flag not existing, should throw an error', async function () {});
-  //   it('Set region without flag, should set the default', async function () {});
+
+  it('should set a custom region with developer hub URL', function () {
+    const customRegion = {
+      cma: 'https://custom-cma.com',
+      cda: 'https://custom-cda.com',
+      uiHost: 'https://custom-ui.com',
+      name: 'Custom Region',
+      developerHubUrl: 'https://custom-developer-hub.com',
+    };
+    const result = UserConfig.setCustomRegion(customRegion);
+    expect(result.developerHubUrl).to.equal(customRegion.developerHubUrl);
+  });
+
+  it('should set a custom region with personalize URL', function () {
+    const customRegion = {
+      cma: 'https://custom-cma.com',
+      cda: 'https://custom-cda.com',
+      uiHost: 'https://custom-ui.com',
+      name: 'Custom Region',
+      personalizeUrl: 'https://custom-personalize.com',
+    };
+    const result = UserConfig.setCustomRegion(customRegion);
+    expect(result.personalizeUrl).to.equal(customRegion.personalizeUrl);
+  });
+
+  it('should set a custom region with launch URL', function () {
+    const customRegion = {
+      cma: 'https://custom-cma.com',
+      cda: 'https://custom-cda.com',
+      uiHost: 'https://custom-ui.com',
+      name: 'Custom Region',
+      launchHubUrl: 'https://custom-launch.com',
+    };
+    const result = UserConfig.setCustomRegion(customRegion);
+    expect(result.launchHubUrl).to.equal(customRegion.launchHubUrl);
+  });
+
+  it('should set a custom region with all optional URLs', function () {
+    const customRegion = {
+      cma: 'https://custom-cma.com',
+      cda: 'https://custom-cda.com',
+      uiHost: 'https://custom-ui.com',
+      name: 'Custom Region',
+      developerHubUrl: 'https://custom-developer-hub.com',
+      personalizeUrl: 'https://custom-personalize.com',
+      launchHubUrl: 'https://custom-launch.com',
+    };
+    const result = UserConfig.setCustomRegion(customRegion);
+    expect(result).to.deep.equal(customRegion);
+  });
+
+  it('should sanitize region object to only include valid properties', function () {
+    const customRegion = {
+      cma: 'https://custom-cma.com',
+      cda: 'https://custom-cda.com',
+      uiHost: 'https://custom-ui.com',
+      name: 'Custom Region',
+      developerHubUrl: 'https://custom-developer-hub.com',
+      personalizeUrl: 'https://custom-personalize.com',
+      launchHubUrl: 'https://custom-launch.com',
+      invalidProperty: 'should be removed',
+    };
+    const result = UserConfig.setCustomRegion(customRegion);
+    expect(result).to.not.have.property('invalidProperty');
+  });
 });
 
 describe('Region Handler', function () {
@@ -127,9 +303,9 @@ describe('Region Handler', function () {
   });
 
   it('askRegions should return selected region', async function () {
-    inquireStub.returns(Promise.resolve('NA'));
+    inquireStub.returns(Promise.resolve('AWS-NA'));
     const result = await askRegions();
-    expect(result).to.equal('NA');
+    expect(result).to.equal('AWS-NA');
   });
 
   it('askCustomRegion should return custom region details', async function () {
