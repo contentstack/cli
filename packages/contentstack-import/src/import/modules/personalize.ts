@@ -52,7 +52,7 @@ export default class ImportPersonalize {
           .importOrder as (keyof typeof moduleMapper)[];
 
         log.debug(`Processing ${order.length} personalize modules in order: ${order.join(', ')}`, this.config.context);
-        log.debug(`Available modules: ${Object.keys(moduleMapper).join(', ')}`, this.config.context);
+                 log.debug(`Available modules: ${Object.keys(moduleMapper || {}).join(', ')}`, this.config.context);
 
         for (const module of order) {
           log.debug(`Starting import for personalize module: ${module}`, this.config.context);

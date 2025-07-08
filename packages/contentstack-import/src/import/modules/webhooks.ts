@@ -45,7 +45,7 @@ export default class ImportWebhooks extends BaseClass {
     if (fileHelper.fileExistsSync(this.webhooksFolderPath)) {
       this.webhooks = fsUtil.readFile(join(this.webhooksFolderPath, 'webhooks.json'), true) as Record<string, unknown>;
       log.debug(`Found webhooks folder: ${this.webhooksFolderPath}`, this.importConfig.context);
-      log.debug(`Loaded ${Object.keys(this.webhooks).length} webhooks from file`, this.importConfig.context);
+      log.debug(`Loaded ${Object.keys(this.webhooks || {}).length} webhooks from file`, this.importConfig.context);
     } else {
       log.info(`No Webhooks Found - '${this.webhooksFolderPath}'`, this.importConfig.context);
       return;
@@ -62,7 +62,7 @@ export default class ImportWebhooks extends BaseClass {
       : {};
     
     if (Object.keys(this.webhookUidMapper)?.length > 0) {
-      log.debug(`Loaded existing webhook UID mappings: ${Object.keys(this.webhookUidMapper).length} entries`, this.importConfig.context);
+      log.debug(`Loaded existing webhook UID mappings: ${Object.keys(this.webhookUidMapper || {}).length} entries`, this.importConfig.context);
     } else {
       log.debug('No existing webhook UID mappings found', this.importConfig.context);
     }
