@@ -33,7 +33,7 @@ export default class Importlabels extends BaseClass {
     this.failedLabel = [];
     this.createdLabel = [];
     this.labelUidMapper = {};
-    
+
     log.debug('Initialized ImportLabels class', this.importConfig.context);
     log.debug(`Labels folder path: ${this.labelsFolderPath}`, this.importConfig.context);
     log.debug(`Mapper directory path: ${this.mapperDirPath}`, this.importConfig.context);
@@ -46,12 +46,13 @@ export default class Importlabels extends BaseClass {
   async start(): Promise<void> {
     log.info('Starting labels import process', this.importConfig.context);
     log.debug('Checking for labels folder existence', this.importConfig.context);
-    
+
     //Step1 check folder exists or not
     if (fileHelper.fileExistsSync(this.labelsFolderPath)) {
       log.debug(`Found labels folder: ${this.labelsFolderPath}`, this.importConfig.context);
       this.labels = fsUtil.readFile(join(this.labelsFolderPath, 'labels.json'), true) as Record<string, unknown>;
-      log.debug(`Loaded ${Object.keys(this.labels || {}).length} label entries from file`, this.importConfig.context);
+      const labelCount = Object.keys(this.labels || {}).length;
+      log.debug(`Loaded ${labelCount} label items from file`, this.importConfig.context);
     } else {
       log.info(`No labels found - '${this.labelsFolderPath}'`, this.importConfig.context);
       return;
@@ -66,7 +67,8 @@ export default class Importlabels extends BaseClass {
       : {};
 
     if (Object.keys(this.labelUidMapper).length > 0) {
-      log.debug(`Loaded existing label UID references: ${Object.keys(this.labelUidMapper || {}).length} entries`, this.importConfig.context);
+      const labelUidCount = Object.keys(this.labelUidMapper || {}).length;
+      log.debug(`Loaded existing label UID data: ${labelUidCount} items`, this.importConfig.context);
     } else {
       log.debug('No existing label UID mappings found', this.importConfig.context);
     }
@@ -150,7 +152,10 @@ export default class Importlabels extends BaseClass {
     } else {
       let labelReq = label;
       if (label?.parent?.length != 0) {
-        log.debug(`Label '${label.name}' has parent labels, removing parent for initial creation`, this.importConfig.context);
+        log.debug(
+          `Label '${label.name}' has parent labels, removing parent for initial creation`,
+          this.importConfig.context,
+        );
         labelReq = omit(label, ['parent']);
       }
       apiOptions.apiData = labelReq;
@@ -172,10 +177,17 @@ export default class Importlabels extends BaseClass {
 
       const onReject = ({ error, apiData }: any) => {
         log.debug(`Label '${apiData?.name}' update failed`, this.importConfig.context);
-        handleAndLogError(error, { ...this.importConfig.context, name: apiData?.name }, `Failed to update label '${apiData?.name}'`);
+        handleAndLogError(
+          error,
+          { ...this.importConfig.context, name: apiData?.name },
+          `Failed to update label '${apiData?.name}'`,
+        );
       };
 
-      log.debug(`Using concurrency limit for updates: ${this.importConfig.fetchConcurrency || 1}`, this.importConfig.context);
+      log.debug(
+        `Using concurrency limit for updates: ${this.importConfig.fetchConcurrency || 1}`,
+        this.importConfig.context,
+      );
       await this.makeConcurrentCall(
         {
           apiContent,
@@ -195,7 +207,7 @@ export default class Importlabels extends BaseClass {
     } else {
       log.debug('No labels to update', this.importConfig.context);
     }
-    
+
     log.debug('Labels update process completed', this.importConfig.context);
   }
 
@@ -208,11 +220,14 @@ export default class Importlabels extends BaseClass {
     const { apiData: label } = apiOptions;
     const labelUid = label.uid;
     log.debug(`Serializing label update: ${label.name} (${labelUid})`, this.importConfig.context);
-    
+
     if (this.labelUidMapper.hasOwnProperty(labelUid)) {
       const newLabel = this.labelUidMapper[labelUid] as Record<string, any>;
       if (label?.parent?.length > 0) {
-        log.debug(`Label '${label.name}' has ${label.parent.length} parent labels to update`, this.importConfig.context);
+        log.debug(
+          `Label '${label.name}' has ${label.parent.length} parent labels to update`,
+          this.importConfig.context,
+        );
         for (let i = 0; i < label?.parent?.length; i++) {
           const parentUid = label.parent[i];
           if (this.labelUidMapper.hasOwnProperty(parentUid)) {

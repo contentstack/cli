@@ -49,7 +49,8 @@ export default class ImportTaxonomies extends BaseClass {
         string,
         unknown
       >;
-      log.debug(`Loaded ${Object.keys(this.taxonomies || {}).length} taxonomy entries from file`, this.importConfig.context);
+      const taxonomyCount = Object.keys(this.taxonomies || {}).length;
+      log.debug(`Loaded ${taxonomyCount} taxonomy items from file`, this.importConfig.context);
     } else {
       log.info(`No Taxonomies Found! - '${this.taxonomiesFolderPath}'`, this.importConfig.context);
       return;
@@ -60,11 +61,11 @@ export default class ImportTaxonomies extends BaseClass {
     await fsUtil.makeDirectory(this.taxonomiesMapperDirPath);
     await fsUtil.makeDirectory(this.termsMapperDirPath);
     log.debug('Created taxonomies and terms mapper directories', this.importConfig.context);
-    
+
     // Step 3 import taxonomies
     log.debug('Starting taxonomies import', this.importConfig.context);
     await this.importTaxonomies();
-    
+
     //Step 4 create taxonomy & related terms success & failure file
     log.debug('Creating success and failure files', this.importConfig.context);
     this.createSuccessAndFailedFile();
@@ -92,21 +93,24 @@ export default class ImportTaxonomies extends BaseClass {
       const taxonomyUID = apiData?.taxonomy?.uid;
       const taxonomyName = apiData?.taxonomy?.name;
       const termsCount = Object.keys(apiData?.terms || {}).length;
-      
+
       this.createdTaxonomies[taxonomyUID] = apiData?.taxonomy;
       this.createdTerms[taxonomyUID] = apiData?.terms;
-      
+
       log.success(`Taxonomy '${taxonomyUID}' imported successfully!`, this.importConfig.context);
       log.debug(`Created taxonomy '${taxonomyName}' with ${termsCount} terms`, this.importConfig.context);
-      log.debug(`Taxonomy details: ${JSON.stringify({ uid: taxonomyUID, name: taxonomyName, termsCount })}`, this.importConfig.context);
+      log.debug(
+        `Taxonomy details: ${JSON.stringify({ uid: taxonomyUID, name: taxonomyName, termsCount })}`,
+        this.importConfig.context,
+      );
     };
 
     const onReject = ({ error, apiData }: any) => {
       const taxonomyUID = apiData?.taxonomy?.uid;
       const taxonomyName = apiData?.taxonomy?.name;
-      
+
       log.debug(`Taxonomy '${taxonomyUID}' failed to import`, this.importConfig.context);
-      
+
       if (error?.status === 409 && error?.statusText === 'Conflict') {
         log.info(`Taxonomy '${taxonomyUID}' already exists!`, this.importConfig.context);
         log.debug(`Adding existing taxonomy '${taxonomyUID}' to created list`, this.importConfig.context);
@@ -118,14 +122,21 @@ export default class ImportTaxonomies extends BaseClass {
           const errorMsg = error?.errorMessage || error?.errors?.taxonomy || error?.errors?.term || error?.message;
           log.error(`Taxonomy '${taxonomyUID}' failed to be import! ${errorMsg}`, this.importConfig.context);
         } else {
-          handleAndLogError(error, { ...this.importConfig.context, taxonomyUID }, `Taxonomy '${taxonomyUID}' failed to import`);
+          handleAndLogError(
+            error,
+            { ...this.importConfig.context, taxonomyUID },
+            `Taxonomy '${taxonomyUID}' failed to import`,
+          );
         }
         this.failedTaxonomies[taxonomyUID] = apiData?.taxonomy;
         this.failedTerms[taxonomyUID] = apiData?.terms;
       }
     };
 
-    log.debug(`Using concurrency limit: ${this.importConfig.concurrency || this.importConfig.fetchConcurrency || 1}`, this.importConfig.context);
+    log.debug(
+      `Using concurrency limit: ${this.importConfig.concurrency || this.importConfig.fetchConcurrency || 1}`,
+      this.importConfig.context,
+    );
     await this.makeConcurrentCall(
       {
         apiContent,
@@ -142,7 +153,7 @@ export default class ImportTaxonomies extends BaseClass {
       undefined,
       false,
     );
-    
+
     log.debug('Taxonomies import process completed', this.importConfig.context);
   }
 
@@ -155,10 +166,10 @@ export default class ImportTaxonomies extends BaseClass {
     const { apiData } = apiOptions;
     const taxonomyUID = apiData?.uid;
     const filePath = join(this.taxonomiesFolderPath, `${taxonomyUID}.json`);
-    
+
     log.debug(`Serializing taxonomy: ${taxonomyUID}`, this.importConfig.context);
     log.debug(`Looking for taxonomy file: ${filePath}`, this.importConfig.context);
-    
+
     if (fileHelper.fileExistsSync(filePath)) {
       const taxonomyDetails = fsUtil.readFile(filePath, true) as Record<string, unknown>;
       log.debug(`Successfully loaded taxonomy details from ${filePath}`, this.importConfig.context);
@@ -178,18 +189,27 @@ export default class ImportTaxonomies extends BaseClass {
    */
   createSuccessAndFailedFile() {
     log.debug('Creating success and failed files for taxonomies and terms', this.importConfig.context);
-    
+
     const createdTaxCount = Object.keys(this.createdTaxonomies)?.length;
     const failedTaxCount = Object.keys(this.failedTaxonomies)?.length;
     const createdTermsCount = Object.keys(this.createdTerms)?.length;
     const failedTermsCount = Object.keys(this.failedTerms)?.length;
-    
-    log.debug(`Summary - Created taxonomies: ${createdTaxCount}, Failed taxonomies: ${failedTaxCount}`, this.importConfig.context);
-    log.debug(`Summary - Created terms: ${createdTermsCount}, Failed terms: ${failedTermsCount}`, this.importConfig.context);
-    
+
+    log.debug(
+      `Summary - Created taxonomies: ${createdTaxCount}, Failed taxonomies: ${failedTaxCount}`,
+      this.importConfig.context,
+    );
+    log.debug(
+      `Summary - Created terms: ${createdTermsCount}, Failed terms: ${failedTermsCount}`,
+      this.importConfig.context,
+    );
+
     if (this.createdTaxonomies !== undefined && !isEmpty(this.createdTaxonomies)) {
       fsUtil.writeFile(this.taxSuccessPath, this.createdTaxonomies);
-      log.debug(`Written ${createdTaxCount} successful taxonomies to file: ${this.taxSuccessPath}`, this.importConfig.context);
+      log.debug(
+        `Written ${createdTaxCount} successful taxonomies to file: ${this.taxSuccessPath}`,
+        this.importConfig.context,
+      );
     }
 
     if (this.failedTaxonomies !== undefined && !isEmpty(this.failedTaxonomies)) {
@@ -199,12 +219,18 @@ export default class ImportTaxonomies extends BaseClass {
 
     if (this.createdTerms !== undefined && !isEmpty(this.createdTerms)) {
       fsUtil.writeFile(this.termsSuccessPath, this.createdTerms);
-      log.debug(`Written successful terms for ${createdTermsCount} taxonomies to file: ${this.termsSuccessPath}`, this.importConfig.context);
+      log.debug(
+        `Written successful terms for ${createdTermsCount} taxonomies to file: ${this.termsSuccessPath}`,
+        this.importConfig.context,
+      );
     }
 
     if (this.failedTerms !== undefined && !isEmpty(this.failedTerms)) {
       fsUtil.writeFile(this.termsFailsPath, this.failedTerms);
-      log.debug(`Written failed terms for ${failedTermsCount} taxonomies to file: ${this.termsFailsPath}`, this.importConfig.context);
+      log.debug(
+        `Written failed terms for ${failedTermsCount} taxonomies to file: ${this.termsFailsPath}`,
+        this.importConfig.context,
+      );
     }
   }
 }

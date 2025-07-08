@@ -45,7 +45,8 @@ export default class ImportWebhooks extends BaseClass {
     if (fileHelper.fileExistsSync(this.webhooksFolderPath)) {
       this.webhooks = fsUtil.readFile(join(this.webhooksFolderPath, 'webhooks.json'), true) as Record<string, unknown>;
       log.debug(`Found webhooks folder: ${this.webhooksFolderPath}`, this.importConfig.context);
-      log.debug(`Loaded ${Object.keys(this.webhooks || {}).length} webhook entries from file`, this.importConfig.context);
+      const webhookCount = Object.keys(this.webhooks || {}).length;
+      log.debug(`Loaded ${webhookCount} webhook items from file`, this.importConfig.context);
     } else {
       log.info(`No Webhooks Found - '${this.webhooksFolderPath}'`, this.importConfig.context);
       return;
@@ -55,14 +56,15 @@ export default class ImportWebhooks extends BaseClass {
     log.debug('Creating webhooks mapper directory', this.importConfig.context);
     await fsUtil.makeDirectory(this.mapperDirPath);
     log.debug('Created webhooks mapper directory', this.importConfig.context);
-    
+
     log.debug('Loading existing webhook UID mappings', this.importConfig.context);
     this.webhookUidMapper = fileHelper.fileExistsSync(this.webhookUidMapperPath)
       ? (fsUtil.readFile(join(this.webhookUidMapperPath), true) as Record<string, unknown>)
       : {};
-    
+
     if (Object.keys(this.webhookUidMapper)?.length > 0) {
-      log.debug(`Loaded existing webhook UID references: ${Object.keys(this.webhookUidMapper || {}).length} entries`, this.importConfig.context);
+      const webhookUidCount = Object.keys(this.webhookUidMapper || {}).length;
+      log.debug(`Loaded existing webhook UID data: ${webhookUidCount} items`, this.importConfig.context);
     } else {
       log.debug('No existing webhook UID mappings found', this.importConfig.context);
     }
@@ -110,7 +112,11 @@ export default class ImportWebhooks extends BaseClass {
         log.info(`Webhook '${name}' already exists`, this.importConfig.context);
       } else {
         this.failedWebhooks.push(apiData);
-        handleAndLogError(error, { ...this.importConfig.context, webhookName: name }, `Webhook '${name}' failed to import`);
+        handleAndLogError(
+          error,
+          { ...this.importConfig.context, webhookName: name },
+          `Webhook '${name}' failed to import`,
+        );
       }
     };
 
@@ -131,7 +137,7 @@ export default class ImportWebhooks extends BaseClass {
       undefined,
       false,
     );
-    
+
     log.debug('Webhook import process completed', this.importConfig.context);
   }
 

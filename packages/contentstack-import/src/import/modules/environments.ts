@@ -3,7 +3,7 @@ import values from 'lodash/values';
 import { join } from 'node:path';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
 
-import {fsUtil, fileHelper } from '../../utils';
+import { fsUtil, fileHelper } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, EnvironmentConfig } from '../../types';
 
@@ -39,7 +39,7 @@ export default class ImportEnvironments extends BaseClass {
    */
   async start(): Promise<void> {
     log.debug('Checking for environments folder existence', this.importConfig.context);
-    
+
     //Step1 check folder exists or not
     if (fileHelper.fileExistsSync(this.environmentsFolderPath)) {
       log.debug(`Found environments folder: ${this.environmentsFolderPath}`, this.importConfig.context);
@@ -47,7 +47,8 @@ export default class ImportEnvironments extends BaseClass {
         string,
         unknown
       >;
-      log.debug(`Loaded ${Object.keys(this.environments || {}).length} environment entries from file`, this.importConfig.context);
+      const envCount = Object.keys(this.environments || {}).length;
+      log.debug(`Loaded ${envCount} environment items from file`, this.importConfig.context);
     } else {
       log.info(`No Environments Found - '${this.environmentsFolderPath}'`, this.importConfig.context);
       return;
@@ -61,7 +62,8 @@ export default class ImportEnvironments extends BaseClass {
       : {};
 
     if (Object.keys(this.envUidMapper)?.length > 0) {
-      log.debug(`Loaded existing environment UID references: ${Object.keys(this.envUidMapper || {}).length} entries`, this.importConfig.context);
+      const envUidCount = Object.keys(this.envUidMapper || {}).length;
+      log.debug(`Loaded existing environment UID data: ${envUidCount} items`, this.importConfig.context);
     } else {
       log.debug('No existing environment UID mappings found', this.importConfig.context);
     }
@@ -136,7 +138,7 @@ export default class ImportEnvironments extends BaseClass {
       undefined,
       false,
     );
-    
+
     log.debug('Environments import process completed', this.importConfig.context);
   }
 
@@ -148,7 +150,7 @@ export default class ImportEnvironments extends BaseClass {
   serializeEnvironments(apiOptions: ApiOptions): ApiOptions {
     const { apiData: environment } = apiOptions;
     log.debug(`Serializing environment: ${environment.name} (${environment.uid})`, this.importConfig.context);
-    
+
     if (this.envUidMapper.hasOwnProperty(environment.uid)) {
       log.info(
         `Environment '${environment.name}' already exists. Skipping it to avoid duplicates!`,

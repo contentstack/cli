@@ -59,7 +59,7 @@ export default class ImportLocales extends BaseClass {
 
   async start(): Promise<any> {
     log.debug('Loading locales from file', this.config.context);
-    
+
     this.languages = fsUtil.readFile(path.join(this.langFolderPath, this.localeConfig.fileName)) as Record<
       string,
       unknown
@@ -69,40 +69,41 @@ export default class ImportLocales extends BaseClass {
       return;
     }
     log.debug(`Found ${this.languages.length} languages to import`, this.config.context);
-    
+
     log.debug('Loading source master language configuration', this.config.context);
     this.sourceMasterLanguage = fsUtil.readFile(
       path.join(this.langFolderPath, this.masterLanguageConfig.fileName),
     ) as Record<string, any>;
     log.debug('Loaded source master language configuration', this.config.context);
-    
+
     log.debug('Creating languages mapper directory', this.config.context);
     await fileHelper.makeDirectory(this.langMapperPath);
     log.debug('Created languages mapper directory', this.config.context);
-    
+
     log.debug('Loading existing language UID mappings', this.config.context);
     if (fileHelper.fileExistsSync(this.langUidMapperPath)) {
       this.langUidMapper = fsUtil.readFile(this.langUidMapperPath) || {};
-      log.debug(`Loaded existing language UID references: ${Object.keys(this.langUidMapper || {}).length} entries`, this.config.context);
+      const langUidCount = Object.keys(this.langUidMapper || {}).length;
+      log.debug(`Loaded existing language UID data: ${langUidCount} items`, this.config.context);
     } else {
       log.debug('No existing language UID mappings found', this.config.context);
     }
-    
+
     log.debug('Checking and updating master locale', this.config.context);
     await this.checkAndUpdateMasterLocale().catch((error) => {
       handleAndLogError(error, { ...this.config.context });
     });
-    
+
     log.debug('Creating locales', this.config.context);
     await this.createLocales().catch((error) => {
       handleAndLogError(error, { ...this.config.context });
       Promise.reject('Failed to import locales');
     });
-    
+
     log.debug('Writing failed locales to file', this.config.context);
     fsUtil.writeFile(this.langFailsPath, this.failedLocales);
     log.debug(`Written ${this.failedLocales.length} failed locales to file`, this.config.context);
-    
+
     log.debug('Updating locales', this.config.context);
     await this.updateLocales().catch((error) => {
       handleAndLogError(error, { ...this.config.context });
@@ -114,13 +115,13 @@ export default class ImportLocales extends BaseClass {
 
   async checkAndUpdateMasterLocale(): Promise<any> {
     log.debug('Checking and updating master locale', this.config.context);
-    
+
     let sourceMasterLangDetails = (this.sourceMasterLanguage && Object.values(this.sourceMasterLanguage)) || [];
     log.debug(`Source master language details count: ${sourceMasterLangDetails.length}`, this.config.context);
-    
+
     if (sourceMasterLangDetails?.[0]?.code === this.masterLanguage?.code) {
       log.debug(`Master locale code matches: ${this.masterLanguage?.code}`, this.config.context);
-      
+
       log.debug('Fetching current master language details from stack', this.config.context);
       let masterLangDetails = await this.stackAPIClient
         .locale(this.masterLanguage['code'])
@@ -129,7 +130,7 @@ export default class ImportLocales extends BaseClass {
           log.debug('Error fetching master language details', this.config.context);
           handleAndLogError(error, { ...this.config.context });
         });
-        
+
       if (
         masterLangDetails?.name?.toString().toUpperCase() !==
         sourceMasterLangDetails[0]['name']?.toString().toUpperCase()
@@ -137,13 +138,13 @@ export default class ImportLocales extends BaseClass {
         log.debug('Master language name differs between source and destination', this.config.context);
         log.debug(`Current master language name: ${masterLangDetails['name']}`, this.config.context);
         log.debug(`Source master language name: ${sourceMasterLangDetails[0]['name']}`, this.config.context);
-        
+
         cliux.print('WARNING!!! The master language name for the source and destination is different.', {
           color: 'yellow',
         });
         cliux.print(`Old Master language name: ${masterLangDetails['name']}`, { color: 'red' });
         cliux.print(`New Master language name: ${sourceMasterLangDetails[0]['name']}`, { color: 'green' });
-        
+
         const langUpdateConfirmation: boolean = await cliux.inquire({
           type: 'confirm',
           message: 'Are you sure you want to update name of master language?',
@@ -157,9 +158,9 @@ export default class ImportLocales extends BaseClass {
           if (!sourceMasterLanguage) {
             log.info(`Master language details not found with id ${langUid} to update`, this.config.context);
           }
-          
+
           log.debug(`Updating master language name: ${sourceMasterLanguage.name}`, this.config.context);
-          
+
           const langUpdateRequest = this.stackAPIClient.locale(sourceMasterLanguage.code);
           langUpdateRequest.name = sourceMasterLanguage.name;
           await langUpdateRequest.update().catch(function (error: Error) {
@@ -179,13 +180,13 @@ export default class ImportLocales extends BaseClass {
   }
 
   async createLocales(): Promise<any> {
-    const languagesToCreate = filter(values(this.languages), (lang) => lang.code !== this.masterLanguage.code) as Record<
-      string,
-      any
-    >[];
-    
+    const languagesToCreate = filter(
+      values(this.languages),
+      (lang) => lang.code !== this.masterLanguage.code,
+    ) as Record<string, any>[];
+
     log.debug(`Creating ${languagesToCreate.length} locales (excluding master locale)`, this.config.context);
-    
+
     const onSuccess = ({ response = {}, apiData: { uid, code } = undefined }: any) => {
       this.langUidMapper[uid] = response.uid;
       this.createdLocales.push(pick(response, [...this.localeConfig.requiredKeys]));
@@ -193,7 +194,7 @@ export default class ImportLocales extends BaseClass {
       log.debug(`Locale UID mapping: ${uid} → ${response.uid}`, this.config.context);
       fsUtil.writeFile(this.langUidMapperPath, this.langUidMapper);
     };
-    
+
     const onReject = ({ error, apiData: { uid, code } = undefined }: any) => {
       if (error?.errorCode === 247) {
         log.info(formatError(error), this.config.context);
@@ -203,7 +204,7 @@ export default class ImportLocales extends BaseClass {
       }
       this.failedLocales.push({ uid, code });
     };
-    
+
     return await this.makeConcurrentCall({
       processName: 'Import locales',
       apiContent: languagesToCreate,
@@ -219,19 +220,19 @@ export default class ImportLocales extends BaseClass {
 
   async updateLocales(): Promise<unknown> {
     log.debug(`Updating ${this.languages.length} locales`, this.config.context);
-    
+
     const onSuccess = ({ response = {}, apiData: { uid, code } = undefined }: any) => {
       log.info(`Updated locale: '${code}'`, this.config.context);
       log.debug(`Locale update completed for: ${code}`, this.config.context);
       fsUtil.writeFile(this.langSuccessPath, this.createdLocales);
     };
-    
+
     const onReject = ({ error, apiData: { uid, code } = undefined }: any) => {
       log.error(`Language '${code}' failed to update`, this.config.context);
       handleAndLogError(error, { ...this.config.context, code });
       fsUtil.writeFile(this.langFailsPath, this.failedLocales);
     };
-    
+
     return await this.makeConcurrentCall({
       processName: 'Update locales',
       apiContent: values(this.languages),
