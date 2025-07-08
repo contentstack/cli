@@ -145,7 +145,7 @@ export default class ExportAssets extends BaseClass {
           indexFileName: 'assets.json',
           basePath: this.assetsRootPath,
           chunkFileSize: this.assetConfig.chunkFileSize,
-          metaPickKeys: merge(['uid', 'url', 'filename'], this.assetConfig.assetsMetaKeys),
+          metaPickKeys: merge(['uid', 'url', 'filename', 'parent_uid'], this.assetConfig.assetsMetaKeys),
         });
       }
       if (!isEmpty(items)) fs?.writeIntoFile(items, { mapKeyVal: true });
@@ -211,7 +211,7 @@ export default class ExportAssets extends BaseClass {
           indexFileName: 'versioned-assets.json',
           chunkFileSize: this.assetConfig.chunkFileSize,
           basePath: pResolve(this.assetsRootPath, 'versions'),
-          metaPickKeys: merge(['uid', 'url', 'filename', '_version'], this.assetConfig.assetsMetaKeys),
+          metaPickKeys: merge(['uid', 'url', 'filename', '_version', 'parent_uid'], this.assetConfig.assetsMetaKeys),
         });
       }
       if (!isEmpty(response))
