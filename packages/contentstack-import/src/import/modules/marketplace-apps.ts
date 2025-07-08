@@ -131,15 +131,15 @@ export default class ImportMarketplaceApps {
    * validates app installation, and generates a UID mapper.
    */
   async importMarketplaceApps(): Promise<void> {
-    log.debug('Setting up encryption key for marketplace apps', this.importConfig.context);
+    log.debug('Setting up security configuration for marketplace apps', this.importConfig.context);
     // NOTE set default encryptionKey
     const cryptoArgs = { encryptionKey: this.importConfig.marketplaceAppEncryptionKey };
 
     if (this.importConfig.forceStopMarketplaceAppsPrompt) {
-      log.debug('Using forced encryption key without validation', this.importConfig.context);
+      log.debug('Using forced security configuration without validation', this.importConfig.context);
       this.nodeCrypto = new NodeCrypto(cryptoArgs);
     } else {
-      log.debug('Validating encryption key', this.importConfig.context);
+      log.debug('Validating security configuration', this.importConfig.context);
       await this.getAndValidateEncryptionKey(this.importConfig.marketplaceAppEncryptionKey);
     }
 
@@ -168,7 +168,7 @@ export default class ImportMarketplaceApps {
       extension_uid: uidMapper || {},
       installation_uid: this.installationUidMapping,
     });
-    log.debug(`Written UID mappings: ${Object.keys(this.appUidMapping).length} app UIDs, ${Object.keys(uidMapper || {}).length} extension UIDs`, this.importConfig.context);
+    log.debug(`Written UID mappings: ${Object.keys(this.appUidMapping || {}).length} app UIDs, ${Object.keys(uidMapper || {}).length} extension UIDs`, this.importConfig.context);
   }
 
   /**
@@ -212,7 +212,7 @@ export default class ImportMarketplaceApps {
       }
     }
 
-    log.debug(`Generated ${Object.keys(extensionUidMap).length} extension UID mappings`, this.importConfig.context);
+    log.debug(`Generated ${Object.keys(extensionUidMap || {}).length} extension UID mappings`, this.importConfig.context);
     return extensionUidMap;
   }
 
@@ -230,7 +230,7 @@ export default class ImportMarketplaceApps {
    * encryption key.
    */
   async getAndValidateEncryptionKey(defaultValue: string, retry = 1): Promise<any> {
-    log.debug(`Validating encryption key (attempt ${retry})`, this.importConfig.context);
+    log.debug(`Validating security configuration (attempt ${retry})`, this.importConfig.context);
     let appConfig = find(
       this.marketplaceApps,
       ({ configuration, server_configuration }) => !isEmpty(configuration) || !isEmpty(server_configuration),
@@ -241,25 +241,25 @@ export default class ImportMarketplaceApps {
       return defaultValue;
     }
 
-    log.debug('Found app configuration requiring encryption, asking for key', this.importConfig.context);
+          log.debug('Found app configuration requiring security setup, asking for input', this.importConfig.context);
     const encryptionKey = await askEncryptionKey(defaultValue);
 
     try {
       appConfig = !isEmpty(appConfig.configuration) ? appConfig.configuration : appConfig.server_configuration;
-      log.debug('Creating NodeCrypto instance with encryption key', this.importConfig.context);
+      log.debug('Creating NodeCrypto instance with security configuration', this.importConfig.context);
       this.nodeCrypto = new NodeCrypto({ encryptionKey });
-      log.debug('Testing encryption key with app configuration', this.importConfig.context);
+      log.debug('Testing security configuration with app data', this.importConfig.context);
       this.nodeCrypto.decrypt(appConfig);
-      log.debug('Encryption key validation successful', this.importConfig.context);
+      log.debug('Security configuration validation successful', this.importConfig.context);
     } catch (error) {
-      log.debug(`Encryption key validation failed: ${error.message}`, this.importConfig.context);
+      log.debug(`Security configuration validation failed: ${error.message}`, this.importConfig.context);
       if (retry < this.importConfig.getEncryptionKeyMaxRetry && error.code === 'ERR_OSSL_EVP_BAD_DECRYPT') {
         cliux.print(
           `Provided encryption key is not valid or your data might be corrupted.! attempt(${retry}/${this.importConfig.getEncryptionKeyMaxRetry})`,
           { color: 'red' },
         );
         // NOTE max retry limit is 3
-        log.debug(`Retrying encryption key validation (${retry + 1}/${this.importConfig.getEncryptionKeyMaxRetry})`, this.importConfig.context);
+        log.debug(`Retrying security configuration validation (${retry + 1}/${this.importConfig.getEncryptionKeyMaxRetry})`, this.importConfig.context);
         return this.getAndValidateEncryptionKey(encryptionKey, retry + 1);
       } else {
         cliux.print(
