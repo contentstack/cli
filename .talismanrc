@@ -152,4 +152,6 @@ fileignoreconfig:
     checksum: fd7c4ebb6d6d955647012454357c360a292d122227a0d130b39dfd56c41f7529
   - filename: packages/contentstack-utilities/src/logger/logger.ts
     checksum: 892727d0fc86c09b2e386479b4bee3c08d8ce641ba1f8c8e54923d359fb923c5
+  - filename: packages/contentstack-import/src/import/modules/environments.ts
+    checksum: 31a35e99dddeba8e0479422c69c907baac7f412d6d2a4695c7002328525220b3
 version: "1.0"
