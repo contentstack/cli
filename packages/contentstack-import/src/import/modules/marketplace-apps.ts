@@ -168,7 +168,7 @@ export default class ImportMarketplaceApps {
       extension_uid: uidMapper || {},
       installation_uid: this.installationUidMapping,
     });
-    log.debug(`Written UID mappings: ${Object.keys(this.appUidMapping || {}).length} app UIDs, ${Object.keys(uidMapper || {}).length} extension UIDs`, this.importConfig.context);
+    log.debug(`Written UID references: ${Object.keys(this.appUidMapping || {}).length} app UIDs, ${Object.keys(uidMapper || {}).length} extension UIDs`, this.importConfig.context);
   }
 
   /**
@@ -212,7 +212,7 @@ export default class ImportMarketplaceApps {
       }
     }
 
-    log.debug(`Generated ${Object.keys(extensionUidMap || {}).length} extension UID mappings`, this.importConfig.context);
+    log.debug(`Generated ${Object.keys(extensionUidMap || {}).length} extension UID references`, this.importConfig.context);
     return extensionUidMap;
   }
 

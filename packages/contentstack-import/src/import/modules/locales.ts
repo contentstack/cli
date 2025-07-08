@@ -83,7 +83,7 @@ export default class ImportLocales extends BaseClass {
     log.debug('Loading existing language UID mappings', this.config.context);
     if (fileHelper.fileExistsSync(this.langUidMapperPath)) {
       this.langUidMapper = fsUtil.readFile(this.langUidMapperPath) || {};
-      log.debug(`Loaded existing language UID mappings: ${Object.keys(this.langUidMapper || {}).length} entries`, this.config.context);
+      log.debug(`Loaded existing language UID references: ${Object.keys(this.langUidMapper || {}).length} entries`, this.config.context);
     } else {
       log.debug('No existing language UID mappings found', this.config.context);
     }

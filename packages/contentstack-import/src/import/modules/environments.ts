@@ -47,7 +47,7 @@ export default class ImportEnvironments extends BaseClass {
         string,
         unknown
       >;
-      log.debug(`Loaded ${Object.keys(this.environments || {}).length} environments from file`, this.importConfig.context);
+      log.debug(`Loaded ${Object.keys(this.environments || {}).length} environment entries from file`, this.importConfig.context);
     } else {
       log.info(`No Environments Found - '${this.environmentsFolderPath}'`, this.importConfig.context);
       return;
@@ -61,7 +61,7 @@ export default class ImportEnvironments extends BaseClass {
       : {};
 
     if (Object.keys(this.envUidMapper)?.length > 0) {
-      log.debug(`Loaded existing environment UID mappings: ${Object.keys(this.envUidMapper || {}).length} entries`, this.importConfig.context);
+      log.debug(`Loaded existing environment UID references: ${Object.keys(this.envUidMapper || {}).length} entries`, this.importConfig.context);
     } else {
       log.debug('No existing environment UID mappings found', this.importConfig.context);
     }

@@ -51,7 +51,7 @@ export default class Importlabels extends BaseClass {
     if (fileHelper.fileExistsSync(this.labelsFolderPath)) {
       log.debug(`Found labels folder: ${this.labelsFolderPath}`, this.importConfig.context);
       this.labels = fsUtil.readFile(join(this.labelsFolderPath, 'labels.json'), true) as Record<string, unknown>;
-      log.debug(`Loaded ${Object.keys(this.labels || {}).length} labels from file`, this.importConfig.context);
+      log.debug(`Loaded ${Object.keys(this.labels || {}).length} label entries from file`, this.importConfig.context);
     } else {
       log.info(`No labels found - '${this.labelsFolderPath}'`, this.importConfig.context);
       return;
@@ -66,7 +66,7 @@ export default class Importlabels extends BaseClass {
       : {};
 
     if (Object.keys(this.labelUidMapper).length > 0) {
-      log.debug(`Loaded existing label UID mappings: ${Object.keys(this.labelUidMapper || {}).length} entries`, this.importConfig.context);
+      log.debug(`Loaded existing label UID references: ${Object.keys(this.labelUidMapper || {}).length} entries`, this.importConfig.context);
     } else {
       log.debug('No existing label UID mappings found', this.importConfig.context);
     }
