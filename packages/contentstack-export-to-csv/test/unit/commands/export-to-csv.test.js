@@ -368,10 +368,18 @@ describe('Testing teams support in CLI export-to-csv', () => {
 
 describe('Export assets', () => {
   beforeEach(() => {
+    if (!configHandler.get('authorisationType')) {
+      configHandler.set('authorisationType', 'BASIC');
+      configHandler.set('delete', true);
+    }
     sandbox = sinon.createSandbox();
     sandbox.stub(fs, 'createWriteStream').returns(new PassThrough());
   });
   afterEach(() => {
+    if (configHandler.get('delete')) {
+      configHandler.delete('delete');
+      configHandler.delete('authorisationType');
+    }
     sandbox.restore();
     nock.cleanAll();
   });
@@ -504,11 +512,13 @@ describe('Export assets', () => {
   it('should export only assets (no folders) using prompt', async () => {
     sandbox.stub(process, 'chdir').returns(undefined);
     sandbox.stub(inquirer, 'registerPrompt').returns(undefined);
-    sandbox.stub(inquirer, 'prompt').returns(Promise.resolve({
-      action: 'assets',
-      chosenOrg: mockData.organizations[0].name,
-      chosenStack: mockData.stacks[0].name,
-    }));
+    sandbox.stub(inquirer, 'prompt').returns(
+      Promise.resolve({
+        action: 'assets',
+        chosenOrg: mockData.organizations[0].name,
+        chosenStack: mockData.stacks[0].name,
+      }),
+    );
     mockPromptStackAndAssets({ assets: mockData.assets, assetFolders: [] });
     const { stdout } = await runCommand(['cm:export-to-csv']);
     expect(stdout).to.include('Writing Assets to file:');
@@ -519,11 +529,13 @@ describe('Export assets', () => {
   it('should export only asset folders (no assets) using prompt', async () => {
     sandbox.stub(process, 'chdir').returns(undefined);
     sandbox.stub(inquirer, 'registerPrompt').returns(undefined);
-    sandbox.stub(inquirer, 'prompt').returns(Promise.resolve({
-      action: 'assets',
-      chosenOrg: mockData.organizations[0].name,
-      chosenStack: mockData.stacks[0].name,
-    }));
+    sandbox.stub(inquirer, 'prompt').returns(
+      Promise.resolve({
+        action: 'assets',
+        chosenOrg: mockData.organizations[0].name,
+        chosenStack: mockData.stacks[0].name,
+      }),
+    );
     mockPromptStackAndAssets({ assets: [], assetFolders: mockData.assetFolders });
     const { stdout } = await runCommand(['cm:export-to-csv']);
     expect(stdout).to.not.include('Writing Assets to file:');
@@ -534,11 +546,13 @@ describe('Export assets', () => {
   it('should not export anything if no assets or folders exist (prompt)', async () => {
     sandbox.stub(process, 'chdir').returns(undefined);
     sandbox.stub(inquirer, 'registerPrompt').returns(undefined);
-    sandbox.stub(inquirer, 'prompt').returns(Promise.resolve({
-      action: 'assets',
-      chosenOrg: mockData.organizations[0].name,
-      chosenStack: mockData.stacks[0].name,
-    }));
+    sandbox.stub(inquirer, 'prompt').returns(
+      Promise.resolve({
+        action: 'assets',
+        chosenOrg: mockData.organizations[0].name,
+        chosenStack: mockData.stacks[0].name,
+      }),
+    );
     mockPromptStackAndAssets({ assets: [], assetFolders: [] });
     const { stdout } = await runCommand(['cm:export-to-csv']);
     expect(stdout).to.not.include('Writing Assets to file:');
