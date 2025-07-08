@@ -48,7 +48,7 @@ export default class ImportWorkflows extends BaseClass {
    */
   async start(): Promise<void> {
     log.debug('Checking for workflows folder existence', this.importConfig.context);
-    
+
     //Step1 check folder exists or not
     if (fileHelper.fileExistsSync(this.workflowsFolderPath)) {
       log.debug(`Found workflows folder: ${this.workflowsFolderPath}`, this.importConfig.context);
@@ -56,7 +56,8 @@ export default class ImportWorkflows extends BaseClass {
         string,
         unknown
       >;
-      log.debug(`Loaded ${Object.keys(this.workflows || {}).length} workflow entries from file`, this.importConfig.context);
+      const workflowCount = Object.keys(this.workflows || {}).length;
+      log.debug(`Loaded ${workflowCount} workflow items from file`, this.importConfig.context);
     } else {
       log.info(`No Workflows Found - '${this.workflowsFolderPath}'`, this.importConfig.context);
       return;
@@ -71,7 +72,8 @@ export default class ImportWorkflows extends BaseClass {
       : {};
 
     if (Object.keys(this.workflowUidMapper)?.length > 0) {
-      log.debug(`Loaded existing workflow UID references: ${Object.keys(this.workflowUidMapper || {}).length} entries`, this.importConfig.context);
+      const workflowUidCount = Object.keys(this.workflowUidMapper || {}).length;
+      log.debug(`Loaded existing workflow UID data: ${workflowUidCount} items`, this.importConfig.context);
     } else {
       log.debug('No existing workflow UID mappings found', this.importConfig.context);
     }
@@ -112,22 +114,23 @@ export default class ImportWorkflows extends BaseClass {
       })
       .catch((err: any) => {
         log.debug('Error fetching roles', this.importConfig.context);
-        handleAndLogError(err, { ...this.importConfig.context});
+        handleAndLogError(err, { ...this.importConfig.context });
       });
 
     for (const role of roles?.items || []) {
       this.roleNameMap[role.name] = role.uid;
       log.debug(`Role mapping: ${role.name} → ${role.uid}`, this.importConfig.context);
     }
-    
-    log.debug(`Created role name references for ${Object.keys(this.roleNameMap || {}).length} roles`, this.importConfig.context);
+
+    const roleCount = Object.keys(this.roleNameMap || {}).length;
+    log.debug(`Created role name data for ${roleCount} roles`, this.importConfig.context);
   }
 
   async importWorkflows() {
     log.debug('Validating workflows data', this.importConfig.context);
     const apiContent = values(this.workflows);
     const oldWorkflows = cloneDeep(values(this.workflows));
-    
+
     log.debug(`Starting to import ${apiContent.length} workflows`, this.importConfig.context);
 
     //check and create custom roles if not exists
@@ -142,7 +145,10 @@ export default class ImportWorkflows extends BaseClass {
     }
 
     const onSuccess = async ({ response, apiData: { uid, name } = { uid: null, name: '' } }: any) => {
-      log.debug(`Workflow '${name}' imported successfully, processing next available stages`, this.importConfig.context);
+      log.debug(
+        `Workflow '${name}' imported successfully, processing next available stages`,
+        this.importConfig.context,
+      );
       const oldWorkflowStages = find(oldWorkflows, { uid })?.workflow_stages;
       if (!isEmpty(filter(oldWorkflowStages, ({ next_available_stages }) => !isEmpty(next_available_stages)))) {
         log.debug(`Updating next available stages for workflow '${name}'`, this.importConfig.context);
@@ -204,7 +210,7 @@ export default class ImportWorkflows extends BaseClass {
       undefined,
       false,
     );
-    
+
     log.debug('Workflows import process completed', this.importConfig.context);
   }
 
@@ -231,9 +237,9 @@ export default class ImportWorkflows extends BaseClass {
       name: workflow.name,
       branches: workflow.branches,
       workflow_stages: newWorkflowStages,
-      content_types: workflow.content_types
+      content_types: workflow.content_types,
     });
-    
+
     return updateWorkflow.update();
   }
 
@@ -246,11 +252,17 @@ export default class ImportWorkflows extends BaseClass {
     let { apiData: workflow } = apiOptions;
 
     if (this.workflowUidMapper.hasOwnProperty(workflow.uid)) {
-      log.info(`Workflow '${workflow.name}' already exists. Skipping it to avoid duplicates!`, this.importConfig.context);
+      log.info(
+        `Workflow '${workflow.name}' already exists. Skipping it to avoid duplicates!`,
+        this.importConfig.context,
+      );
       apiOptions.entity = undefined;
     } else {
       if (workflow.admin_users !== undefined) {
-        log.info(chalk.yellow('We are skipping import of `Workflow superuser(s)` from workflow'), this.importConfig.context);
+        log.info(
+          chalk.yellow('We are skipping import of `Workflow superuser(s)` from workflow'),
+          this.importConfig.context,
+        );
         delete workflow.admin_users;
       }
       // One branch is required to create workflow.

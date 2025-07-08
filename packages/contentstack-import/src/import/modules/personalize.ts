@@ -19,7 +19,7 @@ export default class ImportPersonalize {
   async start(): Promise<void> {
     try {
       log.debug('Validating personalize configuration', this.config.context);
-      
+
       if (!this.personalizeConfig.baseURL[this.config.region.name]) {
         log.debug(`No baseURL found for region: ${this.config.region.name}`, this.config.context);
         log.info('Skipping Personalize project import, personalize url is not set', this.config.context);
@@ -32,15 +32,15 @@ export default class ImportPersonalize {
         log.info('Skipping Personalize project import when using management token', this.config.context);
         return;
       }
-      
+
       log.debug('Starting personalize project import', this.config.context);
       log.debug(`Base URL: ${this.personalizeConfig.baseURL[this.config.region.name]}`, this.config.context);
       await new Import.Project(this.config, log as unknown as LogType).import();
       log.debug('Personalize project import completed', this.config.context);
-      
+
       if (this.personalizeConfig.importData) {
         log.debug('Personalize data import is enabled', this.config.context);
-        
+
         const moduleMapper = {
           events: Import.Events,
           audiences: Import.Audiences,
@@ -52,32 +52,33 @@ export default class ImportPersonalize {
           .importOrder as (keyof typeof moduleMapper)[];
 
         log.debug(`Processing ${order.length} personalize modules in order: ${order.join(', ')}`, this.config.context);
-                 log.debug(`Available module types: ${Object.keys(moduleMapper || {}).join(', ')}`, this.config.context);
+        const moduleTypes = Object.keys(moduleMapper || {}).join(', ');
+        log.debug(`Available module types: ${moduleTypes}`, this.config.context);
 
         for (const module of order) {
           log.debug(`Starting import for personalize module: ${module}`, this.config.context);
           const Module = moduleMapper[module];
-          
+
           if (!Module) {
             log.debug(`Module ${module} not found in moduleMapper`, this.config.context);
             continue;
           }
-          
+
           log.debug(`Creating instance of ${module} module`, this.config.context);
           const moduleInstance = new Module(this.config, log as unknown as LogType);
-          
+
           log.debug(`Importing ${module} module`, this.config.context);
           await moduleInstance.import();
-          
+
           log.success(`Successfully imported personalize module: ${module}`, this.config.context);
           log.debug(`Completed import for personalize module: ${module}`, this.config.context);
         }
-        
+
         log.debug('All personalize modules imported successfully', this.config.context);
       } else {
         log.debug('Personalize data import is disabled', this.config.context);
       }
-      
+
       log.success('Personalize import completed successfully', this.config.context);
     } catch (error) {
       this.personalizeConfig.importData = false; // Stop personalize import if project creation fails
