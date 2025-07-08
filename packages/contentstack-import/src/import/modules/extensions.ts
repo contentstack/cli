@@ -2,8 +2,9 @@ import isEmpty from 'lodash/isEmpty';
 import values from 'lodash/values';
 import cloneDeep from 'lodash/cloneDeep';
 import { join } from 'node:path';
+import { log, handleAndLogError } from '@contentstack/cli-utilities';
 
-import { log, formatError, fsUtil, fileHelper } from '../../utils';
+import { fsUtil, fileHelper } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, Extensions, ExtensionType } from '../../types';
 
@@ -24,6 +25,7 @@ export default class ImportExtensions extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
+    this.importConfig.context.module = 'extensions';
     this.extensionsConfig = importConfig.modules.extensions;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'extensions');
     this.extensionsFolderPath = join(this.importConfig.backupDir, this.extensionsConfig.dirName);
@@ -43,8 +45,6 @@ export default class ImportExtensions extends BaseClass {
    * @returns {Promise<void>} Promise<void>
    */
   async start(): Promise<void> {
-    log(this.importConfig, 'Migrating extensions', 'info');
-
     //Step1 check folder exists or not
     if (fileHelper.fileExistsSync(this.extensionsFolderPath)) {
       this.extensions = fsUtil.readFile(join(this.extensionsFolderPath, 'extensions.json'), true) as Record<
@@ -52,7 +52,7 @@ export default class ImportExtensions extends BaseClass {
         Record<string, unknown>
       >;
     } else {
-      log(this.importConfig, `No Extensions Found - '${this.extensionsFolderPath}'`, 'info');
+      log.info(`No Extensions Found - '${this.extensionsFolderPath}'`, this.importConfig.context);
       return;
     }
 
@@ -72,7 +72,7 @@ export default class ImportExtensions extends BaseClass {
     // Note: if any extensions present, then update it
     if (this.importConfig.replaceExisting && this.existingExtensions.length > 0) {
       await this.replaceExtensions().catch((error: Error) => {
-        log(this.importConfig, `Error while replacing extensions ${formatError(error)}`, 'error');
+        handleAndLogError(error, { ...this.importConfig.context});
       });
     }
 
@@ -84,12 +84,12 @@ export default class ImportExtensions extends BaseClass {
       fsUtil.writeFile(this.extFailsPath, this.extFailed);
     }
 
-    log(this.importConfig, 'Extensions have been imported successfully!', 'success');
+    log.success('Extensions have been imported successfully!', this.importConfig.context);
   }
 
   async importExtensions(): Promise<any> {
     if (this.extensions === undefined || isEmpty(this.extensions)) {
-      log(this.importConfig, 'No Extensions Found', 'info');
+      log.info('No Extensions Found', this.importConfig.context);
       return;
     }
 
@@ -98,7 +98,7 @@ export default class ImportExtensions extends BaseClass {
     const onSuccess = ({ response, apiData: { uid, title } = { uid: null, title: '' } }: any) => {
       this.extSuccess.push(response);
       this.extUidMapper[uid] = response.uid;
-      log(this.importConfig, `Extension '${title}' imported successfully`, 'success');
+      log.success(`Extension '${title}' imported successfully`, this.importConfig.context);
       fsUtil.writeFile(this.extUidMapperPath, this.extUidMapper);
     };
 
@@ -109,12 +109,11 @@ export default class ImportExtensions extends BaseClass {
           this.existingExtensions.push(apiData);
         }
         if (!this.importConfig.skipExisting) {
-          log(this.importConfig, `Extension '${title}' already exists`, 'info');
+          log.info(`Extension '${title}' already exists`, this.importConfig.context);
         }
       } else {
         this.extFailed.push(apiData);
-        log(this.importConfig, `Extension '${title}' failed to be import ${formatError(error)}`, 'error');
-        log(this.importConfig, error, 'error');
+        handleAndLogError(error, { ...this.importConfig.context, title }, `Extension '${title}' failed to be import`);
       }
     };
 
@@ -139,14 +138,13 @@ export default class ImportExtensions extends BaseClass {
     const onSuccess = ({ response, apiData: { uid, title } = { uid: null, title: '' } }: any) => {
       this.extSuccess.push(response);
       this.extUidMapper[uid] = response.uid;
-      log(this.importConfig, `Extension '${title}' replaced successfully`, 'success');
+      log.success(`Extension '${title}' replaced successfully`, this.importConfig.context);
       fsUtil.writeFile(this.extUidMapperPath, this.extUidMapper);
     };
 
     const onReject = ({ error, apiData }: any) => {
       this.extFailed.push(apiData);
-      log(this.importConfig, `Extension '${apiData.title}' failed to replace ${formatError(error)}`, 'error');
-      log(this.importConfig, error, 'error');
+      handleAndLogError(error, { ...this.importConfig.context, title: apiData.title }, `Extension '${apiData.title}' failed to replace`);
     };
 
     await this.makeConcurrentCall(
@@ -225,7 +223,7 @@ export default class ImportExtensions extends BaseClass {
     extension.forEach((ext: ExtensionType) => {
       let ct: any = ext?.scope?.content_types || [];
       if ((ct.length === 1 && ct[0] !== '$all') || ct?.length > 1) {
-        log(this.importConfig, `Removing the content-types ${ct.join(',')} from the extension ${ext.title} ...`, 'info');
+        log.info(`Removing the content-types ${ct.join(',')} from the extension ${ext.title} ...`, this.importConfig.context);
         const { uid, scope } = ext;
         this.extensionObject.push({ uid, scope });
         delete ext.scope;

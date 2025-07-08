@@ -6,10 +6,10 @@
  */
 
 import * as path from 'path';
-import { isEmpty, cloneDeep, map, find } from 'lodash';
-import { cliux, sanitizePath } from '@contentstack/cli-utilities';
+import { isEmpty, cloneDeep } from 'lodash';
+import { cliux, sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 import { GlobalFieldData, GlobalField } from '@contentstack/management/types/stack/globalField';
-import { fsUtil, log, formatError, fileHelper, lookupExtension, removeReferenceFields } from '../../utils';
+import { fsUtil,fileHelper, lookupExtension, removeReferenceFields } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
 import { gfSchemaTemplate } from '../../utils/global-field-helper';
@@ -43,6 +43,7 @@ export default class ImportGlobalFields extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
+    this.importConfig.context.module = 'global-fields';
     this.config = importConfig;
     this.gFsConfig = importConfig.modules['global-fields'];
     this.gFs = [];
@@ -64,7 +65,7 @@ export default class ImportGlobalFields extends BaseClass {
   async start(): Promise<any> {
     this.gFs = fsUtil.readFile(path.join(this.gFsFolderPath, this.gFsConfig.fileName)) as Record<string, unknown>[];
     if (!this.gFs || isEmpty(this.gFs)) {
-      log(this.config, 'No global fields found to import', 'info');
+      log.info('No global fields found to import', this.importConfig.context);
       return;
     }
     await fsUtil.makeDirectory(this.gFsMapperPath);
@@ -77,25 +78,25 @@ export default class ImportGlobalFields extends BaseClass {
 
     await this.seedGFs();
     if (this.seedGFs?.length) fsUtil.writeFile(this.gFsPendingPath, this.pendingGFs);
-    log(this.importConfig, 'Created Global Fields', 'success');
+    log.success('Created Global Fields', this.importConfig.context);
 
     await this.updateGFs();
-    log(this.importConfig, 'Updated Global Fields', 'success');
+    log.success('Updated Global Fields', this.importConfig.context);
 
     if (this.importConfig.replaceExisting && this.existingGFs.length > 0) {
       await this.replaceGFs().catch((error: Error) => {
-        log(this.importConfig, `Error while replacing global fields ${formatError(error)}`, 'error');
+        handleAndLogError(error, { ...this.importConfig.context});
       });
     }
 
-    log(this.config, 'Global fields import has been completed!', 'info');
+    log.success('Global fields import has been completed!', this.importConfig.context);
   }
 
   async seedGFs(): Promise<any> {
     const onSuccess = ({ response: globalField, apiData: { uid } = undefined }: any) => {
       this.createdGFs.push(globalField);
       this.gFsUidMapper[uid] = globalField;
-      log(this.importConfig, `Global field ${globalField.uid} created successfully`, 'success');
+      log.success(`Global field ${globalField.uid} created successfully`, this.importConfig.context);
     };
     const onReject = ({ error, apiData: globalField = undefined }: any) => {
       const uid = globalField?.global_field?.uid;
@@ -104,11 +105,10 @@ export default class ImportGlobalFields extends BaseClass {
           this.existingGFs.push(globalField);
         }
         if (!this.importConfig.skipExisting) {
-          log(this.importConfig, `Global fields '${globalField?.global_field?.uid}' already exist`, 'info');
+          log.info(`Global fields '${globalField?.global_field?.uid}' already exist`, this.importConfig.context);
         }
       } else {
-        log(this.importConfig, `Global fields '${uid}' failed to import`, 'error');
-        log(this.importConfig, formatError(error), 'error');
+        handleAndLogError(error, { ...this.importConfig.context, uid }, `Global fields '${uid}' failed to import`);
         this.failedGFs.push({ uid });
       }
     };
@@ -142,10 +142,10 @@ export default class ImportGlobalFields extends BaseClass {
 
   async updateGFs(): Promise<any> {
     const onSuccess = ({ response: globalField, apiData: { uid } = undefined }: any) => {
-      log(this.importConfig, `Updated the global field ${uid}`, 'info');
+      log.info(`Updated the global field ${uid}`, this.importConfig.context);
     };
     const onReject = ({ error, apiData: { uid } = undefined }: any) => {
-      log(this.importConfig, `Failed to update the global field '${uid}' ${formatError(error)}`, 'error');
+      handleAndLogError(error, { ...this.importConfig.context, uid }, `Failed to update the global field '${uid}'`);
     };
     
     return await this.makeConcurrentCall({
@@ -209,13 +209,12 @@ export default class ImportGlobalFields extends BaseClass {
       this.createdGFs.push(globalField);
       this.gFsUidMapper[uid] = globalField;
       fsUtil.writeFile(this.gFsUidMapperPath, this.gFsUidMapper);
-      log(this.config, `Global field '${uid}' replaced successfully`, 'success');
+      log.success(`Global field '${uid}' replaced successfully`, this.importConfig.context);
     };
 
     const onReject = ({ error, apiData }: any) => {
       const uid = apiData?.uid ?? apiData?.global_field?.uid ?? 'unknown';
-      log(this.importConfig, `Global fields '${uid}' failed to replace`, 'error');
-      log(this.importConfig, formatError(error), 'error');
+      handleAndLogError(error, { ...this.importConfig.context, uid }, `Global fields '${uid}' failed to replace`);
       this.failedGFs.push({ uid });
     };
 

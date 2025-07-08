@@ -1,11 +1,12 @@
 import isEmpty from 'lodash/isEmpty';
 import values from 'lodash/values';
 import { join } from 'node:path';
+import { forEach, map } from 'lodash';
+import { log, handleAndLogError } from '@contentstack/cli-utilities';
 
-import { log, formatError, fsUtil, fileHelper } from '../../utils';
+import { fsUtil, fileHelper } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, CustomRoleConfig } from '../../types';
-import { forEach, map } from 'lodash';
 
 export default class ImportCustomRoles extends BaseClass {
   private customRolesMapperPath: string;
@@ -29,6 +30,7 @@ export default class ImportCustomRoles extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
+    this.importConfig.context.module = 'custom-roles';
     this.customRolesConfig = importConfig.modules.customRoles;
     this.customRolesMapperPath = join(this.importConfig.backupDir, 'mapper', 'custom-roles');
     this.customRolesFolderPath = join(this.importConfig.backupDir, this.customRolesConfig.dirName);
@@ -52,14 +54,14 @@ export default class ImportCustomRoles extends BaseClass {
    * @returns {Promise<void>} Promise<void>
    */
   async start(): Promise<void> {
-    log(this.importConfig, 'Migrating custom-roles', 'info');
+    log.info('Migrating custom-roles', this.importConfig.context);
 
     //Step1 check folder exists or not
     if (fileHelper.fileExistsSync(this.customRolesFolderPath)) {
       this.customRoles = fsUtil.readFile(join(this.customRolesFolderPath, this.customRolesConfig.fileName),true) as Record<string, unknown>;
       this.customRolesLocales = fsUtil.readFile(join(this.customRolesFolderPath, this.customRolesConfig.customRolesLocalesFileName),true) as Record<string, unknown>;
     } else {
-      log(this.importConfig, `No custom-rules are found - '${this.customRolesFolderPath}'`, 'info');
+      log.info(`No custom-rules are found - '${this.customRolesFolderPath}'`, this.importConfig.context);
       return;
     }
 
@@ -87,7 +89,7 @@ export default class ImportCustomRoles extends BaseClass {
       fsUtil.writeFile(this.customRolesFailsPath, this.failedCustomRoles);
     }
 
-    log(this.importConfig, 'Custom roles have been imported successfully!', 'success');
+    log.success('Custom roles have been imported successfully!', this.importConfig.context);
   }
 
   async getLocalesUidMap(): Promise<void> {
@@ -96,7 +98,9 @@ export default class ImportCustomRoles extends BaseClass {
       .query()
       .find()
       .then((data: any) => data)
-      .catch((error) => log(this.importConfig, `Failed to fetch locale.${formatError(error)}`, 'error'));
+      .catch((error) => {
+        handleAndLogError(error, { ...this.importConfig.context});
+      });
     this.targetLocalesMap = {};
     this.sourceLocalesMap = {};
 
@@ -117,7 +121,7 @@ export default class ImportCustomRoles extends BaseClass {
 
   async importCustomRoles() {
     if (this.customRoles === undefined || isEmpty(this.customRoles)) {
-      log(this.importConfig, 'No custom-roles found', 'info');
+      log.info('No custom-roles found', this.importConfig.context);
       return;
     }
 
@@ -126,7 +130,7 @@ export default class ImportCustomRoles extends BaseClass {
     const onSuccess = ({ response, apiData: { uid, name } = { uid: null, name: '' } }: any) => {
       this.createdCustomRoles.push(response);
       this.customRolesUidMapper[uid] = response.uid;
-      log(this.importConfig, `custom-role '${name}' imported successfully`, 'success');
+      log.success(`custom-role '${name}' imported successfully`, this.importConfig.context);
       fsUtil.writeFile(this.customRolesUidMapperPath, this.customRolesUidMapper);
     };
 
@@ -135,11 +139,10 @@ export default class ImportCustomRoles extends BaseClass {
       const { name } = apiData;
 
       if (err?.errors?.name) {
-        log(this.importConfig, `custom-role '${name}' already exists`, 'info');
+        log.info(`custom-role '${name}' already exists`, this.importConfig.context);
       } else {
         this.failedCustomRoles.push(apiData);
-        log(this.importConfig, `custom-role '${name}' failed to be import.${formatError(error)}`, 'error');
-        log(this.importConfig, formatError(error), 'error');
+        handleAndLogError(error, { ...this.importConfig.context, name }, `custom-role '${name}' failed to be import`);
       }
     };
 
@@ -170,10 +173,9 @@ export default class ImportCustomRoles extends BaseClass {
     const { apiData: customRole } = apiOptions;
 
     if (this.customRolesUidMapper.hasOwnProperty(customRole.uid)) {
-      log(
-        this.importConfig,
+      log.info(
         `custom-role '${customRole.name}' already exists. Skipping it to avoid duplicates!`,
-        'info',
+        this.importConfig.context,
       );
       apiOptions.entity = undefined;
     } else {
