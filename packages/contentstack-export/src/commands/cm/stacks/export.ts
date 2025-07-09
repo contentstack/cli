@@ -130,6 +130,7 @@ export default class ExportCommand extends Command {
       log.success(`The log has been stored at '${getLogPath()}'`, exportConfig.context)
     } catch (error) {
       handleAndLogError(error);
+      log.info(`The log has been stored at '${getLogPath()}'`)
     }
   }
   
@@ -143,7 +144,7 @@ export default class ExportCommand extends Command {
       sessionId: this.context.sessionId,
       apiKey: apiKey || '',
       orgId: configHandler.get('organization_uid') || '',
-      authMethod: this.context.authMethod || 'basic',
+      authMethod: this.context.authMethod || 'Basic Auth',
     };
   }
 
