@@ -111,9 +111,10 @@ export interface Context {
   userId: string | undefined;
   email: string | undefined;
   sessionId: string | undefined;
-  clientId: string | undefined;
+  clientId?: string | undefined;
   apiKey: string;
   orgId: string;
+  authMethod?: string;
 }
 
 export { default as DefaultConfig } from './default-config';
