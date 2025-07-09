@@ -1,4 +1,4 @@
-import { Modules, Region } from '.';
+import { Context, Modules, Region } from '.';
 import DefaultConfig from './default-config';
 
 export interface ExternalConfig {
@@ -11,6 +11,7 @@ export interface ExternalConfig {
 }
 
 export default interface ImportConfig extends DefaultConfig, ExternalConfig {
+  authMethod: string;
   skipAssetsPublish?: boolean;
   skipEntriesPublish?: boolean;
   cliLogsPath: string;
@@ -56,6 +57,7 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   region: Region;
   personalizeProjectName?: string;
   'exclude-global-modules': false;
+  context: Context;
 }
 
 type branch = {
