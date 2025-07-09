@@ -61,7 +61,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
       if (config.username && config.password) {
         log.debug('Using basic authentication with username/password');
         await login(config);
-        authMethod = 'basic_auth';
+        authMethod = 'Basic Auth';
         log.debug('Basic authentication successful');
       } else {
         log.debug('No authentication method available');
