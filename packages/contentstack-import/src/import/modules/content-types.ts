@@ -109,15 +109,18 @@ export default class ContentTypesImport extends BaseClass {
       return;
     }
     log.debug(`Found ${this.cTs.length} content types to import`, this.importConfig.context);
-    
+
     await fsUtil.makeDirectory(this.cTsMapperPath);
     log.debug('Created content types mapper directory', this.importConfig.context);
-    
+
     this.installedExtensions = (
       ((await fsUtil.readFile(this.marketplaceAppMapperPath)) as any) || { extension_uid: {} }
     ).extension_uid;
-    log.debug(`Loaded ${Object.keys(this.installedExtensions)?.length} installed extensions`, this.importConfig.context);
-    
+    log.debug(
+      `Loaded ${Object.keys(this.installedExtensions)?.length} installed extensions`,
+      this.importConfig.context,
+    );
+
     this.taxonomies = fsUtil.readFile(this.taxonomiesPath) as Record<string, unknown>;
     log.debug(`Loaded ${Object.keys(this.taxonomies || {}).length} taxonomies`, this.importConfig.context);
 
@@ -132,21 +135,21 @@ export default class ContentTypesImport extends BaseClass {
     log.info('Starting content types update process', this.importConfig.context);
     await this.updateCTs();
     log.success('Updated content types with references', this.importConfig.context);
-    
+
     if (this.fieldRules.length > 0) {
       fsUtil.writeFile(path.join(this.cTsFolderPath, 'field_rules_uid.json'), this.fieldRules);
       log.debug(`Written ${this.fieldRules.length} field rules to file`, this.importConfig.context);
     }
-    
+
     log.info('Updating the extensions...', this.importConfig.context);
     await this.updatePendingExtensions();
     if (this.isExtensionsUpdate) {
       log.success('Successfully updated the extensions.', this.importConfig.context);
     }
-    
+
     log.info('Starting pending global fields update', this.importConfig.context);
     await this.updatePendingGFs().catch((error) => {
-      handleAndLogError(error, { ...this.importConfig.context});
+      handleAndLogError(error, { ...this.importConfig.context });
     });
     log.success('Updated pending global fields with content type with references', this.importConfig.context);
     log.success('Content types have been imported successfully!', this.importConfig.context);
@@ -228,23 +231,29 @@ export default class ContentTypesImport extends BaseClass {
    */
   serializeUpdateCTs(apiOptions: ApiOptions): ApiOptions {
     const { apiData: contentType } = apiOptions;
-    log.debug(`Serializing update for content type: ${contentType.uid} (${contentType.title})`, this.importConfig.context);
-    
+    log.debug(
+      `Serializing update for content type: ${contentType.uid} (${contentType.title})`,
+      this.importConfig.context,
+    );
+
     if (contentType.field_rules) {
       contentType.field_rules = updateFieldRules(contentType);
       if (!contentType.field_rules.length) {
         delete contentType.field_rules;
         log.debug(`Removed empty field rules for content type: ${contentType.uid}`, this.importConfig.context);
       } else {
-        log.debug(`Updated ${contentType.field_rules.length} field rules for content type: ${contentType.uid}`, this.importConfig.context);
+        log.debug(
+          `Updated ${contentType.field_rules.length} field rules for content type: ${contentType.uid}`,
+          this.importConfig.context,
+        );
       }
       this.fieldRules.push(contentType.uid);
     }
-    
+
     //will remove taxonomy if taxonomy doesn't exists in stack
     lookUpTaxonomy(this.importConfig, contentType.schema, this.taxonomies);
     log.debug(`Processed taxonomy lookups for content type: ${contentType.uid}`, this.importConfig.context);
-    
+
     lookupExtension(
       this.importConfig,
       contentType.schema,
@@ -252,7 +261,7 @@ export default class ContentTypesImport extends BaseClass {
       this.installedExtensions,
     );
     log.debug(`Processed extension lookups for content type: ${contentType.uid}`, this.importConfig.context);
-    
+
     const contentTypePayload = this.stack.contentType(contentType.uid);
     Object.assign(contentTypePayload, cloneDeep(contentType));
     log.debug(`Content type update serialization completed for: ${contentType.uid}`, this.importConfig.context);
@@ -263,10 +272,10 @@ export default class ContentTypesImport extends BaseClass {
   async updatePendingGFs(): Promise<any> {
     this.pendingGFs = fsUtil.readFile(this.gFsPendingPath) as any;
     this.gFs = fsUtil.readFile(path.resolve(this.gFsFolderPath, this.gFsConfig.fileName)) as Record<string, unknown>[];
-    
+
     log.debug(`Found ${this.pendingGFs?.length || 0} pending global fields to update`, this.importConfig.context);
     log.debug(`Loaded ${this.gFs?.length || 0} global fields from file`, this.importConfig.context);
-    
+
     const onSuccess = ({ response: globalField, apiData: { uid } = undefined }: any) => {
       log.info(`Updated the global field ${uid} with content type references`, this.importConfig.context);
       log.debug(`Global field update completed for: ${uid}`, this.importConfig.context);
@@ -274,12 +283,12 @@ export default class ContentTypesImport extends BaseClass {
     const onReject = ({ error, apiData: { uid } = undefined }: any) => {
       handleAndLogError(error, { ...this.importConfig.context, uid }, `Failed to update the global field '${uid}'`);
     };
-    
+
     const apiContent = map(this.pendingGFs, (uid: string) => {
       return { uid };
     });
     log.debug(`Prepared ${apiContent.length} global field update tasks`, this.importConfig.context);
-    
+
     return await this.makeConcurrentCall({
       processName: 'Update pending global fields',
       apiContent: apiContent,
@@ -303,18 +312,18 @@ export default class ContentTypesImport extends BaseClass {
     const {
       apiData: { uid },
     } = apiOptions;
-    
+
     log.debug(`Serializing global field update for: ${uid}`, this.importConfig.context);
-    
+
     const globalField = find(this.gFs, { uid });
     if (!globalField) {
       log.debug(`Global field not found: ${uid}`, this.importConfig.context);
       apiOptions.apiData = null;
       return apiOptions;
     }
-    
+
     log.debug(`Found global field: ${uid}`, this.importConfig.context);
-    
+
     lookupExtension(
       this.importConfig,
       globalField.schema,
@@ -322,10 +331,8 @@ export default class ContentTypesImport extends BaseClass {
       this.installedExtensions,
     );
     log.debug(`Processed extension lookups for global field: ${uid}`, this.importConfig.context);
-    
-    const globalFieldPayload = this.stack.globalField(
-      uid, { api_version: '3.2' },
-    );
+
+    const globalFieldPayload = this.stack.globalField(uid, { api_version: '3.2' });
     Object.assign(globalFieldPayload, cloneDeep(globalField));
     log.debug(`Global field update serialization completed for: ${uid}`, this.importConfig.context);
     apiOptions.apiData = globalFieldPayload;
@@ -335,8 +342,8 @@ export default class ContentTypesImport extends BaseClass {
   async updatePendingExtensions(): Promise<any> {
     let apiContent = fsUtil.readFile(this.extPendingPath) as Record<string, any>[];
     log.debug(`Reading pending extensions from: ${this.extPendingPath}`, this.importConfig.context);
-    
-    if (apiContent?.length === 0) {
+
+    if (!apiContent || apiContent?.length === 0) {
       log.info(`No extensions found to be updated.`, this.importConfig.context);
       log.debug('Skipping extensions update - no pending extensions', this.importConfig.context);
       return;
@@ -344,7 +351,7 @@ export default class ContentTypesImport extends BaseClass {
 
     log.debug(`Found ${apiContent.length} extensions to update`, this.importConfig.context);
     this.isExtensionsUpdate = true;
-    
+
     const onSuccess = ({ response, apiData: { uid, title } = { uid: null, title: '' } }: any) => {
       log.success(`Successfully updated the '${response.title}' extension.`, this.importConfig.context);
       log.debug(`Extension update completed for: ${uid}`, this.importConfig.context);

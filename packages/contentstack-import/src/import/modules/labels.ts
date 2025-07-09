@@ -8,7 +8,7 @@ import { log, handleAndLogError } from '@contentstack/cli-utilities';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, LabelConfig } from '../../types';
 
-export default class Importlabels extends BaseClass {
+export default class ImportLabels extends BaseClass {
   private mapperDirPath: string;
   private labelsFolderPath: string;
   private labelUidMapperPath: string;
@@ -79,7 +79,7 @@ export default class Importlabels extends BaseClass {
     }
 
     log.debug('Starting labels import', this.importConfig.context);
-    await this.importlabels();
+    await this.importLabels();
     //update parent in created label
     log.debug('Starting labels update process', this.importConfig.context);
     await this.updateLabels();
@@ -98,7 +98,7 @@ export default class Importlabels extends BaseClass {
     log.success('Labels have been imported successfully!', this.importConfig.context);
   }
 
-  async importlabels() {
+  async importLabels() {
     if (this.labels === undefined || isEmpty(this.labels)) {
       log.info('No Labels Found', this.importConfig.context);
       return;
@@ -128,7 +128,7 @@ export default class Importlabels extends BaseClass {
         apiContent,
         processName: 'create labels',
         apiParams: {
-          serializeData: this.serializelabels.bind(this),
+          serializeData: this.serializeLabels.bind(this),
           reject: onReject.bind(this),
           resolve: onSuccess.bind(this),
           entity: 'create-labels',
@@ -142,11 +142,11 @@ export default class Importlabels extends BaseClass {
   }
 
   /**
-   * @method serializelabels
+   * @method serializeLabels
    * @param {ApiOptions} apiOptions ApiOptions
    * @returns {ApiOptions} ApiOptions
    */
-  serializelabels(apiOptions: ApiOptions): ApiOptions {
+  serializeLabels(apiOptions: ApiOptions): ApiOptions {
     const { apiData: label } = apiOptions;
     log.debug(`Serializing label: ${label.name} (${label.uid})`, this.importConfig.context);
 
