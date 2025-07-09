@@ -154,4 +154,8 @@ fileignoreconfig:
     checksum: 892727d0fc86c09b2e386479b4bee3c08d8ce641ba1f8c8e54923d359fb923c5
   - filename: packages/contentstack-import/src/import/modules/environments.ts
     checksum: 31a35e99dddeba8e0479422c69c907baac7f412d6d2a4695c7002328525220b3
+  - filename: packages/contentstack-import/src/utils/login-handler.ts
+    checksum: 9ee0a01dbdffa71a972cc8e64c24a219731e27d3c98b4607e2114337a3ebbf94
+  - filename: packages/contentstack-import/src/utils/extension-helper.ts
+    checksum: 147ffe7069333c30a20e63f3dcfde3c4f359748f82a8b9a071adc0361a968814
 version: "1.0"
