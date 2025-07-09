@@ -19,13 +19,15 @@ export const lookupExtension = function (
   installedExtensions: any,
 ) {
   log.debug('Starting extension lookup process...');
-  
+
   const fs = new FsUtility({ basePath: config.backupDir });
   const extensionPath = join(config.backupDir, 'mapper/extensions', 'uid-mapping.json');
   const globalfieldsPath = join(config.backupDir, 'mapper/globalfields', 'uid-mapping.json');
   const marketPlaceAppsPath = join(config.backupDir, 'mapper/marketplace_apps', 'uid-mapping.json');
 
-  log.debug(`Extension mapping paths - Extensions: ${extensionPath}, Global fields: ${globalfieldsPath}, Marketplace apps: ${marketPlaceAppsPath}`);
+  log.debug(
+    `Extension mapping paths - Extensions: ${extensionPath}, Global fields: ${globalfieldsPath}, Marketplace apps: ${marketPlaceAppsPath}`,
+  );
 
   for (let i in schema) {
     if (schema[i].data_type === 'group') {
@@ -68,9 +70,10 @@ export const lookupExtension = function (
       log.debug(`Processing global field: ${schema[i].uid}`);
       const global_fields_key_value = schema[i].reference_to;
       const global_fields_data = fs.readFile(globalfieldsPath) as Record<string, unknown>;
-      
+
       if (global_fields_data && global_fields_data.hasOwnProperty(global_fields_key_value)) {
-        log.debug(`Mapping global field reference: ${global_fields_key_value} -> ${global_fields_data[global_fields_key_value]}`);
+        const mappedValue = global_fields_data[global_fields_key_value];
+        log.debug(`Mapping global field reference: ${global_fields_key_value} -> ${mappedValue}`);
         schema[i].reference_to = global_fields_data[global_fields_key_value];
       } else {
         log.warn(`No mapping found for global field: ${global_fields_key_value}`);
@@ -79,9 +82,10 @@ export const lookupExtension = function (
       log.debug(`Processing field with extension UID: ${schema[i].uid}`);
       const extension_key_value = schema[i].extension_uid;
       const data = fs.readFile(extensionPath) as Record<string, unknown>;
-      
+
       if (data && data.hasOwnProperty(extension_key_value)) {
-        log.debug(`Mapping extension UID: ${extension_key_value} -> ${data[extension_key_value]}`);
+        const mappedExtension = data[extension_key_value];
+        log.debug(`Mapping extension UID: ${extension_key_value} -> ${mappedExtension}`);
         // eslint-disable-next-line camelcase
         schema[i].extension_uid = data[extension_key_value];
       } else if (schema[i].field_metadata && schema[i].field_metadata.extension) {
@@ -97,23 +101,29 @@ export const lookupExtension = function (
       const newPluginUidsArray: any[] = [];
       const data = fs.readFile(extensionPath) as Record<string, unknown>;
       const marketPlaceAppsData = fs.readFile(marketPlaceAppsPath) as { extension_uid: Record<string, unknown> };
-      
+
       schema[i].plugins.forEach((extension_key_value: string) => {
         if (data && data.hasOwnProperty(extension_key_value)) {
-          log.debug(`Mapping plugin extension: ${extension_key_value} -> ${data[extension_key_value]}`);
+          const mappedPlugin = data[extension_key_value];
+          log.debug(`Mapping plugin extension: ${extension_key_value} -> ${mappedPlugin}`);
           newPluginUidsArray.push(data[extension_key_value]);
-        } else if (marketPlaceAppsData && marketPlaceAppsData.extension_uid && marketPlaceAppsData.extension_uid.hasOwnProperty(extension_key_value)) {
-          log.debug(`Mapping marketplace app extension: ${extension_key_value} -> ${marketPlaceAppsData.extension_uid[extension_key_value]}`);
+        } else if (
+          marketPlaceAppsData &&
+          marketPlaceAppsData.extension_uid &&
+          marketPlaceAppsData.extension_uid.hasOwnProperty(extension_key_value)
+        ) {
+          const mappedMarketplaceExt = marketPlaceAppsData.extension_uid[extension_key_value];
+          log.debug(`Mapping marketplace app extension: ${extension_key_value} -> ${mappedMarketplaceExt}`);
           newPluginUidsArray.push(marketPlaceAppsData.extension_uid[extension_key_value]);
         } else {
           log.warn(`No mapping found for plugin extension: ${extension_key_value}`);
         }
       });
-      
+
       log.debug(`Updated plugins array with ${newPluginUidsArray.length} mapped extensions`);
       schema[i].plugins = newPluginUidsArray;
     }
   }
-  
+
   log.debug('Extension lookup process completed');
 };
