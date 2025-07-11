@@ -221,6 +221,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     const { content_type, locale, entry_uid } = entriesForVariant;
     const entryUid = this.entriesUidMapper[entry_uid];
     const batches = chunk(variantEntries, variantEntryConfig.apiConcurrency || 5);
+    if (isEmpty(batches)) return;
 
     log.debug(`Starting concurrent processing for ${variantEntries.length} variant entries`, this.config.context);
 
