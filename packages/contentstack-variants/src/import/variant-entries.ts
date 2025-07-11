@@ -192,7 +192,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
           await this.handleConcurrency(contentType, variantEntries, entriesForVariant);
         }
       } catch (error) {
-        handleAndLogError(error, this.config.context, `Failed to process variant entries for ${content_type}/${locale}/${entry_uid}`);
+        handleAndLogError(error, this.config.context, this.formatVariantErrorMessage(content_type, locale, entry_uid));
       }
     }
   }
