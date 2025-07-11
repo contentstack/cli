@@ -1,6 +1,6 @@
 fileignoreconfig:
   - filename: pnpm-lock.yaml
-    checksum: 550a609e4555f12348d39594897ebcd9f7173ea11ac34ad8c7ac4a714325f203
+    checksum: 9efe167319bf4b29931ee11e6caa385a32ea1e28dbc4f0bf25faaf645cba5e4b
   - filename: packages/contentstack-import/test/integration/auth-token-modules/environments.test.js
     checksum: bc6f06b75d082aaf99e2f2f4b932b143765e2f14086967fb8973fe1b2ca6c03e
   - filename: packages/contentstack-import/test/integration/environments.test.js
