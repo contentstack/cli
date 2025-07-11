@@ -68,7 +68,7 @@ export default class ImportLocales extends BaseClass {
       log.info('No languages found to import', this.config.context);
       return;
     }
-    log.debug(`Found ${this.languages.length} languages to import`, this.config.context);
+    log.debug(`Found ${values(this.languages).length} languages to import`, this.config.context);
 
     log.debug('Loading source master language configuration', this.config.context);
     this.sourceMasterLanguage = fsUtil.readFile(
@@ -219,7 +219,7 @@ export default class ImportLocales extends BaseClass {
   }
 
   async updateLocales(): Promise<unknown> {
-    log.debug(`Updating ${this.languages.length} locales`, this.config.context);
+    log.debug(`Updating ${values(this.languages).length} locales`, this.config.context);
 
     const onSuccess = ({ response = {}, apiData: { uid, code } = undefined }: any) => {
       log.info(`Updated locale: '${code}'`, this.config.context);

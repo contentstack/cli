@@ -1,4 +1,4 @@
-import { Import, LogType } from '@contentstack/cli-variants';
+import { Import } from '@contentstack/cli-variants';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
 import { ImportConfig, ModuleClassParams } from '../../types';
 
@@ -33,7 +33,7 @@ export default class ImportPersonalize {
 
       log.debug('Starting personalize project import', this.config.context);
       log.debug(`Base URL: ${this.personalizeConfig.baseURL[this.config.region.name]}`, this.config.context);
-      await new Import.Project(this.config, log as unknown as LogType).import();
+      await new Import.Project(this.config).import();
       log.debug('Personalize project import completed', this.config.context);
 
       if (this.personalizeConfig.importData) {
@@ -63,7 +63,7 @@ export default class ImportPersonalize {
           }
 
           log.debug(`Creating instance of ${module} module`, this.config.context);
-          const moduleInstance = new Module(this.config, log as unknown as LogType);
+          const moduleInstance = new Module(this.config);
 
           log.debug(`Importing ${module} module`, this.config.context);
           await moduleInstance.import();

@@ -156,8 +156,10 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
     log.debug(`Making API call to: ${endpoint}`, this.exportConfig?.context );
     const data = await this.apiClient.get(endpoint);
     const response = (await this.handleVariantAPIRes(data)) as { entries: VariantEntryStruct[]; count: number };
-
-    log.debug(`Received ${response.entries?.length || 0} variant entries out of total ${response.count}`, this.exportConfig?.context );
+    
+    if (response?.entries?.length) {
+      log.debug(`Received ${response.entries?.length} variant entries out of total ${response.count}`, this.exportConfig?.context );
+    }
 
     if (callback) {
       log.debug('Executing callback with variant entries', this.exportConfig?.context );

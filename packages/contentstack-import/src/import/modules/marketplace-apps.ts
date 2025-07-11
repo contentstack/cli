@@ -281,7 +281,7 @@ export default class ImportMarketplaceApps {
           `Maximum retry limit exceeded. Closing the process, please try again.! attempt(${retry}/${this.importConfig.getEncryptionKeyMaxRetry})`,
           { color: 'red' },
         );
-        log.debug('Maximum retry limit exceeded for encryption key validation', this.importConfig.context);
+        log.debug('Maximum retry limit exceeded for encryption validation', this.importConfig.context);
         process.exit(1);
       }
     }
@@ -336,7 +336,7 @@ export default class ImportMarketplaceApps {
           'ui_location',
           'framework_version',
         ];
-        log.debug(`Extracting valid keys from app manifest: ${app.manifest.name}`, this.importConfig.context);
+        log.debug(`Extracting valid configuration from app manifest: ${app.manifest.name}`, this.importConfig.context);
         const manifest = pick(app.manifest, validKeys) as Manifest;
         this.appOriginalName = manifest.name;
 

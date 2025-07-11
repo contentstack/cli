@@ -249,11 +249,13 @@ export default class ImportAssets extends BaseClass {
 
     if (!isVersion) {
       if (!isEmpty(this.assetsUidMap)) {
-        log.debug(`Writing ${Object.keys(this.assetsUidMap).length} UID mappings`, this.importConfig.context);
+        const uidMappingCount = Object.keys(this.assetsUidMap).length;
+        log.debug(`Writing ${uidMappingCount} UID mappings`, this.importConfig.context);
         this.fs.writeFile(this.assetUidMapperPath, this.assetsUidMap);
       }
       if (!isEmpty(this.assetsUrlMap)) {
-        log.debug(`Writing ${Object.keys(this.assetsUrlMap).length} URL mappings`, this.importConfig.context);
+        const urlMappingCount = Object.keys(this.assetsUrlMap).length;
+        log.debug(`Writing ${urlMappingCount} URL mappings`, this.importConfig.context);
         this.fs.writeFile(this.assetUrlMapperPath, this.assetsUrlMap);
       }
     }

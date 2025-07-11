@@ -26,6 +26,7 @@ export default class ExportAudiences extends PersonalizationAdapter<ExportConfig
       this.audiencesConfig.dirName,
     );
     this.audiences = [];
+    this.exportConfig.context.module = 'audiences';
   }
 
   async start() {
