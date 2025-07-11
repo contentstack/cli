@@ -30,6 +30,7 @@ const config: DefaultConfig = {
     types: [
       'locales',
       'environments',
+      'stack',
       'assets',
       'taxonomies',
       'extensions',
