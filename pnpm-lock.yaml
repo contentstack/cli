@@ -642,7 +642,7 @@ importers:
       '@contentstack/cli-command': ~1.5.0
       '@contentstack/cli-utilities': ~1.12.0
       '@contentstack/cli-variants': ~1.2.1
-      '@contentstack/management': ~1.21.4
+      '@contentstack/management': ~1.22.0
       '@oclif/core': ^4.3.0
       '@oclif/test': ^4.1.13
       '@types/big-json': ^3.2.5
@@ -678,7 +678,7 @@ importers:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/cli-variants': link:../contentstack-variants
-      '@contentstack/management': 1.21.7_debug@4.4.1
+      '@contentstack/management': 1.22.0_debug@4.4.1
       '@oclif/core': 4.4.0
       big-json: 3.2.0
       bluebird: 3.7.2
