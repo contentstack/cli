@@ -21,6 +21,7 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
       sanitizePath(this.personalizeConfig.dirName),
       'projects',
     );
+    this.exportConfig.context.module = 'projects';
   }
 
   async start() {

@@ -26,6 +26,7 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
       this.eventsConfig.dirName,
     );
     this.events = [];
+    this.exportConfig.context.module = 'events';
   }
 
   async start() {

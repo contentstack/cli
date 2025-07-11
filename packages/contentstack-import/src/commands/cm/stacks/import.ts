@@ -1,4 +1,3 @@
-import path from 'node:path';
 import { Command } from '@contentstack/cli-command';
 import {
   messageHandler,
@@ -16,7 +15,7 @@ import {
 
 import { Context, ImportConfig } from '../../../types';
 import { ModuleImporter } from '../../../import';
-import { setupImportConfig } from '../../../utils';
+import { setupImportConfig  } from '../../../utils';
 
 export default class ImportCommand extends Command {
   static description = messageHandler.parse('Import content from a stack');
@@ -151,6 +150,7 @@ export default class ImportCommand extends Command {
       // Prepare the context object
       const context = this.createImportContext(importConfig.apiKey);
       importConfig.context = {...context};
+      log.info(`Using Cli Version: ${this.context?.plugin?.version}`, importConfig.context);
       
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;

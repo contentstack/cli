@@ -25,6 +25,7 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
       sanitizePath(this.personalizeConfig.dirName),
       'experiences',
     );
+    this.exportConfig.context.module = 'experiences';
   }
 
   async start() {

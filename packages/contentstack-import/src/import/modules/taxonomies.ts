@@ -173,7 +173,8 @@ export default class ImportTaxonomies extends BaseClass {
     if (fileHelper.fileExistsSync(filePath)) {
       const taxonomyDetails = fsUtil.readFile(filePath, true) as Record<string, unknown>;
       log.debug(`Successfully loaded taxonomy details from ${filePath}`, this.importConfig.context);
-      log.debug(`Taxonomy has ${Object.keys(taxonomyDetails?.terms || {}).length} terms`, this.importConfig.context);
+        const termCount = Object.keys(taxonomyDetails?.terms || {}).length;
+        log.debug(`Taxonomy has ${termCount} term entries`, this.importConfig.context);
       apiOptions.apiData = { filePath, taxonomy: taxonomyDetails?.taxonomy, terms: taxonomyDetails?.terms };
     } else {
       log.debug(`File does not exist for taxonomy: ${taxonomyUID}`, this.importConfig.context);
