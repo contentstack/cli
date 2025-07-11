@@ -31,7 +31,7 @@ export default class ImportStack extends BaseClass { // classname
       return;
     }
 
-    if (this.stackSettings.live_preview && this.stackSettings.live_preview['default-env']) {
+    if (this.stackSettings?.live_preview && this.stackSettings?.live_preview['default-env']) {
       const oldEnvUid = this.stackSettings.live_preview['default-env'];
       const mappedEnvUid = this.envUidMapper[oldEnvUid];
       this.stackSettings.live_preview['default-env'] = mappedEnvUid;
