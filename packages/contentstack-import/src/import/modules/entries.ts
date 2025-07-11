@@ -190,10 +190,10 @@ export default class EntriesImport extends BaseClass {
 
       // Update field rule of content types which are got removed earlier
       log.info('Updating the field rules of content type', this.importConfig.context);
+      log.info('Updating the field rules of content type', this.importConfig.context);
       await this.updateFieldRules().catch((error) => {
         handleAndLogError(error, { ...this.importConfig.context }, 'Error while updating field rules of content type');
       });
-      log.success('Field rules updated successfully', this.importConfig.context);
       log.success('Entries imported successfully', this.importConfig.context);
 
       // Publishing entries

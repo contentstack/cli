@@ -9,12 +9,12 @@ import { existsSync } from 'node:fs';
 import includes from 'lodash/includes';
 import { v4 as uuid } from 'uuid';
 import { resolve as pResolve, join } from 'node:path';
-import { FsUtility } from '@contentstack/cli-utilities';
+import { FsUtility, log, handleAndLogError } from '@contentstack/cli-utilities';
 
 import config from '../../config';
-import { log, formatError, formatDate } from '../../utils';
-import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams } from '../../types';
+import { formatDate } from '../../utils';
+import BaseClass, { ApiOptions } from './base-class';
 
 export default class ImportAssets extends BaseClass {
   private fs: FsUtility;
@@ -33,6 +33,7 @@ export default class ImportAssets extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
+    this.importConfig.context.module = 'assets';
 
     this.assetsPath = join(this.importConfig.backupDir, 'assets');
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'assets');
@@ -52,20 +53,36 @@ export default class ImportAssets extends BaseClass {
    * @returns {Promise<void>} Promise<any>
    */
   async start(): Promise<void> {
+    try {
     // NOTE Step 1: Import folders and create uid mapping file
-    await this.importFolders();
+      log.debug('Starting folder import process', this.importConfig.context);
+      await this.importFolders();
 
     // NOTE Step 2: Import versioned assets and create it mapping files (uid, url)
-    if (this.assetConfig.includeVersionedAssets) {
-      if (existsSync(`${this.assetsPath}/versions`)) await this.importAssets(true);
-      else log(this.importConfig, 'No Versioned assets found to import', 'info');
-    }
+      if (this.assetConfig.includeVersionedAssets) {
+        const versionsPath = `${this.assetsPath}/versions`;
+        if (existsSync(versionsPath)) {
+          log.debug('Starting versioned assets import', this.importConfig.context);
+          await this.importAssets(true);
+        } else {
+          log.info('No Versioned assets found to import', this.importConfig.context);
+        }
+      }
 
     // NOTE Step 3: Import Assets and create it mapping files (uid, url)
-    await this.importAssets();
+      log.debug('Starting assets import', this.importConfig.context);
+      await this.importAssets();
 
     // NOTE Step 4: Publish assets
-    if (!this.importConfig.skipAssetsPublish) await this.publish();
+      if (!this.importConfig.skipAssetsPublish) {
+        log.debug('Starting assets publishing', this.importConfig.context);
+        await this.publish();
+      }
+
+      log.success('Assets imported successfully!', this.importConfig.context);
+    } catch (error) {
+      handleAndLogError(error, { ...this.importConfig.context });
+    }
   }
 
   /**
@@ -73,36 +90,57 @@ export default class ImportAssets extends BaseClass {
    * @returns {Promise<any>} Promise<any>
    */
   async importFolders(): Promise<any> {
-    const folders = this.fs.readFile(pResolve(this.assetsRootPath, 'folders.json'));
+    const foldersPath = pResolve(this.assetsRootPath, 'folders.json');
+    log.debug(`Reading folders from: ${foldersPath}`, this.importConfig.context);
+
+    const folders = this.fs.readFile(foldersPath);
     if (isEmpty(folders)) {
-      log(this.importConfig, 'No folders found to import', 'info');
+      log.info('No folders found to import', this.importConfig.context);
       return;
     }
+    log.debug(`Found ${folders.length} folders to import`, this.importConfig.context);
+
     const batches = this.constructFolderImportOrder(folders);
+    log.debug(`Organized folders into ${batches.length} batches for import`, this.importConfig.context);
+
     const onSuccess = ({ response, apiData: { uid, name } = { uid: null, name: '' } }: any) => {
       this.assetsFolderMap[uid] = response.uid;
-      log(this.importConfig, `Created folder: '${name}'`, 'success');
+      log.debug(`Created folder: ${name} (Mapped ${uid} → ${response.uid})`, this.importConfig.context);
+      log.success(`Created folder: '${name}'`, this.importConfig.context);
     };
+
     const onReject = ({ error, apiData: { name } = { name: '' } }: any) => {
-      log(this.importConfig, `${name} folder creation failed.!`, 'error');
-      log(this.importConfig, formatError(error), 'error');
+      log.error(`${name} folder creation failed.!`, this.importConfig.context);
+      handleAndLogError(error, { ...this.importConfig.context, name });
     };
+
     const serializeData = (apiOptions: ApiOptions) => {
       if (apiOptions.apiData.parent_uid) {
+        const originalParent = apiOptions.apiData.parent_uid;
         apiOptions.apiData.parent_uid = this.assetsFolderMap[apiOptions.apiData.parent_uid];
+        log.debug(
+          `Mapped parent folder: ${originalParent} → ${apiOptions.apiData.parent_uid}`,
+          this.importConfig.context,
+        );
       }
-
       return apiOptions;
     };
 
     const batch = map(unionBy(batches, 'parent_uid'), 'parent_uid');
+    log.debug(`Processing ${batch.length} folder batches`, this.importConfig.context);
 
     for (const parent_uid of batch) {
+      const currentBatch = filter(batches, { parent_uid });
+      log.debug(
+        `Processing batch with parent_uid: ${parent_uid} (${currentBatch.length} folders)`,
+        this.importConfig.context,
+      );
+
       // NOTE create parent folders
       /* eslint-disable no-await-in-loop */
       await this.makeConcurrentCall(
         {
-          apiContent: orderBy(filter(batches, { parent_uid }), 'created_at'),
+          apiContent: orderBy(currentBatch, 'created_at'),
           processName: 'import assets folders',
           apiParams: {
             serializeData,
@@ -119,6 +157,7 @@ export default class ImportAssets extends BaseClass {
     }
 
     if (!isEmpty(this.assetsFolderMap)) {
+      log.debug(`Writing folder mappings to ${this.assetFolderUidMapperPath}`, this.importConfig.context);
       this.fs.writeFile(this.assetFolderUidMapperPath, this.assetsFolderMap);
     }
   }
@@ -132,36 +171,47 @@ export default class ImportAssets extends BaseClass {
     const processName = isVersion ? 'import versioned assets' : 'import assets';
     const indexFileName = isVersion ? 'versioned-assets.json' : 'assets.json';
     const basePath = isVersion ? join(this.assetsPath, 'versions') : this.assetsPath;
+    log.debug(`Importing ${processName} from ${basePath}`, this.importConfig.context);
+
     const fs = new FsUtility({ basePath, indexFileName });
     const indexer = fs.indexFileContent;
     const indexerCount = values(indexer).length;
 
+    log.debug(`Found ${indexerCount} asset chunks to process`, this.importConfig.context);
+
     const onSuccess = ({ response = {}, apiData: { uid, url, title } = undefined }: any) => {
       this.assetsUidMap[uid] = response.uid;
       this.assetsUrlMap[url] = response.url;
-      log(this.importConfig, `Created asset: '${title}'`, 'info');
+      log.debug(`Created asset: ${title} (Mapped ${uid} → ${response.uid})`, this.importConfig.context);
+      log.success(`Created asset: '${title}'`, this.importConfig.context);
     };
+
     const onReject = ({ error, apiData: { title } = undefined }: any) => {
-      log(this.importConfig, `${title} asset upload failed.!`, 'error');
-      log(this.importConfig, formatError(error), 'error');
+      log.error(`${title} asset upload failed.!`, this.importConfig.context);
+      handleAndLogError(error, { ...this.importConfig.context, title });
     };
 
     /* eslint-disable @typescript-eslint/no-unused-vars, guard-for-in */
     for (const index in indexer) {
+      log.debug(`Processing chunk ${index} of ${indexerCount}`, this.importConfig.context);
+
       const chunk = await fs.readChunkFiles.next().catch((error) => {
-        log(this.importConfig, error, 'error');
+        handleAndLogError(error, { ...this.importConfig.context });
       });
 
       if (chunk) {
         let apiContent = orderBy(values(chunk as Record<string, any>[]), '_version');
+        log.debug(`Processing ${apiContent.length} assets in chunk`, this.importConfig.context);
 
         if (isVersion && this.assetConfig.importSameStructure) {
-          // NOTE to create same structure it must have seed assets/version 1 asset to be created first
+          log.debug('Processing version 1 assets first', this.importConfig.context);
+          const versionOneAssets = filter(apiContent, ({ _version }) => _version === 1);
+
           await this.makeConcurrentCall({
             processName,
             indexerCount,
             currentIndexer: +index,
-            apiContent: filter(apiContent, ({ _version }) => _version === 1),
+            apiContent: versionOneAssets,
             apiParams: {
               reject: onReject,
               resolve: onSuccess,
@@ -173,6 +223,7 @@ export default class ImportAssets extends BaseClass {
           });
 
           apiContent = filter(apiContent, ({ _version }) => _version > 1);
+          log.debug(`Processing ${apiContent.length} versioned assets after version 1`, this.importConfig.context);
         }
 
         await this.makeConcurrentCall(
@@ -196,9 +247,15 @@ export default class ImportAssets extends BaseClass {
       }
     }
 
-    if (!isVersion && (!isEmpty(this.assetsUidMap) || !isEmpty(this.assetsUrlMap))) {
-      this.fs.writeFile(this.assetUidMapperPath, this.assetsUidMap);
-      this.fs.writeFile(this.assetUrlMapperPath, this.assetsUrlMap);
+    if (!isVersion) {
+      if (!isEmpty(this.assetsUidMap)) {
+        log.debug(`Writing ${Object.keys(this.assetsUidMap).length} UID mappings`, this.importConfig.context);
+        this.fs.writeFile(this.assetUidMapperPath, this.assetsUidMap);
+      }
+      if (!isEmpty(this.assetsUrlMap)) {
+        log.debug(`Writing ${Object.keys(this.assetsUrlMap).length} URL mappings`, this.importConfig.context);
+        this.fs.writeFile(this.assetUrlMapperPath, this.assetsUrlMap);
+      }
     }
   }
 
@@ -213,25 +270,23 @@ export default class ImportAssets extends BaseClass {
     if (
       !this.assetConfig.importSameStructure &&
       !this.assetConfig.includeVersionedAssets &&
-      /* eslint-disable @typescript-eslint/no-unused-vars, no-prototype-builtins */
       this.assetsUidMap.hasOwnProperty(asset.uid)
     ) {
-      log(
-        this.importConfig,
-        `Skipping upload of asset: ${asset.uid}. Its mapped to: ${this.assetsUidMap[asset.uid]}`,
-        'success',
-      );
+      log.info(`Skipping existing asset: ${asset.uid} (${asset.title})`, this.importConfig.context);
       apiOptions.entity = undefined;
       return apiOptions;
     }
 
     asset.upload = join(this.assetsPath, 'files', asset.uid, asset.filename);
+    log.debug(`Asset file path resolved to: ${asset.upload}`, this.importConfig.context);
 
     if (asset.parent_uid) {
+      const originalParent = asset.parent_uid;
       asset.parent_uid = this.assetsFolderMap[asset.parent_uid];
+      log.debug(`Mapped parent UID: ${originalParent} → ${asset.parent_uid}`, this.importConfig.context);
     } else if (this.importConfig.replaceExisting) {
-      // adds the root folder as parent for all assets in the root level
       asset.parent_uid = this.assetsFolderMap[this.rootFolder.uid];
+      log.debug(`Assigned root folder as parent: ${asset.parent_uid}`, this.importConfig.context);
     }
 
     apiOptions.apiData = asset;
@@ -239,6 +294,7 @@ export default class ImportAssets extends BaseClass {
     if (this.assetsUidMap[asset.uid] && this.assetConfig.importSameStructure) {
       apiOptions.entity = 'replace-assets';
       apiOptions.uid = this.assetsUidMap[asset.uid] as string;
+      log.debug(`Preparing to replace asset: ${asset.uid} → ${apiOptions.uid}`, this.importConfig.context);
     }
 
     return apiOptions;
@@ -251,47 +307,67 @@ export default class ImportAssets extends BaseClass {
   async publish() {
     const fs = new FsUtility({ basePath: this.assetsPath, indexFileName: 'assets.json' });
     if (isEmpty(this.assetsUidMap)) {
+      log.debug('Loading asset UID mappings from file', this.importConfig.context);
       this.assetsUidMap = fs.readFile(this.assetUidMapperPath, true) as any;
     }
+
     const indexer = fs.indexFileContent;
     const indexerCount = values(indexer).length;
+    log.debug(`Found ${indexerCount} asset chunks to publish`, this.importConfig.context);
+
     const onSuccess = ({ apiData: { uid, title } = undefined }: any) => {
-      log(this.importConfig, `Asset '${uid}: ${title}' published successfully`, 'success');
+      log.success(`Asset '${uid}: ${title}' published successfully`, this.importConfig.context);
     };
+
     const onReject = ({ error, apiData: { uid, title } = undefined }: any) => {
-      log(this.importConfig, `Asset '${uid}: ${title}' not published`, 'error');
-      log(this.importConfig, formatError(error), 'error');
+      log.error(`Asset '${uid}: ${title}' not published`, this.importConfig.context);
+      handleAndLogError(error, { ...this.importConfig.context, uid, title });
     };
+
     const serializeData = (apiOptions: ApiOptions) => {
       const { apiData: asset } = apiOptions;
       const publishDetails = filter(asset.publish_details, ({ environment }) => {
         return this.environments?.hasOwnProperty(environment);
       });
+
       if (publishDetails.length) {
         const environments = uniq(map(publishDetails, ({ environment }) => this.environments[environment].name));
         const locales = uniq(map(publishDetails, 'locale'));
+
         if (environments.length === 0 || locales.length === 0) {
-          apiOptions.entity = undefined
+          log.debug(
+            `Skipping publish for asset ${asset.uid} - no valid environments/locales`,
+            this.importConfig.context,
+          );
+          apiOptions.entity = undefined;
           return apiOptions;
         }
+
         asset.locales = locales;
         asset.environments = environments;
         apiOptions.apiData.publishDetails = { locales, environments };
+        log.debug(`Prepared publish details for asset ${asset.uid}`, this.importConfig.context);
       }
 
       apiOptions.uid = this.assetsUidMap[asset.uid] as string;
 
-      if (!apiOptions.uid) apiOptions.entity = undefined;
+      if (!apiOptions.uid) {
+        log.debug(`Skipping publish for asset ${asset.uid} - no UID mapping found`, this.importConfig.context);
+        apiOptions.entity = undefined;
+      }
 
       return apiOptions;
     };
 
-    /* eslint-disable @typescript-eslint/no-unused-vars */
     for (const index in indexer) {
+      log.debug(`Processing publish chunk ${index} of ${indexerCount}`, this.importConfig.context);
       const apiContent = filter(
         values(await fs.readChunkFiles.next()),
         ({ publish_details }) => !isEmpty(publish_details),
       );
+
+      log.debug(`Found ${apiContent.length} publishable assets in chunk`, this.importConfig.context);
+
       await this.makeConcurrentCall({
         apiContent,
         indexerCount,
@@ -316,24 +392,26 @@ export default class ImportAssets extends BaseClass {
    */
   constructFolderImportOrder(folders: any): Array<Record<string, any>> {
     let parentUIds: unknown[] = [];
-
-    // NOTE: Read root folder
     const importOrder = filter(folders, { parent_uid: null }).map(({ uid, name, parent_uid, created_at }) => {
       parentUIds.push(uid);
       return { uid, name, parent_uid, created_at };
     });
 
+    log.debug(`Found ${importOrder.length} root folders`, this.importConfig.context);
+
     while (!isEmpty(parentUIds)) {
       // NOTE: Read nested folders every iteration until we find empty folders
-      parentUIds = filter(folders, ({ parent_uid }) => includes(parentUIds, parent_uid)).map(
-        ({ uid, name, parent_uid, created_at }) => {
-          importOrder.push({ uid, name, parent_uid, created_at });
-          return uid;
-        },
-      );
+      const nestedFolders = filter(folders, ({ parent_uid }) => includes(parentUIds, parent_uid));
+      log.debug(`Processing ${nestedFolders.length} nested folders`, this.importConfig.context);
+
+      parentUIds = nestedFolders.map(({ uid, name, parent_uid, created_at }) => {
+        importOrder.push({ uid, name, parent_uid, created_at });
+        return uid;
+      });
     }
 
     if (this.importConfig.replaceExisting) {
+      log.debug('Setting up root folder for import', this.importConfig.context);
       // Note: adds a root folder to distinguish latest asset uploads
       // Todo: This temporary approach should be updated with asset and folder overwrite strategy, which follows
       // folder overwrite
@@ -349,13 +427,15 @@ export default class ImportAssets extends BaseClass {
         parent_uid: null,
         created_at: null,
       };
+
       filter(importOrder, (folder, index) => {
         if (!folder.parent_uid) {
           importOrder.splice(index, 1, { ...folder, parent_uid: this.rootFolder.uid });
         }
       });
-      // NOTE: Adds root folder
+
       importOrder.unshift(this.rootFolder);
+      log.debug('Added root folder to import order', this.importConfig.context);
     }
     return importOrder;
   }

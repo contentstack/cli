@@ -148,7 +148,7 @@ export default class ExportCommand extends Command {
       sessionId: this.context.sessionId,
       apiKey: apiKey || '',
       orgId: configHandler.get('organization_uid') || '',
-      authMethod: this.context.authMethod || 'basic',
+      authMethod: this.context.authMethod || 'Basic Auth',
     };
   }
 
