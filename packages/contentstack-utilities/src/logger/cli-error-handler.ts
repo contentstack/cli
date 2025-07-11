@@ -130,9 +130,16 @@ export default class CLIErrorHandler {
     const isNetworkError = ['ECONNREFUSED', 'ENOTFOUND', 'ETIMEDOUT', 'ENETUNREACH'].includes(error.code);
     const isTimeoutError = error.code === 'ETIMEDOUT' || error.message?.includes('timeout');
   
-    if (status >= 400 && status < 500) {
+    if (status >= 100 && status < 200) {
+      return ERROR_TYPES.INFORMATIONAL;
+    } else if (status >= 200 && status < 300) {
+      // Successful response, but still got here — treat as application logic error
+      return ERROR_TYPES.APPLICATION;
+    } else if (status >= 300 && status < 400) {
+      return ERROR_TYPES.REDIRECTION;
+    } else if (status >= 400 && status < 500) {
       return ERROR_TYPES.API_ERROR;
-    } else if (status >= 500) {
+    } else if (status >= 500 && status < 600) {
       return ERROR_TYPES.SERVER_ERROR;
     } else if (isNetworkError || isTimeoutError) {
       return ERROR_TYPES.NETWORK;

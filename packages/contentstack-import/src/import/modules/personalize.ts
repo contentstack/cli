@@ -1,4 +1,4 @@
-import { Import, LogType } from '@contentstack/cli-variants';
+import { Import } from '@contentstack/cli-variants';
 import { log } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
 
@@ -27,7 +27,7 @@ export default class ImportPersonalize {
         log(this.config, 'Skipping Personalize project import when using management token', 'info');
         return;
       }
-      await new Import.Project(this.config, log as unknown as LogType).import();
+      await new Import.Project(this.config).import();
       if (this.personalizeConfig.importData) {
         const moduleMapper = {
           events: Import.Events,
@@ -41,7 +41,7 @@ export default class ImportPersonalize {
 
         for (const module of order) {
           const Module = moduleMapper[module];
-          await new Module(this.config, log as unknown as LogType).import();
+          await new Module(this.config).import();
         }
       }
     } catch (error) {

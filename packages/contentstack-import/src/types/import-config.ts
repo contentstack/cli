@@ -1,4 +1,4 @@
-import { Modules, Region } from '.';
+import { Modules, Region, Context } from '.';
 import DefaultConfig from './default-config';
 
 export interface ExternalConfig {
@@ -11,6 +11,7 @@ export interface ExternalConfig {
 }
 
 export default interface ImportConfig extends DefaultConfig, ExternalConfig {
+  context: Context;
   skipAssetsPublish?: boolean;
   skipEntriesPublish?: boolean;
   cliLogsPath: string;
