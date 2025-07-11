@@ -17,20 +17,20 @@ importers:
       '@contentstack/cli-cm-bootstrap': ~1.14.1
       '@contentstack/cli-cm-branches': ~1.4.3
       '@contentstack/cli-cm-bulk-publish': ~1.8.2
-      '@contentstack/cli-cm-clone': ~1.14.2
+      '@contentstack/cli-cm-clone': ~1.14.3
       '@contentstack/cli-cm-export': ~1.17.0
       '@contentstack/cli-cm-export-to-csv': ~1.8.2
-      '@contentstack/cli-cm-import': ~1.24.0
+      '@contentstack/cli-cm-import': ~1.25.0
       '@contentstack/cli-cm-import-setup': 1.3.0
       '@contentstack/cli-cm-migrate-rte': ~1.5.2
-      '@contentstack/cli-cm-seed': ~1.11.2
+      '@contentstack/cli-cm-seed': ~1.11.3
       '@contentstack/cli-command': ~1.5.1
       '@contentstack/cli-config': ~1.13.0
       '@contentstack/cli-launch': ^1.9.2
       '@contentstack/cli-migration': ~1.7.3
-      '@contentstack/cli-utilities': ~1.12.0
+      '@contentstack/cli-utilities': ~1.12.1
       '@contentstack/cli-variants': ~1.2.2
-      '@contentstack/management': ~1.21.4
+      '@contentstack/management': ~1.22.0
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@oclif/plugin-not-found': ^3.2.53
@@ -88,7 +88,7 @@ importers:
       '@contentstack/cli-migration': link:../contentstack-migration
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/cli-variants': link:../contentstack-variants
-      '@contentstack/management': 1.21.7_debug@4.4.1
+      '@contentstack/management': 1.22.0_debug@4.4.1
       '@oclif/core': 4.4.0
       '@oclif/plugin-help': 6.2.29
       '@oclif/plugin-not-found': 3.2.57_@types+node@14.18.63
@@ -376,7 +376,7 @@ importers:
     specifiers:
       '@colors/colors': ^1.6.0
       '@contentstack/cli-cm-export': ~1.17.0
-      '@contentstack/cli-cm-import': ~1.24.0
+      '@contentstack/cli-cm-import': ~1.25.0
       '@contentstack/cli-command': ~1.5.0
       '@contentstack/cli-utilities': ~1.12.0
       '@oclif/core': ^4.3.0
@@ -642,7 +642,7 @@ importers:
       '@contentstack/cli-command': ~1.5.0
       '@contentstack/cli-utilities': ~1.12.0
       '@contentstack/cli-variants': ~1.2.1
-      '@contentstack/management': ~1.21.4
+      '@contentstack/management': ~1.22.0
       '@oclif/core': ^4.3.0
       '@oclif/test': ^4.1.13
       '@types/big-json': ^3.2.5
@@ -678,7 +678,7 @@ importers:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/cli-variants': link:../contentstack-variants
-      '@contentstack/management': 1.21.7_debug@4.4.1
+      '@contentstack/management': 1.22.0_debug@4.4.1
       '@oclif/core': 4.4.0
       big-json: 3.2.0
       bluebird: 3.7.2
@@ -862,10 +862,10 @@ importers:
 
   packages/contentstack-seed:
     specifiers:
-      '@contentstack/cli-cm-import': ~1.24.0
+      '@contentstack/cli-cm-import': ~1.25.0
       '@contentstack/cli-command': ~1.5.0
       '@contentstack/cli-utilities': ~1.12.0
-      '@contentstack/management': ~1.21.4
+      '@contentstack/management': ~1.22.0
       '@types/inquirer': ^9.0.8
       '@types/jest': ^26.0.24
       '@types/mkdirp': ^1.0.2
@@ -889,7 +889,7 @@ importers:
       '@contentstack/cli-cm-import': link:../contentstack-import
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@contentstack/management': 1.21.7
+      '@contentstack/management': 1.22.0
       inquirer: 8.2.6
       mkdirp: 1.0.4
       tar: 6.2.1
@@ -913,7 +913,7 @@ importers:
 
   packages/contentstack-utilities:
     specifiers:
-      '@contentstack/management': ~1.21.4
+      '@contentstack/management': ~1.22.0
       '@contentstack/marketplace-sdk': ^1.2.8
       '@oclif/core': ^4.3.0
       '@types/chai': ^4.3.20
@@ -960,7 +960,7 @@ importers:
       winston: ^3.17.0
       xdg-basedir: ^4.0.0
     dependencies:
-      '@contentstack/management': 1.21.7
+      '@contentstack/management': 1.22.0
       '@contentstack/marketplace-sdk': 1.2.8
       '@oclif/core': 4.4.0
       axios: 1.10.0
@@ -2241,9 +2241,42 @@ packages:
       stream-browserify: 3.0.0
     transitivePeerDependencies:
       - debug
+    dev: true
 
   /@contentstack/management/1.21.7_debug@4.4.1:
     resolution: {integrity: sha512-PK3pXY25qx1I6Sz5tttBpXQf7PdQCb23T5Je60qvV18MlE2hKj/NNJzqE4IVMsWGQ83Ic81VEHpyuvIL5AnDNA==}
+    engines: {node: '>=8.0.0'}
+    dependencies:
+      assert: 2.1.0
+      axios: 1.10.0_debug@4.4.1
+      buffer: 6.0.3
+      form-data: 4.0.3
+      husky: 9.1.7
+      lodash: 4.17.21
+      qs: 6.14.0
+      stream-browserify: 3.0.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
+  /@contentstack/management/1.22.0:
+    resolution: {integrity: sha512-TmwCKhdZnmGpcTuXn5JWbvMqbu0PqEn8Z/oEUlCelAxpo9vSC2qS4aejJtLTqC3Gii/7cJwjqF1BoFpwSO5J9A==}
+    engines: {node: '>=8.0.0'}
+    dependencies:
+      assert: 2.1.0
+      axios: 1.10.0
+      buffer: 6.0.3
+      form-data: 4.0.3
+      husky: 9.1.7
+      lodash: 4.17.21
+      qs: 6.14.0
+      stream-browserify: 3.0.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
+  /@contentstack/management/1.22.0_debug@4.4.1:
+    resolution: {integrity: sha512-TmwCKhdZnmGpcTuXn5JWbvMqbu0PqEn8Z/oEUlCelAxpo9vSC2qS4aejJtLTqC3Gii/7cJwjqF1BoFpwSO5J9A==}
     engines: {node: '>=8.0.0'}
     dependencies:
       assert: 2.1.0
