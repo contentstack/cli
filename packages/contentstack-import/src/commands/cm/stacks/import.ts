@@ -6,13 +6,14 @@ import {
   flags,
   FlagInput,
   ContentstackClient,
-  configHandler,
+  pathValidator,
   log,
   handleAndLogError,
+  configHandler,
   getLogPath,
 } from '@contentstack/cli-utilities';
 
-import { ImportConfig, Context } from '../../../types';
+import { Context, ImportConfig } from '../../../types';
 import { ModuleImporter } from '../../../import';
 import { setupImportConfig,  } from '../../../utils';
 
@@ -153,7 +154,7 @@ export default class ImportCommand extends Command {
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;
       importConfig.region = this.region;
-      if(this.developerHubUrl) importConfig.developerHubBaseUrl = this.developerHubUrl;
+      if (this.developerHubUrl) importConfig.developerHubBaseUrl = this.developerHubUrl;
       if (this.personalizeUrl) importConfig.modules.personalize.baseURL[importConfig.region.name] = this.personalizeUrl;
       backupDir = importConfig.cliLogsPath || importConfig.backupDir;
 
@@ -177,10 +178,10 @@ export default class ImportCommand extends Command {
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       const result = await moduleImporter.start();
 
-      if (!result?.noSuccessMsg) {
+      if (!result?.noSuccessMsg) {       
         const successMessage = importConfig.stackName
-          ? `Successfully imported the content to the stack named ${importConfig.stackName} with the API key ${importConfig.apiKey} .`
-          : `The content has been imported to the stack ${importConfig.apiKey} successfully!`;
+        ? `Successfully imported the content to the stack named ${importConfig.stackName} with the API key ${importConfig.apiKey} .`
+        : `The content has been imported to the stack ${importConfig.apiKey} successfully!`;
         log.success(successMessage, importConfig.context);
       }
 
