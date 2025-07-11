@@ -133,8 +133,9 @@ export default class CLIErrorHandler {
     if (status >= 100 && status < 200) {
       return ERROR_TYPES.INFORMATIONAL;
     } else if (status >= 200 && status < 300) {
-      // Successful response, but still got here — treat as application logic error
-      return ERROR_TYPES.APPLICATION;
+      // Successful response — should not reach error handler
+      console.warn('Unexpected 2xx response in error handler:', error);
+      return ERROR_TYPES.SUCCESS; // Define a new type for unexpected success responses if needed
     } else if (status >= 300 && status < 400) {
       return ERROR_TYPES.REDIRECTION;
     } else if (status >= 400 && status < 500) {
