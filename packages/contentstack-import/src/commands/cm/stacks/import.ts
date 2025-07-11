@@ -15,7 +15,7 @@ import {
 
 import { Context, ImportConfig } from '../../../types';
 import { ModuleImporter } from '../../../import';
-import { setupImportConfig,  } from '../../../utils';
+import { setupImportConfig  } from '../../../utils';
 
 export default class ImportCommand extends Command {
   static description = messageHandler.parse('Import content from a stack');
