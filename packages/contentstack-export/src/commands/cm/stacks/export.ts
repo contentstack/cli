@@ -12,7 +12,7 @@ import {
   configHandler,
   log,
   handleAndLogError,
-  getLogPath
+  getLogPath,
 } from '@contentstack/cli-utilities';
 
 import { ModuleExporter } from '../../../export';
@@ -113,7 +113,8 @@ export default class ExportCommand extends Command {
       const exportConfig = await setupExportConfig(flags);
       // Prepare the context object
       const context = this.createExportContext(exportConfig.apiKey);
-      exportConfig.context = {...context};
+      exportConfig.context = { ...context };
+      log.info(`Using Cli Version: ${this.context?.plugin?.version}`, exportConfig.context);
 
       // Assign exportConfig variables
       this.assignExportConfig(exportConfig);
@@ -125,14 +126,18 @@ export default class ExportCommand extends Command {
       if (!exportConfig.branches?.length) {
         writeExportMetaFile(exportConfig);
       }
-      log.success(`The content of the stack ${exportConfig.apiKey} has been exported successfully!`,exportConfig.context)
+      log.success(
+        `The content of the stack ${exportConfig.apiKey} has been exported successfully!`,
+        exportConfig.context,
+      );
       log.info(`The exported content has been stored at '${exportDir}'`, exportConfig.context);
-      log.success(`The log has been stored at '${getLogPath()}'`, exportConfig.context)
+      log.success(`The log has been stored at '${getLogPath()}'`, exportConfig.context);
     } catch (error) {
       handleAndLogError(error);
+      log.info(`The log has been stored at '${getLogPath()}'`)
     }
   }
-  
+
   // Create export context object
   private createExportContext(apiKey: string): Context {
     return {

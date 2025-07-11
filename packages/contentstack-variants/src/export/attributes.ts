@@ -26,6 +26,7 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
       sanitizePath(this.attributesConfig.dirName),
     );
     this.attributes = [];
+    this.exportConfig.context.module = 'attributes';
   }
 
   async start() {
