@@ -157,7 +157,7 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
     const data = await this.apiClient.get(endpoint);
     const response = (await this.handleVariantAPIRes(data)) as { entries: VariantEntryStruct[]; count: number };
     
-    if(response?.entries?.length) {
+    if (response?.entries?.length) {
       log.debug(`Received ${response.entries?.length} variant entries out of total ${response.count}`, this.exportConfig?.context );
     }
 
