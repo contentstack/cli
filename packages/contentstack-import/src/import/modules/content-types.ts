@@ -122,7 +122,8 @@ export default class ContentTypesImport extends BaseClass {
     );
 
     this.taxonomies = fsUtil.readFile(this.taxonomiesPath) as Record<string, unknown>;
-    log.debug(`Loaded ${Object.keys(this.taxonomies || {}).length} taxonomies`, this.importConfig.context);
+        const taxonomyCount = Object.keys(this.taxonomies || {}).length;
+        log.debug(`Loaded ${taxonomyCount} taxonomy definitions`, this.importConfig.context);
 
     log.info('Starting content types seeding process', this.importConfig.context);
     await this.seedCTs();
