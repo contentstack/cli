@@ -1,4 +1,4 @@
-import { cliux, configHandler, formatError } from '@contentstack/cli-utilities';
+import { cliux, configHandler } from '@contentstack/cli-utilities';
 import { limitNamesConfig, defaultRalteLimitConfig } from '../utils/common-utilities';
 import { Limit } from '../interfaces';
 
