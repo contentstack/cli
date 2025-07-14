@@ -66,8 +66,7 @@ export class RateLimitHandler {
         }
       });
     } catch (error) {
-      console.log('Something went wrong while setting rate limit for org:', formatError(error));
-      throw new Error(error);
+      throw new Error(formatError(error));
     }
   }
 }
