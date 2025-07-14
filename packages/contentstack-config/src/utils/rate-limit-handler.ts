@@ -66,7 +66,7 @@ export class RateLimitHandler {
         }
       });
     } catch (error) {
-      throw new Error(formatError(error));
+      throw new Error(error);
     }
   }
 }
