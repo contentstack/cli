@@ -29,7 +29,7 @@ function handleAndLogError(error: unknown, context?: ErrorContext, errorMessage?
   // Always log the error
   v2Logger.logError({
     type: classified.type,
-    message: errorMessage || classified.message,
+    message: errorMessage || classified.error.message || classified.message,
     error: classified.error,
     context: typeof classified.context === 'string' ? { message: classified.context } : classified.context,
     hidden: classified.hidden,
