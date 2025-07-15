@@ -1,4 +1,4 @@
-import { cliux, CLIError, handleAndLogError, log, cliErrorHandler } from '@contentstack/cli-utilities';
+import { cliux, CLIError, log, cliErrorHandler } from '@contentstack/cli-utilities';
 import { User } from '../interfaces';
 import { askOTPChannel, askOTP } from './interactive';
 
@@ -98,6 +98,7 @@ class AuthHandler {
                 log.debug('Login with TFA token failed', { module: 'auth-handler', error });
                 const err = cliErrorHandler.classifyError(error);
                 reject(err);
+                return;
               }
             } else {
               log.debug('Login failed - no user found', { module: 'auth-handler', result });
