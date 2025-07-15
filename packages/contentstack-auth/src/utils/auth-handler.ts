@@ -28,11 +28,13 @@ class AuthHandler {
    * TBD: take out the otp implementation from login and create a new method/function to handle otp
    */
   async login(email: string, password: string, tfaToken?: string): Promise<User> {
+    const hasCredentials = !!password;
+    const hasTfaToken = !!tfaToken;
     log.debug('Starting login process', {
       module: 'auth-handler',
       email,
-      hasPassword: !!password,
-      hasTfaToken: !!tfaToken,
+      hasCredentials,
+      hasTfaToken,
     });
 
     return new Promise((resolve, reject) => {
@@ -47,9 +49,11 @@ class AuthHandler {
           log.debug('Adding TFA token to login payload', { module: 'auth-handler' });
         }
 
+        const hasCredentials = !!password;
+        const hasTfaTokenPresent = !!tfaToken;
         log.debug('Making login API call', {
           module: 'auth-handler',
-          payload: { email, hasPassword: !!password, hasTfaToken: !!tfaToken },
+          payload: { email, hasCredentials, hasTfaTokenPresent },
         });
 
         this._client
@@ -106,10 +110,12 @@ class AuthHandler {
             reject(err);
           });
       } else {
+        const hasEmail = !!email;
+        const hasCredentials = !!password;
         log.debug('Login failed - missing credentials', {
           module: 'auth-handler',
-          hasEmail: !!email,
-          hasPassword: !!password,
+          hasEmail,
+          hasCredentials,
         });
         reject(new CLIError({ message: 'No credential found to login' }));
       }
