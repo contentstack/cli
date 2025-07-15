@@ -1,4 +1,4 @@
-import { cliux, CLIError, handleAndLogError, log } from '@contentstack/cli-utilities';
+import { cliux, CLIError, log, cliErrorHandler } from '@contentstack/cli-utilities';
 import { User } from '../interfaces';
 import { askOTPChannel, askOTP } from './interactive';
 
@@ -28,8 +28,15 @@ class AuthHandler {
    * TBD: take out the otp implementation from login and create a new method/function to handle otp
    */
   async login(email: string, password: string, tfaToken?: string): Promise<User> {
-    log.debug('Starting login process', { module: 'auth-handler', email, hasPassword: !!password, hasTfaToken: !!tfaToken });
-    
+    const hasCredentials = !!password;
+    const hasTfaToken = !!tfaToken;
+    log.debug('Starting login process', {
+      module: 'auth-handler',
+      email,
+      hasCredentials,
+      hasTfaToken,
+    });
+
     return new Promise((resolve, reject) => {
       if (email && password) {
         const loginPayload: {
@@ -41,14 +48,23 @@ class AuthHandler {
           loginPayload.tfa_token = tfaToken;
           log.debug('Adding TFA token to login payload', { module: 'auth-handler' });
         }
-        
-        log.debug('Making login API call', { module: 'auth-handler', payload: { email, hasPassword: !!password, hasTfaToken: !!tfaToken } });
-        
+
+        const hasCredentials = !!password;
+        const hasTfaTokenPresent = !!tfaToken;
+        log.debug('Making login API call', {
+          module: 'auth-handler',
+          payload: { email, hasCredentials, hasTfaTokenPresent },
+        });
+
         this._client
           .login(loginPayload)
           .then(async (result: any) => {
-            log.debug('Login API response received', { module: 'auth-handler', hasUser: !!result.user, errorCode: result.error_code });
-            
+            log.debug('Login API response received', {
+              module: 'auth-handler',
+              hasUser: !!result.user,
+              errorCode: result.error_code,
+            });
+
             if (result.user) {
               log.debug('Login successful, user found', { module: 'auth-handler', userEmail: result.user.email });
               resolve(result.user as User);
@@ -56,7 +72,7 @@ class AuthHandler {
               log.debug('TFA required, requesting OTP channel', { module: 'auth-handler' });
               const otpChannel = await askOTPChannel();
               log.debug(`OTP channel selected: ${otpChannel}`, { module: 'auth-handler' });
-              
+
               // need to send sms to the mobile
               if (otpChannel === 'sms') {
                 log.debug('Sending SMS OTP request', { module: 'auth-handler' });
@@ -66,22 +82,23 @@ class AuthHandler {
                   cliux.print('CLI_AUTH_LOGIN_SECURITY_CODE_SEND_SUCCESS');
                 } catch (error) {
                   log.debug('SMS OTP request failed', { module: 'auth-handler', error });
-                  handleAndLogError(error, {}, 'Failed to send the security code')
-                  reject(new CLIError({ message: 'Failed to login - failed to send the security code' }));
+                  const err = cliErrorHandler.classifyError(error);
+                  reject(err);
                   return;
                 }
               }
-              
+
               log.debug('Requesting OTP input from user', { module: 'auth-handler' });
               const tfToken = await askOTP();
               log.debug('OTP received, retrying login', { module: 'auth-handler' });
-              
+
               try {
                 resolve(await this.login(email, password, tfToken));
               } catch (error) {
                 log.debug('Login with TFA token failed', { module: 'auth-handler', error });
-                handleAndLogError(error, {}, 'Failed to login with tfa token')
-                reject(new CLIError({ message: 'Failed to login with the tf token' }));
+                const err = cliErrorHandler.classifyError(error);
+                reject(err);
+                return;
               }
             } else {
               log.debug('Login failed - no user found', { module: 'auth-handler', result });
@@ -90,11 +107,17 @@ class AuthHandler {
           })
           .catch((error: any) => {
             log.debug('Login API call failed', { module: 'auth-handler', error: error.message || error });
-            handleAndLogError(error, {}, 'Failed to login with the credentials');
-            reject(new CLIError({ message: error.errorMessage }));
+            const err = cliErrorHandler.classifyError(error);
+            reject(err);
           });
       } else {
-        log.debug('Login failed - missing credentials', { module: 'auth-handler', hasEmail: !!email, hasPassword: !!password });
+        const hasEmail = !!email;
+        const hasCredentials = !!password;
+        log.debug('Login failed - missing credentials', {
+          module: 'auth-handler',
+          hasEmail,
+          hasCredentials,
+        });
         reject(new CLIError({ message: 'No credential found to login' }));
       }
     });
@@ -107,11 +130,11 @@ class AuthHandler {
    */
   async logout(authtoken: string): Promise<object> {
     log.debug('Starting logout process', { module: 'auth-handler', hasAuthToken: !!authtoken });
-    
+
     return new Promise((resolve, reject) => {
       if (authtoken) {
         log.debug('Making logout API call', { module: 'auth-handler' });
-        
+
         this._client
           .logout(authtoken)
           .then(function (response: object) {
@@ -120,8 +143,8 @@ class AuthHandler {
           })
           .catch((error: Error) => {
             log.debug('Logout API call failed', { module: 'auth-handler', error: error.message });
-            handleAndLogError(error, {}, 'Failed to logout');
-            return reject(new CLIError({ message: 'Failed to logout - ' + error.message }));
+            const err = cliErrorHandler.classifyError(error);
+            reject(err);
           });
       } else {
         log.debug('Logout failed - no auth token provided', { module: 'auth-handler' });
@@ -137,11 +160,11 @@ class AuthHandler {
    */
   async validateAuthtoken(authtoken: string): Promise<object> {
     log.debug('Starting token validation', { module: 'auth-handler', hasAuthToken: !!authtoken });
-    
+
     return new Promise((resolve, reject) => {
       if (authtoken) {
         log.debug('Making token validation API call', { module: 'auth-handler' });
-        
+
         this._client
           .getUser()
           .then((user: object) => {
@@ -150,8 +173,8 @@ class AuthHandler {
           })
           .catch((error: Error) => {
             log.debug('Token validation failed', { module: 'auth-handler', error: error.message });
-            handleAndLogError(error, {}, 'Failed to validate token');
-            reject(new CLIError({ message: 'Failed to validate token - ' + error.message }));
+            const err = cliErrorHandler.classifyError(error);
+            reject(err);
           });
       } else {
         log.debug('Token validation failed - no auth token provided', { module: 'auth-handler' });
