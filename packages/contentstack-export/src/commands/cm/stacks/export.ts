@@ -72,19 +72,22 @@ export default class ExportCommand extends Command {
     }),
     module: flags.string({
       char: 'm',
-      description: '[optional] Specific module name. If not specified, the export command will export all the modules to the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, and taxonomies.',
+      description:
+        '[optional] Specific module name. If not specified, the export command will export all the modules to the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, and taxonomies.',
       parse: printFlagDeprecation(['-m'], ['--module']),
     }),
     'content-types': flags.string({
       char: 't',
-      description: '[optional]  The UID of the content type(s) whose content you want to export. In case of multiple content types, specify the IDs separated by spaces.',
+      description:
+        '[optional]  The UID of the content type(s) whose content you want to export. In case of multiple content types, specify the IDs separated by spaces.',
       multiple: true,
       parse: printFlagDeprecation(['-t'], ['--content-types']),
     }),
     branch: flags.string({
       char: 'B',
       // default: 'main',
-      description: '[optional] The name of the branch where you want to export your content. If you don\'t mention the branch name, then by default the content will be exported from all the branches of your stack.',
+      description:
+        "[optional] The name of the branch where you want to export your content. If you don't mention the branch name, then by default the content will be exported from all the branches of your stack.",
       parse: printFlagDeprecation(['-B'], ['--branch']),
     }),
     'secured-assets': flags.boolean({
@@ -94,6 +97,10 @@ export default class ExportCommand extends Command {
       char: 'y',
       required: false,
       description: '[optional] Force override all Marketplace prompts.',
+    }),
+    query: flags.string({
+      description: '[optional] Query object (inline JSON or file path) to filter module exports.',
+      hidden: true,
     }),
   };
 
@@ -107,7 +114,7 @@ export default class ExportCommand extends Command {
       // Note setting host to create cma client
       exportConfig.host = this.cmaHost;
       exportConfig.region = this.region;
-      if(this.developerHubUrl) exportConfig.developerHubBaseUrl = this.developerHubUrl;
+      if (this.developerHubUrl) exportConfig.developerHubBaseUrl = this.developerHubUrl;
       if (this.personalizeUrl) exportConfig.modules.personalize.baseURL[exportConfig.region.name] = this.personalizeUrl;
       exportDir = sanitizePath(exportConfig.cliLogsPath || exportConfig.data || exportConfig.exportDir);
       const managementAPIClient: ContentstackClient = await managementSDKClient(exportConfig);
