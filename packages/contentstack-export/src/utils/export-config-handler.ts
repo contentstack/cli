@@ -15,7 +15,9 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
     const externalConfig = await readFile(exportCmdFlags['config']);
     config = merge.recursive(config, externalConfig);
   }
-  config.exportDir = sanitizePath(exportCmdFlags['data'] || exportCmdFlags['data-dir'] || config.data || (await askExportDir()));
+  config.exportDir = sanitizePath(
+    exportCmdFlags['data'] || exportCmdFlags['data-dir'] || config.data || (await askExportDir()),
+  );
 
   const pattern = /[*$%#<>{}!&?]/g;
   if (pattern.test(config.exportDir)) {
@@ -81,6 +83,30 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
   if (Array.isArray(config.filteredModules) && config.filteredModules.length > 0) {
     config.modules.types = filter(defaultConfig.modules.types, (module) => includes(config.filteredModules, module));
   }
+
+  // Handle query flag - can be inline JSON or file path
+  if (exportCmdFlags['query']) {
+    try {
+      const queryInput = exportCmdFlags['query'];
+
+      // Check if it's a file path (contains .json extension or path separators)
+      if (queryInput.includes('.json') || queryInput.includes('/') || queryInput.includes('\\')) {
+        // Try to read as file path
+        try {
+          config.query = await readFile(queryInput);
+        } catch (fileError) {
+          // If file read fails, treat as inline JSON
+          config.query = JSON.parse(queryInput);
+        }
+      } else {
+        // Parse as inline JSON
+        config.query = JSON.parse(queryInput);
+      }
+    } catch (error) {
+      throw new Error(`Invalid query format: ${error.message}`);
+    }
+  }
+
   return config;
 };
 
