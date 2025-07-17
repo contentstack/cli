@@ -127,6 +127,11 @@ export default class ContentTypesImport extends BaseClass {
     if (this.isExtensionsUpdate) {
       log(this.importConfig, 'Successfully updated the extensions.', 'success');
     }
+    this.pendingGFs = fsUtil.readFile(this.gFsPendingPath) as any;
+    if (!this.pendingGFs || isEmpty(this.pendingGFs)) {
+      log(this.importConfig, 'No pending global fields found to update', 'info');
+      return;
+    }
     await this.updatePendingGFs().catch((error) => {
       log(this.importConfig, `Error while updating pending global field ${formatError(error)}`, 'error');
     });
@@ -227,8 +232,9 @@ export default class ContentTypesImport extends BaseClass {
 
   async updatePendingGFs(): Promise<any> {
     this.pendingGFs = fsUtil.readFile(this.gFsPendingPath) as any;
+    log(this.importConfig, `Found ${this.pendingGFs.length} pending global fields to update`, 'info');
     this.gFs = fsUtil.readFile(path.resolve(this.gFsFolderPath, this.gFsConfig.fileName)) as Record<string, unknown>[];
-    const onSuccess = ({ response: globalField, apiData: { uid } = undefined }: any) => {
+    const onSuccess = ({ response, apiData: { uid } = undefined }: any) => {
       log(this.importConfig, `Updated the global field ${uid} with content type references`, 'info');
     };
     const onReject = ({ error, apiData: { uid } = undefined }: any) => {
@@ -266,9 +272,7 @@ export default class ContentTypesImport extends BaseClass {
       this.importConfig.preserveStackVersion,
       this.installedExtensions,
     );
-    const globalFieldPayload = this.stack.globalField(
-      uid, { api_version: '3.2' },
-    );
+    const globalFieldPayload = this.stack.globalField(uid, { api_version: '3.2' });
     Object.assign(globalFieldPayload, cloneDeep(globalField));
     apiOptions.apiData = globalFieldPayload;
     return apiOptions;
