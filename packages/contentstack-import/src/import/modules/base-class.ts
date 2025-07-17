@@ -325,20 +325,20 @@ export default abstract class BaseClass {
         return this.stack.globalField({ api_version: '3.2' }).create(apiData).then(onSuccess).catch(onReject);
       case 'update-gfs':
         let globalFieldUid = apiData.uid ?? apiData.global_field?.uid;
-        return this.stack
-          .globalField(globalFieldUid, { api_version: '3.2' })
-          .fetch()
-          .then(async (gf) => {
-            const updatePayload = omit(apiData, ['uid']);
-            Object.assign(gf, updatePayload);
-            try {
-              const response = await gf.update();
-              return onSuccess(response);
-            } catch (error) {
-              return onReject(error);
-            }
-          })
-          .catch(onReject);
+          return this.stack
+            .globalField(globalFieldUid, { api_version: '3.2' })
+            .fetch()
+            .then(async (gf) => {
+              const { uid, ...updatePayload } = cloneDeep(apiData);
+              Object.assign(gf, updatePayload);
+              try {
+                const response = await gf.update();
+                return onSuccess(response);
+              } catch (error) {
+                return onReject(error);
+              }
+            })
+            .catch(onReject);
       case 'create-environments':
         return this.stack
           .environment()
