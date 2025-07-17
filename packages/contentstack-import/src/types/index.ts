@@ -114,7 +114,7 @@ export interface Context {
   clientId?: string | undefined;
   apiKey: string;
   orgId: string;
-  authMethod?: string;
+  authenticationMethod?: string;
 }
 
 export { default as DefaultConfig } from './default-config';
@@ -138,5 +138,5 @@ export interface Context {
   clientId?: string | undefined;
   apiKey: string;
   orgId: string;
-  authMethod?: string;
+  authenticationMethod?: string;
 }

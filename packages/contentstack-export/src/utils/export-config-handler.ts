@@ -12,7 +12,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
   let config = merge({}, defaultConfig);
 
   // Track authentication method
-  let authMethod = 'unknown';
+  let authenticationMethod = 'unknown';
 
   log.debug('Setting up export configuration');
 
@@ -46,7 +46,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
     const { token, apiKey } = configHandler.get(`tokens.${managementTokenAlias}`) || {};
     config.management_token = token;
     config.apiKey = apiKey;
-    authMethod = 'Management Token';
+    authenticationMethod = 'Management Token';
     if (!config.management_token) {
       log.debug('Management token not found for alias', { alias: managementTokenAlias });
       throw new Error(`No management token found on given alias ${managementTokenAlias}`);
@@ -61,7 +61,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
       if (config.username && config.password) {
         log.debug('Using basic authentication with username/password');
         await login(config);
-        authMethod = 'Basic Auth';
+        authenticationMethod = 'Basic Auth';
         log.debug('Basic authentication successful');
       } else {
         log.debug('No authentication method available');
@@ -72,10 +72,10 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
       const isOAuthUser = configHandler.get('authorisationType') === 'OAUTH' || false;
 
       if (isOAuthUser) {
-        authMethod = 'OAuth';
+        authenticationMethod = 'OAuth';
         log.debug('User authenticated via OAuth');
       } else {
-        authMethod = 'Basic Auth';
+        authenticationMethod = 'Basic Auth';
         log.debug('User authenticated via auth token');
       }
 
@@ -114,7 +114,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
   }
 
   // Add authentication details to config for context tracking
-  config.authMethod = authMethod;
+  config.authenticationMethod = authenticationMethod;
   log.debug('Export configuration setup completed', { ...config });
 
   return config;
