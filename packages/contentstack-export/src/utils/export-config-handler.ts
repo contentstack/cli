@@ -46,7 +46,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
     const { token, apiKey } = configHandler.get(`tokens.${managementTokenAlias}`) || {};
     config.management_token = token;
     config.apiKey = apiKey;
-    authMethod = 'management_token';
+    authMethod = 'Management Token';
     if (!config.management_token) {
       log.debug('Management token not found for alias', { alias: managementTokenAlias });
       throw new Error(`No management token found on given alias ${managementTokenAlias}`);
@@ -72,7 +72,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
       const isOAuthUser = configHandler.get('authorisationType') === 'OAUTH' || false;
 
       if (isOAuthUser) {
-        authMethod = 'Oauth';
+        authMethod = 'OAuth';
         log.debug('User authenticated via OAuth');
       } else {
         authMethod = 'Basic Auth';
