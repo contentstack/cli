@@ -82,8 +82,11 @@ export default class SetRateLimitCommand extends BaseCommand<typeof SetRateLimit
     try {
       await limitHandler.setRateLimit(config);
     } catch (error) {
-      cliux.error(`Error: Something went wrong while setting rate limit for org: ${org}`);
-      cliux.error(error);
+      if (error?.message) {
+        cliux.error(error.message);
+      } else {
+        cliux.error(`Error: Something went wrong while setting rate limit for org: ${org}`);
+      }
     }
   }
 }
