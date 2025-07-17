@@ -159,7 +159,7 @@ fileignoreconfig:
   - filename: packages/contentstack-import/src/utils/extension-helper.ts
     checksum: 147ffe7069333c30a20e63f3dcfde3c4f359748f82a8b9a071adc0361a968814
   - filename: packages/contentstack-import/src/commands/cm/stacks/import.ts
-    checksum: 5290d129c6fff85450e862a4df9669492f805503cef1825c1f3bcbf9c9818d5e
+    checksum: 4544b53e063a64b2c49fbee2dd34a62e1653f03b9d6d55f724ef442f236d0741
   - filename: packages/contentstack-export/src/commands/cm/stacks/export.ts
-    checksum: 23277452f504a246c27b58e1b69fc1d8855ec301c60b4cae60c1e8f865794926
+    checksum: d2222fd14a30cc4c9680e65433d603caf389646a1b4714e0d363bfedff11f423
 version: "1.0"
