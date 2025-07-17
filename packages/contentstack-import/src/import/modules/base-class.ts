@@ -329,7 +329,7 @@ export default abstract class BaseClass {
           .globalField(globalFieldUid, { api_version: '3.2' })
           .fetch()
           .then(async (gf) => {
-            const { uid, ...updatePayload } = cloneDeep(apiData);
+            const updatePayload = omit(apiData, ['uid']);
             Object.assign(gf, updatePayload);
             try {
               const response = await gf.update();
