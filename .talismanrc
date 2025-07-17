@@ -8,7 +8,7 @@ fileignoreconfig:
   - filename: packages/contentstack-import/test/integration/environments.test.js
     checksum: e71f033dad8944ffeafdf22d0514bda1d20c43e8fea0d62c96e774f3414beb31
   - filename: package-lock.json
-    checksum: e72c7f98e233e37f4c6b1afa4fd7cd42225e8eb3bb29c130a4e4f8a91be18cc7
+    checksum: 132bc404a7a90c907ac439d94289a1b83a0a0df56d617b3f697fc219a5b555a5
   - filename: packages/contentstack-auth/test/unit/tokens-validation.test.ts
     checksum: 676052e30d31a771ce68302d89b050d176bbef50f3abc7e9cdd4384f0e274e10
   - filename: packages/contentstack-import/test/integration/auth-token.test.js
