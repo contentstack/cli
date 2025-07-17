@@ -31,7 +31,7 @@ export default interface ExportConfig extends DefaultConfig {
   source_stack?: string;
   sourceStackName?: string;
   region: Region;
-  authMethod?: string;
+  authenticationMethod?: string;
 }
 
 type branch = {

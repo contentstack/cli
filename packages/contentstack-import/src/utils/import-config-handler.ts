@@ -11,7 +11,7 @@ import { ImportConfig } from '../types';
 const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   let config: ImportConfig = merge({}, defaultConfig);
   // Track authentication method
-  let authMethod = 'unknown';
+  let authenticationMethod = 'unknown';
 
   // setup the config
   if (importCmdFlags['config']) {
@@ -50,7 +50,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
     const { token, apiKey } = configHandler.get(`tokens.${managementTokenAlias}`) ?? {};
     config.management_token = token;
     config.apiKey = apiKey;
-    authMethod = 'Management Token';
+    authenticationMethod = 'Management Token';
     if (!config.management_token) {
       throw new Error(`No management token found on given alias ${managementTokenAlias}`);
     }
@@ -62,7 +62,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
       if (config.email && config.password) {
         log.debug('Using basic authentication with username/password');
         await login(config);
-        authMethod = 'Basic Auth';
+        authenticationMethod = 'Basic Auth';
         log.debug('Basic authentication successful');
       } else {
         log.debug('No authentication method available');
@@ -73,10 +73,10 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
       const isOAuthUser = configHandler.get('authorisationType') === 'OAUTH' || false;
 
       if (isOAuthUser) {
-        authMethod = 'OAuth';
+        authenticationMethod = 'OAuth';
         log.debug('User authenticated via OAuth');
       } else {
-        authMethod = 'Basic Auth';
+        authenticationMethod = 'Basic Auth';
         log.debug('User authenticated via auth token');
       }
       config.apiKey =
@@ -132,7 +132,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   }
 
   // Add authentication details to config for context tracking
-  config.authMethod = authMethod;
+  config.authenticationMethod = authenticationMethod;
   log.debug('Import configuration setup completed', { ...config });
 
   return config;
