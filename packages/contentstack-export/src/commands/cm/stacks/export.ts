@@ -112,7 +112,7 @@ export default class ExportCommand extends Command {
       const { flags } = await this.parse(ExportCommand);
       const exportConfig = await setupExportConfig(flags);
       // Prepare the context object
-      const context = this.createExportContext(exportConfig.apiKey);
+      const context = this.createExportContext(exportConfig.apiKey, exportConfig.authMethod);
       exportConfig.context = { ...context };
       log.info(`Using Cli Version: ${this.context?.plugin?.version}`, exportConfig.context);
 
@@ -139,16 +139,16 @@ export default class ExportCommand extends Command {
   }
 
   // Create export context object
-  private createExportContext(apiKey: string): Context {
+  private createExportContext(apiKey: string, authMethod: string): Context {
     return {
       command: this.context.info.command,
       module: '',
-      userId: configHandler.get('userId'),
+      userId: configHandler.get('userUid'),
       email: configHandler.get('email'),
       sessionId: this.context.sessionId,
       apiKey: apiKey || '',
-      orgId: configHandler.get('organization_uid') || '',
-      authMethod: this.context.authMethod || 'Basic Auth',
+      orgId: configHandler.get('oauthOrgUid') || '',
+      authMethod: authMethod || 'Basic Auth',
     };
   }
 

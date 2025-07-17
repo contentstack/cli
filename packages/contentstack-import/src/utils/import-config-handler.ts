@@ -50,7 +50,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
     const { token, apiKey } = configHandler.get(`tokens.${managementTokenAlias}`) ?? {};
     config.management_token = token;
     config.apiKey = apiKey;
-    authMethod = 'management_token';
+    authMethod = 'Management Token';
     if (!config.management_token) {
       throw new Error(`No management token found on given alias ${managementTokenAlias}`);
     }
@@ -62,7 +62,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
       if (config.email && config.password) {
         log.debug('Using basic authentication with username/password');
         await login(config);
-        authMethod = 'basic_auth';
+        authMethod = 'Basic Auth';
         log.debug('Basic authentication successful');
       } else {
         log.debug('No authentication method available');
@@ -73,7 +73,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
       const isOAuthUser = configHandler.get('authorisationType') === 'OAUTH' || false;
 
       if (isOAuthUser) {
-        authMethod = 'Oauth';
+        authMethod = 'OAuth';
         log.debug('User authenticated via OAuth');
       } else {
         authMethod = 'Basic Auth';

@@ -11,7 +11,7 @@ export interface ExternalConfig {
 }
 
 export default interface ImportConfig extends DefaultConfig, ExternalConfig {
-  authMethod: string;
+  authMethod?: string;
   skipAssetsPublish?: boolean;
   skipEntriesPublish?: boolean;
   cliLogsPath: string;
