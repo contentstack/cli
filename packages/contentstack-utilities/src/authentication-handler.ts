@@ -52,6 +52,10 @@ class AuthenticationHandler {
   }
 
   async refreshAccessToken(error: any, maxRetryCount = 1): Promise<void> {
+    // Add delay to prevent burst requests and help diagnose GoCD pipeline failures
+    console.log('Adding delay before processing refreshAccessToken...');
+    await new Promise((resolve) => setTimeout(resolve, 2000)); // 2 second delay
+    console.log('Delay completed, processing refreshAccessToken');
     if (error.response && error.response.status) {
       switch (error.response.status) {
         case 401:
