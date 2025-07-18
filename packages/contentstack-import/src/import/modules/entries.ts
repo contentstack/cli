@@ -56,7 +56,7 @@ export default class EntriesImport extends BaseClass {
   public taxonomies: Record<string, unknown>;
   public rteCTs: any;
   public rteCTsWithRef: any;
-  public entriesForVariant: { content_type: string; locale: string; entry_uid: string }[] = [];
+  public entriesForVariant: Array<{ content_type: string; locale: string; entry_uid: string }> = [];
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -410,7 +410,9 @@ export default class EntriesImport extends BaseClass {
     const onReject = ({ error, apiData: entry, additionalInfo }: any) => {
       const { title, uid } = entry;
       // NOTE Remove from list if any entry import failed
-      remove(this.entriesForVariant, { locale, entry_uid: uid });
+      this.entriesForVariant = this.entriesForVariant.filter(
+        (item) => !(item.locale === locale && item.entry_uid === uid),
+      );
       log.debug(`Removed failed entry from variant list: ${uid}`, this.importConfig.context);
       
       // NOTE: write existing entries into files to handler later
@@ -571,7 +573,9 @@ export default class EntriesImport extends BaseClass {
     };
     const onReject = ({ error, apiData: { uid, title } }: any) => {
       // NOTE Remove from list if any entry import failed
-      remove(this.entriesForVariant, { locale, entry_uid: uid });
+      this.entriesForVariant = this.entriesForVariant.filter(
+        (item) => !(item.locale === locale && item.entry_uid === uid),
+      );
       log.debug(`Removed failed replacement entry from variant list: ${uid}`, this.importConfig.context);
 
       handleAndLogError(error, { ...this.importConfig.context, cTUid, locale });
@@ -709,7 +713,9 @@ export default class EntriesImport extends BaseClass {
     };
     const onReject = ({ error, apiData: { uid, title } }: any) => {
       // NOTE Remove from list if any entry import failed
-      remove(this.entriesForVariant, { locale, entry_uid: uid });
+      this.entriesForVariant = this.entriesForVariant.filter(
+        (item) => !(item.locale === locale && item.entry_uid === uid),
+      );
       log.debug(`Removed failed reference update entry from variant list: ${uid}`, this.importConfig.context);
 
       handleAndLogError(error, { ...this.importConfig.context, cTUid, locale });
@@ -868,19 +874,17 @@ export default class EntriesImport extends BaseClass {
   async removeAutoCreatedEntries(): Promise<void> {
     const onSuccess = ({ response, apiData: { entryUid } }: any) => {
       // NOTE Remove entry from list
-      remove(this.entriesForVariant, {
-        entry_uid: entryUid,
-        locale: this.importConfig?.master_locale?.code,
-      });
+      this.entriesForVariant = this.entriesForVariant.filter(
+        (item) => !(item.entry_uid === entryUid && item.locale === this.importConfig?.master_locale?.code),
+      );
 
       log.success(`Auto created entry in master locale removed - entry uid ${entryUid} `, this.importConfig.context);
     };
     const onReject = ({ error, apiData: { entryUid } }: any) => {
       // NOTE Remove entry from list
-      remove(this.entriesForVariant, {
-        entry_uid: entryUid,
-        locale: this.importConfig?.master_locale?.code,
-      });
+      this.entriesForVariant = this.entriesForVariant.filter(
+        (item) => !(item.entry_uid === entryUid && item.locale === this.importConfig?.master_locale?.code),
+      );
 
       handleAndLogError(error, { ...this.importConfig.context }, `Failed to remove auto created entry in master locale - entry uid ${entryUid}`);
     };

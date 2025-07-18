@@ -1,4 +1,4 @@
-import { cliux, configHandler, formatError } from '@contentstack/cli-utilities';
+import { cliux, configHandler } from '@contentstack/cli-utilities';
 import { limitNamesConfig, defaultRalteLimitConfig } from '../utils/common-utilities';
 import { Limit } from '../interfaces';
 
@@ -66,7 +66,6 @@ export class RateLimitHandler {
         }
       });
     } catch (error) {
-      console.log('Something went wrong while setting rate limit for org:', formatError(error));
       throw new Error(error);
     }
   }
