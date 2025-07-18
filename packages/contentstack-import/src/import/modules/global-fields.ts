@@ -256,7 +256,7 @@ export default class ImportGlobalFields extends BaseClass {
       if (flag.supressed) {
         log.debug(`Global field '${globalField.uid}' has suppressed references, adding to pending`, this.importConfig.context);
         this.pendingGFs.push(globalField.uid);
-        log(this.importConfig, `Global field '${globalField.uid}' will be updated later`, 'info');
+        log.info(`Global field '${globalField.uid}' will be updated later`, this.importConfig.context);
         return resolve(true);
       }
       
