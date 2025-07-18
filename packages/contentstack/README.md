@@ -3817,7 +3817,7 @@ USAGE
   $ csdx launch:functions [-p <value>] [-d <value>]
 
 FLAGS
-  -d, --data-dir=<value>  [default: /cli-repos/logger-v2/cli/packages/contentstack] Current
+  -d, --data-dir=<value>  [default: /Users/aman.kumar/Documents/cli-repos/logger-v2/cli/packages/contentstack] Current
                           working directory
   -p, --port=<value>      [default: 3000] Port number
 

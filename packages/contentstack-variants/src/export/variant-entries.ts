@@ -28,7 +28,9 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
       sanitizePath(config.branchName || ''),
       sanitizePath(config.modules.entries.dirName),
     );
-    this.config.context.module = 'variant-entries';
+    if (this.config && this.config.context) {
+      this.config.context.module = 'variant-entries';
+    }
   }
 
   /**
