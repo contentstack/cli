@@ -88,15 +88,22 @@ class ModuleExporter {
 
   async exportSingleModule(moduleName: Modules): Promise<void> {
     // Note stack is always exported
-    let exportModules: Modules[] = ['stack'];
-    const {
-      modules: { [moduleName]: { dependencies = [] } = {} },
-    } = this.exportConfig;
-
-    if (dependencies.length > 0) {
-      exportModules = exportModules.concat(dependencies);
+    let exportModules: Modules[] = [];
+    if (!this.exportConfig.skipStackSettings) {
+      exportModules.push('stack');
     }
+
     exportModules.push(moduleName);
+
+    if (!this.exportConfig.skipDependencies) {
+      const {
+        modules: { [moduleName]: { dependencies = [] } = {} },
+      } = this.exportConfig;
+
+      if (dependencies.length > 0) {
+        exportModules = exportModules.concat(dependencies);
+      }
+    }
 
     for (const moduleName of exportModules) {
       await this.exportByModuleByName(moduleName);

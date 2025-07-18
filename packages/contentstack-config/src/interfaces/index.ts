@@ -7,8 +7,7 @@ export interface InquirePayload {
   name: string;
   message: string;
   choices?: Array<any>;
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  transformer?: Function;
+  transformer?: (value: any) => any;
 }
 
 export interface Region {
