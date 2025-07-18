@@ -22,6 +22,6 @@ export const gfSchemaTemplate = {
             "multiple": false
             }
         ],
-        "description": "Seed "
+        "description": ""
     }
   };
