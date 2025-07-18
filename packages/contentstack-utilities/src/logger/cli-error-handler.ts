@@ -214,10 +214,11 @@ export default class CLIErrorHandler {
   }
 
   /**
-   * Extracts metadata from context.
-   * 
-   * @param context - Error context
-   * @returns Metadata object
+   * Extracts metadata from the error context and adds additional information.
+   *
+   * @param context - The error context to extract metadata from
+   * @param errorType - Optional error type to include in metadata
+   * @returns An object containing relevant metadata for debugging
    */
   private extractMeta(context?: ErrorContext, errorType?: string): Record<string, string | undefined> {
     if (!context) return {};
