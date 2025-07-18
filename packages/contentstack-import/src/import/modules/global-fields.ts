@@ -107,6 +107,7 @@ export default class ImportGlobalFields extends BaseClass {
 
     log.debug('Starting global fields update process', this.importConfig.context);
     await this.updateGFs();
+    if (this.pendingGFs?.length) fsUtil.writeFile(this.gFsPendingPath, this.pendingGFs);
     log.success('Updated Global Fields', this.importConfig.context);
 
     if (this.importConfig.replaceExisting && this.existingGFs.length > 0) {
@@ -255,6 +256,8 @@ export default class ImportGlobalFields extends BaseClass {
       if (flag.supressed) {
         log.debug(`Global field '${globalField.uid}' has suppressed references, adding to pending`, this.importConfig.context);
         this.pendingGFs.push(globalField.uid);
+        log(this.importConfig, `Global field '${globalField.uid}' will be updated later`, 'info');
+        return resolve(true);
       }
       
       log.debug(`Fetching existing global field: ${globalField.uid}`, this.importConfig.context);

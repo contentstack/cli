@@ -122,8 +122,8 @@ export default class ContentTypesImport extends BaseClass {
     );
 
     this.taxonomies = fsUtil.readFile(this.taxonomiesPath) as Record<string, unknown>;
-        const taxonomyCount = Object.keys(this.taxonomies || {}).length;
-        log.debug(`Loaded ${taxonomyCount} taxonomy definitions`, this.importConfig.context);
+    const taxonomyCount = Object.keys(this.taxonomies || {}).length;
+    log.debug(`Loaded ${taxonomyCount} taxonomy definitions`, this.importConfig.context);
 
     log.info('Starting content types seeding process', this.importConfig.context);
     await this.seedCTs();
@@ -149,6 +149,11 @@ export default class ContentTypesImport extends BaseClass {
     }
 
     log.info('Starting pending global fields update', this.importConfig.context);
+    this.pendingGFs = fsUtil.readFile(this.gFsPendingPath) as any;
+    if (!this.pendingGFs || isEmpty(this.pendingGFs)) {
+      log.info('No pending global fields found to update', this.importConfig.context);
+      return;
+    }
     await this.updatePendingGFs().catch((error) => {
       handleAndLogError(error, { ...this.importConfig.context });
     });
@@ -272,6 +277,7 @@ export default class ContentTypesImport extends BaseClass {
 
   async updatePendingGFs(): Promise<any> {
     this.pendingGFs = fsUtil.readFile(this.gFsPendingPath) as any;
+    log.info(`Found ${this.pendingGFs.length} pending global fields to update`, this.importConfig.context);
     this.gFs = fsUtil.readFile(path.resolve(this.gFsFolderPath, this.gFsConfig.fileName)) as Record<string, unknown>[];
 
     log.debug(`Found ${this.pendingGFs?.length || 0} pending global fields to update`, this.importConfig.context);
