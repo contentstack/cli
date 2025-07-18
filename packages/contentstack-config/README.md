@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-config/1.13.0 darwin-x64 node-v22.17.0
+@contentstack/cli-config/1.14.0 darwin-arm64 node-v18.20.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -32,6 +32,7 @@ USAGE
 * [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
 * [`csdx config:get:ea-header`](#csdx-configgetea-header)
 * [`csdx config:get:early-access-header`](#csdx-configgetearly-access-header)
+* [`csdx config:get:log`](#csdx-configgetlog)
 * [`csdx config:get:rate-limit`](#csdx-configgetrate-limit)
 * [`csdx config:get:region`](#csdx-configgetregion)
 * [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
@@ -41,6 +42,7 @@ USAGE
 * [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
 * [`csdx config:set:ea-header`](#csdx-configsetea-header)
 * [`csdx config:set:early-access-header`](#csdx-configsetearly-access-header)
+* [`csdx config:set:log`](#csdx-configsetlog)
 * [`csdx config:set:rate-limit`](#csdx-configsetrate-limit)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 
@@ -98,6 +100,23 @@ EXAMPLES
 ```
 
 _See code: [src/commands/config/get/early-access-header.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/early-access-header.ts)_
+
+## `csdx config:get:log`
+
+Get logging configuration for CLI
+
+```
+USAGE
+  $ csdx config:get:log
+
+DESCRIPTION
+  Get logging configuration for CLI
+
+EXAMPLES
+  $ csdx config:get:log
+```
+
+_See code: [src/commands/config/get/log.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/log.ts)_
 
 ## `csdx config:get:rate-limit`
 
@@ -300,6 +319,30 @@ EXAMPLES
 ```
 
 _See code: [src/commands/config/set/early-access-header.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/early-access-header.ts)_
+
+## `csdx config:set:log`
+
+Set logging configuration for CLI
+
+```
+USAGE
+  $ csdx config:set:log [--level debug|info|warn|error] [--path <value>]
+
+FLAGS
+  --level=<option>  Set the log level for the CLI.
+                    <options: debug|info|warn|error>
+  --path=<value>    Specify the file path where logs should be saved.
+
+DESCRIPTION
+  Set logging configuration for CLI
+
+EXAMPLES
+  $ csdx config:set:log
+
+  $ csdx config:set:log --level debug --path ./logs/app.log
+```
+
+_See code: [src/commands/config/set/log.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/log.ts)_
 
 ## `csdx config:set:rate-limit`
 

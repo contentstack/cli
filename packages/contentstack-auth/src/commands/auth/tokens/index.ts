@@ -1,5 +1,12 @@
-import { Command } from '@contentstack/cli-command';
-import { cliux, configHandler, formatError, CLITable, TableFlags, FlagInput } from '@contentstack/cli-utilities';
+import {
+  cliux,
+  configHandler,
+  CLITable,
+  TableFlags,
+  FlagInput,
+  handleAndLogError,
+  log,
+} from '@contentstack/cli-utilities';
 import { BaseCommand } from '../../../base-command';
 export default class TokensListCommand extends BaseCommand<typeof TokensListCommand> {
   static aliases = ['tokens'];
@@ -16,10 +23,17 @@ export default class TokensListCommand extends BaseCommand<typeof TokensListComm
   ]); // use the cli table flags as it displays tokens in table
 
   async run(): Promise<any> {
+    log.debug('TokensListCommand run method started', this.contextDetails);
+    this.contextDetails.module = 'tokens-list';
+    
     try {
+      log.debug('Retrieving tokens from configuration', this.contextDetails);
       const managementTokens = configHandler.get('tokens');
+      log.debug('Tokens retrieved from configuration', {...this.contextDetails, tokenCount: managementTokens ? Object.keys(managementTokens).length : 0 });
+      
       const tokens: Record<string, unknown>[] = [];
       if (managementTokens && Object.keys(managementTokens).length > 0) {
+        log.debug('Processing tokens for display', this.contextDetails);
         Object.keys(managementTokens).forEach(function (item) {
           tokens.push({
             alias: item,
@@ -28,9 +42,11 @@ export default class TokensListCommand extends BaseCommand<typeof TokensListComm
             environment: managementTokens[item].environment ? managementTokens[item].environment : '-',
             type: managementTokens[item].type,
           });
+          log.debug(`Token processed: ${item}`, {tokenType: managementTokens[item].type });
         });
 
         const { flags } = await this.parse(TokensListCommand);
+        log.debug('Tokens list flags parsed', {...this.contextDetails, flags });
 
         const headers = [
           {
@@ -50,15 +66,19 @@ export default class TokensListCommand extends BaseCommand<typeof TokensListComm
           },
         ];
 
+        log.debug('Displaying tokens table', {...this.contextDetails, tokenCount: tokens.length });
         cliux.table(headers, tokens, flags as TableFlags);
+        log.debug('Tokens table displayed successfully', this.contextDetails);
       } else {
+        log.debug('No tokens found in configuration', this.contextDetails);
         cliux.print('CLI_AUTH_TOKENS_LIST_NO_TOKENS');
       }
+      
+      log.debug('Tokens list command completed successfully', this.contextDetails);
     } catch (error) {
-      let errorMessage = formatError(error) || 'Something went wrong while fetching tokens. Please try again.';
-      this.logger.error('Token list error', errorMessage);
+      log.debug('Tokens list command failed', {...this.contextDetails, error });
       cliux.print('CLI_AUTH_TOKENS_LIST_FAILED', { color: 'yellow' });
-      cliux.print(errorMessage, { color: 'red' });
+      handleAndLogError(error, { ...this.contextDetails });
     }
   }
 }

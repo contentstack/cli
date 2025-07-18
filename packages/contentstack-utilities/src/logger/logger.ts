@@ -2,8 +2,7 @@ import traverse from 'traverse';
 import { klona } from 'klona/full';
 import { normalize } from 'path';
 import * as winston from 'winston';
-import { LogEntry } from 'winston';
-import { logLevels } from '../constants/logging';
+import { levelColors, logLevels } from '../constants/logging';
 import { LoggerConfig, LogLevel, LogType } from '../interfaces/index';
 
 export default class Logger {
@@ -20,10 +19,12 @@ export default class Logger {
     /management[-._]?token/i,
     /sessionid/i,
     /orgid/i,
+    /stack/i,
   ];
 
   constructor(config: LoggerConfig) {
     this.config = config;
+    winston.addColors(levelColors);
     this.loggers = {
       error: this.getLoggerInstance('error'),
       warn: this.getLoggerInstance('warn'),
@@ -35,10 +36,7 @@ export default class Logger {
 
   getLoggerInstance(level: 'error' | 'info' | 'warn' | 'debug' | 'hidden' = 'info'): winston.Logger {
     const filePath = normalize(process.env.CS_CLI_LOG_PATH || this.config.basePath).replace(/^(\.\.(\/|\\|$))+/, '');
-    if (level === 'hidden') {
-      return this.createLogger('error', filePath);
-    }
-    return this.createLogger(level, filePath);
+    return this.createLogger(level === 'hidden' ? 'error' : level, filePath);
   }
 
   private get loggerOptions(): winston.transports.FileTransportOptions {
@@ -53,33 +51,22 @@ export default class Logger {
   private createLogger(level: LogLevel, filePath: string): winston.Logger {
     return winston.createLogger({
       levels: logLevels,
-      level: level,
+      level,
       transports: [
         new winston.transports.File({
           ...this.loggerOptions,
           filename: `${filePath}/${level}.log`,
-          format: winston.format.combine(
-            winston.format.timestamp(),
-            winston.format.json()
-          ),
+          format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
         }),
         new winston.transports.Console({
           format: winston.format.combine(
             winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
             winston.format.printf((info) => {
+              const redactedInfo = this.redact(info);
               const colorizer = winston.format.colorize();
-              const levelText = info.level.toUpperCase();
-              const timestamp = info.timestamp;
-              const message = info.message;
-              const meta = info.meta;
-
-              let fullLine = `[${timestamp}] ${levelText}: ${message}`;
-              if (meta && (info.level !== 'info' && info.level !== 'success')) {
-                const redactedMeta = this.isLogEntry(meta) ? JSON.stringify(this.redact(meta)) : JSON.stringify(this.redact(meta));
-                fullLine += ` - ${redactedMeta}`;
-              }
-
-              return colorizer.colorize(info.level, fullLine);
+              const levelText = redactedInfo.level.toUpperCase();
+              const { timestamp, message } = redactedInfo;
+              return colorizer.colorize(redactedInfo.level, `[${timestamp}] ${levelText}: ${message}`);
             }),
           ),
         }),
@@ -88,9 +75,7 @@ export default class Logger {
   }
 
   private isSensitiveKey(keyStr: string): boolean {
-    return keyStr && typeof keyStr === 'string'
-      ? this.sensitiveKeys.some((regex) => regex.test(keyStr))
-      : false;
+    return typeof keyStr === 'string' ? this.sensitiveKeys.some((regex) => regex.test(keyStr)) : false;
   }
 
   private redactObject(obj: any): void {
@@ -106,56 +91,49 @@ export default class Logger {
     try {
       const copy = klona(info);
       this.redactObject(copy);
-
       const splat = copy[Symbol.for('splat')];
       if (splat) this.redactObject(splat);
-
       return copy;
-    } catch (error) {
+    } catch {
       return info;
     }
   }
 
-  private isLogEntry(obj: any): obj is LogEntry {
-    return typeof obj === 'object' && 'level' in obj && 'message' in obj;
-  }
-
   private shouldLog(level: LogType, target: 'console' | 'file'): boolean {
     const configLevel = target === 'console' ? this.config.consoleLogLevel : this.config.logLevel;
-    const minLevel = configLevel ? logLevels[configLevel] : 2; // default: info
-    const entryLevel = logLevels[level];
-    return entryLevel <= minLevel;
+    const minLevel = configLevel ? logLevels[configLevel] : 2;
+    return logLevels[level] <= minLevel;
   }
 
   /* === Public Log Methods === */
 
   public error(message: string, meta?: any): void {
     if (this.shouldLog('error', 'console') || this.shouldLog('error', 'file')) {
-      this.loggers.error.error(message, meta);
+      this.loggers.error.error(message, { ...meta, level: 'error' });
     }
   }
 
   public warn(message: string, meta?: any): void {
     if (this.shouldLog('warn', 'console') || this.shouldLog('warn', 'file')) {
-      this.loggers.warn.warn(message, meta);
+      this.loggers.warn.warn(message, { ...meta, level: 'warn' });
     }
   }
 
   public info(message: string, meta?: any): void {
     if (this.shouldLog('info', 'console') || this.shouldLog('info', 'file')) {
-      this.loggers.info.info(message, meta);
+      this.loggers.info.info(message, { ...meta, level: 'info' });
     }
   }
 
   public success(message: string, meta?: any): void {
-    if (this.shouldLog('info', 'console') || this.shouldLog('info', 'file')) {
-      this.loggers.success.info(message, { ...meta, type: 'success' });
+    if (this.shouldLog('success', 'console') || this.shouldLog('success', 'file')) {
+      this.loggers.success.log('success', message, { ...meta });
     }
   }
 
   public debug(message: string, meta?: any): void {
     if (this.shouldLog('debug', 'console') || this.shouldLog('debug', 'file')) {
-      this.loggers.debug.debug(message, meta);
+      this.loggers.debug.debug(message, { ...meta, level: 'debug' });
     }
   }
 
@@ -165,25 +143,30 @@ export default class Logger {
     type: string;
     message: string;
     error: any;
-    context?: string;
+    context?: Record<string, any>;
     hidden?: boolean;
     meta?: Record<string, any>;
   }): void {
     const logPayload = {
       level: logLevels.error,
       message: params.message,
-      timestamp: new Date(),
       meta: {
         type: params.type,
         error: params.error,
-        context: params.context,
-        ...params.meta,
+        ...(params.context || {}),
+        ...(params.meta || {}),
       },
     };
-    const targetLevel: LogType = params.hidden ? 'debug' : 'error';
 
-    if (this.shouldLog(targetLevel, 'console') || this.shouldLog(targetLevel, 'file')) {
-      this.loggers[targetLevel].error(logPayload);
+    // Always log to error file, but respect hidden parameter for console
+    if (this.shouldLog('error', 'file')) {
+      this.loggers.error.error(logPayload);
+    }
+    
+    // For console, use debug level if hidden, otherwise error level
+    const consoleLevel: LogType = params.hidden ? 'debug' : 'error';
+    if (this.shouldLog(consoleLevel, 'console')) {
+      this.loggers[consoleLevel].error(logPayload);
     }
   }
 
@@ -191,7 +174,7 @@ export default class Logger {
     type: string;
     message: string;
     warn?: any;
-    context?: string;
+    context?: Record<string, any>;
     meta?: Record<string, any>;
   }): void {
     const logPayload = {
@@ -200,8 +183,9 @@ export default class Logger {
       timestamp: new Date(),
       meta: {
         type: params.type,
-        context: params.context,
-        ...params.meta,
+        warn: params.warn,
+        ...(params.context || {}),
+        ...(params.meta || {}),
       },
     };
     if (this.shouldLog('warn', 'console') || this.shouldLog('warn', 'file')) {
@@ -213,7 +197,7 @@ export default class Logger {
     type: string;
     message: string;
     info?: any;
-    context?: string;
+    context?: Record<string, any>;
     meta?: Record<string, any>;
   }): void {
     const logPayload = {
@@ -223,8 +207,8 @@ export default class Logger {
       meta: {
         type: params.type,
         info: params.info,
-        context: params.context,
-        ...params.meta,
+        ...(params.context || {}),
+        ...(params.meta || {}),
       },
     };
     if (this.shouldLog('info', 'console') || this.shouldLog('info', 'file')) {
@@ -236,22 +220,22 @@ export default class Logger {
     type: string;
     message: string;
     data?: any;
-    context?: string;
+    context?: Record<string, any>;
     meta?: Record<string, any>;
   }): void {
     const logPayload = {
-      level: logLevels.success,
+      level: 'success',
       message: params.message,
       timestamp: new Date(),
       meta: {
         type: params.type,
         data: params.data,
-        context: params.context,
-        ...params.meta,
+        ...(params.context || {}),
+        ...(params.meta || {}),
       },
     };
-    if (this.shouldLog('info', 'console') || this.shouldLog('info', 'file')) {
-      this.loggers.success.info(logPayload);
+    if (this.shouldLog('success', 'console') || this.shouldLog('success', 'file')) {
+      this.loggers.success.log(logPayload);
     }
   }
 
@@ -259,18 +243,17 @@ export default class Logger {
     type: string;
     message: string;
     debug?: any;
-    context?: string;
+    context?: Record<string, any>;
     meta?: Record<string, any>;
   }): void {
     const logPayload = {
       level: logLevels.debug,
       message: params.message,
-      timestamp: new Date(),
       meta: {
         type: params.type,
         debug: params.debug,
-        context: params.context,
-        ...params.meta,
+        ...(params.context || {}),
+        ...(params.meta || {}),
       },
     };
     if (this.shouldLog('debug', 'console') || this.shouldLog('debug', 'file')) {

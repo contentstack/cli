@@ -1,7 +1,7 @@
 import Bluebird from 'bluebird';
 import * as url from 'url';
 import * as path from 'path';
-import { ContentstackClient, managementSDKClient, validateRegex } from '@contentstack/cli-utilities';
+import { ContentstackClient, managementSDKClient, validateRegex, log } from '@contentstack/cli-utilities';
 import { ImportConfig } from '../types';
 const debug = require('debug')('util:requests');
 let _ = require('lodash');
@@ -21,33 +21,44 @@ function validate(req: any) {
 export const uploadAssetHelper = function (config: ImportConfig, req: any, fsPath: string, RETRY?: number) {
   return new Bluebird(function (resolve, reject) {
     try {
+      log.debug(`Starting asset upload helper for path: ${fsPath}`);
+      
       managementSDKClient(config)
         .then((APIClient: ContentstackClient) => {
           validate(req);
           if (typeof RETRY !== 'number') {
             RETRY = 1;
           } else if (RETRY > MAX_RETRY_LIMIT) {
+            log.debug(`Max retry limit exceeded for asset upload: ${fsPath}`);
             return reject(new Error('Max retry limit exceeded!'));
           }
 
+          log.debug(`Uploading asset (attempt ${RETRY}/${MAX_RETRY_LIMIT}): ${fsPath}`);
+          
           req.upload = fsPath;
           const stackAPIClient = APIClient.stack({
             api_key: config.target_stack,
             management_token: config.management_token,
           });
+          
           stackAPIClient
             .asset()
             .create(req)
             .then((response) => {
+              log.debug(`Asset upload successful: ${fsPath}`);
               return resolve(response);
             })
             .catch((error) => {
+              log.error(`Asset upload failed: ${fsPath}`);
               return reject(error);
             });
         })
-        .catch(reject);
+        .catch((error: any) => {
+          reject(error);
+        });
     } catch (error) {
       debug(error);
+      log.debug('Unexpected error in uploadAssetHelper');
       return reject(error);
     }
   });
@@ -70,6 +81,9 @@ export const lookupAssets = function (
   ) {
     throw new Error('Invalid inputs for lookupAssets!');
   }
+  
+  log.debug(`Starting asset lookup for entry: ${data.entry?.uid}, content type: ${data.content_type?.uid}`);
+  
   let parent: string[] = [];
   let assetUids: string[] = [];
   let assetUrls: string[] = [];
@@ -124,6 +138,7 @@ export const lookupAssets = function (
         findAssetIdsFromJsonCustomFields(data.entry, data.content_type.schema);
       } else if (schema[i].data_type === 'json' && schema[i].field_metadata.extension) {
         if (installedExtensions && installedExtensions[schema[i].extension_uid]) {
+          log.debug(`Mapping extension UID: ${schema[i].extension_uid} to ${installedExtensions[schema[i].extension_uid]}`);
           schema[i].extension_uid = installedExtensions[schema[i].extension_uid];
         }
       }
@@ -131,15 +146,18 @@ export const lookupAssets = function (
   };
 
   function findAssetIdsFromJsonCustomFields(entryObj: any, ctSchema: any) {
+    log.debug('Processing JSON custom fields for asset references');
     ctSchema.map((row: any) => {
       if (row.data_type === 'json') {
         if (entryObj[row.uid] && row.field_metadata.extension && row.field_metadata.is_asset) {
           if (installedExtensions && installedExtensions[row.extension_uid]) {
+            log.debug(`Mapping extension UID in custom field: ${row.extension_uid}`);
             row.extension_uid = installedExtensions[row.extension_uid];
           }
 
           if (entryObj[row.uid].metadata && entryObj[row.uid].metadata.extension_uid) {
             if (installedExtensions && installedExtensions[entryObj[row.uid].metadata.extension_uid]) {
+              log.debug(`Mapping metadata extension UID: ${entryObj[row.uid].metadata.extension_uid}`);
               entryObj[row.uid].metadata.extension_uid = installedExtensions[entryObj[row.uid].metadata.extension_uid];
             }
           }
@@ -151,15 +169,18 @@ export const lookupAssets = function (
   }
 
   function findAssetIdsFromHtmlRte(entryObj: any, ctSchema: any) {
+    log.debug('Extracting asset UIDs from HTML RTE fields');
     const regex = /<img asset_uid=\\"([^"]+)\\"/g;
     let match;
     const entry = JSON.stringify(entryObj);
     while ((match = regex.exec(entry)) !== null) {
       assetUids.push(match[1]);
     }
+    log.debug(`Found ${assetUids.length} asset UIDs in HTML RTE`);
   }
 
   function findAssetIdsFromJsonRte(entryObj: any, ctSchema: any) {
+    log.debug('Processing JSON RTE fields for asset references');
     for (const element of ctSchema) {
       switch (element.data_type) {
         case 'blocks': {
@@ -246,6 +267,9 @@ export const lookupAssets = function (
   updateFileFields(data.entry, data, null, mappedAssetUids, matchedUids, unmatchedUids, mappedAssetUrls);
   assetUids = _.uniq(assetUids);
   assetUrls = _.uniq(assetUrls);
+  
+  log.debug(`Found ${assetUids.length} unique asset UIDs and ${assetUrls.length} unique asset URLs`);
+  
   let entry = JSON.stringify(data.entry);
 
   assetUrls.forEach(function (assetUrl: any) {
@@ -270,6 +294,7 @@ export const lookupAssets = function (
   });
 
   if (matchedUids.length) {
+    log.debug(`Successfully mapped ${matchedUids.length} asset UIDs`);
     let matchedAssetUids = helper.readFileSync(path.join(assetUidMapperPath, 'matched-asset-uids.json'));
     matchedAssetUids = matchedAssetUids || {};
     if (matchedAssetUids.hasOwnProperty(data.content_type.uid)) {
@@ -285,6 +310,7 @@ export const lookupAssets = function (
   }
 
   if (unmatchedUids.length) {
+    log.warn(`Found ${unmatchedUids.length} unmatched asset UIDs`);
     let unmatchedAssetUids = helper.readFileSync(path.join(assetUidMapperPath, 'unmatched-asset-uids.json'));
     unmatchedAssetUids = unmatchedAssetUids || {};
     if (unmatchedAssetUids.hasOwnProperty(data.content_type.uid)) {
@@ -298,6 +324,7 @@ export const lookupAssets = function (
   }
 
   if (unmatchedUrls.length) {
+    log.warn(`Found ${unmatchedUrls.length} unmatched asset URLs`);
     let unmatchedAssetUrls = helper.readFileSync(path.join(assetUidMapperPath, 'unmatched-asset-urls.json'));
     unmatchedAssetUrls = unmatchedAssetUrls || {};
     if (unmatchedAssetUrls.hasOwnProperty(data.content_type.uid)) {
@@ -311,6 +338,7 @@ export const lookupAssets = function (
   }
 
   if (matchedUrls.length) {
+    log.debug(`Successfully mapped ${matchedUrls.length} asset URLs`);
     let matchedAssetUrls = helper.readFileSync(path.join(assetUidMapperPath, 'matched-asset-urls.json'));
     matchedAssetUrls = matchedAssetUrls || {};
     if (matchedAssetUrls.hasOwnProperty(data.content_type.uid)) {
@@ -323,6 +351,7 @@ export const lookupAssets = function (
     helper.writeFile(path.join(assetUidMapperPath, 'matched-asset-urls.json'));
   }
 
+  log.debug(`Asset lookup completed for entry: ${data.entry?.uid}`);
   return JSON.parse(entry);
 };
 

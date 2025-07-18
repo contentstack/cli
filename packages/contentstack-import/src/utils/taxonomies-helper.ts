@@ -2,7 +2,7 @@
  * taxonomy lookup
  */
 import find from 'lodash/find';
-import { log } from './';
+import { log } from '@contentstack/cli-utilities';
 import { ImportConfig } from '../types';
 
 /**
@@ -12,8 +12,12 @@ import { ImportConfig } from '../types';
  * @param {ImportConfig} importConfig
  */
 export const lookUpTaxonomy = function (importConfig: ImportConfig, schema: any, taxonomies: Record<string, unknown>) {
+  log.debug(`Starting taxonomy lookup for schema with ${Object.keys(schema).length} fields`);
+  
   for (let i in schema) {
     if (schema[i].data_type === 'taxonomy') {
+      log.debug(`Processing taxonomy field: ${schema[i].uid}`);
+      
       const taxonomyFieldData = schema[i].taxonomies as Record<string, any>[];
       const { updatedTaxonomyData, isTaxonomyFieldRemoved } = verifyAndRemoveTaxonomy(
         taxonomyFieldData,
@@ -23,12 +27,16 @@ export const lookUpTaxonomy = function (importConfig: ImportConfig, schema: any,
 
       //Handle API error -> The 'taxonomies' property must have atleast one taxonomy object. Remove taxonomy field from schema.
       if (isTaxonomyFieldRemoved) {
+        log.debug(`Removing taxonomy field from schema: ${schema[i].uid}`);
         schema.splice(i, 1);
       } else {
+        log.debug(`Updated taxonomy field data: ${schema[i].uid}`);
         schema[i].taxonomies = updatedTaxonomyData;
       }
     }
   }
+  
+  log.debug('Taxonomy lookup completed');
 };
 
 /**
@@ -46,6 +54,8 @@ const verifyAndRemoveTaxonomy = function (
   updatedTaxonomyData: Record<string, any>[];
   isTaxonomyFieldRemoved: boolean;
 } {
+  log.debug(`Verifying ${taxonomyFieldData?.length || 0} taxonomy references`);
+  
   let isTaxonomyFieldRemoved: boolean = false;
 
   for (let index = 0; index < taxonomyFieldData?.length; index++) {
@@ -53,21 +63,20 @@ const verifyAndRemoveTaxonomy = function (
 
     if (taxonomies === undefined || !taxonomies.hasOwnProperty(taxonomyData?.taxonomy_uid)) {
       // remove taxonomy from taxonomies field data with warning if respective taxonomy doesn't exists
-      log(
-        importConfig,
-        `Taxonomy '${taxonomyData?.taxonomy_uid}' does not exist. Removing the data from the taxonomies field`,
-        'warn',
-      );
+      log.warn(`Taxonomy '${taxonomyData?.taxonomy_uid}' does not exist, removing from field`);
       taxonomyFieldData.splice(index, 1);
       --index;
+    } else {
+      log.debug(`Taxonomy '${taxonomyData?.taxonomy_uid}' exists and is valid`);
     }
   }
 
   if (!taxonomyFieldData?.length) {
-    log(importConfig, 'Taxonomy does not exist. Removing the field from content type', 'warn');
+    log.warn('No valid taxonomies remain, removing entire taxonomy field');
     isTaxonomyFieldRemoved = true;
   }
 
+  log.debug(`Taxonomy verification completed, removed: ${isTaxonomyFieldRemoved}`);
   return {
     updatedTaxonomyData: taxonomyFieldData,
     isTaxonomyFieldRemoved,
@@ -87,18 +96,27 @@ export const lookUpTerms = function (
   taxonomiesAndTermData: Record<string, any>,
   importConfig: ImportConfig,
 ) {
+  log.debug(`Starting term lookup for entry: ${entry.uid}`);
+  
   for (let index = 0; index < ctSchema?.length; index++) {
     if (ctSchema[index].data_type === 'taxonomy') {
+      log.debug(`Processing taxonomy field: ${ctSchema[index].uid}`);
+      
       const taxonomyFieldData = entry[ctSchema[index].uid];
       const updatedTaxonomyData = verifyAndRemoveTerms(taxonomyFieldData, taxonomiesAndTermData, importConfig);
+      
       if (updatedTaxonomyData?.length) {
+        log.debug(`Updated taxonomy data for field: ${ctSchema[index].uid}`);
         entry[ctSchema[index].uid] = updatedTaxonomyData;
       } else {
         //Delete taxonomy from entry if taxonomy field removed from CT
+        log.debug(`Removing taxonomy field from entry: ${ctSchema[index].uid}`);
         delete entry[ctSchema[index].uid];
       }
     }
   }
+  
+  log.debug('Term lookup completed');
 };
 
 /**
@@ -124,9 +142,11 @@ const verifyAndRemoveTerms = function (
         !find(taxonomiesAndTermData[taxUID], (term: Record<string, string>) => term?.uid === termUID))
     ) {
       // remove term from taxonomies field data with warning if respective term doesn't exists
-      log(importConfig, `Term '${termUID}' does not exist. Removing it from taxonomy - '${taxUID}'`, 'warn');
+      log.warn(`Term '${termUID}' does not exist in taxonomy '${taxUID}', removing from entry`);
       taxonomyFieldData.splice(index, 1);
       --index;
+    } else {
+      log.debug(`Term '${termUID}' exists in taxonomy '${taxUID}'`);
     }
   }
 

@@ -105,3 +105,26 @@ export const askOrgID = async (): Promise<string> => {
     name: 'org',
   });
 };
+
+export async function askLogLevel(): Promise<string> {
+  const { logLevel }: { logLevel: string } = await cliux.inquire([
+    {
+      type: 'list',
+      name: 'logLevel',
+      message: 'Select log level:',
+      choices: ['debug', 'info', 'warn', 'error'],
+    },
+  ]);
+  return logLevel;
+}
+
+export async function askLogPath(): Promise<string> {
+  const { logPath }: { logPath: string } = await cliux.inquire([
+    {
+      type: 'input',
+      name: 'logPath',
+      message: 'Enter log file path:',
+    },
+  ]);
+  return logPath;
+}

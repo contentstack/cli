@@ -1,7 +1,7 @@
 import merge from 'merge';
 import * as path from 'path';
 import { omit, filter, includes, isArray } from 'lodash';
-import { configHandler, isAuthenticated, cliux, sanitizePath } from '@contentstack/cli-utilities';
+import { configHandler, isAuthenticated, cliux, sanitizePath, log } from '@contentstack/cli-utilities';
 import defaultConfig from '../config';
 import { readFile, fileExistsSync } from './file-helper';
 import { askContentDir, askAPIKey } from './interactive';
@@ -10,6 +10,9 @@ import { ImportConfig } from '../types';
 
 const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   let config: ImportConfig = merge({}, defaultConfig);
+  // Track authentication method
+  let authenticationMethod = 'unknown';
+
   // setup the config
   if (importCmdFlags['config']) {
     let externalConfig = await readFile(importCmdFlags['config']);
@@ -47,6 +50,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
     const { token, apiKey } = configHandler.get(`tokens.${managementTokenAlias}`) ?? {};
     config.management_token = token;
     config.apiKey = apiKey;
+    authenticationMethod = 'Management Token';
     if (!config.management_token) {
       throw new Error(`No management token found on given alias ${managementTokenAlias}`);
     }
@@ -54,12 +58,27 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
 
   if (!config.management_token) {
     if (!isAuthenticated()) {
+      log.debug('User not authenticated, checking for basic auth credentials');
       if (config.email && config.password) {
+        log.debug('Using basic authentication with username/password');
         await login(config);
+        authenticationMethod = 'Basic Auth';
+        log.debug('Basic authentication successful');
       } else {
+        log.debug('No authentication method available');
         throw new Error('Please login or provide an alias for the management token');
       }
     } else {
+      // Check if user is authenticated via OAuth
+      const isOAuthUser = configHandler.get('authorisationType') === 'OAUTH' || false;
+
+      if (isOAuthUser) {
+        authenticationMethod = 'OAuth';
+        log.debug('User authenticated via OAuth');
+      } else {
+        authenticationMethod = 'Basic Auth';
+        log.debug('User authenticated via auth token');
+      }
       config.apiKey =
         importCmdFlags['stack-uid'] || importCmdFlags['stack-api-key'] || config.target_stack || (await askAPIKey());
       if (typeof config.apiKey !== 'string') {
@@ -111,6 +130,10 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   if (importCmdFlags['exclude-global-modules']) {
     config['exclude-global-modules'] = importCmdFlags['exclude-global-modules'];
   }
+
+  // Add authentication details to config for context tracking
+  config.authenticationMethod = authenticationMethod;
+  log.debug('Import configuration setup completed', { ...config });
 
   return config;
 };
