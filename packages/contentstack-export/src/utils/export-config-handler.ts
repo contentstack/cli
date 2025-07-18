@@ -92,14 +92,8 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
       // Check if it's a file path (contains .json extension or path separators)
       if (queryInput.includes('.json') || queryInput.includes('/') || queryInput.includes('\\')) {
         // Try to read as file path
-        try {
-          config.query = await readFile(queryInput);
-        } catch (fileError) {
-          // If file read fails, treat as inline JSON
-          config.query = JSON.parse(queryInput);
-        }
+        config.query = await readFile(queryInput);
       } else {
-        // Parse as inline JSON
         config.query = JSON.parse(queryInput);
       }
     } catch (error) {
