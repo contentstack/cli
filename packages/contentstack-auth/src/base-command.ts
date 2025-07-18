@@ -53,11 +53,11 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     return {
       command: this.context.info.command,
       module: '',
-      userId: configHandler.get('userId'),
+      userId: configHandler.get('userUid'),
       email: configHandler.get('email'),
       sessionId: this.context.sessionId,
       apiKey: apiKey || '',
-      orgId: configHandler.get('organization_uid') || '',
+      orgId: configHandler.get('oauthOrgUid') || '',
     };
   }
 }

@@ -23,7 +23,7 @@ import { ERROR_TYPES } from '../constants/errorTypes';
  *
  * @example
  * ```typescript
- * const errorHandler = new CLIErrorHandler(true);
+ * const errorHandler = new CLIErrorHandler();
  *
  * try {
  *   // Some operation that may throw an error
@@ -39,26 +39,17 @@ import { ERROR_TYPES } from '../constants/errorTypes';
  * @public
  */
 export default class CLIErrorHandler {
-
-  constructor() {
-    
-  }
+  constructor() {}
 
   /**
    * Classifies an error into a structured format for better handling and debugging.
    *
    * @param error - The error object to classify. Can be of any type.
-   * @param context - Optional additional context about the error, typically used to provide
-   *                  more information about where or why the error occurred.
+   * @param context - Optional additional context about the error.
    * @param errMessage - Optional custom error message to override the default error message.
    *
-   * @returns A `ClassifiedError` object containing details about the error, including its type,
-   *          message, payload, context, metadata, and whether it contains sensitive information.
-   *          If the error is an API error or debugging is enabled, additional debug information
-   *          is included.
-   *
-   * @throws This method handles its own errors and will return a `ClassifiedError` with type
-   *         `ERROR_TYPES.NORMALIZATION` if it fails to normalize or classify the input error.
+   * @returns A `ClassifiedError` object containing essential error details in a clear,
+   *          concise format optimized for debugging.
    */
   classifyError(error: unknown, context?: ErrorContext, errMessage?: string): ClassifiedError {
     try {
@@ -68,12 +59,9 @@ export default class CLIErrorHandler {
 
       const result: ClassifiedError = {
         type,
-        message: errMessage || normalized.message || 'Unhandled error',
+        message: errMessage || this.extractClearMessage(normalized),
         error: this.extractErrorPayload(normalized),
-        meta: {
-          type,
-          ...(context || {}),
-        } as Record<string, string | undefined>,
+        meta: this.extractMeta(context, type),
         hidden,
       };
 
@@ -81,20 +69,39 @@ export default class CLIErrorHandler {
     } catch (e) {
       return {
         type: ERROR_TYPES.NORMALIZATION,
-        message: 'Failed to normalize or classify error',
-        error: { message: String(e) },
-        meta: {
-          ...(context || {}),
-          ...this.extractMeta(context),
-        } as Record<string, string | undefined>,
+        message: 'Failed to process error',
+        error: {
+          originalError: String(e),
+          errorType: typeof error,
+        },
+        meta: this.extractMeta(context, ERROR_TYPES.NORMALIZATION),
         hidden: false,
       };
     }
   }
 
   /**
+   * Extracts a clear, concise error message from various error types.
+   */
+  private extractClearMessage(error: Error & Record<string, any>): string {
+    const { message, code, status } = error;
+
+    // For API errors, include status code for clarity
+    if (status && status >= 400) {
+      return `${message} (HTTP ${status})`;
+    }
+
+    // For network errors, include error code
+    if (code && ['ECONNREFUSED', 'ENOTFOUND', 'ETIMEDOUT', 'ENETUNREACH'].includes(code)) {
+      return `${message} (${code})`;
+    }
+
+    return message || 'Unknown error occurred';
+  }
+
+  /**
    * Normalizes various error types into a standard Error object.
-   * 
+   *
    * @param error - The error to normalize
    * @returns A normalized Error object
    */
@@ -105,10 +112,19 @@ export default class CLIErrorHandler {
 
     if (typeof error === 'object') {
       try {
-        const msg = (error as any).message || (error as any).error || 'Unknown error';
-        const err = new Error(msg);
-        Object.assign(err, error);
-        return err;
+        const errorObj = error as Record<string, any>;
+        const message = errorObj.message || errorObj.error || errorObj.statusText || 'Unknown error';
+        const normalizedError = new Error(message);
+
+        // Only copy essential properties
+        const essentialProps = ['code', 'status', 'statusText', 'response', 'request', 'config'];
+        essentialProps.forEach((prop) => {
+          if (errorObj[prop] !== undefined) {
+            (normalizedError as any)[prop] = errorObj[prop];
+          }
+        });
+
+        return normalizedError;
       } catch {
         return new Error(JSON.stringify(error));
       }
@@ -119,89 +135,79 @@ export default class CLIErrorHandler {
 
   /**
    * Determines the type of error based on its characteristics.
-   * 
-   * @param error - The error to classify
-   * @returns The error type string
    */
   private determineErrorType(error: Error & Record<string, any>): string {
-    const status = error.status ?? error.response?.status;
-    const axiosError = error as AxiosError;
-  
-    const isNetworkError = ['ECONNREFUSED', 'ENOTFOUND', 'ETIMEDOUT', 'ENETUNREACH'].includes(error.code);
-    const isTimeoutError = error.code === 'ETIMEDOUT' || error.message?.includes('timeout');
-  
-    if (status >= 100 && status < 200) {
-      return ERROR_TYPES.INFORMATIONAL;
-    } else if (status >= 200 && status < 300) {
-      // Successful response — should not reach error handler
-      console.warn('Unexpected 2xx response in error handler:', error);
-      return ERROR_TYPES.SUCCESS; // Define a new type for unexpected success responses if needed
-    } else if (status >= 300 && status < 400) {
-      return ERROR_TYPES.REDIRECTION;
-    } else if (status >= 400 && status < 500) {
-      return ERROR_TYPES.API_ERROR;
-    } else if (status >= 500 && status < 600) {
-      return ERROR_TYPES.SERVER_ERROR;
-    } else if (isNetworkError || isTimeoutError) {
+    const { status, code, name, response } = error;
+    const actualStatus = status || response?.status;
+
+    // Network and timeout errors
+    if (['ECONNREFUSED', 'ENOTFOUND', 'ETIMEDOUT', 'ENETUNREACH'].includes(code)) {
       return ERROR_TYPES.NETWORK;
-    } else if (error.name === 'DatabaseError') {
-      return ERROR_TYPES.DATABASE;
-    } else if (axiosError?.isAxiosError) {
-      return ERROR_TYPES.NETWORK;
-    } else {
-      return ERROR_TYPES.APPLICATION;
     }
+
+    // HTTP status-based classification
+    if (actualStatus) {
+      if (actualStatus >= 100 && actualStatus < 200) return ERROR_TYPES.INFORMATIONAL;
+      if (actualStatus >= 300 && actualStatus < 400) return ERROR_TYPES.REDIRECTION;
+      if (actualStatus >= 400 && actualStatus < 500) return ERROR_TYPES.API_ERROR;
+      if (actualStatus >= 500) return ERROR_TYPES.SERVER_ERROR;
+    }
+
+    // Specific error types
+    if (name === 'DatabaseError') return ERROR_TYPES.DATABASE;
+    if ((error as AxiosError).isAxiosError) return ERROR_TYPES.NETWORK;
+
+    return ERROR_TYPES.APPLICATION;
   }
 
   /**
-   * Extracts comprehensive error payload with enhanced request/response information.
-   * 
-   * @param error - The error to extract payload from
-   * @param context - Additional context for debugging
-   * @returns Structured error payload with full debugging information
+   * Extracts only essential error payload information for clear debugging.
    */
   private extractErrorPayload(error: Error & Record<string, any>): Record<string, any> {
-    // Handle different error structures - Axios errors have different property locations
-    const axiosError = error as AxiosError;
-    
-    const code = error.code || error.errorCode || axiosError.code;
-    const status = error.status || axiosError.response?.status || axiosError.status;
-    const statusText = error.statusText || axiosError.response?.statusText;
-    const method = error.request?.method || error.config?.method || 'UNKNOWN';
-    const url = error.request?.url || error.config?.url || 'UNKNOWN';
+    const { name, message, code, status, response, request, config, statusText } = error;
 
     const payload: Record<string, any> = {
-      name: error.name,
+      name,
       message: formatError(error),
-      code,
-      status,
-      statusText,
-      method,
-      url,
-      errorStack: error.stack,
     };
 
-    // Add request information if available
-    if (error.request || error.config) {
+    // Add error identifiers
+    if (code) payload.code = code;
+    if (status || response?.status) payload.status = status || response?.status;
+
+    // Add request context (only essential info)
+    if (request || config) {
+      const method = request?.method || config?.method;
+      const url = request?.url || config?.url;
+
       payload.request = {
         method,
         url,
-        headers: error.request?.headers || error.config?.headers,
-        data: error.request?.data || error.config?.data,
-        timeout: error.config?.timeout,
-        baseURL: error.config?.baseURL,
-        params: error.config?.params,
+        headers: request?.headers || config?.headers,
+        data: request?.data || config?.data,
+        timeout: config?.timeout,
+        baseURL: config?.baseURL,
+        params: config?.params,
       };
     }
 
-    // Add response information if available
-    if (error.response) {
+    // Add response context (only essential info)
+    if (response) {
       payload.response = {
         status,
         statusText,
         headers: error.response?.headers,
         data: error.response?.data,
       };
+    }
+
+    // Add stack trace only for non-API errors to avoid clutter
+    if (
+      ![ERROR_TYPES.API_ERROR, ERROR_TYPES.SERVER_ERROR].includes(
+        this.determineErrorType(error) as typeof ERROR_TYPES.API_ERROR | typeof ERROR_TYPES.SERVER_ERROR,
+      )
+    ) {
+      payload.stack = error.stack?.split('\n').slice(0, 5).join('\n'); // Limit stack trace
     }
 
     return payload;
@@ -213,21 +219,25 @@ export default class CLIErrorHandler {
    * @param context - Error context
    * @returns Metadata object
    */
-  private extractMeta(context?: ErrorContext): Record<string, string | undefined> {
-    return {
-      email: context?.email,
-      sessionId: context?.sessionId,
-      userId: context?.userId,
-      apiKey: context?.apiKey,
-      orgId: context?.orgId,
-      operation: context?.operation,
-      component: context?.component,
-    };
+  private extractMeta(context?: ErrorContext, errorType?: string): Record<string, string | undefined> {
+    if (!context) return {};
+
+    const baseMeta: Record<string, string | undefined> = {};
+
+    if (context.operation) baseMeta.operation = context.operation;
+    if (context.component) baseMeta.component = context.component;
+    if (context.userId) baseMeta.userId = context.userId;
+    if (context.sessionId) baseMeta.sessionId = context.sessionId;
+    if (context.orgId) baseMeta.orgId = context.orgId;
+    if (errorType) baseMeta.errorType = errorType;
+    if (context.email) baseMeta.email = context.email;
+
+    return baseMeta;
   }
 
   /**
    * Checks if error contains sensitive information.
-   * 
+   *
    * @param error - Error to check
    * @returns True if sensitive info is found
    */
@@ -247,7 +257,7 @@ export default class CLIErrorHandler {
         'authtoken',
         'x-api-key',
       ];
-      
+
       return sensitiveTerms.some((term) => content.includes(term));
     } catch {
       return false;

@@ -148,7 +148,7 @@ export default class ImportCommand extends Command {
       const { flags } = await this.parse(ImportCommand);
       let importConfig: ImportConfig = await setupImportConfig(flags);
       // Prepare the context object
-      const context = this.createImportContext(importConfig.apiKey);
+      const context = this.createImportContext(importConfig.apiKey, importConfig.authenticationMethod);
       importConfig.context = {...context};
       log.info(`Using Cli Version: ${this.context?.plugin?.version}`, importConfig.context);
       
@@ -194,16 +194,16 @@ export default class ImportCommand extends Command {
   }
 
   // Create export context object
-  private createImportContext(apiKey: string): Context {
+  private createImportContext(apiKey: string, authenticationMethod?: string): Context {
     return {
       command: this.context.info.command,
       module: '',
-      userId: configHandler.get('userId'),
+      userId: configHandler.get('userUid'),
       email: configHandler.get('email'),
       sessionId: this.context.sessionId,
       apiKey: apiKey || '',
-      orgId: configHandler.get('organization_uid') || '',
-      authMethod: this.context.authMethod || 'Basic Auth',
+      orgId: configHandler.get('oauthOrgUid') || '',
+      authenticationMethod: authenticationMethod || 'Basic Auth',
     };
   }
 }
