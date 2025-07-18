@@ -19,6 +19,7 @@ import { RoleData } from '@contentstack/management/types/stack/role';
 
 import { log } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
+import cloneDeep from 'lodash/cloneDeep';
 
 export type AdditionalKeys = {
   backupDir: string;
@@ -321,17 +322,23 @@ export default abstract class BaseClass {
       case 'update-cts':
         return apiData.update().then(onSuccess).catch(onReject);
       case 'create-gfs':
-        return this.stack.globalField({api_version: '3.2'}).create(apiData).then(onSuccess).catch(onReject); 
+        return this.stack.globalField({ api_version: '3.2' }).create(apiData).then(onSuccess).catch(onReject);
       case 'update-gfs':
         let globalFieldUid = apiData.uid ?? apiData.global_field?.uid;
-        return this.stack
-          .globalField(globalFieldUid, {api_version: '3.2'})
-          .fetch()
-          .then(async (response) => {
-            response.parent = apiData?.uid ? apiData : apiData.global_field;
-            await response.update().then(onSuccess).catch(onReject);
-          })
-          .catch(onReject);
+          return this.stack
+            .globalField(globalFieldUid, { api_version: '3.2' })
+            .fetch()
+            .then(async (gf) => {
+              const { uid, ...updatePayload } = cloneDeep(apiData);
+              Object.assign(gf, updatePayload);
+              try {
+                const response = await gf.update();
+                return onSuccess(response);
+              } catch (error) {
+                return onReject(error);
+              }
+            })
+            .catch(onReject);
       case 'create-environments':
         return this.stack
           .environment()
