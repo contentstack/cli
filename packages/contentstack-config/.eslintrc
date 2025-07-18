@@ -1,3 +1,34 @@
 {
-  "extends": ["oclif", "oclif-typescript"]
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:mocha/recommended"],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "mocha"],
+  "rules": {
+    "unicorn/no-abusive-eslint-disable": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/ban-ts-ignore": "off",
+    "indent": "off",
+    "object-curly-spacing": "off",
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "mocha/no-async-describe": "off",
+    "mocha/no-identical-title": "off",
+    "mocha/no-mocha-arrows": "off",
+    "mocha/no-setup-in-describe": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-var-requires": "off",
+    "prefer-const": "error",
+    "no-fallthrough": "error",
+    "no-prototype-builtins": "off"
+  },
+  "env": {
+    "node": true,
+    "mocha": true
+  },
+  "overrides": [
+    {
+      "files": ["*.d.ts"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off"
+      }
+    }
+  ]
 }
