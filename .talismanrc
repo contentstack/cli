@@ -1,14 +1,12 @@
 fileignoreconfig:
   - filename: pnpm-lock.yaml
-    checksum: 0dcf1cfbae272f5c6143d09759f18316ba89c0aaaccdfe2aed0bd91f33d9e1c5
-  - filename: package-lock.json
-    checksum: b9f52a74faf44c3d112219ab78e72d41b0dc686a37a4aa1aaccbe8a7596c0683
+    checksum: f207dfb0198bc78f647a0a9456142fba670d49dc1b456bcf73de5e79ca0ec5d5
   - filename: packages/contentstack-import/test/integration/auth-token-modules/environments.test.js
     checksum: bc6f06b75d082aaf99e2f2f4b932b143765e2f14086967fb8973fe1b2ca6c03e
   - filename: packages/contentstack-import/test/integration/environments.test.js
     checksum: e71f033dad8944ffeafdf22d0514bda1d20c43e8fea0d62c96e774f3414beb31
   - filename: package-lock.json
-    checksum: 132bc404a7a90c907ac439d94289a1b83a0a0df56d617b3f697fc219a5b555a5
+    checksum: 52bdeb0247e4b4e19510cd289f0baf1392000fbc64f06661291ffe08f440c89b
   - filename: packages/contentstack-auth/test/unit/tokens-validation.test.ts
     checksum: 676052e30d31a771ce68302d89b050d176bbef50f3abc7e9cdd4384f0e274e10
   - filename: packages/contentstack-import/test/integration/auth-token.test.js

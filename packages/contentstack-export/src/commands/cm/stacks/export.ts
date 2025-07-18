@@ -73,7 +73,7 @@ export default class ExportCommand extends Command {
     module: flags.string({
       char: 'm',
       description:
-        '[optional] Specific module name. If not specified, the export command will export all the modules to the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, and taxonomies.',
+        '[optional] Specific module name. If not specified, the export command will export all the modules to the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, personalize projects, and taxonomies.',
       parse: printFlagDeprecation(['-m'], ['--module']),
     }),
     'content-types': flags.string({

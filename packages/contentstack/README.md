@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.43.0 darwin-arm64 node-v22.13.1
+@contentstack/cli/1.43.1 darwin-arm64 node-v22.13.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -2189,7 +2189,7 @@ FLAGS
   -m, --module=<value>            [optional] Specific module name. If not specified, the export command will export all
                                   the modules to the stack. The available modules are assets, content-types, entries,
                                   environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                  workflows, custom-roles, and taxonomies.
+                                  workflows, custom-roles, personalize projects, and taxonomies.
   -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
                                   of multiple content types, specify the IDs separated by spaces.
   -y, --yes                       [optional] Force override all Marketplace prompts.
@@ -2353,7 +2353,7 @@ FLAGS
                                           specified, the import command will import all the modules into the stack. The
                                           available modules are assets, content-types, entries, environments,
                                           extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                          workflows, custom-roles, and taxonomies.
+                                          workflows, custom-roles, personalize projects, and taxonomies.
   -y, --yes                               [optional] Force override all Marketplace prompts.
       --exclude-global-modules            Excludes the branch-independent module from the import operation.
       --import-webhook-status=<option>    [default: disable] [default: disable] (optional) This webhook state keeps the
@@ -2806,7 +2806,7 @@ FLAGS
   -m, --module=<value>            [optional] Specific module name. If not specified, the export command will export all
                                   the modules to the stack. The available modules are assets, content-types, entries,
                                   environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                  workflows, custom-roles, and taxonomies.
+                                  workflows, custom-roles, personalize projects, and taxonomies.
   -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
                                   of multiple content types, specify the IDs separated by spaces.
   -y, --yes                       [optional] Force override all Marketplace prompts.
@@ -2864,7 +2864,7 @@ FLAGS
                                           specified, the import command will import all the modules into the stack. The
                                           available modules are assets, content-types, entries, environments,
                                           extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                          workflows, custom-roles, and taxonomies.
+                                          workflows, custom-roles, personalize projects, and taxonomies.
   -y, --yes                               [optional] Force override all Marketplace prompts.
       --exclude-global-modules            Excludes the branch-independent module from the import operation.
       --import-webhook-status=<option>    [default: disable] [default: disable] (optional) This webhook state keeps the
