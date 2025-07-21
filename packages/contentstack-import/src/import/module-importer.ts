@@ -65,7 +65,7 @@ class ModuleImporter {
       this.importConfig.masterLocale = { code: masterLocalResponse.code };
     }
 
-    await sanitizeStack(this.stackAPIClient);
+    await sanitizeStack(this.importConfig);
 
     return this.import();
   }
