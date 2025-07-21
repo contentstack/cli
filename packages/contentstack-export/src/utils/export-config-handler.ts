@@ -111,7 +111,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
 
   if (Array.isArray(config.filteredModules) && config.filteredModules.length > 0) {
     config.modules.types = filter(defaultConfig.modules.types, (module) => includes(config.filteredModules, module));
-  
+  }
 
   // Handle query flag - can be inline JSON or file path
   if (exportCmdFlags['query']) {
