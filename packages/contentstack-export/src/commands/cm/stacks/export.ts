@@ -102,6 +102,10 @@ export default class ExportCommand extends Command {
       required: false,
       description: '[optional] Force override all Marketplace prompts.',
     }),
+    query: flags.string({
+      description: '[optional] Query object (inline JSON or file path) to filter module exports.',
+      hidden: true,
+    }),
   };
 
   static aliases: string[] = ['cm:export'];

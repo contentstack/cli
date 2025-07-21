@@ -154,6 +154,7 @@ export default class EntriesExport extends BaseClass {
         locale: options.locale,
       },
     };
+    this.applyQueryFilters(requestObject, 'entries');
 
     log.debug(`Fetching entries with request: ${JSON.stringify(requestObject)}`, this.exportConfig.context);
 

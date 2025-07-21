@@ -111,9 +111,26 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
 
   if (Array.isArray(config.filteredModules) && config.filteredModules.length > 0) {
     config.modules.types = filter(defaultConfig.modules.types, (module) => includes(config.filteredModules, module));
+  
+
+  // Handle query flag - can be inline JSON or file path
+  if (exportCmdFlags['query']) {
+    try {
+      const queryInput = exportCmdFlags['query'];
+
+      // Check if it's a file path (contains .json extension or path separators)
+      if (queryInput.includes('.json') || queryInput.includes('/') || queryInput.includes('\\')) {
+        // Try to read as file path
+        config.query = await readFile(queryInput);
+      } else {
+        config.query = JSON.parse(queryInput);
+      }
+    } catch (error) {
+      throw new Error(`Invalid query format: ${error.message}`);
+    }
   }
 
-  // Add authentication details to config for context tracking
+    // Add authentication details to config for context tracking
   config.authenticationMethod = authenticationMethod;
   log.debug('Export configuration setup completed', { ...config });
 
