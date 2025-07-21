@@ -17,6 +17,7 @@ const DEFAULT_OWNER = 'contentstack';
 const DEFAULT_STACK_PATTERN = 'stack-';
 
 export const ENGLISH_LOCALE = 'en-us';
+const COMPASS_REPO = 'compass-starter-stack';
 
 export interface ContentModelSeederOptions {
   parent?: any;
@@ -183,7 +184,7 @@ export default class ContentModelSeeder {
   async shouldProceed(api_key: string) {
     let count;
     const stack_details = await this.csClient.getStack(api_key);
-    if(this.options.master_locale !== stack_details.master_locale && this.ghRepo === 'compass-starter-stack'){
+    if(this.options.master_locale !== stack_details.master_locale && this.ghRepo === COMPASS_REPO){
         cliux.print(`Compass app requires the master locale to be set to English (en).`,{
           color: "yellow",
           bold: true,

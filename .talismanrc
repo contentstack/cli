@@ -53,4 +53,6 @@ fileignoreconfig:
     checksum: db5b7aedcd89d783760eb988a2369243c34edc9c12e93a41b2b08fb0da02afdc
   - filename: packages/contentstack-export/src/export/modules/assets.ts
     checksum: c7f19e6c4a212329d981cebce9a9a8393923dd7c85feb762ddcdca678f7a9349
+  - filename: packages/contentstack-seed/src/seed/index.ts
+    checksum: 71bceee81585a443e413cfce4595f3d1f905de0943df5688c7c9ba105bef760a
 version: ''
