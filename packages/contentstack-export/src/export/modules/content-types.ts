@@ -49,6 +49,9 @@ export default class ContentTypesExport extends BaseClass {
       this.qs.uid = { $in: this.exportConfig.contentTypes };
     }
 
+    // Add after existing qs setup and before contentTypesDirPath
+    this.applyQueryFilters(this.qs, 'content-types');
+
     this.contentTypesDirPath = path.resolve(
       sanitizePath(exportConfig.data),
       sanitizePath(exportConfig.branchName || ''),
@@ -121,14 +124,13 @@ export default class ContentTypesExport extends BaseClass {
     log.debug(`Writing ${contentTypes.length} content types to disk`, this.exportConfig.context);
 
     function write(contentType: Record<string, unknown>) {
-      const filename = `${contentType.uid === 'schema' ? 'schema|1' : contentType.uid}.json`;
-      const fullPath = path.join(
-        sanitizePath(this.contentTypesDirPath),
-        sanitizePath(filename),
+      return fsUtil.writeFile(
+        path.join(
+          sanitizePath(this.contentTypesDirPath),
+          sanitizePath(`${contentType.uid === 'schema' ? 'schema|1' : contentType.uid}.json`),
+        ),
+        contentType,
       );
-
-      log.debug(`Writing content type to: ${fullPath}`, this.exportConfig.context);
-      return fsUtil.writeFile(fullPath, contentType);
     }
 
     await executeTask(contentTypes, write.bind(this), {

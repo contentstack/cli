@@ -29,6 +29,7 @@ export default class ExportMarketplaceApps {
   public appSdk: ContentstackMarketplaceClient;
   public exportConfig: ExportConfig;
   public command: Command;
+  public query: Record<string, any>;
 
   constructor({ exportConfig }: Omit<ModuleClassParams, 'stackAPIClient' | 'moduleName'>) {
     this.exportConfig = exportConfig;
@@ -61,6 +62,7 @@ export default class ExportMarketplaceApps {
     log.debug(`Developer hub base URL: ${this.developerHubBaseUrl}`, this.exportConfig.context);
     
     this.exportConfig.org_uid = await getOrgUid(this.exportConfig);
+    this.query = { target_uids: this.exportConfig.source_stack };
     log.debug(`Organization UID: ${this.exportConfig.org_uid}`, this.exportConfig.context);
 
     // NOTE init marketplace app sdk
@@ -78,6 +80,16 @@ export default class ExportMarketplaceApps {
    */
   async exportApps(): Promise<any> {
     log.debug('Starting apps export process...', this.exportConfig.context);
+    // currently support only app_uids or installation_uids
+    const externalQuery = this.exportConfig.query?.modules['marketplace-apps'];
+    if (externalQuery) {
+      if (externalQuery.app_uid?.$in?.length > 0) {
+        this.query.app_uids = externalQuery.app_uid.$in.join(',');
+      }
+      if (externalQuery.installation_uid?.$in?.length > 0) {
+        this.query.installation_uids = externalQuery.installation_uid?.$in?.join(',');
+      }
+    }
     
     await this.getStackSpecificApps();
     log.debug(`Retrieved ${this.installedApps.length} stack-specific apps`, this.exportConfig.context);
@@ -246,7 +258,7 @@ export default class ExportMarketplaceApps {
     const collection = await this.appSdk
       .marketplace(this.exportConfig.org_uid)
       .installation()
-      .fetchAll({ target_uids: this.exportConfig.source_stack, skip })
+      .fetchAll({ ...this.query, skip })
       .catch((error) => {
         log.debug('Error occurred while fetching stack-specific apps', this.exportConfig.context);
         handleAndLogError(error, {

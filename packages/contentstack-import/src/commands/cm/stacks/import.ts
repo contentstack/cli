@@ -74,7 +74,7 @@ export default class ImportCommand extends Command {
       required: false,
       char: 'm',
       description:
-        '[optional] Specify the module to import into the target stack. If not specified, the import command will import all the modules into the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, and taxonomies.',
+        '[optional] Specify the module to import into the target stack. If not specified, the import command will import all the modules into the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, personalize projects, and taxonomies.',
       parse: printFlagDeprecation(['-m'], ['--module']),
     }),
     'backup-dir': flags.string({

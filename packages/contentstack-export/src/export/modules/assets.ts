@@ -137,6 +137,7 @@ export default class ExportAssets extends BaseClass {
       include_publish_details: true,
       except: { BASE: this.assetConfig.invalidKeys },
     };
+    this.applyQueryFilters(queryParam, 'assets');
 
     if (this.assetConfig.includeVersionedAssets) {
       const customHandler = (array: Array<any>) => {

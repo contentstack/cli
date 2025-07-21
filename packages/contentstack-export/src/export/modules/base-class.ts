@@ -190,4 +190,18 @@ export default abstract class BaseClass {
         return Promise.resolve();
     }
   }
+
+  protected applyQueryFilters(requestObject: any, moduleName: string): any {
+    if (this.exportConfig.query?.modules?.[moduleName]) {
+      const moduleQuery = this.exportConfig.query.modules[moduleName];
+      // Merge the query parameters with existing requestObject
+      if (moduleQuery) {
+        if (!requestObject.query) {
+          requestObject.query = moduleQuery;
+        }
+        Object.assign(requestObject.query, moduleQuery);
+      }
+    }
+    return requestObject;
+  }
 }

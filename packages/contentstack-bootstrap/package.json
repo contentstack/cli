@@ -9,7 +9,6 @@
     "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
-    "posttest": "eslint . --ext .ts --config .eslintrc",
     "prepack": "pnpm compile && oclif manifest && oclif readme",
     "version": "oclif readme && git add README.md",
     "test": "npm run build && npm run test:e2e",

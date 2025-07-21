@@ -19,6 +19,7 @@ export default interface ExportConfig extends DefaultConfig {
   singleModuleExport?: boolean;
   moduleName?: Modules;
   master_locale: masterLocale;
+  query?: any; // Added query field
   headers?: {
     api_key: string;
     access_token?: string;
@@ -31,6 +32,8 @@ export default interface ExportConfig extends DefaultConfig {
   source_stack?: string;
   sourceStackName?: string;
   region: Region;
+  skipStackSettings?: boolean;
+  skipDependencies?: boolean;
   authenticationMethod?: string;
 }
 
