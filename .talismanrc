@@ -1,12 +1,12 @@
 fileignoreconfig:
   - filename: pnpm-lock.yaml
-    checksum: f207dfb0198bc78f647a0a9456142fba670d49dc1b456bcf73de5e79ca0ec5d5
+    checksum: 5b171002be4247e270dcdf69a2c67f686d937a380a293f9dc4aa003978f633a7
   - filename: packages/contentstack-import/test/integration/auth-token-modules/environments.test.js
     checksum: bc6f06b75d082aaf99e2f2f4b932b143765e2f14086967fb8973fe1b2ca6c03e
   - filename: packages/contentstack-import/test/integration/environments.test.js
     checksum: e71f033dad8944ffeafdf22d0514bda1d20c43e8fea0d62c96e774f3414beb31
   - filename: package-lock.json
-    checksum: a3cd702c03053491faea19f79b8af667aac897c249a17054db66c358491090c0
+    checksum: eff784b5a6169e024b908b55076945386b0b6b5f6bb25ea5fc1b889d7d181e69
   - filename: packages/contentstack-auth/test/unit/tokens-validation.test.ts
     checksum: 676052e30d31a771ce68302d89b050d176bbef50f3abc7e9cdd4384f0e274e10
   - filename: packages/contentstack-import/test/integration/auth-token.test.js
@@ -57,4 +57,6 @@ fileignoreconfig:
     checksum: db1ae8b5d8c338ad0369d441b11978dc6850d0f09f338b331e12478ebc18ff65
   - filename: packages/contentstack-seed/src/seed/compassAppHelper.ts
     checksum: 59001d937245a8d1062a4a53206e1bb2d6d1a85633165e6e6749f1d5fc1bd817
+  - filename: packages/contentstack/README.md
+    checksum: d6da4ce77d52464737a4f22034f62fb93e47ec9200f8f788f06dbcedaae123b3
 version: ''
