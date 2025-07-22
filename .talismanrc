@@ -55,4 +55,10 @@ fileignoreconfig:
     checksum: c7f19e6c4a212329d981cebce9a9a8393923dd7c85feb762ddcdca678f7a9349
   - filename: packages/contentstack/README.md
     checksum: d6da4ce77d52464737a4f22034f62fb93e47ec9200f8f788f06dbcedaae123b3
+  - filename: packages/contentstack-auth/test/unit/commands/tokens-add.test.ts
+    checksum: 4b8ada59d635747c7418ae8a45cd94f8590bedf67be869ba25dc2a5c19a6b37d
+  - filename: packages/contentstack-auth/test/integration/auth.test.ts
+    checksum: 03fe351ac4ce622297d42615c74273980183200f092435ca4915e56513cb3b13
+  - filename: packages/contentstack-auth/test/unit/tokens-validation.test.ts
+    checksum: 5222bdeb09c0f86fc3ef35d71d5c33a9d5b50bcb8989ed8e5b887e355a99f36d
 version: ''

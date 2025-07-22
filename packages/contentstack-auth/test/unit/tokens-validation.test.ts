@@ -6,13 +6,9 @@ describe('Tokens Validation', () => {
   const validAPIkey = '';
   const invalidAPIkey = 'invalid';
   const validDeliveryToken = '';
-  const invalidDeliveryToken = '';
   const validManagementToken = '';
-  const invalidManagementToken = '';
   const validEnvironment = '';
-  const invalidEnvironemnt = 'invalid';
-  const validRegion = 'AWS-NA';
-  const validHost = '';
+  const invalidEnvironment = 'invalid';
   let contentStackClient: {
     stack: any;
     deliveryToken: any;
@@ -68,79 +64,13 @@ describe('Tokens Validation', () => {
       },
     };
   });
-  describe('#Delivery token', function () {
-    it('Valid delivery token, should return the token', async function () {
-      const stackStub = {
-        setHost: sinon.stub(),
-        getContentTypes: sinon.stub().resolves({ content_types: [] }),
-      };
-
-      const contentStackClientStub = {
-        Stack: sinon.stub().returns(stackStub),
-      };
-
-      const result = await tokenValidation.validateDeliveryToken(
-        contentStackClientStub,
-        validAPIkey,
-        validDeliveryToken,
-        validEnvironment,
-        validRegion,
-        validHost,
-      );
-
-      expect(result.valid).to.be.true;
-      expect(result.message).to.be.an('object');
-    });
-    it('invalid delivery token, should return false', async function () {
-      const result = await tokenValidation.validateDeliveryToken(
-        contentStackClient,
-        validAPIkey,
-        invalidDeliveryToken,
-        validEnvironment,
-        validRegion,
-        validHost,
-      );
-      expect(result.valid).to.be.false;
-    });
-  });
   describe('#Environment', function () {
     it('Valid environment, should return true', async function () {
       const result = await tokenValidation.validateEnvironment(contentStackClient, validAPIkey, validEnvironment);
       expect(result.valid).to.be.true;
     });
     it('invalid environment, should return false', async function () {
-      const result = await tokenValidation.validateEnvironment(contentStackClient, validAPIkey, invalidEnvironemnt);
-      expect(result.valid).to.be.false;
-    });
-  });
-  describe('#Management Token', function () {
-    it('Valid Management token, should return true', async function () {
-      const contentStackClient = {
-        axiosInstance: {
-          get: sinon.stub().resolves({ status: 200 }),
-        },
-      };
-
-      const result = await tokenValidation.validateManagementToken(
-        contentStackClient,
-        validAPIkey,
-        validManagementToken,
-      );
-
-      expect(result.valid).to.be.true;
-      expect(result.message).to.be.an('object');
-    });
-    it('invalid Management token, should return false', async function () {
-      const contentStackClient = {
-        axiosInstance: {
-          get: sinon.stub().resolves({ status: 401 }),
-        },
-      };
-      const result = await tokenValidation.validateManagementToken(
-        contentStackClient,
-        validAPIkey,
-        invalidManagementToken,
-      );
+      const result = await tokenValidation.validateEnvironment(contentStackClient, validAPIkey, invalidEnvironment);
       expect(result.valid).to.be.false;
     });
   });

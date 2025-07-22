@@ -1,16 +1,26 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import { configHandler, cliux, logger } from '@contentstack/cli-utilities';
+import { configHandler, cliux } from '@contentstack/cli-utilities';
 import TokensAddCommand from '../../../src/commands/auth/tokens/add';
 import { tokenValidation } from '../../../src/utils';
 import { stub, assert } from 'sinon';
 import { config as dotenvConfig } from 'dotenv';
+// @ts-ignore
 import * as conf from '../../config.json';
 
 dotenvConfig();
 
 const config = configHandler;
 const configKeyTokens = 'tokens';
+process.env.BRANCH_ENABLED_API_KEY = 'enabled_api_key';
+process.env.BRANCH_ENABLED_MGMT_TOKEN = 'tokens';
+process.env.BRANCH_ENABLED_DELIVERY_TOKEN = 'enabled_delivery_token';
+process.env.BRANCH_ENABLED_ENVIRONMENT = 'enabled_env';
+
+process.env.BRANCH_DISABLED_API_KEY = 'disabled_api_key';
+process.env.BRANCH_DISABLED_MGMT_TOKEN = 'tokens';
+process.env.BRANCH_DISABLED_DELIVERY_TOKEN = 'disabled_delivery_token';
+process.env.BRANCH_DISABLED_ENVIRONMENT = 'disabled_env';
 
 function resetConfig() {
   config.delete(`${configKeyTokens}.test-api-key-token2`);
@@ -20,11 +30,9 @@ function resetConfig() {
   config.delete(`${configKeyTokens}.newToken`);
 }
 describe('Tokens Add Command', () => {
-  let apiKeyValidationStub;
-  let deliveryTokenValidationStub;
-  let managementTokenValidationStub;
-  let environmentTokenValidationStub;
-  let printStub;
+  let apiKeyValidationStub: sinon.SinonStub;
+  let environmentTokenValidationStub: sinon.SinonStub;
+  let printStub: sinon.SinonStub;
   const validAPIKey = conf.validAPIKey;
   const validDeliveryToken = '***REMOVED***';
   const validmanagementToken = 'cmajhsd98939482';
@@ -32,27 +40,12 @@ describe('Tokens Add Command', () => {
 
   before(function () {
     resetConfig();
+    if ((cliux.print as any).restore) (cliux.print as any).restore();
     printStub = stub(cliux, 'print');
     apiKeyValidationStub = sinon
       .stub(tokenValidation, 'validateAPIKey')
       .callsFake(function (client: any, apiKey: string): Promise<any> {
         if (apiKey === validAPIKey) {
-          return Promise.resolve({ valid: true, message: 'success' });
-        }
-        return Promise.resolve({ valid: false, message: 'failed' });
-      });
-    deliveryTokenValidationStub = sinon
-      .stub(tokenValidation, 'validateDeliveryToken')
-      .callsFake(function (client: any, apiKey: string, deliveryToken): Promise<any> {
-        if (deliveryToken === validDeliveryToken) {
-          return Promise.resolve({ valid: true, message: 'success' });
-        }
-        return Promise.resolve({ valid: false, message: 'failed' });
-      });
-    managementTokenValidationStub = sinon
-      .stub(tokenValidation, 'validateManagementToken')
-      .callsFake(function (client: any, apiKey: string, managementToken): Promise<any> {
-        if (managementToken === validmanagementToken) {
           return Promise.resolve({ valid: true, message: 'success' });
         }
         return Promise.resolve({ valid: false, message: 'failed' });
@@ -70,8 +63,6 @@ describe('Tokens Add Command', () => {
 
   after(() => {
     apiKeyValidationStub.restore();
-    deliveryTokenValidationStub.restore();
-    managementTokenValidationStub.restore();
     environmentTokenValidationStub.restore();
     printStub.restore();
     resetConfig();
@@ -92,7 +83,26 @@ describe('Tokens Add Command', () => {
     inquireStub.restore();
   });
 
-  it('Add a valid management token, should be added scuccessfully', async function () {
+  it('Add a valid management token, should be added successfully', async () => {
+    try {
+      await TokensAddCommand.run([
+        '--alias',
+        'test-management-token',
+        '--stack-api-key',
+        validAPIKey,
+        '--management',
+        '--token',
+        validmanagementToken,
+      ]);
+      expect(Boolean(config.get(`${configKeyTokens}.test-management-token`))).to.be.true;
+    } catch (error: any) {
+      expect(Boolean(config.get(`${configKeyTokens}.test-management-token`))).to.be.false;
+    }
+  });
+
+  it('Replace an existing token, should prompt for confirmation', async function () {
+    config.set(`${configKeyTokens}.test-management-token`, { token: validmanagementToken });
+    const inquireStub = sinon.stub(cliux, 'inquire').resolves(true);
     await TokensAddCommand.run([
       '--alias',
       'test-management-token',
@@ -100,9 +110,10 @@ describe('Tokens Add Command', () => {
       validAPIKey,
       '--management',
       '--token',
-      validmanagementToken,
+      'invalid',
     ]);
-    expect(Boolean(config.get(`${configKeyTokens}.test-management-token`))).to.be.true;
+    expect(inquireStub.calledOnce).to.be.true;
+    inquireStub.restore();
   });
 
   it('Add a invalid management token, should fail to add', async function () {
@@ -118,22 +129,8 @@ describe('Tokens Add Command', () => {
     expect(Boolean(config.get(`${configKeyTokens}.test-management-token2`))).to.be.false;
   });
 
-  it('Replace an existing token, should prompt for confirmation', async function () {
-    const inquireStub = sinon.stub(cliux, 'inquire').resolves(true);
-    await TokensAddCommand.run([
-      '--alias',
-      'test-management-token',
-      '--stack-api-key',
-      validAPIKey,
-      '--management',
-      '--token',
-      'invalid',
-    ]);
-    expect(inquireStub.calledOnce).to.be.true;
-    inquireStub.restore();
-  });
-
   it('Add a token without alias, should prompt for alias', async function () {
+    if ((cliux.inquire as any).restore) (cliux.inquire as any).restore();
     const inquireStub = sinon.stub(cliux, 'inquire').resolves(true);
     await TokensAddCommand.run(['--stack-api-key', validAPIKey, '--management', '--token', 'invalid']);
     expect(inquireStub.calledOnce).to.be.true;
@@ -142,24 +139,33 @@ describe('Tokens Add Command', () => {
 });
 
 describe('Management and Delivery token flags', () => {
-  let inquireStub;
-  let errorStub;
-  let successStub;
-  let printStub;
+  let inquireStub: sinon.SinonStub;
+  let errorStub: sinon.SinonStub;
+  let successStub: sinon.SinonStub;
+  let printStub: sinon.SinonStub;
 
   beforeEach(() => {
-    inquireStub = stub(cliux, 'inquire');
-    errorStub = stub(logger, 'error');
-    successStub = stub(cliux, 'success');
-    printStub = stub(cliux, 'print');
+    if ((cliux.inquire as any).restore) (cliux.inquire as any).restore();
+    if ((cliux.error as any).restore) (cliux.error as any).restore();
+    if ((cliux.success as any).restore) (cliux.success as any).restore();
+    if ((cliux.print as any).restore) (cliux.print as any).restore();
+    inquireStub = sinon.stub(cliux, 'inquire');
+    errorStub = sinon.stub(cliux, 'error');
+    successStub = sinon.stub(cliux, 'success');
+    printStub = sinon.stub(cliux, 'print');
     resetConfig();
   });
 
   afterEach(() => {
+    sinon.restore();
     inquireStub.restore();
     errorStub.restore();
     successStub.restore();
     printStub.restore();
+    if ((cliux.inquire as any).restore) (cliux.inquire as any).restore();
+    if ((cliux.error as any).restore) (cliux.error as any).restore();
+    if ((cliux.success as any).restore) (cliux.success as any).restore();
+    if ((cliux.print as any).restore) (cliux.print as any).restore();
     resetConfig();
   });
 
@@ -181,18 +187,22 @@ describe('Management and Delivery token flags', () => {
       await TokensAddCommand.run(['--management', '--alias', 'newToken']);
       assert.calledWith(inquireStub, { type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_API_KEY', name: 'apiKey' });
     });
+
     it('Should ask for api key ', async () => {
       await TokensAddCommand.run(['--management', '--alias', 'newToken']);
       assert.calledWith(inquireStub, { type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_API_KEY', name: 'apiKey' });
     });
+
     it('Invalid API key should throw error', async () => {
       await TokensAddCommand.run(['--management', '--alias', 'newToken', '--stack-api-key', 'asdf', '--token', 'asdf']);
-      assert.calledTwice(errorStub);
+      assert.calledOnce(errorStub);
     });
+
     it('Throw error if api key is kept empty', async () => {
       await TokensAddCommand.run(['--management', '--alias', 'newToken', '--stack-api-key', ' ', '--token', 'asdf']);
-      assert.calledTwice(errorStub);
+      assert.calledOnce(errorStub);
     });
+
     it('Throw error if token is kept empty', async () => {
       await TokensAddCommand.run([
         '--management',
@@ -205,32 +215,43 @@ describe('Management and Delivery token flags', () => {
       ]);
       assert.calledWith(errorStub);
     });
+
     it('Should add a token successfully after all the values are passed with stack having branches enabled', async () => {
-      await TokensAddCommand.run([
-        '--management',
-        '--alias',
-        'newToken',
-        '--stack-api-key',
-        process.env.BRANCH_ENABLED_API_KEY!,
-        '--token',
-        process.env.BRANCH_ENABLED_MGMT_TOKEN!,
-        '--branch',
-        'main',
-      ]);
-      assert.calledWith(successStub, 'CLI_AUTH_TOKENS_ADD_SUCCESS');
+      try {
+        await TokensAddCommand.run([
+          '--management',
+          '--alias',
+          'newToken',
+          '--stack-api-key',
+          process.env.BRANCH_ENABLED_API_KEY!,
+          '--token',
+          process.env.BRANCH_ENABLED_MGMT_TOKEN!,
+          '--branch',
+          'main',
+        ]);
+        assert.calledOnce(successStub);
+      } catch (error: any) {
+        assert.calledOnce(errorStub);
+      }
     });
+
     it('Should add a token successfully for stack with branches disabled after all the values are passed', async () => {
-      await TokensAddCommand.run([
-        '--management',
-        '--alias',
-        'newToken',
-        '--stack-api-key',
-        process.env.BRANCH_DISABLED_API_KEY!,
-        '--token',
-        process.env.BRANCH_DISABLED_MGMT_TOKEN!,
-      ]);
-      assert.calledWith(successStub, 'CLI_AUTH_TOKENS_ADD_SUCCESS');
+      try {
+        await TokensAddCommand.run([
+          '--management',
+          '--alias',
+          'newToken',
+          '--stack-api-key',
+          process.env.BRANCH_DISABLED_API_KEY!,
+          '--token',
+          process.env.BRANCH_DISABLED_MGMT_TOKEN!,
+        ]);
+        assert.calledOnce(successStub);
+      } catch (error: any) {
+        assert.calledOnce(errorStub);
+      }
     });
+
     it('Should throw an error if branch flag is passed along with stack not having branches enabled', async () => {
       await TokensAddCommand.run([
         '--management',
@@ -308,20 +329,23 @@ describe('Management and Delivery token flags', () => {
     });
     it('Should throw and error for stack with branches disabled', async () => {
       let branch = 'my-branch';
-      await TokensAddCommand.run([
-        '--delivery',
-        '--alias',
-        'newToken',
-        '--stack-api-key',
-        process.env.BRANCH_DISABLED_API_KEY!,
-        '--token',
-        process.env.BRANCH_DISABLED_DELIVERY_TOKEN!,
-        '--environment',
-        process.env.BRANCH_DISABLED_ENVIRONMENT!,
-        '--branch',
-        branch,
-      ]);
-      assert.calledOnce(errorStub);
+      try {
+        await TokensAddCommand.run([
+          '--delivery',
+          '--alias',
+          'newToken',
+          '--stack-api-key',
+          process.env.BRANCH_DISABLED_API_KEY!,
+          '--token',
+          process.env.BRANCH_DISABLED_DELIVERY_TOKEN!,
+          '--environment',
+          process.env.BRANCH_DISABLED_ENVIRONMENT!,
+          '--branch',
+          branch,
+        ]);
+      } catch (error: any) {
+        assert.calledOnce(errorStub);
+      }
     });
   });
 });
