@@ -4,7 +4,30 @@ import { CLIErrorHandler } from './cli-error-handler';
 import { ErrorContext } from '../interfaces';
 import { configHandler } from '..';
 
-const v2Logger = new Logger({ basePath: getLogPath(), logLevel: configHandler.get('log.level') || 'info' });
+let loggerInstance: Logger | null = null;
+
+function createLoggerInstance(): Logger {
+  const config = {
+    basePath: getLogPath(),
+    logLevel: configHandler.get('log.level') || 'info',
+  };
+  return new Logger(config);
+}
+
+// Lazy proxy object that behaves like a Logger
+const v2Logger = new Proxy({} as Logger, {
+  get(_, prop: keyof Logger) {
+    if (!loggerInstance) {
+      loggerInstance = createLoggerInstance();
+    }
+    const targetProp = loggerInstance[prop];
+    if (typeof targetProp === 'function') {
+      return targetProp.bind(loggerInstance);
+    }
+    return targetProp;
+  },
+});
+
 const cliErrorHandler = new CLIErrorHandler(); // Enable debug mode for error classification
 
 /**

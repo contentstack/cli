@@ -150,7 +150,7 @@ export default class ImportCommand extends Command {
       // Prepare the context object
       const context = this.createImportContext(importConfig.apiKey, importConfig.authenticationMethod);
       importConfig.context = {...context};
-      log.info(`Using Cli Version: ${this.context?.plugin?.version}`, importConfig.context);
+      log.info(`Using Cli Version: ${this.context?.cliVersion}`, importConfig.context);
       
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;
