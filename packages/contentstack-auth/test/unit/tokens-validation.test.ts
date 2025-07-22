@@ -10,7 +10,7 @@ describe('Tokens Validation', () => {
   const validEnvironment = '';
   const invalidEnvironment = 'invalid';
   let contentStackClient: {
-    stack: any;
+    Stack?: any;
     deliveryToken: any;
     query: any;
     find: any;
@@ -20,9 +20,14 @@ describe('Tokens Validation', () => {
     environmentName?: string;
     axiosInstance: any;
     apiKey?: string;
+    stack?: any;
   };
   beforeEach(function () {
     contentStackClient = {
+      Stack: sinon.stub().callsFake((param) => {
+        contentStackClient.apiKey = param.api_key;
+        return contentStackClient;
+      }),
       stack: sinon.stub().callsFake((param) => {
         contentStackClient.apiKey = param.api_key;
         return contentStackClient;
