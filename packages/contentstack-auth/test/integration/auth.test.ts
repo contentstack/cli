@@ -87,16 +87,6 @@ describe('contentstack-auth plugin test', () => {
     });
   });
 
-  describe('Check auth:logout command', () => {
-    beforeEach(() => {
-      inquireStub = Sinon.stub().callsFake(async () => 'Yes');
-    });
-    fancy.stdout({ print: PRINT_LOGS || false }).it('Logout should succeed', async () => {
-      const { stdout } = await runCommand(['auth:logout', '--yes'], { root: process.cwd() });
-      expect(stdout).to.match(/CLI_AUTH_LOGOUT_ALREADY|Successfully logged out/i);
-    });
-  });
-
   describe('Test whoami command', () => {
     let mail: string;
     before(() => {
@@ -110,6 +100,16 @@ describe('contentstack-auth plugin test', () => {
       const { stdout } = await runCommand(['whoami'], { root: process.cwd() });
 
       expect(stdout).to.match(new RegExp(`You are currently logged in with email\\n${mail}\\n|You are not logged in`));
+    });
+  });
+
+  describe('Check auth:logout command', () => {
+    beforeEach(() => {
+      inquireStub = Sinon.stub().callsFake(async () => 'Yes');
+    });
+    fancy.stdout({ print: PRINT_LOGS || false }).it('Logout should succeed', async () => {
+      const { stdout } = await runCommand(['auth:logout', '--yes'], { root: process.cwd() });
+      expect(stdout).to.match(/CLI_AUTH_LOGOUT_ALREADY|Successfully logged out/i);
     });
   });
 });
