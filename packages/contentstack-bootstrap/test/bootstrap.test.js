@@ -54,7 +54,7 @@ const mock = {
     master_locale: 'en-us',
   },
   region: {
-    name: 'NA',
+    name: 'AWS-NA',
     cda: 'https://cdn.contentstack.com',
     cma: 'https://api.contentstack.com',
     uiHost: 'https://app.contentstack.com',

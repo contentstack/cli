@@ -117,6 +117,7 @@ export default class ExportAssets extends BaseClass {
       include_publish_details: true,
       except: { BASE: this.assetConfig.invalidKeys },
     };
+    this.applyQueryFilters(queryParam, 'assets');
 
     if (this.assetConfig.includeVersionedAssets) {
       const customHandler = (array: Array<any>) => {
@@ -145,7 +146,7 @@ export default class ExportAssets extends BaseClass {
           indexFileName: 'assets.json',
           basePath: this.assetsRootPath,
           chunkFileSize: this.assetConfig.chunkFileSize,
-          metaPickKeys: merge(['uid', 'url', 'filename', 'parent_uid'], this.assetConfig.assetsMetaKeys),
+          metaPickKeys: merge(['uid', 'url', 'filename'], this.assetConfig.assetsMetaKeys),
         });
       }
       if (!isEmpty(items)) fs?.writeIntoFile(items, { mapKeyVal: true });
@@ -211,7 +212,7 @@ export default class ExportAssets extends BaseClass {
           indexFileName: 'versioned-assets.json',
           chunkFileSize: this.assetConfig.chunkFileSize,
           basePath: pResolve(this.assetsRootPath, 'versions'),
-          metaPickKeys: merge(['uid', 'url', 'filename', '_version', 'parent_uid'], this.assetConfig.assetsMetaKeys),
+          metaPickKeys: merge(['uid', 'url', 'filename', '_version'], this.assetConfig.assetsMetaKeys),
         });
       }
       if (!isEmpty(response))

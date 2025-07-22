@@ -55,14 +55,13 @@ export const escapeRegExp = (str: string) => str?.replace(/[.*+?^${}()|[\]\\]/g,
 
 // To remove the relative path
 export const sanitizePath = (str: string) => {
-  if (typeof str !== 'string') 
-    return;
-  
+  if (typeof str !== 'string') return;
+
   const decodedStr = decodeURIComponent(str);
   return decodedStr
-    ?.replace(/^([\/\\]){2,}/, "./") // Normalize leading slashes/backslashes to ''
-    .replace(/[\/\\]+/g, "/") // Replace multiple slashes/backslashes with a single '/'
-    .replace(/(\.\.(\/|\\|$))+/g, ""); // Remove directory traversal (../ or ..\)
+    .replace(/^([\/\\]){2,}/, './') // Normalize leading slashes/backslashes to ''
+    .replace(/[\/\\]+/g, '/') // Replace multiple slashes/backslashes with a single '/'
+    .replace(/(\.\.(\/|\\|$))+/g, ''); // Remove directory traversal (../ or ..\)
 };
 
 // To validate the UIDs of assets
@@ -131,6 +130,7 @@ export const formatError = function (error: any) {
       authorization: 'Authentication',
       api_key: 'Stack API key',
       uid: 'Content Type',
+      // deepcode ignore HardcodedNonCryptoSecret: The hardcoded value 'access_token' is used as a key in an error message mapping object and does not represent a sensitive secret or cryptographic key.
       access_token: 'Delivery Token',
     };
 

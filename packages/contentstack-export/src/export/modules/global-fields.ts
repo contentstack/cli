@@ -35,7 +35,7 @@ export default class GlobalFieldsExport extends BaseClass {
       asc: 'updated_at',
       include_count: true,
       limit: this.globalFieldsConfig.limit,
-      include_global_field_schema: true
+      include_global_field_schema: true,
     };
     this.globalFieldsDirPath = path.resolve(
       sanitizePath(exportConfig.data),
@@ -43,6 +43,7 @@ export default class GlobalFieldsExport extends BaseClass {
       sanitizePath(this.globalFieldsConfig.dirName),
     );
     this.globalFields = [];
+    this.applyQueryFilters(this.qs, 'global-fields');
   }
 
   async start() {
@@ -62,7 +63,7 @@ export default class GlobalFieldsExport extends BaseClass {
     if (skip) {
       this.qs.skip = skip;
     }
-    let globalFieldsFetchResponse = await this.stackAPIClient.globalField({api_version: '3.2'}).query(this.qs).find();
+    let globalFieldsFetchResponse = await this.stackAPIClient.globalField({ api_version: '3.2' }).query(this.qs).find();
     if (Array.isArray(globalFieldsFetchResponse.items) && globalFieldsFetchResponse.items.length > 0) {
       this.sanitizeAttribs(globalFieldsFetchResponse.items);
       skip += this.globalFieldsConfig.limit || 100;
