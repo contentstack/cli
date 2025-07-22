@@ -118,7 +118,7 @@ export default class ExportCommand extends Command {
       // Prepare the context object
       const context = this.createExportContext(exportConfig.apiKey, exportConfig.authenticationMethod);
       exportConfig.context = { ...context };
-      log.info(`Using Cli Version: ${this.context?.plugin?.version}`, exportConfig.context);
+      log.info(`Using Cli Version: ${this.context?.cliVersion}`, exportConfig.context);
 
       // Assign exportConfig variables
       this.assignExportConfig(exportConfig);
