@@ -60,6 +60,12 @@ export const sanitizeStack = (importConfig: ImportConfig) => {
     return Promise.resolve();
   }
   
+  if (importConfig.management_token) {
+    log.info('Skipping stack version sanitization: Operation is not supported when using a management token.', );
+    return Promise.resolve();
+  }
+  
+  
   try {
     const httpClient = HttpClient.create();
     httpClient.headers(importConfig.headers);
