@@ -61,7 +61,7 @@ function handleAndLogError(error: unknown, context?: ErrorContext, errorMessage?
 }
 
 function getLogPath(): string {
-  return process.env.CS_CLI_LOG_PATH || configHandler.get('log.path') || path.join(process.cwd(), 'logs');
+  return process.env.CS_CLI_LOG_PATH || configHandler.get('log.path') || path.join(__dirname, 'logs');
 }
 
 export { v2Logger, cliErrorHandler, handleAndLogError, getLogPath };

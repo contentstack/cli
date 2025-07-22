@@ -150,25 +150,24 @@ export default class ImportCommand extends Command {
       // Prepare the context object
       const context = this.createImportContext(importConfig.apiKey, importConfig.authenticationMethod);
       importConfig.context = {...context};
-      log.info(`Using Cli Version: ${this.context?.cliVersion}`, importConfig.context);
+      //log.info(`Using Cli Version: ${this.context?.cliVersion}`, importConfig.context);
       
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;
       importConfig.region = this.region;
       if (this.developerHubUrl) importConfig.developerHubBaseUrl = this.developerHubUrl;
       if (this.personalizeUrl) importConfig.modules.personalize.baseURL[importConfig.region.name] = this.personalizeUrl;
-      backupDir = importConfig.cliLogsPath || importConfig.backupDir;
-
+      
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
-
+      
       if (!flags.branch) {
         try {
           const branches = await managementAPIClient
-            .stack({ api_key: importConfig.apiKey })
-            .branch()
-            .query()
-            .find()
-            .then(({ items }: any) => items);
+          .stack({ api_key: importConfig.apiKey })
+          .branch()
+          .query()
+          .find()
+          .then(({ items }: any) => items);
           if (branches.length) {
             flags.branch = 'main';
           }
@@ -178,6 +177,7 @@ export default class ImportCommand extends Command {
       }
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       const result = await moduleImporter.start();
+      backupDir = importConfig.backupDir;
 
       if (!result?.noSuccessMsg) {       
         const successMessage = importConfig.stackName
@@ -187,20 +187,22 @@ export default class ImportCommand extends Command {
       }
 
       log.success(`The log has been stored at '${getLogPath()}'`, importConfig.context)
+      log.info(`The backup content has been stored at '${backupDir}'`, importConfig.context);
     } catch (error) {
       handleAndLogError(error);
       log.info(`The log has been stored at '${getLogPath()}'`)
+      log.info(`The backup content has been stored at '${backupDir}'`);
     }
   }
 
   // Create export context object
   private createImportContext(apiKey: string, authenticationMethod?: string): Context {
     return {
-      command: this.context.info.command,
+      command: this.context?.info?.command || 'cm:stacks:import',
       module: '',
-      userId: configHandler.get('userUid'),
-      email: configHandler.get('email'),
-      sessionId: this.context.sessionId,
+      userId: configHandler.get('userUid') || '',
+      email: configHandler.get('email') || '',
+      sessionId: this.context?.sessionId,
       apiKey: apiKey || '',
       orgId: configHandler.get('oauthOrgUid') || '',
       authenticationMethod: authenticationMethod || 'Basic Auth',

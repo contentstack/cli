@@ -118,7 +118,7 @@ export default class ExportCommand extends Command {
       // Prepare the context object
       const context = this.createExportContext(exportConfig.apiKey, exportConfig.authenticationMethod);
       exportConfig.context = { ...context };
-      log.info(`Using Cli Version: ${this.context?.cliVersion}`, exportConfig.context);
+      //log.info(`Using Cli Version: ${this.context?.cliVersion}`, exportConfig.context);
 
       // Assign exportConfig variables
       this.assignExportConfig(exportConfig);
@@ -145,11 +145,11 @@ export default class ExportCommand extends Command {
   // Create export context object
   private createExportContext(apiKey: string, authenticationMethod?: string): Context {
     return {
-      command: this.context.info.command,
+      command: this.context?.info?.command || 'cm:stacks:export',
       module: '',
-      userId: configHandler.get('userUid'),
-      email: configHandler.get('email'),
-      sessionId: this.context.sessionId,
+      userId: configHandler.get('userUid') || '',
+      email: configHandler.get('email') || '',
+      sessionId: this.context?.sessionId || '',
       apiKey: apiKey || '',
       orgId: configHandler.get('oauthOrgUid') || '',
       authenticationMethod: authenticationMethod || 'Basic Auth',
