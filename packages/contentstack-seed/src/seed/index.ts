@@ -12,13 +12,11 @@ import {
 } from '../seed/interactive';
 import GitHubClient from './github/client';
 import GithubError from './github/error';
+import { shouldProceedForCompassApp, ENGLISH_LOCALE } from './compassAppHelper';
 
 const DEFAULT_OWNER = 'contentstack';
 const DEFAULT_STACK_PATTERN = 'stack-';
-
-export const ENGLISH_LOCALE = 'en-us';
 const COMPASS_REPO = 'compass-starter-stack';
-
 export interface ContentModelSeederOptions {
   parent?: any;
   cdaHost: string;
@@ -38,13 +36,10 @@ export interface ContentModelSeederOptions {
 export default class ContentModelSeeder {
   private readonly parent: any = null;
   private readonly csClient: ContentstackClient;
-
   private readonly ghClient: GitHubClient;
-
   private readonly _options: ContentModelSeederOptions;
 
   private ghUsername: string = DEFAULT_OWNER;
-
   private ghRepo: string | undefined;
   managementToken?: string | undefined;
 
@@ -75,7 +70,6 @@ export default class ContentModelSeeder {
       api_key = stackResponse.api_key as string;
 
       const proceed = await this.shouldProceed(api_key);
-
       if (!proceed) {
         cliux.print('Exiting. Please re-run the command, if you wish to seed content.');
         return;
@@ -85,13 +79,12 @@ export default class ContentModelSeeder {
     const tmpPath = await this.downloadRelease();
 
     cliux.print(`Importing into ${this.managementToken ? 'your stack' : `'${stackResponse.name}'`}.`);
-    
 
     await importer.run({
       api_key: api_key,
       cdaHost: this.options.cdaHost,
       cmaHost: this.options.cmaHost,
-      master_locale : this.options.master_locale || ENGLISH_LOCALE,
+      master_locale: this.options.master_locale || ENGLISH_LOCALE,
       tmpPath: tmpPath,
       isAuthenticated: this.options.isAuthenticated,
       alias: this.options.alias,
@@ -99,26 +92,19 @@ export default class ContentModelSeeder {
     return { api_key };
   }
 
-  async getInput(): Promise<
-    | {
-        organizationResponse: Organization;
-        stackResponse: InquireStackResponse;
-      }
-    | any
-  > {
+  async getInput(): Promise<{
+    organizationResponse: Organization;
+    stackResponse: InquireStackResponse;
+  }> {
     if (!this.ghRepo) {
       await this.inquireGitHubRepo();
     }
 
     let repoExists = false;
     let repoResponseData: any = {};
-    try {
-      const repoCheckResult = await this.ghClient.makeGetApiCall(this.ghRepo as string);
-      repoExists = repoCheckResult.statusCode === 200;
-      repoResponseData = { status: repoCheckResult.statusCode, statusMessage: repoCheckResult.statusMessage };
-    } catch (error) {
-      throw error;
-    }
+    const repoCheckResult = await this.ghClient.makeGetApiCall(this.ghRepo as string);
+    repoExists = repoCheckResult.statusCode === 200;
+    repoResponseData = { status: repoCheckResult.statusCode, statusMessage: repoCheckResult.statusMessage };
 
     if (repoExists === false) {
       cliux.error(
@@ -127,43 +113,42 @@ export default class ContentModelSeeder {
           : `Could not find GitHub repository '${this.ghPath}'.`,
       );
       if (this.parent) this.parent.exit(1);
+    }
+
+    let organizationResponse: Organization | undefined;
+    let stackResponse: InquireStackResponse;
+
+    if (this.options.stackUid && this.options.managementToken) {
+      stackResponse = {
+        isNew: false,
+        name: 'your stack',
+        uid: this.options.stackUid,
+        api_key: this.options.stackUid,
+      };
+    } else if (this.options.stackUid) {
+      const stack = await this.csClient.getStack(this.options.stackUid);
+      stackResponse = {
+        isNew: false,
+        name: stack.name,
+        uid: stack.uid,
+        api_key: stack.api_key,
+      };
     } else {
-      let organizationResponse: Organization | undefined;
-      let stackResponse: InquireStackResponse;
-      let stack: Stack;
-      if (this.options.stackUid && this.options.managementToken) {
-        stackResponse = {
-          isNew: false,
-          name: 'your stack',
-          uid: this.options.stackUid,
-          api_key: this.options.stackUid,
-        };
-      } else if (this.options.stackUid) {
-        stack = await this.csClient.getStack(this.options.stackUid);
-        stackResponse = {
-          isNew: false,
-          name: stack.name,
-          uid: stack.uid,
-          api_key: stack.api_key,
-        };
+      if (this.options.orgUid) {
+        organizationResponse = await this.csClient.getOrganization(this.options.orgUid);
       } else {
-        if (this.options.orgUid) {
-          organizationResponse = await this.csClient.getOrganization(this.options.orgUid);
-        } else {
-          const organizations = await this.csClient.getOrganizations();
-          if (!organizations || organizations.length === 0) {
-            throw new Error(
-              'You do not have access to any organizations. Please try again or ask an Administrator for assistance.',
-            );
-          }
-          organizationResponse = await inquireOrganization(organizations);
+        const organizations = await this.csClient.getOrganizations();
+        if (!organizations || organizations.length === 0) {
+          throw new Error('You do not have access to any organizations.');
         }
-        const stacks = await this.csClient.getStacks(organizationResponse.uid);
-        stackResponse = await inquireStack(stacks, this.options.stackName);
+        organizationResponse = await inquireOrganization(organizations);
       }
 
-      return { organizationResponse, stackResponse };
+      const stacks = await this.csClient.getStacks(organizationResponse.uid);
+      stackResponse = await inquireStack(stacks, this.options.stackName);
     }
+
+    return { organizationResponse: organizationResponse!, stackResponse };
   }
 
   async createStack(organization: Organization, stackName: string) {
@@ -181,67 +166,35 @@ export default class ContentModelSeeder {
     return newStack.api_key;
   }
 
-  async shouldProceed(api_key: string) {
-    let count;
-    const stack_details = await this.csClient.getStack(api_key);
-    if(this.options.master_locale !== stack_details.master_locale && this.ghRepo === COMPASS_REPO){
-        cliux.print(`Compass app requires the master locale to be set to English (en).`,{
-          color: "yellow",
-          bold: true,
-        });
-        return false;
-    }
-    const managementBody = {
-          "name":"Checking roles for creating management token",
-          "description":"This is a compass app management token.",
-          "scope":[
-              {
-                  "module":"content_type",
-                  "acl":{
-                      "read":true,
-                      "write":true
-                  }
-              },
-              {
-                  "module":"branch",
-                  "branches":[
-                      "main"
-                  ],
-                  "acl":{
-                      "read":true
-                  }
-              }
-          ],
-          "expires_on": "3000-01-01",
-          "is_email_notification_enabled":false
-      }
-    let managementTokenResult = await this.csClient.createManagementToken(api_key, this.managementToken, managementBody);
-    if(managementTokenResult?.response_code == "161" || managementTokenResult?.response_code == "401"){
-      cliux.print(
-        `Info: Failed to generate a management token.\nNote: Management token is not available in your plan. Please contact the admin for support.`,
-        {
-          color: 'red',
-        },
-      );
+  async shouldProceed(api_key: string): Promise<boolean> {
+    if (!this.ghRepo) {
+      cliux.error('GitHub repository is not defined.');
       return false;
-    }    
-    count = await this.csClient.getContentTypeCount(api_key, this.managementToken);
+    }
 
+    // ✅ Compass check
+    if (this.ghRepo === COMPASS_REPO) {
+      const proceedCompass = await shouldProceedForCompassApp({
+        csClient: this.csClient,
+        api_key,
+        managementToken: this.managementToken,
+        masterLocale: this.options.master_locale,
+      });
+
+      if (!proceedCompass) return false;
+    }
+
+    const count = await this.csClient.getContentTypeCount(api_key, this.managementToken);
     if (count > 0 && this._options.skipStackConfirmation !== 'yes') {
       const proceed = await inquireProceed();
-
-      if (!proceed) {
-        return false;
-      }
+      if (!proceed) return false;
     }
 
     return true;
   }
 
   async downloadRelease() {
-    const tmpDir = tmp.dirSync({
-      unsafeCleanup: true,
-    });
+    const tmpDir = tmp.dirSync({ unsafeCleanup: true });
 
     cliux.print(`Creating temporary directory '${tmpDir.name}'.`);
     cliux.loader('Downloading and extracting Stack');
@@ -249,10 +202,10 @@ export default class ContentModelSeeder {
     try {
       await this.ghClient.getLatest(this.ghRepo as string, tmpDir.name);
     } catch (error) {
-      if (error instanceof GithubError) {
-        if (error.status === 404) {
-          cliux.error(`Unable to find a release for '${this.ghPath}'.`);
-        }
+      if (error instanceof GithubError && error.status === 404) {
+        cliux.error(`Unable to find a release for '${this.ghPath}'.`);
+      } else {
+        throw error;
       }
     } finally {
       cliux.loader();
