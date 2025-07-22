@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.41.2 darwin-arm64 node-v22.13.1
+@contentstack/cli/1.43.1 darwin-arm64 node-v22.13.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -2192,7 +2192,7 @@ FLAGS
   -m, --module=<value>            [optional] Specific module name. If not specified, the export command will export all
                                   the modules to the stack. The available modules are assets, content-types, entries,
                                   environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                  workflows, custom-roles, and taxonomies.
+                                  workflows, custom-roles, personalize projects, and taxonomies.
   -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
                                   of multiple content types, specify the IDs separated by spaces.
   -y, --yes                       [optional] Force override all Marketplace prompts.
@@ -2356,7 +2356,7 @@ FLAGS
                                           specified, the import command will import all the modules into the stack. The
                                           available modules are assets, content-types, entries, environments,
                                           extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                          workflows, custom-roles, and taxonomies.
+                                          workflows, custom-roles, personalize projects, and taxonomies.
   -y, --yes                               [optional] Force override all Marketplace prompts.
       --exclude-global-modules            Excludes the branch-independent module from the import operation.
       --import-webhook-status=<option>    [default: disable] [default: disable] (optional) This webhook state keeps the
@@ -2809,7 +2809,7 @@ FLAGS
   -m, --module=<value>            [optional] Specific module name. If not specified, the export command will export all
                                   the modules to the stack. The available modules are assets, content-types, entries,
                                   environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                  workflows, custom-roles, and taxonomies.
+                                  workflows, custom-roles, personalize projects, and taxonomies.
   -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
                                   of multiple content types, specify the IDs separated by spaces.
   -y, --yes                       [optional] Force override all Marketplace prompts.
@@ -2867,7 +2867,7 @@ FLAGS
                                           specified, the import command will import all the modules into the stack. The
                                           available modules are assets, content-types, entries, environments,
                                           extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                          workflows, custom-roles, and taxonomies.
+                                          workflows, custom-roles, personalize projects, and taxonomies.
   -y, --yes                               [optional] Force override all Marketplace prompts.
       --exclude-global-modules            Excludes the branch-independent module from the import operation.
       --import-webhook-status=<option>    [default: disable] [default: disable] (optional) This webhook state keeps the
@@ -3591,13 +3591,11 @@ DESCRIPTION
 EXAMPLES
   $ csdx config:set:region
 
-  $ csdx config:set:region NA
-
-  $ csdx config:set:region EU
-
   $ csdx config:set:region AWS-NA
 
   $ csdx config:set:region AWS-EU
+
+  $ csdx config:set:region AWS-AU
 
   $ csdx config:set:region AZURE-NA
 
@@ -3638,7 +3636,7 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.28/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.29/src/commands/help.ts)_
 
 ## `csdx launch`
 
@@ -3779,7 +3777,8 @@ USAGE
   $ csdx launch:functions [-p <value>] [-d <value>]
 
 FLAGS
-  -d, --data-dir=<value>  [default: /Users/tim.benniks/Websites/cli/packages/contentstack] Current working directory
+  -d, --data-dir=<value>  [default: /Users/shafeeq.pp/WORKSPACE/CLI/cli-org/cli-10/cli/packages/contentstack] Current
+                          working directory
   -p, --port=<value>      [default: 3000] Port number
 
 DESCRIPTION
@@ -3955,7 +3954,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.39/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:add PLUGIN`
 
@@ -4029,7 +4028,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.39/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN`
 
@@ -4078,7 +4077,7 @@ EXAMPLES
     $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.39/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PATH`
 
@@ -4109,7 +4108,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.39/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:remove [PLUGIN]`
 
@@ -4150,7 +4149,7 @@ FLAGS
   --reinstall  Reinstall all plugins after uninstalling.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.39/src/commands/plugins/reset.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/reset.ts)_
 
 ## `csdx plugins:uninstall [PLUGIN]`
 
@@ -4178,7 +4177,7 @@ EXAMPLES
   $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.39/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:unlink [PLUGIN]`
 
@@ -4222,7 +4221,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.39/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 

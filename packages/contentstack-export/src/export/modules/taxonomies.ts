@@ -23,6 +23,7 @@ export default class ExportTaxonomies extends BaseClass {
     this.taxonomies = {};
     this.taxonomiesConfig = exportConfig.modules.taxonomies;
     this.qs = { include_count: true, limit: this.taxonomiesConfig.limit || 100, skip: 0 };
+    this.applyQueryFilters(this.qs, 'taxonomies');
   }
 
   async start(): Promise<void> {

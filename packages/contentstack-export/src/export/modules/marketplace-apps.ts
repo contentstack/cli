@@ -26,6 +26,7 @@ export default class ExportMarketplaceApps {
   public appSdk: ContentstackMarketplaceClient;
   public exportConfig: ExportConfig;
   public command: Command;
+  public query: Record<string, any>;
 
   constructor({ exportConfig }: Omit<ModuleClassParams, 'stackAPIClient' | 'moduleName'>) {
     this.exportConfig = exportConfig;
@@ -51,6 +52,7 @@ export default class ExportMarketplaceApps {
     await fsUtil.makeDirectory(this.marketplaceAppPath);
     this.developerHubBaseUrl = this.exportConfig.developerHubBaseUrl || (await getDeveloperHubUrl(this.exportConfig));
     this.exportConfig.org_uid = await getOrgUid(this.exportConfig);
+    this.query = { target_uids: this.exportConfig.source_stack };
 
     // NOTE init marketplace app sdk
     const host = this.developerHubBaseUrl.split('://').pop();
@@ -64,6 +66,16 @@ export default class ExportMarketplaceApps {
    * library if it is available.
    */
   async exportApps(): Promise<any> {
+    // currently support only app_uids or installation_uids
+    const externalQuery = this.exportConfig.query?.modules['marketplace-apps'];
+    if (externalQuery) {
+      if (externalQuery.app_uid?.$in?.length > 0) {
+        this.query.app_uids = externalQuery.app_uid.$in.join(',');
+      }
+      if (externalQuery.installation_uid?.$in?.length > 0) {
+        this.query.installation_uids = externalQuery.installation_uid?.$in?.join(',');
+      }
+    }
     await this.getStackSpecificApps();
     await this.getAppManifestAndAppConfig();
 
@@ -186,7 +198,7 @@ export default class ExportMarketplaceApps {
     const collection = await this.appSdk
       .marketplace(this.exportConfig.org_uid)
       .installation()
-      .fetchAll({ target_uids: this.exportConfig.source_stack, skip })
+      .fetchAll({ ...this.query, skip })
       .catch((error) => {
         log(this.exportConfig, `Failed to export marketplace-apps ${formatError(error)}`, 'error');
         log(this.exportConfig, error, 'error');
