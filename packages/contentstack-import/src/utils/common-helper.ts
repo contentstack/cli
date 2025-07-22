@@ -56,6 +56,12 @@ export const sanitizeStack = (importConfig: ImportConfig) => {
   if (typeof importConfig.preserveStackVersion !== 'boolean' || !importConfig.preserveStackVersion) {
     return Promise.resolve();
   }
+  
+  if (importConfig.management_token) {
+    log(importConfig, 'Skipping stack version sanitization: Operation is not supported when using a management token.', 'info');
+    return Promise.resolve();
+  }
+  
   log(importConfig, 'Running script to maintain stack version.', 'success');
   try {
     const httpClient = HttpClient.create();
