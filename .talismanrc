@@ -56,5 +56,5 @@ fileignoreconfig:
   - filename: packages/contentstack-variants/src/import/variant-entries.ts
     checksum: 01059fd6aa42deb6f070f57f4376c35a85684312fb7ca4757df5b53bfe0144d2
   - filename: packages/contentstack/README.md
-    checksum: a98f840f28097474c0356a77961fec88b6c152a6ec921b70d4208535cc116da0
+    checksum: 8a5d382f3a6bcb3215f466a8bce8c7464d8c1591535afab96c652888b7245a71
 version: ''
