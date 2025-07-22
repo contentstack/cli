@@ -5,13 +5,13 @@ import { cliux } from '@contentstack/cli-utilities';
 
 describe('Whoami Command', () => {
   let getEmailStub: any;
-  before(function () {
+  beforeEach(function () {
     getEmailStub = sinon.stub(WhoamiCommand.prototype, 'email').get(function getterFn() {
       return '***REMOVED***';
     });
   });
 
-  after(() => {
+  afterEach(() => {
     getEmailStub.restore();
   });
 
