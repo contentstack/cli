@@ -1,5 +1,5 @@
 import { cliux } from '@contentstack/cli-utilities';
-import ContentstackClient from '../seed/contentstack/client';
+import ContentstackClient from '../contentstack/client';
 
 export const COMPASS_REPO = 'compass-starter-stack';
 export const ENGLISH_LOCALE = 'en-us';
@@ -51,7 +51,7 @@ export async function shouldProceedForCompassApp({
 
   if (masterLocale !== stackDetails.master_locale) {
     cliux.print(
-      `Compass app requires the master locale to be set to English (en-us).`,
+      `Compass app requires the master locale to be set to English (${masterLocale}).`,
       {
         color: 'yellow',
         bold: true,

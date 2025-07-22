@@ -54,7 +54,7 @@ fileignoreconfig:
   - filename: packages/contentstack-export/src/export/modules/assets.ts
     checksum: c7f19e6c4a212329d981cebce9a9a8393923dd7c85feb762ddcdca678f7a9349
   - filename: packages/contentstack-seed/src/seed/index.ts
-    checksum: db1ae8b5d8c338ad0369d441b11978dc6850d0f09f338b331e12478ebc18ff65
+    checksum: 23b30ba6c75200c21a8d4b8a1cd176b6302942e13f865fbaef36eeff995b85d1
   - filename: packages/contentstack-seed/src/seed/compassAppHelper.ts
     checksum: 59001d937245a8d1062a4a53206e1bb2d6d1a85633165e6e6749f1d5fc1bd817
   - filename: packages/contentstack/README.md

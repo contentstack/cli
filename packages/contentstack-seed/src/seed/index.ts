@@ -2,7 +2,7 @@ import * as tmp from 'tmp';
 import { cliux } from '@contentstack/cli-utilities';
 
 import * as importer from '../seed/importer';
-import ContentstackClient, { Organization, Stack } from '../seed/contentstack/client';
+import ContentstackClient, { Organization } from '../seed/contentstack/client';
 import {
   inquireOrganization,
   inquireProceed,
@@ -12,7 +12,7 @@ import {
 } from '../seed/interactive';
 import GitHubClient from './github/client';
 import GithubError from './github/error';
-import { shouldProceedForCompassApp, ENGLISH_LOCALE } from './compassAppHelper';
+import { shouldProceedForCompassApp, ENGLISH_LOCALE } from './utils/compassAppHelper';
 
 const DEFAULT_OWNER = 'contentstack';
 const DEFAULT_STACK_PATTERN = 'stack-';
@@ -102,9 +102,17 @@ export default class ContentModelSeeder {
 
     let repoExists = false;
     let repoResponseData: any = {};
-    const repoCheckResult = await this.ghClient.makeGetApiCall(this.ghRepo as string);
-    repoExists = repoCheckResult.statusCode === 200;
-    repoResponseData = { status: repoCheckResult.statusCode, statusMessage: repoCheckResult.statusMessage };
+    let repoCheckResult;
+    try {
+      repoCheckResult = await this.ghClient.makeGetApiCall(this.ghRepo as string);
+      repoExists = repoCheckResult.statusCode === 200;
+      repoResponseData = { status: repoCheckResult.statusCode, statusMessage: repoCheckResult.statusMessage };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      cliux.error(`Failed to fetch GitHub repository details: ${errorMessage}`);
+      if (this.parent) this.parent.exit(1);
+      throw error; // Re-throw the error instead of returning false
+    }
 
     if (repoExists === false) {
       cliux.error(
@@ -139,7 +147,7 @@ export default class ContentModelSeeder {
       } else {
         const organizations = await this.csClient.getOrganizations();
         if (!organizations || organizations.length === 0) {
-          throw new Error('You do not have access to any organizations.');
+          throw new Error('You do not have access to any organizations. Please try again or ask an Administrator for assistance.');
         }
         organizationResponse = await inquireOrganization(organizations);
       }
@@ -148,7 +156,10 @@ export default class ContentModelSeeder {
       stackResponse = await inquireStack(stacks, this.options.stackName);
     }
 
-    return { organizationResponse: organizationResponse!, stackResponse };
+    if (!organizationResponse) {
+      throw new Error('Organization response is undefined. Ensure an organization is selected or provided.');
+    }
+    return { organizationResponse, stackResponse };
   }
 
   async createStack(organization: Organization, stackName: string) {
