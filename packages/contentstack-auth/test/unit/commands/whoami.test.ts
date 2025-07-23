@@ -4,14 +4,14 @@ import WhoamiCommand from '../../../src/commands/auth/whoami';
 import { cliux } from '@contentstack/cli-utilities';
 
 describe('Whoami Command', () => {
-  let getEmailStub;
-  before(function () {
+  let getEmailStub: any;
+  beforeEach(function () {
     getEmailStub = sinon.stub(WhoamiCommand.prototype, 'email').get(function getterFn() {
       return '***REMOVED***';
     });
   });
 
-  after(() => {
+  afterEach(() => {
     getEmailStub.restore();
   });
 
