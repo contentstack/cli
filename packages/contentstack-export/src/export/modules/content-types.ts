@@ -14,7 +14,7 @@ export default class ContentTypesExport extends BaseClass {
     skip?: number;
     limit?: number;
     include_global_field_schema: boolean;
-    uid?: Record<string, string[]>
+    uid?: Record<string, string[]>;
   };
   private contentTypesConfig: {
     dirName?: string;
@@ -38,11 +38,14 @@ export default class ContentTypesExport extends BaseClass {
       include_global_field_schema: true,
     };
 
-     // If content type id is provided then use it as part of query
-     if (Array.isArray(this.exportConfig.contentTypes) && this.exportConfig.contentTypes.length > 0) {
+    // If content type id is provided then use it as part of query
+    if (Array.isArray(this.exportConfig.contentTypes) && this.exportConfig.contentTypes.length > 0) {
       this.qs.uid = { $in: this.exportConfig.contentTypes };
-     }
-    
+    }
+
+    // Add after existing qs setup and before contentTypesDirPath
+    this.applyQueryFilters(this.qs, 'content-types');
+
     this.contentTypesDirPath = path.resolve(
       sanitizePath(exportConfig.data),
       sanitizePath(exportConfig.branchName || ''),
@@ -99,7 +102,10 @@ export default class ContentTypesExport extends BaseClass {
   async writeContentTypes(contentTypes: Record<string, unknown>[]) {
     function write(contentType: Record<string, unknown>) {
       return fsUtil.writeFile(
-        path.join(sanitizePath(this.contentTypesDirPath), sanitizePath(`${contentType.uid === 'schema' ? 'schema|1' : contentType.uid}.json`)),
+        path.join(
+          sanitizePath(this.contentTypesDirPath),
+          sanitizePath(`${contentType.uid === 'schema' ? 'schema|1' : contentType.uid}.json`),
+        ),
         contentType,
       );
     }

@@ -133,6 +133,7 @@ export default class EntriesExport extends BaseClass {
         locale: options.locale,
       },
     };
+    this.applyQueryFilters(requestObject, 'entries');
 
     let entriesSearchResponse;
     try {
