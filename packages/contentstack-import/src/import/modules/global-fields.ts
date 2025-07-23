@@ -76,10 +76,10 @@ export default class ImportGlobalFields extends BaseClass {
     ).extension_uid;
 
     await this.seedGFs();
-    if (this.seedGFs?.length) fsUtil.writeFile(this.gFsPendingPath, this.pendingGFs);
     log(this.importConfig, 'Created Global Fields', 'success');
-
+    
     await this.updateGFs();
+    if (this.pendingGFs?.length) fsUtil.writeFile(this.gFsPendingPath, this.pendingGFs);
     log(this.importConfig, 'Updated Global Fields', 'success');
 
     if (this.importConfig.replaceExisting && this.existingGFs.length > 0) {
@@ -178,6 +178,8 @@ export default class ImportGlobalFields extends BaseClass {
       await removeReferenceFields(globalField.schema, flag, this.stack);
       if (flag.supressed) {
         this.pendingGFs.push(globalField.uid);
+        log(this.importConfig, `Global field '${globalField.uid}' will be updated later`, 'info');
+        return resolve(true);
       }
       return this.stack
       .globalField(globalField.uid, { api_version: '3.2' })
