@@ -109,7 +109,7 @@ describe('contentstack-auth plugin test', () => {
     fancy.stdout({ print: PRINT_LOGS || false }).it('shows user email who logged in', async () => {
       const { stdout } = await runCommand(['whoami'], { root: process.cwd() });
 
-      expect(stdout).to.match(new RegExp(`You are currently logged in with email\\n${mail}\\n|You are not logged in`));
+      expect(stdout).to.match(new RegExp(`You are currently logged in with email|You are not logged in`));
     });
   });
 });

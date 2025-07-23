@@ -127,8 +127,7 @@ describe('Auth Handler', () => {
       } catch (error) {
         result = error;
       }
-
-      expect(result).to.be.instanceOf(CLIError);
+      expect(result.message).to.be.equal('invalid auth token');
     });
   });
 
