@@ -1,5 +1,4 @@
-import { Command } from '@contentstack/cli-command';
-import { cliux, formatError } from '@contentstack/cli-utilities';
+import { cliux, log, handleAndLogError, messageHandler } from '@contentstack/cli-utilities';
 import { BaseCommand } from '../../base-command';
 
 export default class WhoamiCommand extends BaseCommand<typeof WhoamiCommand> {
@@ -10,19 +9,25 @@ export default class WhoamiCommand extends BaseCommand<typeof WhoamiCommand> {
   static aliases = ['whoami'];
 
   async run(): Promise<any> {
+    log.debug('WhoamiCommand run method started', this.contextDetails);
+
     try {
+      log.debug('Checking user email from context', { ...this.contextDetails, hasEmail: !!this.email });
+
       if (this.email) {
+        log.debug('User email found, displaying user information', { ...this.contextDetails, email: this.email });
         cliux.print('CLI_AUTH_WHOAMI_LOGGED_IN_AS', { color: 'white' });
         cliux.print(this.email, { color: 'green' });
-        this.logger.info('Currently logged in user', this.email);
+        log.info(messageHandler.parse('CLI_AUTH_WHOAMI_LOGGED_IN_AS', this.email), this.contextDetails);
+        log.debug('Whoami command completed successfully', this.contextDetails);
       } else {
-        cliux.error('CLI_AUTH_WHOAMI_FAILED');
+        log.debug('No user email found in context', this.contextDetails);
+        log.error(messageHandler.parse('CLI_AUTH_WHOAMI_FAILED'), this.contextDetails);
       }
     } catch (error) {
-      let errorMessage = formatError(error) || 'Something went wrong. Please try again.';
-      this.logger.error('whoami error', errorMessage);
+      log.debug('Whoami command failed', { ...this.contextDetails, error });
       cliux.print('CLI_AUTH_WHOAMI_FAILED', { color: 'yellow' });
-      cliux.print(errorMessage, { color: 'red' });
+      handleAndLogError(error, { ...this.contextDetails });
     }
   }
 }
