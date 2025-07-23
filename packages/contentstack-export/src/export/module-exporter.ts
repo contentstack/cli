@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { ContentstackClient } from '@contentstack/cli-utilities';
-import { setupBranches, setupExportDir, log, formatError, writeExportMetaFile } from '../utils';
+import { ContentstackClient, handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
+import { setupBranches, setupExportDir, writeExportMetaFile } from '../utils';
 import startModuleExport from './modules';
 import startJSModuleExport from './modules-js';
 import { ExportConfig, Modules } from '../types';
@@ -38,19 +38,29 @@ class ModuleExporter {
         this.exportConfig.branchName = branch.uid;
         this.stackAPIClient.stackHeaders.branch = branch.uid;
         this.exportConfig.branchDir = path.join(this.exportConfig.exportDir, branch.uid);
-        log(this.exportConfig, `Exporting content from branch ${branch.uid}`, 'success');
+        log.info(`Exporting content from branch ${branch.uid}`, this.exportConfig.context);
         writeExportMetaFile(this.exportConfig, this.exportConfig.branchDir);
         await this.export();
-        log(this.exportConfig, `The content of branch ${branch.uid} has been exported successfully!`, 'success');
+        log.success(
+          `The content of branch ${branch.uid} has been exported successfully!`,
+          this.exportConfig.context,
+        );
       } catch (error) {
-        log(this.exportConfig, formatError(error), 'error');
-        throw new Error(`Failed to export contents from branch ${branch.uid}`);
+        handleAndLogError(
+          error,
+          { ...this.exportConfig.context, branch: branch.uid },
+          messageHandler.parse('FAILED_EXPORT_CONTENT_BRANCH', { branch: branch.uid }),
+        );
+        throw new Error(messageHandler.parse('FAILED_EXPORT_CONTENT_BRANCH', { branch: branch.uid }));
       }
     }
   }
 
   async export() {
-    log(this.exportConfig, `Started to export content, version is ${this.exportConfig.contentVersion}`, 'info');
+    log.info(
+      `Started to export content, version is ${this.exportConfig.contentVersion}`,
+      this.exportConfig.context,
+    );
     // checks for single module or all modules
     if (this.exportConfig.singleModuleExport) {
       return this.exportSingleModule(this.exportConfig.moduleName);
@@ -59,7 +69,7 @@ class ModuleExporter {
   }
 
   async exportByModuleByName(moduleName: Modules) {
-    log(this.exportConfig, `Starting export of ${moduleName} module`, 'info');
+    log.info(`Exporting module: ${moduleName}`, this.exportConfig.context);
     // export the modules by name
     // calls the module runner which inturn calls the module itself
     let exportedModuleResponse;
