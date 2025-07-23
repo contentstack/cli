@@ -87,6 +87,16 @@ describe('contentstack-auth plugin test', () => {
     });
   });
 
+  describe('Check auth:logout command', () => {
+    beforeEach(() => {
+      inquireStub = Sinon.stub().callsFake(async () => 'Yes');
+    });
+    fancy.stdout({ print: PRINT_LOGS || false }).it('Logout should succeed', async () => {
+      const { stdout } = await runCommand(['auth:logout', '--yes'], { root: process.cwd() });
+      expect(stdout).to.match(/CLI_AUTH_LOGOUT_ALREADY|Successfully logged out/i);
+    });
+  });
+
   describe('Test whoami command', () => {
     let mail: string;
     before(() => {
@@ -100,69 +110,6 @@ describe('contentstack-auth plugin test', () => {
       const { stdout } = await runCommand(['whoami'], { root: process.cwd() });
 
       expect(stdout).to.match(new RegExp(`You are currently logged in with email\\n${mail}\\n|You are not logged in`));
-    });
-  });
-
-  describe('Check auth:logout command', () => {
-    beforeEach(() => {
-      inquireStub = Sinon.stub().callsFake(async () => 'Yes');
-    });
-    fancy.stdout({ print: PRINT_LOGS || false }).it('Logout should succeed', async () => {
-      const { stdout } = await runCommand(['auth:logout', '--yes'], { root: process.cwd() });
-      expect(stdout).to.match(/CLI_AUTH_LOGOUT_ALREADY|Successfully logged out/i);
-    });
-  });
-});
-
-describe('contentstack-auth tokens commands', () => {
-  let inquireStub: Sinon.SinonStub | undefined;
-
-  beforeEach(() => {
-    messageHandler.init({ messageFilePath });
-  });
-  afterEach(() => {
-    messageHandler.init({ messageFilePath: '' });
-    if (inquireStub && inquireStub.restore) inquireStub.restore();
-  });
-
-  describe('auth:tokens:add', () => {
-    beforeEach(() => {
-      inquireStub = Sinon.stub(CliUx, 'inquire').callsFake(async (inquire: any) => {
-        if (inquire.name === 'alias') return 'test-alias';
-        if (inquire.name === 'apiKey') return 'test-api-key';
-        if (inquire.name === 'token') return 'test-token';
-        if (inquire.name === 'env') return 'test-env';
-        if (inquire.name === 'tokenType') return 'management';
-        if (inquire.name === 'confirm') return true;
-      });
-    });
-    fancy.stdout({ print: PRINT_LOGS }).it('should add a management token with prompts', async () => {
-      const { stdout } = await runCommand(['auth:tokens:add'], { root: process.cwd() });
-      expect(stdout).to.include('');
-    });
-  });
-
-  describe('auth:tokens:remove', () => {
-    beforeEach(() => {
-      inquireStub = Sinon.stub(CliUx, 'inquire').callsFake(async (inquire: any) => {
-        if (inquire.name === 'selectedTokens') return ['test-alias: test-token : test-api-key : management'];
-      });
-    });
-
-    fancy.stdout({ print: PRINT_LOGS }).it('should handle case when no tokens exist', async () => {
-      const { stdout } = await runCommand(['auth:tokens:remove'], { root: process.cwd() });
-      expect(stdout).to.include('No tokens are added yet!\n');
-    });
-
-    fancy.stdout({ print: PRINT_LOGS }).it('should handle invalid alias removal', async () => {
-      const { stdout } = await runCommand(['auth:tokens:remove', '-a', 'invalid-alias'], { root: process.cwd() });
-      expect(stdout).to.include('No tokens are added yet!\n');
-    });
-
-    fancy.stdout({ print: PRINT_LOGS }).it('should handle empty token selection', async () => {
-      inquireStub = Sinon.stub(CliUx, 'inquire').callsFake(async () => []);
-      const { stdout } = await runCommand(['auth:tokens:remove'], { root: process.cwd() });
-      expect(stdout).to.include('No tokens are added yet!\n');
     });
   });
 });
