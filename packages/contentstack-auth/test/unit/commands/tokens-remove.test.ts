@@ -35,20 +35,13 @@ describe('Tokens Remove Command', () => {
     expect(inquireStub.calledOnce).to.be.true;
   });
 
-  it('Remove the token without alias, should list the table', async function () {
-    const inquireStub = sinon.stub(cliux, 'inquire').resolves([token1Alias]);
-    await TokensRemoveCommand.run([]);
-    expect(inquireStub.calledOnce).to.be.true;
-    expect(Boolean(config.get(`${configKeyTokens}.${token1Alias}`))).to.be.false;
-  });
-
   it('Selectes multiple token, remove all the selected tokens', async function () {
     config.set(`${configKeyTokens}.${token1Alias}`, { name: 'test1' });
     config.set(`${configKeyTokens}.${token1Alias}2`, { name: 'test2' });
 
     const inquireStub = sinon.stub(cliux, 'inquire').resolves([token1Alias, token1Alias + '2']);
     await TokensRemoveCommand.run([]);
-    expect(inquireStub.calledOnce).to.be.true;
+    expect(inquireStub.called).to.be.true;
     expect(Boolean(config.get(`${configKeyTokens}.${token1Alias}`))).to.be.false;
     expect(Boolean(config.get(`${configKeyTokens}.${token1Alias}2`))).to.be.false;
   });

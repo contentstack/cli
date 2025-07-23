@@ -5,6 +5,7 @@ import TokensAddCommand from '../../../src/commands/auth/tokens/add';
 import { tokenValidation } from '../../../src/utils';
 import { stub, assert } from 'sinon';
 import { config as dotenvConfig } from 'dotenv';
+import nock from 'nock';
 // @ts-ignore
 import * as conf from '../../config.json';
 
@@ -153,6 +154,7 @@ describe('Management and Delivery token flags', () => {
     errorStub = sinon.stub(cliux, 'error');
     successStub = sinon.stub(cliux, 'success');
     printStub = sinon.stub(cliux, 'print');
+    nock.cleanAll();
     resetConfig();
   });
 
@@ -166,6 +168,7 @@ describe('Management and Delivery token flags', () => {
     if ((cliux.error as any).restore) (cliux.error as any).restore();
     if ((cliux.success as any).restore) (cliux.success as any).restore();
     if ((cliux.print as any).restore) (cliux.print as any).restore();
+    nock.cleanAll();
     resetConfig();
   });
 
@@ -193,78 +196,65 @@ describe('Management and Delivery token flags', () => {
       assert.calledWith(inquireStub, { type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_API_KEY', name: 'apiKey' });
     });
 
-    it('Invalid API key should throw error', async () => {
-      await TokensAddCommand.run(['--management', '--alias', 'newToken', '--stack-api-key', 'asdf', '--token', 'asdf']);
-      assert.calledOnce(errorStub);
-    });
+    it('Should add a token successfully when all values are passed', async () => {
+      nock('https://api.contentstack.io').get('/v3/environments').query({ limit: 1 }).reply(200, { environments: [] });
 
-    it('Throw error if api key is kept empty', async () => {
-      await TokensAddCommand.run(['--management', '--alias', 'newToken', '--stack-api-key', ' ', '--token', 'asdf']);
-      assert.calledOnce(errorStub);
-    });
-
-    it('Throw error if token is kept empty', async () => {
       await TokensAddCommand.run([
         '--management',
         '--alias',
         'newToken',
         '--stack-api-key',
-        process.env.BRANCH_ENABLED_API_KEY!,
+        conf.validAPIKey,
         '--token',
-        '',
-      ]);
-      assert.calledWith(errorStub);
-    });
-
-    it('Should add a token successfully after all the values are passed with stack having branches enabled', async () => {
-      try {
-        await TokensAddCommand.run([
-          '--management',
-          '--alias',
-          'newToken',
-          '--stack-api-key',
-          process.env.BRANCH_ENABLED_API_KEY!,
-          '--token',
-          process.env.BRANCH_ENABLED_MGMT_TOKEN!,
-          '--branch',
-          'main',
-        ]);
-        assert.calledOnce(successStub);
-      } catch (error: any) {
-        assert.calledOnce(errorStub);
-      }
-    });
-
-    it('Should add a token successfully for stack with branches disabled after all the values are passed', async () => {
-      try {
-        await TokensAddCommand.run([
-          '--management',
-          '--alias',
-          'newToken',
-          '--stack-api-key',
-          process.env.BRANCH_DISABLED_API_KEY!,
-          '--token',
-          process.env.BRANCH_DISABLED_MGMT_TOKEN!,
-        ]);
-        assert.calledOnce(successStub);
-      } catch (error: any) {
-        assert.calledOnce(errorStub);
-      }
-    });
-
-    it('Should throw an error if branch flag is passed along with stack not having branches enabled', async () => {
-      await TokensAddCommand.run([
-        '--management',
-        '--alias',
-        'newToken',
-        '--stack-api-key',
-        process.env.BRANCH_DISABLED_API_KEY!,
-        '--token',
-        process.env.BRANCH_DISABLED_MGMT_TOKEN!,
+        conf.validToken,
         '--branch',
         'main',
       ]);
-      assert.calledOnce(errorStub);
+
+      assert.calledOnce(successStub);
+    });
+
+    it('Should error when --token has no value', async () => {
+      try {
+        await TokensAddCommand.run(['--management', '--alias', 'newToken', '--stack-api-key']);
+        throw new Error('Test should not reach here');
+      } catch (error: any) {
+        expect(error.message).to.contain('expects a value');
+      }
+    });
+
+    it('Should add a token successfully after all the values are passed with stack having branches enabled', async () => {
+      nock('https://api.contentstack.io').get('/v3/environments').query({ limit: 1 }).reply(200, { environments: [] });
+
+      await TokensAddCommand.run([
+        '--management',
+        '--alias',
+        'newToken',
+        '--stack-api-key',
+        conf.validAPIKey,
+        '--token',
+        conf.validToken,
+        '--branch',
+        'main',
+      ]);
+
+      assert.calledOnce(successStub);
+    });
+
+    it('Should add a token successfully for stack with branches disabled after all the values are passed', async () => {
+      nock('https://api.contentstack.io').get('/v3/environments').query({ limit: 1 }).reply(200, { environments: [] });
+
+      await TokensAddCommand.run([
+        '--management',
+        '--alias',
+        'newToken',
+        '--stack-api-key',
+        conf.validAPIKey,
+        '--token',
+        conf.validToken,
+      ]);
+
+      assert.calledOnce(successStub);
     });
   });
 

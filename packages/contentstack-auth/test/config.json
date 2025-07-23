@@ -4,5 +4,8 @@
   "INTEGRATION_EXECUTION_ORDER": [],
   "password": "testpassword",
   "invalidPassowrd": "invalidpassword",
-  "validAPIKey": "adasdfagsf"
+  "validAPIKey": "adasdfagsf",
+  "validToken": "adasdfagsf",
+  "invalidAPIKey": "invalidapikey",
+  "invalidToken": "invalidtoken"
 }
