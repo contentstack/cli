@@ -58,7 +58,7 @@ fileignoreconfig:
   - filename: packages/contentstack-auth/test/unit/commands/tokens-add.test.ts
     checksum: 4b8ada59d635747c7418ae8a45cd94f8590bedf67be869ba25dc2a5c19a6b37d
   - filename: packages/contentstack-auth/test/integration/auth.test.ts
-    checksum: 9b5c9728050f812ba1bf6a5d102e8a64e9b6a14a1ebd18273684baff4ddb5faf
+    checksum: 3710811bc97d78037bf8060b9414615b88d53388865c4c0930c5be3258cf8d4b
   - filename: packages/contentstack-auth/test/unit/tokens-validation.test.ts
     checksum: 5222bdeb09c0f86fc3ef35d71d5c33a9d5b50bcb8989ed8e5b887e355a99f36d
 version: ''
