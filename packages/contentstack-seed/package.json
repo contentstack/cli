@@ -21,6 +21,8 @@
     "@types/node": "^14.18.63",
     "@types/tar": "^6.1.13",
     "@types/tmp": "^0.2.6",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
     "axios": "^1.8.2",
     "eslint": "^8.57.1",
     "eslint-config-oclif": "^6.0.62",
@@ -63,10 +65,12 @@
   },
   "repository": "contentstack/cli",
   "scripts": {
-    "test": "jest",
+    "test": "npx jest",
     "pack": "npm pack --dry-run",
     "postpack": "rm -f oclif.manifest.json",
-    "posttest": "eslint . --ext .ts --config .eslintrc",
+    "posttest": "eslint src tests --ext .js,.ts --config .eslintrc",
+    "lint": "eslint src tests --ext .js,.ts --config .eslintrc",
+    "format": "eslint src tests --ext .js,.ts --config .eslintrc --fix",
     "prepack": "rm -rf lib && tsc -b && oclif manifest && oclif readme",
     "version": "oclif readme && git add README.md",
     "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
