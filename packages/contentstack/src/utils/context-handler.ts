@@ -16,6 +16,7 @@ export default class CsdxContext {
   readonly analyticsInfo: string;
   public flagWarningPrintState: any;
   public flags: any;
+  public cliVersion: string;
 
   constructor(cliOpts: any, cliConfig: any) {
     const analyticsInfo = [];
@@ -41,6 +42,7 @@ export default class CsdxContext {
       email: configHandler.get('email'),
     };
     this.config = { ...config };
+    this.cliVersion = cliConfig.version
     this.region = configHandler.get('region');
     this.info = { command: cliOpts.id };
     if (command.pluginName) {

@@ -1,8 +1,8 @@
 import * as path from 'path';
-import { writeFileSync, makeDirectory } from './file-helper';
-import { isAuthenticated, configHandler } from '@contentstack/cli-utilities';
-import { ExportConfig } from '../types';
 import { sanitizePath } from '@contentstack/cli-utilities';
+
+import { ExportConfig } from '../types';
+import { writeFileSync, makeDirectory } from './file-helper';
 
 const setupBranches = async (config: ExportConfig, stackAPIClient: any) => {
   if (typeof config !== 'object') {
