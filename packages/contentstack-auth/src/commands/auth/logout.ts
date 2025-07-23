@@ -1,4 +1,3 @@
-import { Command } from '@contentstack/cli-command';
 import {
   cliux,
   configHandler,
@@ -7,7 +6,9 @@ import {
   authHandler as oauthHandler,
   managementSDKClient,
   FlagInput,
-  formatError,
+  log,
+  handleAndLogError,
+  messageHandler,
 } from '@contentstack/cli-utilities';
 
 import { authHandler } from '../../utils';
@@ -37,41 +38,72 @@ export default class LogoutCommand extends BaseCommand<typeof LogoutCommand> {
   static aliases = ['logout'];
 
   async run(): Promise<any> {
+    log.debug('LogoutCommand run method started', this.contextDetails);
+
     const { flags: logoutFlags } = await this.parse(LogoutCommand);
+    log.debug('Token add flags parsed', {...this.contextDetails, flags: logoutFlags });
+
     let confirm = logoutFlags.force === true || logoutFlags.yes === true;
+    log.debug(`Initial confirmation status: ${confirm}`, {
+      ...this.contextDetails,
+      force: logoutFlags.force,
+      yes: logoutFlags.yes,
+    });
+
     if (!confirm) {
+      log.debug('Requesting user confirmation for logout', this.contextDetails);
       confirm = await cliux.inquire({
         type: 'confirm',
         message: 'CLI_AUTH_LOGOUT_CONFIRM',
         name: 'confirmation',
       });
+      log.debug(`User confirmation received: ${confirm}`, this.contextDetails);
     }
 
     try {
+      log.debug('Initializing management API client for logout', this.contextDetails);
       const managementAPIClient = await managementSDKClient({ host: this.cmaHost, skipTokenValidity: true });
+      log.debug('Management API client initialized successfully', this.contextDetails);
+
       authHandler.client = managementAPIClient;
-      if (confirm === true && (await oauthHandler.isAuthenticated())) {
+      log.debug('Auth handler client set for logout', this.contextDetails);
+
+      if (confirm === true && oauthHandler.isAuthenticated()) {
+        log.debug('User confirmed logout and is authenticated, proceeding with logout', this.contextDetails);
         cliux.loader('CLI_AUTH_LOGOUT_LOADER_START');
+
         if (await oauthHandler.isAuthorisationTypeBasic()) {
-          await authHandler.logout(configHandler.get('authtoken'));
+          log.debug('Using basic authentication for logout', this.contextDetails);
+          const authToken = configHandler.get('authtoken');
+          log.debug('Retrieved auth token for logout', { ...this.contextDetails, hasAuthToken: !!authToken });
+          await authHandler.logout(authToken);
+          log.debug('Basic auth logout completed', this.contextDetails);
         } else if (await oauthHandler.isAuthorisationTypeOAuth()) {
+          log.debug('Using OAuth authentication for logout', this.contextDetails);
           await oauthHandler.oauthLogout();
+          log.debug('OAuth logout completed', this.contextDetails);
         }
+
         cliux.loader('');
-        this.logger.info('successfully logged out');
-        cliux.success('CLI_AUTH_LOGOUT_SUCCESS');
+        log.success(messageHandler.parse('CLI_AUTH_LOGOUT_SUCCESS'), this.contextDetails);
+        log.debug('Logout process completed successfully', this.contextDetails);
       } else {
-        cliux.success('CLI_AUTH_LOGOUT_ALREADY');
+        log.debug('User not confirmed or not authenticated, skipping logout', {
+          ...this.contextDetails,
+          confirm,
+          isAuthenticated: oauthHandler.isAuthenticated(),
+        });
+        log.success(messageHandler.parse('CLI_AUTH_LOGOUT_ALREADY'), this.contextDetails);
       }
     } catch (error) {
-      let errorMessage = formatError(error) || 'Something went wrong while logging out. Please try again.';
-
-      this.logger.error('Logout failed', errorMessage);
+      log.debug('Logout command failed', { ...this.contextDetails, error: error.message });
       cliux.print('CLI_AUTH_LOGOUT_FAILED', { color: 'yellow' });
-      cliux.print(errorMessage, { color: 'red' });
+      handleAndLogError(error, { ...this.contextDetails });
     } finally {
       if (confirm === true) {
+        log.debug('Setting config data for logout', this.contextDetails);
         await oauthHandler.setConfigData('logout');
+        log.debug('Config data set for logout', this.contextDetails);
       }
     }
   }

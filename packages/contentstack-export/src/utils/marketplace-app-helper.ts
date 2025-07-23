@@ -1,6 +1,5 @@
-import { cliux, configHandler, NodeCrypto, managementSDKClient, createDeveloperHubUrl } from '@contentstack/cli-utilities';
+import { cliux, handleAndLogError, NodeCrypto, managementSDKClient, createDeveloperHubUrl } from '@contentstack/cli-utilities';
 
-import { formatError, log } from '../utils';
 import { ExportConfig } from '../types';
 
 export const getDeveloperHubUrl = async (exportConfig: ExportConfig) => {
@@ -13,7 +12,7 @@ export async function getOrgUid(config: ExportConfig): Promise<string> {
     .stack({ api_key: config.source_stack })
     .fetch()
     .catch((error: any) => {
-      log(config, formatError(error), 'error');
+      handleAndLogError(error, {...config.context});
     });
 
   return tempStackData?.org_uid;
