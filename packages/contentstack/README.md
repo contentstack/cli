@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.43.1 darwin-arm64 node-v22.13.1
+@contentstack/cli/1.44.0 darwin-arm64 node-v22.13.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -88,6 +88,7 @@ USAGE
 * [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
 * [`csdx config:get:ea-header`](#csdx-configgetea-header)
 * [`csdx config:get:early-access-header`](#csdx-configgetearly-access-header)
+* [`csdx config:get:log`](#csdx-configgetlog)
 * [`csdx config:get:rate-limit`](#csdx-configgetrate-limit)
 * [`csdx config:get:region`](#csdx-configgetregion)
 * [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
@@ -97,6 +98,7 @@ USAGE
 * [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
 * [`csdx config:set:ea-header`](#csdx-configsetea-header)
 * [`csdx config:set:early-access-header`](#csdx-configsetearly-access-header)
+* [`csdx config:set:log`](#csdx-configsetlog)
 * [`csdx config:set:rate-limit`](#csdx-configsetrate-limit)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMAND]`](#csdx-help-command)
@@ -2192,7 +2194,7 @@ FLAGS
   -m, --module=<value>            [optional] Specific module name. If not specified, the export command will export all
                                   the modules to the stack. The available modules are assets, content-types, entries,
                                   environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                  workflows, custom-roles, personalize projects, and taxonomies.
+                                  workflows, custom-roles, and taxonomies.
   -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
                                   of multiple content types, specify the IDs separated by spaces.
   -y, --yes                       [optional] Force override all Marketplace prompts.
@@ -2809,7 +2811,7 @@ FLAGS
   -m, --module=<value>            [optional] Specific module name. If not specified, the export command will export all
                                   the modules to the stack. The available modules are assets, content-types, entries,
                                   environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                  workflows, custom-roles, personalize projects, and taxonomies.
+                                  workflows, custom-roles, and taxonomies.
   -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
                                   of multiple content types, specify the IDs separated by spaces.
   -y, --yes                       [optional] Force override all Marketplace prompts.
@@ -3332,6 +3334,23 @@ EXAMPLES
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/early-access-header.ts)_
 
+## `csdx config:get:log`
+
+Get logging configuration for CLI
+
+```
+USAGE
+  $ csdx config:get:log
+
+DESCRIPTION
+  Get logging configuration for CLI
+
+EXAMPLES
+  $ csdx config:get:log
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/log.ts)_
+
 ## `csdx config:get:rate-limit`
 
 Get rate-limit of organizations
@@ -3533,6 +3552,30 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/early-access-header.ts)_
+
+## `csdx config:set:log`
+
+Set logging configuration for CLI
+
+```
+USAGE
+  $ csdx config:set:log [--level debug|info|warn|error] [--path <value>]
+
+FLAGS
+  --level=<option>  Set the log level for the CLI.
+                    <options: debug|info|warn|error>
+  --path=<value>    Specify the file path where logs should be saved.
+
+DESCRIPTION
+  Set logging configuration for CLI
+
+EXAMPLES
+  $ csdx config:set:log
+
+  $ csdx config:set:log --level debug --path ./logs/app.log
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/log.ts)_
 
 ## `csdx config:set:rate-limit`
 
