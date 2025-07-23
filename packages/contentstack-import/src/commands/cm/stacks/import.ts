@@ -163,6 +163,8 @@ export default class ImportCommand extends Command {
       if (!flags.branch) {
         try {
           // Use stack configuration to check for branch availability
+          // false positive - no hardcoded secret here
+        // @ts-ignore-next-line secret-detection
           const keyProp = 'api_key';
           const branches = await managementAPIClient
           .stack({ [keyProp]: importConfig.apiKey })
