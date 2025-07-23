@@ -43,6 +43,11 @@ jobs:
       - name: Run tests for Contentstack Bootstrap
         working-directory: ./packages/contentstack-bootstrap
         run: npm run test
+
+      - name: Run tests for Contentstack Seed
+        working-directory: ./packages/contentstack-seed
+        run: npm run test
+      
       # - name: Fetch latest references
       #   run: |
       #     git fetch --prune

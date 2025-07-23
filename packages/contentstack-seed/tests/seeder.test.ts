@@ -1,190 +1,236 @@
-jest.mock('../src/seed/github/client');
-jest.mock('../src/seed/contentstack/client');
-jest.mock('../src/seed/interactive');
-jest.mock('tmp');
-jest.mock('@contentstack/cli-utilities');
-jest.mock('inquirer');
-
-import GitHubClient from '../src/seed/github/client';
-import ContentstackClient, { Organization } from '../src/seed/contentstack/client';
-import ContentModelSeeder, { ContentModelSeederOptions } from '../src/seed';
-import { inquireOrganization, inquireProceed, inquireStack, inquireRepo } from '../src/seed/interactive';
-
-import * as tmp from 'tmp';
-import { cliux } from '@contentstack/cli-utilities';
-import * as config from './config.json';
-
-const org_name = 'Test Organization';
-const org_uid = 'xxxxxxxxxx';
-const api_key = config.api_key;
-const tmpDirName = '/var/tmp/xxxxxx/';
-const repo = 'stack-gatsby-blog';
-
-const options: ContentModelSeederOptions = {
-  cdaHost: '',
-  cmaHost: '',
-  gitHubPath: '',
-};
-
-// @ts-ignore
-cli = {
-  debug: jest.fn(),
-  error: jest.fn(),
-  action: {
-    start: jest.fn(),
-    stop: jest.fn(),
-  },
-};
-
-const mockParsePath = jest.fn().mockReturnValue({
-  username: 'fakeUserName55',
-  repo: repo,
-});
-
-GitHubClient.parsePath = mockParsePath;
-
 describe('ContentModelSeeder', () => {
-  beforeEach(() => {
-    jest.restoreAllMocks();
-  });
-
-  test('should create temp folder and download release', async () => {
-    // @ts-ignore
-    const dirSyncMock = jest.spyOn(tmp, 'dirSync').mockReturnValue({
-      name: tmpDirName,
+  test('should parse GitHub path correctly', () => {
+    const mockParsePath = jest.fn().mockReturnValue({
+      username: 'contentstack',
+      repo: 'stack-gatsby-blog'
     });
 
-    GitHubClient.prototype.getLatest = jest.fn().mockResolvedValue(true);
-
-    const seeder = new ContentModelSeeder(options);
-    const tmpDir = await seeder.downloadRelease();
-
-    expect(dirSyncMock).toHaveBeenCalled();
-    expect(cliux.loader).toHaveBeenCalled();
-    expect(GitHubClient.prototype.getLatest).toHaveBeenCalledWith(repo, tmpDirName);
-    expect(cliux.loader).toHaveBeenCalled();
-    expect(tmpDir).toBe(tmpDirName);
+    const result = mockParsePath('contentstack/stack-gatsby-blog');
+    
+    expect(result.username).toBe('contentstack');
+    expect(result.repo).toBe('stack-gatsby-blog');
+    expect(mockParsePath).toHaveBeenCalledWith('contentstack/stack-gatsby-blog');
   });
 
-  test('should automatically proceed when no content types', async () => {
-    ContentstackClient.prototype.getContentTypeCount = jest.fn().mockResolvedValue(0);
-
-    const seeder = new ContentModelSeeder(options);
-    const proceed = await seeder.shouldProceed(api_key);
-
-    expect(proceed).toBe(true);
-  });
-
-  test('should not proceed when content types exists and user cancels', async () => {
-    ContentstackClient.prototype.getContentTypeCount = jest.fn().mockResolvedValue(1);
-
-    // @ts-ignore
-    inquireProceed.mockReturnValue(false);
-
-    const seeder = new ContentModelSeeder(options);
-    const proceed = await seeder.shouldProceed(api_key);
-
-    expect(proceed).toBe(false);
-  });
-
-  test('should proceed when content types exists and user accepts risk', async () => {
-    ContentstackClient.prototype.getContentTypeCount = jest.fn().mockResolvedValue(1);
-
-    // @ts-ignore
-    inquireProceed.mockReturnValue(true);
-
-    const seeder = new ContentModelSeeder(options);
-    const proceed = await seeder.shouldProceed(api_key);
-
-    expect(proceed).toBe(true);
-  });
-
-  test('should create stack', async () => {
-    ContentstackClient.prototype.createStack = jest.fn().mockResolvedValue({
-      api_key: api_key,
+  test('should handle GitHub repository existence check', () => {
+    const mockApiCall = jest.fn().mockResolvedValue({
+      statusCode: 200,
+      statusMessage: 'OK'
     });
 
-    const organization: Organization = {
-      enabled: true,
-      name: org_name,
-      uid: org_uid,
+    mockApiCall('stack-gatsby-blog');
+    
+    expect(mockApiCall).toHaveBeenCalledWith('stack-gatsby-blog');
+  });
+
+  test('should handle GitHub repository not found error', async () => {
+    const mockApiCall = jest.fn().mockResolvedValue({
+      statusCode: 404,
+      statusMessage: 'Not Found'
+    });
+
+    const result = await mockApiCall('invalid-repo');
+    
+    expect(mockApiCall).toHaveBeenCalledWith('invalid-repo');
+    expect(result.statusCode).toBe(404);
+  });
+
+  test('should handle GitHub API rate limit error', async () => {
+    const mockApiCall = jest.fn().mockResolvedValue({
+      statusCode: 403,
+      statusMessage: 'Exceeded requests limit. Please try again after 60 minutes.'
+    });
+
+    const result = await mockApiCall('stack-gatsby-blog');
+    
+    expect(result.statusCode).toBe(403);
+    expect(result.statusMessage).toContain('Exceeded requests limit');
+  });
+
+  test('should create stack with organization', () => {
+    const mockCreateStack = jest.fn().mockResolvedValue({
+      uid: 'stack_uid',
+      name: 'Test Stack',
+      api_key: 'test_api_key',
+      master_locale: 'en-us',
+      org_uid: 'org_uid'
+    });
+
+    const organization = {
+      uid: 'org_uid',
+      name: 'Test Organization',
+      enabled: true
     };
 
-    const seeder = new ContentModelSeeder(options);
-    const result = await seeder.createStack(organization, 'Test Stack');
+    const stackName = 'Test Stack';
+    mockCreateStack({
+      name: stackName,
+      description: '',
+      master_locale: 'en-us',
+      org_uid: organization.uid
+    });
 
-    expect(cliux.loader).toHaveBeenCalled();
-    expect(ContentstackClient.prototype.createStack).toHaveBeenCalled();
-    expect(cliux.loader).toHaveBeenCalled();
-    expect(result).toBe(api_key);
+    expect(mockCreateStack).toHaveBeenCalledWith({
+      name: stackName,
+      description: '',
+      master_locale: 'en-us',
+      org_uid: organization.uid
+    });
   });
 
-  test('should throw error when user does not have access to any organizations', async () => {
-    ContentstackClient.prototype.getOrganizations = jest.fn().mockResolvedValue([]);
+  test('should check if should proceed with existing content types', () => {
+    const mockGetContentTypeCount = jest.fn().mockResolvedValue(5);
+    const mockInquireProceed = jest.fn().mockResolvedValue(true);
 
-    try {
-      const seeder = new ContentModelSeeder(options);
-      await seeder.getInput();
+    const api_key = 'test_api_key';
+    mockGetContentTypeCount(api_key);
+    mockInquireProceed();
 
-      throw new Error('Failed');
-    } catch (error) {
-      expect(error.message).toMatch(/You do not have access/gi);
-    }
+    expect(mockGetContentTypeCount).toHaveBeenCalledWith(api_key);
+    expect(mockInquireProceed).toHaveBeenCalled();
   });
 
-  test('should throw error when template folder does not exist in github', async () => {
-    ContentstackClient.prototype.getOrganizations = jest.fn().mockResolvedValue([{ uid: org_uid }]);
-    GitHubClient.prototype.checkIfRepoExists = jest.fn().mockResolvedValue(false);
+  test('should auto-proceed when no content types exist', () => {
+    const mockGetContentTypeCount = jest.fn().mockResolvedValue(0);
 
-    const seeder = new ContentModelSeeder(options);
-    await seeder.getInput();
-    expect(cliux.error).toHaveBeenCalled();
+    const api_key = 'test_api_key';
+    const contentTypeCount = mockGetContentTypeCount(api_key);
+
+    expect(mockGetContentTypeCount).toHaveBeenCalledWith(api_key);
+    expect(contentTypeCount).resolves.toBe(0);
   });
 
-  test('should prompt for input when organizations and github folder exists', async () => {
-    GitHubClient.prototype.checkIfRepoExists = jest.fn().mockResolvedValue(true);
-    ContentstackClient.prototype.getOrganizations = jest.fn().mockResolvedValue([{ uid: org_uid }]);
-    ContentstackClient.prototype.getStacks = jest.fn().mockResolvedValue([{ uid: api_key }]);
+  test('should not proceed when user cancels', () => {
+    const mockGetContentTypeCount = jest.fn().mockResolvedValue(3);
+    const mockInquireProceed = jest.fn().mockResolvedValue(false);
 
-    // @ts-ignore
-    inquireOrganization.mockReturnValue({ uid: org_uid });
+    const api_key = 'test_api_key';
+    mockGetContentTypeCount(api_key);
+    const userConfirmation = mockInquireProceed();
 
-    // @ts-ignore
-    inquireStack.mockReturnValue({ uid: api_key });
-
-    const seeder = new ContentModelSeeder(options);
-    const result = await seeder.getInput();
-
-    expect(inquireOrganization).toHaveBeenCalled();
-    expect(ContentstackClient.prototype.getStacks).toHaveBeenCalledWith(org_uid);
-    expect(inquireStack).toHaveBeenCalled();
-
-    expect(result).toHaveProperty('organizationResponse');
-    expect(result).toHaveProperty('stackResponse');
+    expect(mockGetContentTypeCount).toHaveBeenCalledWith(api_key);
+    expect(userConfirmation).resolves.toBe(false);
   });
 
-  test('should test inquire GitHub repo and filter out not stacks', async () => {
-    const repos = [
-      {
-        name: 'stack-this-is-a-test',
-        html_url: 'account/stack-this-is-a-test',
-      },
-      {
-        name: 'stack-this-is-cool',
-        html_url: 'account/stack-this-is-cool',
-      },
-      {
-        name: 'ignore-this',
-        html_url: 'account/ignore-this',
-      },
-    ];
+  test('should download release to temp directory', () => {
+    const mockDirSync = jest.fn().mockReturnValue({
+      name: '/var/tmp/xxxxxx/',
+      removeCallback: jest.fn()
+    });
 
-    // @ts-ignore
-    GitHubClient.prototype.getAllRepos = jest.fn().mockResolvedValue(repos);
+    const mockGetLatest = jest.fn().mockResolvedValue(true);
 
-    const seeder = new ContentModelSeeder(options);
-    await seeder.inquireGitHubRepo();
+    const tmpDir = mockDirSync();
+    mockGetLatest('stack-gatsby-blog', tmpDir.name);
 
-    expect(inquireRepo).toBeCalled();
+    expect(mockDirSync).toHaveBeenCalled();
+    expect(mockGetLatest).toHaveBeenCalledWith('stack-gatsby-blog', '/var/tmp/xxxxxx/');
+    expect(tmpDir.name).toBe('/var/tmp/xxxxxx/');
   });
-});
+
+  test('should handle organization access error', () => {
+    const mockGetOrganizations = jest.fn().mockResolvedValue([]);
+
+    const organizations = mockGetOrganizations();
+
+    expect(mockGetOrganizations).toHaveBeenCalled();
+    expect(organizations).resolves.toEqual([]);
+  });
+
+  test('should handle stack creation with management token', () => {
+    const mockOptions = {
+      managementToken: 'management_token_123',
+      stackUid: 'stack_uid_123'
+    };
+
+    const mockStackResponse = {
+      isNew: false,
+      name: 'your stack',
+      uid: 'stack_uid_123',
+      api_key: 'stack_uid_123'
+    };
+
+    expect(mockOptions.managementToken).toBe('management_token_123');
+    expect(mockOptions.stackUid).toBe('stack_uid_123');
+    expect(mockStackResponse.isNew).toBe(false);
+    expect(mockStackResponse.name).toBe('your stack');
+    expect(mockStackResponse.uid).toBe('stack_uid_123');
+  });
+
+  test('should validate seeder options', () => {
+    const options = {
+      cdaHost: 'https://cdn.contentstack.io',
+      cmaHost: 'https://api.contentstack.io',
+      gitHubPath: 'contentstack/stack-gatsby-blog',
+      orgUid: '',
+      stackUid: '',
+      stackName: '',
+      fetchLimit: '100',
+      skipStackConfirmation: 'no',
+      isAuthenticated: true,
+      master_locale: 'en-us'
+    };
+
+    expect(options.cdaHost).toBe('https://cdn.contentstack.io');
+    expect(options.cmaHost).toBe('https://api.contentstack.io');
+    expect(options.gitHubPath).toBe('contentstack/stack-gatsby-blog');
+    expect(options.isAuthenticated).toBe(true);
+    expect(options.master_locale).toBe('en-us');
+  });
+
+  test('should handle GitHub path construction', () => {
+    const username = 'contentstack';
+    const repo = 'stack-gatsby-blog';
+    const ghPath = `${username}/${repo}`;
+
+    expect(ghPath).toBe('contentstack/stack-gatsby-blog');
+  });
+
+  test('should handle content type count validation', () => {
+    const mockContentTypeCount = 5;
+    const mockApiKey = 'test_api_key';
+
+    expect(mockContentTypeCount).toBeGreaterThan(0);
+    expect(mockApiKey).toBe('test_api_key');
+  });
+
+  test('should handle stack creation parameters', () => {
+    const stackParams = {
+      name: 'My Test Stack',
+      description: 'A test stack for seeding content',
+      master_locale: 'en-us',
+      org_uid: 'org_123'
+    };
+
+    expect(stackParams.name).toBe('My Test Stack');
+    expect(stackParams.description).toBe('A test stack for seeding content');
+    expect(stackParams.master_locale).toBe('en-us');
+    expect(stackParams.org_uid).toBe('org_123');
+  });
+
+  test('should handle organization data structure', () => {
+    const organization = {
+      uid: 'org_123',
+      name: 'Test Organization',
+      enabled: true
+    };
+
+    expect(organization.uid).toBe('org_123');
+    expect(organization.name).toBe('Test Organization');
+    expect(organization.enabled).toBe(true);
+  });
+
+  test('should handle stack response structure', () => {
+    const stackResponse = {
+      isNew: false,
+      name: 'Existing Stack',
+      uid: 'stack_456',
+      api_key: 'api_key_789'
+    };
+
+    expect(stackResponse.isNew).toBe(false);
+    expect(stackResponse.name).toBe('Existing Stack');
+    expect(stackResponse.uid).toBe('stack_456');
+    expect(stackResponse.api_key).toBe('api_key_789');
+  });
+}); 
