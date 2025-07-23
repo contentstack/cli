@@ -6,6 +6,7 @@ import {
   inquireApp,
   inquireAppType,
   inquireLivePreviewSupport,
+  inquireRunDevServer,
 } from '../../bootstrap/interactive';
 import {
   printFlagDeprecation,
@@ -27,15 +28,16 @@ export default class BootstrapCommand extends Command {
   static examples = [
     '$ csdx cm:bootstrap',
     '$ csdx cm:bootstrap --project-dir <path/to/setup/the/app>',
-    '$ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app>',
-    '$ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --stack-api-key "stack-api-key"',
-    '$ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --org "your-org-uid" --stack-name "stack-name"',
+    '$ csdx cm:bootstrap --app-name "kickstart-next" --project-dir <path/to/setup/the/app>',
+    '$ csdx cm:bootstrap --app-name "kickstart-next" --project-dir <path/to/setup/the/app> --stack-api-key "stack-api-key"',
+    '$ csdx cm:bootstrap --app-name "kickstart-next" --project-dir <path/to/setup/the/app> --org "your-org-uid" --stack-name "stack-name"',
+    '$ csdx cm:bootstrap --app-name "kickstart-next" --project-dir <path/to/setup/the/app> --run-dev-server',
   ];
 
   static flags: FlagInput = {
     'app-name': flags.string({
       description:
-        'App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter, vue-starter, stencil-starter',
+        'App name, kickstart-next, kickstart-next-ssr, kickstart-next-ssg, kickstart-next-graphql, kickstart-next-middleware, kickstart-nuxt, kickstart-nuxt-ssr',
       multiple: false,
       required: false,
     }),
@@ -76,11 +78,16 @@ export default class BootstrapCommand extends Command {
       char: 'y',
       required: false,
     }),
+    'run-dev-server': flags.boolean({
+      description: 'Automatically start the development server after setup',
+      required: false,
+      default: false,
+    }),
 
     // To be deprecated
     appName: flags.string({
       char: 'a',
-      description: 'App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter',
+      description: 'App name, kickstart-next, kickstart-next-ssr, kickstart-next-ssg, kickstart-next-graphql, kickstart-next-middleware, kickstart-nuxt, kickstart-nuxt-ssr',
       multiple: false,
       required: false,
       hidden: true,
@@ -153,7 +160,6 @@ export default class BootstrapCommand extends Command {
       const yes = bootstrapCommandFlags.yes as string;
 
       const appConfig: AppConfig = getAppLevelConfigByName(selectedAppName || selectedApp.configKey);
-      
       const master_locale = appConfig.master_locale || DEFAULT_MASTER_LOCALE;
 
       let cloneDirectory =
@@ -165,6 +171,8 @@ export default class BootstrapCommand extends Command {
       cloneDirectory = resolve(cloneDirectory);
 
       const livePreviewEnabled = bootstrapCommandFlags.yes ? true : await inquireLivePreviewSupport();
+      const runDevServer = bootstrapCommandFlags['run-dev-server'] ||
+        (bootstrapCommandFlags.yes ? false : await inquireRunDevServer());
 
       const seedParams: SeedParams = {};
       const stackAPIKey = bootstrapCommandFlags['stack-api-key'];
@@ -190,6 +198,7 @@ export default class BootstrapCommand extends Command {
         region: this.region,
         appType,
         livePreviewEnabled,
+        runDevServer,
         master_locale,
       };
       const bootstrap = new Bootstrap(options);

@@ -99,6 +99,16 @@ export async function inquireLivePreviewSupport() {
   return livePreviewEnabled;
 }
 
+export async function inquireRunDevServer() {
+  const { runDevServer } = await inquirer.prompt({
+    type: 'confirm',
+    name: 'runDevServer',
+    message: messageHandler.parse('CLI_BOOTSTRAP_RUN_DEV_SERVER_ENQUIRY'),
+    default: true,
+  });
+  return runDevServer;
+}
+
 export async function continueBootstrapCommand() {
   const { shouldContinue } = await inquirer.prompt({
     type: 'list',

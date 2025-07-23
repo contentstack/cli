@@ -16,23 +16,64 @@ export interface AppConfig {
 
 const config: Configuration = {
   sampleApps: [
-    { displayName: 'React JS', configKey: 'reactjs' },
-    { displayName: 'Next JS', configKey: 'nextjs' },
-    { displayName: 'Gatsby', configKey: 'gatsby' },
-    { displayName: 'Angular', configKey: 'angular' },
+    { displayName: 'React JS (Deprecated)', configKey: 'reactjs' },
+    { displayName: 'Next JS (Deprecated)', configKey: 'nextjs' },
+    { displayName: 'Gatsby (Deprecated)', configKey: 'gatsby' },
+    { displayName: 'Angular (Deprecated)', configKey: 'angular' },
   ],
   starterApps: [
-    { displayName: 'React JS', configKey: 'reactjs-starter' },
-    { displayName: 'Next JS', configKey: 'nextjs-starter' },
-    { displayName: 'Gatsby', configKey: 'gatsby-starter' },
-    { displayName: 'Angular', configKey: 'angular-starter' },
-    { displayName: 'Nuxt JS (To be Deprecated)', configKey: 'nuxt-starter' },
-    { displayName: 'Vue JS', configKey: 'vue-starter' },
-    { displayName: 'Stencil', configKey: 'stencil-starter' },
-    { displayName: 'Nuxt3', configKey: 'nuxt3-starter' },
-    { displayName: 'Compass App', configKey: 'compass-app' }
+    { displayName: 'Compass App', configKey: 'compass-app' },
+    { displayName: 'Kickstart Next.js', configKey: 'kickstart-next' },
+    { displayName: 'Kickstart Next.js SSR', configKey: 'kickstart-next-ssr' },
+    { displayName: 'Kickstart Next.js SSG', configKey: 'kickstart-next-ssg' },
+    { displayName: 'Kickstart Next.js GraphQL', configKey: 'kickstart-next-graphql' },
+    { displayName: 'Kickstart Next.js Middleware', configKey: 'kickstart-next-middleware' },
+    { displayName: 'Kickstart NuxtJS', configKey: 'kickstart-next-nuxt' },
+    { displayName: 'Kickstart NuxtJS SSR', configKey: 'kickstart-next-nuxt-ssr' },
+
+    { displayName: 'React JS (Deprecated)', configKey: 'reactjs-starter' },
+    { displayName: 'Next JS (Deprecated)', configKey: 'nextjs-starter' },
+    { displayName: 'Gatsby (Deprecated)', configKey: 'gatsby-starter' },
+    { displayName: 'Angular (Deprecated)', configKey: 'angular-starter' },
+    { displayName: 'Nuxt JS (Deprecated)', configKey: 'nuxt-starter' },
+    { displayName: 'Vue JS (Deprecated)', configKey: 'vue-starter' },
+    { displayName: 'Stencil (Deprecated)', configKey: 'stencil-starter' },
+    { displayName: 'Nuxt3 (Deprecated)', configKey: 'nuxt3-starter' },
   ],
   appLevelConfig: {
+    'kickstart-next': {
+      source: 'contentstack/kickstart-next',
+      stack: 'contentstack/kickstart-stack-seed',
+    },
+
+    'kickstart-next-ssr': {
+      source: 'contentstack/kickstart-next-ssr',
+      stack: 'contentstack/kickstart-stack-seed',
+    },
+
+    'kickstart-next-ssg': {
+      source: 'contentstack/kickstart-next-ssg',
+      stack: 'contentstack/kickstart-stack-seed',
+    },
+
+    'kickstart-next-graphql': {
+      source: 'contentstack/kickstart-next-graphql',
+      stack: 'contentstack/kickstart-stack-seed',
+    },
+
+    'kickstart-next-middleware': {
+      source: 'contentstack/kickstart-next-middleware',
+      stack: 'contentstack/kickstart-stack-seed',
+    },
+
+    'kickstart-next-nuxt': {
+      source: 'contentstack/kickstart-next-nuxt',
+      stack: 'contentstack/kickstart-stack-seed',
+    },
+    'kickstart-next-nuxt-ssr': {
+      source: 'contentstack/kickstart-next-nuxt-ssr',
+      stack: 'contentstack/kickstart-stack-seed',
+    },
     nextjs: {
       source: 'contentstack/contentstack-nextjs-react-universal-demo',
       stack: 'contentstack/stack-contentstack-nextjs-react-universal-demo',
