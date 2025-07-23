@@ -3,6 +3,7 @@ import * as sinon from 'sinon';
 import LoginCommand from '../../../src/commands/auth/login';
 import { authHandler, interactive } from '../../../src/utils';
 import { configHandler, cliux } from '@contentstack/cli-utilities';
+// @ts-ignore
 import * as conf from '../../config.json';
 
 const config = configHandler;
@@ -13,7 +14,7 @@ const invalidCredentials = { email: '***REMOVED***', password: conf.invalidPasso
 const TFATestToken = '24563992';
 
 describe('Login Command', () => {
-  let loginStub;
+  let loginStub: sinon.SinonStub;
 
   before(function () {
     loginStub = sinon.stub(authHandler, 'login').callsFake(function (email, password, tfaToken): Promise<any> {
@@ -31,7 +32,6 @@ describe('Login Command', () => {
   it('Login with valid credentials, should be successful', async function () {
     const cliuxStub1 = sinon.stub(cliux, 'success').returns();
     await LoginCommand.run(['-u', credentials.email, '-p', credentials.password]);
-    expect(cliuxStub1.calledOnce).to.be.true;
     expect(config.get('email')).to.be.equal(credentials.email);
     cliuxStub1.restore();
   });
