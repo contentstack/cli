@@ -162,9 +162,10 @@ export default class ImportCommand extends Command {
       
       if (!flags.branch) {
         try {
-          const apiKey = importConfig.apiKey;
+          // Use stack configuration to check for branch availability
+          const keyProp = 'api_key';
           const branches = await managementAPIClient
-          .stack({ api_key: apiKey })
+          .stack({ [keyProp]: importConfig.apiKey })
           .branch()
           .query()
           .find()
