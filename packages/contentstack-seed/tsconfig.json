@@ -8,9 +8,11 @@
     "strict": true,
     "target": "es2017",
     "allowJs": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true
   },
   "include": [
-    "src/**/*",
+    "src/**/*"
   ]
 }

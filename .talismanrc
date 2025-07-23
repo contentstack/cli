@@ -1,12 +1,12 @@
 fileignoreconfig:
   - filename: pnpm-lock.yaml
-    checksum: 5b171002be4247e270dcdf69a2c67f686d937a380a293f9dc4aa003978f633a7
+    checksum: cc6ea02d7fe44aa075bbf4779527a5358722082f5cda5bfd88af5237312f787a
   - filename: packages/contentstack-import/test/integration/auth-token-modules/environments.test.js
     checksum: bc6f06b75d082aaf99e2f2f4b932b143765e2f14086967fb8973fe1b2ca6c03e
   - filename: packages/contentstack-import/test/integration/environments.test.js
     checksum: e71f033dad8944ffeafdf22d0514bda1d20c43e8fea0d62c96e774f3414beb31
   - filename: package-lock.json
-    checksum: eff784b5a6169e024b908b55076945386b0b6b5f6bb25ea5fc1b889d7d181e69
+    checksum: c4089c8f5e847fd0ba6fd21484f66b8818222d62b5cb3ec1f8d7af6fb657601e
   - filename: packages/contentstack-auth/test/unit/tokens-validation.test.ts
     checksum: 676052e30d31a771ce68302d89b050d176bbef50f3abc7e9cdd4384f0e274e10
   - filename: packages/contentstack-import/test/integration/auth-token.test.js
@@ -59,4 +59,12 @@ fileignoreconfig:
     checksum: 59001d937245a8d1062a4a53206e1bb2d6d1a85633165e6e6749f1d5fc1bd817
   - filename: packages/contentstack/README.md
     checksum: d6da4ce77d52464737a4f22034f62fb93e47ec9200f8f788f06dbcedaae123b3
+  - filename: packages/contentstack-seed/tests/contentstack.test.ts
+    checksum: b7c753682ba8e8105caf026ba4dae3b02864b621b98d47e57cd3c6d6107283e5
+  - filename: packages/contentstack-seed/tests/importer.test.ts
+    checksum: d0ec09e201303037a8d6d8226da0f19cd1da6962b58fa753f4ae39d18c28ea11
+  - filename: packages/contentstack-seed/tests/interactive.test.ts
+    checksum: 7ade4a6fa1a37089458c72e1bbe3c5b3844c3169ec1e0da9fd3a944a21dc433b
+  - filename: packages/contentstack-seed/tests/seeder.test.ts
+    checksum: 12e25a13d3ee93b362948716c5d84db37ec15cc90c3c46c6d1000309f9bf06f0
 version: ''

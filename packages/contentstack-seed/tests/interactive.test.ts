@@ -3,7 +3,6 @@ jest.mock('inquirer');
 const inquirer = require('inquirer');
 import { Organization, Stack } from '../src/seed/contentstack/client';
 import * as interactive from '../src/seed/interactive';
-import * as config from './config.json';
 
 const account = 'account';
 const repo = 'repo';
@@ -17,10 +16,10 @@ describe('interactive', () => {
   test('should return error for no GitHub repos', async () => {
     try {
       expect.assertions(1);
-      const repos = [] as any[];
+      const repos: any[] = [];
       await interactive.inquireRepo(repos);
     } catch (error) {
-      expect(error.message).toMatch(/No Repositories/);
+      expect((error as Error).message).toMatch(/No Repositories/);
     }
   });
 
@@ -48,7 +47,6 @@ describe('interactive', () => {
       },
     ];
 
-    // @ts-ignore
     jest.spyOn(inquirer, 'prompt').mockImplementation((options) => {
       return options;
     });
@@ -61,7 +59,7 @@ describe('interactive', () => {
       expect.assertions(1);
       const organizations: Organization[] = [];
       await interactive.inquireOrganization(organizations);
-    } catch (error) {
+    } catch (error: any) {
       expect(error.message).toMatch(/No Organizations/);
     }
   });
@@ -83,7 +81,6 @@ describe('interactive', () => {
       { enabled: true, name: 'Organization 3', uid: '3' },
     ];
 
-    // @ts-ignore
     jest.spyOn(inquirer, 'prompt').mockImplementation(() => {
       return { uid };
     });
@@ -96,7 +93,6 @@ describe('interactive', () => {
   test('should create new stack', async () => {
     const stacks: Stack[] = [];
 
-    // @ts-ignore
     jest.spyOn(inquirer, 'prompt').mockImplementation(() => {
       return { name: '  Stack Name  ' };
     });
@@ -110,18 +106,16 @@ describe('interactive', () => {
     const expected_uid = 'uid_2';
 
     const stacks: Stack[] = [
-      { uid: 'uid_1', name: 'Stack 1', api_key: config.api_key_1, master_locale: 'en-us', org_uid: 'org_uid_1' },
-      { uid: expected_uid, name: 'Stack 2', api_key: config.api_key_2, master_locale: 'en-us', org_uid: 'org_uid_2' },
-      { uid: 'uid_3', name: 'Stack 3', api_key: config.api_key_3, master_locale: 'en-us', org_uid: 'org_uid_3' },
+      { uid: 'uid_1', name: 'Stack 1', api_key: 'api_key_1', master_locale: 'en-us', org_uid: 'org_uid_1' },
+      { uid: expected_uid, name: 'Stack 2', api_key: 'api_key_2', master_locale: 'en-us', org_uid: 'org_uid_2' },
+      { uid: 'uid_3', name: 'Stack 3', api_key: 'api_key_3', master_locale: 'en-us', org_uid: 'org_uid_3' },
     ];
 
     // select existing stack
-    // @ts-ignore
     jest
       .spyOn(inquirer, 'prompt')
       .mockImplementationOnce(() => {
         return { choice: false };
-        // @ts-ignore
       })
       .mockImplementationOnce(() => {
         return { uid: expected_uid };
