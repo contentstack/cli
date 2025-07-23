@@ -7,8 +7,7 @@ import * as path from 'path';
 import * as _ from 'lodash';
 import config from '../config';
 import * as fileHelper from './file-helper';
-import { escapeRegExp, validateRegex } from '@contentstack/cli-utilities';
-import { log } from './log';
+import { escapeRegExp, validateRegex, log } from '@contentstack/cli-utilities';
 
 import { EntryJsonRTEFieldDataType } from '../types/entries';
 
@@ -21,6 +20,8 @@ export const lookupEntries = function (
   mappedUids: Record<string, any>,
   uidMapperPath: string,
 ) {
+  log.debug(`Starting entry lookup for entry: ${data.entry?.uid}, content type: ${data.content_type?.uid}`);
+  
   let parent: string[] = [];
   let uids: string[] = [];
   let unmapped: string[] = [];
@@ -42,6 +43,7 @@ export const lookupEntries = function (
           case 'reference': {
             if (Object.keys(element.attrs)?.length > 0 && element.attrs?.type === 'entry') {
               if (uids.indexOf(element.attrs['entry-uid']) === -1) {
+                log.debug(`Found entry reference in JSON RTE: ${element.attrs['entry-uid']}`);
                 uids.push(element.attrs['entry-uid']);
               }
             }
@@ -66,10 +68,13 @@ export const lookupEntries = function (
             if (_entry[_parent[j]]?.length && Object.keys(_entry).includes(_parent[j])) {
               _entry[_parent[j]]?.forEach((item: any, idx: any) => {
                 if (typeof item.uid === 'string' && item._content_type_uid) {
+                  log.debug(`Found structured reference: ${item.uid}`);
                   uids.push(item.uid);
                 } else if (typeof item === 'string' && preserveStackVersion === true) {
+                  log.debug(`Found string reference (preserve version): ${item}`);
                   uids.push(item);
                 } else {
+                  log.debug(`Converting reference to structured format: ${item}`);
                   uids.push(item);
                   _entry[_parent[j]][idx] = {
                     uid: item,
@@ -81,10 +86,12 @@ export const lookupEntries = function (
           } else if (Array.isArray(_entry[_parent[j]])) {
             for (const element of _entry[_parent[j]]) {
               if (element.uid?.length) {
+                log.debug(`Found asset reference: ${element.uid}`);
                 uids.push(element.uid);
               }
             }
           } else if (_entry[_parent[j]].uid?.length) {
+            log.debug(`Found single asset reference: ${_entry[_parent[j]].uid}`);
             uids.push(_entry[_parent[j]].uid);
           }
         } else {
@@ -112,6 +119,7 @@ export const lookupEntries = function (
       switch (schema[i].data_type) {
         case 'reference':
           if (Array.isArray(schema[i].reference_to)) {
+            log.debug(`Processing multi-reference field: ${schema[i].uid}`);
             isNewRefFields = true;
             schema[i]?.reference_to?.forEach((reference: any) => {
               parent.push(schema[i].uid);
@@ -119,6 +127,7 @@ export const lookupEntries = function (
               parent.pop();
             });
           } else {
+            log.debug(`Processing single reference field: ${schema[i].uid}`);
             parent.push(schema[i].uid);
             update(parent, schema[i].reference_to, _entry);
             parent.pop();
@@ -126,11 +135,13 @@ export const lookupEntries = function (
           break;
         case 'global_field':
         case 'group':
+          log.debug(`Processing ${schema[i].data_type} field: ${schema[i].uid}`);
           parent.push(schema[i].uid);
           find(schema[i].schema, _entry);
           parent.pop();
           break;
         case 'blocks':
+          log.debug(`Processing blocks field: ${schema[i].uid}`);
           for (let j = 0, _j = schema[i].blocks?.length; j < _j; j++) {
             parent.push(schema[i].uid);
             parent.push(schema[i].blocks[j].uid);
@@ -141,6 +152,7 @@ export const lookupEntries = function (
           break;
         case 'json':
           if (schema[i]?.field_metadata?.rich_text_type) {
+            log.debug(`Processing JSON RTE field: ${schema[i].uid}`);
             findEntryIdsFromJsonRte(data.entry, data.content_type.schema);
           }
           break;
@@ -149,6 +161,8 @@ export const lookupEntries = function (
   };
 
   function findEntryIdsFromJsonRte(entry: any, ctSchema: any = []) {
+    log.debug('Processing JSON RTE fields for entry references');
+    
     for (const element of ctSchema) {
       switch (element.data_type) {
         case 'blocks': {
@@ -194,16 +208,23 @@ export const lookupEntries = function (
 
   find(data.content_type.schema, data.entry);
   if (isNewRefFields) {
+    log.debug('Processing new reference field format');
     findUidsInNewRefFields(data.entry, uids);
   }
+  
   uids = _.flattenDeep(uids);
+  
   // if no references are found, return
   if (uids.length === 0) {
+    log.debug('No entry references found');
     return data.entry;
   }
 
   uids = _.uniq(uids);
+  log.debug(`Found ${uids.length} unique entry references`);
+  
   let entry = JSON.stringify(data.entry);
+  
   uids?.forEach(function (uid: any) {
     if (mappedUids.hasOwnProperty(uid)) {
       const sanitizedUid = escapeRegExp(uid);
@@ -214,7 +235,7 @@ export const lookupEntries = function (
         entry = entry.replace(uidRegex, escapedMappedUid);
         mapped.push(uid);
       } else {
-        log(`Skipping the entry uid ${uid} since the regex is not valid`, 'warn');
+        log.warn(`Skipping entry UID ${uid} due to invalid regex`);
       }
     } else {
       unmapped.push(uid);
@@ -222,6 +243,7 @@ export const lookupEntries = function (
   });
 
   if (unmapped.length > 0) {
+    log.warn(`Found ${unmapped.length} unmapped entry references`);
     let unmappedUids = fileHelper.readFileSync(path.join(uidMapperPath, 'unmapped-uids.json'));
     unmappedUids = unmappedUids || {};
     if (unmappedUids.hasOwnProperty(data.content_type.uid)) {
@@ -236,6 +258,7 @@ export const lookupEntries = function (
   }
 
   if (mapped.length > 0) {
+    log.debug(`Successfully mapped ${mapped.length} entry references`);
     let _mappedUids = fileHelper.readFileSync(path.join(uidMapperPath, 'mapped-uids.json'));
     _mappedUids = _mappedUids || {};
     if (_mappedUids.hasOwnProperty(data.content_type.uid)) {
@@ -249,6 +272,7 @@ export const lookupEntries = function (
     fileHelper.writeFile(path.join(uidMapperPath, 'mapped-uids.json'), _mappedUids);
   }
 
+  log.debug(`Entry lookup completed for entry: ${data.entry?.uid}`);
   return JSON.parse(entry);
 };
 
@@ -274,6 +298,8 @@ export const removeUidsFromJsonRteFields = (
   entry: Record<string, any>,
   ctSchema: Record<string, any>[] = [],
 ): Record<string, any> => {
+  log.debug('Removing UIDs from JSON RTE fields');
+  
   for (const element of ctSchema) {
     switch (element.data_type) {
       case 'blocks': {
@@ -305,6 +331,8 @@ export const removeUidsFromJsonRteFields = (
       }
       case 'json': {
         if (entry[element.uid] && element?.field_metadata?.rich_text_type) {
+          log.debug(`Processing JSON RTE field for UID removal: ${element.uid}`);
+          
           if (element.multiple) {
             entry[element.uid] = entry[element.uid].map((jsonRteData: any) => {
               delete jsonRteData.uid; // remove uid
@@ -335,6 +363,8 @@ export const removeUidsFromJsonRteFields = (
       }
     }
   }
+  
+  log.debug('Completed removing UIDs from JSON RTE fields');
   return entry;
 };
 
