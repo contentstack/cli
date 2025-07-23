@@ -19,7 +19,7 @@ describe('importer', () => {
 
   test('should build import arguments without alias', () => {
     const options = {
-      api_key: 'blt1234567890',
+      api_key: '1234567890',
       tmpPath: '/var/tmp',
       master_locale: 'en-us',
       cmaHost: 'https://api.contentstack.io',
@@ -30,17 +30,17 @@ describe('importer', () => {
     const importPath = '/var/tmp/stack';
     const expectedArgs = ['-k', options.api_key, '-d', importPath];
 
-    expect(expectedArgs).toEqual(['-k', 'blt1234567890', '-d', '/var/tmp/stack']);
+    expect(expectedArgs).toEqual(['-k', '1234567890', '-d', '/var/tmp/stack']);
     expect(expectedArgs).toHaveLength(4);
     expect(expectedArgs[0]).toBe('-k');
-    expect(expectedArgs[1]).toBe('blt1234567890');
+    expect(expectedArgs[1]).toBe('1234567890');
     expect(expectedArgs[2]).toBe('-d');
     expect(expectedArgs[3]).toBe('/var/tmp/stack');
   });
 
   test('should build import arguments with alias', () => {
     const options = {
-      api_key: 'blt1234567890',
+      api_key: '1234567890',
       tmpPath: '/var/tmp',
       master_locale: 'en-us',
       cmaHost: 'https://api.contentstack.io',
@@ -52,17 +52,17 @@ describe('importer', () => {
     const importPath = '/var/tmp/stack';
     const expectedArgs = ['-k', options.api_key, '-d', importPath, '--alias', options.alias];
 
-    expect(expectedArgs).toEqual(['-k', 'blt1234567890', '-d', '/var/tmp/stack', '--alias', 'my-alias']);
+    expect(expectedArgs).toEqual(['-k', '1234567890', '-d', '/var/tmp/stack', '--alias', 'my-alias']);
     expect(expectedArgs).toHaveLength(6);
     expect(expectedArgs[4]).toBe('--alias');
     expect(expectedArgs[5]).toBe('my-alias');
   });
 
   test('should add skip-audit flag to arguments', () => {
-    const baseArgs = ['-k', 'blt1234567890', '-d', '/var/tmp/stack'];
+    const baseArgs = ['-k', '1234567890', '-d', '/var/tmp/stack'];
     const finalArgs = baseArgs.concat('--skip-audit');
 
-    expect(finalArgs).toEqual(['-k', 'blt1234567890', '-d', '/var/tmp/stack', '--skip-audit']);
+    expect(finalArgs).toEqual(['-k', '1234567890', '-d', '/var/tmp/stack', '--skip-audit']);
     expect(finalArgs).toHaveLength(5);
     expect(finalArgs[4]).toBe('--skip-audit');
   });
@@ -70,7 +70,7 @@ describe('importer', () => {
   test('should handle importer options validation', () => {
     const options = {
       master_locale: 'en-us',
-      api_key: 'blt1234567890',
+      api_key: '1234567890',
       tmpPath: '/var/tmp',
       cmaHost: 'https://api.contentstack.io',
       cdaHost: 'https://cdn.contentstack.io',
@@ -79,7 +79,7 @@ describe('importer', () => {
     };
 
     expect(options.master_locale).toBe('en-us');
-    expect(options.api_key).toBe('blt1234567890');
+    expect(options.api_key).toBe('1234567890');
     expect(options.tmpPath).toBe('/var/tmp');
     expect(options.cmaHost).toBe('https://api.contentstack.io');
     expect(options.cdaHost).toBe('https://cdn.contentstack.io');
@@ -119,7 +119,7 @@ describe('importer', () => {
       run: jest.fn().mockResolvedValue(undefined)
     };
 
-    const args = ['-k', 'blt1234567890', '-d', '/var/tmp/stack', '--skip-audit'];
+    const args = ['-k', '1234567890', '-d', '/var/tmp/stack', '--skip-audit'];
     
     await mockImportCommand.run(args);
 
@@ -129,7 +129,7 @@ describe('importer', () => {
   test('should handle import with different locales', () => {
     const options = {
       master_locale: 'fr-fr',
-      api_key: 'blt1234567890',
+      api_key: '1234567890',
       tmpPath: '/var/tmp',
       cmaHost: 'https://api.contentstack.io',
       cdaHost: 'https://cdn.contentstack.io',
@@ -137,13 +137,13 @@ describe('importer', () => {
     };
 
     expect(options.master_locale).toBe('fr-fr');
-    expect(options.api_key).toBe('blt1234567890');
+    expect(options.api_key).toBe('1234567890');
   });
 
   test('should handle import with different hosts', () => {
     const options = {
       master_locale: 'en-us',
-      api_key: 'blt1234567890',
+      api_key: '1234567890',
       tmpPath: '/var/tmp',
       cmaHost: 'https://api.contentstack.io',
       cdaHost: 'https://cdn.contentstack.io',
@@ -172,14 +172,14 @@ describe('importer', () => {
   });
 
   test('should handle argument array construction', () => {
-    const apiKey = 'blt1234567890';
+    const apiKey = '1234567890';
     const importPath = '/var/tmp/stack';
     const alias = 'my-alias';
 
     const argsWithoutAlias = ['-k', apiKey, '-d', importPath];
     const argsWithAlias = ['-k', apiKey, '-d', importPath, '--alias', alias];
 
-    expect(argsWithoutAlias).toEqual(['-k', 'blt1234567890', '-d', '/var/tmp/stack']);
-    expect(argsWithAlias).toEqual(['-k', 'blt1234567890', '-d', '/var/tmp/stack', '--alias', 'my-alias']);
+    expect(argsWithoutAlias).toEqual(['-k', '1234567890', '-d', '/var/tmp/stack']);
+    expect(argsWithAlias).toEqual(['-k', '1234567890', '-d', '/var/tmp/stack', '--alias', 'my-alias']);
   });
 });
