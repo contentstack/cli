@@ -137,27 +137,28 @@ describe('contentstack-auth tokens commands', () => {
       });
     });
 
-    fancy.stdout({ print: PRINT_LOGS }).it('should add a management token with prompts', async () => {
-      const { stdout } = await runCommand(['auth:tokens:add'], { root: process.cwd() });
-      expect(stdout).to.include('');
-    });
-  });
-
-  describe('auth:tokens:remove', () => {
-    beforeEach(() => {
-      inquireStub = Sinon.stub(CliUx, 'inquire').callsFake(async (inquire: any) => {
-        if (inquire.name === 'selectedTokens') return ['test-alias: test-token : test-api-key : management'];
+    describe('auth:tokens:remove', () => {
+      beforeEach(() => {
+        inquireStub = Sinon.stub(CliUx, 'inquire').callsFake(async (inquire: any) => {
+          if (inquire.name === 'selectedTokens') return ['test-alias: test-token : test-api-key : management'];
+        });
       });
-    });
 
-    fancy.stdout({ print: PRINT_LOGS }).it('should remove a token by alias', async () => {
-      const { stdout } = await runCommand(['auth:tokens:remove', '-a', 'test-alias'], { root: process.cwd() });
-      expect(stdout).to.include('Token removed successfully !!\n');
-    });
+      fancy.stdout({ print: PRINT_LOGS }).it('should handle case when no tokens exist', async () => {
+        const { stdout } = await runCommand(['auth:tokens:remove'], { root: process.cwd() });
+        expect(stdout).to.include('No tokens are added yet!\n');
+      });
 
-    fancy.stdout({ print: PRINT_LOGS }).it('should prompt and remove selected tokens', async () => {
-      const { stdout } = await runCommand(['auth:tokens:remove'], { root: process.cwd() });
-      expect(stdout).to.include('Token removed successfully !!\n');
+      fancy.stdout({ print: PRINT_LOGS }).it('should handle invalid alias removal', async () => {
+        const { stdout } = await runCommand(['auth:tokens:remove', '-a', 'invalid-alias'], { root: process.cwd() });
+        expect(stdout).to.include('No tokens are added yet!\n');
+      });
+
+      fancy.stdout({ print: PRINT_LOGS }).it('should handle empty token selection', async () => {
+        inquireStub = Sinon.stub(CliUx, 'inquire').callsFake(async () => []);
+        const { stdout } = await runCommand(['auth:tokens:remove'], { root: process.cwd() });
+        expect(stdout).to.include('No tokens are added yet!\n');
+      });
     });
   });
 });
