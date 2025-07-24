@@ -28,15 +28,14 @@ const cwd = process.env.CS_CLI_CONFIG_PATH;
  * This prevents unnecessary initialization in plugins that import but don't use the config.
  */
 class Config {
+  // NOTE: Changed to null by default for lazy initialization
   private config: Conf | null = null;
   private static instance: Config;
 
-  private constructor() {}
+  private constructor() {
+    // NOTE: Removed immediate initialization to implement lazy loading
+  }
 
-  /**
-   * Gets the singleton instance of Config.
-   * Note: This doesn't initialize the config yet - initialization happens on first use.
-   */
   public static getInstance(): Config {
     if (!Config.instance) {
       Config.instance = new Config();
@@ -50,6 +49,7 @@ class Config {
    * when the module is imported but not used.
    */
   private initializeIfNeeded(): void {
+    // NOTE: Only initialize if not already initialized
     if (this.config) return;
     
     this.config = ENCRYPT_CONF === true ? this.getEncryptedConfig() : this.getDecryptedConfig();
@@ -72,6 +72,7 @@ class Config {
     }
   }
 
+  // Recursive function to migrate from the old config
   setOldConfigStoreData(data, _path = '') {
     for (const key in data) {
       const value = data[key];
@@ -104,7 +105,7 @@ class Config {
 
   removeOldConfigStoreFile() {
     if (existsSync(oldConfigPath)) {
-      unlinkSync(oldConfigPath);
+      unlinkSync(oldConfigPath); // NOTE: remove old configstore file
     }
   }
 
@@ -138,8 +139,8 @@ class Config {
 
     if (config?.path) {
       if (existsSync(config.path)) {
-        configData = JSON.parse(JSON.stringify(config?.store || {}));
-        unlinkSync(config.path);
+        configData = JSON.parse(JSON.stringify(config?.store || {})); // NOTE: convert prototype object to plain object
+        unlinkSync(config.path); // NOTE: remove old config file
       }
     }
 
@@ -149,15 +150,17 @@ class Config {
   private getEncryptedConfig(configData?: Record<string, unknown>, skip = false) {
     const getEncryptedDataElseFallBack = () => {
       try {
+        // NOTE: reading current code base encrypted file if exist
         const encryptionKey: any = this.getObfuscationKey();
         this.safeDeleteConfigIfInvalid(oldConfigPath);
         const conf = new Conf({ configName: CONFIG_NAME, encryptionKey, cwd });
 
         if (Object.keys(configData || {})?.length) {
-          conf.set(configData);
+          conf.set(configData); // NOTE: set config data if passed any
         }
         return conf;
       } catch (error) {
+        // NOTE: reading old code base encrypted file if exist
         try {
           const config = this.fallbackInit();
           const oldConfigData = this.getConfigDataAndUnlinkConfigFile(config);
@@ -180,6 +183,7 @@ class Config {
         return getEncryptedDataElseFallBack();
       }
     } catch (error) {
+      // NOTE: reading current code base encrypted file if exist
       return getEncryptedDataElseFallBack();
     }
   }
@@ -190,7 +194,7 @@ class Config {
       const conf = new Conf({ configName: CONFIG_NAME, cwd });
 
       if (Object.keys(configData || {})?.length) {
-        conf.set(configData);
+        conf.set(configData); // NOTE: set config data if passed any
       }
       return conf;
     } catch (error) {
@@ -199,12 +203,12 @@ class Config {
         this.safeDeleteConfigIfInvalid(oldConfigPath);
         let config = new Conf({ configName: CONFIG_NAME, encryptionKey, cwd });
         const oldConfigData = this.getConfigDataAndUnlinkConfigFile(config);
-        return this.getDecryptedConfig(oldConfigData);
+        return this.getDecryptedConfig(oldConfigData); // NOTE: reinitialize the config with old data and new decrypted file
       } catch (_error) {
         try {
           const config = this.fallbackInit();
           const _configData = this.getConfigDataAndUnlinkConfigFile(config);
-          return this.getDecryptedConfig(_configData);
+          return this.getDecryptedConfig(_configData); // NOTE: reinitialize the config with old data and new decrypted file
         } catch (__error) {
           cliux.print(chalk.red('Error: Config file is corrupted'));
           cliux.print(_error);
@@ -216,39 +220,39 @@ class Config {
 
   /**
    * Gets a value from the configuration.
-   * Initializes the config if it hasn't been initialized yet.
+   * NOTE: Now uses lazy initialization before accessing config
    */
   get(key): string | any {
-    this.initializeIfNeeded();
+    this.initializeIfNeeded(); // NOTE: Initialize config if not already initialized
     return this.config?.get(key);
   }
 
   /**
    * Sets a value in the configuration.
-   * Initializes the config if it hasn't been initialized yet.
+   * NOTE: Now uses lazy initialization before accessing config
    */
   set(key, value) {
-    this.initializeIfNeeded();
+    this.initializeIfNeeded(); // NOTE: Initialize config if not already initialized
     this.config?.set(key, value);
     return this.config;
   }
 
   /**
    * Deletes a value from the configuration.
-   * Initializes the config if it hasn't been initialized yet.
+   * NOTE: Now uses lazy initialization before accessing config
    */
   delete(key) {
-    this.initializeIfNeeded();
+    this.initializeIfNeeded(); // NOTE: Initialize config if not already initialized
     this.config?.delete(key);
     return this.config;
   }
 
   /**
    * Clears all values from the configuration.
-   * Initializes the config if it hasn't been initialized yet.
+   * NOTE: Now uses lazy initialization before accessing config
    */
   clear() {
-    this.initializeIfNeeded();
+    this.initializeIfNeeded(); // NOTE: Initialize config if not already initialized
     this.config?.clear();
   }
 }
