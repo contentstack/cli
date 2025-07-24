@@ -1,7 +1,8 @@
 import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
+import { log, handleAndLogError } from '@contentstack/cli-utilities';
 
-import { formatError, fsUtil, PersonalizationAdapter, log } from '../utils';
+import { fsUtil, PersonalizationAdapter } from '../utils';
 import { PersonalizeConfig, ExportConfig, EventStruct, EventsConfig } from '../types';
 
 export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
@@ -25,27 +26,49 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
       this.eventsConfig.dirName,
     );
     this.events = [];
+    this.exportConfig.context.module = 'events';
   }
 
   async start() {
     try {
-      log(this.exportConfig, 'Starting events export', 'info');
+      log.debug('Starting events export process...', this.exportConfig.context);
+      log.info('Starting events export', this.exportConfig.context);
+      
+      log.debug('Initializing personalization adapter...', this.exportConfig.context);
       await this.init();
+      log.debug('Personalization adapter initialized successfully', this.exportConfig.context);
+      
+      log.debug(`Creating events directory at: ${this.eventsFolderPath}`, this.exportConfig.context);
       await fsUtil.makeDirectory(this.eventsFolderPath);
+      log.debug('Events directory created successfully', this.exportConfig.context);
+      
+      log.debug('Fetching events from personalization API...', this.exportConfig.context);
       this.events = (await this.getEvents()) as EventStruct[];
+      log.debug(`Fetched ${this.events?.length || 0} events`, this.exportConfig.context);
 
       if (!this.events?.length) {
-        log(this.exportConfig, 'No Events found with the given project!', 'info');
+        log.debug('No events found, completing export', this.exportConfig.context);
+        log.info('No Events found with the given project!', this.exportConfig.context);
         return;
       } else {
+        log.debug(`Processing ${this.events.length} events`, this.exportConfig.context);
         this.sanitizeAttribs();
-        fsUtil.writeFile(pResolve(this.eventsFolderPath, this.eventsConfig.fileName), this.events);
-        log(this.exportConfig, 'All the events have been exported successfully!', 'success');
+        log.debug('Events sanitization completed', this.exportConfig.context);
+        
+        const eventsFilePath = pResolve(this.eventsFolderPath, this.eventsConfig.fileName);
+        log.debug(`Writing events to: ${eventsFilePath}`, this.exportConfig.context);
+        fsUtil.writeFile(eventsFilePath, this.events);
+        
+        log.debug('Events export completed successfully', this.exportConfig.context);
+        log.success(
+          `Events exported successfully! Total events: ${this.events.length}`,
+          this.exportConfig.context,
+        );
         return;
       }
     } catch (error) {
-      log(this.exportConfig, `Failed to export events!`, 'error');
-      log(this.config, error, 'error');
+      log.debug(`Error occurred during events export: ${error}`, this.exportConfig.context);
+      handleAndLogError(error, { ...this.exportConfig.context });
     }
   }
 
@@ -53,6 +76,11 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
    * function to remove invalid keys from event object
    */
   sanitizeAttribs() {
+    log.debug(`Sanitizing ${this.events?.length || 0} events`, this.exportConfig.context);
+    log.debug(`Invalid keys to remove: ${JSON.stringify(this.eventsConfig.invalidKeys)}`, this.exportConfig.context);
+    
     this.events = this.events?.map((event) => omit(event, this.eventsConfig.invalidKeys)) || [];
+    
+    log.debug(`Sanitization complete. Total events after sanitization: ${this.events.length}`, this.exportConfig.context);
   }
 }
