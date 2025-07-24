@@ -1,7 +1,7 @@
 import * as path from 'path';
-import { sanitizePath } from '@contentstack/cli-utilities';
+import { sanitizePath, log } from '@contentstack/cli-utilities';
 import { ExportConfig, PersonalizeConfig } from '../types';
-import { PersonalizationAdapter, log, fsUtil, formatError } from '../utils';
+import { PersonalizationAdapter, fsUtil, } from '../utils';
 
 export default class ExportProjects extends PersonalizationAdapter<ExportConfig> {
   private projectFolderPath: string;
@@ -21,26 +21,50 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
       sanitizePath(this.personalizeConfig.dirName),
       'projects',
     );
+    this.exportConfig.context.module = 'projects';
   }
 
   async start() {
     try {
-      log(this.exportConfig, 'Starting projects export', 'info');
+      log.debug('Starting projects export process...', this.exportConfig.context);
+      log.info(`Starting projects export`, this.exportConfig.context);
+      
+      log.debug('Initializing personalization adapter...', this.exportConfig.context);
       await this.init();
+      log.debug('Personalization adapter initialized successfully', this.exportConfig.context);
+      
+      log.debug(`Creating projects directory at: ${this.projectFolderPath}`, this.exportConfig.context);
       await fsUtil.makeDirectory(this.projectFolderPath);
+      log.debug('Projects directory created successfully', this.exportConfig.context);
+      
+      log.debug(`Fetching projects for stack API key: ${this.exportConfig.apiKey}`, this.exportConfig.context);
       const project = await this.projects({ connectedStackApiKey: this.exportConfig.apiKey });
+      log.debug(`Fetched ${project?.length || 0} projects`, this.exportConfig.context);
+      
       if (!project || project?.length < 1) {
-        log(this.exportConfig, 'No Personalize Project connected with the given stack', 'info');
+        log.debug('No projects found, disabling personalization', this.exportConfig.context);
+        log.info(`No Personalize Project connected with the given stack`, this.exportConfig.context);
         this.exportConfig.personalizationEnabled = false;
         return;
       }
+      
+      log.debug(`Found ${project.length} projects, enabling personalization`, this.exportConfig.context);
       this.exportConfig.personalizationEnabled = true;
       this.exportConfig.project_id = project[0]?.uid;
-      fsUtil.writeFile(path.resolve(sanitizePath(this.projectFolderPath), 'projects.json'), project);
-      log(this.exportConfig, 'Project exported successfully!', 'success');
+      log.debug(`Set project ID: ${project[0]?.uid}`, this.exportConfig.context);
+      
+      const projectsFilePath = path.resolve(sanitizePath(this.projectFolderPath), 'projects.json');
+      log.debug(`Writing projects data to: ${projectsFilePath}`, this.exportConfig.context);
+      fsUtil.writeFile(projectsFilePath, project);
+      
+      log.debug('Projects export completed successfully', this.exportConfig.context);
+      log.success(`Projects exported successfully!`, this.exportConfig.context);
     } catch (error) {
       if (error !== 'Forbidden') {
-        log(this.exportConfig, `Failed to export projects!`, 'error');
+        log.debug(`Error occurred during projects export: ${error}`, this.exportConfig.context);
+        log.error('Failed to export projects!', this.exportConfig.context);
+      } else {
+        log.debug('Projects export forbidden, likely due to permissions', this.exportConfig.context);
       }
       throw error;
     }

@@ -2,10 +2,11 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { interactive } from '../../src/utils';
 import { cliux } from '@contentstack/cli-utilities';
+//@ts-ignore
 import * as config from '../config.json'
 
 describe('Interactive', () => {
-  let inquireStub;
+  let inquireStub: sinon.SinonStub;
   beforeEach(function () {
     inquireStub = sinon.stub(cliux, 'inquire');
   });

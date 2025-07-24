@@ -47,7 +47,7 @@ $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-import/1.25.1 darwin-arm64 node-v22.14.0
+@contentstack/cli-cm-import/1.26.0 darwin-arm64 node-v18.20.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -89,7 +89,7 @@ FLAGS
                                           specified, the import command will import all the modules into the stack. The
                                           available modules are assets, content-types, entries, environments,
                                           extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                          workflows, custom-roles, and taxonomies.
+                                          workflows, custom-roles, personalize projects, and taxonomies.
   -y, --yes                               [optional] Force override all Marketplace prompts.
       --exclude-global-modules            Excludes the branch-independent module from the import operation.
       --import-webhook-status=<option>    [default: disable] [default: disable] (optional) This webhook state keeps the
@@ -155,7 +155,7 @@ FLAGS
                                           specified, the import command will import all the modules into the stack. The
                                           available modules are assets, content-types, entries, environments,
                                           extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                          workflows, custom-roles, and taxonomies.
+                                          workflows, custom-roles, personalize projects, and taxonomies.
   -y, --yes                               [optional] Force override all Marketplace prompts.
       --exclude-global-modules            Excludes the branch-independent module from the import operation.
       --import-webhook-status=<option>    [default: disable] [default: disable] (optional) This webhook state keeps the

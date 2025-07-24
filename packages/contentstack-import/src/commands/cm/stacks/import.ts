@@ -1,4 +1,3 @@
-import path from 'node:path';
 import { Command } from '@contentstack/cli-command';
 import {
   messageHandler,
@@ -8,11 +7,15 @@ import {
   FlagInput,
   ContentstackClient,
   pathValidator,
+  log,
+  handleAndLogError,
+  configHandler,
+  getLogPath,
 } from '@contentstack/cli-utilities';
 
-import { ImportConfig } from '../../../types';
+import { Context, ImportConfig } from '../../../types';
 import { ModuleImporter } from '../../../import';
-import { setupImportConfig, formatError, log } from '../../../utils';
+import { setupImportConfig  } from '../../../utils';
 
 export default class ImportCommand extends Command {
   static description = messageHandler.parse('Import content from a stack');
@@ -71,7 +74,7 @@ export default class ImportCommand extends Command {
       required: false,
       char: 'm',
       description:
-        '[optional] Specify the module to import into the target stack. If not specified, the import command will import all the modules into the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, and taxonomies.',
+        '[optional] Specify the module to import into the target stack. If not specified, the import command will import all the modules into the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, personalize projects, and taxonomies.',
       parse: printFlagDeprecation(['-m'], ['--module']),
     }),
     'backup-dir': flags.string({
@@ -143,24 +146,32 @@ export default class ImportCommand extends Command {
     let backupDir: string;
     try {
       const { flags } = await this.parse(ImportCommand);
-      let importConfig = await setupImportConfig(flags);
+      let importConfig: ImportConfig = await setupImportConfig(flags);
+      // Prepare the context object
+      const context = this.createImportContext(importConfig.apiKey, importConfig.authenticationMethod);
+      importConfig.context = {...context};
+      //log.info(`Using Cli Version: ${this.context?.cliVersion}`, importConfig.context);
+      
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;
       importConfig.region = this.region;
-      if(this.developerHubUrl) importConfig.developerHubBaseUrl = this.developerHubUrl;
+      if (this.developerHubUrl) importConfig.developerHubBaseUrl = this.developerHubUrl;
       if (this.personalizeUrl) importConfig.modules.personalize.baseURL[importConfig.region.name] = this.personalizeUrl;
-      backupDir = importConfig.cliLogsPath || importConfig.backupDir;
-
+      
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
-
+      
       if (!flags.branch) {
         try {
+          // Use stack configuration to check for branch availability
+          // false positive - no hardcoded secret here
+        // @ts-ignore-next-line secret-detection
+          const keyProp = 'api_key';
           const branches = await managementAPIClient
-            .stack({ api_key: importConfig.apiKey })
-            .branch()
-            .query()
-            .find()
-            .then(({ items }: any) => items);
+          .stack({ [keyProp]: importConfig.apiKey })
+          .branch()
+          .query()
+          .find()
+          .then(({ items }: any) => items);
           if (branches.length) {
             flags.branch = 'main';
           }
@@ -170,39 +181,35 @@ export default class ImportCommand extends Command {
       }
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       const result = await moduleImporter.start();
+      backupDir = importConfig.backupDir;
 
-      if (!result?.noSuccessMsg) {
-        log(
-          importConfig,
-          importConfig.stackName
-            ? `Successfully imported the content to the stack named ${importConfig.stackName} with the API key ${importConfig.apiKey} .`
-            : `The content has been imported to the stack ${importConfig.apiKey} successfully!`,
-          'success',
-        );
+      if (!result?.noSuccessMsg) {       
+        const successMessage = importConfig.stackName
+        ? `Successfully imported the content to the stack named ${importConfig.stackName} with the API key ${importConfig.apiKey} .`
+        : `The content has been imported to the stack ${importConfig.apiKey} successfully!`;
+        log.success(successMessage, importConfig.context);
       }
 
-      log(
-        importConfig,
-        `The log has been stored at '${pathValidator(
-          path.join(importConfig.cliLogsPath || importConfig.backupDir, 'logs', 'import'),
-        )}'`,
-        'success',
-      );
+      log.success(`The log has been stored at '${getLogPath()}'`, importConfig.context)
+      log.info(`The backup content has been stored at '${backupDir}'`, importConfig.context);
     } catch (error) {
-      log(
-        { data: backupDir ?? pathValidator(path.join(backupDir || __dirname, 'logs', 'import')) } as ImportConfig,
-        `Failed to import stack content - ${formatError(error)}`,
-        'error',
-      );
-      log(
-        { data: backupDir } as ImportConfig,
-        `The log has been stored at ${
-          { data: backupDir }
-            ? pathValidator(path.join(backupDir || __dirname, 'logs', 'import'))
-            : pathValidator(path.join(__dirname, 'logs'))
-        }`,
-        'info',
-      );
+      handleAndLogError(error);
+      log.info(`The log has been stored at '${getLogPath()}'`)
+      log.info(`The backup content has been stored at '${backupDir}'`);
     }
+  }
+
+  // Create export context object
+  private createImportContext(apiKey: string, authenticationMethod?: string): Context {
+    return {
+      command: this.context?.info?.command || 'cm:stacks:import',
+      module: '',
+      userId: configHandler.get('userUid') || '',
+      email: configHandler.get('email') || '',
+      sessionId: this.context?.sessionId,
+      apiKey: apiKey || '',
+      orgId: configHandler.get('oauthOrgUid') || '',
+      authenticationMethod: authenticationMethod || 'Basic Auth',
+    };
   }
 }

@@ -15,5 +15,9 @@
   "CLI_CONFIG_BRANCH_LIST_NO_BRANCHES": "No branches are added. Use config:set:base-branch command to add base branch.",
   "CLI_CONFIG_INQUIRE_EARLY_ACCESS_HEADER_VALUE": "Please enter Early Access header value",
   "CLI_CONFIG_INQUIRE_EARLY_ACCESS_HEADER_ALIAS": "Please enter Early Access header alias",
-  "CLI_BRANCH_REQUIRED_FIELD": "Please enter the required field details"
+  "CLI_BRANCH_REQUIRED_FIELD": "Please enter the required field details",
+  "CLI_CONFIG_LOG_NO_CONFIG": "No config found, please set by running command $ csdx config:set:log",
+  "CLI_CONFIG_LOG_SET_SUCCESS": "Log config set successfully",
+  "CLI_CONFIG_LOG_LEVEL_SET": "Log level: '%s'",
+  "CLI_CONFIG_LOG_PATH_SET": "Log path: '%s'"
 }

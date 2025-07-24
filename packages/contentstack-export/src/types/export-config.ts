@@ -1,7 +1,8 @@
-import { Modules, Region } from '.';
+import { Context, Modules, Region } from '.';
 import DefaultConfig from './default-config';
 
 export default interface ExportConfig extends DefaultConfig {
+  context: Context;
   cliLogsPath: string;
   exportDir: string;
   data: string;
@@ -18,6 +19,7 @@ export default interface ExportConfig extends DefaultConfig {
   singleModuleExport?: boolean;
   moduleName?: Modules;
   master_locale: masterLocale;
+  query?: any; // Added query field
   headers?: {
     api_key: string;
     access_token?: string;
@@ -30,6 +32,9 @@ export default interface ExportConfig extends DefaultConfig {
   source_stack?: string;
   sourceStackName?: string;
   region: Region;
+  skipStackSettings?: boolean;
+  skipDependencies?: boolean;
+  authenticationMethod?: string;
 }
 
 type branch = {

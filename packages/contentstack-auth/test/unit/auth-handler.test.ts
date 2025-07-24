@@ -3,6 +3,7 @@ import * as sinon from 'sinon';
 import { authHandler, interactive } from '../../src/utils';
 import { CLIError, cliux } from '@contentstack/cli-utilities';
 import { User } from '../../src/interfaces';
+// @ts-ignore
 import * as config from '../config.json';
 
 const user: User = { email: '***REMOVED***', authtoken: 'testtoken' };
@@ -14,8 +15,8 @@ const TFATestToken = '24563992';
 const InvalidTFATestToken = '24563965';
 
 describe('Auth Handler', () => {
-  let askOTPChannelStub;
-  let askOTPStub;
+  let askOTPChannelStub: any;
+  let askOTPStub: any;
   before(function () {
     // runs once before the first test in this block
     const loginStub = sinon.stub().callsFake(function (param) {
@@ -126,8 +127,7 @@ describe('Auth Handler', () => {
       } catch (error) {
         result = error;
       }
-
-      expect(result).to.be.instanceOf(CLIError);
+      expect(result.message).to.be.equal('invalid auth token');
     });
   });
 
