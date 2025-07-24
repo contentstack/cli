@@ -32,15 +32,9 @@ class Config {
   }
 
   public static getInstance(): Config {
-    // Ignore if running in development or build
-    if (process.env.NODE_ENV === 'development') {
-      return null;
-    }
-
     if (!configInstance) {
-      configInstance = new Config();;
+      configInstance = new Config();
     }
-
     return configInstance;
   }
 
