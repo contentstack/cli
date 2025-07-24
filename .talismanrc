@@ -1,12 +1,12 @@
 fileignoreconfig:
   - filename: pnpm-lock.yaml
-    checksum: f207dfb0198bc78f647a0a9456142fba670d49dc1b456bcf73de5e79ca0ec5d5
+    checksum: 6447e8e8342717ecec1500db29f16b7b1d64dfe2c5c788b405983b190f2b5c7e
   - filename: packages/contentstack-import/test/integration/auth-token-modules/environments.test.js
     checksum: bc6f06b75d082aaf99e2f2f4b932b143765e2f14086967fb8973fe1b2ca6c03e
   - filename: packages/contentstack-import/test/integration/environments.test.js
     checksum: e71f033dad8944ffeafdf22d0514bda1d20c43e8fea0d62c96e774f3414beb31
   - filename: package-lock.json
-    checksum: 3659711120fd91234dab455bd0fce6bb94c2c98a0342b45336586e5470e782e8
+    checksum: 7260d9647ed789f09e454d63f9bdd0393e6dfd93f69d4dd2a1505c1c2a60b194
   - filename: packages/contentstack-auth/test/unit/tokens-validation.test.ts
     checksum: 676052e30d31a771ce68302d89b050d176bbef50f3abc7e9cdd4384f0e274e10
   - filename: packages/contentstack-import/test/integration/auth-token.test.js
@@ -53,4 +53,18 @@ fileignoreconfig:
     checksum: db5b7aedcd89d783760eb988a2369243c34edc9c12e93a41b2b08fb0da02afdc
   - filename: packages/contentstack-export/src/export/modules/assets.ts
     checksum: c7f19e6c4a212329d981cebce9a9a8393923dd7c85feb762ddcdca678f7a9349
+  - filename: packages/contentstack-variants/src/import/variant-entries.ts
+    checksum: 01059fd6aa42deb6f070f57f4376c35a85684312fb7ca4757df5b53bfe0144d2
+  - filename: packages/contentstack/README.md
+    checksum: d6da4ce77d52464737a4f22034f62fb93e47ec9200f8f788f06dbcedaae123b3
+  - filename: packages/contentstack-auth/test/unit/commands/tokens-add.test.ts
+    checksum: 32ff22c5f9b1e38c575220f1310e4e963d7309b696ef9ba96f04b96ae6254fba
+  - filename: packages/contentstack-auth/test/integration/auth.test.ts
+    checksum: fea36038171d22b5651d3405b490a10c887f343ab367c814f198d5ec6f9a5dfc
+  - filename: packages/contentstack-auth/test/unit/tokens-validation.test.ts
+    checksum: 1fbf278675767ed828f5c83f32d088284410f2d687365bfa759728e3b9b7fa8b
+  - filename: packages/contentstack-auth/test/config.json
+    checksum: 5976c57dd158d77cfaa47e9830c26900e80ce63a4a42c6cce3536092bd5fcdf1
+  - filename: packages/contentstack-utilities/src/config-handler.ts
+    checksum: 313960e3ae1f36dcc4636d906fa964d96e2423301e44b9b783f8f7fcf62820d8
 version: ''

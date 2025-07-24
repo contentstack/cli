@@ -24,6 +24,12 @@ export default class ImportStack extends BaseClass { // classname
       throw new Error('Please run the environments migration first.');
     }
 
+    if (this.importConfig.management_token) {
+      log(this.importConfig, 'Skipping stack settings import: Operation is not supported when using a management token.', 'info');
+      log(this.importConfig, 'Successfully imported stack', 'success');
+      return;
+    }
+
     if (fileHelper.fileExistsSync(this.stackSettingsPath)) {
       this.stackSettings = fsUtil.readFile(this.stackSettingsPath, true) as Record<string, any>;
     } else {
