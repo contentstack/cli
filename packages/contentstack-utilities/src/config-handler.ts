@@ -223,4 +223,24 @@ class Config {
   }
 }
 
-export default new Config();
+let configInstance: Config | null = null;
+
+function createConfigInstance(): Config {
+  return new Config();
+}
+
+// Lazy proxy object that behaves like a Config
+const lazyConfig = new Proxy({} as Config, {
+  get(_, prop: keyof Config) {
+    if (!configInstance) {
+      configInstance = createConfigInstance();
+    }
+    const targetProp = configInstance[prop];
+    if (typeof targetProp === 'function') {
+      return targetProp.bind(configInstance);
+    }
+    return targetProp;
+  },
+});
+
+export default lazyConfig;
