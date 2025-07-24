@@ -229,18 +229,30 @@ function createConfigInstance(): Config {
   return new Config();
 }
 
-// Lazy proxy object that behaves like a Config
-const lazyConfig = new Proxy({} as Config, {
-  get(_, prop: keyof Config) {
-    if (!configInstance) {
-      configInstance = createConfigInstance();
-    }
-    const targetProp = configInstance[prop];
-    if (typeof targetProp === 'function') {
-      return targetProp.bind(configInstance);
-    }
-    return targetProp;
+function getConfigInstance(): Config {
+  if (!configInstance) {
+    configInstance = createConfigInstance();
+  }
+  return configInstance;
+}
+
+// Sinon based lazy config object
+const lazyConfig = {
+  get(key: string) {
+    return getConfigInstance().get(key);
   },
-});
+  
+  set(key: string, value: any) {
+    return getConfigInstance().set(key, value);
+  },
+  
+  delete(key: string) {
+    return getConfigInstance().delete(key);
+  },
+  
+  clear() {
+    return getConfigInstance().clear();
+  }
+};
 
 export default lazyConfig;
