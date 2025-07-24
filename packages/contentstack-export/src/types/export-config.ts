@@ -1,7 +1,8 @@
-import { Modules, Region } from '.';
+import { Context, Modules, Region } from '.';
 import DefaultConfig from './default-config';
 
 export default interface ExportConfig extends DefaultConfig {
+  context: Context;
   cliLogsPath: string;
   exportDir: string;
   data: string;
@@ -33,6 +34,7 @@ export default interface ExportConfig extends DefaultConfig {
   region: Region;
   skipStackSettings?: boolean;
   skipDependencies?: boolean;
+  authenticationMethod?: string;
 }
 
 type branch = {
