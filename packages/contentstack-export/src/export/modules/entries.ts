@@ -59,19 +59,18 @@ export default class EntriesExport extends BaseClass {
     try {
       log.debug('Starting entries export process...', this.exportConfig.context);
       const locales = fsUtil.readFile(this.localesFilePath) as Array<Record<string, unknown>>;
-      if (locales?.length === 0) {
+      if (!Array.isArray(locales) || locales?.length === 0) {
         log.debug(`No locales found in ${this.localesFilePath}`, this.exportConfig.context);
       } else {
         log.debug(`Loaded ${locales?.length} locales from ${this.localesFilePath}`, this.exportConfig.context);
       }
 
       const contentTypes = fsUtil.readFile(this.schemaFilePath) as Array<Record<string, unknown>>;
-      log.debug(`Loaded ${contentTypes?.length} content types from ${this.schemaFilePath}`, this.exportConfig.context);
-
       if (contentTypes?.length === 0) {
         log.info(messageHandler.parse('CONTENT_TYPE_NO_TYPES'), this.exportConfig.context);
         return;
       }
+      log.debug(`Loaded ${contentTypes?.length} content types from ${this.schemaFilePath}`, this.exportConfig.context);
 
       // NOTE Check if variant is enabled in specific stack
       if (this.exportConfig.personalizationEnabled) {
@@ -120,10 +119,17 @@ export default class EntriesExport extends BaseClass {
     locales: Array<Record<string, unknown>>,
     contentTypes: Array<Record<string, unknown>>,
   ): Array<Record<string, any>> {
-    log.debug(
-      `Creating request objects for ${contentTypes.length} content types and ${locales.length} locales`,
-      this.exportConfig.context,
-    );
+    if (!Array.isArray(locales) || locales?.length === 0) {
+      log.debug('No locales found, using master locale only', this.exportConfig.context);
+    } else {
+      log.debug(`Found ${locales.length} locales for export`, this.exportConfig.context);
+    }
+    if (!Array.isArray(contentTypes) || contentTypes.length === 0) {
+      log.debug('No content types found, skipping entries export', this.exportConfig.context);
+      return [];
+    } else {
+      log.debug(`Found ${contentTypes.length} content types for export`, this.exportConfig.context);
+    }
 
     let requestObjects: Array<Record<string, any>> = [];
     contentTypes.forEach((contentType) => {
