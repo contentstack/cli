@@ -94,7 +94,13 @@ export const formatError = function (error: any) {
   }
 
   if (parsedError && typeof parsedError === 'object' && Object.keys(parsedError).length === 0) {
-    if (!parsedError.message && !parsedError.code && !parsedError.status && !parsedError.errorMessage && !parsedError.error_message) {
+    if (
+      !parsedError.message &&
+      !parsedError.code &&
+      !parsedError.status &&
+      !parsedError.errorMessage &&
+      !parsedError.error_message
+    ) {
       return `An unknown error occurred. ${error}`;
     }
   }
@@ -102,22 +108,21 @@ export const formatError = function (error: any) {
   if (parsedError?.response?.data?.errorMessage) {
     return parsedError.response.data.errorMessage;
   }
-  
+
   if (parsedError?.errorMessage) {
     return parsedError.errorMessage;
   }
 
-  // ENHANCED: Handle authentication/login errors
   const status = parsedError?.status || parsedError?.response?.status;
   const errorCode = parsedError?.errorCode || parsedError?.response?.data?.errorCode;
   if (status === 422 && errorCode === 104) {
     return 'Invalid email or password. Please check your credentials and try again.';
   }
-  
+
   if (status === 401) {
     return 'Authentication failed. Please check your credentials.';
   }
-  
+
   if (status === 403) {
     return 'Access denied. Please check your permissions.';
   }
