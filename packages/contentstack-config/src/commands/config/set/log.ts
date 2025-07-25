@@ -23,7 +23,7 @@ export default class LogSetCommand extends Command {
 
   static examples = [
     'csdx config:set:log',
-    'csdx config:set:log --level debug --path ./logs/app.log show-console-logs',
+    'csdx config:set:log --level debug --path ./logs/app.log --show-console-logs',
     'csdx config:set:log --no-show-console-logs',
   ];
 
