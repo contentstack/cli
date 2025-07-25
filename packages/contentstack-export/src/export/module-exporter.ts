@@ -103,8 +103,6 @@ class ModuleExporter {
       exportModules.push('stack');
     }
 
-    exportModules.push(moduleName);
-
     if (!this.exportConfig.skipDependencies) {
       const {
         modules: { [moduleName]: { dependencies = [] } = {} },
@@ -114,6 +112,8 @@ class ModuleExporter {
         exportModules = exportModules.concat(dependencies);
       }
     }
+
+    exportModules.push(moduleName);
 
     for (const moduleName of exportModules) {
       await this.exportByModuleByName(moduleName);
