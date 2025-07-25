@@ -127,7 +127,6 @@ class Config {
   private getEncryptedConfig(configData?: Record<string, unknown>, skip = false) {
     const getEncryptedDataElseFallBack = () => {
       try {
-        
         // NOTE reading current code base encrypted file if exist
         const encryptionKey: any = this.getObfuscationKey();
         this.safeDeleteConfigIfInvalid(oldConfigPath);
@@ -229,18 +228,36 @@ function createConfigInstance(): Config {
   return new Config();
 }
 
-// Lazy proxy object that behaves like a Config
-const lazyConfig = new Proxy({} as Config, {
-  get(_, prop: keyof Config) {
-    if (!configInstance) {
-      configInstance = createConfigInstance();
-    }
-    const targetProp = configInstance[prop];
-    if (typeof targetProp === 'function') {
-      return targetProp.bind(configInstance);
-    }
-    return targetProp;
+function getConfigInstance(): Config {
+  if (!configInstance) {
+    configInstance = createConfigInstance();
+  }
+  return configInstance;
+}
+
+// Sinon based lazy config object
+const lazyConfig = {
+  // false positive - no hardcoded secret here
+  // @ts-ignore-next-line secret-detection
+  get(key: string) {
+    return getConfigInstance().get(key);
   },
-});
+
+  // false positive - no hardcoded secret here
+  // @ts-ignore-next-line secret-detection
+  set(key: string, value: any) {
+    return getConfigInstance().set(key, value);
+  },
+
+  // false positive - no hardcoded secret here
+  // @ts-ignore-next-line secret-detection
+  delete(key: string) {
+    return getConfigInstance().delete(key);
+  },
+
+  clear() {
+    return getConfigInstance().clear();
+  },
+};
 
 export default lazyConfig;
