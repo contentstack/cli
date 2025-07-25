@@ -59,15 +59,16 @@ export default class EntriesExport extends BaseClass {
     try {
       log.debug('Starting entries export process...', this.exportConfig.context);
       const locales = fsUtil.readFile(this.localesFilePath) as Array<Record<string, unknown>>;
-      if (!locales || locales.length === 0) {
+      if (locales?.length === 0) {
         log.debug(`No locales found in ${this.localesFilePath}`, this.exportConfig.context);
+      } else {
+        log.debug(`Loaded ${locales?.length} locales from ${this.localesFilePath}`, this.exportConfig.context);
       }
-      log.debug(`Loaded ${locales?.length} locales from ${this.localesFilePath}`, this.exportConfig.context);
 
       const contentTypes = fsUtil.readFile(this.schemaFilePath) as Array<Record<string, unknown>>;
       log.debug(`Loaded ${contentTypes?.length} content types from ${this.schemaFilePath}`, this.exportConfig.context);
 
-      if (!contentTypes || contentTypes?.length === 0) {
+      if (contentTypes?.length === 0) {
         log.info(messageHandler.parse('CONTENT_TYPE_NO_TYPES'), this.exportConfig.context);
         return;
       }
@@ -178,9 +179,10 @@ export default class EntriesExport extends BaseClass {
         contentType: options.contentType,
         locale: options.locale,
       });
+      throw error;
     }
 
-    if (Array.isArray(entriesSearchResponse.items) && entriesSearchResponse.items.length > 0) {
+    if (Array.isArray(entriesSearchResponse?.items) && entriesSearchResponse?.items?.length > 0) {
       if (options.skip === 0) {
         const entryBasePath = path.join(
           sanitizePath(this.entriesDirPath),
