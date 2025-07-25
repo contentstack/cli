@@ -65,10 +65,10 @@ export default class EntriesExport extends BaseClass {
     try {
       log.debug('Starting entries export process...', this.exportConfig.context);
       const locales = fsUtil.readFile(this.localesFilePath) as Array<Record<string, unknown>>;
-      log.debug(`Loaded ${locales.length} locales from ${this.localesFilePath}`, this.exportConfig.context);
+      log.debug(`Loaded ${locales?.length} locales from ${this.localesFilePath}`, this.exportConfig.context);
       
       const contentTypes = fsUtil.readFile(this.schemaFilePath) as Array<Record<string, unknown>>;
-      log.debug(`Loaded ${contentTypes.length} content types from ${this.schemaFilePath}`, this.exportConfig.context);
+      log.debug(`Loaded ${contentTypes?.length} content types from ${this.schemaFilePath}`, this.exportConfig.context);
       
       if (contentTypes.length === 0) {
         log.info(messageHandler.parse('CONTENT_TYPE_NO_TYPES'), this.exportConfig.context);

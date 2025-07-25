@@ -2,6 +2,7 @@ import { AxiosError } from 'axios';
 import { ClassifiedError, ErrorContext } from '../interfaces';
 import { formatError } from '../helpers';
 import { ERROR_TYPES } from '../constants/errorTypes';
+import { redactObject } from '../helpers';
 
 /**
  * Handles errors in a CLI application by classifying, normalizing, and extracting
@@ -38,7 +39,7 @@ import { ERROR_TYPES } from '../constants/errorTypes';
  *
  * @public
  */
-export default class CLIErrorHandler {
+class CLIErrorHandler {
   constructor() {}
 
   /**
@@ -84,19 +85,42 @@ export default class CLIErrorHandler {
    * Extracts a clear, concise error message from various error types.
    */
   private extractClearMessage(error: Error & Record<string, any>): string {
-    const { message, code, status } = error;
-
-    // For API errors, include status code for clarity
-    if (status && status >= 400) {
-      return `${message} (HTTP ${status})`;
+    if (error?.response?.data?.errorMessage) {
+      return error.response.data.errorMessage;
     }
 
-    // For network errors, include error code
-    if (code && ['ECONNREFUSED', 'ENOTFOUND', 'ETIMEDOUT', 'ENETUNREACH'].includes(code)) {
-      return `${message} (${code})`;
+    if (error?.errorMessage) {
+      return error.errorMessage;
     }
 
-    return message || 'Unknown error occurred';
+    // Handle specific authentication/login error cases
+    const status = error?.status || error?.response?.status;
+    const errorCode = error?.errorCode || error?.response?.data?.errorCode;
+    if (status === 422 && errorCode === 104) {
+      return 'Invalid email or password. Please check your credentials and try again.';
+    }
+
+    if (status === 401) {
+      return 'Authentication failed. Please check your credentials.';
+    }
+
+    if (status === 403) {
+      return 'Access denied. Please check your permissions.';
+    }
+
+    // Use existing formatError function for other cases
+    try {
+      const formattedMessage = formatError(error);
+
+      if (typeof formattedMessage === 'string') {
+        // Remove HTTP status info if it's too technical
+        return formattedMessage.replace(/\s*\(HTTP \d+\)$/, '');
+      }
+
+      return formattedMessage || 'An error occurred. Please try again.';
+    } catch {
+      return 'An error occurred. Please try again.';
+    }
   }
 
   /**
@@ -168,37 +192,45 @@ export default class CLIErrorHandler {
 
     const payload: Record<string, any> = {
       name,
-      message: formatError(error),
+      message: this.extractClearMessage(error),
     };
 
     // Add error identifiers
     if (code) payload.code = code;
     if (status || response?.status) payload.status = status || response?.status;
 
-    // Add request context (only essential info)
+    // Add request context with sensitive data redaction
     if (request || config) {
-      const method = request?.method || config?.method;
-      const url = request?.url || config?.url;
-
-      payload.request = {
-        method,
-        url,
+      const requestData = {
+        method: request?.method || config?.method,
+        url: request?.url || config?.url,
         headers: request?.headers || config?.headers,
         data: request?.data || config?.data,
         timeout: config?.timeout,
         baseURL: config?.baseURL,
         params: config?.params,
       };
+
+      // Use existing redactObject to mask sensitive data
+      payload.request = redactObject(requestData);
     }
 
-    // Add response context (only essential info)
+    // Add response context with sensitive data redaction
     if (response) {
-      payload.response = {
+      const responseData = {
         status,
         statusText,
-        headers: error.response?.headers,
-        data: error.response?.data,
+        headers: response.headers,
+        data: response.data,
       };
+
+      // Use existing redactObject to mask sensitive data
+      payload.response = redactObject(responseData);
+    }
+
+    // Extract user-friendly error message for API errors
+    if (response?.data?.errorMessage) {
+      payload.userFriendlyMessage = response.data.errorMessage;
     }
 
     // Add stack trace only for non-API errors to avoid clutter
@@ -207,7 +239,7 @@ export default class CLIErrorHandler {
         this.determineErrorType(error) as typeof ERROR_TYPES.API_ERROR | typeof ERROR_TYPES.SERVER_ERROR,
       )
     ) {
-      payload.stack = error.stack?.split('\n').slice(0, 5).join('\n'); // Limit stack trace
+      payload.stack = error.stack?.split('\n').slice(0, 5).join('\n');
     }
 
     return payload;
@@ -254,9 +286,13 @@ export default class CLIErrorHandler {
         'api-key',
         'authorization',
         'sessionid',
-        'email',
         'authtoken',
         'x-api-key',
+        'tfa_token',
+        'otp',
+        'security_code',
+        'bearer',
+        'cookie',
       ];
 
       return sensitiveTerms.some((term) => content.includes(term));
