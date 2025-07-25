@@ -20,6 +20,5 @@
   "CLI_CONFIG_LOG_SET_SUCCESS": "Log config set successfully",
   "CLI_CONFIG_LOG_LEVEL_SET": "Log level: '%s'",
   "CLI_CONFIG_LOG_PATH_SET": "Log path: '%s'",
-  "CLI_CONFIG_LOG_CONSOLE_SET": "Log console: '%s'",
-  "CLI_CONFIG_LOG_PROGRESS_SET": "Log progress: '%s'"
+  "CLI_CONFIG_LOG_CONSOLE_SET": "Log console: '%s'"
 }
