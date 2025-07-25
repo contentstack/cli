@@ -48,7 +48,7 @@ export default class ExportCustomRoles extends BaseClass {
     await this.getLocales();
     await this.getCustomRolesLocales();
     
-    log.debug(`Custom roles export completed. Total custom roles: ${Object.keys(this.customRoles).length}`, this.exportConfig.context);
+    log.debug(`Custom roles export completed. Total custom roles: ${Object.keys(this.customRoles)?.length}`, this.exportConfig.context);
   }
 
   async getCustomRoles(): Promise<void> {
@@ -75,8 +75,8 @@ export default class ExportCustomRoles extends BaseClass {
     }
 
     customRoles.forEach((role: any) => {
-      log.debug(`Processing custom role: ${role.name} (${role.uid})`, this.exportConfig.context);
-      log.info(messageHandler.parse('ROLES_EXPORTING_ROLE', role.name), this.exportConfig.context);
+      log.debug(`Processing custom role: ${role?.name} (${role?.uid})`, this.exportConfig.context);
+      log.info(messageHandler.parse('ROLES_EXPORTING_ROLE', role?.name), this.exportConfig.context);
       this.customRoles[role.uid] = role;
     });
     
@@ -93,7 +93,7 @@ export default class ExportCustomRoles extends BaseClass {
       .query({})
       .find()
       .then((data: any) => {
-        log.debug(`Fetched ${data.items?.length || 0} locales`, this.exportConfig.context);
+        log.debug(`Fetched ${data?.items?.length || 0} locales`, this.exportConfig.context);
         return data;
       })
       .catch((err: any) => {
@@ -102,11 +102,11 @@ export default class ExportCustomRoles extends BaseClass {
       });
     
     for (const locale of locales.items) {
-      log.debug(`Mapping locale: ${locale.name} (${locale.uid})`, this.exportConfig.context);
+      log.debug(`Mapping locale: ${locale?.name} (${locale?.uid})`, this.exportConfig.context);
       this.sourceLocalesMap[locale.uid] = locale;
     }
     
-    log.debug(`Mapped ${Object.keys(this.sourceLocalesMap).length} locales`, this.exportConfig.context);
+    log.debug(`Mapped ${Object.keys(this.sourceLocalesMap)?.length} locales`, this.exportConfig.context);
   }
 
   async getCustomRolesLocales() {
@@ -114,11 +114,11 @@ export default class ExportCustomRoles extends BaseClass {
     
     for (const role of values(this.customRoles)) {
       const customRole = role as Record<string, any>;
-      log.debug(`Processing locales for custom role: ${customRole.name}`, this.exportConfig.context);
+      log.debug(`Processing locales for custom role: ${customRole?.name}`, this.exportConfig.context);
       
       const rulesLocales = find(customRole.rules, (rule: any) => rule.module === 'locale');
       if (rulesLocales?.locales?.length) {
-        log.debug(`Found ${rulesLocales.locales.length} locales for role: ${customRole.name}`, this.exportConfig.context);
+        log.debug(`Found ${rulesLocales.locales.length} locales for role: ${customRole?.name}`, this.exportConfig.context);
         forEach(rulesLocales.locales, (locale: any) => {
           log.debug(`Adding locale ${locale} to custom roles mapping`, this.exportConfig.context);
           this.localesMap[locale] = 1;
@@ -127,7 +127,7 @@ export default class ExportCustomRoles extends BaseClass {
     }
 
     if (keys(this.localesMap)?.length) {
-      log.debug(`Processing ${keys(this.localesMap).length} custom role locales`, this.exportConfig.context);
+      log.debug(`Processing ${keys(this.localesMap)?.length} custom role locales`, this.exportConfig.context);
       
       for (const locale in this.localesMap) {
         if (this.sourceLocalesMap[locale] !== undefined) {
