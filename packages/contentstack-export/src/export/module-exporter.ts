@@ -41,10 +41,7 @@ class ModuleExporter {
         log.info(`Exporting content from branch ${branch.uid}`, this.exportConfig.context);
         writeExportMetaFile(this.exportConfig, this.exportConfig.branchDir);
         await this.export();
-        log.success(
-          `The content of branch ${branch.uid} has been exported successfully!`,
-          this.exportConfig.context,
-        );
+        log.success(`The content of branch ${branch.uid} has been exported successfully!`, this.exportConfig.context);
       } catch (error) {
         handleAndLogError(
           error,
@@ -57,10 +54,7 @@ class ModuleExporter {
   }
 
   async export() {
-    log.info(
-      `Started to export content, version is ${this.exportConfig.contentVersion}`,
-      this.exportConfig.context,
-    );
+    log.info(`Started to export content, version is ${this.exportConfig.contentVersion}`, this.exportConfig.context);
     // checks for single module or all modules
     if (this.exportConfig.singleModuleExport) {
       return this.exportSingleModule(this.exportConfig.moduleName);
@@ -103,8 +97,6 @@ class ModuleExporter {
       exportModules.push('stack');
     }
 
-    exportModules.push(moduleName);
-
     if (!this.exportConfig.skipDependencies) {
       const {
         modules: { [moduleName]: { dependencies = [] } = {} },
@@ -114,6 +106,8 @@ class ModuleExporter {
         exportModules = exportModules.concat(dependencies);
       }
     }
+
+    exportModules.push(moduleName);
 
     for (const moduleName of exportModules) {
       await this.exportByModuleByName(moduleName);
