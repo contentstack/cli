@@ -39,7 +39,7 @@ import { redactObject } from '../helpers';
  *
  * @public
  */
-class CLIErrorHandler {
+export default class CLIErrorHandler {
   constructor() {}
 
   /**
@@ -93,29 +93,9 @@ class CLIErrorHandler {
       return error.errorMessage;
     }
 
-    // Handle specific authentication/login error cases
-    const status = error?.status || error?.response?.status;
-    const errorCode = error?.errorCode || error?.response?.data?.errorCode;
-    if (status === 422 && errorCode === 104) {
-      return 'Invalid email or password. Please check your credentials and try again.';
-    }
-
-    if (status === 401) {
-      return 'Authentication failed. Please check your credentials.';
-    }
-
-    if (status === 403) {
-      return 'Access denied. Please check your permissions.';
-    }
-
     // Use existing formatError function for other cases
     try {
       const formattedMessage = formatError(error);
-
-      if (typeof formattedMessage === 'string') {
-        // Remove HTTP status info if it's too technical
-        return formattedMessage.replace(/\s*\(HTTP \d+\)$/, '');
-      }
 
       return formattedMessage || 'An error occurred. Please try again.';
     } catch {
