@@ -57,7 +57,6 @@ class AuthenticationHandler {
 
     if (isGOCD) {
       const gocdDelay = process.env.GOCD_DELAY_MS ? parseInt(process.env.GOCD_DELAY_MS, 10) : 5000;
-      console.log(`Using ${gocdDelay}ms delay for GOCD pipeline`);
       await new Promise((resolve) => setTimeout(resolve, gocdDelay));
     }
     if (error.response && error.response.status) {
