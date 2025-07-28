@@ -5,8 +5,8 @@ import chunk from 'lodash/chunk';
 import isEmpty from 'lodash/isEmpty';
 import entries from 'lodash/entries';
 import isEqual from 'lodash/isEqual';
+import { log } from '@contentstack/cli-utilities';
 
-import { log } from '../../utils';
 import { ExportConfig, ModuleClassParams } from '../../types';
 
 export type ApiOptions = {
@@ -134,7 +134,10 @@ export default abstract class BaseClass {
   async logMsgAndWaitIfRequired(module: string, start: number, batchNo: number): Promise<void> {
     const end = Date.now();
     const exeTime = end - start;
-    log(this.exportConfig, `Batch No. ${batchNo} of ${module} is complete.`, 'success');
+    log.success(
+      `Batch No. ${batchNo} of ${module} is complete. Time taken: ${exeTime} milliseconds`,
+      this.exportConfig.context,
+    );
 
     if (this.exportConfig.modules.assets.displayExecutionTime) {
       console.log(
@@ -186,5 +189,19 @@ export default abstract class BaseClass {
       default:
         return Promise.resolve();
     }
+  }
+
+  protected applyQueryFilters(requestObject: any, moduleName: string): any {
+    if (this.exportConfig.query?.modules?.[moduleName]) {
+      const moduleQuery = this.exportConfig.query.modules[moduleName];
+      // Merge the query parameters with existing requestObject
+      if (moduleQuery) {
+        if (!requestObject.query) {
+          requestObject.query = moduleQuery;
+        }
+        Object.assign(requestObject.query, moduleQuery);
+      }
+    }
+    return requestObject;
   }
 }
