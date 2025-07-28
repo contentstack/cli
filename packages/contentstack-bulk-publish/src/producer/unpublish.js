@@ -15,6 +15,7 @@ const { Command } = require('@contentstack/cli-command');
 const command = new Command();
 const { isEmpty } = require('../util');
 const { fetchBulkPublishLimit } = require('../util/common-utility');
+const { createSmartRateLimiter } = require('../util/smart-rate-limiter');
 const VARIANTS_UNPUBLISH_API_VERSION = '3.2';
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -22,6 +23,9 @@ let bulkUnPublishSet = [];
 let bulkUnPulishAssetSet = [];
 let logFileName;
 let filePath;
+let smartRateLimiter;
+let pendingEntryItems = [];
+let pendingAssetItems = [];
 
 function setConfig(conf, bup) {
   if (bup) {
@@ -54,11 +58,14 @@ function getQueryParams(filter) {
 
 function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion, bulkPublishLimit, variantsFlag = false) {
   return new Promise(async (resolve) => {
+    // Get smart rate limiter instance (singleton per organization)
+    smartRateLimiter = createSmartRateLimiter(stack?.org_uid);
+
     for (let index = 0; index < items.length; index++) {
       changedFlag = true;
 
       if (bulkUnpublish) {
-        if (bulkUnPublishSet.length < bulkPublishLimit && items[index].type === 'entry_published') {
+        if (items[index].type === 'entry_published') {
           const entryData = {
             uid: items[index].data.uid,
             content_type: items[index].content_type_uid,
@@ -68,92 +75,128 @@ function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion
         
           if (variantsFlag && Array.isArray(items[index].data.variants) && items[index].data.variants.length > 0) {
             const entryWithVariants = { ...entryData, variants: items[index].data.variants };
-            bulkUnPublishSet.push(entryWithVariants);
+            pendingEntryItems.push(entryWithVariants);
           } else {
-            bulkUnPublishSet.push(entryData);
+            pendingEntryItems.push(entryData);
           }
         }
 
-        if (bulkUnPulishAssetSet.length < bulkPublishLimit && items[index].type === 'asset_published') {
-          bulkUnPulishAssetSet.push({
+        if (items[index].type === 'asset_published') {
+          pendingAssetItems.push({
             uid: items[index].data.uid,
             version: items[index].data._version,
             publish_details: [items[index].data.publish_details] || [],
           });
         }
-
-        if (bulkUnPulishAssetSet.length === bulkPublishLimit) {
-          await queue.Enqueue({
-            assets: bulkUnPulishAssetSet,
-            Type: 'asset',
-            locale: locale,
-            environments: [environment],
-            stack: stack,
-            apiVersion,
-          });
-          bulkUnPulishAssetSet = [];
-        }
-
-        if (bulkUnPublishSet.length === bulkPublishLimit) {
-          await queue.Enqueue({
-            entries: bulkUnPublishSet,
-            locale: locale,
-            Type: 'entry',
-            environments: [environment],
-            stack: stack,
-            apiVersion,
-          });
-          bulkUnPublishSet = [];
-        }
-        if (index === items.length - 1 && bulkUnPulishAssetSet.length <= bulkPublishLimit && bulkUnPulishAssetSet.length > 0) {
-          await queue.Enqueue({
-            assets: bulkUnPulishAssetSet,
-            Type: 'asset',
-            locale: locale,
-            environments: [environment],
-            stack: stack,
-            apiVersion,
-          });
-          bulkUnPulishAssetSet = [];
-        }
-
-        if (index === items.length - 1 && bulkUnPublishSet.length <= bulkPublishLimit && bulkUnPublishSet.length > 0) {
-          await queue.Enqueue({
-            entries: bulkUnPublishSet,
-            locale: locale,
-            Type: 'entry',
-            environments: [environment],
-            stack: stack,
-            apiVersion,
-          });
-          bulkUnPublishSet = [];
-        }
       } else {
         if (items[index].type === 'entry_published') {
-          await entryQueue.Enqueue({  
+          await entryQueue.Enqueue({
             content_type: items[index].content_type_uid,
-            publish_details: [items[index].data.publish_details],
-            environments: [environment],
             entryUid: items[index].data.uid,
             locale: items[index].data.locale || 'en-us',
-            Type: 'entry',
+            environments: [environment],
             stack: stack,
-            apiVersion,
           });
-        }
-        if (items[index].type === 'asset_published') {
+        } else if (items[index].type === 'asset_published') {
           await assetQueue.Enqueue({
             assetUid: items[index].data.uid,
-            publish_details: [items[index].data.publish_details],
             environments: [environment],
-            Type: 'entry',
             stack: stack,
           });
         }
       }
     }
-    return resolve();
+    
+    // Process pending items with smart rate limiting
+    if (bulkUnpublish) {
+      await processPendingUnpublishItems(stack, environment, locale, apiVersion);
+    }
+    
+    resolve();
   });
+}
+
+/**
+ * Process pending unpublish items with smart rate limiting
+ */
+async function processPendingUnpublishItems(stack, environment, locale, apiVersion) {
+  // Process assets first
+  while (pendingAssetItems.length > 0) {
+    const optimalBatchSize = smartRateLimiter.getOptimalBatchSize(pendingAssetItems.length);
+    
+    if (optimalBatchSize === 0) {
+      // Rate limit exhausted, wait and retry
+      smartRateLimiter.logStatus();
+      await delay(1000);
+      continue;
+    }
+    
+    // Take the optimal batch size
+    const batch = pendingAssetItems.splice(0, optimalBatchSize);
+    
+    try {
+      await queue.Enqueue({
+        assets: batch,
+        Type: 'asset',
+        locale: locale,
+        environments: [environment],
+        stack: stack,
+        apiVersion,
+      });
+      
+      smartRateLimiter.logStatus();
+      
+    } catch (error) {
+      if (error.errorCode === 429) {
+        // Rate limit error, put items back and wait
+        pendingAssetItems.unshift(...batch);
+        smartRateLimiter.logStatus();
+        await delay(1000);
+      } else {
+        // Other error, log and continue
+        console.log(`Error processing asset batch: ${error.message}`);
+      }
+    }
+  }
+  
+  // Process entries
+  while (pendingEntryItems.length > 0) {
+    const optimalBatchSize = smartRateLimiter.getOptimalBatchSize(pendingEntryItems.length);
+    
+    if (optimalBatchSize === 0) {
+      // Rate limit exhausted, wait and retry
+      smartRateLimiter.logStatus();
+      await delay(1000);
+      continue;
+    }
+    
+    // Take the optimal batch size
+    const batch = pendingEntryItems.splice(0, optimalBatchSize);
+    
+    try {
+      await queue.Enqueue({
+        entries: batch,
+        locale: locale,
+        Type: 'entry',
+        environments: [environment],
+        stack: stack,
+        apiVersion,
+      });
+      
+      smartRateLimiter.logStatus();
+      
+    } catch (error) {
+      if (error.errorCode === 429) {
+        // Rate limit error, put items back and wait
+        pendingEntryItems.unshift(...batch);
+        smartRateLimiter.logStatus();
+        await delay(1000);
+      } else {
+        // Other error, log and continue
+        console.log(`Error processing entry batch: ${error.message}`);
+      }
+    }
+  }
 }
 
 async function getSyncEntries(
@@ -217,6 +260,12 @@ async function getSyncEntries(
       }
 
       const entriesResponse = await Stack.sync(syncData);
+      
+      // Update rate limit from server response if available
+      if (smartRateLimiter) {
+        smartRateLimiter.updateRateLimit(entriesResponse);
+      }
+      
       if (entriesResponse.items.length > 0) {
         if (variantsFlag) {
           queryParamsObj.apiVersion = VARIANTS_UNPUBLISH_API_VERSION;
@@ -277,6 +326,11 @@ async function getVariantEntries(stack, contentType, entries, queryParams, skip 
       .variants()
       .query(variantQueryParams)
       .find();
+
+    // Update rate limit from server response if available
+    if (smartRateLimiter) {
+      smartRateLimiter.updateRateLimit(variantsEntriesResponse);
+    }
 
     // Map the response items to extract variant UIDs
     const variants = variantsEntriesResponse.items.map(entry => ({
