@@ -48,7 +48,7 @@ const cliErrorHandler = new CLIErrorHandler(); // Enable debug mode for error cl
  */
 function handleAndLogError(error: unknown, context?: ErrorContext, errorMessage?: string): void {
   const classified = cliErrorHandler.classifyError(error, context, errorMessage);
-  const apiError = classified.error?.message || classified.message;
+  const apiError = classified.error?.message || classified?.message || 'Unknown error';
 
   // Always log the error
   v2Logger.logError({
