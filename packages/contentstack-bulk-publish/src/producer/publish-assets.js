@@ -7,16 +7,22 @@ const retryFailedLogs = require('../util/retryfailed');
 const { validateFile } = require('../util/fs');
 const { isEmpty } = require('../util');
 const { fetchBulkPublishLimit } = require('../util/common-utility');
+const { createSmartRateLimiter } = require('../util/smart-rate-limiter');
 
 const queue = getQueue();
 let logFileName;
 let bulkPublishSet = [];
 let filePath;
+let smartRateLimiter;
+let pendingItems = [];
 
 /* eslint-disable no-param-reassign */
 
 async function getAssets(stack, folder, bulkPublish, environments, locale, apiVersion, bulkPublishLimit, skip = 0) {
   return new Promise((resolve, reject) => {
+    // Get smart rate limiter instance (singleton per organization)
+    smartRateLimiter = createSmartRateLimiter(stack?.org_uid);
+
     let queryParams = {
       folder: folder,
       skip: skip,
@@ -29,6 +35,9 @@ async function getAssets(stack, folder, bulkPublish, environments, locale, apiVe
       .query(queryParams)
       .find()
       .then(async (assetResponse) => {
+        // Update rate limit from server response
+        smartRateLimiter.updateRateLimit(assetResponse);
+        
         if (assetResponse && assetResponse.items.length > 0) {
           skip += assetResponse.items.length;
           let assets = assetResponse.items;
@@ -47,40 +56,12 @@ async function getAssets(stack, folder, bulkPublish, environments, locale, apiVe
               continue;
             }
             if (bulkPublish) {
-              if (bulkPublishSet.length < bulkPublishLimit) {
-                bulkPublishSet.push({
-                  uid: assets[index].uid,
-                  locale,
-                  publish_details: assets[index].publish_details || [],
-                });
-              }
-              if (bulkPublishSet.length === bulkPublishLimit) {
-                await queue.Enqueue({
-                  assets: bulkPublishSet,
-                  Type: 'asset',
-                  environments: environments,
-                  locale,
-                  stack: stack,
-                  apiVersion,
-                });
-                bulkPublishSet = [];
-              }
-
-              if (
-                assetResponse.items.length - 1 === index &&
-                bulkPublishSet.length > 0 &&
-                bulkPublishSet.length < bulkPublishLimit
-              ) {
-                await queue.Enqueue({
-                  assets: bulkPublishSet,
-                  Type: 'asset',
-                  environments: environments,
-                  locale,
-                  stack: stack,
-                  apiVersion,
-                });
-                bulkPublishSet = [];
-              }
+              // Add to pending items instead of immediate processing
+              pendingItems.push({
+                uid: assets[index].uid,
+                locale,
+                publish_details: assets[index].publish_details || [],
+              });
             } else {
               await queue.Enqueue({
                 assetUid: assets[index].uid,
@@ -92,7 +73,17 @@ async function getAssets(stack, folder, bulkPublish, environments, locale, apiVe
               });
             }
           }
+          
+          // Process pending items with smart rate limiting
+          if (pendingItems.length > 0) {
+            await processPendingAssets(stack, environments, locale, apiVersion);
+          }
+          
           if (skip === assetResponse.count) {
+            // Process any remaining items
+            if (pendingItems.length > 0) {
+              await processPendingAssets(stack, environments, locale, apiVersion);
+            }
             return resolve(true);
           }
           await getAssets(stack, folder, bulkPublish, environments, locale, apiVersion, bulkPublishLimit, skip);
@@ -105,6 +96,51 @@ async function getAssets(stack, folder, bulkPublish, environments, locale, apiVe
         reject(error);
       });
   });
+}
+
+/**
+ * Process pending assets with smart rate limiting
+ */
+async function processPendingAssets(stack, environments, locale, apiVersion) {
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  
+  while (pendingItems.length > 0) {
+    const optimalBatchSize = smartRateLimiter.getOptimalBatchSize(pendingItems.length);
+    
+    if (optimalBatchSize === 0) {
+      // Rate limit exhausted, wait and retry
+      smartRateLimiter.logStatus();
+      await delay(1000);
+      continue;
+    }
+    
+    // Take the optimal batch size
+    const batch = pendingItems.splice(0, optimalBatchSize);
+    
+    try {
+      await queue.Enqueue({
+        assets: batch,
+        Type: 'asset',
+        environments: environments,
+        locale,
+        stack: stack,
+        apiVersion,
+      });
+      
+      smartRateLimiter.logStatus();
+      
+    } catch (error) {
+      if (error.errorCode === 429) {
+        // Rate limit error, put items back and wait
+        pendingItems.unshift(...batch);
+        smartRateLimiter.logStatus();
+        await delay(1000);
+      } else {
+        // Other error, log and continue
+        console.log(`Error processing batch: ${error.message}`);
+      }
+    }
+  }
 }
 
 function setConfig(conf, bp) {

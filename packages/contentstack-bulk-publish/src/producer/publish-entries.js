@@ -9,6 +9,7 @@ const retryFailedLogs = require('../util/retryfailed');
 const { validateFile } = require('../util/fs');
 const { isEmpty } = require('../util');
 const { fetchBulkPublishLimit } = require('../util/common-utility');
+const { createSmartRateLimiter } = require('../util/smart-rate-limiter');
 const VARIANTS_PUBLISH_API_VERSION = '3.2';
 
 const queue = getQueue();
@@ -19,6 +20,8 @@ let contentTypesList = [];
 let allContentTypes = [];
 let bulkPublishSet = [];
 let filePath;
+let smartRateLimiter;
+let pendingItems = [];
 
 async function getEntries(
   stack,
@@ -34,6 +37,9 @@ async function getEntries(
 ) {
   return new Promise((resolve, reject) => {
     skipCount = skip;
+
+    // Get smart rate limiter instance (singleton per organization)
+    smartRateLimiter = createSmartRateLimiter(stack?.org_uid);
 
     let queryParams = {
       locale: locale || 'en-us',
@@ -55,61 +61,35 @@ async function getEntries(
       .query(queryParams)
       .find()
       .then(async (entriesResponse) => {
+        // Update rate limit from server response
+        smartRateLimiter.updateRateLimit(entriesResponse);
+        
         skipCount += entriesResponse.items.length;
         let entries = entriesResponse.items;
 
         for (let index = 0; index < entries.length; index++) {
           let variants = [];
           if (bulkPublish) {
-            let entry;
-            if (bulkPublishSet.length < bulkPublishLimit) {
-              entry = {
-                uid: entries[index].uid,
-                content_type: contentType,
-                locale,
-                publish_details: entries[index].publish_details || [],
-              };
+            let entry = {
+              uid: entries[index].uid,
+              content_type: contentType,
+              locale,
+              publish_details: entries[index].publish_details || [],
+            };
 
-              if (variantsFlag) {
-                variants = await getVariantEntries(stack, contentType, entries, index, queryParams);
-                if (variants.length > 0) {
-                  entry.variant_rules = {
-                    publish_latest_base: false,
-                    publish_latest_base_conditionally: true,
-                  };
-                  entry.variants = variants;
-                }
+            if (variantsFlag) {
+              variants = await getVariantEntries(stack, contentType, entries, index, queryParams);
+              if (variants.length > 0) {
+                entry.variant_rules = {
+                  publish_latest_base: false,
+                  publish_latest_base_conditionally: true,
+                };
+                entry.variants = variants;
               }
             }
-            bulkPublishSet.push(entry);
-
-            if (bulkPublishSet.length === bulkPublishLimit) {
-              await queue.Enqueue({
-                entries: bulkPublishSet,
-                locale,
-                Type: 'entry',
-                environments: environments,
-                stack: stack,
-                apiVersion,
-              });
-              bulkPublishSet = [];
-            }
-
-            if (
-              index === entries.length - 1 &&
-              bulkPublishSet.length <= bulkPublishLimit &&
-              bulkPublishSet.length > 0
-            ) {
-              await queue.Enqueue({
-                entries: bulkPublishSet,
-                locale,
-                Type: 'entry',
-                environments: environments,
-                stack: stack,
-                apiVersion,
-              });
-              bulkPublishSet = [];
-            }
+            
+            // Add to pending items instead of immediate processing
+            pendingItems.push(entry);
           } else {
             await queue.Enqueue({
               content_type: contentType,
@@ -123,8 +103,16 @@ async function getEntries(
           }
         }
 
+        // Process pending items with smart rate limiting
+        if (pendingItems.length > 0) {
+          await processPendingItems(stack, environments, locale, apiVersion);
+        }
+
         if (entriesResponse.count === skipCount) {
-          bulkPublishSet = [];
+          // Process any remaining items
+          if (pendingItems.length > 0) {
+            await processPendingItems(stack, environments, locale, apiVersion);
+          }
           return resolve();
         }
         await getEntries(
@@ -228,6 +216,51 @@ function setConfig(conf, bp) {
   config = conf;
   queue.config = conf;
   filePath = initializeLogger(logFileName);
+}
+
+/**
+ * Process pending items with smart rate limiting
+ */
+async function processPendingItems(stack, environments, locale, apiVersion) {
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  
+  while (pendingItems.length > 0) {
+    const optimalBatchSize = smartRateLimiter.getOptimalBatchSize(pendingItems.length);
+    
+    if (optimalBatchSize === 0) {
+      // Rate limit exhausted, wait and retry
+      smartRateLimiter.logStatus();
+      await delay(1000);
+      continue;
+    }
+    
+    // Take the optimal batch size
+    const batch = pendingItems.splice(0, optimalBatchSize);
+    
+    try {
+      await queue.Enqueue({
+        entries: batch,
+        locale,
+        Type: 'entry',
+        environments: environments,
+        stack: stack,
+        apiVersion,
+      });
+      
+      smartRateLimiter.logStatus();
+      
+    } catch (error) {
+      if (error.errorCode === 429) {
+        // Rate limit error, put items back and wait
+        pendingItems.unshift(...batch);
+        smartRateLimiter.logStatus();
+        await delay(1000);
+      } else {
+        // Other error, log and continue
+        console.log(`Error processing batch: ${error.message}`);
+      }
+    }
+  }
 }
 
 async function start(

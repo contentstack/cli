@@ -6,6 +6,7 @@ async function getStack(data) {
   const options = {
     host: data.host,
     branchName: data.branch,
+    headers: {includeResHeaders: true},
   };
   const stackOptions = {};
   if (data.alias) {

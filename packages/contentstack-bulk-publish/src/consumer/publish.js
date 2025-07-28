@@ -11,9 +11,15 @@ const nrpApiVersionWarning = `Provided apiVersion is invalid. ${apiVersionForNRP
 const { getLoggerInstance, addLogs, getLogsDirPath } = require('../util/logger');
 const { sanitizePath } = require('@contentstack/cli-utilities');
 const logsDir = getLogsDirPath();
+const { handleRateLimit, fetchBulkPublishLimit } = require('../util/common-utility');
+const { createSmartRateLimiter } = require('../util/smart-rate-limiter');
+
+// Simple delay function
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 let logger;
 let fileNme;
+let smartRateLimiter;
 
 function initializeLogger(fileName) {
   fileNme = fileName;
@@ -60,23 +66,23 @@ function displayAssetsDetails(sanitizedData, action, mapping) {
     sanitizedData.forEach((asset) => {
       asset?.publish_details.forEach((pd) => {
         if (Object.keys(mapping).includes(pd.environment)) {
-        console.log(
-          chalk.green(
-            `Asset UID '${asset.uid}' ${pd.version ? `and version '${pd.version}'` : ''} ${
-              asset.locale ? `in locale '${asset.locale}'` : ''
-            } in environment ${pd.environment}`,
-          ),
-        );
-      }
+          const versionText = pd.version ? `and version '${pd.version}'` : '';
+          const localeText = asset.locale ? `in locale '${asset.locale}'` : '';
+          console.log(
+            chalk.green(
+              `Asset UID '${asset.uid}' ${versionText} ${localeText} in environment ${pd.environment}`,
+            ),
+          );
+        }
       });
     });
   } else if (action === 'bulk_unpublish') {
     sanitizedData.forEach((asset) => {
+      const versionText = asset.version ? `and version '${asset.version}'` : '';
+      const localeText = asset.locale ? `in locale '${asset.locale}'` : '';
       console.log(
         chalk.green(
-          `Asset UID '${asset.uid}' ${asset.version ? `and version '${asset.version}'` : ''} ${
-            asset.locale ? `in locale '${asset.locale}'` : ''
-          }`,
+          `Asset UID '${asset.uid}' and version ${versionText} in locale ${localeText}`,
         ),
       );
     });
@@ -86,7 +92,24 @@ async function publishEntry(data, _config, queue) {
   const lang = [];
   const entryObj = data.obj;
   const stack = entryObj.stack;
+  
+  // Get smart rate limiter instance (singleton per organization)
+  smartRateLimiter = createSmartRateLimiter(stack?.org_uid);
+  
   lang.push(entryObj.locale);
+  
+  // Check if we can process this item
+  if (!smartRateLimiter.canProcess(1)) {
+    smartRateLimiter.logStatus();
+    // Put the item back in queue and wait
+    await delay(1000);
+    queue.Enqueue(data);
+    return;
+  }
+  
+  // Log request attempt
+  smartRateLimiter.logRequestAttempt('publish', 'entry', entryObj.entryUid);
+  
   stack
     .contentType(entryObj.content_type)
     .entry(entryObj.entryUid)
@@ -96,6 +119,12 @@ async function publishEntry(data, _config, queue) {
     })
     .then((publishEntryResponse) => {
       if (!publishEntryResponse.error_message) {
+        // Update rate limit from server response
+        smartRateLimiter.updateRateLimit(publishEntryResponse);
+        
+        // Log success
+        smartRateLimiter.logRequestSuccess('publish', 'entry', entryObj.entryUid, publishEntryResponse);
+        
         console.log(
           chalk.green(
             `entry published with ContentType uid=${entryObj.content_type} Entry uid=${entryObj.entryUid} locale=${entryObj.locale}`,
@@ -111,9 +140,15 @@ async function publishEntry(data, _config, queue) {
         throw publishEntryResponse;
       }
     })
-    .catch((error) => {
+    .catch(async (error) => {
+      // Log failure
+      smartRateLimiter.logRequestFailure('publish', 'entry', entryObj.entryUid, error);
+      
       if (error.errorCode === 429 && data.retry < 2) {
         data.retry++;
+        smartRateLimiter.logStatus();
+        // Wait and retry
+        await delay(1000);
         queue.Enqueue(data);
       } else {
         delete entryObj.stack;
@@ -141,12 +176,33 @@ async function publishEntry(data, _config, queue) {
 async function publishAsset(data, _config, queue) {
   const assetobj = data.obj;
   const stack = assetobj.stack;
+  
+  // Get smart rate limiter instance (singleton per organization)
+  smartRateLimiter = createSmartRateLimiter(stack?.org_uid);
+  
+  // Check if we can process this item
+  if (!smartRateLimiter.canProcess(1)) {
+    smartRateLimiter.logStatus();
+    // Put the item back in queue and wait
+    await delay(1000);
+    queue.Enqueue(data);
+    return;
+  }
+
+  // Log request attempt
+  smartRateLimiter.logRequestAttempt('publish', 'asset', assetobj.assetUid);
 
   stack
     .asset(assetobj.assetUid)
     .publish({ publishDetails: { environments: assetobj.environments, locales: [assetobj.locale || 'en-us'] } })
     .then((publishAssetResponse) => {
       if (!publishAssetResponse.error_message) {
+        // Update rate limit from server response
+        smartRateLimiter.updateRateLimit(publishAssetResponse);
+        
+        // Log success
+        smartRateLimiter.logRequestSuccess('publish', 'asset', assetobj.assetUid, publishAssetResponse);
+        
         console.log(chalk.green(`asset published with Asset uid=${assetobj.assetUid}, locale=${assetobj.locale}`));
         delete assetobj.stack;
         addLogs(
@@ -158,9 +214,15 @@ async function publishAsset(data, _config, queue) {
         throw publishAssetResponse;
       }
     })
-    .catch((error) => {
+    .catch(async (error) => {
+      // Log failure
+      smartRateLimiter.logRequestFailure('publish', 'asset', assetobj.assetUid, error);
+      
       if (error.errorCode === 429 && data.retry < 2) {
         data.retry++;
+        smartRateLimiter.logStatus();
+        // Wait and retry
+        await delay(1000);
         queue.Enqueue(data);
       } else {
         delete assetobj.stack;
@@ -183,13 +245,36 @@ async function UnpublishEntry(data, _config, queue) {
   const lang = [];
   const entryObj = data.obj;
   const stack = entryObj.stack;
+  
+  // Get smart rate limiter instance (singleton per organization)
+  smartRateLimiter = createSmartRateLimiter(stack?.org_uid);
+  
   lang.push(entryObj.locale);
+  
+  // Check if we can process this item
+  if (!smartRateLimiter.canProcess(1)) {
+    smartRateLimiter.logStatus();
+    // Put the item back in queue and wait
+    await delay(1000);
+    queue.Enqueue(data);
+    return;
+  }
+  
+  // Log request attempt
+  smartRateLimiter.logRequestAttempt('unpublish', 'entry', entryObj.entryUid);
+  
   stack
     .contentType(entryObj.content_type)
     .entry(entryObj.entryUid)
     .unpublish({ publishDetails: { environments: entryObj.environments, locales: lang }, locale: entryObj.locale })
     .then((unpublishEntryResponse) => {
       if (!unpublishEntryResponse.error_message) {
+        // Update rate limit from server response
+        smartRateLimiter.updateRateLimit(unpublishEntryResponse);
+        
+        // Log success
+        smartRateLimiter.logRequestSuccess('unpublish', 'entry', entryObj.entryUid, unpublishEntryResponse);
+        
         delete entryObj.stack;
         console.log(
           chalk.green(
@@ -205,9 +290,15 @@ async function UnpublishEntry(data, _config, queue) {
         throw unpublishEntryResponse;
       }
     })
-    .catch((error) => {
+    .catch(async (error) => {
+      // Log failure
+      smartRateLimiter.logRequestFailure('unpublish', 'entry', entryObj.entryUid, error);
+      
       if (error.errorCode === 429 && data.retry < 2) {
         data.retry++;
+        smartRateLimiter.logStatus();
+        // Wait and retry
+        await delay(1000);
         queue.Enqueue(data);
       } else {
         delete entryObj.stack;
@@ -230,26 +321,53 @@ async function UnpublishEntry(data, _config, queue) {
 async function UnpublishAsset(data, _config, queue) {
   const assetobj = data.obj;
   const stack = assetobj.stack;
+  
+  // Get smart rate limiter instance (singleton per organization)
+  smartRateLimiter = createSmartRateLimiter(stack?.org_uid);
+  
+  // Check if we can process this item
+  if (!smartRateLimiter.canProcess(1)) {
+    smartRateLimiter.logStatus();
+    // Put the item back in queue and wait
+    await delay(1000);
+    queue.Enqueue(data);
+    return;
+  }
+
+  // Log request attempt
+  smartRateLimiter.logRequestAttempt('unpublish', 'asset', assetobj.assetUid);
 
   stack
     .asset(assetobj.assetUid)
     .unpublish({ publishDetails: { environments: assetobj.environments, locales: [assetobj.locale || 'en-us'] } })
     .then((unpublishAssetResponse) => {
       if (!unpublishAssetResponse.error_message) {
+        // Update rate limit from server response
+        smartRateLimiter.updateRateLimit(unpublishAssetResponse);
+        
+        // Log success
+        smartRateLimiter.logRequestSuccess('unpublish', 'asset', assetobj.assetUid, unpublishAssetResponse);
+        
         delete assetobj.stack;
-        console.log(`Asset unpublished with Asset uid=${assetobj.assetUid}`);
+        console.log(chalk.red(`Could not Unpublish because of error=${formatError(error)}`));
         addLogs(
           logger,
           { options: assetobj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host },
-          'info',
+          'error',
         );
       } else {
         throw unpublishAssetResponse;
       }
     })
-    .catch((error) => {
+    .catch(async (error) => {
+      // Log failure
+      smartRateLimiter.logRequestFailure('unpublish', 'asset', assetobj.assetUid, error);
+      
       if (error.errorCode === 429 && data.retry < 2) {
         data.retry++;
+        smartRateLimiter.logStatus();
+        // Wait and retry
+        await delay(1000);
         queue.Enqueue(data);
       } else {
         delete assetobj.stack;
@@ -283,6 +401,10 @@ async function performBulkPublish(data, _config, queue) {
   let conf;
   const bulkPublishObj = data.obj;
   const stack = bulkPublishObj.stack;
+  
+  // Get smart rate limiter instance (singleton per organization)
+  smartRateLimiter = createSmartRateLimiter(stack?.org_uid);
+  
   let payload = {};
   const mapping = await getEnvironment(stack, bulkPublishObj.environments);
   switch (bulkPublishObj.Type) {
@@ -304,15 +426,33 @@ async function performBulkPublish(data, _config, queue) {
           }
         }
       }
+      // Check if we can process this bulk operation
+      const entriesToProcess = bulkPublishObj.entries ? bulkPublishObj.entries.length : 1;
+      if (!smartRateLimiter.canProcess(entriesToProcess)) {
+        smartRateLimiter.logStatus();
+        // Put the item back in queue and wait
+        await delay(1000);
+        queue.Enqueue(data);
+        return;
+      }
+      
+      // Log bulk request attempt
+      const entryIds = bulkPublishObj.entries ? bulkPublishObj.entries.map(e => e.uid).join(',') : 'bulk_entries';
+      smartRateLimiter.logRequestAttempt('bulk_publish', 'entries', entryIds);
+      
       stack
         .bulkOperation()
         .publish(payload)
         .then((bulkPublishEntriesResponse) => {
           if (!bulkPublishEntriesResponse.error_message) {
+            // Log success
+            smartRateLimiter.logRequestSuccess('bulk_publish', 'entries', entryIds, bulkPublishEntriesResponse);
+            
             console.log(
               chalk.green(`Bulk entries sent for publish`),
               bulkPublishEntriesResponse.job_id ? chalk.yellow(`job_id: ${bulkPublishEntriesResponse.job_id}`) : '',
             );
+            // Only display entry details once per bulk operation, not per entry
             displayEntriesDetails(bulkPublishObj.entries, 'bulk_publish', mapping);
             delete bulkPublishObj.stack;
             addLogs(
@@ -324,9 +464,15 @@ async function performBulkPublish(data, _config, queue) {
             throw bulkPublishEntriesResponse;
           }
         })
-        .catch((error) => {
+        .catch(async (error) => {
+          // Log failure
+          smartRateLimiter.logRequestFailure('bulk_publish', 'entries', entryIds, error);
+          
           if (error.errorCode === 429 && data.retry < 2) {
             data.retry++;
+            smartRateLimiter.logStatus();
+            // Wait and retry
+            await delay(1000);
             queue.Enqueue(data);
           } else {
             delete bulkPublishObj.stack;
@@ -350,24 +496,40 @@ async function performBulkPublish(data, _config, queue) {
       if (bulkPublishObj.apiVersion) {
         if (!isNaN(bulkPublishObj.apiVersion) && bulkPublishObj.apiVersion === apiVersionForNRP) {
           payload['api_version'] = bulkPublishObj.apiVersion;
+          payload.details.publish_with_reference = true;
         } else {
           if (bulkPublishObj.apiVersion !== '3') {
-            // because 3 is the default value for api-version, and it exists for the purpose of display only
             console.log(chalk.yellow(nrpApiVersionWarning));
           }
         }
       }
+      // Check if we can process this bulk operation
+      const assetsToProcess = bulkPublishObj.assets ? bulkPublishObj.assets.length : 1;
+      if (!smartRateLimiter.canProcess(assetsToProcess)) {
+        smartRateLimiter.logStatus();
+        // Put the item back in queue and wait
+        await delay(1000);
+        queue.Enqueue(data);
+        return;
+      }
+      
+      // Log bulk request attempt
+      const assetIds = bulkPublishObj.assets ? bulkPublishObj.assets.map(a => a.uid).join(',') : 'bulk_assets';
+      smartRateLimiter.logRequestAttempt('bulk_publish', 'assets', assetIds);
+      
       stack
         .bulkOperation()
         .publish(payload)
         .then((bulkPublishAssetsResponse) => {
           if (!bulkPublishAssetsResponse.error_message) {
+            // Log success
+            smartRateLimiter.logRequestSuccess('bulk_publish', 'assets', assetIds, bulkPublishAssetsResponse);
+            
             console.log(
-              chalk.green(
-                `Bulk assets sent for publish`,
-                bulkPublishAssetsResponse.job_id ? chalk.yellow(`job_id: ${bulkPublishAssetsResponse.job_id}`) : '',
-              ),
+              chalk.green(`Bulk assets sent for publish`),
+              bulkPublishAssetsResponse.job_id ? chalk.yellow(`job_id: ${bulkPublishAssetsResponse.job_id}`) : '',
             );
+            // Only display asset details once per bulk operation, not per asset
             displayAssetsDetails(bulkPublishObj.assets, 'bulk_publish', mapping);
             delete bulkPublishObj.stack;
             addLogs(
@@ -379,15 +541,20 @@ async function performBulkPublish(data, _config, queue) {
             throw bulkPublishAssetsResponse;
           }
         })
-        .catch((error) => {
+        .catch(async (error) => {
+          // Log failure
+          smartRateLimiter.logRequestFailure('bulk_publish', 'assets', assetIds, error);
+          
           if (error.errorCode === 429 && data.retry < 2) {
             data.retry++;
+            smartRateLimiter.logStatus();
+            // Wait and retry
+            await delay(1000);
             queue.Enqueue(data);
           } else {
             delete bulkPublishObj.stack;
             console.log(chalk.red(`Bulk assets failed to publish with error ${formatError(error)}`));
-
-            displayAssetsDetails(sanitizedData, 'bulk_publish', mapping);
+            displayAssetsDetails(bulkPublishObj.assets, 'bulk_publish', mapping);
             addLogs(
               logger,
               { options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host },
@@ -397,7 +564,8 @@ async function performBulkPublish(data, _config, queue) {
         });
       break;
     default:
-      console.log('No such type');
+      console.log(chalk.red(`Invalid bulk publish type: ${bulkPublishObj.Type}`));
+      break;
   }
 }
 
@@ -405,6 +573,10 @@ async function performBulkUnPublish(data, _config, queue) {
   let conf;
   const bulkUnPublishObj = data.obj;
   const stack = bulkUnPublishObj.stack;
+  
+  // Get smart rate limiter instance (singleton per organization)
+  smartRateLimiter = createSmartRateLimiter(stack?.org_uid);
+  
   let payload = {};
   switch (bulkUnPublishObj.Type) {
     case 'entry':
@@ -424,20 +596,35 @@ async function performBulkUnPublish(data, _config, queue) {
           }
         }
       }
+      // Check if we can process this bulk operation
+      const entriesToUnpublish = bulkUnPublishObj.entries ? bulkUnPublishObj.entries.length : 1;
+      if (!smartRateLimiter.canProcess(entriesToUnpublish)) {
+        smartRateLimiter.logStatus();
+        // Put the item back in queue and wait
+        await delay(1000);
+        queue.Enqueue(data);
+        return;
+      }
+      
+      // Log bulk request attempt
+      const entryIds = bulkUnPublishObj.entries ? bulkUnPublishObj.entries.map(e => e.uid).join(',') : 'bulk_entries';
+      smartRateLimiter.logRequestAttempt('bulk_unpublish', 'entries', entryIds);
+      
       stack
         .bulkOperation()
         .unpublish(payload)
         .then((bulkUnPublishEntriesResponse) => {
           if (!bulkUnPublishEntriesResponse.error_message) {
+            // Log success
+            smartRateLimiter.logRequestSuccess('bulk_unpublish', 'entries', entryIds, bulkUnPublishEntriesResponse);
+            
             delete bulkUnPublishObj.stack;
 
             console.log(
-              chalk.green(
-                `Bulk entries sent for Unpublish`,
-                bulkUnPublishEntriesResponse.job_id
-                  ? chalk.yellow(`job_id: ${bulkUnPublishEntriesResponse.job_id}`)
-                  : '',
-              ),
+              chalk.green(`Bulk entries sent for Unpublish`),
+              bulkUnPublishEntriesResponse.job_id
+                ? chalk.yellow(`job_id: ${bulkUnPublishEntriesResponse.job_id}`)
+                : '',
             );
             displayEntriesDetails(bulkUnPublishObj.entries, 'bulk_unpublish');
             addLogs(
@@ -449,9 +636,15 @@ async function performBulkUnPublish(data, _config, queue) {
             throw bulkUnPublishEntriesResponse;
           }
         })
-        .catch((error) => {
+        .catch(async (error) => {
+          // Log failure
+          smartRateLimiter.logRequestFailure('bulk_unpublish', 'entries', entryIds, error);
+          
           if (error.errorCode === 429 && data.retry < 2) {
             data.retry++;
+            smartRateLimiter.logStatus();
+            // Wait and retry
+            await delay(1000);
             queue.Enqueue(data);
           } else {
             delete bulkUnPublishObj.stack;
@@ -482,17 +675,32 @@ async function performBulkUnPublish(data, _config, queue) {
           }
         }
       }
+      // Check if we can process this bulk operation
+      const assetsToUnpublish = bulkUnPublishObj.assets ? bulkUnPublishObj.assets.length : 1;
+      if (!smartRateLimiter.canProcess(assetsToUnpublish)) {
+        smartRateLimiter.logStatus();
+        // Put the item back in queue and wait
+        await delay(1000);
+        queue.Enqueue(data);
+        return;
+      }
+      
+      // Log bulk request attempt
+      const assetIds = bulkUnPublishObj.assets ? bulkUnPublishObj.assets.map(a => a.uid).join(',') : 'bulk_assets';
+      smartRateLimiter.logRequestAttempt('bulk_unpublish', 'assets', assetIds);
+      
       stack
         .bulkOperation()
         .unpublish(payload)
         .then((bulkUnPublishAssetsResponse) => {
           if (!bulkUnPublishAssetsResponse.error_message) {
+            // Log success
+            smartRateLimiter.logRequestSuccess('bulk_unpublish', 'assets', assetIds, bulkUnPublishAssetsResponse);
+            
             delete bulkUnPublishObj.stack;
             console.log(
-              chalk.green(
-                `Bulk assets sent for Unpublish`,
-                bulkUnPublishAssetsResponse.job_id ? chalk.yellow(`job_id: ${bulkUnPublishAssetsResponse.job_id}`) : '',
-              ),
+              chalk.green(`Bulk assets sent for Unpublish`),
+              bulkUnPublishAssetsResponse.job_id ? chalk.yellow(`job_id: ${bulkUnPublishAssetsResponse.job_id}`) : '',
             );
             displayAssetsDetails(bulkUnPublishObj.assets, 'bulk_unpublish');
             addLogs(
@@ -504,9 +712,15 @@ async function performBulkUnPublish(data, _config, queue) {
             throw bulkUnPublishAssetsResponse;
           }
         })
-        .catch((error) => {
+        .catch(async (error) => {
+          // Log failure
+          smartRateLimiter.logRequestFailure('bulk_unpublish', 'assets', assetIds, error);
+          
           if (error.errorCode === 429 && data.retry < 2) {
             data.retry++;
+            smartRateLimiter.logStatus();
+            // Wait and retry
+            await delay(1000);
             queue.Enqueue(data);
           } else {
             delete bulkUnPublishObj.stack;
@@ -521,7 +735,8 @@ async function performBulkUnPublish(data, _config, queue) {
         });
       break;
     default:
-      console.log('No such type');
+      console.log(chalk.red(`Invalid bulk unpublish type: ${bulkUnPublishObj.Type}`));
+      break;
   }
 }
 
@@ -534,6 +749,9 @@ async function publishUsingVersion(data, _config, queue) {
   let counter = 0;
   const bulkPublishObj = data.obj;
   const stack = bulkPublishObj.stack;
+  
+  // Get smart rate limiter instance (singleton per organization)
+  smartRateLimiter = createSmartRateLimiter(stack?.org_uid);
   switch (bulkPublishObj.Type) {
     case 'entry':
       successfullyPublished = [];
@@ -551,12 +769,23 @@ async function publishUsingVersion(data, _config, queue) {
           locale: bulkPublishObj.locale,
           version: entry.version,
         };
+        // Check if we can process this item
+        if (!smartRateLimiter.canProcess(1)) {
+          smartRateLimiter.logStatus();
+          // Put the item back in queue and wait
+          await delay(1000);
+          queue.Enqueue(data);
+          return;
+        }
+        
         stack
           .contentType(entry.content_type)
           .entry(entry.uid)
           .publish(conf)
           .then((publishEntriesResponse) => {
             if (!publishEntriesResponse.error_message) {
+              // Update rate limit from server response
+              smartRateLimiter.updateRateLimit(publishEntriesResponse);
               console.log(chalk.green(`Entry=${entry.uid} sent for publish`));
 
               counter += 1;
@@ -602,9 +831,12 @@ async function publishUsingVersion(data, _config, queue) {
               // throw bulkPublishEntriesResponse;
             }
           })
-          .catch((error) => {
+          .catch(async (error) => {
             if (error.errorCode === 429 && data.retry < 2) {
               data.retry++;
+              smartRateLimiter.logStatus();
+              // Wait and retry
+              await delay(1000);
               queue.Enqueue(data);
             } else {
               counter += 1;
@@ -663,11 +895,22 @@ async function publishUsingVersion(data, _config, queue) {
           },
           version: asset.version,
         };
+        // Check if we can process this item
+        if (!smartRateLimiter.canProcess(1)) {
+          smartRateLimiter.logStatus();
+          // Put the item back in queue and wait
+          await delay(1000);
+          queue.Enqueue(data);
+          return;
+        }
+        
         stack
           .asset(asset.uid)
           .publish(conf)
           .then((publishAssetsResponse) => {
             if (!publishAssetsResponse.error_message) {
+              // Update rate limit from server response
+              smartRateLimiter.updateRateLimit(publishAssetsResponse);
               console.log(chalk.green(`Asset=${asset.uid} sent for publish`));
 
               counter += 1;
@@ -713,9 +956,12 @@ async function publishUsingVersion(data, _config, queue) {
               // throw bulkPublishAssetsResponse;
             }
           })
-          .catch((error) => {
+          .catch(async (error) => {
             if (error.errorCode === 429 && data.retry < 2) {
               data.retry++;
+              smartRateLimiter.logStatus();
+              // Wait and retry
+              await delay(1000);
               queue.Enqueue(data);
             } else {
               counter += 1;
@@ -751,8 +997,8 @@ async function publishUsingVersion(data, _config, queue) {
                     },
                     'error',
                   );
+                  }
                 }
-              }
 
               console.log(chalk.red(`Asset=${asset.uid} failed to publish with error ${formatError(error)}`));
             }

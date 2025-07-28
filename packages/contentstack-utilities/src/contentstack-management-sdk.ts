@@ -85,6 +85,12 @@ class ManagementSDKInitiator {
       if (!option.headers) option.headers = {};
       option.headers['X-CS-CLI'] = this.analyticsInfo;
     }
+
+    if (config.headers?.includeResHeaders) {
+      if (!option.headers) option.headers = {};
+      option.headers['includeResHeaders'] = true;
+    }
+    
     if (!config.management_token) {
       const authorisationType = configStore.get('authorisationType');
       if (authorisationType === 'BASIC') {
