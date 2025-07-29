@@ -59,7 +59,7 @@ export default class Logger {
     ];
 
     // Add console transport only if showConsoleLogs is true
-    if (configHandler.get('showConsoleLogs')) {
+    if (configHandler && typeof configHandler.get === 'function' && configHandler.get('showConsoleLogs')) {
       transports.push(
         new winston.transports.Console({
           format: winston.format.combine(

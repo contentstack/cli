@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { ModuleResult, SummaryOptions } from '../interfaces';
+import { ModuleResult, SummaryOptions } from '../interfaces/index';
 
 export default class SummaryManager {
   private modules: Map<string, ModuleResult> = new Map();
