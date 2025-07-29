@@ -4,6 +4,7 @@ import { normalize } from 'path';
 import * as winston from 'winston';
 import { levelColors, logLevels } from '../constants/logging';
 import { LoggerConfig, LogLevel, LogType } from '../interfaces/index';
+import { configHandler } from '..';
 
 export default class Logger {
   private loggers: Record<string, winston.Logger>;
@@ -49,15 +50,17 @@ export default class Logger {
   }
 
   private createLogger(level: LogLevel, filePath: string): winston.Logger {
-    return winston.createLogger({
-      levels: logLevels,
-      level,
-      transports: [
-        new winston.transports.File({
-          ...this.loggerOptions,
-          filename: `${filePath}/${level}.log`,
-          format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
-        }),
+    const transports: winston.transport[] = [
+      new winston.transports.File({
+        ...this.loggerOptions,
+        filename: `${filePath}/${level}.log`,
+        format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
+      }),
+    ];
+
+    // Add console transport only if showConsoleLogs is true
+    if (configHandler.get('showConsoleLogs')) {
+      transports.push(
         new winston.transports.Console({
           format: winston.format.combine(
             winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
@@ -70,7 +73,13 @@ export default class Logger {
             }),
           ),
         }),
-      ],
+      );
+    }
+
+    return winston.createLogger({
+      levels: logLevels,
+      level,
+      transports,
     });
   }
 
@@ -101,8 +110,9 @@ export default class Logger {
 
   private shouldLog(level: LogType, target: 'console' | 'file'): boolean {
     const configLevel = target === 'console' ? this.config.consoleLogLevel : this.config.logLevel;
-    const minLevel = configLevel ? logLevels[configLevel] : 2;
-    return logLevels[level] <= minLevel;
+    const minLevel = configLevel ? logLevels[configLevel] : logLevels['info']; // Default to info level
+    const currentLevel = logLevels[level] || logLevels['info']; // Handle undefined levels
+    return currentLevel <= minLevel;
   }
 
   /* === Public Log Methods === */
@@ -127,7 +137,7 @@ export default class Logger {
 
   public success(message: string, meta?: any): void {
     if (this.shouldLog('success', 'console') || this.shouldLog('success', 'file')) {
-      this.loggers.success.log('success', message, { ...meta });
+      this.loggers.success.info(message, { ...meta, type: 'success' });
     }
   }
 
@@ -162,7 +172,7 @@ export default class Logger {
     if (this.shouldLog('error', 'file')) {
       this.loggers.error.error(logPayload);
     }
-    
+
     // For console, use debug level if hidden, otherwise error level
     const consoleLevel: LogType = params.hidden ? 'debug' : 'error';
     if (this.shouldLog(consoleLevel, 'console')) {
@@ -235,7 +245,7 @@ export default class Logger {
       },
     };
     if (this.shouldLog('success', 'console') || this.shouldLog('success', 'file')) {
-      this.loggers.success.log(logPayload);
+      this.loggers.success.info(logPayload);
     }
   }
 

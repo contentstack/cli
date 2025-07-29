@@ -78,3 +78,4 @@ export { default as TablePrompt } from './inquirer-table-prompt';
 export { Logger };
 export { default as authenticationHandler } from './authentication-handler';
 export {v2Logger as log, cliErrorHandler, handleAndLogError, getLogPath} from './logger/log'
+export {CLIProgressManager, SummaryManager} from './progress-manager'
