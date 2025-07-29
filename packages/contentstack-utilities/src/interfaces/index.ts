@@ -1,4 +1,5 @@
-import { logLevels } from "../constants/logging";
+import { logLevels } from '../constants/logging';
+import ProgressBar from 'cli-progress';
 
 export interface IPromptOptions {
   prompt?: string;
@@ -76,11 +77,11 @@ export interface Locale {
 export interface CliUXPromptOptions extends IPromptOptions {}
 
 export interface LoggerConfig {
-  basePath: string;               // Base path for log storage
-  processName?: string;           // Optional name of the plugin/process
+  basePath: string; // Base path for log storage
+  processName?: string; // Optional name of the plugin/process
   consoleLoggingEnabled?: boolean; // Should logs be printed to console
-  consoleLogLevel?: LogType;      // Console log level (info, debug, etc.)
-  logLevel?: LogType;             // File log level
+  consoleLogLevel?: LogType; // Console log level (info, debug, etc.)
+  logLevel?: LogType; // File log level
 }
 
 export interface PrintOptions {
@@ -121,3 +122,42 @@ export type ErrorContext = ErrorContextBase & {
   [key: string]: unknown;
 };
 
+export interface Failure {
+  item: string;
+  error: string | null;
+  process?: string;
+}
+
+export interface ProcessProgress {
+  name: string;
+  total: number;
+  current: number;
+  status: 'pending' | 'active' | 'completed' | 'failed';
+  successCount: number;
+  failureCount: number;
+  failures: Failure[];
+  progressBar?: ProgressBar.SingleBar;
+}
+
+export interface ProgressManagerOptions {
+  showConsoleLogs?: boolean;
+  total?: number;
+  moduleName?: string;
+  enableNestedProgress?: boolean;
+}
+
+export interface ModuleResult {
+  name: string;
+  status: 'pending' | 'running' | 'completed' | 'failed';
+  startTime?: number;
+  endTime?: number;
+  totalItems: number;
+  successCount: number;
+  failureCount: number;
+  failures: Array<{ item: string; error: string }>;
+}
+
+export interface SummaryOptions {
+  operationName: string; // 'EXPORT', 'IMPORT', 'MIGRATION', etc.
+  context?: any;
+}
