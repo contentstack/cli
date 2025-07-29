@@ -55,8 +55,8 @@ Module.prototype.require = function (id: string) {
   return originalRequire.apply(this, arguments);
 };
 
-import CLIProgressManager from '../../src/progress-manager/cli-progress-manager';
-import SummaryManager from '../../src/progress-manager/summary-manager';
+import CLIProgressManager from '../../src/progress-summary/cli-progress-manager';
+import SummaryManager from '../../src/progress-summary/summary-manager';
 
 // Optimized cleanup function for fast tests
 function forceCleanupSpinners() {
