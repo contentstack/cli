@@ -81,11 +81,26 @@ describe('CLIProgressManager', () => {
   let progressManager: CLIProgressManager;
   let consoleLogStub: sinon.SinonStub;
   
-  before(() => {
+  beforeEach(() => {
     forceCleanupSpinners();
+    
+    // Mock require.cache to intercept ora and cli-progress module loading
+    Module.prototype.require = function (id: string) {
+      if (id === 'ora') {
+        return mockOra;
+      }
+      if (id === 'cli-progress') {
+        return {
+          SingleBar: function() { return mockProgressBar; },
+          MultiBar: function() { return mockMultiBar; },
+          Presets: { shades_classic: {} }
+        };
+      }
+      return originalRequire.apply(this, arguments);
+    };
   });
   
-  after(() => {
+  afterEach(() => {
     // Restore original require
     Module.prototype.require = originalRequire;
     forceCleanupSpinners();
