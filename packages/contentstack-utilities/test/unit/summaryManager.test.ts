@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { fancy } from 'fancy-test';
 import sinon from 'sinon';
-import SummaryManager from '../../src/progress-manager/summary-manager';
+import SummaryManager from '../../src/progress-summary/summary-manager';
 
 describe('SummaryManager', () => {
   let summaryManager: SummaryManager;
