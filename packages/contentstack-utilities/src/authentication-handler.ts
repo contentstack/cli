@@ -52,6 +52,13 @@ class AuthenticationHandler {
   }
 
   async refreshAccessToken(error: any, maxRetryCount = 1): Promise<void> {
+    // Add configurable delay only for CI/CD pipelines
+    const delayMs = process.env.DELAY_MS;
+
+    if (delayMs) {
+      const delay = parseInt(delayMs, 10);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
     if (error.response && error.response.status) {
       switch (error.response.status) {
         case 401:
