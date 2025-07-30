@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-config/1.14.0 darwin-arm64 node-v18.20.2
+@contentstack/cli-config/1.14.0 darwin-arm64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -326,12 +326,13 @@ Set logging configuration for CLI
 
 ```
 USAGE
-  $ csdx config:set:log [--level debug|info|warn|error] [--path <value>]
+  $ csdx config:set:log [--level debug|info|warn|error] [--path <value>] [--show-console-logs]
 
 FLAGS
-  --level=<option>  Set the log level for the CLI.
-                    <options: debug|info|warn|error>
-  --path=<value>    Specify the file path where logs should be saved.
+  --level=<option>          Set the log level for the CLI.
+                            <options: debug|info|warn|error>
+  --path=<value>            Specify the file path where logs should be saved.
+  --[no-]show-console-logs  Enable console logging.
 
 DESCRIPTION
   Set logging configuration for CLI
@@ -339,7 +340,9 @@ DESCRIPTION
 EXAMPLES
   $ csdx config:set:log
 
-  $ csdx config:set:log --level debug --path ./logs/app.log
+  $ csdx config:set:log --level debug --path ./logs/app.log --show-console-logs
+
+  $ csdx config:set:log --no-show-console-logs
 ```
 
 _See code: [src/commands/config/set/log.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/log.ts)_
