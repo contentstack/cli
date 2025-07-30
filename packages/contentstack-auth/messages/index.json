@@ -20,7 +20,7 @@
   "CLI_AUTH_LOGOUT_ALREADY": "You're already logged out",
   "CLI_AUTH_LOGOUT_NO_AUTHORIZATIONS": "No authorizations found",
   "CLI_AUTH_LOGOUT_NO_AUTHORIZATIONS_USER": "No authorizations found for current user",
-  "CLI_AUTH_WHOAMI_LOGGED_IN_AS": "You are currently logged in with email '%s'",
+  "CLI_AUTH_WHOAMI_LOGGED_IN_AS": "You are currently logged in with email:",
   "CLI_AUTH_WHOAMI_FAILED": "Failed to get the current user details",
   "CLI_AUTH_WHOAMI_DESCRIPTION": "Display current users email address",
   "CLI_AUTH_TOKENS_ADD_ASK_TOKEN_ALIAS": "Provide alias to store token",
