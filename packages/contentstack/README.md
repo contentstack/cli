@@ -3556,12 +3556,13 @@ Set logging configuration for CLI
 
 ```
 USAGE
-  $ csdx config:set:log [--level debug|info|warn|error] [--path <value>]
+  $ csdx config:set:log [--level debug|info|warn|error] [--path <value>] [--show-console-logs]
 
 FLAGS
-  --level=<option>  Set the log level for the CLI.
-                    <options: debug|info|warn|error>
-  --path=<value>    Specify the file path where logs should be saved.
+  --level=<option>          Set the log level for the CLI.
+                            <options: debug|info|warn|error>
+  --path=<value>            Specify the file path where logs should be saved.
+  --[no-]show-console-logs  Enable console logging.
 
 DESCRIPTION
   Set logging configuration for CLI
@@ -3569,7 +3570,9 @@ DESCRIPTION
 EXAMPLES
   $ csdx config:set:log
 
-  $ csdx config:set:log --level debug --path ./logs/app.log
+  $ csdx config:set:log --level debug --path ./logs/app.log --show-console-logs
+
+  $ csdx config:set:log --no-show-console-logs
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/log.ts)_
@@ -3817,8 +3820,8 @@ USAGE
   $ csdx launch:functions [-p <value>] [-d <value>]
 
 FLAGS
-  -d, --data-dir=<value>  [default: /Users/aman.kumar/Documents/cli-repos/logger-v2/cli/packages/contentstack] Current
-                          working directory
+  -d, --data-dir=<value>  [default: /cli/packages/contentstack]
+                          Current working directory
   -p, --port=<value>      [default: 3000] Port number
 
 DESCRIPTION

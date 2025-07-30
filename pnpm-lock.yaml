@@ -13,7 +13,7 @@ importers:
   packages/contentstack:
     specifiers:
       '@contentstack/cli-audit': ~1.14.0
-      '@contentstack/cli-auth': ~1.5.0
+      '@contentstack/cli-auth': ~1.5.1
       '@contentstack/cli-cm-bootstrap': ~1.15.0
       '@contentstack/cli-cm-branches': ~1.5.0
       '@contentstack/cli-cm-bulk-publish': ~1.9.0
@@ -28,7 +28,7 @@ importers:
       '@contentstack/cli-config': ~1.14.0
       '@contentstack/cli-launch': ^1.9.2
       '@contentstack/cli-migration': ~1.8.0
-      '@contentstack/cli-utilities': ~1.13.0
+      '@contentstack/cli-utilities': ~1.13.1
       '@contentstack/cli-variants': ~1.3.0
       '@contentstack/management': ~1.22.0
       '@oclif/core': ^4.3.0
@@ -132,7 +132,7 @@ importers:
   packages/contentstack-audit:
     specifiers:
       '@contentstack/cli-command': ~1.6.0
-      '@contentstack/cli-utilities': ~1.13.0
+      '@contentstack/cli-utilities': ~1.13.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@oclif/plugin-plugins': ^5.4.38
@@ -193,7 +193,7 @@ importers:
   packages/contentstack-auth:
     specifiers:
       '@contentstack/cli-command': ~1.6.0
-      '@contentstack/cli-utilities': ~1.13.0
+      '@contentstack/cli-utilities': ~1.13.1
       '@fancy-test/nock': ^0.1.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
@@ -243,7 +243,7 @@ importers:
     specifiers:
       '@contentstack/cli-cm-seed': ~1.12.0
       '@contentstack/cli-command': ~1.6.0
-      '@contentstack/cli-utilities': ~1.13.0
+      '@contentstack/cli-utilities': ~1.13.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@oclif/test': ^4.1.13
@@ -294,7 +294,7 @@ importers:
     specifiers:
       '@contentstack/cli-command': ~1.6.0
       '@contentstack/cli-dev-dependencies': ~1.3.0
-      '@contentstack/cli-utilities': ~1.13.0
+      '@contentstack/cli-utilities': ~1.13.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@types/flat': ^5.0.5
@@ -338,7 +338,7 @@ importers:
   packages/contentstack-bulk-publish:
     specifiers:
       '@contentstack/cli-command': ~1.6.0
-      '@contentstack/cli-utilities': ~1.13.0
+      '@contentstack/cli-utilities': ~1.13.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@oclif/test': ^4.1.13
@@ -378,7 +378,7 @@ importers:
       '@contentstack/cli-cm-export': ~1.18.0
       '@contentstack/cli-cm-import': ~1.26.0
       '@contentstack/cli-command': ~1.6.0
-      '@contentstack/cli-utilities': ~1.13.0
+      '@contentstack/cli-utilities': ~1.13.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@oclif/test': ^4.1.13
@@ -425,7 +425,7 @@ importers:
 
   packages/contentstack-command:
     specifiers:
-      '@contentstack/cli-utilities': ~1.13.0
+      '@contentstack/cli-utilities': ~1.13.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@oclif/test': ^4.1.13
@@ -461,7 +461,7 @@ importers:
   packages/contentstack-config:
     specifiers:
       '@contentstack/cli-command': ~1.6.0
-      '@contentstack/cli-utilities': ~1.13.0
+      '@contentstack/cli-utilities': ~1.13.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@oclif/test': ^4.1.13
@@ -534,7 +534,7 @@ importers:
       '@contentstack/cli-command': ~1.6.0
       '@contentstack/cli-config': ~1.12.1
       '@contentstack/cli-dev-dependencies': ~1.3.1
-      '@contentstack/cli-utilities': ~1.13.0
+      '@contentstack/cli-utilities': ~1.13.1
       '@contentstack/cli-variants': ~1.3.0
       '@oclif/core': ^4.3.3
       '@oclif/plugin-help': ^6.2.28
@@ -598,7 +598,7 @@ importers:
   packages/contentstack-export-to-csv:
     specifiers:
       '@contentstack/cli-command': ~1.6.0
-      '@contentstack/cli-utilities': ~1.13.0
+      '@contentstack/cli-utilities': ~1.13.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@oclif/test': ^4.1.13
@@ -640,7 +640,7 @@ importers:
     specifiers:
       '@contentstack/cli-audit': ~1.14.0
       '@contentstack/cli-command': ~1.6.0
-      '@contentstack/cli-utilities': ~1.13.0
+      '@contentstack/cli-utilities': ~1.13.1
       '@contentstack/cli-variants': ~1.3.0
       '@contentstack/management': ~1.22.0
       '@oclif/core': ^4.3.0
@@ -714,7 +714,7 @@ importers:
   packages/contentstack-import-setup:
     specifiers:
       '@contentstack/cli-command': ~1.6.0
-      '@contentstack/cli-utilities': ~1.13.0
+      '@contentstack/cli-utilities': ~1.13.1
       '@oclif/core': ^4.3.0
       '@types/big-json': ^3.2.5
       '@types/bluebird': ^3.5.42
@@ -775,7 +775,7 @@ importers:
   packages/contentstack-migrate-rte:
     specifiers:
       '@contentstack/cli-command': ~1.6.0
-      '@contentstack/cli-utilities': ~1.13.0
+      '@contentstack/cli-utilities': ~1.13.1
       '@contentstack/json-rte-serializer': ~2.1.0
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
@@ -820,7 +820,7 @@ importers:
   packages/contentstack-migration:
     specifiers:
       '@contentstack/cli-command': ~1.6.0
-      '@contentstack/cli-utilities': ~1.13.0
+      '@contentstack/cli-utilities': ~1.13.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@oclif/test': ^4.1.13
@@ -864,7 +864,7 @@ importers:
     specifiers:
       '@contentstack/cli-cm-import': ~1.26.0
       '@contentstack/cli-command': ~1.6.0
-      '@contentstack/cli-utilities': ~1.13.0
+      '@contentstack/cli-utilities': ~1.13.1
       '@contentstack/management': ~1.22.0
       '@types/inquirer': ^9.0.8
       '@types/jest': ^26.0.24
@@ -2081,11 +2081,13 @@ packages:
       - jest
     dev: true
 
-  /@contentstack/cli-command/1.5.1_debug@4.4.1:
-    resolution: {integrity: sha512-GJHPXH/e4bw2sftpFUGQFao3H0Btp3wEsjyukqOtlFlY3ZjzwqVRGAJTncte2NfkQUjnqlxIxRhJKE645nWSzg==}
+  /@contentstack/cli-command/1.6.0_debug@4.4.1:
+    resolution: {integrity: sha512-PZI0MmXRC05SRr0SJMHxGqTGItyUxt9gwZSJ6O7C7O6pqbwzOzUdEY0YpxgbIAj3/ZTE1ADPIj0xsVlH7yFqKQ==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      '@contentstack/cli-utilities': 1.12.1_debug@4.4.1
+      '@contentstack/cli-utilities': 1.13.0_debug@4.4.1
+      '@oclif/core': 4.4.0
+      '@oclif/plugin-help': 6.2.29
       contentstack: 3.25.3
     transitivePeerDependencies:
       - '@jest/globals'
@@ -2112,8 +2114,8 @@ packages:
     hasBin: true
     dependencies:
       '@apollo/client': 3.13.8_graphql@16.11.0
-      '@contentstack/cli-command': 1.5.1_debug@4.4.1
-      '@contentstack/cli-utilities': 1.12.1_debug@4.4.1
+      '@contentstack/cli-command': 1.6.0_debug@4.4.1
+      '@contentstack/cli-utilities': 1.13.0_debug@4.4.1
       '@oclif/core': 4.4.0
       '@oclif/plugin-help': 6.2.29
       '@oclif/plugin-plugins': 5.4.43
@@ -2186,8 +2188,8 @@ packages:
       - debug
     dev: true
 
-  /@contentstack/cli-utilities/1.12.1_debug@4.4.1:
-    resolution: {integrity: sha512-+DNqQxy9ERR53OAeUYSMCazUs9DjazyB6r+ZMIotg6BB6ZdlNt6Qr6XgxEFE/jgBqzZVmPox3hu+xV0KL1DEdg==}
+  /@contentstack/cli-utilities/1.13.0_debug@4.4.1:
+    resolution: {integrity: sha512-L5Wn+pbNsd+2a99DYSo+s8PGYeuJWblllRraYi735osMxXYCCTwRXtmTOz6FAl2/XwI2wBd4FwT4ssgwVPGqfQ==}
     dependencies:
       '@contentstack/management': 1.22.0_debug@4.4.1
       '@contentstack/marketplace-sdk': 1.2.8_debug@4.4.1
