@@ -86,8 +86,10 @@ function getLogPath(): string {
   // 3. Use current working directory (where user ran the command)
   try {
     const cwdPath = path.join(process.cwd(), 'logs');
-    const testDir = path.dirname(cwdPath);
-    fs.accessSync(testDir, fs.constants.W_OK);
+    if (!fs.existsSync(cwdPath)) {
+      fs.mkdirSync(cwdPath, { recursive: true });
+    }
+    fs.accessSync(cwdPath, fs.constants.W_OK);
     return cwdPath;
   } catch (error) {
     // If current directory is not writable, fall back to home directory
