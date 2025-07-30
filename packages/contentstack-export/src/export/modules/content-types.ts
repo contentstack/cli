@@ -105,7 +105,7 @@ export default class ContentTypesExport extends BaseClass {
   }
 
   sanitizeAttribs(contentTypes: Record<string, unknown>[]): Record<string, unknown>[] {
-    log.debug(`Sanitizing ${contentTypes.length} content types`, this.exportConfig.context);
+    log.debug(`Sanitizing ${contentTypes?.length} content types`, this.exportConfig.context);
 
     const updatedContentTypes: Record<string, unknown>[] = [];
 
@@ -121,7 +121,7 @@ export default class ContentTypesExport extends BaseClass {
   }
 
   async writeContentTypes(contentTypes: Record<string, unknown>[]) {
-    log.debug(`Writing ${contentTypes.length} content types to disk`, this.exportConfig.context);
+    log.debug(`Writing ${contentTypes?.length} content types to disk`, this.exportConfig.context);
 
     function write(contentType: Record<string, unknown>) {
       return fsUtil.writeFile(
