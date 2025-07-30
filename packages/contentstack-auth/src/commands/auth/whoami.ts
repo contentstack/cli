@@ -18,7 +18,6 @@ export default class WhoamiCommand extends BaseCommand<typeof WhoamiCommand> {
         log.debug('User email found, displaying user information', { ...this.contextDetails, email: this.email });
         cliux.print('CLI_AUTH_WHOAMI_LOGGED_IN_AS', { color: 'white' });
         cliux.print(this.email, { color: 'green' });
-        log.info(messageHandler.parse('CLI_AUTH_WHOAMI_LOGGED_IN_AS', this.email), this.contextDetails);
         log.debug('Whoami command completed successfully', this.contextDetails);
       } else {
         log.debug('No user email found in context', this.contextDetails);
