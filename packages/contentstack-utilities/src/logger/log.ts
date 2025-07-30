@@ -50,11 +50,12 @@ const cliErrorHandler = new CLIErrorHandler(); // Enable debug mode for error cl
  */
 function handleAndLogError(error: unknown, context?: ErrorContext, errorMessage?: string): void {
   const classified = cliErrorHandler.classifyError(error, context, errorMessage);
+  const apiError = classified.error?.message || classified?.message || 'Unknown error';
 
   // Always log the error
   v2Logger.logError({
     type: classified.type,
-    message: errorMessage || classified.error?.message || classified.message,
+    message: errorMessage ? `${errorMessage}\nAPI Error: ${apiError}` : `${apiError}`,
     error: classified.error,
     context: typeof classified.context === 'string' ? { message: classified.context } : classified.context,
     hidden: classified.hidden,
