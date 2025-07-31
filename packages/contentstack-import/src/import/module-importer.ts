@@ -156,15 +156,13 @@ class ModuleImporter {
               'extensions',
               'workflows',
               'custom-roles',
-              'assets',
-              'field-rules',
+              'assets'
             ].includes(val),
           )
           .forEach((val) => {
             args.push('--modules', val);
           });
       }
-      args.push('--modules', 'assets');
       args.push('--modules', 'field-rules');
       log(this.importConfig, 'Starting audit process', 'info');
       const result = await AuditFix.run(args);
