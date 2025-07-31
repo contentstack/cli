@@ -76,12 +76,7 @@ describe('AssetsUnpublish Command', () => {
   it('prompts for missing access parameter', async () => {
     const promptStub = sandbox.stub(cliux, 'prompt').resolves('test-delivery-token');
     test
-      .command(UnpublishCommand, [
-        '--alias', 'm_alias', 
-        '--environment', 'env', 
-        '--locale', 'en-us', 
-        '--yes'
-      ])
+      .command(UnpublishCommand, ['--alias', 'm_alias', '--environment', 'env', '--locale', 'en-us', '--yes'])
       .it('Handles missing parameter prompt', () => {
         sinon.assert.calledOnce(promptStub);
       });
@@ -89,11 +84,7 @@ describe('AssetsUnpublish Command', () => {
 
   it('validates required authentication parameters', async () => {
     test
-      .command(UnpublishCommand, [
-        '--environment', 'env', 
-        '--locale', 'en-us', 
-        '--yes'
-      ])
+      .command(UnpublishCommand, ['--environment', 'env', '--locale', 'en-us', '--yes'])
       .catch((error) => {
         expect(error.message).to.equal('Please use `--alias` or `--stack-api-key` to proceed.');
       })
