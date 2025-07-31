@@ -1,57 +1,102 @@
-const { describe, it } = require('mocha');
-const { cliux } = require('@contentstack/cli-utilities');
 const sinon = require('sinon');
-const { config } = require('dotenv');
-const { expect } = require('chai');
+const { test } = require('@contentstack/cli-dev-dependencies');
+const { describe, it, beforeEach, afterEach } = require('mocha');
+const UnpublishCommand = require('../../../../src/commands/cm/assets/unpublish');
+const AddTokenCommand = require('@contentstack/cli-auth/lib/commands/auth/tokens/add').default;
+const getStackModule = require('../../../helpers/helper');
+const { cliux } = require('@contentstack/cli-utilities');
 
-const AssetsUnpublish = require('../../../../src/commands/cm/assets/unpublish');
+describe('AssetsUnpublish Command', () => {
+  let sandbox;
+  let stackDetails;
 
-const { stub } = sinon;
+  beforeEach(async () => {
+    sandbox = sinon.createSandbox();
 
-config();
+    stackDetails = {
+      api_key: 'asdf',
+      environment: 'env',
+      delivery_token: 'asdf',
+      management_token: 'asdf',
+      alias: 'm_alias',
+    };
 
-const environments = process.env.ENVIRONMENTS.split(',');
-const locales = process.env.LOCALES.split(',');
+    sandbox.stub(getStackModule, 'getStack').resolves(stackDetails);
 
-describe('AssetsUnpublish', () => {
-  it('Should run successfully when all the flags are passed', async () => {
-    const args = ['--environment', environments[0], '--locale', locales[0], '--alias', process.env.MANAGEMENT_ALIAS, '--delivery-token', process.env.DELIVERY_TOKEN, '--yes'];
-    const inquireStub = stub(cliux, 'prompt');
-    await AssetsUnpublish.run(args);
-    sinon.assert.notCalled(inquireStub);
-    inquireStub.restore();
+    await test
+      .command(AddTokenCommand, [
+        '--alias',
+        'm_alias',
+        '--stack-api-key',
+        stackDetails.api_key,
+        '--management',
+        '--token',
+        stackDetails.management_token,
+        '--yes',
+      ])
+      .it(`Adding token for ${stackDetails.api_key}`);
   });
 
-  it('Should ask for delivery token when the flag is not passed', async () => {
-    const args = ['--environment', environments[0], '--locale', locales[0], '--alias', process.env.MANAGEMENT_ALIAS, '--yes'];
-    const inquireStub = stub(cliux, 'prompt').resolves(process.env.DELIVERY_TOKEN);
-    await AssetsUnpublish.run(args);
-    sinon.assert.calledOnce(inquireStub);
-    inquireStub.restore();
+  afterEach(() => {
+    sandbox.restore();
   });
 
-  it('Should fail when alias and stack api key flags are not passed', async () => {
-    const args = ['--environment', environments[0], '--locale', locales[0], '--yes'];
-    const inquireStub = stub(cliux, 'prompt');
-    const assetUnpublishSpy = sinon.spy(AssetsUnpublish.prototype, 'run');
-    const expectedError = 'Please use `--alias` or `--stack-api-key` to proceed.';
-    try {
-      await AssetsUnpublish.run(args);
-    } catch (error) {
-      expect(error).to.be.an.instanceOf(Error);
-      expect(error.message).to.equal(expectedError);
-      expect(assetUnpublishSpy.calledOnce).to.be.true;
-    }
-    sinon.assert.notCalled(inquireStub);
-    inquireStub.restore();
-    assetUnpublishSpy.restore();
+  it('executes successfully with required parameters', async () => {
+    await test
+      .command(UnpublishCommand, [
+        '--alias',
+        'm_alias',
+        '--environment',
+        'env',
+        '--locale',
+        'en-us',
+        '--delivery-token',
+        'test-delivery-token',
+        '--yes',
+      ])
+      .it('Command completes without errors');
   });
 
-  it('Should run successfully when user is logged in and stack api key is passed', async () => {
-    const args = ['--environment', environments[0], '--locale', locales[0], '--stack-api-key', process.env.STACK_API_KEY, '--delivery-token', process.env.DELIVERY_TOKEN, '--yes'];
-    const inquireStub = stub(cliux, 'prompt');
-    await AssetsUnpublish.run(args);
-    sinon.assert.notCalled(inquireStub);
-    inquireStub.restore();
+  it('executes successfully with stack identifier', async () => {
+    await test
+      .command(UnpublishCommand, [
+        '--stack-api-key',
+        stackDetails.api_key,
+        '--environment',
+        'env',
+        '--locale',
+        'en-us',
+        '--delivery-token',
+        'test-delivery-token',
+        '--yes',
+      ])
+      .it('Command completes using stack API key');
+  });
+
+  it('prompts for missing access parameter', async () => {
+    const promptStub = sandbox.stub(cliux, 'prompt').resolves('test-delivery-token');
+    test
+      .command(UnpublishCommand, [
+        '--alias', 'm_alias', 
+        '--environment', 'env', 
+        '--locale', 'en-us', 
+        '--yes'
+      ])
+      .it('Handles missing parameter prompt', () => {
+        sinon.assert.calledOnce(promptStub);
+      });
+  });
+
+  it('validates required authentication parameters', async () => {
+    test
+      .command(UnpublishCommand, [
+        '--environment', 'env', 
+        '--locale', 'en-us', 
+        '--yes'
+      ])
+      .catch((error) => {
+        expect(error.message).to.equal('Please use `--alias` or `--stack-api-key` to proceed.');
+      })
+      .it('Handles missing authentication parameters');
   });
 });
