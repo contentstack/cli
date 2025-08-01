@@ -170,6 +170,13 @@ export default class CLIProgressManager {
     this.callbacks = { ...this.callbacks, ...callbacks };
   }
 
+  /**
+   * Convert module name from UPPERCASE to PascalCase 
+   */
+  private formatModuleName(name: string): string {
+    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  }
+
   private initializeProgress(): void {
     if (this.showConsoleLogs) {
       return;
@@ -202,8 +209,10 @@ export default class CLIProgressManager {
         barIncompleteChar: '\u2591',
         hideCursor: true,
       });
+      const formattedName = this.formatModuleName(this.moduleName);
+      const displayName = formattedName.length > 20 ? formattedName.substring(0, 17) + '...' : formattedName;
       this.progressBar.start(this.total, 0, {
-        label: chalk.gray(`   └─ ${this.moduleName}`.padEnd(18)),
+        label: chalk.gray(`   └─ ${displayName}`.padEnd(25)),
         status: chalk.gray('Starting...'),
         percentage: '0',
       });
@@ -229,7 +238,8 @@ export default class CLIProgressManager {
     };
 
     if (!this.showConsoleLogs) {
-      const indentedLabel = `  ├─ ${processName}`.padEnd(18);
+      const truncatedName = processName.length > 20 ? processName.substring(0, 17) + '...' : processName;
+      const indentedLabel = `  ├─ ${truncatedName}`.padEnd(25);
       process.progressBar = this.multiBar.create(total, 0, {
         label: chalk.gray(indentedLabel),
         status: chalk.gray('Pending'),
@@ -251,10 +261,11 @@ export default class CLIProgressManager {
     if (process) {
       process.status = 'active';
       if (!this.showConsoleLogs && process.progressBar) {
-        const indentedLabel = `  ├─ ${processName}`.padEnd(18);
+        const truncatedName = processName.length > 20 ? processName.substring(0, 17) + '...' : processName;
+        const indentedLabel = `  ├─ ${truncatedName}`.padEnd(25);
         process.progressBar.update(0, {
           label: chalk.yellow(indentedLabel),
-          status: chalk.yellow(this.moduleName),
+          status: chalk.yellow('Processing'),
           percentage: '0',
         });
       }
@@ -277,7 +288,8 @@ export default class CLIProgressManager {
         const statusText = success
           ? chalk.green(`✓ Complete (${process.successCount}/${process.current})`)
           : chalk.red(`✗ Failed (${process.successCount}/${process.current})`);
-        const indentedLabel = `  ├─ ${processName}`.padEnd(18);
+        const truncatedName = processName.length > 20 ? processName.substring(0, 17) + '...' : processName;
+        const indentedLabel = `  ├─ ${truncatedName}`.padEnd(25);
         process.progressBar.update(process.total, {
           label: success ? chalk.green(indentedLabel) : chalk.red(indentedLabel),
           status: statusText,
@@ -297,7 +309,8 @@ export default class CLIProgressManager {
         const process = this.processes.get(processName);
         if (process && process.progressBar) {
           const percentage = Math.round((process.current / process.total) * 100);
-          const indentedLabel = `  ├─ ${processName}`.padEnd(18);
+          const truncatedName = processName.length > 20 ? processName.substring(0, 17) + '...' : processName;
+          const indentedLabel = `  ├─ ${truncatedName}`.padEnd(25);
           process.progressBar.update(process.current, {
             label: chalk.yellow(indentedLabel),
             status: chalk.yellow(message),
@@ -306,8 +319,10 @@ export default class CLIProgressManager {
         }
       } else if (this.progressBar) {
         const percentage = Math.round(this.progressBar.getProgress() * 100);
+        const formattedName = this.formatModuleName(this.moduleName);
+        const displayName = formattedName.length > 20 ? formattedName.substring(0, 17) + '...' : formattedName;
         this.progressBar.update(this.progressBar.getProgress() * this.total, {
-          label: chalk.yellow(`   └─ ${this.moduleName}`.padEnd(18)),
+          label: chalk.yellow(`   └─ ${displayName}`.padEnd(25)),
           status: chalk.yellow(message),
           percentage: percentage.toString(),
         });
@@ -355,7 +370,8 @@ export default class CLIProgressManager {
           const percentage = Math.round((process.current / process.total) * 100);
           const statusText = `${process.successCount}✓ ${process.failureCount}✗`;
 
-          const indentedLabel = `  ├─ ${targetProcess}`.padEnd(18);
+          const truncatedName = targetProcess.length > 20 ? targetProcess.substring(0, 17) + '...' : targetProcess;
+          const indentedLabel = `  ├─ ${truncatedName}`.padEnd(25);
           process.progressBar.increment(1, {
             label: chalk.cyan(indentedLabel),
             status: chalk.cyan(statusText),
@@ -381,8 +397,10 @@ export default class CLIProgressManager {
           const labelColor =
             totalProcessed >= this.total ? (this.failureCount === 0 ? chalk.green : chalk.yellow) : chalk.cyan;
 
+          const formattedName = this.formatModuleName(this.moduleName);
+          const displayName = formattedName.length > 20 ? formattedName.substring(0, 17) + '...' : formattedName;
           this.progressBar.increment(1, {
-            label: labelColor(`   └─ ${this.moduleName}`.padEnd(18)),
+            label: labelColor(`   └─ ${displayName}`.padEnd(25)),
             status: statusText,
             percentage: percentage.toString(),
           });

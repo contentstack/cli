@@ -11,18 +11,21 @@ export default class LogGetCommand extends Command {
       const currentLoggingConfig = configHandler.get('log') || {};
       const logLevel = currentLoggingConfig?.level;
       const logPath = currentLoggingConfig?.path;
+      const showConsoleLogs = currentLoggingConfig?.showConsoleLogs;
 
       if (logLevel || logPath) {
         const logConfigList = [
           {
             'Log Level': logLevel || 'Not set',
             'Log Path': logPath || 'Not set',
+            'Show Console Logs': showConsoleLogs !== undefined ? String(showConsoleLogs) : 'Not set',
           },
         ];
 
         const headers: TableHeader[] = [
           { value: 'Log Level' },
           { value: 'Log Path' },
+          { value: 'Show Console Logs' },
         ];
 
         cliux.table(headers, logConfigList);
