@@ -51,29 +51,51 @@ export default class GlobalFieldsExport extends BaseClass {
     this.globalFields = [];
     this.applyQueryFilters(this.qs, 'global-fields');
     this.exportConfig.context.module = 'global-fields';
+    this.currentModuleName = 'Global Fields';
   }
 
   async start() {
     try {
       log.debug('Starting global fields export process...', this.exportConfig.context);
-      log.debug(`Global fields directory path: ${this.globalFieldsDirPath}`, this.exportConfig.context); 
-      await fsUtil.makeDirectory(this.globalFieldsDirPath);
-      log.debug('Created global fields directory', this.exportConfig.context);
-      
+
+      // Get global fields count and setup with loading spinner
+      const [totalCount] = await this.withLoadingSpinner(
+        'GLOBAL-FIELDS: Analyzing global fields...',
+        async () => {
+          await fsUtil.makeDirectory(this.globalFieldsDirPath);
+          const countResponse = await this.stackAPIClient
+            .globalField()
+            .query({ ...this.qs, include_count: true, limit: 1 })
+            .find();
+          return [countResponse.count || 0];
+        },
+      );
+
+      if (totalCount === 0) {
+        log.info(messageHandler.parse('GLOBAL_FIELDS_NOT_FOUND'), this.exportConfig.context);
+        return;
+      }
+
+      // Create simple progress manager for global fields
+      const progress = this.createSimpleProgress(this.currentModuleName, totalCount);
+
+      progress.updateStatus('Fetching global fields...');
       await this.getGlobalFields();
-      log.debug(`Retrieved ${this.globalFields.length} global fields`, this.exportConfig.context);
-      
+
       const globalFieldsFilePath = path.join(this.globalFieldsDirPath, this.globalFieldsConfig.fileName);
       log.debug(`Writing global fields to: ${globalFieldsFilePath}`, this.exportConfig.context);
       fsUtil.writeFile(globalFieldsFilePath, this.globalFields);
-      
+
       log.success(
         messageHandler.parse('GLOBAL_FIELDS_EXPORT_COMPLETE', this.globalFields.length),
         this.exportConfig.context,
       );
+
+      this.completeProgress(true);
     } catch (error) {
       log.debug('Error occurred during global fields export', this.exportConfig.context);
       handleAndLogError(error, { ...this.exportConfig.context });
+      this.completeProgress(false, error?.message || 'Global fields export failed');
     }
   }
 
@@ -83,11 +105,16 @@ export default class GlobalFieldsExport extends BaseClass {
       log.debug(`Fetching global fields with skip: ${skip}`, this.exportConfig.context);
     }
     log.debug(`Query parameters: ${JSON.stringify(this.qs)}`, this.exportConfig.context);
-    
+
     let globalFieldsFetchResponse = await this.stackAPIClient.globalField({ api_version: '3.2' }).query(this.qs).find();
-    
-    log.debug(`Fetched ${globalFieldsFetchResponse.items?.length || 0} global fields out of total ${globalFieldsFetchResponse.count}`, this.exportConfig.context);
-    
+
+    log.debug(
+      `Fetched ${globalFieldsFetchResponse.items?.length || 0} global fields out of total ${
+        globalFieldsFetchResponse.count
+      }`,
+      this.exportConfig.context,
+    );
+
     if (Array.isArray(globalFieldsFetchResponse.items) && globalFieldsFetchResponse.items.length > 0) {
       log.debug(`Processing ${globalFieldsFetchResponse.items.length} global fields`, this.exportConfig.context);
       this.sanitizeAttribs(globalFieldsFetchResponse.items);
@@ -105,18 +132,24 @@ export default class GlobalFieldsExport extends BaseClass {
 
   sanitizeAttribs(globalFields: Record<string, string>[]) {
     log.debug(`Sanitizing ${globalFields.length} global fields`, this.exportConfig.context);
-    
+
     globalFields.forEach((globalField: Record<string, string>) => {
       log.debug(`Processing global field: ${globalField.uid || 'unknown'}`, this.exportConfig.context);
-      
+
       for (let key in globalField) {
         if (this.globalFieldsConfig.validKeys.indexOf(key) === -1) {
           delete globalField[key];
         }
       }
       this.globalFields.push(globalField);
+
+      // Track progress for each global field
+      this.progressManager?.tick(true, `global-field: ${globalField.uid}`);
     });
-    
-    log.debug(`Sanitization complete. Total global fields processed: ${this.globalFields.length}`, this.exportConfig.context);
+
+    log.debug(
+      `Sanitization complete. Total global fields processed: ${this.globalFields.length}`,
+      this.exportConfig.context,
+    );
   }
 }

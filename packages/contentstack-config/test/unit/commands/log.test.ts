@@ -45,7 +45,7 @@ describe('Log Commands', () => {
         setStub.calledWith('log', {
           level: 'debug',
           path: './logs/app.log',
-          'show-console-logs': false,
+          showConsoleLogs: false,
         }),
       ).to.be.true;
 
@@ -74,7 +74,7 @@ describe('Log Commands', () => {
         setStub.calledWith('log', {
           level: 'info',
           path: './custom/logs/app.log',
-          'show-console-logs': false,
+          showConsoleLogs: false,
         }),
       ).to.be.true;
 
@@ -103,7 +103,7 @@ describe('Log Commands', () => {
         setStub.calledWith('log', {
           level: 'warn',
           path: './existing/logs/app.log',
-          'show-console-logs': false,
+          showConsoleLogs: false,
         }),
       ).to.be.true;
 
@@ -132,7 +132,7 @@ describe('Log Commands', () => {
         setStub.calledWith('log', {
           level: 'error',
           path: './new/logs/app.log',
-          'show-console-logs': false,
+          showConsoleLogs: false,
         }),
       ).to.be.true;
 
@@ -159,7 +159,7 @@ describe('Log Commands', () => {
         setStub.calledWith('log', {
           level: 'info',
           path: './logs/app.log',
-          'show-console-logs': true,
+          showConsoleLogs: true,
         }),
       ).to.be.true;
 
@@ -184,7 +184,7 @@ describe('Log Commands', () => {
         setStub.calledWith('log', {
           level: 'info',
           path: './logs/app.log',
-          'show-console-logs': false,
+          showConsoleLogs: false,
         }),
       ).to.be.true;
 
@@ -210,7 +210,7 @@ describe('Log Commands', () => {
         setStub.calledWith('log', {
           level: 'warn',
           path: './logs/warnings.log',
-          'show-console-logs': true,
+          showConsoleLogs: true,
         }),
       ).to.be.true;
 
@@ -241,7 +241,7 @@ describe('Log Commands', () => {
         setStub.calledWith('log', {
           level: 'info',
           path: './logs/app.log',
-          'show-console-logs': false,
+          showConsoleLogs: false,
         }),
       ).to.be.true;
 
@@ -290,11 +290,12 @@ describe('Log Commands', () => {
       await cmd.run();
 
       expect(tableMessage).to.have.length(1);
-      expect(tableMessage[0].headers).to.deep.equal([{ value: 'Log Level' }, { value: 'Log Path' }]);
+      expect(tableMessage[0].headers).to.deep.equal([{ value: 'Log Level' }, { value: 'Log Path' }, { value: 'Show Console Logs' }]);
       expect(tableMessage[0].data).to.deep.equal([
         {
           'Log Level': 'debug',
           'Log Path': './logs/app.log',
+          'Show Console Logs': 'Not set',
         },
       ]);
     });
@@ -306,11 +307,12 @@ describe('Log Commands', () => {
       await cmd.run();
 
       expect(tableMessage).to.have.length(1);
-      expect(tableMessage[0].headers).to.deep.equal([{ value: 'Log Level' }, { value: 'Log Path' }]);
+      expect(tableMessage[0].headers).to.deep.equal([{ value: 'Log Level' }, { value: 'Log Path' }, { value: 'Show Console Logs' }]);
       expect(tableMessage[0].data).to.deep.equal([
         {
           'Log Level': 'info',
           'Log Path': 'Not set',
+          'Show Console Logs': 'Not set',
         },
       ]);
     });
@@ -322,11 +324,12 @@ describe('Log Commands', () => {
       await cmd.run();
 
       expect(tableMessage).to.have.length(1);
-      expect(tableMessage[0].headers).to.deep.equal([{ value: 'Log Level' }, { value: 'Log Path' }]);
+      expect(tableMessage[0].headers).to.deep.equal([{ value: 'Log Level' }, { value: 'Log Path' }, { value: 'Show Console Logs' }]);
       expect(tableMessage[0].data).to.deep.equal([
         {
           'Log Level': 'Not set',
           'Log Path': './custom/logs/app.log',
+          'Show Console Logs': 'Not set',
         },
       ]);
     });
