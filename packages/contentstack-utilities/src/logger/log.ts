@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import { default as Logger } from './logger';
 import { CLIErrorHandler } from './cli-error-handler';
@@ -48,11 +50,12 @@ const cliErrorHandler = new CLIErrorHandler(); // Enable debug mode for error cl
  */
 function handleAndLogError(error: unknown, context?: ErrorContext, errorMessage?: string): void {
   const classified = cliErrorHandler.classifyError(error, context, errorMessage);
+  const apiError = classified.error?.message || classified?.message || 'Unknown error';
 
   // Always log the error
   v2Logger.logError({
     type: classified.type,
-    message: errorMessage || classified.error?.message || classified.message,
+    message: errorMessage ? `${errorMessage}\nAPI Error: ${apiError}` : `${apiError}`,
     error: classified.error,
     context: typeof classified.context === 'string' ? { message: classified.context } : classified.context,
     hidden: classified.hidden,
@@ -60,8 +63,40 @@ function handleAndLogError(error: unknown, context?: ErrorContext, errorMessage?
   });
 }
 
+/**
+ * Get the log path for centralized logging
+ * Priority:
+ * 1. CS_CLI_LOG_PATH environment variable (user override)
+ * 2. User config (log.path from CLI config)
+ * 3. Current working directory + logs (where user ran the command)
+ * 4. Home directory (~/contentstack/logs) (fallback)
+ */
 function getLogPath(): string {
-  return process.env.CS_CLI_LOG_PATH || configHandler.get('log.path') || path.join(__dirname, 'logs');
+  // 1. Environment variable override
+  if (process.env.CS_CLI_LOG_PATH) {
+    return process.env.CS_CLI_LOG_PATH;
+  }
+
+  // 2. User configured path
+  const configuredPath = configHandler.get('log.path');
+  if (configuredPath) {
+    return configuredPath;
+  }
+
+  // 3. Use current working directory (where user ran the command)
+  try {
+    const cwdPath = path.join(process.cwd(), 'logs');
+    if (!fs.existsSync(cwdPath)) {
+      fs.mkdirSync(cwdPath, { recursive: true });
+    }
+    fs.accessSync(cwdPath, fs.constants.W_OK);
+    return cwdPath;
+  } catch (error) {
+    // If current directory is not writable, fall back to home directory
+  }
+
+  // 4. Fallback to home directory
+  return path.join(os.homedir(), 'contentstack', 'logs');
 }
 
 export { v2Logger, cliErrorHandler, handleAndLogError, getLogPath };

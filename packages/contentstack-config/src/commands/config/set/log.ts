@@ -1,23 +1,31 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, flags, configHandler, FlagInput, messageHandler, CLIError } from '@contentstack/cli-utilities';
+import { cliux, flags, configHandler, FlagInput, messageHandler } from '@contentstack/cli-utilities';
 import { interactive } from '../../../utils';
-import { existsSync, statSync } from 'fs';
-import { dirname } from 'path';
 
 export default class LogSetCommand extends Command {
   static description = 'Set logging configuration for CLI';
 
   static flags: FlagInput = {
-    level: flags.string({
+    'level': flags.string({
       description: 'Set the log level for the CLI.',
       options: ['debug', 'info', 'warn', 'error'],
     }),
-    path: flags.string({
-      description: ' Specify the file path where logs should be saved.',
+    'path': flags.string({
+      description: 'Specify the file path where logs should be saved.',
     }),
+    'show-console-logs': flags.boolean({
+      description: 'Enable console logging.',
+      allowNo: true, // no-show-console-logs
+      default: false,
+    })
   };
 
-  static examples = ['csdx config:set:log', 'csdx config:set:log --level debug --path ./logs/app.log'];
+
+  static examples = [
+    'csdx config:set:log',
+    'csdx config:set:log --level debug --path ./logs/app.log --show-console-logs',
+    'csdx config:set:log --no-show-console-logs',
+  ];
 
   async run() {
     try {
@@ -25,6 +33,7 @@ export default class LogSetCommand extends Command {
 
       let logLevel: string = flags['level'];
       let logPath: string = flags['path'];
+      const showConsoleLogs: boolean = flags['show-console-logs'];
 
       // Interactive prompts if not passed via flags
       if (!logLevel) {
@@ -35,23 +44,16 @@ export default class LogSetCommand extends Command {
         logPath = await interactive.askLogPath();
       }
 
-      if (logPath) {
-        const logDir = dirname(logPath);
-        // Check if the directory part of the path exists and is actually a file
-        if (existsSync(logDir) && statSync(logDir).isFile()) {
-          throw new CLIError({
-            message: `The directory path '${logDir}' is a file, not a directory. Please provide a valid directory path for the log file.`,
-          });
-        }
-      }
-
       const currentLoggingConfig = configHandler.get('log') || {};
       if (logLevel) currentLoggingConfig.level = logLevel;
       if (logPath) currentLoggingConfig.path = logPath;
+      currentLoggingConfig['show-console-logs'] = showConsoleLogs;
 
       configHandler.set('log', currentLoggingConfig);
+
       cliux.success(messageHandler.parse('CLI_CONFIG_LOG_LEVEL_SET', logLevel));
       cliux.success(messageHandler.parse('CLI_CONFIG_LOG_PATH_SET', logPath));
+      cliux.success(messageHandler.parse('CLI_CONFIG_LOG_CONSOLE_SET', String(showConsoleLogs)));
       cliux.print(messageHandler.parse('CLI_CONFIG_LOG_SET_SUCCESS'), { color: 'green' });
     } catch (error) {
       cliux.error('error', error);

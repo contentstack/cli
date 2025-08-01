@@ -17,7 +17,7 @@
     "format": "eslint src/**/*.ts --fix"
   },
   "dependencies": {
-    "@contentstack/cli-utilities": "~1.13.0",
+    "@contentstack/cli-utilities": "~1.13.1",
     "contentstack": "^3.25.3",
     "@oclif/core": "^4.3.0",
     "@oclif/plugin-help": "^6.2.28"
