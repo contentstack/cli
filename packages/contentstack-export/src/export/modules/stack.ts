@@ -24,46 +24,102 @@ export default class ExportStack extends BaseClass {
       this.stackConfig.dirName,
     );
     this.exportConfig.context.module = 'stack';
+    this.currentModuleName = 'Stack';
   }
 
   async start(): Promise<void> {
-    log.debug('Starting stack export process...', this.exportConfig.context);
+    try {
+      log.debug('Starting stack export process...', this.exportConfig.context);
 
-    if (isAuthenticated()) {
-      log.debug('User is authenticated, fetching stack data...', this.exportConfig.context);
-      const stackData = await this.getStack();
+      // Initial analysis with loading spinner
+      const [stackData, localesCount] = await this.withLoadingSpinner(
+        'STACK: Analyzing stack configuration...',
+        async () => {
+          const stackData = isAuthenticated() ? await this.getStack() : null;
+          const localesCount =
+            !this.exportConfig.preserveStackVersion && !this.exportConfig.hasOwnProperty('master_locale')
+              ? await this.getLocalesCount()
+              : 0;
+          return [stackData, localesCount];
+        },
+      );
+
+      // Create nested progress manager
+      const progress = this.createNestedProgress(this.currentModuleName);
+
+      // Add processes based on configuration
+      let processCount = 0;
+
       if (stackData?.org_uid) {
         log.debug(`Found organization UID: ${stackData.org_uid}`, this.exportConfig.context);
         this.exportConfig.org_uid = stackData.org_uid;
         this.exportConfig.sourceStackName = stackData.name;
         log.debug(`Set source stack name: ${stackData.name}`, this.exportConfig.context);
-      } else {
-        log.debug('No stack data found or missing org_uid', this.exportConfig.context);
       }
-    } else {
-      log.debug('User is not authenticated, skipping stack data fetch', this.exportConfig.context);
-    }
 
-    if (this.exportConfig.management_token) {
-      log.info(
-        'Skipping stack settings export: Operation is not supported when using a management token.',
-        this.exportConfig.context,
-      );
-    } else {
-      await this.exportStackSettings();
-    }
-    if (!this.exportConfig.preserveStackVersion && !this.exportConfig.hasOwnProperty('master_locale')) {
-      log.debug(
-        'Preserve stack version is false and master locale not set, fetching locales...',
-        this.exportConfig.context,
-      );
-      //fetch master locale details
-      return this.getLocales();
-    } else if (this.exportConfig.preserveStackVersion) {
-      log.debug('Preserve stack version is true, exporting stack...', this.exportConfig.context);
-      return this.exportStack();
-    } else {
-      log.debug('Master locale already set, skipping locale fetch', this.exportConfig.context);
+      if (!this.exportConfig.management_token) {
+        progress.addProcess('Stack Settings', 1);
+        processCount++;
+      }
+
+      if (
+        !this.exportConfig.preserveStackVersion &&
+        !this.exportConfig.hasOwnProperty('master_locale') &&
+        localesCount > 0
+      ) {
+        progress.addProcess('Locales', localesCount);
+        processCount++;
+      } else if (this.exportConfig.preserveStackVersion) {
+        progress.addProcess('Stack Export', 1);
+        processCount++;
+      }
+
+      // Execute processes
+      if (!this.exportConfig.management_token) {
+        progress.startProcess('Stack Settings').updateStatus('Exporting stack settings...', 'Stack Settings');
+        await this.exportStackSettings();
+        progress.completeProcess('Stack Settings', true);
+      } else {
+        log.info(
+          'Skipping stack settings export: Operation is not supported when using a management token.',
+          this.exportConfig.context,
+        );
+      }
+
+      if (
+        !this.exportConfig.preserveStackVersion &&
+        !this.exportConfig.hasOwnProperty('master_locale') &&
+        localesCount > 0
+      ) {
+        progress.startProcess('Locales').updateStatus('Fetching master locale...', 'Locales');
+        const masterLocale = await this.getLocales();
+        progress.completeProcess('Locales', true);
+
+        if (masterLocale?.code) {
+          this.exportConfig.master_locale = { code: masterLocale.code };
+          log.debug(`Set master locale: ${masterLocale.code}`, this.exportConfig.context);
+        }
+
+        this.completeProgress(true);
+        return masterLocale;
+      } else if (this.exportConfig.preserveStackVersion) {
+        progress.startProcess('Stack Export').updateStatus('Exporting stack data...', 'Stack Export');
+        const stackResult = await this.exportStack();
+        progress.completeProcess('Stack Export', true);
+
+        this.completeProgress(true);
+        return stackResult;
+      } else {
+        log.debug('Master locale already set, skipping locale fetch', this.exportConfig.context);
+      }
+
+      this.completeProgress(true);
+      log.success('Stack export completed successfully', this.exportConfig.context);
+    } catch (error) {
+      log.debug('Error occurred during stack export', this.exportConfig.context);
+      handleAndLogError(error, { ...this.exportConfig.context });
+      this.completeProgress(false, error?.message || 'Stack export failed');
+      throw error;
     }
   }
 
@@ -86,6 +142,26 @@ export default class ExportStack extends BaseClass {
       });
   }
 
+  async getLocalesCount(): Promise<number> {
+    log.debug('Fetching locales count...', this.exportConfig.context);
+
+    try {
+      const countQuery = {
+        ...this.qs,
+        limit: 1,
+      };
+
+      const data = await this.stack.locale().query(countQuery).find();
+
+      const count = data.count || 0;
+      log.debug(`Total locales count: ${count}`, this.exportConfig.context);
+      return count;
+    } catch (error) {
+      log.debug('Failed to fetch locales count', this.exportConfig.context);
+      return 0;
+    }
+  }
+
   async getLocales(skip: number = 0) {
     if (skip) {
       this.qs.skip = skip;
@@ -106,6 +182,12 @@ export default class ExportStack extends BaseClass {
 
         if (items?.length) {
           log.debug(`Processing ${items.length} locales to find master locale`, this.exportConfig.context);
+
+          // Track progress for each locale processed
+          items.forEach((locale: any) => {
+            this.progressManager?.tick(true, `locale: ${locale.name || locale.code}`, null, 'Locales');
+          });
+
           skip += this.stackConfig.limit || 100;
           const masterLocalObj = find(items, (locale: any) => {
             if (locale.fallback_locale === null) {
@@ -139,6 +221,7 @@ export default class ExportStack extends BaseClass {
           `Error occurred while fetching locales for stack: ${this.exportConfig.source_stack}`,
           this.exportConfig.context,
         );
+        this.progressManager?.tick(false, 'locale fetch', error?.message || 'Failed to fetch locales', 'Locales');
         handleAndLogError(
           error,
           { ...this.exportConfig.context },
@@ -160,6 +243,10 @@ export default class ExportStack extends BaseClass {
         const stackFilePath = pResolve(this.stackFolderPath, this.stackConfig.fileName);
         log.debug(`Writing stack data to: ${stackFilePath}`, this.exportConfig.context);
         fsUtil.writeFile(stackFilePath, resp);
+
+        // Track progress for stack export completion
+        this.progressManager?.tick(true, `stack: ${this.exportConfig.source_stack}`, null, 'Stack Export');
+
         log.success(
           `Stack details exported successfully for stack ${this.exportConfig.source_stack}`,
           this.exportConfig.context,
@@ -169,6 +256,7 @@ export default class ExportStack extends BaseClass {
       })
       .catch((error: any) => {
         log.debug(`Error occurred while exporting stack: ${this.exportConfig.source_stack}`, this.exportConfig.context);
+        this.progressManager?.tick(false, 'stack export', error?.message || 'Failed to export stack', 'Stack Export');
         handleAndLogError(error, { ...this.exportConfig.context });
       });
   }
@@ -180,10 +268,20 @@ export default class ExportStack extends BaseClass {
       .settings()
       .then((resp: any) => {
         fsUtil.writeFile(pResolve(this.stackFolderPath, 'settings.json'), resp);
+
+        // Track progress for stack settings completion
+        this.progressManager?.tick(true, 'stack settings', null, 'Stack Settings');
+
         log.success('Exported stack settings successfully!', this.exportConfig.context);
         return resp;
       })
       .catch((error: any) => {
+        this.progressManager?.tick(
+          false,
+          'stack settings',
+          error?.message || 'Failed to export stack settings',
+          'Stack Settings',
+        );
         handleAndLogError(error, { ...this.exportConfig.context });
       });
   }

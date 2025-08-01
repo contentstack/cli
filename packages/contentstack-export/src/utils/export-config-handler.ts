@@ -1,6 +1,6 @@
 import merge from 'merge';
 import * as path from 'path';
-import { configHandler, isAuthenticated,cliux, sanitizePath, log } from '@contentstack/cli-utilities';
+import { configHandler, isAuthenticated, cliux, sanitizePath, log } from '@contentstack/cli-utilities';
 import defaultConfig from '../config';
 import { readFile } from './file-helper';
 import { askExportDir, askAPIKey } from './interactive';
@@ -129,8 +129,9 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
       throw new Error(`Invalid query format: ${error.message}`);
     }
   }
-
-    // Add authentication details to config for context tracking
+  // Set progress supported module to check and display console logs
+  configHandler.set('log.progressSupportedModule', 'export');
+  // Add authentication details to config for context tracking
   config.authenticationMethod = authenticationMethod;
   log.debug('Export configuration setup completed', { ...config });
 
