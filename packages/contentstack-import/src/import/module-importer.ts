@@ -50,9 +50,14 @@ class ModuleImporter {
     if (
       !this.importConfig.skipAudit &&
       (!this.importConfig.moduleName ||
-        ['content-types', 'global-fields', 'entries', 'extensions', 'workflows', 'custom-roles'].includes(
-          this.importConfig.moduleName,
-        ))
+        [
+          'content-types',
+          'global-fields',
+          'entries',
+          'extensions',
+          'workflows',
+          'custom-roles',
+        ].includes(this.importConfig.moduleName))
     ) {
       if (!(await this.auditImportData(logger))) {
         return { noSuccessMsg: true };
@@ -144,13 +149,21 @@ class ModuleImporter {
       } else if (this.importConfig.modules.types.length) {
         this.importConfig.modules.types
           .filter((val) =>
-            ['content-types', 'global-fields', 'entries', 'extensions', 'workflows', 'custom-roles'].includes(val),
+            [
+              'content-types',
+              'global-fields',
+              'entries',
+              'extensions',
+              'workflows',
+              'custom-roles',
+              'assets'
+            ].includes(val),
           )
           .forEach((val) => {
             args.push('--modules', val);
           });
       }
-
+      args.push('--modules', 'field-rules');
       log(this.importConfig, 'Starting audit process', 'info');
       const result = await AuditFix.run(args);
       log(this.importConfig, 'Audit process completed', 'info');
