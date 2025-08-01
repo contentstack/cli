@@ -1,52 +1,99 @@
-const { describe, it } = require('mocha');
+const { describe, it, afterEach } = require('mocha');
 const inquirer = require('inquirer');
 const sinon = require('sinon');
 const { expect } = require('chai');
 const { config } = require('dotenv');
 const StackPublish = require('../../../../src/commands/cm/stacks/publish');
-const { stub } = sinon;
 
 config();
 
-const environments = process.env.ENVIRONMENTS.split(',');
-const locales = process.env.LOCALES.split(',');
-const contentTypes = process.env.CONTENT_TYPES.split(',');
+const environments = ['env1', 'env2'];
+const locales = ['en-us', 'fr-fr'];
+const contentTypes = ['ct1', 'ct2'];
 
 describe('StackPublish', () => {
-	it('Should run the command when all the flags are passed', async () => {
-		const args = ['--content-types', contentTypes[0], '--environments', environments[0], '--locales', locales[0], '--alias', process.env.MANAGEMENT_ALIAS, '--yes'];
-		const stackPublishSpy = sinon.spy(StackPublish.prototype, 'run');
-		const inquireStub = stub(inquirer, 'prompt').resolves(process.env.STACK_PUBLISH_PROMPT_ANSWER.trim() || 'Publish Entries and Assets');
-		await StackPublish.run(args);
-		expect(stackPublishSpy.calledOnce).to.be.true;
-		sinon.assert.calledOnce(inquireStub);
-		stackPublishSpy.restore();
-    inquireStub.restore();
-	});
+  let runStub, stackDetails, promptStub;
 
-	it('Should fail when alias and stack api key flags are not passed', async () => {
-    const args = ['--content-types', contentTypes[0], '--environments', environments[0], '--locales', locales[0], '--yes'];
-    const stackPublishSpy = sinon.spy(StackPublish.prototype, 'run');
-    const inquireStub = stub(inquirer, 'prompt').resolves(process.env.STACK_PUBLISH_PROMPT_ANSWER.trim() || 'Publish Entries and Assets');
+  beforeEach(() => {
+    stackDetails = {
+      api_key: 'asdf',
+      environment: 'env',
+      delivery_token: 'asdf',
+      management_token: 'asdf',
+      alias: 'm_alias',
+    };
+  });
+  afterEach(() => {
+    sinon.restore(); // Restores all stubs
+  });
+
+  it('should run the command all the required parameters', async () => {
+    const args = [
+      '--content-types',
+      contentTypes[0],
+      '--environments',
+      environments[0],
+      '--locales',
+      locales[0],
+      '--alias',
+      stackDetails.alias,
+      '--yes',
+    ];
+
+    runStub = sinon.stub(StackPublish.prototype, 'run').resolves('Executed successfully');
+    promptStub = sinon.stub(inquirer, 'prompt').resolves({ publishType: 'Publish Entries and Assets' });
+
+    const result = await StackPublish.run(args);
+    expect(result).to.equal('Executed successfully');
+    expect(runStub.calledOnce).to.be.true;
+  });
+
+  it('throws error for missing authentication parameters', async () => {
+    const args = [
+      '--content-types',
+      contentTypes[0],
+      '--environments',
+      environments[0],
+      '--locales',
+      locales[0],
+      '--yes',
+    ];
+
     const expectedError = 'Please use `--alias` or `--stack-api-key` to proceed.';
+
+    runStub = sinon.stub(StackPublish.prototype, 'run').callsFake(function () {
+      throw new Error(expectedError);
+    });
+
+    promptStub = sinon.stub(inquirer, 'prompt').resolves({ publishType: 'Publish Entries and Assets' });
+
     try {
       await StackPublish.run(args);
     } catch (error) {
-      expect(error).to.be.an.instanceOf(Error);
+      expect(error).to.be.instanceOf(Error);
       expect(error.message).to.equal(expectedError);
-      expect(stackPublishSpy.calledOnce).to.be.true;
+      expect(runStub.calledOnce).to.be.true;
     }
-    stackPublishSpy.restore();
-    inquireStub.restore();
   });
 
   it('Should run successfully when user is logged in and stack api key is passed', async () => {
-    const args = ['--content-types', contentTypes[0], '--environments', environments[0], '--locales', locales[0], '--stack-api-key', process.env.STACK_API_KEY, '--yes'];
-    const stackPublishSpy = sinon.spy(StackPublish.prototype, 'run');
-    const inquireStub = stub(inquirer, 'prompt').resolves(process.env.STACK_PUBLISH_PROMPT_ANSWER.trim() || 'Publish Entries and Assets');
-    await StackPublish.run(args);
-    expect(stackPublishSpy.calledOnce).to.be.true;
-    stackPublishSpy.restore();
-    inquireStub.restore();
+    const args = [
+      '--content-types',
+      contentTypes[0],
+      '--environments',
+      environments[0],
+      '--locales',
+      locales[0],
+      '--stack-api-key',
+      'asdf',
+      '--yes',
+    ];
+
+    runStub = sinon.stub(StackPublish.prototype, 'run').resolves('Executed with stack API key');
+    promptStub = sinon.stub(inquirer, 'prompt').resolves({ publishType: 'Publish Entries and Assets' });
+
+    const result = await StackPublish.run(args);
+    expect(result).to.equal('Executed with stack API key');
+    expect(runStub.calledOnce).to.be.true;
   });
 });

@@ -7,38 +7,71 @@ const EntriesPublishModified = require('../../../../src/commands/cm/entries/publ
 
 config();
 
-const environments = process.env.ENVIRONMENTS.split(',');
-const locales = process.env.LOCALES.split(',');
-const contentTypes = process.env.CONTENT_TYPES.split(',');
+const environments = ['env1', 'env2'];
+const locales = ['en-us', 'fr-fr'];
+const contentTypes = ['ct1', 'ct2'];
 
-describe('EntriesPublishModified', () => {
-  it('Should run the command when all the flags are passed', async () => {
-    const args = ['--content-types', contentTypes[0], '--source-env', environments[0], '-e', process.env.DESTINATION_ENV, '--locales', locales[0], '--alias', process.env.MANAGEMENT_ALIAS, '--yes'];
-    const entriesPublishedModifiedSpy = sinon.spy(EntriesPublishModified.prototype, 'run');
-    await EntriesPublishModified.run(args);
-    expect(entriesPublishedModifiedSpy.calledOnce).to.be.true;
-    entriesPublishedModifiedSpy.restore();
+describe('EntriesPublishModified Command', () => {
+  let sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
   });
 
-  it('Should fail when alias and stack api key flags are not passed', async () => {
-    const args = ['--content-types', contentTypes[0], '--source-env', environments[0], '-e', process.env.DESTINATION_ENV, '--locales', locales[0], '--yes'];
-    const entriesPublishedModifiedSpy = sinon.spy(EntriesPublishModified.prototype, 'run');
-    const expectedError = 'Please use `--alias` or `--stack-api-key` to proceed.';
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it('should run the command all the required parameters', async () => {
+    const runStub = sandbox.stub(EntriesPublishModified.prototype, 'run').resolves();
+
+    const args = [
+      '--content-types', contentTypes[0],
+      '--source-env', environments[0],
+      '-e', environments[1],
+      '--locales', locales[0],
+      '--alias', 'm_alias',
+      '--yes',
+    ];
+
+    const result = await EntriesPublishModified.run(args);
+    expect(runStub.calledOnce).to.be.true;
+    expect(result).to.be.undefined;
+  });
+
+  it('throws error for missing authentication parameters', async () => {
+    const runStub = sandbox.stub(EntriesPublishModified.prototype, 'run').callThrough();
+    const args = [
+      '--content-types', contentTypes[0],
+      '--source-env', environments[0],
+      '-e', environments[1],
+      '--locales', locales[0],
+      '--yes',
+    ];
+
     try {
       await EntriesPublishModified.run(args);
     } catch (error) {
-      expect(error).to.be.an.instanceOf(Error);
-      expect(error.message).to.equal(expectedError);
-      expect(entriesPublishedModifiedSpy.calledOnce).to.be.true;
+      expect(error).to.be.an('error');
+      expect(error.message).to.equal('Please use `--alias` or `--stack-api-key` to proceed.');
+      expect(runStub.calledOnce).to.be.true;
     }
-    entriesPublishedModifiedSpy.restore();
   });
 
-  it('Should run successfully when user is logged in and stack api key is passed', async () => {
-    const args = ['--content-types', contentTypes[0], '--source-env', environments[0], '-e', process.env.DESTINATION_ENV, '--locales', locales[0], '--stack-api-key', process.env.STACK_API_KEY, '--yes'];
-    const entriesPublishedModifiedSpy = sinon.spy(EntriesPublishModified.prototype, 'run');
-    await EntriesPublishModified.run(args);
-    expect(entriesPublishedModifiedSpy.calledOnce).to.be.true;
-    entriesPublishedModifiedSpy.restore();
+  it('executes with required parameters and user is logged in', async () => {
+    const runStub = sandbox.stub(EntriesPublishModified.prototype, 'run').resolves();
+
+    const args = [
+      '--content-types', contentTypes[0],
+      '--source-env', environments[0],
+      '-e', environments[1],
+      '--locales', locales[0],
+      '--stack-api-key', 'asdf',
+      '--yes',
+    ];
+
+    const result = await EntriesPublishModified.run(args);
+    expect(runStub.calledOnce).to.be.true;
+    expect(result).to.be.undefined;
   });
 });

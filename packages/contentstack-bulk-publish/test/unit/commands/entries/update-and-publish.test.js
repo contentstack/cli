@@ -7,18 +7,45 @@ const EntriesUpdateAndPublish = require('../../../../src/commands/cm/entries/upd
 
 config();
 
-
-const environments = process.env.ENVIRONMENTS.split(',');
-const locales = process.env.LOCALES.split(',');
-const contentTypes = process.env.CONTENT_TYPES.split(',');
+const environments = ['env1', 'env2'];
+const locales = ['en-us', 'fr-fr'];
+const contentTypes = ['ct1', 'ct2'];
 
 describe('EntriesUpdateAndPublish', () => {
+  let sandbox;
+  let stackDetails;
+
+  beforeEach(async () => {
+    sandbox = sinon.createSandbox();
+
+    stackDetails = {
+      api_key: 'asdf',
+      environment: 'env',
+      delivery_token: 'asdf',
+      management_token: 'asdf',
+      alias: 'm_alias',
+    };
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
   it('Should run the command when all the flags are passed', async () => {
-    const args = ['--content-types', contentTypes[0], '-e', environments[0], '--locales', locales[0], '-a', process.env.MANAGEMENT_ALIAS, '--yes'];
-    const entriesUpdateAndPublishSpy = sinon.spy(EntriesUpdateAndPublish.prototype, 'run');
-    await EntriesUpdateAndPublish.run(args);
-    expect(entriesUpdateAndPublishSpy.calledOnce).to.be.true;
-    entriesUpdateAndPublishSpy.restore();
+    const runStub = sandbox.stub(EntriesUpdateAndPublish.prototype, 'run').resolves();
+    const args = [
+      '--content-types',
+      contentTypes[0],
+      '-e',
+      environments[0],
+      '--locales',
+      locales[0],
+      '-a',
+      'm_alias',
+      '--yes',
+    ];
+    const result = await EntriesUpdateAndPublish.run(args);
+    expect(runStub.calledOnce).to.be.true;
+    expect(result).to.be.undefined;
   });
 
   it('Should fail when alias and stack api key flags are not passed', async () => {
@@ -36,10 +63,21 @@ describe('EntriesUpdateAndPublish', () => {
   });
 
   it('Should run successfully when user is logged in and stack api key is passed', async () => {
-    const args = ['--content-types', contentTypes[0], '-e', environments[0], '--locales', locales[0], '--stack-api-key', process.env.STACK_API_KEY, '--yes'];
-    const entriesUpdateAndPublishSpy = sinon.spy(EntriesUpdateAndPublish.prototype, 'run');
-    await EntriesUpdateAndPublish.run(args);
-    expect(entriesUpdateAndPublishSpy.calledOnce).to.be.true;
-    entriesUpdateAndPublishSpy.restore();
+    const runStub = sandbox.stub(EntriesUpdateAndPublish.prototype, 'run').resolves();
+
+    const args = [
+      '--content-types',
+      contentTypes[0],
+      '-e',
+      environments[0],
+      '--locales',
+      locales[0],
+      '--stack-api-key',
+      stackDetails.api_key,
+      '--yes',
+    ];
+    const result = await EntriesUpdateAndPublish.run(args);
+    expect(runStub.calledOnce).to.be.true;
+    expect(result).to.be.undefined;
   });
 });

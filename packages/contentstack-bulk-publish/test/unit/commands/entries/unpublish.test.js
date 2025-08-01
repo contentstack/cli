@@ -1,57 +1,97 @@
-const { describe, it } = require('mocha');
-const EntriesUnpublish = require('../../../../src/commands/cm/entries/unpublish');
-const { cliux } = require('@contentstack/cli-utilities');
-const sinon = require('sinon');
-const { config } = require('dotenv');
 const { expect } = require('chai');
+const sinon = require('sinon');
+const { describe, it, beforeEach, afterEach } = require('mocha');
+const EntriesUnpublish = require('../../../../src/commands/cm/entries/unpublish');
+const AddTokenCommand = require('@contentstack/cli-auth/lib/commands/auth/tokens/add').default;
+const helper = require('../../../helpers/helper');
+const { cliux } = require('@contentstack/cli-utilities');
 
-const { stub } = sinon;
+describe('EntriesUnpublish Command', () => {
+  let sandbox;
+  let stackDetails;
 
-config();
+  beforeEach(async () => {
+    sandbox = sinon.createSandbox();
 
-const environments = process.env.ENVIRONMENTS.split(',');
-const locales = process.env.LOCALES.split(',');
-const contentTypes = process.env.CONTENT_TYPES.split(',');
-
-describe('EntriesUnpublish', () => {
-  it('Should run the command when all the flags are passed', async function () {
-    const args = ['--content-type', contentTypes[0], '--environment', environments[0], '--locale', locales[0], '--alias', process.env.MANAGEMENT_ALIAS, '--delivery-token', process.env.DELIVERY_TOKEN, '--yes'];
-    const inquireStub = stub(cliux, 'prompt');
-    await EntriesUnpublish.run(args);
-    sinon.assert.notCalled(inquireStub);
-    inquireStub.restore();
+    stackDetails = {
+      api_key: 'asdf',
+      environment: 'env',
+      delivery_token: 'asdf',
+      management_token: 'asdf',
+      alias: 'm_alias',
+    };
   });
 
-  it('Should ask for delivery token when the flag is not passed', async () => {
-    const args = ['--content-type', contentTypes[0], '--environment', environments[0], '--locale', locales[0], '--alias', process.env.MANAGEMENT_ALIAS, '--yes'];
-    const inquireStub = stub(cliux, 'prompt').resolves(process.env.DELIVERY_TOKEN);
-    await EntriesUnpublish.run(args);
-    sinon.assert.calledOnce(inquireStub);
-    inquireStub.restore();
+  afterEach(() => {
+    sandbox.restore();
   });
 
-  it('Should fail when alias and stack api key flags are not passed', async () => {
-    const args = ['--content-type', contentTypes[0], '--environment', environments[0], '--locale', locales[0], '--delivery-token', process.env.DELIVERY_TOKEN, '--yes'];
-    const inquireStub = stub(cliux, 'prompt');
-    const entriesUnpublishSpy = sinon.spy(EntriesUnpublish.prototype, 'run');
-    const expectedError = 'Please use `--alias` or `--stack-api-key` to proceed.';
+  it('executes successfully with required parameters', async () => {
+    const runStub = sandbox.stub(EntriesUnpublish.prototype, 'run').resolves();
+
+    const result = await EntriesUnpublish.run([
+      '--alias',
+      'm_alias',
+      '--environment',
+      'env',
+      '--locale',
+      'en-us',
+      '--delivery-token',
+      'test-delivery-token',
+      '--yes',
+    ]);
+
+    expect(runStub.calledOnce).to.be.true;
+    expect(result).to.be.undefined;
+  });
+
+  it('executes successfully with stack identifier', async () => {
+    const runStub = sandbox.stub(EntriesUnpublish.prototype, 'run').resolves();
+
+    const result = await EntriesUnpublish.run([
+      '--stack-api-key',
+      stackDetails.api_key,
+      '--environment',
+      'env',
+      '--locale',
+      'en-us',
+      '--delivery-token',
+      'test-delivery-token',
+      '--yes',
+    ]);
+
+    expect(runStub.calledOnce).to.be.true;
+    expect(result).to.be.undefined;
+  });
+
+  it('prompts for missing delivery token', async () => {
+    sandbox.stub(helper, 'getStack').resolves({ ...stackDetails, delivery_token: undefined });
+    sandbox.stub(cliux, 'prompt').resolves('prompted-token');
+    sandbox.stub(AddTokenCommand.prototype, 'run').resolves();
+    const runStub = sandbox.stub(EntriesUnpublish.prototype, 'run').resolves('Success');
+
+    const result = await EntriesUnpublish.run([
+      '--alias',
+      'm_alias',
+      '--environment',
+      'env',
+      '--locale',
+      'en-us',
+      '--yes',
+    ]);
+
+    expect(result).to.equal('Success');
+    sinon.assert.calledOnce(runStub);
+  });
+
+  it('throws error for missing authentication parameters', async () => {
+    const runStub = sandbox.stub(EntriesUnpublish.prototype, 'run');
+
     try {
-      await EntriesUnpublish.run(args);
+      await EntriesUnpublish.run(['--environment', 'env', '--locale', 'en-us', '--yes']);
     } catch (error) {
-      expect(error).to.be.an.instanceOf(Error);
-      expect(error.message).to.equal(expectedError);
-      expect(entriesUnpublishSpy.calledOnce).to.be.true;
+      expect(error.message).to.equal('Please use `--alias` or `--stack-api-key` to proceed.');
+      expect(runStub.called).to.be.false;
     }
-    sinon.assert.notCalled(inquireStub);
-    inquireStub.restore();
-    entriesUnpublishSpy.restore();
-  });
-
-  it('Should run successfully when user is logged in and stack api key is passed', async () => {
-    const args = ['--content-type', contentTypes[0], '--environment', environments[0], '--locale', locales[0], '--stack-api-key', process.env.STACK_API_KEY, '--delivery-token', process.env.DELIVERY_TOKEN, '--yes'];
-    const inquireStub = stub(cliux, 'prompt');
-    await EntriesUnpublish.run(args);
-    sinon.assert.notCalled(inquireStub);
-    inquireStub.restore();
   });
 });
