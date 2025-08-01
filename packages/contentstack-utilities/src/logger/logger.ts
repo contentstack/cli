@@ -2,7 +2,7 @@ import traverse from 'traverse';
 import { klona } from 'klona/full';
 import { normalize } from 'path';
 import * as winston from 'winston';
-import { levelColors, logLevels } from '../constants/logging';
+import { levelColors, logLevels, PROGRESS_SUPPORTED_MODULES } from '../constants/logging';
 import { LoggerConfig, LogLevel, LogType } from '../interfaces/index';
 import { configHandler } from '..';
 
@@ -58,8 +58,22 @@ export default class Logger {
       }),
     ];
 
-    // Add console transport only if showConsoleLogs is true
-    if (configHandler && typeof configHandler.get === 'function' && configHandler.get('showConsoleLogs')) {
+    // Determine console logging based on configuration
+    let showConsoleLogs = true;
+
+    if (configHandler && typeof configHandler.get === 'function') {
+      const logConfig = configHandler.get('log') || {};
+      const hasProgressSupport = PROGRESS_SUPPORTED_MODULES.includes(logConfig.progressSupportedModule);
+      if (hasProgressSupport) {
+        // Plugin has progress bars - respect user's showConsoleLogs setting
+        showConsoleLogs = logConfig.showConsoleLogs ?? true;
+      } else {
+        // Plugin doesn't have progress support - always show console logs
+        showConsoleLogs = true;
+      }
+    }
+
+    if (showConsoleLogs) {
       transports.push(
         new winston.transports.Console({
           format: winston.format.combine(
@@ -110,9 +124,8 @@ export default class Logger {
 
   private shouldLog(level: LogType, target: 'console' | 'file'): boolean {
     const configLevel = target === 'console' ? this.config.consoleLogLevel : this.config.logLevel;
-    const minLevel = configLevel ? logLevels[configLevel] : logLevels['info']; // Default to info level
-    const currentLevel = logLevels[level] || logLevels['info']; // Handle undefined levels
-    return currentLevel <= minLevel;
+    const minLevel = configLevel ? logLevels[configLevel] : 2;
+    return logLevels[level] <= minLevel;
   }
 
   /* === Public Log Methods === */
@@ -137,7 +150,7 @@ export default class Logger {
 
   public success(message: string, meta?: any): void {
     if (this.shouldLog('success', 'console') || this.shouldLog('success', 'file')) {
-      this.loggers.success.info(message, { ...meta, type: 'success' });
+      this.loggers.success.log('success', message, { ...meta });
     }
   }
 
@@ -245,7 +258,7 @@ export default class Logger {
       },
     };
     if (this.shouldLog('success', 'console') || this.shouldLog('success', 'file')) {
-      this.loggers.success.info(logPayload);
+      this.loggers.success.log(logPayload);
     }
   }
 
