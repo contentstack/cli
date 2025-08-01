@@ -53,66 +53,182 @@ export default class EntriesExport extends BaseClass {
     );
     this.projectInstance = new ExportProjects(this.exportConfig);
     this.exportConfig.context.module = 'entries';
+    this.currentModuleName = 'Entries';
   }
 
   async start() {
     try {
       log.debug('Starting entries export process...', this.exportConfig.context);
-      const locales = fsUtil.readFile(this.localesFilePath) as Array<Record<string, unknown>>;
-      if (!Array.isArray(locales) || locales?.length === 0) {
-        log.debug(`No locales found in ${this.localesFilePath}`, this.exportConfig.context);
-      } else {
-        log.debug(`Loaded ${locales?.length} locales from ${this.localesFilePath}`, this.exportConfig.context);
-      }
-
-      const contentTypes = fsUtil.readFile(this.schemaFilePath) as Array<Record<string, unknown>>;
-      if (contentTypes?.length === 0) {
-        log.info(messageHandler.parse('CONTENT_TYPE_NO_TYPES'), this.exportConfig.context);
-        return;
-      }
-      log.debug(`Loaded ${contentTypes?.length} content types from ${this.schemaFilePath}`, this.exportConfig.context);
-
-      // NOTE Check if variant is enabled in specific stack
-      if (this.exportConfig.personalizationEnabled) {
-        log.debug('Personalization is enabled, checking for variant entries...', this.exportConfig.context);
-        let project_id;
-        try {
-          const project = await this.projectInstance.projects({ connectedStackApiKey: this.exportConfig.apiKey });
-
-          if (project && project[0]?.uid) {
-            project_id = project[0].uid;
-            this.exportVariantEntry = true;
-            log.debug(`Found project with ID: ${project_id}, enabling variant entry export`, this.exportConfig.context);
+      
+      // Initial analysis with loading spinner
+      const [locales, contentTypes, entryRequestOptions, totalEntriesCount, variantInfo] = await this.withLoadingSpinner(
+        'ENTRIES: Analyzing content structure and entries...',
+        async () => {
+          const locales = fsUtil.readFile(this.localesFilePath) as Array<Record<string, unknown>>;
+          const contentTypes = fsUtil.readFile(this.schemaFilePath) as Array<Record<string, unknown>>;
+          
+          if (!Array.isArray(locales) || locales?.length === 0) {
+            log.debug(`No locales found in ${this.localesFilePath}`, this.exportConfig.context);
+          } else {
+            log.debug(`Loaded ${locales?.length} locales from ${this.localesFilePath}`, this.exportConfig.context);
           }
 
-          this.variantEntries = new Export.VariantEntries(Object.assign(this.exportConfig, { project_id }));
-        } catch (error) {
-          handleAndLogError(error, { ...this.exportConfig.context });
+          if (contentTypes?.length === 0) {
+            log.info(messageHandler.parse('CONTENT_TYPE_NO_TYPES'), this.exportConfig.context);
+            return [locales, contentTypes, [], 0, null];
+          }
+          log.debug(`Loaded ${contentTypes?.length} content types from ${this.schemaFilePath}`, this.exportConfig.context);
+
+          // Create entry request objects
+          const entryRequestOptions = this.createRequestObjects(locales, contentTypes);
+          log.debug(
+            `Created ${entryRequestOptions.length} entry request objects for processing`,
+            this.exportConfig.context,
+          );
+
+          // Get total entries count for better progress tracking
+          const totalEntriesCount = await this.getTotalEntriesCount(entryRequestOptions);    
+          const variantInfo = await this.setupVariantExport();
+          return [locales, contentTypes, entryRequestOptions, totalEntriesCount, variantInfo];
+        }
+      );
+
+      if (contentTypes?.length === 0) {
+        return;
+      }
+
+      // Create nested progress manager
+      const progress = this.createNestedProgress(this.currentModuleName);
+
+      // Add sub-processes 
+      if (totalEntriesCount > 0) {
+        progress.addProcess('Entries', totalEntriesCount);
+        
+        if (this.entriesConfig.exportVersions) {
+          progress.addProcess('Entry Versions', totalEntriesCount); 
+        }
+        
+        if (this.exportVariantEntry) {
+          progress.addProcess('Variant Entries', totalEntriesCount);
         }
       }
 
-      const entryRequestOptions = this.createRequestObjects(locales, contentTypes);
-      log.debug(
-        `Created ${entryRequestOptions.length} entry request objects for processing`,
-        this.exportConfig.context,
-      );
+      // Process entry collections
+      if (totalEntriesCount > 0) {
+        progress.startProcess('Entries').updateStatus('Processing entry collections...', 'Entries');
 
-      for (let entryRequestOption of entryRequestOptions) {
-        log.debug(
-          `Processing entries for content type: ${entryRequestOption.contentType}, locale: ${entryRequestOption.locale}`,
-          this.exportConfig.context,
-        );
-        await this.getEntries(entryRequestOption);
-        this.entriesFileHelper?.completeFile(true);
-        log.success(
-          messageHandler.parse('ENTRIES_EXPORT_COMPLETE', entryRequestOption.contentType, entryRequestOption.locale),
-          this.exportConfig.context,
-        );
+        for (let entryRequestOption of entryRequestOptions) {
+          try {
+            log.debug(
+              `Processing entries for content type: ${entryRequestOption.contentType}, locale: ${entryRequestOption.locale}`,
+              this.exportConfig.context,
+            );
+            await this.getEntries(entryRequestOption);
+            this.entriesFileHelper?.completeFile(true);
+
+            log.success(
+              messageHandler.parse('ENTRIES_EXPORT_COMPLETE', entryRequestOption.contentType, entryRequestOption.locale),
+              this.exportConfig.context,
+            );
+          } catch (error) {
+            this.progressManager?.tick(
+              false,
+              `${entryRequestOption.contentType}:${entryRequestOption.locale}`,
+              error?.message || 'Failed to export entries',
+              'Entries',
+            );
+            throw error;
+          }
+        }
+        progress.completeProcess('Entries', true);
+
+        if (this.entriesConfig.exportVersions) {
+          progress.completeProcess('Entry Versions', true);
+        }
+        
+        if (this.exportVariantEntry) {
+          progress.completeProcess('Variant Entries', true);
+        }
       }
+
+      this.completeProgress(true);
       log.success(messageHandler.parse('ENTRIES_EXPORT_SUCCESS'), this.exportConfig.context);
+      
     } catch (error) {
       handleAndLogError(error, { ...this.exportConfig.context });
+      this.completeProgress(false, error?.message || 'Entries export failed');
     }
+  }
+
+  async getTotalEntriesCount(entryRequestOptions: Array<Record<string, any>>): Promise<number> {
+    log.debug('Calculating total entries count for progress tracking...', this.exportConfig.context);
+    
+    let totalCount = 0;
+    
+    try {
+      for (const option of entryRequestOptions) {
+        const countQuery = {
+          locale: option.locale,
+          limit: 1,
+          include_count: true,
+          query: { locale: option.locale },
+        };
+        
+        this.applyQueryFilters(countQuery, 'entries');
+        
+        try {
+          const response = await this.stackAPIClient
+            .contentType(option.contentType)
+            .entry()
+            .query(countQuery)
+            .find();
+            
+          const count = response.count || 0;
+          totalCount += count;
+          log.debug(
+            `Content type ${option.contentType} (${option.locale}): ${count} entries`,
+            this.exportConfig.context
+          );
+        } catch (error) {
+          log.debug(
+            `Failed to get count for ${option.contentType}:${option.locale}`,
+            this.exportConfig.context
+          );
+        }
+      }
+    } catch (error) {
+      log.debug('Error calculating total entries count, using collection count as fallback', this.exportConfig.context);
+      return entryRequestOptions.length;
+    }
+    
+    log.debug(`Total entries count: ${totalCount}`, this.exportConfig.context);
+    return totalCount;
+  }
+
+  async setupVariantExport(): Promise<any> {
+    if (!this.exportConfig.personalizationEnabled) {
+      return null;
+    }
+    
+    log.debug('Personalization is enabled, checking for variant entries...', this.exportConfig.context);
+    
+    try {
+      const project = await this.projectInstance.projects({ connectedStackApiKey: this.exportConfig.apiKey });
+
+      if (project && project[0]?.uid) {
+        const project_id = project[0].uid;
+        this.exportVariantEntry = true;
+        log.debug(`Found project with ID: ${project_id}, enabling variant entry export`, this.exportConfig.context);
+        
+        this.variantEntries = new Export.VariantEntries(Object.assign(this.exportConfig, { project_id }));
+        return { project_id };
+      }
+    } catch (error) {
+      log.debug('Failed to setup variant export', this.exportConfig.context);
+      handleAndLogError(error, { ...this.exportConfig.context });
+    }
+    
+    return null;
   }
 
   createRequestObjects(
@@ -211,6 +327,11 @@ export default class EntriesExport extends BaseClass {
       log.debug(`Writing ${entriesSearchResponse.items.length} entries to file`, this.exportConfig.context);
       this.entriesFileHelper.writeIntoFile(entriesSearchResponse.items, { mapKeyVal: true });
 
+      // Track progress for individual entries
+      entriesSearchResponse.items.forEach((entry: any) => {
+        this.progressManager?.tick(true, `entry: ${entry.uid}`, null, 'Entries');
+      });
+
       if (this.entriesConfig.exportVersions) {
         log.debug('Exporting entry versions is enabled', this.exportConfig.context);
         let versionedEntryPath = path.join(
@@ -231,11 +352,25 @@ export default class EntriesExport extends BaseClass {
       // NOTE Export all base entry specific 'variant entries'
       if (this.exportVariantEntry) {
         log.debug('Exporting variant entries for base entries', this.exportConfig.context);
-        await this.variantEntries.exportVariantEntry({
-          locale: options.locale,
-          contentTypeUid: options.contentType,
-          entries: entriesSearchResponse.items,
-        });
+        try {
+          await this.variantEntries.exportVariantEntry({
+            locale: options.locale,
+            contentTypeUid: options.contentType,
+            entries: entriesSearchResponse.items,
+          });
+          
+          // Track progress for variant entries
+          entriesSearchResponse.items.forEach((entry: any) => {
+            this.progressManager?.tick(true, `variant: ${entry.uid}`, null, 'Variant Entries');
+          });
+          
+          log.debug(`Successfully exported variant entries for ${entriesSearchResponse.items.length} entries`, this.exportConfig.context);
+        } catch (error) {
+          log.debug('Failed to export variant entries', this.exportConfig.context);
+          entriesSearchResponse.items.forEach((entry: any) => {
+            this.progressManager?.tick(false, `variant: ${entry.uid}`, error?.message || 'Failed to export variant', 'Variant Entries');
+          });
+        }
       }
 
       options.skip += this.entriesConfig.limit || 100;
@@ -248,6 +383,11 @@ export default class EntriesExport extends BaseClass {
       }
       log.debug(`Continuing to fetch entries with skip: ${options.skip}`, this.exportConfig.context);
       return await this.getEntries(options);
+    } else {
+      log.debug(
+        `No entries found for content type: ${options.contentType}, locale: ${options.locale}`,
+        this.exportConfig.context,
+      );
     }
   }
 
@@ -261,6 +401,8 @@ export default class EntriesExport extends BaseClass {
       const versionFilePath = path.join(sanitizePath(options.versionedEntryPath), sanitizePath(`${entry.uid}.json`));
       log.debug(`Writing versioned entry to: ${versionFilePath}`, this.exportConfig.context);
       fsUtil.writeFile(versionFilePath, response);
+      // Track version progress if the process exists
+      this.progressManager?.tick(true, `version: ${entry.uid}`, null, 'Entry Versions');
       log.success(
         messageHandler.parse('ENTRIES_VERSIONED_EXPORT_SUCCESS', options.contentType, entry.uid, options.locale),
         this.exportConfig.context,
@@ -268,6 +410,13 @@ export default class EntriesExport extends BaseClass {
     };
     const onReject = ({ error, apiData: { uid } = undefined }: any) => {
       log.debug(`Failed to fetch versioned entry for uid: ${uid}`, this.exportConfig.context);
+      // Track version failure if the process exists
+      this.progressManager?.tick(
+        false,
+        `version: ${uid}`,
+        error?.message || 'Failed to fetch versions',
+        'Entry Versions',
+      );
       handleAndLogError(
         error,
         {

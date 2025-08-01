@@ -19,8 +19,9 @@ import {
 
 import { fsUtil, getOrgUid, createNodeCryptoInstance, getDeveloperHubUrl } from '../../utils';
 import { ModuleClassParams, MarketplaceAppsConfig, ExportConfig, Installation, Manifest } from '../../types';
+import BaseClass from './base-class';
 
-export default class ExportMarketplaceApps {
+export default class ExportMarketplaceApps extends BaseClass {
   protected marketplaceAppConfig: MarketplaceAppsConfig;
   protected installedApps: Installation[] = [];
   public developerHubBaseUrl: string;
@@ -31,23 +32,71 @@ export default class ExportMarketplaceApps {
   public command: Command;
   public query: Record<string, any>;
 
-  constructor({ exportConfig }: Omit<ModuleClassParams, 'stackAPIClient' | 'moduleName'>) {
+  constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
+    super({ exportConfig, stackAPIClient });
     this.exportConfig = exportConfig;
     this.marketplaceAppConfig = exportConfig.modules.marketplace_apps;
     this.exportConfig.context.module = 'marketplace-apps';
+    this.currentModuleName = 'Marketplace Apps';
   }
 
   async start(): Promise<void> {
-    log.debug('Starting marketplace apps export process...', this.exportConfig.context);
-    
-    if (!isAuthenticated()) {
-      cliux.print(
-        'WARNING!!! To export Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in',
-        { color: 'yellow' },
-      );
-      return Promise.resolve();
-    }
+    try {
+      log.debug('Starting marketplace apps export process...', this.exportConfig.context);
+      
+      if (!isAuthenticated()) {
+        cliux.print(
+          'WARNING!!! To export Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in',
+          { color: 'yellow' },
+        );
+        return Promise.resolve();
+      }
 
+      // Initial setup and analysis with loading spinner
+      const [appsCount] = await this.withLoadingSpinner(
+        'MARKETPLACE-APPS: Analyzing marketplace apps...',
+        async () => {
+          await this.setupPaths();
+          const appsCount = await this.getAppsCount();
+          return [appsCount];
+        }
+      );
+
+      if (appsCount === 0) {
+        log.info(messageHandler.parse('MARKETPLACE_APPS_NOT_FOUND'), this.exportConfig.context);
+        return;
+      }
+
+      // Create nested progress manager
+      const progress = this.createNestedProgress(this.currentModuleName);
+
+      // Add processes based on what we found
+      progress.addProcess('Apps Fetch', appsCount);
+      progress.addProcess('App Processing', appsCount); // Manifests and configurations
+
+      // Fetch stack specific apps
+      progress.startProcess('Apps Fetch').updateStatus('Fetching marketplace apps...', 'Apps Fetch');
+      await this.exportApps();
+      progress.completeProcess('Apps Fetch', true);
+
+      // Process apps (manifests and configurations)
+      if (this.installedApps.length > 0) {
+        progress.startProcess('App Processing').updateStatus('Processing app manifests and configurations...', 'App Processing');
+        await this.getAppManifestAndAppConfig();
+        progress.completeProcess('App Processing', true);
+      }
+
+      this.completeProgress(true);
+      log.success('Marketplace apps export completed successfully', this.exportConfig.context);
+      
+    } catch (error) {
+      log.debug('Error occurred during marketplace apps export', this.exportConfig.context);
+      handleAndLogError(error, { ...this.exportConfig.context });
+      this.completeProgress(false, error?.message || 'Marketplace apps export failed');
+    }
+  }
+
+  async setupPaths(): Promise<void> {
     this.marketplaceAppPath = pResolve(
       this.exportConfig.data,
       this.exportConfig.branchName || '',
@@ -69,9 +118,34 @@ export default class ExportMarketplaceApps {
     const host = this.developerHubBaseUrl.split('://').pop();
     log.debug(`Initializing marketplace SDK with host: ${host}`, this.exportConfig.context);
     this.appSdk = await marketplaceSDKClient({ host });
+  }
 
-    await this.exportApps();
-    log.debug('Marketplace apps export process completed', this.exportConfig.context);
+  async getAppsCount(): Promise<number> {
+    log.debug('Fetching marketplace apps count...', this.exportConfig.context);
+    
+    try {
+      const externalQuery = this.exportConfig.query?.modules['marketplace-apps'];
+      if (externalQuery) {
+        if (externalQuery.app_uid?.$in?.length > 0) {
+          this.query.app_uids = externalQuery.app_uid.$in.join(',');
+        }
+        if (externalQuery.installation_uid?.$in?.length > 0) {
+          this.query.installation_uids = externalQuery.installation_uid?.$in?.join(',');
+        }
+      }
+
+      const collection = await this.appSdk
+        .marketplace(this.exportConfig.org_uid)
+        .installation()
+        .fetchAll({ ...this.query, limit: 1, skip: 0 });
+
+      const count = collection?.count || 0;
+      log.debug(`Total marketplace apps count: ${count}`, this.exportConfig.context);
+      return count;
+    } catch (error) {
+      log.debug('Failed to fetch marketplace apps count', this.exportConfig.context);
+      return 0;
+    }
   }
 
   /**
@@ -80,22 +154,9 @@ export default class ExportMarketplaceApps {
    */
   async exportApps(): Promise<any> {
     log.debug('Starting apps export process...', this.exportConfig.context);
-    // currently support only app_uids or installation_uids
-    const externalQuery = this.exportConfig.query?.modules['marketplace-apps'];
-    if (externalQuery) {
-      if (externalQuery.app_uid?.$in?.length > 0) {
-        this.query.app_uids = externalQuery.app_uid.$in.join(',');
-      }
-      if (externalQuery.installation_uid?.$in?.length > 0) {
-        this.query.installation_uids = externalQuery.installation_uid?.$in?.join(',');
-      }
-    }
     
     await this.getStackSpecificApps();
     log.debug(`Retrieved ${this.installedApps.length} stack-specific apps`, this.exportConfig.context);
-    
-    await this.getAppManifestAndAppConfig();
-    log.debug('Completed app manifest and configuration processing', this.exportConfig.context);
 
     if (!this.nodeCrypto && find(this.installedApps, (app) => !isEmpty(app.configuration))) {
       log.debug('Initializing NodeCrypto for app configuration encryption', this.exportConfig.context);
@@ -133,6 +194,9 @@ export default class ExportMarketplaceApps {
       for (const [index, app] of entries(this.installedApps)) {
         log.debug(`Processing app configurations: ${app.manifest?.name || app.uid}`, this.exportConfig.context);
         await this.getAppConfigurations(+index, app);
+        
+        // Track progress for each app processed
+        this.progressManager?.tick(true, `app: ${app.manifest?.name || app.uid}`, null, 'App Processing');
       }
 
       const marketplaceAppsFilePath = pResolve(this.marketplaceAppPath, this.marketplaceAppConfig.fileName);
@@ -279,6 +343,12 @@ export default class ExportMarketplaceApps {
       ) as unknown as Installation[];
       
       log.debug(`Processed ${installation.length} app installations`, this.exportConfig.context);
+      
+      // Track progress for each app fetched
+      installation.forEach((app) => {
+        this.progressManager?.tick(true, `app: ${app.manifest?.name || app.uid}`, null, 'Apps Fetch');
+      });
+      
       this.installedApps = this.installedApps.concat(installation);
 
       if (count - (skip + 50) > 0) {

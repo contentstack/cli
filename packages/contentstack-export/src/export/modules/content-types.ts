@@ -1,11 +1,5 @@
 import * as path from 'path';
-import {
-  ContentstackClient,
-  handleAndLogError,
-  messageHandler,
-  log,
-  sanitizePath,
-} from '@contentstack/cli-utilities';
+import { ContentstackClient, handleAndLogError, messageHandler, log, sanitizePath } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
 import { fsUtil, executeTask } from '../../utils';
@@ -59,20 +53,42 @@ export default class ContentTypesExport extends BaseClass {
     );
     this.contentTypes = [];
     this.exportConfig.context.module = 'content-types';
+    this.currentModuleName = 'Content Types';
   }
 
   async start() {
     try {
       log.debug('Starting content types export process...', this.exportConfig.context);
-      await fsUtil.makeDirectory(this.contentTypesDirPath);
-      log.debug(`Created directory at path: ${this.contentTypesDirPath}`, this.exportConfig.context);
 
+      await fsUtil.makeDirectory(this.contentTypesDirPath);
+
+      // Get content types count for progress tracking
+      const [totalCount] = await this.withLoadingSpinner('CONTENT-TYPES: Analyzing content types...', async () => {
+        const countResponse = await this.stackAPIClient
+          .contentType()
+          .query({ ...this.qs, limit: 1, include_count: true })
+          .find();
+        return [countResponse.count || 0];
+      });
+
+      if (totalCount === 0) {
+        log.info(messageHandler.parse('CONTENT_TYPE_NO_TYPES'), this.exportConfig.context);
+        return;
+      }
+
+      // Create simple progress manager with total count
+      const progress = this.createSimpleProgress(this.currentModuleName, totalCount);
+
+      progress.updateStatus('Fetching content types...');
       await this.getContentTypes();
+
       await this.writeContentTypes(this.contentTypes);
 
       log.success(messageHandler.parse('CONTENT_TYPE_EXPORT_COMPLETE'), this.exportConfig.context);
+      this.completeProgress(true);
     } catch (error) {
       handleAndLogError(error, { ...this.exportConfig.context });
+      this.completeProgress(false, error?.message || 'Content types export failed');
     }
   }
 
@@ -86,7 +102,9 @@ export default class ContentTypesExport extends BaseClass {
     const contentTypeSearchResponse = await this.stackAPIClient.contentType().query(this.qs).find();
 
     log.debug(
-      `Fetched ${contentTypeSearchResponse.items?.length || 0} content types out of total ${contentTypeSearchResponse.count}`,
+      `Fetched ${contentTypeSearchResponse.items?.length || 0} content types out of total ${
+        contentTypeSearchResponse.count
+      }`,
       this.exportConfig.context,
     );
 
@@ -105,11 +123,12 @@ export default class ContentTypesExport extends BaseClass {
   }
 
   sanitizeAttribs(contentTypes: Record<string, unknown>[]): Record<string, unknown>[] {
-    log.debug(`Sanitizing ${contentTypes?.length} content types`, this.exportConfig.context);
+    log.debug(`Sanitizing ${contentTypes.length} content types`, this.exportConfig.context);
 
     const updatedContentTypes: Record<string, unknown>[] = [];
 
     contentTypes.forEach((contentType) => {
+      this.progressManager?.tick(true, `content-type: ${contentType.uid}`);
       for (const key in contentType) {
         if (this.contentTypesConfig.validKeys.indexOf(key) === -1) {
           delete contentType[key];
@@ -121,19 +140,17 @@ export default class ContentTypesExport extends BaseClass {
   }
 
   async writeContentTypes(contentTypes: Record<string, unknown>[]) {
-    log.debug(`Writing ${contentTypes?.length} content types to disk`, this.exportConfig.context);
+    log.debug(`Writing ${contentTypes.length} content types to disk`, this.exportConfig.context);
 
-    function write(contentType: Record<string, unknown>) {
-      return fsUtil.writeFile(
-        path.join(
-          sanitizePath(this.contentTypesDirPath),
-          sanitizePath(`${contentType.uid === 'schema' ? 'schema|1' : contentType.uid}.json`),
-        ),
-        contentType,
-      );
-    }
+    const writeWithProgress = (contentType: Record<string, unknown>) => {
+      const filename = `${contentType.uid === 'schema' ? 'schema|1' : contentType.uid}.json`;
+      const fullPath = path.join(sanitizePath(this.contentTypesDirPath), sanitizePath(filename));
 
-    await executeTask(contentTypes, write.bind(this), {
+      log.debug(`Writing content type to: ${fullPath}`, this.exportConfig.context);
+      return fsUtil.writeFile(fullPath, contentType);
+    };
+
+    await executeTask(contentTypes, writeWithProgress.bind(this), {
       concurrency: this.exportConfig.writeConcurrency,
     });
 

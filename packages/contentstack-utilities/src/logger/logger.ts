@@ -2,8 +2,9 @@ import traverse from 'traverse';
 import { klona } from 'klona/full';
 import { normalize } from 'path';
 import * as winston from 'winston';
-import { levelColors, logLevels } from '../constants/logging';
+import { levelColors, logLevels, PROGRESS_SUPPORTED_MODULES } from '../constants/logging';
 import { LoggerConfig, LogLevel, LogType } from '../interfaces/index';
+import { configHandler } from '..';
 
 export default class Logger {
   private loggers: Record<string, winston.Logger>;
@@ -49,15 +50,31 @@ export default class Logger {
   }
 
   private createLogger(level: LogLevel, filePath: string): winston.Logger {
-    return winston.createLogger({
-      levels: logLevels,
-      level,
-      transports: [
-        new winston.transports.File({
-          ...this.loggerOptions,
-          filename: `${filePath}/${level}.log`,
-          format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
-        }),
+    const transports: winston.transport[] = [
+      new winston.transports.File({
+        ...this.loggerOptions,
+        filename: `${filePath}/${level}.log`,
+        format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
+      }),
+    ];
+
+    // Determine console logging based on configuration
+    let showConsoleLogs = true;
+
+    if (configHandler && typeof configHandler.get === 'function') {
+      const logConfig = configHandler.get('log') || {};
+      const hasProgressSupport = PROGRESS_SUPPORTED_MODULES.includes(logConfig.progressSupportedModule);
+      if (hasProgressSupport) {
+        // Plugin has progress bars - respect user's showConsoleLogs setting
+        showConsoleLogs = logConfig.showConsoleLogs ?? true;
+      } else {
+        // Plugin doesn't have progress support - always show console logs
+        showConsoleLogs = true;
+      }
+    }
+
+    if (showConsoleLogs) {
+      transports.push(
         new winston.transports.Console({
           format: winston.format.combine(
             winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
@@ -70,7 +87,13 @@ export default class Logger {
             }),
           ),
         }),
-      ],
+      );
+    }
+
+    return winston.createLogger({
+      levels: logLevels,
+      level,
+      transports,
     });
   }
 
@@ -162,7 +185,7 @@ export default class Logger {
     if (this.shouldLog('error', 'file')) {
       this.loggers.error.error(logPayload);
     }
-    
+
     // For console, use debug level if hidden, otherwise error level
     const consoleLevel: LogType = params.hidden ? 'debug' : 'error';
     if (this.shouldLog(consoleLevel, 'console')) {

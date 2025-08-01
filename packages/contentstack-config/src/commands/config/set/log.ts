@@ -34,7 +34,9 @@ export default class LogSetCommand extends Command {
       let logLevel: string = flags['level'];
       let logPath: string = flags['path'];
       const showConsoleLogs: boolean = flags['show-console-logs'];
-
+      const currentLoggingConfig = configHandler.get('log') || {};
+      logLevel = logLevel || currentLoggingConfig?.level;
+      logPath = logPath || currentLoggingConfig?.path;
       // Interactive prompts if not passed via flags
       if (!logLevel) {
         logLevel = await interactive.askLogLevel();
@@ -44,10 +46,9 @@ export default class LogSetCommand extends Command {
         logPath = await interactive.askLogPath();
       }
 
-      const currentLoggingConfig = configHandler.get('log') || {};
       if (logLevel) currentLoggingConfig.level = logLevel;
       if (logPath) currentLoggingConfig.path = logPath;
-      currentLoggingConfig['show-console-logs'] = showConsoleLogs;
+      currentLoggingConfig.showConsoleLogs = showConsoleLogs;
 
       configHandler.set('log', currentLoggingConfig);
 
