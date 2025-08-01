@@ -3,12 +3,14 @@
 /* eslint-disable camelcase */
 /* eslint-disable max-depth */
 /* eslint-disable no-console */
+const { cliux } = require('@contentstack/cli-utilities');
 const { getQueue } = require('../util/queue');
 const { performBulkPublish, publishEntry, initializeLogger } = require('../consumer/publish');
 const retryFailedLogs = require('../util/retryfailed');
 const { validateFile } = require('../util/fs');
 const { isEmpty } = require('../util');
 const { fetchBulkPublishLimit } = require('../util/common-utility');
+const { generateBulkPublishStatusUrl } = require('../util/bulk-publish-utils');
 const VARIANTS_PUBLISH_API_VERSION = '3.2';
 
 const queue = getQueue();
@@ -253,6 +255,18 @@ async function start(
     } else if (!isSuccessLogEmpty) {
       console.log(`The success log for this session is stored at ${filePath}.success`);
     }
+    
+    // Generate and display the bulk publish status link
+    if (bulkPublish && stack && config) {
+      const statusUrl = generateBulkPublishStatusUrl(stack, config);
+      if (statusUrl) {
+        process.stdout.write('\n');
+        process.stdout.write('\x1b[37mHere is the link for check the bulk publish status: \x1b[0m');
+        process.stdout.write('\x1b[34m' + statusUrl + '\x1b[0m');
+        process.stdout.write('\n');
+      }
+    }
+    
     process.exit(0);
   });
 
