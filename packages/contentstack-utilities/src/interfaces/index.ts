@@ -160,4 +160,5 @@ export interface ModuleResult {
 export interface SummaryOptions {
   operationName: string; // 'EXPORT', 'IMPORT', 'MIGRATION', etc.
   context?: any;
+  branchName?: string; // Optional branch name for operations
 }

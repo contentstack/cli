@@ -6,11 +6,13 @@ export default class SummaryManager {
   private operationName: string;
   private context: any;
   private operationStartTime: number;
+  private branchName: string;
 
   constructor({ operationName, context }: SummaryOptions) {
     this.operationName = operationName;
     this.context = context;
     this.operationStartTime = Date.now();
+    this.branchName = context.branchName || ''; 
   }
 
   registerModule(moduleName: string, totalItems: number = 0): void {
@@ -62,8 +64,13 @@ export default class SummaryManager {
     const operationEndTime = Date.now();
     const totalDuration = operationEndTime - this.operationStartTime;
 
+    const branchInfo = this.branchName ? `EXPORTING "${this.branchName.toUpperCase()}" BRANCH RESULTS` : '';
+
     console.log('\n' + chalk.bold('='.repeat(80)));
     console.log(chalk.bold.cyan(`                   ${this.operationName} SUMMARY`));
+    if (branchInfo) {
+      console.log(chalk.bold.white(`                   ${branchInfo}`));
+    }
     console.log(chalk.bold('='.repeat(80)));
 
     // Overall Statistics
