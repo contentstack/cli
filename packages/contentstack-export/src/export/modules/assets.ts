@@ -62,7 +62,7 @@ export default class ExportAssets extends BaseClass {
     // Create nested progress manager
     const progress = this.createNestedProgress(this.currentModuleName);
 
-    // Add sub-processes 
+    // Add sub-processes
     if (typeof assetsFolderCount === 'number' && assetsFolderCount > 0) {
       progress.addProcess('Asset Folders', assetsFolderCount);
     }
@@ -197,7 +197,7 @@ export default class ExportAssets extends BaseClass {
     }
 
     const onReject = ({ error }: any) => {
-      this.progressManager.tick(false, 'asset', error?.message || 'Failed to fetch asset', 'Asset Metadata');
+      this.progressManager?.tick(false, 'asset', error?.message || 'Failed to fetch asset', 'Asset Metadata');
       handleAndLogError(error, { ...this.exportConfig.context }, messageHandler.parse('ASSET_QUERY_FAILED'));
     };
 
@@ -219,7 +219,7 @@ export default class ExportAssets extends BaseClass {
         fs?.writeIntoFile(items, { mapKeyVal: true });
         // Track progress for each asset with process name
         items.forEach((asset: any) => {
-          this.progressManager.tick(true, `asset: ${asset.filename || asset.uid}`, null, 'Asset Metadata');
+          this.progressManager?.tick(true, `asset: ${asset.filename || asset.uid}`, null, 'Asset Metadata');
         });
       }
     };
@@ -418,13 +418,13 @@ export default class ExportAssets extends BaseClass {
       } else {
         data.pipe(assetWriterStream);
       }
-      this.progressManager.tick(true, `Downloaded asset: ${asset.filename || asset.uid}`, null, 'Asset Downloads');
+      this.progressManager?.tick(true, `Downloaded asset: ${asset.filename || asset.uid}`, null, 'Asset Downloads');
       log.success(messageHandler.parse('ASSET_DOWNLOAD_SUCCESS', asset.filename, asset.uid), this.exportConfig.context);
     };
 
     const onReject = ({ error, additionalInfo }: any) => {
       const { asset } = additionalInfo;
-      this.progressManager.tick(
+      this.progressManager?.tick(
         false,
         `Failed to download asset: ${asset.filename || asset.uid}`,
         null,
