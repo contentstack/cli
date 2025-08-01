@@ -1,4 +1,3 @@
-// @ts-nocheck
 const managementSDKClient = require('@contentstack/cli-utilities');
 let config = {
   source_stack: process.env.STACK_API_KEY || 'asdf',
