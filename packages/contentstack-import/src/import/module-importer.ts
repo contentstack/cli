@@ -57,6 +57,7 @@ class ModuleImporter {
           'extensions',
           'workflows',
           'custom-roles',
+          'assets'
         ].includes(this.importConfig.moduleName))
     ) {
       if (!(await this.auditImportData(logger))) {
