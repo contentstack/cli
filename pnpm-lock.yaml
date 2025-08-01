@@ -16,7 +16,7 @@ importers:
       '@contentstack/cli-auth': ~1.5.1
       '@contentstack/cli-cm-bootstrap': ~1.15.0
       '@contentstack/cli-cm-branches': ~1.5.0
-      '@contentstack/cli-cm-bulk-publish': ~1.9.0
+      '@contentstack/cli-cm-bulk-publish': ~1.9.1
       '@contentstack/cli-cm-clone': ~1.15.0
       '@contentstack/cli-cm-export': ~1.18.0
       '@contentstack/cli-cm-export-to-csv': ~1.9.0
@@ -338,6 +338,7 @@ importers:
   packages/contentstack-bulk-publish:
     specifiers:
       '@contentstack/cli-command': ~1.6.0
+      '@contentstack/cli-config': ~1.15.0
       '@contentstack/cli-utilities': ~1.13.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
@@ -355,6 +356,7 @@ importers:
       winston: ^3.17.0
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
+      '@contentstack/cli-config': link:../contentstack-config
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/core': 4.4.0
       '@oclif/plugin-help': 6.2.29
