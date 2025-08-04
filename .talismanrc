@@ -80,7 +80,7 @@ fileignoreconfig:
   - filename: packages/contentstack-export/src/commands/cm/stacks/export.ts
     checksum: ece7891cb6fd7edff4a3cd54adb03ba8f7d8d5758f52d98a5c0ff0bd1b071f74
   - filename: packages/contentstack-import/src/commands/cm/stacks/import.ts
-    checksum: c979bcc18cb0d3e5c58f1b27a106b3d89bb6524d47c0cc2b2fd199031ea33279
+    checksum: 97463e90433387396c1effeef8eed736179b85e3674398fc7ad22c936f7d8393
   - filename: packages/contentstack-export/src/export/modules/custom-roles.ts
     checksum: 4fc0f5cab039c84d1a12cdae90dcdcaf15ba461b23007635dc997aada75bbb23
   - filename: packages/contentstack-import/src/utils/extension-helper.ts
