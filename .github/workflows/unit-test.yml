@@ -20,6 +20,10 @@ jobs:
         run: |
           npm run setup-repo-old
 
+      - name: Run tests for Contentstack Command
+        working-directory: ./packages/contentstack-command
+        run: npm run test:unit
+
       - name: Run tests for Audit plugin
         working-directory: ./packages/contentstack-audit
         run: npm run test:unit
@@ -47,6 +51,11 @@ jobs:
       - name: Run tests for Contentstack Auth
         working-directory: ./packages/contentstack-auth
         run: npm run test
+
+      - name: Run tests for Contentstack Import Setup
+        working-directory: ./packages/contentstack-import-setup
+        run: npm run test:unit
+
       # - name: Fetch latest references
       #   run: |
       #     git fetch --prune
