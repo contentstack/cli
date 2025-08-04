@@ -50,7 +50,7 @@ jobs:
 
       - name: Run tests for Contentstack Bulk Publish
         working-directory: ./packages/contentstack-bulk-publish
-        run: npm run test
+        run: npm run test:unit
       # - name: Fetch latest references
       #   run: |
       #     git fetch --prune
