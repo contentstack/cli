@@ -47,6 +47,10 @@ jobs:
       - name: Run tests for Contentstack Auth
         working-directory: ./packages/contentstack-auth
         run: npm run test
+
+      - name: Run tests for Contentstack Bulk Publish
+        working-directory: ./packages/contentstack-bulk-publish
+        run: npm run test
       # - name: Fetch latest references
       #   run: |
       #     git fetch --prune
