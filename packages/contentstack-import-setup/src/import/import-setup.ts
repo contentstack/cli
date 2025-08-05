@@ -1,8 +1,13 @@
-import Module from 'module';
 import { ImportConfig, Modules } from '../types';
 import { backupHandler, log } from '../utils';
 import { ContentstackClient, formatError } from '@contentstack/cli-utilities';
 import { validateBranch } from '../utils';
+import { expect } from 'chai';
+import * as path from 'path';
+import * as fs from 'fs';
+import { restore } from 'sinon';
+import * as fileHelper from '../../src/utils/file-helper';
+import * as os from 'os';
 
 export default class ImportSetup {
   protected config: ImportConfig;
