@@ -2,5 +2,7 @@ fileignoreconfig:
   - filename: packages/contentstack-import/src/commands/cm/stacks/import.ts
     checksum: 97463e90433387396c1effeef8eed736179b85e3674398fc7ad22c936f7d8393
   - filename: packages/contentstack/README.md
-    checksum: c09f6dc93702caff3adf689b501ec32586a16c865c1fe3a63b53ae645ca22349
+    checksum: c09f6dc93702caff3adf689b501ec32586a16c865c1fe3a63b53ae645ca22349\
+  - filename: package-lock.json
+    checksum: b931e2aebd20e9f576b580d4f1e304e1d509e0ffa8a62b7b705e2329cb0b9fd9
 version: '1.0'
