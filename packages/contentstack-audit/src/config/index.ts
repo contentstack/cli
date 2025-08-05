@@ -107,6 +107,7 @@ const config = {
     'selectedValue',
     'ct_uid',
     'action',
+    'is_variant',
     "Module",
     "Total",
     "Fixable",
@@ -114,6 +115,9 @@ const config = {
     "Fixed",
     "Not-Fixed",
     "Passed",
+    "reference_uid",
+    "content_type_uid",
+    "path",
   ],
   ReportTitleForEntries: {
     Entries_Select_feild: 'Entries_Select_feild',
@@ -121,7 +125,8 @@ const config = {
     Entries_Title_feild: 'Entries_Title_feild',
     Entry_Missing_Locale_and_Env: 'Entry_Missing_Locale_and_Env',
     Entry_Missing_Locale_and_Env_in_Publish_Details: 'Entry_Missing_Locale_and_Env_in_Publish_Details',
-    Entry_Multiple_Fields:"Entry_Multiple_Fields"
+    Entry_Multiple_Fields: 'Entry_Multiple_Fields',
+    Variant_References: 'Variant_References'
   },
   feild_level_modules: [
     'Entries_Title_feild',
@@ -130,6 +135,7 @@ const config = {
     'Entry_Missing_Locale_and_Env_in_Publish_Details',
     'field-rules',
     'Entry_Multiple_Fields',
+    'Variant_References',
     'Summary'
   ],
   fixSelectField: false,

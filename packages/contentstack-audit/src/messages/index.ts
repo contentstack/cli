@@ -24,6 +24,16 @@ const commonMsg = {
 };
 
 const auditMsg = {
+  VARIANT_PUBLISH_VALIDATION_ERROR: 'Variant validation error in entry {entry_uid} Content Type: {ctUid}, Locale: {locale})',
+  VARIANT_REFERENCE_INVALID: 'Invalid reference in variant: Entry {entry_uid} references {reference_uid} Content Type: {content_type_uid} at path {path}',
+  VARIANT_FIX_SUCCESS: 'Successfully fixed variant file at {path}',
+  VARIANT_FIX_ERROR: 'Error fixing variant file at {path}: {error}',
+  VARIANT_PUBLISH_DETAILS_INVALID: 'Invalid publish details for variant {variant_uid} in environment {environment} and locale {locale} (entry locale: {entry_locale})',
+  VARIANT_PUBLISH_DETAILS_INVALID_FORMAT: 'Invalid publish_details format for variant {variant_uid} in entry {entry_uid}',
+  VARIANT_FILE_READ_ERROR: 'Error reading variant file {file}: {error}',
+  VARIANT_DIRECTORY_ERROR: 'Error processing variants directory {path}: {error}',
+  VARIANT_FILE_INVALID_FORMAT: 'Invalid format in variant file {file}',
+  VARIANT_INVALID_FORMAT: 'Invalid variant format in file {file}',
   REPORT_PATH: 'Path to store the audit reports',
   MODULES: 'Provide the list of modules to be audited',
   AUDIT_START_SPINNER: '{module} scanning...',

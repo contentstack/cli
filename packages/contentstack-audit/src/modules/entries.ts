@@ -1,4 +1,7 @@
-import map from 'lodash/map';
+import { map } from 'lodash';
+import { VariantPublishValidator } from './variant/variant-publish-validator';
+import { VariantFileHandler } from './variant/variant-file-handler';
+import { VariantLogger } from './variant/variant-logger';
 import find from 'lodash/find';
 import values from 'lodash/values';
 import isEmpty from 'lodash/isEmpty';
@@ -44,6 +47,7 @@ import { keys } from 'lodash';
 
 export default class Entries {
   public log: LogFn;
+  private variantValidator: VariantPublishValidator;
   protected fix: boolean;
   public fileName: string;
   public locales!: Locale[];
@@ -56,6 +60,7 @@ export default class Entries {
   public ctSchema: ContentTypeStruct[];
   protected entries!: Record<string, EntryStruct>;
   protected missingRefs: Record<string, any> = {};
+  protected missingVariantRefs: Record<string, any> = {}; // New property for variant reference errors
   protected missingSelectFeild: Record<string, any> = {};
   protected missingMandatoryFields: Record<string, any> = {};
   protected missingTitleFields: Record<string, any> = {};
@@ -67,6 +72,18 @@ export default class Entries {
 
   constructor({ log, fix, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
     this.log = log;
+    this.folderPath = resolve(sanitizePath(config.basePath), sanitizePath(config.moduleConfig.entries.dirName));
+    const variantLogger = new VariantLogger(log);
+    const variantFileHandler = new VariantFileHandler(this.folderPath);
+    this.variantValidator = new VariantPublishValidator(
+      {
+        environments: [],  // Will be populated in prepareEntryMetaData
+        locales: []       // Will be populated in prepareEntryMetaData
+      },
+      variantFileHandler,
+      variantLogger,
+      fix
+    );
     this.config = config;
     this.fix = fix ?? false;
     this.ctSchema = ctSchema;
@@ -187,6 +204,36 @@ export default class Entries {
               this.log($t(auditMsg.ENTRY_PUBLISH_DETAILS_NOT_EXIST, { uid: entryUid }), { color: 'red' });
             }
 
+            this.log('Scanning Variants', { color: 'green' });
+            const variantResults = await this.variantValidator.validateVariantsInDirectory(
+              basePath,
+              entryUid,
+              ctSchema.uid,
+              code
+            );
+
+            if (!variantResults.isValid) {
+              variantResults.errors.forEach(error => {
+                if (error.type === 'reference') {
+                  // For reference errors, use the missingVariantRefs array
+                  if (!this.missingVariantRefs[entryUid]) {
+                    this.missingVariantRefs[entryUid] = [];
+                  }
+                  this.missingVariantRefs[entryUid].push({
+                    ...error,
+                    is_variant: true
+                  });
+                } else {
+                  if (!this.missingEnvLocale[entryUid]) {
+                    this.missingEnvLocale[entryUid] = [];
+                  }
+                  this.missingEnvLocale[entryUid].push({
+                    ...error,
+                    is_variant: true
+                  });
+                }
+              });
+            }
             this.entries[entryUid].publish_details = this.entries[entryUid]?.publish_details.filter((pd: any) => {
               if (localKey?.includes(pd.locale) && this.environments?.includes(pd.environment)) {
                 return true;
@@ -209,6 +256,7 @@ export default class Entries {
                       publish_environment: pd.environment,
                       ctUid: ctSchema.uid,
                       ctLocale: code,
+                      is_variant: false,
                     },
                   ];
                 } else {
@@ -218,6 +266,7 @@ export default class Entries {
                     publish_environment: pd.environment,
                     ctUid: ctSchema.uid,
                     ctLocale: code,
+                    is_variant: false,
                   });
                 }
                 return false;
@@ -244,6 +293,7 @@ export default class Entries {
     this.removeEmptyVal();
     return {
       missingEntryRefs: this.missingRefs,
+      missingVariantRefs: this.missingVariantRefs, // Add variant refs to return value
       missingSelectFeild: this.missingSelectFeild,
       missingMandatoryFields: this.missingMandatoryFields,
       missingTitleFields: this.missingTitleFields,
@@ -259,6 +309,11 @@ export default class Entries {
     for (let propName in this.missingRefs) {
       if (!this.missingRefs[propName].length) {
         delete this.missingRefs[propName];
+      }
+    }
+    for (let propName in this.missingVariantRefs) {
+      if (!this.missingVariantRefs[propName].length) {
+        delete this.missingVariantRefs[propName];
       }
     }
     for (let propName in this.missingSelectFeild) {
@@ -310,7 +365,7 @@ export default class Entries {
 
         for (const app of marketplaceApps) {
           const metaData = map(map(app?.ui_location?.locations, 'meta').flat(), 'extension_uid').filter(
-            (val) => val,
+            (val: string | undefined) => val,
           ) as string[];
           this.extensions.push(...metaData);
         }
@@ -1427,6 +1482,8 @@ export default class Entries {
       this.config.moduleConfig.environments.fileName,
     );
     this.environments = existsSync(environmentPath) ? keys(JSON.parse(readFileSync(environmentPath, 'utf8'))) : [];
+
+   
     for (const { code } of this.locales) {
       for (const { uid } of this.ctSchema) {
         let basePath = join(this.folderPath, uid, code);
@@ -1459,5 +1516,19 @@ export default class Entries {
         }
       }
     }
+
+     // Update variant validator config with loaded environments and locales
+     const variantLogger = new VariantLogger(this.log);
+     const variantFileHandler = new VariantFileHandler(this.folderPath);
+     this.variantValidator = new VariantPublishValidator(
+       {
+         environments: this.environments,
+         locales: this.locales
+       },
+       variantFileHandler,
+       variantLogger,
+       this.fix,
+       this.entryMetaData
+     );
   }
 }

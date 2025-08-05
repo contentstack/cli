@@ -5,10 +5,10 @@
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-cm-import": "~1.26.1",
+    "@contentstack/cli-cm-import": "~1.26.2",
     "@contentstack/cli-command": "~1.6.0",
     "@contentstack/cli-utilities": "~1.13.1",
-    "@contentstack/management": "~1.22.0",
+    "@contentstack/management": "~1.23.1",
     "inquirer": "8.2.6",
     "mkdirp": "^1.0.4",
     "tar": "^6.2.1",

@@ -31,6 +31,7 @@ import {
   OutputColumn,
   RefErrorReturnType,
   WorkflowExtensionsRefErrorReturnType,
+  ScanAndFixResult,
 } from './types';
 
 export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseCommand> {
@@ -64,6 +65,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingCtRefs,
       missingGfRefs,
       missingEntryRefs,
+      missingVariantRefs,
       missingCtRefsInExtensions,
       missingCtRefsInWorkflow,
       missingSelectFeild,
@@ -81,6 +83,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         { module: 'Content types', missingRefs: missingCtRefs },
         { module: 'Global Fields', missingRefs: missingGfRefs },
         { module: 'Entries', missingRefs: missingEntryRefs },
+        { module: 'Variant References', missingRefs: missingVariantRefs },
       ]);
       this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Extensions', missingRefs: missingCtRefsInExtensions }]);
       this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Workflows', missingRefs: missingCtRefsInWorkflow }]);
@@ -111,6 +114,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       !isEmpty(missingCtRefs) ||
       !isEmpty(missingGfRefs) ||
       !isEmpty(missingEntryRefs) ||
+      !isEmpty(missingVariantRefs) ||
       !isEmpty(missingCtRefsInWorkflow) ||
       !isEmpty(missingCtRefsInExtensions) ||
       !isEmpty(missingSelectFeild) ||
@@ -144,6 +148,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       !isEmpty(missingCtRefs) ||
       !isEmpty(missingGfRefs) ||
       !isEmpty(missingEntryRefs) ||
+      !isEmpty(missingVariantRefs) ||
       !isEmpty(missingCtRefsInWorkflow) ||
       !isEmpty(missingCtRefsInExtensions) ||
       !isEmpty(missingSelectFeild) ||
@@ -160,11 +165,12 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    * @returns The function `scan()` returns an object with properties `missingCtRefs`, `missingGfRefs`,
    * and `missingEntryRefs`.
    */
-  async scanAndFix() {
+  async scanAndFix(): Promise<ScanAndFixResult> {
     let { ctSchema, gfSchema } = this.getCtAndGfSchema();
     let missingCtRefs,
       missingGfRefs,
       missingEntryRefs,
+      missingVariantRefs,
       missingCtRefsInExtensions,
       missingCtRefsInWorkflow,
       missingSelectFeild,
@@ -216,12 +222,14 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         case 'entries':
           missingEntry = await new Entries(cloneDeep(constructorParam)).run();
           missingEntryRefs = missingEntry.missingEntryRefs ?? {};
+          missingVariantRefs = missingEntry.missingVariantRefs ?? {};
           missingSelectFeild = missingEntry.missingSelectFeild ?? {};
           missingMandatoryFields = missingEntry.missingMandatoryFields ?? {};
           missingTitleFields = missingEntry.missingTitleFields ?? {};
           missingEnvLocalesInEntries = missingEntry.missingEnvLocale ?? {};
           missingMultipleFields = missingEntry.missingMultipleFields ?? {};
           await this.prepareReport(module, missingEntryRefs);
+          await this.prepareReport('Variant_References', missingVariantRefs);
 
           await this.prepareReport(`Entries_Select_feild`, missingSelectFeild);
 
@@ -566,6 +574,11 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
           if (this.currentCommand === 'cm:stacks:audit:fix') {
             row['Fix status'] = row.fixStatus;
+          }
+
+          // Handle variant flag for entries
+          if ('is_variant' in issue) {
+            row[OutputColumn['is_variant']] = issue.is_variant ? 'Yes' : 'No';
           }
 
           rowData.push(row);
