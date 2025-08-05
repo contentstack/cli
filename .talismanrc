@@ -132,9 +132,3 @@ fileignoreconfig:
   - filename: packages/contentstack-variants/src/import/audiences.ts
     checksum: 9b1d68db8e25c2cf1e68e7b458adadf477875e7901327586c8e6289479549ee8
 version: ''
-
-
-- filename: package-lock.json
-  checksum: ae7b740ff57e8d4c9ce2fc31d282b8cbbfb1ce822d05cdab4dcbe5a70b775cbd
-- filename: pnpm-lock.yaml
-  checksum: 3b5057d9fd6935a2124aaf7fe24286d767875c7b82f4381a9f834d34f2bf304e
