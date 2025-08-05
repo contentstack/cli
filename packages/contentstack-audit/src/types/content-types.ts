@@ -176,6 +176,10 @@ enum OutputColumn {
   "Non-Fixable"="Non-Fixable",
   "Fixed" = "Fixed",
   "Not-Fixed" = "Not-Fixed",
+  "is_variant" = "is_variant",
+  "reference_uid" = "reference_uid",
+  "content_type_uid" = "content_type_uid",
+  "path" = "path",
 }
 
 export {

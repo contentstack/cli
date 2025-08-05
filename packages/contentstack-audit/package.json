@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-audit",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "description": "Contentstack audit plugin",
   "author": "Contentstack CLI",
   "homepage": "https://github.com/contentstack/cli",
@@ -21,7 +21,7 @@
     "@contentstack/cli-command": "~1.6.0",
     "@contentstack/cli-utilities": "~1.13.1",
     "@oclif/core": "^4.3.0",
-    "@oclif/plugin-help": "^6.2.28",
+    "@oclif/plugin-help": "^6.2.32",
     "@oclif/plugin-plugins": "^5.4.38",
     "chalk": "^4.1.2",
     "fast-csv": "^4.3.6",
@@ -35,11 +35,11 @@
     "@types/chai": "^4.3.20",
     "@types/fs-extra": "^11.0.4",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^20.17.50",
+    "@types/node": "^20.19.9",
     "@types/uuid": "^9.0.8",
     "chai": "^4.5.0",
     "eslint": "^8.57.1",
-    "eslint-config-oclif": "^6.0.62",
+    "eslint-config-oclif": "^6.0.90",
     "eslint-config-oclif-typescript": "^3.1.14",
     "mocha": "^10.8.2",
     "nyc": "^15.1.0",
@@ -47,7 +47,7 @@
     "shx": "^0.4.0",
     "sinon": "^19.0.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.2"
   },
   "oclif": {
     "bin": "csdx",

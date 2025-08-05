@@ -5,3 +5,4 @@ export * from './content-types';
 export * from './workflow';
 export * from './extensions';
 export * from './custom-role';
+export * from './audit';
