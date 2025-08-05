@@ -14,7 +14,7 @@ export default class BaseImportSetup {
   }
 
   async setupDependencies() {
-    for (const moduleName of Object.keys(this.dependencies)) {
+    for (const moduleName of this.dependencies) {
       try {
         const modulePath = `./${moduleName}`;
         const { default: ModuleClass } = await import(modulePath);
