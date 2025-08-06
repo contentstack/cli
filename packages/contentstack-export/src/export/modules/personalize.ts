@@ -64,7 +64,7 @@ export default class ExportPersonalize extends BaseClass {
         };
 
         const order: (keyof typeof moduleMapper)[] = this.exportConfig.modules.personalize
-          .exportOrder as (keyof typeof moduleMapper)[];
+          .exportOrder as (keyof typeof moduleMapper)[]; // talisman:disable-line
         
         log.debug(
           `Adding ${order.length} personalize module processes: ${order.join(', ')}`,
@@ -117,7 +117,7 @@ export default class ExportPersonalize extends BaseClass {
           });
 
           const order: (keyof typeof moduleInstanceMapper)[] = this.exportConfig.modules.personalize
-            .exportOrder as (keyof typeof moduleInstanceMapper)[];
+            .exportOrder as (keyof typeof moduleInstanceMapper)[]; // talisman:disable-line
 
           log.debug(`Personalize export order: ${order.join(', ')}`, this.exportConfig.context);
 
