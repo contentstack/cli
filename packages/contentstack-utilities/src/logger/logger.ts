@@ -12,7 +12,6 @@ export default class Logger {
 
   private sensitiveKeys = [
     /authtoken/i,
-    /^email$/i,
     /^password$/i,
     /secret/i,
     /token/i,
