@@ -50,7 +50,7 @@
     "postpack": "rm -f oclif.manifest.json",
     "generate-api-ref-md-doc": "nyc jsdoc2md ./src/modules/* > ./docs/api-reference.md",
     "prepack": "oclif manifest && oclif readme && pnpm generate-api-ref-md-doc",
-    "test": "nyc mocha \"test/**/*.test.js\"",
+    "test": "nyc mocha --timeout 3000 \"test/**/*.test.js\"",
     "version": "oclif readme && git add README.md",
     "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
   },
