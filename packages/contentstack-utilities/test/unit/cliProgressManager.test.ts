@@ -209,13 +209,13 @@ describe('CLIProgressManager', () => {
 
   describe('Static Methods', () => {
     fancy.it('should initialize global summary', () => {
-      const summary = CLIProgressManager.initializeGlobalSummary('TEST_OPERATION');
+      const summary = CLIProgressManager.initializeGlobalSummary('TEST_OPERATION', '');
       expect(summary).to.be.instanceOf(SummaryManager);
       expect(CLIProgressManager['globalSummary']).to.equal(summary);
     });
 
     fancy.it('should clear global summary', () => {
-      CLIProgressManager.initializeGlobalSummary('TEST');
+      CLIProgressManager.initializeGlobalSummary('TEST', '');
       CLIProgressManager.clearGlobalSummary();
       expect(CLIProgressManager['globalSummary']).to.be.null;
     });
@@ -239,7 +239,7 @@ describe('CLIProgressManager', () => {
     // Note: Skipping actual withLoadingSpinner tests to avoid ora spinner issues in test environment
     fancy.it('should print global summary when exists', () => {
       const summaryStub = sinon.stub(SummaryManager.prototype, 'printFinalSummary');
-      CLIProgressManager.initializeGlobalSummary('TEST');
+      CLIProgressManager.initializeGlobalSummary('TEST', '');
       CLIProgressManager.printGlobalSummary();
       expect(summaryStub.calledOnce).to.be.true;
     });
@@ -379,7 +379,7 @@ describe('CLIProgressManager', () => {
       const summaryStub = sinon.stub(SummaryManager.prototype, 'registerModule');
       const startStub = sinon.stub(SummaryManager.prototype, 'startModule');
 
-      CLIProgressManager.initializeGlobalSummary('GLOBAL_TEST');
+      CLIProgressManager.initializeGlobalSummary('GLOBAL_TEST', '');
       progressManager = new CLIProgressManager({
         moduleName: 'TEST_MODULE',
         total: 10,

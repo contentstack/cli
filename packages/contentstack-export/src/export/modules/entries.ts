@@ -353,23 +353,20 @@ export default class EntriesExport extends BaseClass {
       if (this.exportVariantEntry) {
         log.debug('Exporting variant entries for base entries', this.exportConfig.context);
         try {
+          // Set parent progress manager for variant entries
+          if (this.variantEntries && typeof this.variantEntries.setParentProgressManager === 'function') {
+            this.variantEntries.setParentProgressManager(this.progressManager);
+          }
+          
           await this.variantEntries.exportVariantEntry({
             locale: options.locale,
             contentTypeUid: options.contentType,
             entries: entriesSearchResponse.items,
           });
           
-          // Track progress for variant entries
-          entriesSearchResponse.items.forEach((entry: any) => {
-            this.progressManager?.tick(true, `variant: ${entry.uid}`, null, 'Variant Entries');
-          });
-          
           log.debug(`Successfully exported variant entries for ${entriesSearchResponse.items.length} entries`, this.exportConfig.context);
         } catch (error) {
           log.debug('Failed to export variant entries', this.exportConfig.context);
-          entriesSearchResponse.items.forEach((entry: any) => {
-            this.progressManager?.tick(false, `variant: ${entry.uid}`, error?.message || 'Failed to export variant', 'Variant Entries');
-          });
         }
       }
 

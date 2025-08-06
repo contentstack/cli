@@ -6,7 +6,7 @@ import {
   ExportAudiences,
   AnyProperty,
 } from '@contentstack/cli-variants';
-import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
+import { handleAndLogError, messageHandler, log, CLIProgressManager } from '@contentstack/cli-utilities';
 
 import { ModuleClassParams, ExportConfig } from '../../types';
 import BaseClass from './base-class';
@@ -14,6 +14,20 @@ import BaseClass from './base-class';
 export default class ExportPersonalize extends BaseClass {
   public exportConfig: ExportConfig;
   public personalizeConfig: { dirName: string; baseURL: Record<string, string> } & AnyProperty;
+
+  private readonly moduleInstanceMapper = {
+    events: ExportEvents,
+    attributes: ExportAttributes,
+    audiences: ExportAudiences,
+    experiences: ExportExperiences,
+  };
+
+  private readonly moduleDisplayMapper = {
+    events: 'Events',
+    attributes: 'Attributes',
+    audiences: 'Audiences',
+    experiences: 'Experiences',
+  };
 
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
@@ -32,6 +46,12 @@ export default class ExportPersonalize extends BaseClass {
         async () => {
           const canProceed = this.validatePersonalizeSetup();
           const moduleCount = canProceed ? this.getPersonalizeModuleCount() : 0;
+
+          log.debug(
+            `Personalize validation - canProceed: ${canProceed}, moduleCount: ${moduleCount}`,
+            this.exportConfig.context,
+          );
+
           return [canProceed, moduleCount];
         },
       );
@@ -41,61 +61,20 @@ export default class ExportPersonalize extends BaseClass {
         return;
       }
 
+      log.debug(`Creating personalize progress with moduleCount: ${moduleCount}`, this.exportConfig.context);
       const progress = this.createNestedProgress(this.currentModuleName);
 
-      // Add projects export process (always runs first)
-      progress.addProcess('Projects', 1);
-
-      // Add personalize modules processes if enabled
-      if (this.exportConfig.personalizationEnabled && moduleCount > 0) {
-        progress.addProcess('Personalize Modules', moduleCount);
-      }
+      this.addProjectProcess(progress);
+      this.addModuleProcesses(progress, moduleCount);
 
       try {
-        // Process projects export
-        progress.startProcess('Projects').updateStatus('Exporting personalization projects...', 'Projects');
-        log.debug('Starting projects export for personalization...', this.exportConfig.context);
-        await new ExportProjects(this.exportConfig).start();
-        this.progressManager?.tick(true, 'projects export', null, 'Projects');
-        progress.completeProcess('Projects', true);
+        await this.exportProjects(progress);
 
-        if (this.exportConfig.personalizationEnabled && moduleCount > 0) {
-          progress
-            .startProcess('Personalize Modules')
-            .updateStatus('Processing personalize modules...', 'Personalize Modules');
-          log.debug('Personalization is enabled, processing personalize modules...', this.exportConfig.context);
-
-          const moduleMapper = {
-            events: new ExportEvents(this.exportConfig),
-            attributes: new ExportAttributes(this.exportConfig),
-            audiences: new ExportAudiences(this.exportConfig),
-            experiences: new ExportExperiences(this.exportConfig),
-          };
-
-          const order: (keyof typeof moduleMapper)[] = this.exportConfig.modules.personalize
-            .exportOrder as (keyof typeof moduleMapper)[];
-
-          log.debug(`Personalize export order: ${order.join(', ')}`, this.exportConfig.context);
-
-          for (const module of order) {
-            log.debug(`Processing personalize module: ${module}`, this.exportConfig.context);
-
-            if (moduleMapper[module]) {
-              log.debug(`Starting export for module: ${module}`, this.exportConfig.context);
-              await moduleMapper[module].start();
-              this.progressManager?.tick(true, `module: ${module}`, null, 'Personalize Modules');
-              log.debug(`Completed export for module: ${module}`, this.exportConfig.context);
-            } else {
-              log.debug(`Module not implemented: ${module}`, this.exportConfig.context);
-              this.progressManager?.tick(false, `module: ${module}`, 'Module not implemented', 'Personalize Modules');
-              log.info(messageHandler.parse('PERSONALIZE_MODULE_NOT_IMPLEMENTED', module), this.exportConfig.context);
-            }
-          }
-
-          progress.completeProcess('Personalize Modules', true);
-          log.debug('Completed all personalize module exports', this.exportConfig.context);
+        if (moduleCount > 0) {
+          log.debug('Processing personalize modules...', this.exportConfig.context);
+          await this.exportModules(progress);
         } else {
-          log.debug('Personalization is disabled, skipping personalize module exports', this.exportConfig.context);
+          log.debug('No personalize modules configured for processing', this.exportConfig.context);
         }
 
         this.completeProgress(true);
@@ -105,7 +84,7 @@ export default class ExportPersonalize extends BaseClass {
           log.debug('Personalize access forbidden, personalization not enabled', this.exportConfig.context);
           log.info(messageHandler.parse('PERSONALIZE_NOT_ENABLED'), this.exportConfig.context);
           this.exportConfig.personalizationEnabled = false;
-          this.completeProgress(true); // Complete successfully but with personalization disabled
+          this.completeProgress(true); // considered successful even if skipped
         } else {
           log.debug('Error occurred during personalize module processing', this.exportConfig.context);
           this.completeProgress(false, moduleError?.message || 'Personalize module processing failed');
@@ -141,5 +120,88 @@ export default class ExportPersonalize extends BaseClass {
   private getPersonalizeModuleCount(): number {
     const order = this.exportConfig.modules?.personalize?.exportOrder;
     return Array.isArray(order) ? order.length : 0;
+  }
+
+  private addProjectProcess(progress: CLIProgressManager) {
+    progress.addProcess('Projects', 1);
+    log.debug('Added Projects process to personalize progress', this.exportConfig.context);
+  }
+
+  private addModuleProcesses(progress: CLIProgressManager, moduleCount: number) {
+    if (moduleCount > 0) {
+      // talisman-ignore-start
+      const order: (keyof typeof this.moduleDisplayMapper)[] = this.exportConfig.modules.personalize
+        .exportOrder as (keyof typeof this.moduleDisplayMapper)[];
+      // talisman-ignore-end
+
+      log.debug(`Adding ${order.length} personalize module processes: ${order.join(', ')}`, this.exportConfig.context);
+
+      for (const module of order) {
+        const processName = this.moduleDisplayMapper[module];
+        progress.addProcess(processName, 1);
+        log.debug(`Added ${processName} process to personalize progress`, this.exportConfig.context);
+      }
+    } else {
+      log.debug('No personalize modules to add to progress', this.exportConfig.context);
+    }
+  }
+
+  private async exportProjects(progress: CLIProgressManager) {
+    progress.startProcess('Projects').updateStatus('Exporting personalization projects...', 'Projects');
+    log.debug('Starting projects export for personalization...', this.exportConfig.context);
+
+    const projectsExporter = new ExportProjects(this.exportConfig);
+    projectsExporter.setParentProgressManager(progress);
+    await projectsExporter.start();
+
+    progress.completeProcess('Projects', true);
+  }
+
+  private async exportModules(progress: CLIProgressManager) {
+    // Set parent progress for all module instances
+    Object.entries(this.moduleInstanceMapper).forEach(([_, ModuleClass]) => {
+      const instance = new ModuleClass(this.exportConfig);
+      instance.setParentProgressManager(progress);
+    });
+
+    // talisman-ignore-start
+    const order: (keyof typeof this.moduleInstanceMapper)[] = this.exportConfig.modules.personalize
+      .exportOrder as (keyof typeof this.moduleInstanceMapper)[];
+    // talisman-ignore-end
+
+    log.debug(`Personalize export order: ${order.join(', ')}`, this.exportConfig.context);
+
+    for (const module of order) {
+      log.debug(`Processing personalize module: ${module}`, this.exportConfig.context);
+      const processName = this.moduleDisplayMapper[module];
+      const ModuleClass = this.moduleInstanceMapper[module];
+
+      if (ModuleClass) {
+        progress.startProcess(processName).updateStatus(`Exporting ${module}...`, processName);
+        log.debug(`Starting export for module: ${module}`, this.exportConfig.context);
+
+        if (this.exportConfig.personalizationEnabled) {
+          const exporter = new ModuleClass(this.exportConfig);
+          exporter.setParentProgressManager(progress);
+          await exporter.start();
+
+          progress.completeProcess(processName, true);
+          log.debug(`Completed export for module: ${module}`, this.exportConfig.context);
+        } else {
+          log.debug(`Skipping ${module} - personalization not enabled`, this.exportConfig.context);
+          this.progressManager?.tick(true, `${module} skipped (no project)`, null, processName);
+          progress.completeProcess(processName, true);
+          log.info(`Skipped ${module} export - no personalize project found`, this.exportConfig.context);
+        }
+      } else {
+        log.debug(`Module not implemented: ${module}`, this.exportConfig.context);
+        progress.startProcess(processName).updateStatus(`Module not implemented: ${module}`, processName);
+        this.progressManager?.tick(false, `module: ${module}`, 'Module not implemented', processName);
+        progress.completeProcess(processName, false);
+        log.info(messageHandler.parse('PERSONALIZE_MODULE_NOT_IMPLEMENTED', module), this.exportConfig.context);
+      }
+    }
+
+    log.debug('Completed all personalize module processing', this.exportConfig.context);
   }
 }
