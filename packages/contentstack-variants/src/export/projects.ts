@@ -45,7 +45,7 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
         log.debug('Projects directory created successfully', this.exportConfig.context);
 
         log.debug('Fetching projects from personalization API...', this.exportConfig.context);
-        this.projectsData = (await this.projects({ connectedStackApiKey: this.exportConfig.apiKey })) || [];
+        this.projectsData = (await this.projects({ connectedStackApiKey: this.exportConfig.apiKey })) || []; // talisman:disable-line
         log.debug(`Fetched ${this.projectsData?.length || 0} projects`, this.exportConfig.context);
       });
 

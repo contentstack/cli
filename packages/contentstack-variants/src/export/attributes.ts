@@ -108,10 +108,10 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
    */
   sanitizeAttribs() {
     log.debug(`Sanitizing ${this.attributes?.length || 0} attributes`, this.exportConfig.context);
-    log.debug(
-      `Invalid keys to remove: ${JSON.stringify(this.attributesConfig.invalidKeys)}`,
-      this.exportConfig.context,
-    );
+            log.debug(
+          `Invalid keys to remove: ${JSON.stringify(this.attributesConfig.invalidKeys)}`, // talisman:disable-line
+          this.exportConfig.context,
+        );
 
     this.attributes =
       this.attributes?.map((attribute, index) => {
