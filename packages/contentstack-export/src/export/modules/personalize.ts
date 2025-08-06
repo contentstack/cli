@@ -129,10 +129,10 @@ export default class ExportPersonalize extends BaseClass {
 
   private addModuleProcesses(progress: CLIProgressManager, moduleCount: number) {
     if (moduleCount > 0) {
-      // false positive - no hardcoded secret here
-      // @ts-ignore-next-line secret-detection
+      // talisman-ignore-start
       const order: (keyof typeof this.moduleDisplayMapper)[] = this.exportConfig.modules.personalize
         .exportOrder as (keyof typeof this.moduleDisplayMapper)[];
+      // talisman-ignore-end
 
       log.debug(`Adding ${order.length} personalize module processes: ${order.join(', ')}`, this.exportConfig.context);
 
@@ -164,10 +164,10 @@ export default class ExportPersonalize extends BaseClass {
       instance.setParentProgressManager(progress);
     });
 
-    // false positive - no hardcoded secret here
-    // @ts-ignore-next-line secret-detection
+    // talisman-ignore-start
     const order: (keyof typeof this.moduleInstanceMapper)[] = this.exportConfig.modules.personalize
       .exportOrder as (keyof typeof this.moduleInstanceMapper)[];
+    // talisman-ignore-end
 
     log.debug(`Personalize export order: ${order.join(', ')}`, this.exportConfig.context);
 

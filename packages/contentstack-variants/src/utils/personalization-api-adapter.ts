@@ -154,9 +154,6 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
   }
 
   async projects(options: GetProjectsParams): Promise<ProjectStruct[]> {
-    // false positive - no hardcoded secret here
-    // @ts-ignore-next-line secret-detection
-    log.debug(`Fetching projects for stack API key: ${options.connectedStackApiKey}`, this.exportConfig?.context);
     await this.init();
     const getProjectEndPoint = `/projects?connectedStackApiKey=${options.connectedStackApiKey}`;
     log.debug(`Making API call to: ${getProjectEndPoint}`, this.exportConfig?.context);
