@@ -341,7 +341,7 @@ async function start(
       const statusUrl = generateBulkPublishStatusUrl(stack, config);
       if (statusUrl) {
         process.stdout.write('\n');
-        process.stdout.write('\x1b[37mHere is the link for check the bulk publish status: \x1b[0m');
+        process.stdout.write('\x1b[37mHere is the link to check the bulk publish status: \x1b[0m');
         process.stdout.write('\x1b[34m' + statusUrl + '\x1b[0m');
         process.stdout.write('\n');
       }
