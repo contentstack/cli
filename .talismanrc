@@ -132,7 +132,7 @@ fileignoreconfig:
   - filename: packages/contentstack-variants/src/import/audiences.ts
     checksum: 9b1d68db8e25c2cf1e68e7b458adadf477875e7901327586c8e6289479549ee8
   - filename: packages/contentstack-bulk-publish/src/producer/publish-unpublished-env.js
-    checksum: 697006c7f7363d5a17a5c459471f84c263adbc9bbe8f06f1ec970f3b0af79bc3
+    checksum: 50817911da344881b0506532fa619ed2e1ff10d026cd3a735021e710c0fdb322
   - filename: packages/contentstack-bulk-publish/src/util/bulk-publish-utils.js
     checksum: 4256961b963af6c7f5f0ec9b8bf9b7f22351aa826677cfff0ce81aed12c908a3
 version: ''

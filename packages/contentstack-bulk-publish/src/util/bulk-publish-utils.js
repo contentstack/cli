@@ -49,4 +49,4 @@ function generateBulkPublishStatusUrl(stack, config) {
 
 module.exports = {
   generateBulkPublishStatusUrl,
-}; 
+};
