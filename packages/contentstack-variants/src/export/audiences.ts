@@ -112,7 +112,6 @@ export default class ExportAudiences extends PersonalizationAdapter<ExportConfig
    */
   sanitizeAttribs() {
     log.debug(`Sanitizing ${this.audiences?.length || 0} audiences`, this.exportConfig.context);
-    log.debug(`Invalid keys to remove: ${JSON.stringify(this.audiencesConfig.invalidKeys)}`, this.exportConfig.context);
 
     this.audiences =
       this.audiences?.map((audience, index) => {

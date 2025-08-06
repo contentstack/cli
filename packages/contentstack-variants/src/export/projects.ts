@@ -45,7 +45,9 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
         log.debug('Projects directory created successfully', this.exportConfig.context);
 
         log.debug('Fetching projects from personalization API...', this.exportConfig.context);
-        this.projectsData = (await this.projects({ connectedStackApiKey: this.exportConfig.apiKey })) || []; // talisman:disable-line
+        // false positive - no hardcoded secret here
+        // @ts-ignore-next-line secret-detection
+        this.projectsData = (await this.projects({ connectedStackApiKey: this.exportConfig.apiKey })) || [];
         log.debug(`Fetched ${this.projectsData?.length || 0} projects`, this.exportConfig.context);
       });
 
@@ -56,7 +58,7 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
         return;
       }
 
-      // Enable personalization and set project config  
+      // Enable personalization and set project config
       log.debug(`Found ${this.projectsData.length} projects, enabling personalization`, this.exportConfig.context);
       this.exportConfig.personalizationEnabled = true;
       this.exportConfig.project_id = this.projectsData[0]?.uid;

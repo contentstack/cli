@@ -104,7 +104,6 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
    */
   sanitizeAttribs() {
     log.debug(`Sanitizing ${this.events?.length || 0} events`, this.exportConfig.context);
-    log.debug(`Invalid keys to remove: ${JSON.stringify(this.eventsConfig.invalidKeys)}`, this.exportConfig.context);
 
     this.events =
       this.events?.map((event, index) => {

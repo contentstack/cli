@@ -68,12 +68,25 @@ export default class ExportTaxonomies extends BaseClass {
       await this.getAllTaxonomies();
       progress.completeProcess('Fetch Taxonomies', true);
 
+      const actualTaxonomyCount = Object.keys(this.taxonomies)?.length;
+      log.debug(`Found ${actualTaxonomyCount} taxonomies to export (API reported ${totalCount})`, this.exportConfig.context);
+
+      // Update progress for export step if counts differ
+      if (actualTaxonomyCount !== totalCount && actualTaxonomyCount > 0) {
+        // Remove the old process and add with correct count
+        progress.addProcess('Export Taxonomies & Terms', actualTaxonomyCount);
+      }
+
       // Export detailed taxonomies
-      progress
-        .startProcess('Export Taxonomies & Terms')
-        .updateStatus('Exporting taxonomy details...', 'Export Taxonomies & Terms');
-      await this.exportTaxonomies();
-      progress.completeProcess('Export Taxonomies & Terms', true);
+      if (actualTaxonomyCount > 0) {
+        progress
+          .startProcess('Export Taxonomies & Terms')
+          .updateStatus('Exporting taxonomy details...', 'Export Taxonomies & Terms');
+        await this.exportTaxonomies();
+        progress.completeProcess('Export Taxonomies & Terms', true);
+      } else {
+        log.info('No taxonomies found to export detailed information', this.exportConfig.context);
+      }
 
       const taxonomyCount = Object.keys(this.taxonomies).length;
       log.success(messageHandler.parse('TAXONOMY_EXPORT_COMPLETE', taxonomyCount), this.exportConfig.context);
@@ -194,19 +207,27 @@ export default class ExportTaxonomies extends BaseClass {
       );
     };
 
-    return await this.makeConcurrentCall({
-      totalCount: keys(this.taxonomies).length,
-      apiParams: {
-        module: 'export-taxonomy',
-        resolve: onSuccess,
-        reject: onReject,
-      },
-      module: 'taxonomies detailed export',
-      concurrencyLimit: this.exportConfig?.fetchConcurrency || 1,
-    }).then(() => {
-      const taxonomiesFilePath = pResolve(this.taxonomiesFolderPath, this.taxonomiesConfig.fileName);
-      log.debug(`Writing taxonomies index to: ${taxonomiesFilePath}`, this.exportConfig.context);
-      fsUtil.writeFile(taxonomiesFilePath, this.taxonomies);
-    });
+    const taxonomyUids = keys(this.taxonomies);
+    log.debug(`Starting detailed export for ${taxonomyUids.length} taxonomies`, this.exportConfig.context);
+    
+    // Export each taxonomy individually
+    for (const uid of taxonomyUids) {
+      try {
+        log.debug(`Exporting detailed taxonomy: ${uid}`, this.exportConfig.context);
+        await this.makeAPICall({
+          module: 'export-taxonomy',
+          uid,
+          resolve: onSuccess,
+          reject: onReject,
+        });
+      } catch (error) {
+        onReject({ error, uid });
+      }
+    }
+    
+    // Write the taxonomies index file
+    const taxonomiesFilePath = pResolve(this.taxonomiesFolderPath, this.taxonomiesConfig.fileName);
+    log.debug(`Writing taxonomies index to: ${taxonomiesFilePath}`, this.exportConfig.context);
+    fsUtil.writeFile(taxonomiesFilePath, this.taxonomies);
   }
 }
