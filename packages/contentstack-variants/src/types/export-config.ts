@@ -143,6 +143,7 @@ export interface DefaultConfig {
       limit: number;
       dependencies?: Modules[];
       exportVersions: boolean;
+      latestPublishDetails?: boolean;
     };
     variantEntry: {
       dirName: string;

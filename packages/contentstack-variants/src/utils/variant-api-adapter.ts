@@ -93,7 +93,7 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
       limit = variantConfig.query.limit || 100,
       include_variant = variantConfig.query.include_variant || true,
       include_count = variantConfig.query.include_count || true,
-      include_publish_details = variantConfig.query.include_publish_details || true,
+      include_publish_details = variantConfig.query.include_publish_details !== false,
     } = options;
 
     log.debug(`Fetching variant entries for content type: ${content_type_uid}, entry: ${entry_uid}, locale: ${locale}`, this.exportConfig?.context );
@@ -159,6 +159,19 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
     
     if (response?.entries?.length) {
       log.debug(`Received ${response.entries?.length} variant entries out of total ${response.count}`, this.exportConfig?.context );
+
+      // Filter publish details if latestPublishDetails is enabled
+      const variantConfig = (this.config as ExportConfig).modules.variantEntry;
+      if (variantConfig.query.include_publish_details && ((this.config as any).modules.entries.latestPublishDetails)) {
+        response.entries = response.entries.map(entry => {
+          if (entry.publish_details) {
+            entry.publish_details = entry.publish_details.filter(
+              (detail: any) => detail.version === entry._version
+            );
+          }
+          return entry;
+        });
+      }
     }
 
     if (callback) {

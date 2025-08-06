@@ -130,6 +130,19 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
     }
   }
 
+  // Handle publish details flags
+  if (exportCmdFlags['skip-publish-details']) {
+    log.debug('Skipping publish details in export');
+    config.modules.entries.includePublishDetails = false;
+    config.modules.assets.includePublishDetails = false;
+    config.modules.variantEntry.query.include_publish_details = false;
+  }
+
+  if (exportCmdFlags['latest-publish-details']) {
+    log.debug('Only including latest publish details in export');
+    config.modules.entries.latestPublishDetails = true;
+  }
+
     // Add authentication details to config for context tracking
   config.authenticationMethod = authenticationMethod;
   log.debug('Export configuration setup completed', { ...config });

@@ -95,6 +95,7 @@ export default interface DefaultConfig {
       displayExecutionTime: boolean;
       enableDownloadStatus: boolean;
       includeVersionedAssets: boolean;
+      includePublishDetails?: boolean;
       dependencies?: Modules[];
     };
     content_types: {
@@ -123,6 +124,8 @@ export default interface DefaultConfig {
       limit: number;
       dependencies?: Modules[];
       exportVersions: boolean;
+      includePublishDetails?: boolean;
+      latestPublishDetails?: boolean;
     };
     personalize: {
       dirName: string;

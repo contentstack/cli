@@ -20,6 +20,8 @@ export default class EntriesExport extends BaseClass {
     chunkFileSize?: number;
     batchLimit?: number;
     exportVersions: boolean;
+    includePublishDetails?: boolean;
+    latestPublishDetails?: boolean;
   };
   private variantEntries!: any;
   private entriesDirPath: string;
@@ -85,7 +87,22 @@ export default class EntriesExport extends BaseClass {
             log.debug(`Found project with ID: ${project_id}, enabling variant entry export`, this.exportConfig.context);
           }
 
-          this.variantEntries = new Export.VariantEntries(Object.assign(this.exportConfig, { project_id }));
+          // Ensure variant entry config respects publish details flag
+          const variantConfig = {
+            ...this.exportConfig,
+            project_id,
+            modules: {
+              ...this.exportConfig.modules,
+              variantEntry: {
+                ...this.exportConfig.modules.variantEntry,
+                query: {
+                  ...this.exportConfig.modules.variantEntry.query,
+                  include_publish_details: this.entriesConfig.includePublishDetails !== false
+                }
+              }
+            }
+          };
+          this.variantEntries = new Export.VariantEntries(variantConfig);
         } catch (error) {
           handleAndLogError(error, { ...this.exportConfig.context });
         }
@@ -158,7 +175,7 @@ export default class EntriesExport extends BaseClass {
       skip: options.skip,
       limit: this.entriesConfig.limit,
       include_count: true,
-      include_publish_details: true,
+      include_publish_details: this.entriesConfig.includePublishDetails !== false,
       query: {
         locale: options.locale,
       },
@@ -206,6 +223,18 @@ export default class EntriesExport extends BaseClass {
           omitKeys: this.entriesConfig.invalidKeys,
         });
         log.debug('Initialized FsUtility for writing entries', this.exportConfig.context);
+      }
+
+      // Filter publish details if latestPublishDetails is enabled
+      if (this.entriesConfig.latestPublishDetails && this.entriesConfig.includePublishDetails !== false) {
+        entriesSearchResponse.items = entriesSearchResponse.items.map(entry => {
+          if (entry.publish_details) {
+            entry.publish_details = entry.publish_details.filter(
+              (detail: any) => detail.version === entry._version
+            );
+          }
+          return entry;
+        });
       }
 
       log.debug(`Writing ${entriesSearchResponse.items.length} entries to file`, this.exportConfig.context);

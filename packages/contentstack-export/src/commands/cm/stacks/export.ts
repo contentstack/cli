@@ -30,10 +30,11 @@ export default class ExportCommand extends Command {
     'csdx cm:stacks:export --alias <management_token_alias> --config <path/to/config/file>',
     'csdx cm:stacks:export --module <single module name>',
     'csdx cm:stacks:export --branch [optional] branch name',
+    'csdx cm:stacks:export --skip-publish-details',
   ];
 
   static usage: string =
-    'cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]';
+    'cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets] [--skip-publish-details]';
 
   static flags: FlagInput = {
     config: flags.string({
@@ -105,6 +106,14 @@ export default class ExportCommand extends Command {
     query: flags.string({
       description: '[optional] Query object (inline JSON or file path) to filter module exports.',
       hidden: true,
+    }),
+    'skip-publish-details': flags.boolean({
+      description: '[optional] Skip publish details when exporting entries, assets, and variants.',
+      default: false,
+    }),
+    'latest-publish-details': flags.boolean({
+      description: '[optional] Only include publish details for the latest version of entries.',
+      default: false,
     }),
   };
 
