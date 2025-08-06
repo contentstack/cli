@@ -150,7 +150,7 @@ async function start({ sourceEnv, environments, locale, contentTypes, bulkPublis
       const statusUrl = generateBulkPublishStatusUrl(stack, config);
       if (statusUrl) {
         process.stdout.write('\n');
-        process.stdout.write('\x1b[37mHere is the link for check the bulk unpublish status: \x1b[0m');
+        process.stdout.write('\x1b[37mHere is the link to check the bulk unpublish status: \x1b[0m');
         process.stdout.write('\x1b[34m' + statusUrl + '\x1b[0m');
         process.stdout.write('\n');
       }
