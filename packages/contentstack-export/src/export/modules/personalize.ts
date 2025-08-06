@@ -32,6 +32,12 @@ export default class ExportPersonalize extends BaseClass {
         async () => {
           const canProceed = this.validatePersonalizeSetup();
           const moduleCount = canProceed ? this.getPersonalizeModuleCount() : 0;
+          
+          log.debug(
+            `Personalize validation - canProceed: ${canProceed}, moduleCount: ${moduleCount}`,
+            this.exportConfig.context,
+          );
+          
           return [canProceed, moduleCount];
         },
       );
@@ -41,61 +47,119 @@ export default class ExportPersonalize extends BaseClass {
         return;
       }
 
+      log.debug(`Creating personalize progress with moduleCount: ${moduleCount}`, this.exportConfig.context);
       const progress = this.createNestedProgress(this.currentModuleName);
 
       // Add projects export process (always runs first)
       progress.addProcess('Projects', 1);
+      log.debug('Added Projects process to personalize progress', this.exportConfig.context);
 
-      // Add personalize modules processes if enabled
-      if (this.exportConfig.personalizationEnabled && moduleCount > 0) {
-        progress.addProcess('Personalize Modules', moduleCount);
+      // Add individual processes for each enabled personalize module
+      if (moduleCount > 0) {
+        const moduleMapper = {
+          events: 'Events',
+          attributes: 'Attributes', 
+          audiences: 'Audiences',
+          experiences: 'Experiences',
+        };
+
+        const order: (keyof typeof moduleMapper)[] = this.exportConfig.modules.personalize
+          .exportOrder as (keyof typeof moduleMapper)[];
+        
+        log.debug(
+          `Adding ${order.length} personalize module processes: ${order.join(', ')}`,
+          this.exportConfig.context,
+        );
+        
+        // Add a process for each module - use 1 as default since actual counts will be tracked by individual modules
+        for (const module of order) {
+          const processName = moduleMapper[module];
+          progress.addProcess(processName, 1);
+          log.debug(`Added ${processName} process to personalize progress`, this.exportConfig.context);
+        }
+      } else {
+        log.debug('No personalize modules to add to progress', this.exportConfig.context);
       }
 
       try {
         // Process projects export
         progress.startProcess('Projects').updateStatus('Exporting personalization projects...', 'Projects');
         log.debug('Starting projects export for personalization...', this.exportConfig.context);
-        await new ExportProjects(this.exportConfig).start();
+
+        const projectsExporter = new ExportProjects(this.exportConfig);
+        projectsExporter.setParentProgressManager(progress);
+        await projectsExporter.start();
+
         this.progressManager?.tick(true, 'projects export', null, 'Projects');
         progress.completeProcess('Projects', true);
 
-        if (this.exportConfig.personalizationEnabled && moduleCount > 0) {
-          progress
-            .startProcess('Personalize Modules')
-            .updateStatus('Processing personalize modules...', 'Personalize Modules');
-          log.debug('Personalization is enabled, processing personalize modules...', this.exportConfig.context);
+        // Process personalize modules if we have any configured
+        if (moduleCount > 0) {
+          log.debug('Processing personalize modules...', this.exportConfig.context);
 
-          const moduleMapper = {
+          const moduleInstanceMapper = {
             events: new ExportEvents(this.exportConfig),
             attributes: new ExportAttributes(this.exportConfig),
             audiences: new ExportAudiences(this.exportConfig),
             experiences: new ExportExperiences(this.exportConfig),
           };
 
-          const order: (keyof typeof moduleMapper)[] = this.exportConfig.modules.personalize
-            .exportOrder as (keyof typeof moduleMapper)[];
+          const moduleDisplayMapper = {
+            events: 'Events',
+            attributes: 'Attributes', 
+            audiences: 'Audiences',
+            experiences: 'Experiences',
+          };
+
+          // Set parent progress manager for all sub-modules
+          Object.values(moduleInstanceMapper).forEach(moduleInstance => {
+            moduleInstance.setParentProgressManager(progress);
+          });
+
+          const order: (keyof typeof moduleInstanceMapper)[] = this.exportConfig.modules.personalize
+            .exportOrder as (keyof typeof moduleInstanceMapper)[];
 
           log.debug(`Personalize export order: ${order.join(', ')}`, this.exportConfig.context);
 
           for (const module of order) {
             log.debug(`Processing personalize module: ${module}`, this.exportConfig.context);
+            const processName = moduleDisplayMapper[module];
 
-            if (moduleMapper[module]) {
+            if (moduleInstanceMapper[module]) {
+              // Start the process for this specific module
+              progress.startProcess(processName).updateStatus(`Exporting ${module}...`, processName);
+              
               log.debug(`Starting export for module: ${module}`, this.exportConfig.context);
-              await moduleMapper[module].start();
-              this.progressManager?.tick(true, `module: ${module}`, null, 'Personalize Modules');
-              log.debug(`Completed export for module: ${module}`, this.exportConfig.context);
+              
+              // Check if personalization is enabled before processing
+              if (this.exportConfig.personalizationEnabled) {
+                await moduleInstanceMapper[module].start();
+                
+                // Complete the process - individual modules handle item-level progress tracking
+                progress.completeProcess(processName, true);
+                log.debug(`Completed export for module: ${module}`, this.exportConfig.context);
+              } else {
+                // Personalization not enabled, skip with informative message
+                log.debug(`Skipping ${module} - personalization not enabled`, this.exportConfig.context);
+                
+                // Mark as skipped
+                this.progressManager?.tick(true, `${module} skipped (no project)`, null, processName);
+                
+                progress.completeProcess(processName, true);
+                log.info(`Skipped ${module} export - no personalize project found`, this.exportConfig.context);
+              }
             } else {
               log.debug(`Module not implemented: ${module}`, this.exportConfig.context);
-              this.progressManager?.tick(false, `module: ${module}`, 'Module not implemented', 'Personalize Modules');
+              progress.startProcess(processName).updateStatus(`Module not implemented: ${module}`, processName);
+              this.progressManager?.tick(false, `module: ${module}`, 'Module not implemented', processName);
+              progress.completeProcess(processName, false);
               log.info(messageHandler.parse('PERSONALIZE_MODULE_NOT_IMPLEMENTED', module), this.exportConfig.context);
             }
           }
 
-          progress.completeProcess('Personalize Modules', true);
-          log.debug('Completed all personalize module exports', this.exportConfig.context);
+          log.debug('Completed all personalize module processing', this.exportConfig.context);
         } else {
-          log.debug('Personalization is disabled, skipping personalize module exports', this.exportConfig.context);
+          log.debug('No personalize modules configured for processing', this.exportConfig.context);
         }
 
         this.completeProgress(true);

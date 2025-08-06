@@ -9,6 +9,8 @@ import {
   managementSDKClient,
   authenticationHandler,
   log,
+  CLIProgressManager,
+  configHandler,
 } from '@contentstack/cli-utilities';
 
 import {
@@ -385,6 +387,9 @@ export class VariantAdapter<T> {
   protected variantInstance;
   public readonly messages: typeof messages;
   public exportConfig?: any;
+  protected progressManager: CLIProgressManager | null = null;
+  protected parentProgressManager: CLIProgressManager | null = null;
+  protected currentModuleName: string = '';
 
   constructor(config: ContentstackConfig & AnyProperty & AdapterType<T, ContentstackConfig>);
   constructor(config: APIConfig & AdapterType<T, APIConfig & AnyProperty>, options?: HttpClientOptions);
@@ -406,6 +411,82 @@ export class VariantAdapter<T> {
 
     this.messages = messages;
     log.debug('VariantAdapter initialized successfully', this.exportConfig?.context );
+  }
+
+  /**
+   * Set parent progress manager for sub-module integration
+   */
+  public setParentProgressManager(parentProgress: CLIProgressManager): void {
+    this.parentProgressManager = parentProgress;
+    this.progressManager = parentProgress;
+  }
+
+  /**
+   * Create simple progress manager for single process tracking
+   */
+  protected createSimpleProgress(moduleName: string, total?: number): CLIProgressManager {
+    this.currentModuleName = moduleName;
+    
+    // If we have a parent progress manager, use it instead of creating a new one
+    if (this.parentProgressManager) {
+      this.progressManager = this.parentProgressManager;
+      return this.progressManager;
+    }
+    
+    const logConfig = configHandler.get('log') || {};
+    const showConsoleLogs = logConfig.showConsoleLogs ?? false;
+    this.progressManager = CLIProgressManager.createSimple(moduleName, total, showConsoleLogs);
+    return this.progressManager;
+  }
+
+  /**
+   * Create nested progress manager for multi-process tracking
+   */
+  protected createNestedProgress(moduleName: string): CLIProgressManager {
+    this.currentModuleName = moduleName;
+    
+    // If we have a parent progress manager, use it instead of creating a new one
+    if (this.parentProgressManager) {
+      this.progressManager = this.parentProgressManager;
+      return this.progressManager;
+    }
+    
+    const logConfig = configHandler.get('log') || {};
+    const showConsoleLogs = logConfig.showConsoleLogs ?? false;
+    this.progressManager = CLIProgressManager.createNested(moduleName, showConsoleLogs);
+    return this.progressManager;
+  }
+
+  /**
+   * Complete progress manager
+   */
+  protected completeProgress(success: boolean = true, error?: string): void {
+    // Only complete progress if we own the progress manager (no parent)
+    if (!this.parentProgressManager) {
+      this.progressManager?.complete(success, error);
+    }
+    this.progressManager = null;
+  }
+
+  /**
+   * Execute action with loading spinner for initial setup tasks
+   */
+  protected async withLoadingSpinner<T>(message: string, action: () => Promise<T>): Promise<T> {
+    const logConfig = configHandler.get('log') || {};
+    const showConsoleLogs = logConfig.showConsoleLogs ?? false;
+
+    if (showConsoleLogs) {
+      // If console logs are enabled, don't show spinner, just execute the action
+      return await action();
+    }
+    return await CLIProgressManager.withLoadingSpinner(message, action);
+  }
+
+  /**
+   * Update progress for a specific item
+   */
+  protected updateProgress(success: boolean, itemName: string, error?: string, processName?: string): void {
+    this.progressManager?.tick(success, itemName, error, processName);
   }
 }
 

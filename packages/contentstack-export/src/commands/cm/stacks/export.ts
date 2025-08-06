@@ -158,7 +158,6 @@ export default class ExportCommand extends Command {
       command: this.context?.info?.command || 'cm:stacks:export',
       module: '',
       userId: configHandler.get('userUid') || '',
-      email: configHandler.get('email') || '',
       sessionId: this.context?.sessionId || '',
       apiKey: apiKey || '',
       orgId: configHandler.get('oauthOrgUid') || '',

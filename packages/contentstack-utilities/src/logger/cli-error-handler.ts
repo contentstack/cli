@@ -85,18 +85,18 @@ export default class CLIErrorHandler {
    * Extracts a clear, concise error message from various error types.
    */
   private extractClearMessage(error: Error & Record<string, any>): string {
-    if (error?.response?.data?.errorMessage) {
+    // Quick check for direct response error messages
+    if (error?.response?.data?.errorMessage && typeof error.response.data.errorMessage === 'string') {
       return error.response.data.errorMessage;
     }
 
-    if (error?.errorMessage) {
+    if (error?.errorMessage && typeof error.errorMessage === 'string') {
       return error.errorMessage;
     }
 
-    // Use existing formatError function for other cases
+    // Use existing formatError function for comprehensive message extraction
     try {
       const formattedMessage = formatError(error);
-
       return formattedMessage || 'An error occurred. Please try again.';
     } catch {
       return 'An error occurred. Please try again.';
@@ -117,11 +117,9 @@ export default class CLIErrorHandler {
     if (typeof error === 'object') {
       try {
         const errorObj = error as Record<string, any>;
-        const message = errorObj.message || errorObj.error || errorObj.statusText || 'Unknown error';
-        const normalizedError = new Error(message);
+        const normalizedError = new Error('Error occurred');
 
-        // Only copy essential properties
-        const essentialProps = ['code', 'status', 'statusText', 'response', 'request', 'config'];
+        const essentialProps = ['code', 'status', 'statusText', 'response', 'request', 'config', 'message', 'errorMessage', 'error_message', 'error'];
         essentialProps.forEach((prop) => {
           if (errorObj[prop] !== undefined) {
             (normalizedError as any)[prop] = errorObj[prop];
