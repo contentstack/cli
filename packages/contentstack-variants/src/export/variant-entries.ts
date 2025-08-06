@@ -95,6 +95,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
           content_type_uid,
           entry_uid: entry.uid,
           locale,
+          include_publish_details: this.config.modules.variantEntry.query.include_publish_details !== false,
         });
         
         if (existsSync(variantEntryBasePath)) {

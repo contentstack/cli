@@ -134,7 +134,7 @@ export default class ExportAssets extends BaseClass {
 
     const queryParam = {
       ...this.commonQueryParam,
-      include_publish_details: true,
+      include_publish_details: this.assetConfig.includePublishDetails !== false,
       except: { BASE: this.assetConfig.invalidKeys },
     };
     this.applyQueryFilters(queryParam, 'assets');
@@ -203,7 +203,7 @@ export default class ExportAssets extends BaseClass {
 
     const queryParam = {
       ...this.commonQueryParam,
-      include_publish_details: true,
+      include_publish_details: this.assetConfig.includePublishDetails !== false,
       except: { BASE: this.assetConfig.invalidKeys },
     };
 
