@@ -1,4 +1,5 @@
 const { regions } = require('@contentstack/cli-config/lib/utils/region-handler');
+const { configHandler } = require('@contentstack/cli-utilities');
 
 /**
  * Get the appropriate app URL based on the host
@@ -6,7 +7,15 @@ const { regions } = require('@contentstack/cli-config/lib/utils/region-handler')
  * @returns {string} The app URL
  */
 function getAppUrlFromHost(host) {
-  // Handle development and staging environments
+  // Get the current region from configHandler
+  const currentRegion = configHandler.get('region');
+  
+  // If we have a configured region, use its uiHost
+  if (currentRegion && currentRegion.uiHost) {
+    return currentRegion.uiHost;
+  }
+  
+  // Handle development and staging environments (fallback for when region is not configured)
   if (host.includes('stag')) {
     return 'https://stag-app.csnonprod.com';
   }
@@ -20,7 +29,7 @@ function getAppUrlFromHost(host) {
     return 'https://dev-app.csnonprod.com';
   }
   
-  // Find matching region based on host
+  // Find matching region based on host (fallback)
   for (const regionConfig of Object.values(regions)) {
     if (host.includes(regionConfig.cma.replace('https://', ''))) {
       return regionConfig.uiHost;
