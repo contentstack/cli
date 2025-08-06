@@ -108,20 +108,20 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
 
           // create id mapper for experience to variants
           let variants = experience?._cms?.variants ?? {};
-          // false positive - no hardcoded secret here
-          // @ts-ignore-next-line secret-detection
+          // talisman-ignore-start
           log.debug(
             `Found ${Object.keys(variants).length} variants for experience: ${experience.name}`,
             this.exportConfig.context,
           );
+          // talisman-ignore-end
 
+          // talisman-ignore-start
           Object.keys(variants).forEach((variantShortId: string) => {
-            // false positive - no hardcoded secret here
-            // @ts-ignore-next-line secret-detection
             const experienceToVariantsStr = `${experience.uid}-${variantShortId}-${variants[variantShortId]}`;
             experienceToVariantsStrList.push(experienceToVariantsStr);
             log.debug(`Added variant mapping: ${experienceToVariantsStr}`, this.exportConfig.context);
           });
+          // talisman-ignore-end
 
           // Fetch versions of experience
           try {
