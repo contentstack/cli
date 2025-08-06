@@ -63,26 +63,21 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
       this.exportConfig.project_id = this.projectsData[0]?.uid;
       log.debug(`Set project ID: ${this.projectsData[0]?.uid}`, this.exportConfig.context);
 
-      // Create progress manager - use parent if available, otherwise create nested
       let progress: any;
       if (this.parentProgressManager) {
-        // Use parent progress manager - projects process should already be started by parent
         progress = this.parentProgressManager;
         this.progressManager = this.parentProgressManager;
       } else {
-        // Create our own progress for standalone execution
         progress = this.createNestedProgress('Projects');
         progress.addProcess('Projects', 1);
         progress.startProcess('Projects').updateStatus('Processing and exporting project data...', 'Projects');
       }
 
-      // Process and Projects
       const projectsFilePath = pResolve(sanitizePath(this.projectsFolderPath), 'projects.json');
       log.debug(`Writing projects to: ${projectsFilePath}`, this.exportConfig.context);
       fsUtil.writeFile(projectsFilePath, this.projectsData);
       log.debug('Projects export completed successfully', this.exportConfig.context);
 
-      // Update progress - use appropriate process name based on context
       const processName = this.parentProgressManager ? 'Projects' : 'Projects';
       this.updateProgress(true, 'project export', undefined, processName);
 
