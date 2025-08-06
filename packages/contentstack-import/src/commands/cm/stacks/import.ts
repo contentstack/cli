@@ -181,11 +181,9 @@ export default class ImportCommand extends Command {
         }
       }
 
-      // Set backupDir early so it's available in error handling
-      backupDir = importConfig.backupDir;
-
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       const result = await moduleImporter.start();
+      backupDir = importConfig.backupDir;
 
       if (!result?.noSuccessMsg) {
         const successMessage = importConfig.stackName
@@ -199,8 +197,8 @@ export default class ImportCommand extends Command {
     } catch (error) {
       handleAndLogError(error);
       log.info(`The log has been stored at '${getLogPath()}'`);
-      if (backupDir) {
-        log.info(`The backup content has been stored at '${backupDir}'`);
+      if (importConfig?.backupDir) {
+        log.info(`The backup content has been stored at '${importConfig?.backupDir}'`);
       } else {
         log.info('No backup directory was created due to early termination');
       }
