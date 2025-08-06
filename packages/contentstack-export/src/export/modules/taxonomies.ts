@@ -194,7 +194,7 @@ export default class ExportTaxonomies extends BaseClass {
       );
     };
 
-    return this.makeConcurrentCall({
+    return await this.makeConcurrentCall({
       totalCount: keys(this.taxonomies).length,
       apiParams: {
         module: 'export-taxonomy',

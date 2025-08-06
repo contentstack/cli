@@ -145,6 +145,7 @@ export const formatError = function (error: any) {
   // Determine the error message
   let message =
     parsedError.errorMessage || parsedError.error_message || parsedError?.code || parsedError.message || parsedError;
+  
   if (typeof message === 'object') {
     message = JSON.stringify(message);
   }
@@ -152,8 +153,8 @@ export const formatError = function (error: any) {
   // If message is in JSON format, parse it to extract the actual message string
   try {
     const parsedMessage = JSON.parse(message);
-    if (typeof parsedMessage === 'object') {
-      message = parsedMessage?.message || message;
+    if (typeof parsedMessage === 'object' && parsedMessage !== null) {
+      message = parsedMessage?.message || parsedMessage?.errorMessage || parsedMessage?.error || message;
     }
   } catch (e) {
     // message is not in JSON format, no need to parse

@@ -24,6 +24,9 @@ export async function createNodeCryptoInstance(config: ExportConfig): Promise<No
   if (config.forceStopMarketplaceAppsPrompt) {
     cryptoArgs['encryptionKey'] = config.marketplaceAppEncryptionKey;
   } else {
+    // Add spacing 
+    console.log('');
+    
     cryptoArgs['encryptionKey'] = await cliux.inquire({
       type: 'input',
       name: 'name',
@@ -35,6 +38,7 @@ export async function createNodeCryptoInstance(config: ExportConfig): Promise<No
       },
       message: 'Enter Marketplace app configurations encryption key',
     });
+    console.log('');
   }
 
   return new NodeCrypto(cryptoArgs);
