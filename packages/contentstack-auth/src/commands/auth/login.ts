@@ -10,7 +10,7 @@ import {
   messageHandler,
 } from '@contentstack/cli-utilities';
 import { User } from '../../interfaces';
-import { authHandler, interactive } from '../../utils';
+import { authHandler, interactive, totpHandler } from '../../utils';
 import { BaseCommand } from '../../base-command';
 
 export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
@@ -40,11 +40,18 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
       required: false,
       exclusive: ['oauth'],
     }),
+    'totp-secret': flags.string({
+      description: 'TOTP secret for 2FA authentication.',
+      multiple: false,
+      required: false,
+      exclusive: ['oauth'],
+      hidden: false,
+    }),
     oauth: flags.boolean({
       description: 'Enables single sign-on (SSO) in Contentstack CLI.',
       required: false,
       default: false,
-      exclusive: ['username', 'password'],
+      exclusive: ['username', 'password', 'totp-secret'],
     }),
   };
 
@@ -76,8 +83,15 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
         log.debug('Starting basic authentication flow', this.contextDetails);
         const username = loginFlags?.username || (await interactive.askUsername());
         const password = loginFlags?.password || (await interactive.askPassword());
-        log.debug('Credentials obtained', { ...this.contextDetails, hasUsername: !!username, hasPassword: !!password });
-        await this.login(username, password);
+        const totpSecret = loginFlags?.['totp-secret'];
+        log.debug('Credentials obtained', { 
+          ...this.contextDetails, 
+          hasUsername: !!username, 
+          hasPassword: !!password,
+          hasTotpSecret: !!totpSecret
+        });
+
+        await this.login(username, password, totpSecret);
       }
     } catch (error) {
       log.debug('Login command failed', { ...this.contextDetails, error });
@@ -87,12 +101,25 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
     }
   }
 
-  async login(username: string, password: string): Promise<void> {
+  async login(username: string, password: string, totpSecret?: string): Promise<void> {
     log.debug('Starting login process', { ...this.contextDetails, username });
 
     try {
       log.debug('Calling auth handler login', this.contextDetails);
-      const user: User = await authHandler.login(username, password);
+      let tfaToken: string | undefined;
+      
+      if (totpSecret) {
+        log.debug('Generating TOTP token from provided secret', this.contextDetails);
+        try {
+          tfaToken = totpHandler.generateTOTPFromSecret(totpSecret);
+          log.debug('TOTP token generated successfully', this.contextDetails);
+        } catch (error) {
+          log.debug('Failed to generate TOTP token', { ...this.contextDetails, error });
+          tfaToken = undefined;
+        }
+      }
+
+      const user: User = await authHandler.login(username, password, tfaToken);
       log.debug('Auth handler login completed', {
         ...this.contextDetails,
         hasUser: !!user,
