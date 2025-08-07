@@ -126,9 +126,9 @@ describe('Branch Diff Utility Testcases', () => {
       baseBranchFieldExists: baseBranchDiff,
       compareBranchFieldExists: compareBranchDiff,
       diffData: mockData.branchDiff,
-      listOfModifiedFields: [],
-      listOfAddedFields: [],
-      listOfDeletedFields: [],
+      listOfModifiedFields: mockData.verboseRes.listOfModifiedFields,
+      listOfAddedFields: mockData.verboseRes.listOfAddedFields,
+      listOfDeletedFields: mockData.verboseRes.listOfDeletedFields,
     });
     deepDiffStub.restore();
   });
