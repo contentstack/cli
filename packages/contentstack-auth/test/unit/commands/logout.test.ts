@@ -5,34 +5,27 @@ import { cliux } from '@contentstack/cli-utilities';
 import { authHandler } from '../../../src/utils';
 
 describe('Logout Command', () => {
-  let inquireStub: sinon.SinonStub;
-  let successStub: sinon.SinonStub;
-  let loaderStub: sinon.SinonStub;
-  let logoutStub: sinon.SinonStub;
-  let isAuthenticatedStub: sinon.SinonStub;
-  let configStub: sinon.SinonStub;
+  let sandbox: sinon.SinonSandbox;
 
   beforeEach(() => {
-    inquireStub = sinon.stub(cliux, 'inquire');
-    successStub = sinon.stub(cliux, 'success');
-    loaderStub = sinon.stub(cliux, 'loader');
-    logoutStub = sinon.stub(authHandler, 'logout').resolves({ user: {} });
+    sandbox = sinon.createSandbox();
+    sandbox.stub(cliux, 'success');
+    sandbox.stub(cliux, 'loader');
   });
 
   afterEach(() => {
-    inquireStub.restore();
-    successStub.restore();
-    loaderStub.restore();
-    logoutStub.restore();
+    sandbox.restore();
   });
 
   it('Logout with valid token, should be successful', async function () {
+    const inquireStub = sandbox.stub(cliux, 'inquire');
     await LogoutCommand.run([]);
     expect(inquireStub.calledOnce).to.be.true;
   });
 
   it('Logout should prompt for confirmation', async function () {
-    inquireStub.resolves(false);
+    const inquireStub = sandbox.stub(cliux, 'inquire').resolves(false);
+    const logoutStub = sandbox.stub(authHandler, 'logout');
     await LogoutCommand.run([]);
     expect(inquireStub.calledOnce).to.be.true;
     expect(inquireStub.firstCall.args[0]).to.deep.include({

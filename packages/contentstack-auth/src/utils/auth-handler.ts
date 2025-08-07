@@ -69,35 +69,44 @@ class AuthHandler {
               log.debug('Login successful, user found', { module: 'auth-handler', userEmail: result.user.email });
               resolve(result.user as User);
             } else if (result.error_code === 294) {
-              log.debug('TFA required, requesting OTP channel', { module: 'auth-handler' });
-              const otpChannel = await askOTPChannel();
-              log.debug(`OTP channel selected: ${otpChannel}`, { module: 'auth-handler' });
+              let tfToken: string;
 
-              // need to send sms to the mobile
-              if (otpChannel === 'sms') {
-                log.debug('Sending SMS OTP request', { module: 'auth-handler' });
-                try {
-                  await this._client.axiosInstance.post('/user/request_token_sms', { user: loginPayload });
-                  log.debug('SMS OTP request successful', { module: 'auth-handler' });
-                  cliux.print('CLI_AUTH_LOGIN_SECURITY_CODE_SEND_SUCCESS');
-                } catch (error) {
-                  log.debug('SMS OTP request failed', { module: 'auth-handler', error });
-                  const err = cliErrorHandler.classifyError(error);
-                  reject(err);
-                  return;
+              // If tfaToken is already provided, use it directly
+              if (tfaToken) {
+                log.debug('Using provided TFA token', { module: 'auth-handler' });
+                tfToken = tfaToken;
+              } else {
+                // No token provided, ask for OTP channel
+                log.debug('2FA required, requesting OTP channel', { module: 'auth-handler' });
+                const otpChannel = await askOTPChannel();
+                log.debug(`OTP channel selected: ${otpChannel}`, { module: 'auth-handler' });
+                
+                if (otpChannel === 'sms') {
+                  // Send SMS OTP request
+                  log.debug('Sending SMS OTP request', { module: 'auth-handler' });
+                  try {
+                    await this._client.axiosInstance.post('/user/request_token_sms', { user: loginPayload });
+                    log.debug('SMS OTP request successful', { module: 'auth-handler' });
+                    cliux.print('CLI_AUTH_LOGIN_SECURITY_CODE_SEND_SUCCESS');
+                  } catch (error) {
+                    log.debug('SMS OTP request failed', { module: 'auth-handler', error });
+                    const err = cliErrorHandler.classifyError(error);
+                    reject(new CLIError(err));
+                    return;
+                  }
                 }
+                
+                // Ask for OTP input (either SMS code or TOTP code)
+                log.debug('Requesting OTP input', { module: 'auth-handler', channel: otpChannel });
+                tfToken = await askOTP();
               }
-
-              log.debug('Requesting OTP input from user', { module: 'auth-handler' });
-              const tfToken = await askOTP();
-              log.debug('OTP received, retrying login', { module: 'auth-handler' });
 
               try {
                 resolve(await this.login(email, password, tfToken));
               } catch (error) {
                 log.debug('Login with TFA token failed', { module: 'auth-handler', error });
                 const err = cliErrorHandler.classifyError(error);
-                reject(err);
+                reject(new CLIError(err));
                 return;
               }
             } else {
@@ -118,7 +127,7 @@ class AuthHandler {
           hasEmail,
           hasCredentials,
         });
-        reject(new CLIError({ message: 'No credential found to login' }));
+        reject(new CLIError('No credential found to login'));
       }
     });
   }
@@ -148,7 +157,7 @@ class AuthHandler {
           });
       } else {
         log.debug('Logout failed - no auth token provided', { module: 'auth-handler' });
-        reject(new CLIError({ message: 'No auth token found to logout' }));
+        reject(new CLIError('No auth token found to logout'));
       }
     });
   }
@@ -178,7 +187,7 @@ class AuthHandler {
           });
       } else {
         log.debug('Token validation failed - no auth token provided', { module: 'auth-handler' });
-        reject(new CLIError({ message: 'No auth token found to validate' }));
+        reject(new CLIError('No auth token found to validate'));
       }
     });
   }
