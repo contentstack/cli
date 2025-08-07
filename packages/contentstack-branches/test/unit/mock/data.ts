@@ -351,10 +351,16 @@ const mockData = {
   verboseRes: {
     listOfAddedFields: [
       {
-        path: undefined,
-        displayName: undefined,
-        uid: undefined,
-        field: undefined,
+        path: 'new_field',
+        displayName: 'New Field',
+        uid: 'new_field',
+        field: 'text',
+      },
+      {
+        path: 'description',
+        displayName: 'Description',
+        uid: 'description',
+        field: 'rich_text_editor',
       },
     ],
     listOfDeletedFields: [
@@ -364,6 +370,12 @@ const mockData = {
         uid: 'single_line_fieldbox33',
         field: 'compactfield',
       },
+      {
+        path: 'old_field',
+        displayName: 'Old Field',
+        uid: 'old_field',
+        field: 'text',
+      },
     ],
     listOfModifiedFields: [
       {
@@ -371,6 +383,12 @@ const mockData = {
         displayName: 'Name',
         uid: 'title',
         field: 'metadata',
+      },
+      {
+        path: 'content',
+        displayName: 'Content',
+        uid: 'content',
+        field: 'rich_text_editor',
       },
     ],
   },
