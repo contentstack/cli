@@ -1,14 +1,4 @@
 fileignoreconfig:
 - filename: package-lock.json
-  checksum: 01a85e56fd9d528f1c8cd0a4b2c29bf3020810c16db6e5221ae996b189e3ec98
-- filename: pnpm-lock.yaml
-  checksum: 8e4559fc2b5579b58020a19a5381ac1f1c4b27e60f3f2b818f9d512460c32794
-- filename: packages/contentstack-auth/test/unit/utils/totp-handler.test.ts
-  checksum: 7fccd970e606e252af90020f9bf111e1d717ec8ef45b019edc83992e65447043
-- filename: packages/contentstack-auth/src/utils/totp-handler.ts
-  checksum: a7e3e4836307eab39a9726cf19d06399a27f5c40aef20371382f545fb0d49e96
-- filename: packages/contentstack-auth/src/commands/auth/login.ts
-  checksum: 2099af8ae88c58597cf9c17f2c707ef541a6e780e9c27363110a01b14e4d0ead
-- filename: packages/contentstack-auth/test/unit/utils/auth-handler.test.ts
-  checksum: e7c31ec3ef8317b2244fc414f784bccecf2f671bc376d7192dc761941681a590
-version: ""
+  checksum: 72a462b8cacd9977871d7e5c6c15ba8be8c217930955667cb543ad93a41c1989
+version: "1.0"
