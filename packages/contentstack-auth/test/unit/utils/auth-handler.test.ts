@@ -25,6 +25,69 @@ describe('Auth Handler', () => {
     sinon.restore();
   });
 
+  describe('handleOTPFlow', () => {
+    it('should return provided TFA token if available', async () => {
+      const result = await (authHandler as any).handleOTPFlow(mockTFAToken, mockCredentials);
+      expect(result).to.equal(mockTFAToken);
+    });
+
+    it('should handle SMS OTP flow', async () => {
+      const smsCode = '654321';
+      clientStub.axiosInstance.post.resolves();
+      
+      const askOTPChannelStub = sinon.stub(interactive, 'askOTPChannel').resolves('sms');
+      const askOTPStub = sinon.stub(interactive, 'askOTP').resolves(smsCode);
+      sinon.stub(cliux, 'print').returns();
+
+      const result = await (authHandler as any).handleOTPFlow(undefined, mockCredentials);
+
+      expect(result).to.equal(smsCode);
+      expect(askOTPChannelStub.calledOnce).to.be.true;
+      expect(clientStub.axiosInstance.post.calledOnce).to.be.true;
+      expect(askOTPStub.calledOnce).to.be.true;
+    });
+
+    it('should handle 2FA app flow', async () => {
+      const appCode = '987654';
+      
+      const askOTPChannelStub = sinon.stub(interactive, 'askOTPChannel').resolves('2fa_app');
+      const askOTPStub = sinon.stub(interactive, 'askOTP').resolves(appCode);
+
+      const result = await (authHandler as any).handleOTPFlow(undefined, mockCredentials);
+
+      expect(result).to.equal(appCode);
+      expect(askOTPChannelStub.calledOnce).to.be.true;
+      expect(clientStub.axiosInstance.post.notCalled).to.be.true;
+      expect(askOTPStub.calledOnce).to.be.true;
+    });
+  });
+
+  describe('requestSMSOTP', () => {
+    it('should send SMS OTP request successfully', async () => {
+      clientStub.axiosInstance.post.resolves();
+      sinon.stub(cliux, 'print').returns();
+
+      await (authHandler as any).requestSMSOTP(mockCredentials);
+
+      expect(clientStub.axiosInstance.post.calledOnce).to.be.true;
+      expect(clientStub.axiosInstance.post.firstCall.args[0]).to.equal('/user/request_token_sms');
+      expect(clientStub.axiosInstance.post.firstCall.args[1]).to.deep.equal({ user: mockCredentials });
+    });
+
+    it('should handle SMS request failure', async () => {
+      const error = { type: 'APPLICATION_ERROR' };
+      clientStub.axiosInstance.post.rejects(error);
+
+      try {
+        await (authHandler as any).requestSMSOTP(mockCredentials);
+        expect.fail('Should have thrown an error');
+      } catch (err) {
+        expect(err).to.be.an('error');
+        expect(clientStub.axiosInstance.post.calledOnce).to.be.true;
+      }
+    });
+  });
+
   describe('login with 2FA', () => {
     it('should use provided TFA token directly if available', async () => {
       // First call triggers 2FA, second call succeeds
