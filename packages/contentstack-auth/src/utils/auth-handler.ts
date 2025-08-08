@@ -34,21 +34,34 @@ class AuthHandler {
    * @returns Promise<string> The TFA token to use for authentication
    */
   private async handleOTPFlow(tfaToken?: string, loginPayload?: any): Promise<string> {
-    if (tfaToken) {
-      log.debug('Using provided TFA token', { module: 'auth-handler' });
-      return tfaToken;
+    try {
+      if (tfaToken) {
+        log.debug('Using provided TFA token', { module: 'auth-handler' });
+        return tfaToken;
+      }
+
+      log.debug('2FA required, requesting OTP channel', { module: 'auth-handler' });
+      const otpChannel = await askOTPChannel();
+      log.debug(`OTP channel selected: ${otpChannel}`, { module: 'auth-handler' });
+
+      if (otpChannel === 'sms') {
+        try {
+          await this.requestSMSOTP(loginPayload);
+        } catch (error) {
+          log.debug('SMS OTP request failed', { module: 'auth-handler', error });
+          throw new CLIError('Failed to send SMS OTP. Please try again or use a different 2FA method.');
+        }
+      }
+
+      log.debug('Requesting OTP input', { module: 'auth-handler', channel: otpChannel });
+      return await askOTP();
+    } catch (error) {
+      log.debug('2FA flow failed', { module: 'auth-handler', error });
+      if (error instanceof CLIError) {
+        throw error;
+      }
+      throw new CLIError('Failed to complete 2FA authentication. Please try again.');
     }
-
-    log.debug('2FA required, requesting OTP channel', { module: 'auth-handler' });
-    const otpChannel = await askOTPChannel();
-    log.debug(`OTP channel selected: ${otpChannel}`, { module: 'auth-handler' });
-
-    if (otpChannel === 'sms') {
-      await this.requestSMSOTP(loginPayload);
-    }
-
-    log.debug('Requesting OTP input', { module: 'auth-handler', channel: otpChannel });
-    return await askOTP();
   }
 
   /**
@@ -111,7 +124,7 @@ class AuthHandler {
               log.debug('Login successful, user found', { module: 'auth-handler', userEmail: result.user.email });
               resolve(result.user as User);
             } else if (result.error_code === 294) {
-                            const tfToken = await this.handleOTPFlow(tfaToken, loginPayload);
+              const tfToken = await this.handleOTPFlow(tfaToken, loginPayload);
 
               try {
                 resolve(await this.login(email, password, tfToken));
