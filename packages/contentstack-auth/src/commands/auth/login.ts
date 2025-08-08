@@ -42,10 +42,7 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
     }),
     'totp-secret': flags.string({
       description: 'TOTP secret for 2FA authentication.',
-      multiple: false,
-      required: false,
       exclusive: ['oauth'],
-      hidden: false,
     }),
     oauth: flags.boolean({
       description: 'Enables single sign-on (SSO) in Contentstack CLI.',

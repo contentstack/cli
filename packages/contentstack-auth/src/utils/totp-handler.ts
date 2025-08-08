@@ -41,7 +41,7 @@ class TOTPHandler {
       // Validate and normalize secret
       const normalizedSecret = secret.toUpperCase();
       if (!this.isValidBase32(normalizedSecret)) {
-        throw new Error('Invalid TOTP secret format');
+        throw new Error('Something went wrong with your authentication setup. Please check the secret or try again');
       }
 
       // Generate TOTP code
@@ -50,7 +50,7 @@ class TOTPHandler {
       return code;
     } catch (error) {
       log.debug('Failed to generate TOTP code', { module: 'totp-handler', error });
-      throw new Error('Failed to generate TOTP code from provided secret');
+              throw new Error('Something went wrong with your authentication setup. Please check the secret or try again');
     }
   }
 
@@ -73,7 +73,7 @@ class TOTPHandler {
         source = 'stored configuration';
       } catch (error) {
         log.debug('Failed to decrypt stored TOTP secret', { module: 'totp-handler', error });
-        throw new Error('Failed to decrypt stored TOTP secret');
+        throw new Error('Authentication failed. Please try again.');
       }
     }
 
@@ -84,7 +84,7 @@ class TOTPHandler {
         return code;
       } catch (error) {
         log.debug('Failed to generate TOTP code', { module: 'totp-handler', error, source });
-        const message = `Failed to use TOTP secret from ${source}. Please enter the code manually.`;
+        const message = `We couldn't retrieve your authentication code. Please enter it manually.`;
         cliux.print('Consider reconfiguring TOTP using config:totp:add');
         throw new Error(message);
       }
@@ -103,7 +103,7 @@ class TOTPHandler {
   async getManualTOTPCode(): Promise<string> {
     const code = await askOTP();
     if (!/^\d{6}$/.test(code)) {
-      throw new Error('Invalid TOTP code format. Code must be 6 digits.');
+      throw new Error('Invalid authentication code.');
     }
     return code;
   }

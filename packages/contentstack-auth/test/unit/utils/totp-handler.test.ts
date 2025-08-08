@@ -16,7 +16,7 @@ describe('TOTP Handler', () => {
     });
 
     it('should throw error for invalid secret', () => {
-      expect(() => totpHandler.generateTOTPFromSecret(invalidSecret)).to.throw('Failed to generate TOTP code from provided secret');
+      expect(() => totpHandler.generateTOTPFromSecret(invalidSecret)).to.throw('Something went wrong with your authentication setup. Please check the secret or try again');
     });
 
     it('should normalize secret to uppercase', () => {
@@ -74,7 +74,7 @@ describe('TOTP Handler', () => {
         await totpHandler.getTOTPCode();
         expect.fail('Should have thrown an error');
       } catch (error) {
-        expect(error).to.be.an('error').with.property('message', 'Failed to decrypt stored TOTP secret');
+        expect(error).to.be.an('error').with.property('message', 'Authentication failed. Please try again.');
       }
     });
   });
