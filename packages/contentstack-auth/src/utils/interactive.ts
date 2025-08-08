@@ -17,7 +17,7 @@ export const askOTPChannel = async (): Promise<string> => {
     name: 'otpChannel',
     message: 'CLI_AUTH_LOGIN_ASK_CHANNEL_FOR_OTP',
     choices: [
-      { name: '2FA Authenticator App', value: '2fa_authenticator_app' },
+      { name: 'Authenticator App', value: 'authenticator_app' },
       { name: 'SMS', value: 'sms' },
     ],
   });

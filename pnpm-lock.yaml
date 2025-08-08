@@ -60,6 +60,7 @@ importers:
       nyc: ^15.1.0
       oclif: ^4.17.46
       open: ^8.4.2
+      otplib: ^12.0.1
       rimraf: ^5.0.10
       semver: ^7.7.2
       shelljs: ^0.10.0
@@ -101,6 +102,7 @@ importers:
       inquirer: 8.2.6
       node-machine-id: 1.1.12
       open: 8.4.2
+      otplib: 12.0.1
       semver: 7.7.2
       short-uuid: 4.2.2
       uuid: 9.0.1
@@ -2590,8 +2592,8 @@ packages:
     engines: {node: ^12.0.0 || ^14.0.0 || >=16.0.0}
     dev: true
 
-  /@eslint/compat/1.3.1_eslint@7.32.0:
-    resolution: {integrity: sha512-k8MHony59I5EPic6EQTCNOuPoVBnoYXkP+20xvwFjN7t0qI3ImyvyBgg+hIVPwC8JaxVjjUZld+cLfBLFDLucg==}
+  /@eslint/compat/1.3.2_eslint@7.32.0:
+    resolution: {integrity: sha512-jRNwzTbd6p2Rw4sZ1CgWRS8YMtqG15YyZf7zvb6gY2rB2u6n+2Z+ELW0GtL0fQgyl0pr4Y/BzBfng/BdsereRA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     peerDependencies:
       eslint: ^8.40 || 9
@@ -2602,8 +2604,8 @@ packages:
       eslint: 7.32.0
     dev: true
 
-  /@eslint/compat/1.3.1_eslint@8.57.1:
-    resolution: {integrity: sha512-k8MHony59I5EPic6EQTCNOuPoVBnoYXkP+20xvwFjN7t0qI3ImyvyBgg+hIVPwC8JaxVjjUZld+cLfBLFDLucg==}
+  /@eslint/compat/1.3.2_eslint@8.57.1:
+    resolution: {integrity: sha512-jRNwzTbd6p2Rw4sZ1CgWRS8YMtqG15YyZf7zvb6gY2rB2u6n+2Z+ELW0GtL0fQgyl0pr4Y/BzBfng/BdsereRA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     peerDependencies:
       eslint: ^8.40 || 9
@@ -8290,7 +8292,7 @@ packages:
     resolution: {integrity: sha512-bdYiRSV7D72Vwz7YW8GDOoqpGgcnOpBPSwIudHr5nddNB5VIuqJOecCIlua+DqscMZtQJ+1RyuMuKK9xzdAL7w==}
     engines: {node: '>=18.18.0'}
     dependencies:
-      '@eslint/compat': 1.3.1_eslint@8.57.1
+      '@eslint/compat': 1.3.2_eslint@8.57.1
       '@eslint/eslintrc': 3.3.1
       '@eslint/js': 9.32.0
       '@stylistic/eslint-plugin': 3.1.0_avq3eyf5kaj6ssrwo7fvkrwnji
@@ -8319,7 +8321,7 @@ packages:
     resolution: {integrity: sha512-bdYiRSV7D72Vwz7YW8GDOoqpGgcnOpBPSwIudHr5nddNB5VIuqJOecCIlua+DqscMZtQJ+1RyuMuKK9xzdAL7w==}
     engines: {node: '>=18.18.0'}
     dependencies:
-      '@eslint/compat': 1.3.1_eslint@7.32.0
+      '@eslint/compat': 1.3.2_eslint@7.32.0
       '@eslint/eslintrc': 3.3.1
       '@eslint/js': 9.32.0
       '@stylistic/eslint-plugin': 3.1.0_eslint@7.32.0
@@ -8348,7 +8350,7 @@ packages:
     resolution: {integrity: sha512-bdYiRSV7D72Vwz7YW8GDOoqpGgcnOpBPSwIudHr5nddNB5VIuqJOecCIlua+DqscMZtQJ+1RyuMuKK9xzdAL7w==}
     engines: {node: '>=18.18.0'}
     dependencies:
-      '@eslint/compat': 1.3.1_eslint@8.57.1
+      '@eslint/compat': 1.3.2_eslint@8.57.1
       '@eslint/eslintrc': 3.3.1
       '@eslint/js': 9.32.0
       '@stylistic/eslint-plugin': 3.1.0_eslint@8.57.1
@@ -8377,7 +8379,7 @@ packages:
     resolution: {integrity: sha512-bdYiRSV7D72Vwz7YW8GDOoqpGgcnOpBPSwIudHr5nddNB5VIuqJOecCIlua+DqscMZtQJ+1RyuMuKK9xzdAL7w==}
     engines: {node: '>=18.18.0'}
     dependencies:
-      '@eslint/compat': 1.3.1_eslint@8.57.1
+      '@eslint/compat': 1.3.2_eslint@8.57.1
       '@eslint/eslintrc': 3.3.1
       '@eslint/js': 9.32.0
       '@stylistic/eslint-plugin': 3.1.0_owjsyeuugtyevmmlm2yzh3xodu
