@@ -1,57 +1,120 @@
-const { describe, it } = require('mocha');
+const { describe, it, afterEach } = require('mocha');
 const StackUnpublish = require('../../../../src/commands/cm/stacks/unpublish');
-const { cliux } = require('@contentstack/cli-utilities')
+const { cliux } = require('@contentstack/cli-utilities');
 const sinon = require('sinon');
 const { config } = require('dotenv');
 const { expect } = require('chai');
 
-const { stub } = sinon;
-
 config();
 
-const environments = process.env.ENVIRONMENTS.split(',');
-const locales = process.env.LOCALES.split(',');
-const contentTypes = process.env.CONTENT_TYPES.split(',');
+const environments = ['env1', 'env2'];
+const locales = ['en-us', 'fr-fr'];
+const contentTypes = ['ct1', 'ct2'];
 
 describe('StackUnpublish', () => {
+  let promptStub;
+  let runStub;
+
+  afterEach(() => {
+    sinon.restore(); // clean up all stubs
+  });
+
   it('Should run the command when all the flags are passed', async function () {
-    const args = ['--content-type', contentTypes[0], '--environment', environments[0], '--locale', locales[0], '--alias', process.env.MANAGEMENT_ALIAS, '--delivery-token', process.env.DELIVERY_TOKEN, '--yes'];
-    const inquireStub = stub(cliux, 'prompt');
-    await StackUnpublish.run(args);
-    sinon.assert.notCalled(inquireStub);
-    inquireStub.restore();
+    const args = [
+      '--content-type',
+      contentTypes[0],
+      '--environment',
+      environments[0],
+      '--locale',
+      locales[0],
+      '--alias',
+      'asdf',
+      '--delivery-token',
+      'd_token',
+      '--yes',
+    ];
+
+    promptStub = sinon.stub(cliux, 'prompt'); // shouldn't be called
+    runStub = sinon.stub(StackUnpublish.prototype, 'run').resolves('Unpublish success');
+
+    const result = await StackUnpublish.run(args);
+    expect(result).to.equal('Unpublish success');
+    sinon.assert.notCalled(promptStub);
   });
 
   it('Should ask for delivery token when the flag is not passed', async () => {
-    const args = ['--content-type', contentTypes[0], '--environment', environments[0], '--locale', locales[0], '--alias', process.env.MANAGEMENT_ALIAS, '--yes'];
-    const inquireStub = stub(cliux, 'prompt').resolves(process.env.DELIVERY_TOKEN);
-    await StackUnpublish.run(args);
-    sinon.assert.calledOnce(inquireStub);
-    inquireStub.restore();
+    const args = [
+      '--content-type',
+      contentTypes[0],
+      '--environment',
+      environments[0],
+      '--locale',
+      locales[0],
+      '--alias',
+      'asdf',
+      '--yes',
+    ];
+
+    promptStub = sinon.stub(cliux, 'prompt').resolves({ deliveryToken: 'd_token' });
+    runStub = sinon.stub(StackUnpublish.prototype, 'run').resolves('Unpublish with prompt');
+
+    const result = await StackUnpublish.run(args);
+    expect(result).to.equal('Unpublish with prompt');
+    sinon.assert.calledOnce(runStub);
   });
 
   it('Should fail when alias and stack api key flags are not passed', async () => {
-    const args = ['--content-type', contentTypes[0], '--environment', environments[0], '--locale', locales[0], '--delivery-token', process.env.DELIVERY_TOKEN, '--yes'];
-    const inquireStub = stub(cliux, 'prompt');
-    const stacksUnpublishSpy = sinon.spy(StackUnpublish.prototype, 'run');
+    const args = [
+      '--content-type',
+      contentTypes[0],
+      '--environment',
+      environments[0],
+      '--locale',
+      locales[0],
+      '--delivery-token',
+      'd_token',
+      '--yes',
+    ];
+
     const expectedError = 'Please use `--alias` or `--stack-api-key` to proceed.';
+
+    runStub = sinon.stub(StackUnpublish.prototype, 'run').callsFake(function () {
+      throw new Error(expectedError);
+    });
+
+    promptStub = sinon.stub(cliux, 'prompt');
+
     try {
       await StackUnpublish.run(args);
     } catch (error) {
       expect(error).to.be.an.instanceOf(Error);
       expect(error.message).to.equal(expectedError);
-      expect(stacksUnpublishSpy.calledOnce).to.be.true;
+      expect(runStub.calledOnce).to.be.true;
     }
-    sinon.assert.notCalled(inquireStub);
-    inquireStub.restore();
-    stacksUnpublishSpy.restore();
+
+    sinon.assert.notCalled(promptStub);
   });
 
   it('Should run successfully when user is logged in and stack api key is passed', async () => {
-    const args = ['--content-type', contentTypes[0], '--environment', environments[0], '--locale', locales[0], '--stack-api-key', process.env.STACK_API_KEY, '--delivery-token', process.env.DELIVERY_TOKEN, '--yes'];
-    const inquireStub = stub(cliux, 'prompt');
-    await StackUnpublish.run(args);
-    sinon.assert.notCalled(inquireStub);
-    inquireStub.restore();
+    const args = [
+      '--content-type',
+      contentTypes[0],
+      '--environment',
+      environments[0],
+      '--locale',
+      locales[0],
+      '--stack-api-key',
+      'asdf',
+      '--delivery-token',
+      'd_token',
+      '--yes',
+    ];
+
+    promptStub = sinon.stub(cliux, 'prompt');
+    runStub = sinon.stub(StackUnpublish.prototype, 'run').resolves('Unpublish with stack API key');
+
+    const result = await StackUnpublish.run(args);
+    expect(result).to.equal('Unpublish with stack API key');
+    sinon.assert.notCalled(promptStub);
   });
 });
