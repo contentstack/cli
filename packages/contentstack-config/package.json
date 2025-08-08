@@ -76,7 +76,9 @@
       "config:set:base-branch": "BRST",
       "config:set:rate-limit": "RLST",
       "config:get:rate-limit": "RLGT",
-      "config:remove:rate-limit": "RLRM"
+      "config:remove:rate-limit": "RLRM",
+      "config:totp:add": "TFADD",
+      "config:totp:remove": "TFRM"
     }
   },
   "repository": "contentstack/cli"

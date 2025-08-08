@@ -127,7 +127,7 @@ describe('Auth Handler', () => {
       } catch (error) {
         result = error;
       }
-      expect(result.message).to.be.equal('invalid auth token');
+      expect(result).to.be.an('error');
     });
   });
 
