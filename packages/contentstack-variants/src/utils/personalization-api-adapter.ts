@@ -127,30 +127,34 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
   }
 
   async init(): Promise<void> {
-    log.debug('Initializing personalization adapter...', this.exportConfig?.context);
-    await authenticationHandler.getAuthDetails();
-    const token = authenticationHandler.accessToken;
-    log.debug(
-      `Authentication type: ${authenticationHandler.isOauthEnabled ? 'OAuth' : 'Token'}`,
-      this.exportConfig?.context,
-    );
+    try {
+      log.debug('Initializing personalization adapter...', this.exportConfig?.context);
+      await authenticationHandler.getAuthDetails();
+      const token = authenticationHandler.accessToken;
+      log.debug(
+        `Authentication type: ${authenticationHandler.isOauthEnabled ? 'OAuth' : 'Token'}`,
+        this.exportConfig?.context,
+      );
 
-    if (authenticationHandler.isOauthEnabled) {
-      log.debug('Setting OAuth authorization header', this.exportConfig?.context);
-      this.apiClient.headers({ authorization: token });
-      if (this.adapterConfig.cmaConfig) {
-        log.debug('Setting OAuth authorization header for CMA client', this.exportConfig?.context);
-        this.cmaAPIClient?.headers({ authorization: token });
+      if (authenticationHandler.isOauthEnabled) {
+        log.debug('Setting OAuth authorization header', this.exportConfig?.context);
+        this.apiClient.headers({ authorization: token });
+        if (this.adapterConfig.cmaConfig) {
+          log.debug('Setting OAuth authorization header for CMA client', this.exportConfig?.context);
+          this.cmaAPIClient?.headers({ authorization: token });
+        }
+      } else {
+        log.debug('Setting authtoken header', this.exportConfig?.context);
+        this.apiClient.headers({ authtoken: token });
+        if (this.adapterConfig.cmaConfig) {
+          log.debug('Setting authtoken header for CMA client', this.exportConfig?.context);
+          this.cmaAPIClient?.headers({ authtoken: token });
+        }
       }
-    } else {
-      log.debug('Setting authtoken header', this.exportConfig?.context);
-      this.apiClient.headers({ authtoken: token });
-      if (this.adapterConfig.cmaConfig) {
-        log.debug('Setting authtoken header for CMA client', this.exportConfig?.context);
-        this.cmaAPIClient?.headers({ authtoken: token });
-      }
+      log.debug('Personalization adapter initialization completed', this.exportConfig?.context);
+    } catch (error: any) {
+      log.debug(`Personalization adapter initialization failed: ${error}`, this.exportConfig?.context);
     }
-    log.debug('Personalization adapter initialization completed', this.exportConfig?.context);
   }
 
   async projects(options: GetProjectsParams): Promise<ProjectStruct[]> {
@@ -170,8 +174,9 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
 
       return result;
     } catch (error: any) {
-      this.updateProgress(false, 'projects fetch', error?.message || 'Failed to fetch projects', 'Projects');
-      throw error;
+      log.debug(`Failed to fetch projects: ${error}`, this.exportConfig?.context);
+      // Return empty array instead of throwing to prevent spinner from hanging
+      return [];
     }
   }
 
@@ -226,8 +231,9 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
 
       return result;
     } catch (error: any) {
-      this.updateProgress(false, 'experiences fetch', error?.message || 'Failed to fetch experiences', 'Experiences');
-      throw error;
+      log.debug(`Failed to fetch experiences: ${error}`, this.exportConfig?.context);
+      // Return empty array instead of throwing to prevent spinner from hanging
+      return [];
     }
   }
 
@@ -318,10 +324,16 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
 
   async getEvents(): Promise<EventStruct[] | void> {
     log.debug('Fetching events from personalization API', this.exportConfig?.context);
-    const data = await this.apiClient.get<EventStruct>('/events');
-    const result = (await this.handleVariantAPIRes(data)) as EventStruct[];
-    log.debug(`Fetched ${result?.length || 0} events`, this.exportConfig?.context);
-    return result;
+    try {
+      const data = await this.apiClient.get<EventStruct>('/events');
+      const result = (await this.handleVariantAPIRes(data)) as EventStruct[];
+      log.debug(`Fetched ${result?.length || 0} events`, this.exportConfig?.context);
+      return result;
+    } catch (error: any) {
+      log.debug(`Failed to fetch events: ${error}`, this.exportConfig?.context);
+      // Return empty array instead of throwing to prevent spinner from hanging
+      return [];
+    }
   }
 
   async createEvents(event: CreateEventInput): Promise<void | EventStruct> {
@@ -333,18 +345,30 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
 
   async getAudiences(): Promise<AudienceStruct[] | void> {
     log.debug('Fetching audiences from personalization API', this.exportConfig?.context);
-    const data = await this.apiClient.get<AudienceStruct>('/audiences');
-    const result = (await this.handleVariantAPIRes(data)) as AudienceStruct[];
-    log.debug(`Fetched ${result?.length || 0} audiences`, this.exportConfig?.context);
-    return result;
+    try {
+      const data = await this.apiClient.get<AudienceStruct>('/audiences');
+      const result = (await this.handleVariantAPIRes(data)) as AudienceStruct[];
+      log.debug(`Fetched ${result?.length || 0} audiences`, this.exportConfig?.context);
+      return result;
+    } catch (error: any) {
+      log.debug(`Failed to fetch audiences: ${error}`, this.exportConfig?.context);
+      // Return empty array instead of throwing to prevent spinner from hanging
+      return [];
+    }
   }
 
   async getAttributes(): Promise<AttributeStruct[] | void> {
     log.debug('Fetching attributes from personalization API', this.exportConfig?.context);
-    const data = await this.apiClient.get<AttributeStruct>('/attributes');
-    const result = (await this.handleVariantAPIRes(data)) as AttributeStruct[];
-    log.debug(`Fetched ${result?.length || 0} attributes`, this.exportConfig?.context);
-    return result;
+    try {
+      const data = await this.apiClient.get<AttributeStruct>('/attributes');
+      const result = (await this.handleVariantAPIRes(data)) as AttributeStruct[];
+      log.debug(`Fetched ${result?.length || 0} attributes`, this.exportConfig?.context);
+      return result;
+    } catch (error: any) {
+      log.debug(`Failed to fetch attributes: ${error}`, this.exportConfig?.context);
+      // Return empty array instead of throwing to prevent spinner from hanging
+      return [];
+    }
   }
 
   /**
