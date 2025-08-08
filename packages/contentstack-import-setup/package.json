@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-cm-import-setup",
   "description": "Contentstack CLI plugin to setup the mappers and configurations for the import command",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
