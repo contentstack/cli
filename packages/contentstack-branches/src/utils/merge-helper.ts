@@ -147,7 +147,7 @@ export const executeMerge = async (apiKey, mergePayload, host): Promise<any> => 
   }
 };
 
-export const fetchMergeStatus = async (stackAPIClient, mergePayload): Promise<any> => {
+export const fetchMergeStatus = async (stackAPIClient, mergePayload, delay = 5000): Promise<any> => {
   return new Promise(async (resolve, reject) => {
     const mergeStatusResponse = await getMergeQueueStatus(stackAPIClient, { uid: mergePayload.uid });
 
@@ -158,8 +158,8 @@ export const fetchMergeStatus = async (stackAPIClient, mergePayload): Promise<an
         resolve(mergeRequestStatusResponse);
       } else if (mergeStatus === 'in-progress' || mergeStatus === 'in_progress') {
         setTimeout(async () => {
-          await fetchMergeStatus(stackAPIClient, mergePayload).then(resolve).catch(reject);
-        }, 5000);
+          await fetchMergeStatus(stackAPIClient, mergePayload, delay).then(resolve).catch(reject);
+        }, delay);
       } else if (mergeStatus === 'failed') {
         if (mergeRequestStatusResponse?.errors?.length > 0) {
           const errorPath = path.join(process.cwd(), 'merge-error.log');
