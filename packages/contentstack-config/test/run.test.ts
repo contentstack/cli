@@ -1,11 +1,9 @@
 import { join, resolve } from "path";
 import { existsSync, readdirSync } from "fs";
-import {
-  IS_TS,
-  UNIT_EXECUTION_ORDER,
-  INTEGRATION_EXECUTION_ORDER,
-  // @ts-ignore
-} from "./config.json" with { type: "json" };
+// @ts-ignore
+import config from "./config.json" with { type: "json" };
+
+const { IS_TS, UNIT_EXECUTION_ORDER, INTEGRATION_EXECUTION_ORDER } = config;
 
 const filter = require("lodash/filter");
 const forEach = require("lodash/forEach");
