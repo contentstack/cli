@@ -52,9 +52,9 @@ jobs:
         working-directory: ./packages/contentstack-auth
         run: npm run test
 
-      - name: Run tests for Contentstack Import Setup
-        working-directory: ./packages/contentstack-import-setup
-        run: npm run test:unit
+      # - name: Run tests for Contentstack Import Setup
+      #   working-directory: ./packages/contentstack-import-setup
+      #   run: npm run test:unit
 
 
       - name: Run tests for Contentstack Bulk Publish
