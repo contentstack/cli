@@ -1,4 +1,3 @@
-import { entries } from 'lodash';
 import { DefaultConfig } from '../types';
 
 const config: DefaultConfig = {

@@ -1,17 +1,14 @@
 import { join, resolve } from "path";
 import { existsSync, readdirSync } from "fs";
-import {
-  IS_TS,
-  UNIT_EXECUTION_ORDER,
-  INTEGRATION_EXECUTION_ORDER,
-  // @ts-ignore
-} from "./config.json";
+import filter from "lodash/filter.js";
+import forEach from "lodash/forEach.js";
+import isEmpty from "lodash/isEmpty.js";
+import isArray from "lodash/isArray.js";
+import includes from "lodash/includes.js";
+// @ts-ignore
+import config from "./config.json" with { type: "json" };
 
-const filter = require("lodash/filter");
-const forEach = require("lodash/forEach");
-const isEmpty = require("lodash/isEmpty");
-const isArray = require("lodash/isArray");
-const includes = require("lodash/includes");
+const { IS_TS, UNIT_EXECUTION_ORDER, INTEGRATION_EXECUTION_ORDER } = config;
 
 const testFileExtension = IS_TS ? ".ts" : ".js";
 process.env.TS_NODE_PROJECT = resolve("test/tsconfig.json");
