@@ -56,30 +56,39 @@ describe('TOTP Commands', function () {
       'JBSWY3DPEHPK3PXP ', // Trailing space
     ];
 
-    it('should add TOTP configuration successfully', async function () {
+    it('should add TOTP configuration successfully with last_updated', async function () {
       configStub.get.returns(null);
       encrypterStub.encrypt.returns(encryptedSecret);
       authenticatorStub.generate.returns('123456');
       authenticatorStub.check.returns(true);
       inquireStub.returns(Promise.resolve(true));
 
+      const now = new Date();
+      const clock = sinon.useFakeTimers(now.getTime());
+
       await TotpAddCommand.run(['--secret', validSecret]);
       expect(configStub.set.calledOnce).to.be.true;
       expect(configStub.set.firstCall.args[0]).to.equal('totp');
-      expect(configStub.set.firstCall.args[1]).to.deep.include({
-        secret: encryptedSecret,
-      });
+      const storedConfig = configStub.set.firstCall.args[1];
+      expect(storedConfig).to.have.property('secret', encryptedSecret);
+      expect(storedConfig).to.have.property('last_updated');
+      expect(new Date(storedConfig.last_updated).getTime()).to.equal(now.getTime());
+
+      clock.restore();
     });
 
     it('should cancel when user declines to overwrite existing config', async function () {
-      configStub.get.returns({ secret: 'existing-secret' });
+      const existingConfig = {
+        secret: 'existing-secret',
+        last_updated: new Date().toISOString()
+      };
+      configStub.get.returns(existingConfig);
       inquireStub.returns(Promise.resolve(false));
       authenticatorStub.check.returns(true);
       authenticatorStub.generate.returns('123456');
 
       await TotpAddCommand.run(['--secret', validSecret]);
       expect(configStub.set.called).to.be.false;
-      expect(inquireStub.calledOnce).to.be.true;
       expect(inquireStub.calledOnce).to.be.true;
     });
 
@@ -115,7 +124,7 @@ describe('TOTP Commands', function () {
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.contain('Failed to encrypt TOTP secret');
+        expect(err.message).to.contain('Failed to store TOTP secret');
       }
     });
 
@@ -194,7 +203,11 @@ describe('TOTP Commands', function () {
     const decryptedSecret = 'JBSWY3DPEHPK3PXP';
 
     it('should remove TOTP configuration successfully', async function () {
-      configStub.get.returns({ secret: encryptedSecret });
+      const config = {
+        secret: encryptedSecret,
+        last_updated: new Date().toISOString()
+      };
+      configStub.get.returns(config);
       encrypterStub.decrypt.returns(decryptedSecret);
       inquireStub.returns(Promise.resolve(true));
 
@@ -324,7 +337,7 @@ describe('TOTP Commands', function () {
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.contain('Failed to read TOTP configuration');
+        expect(err.message).to.contain('Failed to remove TOTP configuration');
       }
     });
 
