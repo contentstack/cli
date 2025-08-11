@@ -30,14 +30,13 @@ export default class AddTOTPCommand extends BaseCommand<typeof AddTOTPCommand> {
       const { flags } = await this.parse(AddTOTPCommand);
       let secret = flags.secret;
 
-      // Validate and normalize secret
       if (!secret) {
         secret = await cliux.inquire({
           type: 'password',
           name: 'secret',
-          message: 'Enter your TOTP secret:',
+          message: 'Enter your secret:',
           validate: (input: string) => {
-            if (!input) return 'TOTP secret is required';
+            if (!input) return 'Secret is required';
             if (!this.totpService.validateSecret(input)) return 'Invalid TOTP secret format';
             return true;
           },
@@ -55,7 +54,7 @@ export default class AddTOTPCommand extends BaseCommand<typeof AddTOTPCommand> {
         const confirm = await cliux.inquire({
           type: 'confirm',
           name: 'confirm',
-          message: 'TOTP configuration already exists. Do you want to overwrite it?',
+          message: 'Secret configuration already exists. Do you want to overwrite it?',
         });
 
         if (!confirm) {
@@ -68,18 +67,18 @@ export default class AddTOTPCommand extends BaseCommand<typeof AddTOTPCommand> {
       try {
         const encryptedSecret = this.totpService.encryptSecret(secret);
         this.totpService.storeConfig({ secret: encryptedSecret });
-        cliux.success('TOTP secret has been stored successfully');
+        cliux.success('Secret has been stored successfully');
       } catch (error) {
         if (error instanceof TOTPError) {
           throw error;
         }
-        throw new TOTPError('Failed to store TOTP secret');
+        throw new TOTPError('Failed to store configuration');
       }
     } catch (error) {
       if (error instanceof TOTPError) {
         cliux.error(error.message);
       } else {
-        cliux.error('Failed to store TOTP secret');
+        cliux.error('Failed to store configuration');
       }
       throw error;
     }
