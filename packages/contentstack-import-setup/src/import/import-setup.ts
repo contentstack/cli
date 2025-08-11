@@ -1,7 +1,6 @@
-import Module from 'module';
 import { ImportConfig, Modules } from '../types';
 import { backupHandler, log } from '../utils';
-import { ContentstackClient, formatError } from '@contentstack/cli-utilities';
+import { ContentstackClient } from '@contentstack/cli-utilities';
 import { validateBranch } from '../utils';
 
 export default class ImportSetup {
