@@ -41,4 +41,9 @@ fileignoreconfig:
   checksum: 3c9e7e43bebec8683b4af2ed2b28ed71c24cf0e7e7379aa7acceee620d2cc310
 - filename: packages/contentstack-config/test/unit/services/totp.service.test.ts
   checksum: 68a9e64134c5972828d6c1e65d6975b6200f36a0edab3ee6e4df05445a52f941
+- filename: packages/contentstack-config/src/services/totp/totp.service.ts
+  checksum: 63aeb5dc49a60c195a5cfcefd52aeb276f0bb5227152d44c7d6305b0dbf7bee5
+- filename: packages/contentstack-config/src/commands/config/totp/remove.ts
+  checksum: 17f6576f90d3b30f37c5ef1318b188db2c70ab31e7fdedc3c94807d1eb822a8b
 version: "1.0"
+

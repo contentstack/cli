@@ -5,7 +5,7 @@ import { TOTPError } from '../../../services/totp/types';
 import { Flags } from '@oclif/core';
 
 export default class RemoveTOTPCommand extends BaseCommand<typeof RemoveTOTPCommand> {
-  static readonly description = 'Remove stored TOTP secret';
+  static readonly description = 'Remove stored secret';
 
   static readonly examples = [
     '$ csdx config:totp:remove',
@@ -31,18 +31,17 @@ export default class RemoveTOTPCommand extends BaseCommand<typeof RemoveTOTPComm
     try {
       const { flags } = await this.parse(RemoveTOTPCommand);
 
-      // Check if TOTP configuration exists
       let config;
       try {
         config = this.totpService.getStoredConfig();
         if (!config?.secret) {
-          throw new TOTPError('Failed to remove TOTP configuration');
+          throw new TOTPError('Failed to remove configuration');
         }
       } catch (error) {
         if (error instanceof TOTPError) {
           throw error;
         }
-        throw new TOTPError('Failed to remove TOTP configuration');
+        throw new TOTPError('Failed to remove configuration');
       }
 
       // Verify the configuration is valid
@@ -50,13 +49,13 @@ export default class RemoveTOTPCommand extends BaseCommand<typeof RemoveTOTPComm
       try {
         this.totpService.decryptSecret(config.secret);
       } catch (error) {
-        this.logger.debug('Failed to decrypt TOTP secret', { error });
+        this.logger.debug('Failed to decrypt secret', { error });
         isCorrupted = true;
       }
 
       // Confirm removal unless -y flag is used
       if (!flags.yes) {
-        let message = 'Are you sure you want to remove the stored TOTP secret?';
+        let message = 'Are you sure you want to remove the stored secret?';
         if (isCorrupted) {
           message = 'Configuration appears corrupted. Do you want to remove it anyway?';
         }
@@ -75,16 +74,16 @@ export default class RemoveTOTPCommand extends BaseCommand<typeof RemoveTOTPComm
 
       try {
         this.totpService.removeConfig();
-        cliux.success('TOTP secret has been removed successfully');
+        cliux.success('Secret has been removed successfully');
       } catch (error) {
-        this.logger.error('Failed to remove TOTP configuration', { error });
-        throw new TOTPError('Failed to remove TOTP configuration');
+        this.logger.error('Failed to remove secret configuration', { error });
+        throw new TOTPError('Failed to remove configuration');
       }
     } catch (error) {
       if (error instanceof TOTPError) {
         cliux.error(error.message);
       } else {
-        cliux.error('Failed to remove TOTP configuration');
+        cliux.error('Failed to remove configuration');
       }
       throw error;
     }

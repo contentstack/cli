@@ -92,7 +92,7 @@ describe('TOTP Service', () => {
         error = err;
       }
       expect(error).to.be.an('error').with.property('name', 'TOTPError');
-      expect((error as TOTPError).message).to.equal('Failed to encrypt TOTP secret');
+      expect((error as TOTPError).message).to.equal('Failed to encrypt secret');
     });
 
     it('should normalize secret before encryption', () => {
@@ -123,7 +123,7 @@ describe('TOTP Service', () => {
         error = err;
       }
       expect(error).to.be.an('error').with.property('name', 'TOTPError');
-      expect((error as TOTPError).message).to.equal('Failed to decrypt TOTP secret');
+      expect((error as TOTPError).message).to.equal('Failed to decrypt secret');
     });
   });
 
@@ -154,7 +154,7 @@ describe('TOTP Service', () => {
         error = err;
       }
       expect(error).to.be.an('error').with.property('name', 'TOTPError');
-      expect((error as TOTPError).message).to.equal('Failed to read TOTP configuration');
+      expect((error as TOTPError).message).to.equal('Failed to read configuration');
     });
   });
 
@@ -193,7 +193,7 @@ describe('TOTP Service', () => {
         error = err;
       }
       expect(error).to.be.an('error').with.property('name', 'TOTPError');
-      expect((error as TOTPError).message).to.equal('Failed to store TOTP configuration');
+      expect((error as TOTPError).message).to.equal('Failed to store configuration');
     });
   });
 
@@ -213,7 +213,7 @@ describe('TOTP Service', () => {
         error = err;
       }
       expect(error).to.be.an('error').with.property('name', 'TOTPError');
-      expect((error as TOTPError).message).to.equal('Failed to remove TOTP configuration');
+      expect((error as TOTPError).message).to.equal('Failed to remove configuration');
     });
   });
 
@@ -237,7 +237,7 @@ describe('TOTP Service', () => {
         error = err;
       }
       expect(error).to.be.an('error').with.property('name', 'TOTPError');
-      expect((error as TOTPError).message).to.equal('Failed to generate TOTP code');
+      expect((error as TOTPError).message).to.equal('Failed to generate code');
     });
 
     it('should normalize secret before generation', () => {

@@ -16,12 +16,10 @@ export class TOTPService implements ITOTPService {
       return false;
     }
 
-    // Check for leading/trailing spaces in original input
     if (secret.trim() !== secret) {
       return false;
     }
 
-    // Base32 validation (A-Z, 2-7)
     const base32Regex = /^[A-Z2-7]+=*$/;
     const normalizedSecret = secret.trim().toUpperCase();
 
@@ -30,7 +28,6 @@ export class TOTPService implements ITOTPService {
       return false;
     }
 
-    // Check for invalid padding
     const paddingRegex = /=+$/;
     const paddingMatch = paddingRegex.exec(normalizedSecret);
     if (paddingMatch) {
@@ -40,7 +37,6 @@ export class TOTPService implements ITOTPService {
         return false;
       }
     } else if (normalizedSecret.length % 8 !== 0) {
-      // If no padding, length must be a multiple of 8
       return false;
     }
 
@@ -58,7 +54,7 @@ export class TOTPService implements ITOTPService {
       return this.encrypter.encrypt(secret.trim().toUpperCase());
     } catch (error) {
       this.logger.error('Secret encryption failed', { error });
-      throw new TOTPError('Failed to encrypt TOTP secret');
+      throw new TOTPError('Failed to encrypt secret');
     }
   }
 
@@ -67,7 +63,7 @@ export class TOTPService implements ITOTPService {
       return this.encrypter.decrypt(encryptedSecret);
     } catch (error) {
       this.logger.error('Secret decryption failed', { error });
-      throw new TOTPError('Failed to decrypt TOTP secret');
+      throw new TOTPError('Failed to decrypt secret');
     }
   }
 
@@ -76,8 +72,8 @@ export class TOTPService implements ITOTPService {
       const config = configHandler.get('totp');
       return config?.secret ? config as TOTPConfig : null;
     } catch (error) {
-      this.logger.error('Failed to read TOTP config', { error });
-      throw new TOTPError('Failed to read TOTP configuration');
+      this.logger.error('Failed to read config', { error });
+      throw new TOTPError('Failed to read configuration');
     }
   }
 
@@ -90,8 +86,8 @@ export class TOTPService implements ITOTPService {
       };
       configHandler.set('totp', updatedConfig);
     } catch (error) {
-      this.logger.error('Failed to store TOTP config', { error });
-      throw new TOTPError('Failed to store TOTP configuration');
+      this.logger.error('Failed to store config', { error });
+      throw new TOTPError('Failed to store configuration');
     }
   }
 
@@ -99,8 +95,8 @@ export class TOTPService implements ITOTPService {
     try {
       configHandler.delete('totp');
     } catch (error) {
-      this.logger.error('Failed to remove TOTP config', { error });
-      throw new TOTPError('Failed to remove TOTP configuration');
+      this.logger.error('Failed to remove config', { error });
+      throw new TOTPError('Failed to remove configuration');
     }
   }
 
@@ -108,8 +104,8 @@ export class TOTPService implements ITOTPService {
     try {
       return authenticator.generate(secret.trim().toUpperCase());
     } catch (error) {
-      this.logger.error('Failed to generate TOTP code', { error });
-      throw new TOTPError('Failed to generate TOTP code');
+      this.logger.error('Failed to generate code', { error });
+      throw new TOTPError('Failed to generate code');
     }
   }
 
@@ -117,7 +113,7 @@ export class TOTPService implements ITOTPService {
     try {
       return authenticator.check(token, secret.trim().toUpperCase());
     } catch (error) {
-      this.logger.debug('TOTP verification failed', { error });
+      this.logger.debug('Secret verification failed', { error });
       return false;
     }
   }

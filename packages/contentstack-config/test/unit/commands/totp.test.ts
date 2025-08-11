@@ -124,7 +124,7 @@ describe('TOTP Commands', function () {
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.contain('Failed to store TOTP secret');
+        expect(err.message).to.contain('Failed to store configuration');
       }
     });
 
@@ -223,7 +223,7 @@ describe('TOTP Commands', function () {
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.equal('Failed to remove TOTP configuration');
+        expect(err.message).to.equal('Failed to remove configuration');
         expect(configStub.delete.called).to.be.false;
       }
     });
@@ -261,7 +261,7 @@ describe('TOTP Commands', function () {
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.contain('Failed to remove TOTP configuration');
+        expect(err.message).to.contain('Failed to remove configuration');
       }
     });
 
@@ -272,7 +272,7 @@ describe('TOTP Commands', function () {
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.contain('Failed to remove TOTP configuration');
+        expect(err.message).to.contain('Failed to remove configuration');
       }
     });
 
@@ -283,7 +283,7 @@ describe('TOTP Commands', function () {
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.contain('Failed to remove TOTP configuration');
+        expect(err.message).to.contain('Failed to remove configuration');
       }
     });
 
@@ -294,7 +294,7 @@ describe('TOTP Commands', function () {
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.contain('Failed to remove TOTP configuration');
+        expect(err.message).to.contain('Failed to remove configuration');
       }
     });
 
@@ -305,7 +305,7 @@ describe('TOTP Commands', function () {
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.contain('Failed to remove TOTP configuration');
+        expect(err.message).to.contain('Failed to remove configuration');
       }
     });
 
@@ -337,7 +337,7 @@ describe('TOTP Commands', function () {
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.contain('Failed to remove TOTP configuration');
+        expect(err.message).to.contain('Failed to remove configuration');
       }
     });
 
