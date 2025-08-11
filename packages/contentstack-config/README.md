@@ -5,16 +5,14 @@ The config namespace contains all the commands that you will need to configure t
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
-
-- [@contentstack/cli-config](#contentstackcli-config)
-- [Usage](#usage)
-- [Commands](#commands)
+* [@contentstack/cli-config](#contentstackcli-config)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
@@ -26,29 +24,29 @@ USAGE
   $ csdx COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
-- [`csdx config:get:ea-header`](#csdx-configgetea-header)
-- [`csdx config:get:early-access-header`](#csdx-configgetearly-access-header)
-- [`csdx config:get:log`](#csdx-configgetlog)
-- [`csdx config:get:rate-limit`](#csdx-configgetrate-limit)
-- [`csdx config:get:region`](#csdx-configgetregion)
-- [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
-- [`csdx config:remove:ea-header`](#csdx-configremoveea-header)
-- [`csdx config:remove:early-access-header`](#csdx-configremoveearly-access-header)
-- [`csdx config:remove:rate-limit`](#csdx-configremoverate-limit)
-- [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
-- [`csdx config:set:ea-header`](#csdx-configsetea-header)
-- [`csdx config:set:early-access-header`](#csdx-configsetearly-access-header)
-- [`csdx config:set:log`](#csdx-configsetlog)
-- [`csdx config:set:rate-limit`](#csdx-configsetrate-limit)
-- [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
+* [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
+* [`csdx config:get:ea-header`](#csdx-configgetea-header)
+* [`csdx config:get:early-access-header`](#csdx-configgetearly-access-header)
+* [`csdx config:get:log`](#csdx-configgetlog)
+* [`csdx config:get:rate-limit`](#csdx-configgetrate-limit)
+* [`csdx config:get:region`](#csdx-configgetregion)
+* [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
+* [`csdx config:remove:ea-header`](#csdx-configremoveea-header)
+* [`csdx config:remove:early-access-header`](#csdx-configremoveearly-access-header)
+* [`csdx config:remove:rate-limit`](#csdx-configremoverate-limit)
+* [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
+* [`csdx config:set:ea-header`](#csdx-configsetea-header)
+* [`csdx config:set:early-access-header`](#csdx-configsetearly-access-header)
+* [`csdx config:set:log`](#csdx-configsetlog)
+* [`csdx config:set:rate-limit`](#csdx-configsetrate-limit)
+* [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
+* [`csdx config:totp:add`](#csdx-configtotpadd)
+* [`csdx config:totp:remove`](#csdx-configtotpremove)
 
 ## `csdx config:get:base-branch`
 
@@ -435,4 +433,37 @@ EXAMPLES
 
 _See code: [src/commands/config/set/region.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/region.ts)_
 
+## `csdx config:totp:add`
+
+Add TOTP secret for 2FA authentication
+
+```
+USAGE
+  $ csdx config:totp:add
+
+DESCRIPTION
+  Add TOTP secret for 2FA authentication
+
+EXAMPLES
+  $ csdx config:totp:add
+```
+
+_See code: [src/commands/config/totp/add.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/totp/add.ts)_
+
+## `csdx config:totp:remove`
+
+Remove stored TOTP secret
+
+```
+USAGE
+  $ csdx config:totp:remove
+
+DESCRIPTION
+  Remove stored TOTP secret
+
+EXAMPLES
+  $ csdx config:totp:remove
+```
+
+_See code: [src/commands/config/totp/remove.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/totp/remove.ts)_
 <!-- commandsstop -->
