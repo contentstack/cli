@@ -19,3 +19,4 @@ dependabot.yml
 oclif.manifest.json
 *.env
 .vscode/
+audit-report
