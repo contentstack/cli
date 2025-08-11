@@ -25,19 +25,25 @@ describe('Content types', () => {
   let constructorParam: ModuleConstructorParam & CtConstructorParam;
 
   class AuditTempClass extends ContentType {
-    constructor(public missingRefs: Record<string, any> = {}) {
+    public missingRefs: Record<string, any>;
+    
+    constructor(missingRefs: Record<string, any> = {}) {
       super(constructorParam);
       this.currentUid = 'audit';
       this.currentTitle = 'Audit';
+      this.missingRefs = missingRefs;
       this.missingRefs['audit'] = [];
     }
   }
 
   class AuditFixTempClass extends ContentType {
-    constructor(public missingRefs: Record<string, any> = {}) {
+    public missingRefs: Record<string, any>;
+    
+    constructor(missingRefs: Record<string, any> = {}) {
       super({ ...constructorParam, fix: true, moduleName: undefined });
       this.currentUid = 'audit-fix';
       this.currentTitle = 'Audit fix';
+      this.missingRefs = missingRefs;
       this.missingRefs['audit-fix'] = [];
     }
   }
