@@ -1,5 +1,6 @@
 export interface TOTPConfig {
   secret: string;
+  last_updated: string;
 }
 
 export interface TOTPValidationResult {
