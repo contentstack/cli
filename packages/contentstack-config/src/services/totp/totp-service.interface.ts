@@ -5,7 +5,7 @@ export interface ITOTPService {
   encryptSecret(secret: string): string;
   decryptSecret(encryptedSecret: string): string;
   getStoredConfig(): TOTPConfig | null;
-  storeConfig(config: TOTPConfig): void;
+  storeConfig(config: Partial<TOTPConfig>): void;
   removeConfig(): void;
   generateTOTP(secret: string): string;
   verifyTOTP(secret: string, token: string): boolean;

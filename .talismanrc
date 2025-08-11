@@ -8,7 +8,7 @@ fileignoreconfig:
 - filename: packages/contentstack-config/src/commands/config/totp/remove.ts
   checksum: 6b2956013e33a2b46e5e342ce362672bfb5e057211737b95c5924f6994e858c2
 - filename: packages/contentstack-config/src/services/totp/totp.service.ts
-  checksum: f21bc50af721e29ab69afe43e2b1c55d7867cfb894056ec240e412ca2e5eacc2
+  checksum: d460e9ea8cb538131dc3318beed5c4cebab9be66592dc42a138d80b9e1692684
 - filename: packages/contentstack-config/src/services/totp/types.ts
   checksum: 8ab48ff2bcd11d69b77df0dd71262c28703ba674a552f6b536a53c855d828117
 - filename: packages/contentstack-config/test/unit/commands/totp.test.ts
@@ -16,5 +16,7 @@ fileignoreconfig:
 - filename: packages/contentstack-config/src/commands/config/totp/add.ts
   checksum: 48d2ddefec00834fff94dac250be2c20a47d44d23fca87d0e145b38b11604219
 - filename: packages/contentstack-config/test/unit/services/totp.service.test.ts
-  checksum: bfb93f2b62f606007cc84a4a51a3e61ded10593c65a499f8748379728f9592e2
+  checksum: d460e9ea8cb538131dc3318beed5c4cebab9be66592dc42a138d80b9e1692684
+- filename: packages/contentstack-auth/src/commands/auth/login.ts
+  checksum: 7c6f82a7e4147c327c3d634c3845d5cebf55f91e5feefc7871fc77e77bdd9a46
 version: "1.0"

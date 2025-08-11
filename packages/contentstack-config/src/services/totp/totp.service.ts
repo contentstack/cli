@@ -1,6 +1,7 @@
 import { configHandler, NodeCrypto, log } from '@contentstack/cli-utilities';
 import { authenticator } from 'otplib';
-import { ITOTPService, TOTPConfig, TOTPError } from './types';
+import { TOTPConfig, TOTPError } from './totp.types';
+import { ITOTPService } from './totp-service.interface';
 
 export class TOTPService implements ITOTPService {
   private readonly encrypter: NodeCrypto;
@@ -80,9 +81,14 @@ export class TOTPService implements ITOTPService {
     }
   }
 
-  storeConfig(config: TOTPConfig): void {
+  storeConfig(config: Partial<TOTPConfig>): void {
     try {
-      configHandler.set('totp', config);
+      const updatedConfig: TOTPConfig = {
+        ...config,
+        last_updated: new Date().toISOString(),
+        secret: config.secret!
+      };
+      configHandler.set('totp', updatedConfig);
     } catch (error) {
       this.logger.error('Failed to store TOTP config', { error });
       throw new TOTPError('Failed to store TOTP configuration');
