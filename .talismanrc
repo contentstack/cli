@@ -37,4 +37,8 @@ fileignoreconfig:
   checksum: c09f6dc93702caff3adf689b501ec32586a16c865c1fe3a63b53ae645ca22349
 - filename: packages/contentstack-import-setup/test/unit/modules/assets.test.ts
   checksum: 449a5e3383631a6f78d1291aa3c28c91681879289398f0a933158fba5c5d5acf
+- filename: packages/contentstack-config/test/unit/commands/totp.test.ts
+  checksum: 3c9e7e43bebec8683b4af2ed2b28ed71c24cf0e7e7379aa7acceee620d2cc310
+- filename: packages/contentstack-config/test/unit/services/totp.service.test.ts
+  checksum: 68a9e64134c5972828d6c1e65d6975b6200f36a0edab3ee6e4df05445a52f941
 version: "1.0"

@@ -159,10 +159,28 @@ describe('TOTP Service', () => {
   });
 
   describe('storeConfig', () => {
-    it('should store config successfully', () => {
+    it('should store config with valid ISO timestamp', () => {
       const config = { secret: 'encrypted-secret|iv' };
       totpService.storeConfig(config);
-      expect(configStub.set.calledWith('totp', config)).to.be.true;
+      
+      const storedConfig = configStub.set.firstCall.args[1];
+      expect(storedConfig.last_updated).to.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+      expect(() => new Date(storedConfig.last_updated)).to.not.throw();
+    });
+    it('should store config successfully with last_updated', () => {
+      const config = { secret: 'encrypted-secret|iv' };
+      const now = new Date();
+      const clock = sinon.useFakeTimers(now.getTime());
+      
+      totpService.storeConfig(config);
+      
+      expect(configStub.set.calledOnce).to.be.true;
+      const storedConfig = configStub.set.firstCall.args[1];
+      expect(storedConfig).to.have.property('secret', 'encrypted-secret|iv');
+      expect(storedConfig).to.have.property('last_updated');
+      expect(new Date(storedConfig.last_updated).getTime()).to.equal(now.getTime());
+      
+      clock.restore();
     });
 
     it('should handle storage errors', () => {
