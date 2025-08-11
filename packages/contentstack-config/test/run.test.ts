@@ -5,7 +5,7 @@ import {
   UNIT_EXECUTION_ORDER,
   INTEGRATION_EXECUTION_ORDER,
   // @ts-ignore
-} from "./config.json";
+} from "./config.json" with { type: "json" };
 
 const filter = require("lodash/filter");
 const forEach = require("lodash/forEach");
