@@ -41,4 +41,6 @@ fileignoreconfig:
   checksum: 68158e62e4e5f6d51538bed0789074a4f595f1e4b3a37e82edce6afe5b69bc30
 - filename: packages/contentstack-config/test/unit/services/mfa.service.test.ts
   checksum: 8ba652904813cc27d5be3c7829588c3f4b0a3b3fab50439676690fe95a1d4733
+- filename: packages/contentstack-config/README.md
+  checksum: b560bf300a07b40d9c24534c8e3493b7569233de061cfcdd58eb615c96e83d75
 version: "1.0"
