@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-config/1.15.0 darwin-arm64 node-v22.14.0
+@contentstack/cli-config/1.16.0 darwin-arm64 node-v23.11.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -35,6 +35,8 @@ USAGE
 * [`csdx config:get:log`](#csdx-configgetlog)
 * [`csdx config:get:rate-limit`](#csdx-configgetrate-limit)
 * [`csdx config:get:region`](#csdx-configgetregion)
+* [`csdx config:mfa:add`](#csdx-configmfaadd)
+* [`csdx config:mfa:remove`](#csdx-configmfaremove)
 * [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
 * [`csdx config:remove:ea-header`](#csdx-configremoveea-header)
 * [`csdx config:remove:early-access-header`](#csdx-configremoveearly-access-header)
@@ -45,8 +47,6 @@ USAGE
 * [`csdx config:set:log`](#csdx-configsetlog)
 * [`csdx config:set:rate-limit`](#csdx-configsetrate-limit)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
-* [`csdx config:totp:add`](#csdx-configtotpadd)
-* [`csdx config:totp:remove`](#csdx-configtotpremove)
 
 ## `csdx config:get:base-branch`
 
@@ -153,6 +153,48 @@ EXAMPLES
 ```
 
 _See code: [src/commands/config/get/region.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/region.ts)_
+
+## `csdx config:mfa:add`
+
+Add MFA secret for 2FA authentication
+
+```
+USAGE
+  $ csdx config:mfa:add [--secret <value>]
+
+FLAGS
+  --secret=<value>  MFA secret for 2FA authentication
+
+DESCRIPTION
+  Add MFA secret for 2FA authentication
+
+EXAMPLES
+  $ csdx config:mfa:add
+```
+
+_See code: [src/commands/config/mfa/add.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/mfa/add.ts)_
+
+## `csdx config:mfa:remove`
+
+Remove stored secret
+
+```
+USAGE
+  $ csdx config:mfa:remove [-y]
+
+FLAGS
+  -y, --yes  Skip confirmation prompt
+
+DESCRIPTION
+  Remove stored secret
+
+EXAMPLES
+  $ csdx config:mfa:remove
+
+  $ csdx config:mfa:remove -y
+```
+
+_See code: [src/commands/config/mfa/remove.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/mfa/remove.ts)_
 
 ## `csdx config:remove:base-branch`
 
@@ -432,38 +474,4 @@ EXAMPLES
 ```
 
 _See code: [src/commands/config/set/region.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/region.ts)_
-
-## `csdx config:totp:add`
-
-Add TOTP secret for 2FA authentication
-
-```
-USAGE
-  $ csdx config:totp:add
-
-DESCRIPTION
-  Add TOTP secret for 2FA authentication
-
-EXAMPLES
-  $ csdx config:totp:add
-```
-
-_See code: [src/commands/config/totp/add.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/totp/add.ts)_
-
-## `csdx config:totp:remove`
-
-Remove stored TOTP secret
-
-```
-USAGE
-  $ csdx config:totp:remove
-
-DESCRIPTION
-  Remove stored TOTP secret
-
-EXAMPLES
-  $ csdx config:totp:remove
-```
-
-_See code: [src/commands/config/totp/remove.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/totp/remove.ts)_
 <!-- commandsstop -->
