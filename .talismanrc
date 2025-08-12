@@ -45,5 +45,13 @@ fileignoreconfig:
   checksum: 63aeb5dc49a60c195a5cfcefd52aeb276f0bb5227152d44c7d6305b0dbf7bee5
 - filename: packages/contentstack-config/src/commands/config/totp/remove.ts
   checksum: 17f6576f90d3b30f37c5ef1318b188db2c70ab31e7fdedc3c94807d1eb822a8b
+- filename: packages/contentstack-config/src/services/mfa/types.ts
+  checksum: 2817710204fc907642803e514bb51df506f60a196d00548362e7178a3bf21208
+- filename: packages/contentstack-config/src/services/mfa/mfa-service.interface.ts
+  checksum: 68158e62e4e5f6d51538bed0789074a4f595f1e4b3a37e82edce6afe5b69bc30
+- filename: packages/contentstack-config/src/services/totp/types.ts
+  checksum: 3aaf2a825de2e8876590518bb6a5ae8f964d5d33188cbd44c3a8555507424a32
+- filename: packages/contentstack-config/test/unit/services/mfa.service.test.ts
+  checksum: 8ba652904813cc27d5be3c7829588c3f4b0a3b3fab50439676690fe95a1d4733
 version: "1.0"
 
