@@ -1,8 +1,14 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import LoginCommand from '../../../src/commands/auth/login';
-import { authHandler, interactive } from '../../../src/utils';
-import { configHandler, cliux } from '@contentstack/cli-utilities';
+import { authHandler, interactive, totpHandler } from '../../../src/utils';
+import { 
+  configHandler, 
+  cliux, 
+  messageHandler,
+  authHandler as oauthHandler
+} from '@contentstack/cli-utilities';
+import * as managementSDK from '@contentstack/cli-utilities';
 // @ts-ignore
 import * as conf from '../../config.json';
 
@@ -16,17 +22,39 @@ const TFATestToken = '24563992';
 describe('Login Command', () => {
   let loginStub: sinon.SinonStub;
 
-  before(function () {
-    loginStub = sinon.stub(authHandler, 'login').callsFake(function (email, password, tfaToken): Promise<any> {
+  let sandbox: sinon.SinonSandbox;
+
+  beforeEach(function () {
+    sandbox = sinon.createSandbox();
+    // Setup auth handler stub
+    loginStub = sandbox.stub(authHandler, 'login').callsFake(function (email, password, tfaToken): Promise<any> {
       if (password === credentials.password) {
         return Promise.resolve(user);
       }
       return Promise.reject({ message: 'invalid credentials' });
     });
+
+    // Setup management SDK client stub
+    const mockClient = {
+      login: sandbox.stub().resolves({ user: { email: credentials.email, authtoken: 'test-token' } }),
+      logout: sandbox.stub().resolves({}),
+      getUser: sandbox.stub().resolves({ email: credentials.email })
+    };
+    sandbox.stub(managementSDK, 'managementSDKClient').resolves(mockClient);
+    authHandler.client = mockClient;
+
+    // Setup TOTP handler stub
+    sandbox.stub(totpHandler, 'getTOTPCode').resolves(TFATestToken);
+
+    // Setup OAuth handler stub
+    sandbox.stub(oauthHandler, 'setConfigData').resolves();
+
+    // Setup message handler stub
+    sandbox.stub(messageHandler, 'parse').returns('Successfully logged in!!');
   });
 
-  after(() => {
-    loginStub.restore();
+  afterEach(() => {
+    sandbox.restore();
   });
 
   it('Login with valid credentials, should be successful', async function () {
