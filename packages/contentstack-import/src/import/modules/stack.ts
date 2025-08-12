@@ -1,9 +1,11 @@
 import { join } from 'node:path';
-import { log, formatError, fileHelper, fsUtil } from '../../utils';
+import { fileHelper, fsUtil } from '../../utils';
 import BaseClass from './base-class';
 import { ModuleClassParams } from '../../types';
+import { log, handleAndLogError } from '@contentstack/cli-utilities';
 
-export default class ImportStack extends BaseClass { // classname
+export default class ImportStack extends BaseClass {
+  // classname
   private stackSettingsPath: string;
   private envUidMapperPath: string;
   private stackSettings: Record<string, any> | null = null;
@@ -16,24 +18,28 @@ export default class ImportStack extends BaseClass { // classname
   }
 
   async start(): Promise<void> {
-    log(this.importConfig, 'Migrating stack...', 'info');
-    
-    if (fileHelper.fileExistsSync(this.envUidMapperPath)) {
-      this.envUidMapper = fsUtil.readFile(this.envUidMapperPath, true) as Record<string, string>;
-    } else {
-      throw new Error('Please run the environments migration first.');
-    }
-
     if (this.importConfig.management_token) {
-      log(this.importConfig, 'Skipping stack settings import: Operation is not supported when using a management token.', 'info');
-      log(this.importConfig, 'Successfully imported stack', 'success');
+      log.info(
+        'Skipping stack settings import: Operation is not supported when using a management token.',
+        this.importConfig.context,
+      );
       return;
     }
 
     if (fileHelper.fileExistsSync(this.stackSettingsPath)) {
       this.stackSettings = fsUtil.readFile(this.stackSettingsPath, true) as Record<string, any>;
     } else {
-      log(this.importConfig, 'No stack Found!', 'info');
+      log.info('No stack setting found!', this.importConfig.context);
+      return;
+    }
+
+    if (fileHelper.fileExistsSync(this.envUidMapperPath)) {
+      this.envUidMapper = fsUtil.readFile(this.envUidMapperPath, true) as Record<string, string>;
+    } else {
+      log.warn(
+        'Skipping stack settings import. Please run the environments migration first.',
+        this.importConfig.context,
+      );
       return;
     }
 
@@ -45,9 +51,9 @@ export default class ImportStack extends BaseClass { // classname
 
     try {
       await this.stack.addSettings(this.stackSettings);
-      log(this.importConfig, 'Successfully imported stack', 'success');
+      log.success('Successfully imported stack', this.importConfig.context);
     } catch (error) {
-      log(this.importConfig, `Stack failed to be imported! ${formatError(error)}`, 'error');
+      handleAndLogError(error, { ...this.importConfig.context });
     }
   }
-} 
+}
