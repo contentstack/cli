@@ -46,5 +46,5 @@ fileignoreconfig:
 - filename: packages/contentstack-auth/test/integration/auth.test.ts
   checksum: 96a66c141cf8f83443f967f62be210c3a95e06cf3d6c7bcb25229a4de7f05c5f
 - filename: packages/contentstack-auth/test/unit/commands/login.test.ts
-  checksum: c756628a3f814340035a97fbb0dbabdf5e20b9557e63e6a77138f661e3e234d5
+  checksum: c256cb00cbe8a5f2ded2907677f7a55b4661cd95f1145d7bbd10740702e10e5c
 version: "1.0"
