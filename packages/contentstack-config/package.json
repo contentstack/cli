@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "author": "Contentstack",
   "scripts": {
     "build": "npm run clean && npm run compile",
@@ -77,8 +77,8 @@
       "config:set:rate-limit": "RLST",
       "config:get:rate-limit": "RLGT",
       "config:remove:rate-limit": "RLRM",
-      "config:totp:add": "TFADD",
-      "config:totp:remove": "TFRM"
+      "config:mfa:add": "TFADD",
+      "config:mfa:remove": "TFRM"
     }
   },
   "repository": "contentstack/cli"
