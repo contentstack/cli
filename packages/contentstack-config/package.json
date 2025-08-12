@@ -77,8 +77,8 @@
       "config:set:rate-limit": "RLST",
       "config:get:rate-limit": "RLGT",
       "config:remove:rate-limit": "RLRM",
-      "config:totp:add": "TFADD",
-      "config:totp:remove": "TFRM"
+      "config:mfa:add": "TFADD",
+      "config:mfa:remove": "TFRM"
     }
   },
   "repository": "contentstack/cli"

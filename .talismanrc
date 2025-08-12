@@ -1,10 +1,8 @@
 fileignoreconfig:
-- filename: pnpm-lock.yaml
-  checksum: 470990d838d1c5a2ac15ab6114701897013ba801f1b26199911843ec95ef5dcd
 - filename: package-lock.json
-  checksum: abf7eaa17745ea602424c7092c9973f794b31be49dbe0fec8a9bbd3e17c6954b
+  checksum: ddcdc0f28b1df533e26c370f92810f1c877aae48ed2157f8822a1f275adad612
 - filename: pnpm-lock.yaml
-  checksum: 0ca85066946c49994a4353c9f64b8f380d5d2050194e3e57ad7ccd7faa030d36
+  checksum: c32024bc35de63368636624ef52c1b0cf6c4e1dbcfa93ced09e57f6e8ca454ca
 - filename: packages/contentstack-import-setup/test/unit/backup-handler.test.ts
   checksum: 0582d62b88834554cf12951c8690a73ef3ddbb78b82d2804d994cf4148e1ef93
 - filename: packages/contentstack-import-setup/test/config.json
@@ -37,21 +35,10 @@ fileignoreconfig:
   checksum: c09f6dc93702caff3adf689b501ec32586a16c865c1fe3a63b53ae645ca22349
 - filename: packages/contentstack-import-setup/test/unit/modules/assets.test.ts
   checksum: 449a5e3383631a6f78d1291aa3c28c91681879289398f0a933158fba5c5d5acf
-- filename: packages/contentstack-config/test/unit/commands/totp.test.ts
-  checksum: 3c9e7e43bebec8683b4af2ed2b28ed71c24cf0e7e7379aa7acceee620d2cc310
-- filename: packages/contentstack-config/test/unit/services/totp.service.test.ts
-  checksum: 68a9e64134c5972828d6c1e65d6975b6200f36a0edab3ee6e4df05445a52f941
-- filename: packages/contentstack-config/src/services/totp/totp.service.ts
-  checksum: 63aeb5dc49a60c195a5cfcefd52aeb276f0bb5227152d44c7d6305b0dbf7bee5
-- filename: packages/contentstack-config/src/commands/config/totp/remove.ts
-  checksum: 17f6576f90d3b30f37c5ef1318b188db2c70ab31e7fdedc3c94807d1eb822a8b
 - filename: packages/contentstack-config/src/services/mfa/types.ts
   checksum: 2817710204fc907642803e514bb51df506f60a196d00548362e7178a3bf21208
 - filename: packages/contentstack-config/src/services/mfa/mfa-service.interface.ts
   checksum: 68158e62e4e5f6d51538bed0789074a4f595f1e4b3a37e82edce6afe5b69bc30
-- filename: packages/contentstack-config/src/services/totp/types.ts
-  checksum: 3aaf2a825de2e8876590518bb6a5ae8f964d5d33188cbd44c3a8555507424a32
 - filename: packages/contentstack-config/test/unit/services/mfa.service.test.ts
   checksum: 8ba652904813cc27d5be3c7829588c3f4b0a3b3fab50439676690fe95a1d4733
 version: "1.0"
-

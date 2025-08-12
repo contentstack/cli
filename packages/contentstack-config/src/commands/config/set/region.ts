@@ -12,15 +12,15 @@ import {
 import { Region } from '../../../interfaces';
 import { regionHandler, interactive } from '../../../utils';
 import { Args, BaseCommand } from '../../../base-command';
-import { TOTPService } from '../../../services/totp/totp.service';
+import { MFAService } from '../../../services/mfa/mfa.service';
 
 export default class RegionSetCommand extends BaseCommand<typeof RegionSetCommand> {
   config: any;
-  private readonly totpService: TOTPService;
+  private readonly mfaService: MFAService;
 
   constructor(argv: string[], config: any) {
     super(argv, config);
-    this.totpService = new TOTPService();
+    this.mfaService = new MFAService();
   }
   static description = 'Set region for CLI';
   static flags: FlagInput = {
@@ -77,22 +77,22 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     region: args.string({ description: 'Name for the region' }),
   };
 
-  private clearTOTPIfRegionChanged(newRegionName: string) {
+  private clearMFAIfRegionChanged(newRegionName: string) {
     const currentRegion = configHandler.get('region');
     if (currentRegion && currentRegion.name !== newRegionName) {
-      this.logger.debug('Region changed, clearing TOTP configuration', { 
+      this.logger.debug('Region changed, clearing MFA configuration', { 
         oldRegion: currentRegion.name, 
         newRegion: newRegionName 
       });
       try {
-        const totpConfig = this.totpService.getStoredConfig();
-        if (totpConfig?.secret) {
-          this.totpService.removeConfig();
-          cliux.print('TOTP configuration has been removed due to region change');
+        const mfaConfig = this.mfaService.getStoredConfig();
+        if (mfaConfig?.secret) {
+          this.mfaService.removeConfig();
+          cliux.print('MFA configuration has been removed due to region change');
         }
       } catch (error) {
-        this.logger.error('Failed to remove TOTP configuration during region change', { error });
-        // Continue with region change even if TOTP removal fails
+        this.logger.error('Failed to remove MFA configuration during region change', { error });
+        // Continue with region change even if MFA removal fails
       }
     }
   }
@@ -135,7 +135,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
         }
         let customRegion: Region = { cda, cma, uiHost, name, developerHubUrl, personalizeUrl, launchHubUrl };
         customRegion = regionHandler.setCustomRegion(customRegion);
-        this.clearTOTPIfRegionChanged(name);
+        this.clearMFAIfRegionChanged(name);
         await authHandler.setConfigData('logout'); //Todo: Handle this logout flow well through logout command call
         cliux.success(`Custom region has been set to ${customRegion.name}`);
         cliux.success(`CMA HOST: ${customRegion.cma}`);
@@ -154,7 +154,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
       )
     ) {
       const regionDetails: Region = regionHandler.setRegion(selectedRegion);
-      this.clearTOTPIfRegionChanged(regionDetails.name);
+      this.clearMFAIfRegionChanged(regionDetails.name);
       await authHandler.setConfigData('logout'); //Todo: Handle this logout flow well through logout command call
       cliux.success(`Region has been set to ${regionDetails.name}`);
       cliux.success(`CDA HOST: ${regionDetails.cda}`);
