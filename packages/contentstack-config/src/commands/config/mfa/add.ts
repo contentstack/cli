@@ -1,33 +1,33 @@
 import { cliux } from '@contentstack/cli-utilities';
 import { Flags } from '@oclif/core';
 import { BaseCommand } from '../../../base-command';
-import { TOTPService } from '../../../services/totp/totp.service';
-import { TOTPError } from '../../../services/totp/types';
+import { MFAService } from '../../../services/mfa/mfa.service';
+import { MFAError } from '../../../services/mfa/mfa.types';
 
-export default class AddTOTPCommand extends BaseCommand<typeof AddTOTPCommand> {
-  static readonly description = 'Add TOTP secret for 2FA authentication';
+export default class AddMFACommand extends BaseCommand<typeof AddMFACommand> {
+  static readonly description = 'Add MFA secret for 2FA authentication';
 
   static readonly examples = [
-    '$ csdx config:totp:add',
+    '$ csdx config:mfa:add',
   ];
 
-  private readonly totpService: TOTPService;
+  private readonly mfaService: MFAService;
 
   constructor(argv: string[], config: any) {
     super(argv, config);
-    this.totpService = new TOTPService();
+    this.mfaService = new MFAService();
   }
 
   static readonly flags = {
     secret: Flags.string({
-      description: 'TOTP secret for 2FA authentication',
+      description: 'MFA secret for 2FA authentication',
       required: false,
     }),
   };
 
   async run(): Promise<void> {
     try {
-      const { flags } = await this.parse(AddTOTPCommand);
+      const { flags } = await this.parse(AddMFACommand);
       let secret = flags.secret;
 
       if (!secret) {
@@ -37,19 +37,19 @@ export default class AddTOTPCommand extends BaseCommand<typeof AddTOTPCommand> {
           message: 'Enter your secret:',
           validate: (input: string) => {
             if (!input) return 'Secret is required';
-            if (!this.totpService.validateSecret(input)) return 'Invalid TOTP secret format';
+            if (!this.mfaService.validateSecret(input)) return 'Invalid secret format';
             return true;
           },
         });
       }
 
       // Validate secret if provided via flag
-      if (!secret || !this.totpService.validateSecret(secret)) {
-        throw new TOTPError('Invalid TOTP secret format');
+      if (!secret || !this.mfaService.validateSecret(secret)) {
+        throw new MFAError('Invalid secret format');
       }
 
-      // Check if TOTP configuration already exists
-      const existingConfig = this.totpService.getStoredConfig();
+      // Check if MFA configuration already exists
+      const existingConfig = this.mfaService.getStoredConfig();
       if (existingConfig) {
         const confirm = await cliux.inquire({
           type: 'confirm',
@@ -65,20 +65,20 @@ export default class AddTOTPCommand extends BaseCommand<typeof AddTOTPCommand> {
 
       // Encrypt and store the secret
       try {
-        const encryptedSecret = this.totpService.encryptSecret(secret);
-        this.totpService.storeConfig({ secret: encryptedSecret });
+        const encryptedSecret = this.mfaService.encryptSecret(secret);
+        this.mfaService.storeConfig({ secret: encryptedSecret });
         cliux.success('Secret has been stored successfully');
       } catch (error) {
-        if (error instanceof TOTPError) {
+        if (error instanceof MFAError) {
           throw error;
         }
-        throw new TOTPError('Failed to store configuration');
+        throw new MFAError('Failed to store secret');
       }
     } catch (error) {
-      if (error instanceof TOTPError) {
+      if (error instanceof MFAError) {
         cliux.error(error.message);
       } else {
-        cliux.error('Failed to store configuration');
+        cliux.error('Failed to store secret');
       }
       throw error;
     }

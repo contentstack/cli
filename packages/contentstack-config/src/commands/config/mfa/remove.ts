@@ -1,15 +1,15 @@
 import { cliux } from '@contentstack/cli-utilities';
 import { BaseCommand } from '../../../base-command';
-import { TOTPService } from '../../../services/totp/totp.service';
-import { TOTPError } from '../../../services/totp/types';
+import { MFAService } from '../../../services/mfa/mfa.service';
+import { MFAError } from '../../../services/mfa/mfa.types';
 import { Flags } from '@oclif/core';
 
-export default class RemoveTOTPCommand extends BaseCommand<typeof RemoveTOTPCommand> {
+export default class RemoveMFACommand extends BaseCommand<typeof RemoveMFACommand> {
   static readonly description = 'Remove stored secret';
 
   static readonly examples = [
-    '$ csdx config:totp:remove',
-    '$ csdx config:totp:remove -y',
+    '$ csdx config:mfa:remove',
+    '$ csdx config:mfa:remove -y',
   ];
 
   static readonly flags = {
@@ -20,34 +20,34 @@ export default class RemoveTOTPCommand extends BaseCommand<typeof RemoveTOTPComm
     }),
   };
 
-  private readonly totpService: TOTPService;
+  private readonly mfaService: MFAService;
 
   constructor(argv: string[], config: any) {
     super(argv, config);
-    this.totpService = new TOTPService();
+    this.mfaService = new MFAService();
   }
 
   async run(): Promise<void> {
     try {
-      const { flags } = await this.parse(RemoveTOTPCommand);
+      const { flags } = await this.parse(RemoveMFACommand);
 
       let config;
       try {
-        config = this.totpService.getStoredConfig();
+        config = this.mfaService.getStoredConfig();
         if (!config?.secret) {
-          throw new TOTPError('Failed to remove configuration');
+          throw new MFAError('Failed to remove secret configuration');
         }
       } catch (error) {
-        if (error instanceof TOTPError) {
+        if (error instanceof MFAError) {
           throw error;
         }
-        throw new TOTPError('Failed to remove configuration');
+        throw new MFAError('Failed to remove secret configuration');
       }
 
       // Verify the configuration is valid
       let isCorrupted = false;
       try {
-        this.totpService.decryptSecret(config.secret);
+        this.mfaService.decryptSecret(config.secret);
       } catch (error) {
         this.logger.debug('Failed to decrypt secret', { error });
         isCorrupted = true;
@@ -73,17 +73,17 @@ export default class RemoveTOTPCommand extends BaseCommand<typeof RemoveTOTPComm
       }
 
       try {
-        this.totpService.removeConfig();
+        this.mfaService.removeConfig();
         cliux.success('Secret has been removed successfully');
       } catch (error) {
         this.logger.error('Failed to remove secret configuration', { error });
-        throw new TOTPError('Failed to remove configuration');
+        throw new MFAError('Failed to remove secret configuration');
       }
     } catch (error) {
-      if (error instanceof TOTPError) {
+      if (error instanceof MFAError) {
         cliux.error(error.message);
       } else {
-        cliux.error('Failed to remove configuration');
+        cliux.error('Failed to remove secret configuration');
       }
       throw error;
     }

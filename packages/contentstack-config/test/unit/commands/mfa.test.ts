@@ -2,10 +2,10 @@ import { expect } from 'chai';
 import { configHandler, cliux, NodeCrypto } from '@contentstack/cli-utilities';
 import { authenticator } from 'otplib';
 import * as sinon from 'sinon';
-import TotpAddCommand from '../../../src/commands/config/totp/add';
-import TotpRemoveCommand from '../../../src/commands/config/totp/remove';
+import MFAAddCommand from '../../../src/commands/config/mfa/add';
+import MFARemoveCommand from '../../../src/commands/config/mfa/remove';
 
-describe('TOTP Commands', function () {
+describe('MFA Commands', function () {
   let inquireStub: sinon.SinonStub;
   let configStub: {
     get: sinon.SinonStub;
@@ -36,7 +36,7 @@ describe('TOTP Commands', function () {
     sinon.restore();
   });
 
-  describe('config:totp:add', function () {
+  describe('config:mfa:add', function () {
     const validSecret = 'JBSWY3DPEHPK3PXP'; // Example valid Base32 secret
     const encryptedSecret = 'encrypted-secret|iv';
     const validSecrets = [
@@ -56,60 +56,51 @@ describe('TOTP Commands', function () {
       'JBSWY3DPEHPK3PXP ', // Trailing space
     ];
 
-    it('should add TOTP configuration successfully with last_updated', async function () {
+    it('should add MFA configuration successfully', async function () {
       configStub.get.returns(null);
       encrypterStub.encrypt.returns(encryptedSecret);
       authenticatorStub.generate.returns('123456');
       authenticatorStub.check.returns(true);
       inquireStub.returns(Promise.resolve(true));
 
-      const now = new Date();
-      const clock = sinon.useFakeTimers(now.getTime());
-
-      await TotpAddCommand.run(['--secret', validSecret]);
+      await MFAAddCommand.run(['--secret', validSecret]);
       expect(configStub.set.calledOnce).to.be.true;
-      expect(configStub.set.firstCall.args[0]).to.equal('totp');
-      const storedConfig = configStub.set.firstCall.args[1];
-      expect(storedConfig).to.have.property('secret', encryptedSecret);
-      expect(storedConfig).to.have.property('last_updated');
-      expect(new Date(storedConfig.last_updated).getTime()).to.equal(now.getTime());
-
-      clock.restore();
+      expect(configStub.set.firstCall.args[0]).to.equal('mfa');
+      expect(configStub.set.firstCall.args[1]).to.deep.include({
+        secret: encryptedSecret,
+      });
     });
 
     it('should cancel when user declines to overwrite existing config', async function () {
-      const existingConfig = {
-        secret: 'existing-secret',
-        last_updated: new Date().toISOString()
-      };
-      configStub.get.returns(existingConfig);
+      configStub.get.returns({ secret: 'existing-secret' });
       inquireStub.returns(Promise.resolve(false));
       authenticatorStub.check.returns(true);
       authenticatorStub.generate.returns('123456');
 
-      await TotpAddCommand.run(['--secret', validSecret]);
+      await MFAAddCommand.run(['--secret', validSecret]);
       expect(configStub.set.called).to.be.false;
+      expect(inquireStub.calledOnce).to.be.true;
       expect(inquireStub.calledOnce).to.be.true;
     });
 
     it('should fail with invalid secret format', async function () {
       try {
-        await TotpAddCommand.run(['--secret', 'invalid!@#']);
+        await MFAAddCommand.run(['--secret', 'invalid!@#']);
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.contain('Invalid TOTP secret format');
+        expect(err.message).to.contain('Invalid secret format');
       }
     });
 
     it('should fail when secret cannot generate valid codes', async function () {
       authenticatorStub.check.returns(false);
       try {
-        await TotpAddCommand.run(['--secret', validSecret]);
+        await MFAAddCommand.run(['--secret', validSecret]);
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.contain('Invalid TOTP secret format');
+        expect(err.message).to.contain('Invalid secret format');
       }
     });
 
@@ -120,11 +111,11 @@ describe('TOTP Commands', function () {
       encrypterStub.encrypt.throws(new Error('Encryption failed'));
 
       try {
-        await TotpAddCommand.run(['--secret', validSecret]);
+        await MFAAddCommand.run(['--secret', validSecret]);
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.contain('Failed to store configuration');
+        expect(err.message).to.contain('Failed to encrypt secret');
       }
     });
 
@@ -136,7 +127,7 @@ describe('TOTP Commands', function () {
         authenticatorStub.generate.returns('123456');
         encrypterStub.encrypt.returns(encryptedSecret);
 
-        await TotpAddCommand.run(['--secret', secret]);
+        await MFAAddCommand.run(['--secret', secret]);
         expect(configStub.set.calledOnce).to.be.true;
       });
     });
@@ -145,32 +136,32 @@ describe('TOTP Commands', function () {
     invalidSecrets.forEach((secret) => {
       it(`should reject invalid secret format: ${secret}`, async function () {
         try {
-          await TotpAddCommand.run(['--secret', secret]);
+          await MFAAddCommand.run(['--secret', secret]);
           expect.fail('Should have thrown an error');
         } catch (error: unknown) {
-        const err = error as Error;
-          expect(err.message).to.contain('Invalid TOTP secret format');
+          const err = error as Error;
+          expect(err.message).to.contain('Invalid secret format');
         }
       });
     });
 
     it('should handle missing secret flag', async function () {
       try {
-        await TotpAddCommand.run([]);
+        await MFAAddCommand.run([]);
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.contain('Invalid TOTP secret format');
+        expect(err.message).to.contain('Invalid secret format');
       }
     });
 
     it('should handle empty secret value', async function () {
       try {
-        await TotpAddCommand.run(['--secret', '']);
+        await MFAAddCommand.run(['--secret', '']);
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.contain('Invalid TOTP secret format');
+        expect(err.message).to.contain('Invalid secret format');
       }
     });
 
@@ -181,7 +172,7 @@ describe('TOTP Commands', function () {
       authenticatorStub.generate.returns(testCode);
       encrypterStub.encrypt.returns(encryptedSecret);
 
-      await TotpAddCommand.run(['--secret', validSecret]);
+      await MFAAddCommand.run(['--secret', validSecret]);
       expect(authenticatorStub.generate.calledWith(validSecret)).to.be.true;
       expect(configStub.set.calledOnce).to.be.true;
     });
@@ -193,37 +184,33 @@ describe('TOTP Commands', function () {
       authenticatorStub.generate.returns('123456');
       inquireStub.returns(Promise.resolve(true));
 
-      await TotpAddCommand.run(['--secret', validSecret]);
+      await MFAAddCommand.run(['--secret', validSecret]);
       expect(configStub.set.calledOnce).to.be.true;
     });
   });
 
-  describe('config:totp:remove', function () {
+  describe('config:mfa:remove', function () {
     const encryptedSecret = 'encrypted-secret|iv';
     const decryptedSecret = 'JBSWY3DPEHPK3PXP';
 
-    it('should remove TOTP configuration successfully', async function () {
-      const config = {
-        secret: encryptedSecret,
-        last_updated: new Date().toISOString()
-      };
-      configStub.get.returns(config);
+    it('should remove MFA configuration successfully', async function () {
+      configStub.get.returns({ secret: encryptedSecret });
       encrypterStub.decrypt.returns(decryptedSecret);
       inquireStub.returns(Promise.resolve(true));
 
-      await TotpRemoveCommand.run([]);
+      await MFARemoveCommand.run([]);
       expect(configStub.delete.called).to.be.true;
-      expect(configStub.delete.firstCall.args[0]).to.equal('totp');
+      expect(configStub.delete.firstCall.args[0]).to.equal('mfa');
     });
 
     it('should fail when no configuration exists', async function () {
       configStub.get.returns(null);
       try {
-        await TotpRemoveCommand.run([]);
+        await MFARemoveCommand.run([]);
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.equal('Failed to remove configuration');
+        expect(err.message).to.equal('Failed to remove secret configuration');
         expect(configStub.delete.called).to.be.false;
       }
     });
@@ -233,7 +220,7 @@ describe('TOTP Commands', function () {
       encrypterStub.decrypt.throws(new Error('Decryption failed'));
       inquireStub.returns(Promise.resolve(false));
 
-      await TotpRemoveCommand.run([]);
+      await MFARemoveCommand.run([]);
       expect(configStub.delete.called).to.be.false;
     });
 
@@ -242,70 +229,70 @@ describe('TOTP Commands', function () {
       encrypterStub.decrypt.returns(decryptedSecret);
       inquireStub.returns(Promise.resolve(false));
 
-      await TotpRemoveCommand.run([]);
+      await MFARemoveCommand.run([]);
       expect(configStub.delete.called).to.be.false;
     });
 
     it('should remove configuration without confirmation when forced', async function () {
       configStub.get.returns({ secret: encryptedSecret });
-      await TotpRemoveCommand.run(['-y']);
+      await MFARemoveCommand.run(['-y']);
       expect(configStub.delete.called).to.be.true;
-      expect(configStub.delete.firstCall.args[0]).to.equal('totp');
+      expect(configStub.delete.firstCall.args[0]).to.equal('mfa');
     });
 
     it('should handle deletion errors', async function () {
       configStub.get.returns({ secret: encryptedSecret });
       configStub.delete.throws(new Error('Delete failed'));
       try {
-        await TotpRemoveCommand.run(['-y']);
+        await MFARemoveCommand.run(['-y']);
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.contain('Failed to remove configuration');
+        expect(err.message).to.contain('Failed to remove secret configuration');
       }
     });
 
     it('should handle invalid config format', async function () {
       configStub.get.returns({ invalid: 'config' });
       try {
-        await TotpRemoveCommand.run([]);
+        await MFARemoveCommand.run([]);
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.contain('Failed to remove configuration');
+        expect(err.message).to.contain('Failed to remove secret configuration');
       }
     });
 
     it('should handle null secret in config', async function () {
       configStub.get.returns({ secret: null });
       try {
-        await TotpRemoveCommand.run([]);
+        await MFARemoveCommand.run([]);
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.contain('Failed to remove configuration');
+        expect(err.message).to.contain('Failed to remove secret configuration');
       }
     });
 
     it('should handle undefined secret in config', async function () {
       configStub.get.returns({ secret: undefined });
       try {
-        await TotpRemoveCommand.run([]);
+        await MFARemoveCommand.run([]);
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.contain('Failed to remove configuration');
+        expect(err.message).to.contain('Failed to remove secret configuration');
       }
     });
 
     it('should handle empty string secret in config', async function () {
       configStub.get.returns({ secret: '' });
       try {
-        await TotpRemoveCommand.run([]);
+        await MFARemoveCommand.run([]);
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.contain('Failed to remove configuration');
+        expect(err.message).to.contain('Failed to remove secret configuration');
       }
     });
 
@@ -318,7 +305,7 @@ describe('TOTP Commands', function () {
       // Second prompt: "Are you sure?"
       inquireStub.onSecondCall().returns(Promise.resolve(true));
 
-      await TotpRemoveCommand.run([]);
+      await MFARemoveCommand.run([]);
       expect(configStub.delete.called).to.be.true;
     });
 
@@ -326,18 +313,18 @@ describe('TOTP Commands', function () {
       configStub.get.returns({ secret: encryptedSecret });
       encrypterStub.decrypt.throws(new Error('Decryption failed'));
 
-      await TotpRemoveCommand.run(['-y']);
+      await MFARemoveCommand.run(['-y']);
       expect(configStub.delete.called).to.be.true;
     });
 
     it('should handle config.get throwing an error', async function () {
       configStub.get.throws(new Error('Failed to read config'));
       try {
-        await TotpRemoveCommand.run([]);
+        await MFARemoveCommand.run([]);
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
-        expect(err.message).to.contain('Failed to remove configuration');
+        expect(err.message).to.contain('Failed to read configuration');
       }
     });
 
@@ -349,13 +336,13 @@ describe('TOTP Commands', function () {
       encrypterStub.decrypt.onSecondCall().returns(decryptedSecret);
       inquireStub.returns(Promise.resolve(true));
 
-      await TotpRemoveCommand.run([]);
+      await MFARemoveCommand.run([]);
       expect(configStub.delete.called).to.be.true;
     });
 
     it('should handle invalid flags', async function () {
       try {
-        await TotpRemoveCommand.run(['--invalid-flag']);
+        await MFARemoveCommand.run(['--invalid-flag']);
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;

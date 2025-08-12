@@ -1,9 +1,9 @@
 import { configHandler, NodeCrypto, log } from '@contentstack/cli-utilities';
 import { authenticator } from 'otplib';
-import { TOTPConfig, TOTPError } from './totp.types';
-import { ITOTPService } from './totp-service.interface';
+import { MFAConfig, MFAError } from './mfa.types';
+import { IMFAService } from './mfa-service.interface';
 
-export class TOTPService implements ITOTPService {
+export class MFAService implements IMFAService {
   private readonly encrypter: NodeCrypto;
   private readonly logger = log;
 
@@ -28,15 +28,19 @@ export class TOTPService implements ITOTPService {
       return false;
     }
 
-    const paddingRegex = /=+$/;
+    // Check padding - must be 0, 2, 4, 5, 6, or 7 equals signs
+    const paddingRegex = /=*$/;
     const paddingMatch = paddingRegex.exec(normalizedSecret);
     if (paddingMatch) {
       const paddingLength = paddingMatch[0].length;
-      const unpadded = normalizedSecret.slice(0, -paddingLength);
-      if (paddingLength > 6 || unpadded.length % 8 !== 0) {
+      if (paddingLength === 1 || paddingLength === 3 || paddingLength > 7) {
         return false;
       }
-    } else if (normalizedSecret.length % 8 !== 0) {
+    }
+
+    // Check that the length without padding is a multiple of 8
+    const unpaddedLength = normalizedSecret.replace(/=+$/, '').length;
+    if (unpaddedLength % 8 !== 0) {
       return false;
     }
 
@@ -54,7 +58,7 @@ export class TOTPService implements ITOTPService {
       return this.encrypter.encrypt(secret.trim().toUpperCase());
     } catch (error) {
       this.logger.error('Secret encryption failed', { error });
-      throw new TOTPError('Failed to encrypt secret');
+      throw new MFAError('Failed to encrypt secret');
     }
   }
 
@@ -63,53 +67,52 @@ export class TOTPService implements ITOTPService {
       return this.encrypter.decrypt(encryptedSecret);
     } catch (error) {
       this.logger.error('Secret decryption failed', { error });
-      throw new TOTPError('Failed to decrypt secret');
+      throw new MFAError('Failed to decrypt secret');
     }
   }
 
-  getStoredConfig(): TOTPConfig | null {
+  getStoredConfig(): MFAConfig | null {
     try {
-      const config = configHandler.get('totp');
-      return config?.secret ? config as TOTPConfig : null;
+      const config = configHandler.get('mfa');
+      return config?.secret ? config as MFAConfig : null;
     } catch (error) {
       this.logger.error('Failed to read config', { error });
-      throw new TOTPError('Failed to read configuration');
+      throw new MFAError('Failed to read configuration');
     }
   }
 
-  storeConfig(config: Partial<TOTPConfig>): void {
+  storeConfig(config: Partial<MFAConfig>): void {
     try {
-      const updatedConfig: TOTPConfig = {
-        ...config,
-        last_updated: new Date().toISOString(),
-        secret: config.secret!
+      const updatedConfig: MFAConfig = {
+        secret: config.secret!,
+        last_updated: new Date().toISOString()
       };
-      configHandler.set('totp', updatedConfig);
+      configHandler.set('mfa', updatedConfig);
     } catch (error) {
       this.logger.error('Failed to store config', { error });
-      throw new TOTPError('Failed to store configuration');
+      throw new MFAError('Failed to store configuration');
     }
   }
 
   removeConfig(): void {
     try {
-      configHandler.delete('totp');
+      configHandler.delete('mfa');
     } catch (error) {
       this.logger.error('Failed to remove config', { error });
-      throw new TOTPError('Failed to remove configuration');
+      throw new MFAError('Failed to remove configuration');
     }
   }
 
-  generateTOTP(secret: string): string {
+  generateMFA(secret: string): string {
     try {
       return authenticator.generate(secret.trim().toUpperCase());
     } catch (error) {
       this.logger.error('Failed to generate code', { error });
-      throw new TOTPError('Failed to generate code');
+      throw new MFAError('Failed to generate code');
     }
   }
 
-  verifyTOTP(secret: string, token: string): boolean {
+  verifyMFA(secret: string, token: string): boolean {
     try {
       return authenticator.check(token, secret.trim().toUpperCase());
     } catch (error) {
