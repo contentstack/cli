@@ -5,7 +5,7 @@ import { continueBootstrapCommand } from '../bootstrap/interactive';
 import { AppConfig } from '../config';
 import messageHandler from '../messages';
 
-interface EnviornmentVariables {
+interface EnvironmentVariables {
   api_key: string;
   deliveryToken: string;
   environment: string;
@@ -101,9 +101,9 @@ export const setupEnvironments = async (
         try {
           const tokenResult = !managementToken
             ? await managementAPIClient
-                .stack({ api_key })
-                .deliveryToken()
-                .create(body, livePreviewEnabled ? { create_with_preview_token: true } : {})
+              .stack({ api_key })
+              .deliveryToken()
+              .create(body, livePreviewEnabled ? { create_with_preview_token: true } : {})
             : {};
           if (livePreviewEnabled && !tokenResult.preview_token && !managementToken) {
             cliux.print(
@@ -117,7 +117,7 @@ export const setupEnvironments = async (
             }
           }
           if (tokenResult.token) {
-            const environmentVariables: EnviornmentVariables = {
+            const environmentVariables: EnvironmentVariables = {
               api_key,
               deliveryToken: tokenResult.token ?? '',
               environment: environment.name,
@@ -135,7 +135,6 @@ export const setupEnvironments = async (
             cliux.print(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_TOKEN_FOR_ENV', environment.name));
           }
         } catch (error) {
-          console.log('error', error);
           cliux.print(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_ENV_FILE_FOR_ENV', environment.name));
         }
       } else {
@@ -169,7 +168,7 @@ const writeEnvFile = (content: string, fileName: string) => {
 
 const envFileHandler = async (
   appConfigKey: string,
-  environmentVariables: EnviornmentVariables,
+  environmentVariables: EnvironmentVariables,
   clonedDirectory: string,
   region: any,
   livePreviewEnabled: boolean,
@@ -193,115 +192,120 @@ const envFileHandler = async (
   }
   const production = environmentVariables.environment === 'production' ? true : false;
   switch (appConfigKey) {
+    case 'kickstart-next':
+    case 'kickstart-next-ssr':
+    case 'kickstart-next-ssg':
+    case 'kickstart-next-middleware':
+    case 'kickstart-next-graphql':
+      fileName = `.env`;
+      filePath = pathValidator(path.join(sanitizePath(clonedDirectory), sanitizePath(fileName)));
+      content = `NEXT_PUBLIC_CONTENTSTACK_API_KEY=${environmentVariables.api_key
+        }\nNEXT_PUBLIC_CONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken
+        }\nNEXT_PUBLIC_CONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token || ''
+        }\nNEXT_PUBLIC_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment
+        }\nNEXT_PUBLIC_CONTENTSTACK_REGION=${regionName
+        }\nNEXT_PUBLIC_CONTENTSTACK_PREVIEW=${livePreviewEnabled ? 'true' : 'false'
+        }\nNEXT_PUBLIC_CONTENTSTACK_CONTENT_DELIVERY = ${cdnHost
+        }\nNEXT_PUBLIC_CONTENTSTACK_CONTENT_APPLICATION = ${appHost
+        }\nNEXT_PUBLIC_CONTENTSTACK_PREVIEW_HOST = ${previewHost};`;
+
+      result = await writeEnvFile(content, filePath);
+      break;
+
+    case 'kickstart-nuxt':
+    case 'kickstart-nuxt-ssr':
+      fileName = `.env`;
+      filePath = pathValidator(path.join(sanitizePath(clonedDirectory), sanitizePath(fileName)));
+      content = `NUXT_CONTENTSTACK_API_KEY=${environmentVariables.api_key
+        }\nNUXT_CONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken
+        }\nNUXT_CONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token || ''
+        }\nNUXT_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment
+        }\nNUXT_CONTENTSTACK_REGION=${region.name
+        }\nNUXT_CONTENTSTACK_PREVIEW=${livePreviewEnabled ? 'true' : 'false'
+        }\nNUXT_CONTENTSTACK_CONTENT_DELIVERY = ${cdnHost
+        }\nNUXT_CONTENTSTACK_CONTENT_APPLICATION = ${appHost
+        }\nNUXT_CONTENTSTACK_PREVIEW_HOST = ${previewHost};`;
+      result = await writeEnvFile(content, filePath);
+      break;
+
     case 'reactjs':
     case 'reactjs-starter':
       fileName = `.env.${environmentVariables.environment}.local`;
       filePath = pathValidator(path.join(sanitizePath(clonedDirectory), sanitizePath(fileName)));
-      content = `REACT_APP_CONTENTSTACK_API_KEY=${
-        environmentVariables.api_key
-      }\nREACT_APP_CONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}${
-        livePreviewEnabled
-          ? `\nREACT_APP_CONTENTSTACK_PREVIEW_TOKEN=${
-              environmentVariables.preview_token || `''`
-            }\nREACT_APP_CONTENTSTACK_PREVIEW_HOST=${previewHost}\nREACT_APP_CONTENTSTACK_APP_HOST=${appHost}\n`
+      content = `REACT_APP_CONTENTSTACK_API_KEY=${environmentVariables.api_key
+        }\nREACT_APP_CONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}${livePreviewEnabled
+          ? `\nREACT_APP_CONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token || `''`
+          }\nREACT_APP_CONTENTSTACK_PREVIEW_HOST=${previewHost}\nREACT_APP_CONTENTSTACK_APP_HOST=${appHost}\n`
           : '\n'
-      }\nREACT_APP_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\n${
-        customHost ? '\nREACT_APP_CONTENTSTACK_API_HOST=' + customHost : ''
-      }${
-        !isUSRegion && !customHost ? '\nREACT_APP_CONTENTSTACK_REGION=' + region.name : ''
-      }\nSKIP_PREFLIGHT_CHECK=true\nREACT_APP_CONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`;
+        }\nREACT_APP_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\n${customHost ? '\nREACT_APP_CONTENTSTACK_API_HOST=' + customHost : ''
+        }${!isUSRegion && !customHost ? '\nREACT_APP_CONTENTSTACK_REGION=' + region.name : ''
+        }\nSKIP_PREFLIGHT_CHECK=true\nREACT_APP_CONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`;
       result = await writeEnvFile(content, filePath);
       break;
     case 'nextjs':
     case 'nextjs-starter':
       fileName = `.env.${environmentVariables.environment}.local`;
       filePath = pathValidator(path.join(sanitizePath(clonedDirectory), sanitizePath(fileName)));
-      content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${
-        environmentVariables.deliveryToken
-      }\n${
-        livePreviewEnabled
-          ? `\nCONTENTSTACK_PREVIEW_TOKEN=${
-              environmentVariables.preview_token || `''`
-            }\nCONTENTSTACK_PREVIEW_HOST=${previewHost}\nCONTENTSTACK_APP_HOST=${appHost}\n`
+      content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken
+        }\n${livePreviewEnabled
+          ? `\nCONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token || `''`
+          }\nCONTENTSTACK_PREVIEW_HOST=${previewHost}\nCONTENTSTACK_APP_HOST=${appHost}\n`
           : '\n'
-      }CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\nCONTENTSTACK_API_HOST=${
-        customHost ? customHost : managementAPIHost
-      }${
-        !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
-      }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\nCONTENTSTACK_LIVE_EDIT_TAGS=false`;
+        }CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\nCONTENTSTACK_API_HOST=${customHost ? customHost : managementAPIHost
+        }${!isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
+        }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\nCONTENTSTACK_LIVE_EDIT_TAGS=false`;
       result = await writeEnvFile(content, filePath);
       break;
     case 'compass-app':
       fileName = '.env';
       filePath = pathValidator(path.join(sanitizePath(clonedDirectory), sanitizePath(fileName)));
-      content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${
-        environmentVariables.deliveryToken
-      }\nCONTENTSTACK_BRANCH=main${
-        livePreviewEnabled
-          ? `\nCONTENTSTACK_PREVIEW_TOKEN=${
-              environmentVariables.preview_token || `''`
-            }\nCONTENTSTACK_PREVIEW_HOST=${previewHost}\n`
+      content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken
+        }\nCONTENTSTACK_BRANCH=main${livePreviewEnabled
+          ? `\nCONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token || `''`
+          }\nCONTENTSTACK_PREVIEW_HOST=${previewHost}\n`
           : '\n'
-      }CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${
-        !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
-      }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\nCONTENTSTACK_LIVE_EDIT_TAGS=false\nCONTENTSTACK_API_HOST=${
-        customHost ? customHost : managementAPIHost
-      }${
-        !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
-      }\nCONTENTSTACK_APP_HOST=${appHost}\nCONTENTSTACK_MANAGEMENT_TOKEN=${
-        managementTokenResult.uid
-      }\nCONTENTSTACK_HOST=${cdnHost}`;
+        }CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${!isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
+        }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\nCONTENTSTACK_LIVE_EDIT_TAGS=false\nCONTENTSTACK_API_HOST=${customHost ? customHost : managementAPIHost
+        }${!isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
+        }\nCONTENTSTACK_APP_HOST=${appHost}\nCONTENTSTACK_MANAGEMENT_TOKEN=${managementTokenResult.uid
+        }\nCONTENTSTACK_HOST=${cdnHost}`;
       result = await writeEnvFile(content, filePath);
       break;
     case 'gatsby':
     case 'gatsby-starter':
       fileName = `.env.${environmentVariables.environment}`;
       filePath = pathValidator(path.join(sanitizePath(clonedDirectory), sanitizePath(fileName)));
-      content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${
-        environmentVariables.deliveryToken
-      }\n${
-        livePreviewEnabled
-          ? `\nCONTENTSTACK_PREVIEW_TOKEN=${
-              environmentVariables.preview_token || `''`
-            }\nCONTENTSTACK_PREVIEW_HOST=${previewHost}\nCONTENTSTACK_APP_HOST=${appHost}\n`
+      content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken
+        }\n${livePreviewEnabled
+          ? `\nCONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token || `''`
+          }\nCONTENTSTACK_PREVIEW_HOST=${previewHost}\nCONTENTSTACK_APP_HOST=${appHost}\n`
           : '\n'
-      }\nCONTENTSTACK_ENVIRONMENT=${
-        environmentVariables.environment
-      }\nCONTENTSTACK_API_HOST=${managementAPIHost}\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`;
+        }\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment
+        }\nCONTENTSTACK_API_HOST=${managementAPIHost}\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`;
       result = await writeEnvFile(content, filePath);
       break;
     case 'angular':
-      content = `export const environment = { \n\tproduction:${
-        environmentVariables.environment === 'production' ? true : false
-      }, \n\tconfig : { \n\t\tapi_key: '${environmentVariables.api_key}', \n\t\tdelivery_token: '${
-        environmentVariables.deliveryToken
-      }',\n${
-        livePreviewEnabled
-          ? `\n\tpreivew_token:'${
-              environmentVariables.preview_token || `''`
-            }'\n\tpreview_host:'${previewHost}'\n\tapp_host:'${appHost}'\n`
+      content = `export const environment = { \n\tproduction:${environmentVariables.environment === 'production' ? true : false
+        }, \n\tconfig : { \n\t\tapi_key: '${environmentVariables.api_key}', \n\t\tdelivery_token: '${environmentVariables.deliveryToken
+        }',\n${livePreviewEnabled
+          ? `\n\tpreivew_token:'${environmentVariables.preview_token || `''`
+          }'\n\tpreview_host:'${previewHost}'\n\tapp_host:'${appHost}'\n`
           : '\n'
-      },\n\t\tenvironment: '${environmentVariables.environment}'${
-        !isUSRegion && !customHost ? `,\n\t\tregion: '${region.name}'` : ''
-      } \n\t } \n };`;
+        },\n\t\tenvironment: '${environmentVariables.environment}'${!isUSRegion && !customHost ? `,\n\t\tregion: '${region.name}'` : ''
+        } \n\t } \n };`;
       fileName = `.env${environmentVariables.environment === 'production' ? '.prod' : ''}`;
       filePath = pathValidator(path.join(sanitizePath(clonedDirectory), 'src', 'environments', sanitizePath(fileName)));
       result = await writeEnvFile(content, filePath);
       break;
     case 'angular-starter':
-      content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${
-        environmentVariables.deliveryToken
-      }\n${
-        livePreviewEnabled
-          ? `\nCONTENTSTACK_PREVIEW_TOKEN=${
-              environmentVariables.preview_token || `''`
-            }\nCONTENTSTACK_PREVIEW_HOST=${previewHost}\nCONTENTSTACK_APP_HOST=${appHost}\n`
+      content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken
+        }\n${livePreviewEnabled
+          ? `\nCONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token || `''`
+          }\nCONTENTSTACK_PREVIEW_HOST=${previewHost}\nCONTENTSTACK_APP_HOST=${appHost}\n`
           : '\n'
-      }CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\nCONTENTSTACK_API_HOST=${
-        customHost ? customHost : managementAPIHost
-      }${
-        !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
-      }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\nCONTENTSTACK_LIVE_EDIT_TAGS=false`;
+        }CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\nCONTENTSTACK_API_HOST=${customHost ? customHost : managementAPIHost
+        }${!isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
+        }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\nCONTENTSTACK_LIVE_EDIT_TAGS=false`;
       fileName = `.env${environmentVariables.environment === 'production' ? '.prod' : ''}`;
       filePath = pathValidator(path.join(sanitizePath(clonedDirectory), sanitizePath(fileName)));
       result = await writeEnvFile(content, filePath);
@@ -313,37 +317,27 @@ const envFileHandler = async (
       fileName = production ? '.env.production' : '.env';
       filePath = pathValidator(path.join(sanitizePath(clonedDirectory), sanitizePath(fileName)));
       // Note: Stencil app needs all the env variables, even if they are not having values otherwise the rollup does not work properly and throws process in undefined error.
-      content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${
-        environmentVariables.deliveryToken
-      }\n${
-        livePreviewEnabled
-          ? `\nCONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token || `''`}\nCONTENTSTACK_PREVIEW_HOST=${
-              customHost ?? previewHost
-            }\nCONTENTSTACK_APP_HOST=${appHost}`
+      content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken
+        }\n${livePreviewEnabled
+          ? `\nCONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token || `''`}\nCONTENTSTACK_PREVIEW_HOST=${customHost ?? previewHost
+          }\nCONTENTSTACK_APP_HOST=${appHost}`
           : '\n'
-      }\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${
-        !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
-      }\nCONTENTSTACK_API_HOST=${
-        customHost ? customHost : managementAPIHost
-      }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\n\nCONTENTSTACK_LIVE_EDIT_TAGS=false`;
+        }\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${!isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
+        }\nCONTENTSTACK_API_HOST=${customHost ? customHost : managementAPIHost
+        }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\n\nCONTENTSTACK_LIVE_EDIT_TAGS=false`;
       result = await writeEnvFile(content, filePath);
       break;
     case 'vue-starter':
       fileName = '.env';
       filePath = pathValidator(path.join(sanitizePath(clonedDirectory), sanitizePath(fileName)));
-      content = `VUE_APP_CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nVUE_APP_CONTENTSTACK_DELIVERY_TOKEN=${
-        environmentVariables.deliveryToken
-      }\n${
-        livePreviewEnabled
-          ? `\nVUE_APP_CONTENTSTACK_PREVIEW_TOKEN=${
-              environmentVariables.preview_token || `''`
-            }\nVUE_APP_CONTENTSTACK_PREVIEW_HOST=${previewHost}\nVUE_APP_CONTENTSTACK_APP_HOST=${appHost}\n`
+      content = `VUE_APP_CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nVUE_APP_CONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken
+        }\n${livePreviewEnabled
+          ? `\nVUE_APP_CONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token || `''`
+          }\nVUE_APP_CONTENTSTACK_PREVIEW_HOST=${previewHost}\nVUE_APP_CONTENTSTACK_APP_HOST=${appHost}\n`
           : '\n'
-      }\nVUE_APP_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${
-        customHost ? '\nVUE_APP_CONTENTSTACK_API_HOST=' + customHost : ''
-      }${
-        !isUSRegion && !customHost ? '\nVUE_APP_CONTENTSTACK_REGION=' + region.name : ''
-      }\nVUE_APP_CONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`;
+        }\nVUE_APP_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${customHost ? '\nVUE_APP_CONTENTSTACK_API_HOST=' + customHost : ''
+        }${!isUSRegion && !customHost ? '\nVUE_APP_CONTENTSTACK_REGION=' + region.name : ''
+        }\nVUE_APP_CONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`;
       result = await writeEnvFile(content, filePath);
       break;
     default:
