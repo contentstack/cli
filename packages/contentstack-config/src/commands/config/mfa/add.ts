@@ -1,5 +1,4 @@
 import { cliux } from '@contentstack/cli-utilities';
-import { Flags } from '@oclif/core';
 import { BaseCommand } from '../../../base-command';
 import { MFAService } from '../../../services/mfa/mfa.service';
 import { MFAError } from '../../../services/mfa/mfa.types';
@@ -18,32 +17,38 @@ export default class AddMFACommand extends BaseCommand<typeof AddMFACommand> {
     this.mfaService = new MFAService();
   }
 
-  static readonly flags = {
-    secret: Flags.string({
-      description: 'MFA secret for 2FA authentication',
-      required: false,
-    }),
-  };
+  static readonly flags = {};
 
   async run(): Promise<void> {
     try {
-      const { flags } = await this.parse(AddMFACommand);
-      let secret = flags.secret;
-
-      if (!secret) {
-        secret = await cliux.inquire({
-          type: 'password',
-          name: 'secret',
-          message: 'Enter your secret:',
-          validate: (input: string) => {
-            if (!input) return 'Secret is required';
-            if (!this.mfaService.validateSecret(input)) return 'Invalid secret format';
-            return true;
-          },
-        });
+      // Check for environment variable first
+      const envSecret = process.env.CONTENTSTACK_MFA_SECRET;
+      if (envSecret) {
+        if (!this.mfaService.validateSecret(envSecret)) {
+          throw new MFAError('Invalid secret format in environment variable');
+        }
+        cliux.print('Using MFA secret from environment variable');
+        return;
       }
 
-      // Validate secret if provided via flag
+      // If no environment variable, prompt for manual input
+      const secret = await cliux.inquire<string>({
+        type: 'password',
+        name: 'secret',
+        message: 'Enter your secret (or set CONTENTSTACK_MFA_SECRET environment variable):',
+        validate: (input: string) => {
+          if (!input) {
+            cliux.error('Secret is required');
+            process.exit(1);
+          }
+          if (!this.mfaService.validateSecret(input)) {
+            cliux.error('Invalid secret format');
+            process.exit(1);
+          }
+          return true;
+        },
+      });
+
       if (!secret || !this.mfaService.validateSecret(secret)) {
         throw new MFAError('Invalid secret format');
       }
@@ -51,7 +56,7 @@ export default class AddMFACommand extends BaseCommand<typeof AddMFACommand> {
       // Check if MFA configuration already exists
       const existingConfig = this.mfaService.getStoredConfig();
       if (existingConfig) {
-        const confirm = await cliux.inquire({
+        const confirm = await cliux.inquire<boolean>({
           type: 'confirm',
           name: 'confirm',
           message: 'Secret configuration already exists. Do you want to overwrite it?',

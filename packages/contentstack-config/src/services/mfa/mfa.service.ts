@@ -73,6 +73,17 @@ export class MFAService implements IMFAService {
 
   getStoredConfig(): MFAConfig | null {
     try {
+      // First check environment variable
+      const envSecret = process.env.CONTENTSTACK_MFA_SECRET;
+      if (envSecret) {
+        this.logger.debug('Found MFA secret in environment variable');
+        return {
+          secret: envSecret,
+          last_updated: new Date().toISOString()
+        };
+      }
+
+      // Fallback to stored config
       const config = configHandler.get('mfa');
       return config?.secret ? config as MFAConfig : null;
     } catch (error) {

@@ -160,10 +160,7 @@ Add MFA secret for 2FA authentication
 
 ```
 USAGE
-  $ csdx config:mfa:add [--secret <value>]
-
-FLAGS
-  --secret=<value>  MFA secret for 2FA authentication
+  $ csdx config:mfa:add
 
 DESCRIPTION
   Add MFA secret for 2FA authentication

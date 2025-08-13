@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import LoginCommand from '../../../src/commands/auth/login';
-import { authHandler, interactive, totpHandler } from '../../../src/utils';
+import { authHandler, interactive, mfaHandler } from '../../../src/utils';
 import { 
   configHandler, 
   cliux, 
@@ -20,11 +20,12 @@ const invalidCredentials = { email: '***REMOVED***', password: conf.invalidPasso
 const TFATestToken = '24563992';
 
 describe('Login Command', () => {
-  let loginStub: sinon.SinonStub;
-
   let sandbox: sinon.SinonSandbox;
 
   beforeEach(function () {
+    // Restore any existing stubs
+    sinon.restore();
+    
     sandbox = sinon.createSandbox();
     
     // Setup config handler stubs
@@ -39,11 +40,11 @@ describe('Login Command', () => {
     // Setup host property
     sandbox.stub(LoginCommand.prototype, 'cmaHost').value('https://api.contentstack.io');
     // Setup auth handler stub
-    loginStub = sandbox.stub(authHandler, 'login').callsFake(function (email, password, tfaToken): Promise<any> {
+    sandbox.stub(authHandler, 'login').callsFake(async function (email, password, tfaToken): Promise<any> {
       if (password === credentials.password) {
-        return Promise.resolve(user);
+        return user;
       }
-      return Promise.reject({ message: 'invalid credentials' });
+      throw new Error('invalid credentials');
     });
 
     // Setup management SDK client stub
@@ -55,8 +56,8 @@ describe('Login Command', () => {
     sandbox.stub(managementSDK, 'managementSDKClient').resolves(mockClient);
     authHandler.client = mockClient;
 
-    // Setup TOTP handler stub
-    sandbox.stub(totpHandler, 'getTOTPCode').resolves(TFATestToken);
+    // Setup MFA handler stub
+    sandbox.stub(mfaHandler, 'getMFACode').resolves(TFATestToken);
 
     // Setup OAuth handler stub
     sandbox.stub(oauthHandler, 'setConfigData').resolves();

@@ -56,14 +56,40 @@ describe('MFA Commands', function () {
       'JBSWY3DPEHPK3PXP ', // Trailing space
     ];
 
-    it('should add MFA configuration successfully', async function () {
+    it('should use MFA secret from environment variable', async function () {
+      process.env.CONTENTSTACK_MFA_SECRET = validSecret;
+      configStub.get.returns(null);
+      authenticatorStub.generate.returns('123456');
+      authenticatorStub.check.returns(true);
+
+      await MFAAddCommand.run([]);
+      expect(configStub.set.called).to.be.false;
+      delete process.env.CONTENTSTACK_MFA_SECRET;
+    });
+
+    it('should throw error for invalid environment variable secret', async function () {
+      process.env.CONTENTSTACK_MFA_SECRET = 'invalid-secret';
+      configStub.get.returns(null);
+      authenticatorStub.check.returns(false);
+
+      try {
+        await MFAAddCommand.run([]);
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect(error.message).to.include('Invalid secret format');
+      } finally {
+        delete process.env.CONTENTSTACK_MFA_SECRET;
+      }
+    });
+
+    it('should add MFA configuration successfully with manual input', async function () {
       configStub.get.returns(null);
       encrypterStub.encrypt.returns(encryptedSecret);
       authenticatorStub.generate.returns('123456');
       authenticatorStub.check.returns(true);
-      inquireStub.returns(Promise.resolve(true));
+      inquireStub.returns(Promise.resolve(validSecret));
 
-      await MFAAddCommand.run(['--secret', validSecret]);
+      await MFAAddCommand.run([]);
       expect(configStub.set.calledOnce).to.be.true;
       expect(configStub.set.firstCall.args[0]).to.equal('mfa');
       expect(configStub.set.firstCall.args[1]).to.deep.include({
@@ -73,19 +99,23 @@ describe('MFA Commands', function () {
 
     it('should cancel when user declines to overwrite existing config', async function () {
       configStub.get.returns({ secret: 'existing-secret' });
-      inquireStub.returns(Promise.resolve(false));
       authenticatorStub.check.returns(true);
       authenticatorStub.generate.returns('123456');
 
-      await MFAAddCommand.run(['--secret', validSecret]);
+      // First prompt for secret
+      inquireStub.onFirstCall().returns(Promise.resolve(validSecret));
+      // Second prompt for confirmation
+      inquireStub.onSecondCall().returns(Promise.resolve(false));
+
+      await MFAAddCommand.run([]);
       expect(configStub.set.called).to.be.false;
-      expect(inquireStub.calledOnce).to.be.true;
-      expect(inquireStub.calledOnce).to.be.true;
+      expect(inquireStub.calledTwice).to.be.true;
     });
 
     it('should fail with invalid secret format', async function () {
       try {
-        await MFAAddCommand.run(['--secret', 'invalid!@#']);
+        inquireStub.returns(Promise.resolve('invalid!@#'));
+        await MFAAddCommand.run([]);
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
@@ -96,7 +126,8 @@ describe('MFA Commands', function () {
     it('should fail when secret cannot generate valid codes', async function () {
       authenticatorStub.check.returns(false);
       try {
-        await MFAAddCommand.run(['--secret', validSecret]);
+        inquireStub.returns(Promise.resolve(validSecret));
+      await MFAAddCommand.run([]);
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
@@ -111,7 +142,8 @@ describe('MFA Commands', function () {
       encrypterStub.encrypt.throws(new Error('Encryption failed'));
 
       try {
-        await MFAAddCommand.run(['--secret', validSecret]);
+        inquireStub.returns(Promise.resolve(validSecret));
+      await MFAAddCommand.run([]);
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
@@ -127,7 +159,8 @@ describe('MFA Commands', function () {
         authenticatorStub.generate.returns('123456');
         encrypterStub.encrypt.returns(encryptedSecret);
 
-        await MFAAddCommand.run(['--secret', secret]);
+        inquireStub.returns(Promise.resolve(secret));
+        await MFAAddCommand.run([]);
         expect(configStub.set.calledOnce).to.be.true;
       });
     });
@@ -136,7 +169,8 @@ describe('MFA Commands', function () {
     invalidSecrets.forEach((secret) => {
       it(`should reject invalid secret format: ${secret}`, async function () {
         try {
-          await MFAAddCommand.run(['--secret', secret]);
+          inquireStub.returns(Promise.resolve(secret));
+        await MFAAddCommand.run([]);
           expect.fail('Should have thrown an error');
         } catch (error: unknown) {
           const err = error as Error;
@@ -157,7 +191,8 @@ describe('MFA Commands', function () {
 
     it('should handle empty secret value', async function () {
       try {
-        await MFAAddCommand.run(['--secret', '']);
+        inquireStub.returns(Promise.resolve(''));
+        await MFAAddCommand.run([]);
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
         const err = error as Error;
@@ -172,7 +207,8 @@ describe('MFA Commands', function () {
       authenticatorStub.generate.returns(testCode);
       encrypterStub.encrypt.returns(encryptedSecret);
 
-      await MFAAddCommand.run(['--secret', validSecret]);
+      inquireStub.returns(Promise.resolve(validSecret));
+      await MFAAddCommand.run([]);
       expect(authenticatorStub.generate.calledWith(validSecret)).to.be.true;
       expect(configStub.set.calledOnce).to.be.true;
     });
@@ -184,7 +220,8 @@ describe('MFA Commands', function () {
       authenticatorStub.generate.returns('123456');
       inquireStub.returns(Promise.resolve(true));
 
-      await MFAAddCommand.run(['--secret', validSecret]);
+      inquireStub.returns(Promise.resolve(validSecret));
+      await MFAAddCommand.run([]);
       expect(configStub.set.calledOnce).to.be.true;
     });
   });

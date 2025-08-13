@@ -1,4 +1,4 @@
-import { cliux, CLIError, log, cliErrorHandler } from '@contentstack/cli-utilities';
+import { cliux, log, handleAndLogError, messageHandler } from '@contentstack/cli-utilities';
 import { User } from '../interfaces';
 import { askOTPChannel, askOTP } from './interactive';
 
@@ -48,19 +48,18 @@ class AuthHandler {
         try {
           await this.requestSMSOTP(loginPayload);
         } catch (error) {
-          log.debug('SMS OTP request failed', { module: 'auth-handler', error });
-          throw new CLIError('Failed to send SMS OTP. Please try again or use a different 2FA method.');
+          log.error('SMS OTP request failed', { module: 'auth-handler', error });
+          cliux.print('CLI_AUTH_SMS_OTP_FAILED', { color: 'yellow' });
+          handleAndLogError(error, { module: 'auth-handler' });
         }
       }
 
       log.debug('Requesting OTP input', { module: 'auth-handler', channel: otpChannel });
       return await askOTP();
     } catch (error) {
-      log.debug('2FA flow failed', { module: 'auth-handler', error });
-      if (error instanceof CLIError) {
-        throw error;
-      }
-      throw new CLIError('Failed to complete 2FA authentication. Please try again.');
+      log.error('2FA flow failed', { module: 'auth-handler', error });
+      cliux.print('CLI_AUTH_2FA_FAILED', { color: 'yellow' });
+      handleAndLogError(error, { module: 'auth-handler' });
     }
   }
 
@@ -76,9 +75,9 @@ class AuthHandler {
       log.debug('SMS OTP request successful', { module: 'auth-handler' });
       cliux.print('CLI_AUTH_LOGIN_SECURITY_CODE_SEND_SUCCESS');
     } catch (error) {
-      log.debug('SMS OTP request failed', { module: 'auth-handler', error });
-      const err = cliErrorHandler.classifyError(error);
-      throw new CLIError(err);
+      log.error('SMS OTP request failed', { module: 'auth-handler', error });
+      handleAndLogError(error, { module: 'auth-handler' });
+      throw error;
     }
   }
 
@@ -130,19 +129,23 @@ class AuthHandler {
                 resolve(await this.login(email, password, tfToken));
               } catch (error) {
                 log.debug('Login with TFA token failed', { module: 'auth-handler', error });
-                const err = cliErrorHandler.classifyError(error);
-                reject(new CLIError(err));
+                handleAndLogError(error, { module: 'auth-handler' });
+                log.debug('2FA authentication failed', { module: 'auth-handler', error });
+                cliux.print('CLI_AUTH_2FA_FAILED', { color: 'yellow' });
+                handleAndLogError(error, { module: 'auth-handler' });
                 return;
               }
             } else {
               log.debug('Login failed - no user found', { module: 'auth-handler', result });
-              reject(new CLIError({ message: 'No user found with the credentials' }));
+              log.debug('Login failed - no user found', { module: 'auth-handler', result });
+              cliux.print('CLI_AUTH_LOGIN_NO_USER', { color: 'yellow' });
+              handleAndLogError(new Error(messageHandler.parse('CLI_AUTH_LOGIN_NO_USER')), { module: 'auth-handler' });
             }
           })
           .catch((error: any) => {
             log.debug('Login API call failed', { module: 'auth-handler', error: error.message || error });
-            const err = cliErrorHandler.classifyError(error);
-            reject(new CLIError(err));
+            cliux.print('CLI_AUTH_LOGIN_FAILED', { color: 'yellow' });
+            handleAndLogError(error, { module: 'auth-handler' });
           });
       } else {
         const hasEmail = !!email;
@@ -152,7 +155,9 @@ class AuthHandler {
           hasEmail,
           hasCredentials,
         });
-        reject(new CLIError('No credential found to login'));
+        log.debug('Login failed - missing credentials', { module: 'auth-handler', hasEmail, hasCredentials });
+        cliux.print('CLI_AUTH_LOGIN_NO_CREDENTIALS', { color: 'yellow' });
+        handleAndLogError(new Error(messageHandler.parse('CLI_AUTH_LOGIN_NO_CREDENTIALS')), { module: 'auth-handler' });
       }
     });
   }
@@ -177,12 +182,13 @@ class AuthHandler {
           })
           .catch((error: Error) => {
             log.debug('Logout API call failed', { module: 'auth-handler', error: error.message });
-            const err = cliErrorHandler.classifyError(error);
-            reject(new CLIError(err));
+            cliux.print('CLI_AUTH_LOGOUT_FAILED', { color: 'yellow' });
+            handleAndLogError(error, { module: 'auth-handler' });
           });
       } else {
         log.debug('Logout failed - no auth token provided', { module: 'auth-handler' });
-        reject(new CLIError('No auth token found to logout'));
+        cliux.print('CLI_AUTH_LOGOUT_NO_TOKEN', { color: 'yellow' });
+        handleAndLogError(new Error(messageHandler.parse('CLI_AUTH_LOGOUT_NO_TOKEN')), { module: 'auth-handler' });
       }
     });
   }
@@ -207,12 +213,15 @@ class AuthHandler {
           })
           .catch((error: Error) => {
             log.debug('Token validation failed', { module: 'auth-handler', error: error.message });
-            const err = cliErrorHandler.classifyError(error);
-            reject(new CLIError(err));
+            cliux.print('CLI_AUTH_TOKEN_VALIDATION_FAILED', { color: 'yellow' });
+            handleAndLogError(error, { module: 'auth-handler' });
           });
       } else {
         log.debug('Token validation failed - no auth token provided', { module: 'auth-handler' });
-        reject(new CLIError('No auth token found to validate'));
+        cliux.print('CLI_AUTH_TOKEN_VALIDATION_NO_TOKEN', { color: 'yellow' });
+        handleAndLogError(new Error(messageHandler.parse('CLI_AUTH_TOKEN_VALIDATION_NO_TOKEN')), {
+          module: 'auth-handler',
+        });
       }
     });
   }
