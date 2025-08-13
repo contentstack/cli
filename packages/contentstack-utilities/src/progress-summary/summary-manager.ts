@@ -64,15 +64,6 @@ export default class SummaryManager {
     const operationEndTime = Date.now();
     const totalDuration = operationEndTime - this.operationStartTime;
 
-    const branchInfo = this.branchName ? `EXPORTING "${this.branchName.toUpperCase()}" BRANCH RESULTS` : '';
-
-    console.log('\n' + chalk.bold('='.repeat(80)));
-    console.log(chalk.bold.cyan(`                   ${this.operationName} SUMMARY`));
-    if (branchInfo) {
-      console.log(chalk.bold.white(`                   ${branchInfo}`));
-    }
-    console.log(chalk.bold('='.repeat(80)));
-
     // Overall Statistics
     const totalModules = this.modules.size;
     const completedModules = Array.from(this.modules.values()).filter((m) => m.status === 'completed').length;
@@ -81,6 +72,7 @@ export default class SummaryManager {
     const totalSuccess = Array.from(this.modules.values()).reduce((sum, m) => sum + m.successCount, 0);
     const totalFailures = Array.from(this.modules.values()).reduce((sum, m) => sum + m.failureCount, 0);
 
+    console.log('\n' + chalk.bold('='.repeat(80)));
     console.log('\n' + chalk.bold('Overall Statistics:'));
     console.log(`  Total ${this.operationName} Time: ${chalk.cyan(this.formatDuration(totalDuration))}`);
     console.log(`  Modules Processed: ${chalk.cyan(completedModules)}/${chalk.cyan(totalModules)}`);
@@ -110,16 +102,17 @@ export default class SummaryManager {
           `${duration.padStart(8)}`,
       );
 
-      // Show failures if any
-      if (module.failures.length > 0) {
-        console.log(chalk.red(`     Failures (${module.failures.length}):`));
-        module.failures.slice(0, 5).forEach((failure) => {
-          console.log(chalk.red(`       - ${failure.item}: ${failure.error}`));
-        });
-        if (module.failures.length > 5) {
-          console.log(chalk.red(`       ... and ${module.failures.length - 5} more`));
-        }
-      }
+
+      // Show failures if any - TEMPORARILY DISABLED - will be shown in separate section later
+      // if (module.failures.length > 0) {
+      //   console.log(chalk.red(`     Failures (${module.failures.length}):`));
+      //   module.failures.slice(0, 5).forEach((failure) => {
+      //     console.log(chalk.red(`       - ${failure.item}: ${failure.error}`));
+      //   });
+      //   if (module.failures.length > 5) {
+      //     console.log(chalk.red(`       ... and ${module.failures.length - 5} more`));
+      //   }
+      // }
     });
 
     // Final Status
@@ -131,6 +124,8 @@ export default class SummaryManager {
     } else {
       console.log(chalk.bold.red(`❌ ${this.operationName} failed`));
     }
+
+    //TODO:- Smart Failure Summary - only show if there are failures
 
     console.log(chalk.bold('='.repeat(80)));
   }

@@ -65,12 +65,12 @@ export default class CLIProgressManager {
   /**
    * Initialize global summary manager for the entire operation
    */
-  static initializeGlobalSummary(operationName: string, branchName: string): SummaryManager {
+  static initializeGlobalSummary(operationName: string, branchName: string, headerTitle?: string): SummaryManager {
     CLIProgressManager.globalSummary = new SummaryManager({ operationName, context: { branchName } });
 
     // Only show header if console logs are disabled (progress UI mode)
     if (!configHandler.get('log')?.showConsoleLogs) {
-      CLIProgressManager.displayOperationHeader(operationName, branchName);
+      CLIProgressManager.displayOperationHeader(branchName, headerTitle);
     }
 
     return CLIProgressManager.globalSummary;
@@ -79,10 +79,13 @@ export default class CLIProgressManager {
   /**
    * Display operation header with branch information
    */
-  static displayOperationHeader(operationName: string, branchName: string): void {
-    const branchInfo = branchName ? `EXPORTING "${branchName.toUpperCase()}" BRANCH CONTENT` : '';
+  static displayOperationHeader(branchName: string, headerTitle?: string): void {
+    if (!headerTitle) return;
+
+    const safeBranchName = branchName || 'main';
+    const branchInfo = headerTitle || `${safeBranchName?.toUpperCase()} CONTENT`;
+
     console.log('\n' + chalk.bold('='.repeat(80)));
-    console.log(chalk.bold.cyan(`                   ${operationName.toUpperCase()}`));
     if (branchInfo) {
       console.log(chalk.bold.white(`                   ${branchInfo}`));
     }
@@ -171,7 +174,7 @@ export default class CLIProgressManager {
   }
 
   /**
-   * Convert module name from UPPERCASE to PascalCase 
+   * Convert module name from UPPERCASE to PascalCase
    */
   private formatModuleName(name: string): string {
     return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
@@ -478,15 +481,15 @@ export default class CLIProgressManager {
         `  ${status} ${processName}: ${process.successCount}✓ ${process.failureCount}✗ (${process.current}/${process.total})`,
       );
 
-      // Show first few failures for this process
-      if (process.failures.length > 0) {
-        process.failures.slice(0, 3).forEach((failure) => {
-          this.log(`    ✗ ${failure.item}: ${failure.error}`);
-        });
-        if (process.failures.length > 3) {
-          this.log(`    ... and ${process.failures.length - 3} more failures`);
-        }
-      }
+      // Show first few failures for this process - TEMPORARILY DISABLED - will be shown in separate section later
+      // if (process.failures.length > 0) {
+      //   process.failures.slice(0, 3).forEach((failure) => {
+      //     this.log(`    ✗ ${failure.item}: ${failure.error}`);
+      //   });
+      //   if (process.failures.length > 3) {
+      //     this.log(`    ... and ${process.failures.length - 3} more failures`);
+      //   }
+      // }
     }
 
     this.log(`\nOverall: ${this.successCount}✓ ${this.failureCount}✗`);
