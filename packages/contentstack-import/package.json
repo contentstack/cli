@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-cm-import",
   "description": "Contentstack CLI plugin to import content into stack",
-  "version": "1.26.0",
+  "version": "1.26.2",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
@@ -36,7 +36,7 @@
     "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "eslint": "^8.57.1",
-    "eslint-config-oclif": "^6.0.62",
+    "eslint-config-oclif": "^6.0.89",
     "mocha": "^10.8.2",
     "nyc": "^15.1.0",
     "oclif": "^4.17.46",
