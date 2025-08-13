@@ -10,7 +10,7 @@ import {
   messageHandler,
 } from '@contentstack/cli-utilities';
 import { User } from '../../interfaces';
-import { authHandler, interactive, totpHandler } from '../../utils';
+import { authHandler, interactive, mfaHandler } from '../../utils';
 import { BaseCommand } from '../../base-command';
 
 export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
@@ -101,10 +101,10 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
       let tfaToken: string | undefined;
       
       try {
-        tfaToken = await totpHandler.getTOTPCode();
-        log.debug('TOTP token generated from stored configuration', this.contextDetails);
+        tfaToken = await mfaHandler.getMFACode();
+        log.debug('MFA token generated from stored configuration', this.contextDetails);
       } catch (error) {
-        log.debug('Failed to generate TOTP token from config', { ...this.contextDetails, error });
+        log.debug('Failed to generate MFA token from config', { ...this.contextDetails, error });
         tfaToken = undefined;
       }
 
