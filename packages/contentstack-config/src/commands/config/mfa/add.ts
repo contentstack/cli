@@ -21,13 +21,12 @@ export default class AddMFACommand extends BaseCommand<typeof AddMFACommand> {
 
   async run(): Promise<void> {
     try {
-      // Check for environment variable first
       const envSecret = process.env.CONTENTSTACK_MFA_SECRET;
       if (envSecret && !this.mfaService.validateSecret(envSecret)) {
-          cliux.error('Invalid secret format in environment variable. The secret must be a valid Base32 string of at least 16 characters.');
-          cliux.print('For more information about MFA, visit: https://www.contentstack.com/docs/developers/security/multi-factor-authentication', { color: 'yellow' });
-          process.exit(1);
-        }
+        cliux.error('Invalid secret format in environment variable. The secret must be a valid Base32 string of at least 16 characters.');
+        cliux.print('For more information about MFA, visit: https://www.contentstack.com/docs/developers/security/multi-factor-authentication', { color: 'yellow' });
+        process.exit(1);
+      } else if (envSecret) {
         cliux.print('Using MFA secret from environment variable');
         return;
       }
