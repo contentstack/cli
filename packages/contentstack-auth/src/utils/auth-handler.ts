@@ -48,18 +48,18 @@ class AuthHandler {
         try {
           await this.requestSMSOTP(loginPayload);
         } catch (error) {
-          log.error('SMS OTP request failed', { module: 'auth-handler', error });
+          log.debug('SMS OTP request failed', { module: 'auth-handler', error });
           cliux.print('CLI_AUTH_SMS_OTP_FAILED', { color: 'yellow' });
-          handleAndLogError(error, { module: 'auth-handler' });
+          throw error;
         }
       }
 
       log.debug('Requesting OTP input', { module: 'auth-handler', channel: otpChannel });
       return await askOTP();
     } catch (error) {
-      log.error('2FA flow failed', { module: 'auth-handler', error });
+      log.debug('2FA flow failed', { module: 'auth-handler', error });
       cliux.print('CLI_AUTH_2FA_FAILED', { color: 'yellow' });
-      handleAndLogError(error, { module: 'auth-handler' });
+      throw error;
     }
   }
 
@@ -75,8 +75,7 @@ class AuthHandler {
       log.debug('SMS OTP request successful', { module: 'auth-handler' });
       cliux.print('CLI_AUTH_LOGIN_SECURITY_CODE_SEND_SUCCESS');
     } catch (error) {
-      log.error('SMS OTP request failed', { module: 'auth-handler', error });
-      handleAndLogError(error, { module: 'auth-handler' });
+      log.debug('SMS OTP request failed', { module: 'auth-handler', error });
       throw error;
     }
   }
@@ -136,7 +135,6 @@ class AuthHandler {
                 return;
               }
             } else {
-              log.debug('Login failed - no user found', { module: 'auth-handler', result });
               log.debug('Login failed - no user found', { module: 'auth-handler', result });
               cliux.print('CLI_AUTH_LOGIN_NO_USER', { color: 'yellow' });
               handleAndLogError(new Error(messageHandler.parse('CLI_AUTH_LOGIN_NO_USER')), { module: 'auth-handler' });

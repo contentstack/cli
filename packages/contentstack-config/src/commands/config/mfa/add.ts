@@ -1,7 +1,6 @@
-import { cliux } from '@contentstack/cli-utilities';
+import { cliux, handleAndLogError } from '@contentstack/cli-utilities';
 import { BaseCommand } from '../../../base-command';
 import { MFAService } from '../../../services/mfa/mfa.service';
-import { MFAError } from '../../../services/mfa/mfa.types';
 
 export default class AddMFACommand extends BaseCommand<typeof AddMFACommand> {
   static readonly description = 'Add MFA secret for 2FA authentication';
@@ -25,7 +24,9 @@ export default class AddMFACommand extends BaseCommand<typeof AddMFACommand> {
       const envSecret = process.env.CONTENTSTACK_MFA_SECRET;
       if (envSecret) {
         if (!this.mfaService.validateSecret(envSecret)) {
-          throw new MFAError('Invalid secret format in environment variable');
+          cliux.error('Invalid secret format in environment variable. The secret must be a valid Base32 string of at least 16 characters.');
+          cliux.print('For more information about MFA, visit: https://www.contentstack.com/docs/developers/security/multi-factor-authentication', { color: 'yellow' });
+          process.exit(1);
         }
         cliux.print('Using MFA secret from environment variable');
         return;
@@ -42,7 +43,8 @@ export default class AddMFACommand extends BaseCommand<typeof AddMFACommand> {
             process.exit(1);
           }
           if (!this.mfaService.validateSecret(input)) {
-            cliux.error('Invalid secret format');
+            cliux.error('Invalid secret format. The secret must be a valid Base32 string of at least 16 characters.');
+            cliux.print('For more information about MFA, visit: https://www.contentstack.com/docs/developers/security/multi-factor-authentication', { color: 'yellow' });
             process.exit(1);
           }
           return true;
@@ -50,7 +52,9 @@ export default class AddMFACommand extends BaseCommand<typeof AddMFACommand> {
       });
 
       if (!secret || !this.mfaService.validateSecret(secret)) {
-        throw new MFAError('Invalid secret format');
+        cliux.error('Invalid secret format. The secret must be a valid Base32 string of at least 16 characters.');
+        cliux.print('For more information about MFA, visit: https://www.contentstack.com/docs/developers/security/multi-factor-authentication', { color: 'yellow' });
+        process.exit(1);
       }
 
       // Check if MFA configuration already exists
@@ -74,18 +78,12 @@ export default class AddMFACommand extends BaseCommand<typeof AddMFACommand> {
         this.mfaService.storeConfig({ secret: encryptedSecret });
         cliux.success('Secret has been stored successfully');
       } catch (error) {
-        if (error instanceof MFAError) {
-          throw error;
-        }
-        throw new MFAError('Failed to store secret');
+        handleAndLogError(error, { module: 'config:mfa:add' });
+        process.exit(1);
       }
     } catch (error) {
-      if (error instanceof MFAError) {
-        cliux.error(error.message);
-      } else {
-        cliux.error('Failed to store secret');
-      }
-      throw error;
+      handleAndLogError(error, { module: 'config:mfa:add' });
+      process.exit(1);
     }
   }
 }
