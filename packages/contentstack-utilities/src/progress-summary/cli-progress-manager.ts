@@ -65,12 +65,12 @@ export default class CLIProgressManager {
   /**
    * Initialize global summary manager for the entire operation
    */
-  static initializeGlobalSummary(operationName: string, branchName: string): SummaryManager {
+  static initializeGlobalSummary(operationName: string, branchName: string, headerTitle?: string): SummaryManager {
     CLIProgressManager.globalSummary = new SummaryManager({ operationName, context: { branchName } });
 
     // Only show header if console logs are disabled (progress UI mode)
     if (!configHandler.get('log')?.showConsoleLogs) {
-      CLIProgressManager.displayOperationHeader(branchName);
+      CLIProgressManager.displayOperationHeader(branchName, headerTitle);
     }
 
     return CLIProgressManager.globalSummary;
@@ -79,8 +79,12 @@ export default class CLIProgressManager {
   /**
    * Display operation header with branch information
    */
-  static displayOperationHeader(branchName: string): void {
-    const branchInfo = branchName ? `EXPORTING "${branchName.toUpperCase()}" BRANCH CONTENT` : 'EXPORTING CONTENT';
+  static displayOperationHeader(branchName: string, headerTitle?: string): void {
+    if (!headerTitle) return;
+
+    const safeBranchName = branchName || 'main';
+    const branchInfo = headerTitle || `${safeBranchName?.toUpperCase()} CONTENT`;
+
     console.log('\n' + chalk.bold('='.repeat(80)));
     if (branchInfo) {
       console.log(chalk.bold.white(`                   ${branchInfo}`));
