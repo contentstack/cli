@@ -36,14 +36,18 @@ class MFAHandler {
    */
   generateMFACode(secret: string): string {
     log.debug('Generating MFA code from provided secret', { module: 'mfa-handler' });
-    
+
     try {
       // Validate and normalize secret
       const normalizedSecret = secret.toUpperCase();
       if (!this.isValidBase32(normalizedSecret)) {
         log.debug('Invalid MFA secret format', { module: 'mfa-handler' });
         cliux.print('CLI_AUTH_MFA_INVALID_SECRET', { color: 'yellow' });
-        throw new Error(messageHandler.parse('CLI_AUTH_MFA_INVALID_SECRET'));
+        cliux.print(
+          'For more information about MFA, visit: https://www.contentstack.com/docs/developers/security/multi-factor-authentication',
+          { color: 'yellow' },
+        );
+        process.exit(1);
       }
 
       // Generate MFA code
@@ -70,8 +74,17 @@ class MFAHandler {
     const envSecret = process.env.CONTENTSTACK_MFA_SECRET;
     if (envSecret) {
       log.debug('Found MFA secret in environment variable', { module: 'mfa-handler' });
-      secret = envSecret;
-      source = 'environment variable';
+      if (!this.isValidBase32(envSecret.toUpperCase())) {
+        log.debug('Invalid MFA secret format from environment variable', { module: 'mfa-handler' });
+        cliux.print('CLI_AUTH_MFA_INVALID_SECRET', { color: 'yellow' });
+        cliux.print(
+          'For more information about MFA, visit: https://www.contentstack.com/docs/developers/security/multi-factor-authentication',
+          { color: 'yellow' },
+        );
+      } else {
+        secret = envSecret;
+        source = 'environment variable';
+      }
     }
 
     if (!secret) {
@@ -98,13 +111,12 @@ class MFAHandler {
         log.debug('Failed to generate MFA code', { module: 'mfa-handler', error, source });
         cliux.print('CLI_AUTH_MFA_GENERATION_FAILED', { color: 'yellow' });
         cliux.print('CLI_AUTH_MFA_RECONFIGURE_HINT');
-        handleAndLogError(new Error(messageHandler.parse('CLI_AUTH_MFA_GENERATION_FAILED')), { module: 'mfa-handler' });
+        cliux.print(
+          'For more information about MFA, visit: https://www.contentstack.com/docs/developers/security/multi-factor-authentication',
+          { color: 'yellow' },
+        );
       }
     }
-
-    // No secret available, ask for manual input
-    log.debug('No MFA secret found, requesting manual input', { module: 'mfa-handler' });
-    return this.getManualMFACode();
   }
 
   /**
@@ -147,4 +159,3 @@ class MFAHandler {
 }
 
 export default new MFAHandler();
-

@@ -1,7 +1,6 @@
-import { cliux } from '@contentstack/cli-utilities';
+import { cliux, handleAndLogError } from '@contentstack/cli-utilities';
 import { BaseCommand } from '../../../base-command';
 import { MFAService } from '../../../services/mfa/mfa.service';
-import { MFAError } from '../../../services/mfa/mfa.types';
 import { Flags } from '@oclif/core';
 
 export default class RemoveMFACommand extends BaseCommand<typeof RemoveMFACommand> {
@@ -32,16 +31,10 @@ export default class RemoveMFACommand extends BaseCommand<typeof RemoveMFAComman
       const { flags } = await this.parse(RemoveMFACommand);
 
       let config;
-      try {
-        config = this.mfaService.getStoredConfig();
-        if (!config?.secret) {
-          throw new MFAError('Failed to remove secret configuration');
-        }
-      } catch (error) {
-        if (error instanceof MFAError) {
-          throw error;
-        }
-        throw new MFAError('Failed to remove secret configuration');
+      config = this.mfaService.getStoredConfig();
+      if (!config?.secret) {
+        cliux.error('No MFA configuration found');
+        process.exit(1);
       }
 
       // Verify the configuration is valid
@@ -76,16 +69,12 @@ export default class RemoveMFACommand extends BaseCommand<typeof RemoveMFAComman
         this.mfaService.removeConfig();
         cliux.success('Secret has been removed successfully');
       } catch (error) {
-        this.logger.error('Failed to remove secret configuration', { error });
-        throw new MFAError('Failed to remove secret configuration');
+        handleAndLogError(error, { module: 'config:mfa:remove' });
+        process.exit(1);
       }
     } catch (error) {
-      if (error instanceof MFAError) {
-        cliux.error(error.message);
-      } else {
-        cliux.error('Failed to remove secret configuration');
-      }
-      throw error;
+      handleAndLogError(error, { module: 'config:mfa:remove' });
+      process.exit(1);
     }
   }
 }

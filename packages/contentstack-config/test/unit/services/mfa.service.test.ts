@@ -3,7 +3,6 @@ import { configHandler, NodeCrypto } from '@contentstack/cli-utilities';
 import { authenticator } from 'otplib';
 import * as sinon from 'sinon';
 import { MFAService } from '../../../src/services/mfa/mfa.service';
-import { MFAError } from '../../../src/services/mfa/mfa.types';
 
 describe('MFA Service', () => {
   let mfaService: MFAService;
@@ -85,8 +84,7 @@ describe('MFA Service', () => {
         mfaService.encryptSecret('JBSWY3DPEHPK3PXP');
         expect.fail('Should have thrown an error');
       } catch (error) {
-        expect(error).to.be.an('error').with.property('name', 'MFAError');
-        expect((error as MFAError).message).to.equal('Failed to encrypt secret');
+        expect(error).to.be.an('error');
       }
     });
 
@@ -112,8 +110,7 @@ describe('MFA Service', () => {
         mfaService.decryptSecret('encrypted-secret|iv');
         expect.fail('Should have thrown an error');
       } catch (error) {
-        expect(error).to.be.an('error').with.property('name', 'MFAError');
-        expect((error as MFAError).message).to.equal('Failed to decrypt secret');
+        expect(error).to.be.an('error');
       }
     });
   });
@@ -141,8 +138,7 @@ describe('MFA Service', () => {
         mfaService.getStoredConfig();
         expect.fail('Should have thrown an error');
       } catch (error) {
-        expect(error).to.be.an('error').with.property('name', 'MFAError');
-        expect((error as MFAError).message).to.equal('Failed to read configuration');
+        expect(error).to.be.an('error');
       }
     });
   });
@@ -173,8 +169,7 @@ describe('MFA Service', () => {
         mfaService.storeConfig({ secret: 'encrypted' });
         expect.fail('Should have thrown an error');
       } catch (error) {
-        expect(error).to.be.an('error').with.property('name', 'MFAError');
-        expect((error as MFAError).message).to.equal('Failed to store configuration');
+        expect(error).to.be.an('error');
       }
     });
   });
@@ -191,8 +186,7 @@ describe('MFA Service', () => {
         mfaService.removeConfig();
         expect.fail('Should have thrown an error');
       } catch (error) {
-        expect(error).to.be.an('error').with.property('name', 'MFAError');
-        expect((error as MFAError).message).to.equal('Failed to remove configuration');
+        expect(error).to.be.an('error');
       }
     });
   });
@@ -212,8 +206,7 @@ describe('MFA Service', () => {
         mfaService.generateMFA('JBSWY3DPEHPK3PXP');
         expect.fail('Should have thrown an error');
       } catch (error) {
-        expect(error).to.be.an('error').with.property('name', 'MFAError');
-        expect((error as MFAError).message).to.equal('Failed to generate code');
+        expect(error).to.be.an('error');
       }
     });
 

@@ -58,9 +58,9 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
       log.debug('Initializing management API client', this.contextDetails);
       const managementAPIClient = await managementSDKClient({ host: this.cmaHost, skipTokenValidity: true });
       log.debug('Management API client initialized successfully', this.contextDetails);
-      
+
       const { flags: loginFlags } = await this.parse(LoginCommand);
-      log.debug('Token add flags parsed', {...this.contextDetails, flags: loginFlags});
+      log.debug('Token add flags parsed', { ...this.contextDetails, flags: loginFlags });
 
       authHandler.client = managementAPIClient;
       log.debug('Auth handler client set', this.contextDetails);
@@ -77,17 +77,22 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
         log.debug('Starting basic authentication flow', this.contextDetails);
         const username = loginFlags?.username || (await interactive.askUsername());
         const password = loginFlags?.password || (await interactive.askPassword());
-        log.debug('Credentials obtained', { 
-          ...this.contextDetails, 
-          hasUsername: !!username, 
-          hasPassword: !!password
+        log.debug('Credentials obtained', {
+          ...this.contextDetails,
+          hasUsername: !!username,
+          hasPassword: !!password,
         });
 
         await this.login(username, password);
       }
     } catch (error) {
-      log.debug('Login command failed', { ...this.contextDetails, error });
-      cliux.error('CLI_AUTH_LOGIN_FAILED');
+      log.debug('Login command failed', {
+        ...this.contextDetails,
+        error,
+      });
+      if ((error.message && error.message.includes('2FA')) || error.message.includes('MFA')) {
+        error.message = `${error.message}\nFor more information about MFA, visit: https://www.contentstack.com/docs/developers/security/multi-factor-authentication`;
+      }
       handleAndLogError(error, { ...this.contextDetails });
       process.exit();
     }
@@ -99,10 +104,12 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
     try {
       log.debug('Calling auth handler login', this.contextDetails);
       let tfaToken: string | undefined;
-      
+
       try {
         tfaToken = await mfaHandler.getMFACode();
-        log.debug('MFA token generated from stored configuration', this.contextDetails);
+        if(tfaToken){
+          log.debug('MFA token generated from stored configuration', this.contextDetails);
+        }
       } catch (error) {
         log.debug('Failed to generate MFA token from config', { ...this.contextDetails, error });
         tfaToken = undefined;

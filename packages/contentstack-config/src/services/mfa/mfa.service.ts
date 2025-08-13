@@ -1,6 +1,6 @@
-import { configHandler, NodeCrypto, log } from '@contentstack/cli-utilities';
+import { configHandler, NodeCrypto, log, cliux } from '@contentstack/cli-utilities';
 import { authenticator } from 'otplib';
-import { MFAConfig, MFAError } from './mfa.types';
+import { MFAConfig } from './mfa.types';
 import { IMFAService } from './mfa-service.interface';
 
 export class MFAService implements IMFAService {
@@ -58,7 +58,7 @@ export class MFAService implements IMFAService {
       return this.encrypter.encrypt(secret.trim().toUpperCase());
     } catch (error) {
       this.logger.error('Secret encryption failed', { error });
-      throw new MFAError('Failed to encrypt secret');
+      throw new Error('Failed to encrypt secret');
     }
   }
 
@@ -67,7 +67,7 @@ export class MFAService implements IMFAService {
       return this.encrypter.decrypt(encryptedSecret);
     } catch (error) {
       this.logger.error('Secret decryption failed', { error });
-      throw new MFAError('Failed to decrypt secret');
+      throw new Error('Failed to decrypt secret');
     }
   }
 
@@ -88,7 +88,7 @@ export class MFAService implements IMFAService {
       return config?.secret ? config as MFAConfig : null;
     } catch (error) {
       this.logger.error('Failed to read config', { error });
-      throw new MFAError('Failed to read configuration');
+      throw new Error('Failed to read configuration');
     }
   }
 
@@ -101,7 +101,7 @@ export class MFAService implements IMFAService {
       configHandler.set('mfa', updatedConfig);
     } catch (error) {
       this.logger.error('Failed to store config', { error });
-      throw new MFAError('Failed to store configuration');
+      throw new Error('Failed to store configuration');
     }
   }
 
@@ -110,7 +110,7 @@ export class MFAService implements IMFAService {
       configHandler.delete('mfa');
     } catch (error) {
       this.logger.error('Failed to remove config', { error });
-      throw new MFAError('Failed to remove configuration');
+      throw new Error('Failed to remove configuration');
     }
   }
 
@@ -119,7 +119,7 @@ export class MFAService implements IMFAService {
       return authenticator.generate(secret.trim().toUpperCase());
     } catch (error) {
       this.logger.error('Failed to generate code', { error });
-      throw new MFAError('Failed to generate code');
+      throw new Error('Failed to generate code');
     }
   }
 
