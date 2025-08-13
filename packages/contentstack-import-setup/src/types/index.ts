@@ -4,7 +4,7 @@ import ImportConfig from './import-config';
 export type ModuleClassParams = {
   stackAPIClient: ReturnType<ContentstackClient['stack']>;
   config: ImportConfig;
-  dependencies: Modules;
+  dependencies: Modules[];
 };
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export interface AuthOptions {

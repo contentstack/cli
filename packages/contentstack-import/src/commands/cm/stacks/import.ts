@@ -15,7 +15,7 @@ import {
 
 import { Context, ImportConfig } from '../../../types';
 import { ModuleImporter } from '../../../import';
-import { setupImportConfig  } from '../../../utils';
+import { setupImportConfig } from '../../../utils';
 
 export default class ImportCommand extends Command {
   static description = messageHandler.parse('Import content from a stack');
@@ -144,34 +144,35 @@ export default class ImportCommand extends Command {
     // initialize the importer
     // start import
     let backupDir: string;
+    let importConfig: ImportConfig;
     try {
       const { flags } = await this.parse(ImportCommand);
-      let importConfig: ImportConfig = await setupImportConfig(flags);
+      importConfig = await setupImportConfig(flags);
       // Prepare the context object
       const context = this.createImportContext(importConfig.apiKey, importConfig.authenticationMethod);
-      importConfig.context = {...context};
+      importConfig.context = { ...context };
       //log.info(`Using Cli Version: ${this.context?.cliVersion}`, importConfig.context);
-      
+
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;
       importConfig.region = this.region;
       if (this.developerHubUrl) importConfig.developerHubBaseUrl = this.developerHubUrl;
       if (this.personalizeUrl) importConfig.modules.personalize.baseURL[importConfig.region.name] = this.personalizeUrl;
-      
+
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
-      
+
       if (!flags.branch) {
         try {
           // Use stack configuration to check for branch availability
           // false positive - no hardcoded secret here
-        // @ts-ignore-next-line secret-detection
+          // @ts-ignore-next-line secret-detection
           const keyProp = 'api_key';
           const branches = await managementAPIClient
-          .stack({ [keyProp]: importConfig.apiKey })
-          .branch()
-          .query()
-          .find()
-          .then(({ items }: any) => items);
+            .stack({ [keyProp]: importConfig.apiKey })
+            .branch()
+            .query()
+            .find()
+            .then(({ items }: any) => items);
           if (branches.length) {
             flags.branch = 'main';
           }
@@ -179,23 +180,28 @@ export default class ImportCommand extends Command {
           // Branch not enabled, just the let flow continue
         }
       }
+
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       const result = await moduleImporter.start();
       backupDir = importConfig.backupDir;
 
-      if (!result?.noSuccessMsg) {       
+      if (!result?.noSuccessMsg) {
         const successMessage = importConfig.stackName
-        ? `Successfully imported the content to the stack named ${importConfig.stackName} with the API key ${importConfig.apiKey} .`
-        : `The content has been imported to the stack ${importConfig.apiKey} successfully!`;
+          ? `Successfully imported the content to the stack named ${importConfig.stackName} with the API key ${importConfig.apiKey} .`
+          : `The content has been imported to the stack ${importConfig.apiKey} successfully!`;
         log.success(successMessage, importConfig.context);
       }
 
-      log.success(`The log has been stored at '${getLogPath()}'`, importConfig.context)
+      log.success(`The log has been stored at '${getLogPath()}'`, importConfig.context);
       log.info(`The backup content has been stored at '${backupDir}'`, importConfig.context);
     } catch (error) {
       handleAndLogError(error);
-      log.info(`The log has been stored at '${getLogPath()}'`)
-      log.info(`The backup content has been stored at '${backupDir}'`);
+      log.info(`The log has been stored at '${getLogPath()}'`);
+      if (importConfig?.backupDir) {
+        log.info(`The backup content has been stored at '${importConfig?.backupDir}'`);
+      } else {
+        log.info('No backup directory was created due to early termination');
+      }
     }
   }
 

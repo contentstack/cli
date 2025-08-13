@@ -15,10 +15,13 @@ describe('Global Fields', () => {
   let constructorParam: ModuleConstructorParam & CtConstructorParam;
 
   class AuditFixTempClass extends GlobalField {
-    constructor(public missingRefs: Record<string, any> = {}) {
+    public missingRefs: Record<string, any>;
+    
+    constructor(missingRefs: Record<string, any> = {}) {
       super({ ...constructorParam, fix: true, moduleName: 'global-fields' });
       this.currentUid = 'audit-fix';
       this.currentTitle = 'Audit fix';
+      this.missingRefs = missingRefs;
       this.missingRefs['audit-fix'] = [];
     }
   }
