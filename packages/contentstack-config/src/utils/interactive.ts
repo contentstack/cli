@@ -159,7 +159,7 @@ export async function confirmMFAOverwrite(): Promise<boolean> {
   });
 }
 
-export async function confirmMFARemoval(isCorrupted: boolean = false): Promise<boolean> {
+export async function confirmMFARemoval(isCorrupted = false): Promise<boolean> {
   const message = isCorrupted 
     ? 'Configuration appears corrupted. Do you want to remove it anyway?'
     : 'Are you sure you want to remove the stored secret?';
