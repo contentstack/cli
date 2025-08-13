@@ -128,3 +128,45 @@ export async function askLogPath(): Promise<string> {
   ]);
   return logPath;
 }
+
+export async function promptForMFASecret(validateSecret: (input: string) => boolean): Promise<string> {
+  const secret = await cliux.inquire<string>({
+    type: 'password',
+    name: 'secret',
+    message: 'Enter your secret (or set CONTENTSTACK_MFA_SECRET environment variable):',
+    validate: (input: string) => {
+      if (!input) {
+        cliux.error('Secret is required');
+        process.exit(1);
+      }
+      if (!validateSecret(input)) {
+        cliux.error('Invalid secret format. The secret must be a valid Base32 string of at least 16 characters.');
+        cliux.print('For more information about MFA, visit: https://www.contentstack.com/docs/developers/security/multi-factor-authentication', { color: 'yellow' });
+        process.exit(1);
+      }
+      return true;
+    },
+  });
+
+  return secret;
+}
+
+export async function confirmMFAOverwrite(): Promise<boolean> {
+  return cliux.inquire<boolean>({
+    type: 'confirm',
+    name: 'confirm',
+    message: 'Secret configuration already exists. Do you want to overwrite it?',
+  });
+}
+
+export async function confirmMFARemoval(isCorrupted: boolean = false): Promise<boolean> {
+  const message = isCorrupted 
+    ? 'Configuration appears corrupted. Do you want to remove it anyway?'
+    : 'Are you sure you want to remove the stored secret?';
+
+  return cliux.inquire<boolean>({
+    type: 'confirm',
+    name: 'confirm',
+    message,
+  });
+}

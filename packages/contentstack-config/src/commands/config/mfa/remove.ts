@@ -1,6 +1,7 @@
 import { cliux, handleAndLogError } from '@contentstack/cli-utilities';
 import { BaseCommand } from '../../../base-command';
 import { MFAService } from '../../../services/mfa/mfa.service';
+import { confirmMFARemoval } from '../../../utils/interactive';
 import { Flags } from '@oclif/core';
 
 export default class RemoveMFACommand extends BaseCommand<typeof RemoveMFACommand> {
@@ -48,17 +49,7 @@ export default class RemoveMFACommand extends BaseCommand<typeof RemoveMFAComman
 
       // Confirm removal unless -y flag is used
       if (!flags.yes) {
-        let message = 'Are you sure you want to remove the stored secret?';
-        if (isCorrupted) {
-          message = 'Configuration appears corrupted. Do you want to remove it anyway?';
-        }
-
-        const confirm = await cliux.inquire({
-          type: 'confirm',
-          name: 'confirm',
-          message,
-        });
-
+        const confirm = await confirmMFARemoval(isCorrupted);
         if (!confirm) {
           cliux.print('Operation cancelled');
           return;

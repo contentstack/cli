@@ -46,9 +46,9 @@ fileignoreconfig:
 - filename: packages/contentstack-auth/env.example
   checksum: 72c9ed18a449c42b03ec54795898f6bad4e15d23a3d701c05b96fb17c3bbd93b
 - filename: packages/contentstack-auth/test/unit/utils/mfa-handler.test.ts
-  checksum: 741d0072dbe79d0d0e8ba08c49c796cb31782993a91a0493c399021106b17d72
+  checksum: 15180df9adf6dac871af82d6983ad27ee75e053240396c88f172dda3fb92fe5a
 - filename: packages/contentstack-config/src/commands/config/mfa/add.ts
-  checksum: db0e4de369f1c08aa1061aa08b3561748e5a87de7fbaf37f8fed49afa2471114
+  checksum: 924ff470773b53caa0dab2b5d8b4a43a1b43f9f681ead744f2311a1c6cdc12aa
 - filename: packages/contentstack-config/src/services/mfa/mfa.service.ts
   checksum: c0bf969154a243036c402194d63ada2ada5efa6c5843674293de25f49292ea5b
 - filename: packages/contentstack-auth/src/utils/mfa-handler.ts
@@ -75,6 +75,6 @@ fileignoreconfig:
   checksum: a61790bd55c565cd56e5ad146816ab0a760f7ccc90c565cf7dff66a97ccef6e1
 - filename: packages/contentstack-config/test/unit/commands/mfa.test.ts
   checksum: 242491d40c7178132dc60abf3a251254559a002a9377b3038bc4a8b0c4708565
+- filename: packages/contentstack-config/src/utils/interactive.ts
+  checksum: 740d954029fb600974ddcf586fe2da8b3619be99e5da3b1fa233cbe1c2d4d8fd
 version: ""
-
-
