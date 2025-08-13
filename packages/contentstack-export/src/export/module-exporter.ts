@@ -35,7 +35,7 @@ class ModuleExporter {
       return this.exportByBranches();
     }
     // If branches disabled then initialize the global summary
-    CLIProgressManager.initializeGlobalSummary('EXPORT', this.exportConfig.branchName);
+    CLIProgressManager.initializeGlobalSummary('EXPORT', this.exportConfig.branchName, 'EXPORTING CONTENT');
     return this.export();
   }
 
@@ -50,7 +50,8 @@ class ModuleExporter {
         // Reset progress manager for each branch (except the first one which was initialized in export command)
         if (index >= 0) {
           CLIProgressManager.clearGlobalSummary();
-          CLIProgressManager.initializeGlobalSummary(`EXPORT-${branch.uid}`, branch.uid);
+          CLIProgressManager.initializeGlobalSummary(`EXPORT-${branch.uid}`, branch.uid,  `EXPORTING "${branch.uid}" BRANCH CONTENT`,);
+          
         }
 
         log.info(`Exporting content from branch ${branch.uid}`, this.exportConfig.context);

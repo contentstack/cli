@@ -175,8 +175,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
       return result;
     } catch (error: any) {
       log.debug(`Failed to fetch projects: ${error}`, this.exportConfig?.context);
-      // Return empty array instead of throwing to prevent spinner from hanging
-      return [];
+      throw error;
     }
   }
 
@@ -232,8 +231,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
       return result;
     } catch (error: any) {
       log.debug(`Failed to fetch experiences: ${error}`, this.exportConfig?.context);
-      // Return empty array instead of throwing to prevent spinner from hanging
-      return [];
+      throw error;
     }
   }
 
@@ -332,7 +330,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     } catch (error: any) {
       log.debug(`Failed to fetch events: ${error}`, this.exportConfig?.context);
       // Return empty array instead of throwing to prevent spinner from hanging
-      return [];
+      throw error;
     }
   }
 
@@ -353,7 +351,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     } catch (error: any) {
       log.debug(`Failed to fetch audiences: ${error}`, this.exportConfig?.context);
       // Return empty array instead of throwing to prevent spinner from hanging
-      return [];
+      throw error;
     }
   }
 
@@ -367,7 +365,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     } catch (error: any) {
       log.debug(`Failed to fetch attributes: ${error}`, this.exportConfig?.context);
       // Return empty array instead of throwing to prevent spinner from hanging
-      return [];
+      throw error;
     }
   }
 
