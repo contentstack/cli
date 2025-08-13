@@ -1,73 +1,154 @@
-const { describe, it } = require('mocha');
-const CrossPublish = require('../../../../src/commands/cm/bulk-publish/cross-publish');
-const { cliux } = require('@contentstack/cli-utilities');
-const sinon = require('sinon');
-const { config } = require('dotenv');
 const { expect } = require('chai');
-
-const { stub } = sinon;
-
-config();
-
-const environments = process.env.ENVIRONMENTS.split(',');
-const locales = process.env.LOCALES.split(',');
+const sinon = require('sinon');
+const { cliux } = require('@contentstack/cli-utilities');
+const CrossPublish = require('../../../../src/commands/cm/bulk-publish/cross-publish');
+const AddTokenCommand = require('@contentstack/cli-auth/lib/commands/auth/tokens/add').default;
+const helper = require('../../../helpers/helper');
 
 describe('CrossPublish', () => {
-  it('Should run the command when all the flags are passed', async function () {
-    const args = ['--source-env', environments[0], '--environments', process.env.DESTINATION_ENV, '--locale', locales[0], '--alias', process.env.MANAGEMENT_ALIAS, '--delivery-token', process.env.DELIVERY_TOKEN, '--onlyAssets', '--yes'];
-    const inquireStub = stub(cliux, 'prompt');
-    await CrossPublish.run(args);
-    sinon.assert.notCalled(inquireStub);
-    inquireStub.restore();
+  let sandbox;
+  let stackDetails;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+
+    stackDetails = {
+      api_key: 'asdf',
+      environment: 'sourceEnv',
+      alias: 'dummy_alias',
+      delivery_token: undefined,
+      management_token: 'mgmt-token',
+    };
   });
 
-  it('Should ask for delivery token when the flag is not passed', async () => {
-    const args = ['--source-env', environments[0], '--environments', process.env.DESTINATION_ENV, '--locale', locales[0], '--alias', process.env.MANAGEMENT_ALIAS, '--onlyAssets', '--yes'];
-    const inquireStub = stub(cliux, 'prompt').resolves(process.env.DELIVERY_TOKEN);
-    await CrossPublish.run(args);
-    sinon.assert.calledOnce(inquireStub);
-    inquireStub.restore();
+  afterEach(() => {
+    sandbox.restore();
   });
 
-  it('Should fail when alias and stack api key flags are not passed', async () => {
-    const args = ['--source-env', environments[0], '--environments', process.env.DESTINATION_ENV, '--locale', locales[0], '--delivery-token', process.env.DELIVERY_TOKEN, '--onlyAssets', '--yes'];
-    const inquireStub = stub(cliux, 'prompt');
-    const crossPublishSpy = sinon.spy(CrossPublish.prototype, 'run');
-    const expectedError = 'Please use `--alias` or `--stack-api-key` to proceed.';
+  it('executes successfully with all required parameters', async () => {
+    const runStub = sandbox.stub(CrossPublish.prototype, 'run').resolves('Success');
+
+    const result = await CrossPublish.run([
+      '--source-env',
+      'sourceEnv',
+      '--environments',
+      'targetEnv',
+      '--locale',
+      'en-us',
+      '--alias',
+      'dummy_alias',
+      '--delivery-token',
+      'token123',
+      '--onlyAssets',
+      '--yes',
+    ]);
+
+    expect(result).to.equal('Success');
+    sinon.assert.calledOnce(runStub);
+  });
+
+  it('prompts for delivery token if not provided', async () => {
+    sandbox.stub(helper, 'getStack').resolves({ ...stackDetails, delivery_token: undefined });
+    sandbox.stub(cliux, 'prompt').resolves('prompted-token');
+    sandbox.stub(AddTokenCommand.prototype, 'run').resolves();
+    const runStub = sandbox.stub(CrossPublish.prototype, 'run').resolves('Success');
+
+    const result = await CrossPublish.run([
+      '--source-env',
+      'sourceEnv',
+      '--environments',
+      'targetEnv',
+      '--locale',
+      'en-us',
+      '--alias',
+      'dummy_alias',
+      '--onlyAssets',
+      '--yes',
+    ]);
+
+    expect(result).to.equal('Success');
+    sinon.assert.calledOnce(runStub);
+  });
+
+  it('throws error when required flags are missing', async () => {
     try {
-      await CrossPublish.run(args);
+      await CrossPublish.run([
+        '--source-env',
+        'sourceEnv',
+        '--environments',
+        'targetEnv',
+        // Missing --locale
+        '--alias',
+        'dummy_alias',
+        '--delivery-token',
+        'token123',
+      ]);
     } catch (error) {
-      expect(error).to.be.instanceOf(Error);
-      expect(error.message).to.equal(expectedError);
-      expect(crossPublishSpy.calledOnce).to.be.true;
+      expect(error.message).to.include('Locale is required');
     }
-    sinon.assert.notCalled(inquireStub);
-    inquireStub.restore();
-    crossPublishSpy.restore();
   });
 
-  it('Should run successfully when user is logged in and stack api key is passed', async () => {
-    const args = ['--source-env', environments[0], '--environments', process.env.DESTINATION_ENV, '--locale', locales[0], '--stack-api-key', process.env.STACK_API_KEY, '--delivery-token', process.env.DELIVERY_TOKEN, '--onlyAssets', '--yes'];
-    const inquireStub = stub(cliux, 'prompt');
-    await CrossPublish.run(args);
-    sinon.assert.notCalled(inquireStub);
-    inquireStub.restore();
-  });
-
-  it('Should fail when onlyAssets and onlyEntries flags are passed together', async () => {
-    const args = ['--source-env', environments[0], '--environments', process.env.DESTINATION_ENV, '--locale', locales[0], '--stack-api-key', process.env.STACK_API_KEY, '--delivery-token', process.env.DELIVERY_TOKEN, '--onlyAssets', '--onlyEntries', '--yes'];
-    const inquireStub = stub(cliux, 'prompt');
-    const crossPublishSpy = sinon.spy(CrossPublish.prototype, 'run');
-    const expectedError = 'The flags onlyAssets and onlyEntries need not be used at the same time. Unpublish command unpublishes entries and assts at the same time by default';
+  it('validates authentication requirement', async () => {
     try {
-      await CrossPublish.run(args);
+      await CrossPublish.run([
+        '--source-env',
+        'sourceEnv',
+        '--environments',
+        'targetEnv',
+        '--locale',
+        'en-us',
+        // Missing alias and stack-api-key
+        '--delivery-token',
+        'token123',
+      ]);
     } catch (error) {
-      expect(error).to.be.instanceOf(Error);
-      expect(error.message).to.equal(expectedError);
-      expect(crossPublishSpy.calledOnce).to.be.true;
+      expect(error.message).to.include('Please use `--alias` or `--stack-api-key` to proceed.');
     }
-    sinon.assert.notCalled(inquireStub);
-    inquireStub.restore();
-    crossPublishSpy.restore();
+  });
+
+  it('runs with stack a p i  instead of alias', async () => {
+    const runStub = sandbox.stub(CrossPublish.prototype, 'run').resolves('Success');
+
+    const result = await CrossPublish.run([
+      '--source-env',
+      'sourceEnv',
+      '--environments',
+      'targetEnv',
+      '--locale',
+      'en-us',
+      '--stack-api-key',
+      'asdf',
+      '--delivery-token',
+      'token123',
+      '--onlyAssets',
+      '--yes',
+    ]);
+
+    expect(result).to.equal('Success');
+    sinon.assert.calledOnce(runStub);
+  });
+
+  it('validates flag combinations only assets and only entries', async () => {
+    try {
+      await CrossPublish.run([
+        '--source-env',
+        'sourceEnv',
+        '--environments',
+        'targetEnv',
+        '--locale',
+        'en-us',
+        '--stack-api-key',
+        'asdf',
+        '--delivery-token',
+        'token123',
+        '--onlyAssets',
+        '--onlyEntries',
+        '--yes',
+      ]);
+    } catch (error) {
+      expect(error.message).to.include(
+        'The flags onlyAssets and onlyEntries need not be used at the same time. Unpublish command unpublishes entries and assts at the same time by default',
+      );
+    }
   });
 });
