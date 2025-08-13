@@ -6,11 +6,11 @@ import {
   flags,
   FlagInput,
   ContentstackClient,
-  pathValidator,
   log,
   handleAndLogError,
   configHandler,
   getLogPath,
+  CLIProgressManager,
 } from '@contentstack/cli-utilities';
 
 import { Context, ImportConfig } from '../../../types';
@@ -181,6 +181,16 @@ export default class ImportCommand extends Command {
         }
       }
 
+      if (flags.branch) {
+        CLIProgressManager.initializeGlobalSummary(
+          `IMPORT-${flags.branch}`,
+          flags.branch,
+          `IMPORTING "${flags.branch}" BRANCH CONTENT`,
+        );
+      } else {
+        CLIProgressManager.initializeGlobalSummary(`IMPORT`, flags.branch, 'IMPORTING CONTENT');
+      }
+
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       const result = await moduleImporter.start();
       backupDir = importConfig.backupDir;
@@ -194,6 +204,7 @@ export default class ImportCommand extends Command {
 
       log.success(`The log has been stored at '${getLogPath()}'`, importConfig.context);
       log.info(`The backup content has been stored at '${backupDir}'`, importConfig.context);
+      CLIProgressManager.printGlobalSummary();
     } catch (error) {
       handleAndLogError(error);
       log.info(`The log has been stored at '${getLogPath()}'`);
