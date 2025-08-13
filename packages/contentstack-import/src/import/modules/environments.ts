@@ -22,6 +22,7 @@ export default class ImportEnvironments extends BaseClass {
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
     this.importConfig.context.module = 'environments';
+    this.currentModuleName = 'Environments';
     this.environmentsConfig = importConfig.modules.environments;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'environments');
     this.environmentsFolderPath = join(this.importConfig.backupDir, this.environmentsConfig.dirName);
@@ -38,51 +39,29 @@ export default class ImportEnvironments extends BaseClass {
    * @returns {Promise<void>} Promise<void>
    */
   async start(): Promise<void> {
-    log.debug('Checking for environments folder existence', this.importConfig.context);
+    try {
+      log.debug('Starting environments import process...', this.importConfig.context);
 
-    //Step1 check folder exists or not
-    if (fileHelper.fileExistsSync(this.environmentsFolderPath)) {
-      log.debug(`Found environments folder: ${this.environmentsFolderPath}`, this.importConfig.context);
-      this.environments = fsUtil.readFile(join(this.environmentsFolderPath, 'environments.json'), true) as Record<
-        string,
-        unknown
-      >;
-      const envCount = Object.keys(this.environments || {}).length;
-      log.debug(`Loaded ${envCount} environment items from file`, this.importConfig.context);
-    } else {
-      log.info(`No Environments Found - '${this.environmentsFolderPath}'`, this.importConfig.context);
-      return;
+      const [environmentsCount] = await this.analyzeEnvironments();
+      if (environmentsCount === 0) {
+        log.info('No Environments Found', this.importConfig.context);
+        return;
+      }
+
+      const progress = this.createSimpleProgress(this.currentModuleName, environmentsCount);
+      await this.prepareEnvironmentMapper();
+
+      progress.updateStatus('Importing environments...');
+      await this.importEnvironments();
+
+      await this.processImportResults();
+
+      this.completeProgress(true);
+      log.success('Environments have been imported successfully!', this.importConfig.context);
+    } catch (error) {
+      this.completeProgress(false, error?.message || 'Environments import failed');
+      handleAndLogError(error, { ...this.importConfig.context });
     }
-
-    log.debug('Creating environments mapper directory', this.importConfig.context);
-    await fsUtil.makeDirectory(this.mapperDirPath);
-    log.debug('Loading existing environment UID mappings', this.importConfig.context);
-    this.envUidMapper = fileHelper.fileExistsSync(this.envUidMapperPath)
-      ? (fsUtil.readFile(join(this.envUidMapperPath), true) as Record<string, unknown>)
-      : {};
-
-    if (Object.keys(this.envUidMapper)?.length > 0) {
-      const envUidCount = Object.keys(this.envUidMapper || {}).length;
-      log.debug(`Loaded existing environment UID data: ${envUidCount} items`, this.importConfig.context);
-    } else {
-      log.debug('No existing environment UID mappings found', this.importConfig.context);
-    }
-
-    log.debug('Starting environment import process', this.importConfig.context);
-    await this.importEnvironments();
-
-    log.debug('Processing environment import results', this.importConfig.context);
-    if (this.envSuccess?.length) {
-      fsUtil.writeFile(this.envSuccessPath, this.envSuccess);
-      log.debug(`Written ${this.envSuccess.length} successful environments to file`, this.importConfig.context);
-    }
-
-    if (this.envFailed?.length) {
-      fsUtil.writeFile(this.envFailsPath, this.envFailed);
-      log.debug(`Written ${this.envFailed.length} failed environments to file`, this.importConfig.context);
-    }
-
-    log.success('Environments have been imported successfully!', this.importConfig.context);
   }
 
   async importEnvironments() {
@@ -99,6 +78,7 @@ export default class ImportEnvironments extends BaseClass {
     const onSuccess = ({ response, apiData: { uid, name } = { uid: null, name: '' } }: any) => {
       this.envSuccess.push(response);
       this.envUidMapper[uid] = response.uid;
+      this.progressManager?.tick(true, `environment: ${name || uid}`);
       log.success(`Environment '${name}' imported successfully`, this.importConfig.context);
       log.debug(`Environment UID mapping: ${uid} → ${response.uid}`, this.importConfig.context);
       fsUtil.writeFile(this.envUidMapperPath, this.envUidMapper);
@@ -108,15 +88,22 @@ export default class ImportEnvironments extends BaseClass {
       const err = error?.message ? JSON.parse(error.message) : error;
       const { name, uid } = apiData;
       log.debug(`Environment '${name}' (${uid}) failed to import`, this.importConfig.context);
+
       if (err?.errors?.name) {
         log.debug(`Environment '${name}' already exists, fetching details`, this.importConfig.context);
         const res = await this.getEnvDetails(name);
         this.envUidMapper[uid] = res?.uid || ' ';
         fsUtil.writeFile(this.envUidMapperPath, this.envUidMapper);
+        this.progressManager?.tick(true, `environment: ${name || uid} (already exists)`);
         log.info(`Environment '${name}' already exists`, this.importConfig.context);
         log.debug(`Added existing environment UID mapping: ${uid} → ${res?.uid}`, this.importConfig.context);
       } else {
         this.envFailed.push(apiData);
+        this.progressManager?.tick(
+          false,
+          `environment: ${name || uid}`,
+          error?.message || 'Failed to import environment',
+        );
         handleAndLogError(error, { ...this.importConfig.context, name }, `Environment '${name}' failed to be import`);
       }
     };
@@ -157,6 +144,8 @@ export default class ImportEnvironments extends BaseClass {
         this.importConfig.context,
       );
       log.debug(`Skipping environment serialization for: ${environment.uid}`, this.importConfig.context);
+      // Still tick progress for skipped environments
+      this.progressManager?.tick(true, `environment: ${environment.name} (skipped - already exists)`);
       apiOptions.entity = undefined;
     } else {
       log.debug(`Processing environment: ${environment.name}`, this.importConfig.context);
@@ -178,5 +167,58 @@ export default class ImportEnvironments extends BaseClass {
         log.debug(`Error fetching environment details for: ${envName}`, this.importConfig.context);
         handleAndLogError(error, { ...this.importConfig.context, envName });
       });
+  }
+
+  private async analyzeEnvironments(): Promise<[number]> {
+    return this.withLoadingSpinner('ENVIRONMENTS: Analyzing import data...', async () => {
+      log.debug('Checking for environments folder existence', this.importConfig.context);
+
+      if (!fileHelper.fileExistsSync(this.environmentsFolderPath)) {
+        log.info(`No Environments Found - '${this.environmentsFolderPath}'`, this.importConfig.context);
+        return [0];
+      }
+
+      log.debug(`Found environments folder: ${this.environmentsFolderPath}`, this.importConfig.context);
+
+      this.environments = fsUtil.readFile(join(this.environmentsFolderPath, 'environments.json'), true) as Record<
+        string,
+        unknown
+      >;
+
+      const count = Object.keys(this.environments || {}).length;
+      log.debug(`Loaded ${count} environment items from file`, this.importConfig.context);
+      return [count];
+    });
+  }
+
+  private async prepareEnvironmentMapper(): Promise<void> {
+    log.debug('Creating environments mapper directory', this.importConfig.context);
+    await fsUtil.makeDirectory(this.mapperDirPath);
+
+    log.debug('Loading existing environment UID mappings', this.importConfig.context);
+    this.envUidMapper = fileHelper.fileExistsSync(this.envUidMapperPath)
+      ? (fsUtil.readFile(this.envUidMapperPath, true) as Record<string, unknown>)
+      : {};
+
+    const count = Object.keys(this.envUidMapper || {}).length;
+    if (count > 0) {
+      log.debug(`Loaded existing environment UID data: ${count} items`, this.importConfig.context);
+    } else {
+      log.debug('No existing environment UID mappings found', this.importConfig.context);
+    }
+  }
+
+  private async processImportResults(): Promise<void> {
+    log.debug('Processing environment import results', this.importConfig.context);
+
+    if (this.envSuccess?.length) {
+      fsUtil.writeFile(this.envSuccessPath, this.envSuccess);
+      log.debug(`Written ${this.envSuccess.length} successful environments to file`, this.importConfig.context);
+    }
+
+    if (this.envFailed?.length) {
+      fsUtil.writeFile(this.envFailsPath, this.envFailed);
+      log.debug(`Written ${this.envFailed.length} failed environments to file`, this.importConfig.context);
+    }
   }
 }

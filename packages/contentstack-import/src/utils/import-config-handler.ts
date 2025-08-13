@@ -131,6 +131,9 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
     config['exclude-global-modules'] = importCmdFlags['exclude-global-modules'];
   }
 
+  // Set progress supported module to check and display console logs
+  configHandler.set('log.progressSupportedModule', 'import');
+  
   // Add authentication details to config for context tracking
   config.authenticationMethod = authenticationMethod;
   log.debug('Import configuration setup completed', { ...config });
