@@ -1,7 +1,5 @@
 import { expect } from 'chai';
-import * as sinon from 'sinon';
 import { spawnSync } from 'child_process';
-import { cliux } from '@contentstack/cli-utilities';
 
 describe('ContentStack-Config Plugin Tests', () => {
   it("Should execute 'config:set:region --AZURE-NA'", () => {
