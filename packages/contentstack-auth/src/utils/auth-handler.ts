@@ -139,7 +139,7 @@ class AuthHandler {
             }
           })
           .catch((error: any) => {
-            log.debug('Login API call failed', { module: 'auth-handler', error: error.message || error });
+            log.debug('Login API call failed', { module: 'auth-handler', error: error.errorMessage || error });
             cliux.print('CLI_AUTH_LOGIN_FAILED', { color: 'yellow' });
             handleAndLogError(error, { module: 'auth-handler' });
           });
