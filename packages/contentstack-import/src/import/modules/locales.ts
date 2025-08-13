@@ -6,7 +6,7 @@
  */
 
 import * as path from 'path';
-import { values, isEmpty, filter, pick } from 'lodash';
+import { values, isEmpty, filter, pick, keys } from 'lodash';
 import { cliux, sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 import { fsUtil, formatError, fileHelper } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
@@ -41,6 +41,7 @@ export default class ImportLocales extends BaseClass {
     super({ importConfig, stackAPIClient });
     this.config = importConfig;
     this.config.context.module = 'locales';
+    this.currentModuleName = 'Locales';
     this.localeConfig = importConfig.modules.locales;
     this.masterLanguage = importConfig.masterLocale;
     this.masterLanguageConfig = importConfig.modules.masterLocale;
@@ -57,126 +58,58 @@ export default class ImportLocales extends BaseClass {
     this.langUidMapperPath = path.resolve(sanitizePath(this.config.data), 'mapper', 'languages', 'uid-mapper.json');
   }
 
-  async start(): Promise<any> {
-    log.debug('Loading locales from file', this.config.context);
+  async start(): Promise<void> {
+    try {
+      log.debug('Starting locales import process...', this.config.context);
+      const [localesCount] = await this.analyzeLocales();
+      if (localesCount === 0) {
+        log.info('No languages found to import', this.config.context);
+        return;
+      }
 
-    this.languages = fsUtil.readFile(path.join(this.langFolderPath, this.localeConfig.fileName)) as Record<
-      string,
-      unknown
-    >[];
-    if (!this.languages || isEmpty(this.languages)) {
-      log.info('No languages found to import', this.config.context);
-      return;
+      const progress = this.setupLocalesProgress(localesCount);
+      this.prepareLocalesMapper();
+
+      await this.processMasterLocale(progress);
+      await this.processLocaleCreation(progress);
+      await this.processLocaleUpdate(progress);
+
+      log.debug('Writing failed locales to file', this.config.context);
+      fsUtil.writeFile(this.langFailsPath, this.failedLocales);
+      log.debug(`Written ${this.failedLocales.length} failed locales to file`, this.config.context);
+
+      this.completeProgress(true);
+      log.success('Languages have been imported successfully!', this.config.context);
+    } catch (error) {
+      this.completeProgress(false, error?.message || 'Locales import failed');
+      handleAndLogError(error, { ...this.config.context });
     }
-    log.debug(`Found ${values(this.languages).length} languages to import`, this.config.context);
-
-    log.debug('Loading source master language configuration', this.config.context);
-    this.sourceMasterLanguage = fsUtil.readFile(
-      path.join(this.langFolderPath, this.masterLanguageConfig.fileName),
-    ) as Record<string, any>;
-    log.debug('Loaded source master language configuration', this.config.context);
-
-    log.debug('Creating languages mapper directory', this.config.context);
-    await fileHelper.makeDirectory(this.langMapperPath);
-    log.debug('Created languages mapper directory', this.config.context);
-
-    log.debug('Loading existing language UID mappings', this.config.context);
-    if (fileHelper.fileExistsSync(this.langUidMapperPath)) {
-      this.langUidMapper = fsUtil.readFile(this.langUidMapperPath) || {};
-      const langUidCount = Object.keys(this.langUidMapper || {}).length;
-      log.debug(`Loaded existing language UID data: ${langUidCount} items`, this.config.context);
-    } else {
-      log.debug('No existing language UID mappings found', this.config.context);
-    }
-
-    log.debug('Checking and updating master locale', this.config.context);
-    await this.checkAndUpdateMasterLocale().catch((error) => {
-      handleAndLogError(error, { ...this.config.context });
-    });
-
-    log.debug('Creating locales', this.config.context);
-    await this.createLocales().catch((error) => {
-      handleAndLogError(error, { ...this.config.context });
-      Promise.reject('Failed to import locales');
-    });
-
-    log.debug('Writing failed locales to file', this.config.context);
-    fsUtil.writeFile(this.langFailsPath, this.failedLocales);
-    log.debug(`Written ${this.failedLocales.length} failed locales to file`, this.config.context);
-
-    log.debug('Updating locales', this.config.context);
-    await this.updateLocales().catch((error) => {
-      handleAndLogError(error, { ...this.config.context });
-      Promise.reject('Failed to update locales');
-    });
-
-    log.success('Languages have been imported successfully!', this.config.context);
   }
 
-  async checkAndUpdateMasterLocale(): Promise<any> {
+  async checkAndUpdateMasterLocale(): Promise<void> {
     log.debug('Checking and updating master locale', this.config.context);
 
-    let sourceMasterLangDetails = (this.sourceMasterLanguage && Object.values(this.sourceMasterLanguage)) || [];
-    log.debug(`Source master language details count: ${sourceMasterLangDetails.length}`, this.config.context);
+    const sourceMasterLangDetails = this.getSourceMasterLangDetails();
+    if (!sourceMasterLangDetails) return;
 
-    if (sourceMasterLangDetails?.[0]?.code === this.masterLanguage?.code) {
-      log.debug(`Master locale code matches: ${this.masterLanguage?.code}`, this.config.context);
-
-      log.debug('Fetching current master language details from stack', this.config.context);
-      let masterLangDetails = await this.stackAPIClient
-        .locale(this.masterLanguage['code'])
-        .fetch()
-        .catch((error: Error) => {
-          log.debug('Error fetching master language details', this.config.context);
-          handleAndLogError(error, { ...this.config.context });
-        });
-
-      if (
-        masterLangDetails?.name?.toString().toUpperCase() !==
-        sourceMasterLangDetails[0]['name']?.toString().toUpperCase()
-      ) {
-        log.debug('Master language name differs between source and destination', this.config.context);
-        log.debug(`Current master language name: ${masterLangDetails['name']}`, this.config.context);
-        log.debug(`Source master language name: ${sourceMasterLangDetails[0]['name']}`, this.config.context);
-
-        cliux.print('WARNING!!! The master language name for the source and destination is different.', {
-          color: 'yellow',
-        });
-        cliux.print(`Old Master language name: ${masterLangDetails['name']}`, { color: 'red' });
-        cliux.print(`New Master language name: ${sourceMasterLangDetails[0]['name']}`, { color: 'green' });
-
-        const langUpdateConfirmation: boolean = await cliux.inquire({
-          type: 'confirm',
-          message: 'Are you sure you want to update name of master language?',
-          name: 'confirmation',
-        });
-
-        if (langUpdateConfirmation) {
-          log.debug('User confirmed master language name update', this.config.context);
-          let langUid = sourceMasterLangDetails[0] && sourceMasterLangDetails[0]['uid'];
-          let sourceMasterLanguage = this.sourceMasterLanguage[langUid];
-          if (!sourceMasterLanguage) {
-            log.info(`Master language details not found with id ${langUid} to update`, this.config.context);
-          }
-
-          log.debug(`Updating master language name: ${sourceMasterLanguage.name}`, this.config.context);
-
-          const langUpdateRequest = this.stackAPIClient.locale(sourceMasterLanguage.code);
-          langUpdateRequest.name = sourceMasterLanguage.name;
-          await langUpdateRequest.update().catch(function (error: Error) {
-            log.debug('Error updating master language name', this.config.context);
-            handleAndLogError(error, { ...this.config.context });
-          });
-          log.success('Master Languages name have been updated successfully!', this.config.context);
-        } else {
-          log.debug('User declined master language name update', this.config.context);
-        }
-      } else {
-        log.debug('Master language names match, no update needed', this.config.context);
-      }
-    } else {
-      log.debug('Master language codes do not match', this.config.context);
+    if (this.masterLanguage?.code !== sourceMasterLangDetails?.code) {
+      this.logCodeMismatch(sourceMasterLangDetails.code);
+      return;
     }
+
+    log.debug(`Master locale code matches: ${this.masterLanguage.code}`, this.config.context);
+    const masterLangDetails = await this.fetchTargetMasterLocale();
+    if (!masterLangDetails) return;
+
+    if (
+      masterLangDetails?.name?.toString().toUpperCase() === sourceMasterLangDetails['name']?.toString().toUpperCase()
+    ) {
+      this.tickProgress(true, `${masterLangDetails.name} (no update needed)`);
+      log.debug('Master language names match, no update required', this.config.context);
+      return;
+    }
+
+    await this.handleNameMismatch(sourceMasterLangDetails, masterLangDetails);
   }
 
   async createLocales(): Promise<any> {
@@ -188,14 +121,21 @@ export default class ImportLocales extends BaseClass {
     log.debug(`Creating ${languagesToCreate.length} locales (excluding master locale)`, this.config.context);
 
     const onSuccess = ({ response = {}, apiData: { uid, code } = undefined }: any) => {
+      this.createdLocales.push(response.uid);
       this.langUidMapper[uid] = response.uid;
-      this.createdLocales.push(pick(response, [...this.localeConfig.requiredKeys]));
+      this.progressManager?.tick(true, `locale: ${code}`, null, 'Locale Create');
       log.info(`Created locale: '${code}'`, this.config.context);
       log.debug(`Locale UID mapping: ${uid} → ${response.uid}`, this.config.context);
       fsUtil.writeFile(this.langUidMapperPath, this.langUidMapper);
     };
 
     const onReject = ({ error, apiData: { uid, code } = undefined }: any) => {
+      this.progressManager?.tick(
+        false,
+        `locale: ${code}`,
+        error?.message || 'Failed to create locale',
+        'Locale Create',
+      );
       if (error?.errorCode === 247) {
         log.info(formatError(error), this.config.context);
       } else {
@@ -218,7 +158,7 @@ export default class ImportLocales extends BaseClass {
     });
   }
 
-  async updateLocales(): Promise<unknown> {
+  async updateLocales(): Promise<any> {
     log.debug(`Updating ${values(this.languages).length} locales`, this.config.context);
 
     const onSuccess = ({ response = {}, apiData: { uid, code } = undefined }: any) => {
@@ -234,7 +174,7 @@ export default class ImportLocales extends BaseClass {
     };
 
     return await this.makeConcurrentCall({
-      processName: 'Update locales',
+      processName: 'Locale Update locales',
       apiContent: values(this.languages),
       apiParams: {
         reject: onReject.bind(this),
@@ -244,5 +184,172 @@ export default class ImportLocales extends BaseClass {
       },
       concurrencyLimit: this.reqConcurrency,
     });
+  }
+
+  private async analyzeLocales(): Promise<[number]> {
+    return this.withLoadingSpinner('LOCALES: Analyzing import data...', async () => {
+      log.debug('Loading locales from file', this.config.context);
+
+      this.languages = fsUtil.readFile(path.join(this.langFolderPath, this.localeConfig.fileName)) as Record<
+        string,
+        unknown
+      >[];
+
+      if (!this.languages || isEmpty(this.languages)) {
+        log.info('No languages found to import', this.config.context);
+        return [0];
+      }
+
+      this.sourceMasterLanguage = fsUtil.readFile(
+        path.join(this.langFolderPath, this.masterLanguageConfig.fileName),
+      ) as Record<string, any>;
+
+      log.debug('Loaded source master language configuration', this.config.context);
+
+      const localesCount = keys(this.languages || {})?.length;
+      log.debug(`Found ${localesCount} languages to import`, this.config.context);
+      return [localesCount];
+    });
+  }
+
+  private setupLocalesProgress(localesCount: number) {
+    const progress = this.createNestedProgress(this.currentModuleName);
+    progress.addProcess('Master Locale ', 1);
+    if (localesCount > 0) {
+      progress.addProcess('Locale Create', localesCount);
+      progress.addProcess('Locale Update', localesCount);
+    }
+    return progress;
+  }
+
+  private async prepareLocalesMapper(): Promise<void> {
+    log.debug('Creating languages mapper directory', this.config.context);
+    fileHelper.makeDirectory(this.langMapperPath);
+    log.debug('Created languages mapper directory', this.config.context);
+
+    if (fileHelper.fileExistsSync(this.langUidMapperPath)) {
+      this.langUidMapper = fsUtil.readFile(this.langUidMapperPath) || {};
+      const langUidCount = Object.keys(this.langUidMapper).length;
+      log.debug(`Loaded existing language UID data: ${langUidCount} items`, this.config.context);
+    } else {
+      log.debug('No existing language UID mappings found', this.config.context);
+    }
+  }
+
+  private async processMasterLocale(progress: any): Promise<void> {
+    progress.startProcess('Master Locale ').updateStatus('Checking master locale...', 'Master Locale ');
+    log.debug('Checking and updating master locale', this.config.context);
+
+    try {
+      await this.checkAndUpdateMasterLocale();
+      progress.completeProcess('Master Locale ', true);
+    } catch (error) {
+      progress.completeProcess('Master Locale ', false);
+      //NOTE:- Continue locale creation in case of master locale error
+      handleAndLogError(error, { ...this.config.context });
+    }
+  }
+
+  private async processLocaleCreation(progress: any): Promise<void> {
+    progress.startProcess('Locale Create').updateStatus('Creating locales...', 'Locale Create');
+    log.debug('Creating locales', this.config.context);
+
+    try {
+      await this.createLocales();
+      progress.completeProcess('Locale Create', true);
+    } catch (error) {
+      progress.completeProcess('Locale Create', false);
+      throw error;
+    }
+  }
+
+  private async processLocaleUpdate(progress: any): Promise<void> {
+    progress.startProcess('Locale Update').updateStatus('Updating locales...', 'Locale Update');
+    log.debug('Updating locales', this.config.context);
+
+    try {
+      await this.updateLocales();
+      progress.completeProcess('Locale Update', true);
+    } catch (error) {
+      progress.completeProcess('Locale Update', false);
+      throw error;
+    }
+  }
+
+  private getSourceMasterLangDetails(): Record<string, any> | null {
+    const details = this.sourceMasterLanguage && Object.values(this.sourceMasterLanguage);
+    const lang = details?.[0];
+
+    if (!lang) {
+      log.info('No source master language details found', this.config.context);
+      return null;
+    }
+
+    return lang as Record<string, any>;
+  }
+
+  private async fetchTargetMasterLocale(): Promise<Record<string, any> | null> {
+    try {
+      log.debug('Fetching current master language details from stack', this.config.context);
+      return await this.stackAPIClient.locale(this.masterLanguage.code).fetch();
+    } catch (error) {
+      log.debug('Error fetching master language details', this.config.context);
+      handleAndLogError(error, { ...this.config.context });
+      return null;
+    }
+  }
+
+  private logCodeMismatch(sourceCode: string): void {
+    const targetCode = this.masterLanguage?.code;
+    const message = `master locale: codes differ (${sourceCode} vs ${targetCode})`;
+
+    this.tickProgress(true, message);
+    log.debug(`Master language codes do not match. Source: ${sourceCode}, Target: ${targetCode}`, this.config.context);
+  }
+
+  private async handleNameMismatch(source: Record<string, any>, target: Record<string, any>): Promise<void> {
+    log.debug('Master language name differs between source and destination', this.config.context);
+    log.debug(`Current: ${target.name}, Source: ${source.name}`, this.config.context);
+
+    cliux.print('WARNING!!! The master language name for the source and destination is different.', {
+      color: 'yellow',
+    });
+    cliux.print('WARNING!!! The master language name for the source and destination is different.', {
+      color: 'yellow',
+    });
+    cliux.print(`Old Master language name: ${target.name}`, { color: 'red' });
+    cliux.print(`New Master language name: ${source.name}`, { color: 'green' });
+
+    const langUpdateConfirmation: boolean = await cliux.inquire({
+      type: 'confirm',
+      message: 'Are you sure you want to update name of master language?',
+      name: 'confirmation',
+    });
+
+    if (!langUpdateConfirmation) {
+      this.tickProgress(true, `${target.name} (skipped update)`);
+      log.info('Master language update cancelled by user', this.config.context);
+      return;
+    }
+
+    log.debug('User confirmed master language update', this.config.context);
+    try {
+      const updatePayload = { ...source, uid: target.uid };
+      const langUpdateRequest = this.stackAPIClient.locale(source.code);
+      langUpdateRequest.name = source.name;
+      await langUpdateRequest.update(updatePayload);
+      this.tickProgress(true, `${source.name} (updated)`);
+      log.success(
+        `Successfully updated master language name from '${target.name}' to '${source.name}'`,
+        this.config.context,
+      );
+    } catch (error) {
+      this.tickProgress(false, source.name, error?.message || 'Failed to update master locale');
+      throw error;
+    }
+  }
+
+  private tickProgress(success: boolean, message: string, error?: string): void {
+    this.progressManager?.tick(success, `master locale: ${message}`, error || null, 'Master Locale ');
   }
 }
