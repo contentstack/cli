@@ -36,7 +36,7 @@ class AuthHandler {
   private async handleOTPFlow(tfaToken?: string, loginPayload?: any): Promise<string> {
     try {
       if (tfaToken) {
-        log.debug('Using provided TFA token', { module: 'auth-handler' });
+        log.info('Using provided TFA token', { module: 'auth-handler' });
         return tfaToken;
       }
 
@@ -102,11 +102,9 @@ class AuthHandler {
           log.debug('Adding TFA token to login payload', { module: 'auth-handler' });
         }
 
-        const hasCredentials = typeof password === 'string' && password.length > 0;
-        const hasTfaTokenPresent = typeof tfaToken === 'string' && tfaToken.length > 0;
         log.debug('Making login API call', {
           module: 'auth-handler',
-          payload: { email, hasCredentials, hasTfaTokenPresent },
+          payload: { email, hasCredentials, hasTfaToken },
         });
 
         this._client
