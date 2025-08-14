@@ -58,7 +58,6 @@ class AuthHandler {
       return await askOTP();
     } catch (error) {
       log.debug('2FA flow failed', { module: 'auth-handler', error });
-      cliux.print('CLI_AUTH_2FA_FAILED', { color: 'red' });
       throw error;
     }
   }
@@ -136,7 +135,7 @@ class AuthHandler {
             }
           })
           .catch((error: any) => {
-            log.debug('Login API call failed', { module: 'auth-handler', error: error.errorMessage || error });
+            log.debug('Login API call failed', { module: 'auth-handler', error: error?.errorMessage || error });
             cliux.print('CLI_AUTH_LOGIN_FAILED', { color: 'yellow' });
             handleAndLogError(error, { module: 'auth-handler' });
           });
