@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-auth",
   "description": "Contentstack CLI plugin for authentication activities",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "scripts": {
@@ -68,16 +68,6 @@
     "commands": "./lib/commands",
     "bin": "csdx",
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-auth/<%- commandPath %>"
-  },
-  "csdxConfig": {
-    "shortCommandName": {
-      "auth:login": "LIN",
-      "auth:logout": "LOT",
-      "auth:whoami": "WHO",
-      "auth:tokens": "LSTKN",
-      "auth:tokens:add": "ADTKN",
-      "auth:tokens:remove": "RMTKN"
-    }
   },
   "csdxConfig": {
     "shortCommandName": {
