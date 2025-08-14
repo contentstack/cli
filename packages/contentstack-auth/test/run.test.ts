@@ -1,6 +1,6 @@
 import { join, resolve } from "path";
 import { existsSync, readdirSync } from "fs";
-import config from "./config.json" with { type: "json" };
+import config from "./config.json";
 import filter from "lodash/filter.js";
 import forEach from "lodash/forEach.js";
 import isEmpty from "lodash/isEmpty.js";
