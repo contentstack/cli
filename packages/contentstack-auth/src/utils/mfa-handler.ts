@@ -57,7 +57,7 @@ class MFAHandler {
     } catch (error) {
       log.debug('Failed to generate MFA code', { module: 'mfa-handler', error });
       cliux.print('CLI_AUTH_MFA_GENERATION_FAILED', { color: 'yellow' });
-      throw new Error(messageHandler.parse('CLI_AUTH_MFA_GENERATION_FAILED'));
+      throw error;
     }
   }
 
@@ -97,7 +97,7 @@ class MFAHandler {
         } catch (error) {
           log.debug('Failed to decrypt stored MFA secret', { module: 'mfa-handler', error });
           cliux.print('CLI_AUTH_MFA_DECRYPT_FAILED', { color: 'yellow' });
-          handleAndLogError(new Error(messageHandler.parse('CLI_AUTH_MFA_DECRYPT_FAILED')), { module: 'mfa-handler' });
+          handleAndLogError(error, { module: 'mfa-handler' }, messageHandler.parse('CLI_AUTH_MFA_DECRYPT_FAILED'));
         }
       }
     }
@@ -141,20 +141,6 @@ class MFAHandler {
    */
   isValidMFACode(code: string): boolean {
     return /^\d{6}$/.test(code);
-  }
-
-  /**
-   * Handles MFA authentication flow
-   * @returns Promise<string> The valid MFA code
-   */
-  async handleMFAAuth(): Promise<string> {
-    try {
-      return await this.getMFACode();
-    } catch (error) {
-      log.debug('MFA code generation failed, falling back to manual input', { module: 'mfa-handler', error });
-      handleAndLogError(error, { module: 'mfa-handler' });
-      return this.getManualMFACode();
-    }
   }
 }
 

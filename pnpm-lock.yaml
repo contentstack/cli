@@ -4,11 +4,9 @@ importers:
 
   .:
     specifiers:
-      '@types/otplib': ^10.0.0
       husky: ^9.1.7
       pnpm: ^7.33.7
     devDependencies:
-      '@types/otplib': 10.0.0
       husky: 9.1.7
       pnpm: 7.33.7
 
@@ -19,8 +17,8 @@ importers:
       '@contentstack/cli-cm-bootstrap': ~1.15.0
       '@contentstack/cli-cm-branches': ~1.5.0
       '@contentstack/cli-cm-bulk-publish': ~1.9.0
-      '@contentstack/cli-cm-clone': ~1.15.0
-      '@contentstack/cli-cm-export': ~1.18.1
+      '@contentstack/cli-cm-clone': ~1.15.1
+      '@contentstack/cli-cm-export': ~1.19.0
       '@contentstack/cli-cm-export-to-csv': ~1.9.0
       '@contentstack/cli-cm-import': ~1.26.2
       '@contentstack/cli-cm-import-setup': 1.4.1
@@ -43,6 +41,7 @@ importers:
       '@types/mkdirp': ^1.0.2
       '@types/mocha': ^8.2.3
       '@types/node': ^14.18.63
+      '@types/otplib': ^10.0.0
       '@types/semver': ^7.7.0
       '@types/sinon': ^10.0.20
       chai: ^4.5.0
@@ -114,6 +113,7 @@ importers:
       '@types/mkdirp': 1.0.2
       '@types/mocha': 8.2.3
       '@types/node': 14.18.63
+      '@types/otplib': 10.0.0
       '@types/semver': 7.7.0
       '@types/sinon': 10.0.20
       chai: 4.5.0
@@ -381,7 +381,7 @@ importers:
   packages/contentstack-clone:
     specifiers:
       '@colors/colors': ^1.6.0
-      '@contentstack/cli-cm-export': ~1.18.1
+      '@contentstack/cli-cm-export': ~1.19.0
       '@contentstack/cli-cm-import': ~1.26.1
       '@contentstack/cli-command': ~1.6.0
       '@contentstack/cli-utilities': ~1.13.1
