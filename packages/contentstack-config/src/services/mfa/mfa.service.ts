@@ -12,14 +12,9 @@ export class MFAService implements IMFAService {
   }
 
   validateSecret(secret: string): boolean {
-    if (!secret || typeof secret !== 'string') {
+    if (typeof secret !== 'string' || secret.trim() !== secret) {
       return false;
     }
-
-    if (secret.trim() !== secret) {
-      return false;
-    }
-
     const base32Regex = /^[A-Z2-7]+=*$/;
     const normalizedSecret = secret.trim().toUpperCase();
 
@@ -79,13 +74,13 @@ export class MFAService implements IMFAService {
         this.logger.debug('Found MFA secret in environment variable');
         return {
           secret: envSecret,
-          last_updated: new Date().toISOString()
+          last_updated: new Date().toISOString(),
         };
       }
 
       // Fallback to stored config
       const config = configHandler.get('mfa');
-      return config?.secret ? config as MFAConfig : null;
+      return config?.secret ? (config as MFAConfig) : null;
     } catch (error) {
       this.logger.error('Failed to read config', { error });
       throw new Error('Failed to read configuration');
@@ -96,7 +91,7 @@ export class MFAService implements IMFAService {
     try {
       const updatedConfig: MFAConfig = {
         secret: config.secret!,
-        last_updated: new Date().toISOString()
+        last_updated: new Date().toISOString(),
       };
       configHandler.set('mfa', updatedConfig);
     } catch (error) {

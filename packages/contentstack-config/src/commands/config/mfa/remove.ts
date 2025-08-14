@@ -7,10 +7,7 @@ import { Flags } from '@oclif/core';
 export default class RemoveMFACommand extends BaseCommand<typeof RemoveMFACommand> {
   static readonly description = 'Remove stored secret';
 
-  static readonly examples = [
-    '$ csdx config:mfa:remove',
-    '$ csdx config:mfa:remove -y',
-  ];
+  static readonly examples = ['$ csdx config:mfa:remove', '$ csdx config:mfa:remove -y'];
 
   static readonly flags = {
     yes: Flags.boolean({
@@ -28,41 +25,34 @@ export default class RemoveMFACommand extends BaseCommand<typeof RemoveMFAComman
   }
 
   async run(): Promise<void> {
+    const { flags } = await this.parse(RemoveMFACommand);
+
+    let config;
+    config = this.mfaService.getStoredConfig();
+    if (!config?.secret) {
+      cliux.error('No MFA configuration found');
+      process.exit(1);
+    }
+
+    let isCorrupted = false;
     try {
-      const { flags } = await this.parse(RemoveMFACommand);
+      this.mfaService.decryptSecret(config.secret);
+    } catch (error) {
+      this.logger.debug('Failed to decrypt secret', { error });
+      isCorrupted = true;
+    }
 
-      let config;
-      config = this.mfaService.getStoredConfig();
-      if (!config?.secret) {
-        cliux.error('No MFA configuration found');
-        process.exit(1);
+    if (!flags.yes) {
+      const confirm = await confirmMFARemoval(isCorrupted);
+      if (!confirm) {
+        cliux.print('Operation cancelled');
+        return;
       }
+    }
 
-      // Verify the configuration is valid
-      let isCorrupted = false;
-      try {
-        this.mfaService.decryptSecret(config.secret);
-      } catch (error) {
-        this.logger.debug('Failed to decrypt secret', { error });
-        isCorrupted = true;
-      }
-
-      // Confirm removal unless -y flag is used
-      if (!flags.yes) {
-        const confirm = await confirmMFARemoval(isCorrupted);
-        if (!confirm) {
-          cliux.print('Operation cancelled');
-          return;
-        }
-      }
-
-      try {
-        this.mfaService.removeConfig();
-        cliux.success('Secret has been removed successfully');
-      } catch (error) {
-        handleAndLogError(error, { module: 'config:mfa:remove' });
-        process.exit(1);
-      }
+    try {
+      this.mfaService.removeConfig();
+      cliux.success('Secret has been removed successfully');
     } catch (error) {
       handleAndLogError(error, { module: 'config:mfa:remove' });
       process.exit(1);

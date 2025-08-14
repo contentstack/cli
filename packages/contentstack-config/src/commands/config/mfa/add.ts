@@ -6,9 +6,7 @@ import { promptForMFASecret, confirmMFAOverwrite } from '../../../utils/interact
 export default class AddMFACommand extends BaseCommand<typeof AddMFACommand> {
   static readonly description = 'Add MFA secret for 2FA authentication';
 
-  static readonly examples = [
-    '$ csdx config:mfa:add',
-  ];
+  static readonly examples = ['$ csdx config:mfa:add'];
 
   private readonly mfaService: MFAService;
 
@@ -20,45 +18,46 @@ export default class AddMFACommand extends BaseCommand<typeof AddMFACommand> {
   static readonly flags = {};
 
   async run(): Promise<void> {
-    try {
-      const envSecret = process.env.CONTENTSTACK_MFA_SECRET;
-      if (envSecret && !this.mfaService.validateSecret(envSecret)) {
-        cliux.error('Invalid secret format in environment variable. The secret must be a valid Base32 string of at least 16 characters.');
-        cliux.print('For more information about MFA, visit: https://www.contentstack.com/docs/developers/security/multi-factor-authentication', { color: 'yellow' });
-        process.exit(1);
-      } else if (envSecret) {
-        cliux.print('Using MFA secret from environment variable');
+    const envSecret = process.env.CONTENTSTACK_MFA_SECRET;
+    if (envSecret && !this.mfaService.validateSecret(envSecret)) {
+      cliux.error('Invalid secret format in environment variable.');
+      cliux.print(
+        'For more information about MFA, visit: https://www.contentstack.com/docs/developers/security/multi-factor-authentication',
+        { color: 'yellow' },
+      );
+      process.exit(1);
+    } else if (envSecret) {
+      cliux.print('Using MFA secret from environment variable');
+      return;
+    }
+
+    // If no environment variable, prompt for manual input
+    const secret = await promptForMFASecret(this.mfaService.validateSecret.bind(this.mfaService));
+
+    if (!secret || !this.mfaService.validateSecret(secret)) {
+      cliux.error('Invalid secret format.');
+      cliux.print(
+        'For more information about MFA, visit: https://www.contentstack.com/docs/developers/security/multi-factor-authentication',
+        { color: 'yellow' },
+      );
+      process.exit(1);
+    }
+
+    // Check if MFA configuration already exists
+    const existingConfig = this.mfaService.getStoredConfig();
+    if (existingConfig) {
+      const confirm = await confirmMFAOverwrite();
+      if (!confirm) {
+        cliux.print('Operation cancelled');
         return;
       }
+    }
 
-      // If no environment variable, prompt for manual input
-      const secret = await promptForMFASecret(this.mfaService.validateSecret.bind(this.mfaService));
-
-      if (!secret || !this.mfaService.validateSecret(secret)) {
-        cliux.error('Invalid secret format. The secret must be a valid Base32 string of at least 16 characters.');
-        cliux.print('For more information about MFA, visit: https://www.contentstack.com/docs/developers/security/multi-factor-authentication', { color: 'yellow' });
-        process.exit(1);
-      }
-
-      // Check if MFA configuration already exists
-      const existingConfig = this.mfaService.getStoredConfig();
-      if (existingConfig) {
-        const confirm = await confirmMFAOverwrite();
-        if (!confirm) {
-          cliux.print('Operation cancelled');
-          return;
-        }
-      }
-
-      // Encrypt and store the secret
-      try {
-        const encryptedSecret = this.mfaService.encryptSecret(secret);
-        this.mfaService.storeConfig({ secret: encryptedSecret });
-        cliux.success('Secret has been stored successfully');
-      } catch (error) {
-        handleAndLogError(error, { module: 'config:mfa:add' });
-        process.exit(1);
-      }
+    // Encrypt and store the secret
+    try {
+      const encryptedSecret = this.mfaService.encryptSecret(secret);
+      this.mfaService.storeConfig({ secret: encryptedSecret });
+      cliux.success('Secret has been stored successfully');
     } catch (error) {
       handleAndLogError(error, { module: 'config:mfa:add' });
       process.exit(1);

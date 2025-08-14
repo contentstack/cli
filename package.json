@@ -2,7 +2,6 @@
   "name": "csdx",
   "version": "1.0.0",
   "devDependencies": {
-    "@types/otplib": "^10.0.0",
     "husky": "^9.1.7",
     "pnpm": "^7.33.7"
   },
