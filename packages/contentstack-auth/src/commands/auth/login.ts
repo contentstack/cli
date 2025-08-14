@@ -90,7 +90,7 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
         ...this.contextDetails,
         error,
       });
-      if ((error.message && error.message.includes('2FA')) || error.message.includes('MFA')) {
+      if ((error?.message && error?.message.includes('2FA')) || error?.message.includes('MFA')) {
         error.message = `${error.message}\nFor more information about MFA, visit: https://www.contentstack.com/docs/developers/security/multi-factor-authentication`;
       }
       handleAndLogError(error, { ...this.contextDetails });

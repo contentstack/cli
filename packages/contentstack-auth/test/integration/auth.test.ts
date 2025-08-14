@@ -65,7 +65,6 @@ describe('contentstack-auth plugin test', () => {
   });
 
   describe('Check auth:login command with --username, --password flags and wrong credentials', function() {
-    this.timeout(10000); // Increase timeout to 10s
 
     it('Login should fail due to wrong credentials (flags)', async () => {
       sandbox.stub(authHandler, 'login').rejects(new Error('Invalid credentials'));
@@ -79,7 +78,6 @@ describe('contentstack-auth plugin test', () => {
   });
 
   describe('Check auth:login command with --username, --password flags', function() {
-    this.timeout(10000); // Increase timeout to 10s
 
     it('Login should succeed (flags)', async () => {
       sandbox.stub(authHandler, 'login').resolves({
@@ -93,7 +91,6 @@ describe('contentstack-auth plugin test', () => {
   });
 
   describe('Check auth:login command with 2FA', function() {
-    this.timeout(10000);
 
     it('Login should succeed with 2FA', async () => {
         mockClient.login.resetBehavior();
@@ -108,7 +105,6 @@ describe('contentstack-auth plugin test', () => {
       });
 
       it.skip('Login should fail with invalid 2FA code', async function() {
-        this.timeout(20000); // Increase timeout to 20s
         
         // Reset and restore all stubs
         sandbox.restore();
@@ -146,7 +142,6 @@ describe('contentstack-auth plugin test', () => {
   });
 
   describe('Check auth:login command with OAuth', function() {
-    this.timeout(10000); // Increase timeout to 10s
 
     it('Login should succeed with OAuth', async () => {
       Object.defineProperty(authHandler, 'oauth', {

@@ -125,7 +125,6 @@ class AuthHandler {
                 resolve(await this.login(email, password, tfToken));
               } catch (error) {
                 log.debug('Login with TFA token failed', { module: 'auth-handler', error });
-                handleAndLogError(error, { module: 'auth-handler' });
                 cliux.print('CLI_AUTH_2FA_FAILED', { color: 'red' });
                 reject(error);
               }
@@ -174,12 +173,10 @@ class AuthHandler {
           .catch((error: Error) => {
             log.debug('Logout API call failed', { module: 'auth-handler', error: error.message });
             cliux.print('CLI_AUTH_LOGOUT_FAILED', { color: 'yellow' });
-            handleAndLogError(error, { module: 'auth-handler' });
             reject(error);
           });
       } else {
         log.debug('Logout failed - no auth token provided', { module: 'auth-handler' });
-        cliux.print('CLI_AUTH_LOGOUT_NO_TOKEN', { color: 'yellow' });
         reject(new Error(messageHandler.parse('CLI_AUTH_LOGOUT_NO_TOKEN')));
       }
     });
@@ -210,7 +207,6 @@ class AuthHandler {
           });
       } else {
         log.debug('Token validation failed - no auth token provided', { module: 'auth-handler' });
-        cliux.print('CLI_AUTH_TOKEN_VALIDATION_NO_TOKEN', { color: 'yellow' });
         reject(new Error(messageHandler.parse('CLI_AUTH_TOKEN_VALIDATION_NO_TOKEN')));
       }
     });

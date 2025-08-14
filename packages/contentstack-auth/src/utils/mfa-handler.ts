@@ -96,7 +96,6 @@ class MFAHandler {
           source = 'stored configuration';
         } catch (error) {
           log.debug('Failed to decrypt stored MFA secret', { module: 'mfa-handler', error });
-          cliux.print('CLI_AUTH_MFA_DECRYPT_FAILED', { color: 'yellow' });
           handleAndLogError(error, { module: 'mfa-handler' }, messageHandler.parse('CLI_AUTH_MFA_DECRYPT_FAILED'));
         }
       }
@@ -125,13 +124,16 @@ class MFAHandler {
    * @throws Error if code format is invalid
    */
   async getManualMFACode(): Promise<string> {
-    const code = await askOTP();
-    if (!/^\d{6}$/.test(code)) {
-      log.debug('Invalid MFA code format', { module: 'mfa-handler', code });
-      cliux.print('CLI_AUTH_MFA_INVALID_CODE', { color: 'yellow' });
-      handleAndLogError(new Error(messageHandler.parse('CLI_AUTH_MFA_INVALID_CODE')), { module: 'mfa-handler' });
+    try {
+      const code = await askOTP();
+      if (!/^\d{6}$/.test(code)) {
+        throw new Error(messageHandler.parse('CLI_AUTH_MFA_INVALID_CODE'));
+      }
+      return code;
+    } catch (error) {
+      log.debug('Failed to get MFA code', { module: 'mfa-handler', error });
+      throw error;
     }
-    return code;
   }
 
   /**
