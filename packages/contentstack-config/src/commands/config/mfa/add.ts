@@ -4,7 +4,7 @@ import { MFAService } from '../../../services/mfa/mfa.service';
 import { promptForMFASecret, confirmMFAOverwrite } from '../../../utils/interactive';
 
 export default class AddMFACommand extends BaseCommand<typeof AddMFACommand> {
-  static readonly description = 'Add MFA secret for 2FA authentication';
+  static readonly description = 'Add MFA Secret for Two-Factor Authentication';
 
   static readonly examples = ['$ csdx config:mfa:add'];
 
@@ -20,7 +20,7 @@ export default class AddMFACommand extends BaseCommand<typeof AddMFACommand> {
   async run(): Promise<void> {
     const envSecret = process.env.CONTENTSTACK_MFA_SECRET;
     if (envSecret && !this.mfaService.validateSecret(envSecret)) {
-      cliux.error('Invalid secret format in environment variable.');
+      cliux.error('Invalid secret format');
       cliux.print(
         'For more information about MFA, visit: https://www.contentstack.com/docs/developers/security/multi-factor-authentication',
         { color: 'yellow' },

@@ -53,7 +53,7 @@
   "CLI_AUTH_MFA_GENERATION_FAILED": "Failed to generate MFA code. Proceeding for Manual MFA code input.",
   "CLI_AUTH_MFA_DECRYPT_FAILED": "Failed to decrypt stored MFA secret. Try Resetting the MFA secret. Proceeding for Manual MFA code input.",
   "CLI_AUTH_MFA_INVALID_CODE": "Invalid authentication code format. Please enter a 6-digit code.",
-  "CLI_AUTH_MFA_RECONFIGURE_HINT": "Consider reconfiguring MFA using config:mfa:add command.",
+  "CLI_AUTH_MFA_RECONFIGURE_HINT": "Consider reconfiguring MFA using config:mfa:add",
   "CLI_AUTH_SMS_OTP_FAILED": "Failed to send SMS OTP. Please try again or use a different 2FA method.",
   "CLI_AUTH_2FA_FAILED": "Two-factor authentication failed. Please try again.",
   "CLI_AUTH_LOGIN_NO_USER": "No user found with the provided credentials.",
