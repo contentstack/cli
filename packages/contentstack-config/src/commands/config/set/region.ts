@@ -78,22 +78,14 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
   };
 
   private clearMFAIfRegionChanged(newRegionName: string) {
-    const currentRegion = configHandler.get('region');
-    if (currentRegion && currentRegion.name !== newRegionName) {
-      this.logger.debug('Region changed, clearing MFA configuration', { 
-        oldRegion: currentRegion.name, 
-        newRegion: newRegionName 
-      });
-      try {
-        const mfaConfig = this.mfaService.getStoredConfig();
-        if (mfaConfig?.secret) {
-          this.mfaService.removeConfig();
-          cliux.print('MFA configuration has been removed due to region change');
-        }
-      } catch (error) {
-        this.logger.error('Failed to remove MFA configuration during region change', { error });
-        // Continue with region change even if MFA removal fails
+    try {
+      const mfaConfig = this.mfaService.getStoredConfig();
+      if (mfaConfig?.secret) {
+        this.mfaService.removeConfig();
+        cliux.print('MFA configuration has been removed due to region change');
       }
+    } catch (error) {
+      this.logger.error('Failed to remove MFA configuration during region change', { error });
     }
   }
 
