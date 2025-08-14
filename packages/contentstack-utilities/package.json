@@ -34,7 +34,7 @@
   "dependencies": {
     "@contentstack/management": "~1.22.0",
     "@contentstack/marketplace-sdk": "^1.2.8",
-    "@oclif/core": "^4.3.0",
+    "@oclif/core": "^4.5.2",
     "axios": "^1.9.0",
     "chalk": "^4.1.2",
     "cli-cursor": "^3.1.0",
@@ -72,7 +72,7 @@
     "@types/traverse": "^0.6.37",
     "chai": "^4.5.0",
     "eslint": "^8.57.1",
-    "eslint-config-oclif": "^6.0.62",
+    "eslint-config-oclif": "^6.0.94",
     "eslint-config-oclif-typescript": "^3.1.14",
     "fancy-test": "^2.0.42",
     "mocha": "10.8.2",

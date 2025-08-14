@@ -6,8 +6,8 @@
   "dependencies": {
     "@contentstack/cli-command": "~1.6.0",
     "@contentstack/cli-utilities": "~1.13.1",
-    "@oclif/core": "^4.3.0",
-    "@oclif/plugin-help": "^6.2.28",
+    "@oclif/core": "^4.5.2",
+    "@oclif/plugin-help": "^6.2.32",
     "async": "^3.2.6",
     "callsites": "^3.1.0",
     "cardinal": "^2.1.1",
@@ -20,11 +20,11 @@
     "@oclif/test": "^4.1.13",
     "chai": "^4.5.0",
     "eslint": "^8.57.1",
-    "eslint-config-oclif": "^6.0.62",
+    "eslint-config-oclif": "^6.0.94",
     "jsdoc-to-markdown": "^8.0.3",
     "nock": "^13.5.6",
     "nyc": "^15.1.0",
-    "oclif": "^4.17.46"
+    "oclif": "^4.22.9"
   },
   "engines": {
     "node": ">=8.3.0"
