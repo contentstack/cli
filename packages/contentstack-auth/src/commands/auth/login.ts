@@ -107,7 +107,7 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
 
       try {
         tfaToken = await mfaHandler.getMFACode();
-        if(tfaToken){
+        if (tfaToken) {
           log.debug('MFA token generated from stored configuration', this.contextDetails);
         }
       } catch (error) {
