@@ -6,11 +6,12 @@ import {
   flags,
   FlagInput,
   ContentstackClient,
-  pathValidator,
   log,
   handleAndLogError,
   configHandler,
   getLogPath,
+  CLIProgressManager,
+  cliux,
 } from '@contentstack/cli-utilities';
 
 import { Context, ImportConfig } from '../../../types';
@@ -181,6 +182,16 @@ export default class ImportCommand extends Command {
         }
       }
 
+      if (flags.branch) {
+        CLIProgressManager.initializeGlobalSummary(
+          `IMPORT-${flags.branch}`,
+          flags.branch,
+          `IMPORTING DATA INTO "${flags.branch}" BRANCH`,
+        );
+      } else {
+        CLIProgressManager.initializeGlobalSummary(`IMPORT`, flags.branch, 'IMPORTING CONTENT');
+      }
+
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       const result = await moduleImporter.start();
       backupDir = importConfig.backupDir;
@@ -192,16 +203,48 @@ export default class ImportCommand extends Command {
         log.success(successMessage, importConfig.context);
       }
 
-      log.success(`The log has been stored at '${getLogPath()}'`, importConfig.context);
-      log.info(`The backup content has been stored at '${backupDir}'`, importConfig.context);
+      CLIProgressManager.printGlobalSummary();
+      this.logSuccessAndBackupMessages(backupDir, importConfig);
     } catch (error) {
       handleAndLogError(error);
-      log.info(`The log has been stored at '${getLogPath()}'`);
-      if (importConfig?.backupDir) {
-        log.info(`The backup content has been stored at '${importConfig?.backupDir}'`);
-      } else {
-        log.info('No backup directory was created due to early termination');
-      }
+      this.logAndPrintErrorDetails(error, importConfig);
+    }
+  }
+
+  private logAndPrintErrorDetails(error: unknown, importConfig: any) {
+    cliux.print('\n');
+    const logPath = getLogPath();
+    const logMsg = `The log has been stored at '${logPath}'`;
+
+    const backupDir = importConfig?.backupDir;
+    const backupDirMsg = backupDir
+      ? `The backup content has been stored at '${backupDir}'`
+      : 'No backup directory was created due to early termination';
+
+    log.info(logMsg);
+    log.info(backupDirMsg);
+
+    const showConsoleLogs = configHandler.get('log')?.showConsoleLogs;
+    if (!showConsoleLogs) {
+      cliux.print(`Error: ${error}`, { color: 'red' });
+      cliux.print(logMsg, { color: 'blue' });
+      cliux.print(backupDirMsg, { color: 'blue' });
+    }
+  }
+
+  private logSuccessAndBackupMessages(backupDir: string, importConfig: any) {
+    cliux.print('\n');
+    const logPath = getLogPath();
+    const logMsg = `The log has been stored at '${logPath}'`;
+    const backupDirMsg = `The backup content has been stored at '${backupDir}'`;
+
+    log.success(logMsg, importConfig.context);
+    log.info(backupDirMsg, importConfig.context);
+
+    const showConsoleLogs = configHandler.get('log')?.showConsoleLogs;
+    if (!showConsoleLogs) {
+      cliux.print(logMsg, { color: 'blue' });
+      cliux.print(backupDirMsg, { color: 'blue' });
     }
   }
 
