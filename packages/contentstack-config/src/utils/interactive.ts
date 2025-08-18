@@ -154,11 +154,8 @@ export async function confirmMFAOverwrite(): Promise<boolean> {
   });
 }
 
-export async function confirmMFARemoval(isCorrupted = false): Promise<boolean> {
-  const message = isCorrupted
-    ? 'The configuration appears to be corrupted. Do you want to remove it anyway?'
-    : 'Are you sure you want to remove the stored secret?';
-
+export async function confirmMFARemoval(): Promise<boolean> {
+  const message = 'Are you sure you want to remove the stored secret?';
   return cliux.inquire<boolean>({
     type: 'confirm',
     name: 'confirm',

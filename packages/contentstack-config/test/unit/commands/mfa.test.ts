@@ -3,7 +3,7 @@ import { configHandler, cliux, NodeCrypto } from '@contentstack/cli-utilities';
 import { authenticator } from 'otplib';
 import * as sinon from 'sinon';
 import MFAAddCommand from '../../../src/commands/config/mfa/add';
-
+import MFARemoveCommand from '../../../lib/commands/config/mfa/remove';
 describe('MFA Commands', function () {
   let inquireStub: sinon.SinonStub;
   let configStub: {
@@ -198,6 +198,174 @@ describe('MFA Commands', function () {
       inquireStub.returns(Promise.resolve(validSecret));
       await MFAAddCommand.run([]);
       expect(configStub.set.calledOnce).to.be.true;
+    });
+  });
+
+    describe('config:mfa:remove', function () {
+    const encryptedSecret = 'encrypted-secret|iv';
+    const decryptedSecret = 'JBSWY3DPEHPK3PXP';
+
+    let processExitStub: sinon.SinonStub;
+
+    beforeEach(function() {
+      processExitStub = sinon.stub(process, 'exit');
+    });
+
+    it('should remove MFA configuration successfully', async function () {
+      configStub.get.returns({ secret: encryptedSecret });
+      encrypterStub.decrypt.returns(decryptedSecret);
+      inquireStub.returns(Promise.resolve(true));
+
+      await MFARemoveCommand.run([]);
+      expect(configStub.delete.called).to.be.true;
+      expect(configStub.delete.firstCall.args[0]).to.equal('mfa');
+    });
+
+    it('should fail when no configuration exists', async function () {
+      configStub.get.returns(null);
+      try {
+        await MFARemoveCommand.run([]);
+        expect.fail('Should have thrown an error');
+      } catch (error: unknown) {
+        const err = error as Error;
+        expect(configStub.delete.called).to.be.false;
+      }
+    });
+
+    it('should handle corrupted configuration gracefully', async function () {
+      configStub.get.returns({ secret: encryptedSecret });
+      encrypterStub.decrypt.throws(new Error('Decryption failed'));
+      inquireStub.returns(Promise.resolve(false));
+
+      await MFARemoveCommand.run([]);
+      expect(configStub.delete.called).to.be.false;
+    });
+
+    it('should cancel removal when user declines', async function () {
+      configStub.get.returns({ secret: encryptedSecret });
+      encrypterStub.decrypt.returns(decryptedSecret);
+      inquireStub.returns(Promise.resolve(false));
+
+      await MFARemoveCommand.run([]);
+      expect(configStub.delete.called).to.be.false;
+    });
+
+    it('should remove configuration without confirmation when forced', async function () {
+      configStub.get.returns({ secret: encryptedSecret });
+      await MFARemoveCommand.run(['-y']);
+      expect(configStub.delete.called).to.be.true;
+      expect(configStub.delete.firstCall.args[0]).to.equal('mfa');
+    });
+
+    it('should handle deletion errors', async function () {
+      configStub.get.returns({ secret: encryptedSecret });
+      configStub.delete.throws(new Error('Delete failed'));
+      try {
+        await MFARemoveCommand.run(['-y']);
+        expect.fail('Should have thrown an error');
+      } catch (error: unknown) {
+        const err = error as Error;
+        expect(err.message).to.be.not.empty;
+      }
+    });
+
+    it('should handle invalid config format', async function () {
+      configStub.get.returns({ invalid: 'config' });
+      try {
+        await MFARemoveCommand.run([]);
+        expect.fail('Should have thrown an error');
+      } catch (error: unknown) {
+        const err = error as Error;
+        expect(err.message).to.be.not.empty;
+      }
+    });
+
+    it('should handle null secret in config', async function () {
+      configStub.get.returns({ secret: null });
+      try {
+        await MFARemoveCommand.run([]);
+        expect.fail('Should have thrown an error');
+      } catch (error: unknown) {
+        const err = error as Error;
+        expect(err.message).to.be.not.empty;
+      }
+    });
+
+    it('should handle undefined secret in config', async function () {
+      configStub.get.returns({ secret: undefined });
+      try {
+        await MFARemoveCommand.run([]);
+        expect.fail('Should have thrown an error');
+      } catch (error: unknown) {
+        const err = error as Error;
+        expect(err.message)
+      }
+    });
+
+    it('should handle empty string secret in config', async function () {
+      configStub.get.returns({ secret: '' });
+      try {
+        await MFARemoveCommand.run([]);
+        expect.fail('Should have thrown an error');
+      } catch (error: unknown) {
+        const err = error as Error;
+
+        expect(err.message).to.be.not.empty;
+      }
+    });
+
+    it('should handle multiple confirmation prompts correctly', async function () {
+      configStub.get.returns({ secret: encryptedSecret });
+      encrypterStub.decrypt.throws(new Error('Decryption failed'));
+      
+      // First prompt: "Configuration appears corrupted"
+      inquireStub.onFirstCall().returns(Promise.resolve(true));
+      // Second prompt: "Are you sure?"
+      inquireStub.onSecondCall().returns(Promise.resolve(true));
+
+      await MFARemoveCommand.run([]);
+      expect(configStub.delete.called).to.be.true;
+    });
+
+    it('should handle force flag with corrupted config', async function () {
+      configStub.get.returns({ secret: encryptedSecret });
+      encrypterStub.decrypt.throws(new Error('Decryption failed'));
+
+      await MFARemoveCommand.run(['-y']);
+      expect(configStub.delete.called).to.be.true;
+    });
+
+    it('should handle config.get throwing an error', async function () {
+      configStub.get.throws(new Error('Failed to read config'));
+      try {
+        await MFARemoveCommand.run([]);
+        expect.fail('Should have thrown an error');
+      } catch (error: unknown) {
+        const err = error as Error;
+        expect(err.message).to.be.not.empty
+      }
+    });
+
+    it('should handle multiple decryption attempts', async function () {
+      configStub.get.returns({ secret: encryptedSecret });
+      // First decrypt attempt fails
+      encrypterStub.decrypt.onFirstCall().throws(new Error('Decryption failed'));
+      // Second decrypt attempt succeeds
+      encrypterStub.decrypt.onSecondCall().returns(decryptedSecret);
+      inquireStub.returns(Promise.resolve(true));
+
+      await MFARemoveCommand.run([]);
+      expect(configStub.delete.called).to.be.true;
+    });
+
+    it('should handle invalid flags', async function () {
+      try {
+        await MFARemoveCommand.run(['--invalid-flag']);
+        expect.fail('Should have thrown an error');
+      } catch (error: unknown) {
+        const err = error as Error;
+        expect(err.message).to.be.not.empty;
+      }
     });
   });
 });
