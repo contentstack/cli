@@ -128,3 +128,40 @@ export async function askLogPath(): Promise<string> {
   ]);
   return logPath;
 }
+
+export async function promptForMFASecret(): Promise<string> {
+  const secret = await cliux.inquire<string>({
+    type: 'password',
+    name: 'secret',
+    message: 'Enter your secret:',
+    validate: (input: string) => {
+      if (!input) {
+        cliux.error('Secret is required');
+        process.exit(1);
+      }
+      return true;
+    },
+  });
+
+  return secret;
+}
+
+export async function confirmMFAOverwrite(): Promise<boolean> {
+  return cliux.inquire<boolean>({
+    type: 'confirm',
+    name: 'confirm',
+    message: 'A secret configuration already exists. Do you want to overwrite it?',
+  });
+}
+
+export async function confirmMFARemoval(isCorrupted = false): Promise<boolean> {
+  const message = isCorrupted
+    ? 'The configuration appears to be corrupted. Do you want to remove it anyway?'
+    : 'Are you sure you want to remove the stored secret?';
+
+  return cliux.inquire<boolean>({
+    type: 'confirm',
+    name: 'confirm',
+    message,
+  });
+}

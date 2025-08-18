@@ -38,3 +38,32 @@ export interface SetRateLimitConfig {
   default?: boolean;
   host?: string;
 }
+
+export interface Context {
+  command: string;
+  module: string;
+  userId: string | undefined;
+  email: string | undefined;
+  sessionId: string | undefined;
+  clientId?: string | undefined;
+  apiKey: string;
+  orgId: string;
+}
+
+export interface MFAConfig {
+  secret: string;
+  last_updated: string;
+}
+
+export interface MFAValidationResult {
+  isValid: boolean;
+  error?: string;
+}
+
+export interface IMFAService {
+  validateSecret(secret: string): boolean;
+  getStoredConfig(): MFAConfig | null;
+  storeConfig(config: MFAConfig): void;
+  removeConfig(): void;
+  generateMFA(secret: string): string;
+}
