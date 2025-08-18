@@ -15,6 +15,10 @@ export default class SummaryManager {
     this.branchName = context.branchName || ''; 
   }
 
+  getModules() {
+    return this.modules;
+  }
+
   registerModule(moduleName: string, totalItems: number = 0): void {
     this.modules.set(moduleName, {
       name: moduleName,
@@ -23,6 +27,7 @@ export default class SummaryManager {
       successCount: 0,
       failureCount: 0,
       failures: [],
+      processes: [],
     });
   }
 
@@ -42,6 +47,25 @@ export default class SummaryManager {
 
       if (!success && error) {
         module.failures.push({ item: 'module', error });
+      }
+    }
+  }
+
+  /**
+   * Register process data for strategy calculations
+   */
+  registerProcessData(moduleName: string, processName: string, processData: any): void {
+    const module = this.modules.get(moduleName);
+    if (module) {
+      if (!module.processes) {
+        module.processes = [];
+      }
+      
+      const existingIndex = module.processes.findIndex((p: any) => p.processName === processName);
+      if (existingIndex >= 0) {
+        module.processes[existingIndex] = { processName, ...processData };
+      } else {
+        module.processes.push({ processName, ...processData });
       }
     }
   }
@@ -98,10 +122,9 @@ export default class SummaryManager {
       console.log(
         `${status} ${module.name.padEnd(20)} | ` +
           `${String(module.successCount).padStart(4)}/${String(totalCount).padStart(4)} items | ` +
-          `${successRate.padStart(6)}% | ` +
+          `${this.formatSuccessRate(successRate).padStart(6)} | ` +
           `${duration.padStart(8)}`,
       );
-
 
       // Show failures if any - TEMPORARILY DISABLED - will be shown in separate section later
       // if (module.failures.length > 0) {
@@ -124,8 +147,6 @@ export default class SummaryManager {
     } else {
       console.log(chalk.bold.red(`❌ ${this.operationName} failed`));
     }
-
-    //TODO:- Smart Failure Summary - only show if there are failures
 
     console.log(chalk.bold('='.repeat(80)));
   }
@@ -154,5 +175,15 @@ export default class SummaryManager {
   private calculateSuccessRate(success: number, total: number): string {
     if (total === 0) return '0';
     return ((success / total) * 100).toFixed(1);
+  }
+
+  private formatSuccessRate(rate: string): string {
+    if (rate === '100.0') {
+      return '100%';
+    } else if (parseFloat(rate) >= 10) {
+      return `${rate}%`;
+    } else {
+      return ` ${rate}%`;
+    }
   }
 }

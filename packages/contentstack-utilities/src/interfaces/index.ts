@@ -155,10 +155,17 @@ export interface ModuleResult {
   successCount: number;
   failureCount: number;
   failures: Array<{ item: string; error: string }>;
+  processes?: Array<{ processName: string; [key: string]: any }>;
 }
 
 export interface SummaryOptions {
   operationName: string; // 'EXPORT', 'IMPORT', 'MIGRATION', etc.
   context?: any;
   branchName?: string; // Optional branch name for operations
+}
+
+export interface ProgressResult {
+  total: number;
+  success: number;
+  failures: number;
 }
