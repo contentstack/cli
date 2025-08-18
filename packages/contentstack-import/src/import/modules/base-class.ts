@@ -16,8 +16,8 @@ import { LabelData } from '@contentstack/management/types/stack/label';
 import { WebhookData } from '@contentstack/management/types/stack/webhook';
 import { WorkflowData } from '@contentstack/management/types/stack/workflow';
 import { RoleData } from '@contentstack/management/types/stack/role';
+import { log, CLIProgressManager, configHandler } from '@contentstack/cli-utilities';
 
-import { log } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -90,6 +90,8 @@ export default abstract class BaseClass {
   public importConfig: ImportConfig;
 
   public modulesConfig: any;
+  protected progressManager: CLIProgressManager | null = null;
+  protected currentModuleName: string = '';
 
   constructor({ importConfig, stackAPIClient }: Omit<ModuleClassParams, 'moduleName'>) {
     this.client = stackAPIClient;
@@ -99,6 +101,51 @@ export default abstract class BaseClass {
 
   get stack(): Stack {
     return this.client;
+  }
+
+  static printFinalSummary(): void {
+    CLIProgressManager.printGlobalSummary();
+  }
+
+  /**
+   * Create simple progress manager
+   */
+  protected createSimpleProgress(moduleName: string, total?: number): CLIProgressManager {
+    this.currentModuleName = moduleName;
+    const logConfig = configHandler.get('log') || {};
+    const showConsoleLogs = logConfig.showConsoleLogs ?? false; // Default to true for better UX
+    this.progressManager = CLIProgressManager.createSimple(moduleName, total, showConsoleLogs);
+    return this.progressManager;
+  }
+
+  /**
+   * Create nested progress manager
+   */
+  protected createNestedProgress(moduleName: string): CLIProgressManager {
+    this.currentModuleName = moduleName;
+    const logConfig = configHandler.get('log') || {};
+    const showConsoleLogs = logConfig.showConsoleLogs ?? false; // Default to true for better UX
+    this.progressManager = CLIProgressManager.createNested(moduleName, showConsoleLogs);
+    return this.progressManager;
+  }
+
+  /**
+   * Complete progress manager
+   */
+  protected completeProgress(success: boolean = true, error?: string): void {
+    this.progressManager?.complete(success, error);
+    this.progressManager = null;
+  }
+
+  protected async withLoadingSpinner<T>(message: string, action: () => Promise<T>): Promise<T> {
+    const logConfig = configHandler.get('log') || {};
+    const showConsoleLogs = logConfig.showConsoleLogs ?? false;
+
+    if (showConsoleLogs) {
+      // If console logs are enabled, don't show spinner, just execute the action
+      return await action();
+    }
+    return await CLIProgressManager.withLoadingSpinner(message, action);
   }
 
   /**
@@ -209,7 +256,7 @@ export default abstract class BaseClass {
       // info: Batch No. 20 of import assets is complete
       if (currentIndexer) batchMsg += `Current chunk processing is (${currentIndexer}/${indexerCount})`;
 
-      log(this.importConfig, `Batch No. (${batchNo}/${totelBatches}) of ${processName} is complete`, 'success');
+      log.info(`Batch No. (${batchNo}/${totelBatches}) of ${processName} is complete`);
     }
 
     if (this.importConfig.modules.assets.displayExecutionTime) {
@@ -325,20 +372,20 @@ export default abstract class BaseClass {
         return this.stack.globalField({ api_version: '3.2' }).create(apiData).then(onSuccess).catch(onReject);
       case 'update-gfs':
         let globalFieldUid = apiData.uid ?? apiData.global_field?.uid;
-          return this.stack
-            .globalField(globalFieldUid, { api_version: '3.2' })
-            .fetch()
-            .then(async (gf) => {
-              const { uid, ...updatePayload } = cloneDeep(apiData);
-              Object.assign(gf, updatePayload);
-              try {
-                const response = await gf.update();
-                return onSuccess(response);
-              } catch (error) {
-                return onReject(error);
-              }
-            })
-            .catch(onReject);
+        return this.stack
+          .globalField(globalFieldUid, { api_version: '3.2' })
+          .fetch()
+          .then(async (gf) => {
+            const { uid, ...updatePayload } = cloneDeep(apiData);
+            Object.assign(gf, updatePayload);
+            try {
+              const response = await gf.update();
+              return onSuccess(response);
+            } catch (error) {
+              return onReject(error);
+            }
+          })
+          .catch(onReject);
       case 'create-environments':
         return this.stack
           .environment()
