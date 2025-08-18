@@ -37,4 +37,6 @@ fileignoreconfig:
   checksum: 449a5e3383631a6f78d1291aa3c28c91681879289398f0a933158fba5c5d5acf
 - filename: packages/contentstack-import/src/commands/cm/stacks/import.ts
   checksum: 0dbf0a6bc447206260b8acd41b85781d60ca50c948bb3ca62f444f97d64d1fb2
+- filename: packages/contentstack-utilities/src/interfaces/index.ts
+  checksum: d0b0042e643ce0c0489b86f15f3b64f60a837c2ae928b6275028e5e0184b0a7a
 version: "1.0"
