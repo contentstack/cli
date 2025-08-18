@@ -1,4 +1,5 @@
 import { ModuleClassParams } from '../../types';
+import '../../utils/strategy-registrations';
 
 export default async function startModuleImport(modulePayload: ModuleClassParams) {
   const { default: ModuleRunner } = await import(`./${modulePayload.moduleName}`);

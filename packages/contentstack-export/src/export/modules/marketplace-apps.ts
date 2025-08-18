@@ -71,19 +71,19 @@ export default class ExportMarketplaceApps extends BaseClass {
       const progress = this.createNestedProgress(this.currentModuleName);
 
       // Add processes based on what we found
-      progress.addProcess('Apps Fetch', appsCount);
-      progress.addProcess('App Processing', appsCount); // Manifests and configurations
+      progress.addProcess('Fetch', appsCount);
+      progress.addProcess('Fetch config & manifest', appsCount); // Manifests and configurations
 
       // Fetch stack specific apps
-      progress.startProcess('Apps Fetch').updateStatus('Fetching marketplace apps...', 'Apps Fetch');
+      progress.startProcess('Fetch').updateStatus('Fetching marketplace apps...', 'Fetch');
       await this.exportApps();
-      progress.completeProcess('Apps Fetch', true);
+      progress.completeProcess('Fetch', true);
 
       // Process apps (manifests and configurations)
       if (this.installedApps.length > 0) {
-        progress.startProcess('App Processing').updateStatus('Processing app manifests and configurations...', 'App Processing');
+        progress.startProcess('Fetch config & manifest').updateStatus('Processing app manifests and configurations...', 'Fetch config & manifest');
         await this.getAppManifestAndAppConfig();
-        progress.completeProcess('App Processing', true);
+        progress.completeProcess('Fetch config & manifest', true);
       }
 
       this.completeProgress(true);
@@ -196,7 +196,7 @@ export default class ExportMarketplaceApps extends BaseClass {
         await this.getAppConfigurations(+index, app);
         
         // Track progress for each app processed
-        this.progressManager?.tick(true, `app: ${app.manifest?.name || app.uid}`, null, 'App Processing');
+        this.progressManager?.tick(true, `app: ${app.manifest?.name || app.uid}`, null, 'Fetch config & manifest');
       }
 
       const marketplaceAppsFilePath = pResolve(this.marketplaceAppPath, this.marketplaceAppConfig.fileName);
@@ -346,7 +346,7 @@ export default class ExportMarketplaceApps extends BaseClass {
       
       // Track progress for each app fetched
       installation.forEach((app) => {
-        this.progressManager?.tick(true, `app: ${app.manifest?.name || app.uid}`, null, 'Apps Fetch');
+        this.progressManager?.tick(true, `app: ${app.manifest?.name || app.uid}`, null, 'Fetch');
       });
       
       this.installedApps = this.installedApps.concat(installation);

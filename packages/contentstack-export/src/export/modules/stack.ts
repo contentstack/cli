@@ -58,7 +58,7 @@ export default class ExportStack extends BaseClass {
       }
 
       if (!this.exportConfig.management_token) {
-        progress.addProcess('Stack Settings', 1);
+        progress.addProcess('Settings', 1);
         processCount++;
       }
 
@@ -67,18 +67,18 @@ export default class ExportStack extends BaseClass {
         !this.exportConfig.hasOwnProperty('master_locale') &&
         localesCount > 0
       ) {
-        progress.addProcess('Locales', localesCount);
+        progress.addProcess('Locale', localesCount);
         processCount++;
       } else if (this.exportConfig.preserveStackVersion) {
-        progress.addProcess('Stack Export', 1);
+        progress.addProcess('Details', 1);
         processCount++;
       }
 
       // Execute processes
       if (!this.exportConfig.management_token) {
-        progress.startProcess('Stack Settings').updateStatus('Exporting stack settings...', 'Stack Settings');
+        progress.startProcess('Settings').updateStatus('Exporting stack settings...', 'Settings');
         await this.exportStackSettings();
-        progress.completeProcess('Stack Settings', true);
+        progress.completeProcess('Settings', true);
       } else {
         log.info(
           'Skipping stack settings export: Operation is not supported when using a management token.',
@@ -91,9 +91,9 @@ export default class ExportStack extends BaseClass {
         !this.exportConfig.hasOwnProperty('master_locale') &&
         localesCount > 0
       ) {
-        progress.startProcess('Locales').updateStatus('Fetching master locale...', 'Locales');
+        progress.startProcess('Locale').updateStatus('Fetching master locale...', 'Locale');
         const masterLocale = await this.getLocales();
-        progress.completeProcess('Locales', true);
+        progress.completeProcess('Locale', true);
 
         if (masterLocale?.code) {
           this.exportConfig.master_locale = { code: masterLocale.code };
@@ -103,14 +103,14 @@ export default class ExportStack extends BaseClass {
         this.completeProgress(true);
         return masterLocale;
       } else if (this.exportConfig.preserveStackVersion) {
-        progress.startProcess('Stack Export').updateStatus('Exporting stack data...', 'Stack Export');
+        progress.startProcess('Details').updateStatus('Exporting stack data...', 'Details');
         const stackResult = await this.exportStack();
-        progress.completeProcess('Stack Export', true);
+        progress.completeProcess('Details', true);
 
         this.completeProgress(true);
         return stackResult;
       } else {
-        log.debug('Master locale already set, skipping locale fetch', this.exportConfig.context);
+        log.debug('Locale locale already set, skipping locale fetch', this.exportConfig.context);
       }
 
       this.completeProgress(true);
@@ -185,7 +185,7 @@ export default class ExportStack extends BaseClass {
 
           // Track progress for each locale processed
           items.forEach((locale: any) => {
-            this.progressManager?.tick(true, `locale: ${locale.name || locale.code}`, null, 'Locales');
+            this.progressManager?.tick(true, `locale: ${locale.name || locale.code}`, null, 'Locale');
           });
 
           skip += this.stackConfig.limit || 100;
@@ -200,14 +200,14 @@ export default class ExportStack extends BaseClass {
             return masterLocalObj;
           } else if (skip >= count) {
             log.error(
-              `Master locale not found in the stack ${this.exportConfig.source_stack}. Please ensure that the stack has a master locale.`,
+              `Locale locale not found in the stack ${this.exportConfig.source_stack}. Please ensure that the stack has a master locale.`,
               this.exportConfig.context,
             );
             log.debug('Completed searching all locales without finding master locale', this.exportConfig.context);
             return;
           } else {
             log.debug(
-              `Master locale not found in current batch, continuing with skip: ${skip}`,
+              `Locale locale not found in current batch, continuing with skip: ${skip}`,
               this.exportConfig.context,
             );
             return await this.getLocales(skip);
@@ -221,7 +221,7 @@ export default class ExportStack extends BaseClass {
           `Error occurred while fetching locales for stack: ${this.exportConfig.source_stack}`,
           this.exportConfig.context,
         );
-        this.progressManager?.tick(false, 'locale fetch', error?.message || 'Failed to fetch locales', 'Locales');
+        this.progressManager?.tick(false, 'locale fetch', error?.message || 'Failed to fetch locales', 'Locale');
         handleAndLogError(
           error,
           { ...this.exportConfig.context },
@@ -245,7 +245,7 @@ export default class ExportStack extends BaseClass {
         fsUtil.writeFile(stackFilePath, resp);
 
         // Track progress for stack export completion
-        this.progressManager?.tick(true, `stack: ${this.exportConfig.source_stack}`, null, 'Stack Export');
+        this.progressManager?.tick(true, `stack: ${this.exportConfig.source_stack}`, null, 'Details');
 
         log.success(
           `Stack details exported successfully for stack ${this.exportConfig.source_stack}`,
@@ -256,7 +256,7 @@ export default class ExportStack extends BaseClass {
       })
       .catch((error: any) => {
         log.debug(`Error occurred while exporting stack: ${this.exportConfig.source_stack}`, this.exportConfig.context);
-        this.progressManager?.tick(false, 'stack export', error?.message || 'Failed to export stack', 'Stack Export');
+        this.progressManager?.tick(false, 'stack export', error?.message || 'Failed to export stack', 'Details');
         handleAndLogError(error, { ...this.exportConfig.context });
       });
   }
@@ -270,7 +270,7 @@ export default class ExportStack extends BaseClass {
         fsUtil.writeFile(pResolve(this.stackFolderPath, 'settings.json'), resp);
 
         // Track progress for stack settings completion
-        this.progressManager?.tick(true, 'stack settings', null, 'Stack Settings');
+        this.progressManager?.tick(true, 'stack settings', null, 'Settings');
 
         log.success('Exported stack settings successfully!', this.exportConfig.context);
         return resp;
@@ -280,7 +280,7 @@ export default class ExportStack extends BaseClass {
           false,
           'stack settings',
           error?.message || 'Failed to export stack settings',
-          'Stack Settings',
+          'Settings',
         );
         handleAndLogError(error, { ...this.exportConfig.context });
       });
