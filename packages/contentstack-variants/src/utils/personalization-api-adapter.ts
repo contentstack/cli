@@ -119,7 +119,11 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    * Update progress for a specific item
    */
   protected updateProgress(success: boolean, itemName: string, error?: string, processName?: string): void {
-    this.progressManager?.tick(success, itemName, error, processName);
+    if (this.parentProgressManager) {
+      this.parentProgressManager.tick(success, itemName, error, processName);
+    } else if (this.progressManager) {
+      this.progressManager.tick(success, itemName, error, processName);
+    }
   }
 
   static printFinalSummary(): void {

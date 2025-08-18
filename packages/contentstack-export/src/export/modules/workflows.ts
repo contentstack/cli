@@ -52,17 +52,11 @@ export default class ExportWorkFlows extends BaseClass {
       }
 
       // Create nested progress manager for complex workflow processing
-      const progress = this.createNestedProgress(this.currentModuleName)
-        .addProcess('Fetch Workflows', totalCount)
-        .addProcess('Process Roles', totalCount * 2); // Estimate roles per workflow
+      const progress = this.createSimpleProgress(this.currentModuleName, totalCount)
 
       // Fetch workflows
-      progress.startProcess('Fetch Workflows').updateStatus('Fetching workflow definitions...', 'Fetch Workflows');
+      progress.updateStatus('Fetching workflow definitions...');
       await this.getWorkflows();
-      progress.completeProcess('Fetch Workflows', true);
-
-      // The role processing is handled within sanitizeAttribs, so marking it complete
-      progress.completeProcess('Process Roles', true);
 
       log.debug(`Retrieved ${Object.keys(this.workflows).length} workflows`, this.exportConfig.context);
 
@@ -135,14 +129,14 @@ export default class ExportWorkFlows extends BaseClass {
         log.success(messageHandler.parse('WORKFLOW_EXPORT_SUCCESS', workflowName), this.exportConfig.context);
 
         // Track progress for each workflow
-        this.progressManager?.tick(true, `workflow: ${workflowName}`, null, 'Fetch Workflows');
+        this.progressManager?.tick(true, `workflow: ${workflowName}`, null, 'Fetch');
       } catch (error) {
         log.error(`Failed to process workflow: ${workflowName}`, this.exportConfig.context);
         this.progressManager?.tick(
           false,
           `workflow: ${workflowName}`,
           error?.message || 'Processing failed',
-          'Fetch Workflows',
+          'Fetch',
         );
       }
     }
@@ -167,11 +161,8 @@ export default class ExportWorkFlows extends BaseClass {
           const roleData = await this.getRoles(roleUid);
           stage.SYS_ACL.roles.uids[i] = roleData;
 
-          // Track progress for each role processed
-          this.progressManager?.tick(true, `role: ${roleUid}`, null, 'Process Roles');
         } catch (error) {
           log.error(`Failed to fetch role ${roleUid}`, this.exportConfig.context);
-          this.progressManager?.tick(false, `role: ${roleUid}`, error?.message || 'Role fetch failed', 'Process Roles');
         }
       }
     }

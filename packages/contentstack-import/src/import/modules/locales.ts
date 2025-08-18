@@ -121,9 +121,9 @@ export default class ImportLocales extends BaseClass {
     log.debug(`Creating ${languagesToCreate.length} locales (excluding master locale)`, this.config.context);
 
     const onSuccess = ({ response = {}, apiData: { uid, code } = undefined }: any) => {
-      this.createdLocales.push(response.uid);
       this.langUidMapper[uid] = response.uid;
-      this.progressManager?.tick(true, `locale: ${code}`, null, 'Locale Create');
+      this.createdLocales.push(pick(response, [...this.localeConfig.requiredKeys]));
+      this.progressManager?.tick(true, `locale: ${code}`, null, 'Create');
       log.info(`Created locale: '${code}'`, this.config.context);
       log.debug(`Locale UID mapping: ${uid} → ${response.uid}`, this.config.context);
       fsUtil.writeFile(this.langUidMapperPath, this.langUidMapper);
@@ -134,7 +134,7 @@ export default class ImportLocales extends BaseClass {
         false,
         `locale: ${code}`,
         error?.message || 'Failed to create locale',
-        'Locale Create',
+        'Create',
       );
       if (error?.errorCode === 247) {
         log.info(formatError(error), this.config.context);
@@ -216,8 +216,8 @@ export default class ImportLocales extends BaseClass {
     const progress = this.createNestedProgress(this.currentModuleName);
     progress.addProcess('Master Locale ', 1);
     if (localesCount > 0) {
-      progress.addProcess('Locale Create', localesCount);
-      progress.addProcess('Locale Update', localesCount);
+      progress.addProcess('Create', localesCount);
+      progress.addProcess('Update', localesCount);
     }
     return progress;
   }
@@ -251,27 +251,27 @@ export default class ImportLocales extends BaseClass {
   }
 
   private async processLocaleCreation(progress: any): Promise<void> {
-    progress.startProcess('Locale Create').updateStatus('Creating locales...', 'Locale Create');
+    progress.startProcess('Create').updateStatus('Creating locales...', 'Create');
     log.debug('Creating locales', this.config.context);
 
     try {
       await this.createLocales();
-      progress.completeProcess('Locale Create', true);
+      progress.completeProcess('Create', true);
     } catch (error) {
-      progress.completeProcess('Locale Create', false);
+      progress.completeProcess('Create', false);
       throw error;
     }
   }
 
   private async processLocaleUpdate(progress: any): Promise<void> {
-    progress.startProcess('Locale Update').updateStatus('Updating locales...', 'Locale Update');
+    progress.startProcess('Update').updateStatus('Updating locales...', 'Update');
     log.debug('Updating locales', this.config.context);
 
     try {
       await this.updateLocales();
-      progress.completeProcess('Locale Update', true);
+      progress.completeProcess('Update', true);
     } catch (error) {
-      progress.completeProcess('Locale Update', false);
+      progress.completeProcess('Update', false);
       throw error;
     }
   }
@@ -304,11 +304,11 @@ export default class ImportLocales extends BaseClass {
     const message = `master locale: codes differ (${sourceCode} vs ${targetCode})`;
 
     this.tickProgress(true, message);
-    log.debug(`Master language codes do not match. Source: ${sourceCode}, Target: ${targetCode}`, this.config.context);
+    log.debug(`Master Locale language codes do not match. Source: ${sourceCode}, Target: ${targetCode}`, this.config.context);
   }
 
   private async handleNameMismatch(source: Record<string, any>, target: Record<string, any>): Promise<void> {
-    log.debug('Master language name differs between source and destination', this.config.context);
+    log.debug('Master Locale language name differs between source and destination', this.config.context);
     log.debug(`Current: ${target.name}, Source: ${source.name}`, this.config.context);
 
     cliux.print('WARNING!!! The master language name for the source and destination is different.', {
@@ -317,8 +317,8 @@ export default class ImportLocales extends BaseClass {
     cliux.print('WARNING!!! The master language name for the source and destination is different.', {
       color: 'yellow',
     });
-    cliux.print(`Old Master language name: ${target.name}`, { color: 'red' });
-    cliux.print(`New Master language name: ${source.name}`, { color: 'green' });
+    cliux.print(`Old Master Locale language name: ${target.name}`, { color: 'red' });
+    cliux.print(`New Master Locale language name: ${source.name}`, { color: 'green' });
 
     const langUpdateConfirmation: boolean = await cliux.inquire({
       type: 'confirm',
@@ -328,7 +328,7 @@ export default class ImportLocales extends BaseClass {
 
     if (!langUpdateConfirmation) {
       this.tickProgress(true, `${target.name} (skipped update)`);
-      log.info('Master language update cancelled by user', this.config.context);
+      log.info('Master Locale language update cancelled by user', this.config.context);
       return;
     }
 

@@ -64,41 +64,41 @@ export default class ExportAssets extends BaseClass {
 
     // Add sub-processes
     if (typeof assetsFolderCount === 'number' && assetsFolderCount > 0) {
-      progress.addProcess('Asset Folders', assetsFolderCount);
+      progress.addProcess('Folders', assetsFolderCount);
     }
     if (typeof assetsCount === 'number' && assetsCount > 0) {
-      progress.addProcess('Asset Metadata', assetsCount);
-      progress.addProcess('Asset Downloads', assetsCount);
+      progress.addProcess('Metadata', assetsCount);
+      progress.addProcess('Downloads', assetsCount);
     }
 
     try {
       // Process asset folders
       if (typeof assetsFolderCount === 'number' && assetsFolderCount > 0) {
-        progress.startProcess('Asset Folders').updateStatus('Fetching folder structure...', 'Asset Folders');
+        progress.startProcess('Folders').updateStatus('Fetching folder structure...', 'Folders');
         await this.getAssetsFolders(assetsFolderCount);
-        progress.completeProcess('Asset Folders', true);
+        progress.completeProcess('Folders', true);
       }
 
       // Process asset metadata
       if (typeof assetsCount === 'number' && assetsCount > 0) {
-        progress.startProcess('Asset Metadata').updateStatus('Fetching asset information...', 'Asset Metadata');
+        progress.startProcess('Metadata').updateStatus('Fetching asset information...', 'Metadata');
         await this.getAssets(assetsCount);
-        progress.completeProcess('Asset Metadata', true);
+        progress.completeProcess('Metadata', true);
       }
 
       // Get versioned assets
       if (!isEmpty(this.versionedAssets) && this.assetConfig.includeVersionedAssets) {
         log.debug('Fetching versioned assets metadata...', this.exportConfig.context);
-        progress.updateStatus('Processing versioned assets...', 'Asset Metadata');
+        progress.updateStatus('Processing versioned assets...', 'Metadata');
         await this.getVersionedAssets();
       }
 
       // Download all assets
       if (typeof assetsCount === 'number' && assetsCount > 0) {
-        progress.startProcess('Asset Downloads').updateStatus('Downloading asset files...', 'Asset Downloads');
+        progress.startProcess('Downloads').updateStatus('Downloading asset files...', 'Downloads');
         log.debug('Starting download of all assets...', this.exportConfig.context);
         await this.downloadAssets();
-        progress.completeProcess('Asset Downloads', true);
+        progress.completeProcess('Downloads', true);
       }
 
       this.completeProgress(true);
@@ -128,13 +128,13 @@ export default class ExportAssets extends BaseClass {
       if (!isEmpty(items)) {
         this.assetsFolder.push(...items);
         items.forEach((folder: any) => {
-          this.progressManager?.tick(true, `folder: ${folder.name || folder.uid}`, null, 'Asset Folders');
+          this.progressManager?.tick(true, `folder: ${folder.name || folder.uid}`, null, 'Folders');
         });
       }
     };
 
     const onReject = ({ error }: any) => {
-      this.progressManager?.tick(false, 'asset folder', error?.message || 'Failed to fetch folder', 'Asset Folders');
+      this.progressManager?.tick(false, 'asset folder', error?.message || 'Failed to fetch folder', 'Folders');
       handleAndLogError(error, { ...this.exportConfig.context });
     };
 
@@ -197,7 +197,7 @@ export default class ExportAssets extends BaseClass {
     }
 
     const onReject = ({ error }: any) => {
-      this.progressManager?.tick(false, 'asset', error?.message || 'Failed to fetch asset', 'Asset Metadata');
+      this.progressManager?.tick(false, 'asset', error?.message || 'Failed to fetch asset', 'Metadata');
       handleAndLogError(error, { ...this.exportConfig.context }, messageHandler.parse('ASSET_QUERY_FAILED'));
     };
 
@@ -219,7 +219,7 @@ export default class ExportAssets extends BaseClass {
         fs?.writeIntoFile(items, { mapKeyVal: true });
         // Track progress for each asset with process name
         items.forEach((asset: any) => {
-          this.progressManager?.tick(true, `asset: ${asset.filename || asset.uid}`, null, 'Asset Metadata');
+          this.progressManager?.tick(true, `asset: ${asset.filename || asset.uid}`, null, 'Metadata');
         });
       }
     };
@@ -418,7 +418,7 @@ export default class ExportAssets extends BaseClass {
       } else {
         data.pipe(assetWriterStream);
       }
-      this.progressManager?.tick(true, `Downloaded asset: ${asset.filename || asset.uid}`, null, 'Asset Downloads');
+      this.progressManager?.tick(true, `Downloaded asset: ${asset.filename || asset.uid}`, null, 'Downloads');
       log.success(messageHandler.parse('ASSET_DOWNLOAD_SUCCESS', asset.filename, asset.uid), this.exportConfig.context);
     };
 
@@ -428,7 +428,7 @@ export default class ExportAssets extends BaseClass {
         false,
         `Failed to download asset: ${asset.filename || asset.uid}`,
         null,
-        'Asset Downloads',
+        'Downloads',
       );
       handleAndLogError(
         error,
