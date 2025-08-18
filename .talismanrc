@@ -1,8 +1,8 @@
 fileignoreconfig:
 - filename: package-lock.json
-  checksum: c73d080bfbbf03bc2597891f956367bfd71f5f2f8d03525175426015265edc91
+  checksum: b01e61e606c0f2fd26cee8c27e00f5910973020afa72ddfb9d995f09dff6229f
 - filename: pnpm-lock.yaml
-  checksum: 0ca85066946c49994a4353c9f64b8f380d5d2050194e3e57ad7ccd7faa030d36
+  checksum: e0310a5c5772a87bf606ee80722e29f9d0bc412ce10444f825a5c14dce4c1b88
 - filename: packages/contentstack-import-setup/test/unit/backup-handler.test.ts
   checksum: 0582d62b88834554cf12951c8690a73ef3ddbb78b82d2804d994cf4148e1ef93
 - filename: packages/contentstack-import-setup/test/config.json
@@ -32,7 +32,29 @@ fileignoreconfig:
 - filename: packages/contentstack-import-setup/test/unit/login-handler.test.ts
   checksum: e549f9ca3a9aae0d93b7284f7e771d55c0610725ddcb4333612df2f215e92769
 - filename: packages/contentstack/README.md
-  checksum: c09f6dc93702caff3adf689b501ec32586a16c865c1fe3a63b53ae645ca22349
+  checksum: f46084b199b3b0d7986b363c86a657570def71e5da29b948cc343eaf94ec7e97
 - filename: packages/contentstack-import-setup/test/unit/modules/assets.test.ts
   checksum: 449a5e3383631a6f78d1291aa3c28c91681879289398f0a933158fba5c5d5acf
+- filename: packages/contentstack-auth/env.example
+  checksum: 72c9ed18a449c42b03ec54795898f6bad4e15d23a3d701c05b96fb17c3bbd93b
+- filename: packages/contentstack-auth/test/integration/auth.test.ts
+  checksum: 9933a64d17d6d6dd7dd87ff210ce5e8a215bf36fac0cfd333894612ed10fb81b
+- filename: packages/contentstack-auth/src/utils/mfa-handler.ts
+  checksum: ca9c34a3fe6c3b957debff987aefbceb641bf4954f15541d07d901f91e5ff014
+- filename: packages/contentstack-auth/messages/index.json
+  checksum: 95856ad6273f17a9e853cda9c2cf0bdd782e47aeab93385e73ab870b5e814f89
+- filename: packages/contentstack-auth/test/utils/auth-handler.test.ts
+  checksum: f88dded3a326f191844e39258e7fe390a72fefeb387d09c7f97e4e8aed520c97
+- filename: packages/contentstack-auth/src/commands/auth/login.ts
+  checksum: 89204be8dfc1f670a568af992b54f34845e49bd4a8046c0cf041dd3759150718
+- filename: packages/contentstack-auth/test/unit/commands/tokens-add.test.ts
+  checksum: 1e7247908e1887998210381c03caca93a3983e1c8967483464cf1c3bd3209cd1
+- filename: packages/contentstack-auth/test/unit/commands/logout.test.ts
+  checksum: cd22dd04bd6a77cafa7dd0960cd4691201a3e228216d5a10041b8e39d7ebba1f
+- filename: packages/contentstack-auth/src/utils/auth-handler.ts
+  checksum: 1261d02e8215da2db28557b77d6a8c8c604e11df88520e1cc5c8561e26bdd150
+- filename: packages/contentstack-auth/test/unit/commands/login.test.ts
+  checksum: f93aa9b0c964608b60c88d4c72ff33840b58ec900297c4bae1f4ea365aa51048
+- filename: packages/contentstack-auth/test/utils/mfa-handler.test.ts
+  checksum: b067f93cf0185d794e8419cc41e8fac96ed790dea8fc48dc083ee242ccacbd4d
 version: "1.0"
