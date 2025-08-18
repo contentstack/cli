@@ -64,24 +64,21 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
         return;
       }
 
-      // Create progress manager - use parent if available, otherwise create simple
       let progress: any;
+      const processName = 'Experiences';
+
       if (this.parentProgressManager) {
-        // Use parent progress manager - we're part of the personalize modules process
         progress = this.parentProgressManager;
         this.progressManager = this.parentProgressManager;
+        progress.updateProcessTotal(processName, experiences.length);
       } else {
         // Create our own progress for standalone execution
-        progress = this.createSimpleProgress('Experiences', experiences.length + 1);
+        progress = this.createSimpleProgress('Experiences', experiences.length);
       }
 
       log.debug(`Processing ${experiences.length} experiences`, this.exportConfig.context);
-
-      // Update progress with process name
-      const processName = 'Experiences';
       progress.updateStatus('Writing experiences data...', processName);
 
-      // Process and export experiences
       const experiencesFilePath = path.resolve(sanitizePath(this.experiencesFolderPath), 'experiences.json');
       log.debug(`Writing experiences to: ${experiencesFilePath}`, this.exportConfig.context);
       fsUtil.writeFile(experiencesFilePath, experiences);
@@ -182,29 +179,8 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
               `Failed to fetch content types of experience ${experience.name}`,
             );
           }
-
-          // Update progress for each processed experience
-          if (this.progressManager) {
-            this.updateProgress(
-              true,
-              `experience ${experienceIndex + 1}/${experiences.length}: ${experience.name} (${experience.uid})`,
-              undefined,
-              processName,
-            );
-          }
         } catch (error: any) {
           log.debug(`Error occurred while processing experience: ${experience.name}`, this.exportConfig.context);
-
-          // Update progress for failed experience
-          if (this.progressManager) {
-            this.updateProgress(
-              false,
-              `experience ${experienceIndex + 1}/${experiences.length}: ${experience.name} (${experience.uid})`,
-              error?.message || 'Failed to process experience',
-              processName,
-            );
-          }
-
           handleAndLogError(error, { ...this.exportConfig.context }, `Failed to process experience ${experience.name}`);
         }
       }
@@ -225,11 +201,6 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
       );
       log.debug(`Writing experience content types mapping to: ${contentTypesFilePath}`, this.exportConfig.context);
       fsUtil.writeFile(contentTypesFilePath, experienceToContentTypesMap);
-
-      // Final progress update
-      if (this.progressManager) {
-        this.updateProgress(true, `${experiences.length} experiences exported`, undefined, processName);
-      }
 
       // Complete progress only if we're managing our own progress
       if (!this.parentProgressManager) {
