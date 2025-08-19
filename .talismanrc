@@ -1,6 +1,4 @@
 fileignoreconfig:
   - filename: package-lock.json
-    checksum: 077d8a386506ceb0606a55c49fc5c8faf5e8786fd119479ddcbc017b6e07031b
-  - filename: packages/contentstack/README.md
-    checksum: 188088ae69fc3b3954f9fca3850a5a241078f95b23b724df58c07e40733754ed
+    checksum: 62d4e616575696750cc428c6bc327058f68fcf7ef0194b4a68aac3cea9551f81
 version: ''
