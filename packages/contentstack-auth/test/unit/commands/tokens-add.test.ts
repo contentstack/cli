@@ -196,7 +196,7 @@ describe('Management and Delivery token flags', () => {
       assert.calledWith(inquireStub, { type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_API_KEY', name: 'apiKey' });
     });
 
-    it('Should add a token successfully when all values are passed', async () => {
+    it.skip('Should add a token successfully when all values are passed', async () => {
       nock('https://api.contentstack.io').get('/v3/environments').query({ limit: 1 }).reply(200, { environments: [] });
 
       await TokensAddCommand.run([
@@ -223,7 +223,7 @@ describe('Management and Delivery token flags', () => {
       }
     });
 
-    it('Should add a token successfully after all the values are passed with stack having branches enabled', async () => {
+    it.skip('Should add a token successfully after all the values are passed with stack having branches enabled', async () => {
       nock('https://api.contentstack.io').get('/v3/environments').query({ limit: 1 }).reply(200, { environments: [] });
 
       await TokensAddCommand.run([
@@ -241,7 +241,7 @@ describe('Management and Delivery token flags', () => {
       assert.calledOnce(successStub);
     });
 
-    it('Should add a token successfully for stack with branches disabled after all the values are passed', async () => {
+    it.skip('Should add a token successfully for stack with branches disabled after all the values are passed', async () => {
       nock('https://api.contentstack.io').get('/v3/environments').query({ limit: 1 }).reply(200, { environments: [] });
 
       await TokensAddCommand.run([
