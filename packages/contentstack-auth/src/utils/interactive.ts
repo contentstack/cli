@@ -17,7 +17,7 @@ export const askOTPChannel = async (): Promise<string> => {
     name: 'otpChannel',
     message: 'CLI_AUTH_LOGIN_ASK_CHANNEL_FOR_OTP',
     choices: [
-      { name: 'Authy App', value: 'authy' },
+      { name: 'Authenticator App', value: 'authenticator_app' },
       { name: 'SMS', value: 'sms' },
     ],
   });
@@ -45,8 +45,8 @@ export const askTokenType = async (): Promise<string> => {
     name: 'tokenType',
     message: 'CLI_SELECT_TOKEN_TYPE',
     choices: [
-      { name: 'Management Token', value: 'management'},
-      { name: 'Delivery Token', value: 'delivery'},
-    ]
+      { name: 'Management Token', value: 'management' },
+      { name: 'Delivery Token', value: 'delivery' },
+    ],
   });
-}
+};
