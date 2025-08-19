@@ -1,7 +1,7 @@
 import { cliux, handleAndLogError, log, messageHandler } from '@contentstack/cli-utilities';
 import { BaseCommand } from '../../../base-command';
 import { MFAService } from '../../../utils/mfa-handler';
-import { promptForMFASecret, confirmMFAOverwrite } from '../../../utils/interactive';
+import { getMFASecretInput, confirmOverwriteMFASecret } from '../../../utils/interactive';
 
 export default class AddMFACommand extends BaseCommand<typeof AddMFACommand> {
   static readonly description = 'Add MFA Secret for Two-Factor Authentication';
@@ -51,7 +51,7 @@ export default class AddMFACommand extends BaseCommand<typeof AddMFACommand> {
         });
       }
 
-      const secret = envSecret || (await promptForMFASecret());
+      const secret = envSecret || (await getMFASecretInput());
 
       if (!secret || !this.mfaService.validateSecret(secret)) {
         log.debug('MFA secret input is empty or the secret validation fails exiting!', {
@@ -76,7 +76,7 @@ export default class AddMFACommand extends BaseCommand<typeof AddMFACommand> {
           ...this.contextDetails,
           hasExistingConfig: true,
         });
-        const confirm = await confirmMFAOverwrite();
+        const confirm = await confirmOverwriteMFASecret();
         if (!confirm) {
           log.debug('User cancelled the override operation', {
             ...this.contextDetails,

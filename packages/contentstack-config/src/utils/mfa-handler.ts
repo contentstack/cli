@@ -27,13 +27,16 @@ export class MFAService implements IMFAService {
     // Check padding
     const paddingRegex = /=*$/;
     const paddingMatch = paddingRegex.exec(normalizedSecret);
-    let paddingLength = 0;
+    const paddingLength = paddingMatch?.[0].length || 0;
     if (paddingMatch) {
-      paddingLength = paddingMatch[0].length;
-      log.debug('Checking padding validity');
-      if (paddingLength === 1 || paddingLength === 3 || paddingLength > 7) {
-        log.debug('Secret validation failed: invalid padding length');
-        return false;
+      if (paddingLength) {
+        log.debug('Checking padding validity');
+        const isInvalidPadding = [1, 3].includes(paddingLength) || paddingLength > 7;
+
+        if (isInvalidPadding) {
+          log.debug('Secret validation failed: invalid padding length');
+          return false;
+        }
       }
     }
 

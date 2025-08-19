@@ -129,7 +129,7 @@ export async function askLogPath(): Promise<string> {
   return logPath;
 }
 
-export async function promptForMFASecret(): Promise<string> {
+export async function getMFASecretInput(): Promise<string> {
   const secret = await cliux.inquire<string>({
     type: 'password',
     name: 'secret',
@@ -146,7 +146,7 @@ export async function promptForMFASecret(): Promise<string> {
   return secret;
 }
 
-export async function confirmMFAOverwrite(): Promise<boolean> {
+export async function confirmOverwriteMFASecret(): Promise<boolean> {
   return cliux.inquire<boolean>({
     type: 'confirm',
     name: 'confirm',
