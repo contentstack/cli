@@ -190,6 +190,13 @@ const envFileHandler = async (
   if (regionName !== 'eu' && !isUSRegion) {
     customHost = region?.cma?.substring(8);
   }
+  
+  // Construct image hostname based on the actual host being used
+  let imageHostname = '*-images.contentstack.com'; // default fallback
+  if (region?.cda) {
+    const baseHost = region.cda.replace(/^https?:\/\//, '').replace(/^[^.]+\./, '');
+    imageHostname = `*-images.${baseHost}`;
+  }
   const production = environmentVariables.environment === 'production' ? true : false;
   switch (appConfigKey) {
     case 'kickstart-next':
@@ -207,7 +214,8 @@ const envFileHandler = async (
         }\nNEXT_PUBLIC_CONTENTSTACK_PREVIEW=${livePreviewEnabled ? 'true' : 'false'
         }\nNEXT_PUBLIC_CONTENTSTACK_CONTENT_DELIVERY = ${cdnHost
         }\nNEXT_PUBLIC_CONTENTSTACK_CONTENT_APPLICATION = ${appHost
-        }\nNEXT_PUBLIC_CONTENTSTACK_PREVIEW_HOST = ${previewHost};`;
+        }\nNEXT_PUBLIC_CONTENTSTACK_PREVIEW_HOST = ${previewHost
+        }\nNEXT_PUBLIC_CONTENTSTACK_IMAGE_HOSTNAME=${imageHostname}`;
 
       result = await writeEnvFile(content, filePath);
       break;
@@ -224,7 +232,7 @@ const envFileHandler = async (
         }\nNUXT_CONTENTSTACK_PREVIEW=${livePreviewEnabled ? 'true' : 'false'
         }\nNUXT_CONTENTSTACK_CONTENT_DELIVERY = ${cdnHost
         }\nNUXT_CONTENTSTACK_CONTENT_APPLICATION = ${appHost
-        }\nNUXT_CONTENTSTACK_PREVIEW_HOST = ${previewHost};`;
+        }\nNUXT_CONTENTSTACK_PREVIEW_HOST = ${previewHost}`;
       result = await writeEnvFile(content, filePath);
       break;
 
