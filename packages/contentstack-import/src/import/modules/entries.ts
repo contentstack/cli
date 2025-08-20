@@ -149,9 +149,7 @@ export default class EntriesImport extends BaseClass {
       progress.completeProcess('Reference Updates', true);
 
       // Step 5: Restore content types
-      progress
-        .startProcess('CT Restoration')
-        .updateStatus('Restoring content type references...', 'CT Restoration');
+      progress.startProcess('CT Restoration').updateStatus('Restoring content type references...', 'CT Restoration');
       await this.enableMandatoryCTReferences();
       progress.completeProcess('CT Restoration', true);
 
@@ -523,6 +521,7 @@ export default class EntriesImport extends BaseClass {
     log.debug(`Found content type schema for ${cTUid}`, this.importConfig.context);
 
     const onSuccess = ({ response, apiData: entry, additionalInfo }: any) => {
+      this.progressManager?.tick(true, `${entry?.title} - ${entry?.uid}`, null, 'Create');
       if (additionalInfo[entry.uid]?.isLocalized) {
         let oldUid = additionalInfo[entry.uid].entryOldUid;
         this.entriesForVariant.push({ content_type: cTUid, entry_uid: oldUid, locale });
@@ -556,6 +555,7 @@ export default class EntriesImport extends BaseClass {
 
     const onReject = ({ error, apiData: entry, additionalInfo }: any) => {
       const { title, uid } = entry;
+      this.progressManager?.tick(false, `${title} - ${uid}`, 'Error while creating entries', 'Create');
       this.entriesForVariant = this.entriesForVariant.filter(
         (item) => !(item.locale === locale && item.entry_uid === uid),
       );
@@ -613,7 +613,6 @@ export default class EntriesImport extends BaseClass {
 
     entriesCreateFileHelper?.completeFile(true);
     existingEntriesFileHelper?.completeFile(true);
-    this.progressManager?.tick(true, `${cTUid} - ${locale}`, null, 'Create');
     log.success(`Created entries for content type ${cTUid} in locale ${locale}`, this.importConfig.context);
   }
 

@@ -48,7 +48,7 @@ export default class ImportVariantEntries extends BaseClass {
         return;
       }
 
-      const progress = this.createSimpleProgress(this.currentModuleName, 1);
+      const progress = this.createSimpleProgress(this.currentModuleName);
 
       progress.updateStatus('Importing variant entries...');
       log.info('Starting variant entries import process', this.config.context);

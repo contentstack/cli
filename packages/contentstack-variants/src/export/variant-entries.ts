@@ -71,6 +71,9 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
     await this.variantInstance.init();
     log.debug('Variant instance initialized successfully', this.config.context);
 
+    let totalVariantCount = 0; // Track total variants found across all entries
+    let processedEntries = 0;
+
     for (let index = 0; index < entries.length; index++) {
       const entry = entries[index];
       log.debug(
@@ -109,6 +112,13 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
         if (variantEntries?.length) {
           entryHasVariants = true;
           variantCount = variantEntries.length;
+          totalVariantCount += variantCount; 
+
+          // Update progress total only for the first batch (when we have a better estimate)
+          if (processedEntries === 0 && this.parentProgressManager) {
+            // Start with current count, will be updated as we find more
+            this.parentProgressManager.updateProcessTotal('Variant Entries', totalVariantCount);
+          }
 
           if (!existsSync(variantEntryBasePath)) {
             log.debug(`Creating directory: ${variantEntryBasePath}`, this.config.context);
@@ -142,14 +152,21 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
           log.debug(`No variant entries directory created for entry: ${entry.uid}`, this.config.context);
         }
 
-        // Track progress for each entry processed (regardless of variants found)
-        if (this.progressManager) {
-          const message = entryHasVariants
-            ? `${variantCount} variants exported for entry: ${entry.uid}`
-            : `No variants found for entry: ${entry.uid}`;
-
-          this.updateProgress(true, message, undefined, 'Variant Entries');
+        // After processing this entry, update the total if we found variants
+        if (entryHasVariants && this.parentProgressManager) {
+          // Update total with current accumulated count
+          this.parentProgressManager.updateProcessTotal('Variant Entries', totalVariantCount);
+          
+          // Tick for each variant found in this entry
+          for (let i = 0; i < variantCount; i++) {
+            this.updateProgress(true, `Variant ${i + 1}/${variantCount} for entry: ${entry.uid}`, undefined, 'Variant Entries');
+          }
+        } else if (this.parentProgressManager) {
+          // No variants found for this entry, but still tick once to show progress
+          this.updateProgress(true, `No variants found for entry: ${entry.uid}`, undefined, 'Variant Entries');
         }
+
+        processedEntries++;
       } catch (error) {
         log.debug(`Error occurred while exporting variant entries for entry: ${entry.uid}`, this.config.context);
 
@@ -172,7 +189,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
     }
 
     log.debug(
-      `Completed variant entries export for content type: ${content_type_uid}, locale: ${locale}`,
+      `Completed variant entries export for content type: ${content_type_uid}, locale: ${locale}. Total variants: ${totalVariantCount}`,
       this.config.context,
     );
   }
