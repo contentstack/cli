@@ -52,10 +52,30 @@ function handleAndLogError(error: unknown, context?: ErrorContext, errorMessage?
   const classified = cliErrorHandler.classifyError(error, context, errorMessage);
   const apiError = classified.error?.message || classified?.message || 'Unknown error';
 
+  // Create enhanced console message with field errors prominently displayed
+  let consoleMessage: string;
+  if (errorMessage) {
+    consoleMessage = `${errorMessage}\nAPI Error: ${apiError}`;
+  } else {
+    consoleMessage = apiError;
+  }
+
+  // If we have field errors, add them as a separate formatted section for console
+  if (classified.error?.fieldErrors && Object.keys(classified.error.fieldErrors).length > 0) {
+    const fieldErrorsList = Object.entries(classified.error.fieldErrors)
+      .map(([field, errors]) => {
+        const errorArray = Array.isArray(errors) ? errors : [errors];
+        return `  • ${field}: ${errorArray.join(', ')}`;
+      })
+      .join('\n');
+
+    consoleMessage += `\n\nField Validation Errors:\n${fieldErrorsList}`;
+  }
+
   // Always log the error
   v2Logger.logError({
     type: classified.type,
-    message: errorMessage ? `${errorMessage}\nAPI Error: ${apiError}` : `${apiError}`,
+    message: consoleMessage,
     error: classified.error,
     context: typeof classified.context === 'string' ? { message: classified.context } : classified.context,
     hidden: classified.hidden,
