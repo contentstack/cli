@@ -60,7 +60,7 @@ export default class ImportWorkflows extends BaseClass {
 
       const progress = this.createNestedProgress(this.currentModuleName);
       progress.addProcess('Get Roles', 1);
-      progress.addProcess('Workflows Import', workflowsCount);
+      progress.addProcess('Create', workflowsCount);
 
       await this.prepareWorkflowMapper();
 
@@ -71,10 +71,10 @@ export default class ImportWorkflows extends BaseClass {
       progress.completeProcess('Get Roles', true);
 
       // Step 2: Import workflows
-      progress.startProcess('Workflows Import').updateStatus('Importing workflows...', 'Workflows Import');
+      progress.startProcess('Create').updateStatus('Importing workflows...', 'Create');
       log.info('Starting workflows import process', this.importConfig.context);
       await this.importWorkflows();
-      progress.completeProcess('Workflows Import', true);
+      progress.completeProcess('Create', true);
 
       this.processWorkflowResults();
 
@@ -144,7 +144,7 @@ export default class ImportWorkflows extends BaseClass {
             false,
             `workflow: ${name || uid}`,
             error?.message || 'Failed to update next available stages',
-            'Workflows Import',
+            'Create',
           );
           handleAndLogError(error, { ...this.importConfig.context, name }, `Workflow '${name}' update failed`);
         });
@@ -157,7 +157,7 @@ export default class ImportWorkflows extends BaseClass {
 
       this.createdWorkflows.push(response);
       this.workflowUidMapper[uid] = response.uid;
-      this.progressManager?.tick(true, `workflow: ${name || uid}`, null, 'Workflows Import');
+      this.progressManager?.tick(true, `workflow: ${name || uid}`, null, 'Create');
       log.success(`Workflow '${name}' imported successfully`, this.importConfig.context);
       log.debug(`Workflow UID mapping: ${uid} → ${response.uid}`, this.importConfig.context);
       fsUtil.writeFile(this.workflowUidMapperPath, this.workflowUidMapper);
@@ -170,7 +170,7 @@ export default class ImportWorkflows extends BaseClass {
       const workflowExists = err?.errors?.name || err?.errors?.['workflow.name'];
 
       if (workflowExists) {
-        this.progressManager?.tick(true, `workflow: ${name || uid} (already exists)`, null, 'Workflows Import');
+        this.progressManager?.tick(true, `workflow: ${name || uid} (already exists)`, null, 'Create');
         log.info(`Workflow '${name}' already exists`, this.importConfig.context);
       } else {
         this.failedWebhooks.push(apiData);
@@ -178,7 +178,7 @@ export default class ImportWorkflows extends BaseClass {
           false,
           `workflow: ${name || uid}`,
           error?.message || 'Failed to import workflow',
-          'Workflows Import',
+          'Create',
         );
         if (error.errors['workflow_stages.0.users']) {
           log.error(
@@ -260,7 +260,7 @@ export default class ImportWorkflows extends BaseClass {
         true,
         `workflow: ${workflow.name} (skipped - already exists)`,
         null,
-        'Workflows Import',
+        'Create',
       );
       apiOptions.entity = undefined;
     } else {

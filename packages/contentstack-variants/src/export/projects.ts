@@ -67,9 +67,10 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
       if (this.parentProgressManager) {
         progress = this.parentProgressManager;
         this.progressManager = this.parentProgressManager;
+        progress.updateProcessTotal('Projects', this.projectsData?.length);
       } else {
         progress = this.createNestedProgress('Projects');
-        progress.addProcess('Projects', 1);
+        progress.addProcess('Projects', this.projectsData?.length);
         progress.startProcess('Projects').updateStatus('Processing and exporting project data...', 'Projects');
       }
 

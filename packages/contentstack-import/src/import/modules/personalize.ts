@@ -7,6 +7,13 @@ export default class ImportPersonalize extends BaseClass {
   private config: ImportConfig;
   public personalizeConfig: ImportConfig['modules']['personalize'];
 
+  private readonly moduleDisplayMapper = {
+    events: 'Events',
+    attributes: 'Attributes',
+    audiences: 'Audiences',
+    experiences: 'Experiences',
+  };
+
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
     this.config = importConfig;
@@ -29,30 +36,23 @@ export default class ImportPersonalize extends BaseClass {
       }
 
       const progress = this.createNestedProgress(this.currentModuleName);
-      progress.addProcess('Project Import', 1);
 
-      if (this.personalizeConfig.importData && modulesCount > 0) {
-        progress.addProcess('Personalize data import', modulesCount);
-      }
+      this.addProjectProcess(progress);
+      this.addModuleProcesses(progress, modulesCount);
 
       // Step 1: Import personalize project
-      progress.startProcess('Project Import').updateStatus('Importing personalize project...', 'Project Import');
-      log.info('Starting personalize project import', this.config.context);
-      await this.importPersonalizeProject(progress);
-      progress.completeProcess('Project Import', true);
+      await this.importProjects(progress);
 
       // Step 2: Import personalize data modules (if enabled)
       if (this.personalizeConfig.importData && modulesCount > 0) {
-        progress
-          .startProcess('Personalize data import')
-          .updateStatus('Importing personalize data modules...', 'Personalize data import');
-        log.info('Starting personalize data import', this.config.context);
-        await this.importPersonalizeData(progress);
-        progress.completeProcess('Personalize data import', true);
+        log.debug('Processing personalize modules...', this.config.context);
+        await this.importModules(progress);
+      } else {
+        log.debug('No personalize modules configured for processing', this.config.context);
       }
 
       this.completeProgress(true);
-      log.success('Personalize import completed successfully', this.config.context)
+      log.success('Personalize import completed successfully', this.config.context);
     } catch (error) {
       this.personalizeConfig.importData = false; // Stop personalize import if project creation fails
       this.completeProgress(false, (error as any)?.message || 'Personalize import failed');
@@ -64,25 +64,40 @@ export default class ImportPersonalize extends BaseClass {
     }
   }
 
-  private async importPersonalizeProject(parentProgress: any): Promise<void> {
-    log.debug('Starting personalize project import', this.config.context);
-    log.debug(`Base URL: ${this.personalizeConfig.baseURL[this.config.region.name]}`, this.config.context);
-
-    // Create project instance and set parent progress manager
-    const projectInstance = new Import.Project(this.config);
-    if (projectInstance.setParentProgressManager) {
-      projectInstance.setParentProgressManager(parentProgress);
-    }
-
-    await projectInstance.import();
-
-    parentProgress?.tick(true, 'personalize project', null, 'Project Import');
-    log.debug('Personalize project import completed', this.config.context);
+  private addProjectProcess(progress: any) {
+    progress.addProcess('Projects', 1);
+    log.debug('Added Projects process to personalize progress', this.config.context);
   }
 
-  private async importPersonalizeData(parentProgress: any): Promise<void> {
-    log.debug('Personalize data import is enabled', this.config.context);
+  private addModuleProcesses(progress: any, moduleCount: number) {
+    if (moduleCount > 0) {
+      const order: (keyof typeof this.moduleDisplayMapper)[] = this.personalizeConfig
+        .importOrder as (keyof typeof this.moduleDisplayMapper)[];
 
+      log.debug(`Adding ${order.length} personalize module processes: ${order.join(', ')}`, this.config.context);
+
+      for (const module of order) {
+        const processName = this.moduleDisplayMapper[module];
+        progress.addProcess(processName, 1);
+        log.debug(`Added ${processName} process to personalize progress`, this.config.context);
+      }
+    } else {
+      log.debug('No personalize modules to add to progress', this.config.context);
+    }
+  }
+
+  private async importProjects(progress: any): Promise<void> {
+    progress.startProcess('Projects').updateStatus('Importing personalization projects...', 'Projects');
+    log.debug('Starting projects import for personalization...', this.config.context);
+
+    const projectInstance = new Import.Project(this.config);
+    projectInstance.setParentProgressManager(progress);
+    await projectInstance.import();
+
+    progress.completeProcess('Projects', true);
+  }
+
+  private async importModules(progress: any): Promise<void> {
     const moduleMapper = {
       events: Import.Events,
       audiences: Import.Audiences,
@@ -92,46 +107,36 @@ export default class ImportPersonalize extends BaseClass {
 
     const order: (keyof typeof moduleMapper)[] = this.personalizeConfig.importOrder as (keyof typeof moduleMapper)[];
 
-    log.debug(`Processing ${order.length} personalize modules in order: ${order.join(', ')}`, this.config.context);
+    log.debug(`Personalize import order: ${order.join(', ')}`, this.config.context);
 
     for (const module of order) {
-      log.debug(`Starting import for personalize module: ${module}`, this.config.context);
-      const Module = moduleMapper[module];
+      log.debug(`Processing personalize module: ${module}`, this.config.context);
+      const processName = this.moduleDisplayMapper[module];
+      const ModuleClass = moduleMapper[module];
 
-      if (!Module) {
-        parentProgress?.tick(
-          false,
-          `module: ${module}`,
-          'Module not found in moduleMapper',
-          'Personalize data import',
-        );
-        log.debug(`Module ${module} not found in moduleMapper`, this.config.context);
-        continue;
-      }
+      if (ModuleClass) {
+        progress.startProcess(processName).updateStatus(`Importing ${module}...`, processName);
+        log.debug(`Starting import for module: ${module}`, this.config.context);
 
-      try {
-        log.debug(`Creating instance of ${module} module`, this.config.context);
-        const moduleInstance = new Module(this.config);
+        if (this.personalizeConfig.importData) {
+          const importer = new ModuleClass(this.config);
+          importer.setParentProgressManager(progress);
+          await importer.import();
 
-        // Set parent progress manager for sub-module
-        if (moduleInstance.setParentProgressManager) {
-          moduleInstance.setParentProgressManager(parentProgress);
+          progress.completeProcess(processName, true);
+          log.debug(`Completed import for module: ${module}`, this.config.context);
+        } else {
+          log.debug(`Skipping ${module} - personalization not enabled`, this.config.context);
+          this.progressManager?.tick(true, `${module} skipped (no project)`, null, processName);
+          progress.completeProcess(processName, true);
+          log.info(`Skipped ${module} import - no personalize project found`, this.config.context);
         }
-
-        log.debug(`Importing ${module} module`, this.config.context);
-        await moduleInstance.import();
-
-        parentProgress?.tick(true, `module: ${module}`, null, 'Personalize data import');
-        log.success(`Successfully imported personalize module: ${module}`, this.config.context);
-      } catch (error) {
-        parentProgress?.tick(
-          false,
-          `module: ${module}`,
-          (error as any)?.message || 'Import failed',
-          'Personalize data import',
-        );
-        log.debug(`Failed to import personalize module: ${module} - ${(error as any)?.message}`, this.config.context);
-        handleAndLogError(error, { ...this.config.context, module });
+      } else {
+        log.debug(`Module not implemented: ${module}`, this.config.context);
+        progress.startProcess(processName).updateStatus(`Module not implemented: ${module}`, processName);
+        this.progressManager?.tick(false, `module: ${module}`, 'Module not implemented', processName);
+        progress.completeProcess(processName, false);
+        log.info(`Module not implemented: ${module}`, this.config.context);
       }
     }
 

@@ -13,7 +13,7 @@ export default class ImportStack extends BaseClass {
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
     this.importConfig.context.module = 'stack';
-    this.currentModuleName = 'Stack Settings';
+    this.currentModuleName = 'Stack';
     this.stackSettingsPath = join(this.importConfig.backupDir, 'stack', 'settings.json');
     this.envUidMapperPath = join(this.importConfig.backupDir, 'mapper', 'environments', 'uid-mapping.json');
   }
