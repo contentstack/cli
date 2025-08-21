@@ -1,5 +1,11 @@
 import * as path from 'path';
-import { ContentstackClient, handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
+import {
+  ContentstackClient,
+  handleAndLogError,
+  messageHandler,
+  log,
+  getBranchFromAlias,
+} from '@contentstack/cli-utilities';
 import { setupBranches, setupExportDir, writeExportMetaFile } from '../utils';
 import startModuleExport from './modules';
 import startJSModuleExport from './modules-js';
@@ -21,6 +27,13 @@ class ModuleExporter {
 
   async start(): Promise<any> {
     // setup the branches
+    if (!this.exportConfig.branchName && this.exportConfig.branchAlias) {
+      try {
+        this.exportConfig.branchName = await getBranchFromAlias(this.stackAPIClient, this.exportConfig.branchAlias);
+      } catch (err) {
+        throw err;
+      }
+    }
     await setupBranches(this.exportConfig, this.stackAPIClient);
     await setupExportDir(this.exportConfig);
     // if branches available run it export by branches
