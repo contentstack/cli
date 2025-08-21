@@ -46,7 +46,7 @@ describe('Region command', function () {
       if (key === 'region') return undefined;
       return undefined;
     });
-    sinon.stub(process, 'exit').callsFake((code) => {
+    const processExitStub = sinon.stub(process, 'exit').callsFake((code) => {
       throw new Error(`CLI_CONFIG_GET_REGION_NOT_FOUND EEXIT: ${code}`);
     });
     let result;
@@ -54,6 +54,8 @@ describe('Region command', function () {
       await GetRegionCommand.run([]);
     } catch (error) {
       result = error;
+    } finally {
+      processExitStub.restore();
     }
     expect(result.message).to.include('CLI_CONFIG_GET_REGION_NOT_FOUND EEXIT: 1');
   });

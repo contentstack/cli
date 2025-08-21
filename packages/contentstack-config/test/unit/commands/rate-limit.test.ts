@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { stub, restore } from 'sinon'; // Import restore for cleaning up
-import { cliux, configHandler, isAuthenticated } from '@contentstack/cli-utilities';
+import { cliux, configHandler } from '@contentstack/cli-utilities';
 import SetRateLimitCommand from '../../../src/commands/config/set/rate-limit';
 import GetRateLimitCommand from '../../../src/commands/config/get/rate-limit';
 import RemoveRateLimitCommand from '../../../src/commands/config/remove/rate-limit';
@@ -34,12 +34,12 @@ describe('Rate Limit Commands', () => {
       }),
     };
     rateLimitHandler.setClient(mockClient);
-    restore();
   });
 
   afterEach(() => {
     cliux.error = originalCliuxError;
     cliux.print = originalCliuxPrint;
+    restore();
   });
 
   describe('Set Rate Limit Command', () => {
@@ -187,6 +187,7 @@ describe('Rate Limit Commands', () => {
       configHandler.set('rateLimit', {});
       try {
         await GetRateLimitCommand.run(['--org', 'non-existent-org']);
+        // Should throw an error
       } catch (error) {
         expect(errorMessage).to.equal('Error: Organization not found');
       }
@@ -213,6 +214,7 @@ describe('Rate Limit Commands', () => {
       configHandler.set('rateLimit', {});
       try {
         await RemoveRateLimitCommand.run(['--org', 'non-existent-org']);
+        // Should throw an error
       } catch (error) {
         expect(errorMessage).to.equal('Error: Organization not found');
       }
