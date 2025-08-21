@@ -10,15 +10,15 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "pnpm compile && oclif manifest && oclif readme",
     "version": "oclif readme && git add README.md",
-    "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+    "test:report": "tsc -p test && NODE_OPTIONS=\"--no-warnings\" nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "pretest": "tsc -p test",
-    "test": "mocha --require ts-node/register 'test/unit/**/*.test.ts'",
+    "test": "NODE_OPTIONS=\"--no-warnings\" mocha --require ts-node/register 'test/unit/**/*.test.ts'",
     "posttest": "npm run lint",
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
-    "test:integration": "mocha --forbid-only \"test/run.test.ts\" --integration-test",
-    "test:unit": "mocha --forbid-only \"test/unit/**/*.test.ts\" --unit-test",
-    "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
+    "test:integration": "NODE_OPTIONS=\"--no-warnings\" mocha --forbid-only \"test/run.test.ts\" --integration-test",
+    "test:unit": "NODE_OPTIONS=\"--no-warnings\" mocha --forbid-only \"test/unit/**/*.test.ts\" --unit-test",
+    "test:unit:report": "NODE_OPTIONS=\"--no-warnings\" nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
   },
   "dependencies": {
     "@contentstack/cli-command": "~1.6.0",
