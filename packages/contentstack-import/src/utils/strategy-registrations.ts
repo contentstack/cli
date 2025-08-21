@@ -20,13 +20,13 @@ ProgressStrategyRegistry.register(
 // Register strategy for Assets - use Asset Upload as primary process  
 ProgressStrategyRegistry.register(
   'ASSETS',
-  new PrimaryProcessStrategy('Asset Upload')
+  new PrimaryProcessStrategy('Upload')
 );
 
 // Register strategy for Entries - use Entry Creation as primary process
 ProgressStrategyRegistry.register(
   'ENTRIES',
-  new PrimaryProcessStrategy('Entry Creation')
+  new PrimaryProcessStrategy('Create')
 );
 
 // Register strategy for Global Fields - use Create as primary process
@@ -50,13 +50,13 @@ ProgressStrategyRegistry.register(
 // Register strategy for Locales - uses default (no nested progress yet)
 ProgressStrategyRegistry.register(
   'LOCALES',
-  new DefaultProgressStrategy()
+  new PrimaryProcessStrategy('Create')
 );
 
 // Register strategy for Labels - uses default (no nested progress yet)
 ProgressStrategyRegistry.register(
   'LABELS',
-  new DefaultProgressStrategy()
+  new PrimaryProcessStrategy('Create')
 );
 
 // Register strategy for Webhooks - uses default (no nested progress yet)
@@ -68,7 +68,7 @@ ProgressStrategyRegistry.register(
 // Register strategy for Workflows - uses default (no nested progress yet)
 ProgressStrategyRegistry.register(
   'WORKFLOWS',
-  new DefaultProgressStrategy()
+  new PrimaryProcessStrategy('Create')
 );
 
 // Register strategy for Custom Roles - uses default (no nested progress yet)
@@ -91,7 +91,7 @@ ProgressStrategyRegistry.register(
 
 // Register strategy for Stack Settings - simple module
 ProgressStrategyRegistry.register(
-  'STACK SETTINGS',
+  'STACK',
   new DefaultProgressStrategy()
 );
 
@@ -100,7 +100,7 @@ ProgressStrategyRegistry.register(
   'PERSONALIZE',
   new CustomProgressStrategy((processes) => {
     // For personalize import, count project imports as primary metric
-    const projectImport = processes.get('Project Import');
+    const projectImport = processes.get('Project');
     if (projectImport) {
       return {
         total: projectImport.total,
@@ -126,7 +126,7 @@ ProgressStrategyRegistry.register(
 // Register strategy for Variant Entries - sub-process of entries
 ProgressStrategyRegistry.register(
   'VARIANT ENTRIES',
-  new DefaultProgressStrategy() // Uses default since it's a sub-process
+  new DefaultProgressStrategy()
 );
 
 export default ProgressStrategyRegistry; 

@@ -130,12 +130,7 @@ export default class ImportLocales extends BaseClass {
     };
 
     const onReject = ({ error, apiData: { uid, code } = undefined }: any) => {
-      this.progressManager?.tick(
-        false,
-        `locale: ${code}`,
-        error?.message || 'Failed to create locale',
-        'Create',
-      );
+      this.progressManager?.tick(false, `locale: ${code}`, error?.message || 'Failed to create locale', 'Create');
       if (error?.errorCode === 247) {
         log.info(formatError(error), this.config.context);
       } else {
@@ -164,10 +159,12 @@ export default class ImportLocales extends BaseClass {
     const onSuccess = ({ response = {}, apiData: { uid, code } = undefined }: any) => {
       log.info(`Updated locale: '${code}'`, this.config.context);
       log.debug(`Locale update completed for: ${code}`, this.config.context);
+      this.progressManager?.tick(true, `locale: ${code}`, null, 'Update');
       fsUtil.writeFile(this.langSuccessPath, this.createdLocales);
     };
 
     const onReject = ({ error, apiData: { uid, code } = undefined }: any) => {
+      this.progressManager?.tick(false, `locale: ${code}`, 'Failed to update locale', 'Update');
       log.error(`Language '${code}' failed to update`, this.config.context);
       handleAndLogError(error, { ...this.config.context, code });
       fsUtil.writeFile(this.langFailsPath, this.failedLocales);
@@ -304,7 +301,10 @@ export default class ImportLocales extends BaseClass {
     const message = `master locale: codes differ (${sourceCode} vs ${targetCode})`;
 
     this.tickProgress(true, message);
-    log.debug(`Master Locale language codes do not match. Source: ${sourceCode}, Target: ${targetCode}`, this.config.context);
+    log.debug(
+      `Master Locale language codes do not match. Source: ${sourceCode}, Target: ${targetCode}`,
+      this.config.context,
+    );
   }
 
   private async handleNameMismatch(source: Record<string, any>, target: Record<string, any>): Promise<void> {

@@ -39,4 +39,12 @@ fileignoreconfig:
   checksum: 0dbf0a6bc447206260b8acd41b85781d60ca50c948bb3ca62f444f97d64d1fb2
 - filename: packages/contentstack-utilities/src/interfaces/index.ts
   checksum: d0b0042e643ce0c0489b86f15f3b64f60a837c2ae928b6275028e5e0184b0a7a
+- filename: packages/contentstack-variants/src/import/attribute.ts
+  checksum: 03e764ee2032c44d9493f2be194f91a2337026b7fd8037df90240327e6bcaabb
+- filename: packages/contentstack-variants/src/import/audiences.ts
+  checksum: f24697ef86e928bb4d16f93c021b647639cc344a7f02463d79d69f9434ebed56
+- filename: packages/contentstack-variants/src/import/events.ts
+  checksum: 6cb014b5518ffe204a9f894ad801c05e2ef91a1692049168f74dd12a224363c4
+- filename: packages/contentstack-import/src/import/modules/personalize.ts
+  checksum: 1311a613177160637e21b3983b281b384c2cb15837d001a398b67afef30a393a
 version: "1.0"

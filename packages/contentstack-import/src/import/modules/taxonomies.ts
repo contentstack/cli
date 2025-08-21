@@ -58,7 +58,7 @@ export default class ImportTaxonomies extends BaseClass {
       this.createSuccessAndFailedFile();
 
       this.completeProgress(true);
-    log.success('Taxonomies imported successfully!', this.importConfig.context);
+      log.success('Taxonomies imported successfully!', this.importConfig.context);
     } catch (error) {
       this.completeProgress(false, error?.message || 'Taxonomies import failed');
       handleAndLogError(error, { ...this.importConfig.context });

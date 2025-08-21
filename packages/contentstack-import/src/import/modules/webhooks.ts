@@ -46,7 +46,7 @@ export default class ImportWebhooks extends BaseClass {
       const [webhooksCount] = await this.analyzeWebhooks();
 
       if (webhooksCount === 0) {
- log.info(`No Webhooks Found - '${this.webhooksFolderPath}'`, this.importConfig.context);
+        log.info(`No Webhooks Found - '${this.webhooksFolderPath}'`, this.importConfig.context);
         return;
       }
 
@@ -59,7 +59,7 @@ export default class ImportWebhooks extends BaseClass {
       this.processWebhookResults();
 
       this.completeProgress(true);
-    log.success('Webhooks have been imported successfully!', this.importConfig.context);
+      log.success('Webhooks have been imported successfully!', this.importConfig.context);
     } catch (error) {
       this.completeProgress(false, error?.message || 'Webhooks import failed');
       handleAndLogError(error, { ...this.importConfig.context });
@@ -95,11 +95,7 @@ export default class ImportWebhooks extends BaseClass {
         log.info(`Webhook '${name}' already exists`, this.importConfig.context);
       } else {
         this.failedWebhooks.push(apiData);
-        this.progressManager?.tick(
-          false,
-          `webhook: ${name || uid}`,
-          error?.message || 'Failed to import webhook',
-        );
+        this.progressManager?.tick(false, `webhook: ${name || uid}`, error?.message || 'Failed to import webhook');
         handleAndLogError(
           error,
           { ...this.importConfig.context, webhookName: name },
