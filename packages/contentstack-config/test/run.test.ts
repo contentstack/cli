@@ -1,12 +1,15 @@
 import { join, resolve } from "path";
-import { existsSync, readdirSync } from "fs";
+import { existsSync, readdirSync, readFileSync } from "fs";
 
+// Import lodash functions
 const filter = require("lodash/filter");
 const forEach = require("lodash/forEach");
 const isEmpty = require("lodash/isEmpty");
 const isArray = require("lodash/isArray");
 const includes = require("lodash/includes");
-const config = require("./config.json");
+
+// Import config
+const config = JSON.parse(readFileSync(join(__dirname, "config.json"), "utf8"));
 
 const { IS_TS, UNIT_EXECUTION_ORDER, INTEGRATION_EXECUTION_ORDER } = config;
 
