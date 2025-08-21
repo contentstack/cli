@@ -54,21 +54,21 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
         return;
       }
 
-      // Create progress manager - use parent if available, otherwise create simple
       let progress: any;
+      const processName = 'Attributes';
+
       if (this.parentProgressManager) {
         // Use parent progress manager - we're part of the personalize modules process
         progress = this.parentProgressManager;
         this.progressManager = this.parentProgressManager;
+
+        progress.updateProcessTotal(processName, this.attributes.length); 
       } else {
-        // Create our own progress for standalone execution
-        progress = this.createSimpleProgress('Attributes', this.attributes.length + 1);
+        progress = this.createSimpleProgress('Attributes', this.attributes.length);
       }
 
       log.debug(`Processing ${this.attributes.length} attributes`, this.exportConfig.context);
 
-      // Update progress with process name
-      const processName = 'Attributes';
       progress.updateStatus('Sanitizing attributes data...', processName);
 
       this.sanitizeAttribs();
@@ -81,10 +81,6 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
       );
       log.debug(`Writing attributes to: ${attributesFilePath}`, this.exportConfig.context);
       fsUtil.writeFile(attributesFilePath, this.attributes);
-
-      if (this.progressManager) {
-        this.updateProgress(true, `${this.attributes.length} attributes exported`, undefined, processName);
-      }
 
       // Complete progress only if we're managing our own progress
       if (!this.parentProgressManager) {

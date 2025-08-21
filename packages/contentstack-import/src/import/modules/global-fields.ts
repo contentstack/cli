@@ -107,13 +107,13 @@ export default class ImportGlobalFields extends BaseClass {
 
       // Step 3: Replace existing global fields if needed
       if (this.importConfig.replaceExisting && this.existingGFs.length > 0) {
-        progress.addProcess('Global Fields Replacement', this.existingGFs.length);
+        progress.addProcess('Replace Existing', this.existingGFs.length);
         progress
-          .startProcess('Global Fields Replacement')
-          .updateStatus('Replacing existing global fields...', 'Global Fields Replacement');
-        log.info('Starting global fields replacement process', this.importConfig.context);
+          .startProcess('Replace Existing')
+          .updateStatus('Replacing existing global fields...', 'Replace Existing');
+        log.info('Starting Replace Existing process', this.importConfig.context);
         await this.replaceGFs();
-        progress.completeProcess('Global Fields Replacement', true);
+        progress.completeProcess('Replace Existing', true);
       }
 
       await this.processGlobalFieldResults();
@@ -315,7 +315,7 @@ export default class ImportGlobalFields extends BaseClass {
       const uid = apiData?.uid ?? apiData?.global_field?.uid ?? 'unknown';
       this.createdGFs.push(globalField);
       this.gFsUidMapper[uid] = globalField;
-      this.progressManager?.tick(true, `global field: ${uid} (replaced)`, null, 'Global Fields Replacement');
+      this.progressManager?.tick(true, `global field: ${uid} (replaced)`, null, 'Replace Existing');
       fsUtil.writeFile(this.gFsUidMapperPath, this.gFsUidMapper);
       log.success(`Global field '${uid}' replaced successfully`, this.importConfig.context);
       log.debug(`Global field replacement completed: ${uid}`, this.importConfig.context);
@@ -327,7 +327,7 @@ export default class ImportGlobalFields extends BaseClass {
         false,
         `global field: ${uid}`,
         error?.message || 'Failed to replace global field',
-        'Global Fields Replacement',
+        'Replace Existing',
       );
       log.debug(`Global field '${uid}' replacement failed`, this.importConfig.context);
       handleAndLogError(error, { ...this.importConfig.context, uid }, `Global fields '${uid}' failed to replace`);
@@ -357,7 +357,7 @@ export default class ImportGlobalFields extends BaseClass {
       false,
     );
 
-    log.debug('Global fields replacement process completed', this.importConfig.context);
+    log.debug('Replace Existing process completed', this.importConfig.context);
   }
 
   /**

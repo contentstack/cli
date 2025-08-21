@@ -60,13 +60,13 @@ export default class ExportTaxonomies extends BaseClass {
       const progress = this.createNestedProgress(this.currentModuleName);
 
       // Add sub-processes
-      progress.addProcess('Fetch Taxonomies', totalCount);
-      progress.addProcess('Export Taxonomies & Terms', totalCount);
+      progress.addProcess('Fetch', totalCount);
+      progress.addProcess('Taxonomies & Terms', totalCount);
 
       // Fetch taxonomies
-      progress.startProcess('Fetch Taxonomies').updateStatus('Fetching taxonomy metadata...', 'Fetch Taxonomies');
+      progress.startProcess('Fetch').updateStatus('Fetching taxonomy metadata...', 'Fetch');
       await this.getAllTaxonomies();
-      progress.completeProcess('Fetch Taxonomies', true);
+      progress.completeProcess('Fetch', true);
 
       const actualTaxonomyCount = Object.keys(this.taxonomies)?.length;
       log.debug(`Found ${actualTaxonomyCount} taxonomies to export (API reported ${totalCount})`, this.exportConfig.context);
@@ -74,16 +74,16 @@ export default class ExportTaxonomies extends BaseClass {
       // Update progress for export step if counts differ
       if (actualTaxonomyCount !== totalCount && actualTaxonomyCount > 0) {
         // Remove the old process and add with correct count
-        progress.addProcess('Export Taxonomies & Terms', actualTaxonomyCount);
+        progress.addProcess('Taxonomies & Terms', actualTaxonomyCount);
       }
 
       // Export detailed taxonomies
       if (actualTaxonomyCount > 0) {
         progress
-          .startProcess('Export Taxonomies & Terms')
-          .updateStatus('Exporting taxonomy details...', 'Export Taxonomies & Terms');
+          .startProcess('Taxonomies & Terms')
+          .updateStatus('Exporting taxonomy details...', 'Taxonomies & Terms');
         await this.exportTaxonomies();
-        progress.completeProcess('Export Taxonomies & Terms', true);
+        progress.completeProcess('Taxonomies & Terms', true);
       } else {
         log.info('No taxonomies found to export detailed information', this.exportConfig.context);
       }
@@ -98,7 +98,7 @@ export default class ExportTaxonomies extends BaseClass {
   }
 
   /**
-   * fetch all taxonomies in the provided stack
+   * Fetch in the provided stack
    * @param {number} skip
    * @returns {Promise<any>}
    */
@@ -152,7 +152,7 @@ export default class ExportTaxonomies extends BaseClass {
       }
 
       // Track progress for each taxonomy
-      this.progressManager?.tick(true, `taxonomy: ${taxonomyName || taxonomyUid}`, null, 'Fetch Taxonomies');
+      this.progressManager?.tick(true, `taxonomy: ${taxonomyName || taxonomyUid}`, null, 'Fetch');
     }
 
     log.debug(
@@ -184,7 +184,7 @@ export default class ExportTaxonomies extends BaseClass {
       fsUtil.writeFile(filePath, response);
 
       // Track progress for each exported taxonomy
-      this.progressManager?.tick(true, `taxonomy: ${taxonomyName || uid}`, null, 'Export Taxonomies & Terms');
+      this.progressManager?.tick(true, `taxonomy: ${taxonomyName || uid}`, null, 'Taxonomies & Terms');
 
       log.success(messageHandler.parse('TAXONOMY_EXPORT_SUCCESS', taxonomyName || uid), this.exportConfig.context);
     };
@@ -197,7 +197,7 @@ export default class ExportTaxonomies extends BaseClass {
         false,
         `taxonomy: ${taxonomyName || uid}`,
         error?.message || 'Export failed',
-        'Export Taxonomies & Terms',
+        'Taxonomies & Terms',
       );
 
       handleAndLogError(

@@ -50,8 +50,11 @@ class ModuleExporter {
         // Reset progress manager for each branch (except the first one which was initialized in export command)
         if (index >= 0) {
           CLIProgressManager.clearGlobalSummary();
-          CLIProgressManager.initializeGlobalSummary(`EXPORT-${branch.uid}`, branch.uid,  `EXPORTING "${branch.uid}" BRANCH CONTENT`,);
-          
+          CLIProgressManager.initializeGlobalSummary(
+            `EXPORT-${branch.uid}`,
+            branch.uid,
+            `EXPORTING "${branch.uid}" BRANCH CONTENT`,
+          );
         }
 
         log.info(`Exporting content from branch ${branch.uid}`, this.exportConfig.context);
@@ -97,7 +100,7 @@ class ModuleExporter {
     } else {
       //NOTE - new modules support only ts
       if (this.exportConfig.onlyTSModules.indexOf(moduleName) === -1) {
-       await startJSModuleExport({
+        await startJSModuleExport({
           stackAPIClient: this.stackAPIClient,
           exportConfig: this.exportConfig,
           moduleName,

@@ -55,24 +55,20 @@ export default class ExportAudiences extends PersonalizationAdapter<ExportConfig
         return;
       }
 
-      // Create progress manager - use parent if available, otherwise create simple
       let progress: any;
+      const processName = 'Audiences';
+
       if (this.parentProgressManager) {
-        // Use parent progress manager - we're part of the personalize modules process
         progress = this.parentProgressManager;
         this.progressManager = this.parentProgressManager;
+        progress.updateProcessTotal(processName, this.audiences.length);
       } else {
-        // Create our own progress for standalone execution
-        progress = this.createSimpleProgress('Audiences', this.audiences.length + 1);
+        progress = this.createSimpleProgress('Audiences', this.audiences.length);
       }
 
-      // Process audiences with progress tracking
       log.debug(`Processing ${this.audiences.length} audiences`, this.exportConfig.context);
-      
-      // Update progress with process name
-      const processName = 'Audiences';
       progress.updateStatus('Sanitizing audiences data...', processName);
-      
+
       this.sanitizeAttribs();
       log.debug('Audiences sanitization completed', this.exportConfig.context);
 
@@ -84,11 +80,6 @@ export default class ExportAudiences extends PersonalizationAdapter<ExportConfig
       );
       log.debug(`Writing audiences to: ${audiencesFilePath}`, this.exportConfig.context);
       fsUtil.writeFile(audiencesFilePath, this.audiences);
-
-      // Final progress update
-      if (this.progressManager) {
-        this.updateProgress(true, `${this.audiences.length} audiences exported`, undefined, processName);
-      }
 
       // Complete progress only if we're managing our own progress
       if (!this.parentProgressManager) {
@@ -117,7 +108,7 @@ export default class ExportAudiences extends PersonalizationAdapter<ExportConfig
       this.audiences?.map((audience, index) => {
         const sanitizedAudience = omit(audience, this.audiencesConfig.invalidKeys);
 
-        // Update progress for each processed audience 
+        // Update progress for each processed audience
         if (this.progressManager) {
           const processName = this.parentProgressManager ? 'Audiences' : undefined;
           this.updateProgress(
@@ -126,7 +117,7 @@ export default class ExportAudiences extends PersonalizationAdapter<ExportConfig
               (audience as any).name || (audience as any).uid || 'unknown'
             }`,
             undefined,
-            processName
+            processName,
           );
         }
 

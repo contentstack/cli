@@ -109,7 +109,7 @@ export default class EntriesExport extends BaseClass {
         }
         
         if (this.exportVariantEntry) {
-          progress.addProcess('Variant Entries', totalEntriesCount);
+          progress.addProcess('Variant Entries', 0);
         }
       }
 
