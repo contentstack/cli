@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { stub, restore } from 'sinon'; // Import restore for cleaning up
-import { cliux, configHandler } from '@contentstack/cli-utilities';
+import { cliux, configHandler, isAuthenticated } from '@contentstack/cli-utilities';
 import SetRateLimitCommand from '../../../src/commands/config/set/rate-limit';
 import GetRateLimitCommand from '../../../src/commands/config/get/rate-limit';
 import RemoveRateLimitCommand from '../../../src/commands/config/remove/rate-limit';
@@ -15,6 +15,7 @@ describe('Rate Limit Commands', () => {
   let printMessage: any;
   let rateLimitHandler: RateLimitHandler;
   let mockClient: any;
+  let isAuthenticatedStub: any;
 
   beforeEach(() => {
     originalCliuxError = cliux.error;
@@ -50,28 +51,49 @@ describe('Rate Limit Commands', () => {
     });
 
     it('Set Rate Limit: should handle invalid utilization percentages', async () => {
-      const args = ['--org', 'test-org-id', '--utilize', '150', '--limit-name', 'getLimit'];
-      await SetRateLimitCommand.run(args);
+      // Stub the exit method to prevent process exit during authentication check
+      const exitStub = stub(SetRateLimitCommand.prototype, 'exit');
+      
+      try {
+        const args = ['--org', 'test-org-id', '--utilize', '150', '--limit-name', 'getLimit'];
+        await SetRateLimitCommand.run(args);
 
-      expect(errorMessage).to.equal('Utilize percentages must be numbers between 0 and 100.');
+        expect(errorMessage).to.equal('Utilize percentages must be numbers between 0 and 100.');
+      } finally {
+        exitStub.restore();
+      }
     });
 
     it('Set Rate Limit: should handle mismatch between utilize percentages and limit names', async () => {
-      const args = ['--org', 'test-org-id', '--utilize', '70', '--limit-name', 'getLimit,postLimit'];
-      await SetRateLimitCommand.run(args);
+      // Stub the exit method to prevent process exit during authentication check
+      const exitStub = stub(SetRateLimitCommand.prototype, 'exit');
+      
+      try {
+        const args = ['--org', 'test-org-id', '--utilize', '70', '--limit-name', 'getLimit,postLimit'];
+        await SetRateLimitCommand.run(args);
 
-      expect(errorMessage).to.equal(
-        'The number of utilization percentages must match the number of limit names provided.',
-      );
+        expect(errorMessage).to.equal(
+          'The number of utilization percentages must match the number of limit names provided.',
+        );
+      } finally {
+        exitStub.restore();
+      }
     });
 
     it('Set Rate Limit: should handle invalid number of limit names', async () => {
-      const args = ['--org', 'test-org-id', '--utilize', '70,80', '--limit-name', 'getLimit'];
-      await SetRateLimitCommand.run(args);
+      // Stub the exit method to prevent process exit during authentication check
+      const exitStub = stub(SetRateLimitCommand.prototype, 'exit');
+      
+      try {
+        const args = ['--org', 'test-org-id', '--utilize', '70,80', '--limit-name', 'getLimit'];
+        await SetRateLimitCommand.run(args);
 
-      expect(errorMessage).to.equal(
-        'The number of utilization percentages must match the number of limit names provided.',
-      );
+        expect(errorMessage).to.equal(
+          'The number of utilization percentages must match the number of limit names provided.',
+        );
+      } finally {
+        exitStub.restore();
+      }
     });
 
     it('Set Rate Limit: should prompt for the organization UID', async () => {

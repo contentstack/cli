@@ -1,12 +1,12 @@
 import { join, resolve } from "path";
 import { existsSync, readdirSync } from "fs";
-import filter from "lodash/filter.js";
-import forEach from "lodash/forEach.js";
-import isEmpty from "lodash/isEmpty.js";
-import isArray from "lodash/isArray.js";
-import includes from "lodash/includes.js";
-// @ts-ignore
-import config from "./config.json" with { type: "json" };
+
+const filter = require("lodash/filter");
+const forEach = require("lodash/forEach");
+const isEmpty = require("lodash/isEmpty");
+const isArray = require("lodash/isArray");
+const includes = require("lodash/includes");
+const config = require("./config.json");
 
 const { IS_TS, UNIT_EXECUTION_ORDER, INTEGRATION_EXECUTION_ORDER } = config;
 
