@@ -1,9 +1,0 @@
-{
-  "timeout": 10000,
-  "recursive": true,
-  "require": ["ts-node/register"],
-  "spec": ["test/unit/**/*.test.ts"],
-  "exit": true,
-  "bail": false,
-  "reporter": "spec"
-}

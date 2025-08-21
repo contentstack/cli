@@ -141,6 +141,10 @@ describe('Rate Limit Commands', () => {
 
         // Ensure exit was called with code 1
         expect(exitStub.calledWith(1)).to.be.true;
+      } catch (error) {
+        // Handle any unexpected errors
+        console.error('Unexpected error in test:', error);
+        throw error;
       } finally {
         exitStub.restore();
         runStub.restore();

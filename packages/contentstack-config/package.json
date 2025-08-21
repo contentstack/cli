@@ -12,7 +12,7 @@
     "version": "oclif readme && git add README.md",
     "test:report": "tsc -p test && NODE_OPTIONS=\"--no-warnings\" nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "pretest": "tsc -p test",
-    "test": "NODE_OPTIONS=\"--no-warnings\" mocha --require ts-node/register 'test/unit/**/*.test.ts'",
+    "test": "NODE_OPTIONS=\"--no-warnings\" mocha --require ts-node/register --require test/unit/helpers/init.js 'test/unit/**/*.test.ts' --timeout 10000 --exit",
     "posttest": "npm run lint",
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
