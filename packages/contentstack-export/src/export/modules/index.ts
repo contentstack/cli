@@ -1,5 +1,6 @@
 import { handleAndLogError } from '@contentstack/cli-utilities';
 import { ModuleClassParams } from '../../types';
+import '../../utils/strategy-registrations';
 
 export default async function startModuleExport(modulePayload: ModuleClassParams) {
   try {

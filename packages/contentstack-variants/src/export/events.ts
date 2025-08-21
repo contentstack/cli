@@ -55,23 +55,20 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
         return;
       }
 
-      // Create progress manager - use parent if available, otherwise create simple
       let progress: any;
+      const processName = 'Events';
+
       if (this.parentProgressManager) {
-        // Use parent progress manager - we're part of the personalize modules process
         progress = this.parentProgressManager;
         this.progressManager = this.parentProgressManager;
+        progress.updateProcessTotal(processName, this.events.length);
       } else {
-        // Create our own progress for standalone execution
-        progress = this.createSimpleProgress('Events', this.events.length + 1);
+        progress = this.createSimpleProgress('Events', this.events.length);
       }
 
       log.debug(`Processing ${this.events.length} events`, this.exportConfig.context);
-      
-      // Update progress with process name
-      const processName = 'Events';
       progress.updateStatus('Sanitizing events data...', processName);
-      
+
       this.sanitizeAttribs();
       log.debug('Events sanitization completed', this.exportConfig.context);
 
@@ -80,9 +77,9 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
       log.debug(`Writing events to: ${eventsFilePath}`, this.exportConfig.context);
       fsUtil.writeFile(eventsFilePath, this.events);
 
-      // Final progress update 
+      // Final progress update
       if (this.progressManager) {
-        this.updateProgress(true, `${this.events.length} events exported`, undefined, processName);
+        //this.updateProgress(true, `${this.events.length} events exported`, undefined, processName);
       }
 
       // Complete progress only if we're managing our own progress
@@ -109,7 +106,6 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
       this.events?.map((event, index) => {
         const sanitizedEvent = omit(event, this.eventsConfig.invalidKeys);
 
-        // Update progress for each processed event 
         if (this.progressManager) {
           const processName = this.parentProgressManager ? 'Events' : undefined;
           this.updateProgress(
@@ -118,7 +114,7 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
               (event as any).key || (event as any).name || (event as any).uid || 'unknown'
             }`,
             undefined,
-            processName
+            processName,
           );
         }
 

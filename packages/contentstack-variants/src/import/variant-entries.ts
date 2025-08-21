@@ -74,34 +74,35 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
    * message indicating that no entries were found and return.
    */
   async import() {
-    const filePath = resolve(sanitizePath(this.entriesMapperPath), 'data-for-variant-entry.json');
-    const variantIdPath = resolve(
-      sanitizePath(this.config.backupDir),
-      'mapper',
-      sanitizePath(this.personalizeConfig.dirName),
-      sanitizePath(this.personalizeConfig.experiences.dirName),
-      'variants-uid-mapping.json',
-    );
+    try {
+      const filePath = resolve(sanitizePath(this.entriesMapperPath), 'data-for-variant-entry.json');
+      const variantIdPath = resolve(
+        sanitizePath(this.config.backupDir),
+        'mapper',
+        sanitizePath(this.personalizeConfig.dirName),
+        sanitizePath(this.personalizeConfig.experiences.dirName),
+        'variants-uid-mapping.json',
+      );
 
-    log.debug(`Checking for variant entry data file: ${filePath}`, this.config.context);
-    if (!existsSync(filePath)) {
-      log.warn(`Variant entry data file not found at path: ${filePath}, skipping import`, this.config.context);
-      return;
-    }
+      log.debug(`Checking for variant entry data file: ${filePath}`, this.config.context);
+      if (!existsSync(filePath)) {
+        log.warn(`Variant entry data file not found at path: ${filePath}, skipping import`, this.config.context);
+        return;
+      }
 
-    log.debug(`Checking for variant ID mapping file: ${variantIdPath}`, this.config.context);
-    if (!existsSync(variantIdPath)) {
-      log.error('Variant UID mapping file not found', this.config.context);
-      return;
-    }
+      log.debug(`Checking for variant ID mapping file: ${variantIdPath}`, this.config.context);
+      if (!existsSync(variantIdPath)) {
+        log.error('Variant UID mapping file not found', this.config.context);
+        return;
+      }
 
-    const entriesForVariants = fsUtil.readFile(filePath, true) as EntryDataForVariantEntries[];
-    log.debug(`Loaded ${entriesForVariants?.length || 0} entries for variant processing`, this.config.context);
+      const entriesForVariants = fsUtil.readFile(filePath, true) as EntryDataForVariantEntries[];
+      log.debug(`Loaded ${entriesForVariants?.length || 0} entries for variant processing`, this.config.context);
 
-    if (isEmpty(entriesForVariants)) {
-      log.warn('No entries found for variant import', this.config.context);
-      return;
-    }
+      if (isEmpty(entriesForVariants)) {
+        log.warn('No entries found for variant import', this.config.context);
+        return;
+      }
 
     const entriesUidMapperPath = join(sanitizePath(this.entriesMapperPath), 'uid-mapping.json');
     const assetUidMapperPath = resolve(sanitizePath(this.config.backupDir), 'mapper', 'assets', 'uid-mapping.json');
@@ -146,15 +147,45 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       this.config.context,
     );
 
+    // If we have a parent progress manager, use it as a sub-module
+    // Otherwise create our own simple progress manager
+    let progress;
+    if (this.parentProgressManager) {
+      progress = this.parentProgressManager;
+      log.debug('Using parent progress manager for variant entries import', this.config.context);
+    } else {
+      progress = this.createSimpleProgress('Variant Entries', entriesForVariants.length);
+      log.debug('Created standalone progress manager for variant entries import', this.config.context);
+    }
+
     // set the token
     await this.variantInstance.init();
 
     log.info(`Processing ${entriesForVariants.length} entries for variant import`, this.config.context);
     for (const entriesForVariant of entriesForVariants) {
-      await this.importVariantEntries(entriesForVariant);
+      try {
+        await this.importVariantEntries(entriesForVariant);
+        this.updateProgress(true, `variant entry: ${entriesForVariant.content_type}/${entriesForVariant.locale}/${entriesForVariant.entry_uid}`, undefined, 'Variant Entries');
+        log.debug(`Successfully processed variant entry: ${entriesForVariant.content_type}/${entriesForVariant.locale}/${entriesForVariant.entry_uid}`, this.config.context);
+      } catch (error) {
+        this.updateProgress(false, `variant entry: ${entriesForVariant.content_type}/${entriesForVariant.locale}/${entriesForVariant.entry_uid}`, (error as any)?.message, 'Variant Entries');
+        handleAndLogError(error, this.config.context, `Failed to import variant entry: ${entriesForVariant.content_type}/${entriesForVariant.locale}/${entriesForVariant.entry_uid}`);
+      }
     }
 
-    log.success('All variant entries have been imported and published successfully', this.config.context);
+    // Only complete progress if we own the progress manager (no parent)
+    if (!this.parentProgressManager) {
+      this.completeProgress(true);
+    }
+
+    log.success(`Variant entries imported successfully! Total entries: ${entriesForVariants.length} - processing completed`, this.config.context);
+    } catch (error) {
+      if (!this.parentProgressManager) {
+        this.completeProgress(false, (error as any)?.message || 'Variant entries import failed');
+      }
+      handleAndLogError(error, this.config.context, 'Variant entries import failed');
+      throw error;
+    }
   }
 
   /**
