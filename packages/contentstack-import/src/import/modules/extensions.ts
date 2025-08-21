@@ -71,10 +71,10 @@ export default class ImportExtensions extends BaseClass {
       this.updateUidExtension();
 
       if (this.importConfig.replaceExisting && this.existingExtensions.length > 0) {
-        progress.addProcess('Update', this.existingExtensions.length);
-        progress.startProcess('Update').updateStatus('Updating existing extensions...', 'Update');
+        progress.addProcess('Replace existing', this.existingExtensions.length);
+        progress.startProcess('Replace existing').updateStatus('Updating existing extensions...', 'Replace existing');
         await this.replaceExtensions();
-        progress.completeProcess('Update', true);
+        progress.completeProcess('Replace existing', true);
       }
 
       await this.processExtensionResults();
@@ -167,7 +167,7 @@ export default class ImportExtensions extends BaseClass {
     const onSuccess = ({ response, apiData: { uid, title } = { uid: null, title: '' } }: any) => {
       this.extSuccess.push(response);
       this.extUidMapper[uid] = response.uid;
-      this.progressManager?.tick(true, `extension: ${title || uid} (updated)`, null, 'Update');
+      this.progressManager?.tick(true, `extension: ${title || uid} (updated)`, null, 'Replace existing');
       log.success(`Extension '${title}' updated successfully`, this.importConfig.context);
       log.debug(`Extension update completed: ${title} (${uid})`, this.importConfig.context);
       fsUtil.writeFile(this.extUidMapperPath, this.extUidMapper);
@@ -180,7 +180,7 @@ export default class ImportExtensions extends BaseClass {
         false,
         `extension: ${title || uid}`,
         error?.message || 'Failed to update extension',
-        'Update',
+        'Replace existing',
       );
       log.debug(`Extension '${title}' update failed`, this.importConfig.context);
       handleAndLogError(error, { ...this.importConfig.context, title }, `Extension '${title}' failed to be updated`);
