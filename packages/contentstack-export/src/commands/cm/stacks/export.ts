@@ -97,7 +97,7 @@ export default class ExportCommand extends Command {
     }),
     'branch-alias': flags.string({
       char: 'b',
-      description: '[optional] The alias of the branch from where you want to export your content.',
+      description: '(Optional) The alias of the branch from which you want to export content.',
       exclusive: ['branch'],
     }),
     'secured-assets': flags.boolean({
