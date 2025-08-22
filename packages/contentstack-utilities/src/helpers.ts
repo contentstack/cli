@@ -17,12 +17,15 @@ export const getBranchFromAlias = async (stack: ReturnType<ContentstackClient['s
   if (!stack || !branchAlias || typeof branchAlias !== 'string') {
     throw new Error('Invalid input: stack and branch alias are required');
   }
-
-  const response = await stack.branchAlias(branchAlias).fetch();
-  if (!response?.uid) {
-    throw new Error(`Invalid Branch Alias. No Branch found for the branch alias: ${branchAlias}`);
+  try {
+    const response = await stack.branchAlias(branchAlias).fetch();
+    if (!response?.uid) {
+      throw new Error(`Invalid Branch Alias. No Branch found for the branch alias: ${branchAlias}`);
+    }
+    return response.uid;
+  } catch (error) {
+    throw error;
   }
-  return response.uid;
 };
 
 export const isManagementTokenValid = async (stackAPIKey, managementToken) => {
