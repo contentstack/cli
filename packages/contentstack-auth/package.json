@@ -72,16 +72,6 @@
   },
   "csdxConfig": {
     "shortCommandName": {
-      "auth:login": "LIN",
-      "auth:logout": "LOT",
-      "auth:whoami": "WHO",
-      "auth:tokens": "LSTKN",
-      "auth:tokens:add": "ADTKN",
-      "auth:tokens:remove": "RMTKN"
-    }
-  },
-  "csdxConfig": {
-    "shortCommandName": {
       "auth:login": "LOGIN",
       "auth:logout": "LOGOUT",
       "auth:whoami": "WHOMAI",

@@ -157,7 +157,7 @@ describe('Testing the getBranchFromAlias function', () => {
         expect.fail('Expected function to throw an error');
       } catch (error) {
         expect(error).to.be.instanceOf(Error);
-        expect((error as Error).message).to.equal('No UID found for branch alias: main');
+        expect((error as Error).message).to.equal('Invalid Branch Alias. No Branch found for the branch alias: main');
       }
     });
 
@@ -173,7 +173,7 @@ describe('Testing the getBranchFromAlias function', () => {
         expect.fail('Expected function to throw an error');
       } catch (error) {
         expect(error).to.be.instanceOf(Error);
-        expect((error as Error).message).to.equal('No UID found for branch alias: main');
+        expect((error as Error).message).to.equal('Invalid Branch Alias. No Branch found for the branch alias: main');
       }
     });
 
@@ -189,7 +189,7 @@ describe('Testing the getBranchFromAlias function', () => {
         expect.fail('Expected function to throw an error');
       } catch (error) {
         expect(error).to.be.instanceOf(Error);
-        expect((error as Error).message).to.equal('No UID found for branch alias: main');
+        expect((error as Error).message).to.equal('Invalid Branch Alias. No Branch found for the branch alias: main');
       }
     });
 
@@ -205,7 +205,7 @@ describe('Testing the getBranchFromAlias function', () => {
         expect.fail('Expected function to throw an error');
       } catch (error) {
         expect(error).to.be.instanceOf(Error);
-        expect((error as Error).message).to.equal('No UID found for branch alias: main');
+        expect((error as Error).message).to.equal('Invalid Branch Alias. No Branch found for the branch alias: main');
       }
     });
 
@@ -221,7 +221,7 @@ describe('Testing the getBranchFromAlias function', () => {
         expect.fail('Expected function to throw an error');
       } catch (error) {
         expect(error).to.be.instanceOf(Error);
-        expect((error as Error).message).to.equal('No UID found for branch alias: main');
+        expect((error as Error).message).to.equal('Invalid Branch Alias. No Branch found for the branch alias: main');
       }
     });
   });
