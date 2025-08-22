@@ -45,7 +45,7 @@ describe('Testing the getBranchFromAlias function', () => {
         expect.fail('Expected function to throw an error');
       } catch (error) {
         expect(error).to.be.instanceOf(Error);
-        expect((error as Error).message).to.equal('Invalid input: stack and branch alias are required');
+        expect((error as Error).message).to.equal('Invalid input. Both stack and branch alias are required.');
       }
     });
 
@@ -55,7 +55,7 @@ describe('Testing the getBranchFromAlias function', () => {
         expect.fail('Expected function to throw an error');
       } catch (error) {
         expect(error).to.be.instanceOf(Error);
-        expect((error as Error).message).to.equal('Invalid input: stack and branch alias are required');
+        expect((error as Error).message).to.equal('Invalid input. Both stack and branch alias are required.');
       }
     });
 
@@ -71,7 +71,7 @@ describe('Testing the getBranchFromAlias function', () => {
         expect.fail('Expected function to throw an error');
       } catch (error) {
         expect(error).to.be.instanceOf(Error);
-        expect((error as Error).message).to.equal('Invalid input: stack and branch alias are required');
+        expect((error as Error).message).to.equal('Invalid input. Both stack and branch alias are required.');
       }
     });
 
@@ -87,7 +87,7 @@ describe('Testing the getBranchFromAlias function', () => {
         expect.fail('Expected function to throw an error');
       } catch (error) {
         expect(error).to.be.instanceOf(Error);
-        expect((error as Error).message).to.equal('Invalid input: stack and branch alias are required');
+        expect((error as Error).message).to.equal('Invalid input. Both stack and branch alias are required.');
       }
     });
 
@@ -103,7 +103,7 @@ describe('Testing the getBranchFromAlias function', () => {
         expect.fail('Expected function to throw an error');
       } catch (error) {
         expect(error).to.be.instanceOf(Error);
-        expect((error as Error).message).to.equal('Invalid input: stack and branch alias are required');
+        expect((error as Error).message).to.equal('Invalid input. Both stack and branch alias are required.');
       }
     });
 
@@ -119,7 +119,7 @@ describe('Testing the getBranchFromAlias function', () => {
         expect.fail('Expected function to throw an error');
       } catch (error) {
         expect(error).to.be.instanceOf(Error);
-        expect((error as Error).message).to.equal('Invalid input: stack and branch alias are required');
+        expect((error as Error).message).to.equal('Invalid input. Both stack and branch alias are required.');
       }
     });
   });

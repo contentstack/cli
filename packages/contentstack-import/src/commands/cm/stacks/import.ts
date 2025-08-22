@@ -87,6 +87,12 @@ export default class ImportCommand extends Command {
       description:
         "The name of the branch where you want to import your content. If you don't mention the branch name, then by default the content will be imported to the main branch.",
       parse: printFlagDeprecation(['-B'], ['--branch']),
+      exclusive: ['branch-alias'],
+    }),
+    'branch-alias': flags.string({
+      description:
+        "The alias of the branch where you want to import your content. If you don't mention the branch alias, then by default the content will be imported to the main branch.",
+      exclusive: ['branch'],
     }),
     'import-webhook-status': flags.string({
       description:
@@ -161,7 +167,7 @@ export default class ImportCommand extends Command {
 
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
 
-      if (!flags.branch) {
+      if (!flags.branch && !importConfig.branchAlias) {
         try {
           // Use stack configuration to check for branch availability
           // false positive - no hardcoded secret here
