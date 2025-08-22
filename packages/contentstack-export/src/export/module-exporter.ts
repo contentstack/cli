@@ -27,21 +27,21 @@ class ModuleExporter {
 
   async start(): Promise<any> {
     // setup the branches
-    if (!this.exportConfig.branchName && this.exportConfig.branchAlias) {
-      try {
+    try {
+      if (!this.exportConfig.branchName && this.exportConfig.branchAlias) {
         this.exportConfig.branchName = await getBranchFromAlias(this.stackAPIClient, this.exportConfig.branchAlias);
-      } catch (err) {
-        throw err;
       }
+      await setupBranches(this.exportConfig, this.stackAPIClient);
+      await setupExportDir(this.exportConfig);
+      // if branches available run it export by branches
+      if (this.exportConfig.branches) {
+        this.exportConfig.branchEnabled = true;
+        return this.exportByBranches();
+      }
+      return this.export();
+    } catch (error) {
+      throw error;
     }
-    await setupBranches(this.exportConfig, this.stackAPIClient);
-    await setupExportDir(this.exportConfig);
-    // if branches available run it export by branches
-    if (this.exportConfig.branches) {
-      this.exportConfig.branchEnabled = true;
-      return this.exportByBranches();
-    }
-    return this.export();
   }
 
   async exportByBranches(): Promise<void> {
