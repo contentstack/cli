@@ -2,14 +2,14 @@ import { join, resolve } from "path";
 import { existsSync, readdirSync, readFileSync } from "fs";
 
 // Import lodash functions
-const filter = require("lodash/filter");
-const forEach = require("lodash/forEach");
-const isEmpty = require("lodash/isEmpty");
-const isArray = require("lodash/isArray");
-const includes = require("lodash/includes");
+import filter from "lodash/filter";
+import forEach from "lodash/forEach";
+import isEmpty from "lodash/isEmpty";
+import isArray from "lodash/isArray";
+import includes from "lodash/includes";
 
-// Import config
-const config = JSON.parse(readFileSync(join(__dirname, "config.json"), "utf8"));
+// @ts-ignore
+import config from "./config.json" with { type: "json" };
 
 const { IS_TS, UNIT_EXECUTION_ORDER, INTEGRATION_EXECUTION_ORDER } = config;
 
