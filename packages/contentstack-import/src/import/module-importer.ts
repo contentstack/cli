@@ -1,7 +1,7 @@
 import { resolve } from 'path';
 import { AuditFix } from '@contentstack/cli-audit';
 import messages, { $t } from '@contentstack/cli-audit/lib/messages';
-import { addLocale, cliux, ContentstackClient, Logger } from '@contentstack/cli-utilities';
+import { addLocale, cliux, ContentstackClient, getBranchFromAlias, Logger } from '@contentstack/cli-utilities';
 
 import startModuleImport from './modules';
 import startJSModuleImport from './modules-js';
@@ -28,7 +28,16 @@ class ModuleImporter {
       this.importConfig.stackName = stackDetails.name as string;
       this.importConfig.org_uid = stackDetails.org_uid as string;
     }
-    if (this.importConfig.branchName) {
+
+    if (!this.importConfig.branchName && this.importConfig.branchAlias) {
+      this.importConfig.branchName = await getBranchFromAlias(this.stackAPIClient, this.importConfig.branchAlias);
+      this.importConfig.branchDir = this.importConfig.contentDir;
+      this.stackAPIClient = this.managementAPIClient.stack({
+        api_key: this.importConfig.apiKey,
+        management_token: this.importConfig.management_token,
+        branch_uid: this.importConfig.branchName,
+      });
+    } else {
       await validateBranch(this.stackAPIClient, this.importConfig, this.importConfig.branchName);
     }
 
@@ -50,15 +59,9 @@ class ModuleImporter {
     if (
       !this.importConfig.skipAudit &&
       (!this.importConfig.moduleName ||
-        [
-          'content-types',
-          'global-fields',
-          'entries',
-          'extensions',
-          'workflows',
-          'custom-roles',
-          'assets'
-        ].includes(this.importConfig.moduleName))
+        ['content-types', 'global-fields', 'entries', 'extensions', 'workflows', 'custom-roles', 'assets'].includes(
+          this.importConfig.moduleName,
+        ))
     ) {
       if (!(await this.auditImportData(logger))) {
         return { noSuccessMsg: true };
@@ -150,15 +153,9 @@ class ModuleImporter {
       } else if (this.importConfig.modules.types.length) {
         this.importConfig.modules.types
           .filter((val) =>
-            [
-              'content-types',
-              'global-fields',
-              'entries',
-              'extensions',
-              'workflows',
-              'custom-roles',
-              'assets'
-            ].includes(val),
+            ['content-types', 'global-fields', 'entries', 'extensions', 'workflows', 'custom-roles', 'assets'].includes(
+              val,
+            ),
           )
           .forEach((val) => {
             args.push('--modules', val);
