@@ -100,11 +100,11 @@ export default class CLIErrorHandler {
       return formattedMessage || 'An error occurred. Please try again.';
     } catch {
       // Fallback to basic error message extraction if formatError fails
-      if (error?.response?.data?.errorMessage && typeof error.response.data.errorMessage === 'string') {
+      if (typeof error?.response?.data?.errorMessage === 'string') {
         return error.response.data.errorMessage;
       }
 
-      if (error?.errorMessage && typeof error.errorMessage === 'string') {
+      if (typeof error?.errorMessage === 'string') {
         return error.errorMessage;
       }
     }
