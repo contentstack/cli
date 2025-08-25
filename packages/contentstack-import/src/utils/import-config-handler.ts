@@ -174,8 +174,8 @@ const setupBranchConfig = async (config: ImportConfig, managementAPIClient: Cont
       config.branchName = 'main';
     }
   } catch (error) {
-    log.error('Failed to fetch branches', { error });
-    throw new Error('Unable to verify branch configuration. Please check your API key or network connection.');
+    // Here the stack is not branch enabled or any network issue
+    log.debug('Failed to fetch branches', { error });
   }
 };
 
