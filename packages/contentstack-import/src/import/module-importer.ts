@@ -37,7 +37,9 @@ class ModuleImporter {
         management_token: this.importConfig.management_token,
         branch_uid: this.importConfig.branchName,
       });
-    } else {
+    } 
+    
+    if(this.importConfig.branchName) {
       await validateBranch(this.stackAPIClient, this.importConfig, this.importConfig.branchName);
     }
 
