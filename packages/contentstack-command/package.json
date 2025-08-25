@@ -19,7 +19,7 @@
     "test:unit": "mocha --timeout 10000 --forbid-only \"test/unit/**/*.test.ts\""
   },
   "dependencies": {
-    "@contentstack/cli-utilities": "~1.13.1",
+    "@contentstack/cli-utilities": "~1.13.2",
     "contentstack": "^3.25.3",
     "@oclif/core": "^4.3.0",
     "@oclif/plugin-help": "^6.2.28"
