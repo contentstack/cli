@@ -167,26 +167,6 @@ export default class ImportCommand extends Command {
 
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
 
-      if (!flags.branch && !importConfig.branchAlias) {
-        try {
-          // Use stack configuration to check for branch availability
-          // false positive - no hardcoded secret here
-          // @ts-ignore-next-line secret-detection
-          const keyProp = 'api_key';
-          const branches = await managementAPIClient
-            .stack({ [keyProp]: importConfig.apiKey })
-            .branch()
-            .query()
-            .find()
-            .then(({ items }: any) => items);
-          if (branches.length) {
-            flags.branch = 'main';
-          }
-        } catch (error) {
-          // Branch not enabled, just the let flow continue
-        }
-      }
-
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       const result = await moduleImporter.start();
       backupDir = importConfig.backupDir;
