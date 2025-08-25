@@ -1,12 +1,21 @@
 import merge from 'merge';
 import * as path from 'path';
 import { omit, filter, includes, isArray } from 'lodash';
-import { configHandler, isAuthenticated, cliux, sanitizePath, log } from '@contentstack/cli-utilities';
+import {
+  configHandler,
+  isAuthenticated,
+  cliux,
+  sanitizePath,
+  log,
+  managementSDKClient,
+  getBranchFromAlias,
+} from '@contentstack/cli-utilities';
 import defaultConfig from '../config';
 import { readFile, fileExistsSync } from './file-helper';
 import { askContentDir, askAPIKey } from './interactive';
 import login from './login-handler';
 import { ImportConfig } from '../types';
+import { ContentstackClient } from '@contentstack/management';
 
 const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   let config: ImportConfig = merge({}, defaultConfig);
@@ -101,7 +110,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   if (importCmdFlags['branch-alias']) {
     config.branchAlias = importCmdFlags['branch-alias'];
   }
-  
+
   if (importCmdFlags['branch']) {
     config.branchName = importCmdFlags['branch'];
     config.branchDir = config.contentDir;
@@ -139,7 +148,35 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   config.authenticationMethod = authenticationMethod;
   log.debug('Import configuration setup completed', { ...config });
 
+  const managementAPIClient: ContentstackClient = await managementSDKClient(config);
+  await setupBranchConfig(config, managementAPIClient);
+
   return config;
+};
+
+const setupBranchConfig = async (config: ImportConfig, managementAPIClient: ContentstackClient): Promise<void> => {
+  const stack = managementAPIClient.stack({ api_key: config.apiKey });
+
+  if (config.branchName) return;
+
+  if (config.branchAlias) {
+    config.branchName = await getBranchFromAlias(stack, config.branchAlias);
+    return;
+  }
+
+  try {
+    const branches = await stack
+      .branch()
+      .query()
+      .find()
+      .then(({ items }) => items);
+    if (branches.length) {
+      config.branchName = 'main';
+    }
+  } catch (error) {
+    log.error('Failed to fetch branches', { error });
+    throw new Error('Unable to verify branch configuration. Please check your API key or network connection.');
+  }
 };
 
 export default setupConfig;

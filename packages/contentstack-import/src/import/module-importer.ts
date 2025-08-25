@@ -28,16 +28,6 @@ class ModuleImporter {
       this.importConfig.stackName = stackDetails.name as string;
       this.importConfig.org_uid = stackDetails.org_uid as string;
     }
-
-    if (!this.importConfig.branchName && this.importConfig.branchAlias) {
-      this.importConfig.branchName = await getBranchFromAlias(this.stackAPIClient, this.importConfig.branchAlias);
-      this.importConfig.branchDir = this.importConfig.contentDir;
-      this.stackAPIClient = this.managementAPIClient.stack({
-        api_key: this.importConfig.apiKey,
-        management_token: this.importConfig.management_token,
-        branch_uid: this.importConfig.branchName,
-      });
-    } 
     
     if(this.importConfig.branchName) {
       await validateBranch(this.stackAPIClient, this.importConfig, this.importConfig.branchName);
