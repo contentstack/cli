@@ -40,7 +40,7 @@ class ModuleImporter {
     if (this.importConfig.branchName) {
       await validateBranch(this.stackAPIClient, this.importConfig, this.importConfig.branchName);
     } else if (!this.importConfig.branchName && this.importConfig.branchAlias) {
-      setupBranchConfig(this.importConfig, this.managementAPIClient);
+      await setupBranchConfig(this.importConfig, this.managementAPIClient);
       if (this.importConfig.branchName) {
         this.stackAPIClient = this.managementAPIClient.stack({
           api_key: this.importConfig.apiKey,
