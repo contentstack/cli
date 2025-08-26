@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: package-lock.json
-  checksum: 26919db6d82143f9cd3ffc36ce5b67eb0802c6baa648b56c25312c50c662537d
+  checksum: 16a20411514058d2030b6240573078fad7640b745545a0463e9b70985f92425c
 - filename: pnpm-lock.yaml
   checksum: d28afee9b463d66004354b9476b1e39344f903e2db3a15c5f83bd84e688c01d6
 - filename: packages/contentstack-import-setup/test/unit/backup-handler.test.ts
