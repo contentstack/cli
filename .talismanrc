@@ -58,7 +58,9 @@ fileignoreconfig:
 - filename: packages/contentstack-auth/test/utils/mfa-handler.test.ts
   checksum: b067f93cf0185d794e8419cc41e8fac96ed790dea8fc48dc083ee242ccacbd4d
 - filename: packages/contentstack-import/src/import/module-importer.ts
-  checksum: bdcfad1ec3a329f9ab49a203e8ea9cb97a9db2250bc202b92cd47ccc5a193010
+  checksum: 468ad9335269739f86205edffd3dab38956da0fce16ddc5356ca18d23b038218
 - filename: packages/contentstack-import/src/utils/import-config-handler.ts
   checksum: bb8093633dc7de888541990623c3e02a482b7e6f5db0ba396bedc20c4c74b782
+- filename: packages/contentstack-import/src/utils/setup-branch.ts
+  checksum: a4a968a20d5ab7cbc08c266819907541bbf793cc098521a5e810ada3cbacbee6
 version: "1.0"

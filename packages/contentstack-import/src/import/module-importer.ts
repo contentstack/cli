@@ -1,12 +1,20 @@
 import { resolve } from 'path';
 import { AuditFix } from '@contentstack/cli-audit';
 import messages, { $t } from '@contentstack/cli-audit/lib/messages';
-import { addLocale, cliux, ContentstackClient, getBranchFromAlias, Logger } from '@contentstack/cli-utilities';
+import { addLocale, cliux, ContentstackClient, Logger } from '@contentstack/cli-utilities';
 
 import startModuleImport from './modules';
 import startJSModuleImport from './modules-js';
 import { ImportConfig, Modules } from '../types';
-import { backupHandler, log, validateBranch, masterLocalDetails, sanitizeStack, initLogger, trace } from '../utils';
+import {
+  backupHandler,
+  log,
+  validateBranch,
+  masterLocalDetails,
+  sanitizeStack,
+  initLogger,
+  setupBranchConfig,
+} from '../utils';
 
 class ModuleImporter {
   private managementAPIClient: ContentstackClient;
@@ -28,9 +36,18 @@ class ModuleImporter {
       this.importConfig.stackName = stackDetails.name as string;
       this.importConfig.org_uid = stackDetails.org_uid as string;
     }
-    
-    if(this.importConfig.branchName) {
+
+    if (this.importConfig.branchName) {
       await validateBranch(this.stackAPIClient, this.importConfig, this.importConfig.branchName);
+    } else if (!this.importConfig.branchName && this.importConfig.branchAlias) {
+      setupBranchConfig(this.importConfig, this.managementAPIClient);
+      if (this.importConfig.branchName) {
+        this.stackAPIClient = this.managementAPIClient.stack({
+          api_key: this.importConfig.apiKey,
+          management_token: this.importConfig.management_token,
+          branch_uid: this.importConfig.branchName,
+        });
+      }
     }
 
     if (this.importConfig.management_token) {
