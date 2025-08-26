@@ -7,15 +7,12 @@ import {
   cliux,
   sanitizePath,
   log,
-  managementSDKClient,
-  getBranchFromAlias,
 } from '@contentstack/cli-utilities';
 import defaultConfig from '../config';
 import { readFile, fileExistsSync } from './file-helper';
 import { askContentDir, askAPIKey } from './interactive';
 import login from './login-handler';
 import { ImportConfig } from '../types';
-import { ContentstackClient } from '@contentstack/management';
 
 const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   let config: ImportConfig = merge({}, defaultConfig);
@@ -148,35 +145,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   config.authenticationMethod = authenticationMethod;
   log.debug('Import configuration setup completed', { ...config });
 
-  const managementAPIClient: ContentstackClient = await managementSDKClient(config);
-  await setupBranchConfig(config, managementAPIClient);
-
   return config;
-};
-
-const setupBranchConfig = async (config: ImportConfig, managementAPIClient: ContentstackClient): Promise<void> => {
-  const stack = managementAPIClient.stack({ api_key: config.apiKey });
-
-  if (config.branchName) return;
-
-  if (config.branchAlias) {
-    config.branchName = await getBranchFromAlias(stack, config.branchAlias);
-    return;
-  }
-
-  try {
-    const branches = await stack
-      .branch()
-      .query()
-      .find()
-      .then(({ items }) => items);
-    if (branches.length) {
-      config.branchName = 'main';
-    }
-  } catch (error) {
-    // Here the stack is not branch enabled or any network issue
-    log.debug('Failed to fetch branches', { error });
-  }
 };
 
 export default setupConfig;
