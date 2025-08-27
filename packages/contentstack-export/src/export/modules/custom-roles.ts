@@ -6,7 +6,13 @@ import { resolve as pResolve } from 'node:path';
 import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
-import { fsUtil } from '../../utils';
+import {
+  fsUtil,
+  EXPORT_PROCESS_NAMES,
+  EXPORT_MODULE_CONTEXTS,
+  EXPORT_PROCESS_STATUS,
+  EXPORT_MODULE_NAMES,
+} from '../../utils';
 import { CustomRoleConfig, ModuleClassParams } from '../../types';
 
 export default class ExportCustomRoles extends BaseClass {
@@ -25,8 +31,8 @@ export default class ExportCustomRoles extends BaseClass {
     this.existingRoles = { Admin: 1, Developer: 1, 'Content Manager': 1 };
     this.localesMap = {};
     this.sourceLocalesMap = {};
-    this.exportConfig.context.module = 'custom-roles';
-    this.currentModuleName = 'Custom Roles';
+    this.exportConfig.context.module = EXPORT_MODULE_CONTEXTS.CUSTOM_ROLES;
+    this.currentModuleName = EXPORT_MODULE_NAMES[EXPORT_MODULE_CONTEXTS.CUSTOM_ROLES];
   }
 
   async start(): Promise<void> {
@@ -66,21 +72,36 @@ export default class ExportCustomRoles extends BaseClass {
 
       // Create nested progress manager
       const progress = this.createNestedProgress(this.currentModuleName)
-        .addProcess('Fetch Roles', totalRoles)
-        .addProcess('Fetch Locales', totalLocales)
-        .addProcess('Process Mappings', 1);
+        .addProcess(EXPORT_PROCESS_NAMES.FETCH_ROLES, totalRoles)
+        .addProcess(EXPORT_PROCESS_NAMES.FETCH_LOCALES, totalLocales)
+        .addProcess(EXPORT_PROCESS_NAMES.PROCESS_MAPPINGS, 1);
 
-      progress.startProcess('Fetch Roles').updateStatus('Fetching custom roles...', 'Fetch Roles');
+      progress
+        .startProcess(EXPORT_PROCESS_NAMES.FETCH_ROLES)
+        .updateStatus(
+          EXPORT_PROCESS_STATUS[EXPORT_PROCESS_NAMES.FETCH_ROLES].FETCHING,
+          EXPORT_PROCESS_NAMES.FETCH_ROLES,
+        );
       await this.getCustomRoles();
-      progress.completeProcess('Fetch Roles', true);
+      progress.completeProcess(EXPORT_PROCESS_NAMES.FETCH_ROLES, true);
 
-      progress.startProcess('Fetch Locales').updateStatus('Fetching locales...', 'Fetch Locales');
+      progress
+        .startProcess(EXPORT_PROCESS_NAMES.FETCH_LOCALES)
+        .updateStatus(
+          EXPORT_PROCESS_STATUS[EXPORT_PROCESS_NAMES.FETCH_LOCALES].FETCHING,
+          EXPORT_PROCESS_NAMES.FETCH_LOCALES,
+        );
       await this.getLocales();
-      progress.completeProcess('Fetch Locales', true);
+      progress.completeProcess(EXPORT_PROCESS_NAMES.FETCH_LOCALES, true);
 
-      progress.startProcess('Process Mappings').updateStatus('Processing role-locale mappings...', 'Process Mappings');
+      progress
+        .startProcess(EXPORT_PROCESS_NAMES.PROCESS_MAPPINGS)
+        .updateStatus(
+          EXPORT_PROCESS_STATUS[EXPORT_PROCESS_NAMES.PROCESS_MAPPINGS].PROCESSING,
+          EXPORT_PROCESS_NAMES.PROCESS_MAPPINGS,
+        );
       await this.getCustomRolesLocales();
-      progress.completeProcess('Process Mappings', true);
+      progress.completeProcess(EXPORT_PROCESS_NAMES.PROCESS_MAPPINGS, true);
 
       log.debug(
         `Custom roles export completed. Total custom roles: ${Object.keys(this.customRoles).length}`,
@@ -124,7 +145,7 @@ export default class ExportCustomRoles extends BaseClass {
       log.info(messageHandler.parse('ROLES_EXPORTING_ROLE', role.name), this.exportConfig.context);
       this.customRoles[role.uid] = role;
 
-      this.progressManager?.tick(true, `role: ${role.name}`, null, 'Fetch Roles');
+      this.progressManager?.tick(true, `role: ${role.name}`, null, EXPORT_PROCESS_NAMES.FETCH_ROLES);
     });
 
     const customRolesFilePath = pResolve(this.rolesFolderPath, this.customRolesConfig.fileName);
@@ -153,7 +174,7 @@ export default class ExportCustomRoles extends BaseClass {
       this.sourceLocalesMap[locale.uid] = locale;
 
       // Track progress for each locale
-      this.progressManager?.tick(true, `locale: ${locale.name}`, null, 'Fetch Locales');
+      this.progressManager?.tick(true, `locale: ${locale.name}`, null, EXPORT_PROCESS_NAMES.FETCH_LOCALES);
     }
 
     log.debug(`Mapped ${Object.keys(this.sourceLocalesMap).length} locales`, this.exportConfig.context);
@@ -198,6 +219,6 @@ export default class ExportCustomRoles extends BaseClass {
     }
 
     // Track progress for mapping completion
-    this.progressManager?.tick(true, 'role-locale mappings', null, 'Process Mappings');
+    this.progressManager?.tick(true, 'role-locale mappings', null, EXPORT_PROCESS_NAMES.PROCESS_MAPPINGS);
   }
 }

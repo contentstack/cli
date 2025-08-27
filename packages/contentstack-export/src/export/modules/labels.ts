@@ -4,8 +4,8 @@ import { resolve as pResolve } from 'node:path';
 import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
-import { fsUtil } from '../../utils';
 import { LabelConfig, ModuleClassParams } from '../../types';
+import { fsUtil, EXPORT_MODULE_CONTEXTS, EXPORT_MODULE_NAMES } from '../../utils';
 
 export default class ExportLabels extends BaseClass {
   private labels: Record<string, Record<string, string>>;
@@ -21,8 +21,8 @@ export default class ExportLabels extends BaseClass {
     this.labels = {};
     this.labelConfig = exportConfig.modules.labels;
     this.qs = { include_count: true };
-    this.exportConfig.context.module = 'labels';
-    this.currentModuleName = 'Labels';
+    this.exportConfig.context.module = EXPORT_MODULE_CONTEXTS.LABELS;
+    this.currentModuleName = EXPORT_MODULE_NAMES[EXPORT_MODULE_CONTEXTS.LABELS];
   }
 
   async start(): Promise<void> {

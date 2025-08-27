@@ -4,8 +4,8 @@ import { resolve as pResolve } from 'node:path';
 import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
-import { fsUtil } from '../../utils';
 import { WorkflowConfig, ModuleClassParams } from '../../types';
+import { fsUtil, EXPORT_MODULE_CONTEXTS, EXPORT_MODULE_NAMES } from '../../utils';
 
 export default class ExportWorkFlows extends BaseClass {
   private workflows: Record<string, Record<string, string>>;
@@ -21,8 +21,8 @@ export default class ExportWorkFlows extends BaseClass {
     this.workflows = {};
     this.workflowConfig = exportConfig.modules.workflows;
     this.qs = { include_count: true };
-    this.exportConfig.context.module = 'workflows';
-    this.currentModuleName = 'Workflows';
+    this.exportConfig.context.module = EXPORT_MODULE_CONTEXTS.WORKFLOWS;
+    this.currentModuleName = EXPORT_MODULE_NAMES[EXPORT_MODULE_CONTEXTS.WORKFLOWS];
   }
 
   async start(): Promise<void> {
@@ -52,7 +52,7 @@ export default class ExportWorkFlows extends BaseClass {
       }
 
       // Create nested progress manager for complex workflow processing
-      const progress = this.createSimpleProgress(this.currentModuleName, totalCount)
+      const progress = this.createSimpleProgress(this.currentModuleName, totalCount);
 
       // Fetch workflows
       progress.updateStatus('Fetching workflow definitions...');
@@ -129,15 +129,10 @@ export default class ExportWorkFlows extends BaseClass {
         log.success(messageHandler.parse('WORKFLOW_EXPORT_SUCCESS', workflowName), this.exportConfig.context);
 
         // Track progress for each workflow
-        this.progressManager?.tick(true, `workflow: ${workflowName}`, null, 'Fetch');
+        this.progressManager?.tick(true, `workflow: ${workflowName}`);
       } catch (error) {
         log.error(`Failed to process workflow: ${workflowName}`, this.exportConfig.context);
-        this.progressManager?.tick(
-          false,
-          `workflow: ${workflowName}`,
-          error?.message || 'Processing failed',
-          'Fetch',
-        );
+        this.progressManager?.tick(false, `workflow: ${workflowName}`, error?.message || 'Processing failed', 'Fetch');
       }
     }
 
@@ -160,7 +155,6 @@ export default class ExportWorkFlows extends BaseClass {
         try {
           const roleData = await this.getRoles(roleUid);
           stage.SYS_ACL.roles.uids[i] = roleData;
-
         } catch (error) {
           log.error(`Failed to fetch role ${roleUid}`, this.exportConfig.context);
         }

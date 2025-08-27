@@ -5,7 +5,16 @@ import { sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilitie
 import { ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
 import { updateFieldRules } from '../../utils/content-type-helper';
-import { fsUtil, schemaTemplate, lookupExtension, lookUpTaxonomy } from '../../utils';
+import {
+  fsUtil,
+  schemaTemplate,
+  lookupExtension,
+  lookUpTaxonomy,
+  IMPORT_PROCESS_NAMES,
+  IMPORT_MODULE_CONTEXTS,
+  IMPORT_PROCESS_STATUS,
+  IMPORT_MODULE_NAMES,
+} from '../../utils';
 
 export default class ContentTypesImport extends BaseClass {
   private cTsMapperPath: string;
@@ -47,8 +56,8 @@ export default class ContentTypesImport extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = 'content-types';
-    this.currentModuleName = 'Content Types';
+    this.importConfig.context.module = IMPORT_MODULE_CONTEXTS.CONTENT_TYPES;
+    this.currentModuleName = IMPORT_MODULE_NAMES[IMPORT_MODULE_CONTEXTS.CONTENT_TYPES];
     this.cTsConfig = importConfig.modules['content-types'];
     this.gFsConfig = importConfig.modules['global-fields'];
     this.reqConcurrency = this.cTsConfig.writeConcurrency || this.importConfig.writeConcurrency;
@@ -425,30 +434,38 @@ export default class ContentTypesImport extends BaseClass {
   initializeProgress() {
     const progress = this.createNestedProgress(this.currentModuleName);
     if (this.cTs.length) {
-      progress.addProcess('Create', this.cTs.length);
-      progress.addProcess('Update', this.cTs.length);
+      progress.addProcess(IMPORT_PROCESS_NAMES.CONTENT_TYPES_CREATE, this.cTs.length);
+      progress.addProcess(IMPORT_PROCESS_NAMES.CONTENT_TYPES_UPDATE, this.cTs.length);
     }
     if (this.pendingGFs.length) {
-      progress.addProcess('GF Update', this.pendingGFs.length);
+      progress.addProcess(IMPORT_PROCESS_NAMES.CONTENT_TYPES_GF_UPDATE, this.pendingGFs.length);
     }
     if (this.pendingExts.length) {
-      progress.addProcess('Ext Update', this.pendingExts.length);
+      progress.addProcess(IMPORT_PROCESS_NAMES.CONTENT_TYPES_EXT_UPDATE, this.pendingExts.length);
     }
     return progress;
   }
 
   async handlePendingGlobalFields(progress: any) {
     progress
-      .startProcess('GF Update')
-      .updateStatus('Updating global fields with content type references...', 'GF Update');
+      .startProcess(IMPORT_PROCESS_NAMES.CONTENT_TYPES_GF_UPDATE)
+      .updateStatus(
+        IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.CONTENT_TYPES_GF_UPDATE].UPDATING,
+        IMPORT_PROCESS_NAMES.CONTENT_TYPES_GF_UPDATE,
+      );
 
     log.info('Starting pending global fields update process', this.importConfig.context);
     await this.updatePendingGFs();
-    progress.completeProcess('GF Update', true);
+    progress.completeProcess(IMPORT_PROCESS_NAMES.CONTENT_TYPES_GF_UPDATE, true);
   }
 
   async handleContentTypesCreation(progress: any) {
-    progress.startProcess('Create').updateStatus('Creating content types...', 'Create');
+    progress
+      .startProcess(IMPORT_PROCESS_NAMES.CONTENT_TYPES_CREATE)
+      .updateStatus(
+        IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.CONTENT_TYPES_CREATE].CREATING,
+        IMPORT_PROCESS_NAMES.CONTENT_TYPES_CREATE,
+      );
 
     log.info('Starting content types seeding process', this.importConfig.context);
     await this.seedCTs();
@@ -458,24 +475,34 @@ export default class ContentTypesImport extends BaseClass {
       log.debug(`Written ${this.createdCTs.length} successful content types to file`, this.importConfig.context);
     }
 
-    progress.completeProcess('Create', true);
+    progress.completeProcess(IMPORT_PROCESS_NAMES.CONTENT_TYPES_CREATE, true);
   }
 
   async handleContentTypesUpdate(progress: any) {
-    progress.startProcess('Update').updateStatus('Updating content types with references...', 'Update');
+    progress
+      .startProcess(IMPORT_PROCESS_NAMES.CONTENT_TYPES_UPDATE)
+      .updateStatus(
+        IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.CONTENT_TYPES_UPDATE].UPDATING,
+        IMPORT_PROCESS_NAMES.CONTENT_TYPES_UPDATE,
+      );
 
     log.info('Starting Update process', this.importConfig.context);
     await this.updateCTs();
 
-    progress.completeProcess('Update', true);
+    progress.completeProcess(IMPORT_PROCESS_NAMES.CONTENT_TYPES_UPDATE, true);
   }
 
   async handlePendingExtensions(progress: any) {
-    progress.startProcess('Ext Update').updateStatus('Updating extensions...', 'Ext Update');
+    progress
+      .startProcess(IMPORT_PROCESS_NAMES.CONTENT_TYPES_EXT_UPDATE)
+      .updateStatus(
+        IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.CONTENT_TYPES_EXT_UPDATE].UPDATING,
+        IMPORT_PROCESS_NAMES.CONTENT_TYPES_EXT_UPDATE,
+      );
 
     log.info('Starting pending extensions update process', this.importConfig.context);
     await this.updatePendingExtensions();
-    progress.completeProcess('Ext Update', true);
+    progress.completeProcess(IMPORT_PROCESS_NAMES.CONTENT_TYPES_EXT_UPDATE, true);
 
     if (this.isExtensionsUpdate) {
       log.success('Successfully updated the extensions.', this.importConfig.context);

@@ -4,7 +4,14 @@ import isEmpty from 'lodash/isEmpty';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
 
 import BaseClass, { ApiOptions } from './base-class';
-import { fsUtil, fileHelper } from '../../utils';
+import {
+  fsUtil,
+  fileHelper,
+  IMPORT_MODULE_CONTEXTS,
+  IMPORT_MODULE_NAMES,
+  IMPORT_PROCESS_STATUS,
+  IMPORT_PROCESS_NAMES,
+} from '../../utils';
 import { ModuleClassParams, TaxonomiesConfig } from '../../types';
 
 export default class ImportTaxonomies extends BaseClass {
@@ -24,8 +31,8 @@ export default class ImportTaxonomies extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = 'taxonomies';
-    this.currentModuleName = 'Taxonomies';
+    this.importConfig.context.module = IMPORT_MODULE_CONTEXTS.TAXONOMIES;
+    this.currentModuleName = IMPORT_MODULE_NAMES[IMPORT_MODULE_CONTEXTS.TAXONOMIES];
     this.taxonomiesConfig = importConfig.modules.taxonomies;
     this.taxonomiesMapperDirPath = join(importConfig.backupDir, 'mapper', 'taxonomies');
     this.termsMapperDirPath = join(this.taxonomiesMapperDirPath, 'terms');
@@ -52,7 +59,7 @@ export default class ImportTaxonomies extends BaseClass {
 
       const progress = this.createSimpleProgress(this.currentModuleName, taxonomiesCount);
       await this.prepareMapperDirectories();
-      progress.updateStatus('Importing taxonomies...');
+      progress.updateStatus(IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.TAXONOMIES_IMPORT].IMPORTING);
       log.debug('Starting taxonomies import', this.importConfig.context);
       await this.importTaxonomies();
       this.createSuccessAndFailedFile();

@@ -4,7 +4,14 @@ import { join } from 'node:path';
 import { forEach, map } from 'lodash';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
 
-import { fsUtil, fileHelper } from '../../utils';
+import {
+  fsUtil,
+  fileHelper,
+  IMPORT_PROCESS_NAMES,
+  IMPORT_MODULE_CONTEXTS,
+  IMPORT_PROCESS_STATUS,
+  IMPORT_MODULE_NAMES,
+} from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, CustomRoleConfig } from '../../types';
 
@@ -30,8 +37,8 @@ export default class ImportCustomRoles extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = 'custom-roles';
-    this.currentModuleName = 'Custom Roles';
+    this.importConfig.context.module = IMPORT_MODULE_CONTEXTS.CUSTOM_ROLES;
+    this.currentModuleName = IMPORT_MODULE_NAMES[IMPORT_MODULE_CONTEXTS.CUSTOM_ROLES];
     this.customRolesConfig = importConfig.modules.customRoles;
     this.customRolesMapperPath = join(this.importConfig.backupDir, 'mapper', 'custom-roles');
     this.customRolesFolderPath = join(this.importConfig.backupDir, this.customRolesConfig.dirName);
@@ -66,10 +73,10 @@ export default class ImportCustomRoles extends BaseClass {
       const progress = this.createSimpleProgress(this.currentModuleName, customRolesCount);
       await this.prepareForImport();
 
-      progress.updateStatus('Building locale mappings...');
+      progress.updateStatus(IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.CUSTOM_ROLES_BUILD_MAPPINGS].BUILDING);
       await this.getLocalesUidMap();
 
-      progress.updateStatus('Importing custom roles...');
+      progress.updateStatus(IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.CUSTOM_ROLES_IMPORT].IMPORTING);
       await this.importCustomRoles();
 
       this.handleImportResults();

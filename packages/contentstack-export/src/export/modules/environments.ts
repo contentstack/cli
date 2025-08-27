@@ -4,8 +4,8 @@ import isEmpty from 'lodash/isEmpty';
 import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
-import { fsUtil } from '../../utils';
 import { EnvironmentConfig, ModuleClassParams } from '../../types';
+import { fsUtil, EXPORT_MODULE_CONTEXTS, EXPORT_MODULE_NAMES } from '../../utils';
 
 export default class ExportEnvironments extends BaseClass {
   private environments: Record<string, unknown>;
@@ -21,8 +21,8 @@ export default class ExportEnvironments extends BaseClass {
     this.environments = {};
     this.environmentConfig = exportConfig.modules.environments;
     this.qs = { include_count: true };
-    this.exportConfig.context.module = 'environments';
-    this.currentModuleName = 'Environments';
+    this.exportConfig.context.module = EXPORT_MODULE_CONTEXTS.ENVIRONMENTS;
+    this.currentModuleName = EXPORT_MODULE_NAMES[EXPORT_MODULE_CONTEXTS.ENVIRONMENTS];
   }
 
   async start(): Promise<void> {
