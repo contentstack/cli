@@ -10,7 +10,6 @@ import { isEmpty, values, cloneDeep, find, indexOf, forEach, remove } from 'loda
 import { FsUtility, sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 import {
   fsUtil,
-  formatError,
   lookupExtension,
   suppressSchemaReference,
   removeUidsFromJsonRteFields,
@@ -20,6 +19,10 @@ import {
   lookupAssets,
   fileHelper,
   lookUpTerms,
+  IMPORT_PROCESS_NAMES,
+  IMPORT_MODULE_CONTEXTS,
+  IMPORT_PROCESS_STATUS,
+  IMPORT_MODULE_NAMES,
 } from '../../utils';
 import { ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
@@ -61,8 +64,8 @@ export default class EntriesImport extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = 'entries';
-    this.currentModuleName = 'Entries';
+    this.importConfig.context.module = IMPORT_MODULE_CONTEXTS.ENTRIES;
+    this.currentModuleName = IMPORT_MODULE_NAMES[IMPORT_MODULE_CONTEXTS.ENTRIES];
     this.assetUidMapperPath = path.resolve(sanitizePath(importConfig.data), 'mapper', 'assets', 'uid-mapping.json');
     this.assetUrlMapperPath = path.resolve(sanitizePath(importConfig.data), 'mapper', 'assets', 'url-mapping.json');
     this.entriesMapperPath = path.resolve(sanitizePath(importConfig.data), 'mapper', 'entries');
@@ -126,49 +129,84 @@ export default class EntriesImport extends BaseClass {
 
       // Step 1: Prepare content types
       progress
-        .startProcess('CT Preparation')
-        .updateStatus('Preparing content types for entry import...', 'CT Preparation');
+        .startProcess(IMPORT_PROCESS_NAMES.CT_PREPARATION)
+        .updateStatus(
+          IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.CT_PREPARATION].PREPARING,
+          IMPORT_PROCESS_NAMES.CT_PREPARATION,
+        );
       await this.disableMandatoryCTReferences();
-      progress.completeProcess('CT Preparation', true);
+      progress.completeProcess(IMPORT_PROCESS_NAMES.CT_PREPARATION, true);
 
       // Step 2: Create entries
-      progress.startProcess('Create').updateStatus('Creating entries...', 'Create');
+      progress
+        .startProcess(IMPORT_PROCESS_NAMES.ENTRIES_CREATE)
+        .updateStatus(
+          IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.ENTRIES_CREATE].CREATING,
+          IMPORT_PROCESS_NAMES.ENTRIES_CREATE,
+        );
       await this.processEntryCreation();
-      progress.completeProcess('Create', true);
+      progress.completeProcess(IMPORT_PROCESS_NAMES.ENTRIES_CREATE, true);
 
       // Step 3: Replace existing entries if needed
       if (this.importConfig.replaceExisting) {
-        progress.startProcess('Replace Existing').updateStatus('Replacing existing entries...', 'Replace Existing');
+        progress
+          .startProcess(IMPORT_PROCESS_NAMES.ENTRIES_REPLACE_EXISTING)
+          .updateStatus(
+            IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.ENTRIES_REPLACE_EXISTING].REPLACING,
+            IMPORT_PROCESS_NAMES.ENTRIES_REPLACE_EXISTING,
+          );
         await this.processEntryReplacement();
-        progress.completeProcess('Replace Existing', true);
+        progress.completeProcess(IMPORT_PROCESS_NAMES.ENTRIES_REPLACE_EXISTING, true);
       }
 
       // Step 4: Update entries with references
-      progress.startProcess('Reference Updates').updateStatus('Updating entry references...', 'Reference Updates');
+      progress
+        .startProcess(IMPORT_PROCESS_NAMES.REFERENCE_UPDATES)
+        .updateStatus(
+          IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.REFERENCE_UPDATES].UPDATING,
+          IMPORT_PROCESS_NAMES.REFERENCE_UPDATES,
+        );
       await this.processEntryReferenceUpdates();
-      progress.completeProcess('Reference Updates', true);
+      progress.completeProcess(IMPORT_PROCESS_NAMES.REFERENCE_UPDATES, true);
 
       // Step 5: Restore content types
-      progress.startProcess('CT Restoration').updateStatus('Restoring content type references...', 'CT Restoration');
+      progress
+        .startProcess(IMPORT_PROCESS_NAMES.CT_RESTORATION)
+        .updateStatus(
+          IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.CT_RESTORATION].RESTORING,
+          IMPORT_PROCESS_NAMES.CT_RESTORATION,
+        );
       await this.enableMandatoryCTReferences();
-      progress.completeProcess('CT Restoration', true);
+      progress.completeProcess(IMPORT_PROCESS_NAMES.CT_RESTORATION, true);
 
       // Step 6: Update field rules
-      progress.startProcess('Field Rules Update').updateStatus('Updating field rules...', 'Field Rules Update');
+      progress
+        .startProcess(IMPORT_PROCESS_NAMES.FIELD_RULES_UPDATE)
+        .updateStatus(
+          IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.FIELD_RULES_UPDATE].UPDATING,
+          IMPORT_PROCESS_NAMES.FIELD_RULES_UPDATE,
+        );
       await this.updateFieldRules();
-      progress.completeProcess('Field Rules Update', true);
+      progress.completeProcess(IMPORT_PROCESS_NAMES.FIELD_RULES_UPDATE, true);
 
       // Step 7: Publish entries if not skipped
       if (!this.importConfig.skipEntriesPublish) {
-        progress.startProcess('Publish').updateStatus('Publishing entries...', 'Publish');
+        progress
+          .startProcess(IMPORT_PROCESS_NAMES.ENTRIES_PUBLISH)
+          .updateStatus(
+            IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.ENTRIES_PUBLISH].PUBLISHING,
+            IMPORT_PROCESS_NAMES.ENTRIES_PUBLISH,
+          );
         await this.processEntryPublishing();
-        progress.completeProcess('Publish', true);
+        progress.completeProcess(IMPORT_PROCESS_NAMES.ENTRIES_PUBLISH, true);
       }
 
       // Step 8: Cleanup and finalization
-      progress.startProcess('Cleanup').updateStatus('Cleaning up auto-created entries...', 'Cleanup');
+      progress
+        .startProcess(IMPORT_PROCESS_NAMES.CLEANUP)
+        .updateStatus(IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.CLEANUP].CLEANING, IMPORT_PROCESS_NAMES.CLEANUP);
       await this.processCleanup();
-      progress.completeProcess('Cleanup', true);
+      progress.completeProcess(IMPORT_PROCESS_NAMES.CLEANUP, true);
 
       this.completeProgress(true);
       log.success('Entries imported successfully', this.importConfig.context);
@@ -228,22 +266,22 @@ export default class EntriesImport extends BaseClass {
     const { contentTypesCount, localesCount, totalEntryTasks } = counts;
 
     // Add main processes
-    progress.addProcess('CT Preparation', contentTypesCount);
-    progress.addProcess('Create', totalEntryTasks);
+    progress.addProcess(IMPORT_PROCESS_NAMES.CT_PREPARATION, contentTypesCount);
+    progress.addProcess(IMPORT_PROCESS_NAMES.ENTRIES_CREATE, totalEntryTasks);
 
     if (this.importConfig.replaceExisting) {
-      progress.addProcess('Replace Existing', totalEntryTasks);
+      progress.addProcess(IMPORT_PROCESS_NAMES.ENTRIES_REPLACE_EXISTING, totalEntryTasks);
     }
 
-    progress.addProcess('Reference Updates', totalEntryTasks);
-    progress.addProcess('CT Restoration', contentTypesCount);
-    progress.addProcess('Field Rules Update', 1);
+    progress.addProcess(IMPORT_PROCESS_NAMES.REFERENCE_UPDATES, totalEntryTasks);
+    progress.addProcess(IMPORT_PROCESS_NAMES.CT_RESTORATION, contentTypesCount);
+    progress.addProcess(IMPORT_PROCESS_NAMES.FIELD_RULES_UPDATE, 1);
 
     if (!this.importConfig.skipEntriesPublish) {
-      progress.addProcess('Publish', totalEntryTasks);
+      progress.addProcess(IMPORT_PROCESS_NAMES.ENTRIES_PUBLISH, totalEntryTasks);
     }
 
-    progress.addProcess('Cleanup', 1);
+    progress.addProcess(IMPORT_PROCESS_NAMES.CLEANUP, 1);
 
     log.debug(
       `Initialized progress tracking for ${contentTypesCount} content types across ${localesCount} locales`,
@@ -365,7 +403,7 @@ export default class EntriesImport extends BaseClass {
     );
 
     const onSuccess = ({ response: contentType, apiData: { uid } }: any) => {
-      this.progressManager?.tick(true, `content type: ${uid}`, null, 'CT Preparation');
+      this.progressManager?.tick(true, `content type: ${uid}`, null, IMPORT_PROCESS_NAMES.CT_PREPARATION);
       log.success(`${uid} content type references removed temporarily`, this.importConfig.context);
     };
     const onReject = ({ error, apiData: { uid } }: any) => {
@@ -541,7 +579,10 @@ export default class EntriesImport extends BaseClass {
         );
         log.debug(`Created entry UID mapping: ${entry.uid} → ${response.uid}`, this.importConfig.context);
         this.entriesForVariant.push({ content_type: cTUid, entry_uid: entry.uid, locale });
-
+        // This is for creating localized entries that do not have a counterpart in master locale.
+        // For example : To create entry1 in fr-fr, where en-us is the master locale
+        // entry1 will get created in en-us first, then fr-fr version will be created
+        // thus entry1 has to be removed from en-us at the end.
         if (!isMasterLocale && !additionalInfo[entry.uid]?.isLocalized) {
           this.autoCreatedEntries.push({ cTUid, locale, entryUid: response.uid });
           log.debug(`Marked entry for auto-cleanup: ${response.uid} in master locale`, this.importConfig.context);

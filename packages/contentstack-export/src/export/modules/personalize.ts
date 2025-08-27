@@ -8,8 +8,9 @@ import {
 } from '@contentstack/cli-variants';
 import { handleAndLogError, messageHandler, log, CLIProgressManager } from '@contentstack/cli-utilities';
 
-import { ModuleClassParams, ExportConfig } from '../../types';
 import BaseClass from './base-class';
+import { ModuleClassParams, ExportConfig } from '../../types';
+import { EXPORT_MODULE_CONTEXTS, EXPORT_MODULE_NAMES, EXPORT_PROCESS_NAMES, EXPORT_PROCESS_STATUS } from '../../utils';
 
 export default class ExportPersonalize extends BaseClass {
   public exportConfig: ExportConfig;
@@ -23,18 +24,18 @@ export default class ExportPersonalize extends BaseClass {
   };
 
   private readonly moduleDisplayMapper = {
-    events: 'Events',
-    attributes: 'Attributes',
-    audiences: 'Audiences',
-    experiences: 'Experiences',
-  };
+    events: EXPORT_PROCESS_NAMES.PERSONALIZE_EVENTS,
+    attributes: EXPORT_PROCESS_NAMES.PERSONALIZE_ATTRIBUTES,
+    audiences: EXPORT_PROCESS_NAMES.PERSONALIZE_AUDIENCES,
+    experiences: EXPORT_PROCESS_NAMES.PERSONALIZE_EXPERIENCES,
+  } as const;
 
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
     this.exportConfig = exportConfig;
     this.personalizeConfig = exportConfig.modules.personalize;
-    this.exportConfig.context.module = 'personalize';
-    this.currentModuleName = 'Personalize';
+    this.exportConfig.context.module = EXPORT_MODULE_CONTEXTS.PERSONALIZE;
+    this.currentModuleName = EXPORT_MODULE_NAMES[EXPORT_MODULE_CONTEXTS.PERSONALIZE];
   }
 
   async start(): Promise<void> {
@@ -123,8 +124,11 @@ export default class ExportPersonalize extends BaseClass {
   }
 
   private addProjectProcess(progress: CLIProgressManager) {
-    progress.addProcess('Projects', 1);
-    log.debug('Added Projects process to personalize progress', this.exportConfig.context);
+    progress.addProcess(EXPORT_PROCESS_NAMES.PERSONALIZE_PROJECTS, 1);
+    log.debug(
+      `Added ${EXPORT_PROCESS_NAMES.PERSONALIZE_PROJECTS} process to personalize progress`,
+      this.exportConfig.context,
+    );
   }
 
   private addModuleProcesses(progress: CLIProgressManager, moduleCount: number) {
@@ -147,14 +151,19 @@ export default class ExportPersonalize extends BaseClass {
   }
 
   private async exportProjects(progress: CLIProgressManager) {
-    progress.startProcess('Projects').updateStatus('Exporting personalization projects...', 'Projects');
+    progress
+      .startProcess(EXPORT_PROCESS_NAMES.PERSONALIZE_PROJECTS)
+      .updateStatus(
+        EXPORT_PROCESS_STATUS[EXPORT_PROCESS_NAMES.PERSONALIZE_PROJECTS].EXPORTING,
+        EXPORT_PROCESS_NAMES.PERSONALIZE_PROJECTS,
+      );
     log.debug('Starting projects export for personalization...', this.exportConfig.context);
 
     const projectsExporter = new ExportProjects(this.exportConfig);
     projectsExporter.setParentProgressManager(progress);
     await projectsExporter.start();
 
-    progress.completeProcess('Projects', true);
+    progress.completeProcess(EXPORT_PROCESS_NAMES.PERSONALIZE_PROJECTS, true);
   }
 
   private async exportModules(progress: CLIProgressManager) {
@@ -177,7 +186,12 @@ export default class ExportPersonalize extends BaseClass {
       const ModuleClass = this.moduleInstanceMapper[module];
 
       if (ModuleClass) {
-        progress.startProcess(processName).updateStatus(`Exporting ${module}...`, processName);
+        progress
+          .startProcess(processName)
+          .updateStatus(
+            (EXPORT_PROCESS_STATUS as any)[processName]?.EXPORTING || `Exporting ${module}...`,
+            processName,
+          );
         log.debug(`Starting export for module: ${module}`, this.exportConfig.context);
 
         if (this.exportConfig.personalizationEnabled) {

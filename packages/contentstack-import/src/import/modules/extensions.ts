@@ -4,7 +4,14 @@ import cloneDeep from 'lodash/cloneDeep';
 import { join } from 'node:path';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
 
-import { fsUtil, fileHelper } from '../../utils';
+import {
+  fsUtil,
+  fileHelper,
+  IMPORT_PROCESS_NAMES,
+  IMPORT_MODULE_CONTEXTS,
+  IMPORT_PROCESS_STATUS,
+  IMPORT_MODULE_NAMES,
+} from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, Extensions, ExtensionType } from '../../types';
 
@@ -25,8 +32,8 @@ export default class ImportExtensions extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = 'extensions';
-    this.currentModuleName = 'Extensions';
+    this.importConfig.context.module = IMPORT_MODULE_CONTEXTS.EXTENSIONS;
+    this.currentModuleName = IMPORT_MODULE_NAMES[IMPORT_MODULE_CONTEXTS.EXTENSIONS];
     this.extensionsConfig = importConfig.modules.extensions;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'extensions');
     this.extensionsFolderPath = join(this.importConfig.backupDir, this.extensionsConfig.dirName);
@@ -55,32 +62,42 @@ export default class ImportExtensions extends BaseClass {
       }
 
       const progress = this.createNestedProgress(this.currentModuleName);
-      progress.addProcess('Create', extensionsCount);
+      progress.addProcess(IMPORT_PROCESS_NAMES.EXTENSIONS_CREATE, extensionsCount);
 
       await this.prepareExtensionMapper();
       log.debug('Checking content types in extension scope', this.importConfig.context);
 
       this.getContentTypesInScope();
 
-      progress.startProcess('Create').updateStatus('Importing extensions...', 'Create');
+      progress
+        .startProcess(IMPORT_PROCESS_NAMES.EXTENSIONS_CREATE)
+        .updateStatus(
+          IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.EXTENSIONS_CREATE].CREATING,
+          IMPORT_PROCESS_NAMES.EXTENSIONS_CREATE,
+        );
       log.debug('Starting Create', this.importConfig.context);
       await this.importExtensions();
-      progress.completeProcess('Create', true);
+      progress.completeProcess(IMPORT_PROCESS_NAMES.EXTENSIONS_CREATE, true);
 
       log.debug('Updating extension UIDs', this.importConfig.context);
       this.updateUidExtension();
 
       if (this.importConfig.replaceExisting && this.existingExtensions.length > 0) {
-        progress.addProcess('Replace existing', this.existingExtensions.length);
-        progress.startProcess('Replace existing').updateStatus('Updating existing extensions...', 'Replace existing');
+        progress.addProcess(IMPORT_PROCESS_NAMES.EXTENSIONS_REPLACE_EXISTING, this.existingExtensions.length);
+        progress
+          .startProcess(IMPORT_PROCESS_NAMES.EXTENSIONS_REPLACE_EXISTING)
+          .updateStatus(
+            IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.EXTENSIONS_REPLACE_EXISTING].REPLACING,
+            IMPORT_PROCESS_NAMES.EXTENSIONS_REPLACE_EXISTING,
+          );
         await this.replaceExtensions();
-        progress.completeProcess('Replace existing', true);
+        progress.completeProcess(IMPORT_PROCESS_NAMES.EXTENSIONS_REPLACE_EXISTING, true);
       }
 
       await this.processExtensionResults();
 
       this.completeProgress(true);
-    log.success('Extensions have been imported successfully!', this.importConfig.context);
+      log.success('Extensions have been imported successfully!', this.importConfig.context);
     } catch (error) {
       this.completeProgress(false, error?.message || 'Create failed');
       handleAndLogError(error, { ...this.importConfig.context });
@@ -100,7 +117,7 @@ export default class ImportExtensions extends BaseClass {
     const onSuccess = ({ response, apiData: { uid, title } = { uid: null, title: '' } }: any) => {
       this.extSuccess.push(response);
       this.extUidMapper[uid] = response.uid;
-      this.progressManager?.tick(true, `extension: ${title || uid}`, null, 'Create');
+      this.progressManager?.tick(true, `extension: ${title || uid}`, null, IMPORT_PROCESS_NAMES.EXTENSIONS_CREATE);
       log.success(`Extension '${title}' imported successfully`, this.importConfig.context);
       log.debug(`Extension import completed: ${title} (${uid})`, this.importConfig.context);
       fsUtil.writeFile(this.extUidMapperPath, this.extUidMapper);
@@ -117,11 +134,16 @@ export default class ImportExtensions extends BaseClass {
             true,
             `extension: ${title || uid} (marked for replacement)`,
             null,
-            'Create',
+            IMPORT_PROCESS_NAMES.EXTENSIONS_CREATE,
           );
           log.debug(`Extension '${title}' marked for replacement`, this.importConfig.context);
         } else {
-          this.progressManager?.tick(true, `extension: ${title || uid} (already exists)`, null, 'Create');
+          this.progressManager?.tick(
+            true,
+            `extension: ${title || uid} (already exists)`,
+            null,
+            IMPORT_PROCESS_NAMES.EXTENSIONS_CREATE,
+          );
         }
         if (!this.importConfig.skipExisting) {
           log.info(`Extension '${title}' already exists`, this.importConfig.context);
@@ -167,7 +189,12 @@ export default class ImportExtensions extends BaseClass {
     const onSuccess = ({ response, apiData: { uid, title } = { uid: null, title: '' } }: any) => {
       this.extSuccess.push(response);
       this.extUidMapper[uid] = response.uid;
-      this.progressManager?.tick(true, `extension: ${title || uid} (updated)`, null, 'Replace existing');
+      this.progressManager?.tick(
+        true,
+        `extension: ${title || uid} (updated)`,
+        null,
+        IMPORT_PROCESS_NAMES.EXTENSIONS_REPLACE_EXISTING,
+      );
       log.success(`Extension '${title}' updated successfully`, this.importConfig.context);
       log.debug(`Extension update completed: ${title} (${uid})`, this.importConfig.context);
       fsUtil.writeFile(this.extUidMapperPath, this.extUidMapper);

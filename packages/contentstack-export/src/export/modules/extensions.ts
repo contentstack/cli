@@ -4,8 +4,8 @@ import { resolve as pResolve } from 'node:path';
 import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
-import { fsUtil } from '../../utils';
 import { ExtensionsConfig, ModuleClassParams } from '../../types';
+import { fsUtil, EXPORT_MODULE_CONTEXTS, EXPORT_MODULE_NAMES } from '../../utils';
 
 export default class ExportExtensions extends BaseClass {
   private extensionsFolderPath: string;
@@ -22,8 +22,8 @@ export default class ExportExtensions extends BaseClass {
     this.extensionConfig = exportConfig.modules.extensions;
     this.qs = { include_count: true };
     this.applyQueryFilters(this.qs, 'extensions');
-    this.exportConfig.context.module = 'extensions';
-    this.currentModuleName = 'Extensions';
+    this.exportConfig.context.module = EXPORT_MODULE_CONTEXTS.EXTENSIONS;
+    this.currentModuleName = EXPORT_MODULE_NAMES[EXPORT_MODULE_CONTEXTS.EXTENSIONS];
   }
 
   async start(): Promise<void> {

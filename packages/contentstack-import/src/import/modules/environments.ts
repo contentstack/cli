@@ -3,7 +3,14 @@ import values from 'lodash/values';
 import { join } from 'node:path';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
 
-import { fsUtil, fileHelper } from '../../utils';
+import {
+  fsUtil,
+  fileHelper,
+  IMPORT_PROCESS_NAMES,
+  IMPORT_MODULE_CONTEXTS,
+  IMPORT_PROCESS_STATUS,
+  IMPORT_MODULE_NAMES,
+} from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, EnvironmentConfig } from '../../types';
 
@@ -21,8 +28,8 @@ export default class ImportEnvironments extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = 'environments';
-    this.currentModuleName = 'Environments';
+    this.importConfig.context.module = IMPORT_MODULE_CONTEXTS.ENVIRONMENTS;
+    this.currentModuleName = IMPORT_MODULE_NAMES[IMPORT_MODULE_CONTEXTS.ENVIRONMENTS];
     this.environmentsConfig = importConfig.modules.environments;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'environments');
     this.environmentsFolderPath = join(this.importConfig.backupDir, this.environmentsConfig.dirName);
@@ -51,7 +58,7 @@ export default class ImportEnvironments extends BaseClass {
       const progress = this.createSimpleProgress(this.currentModuleName, environmentsCount);
       await this.prepareEnvironmentMapper();
 
-      progress.updateStatus('Importing environments...');
+      progress.updateStatus(IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.ENVIRONMENTS_IMPORT].IMPORTING);
       await this.importEnvironments();
 
       await this.processImportResults();

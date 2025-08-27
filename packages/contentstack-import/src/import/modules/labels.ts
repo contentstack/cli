@@ -4,7 +4,14 @@ import isEmpty from 'lodash/isEmpty';
 import values from 'lodash/values';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
 
-import { fsUtil, fileHelper } from '../../utils';
+import {
+  fsUtil,
+  fileHelper,
+  IMPORT_PROCESS_NAMES,
+  IMPORT_MODULE_CONTEXTS,
+  IMPORT_PROCESS_STATUS,
+  IMPORT_MODULE_NAMES,
+} from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, LabelConfig } from '../../types';
 
@@ -22,8 +29,8 @@ export default class ImportLabels extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = 'labels';
-    this.currentModuleName = 'Labels';
+    this.importConfig.context.module = IMPORT_MODULE_CONTEXTS.LABELS;
+    this.currentModuleName = IMPORT_MODULE_NAMES[IMPORT_MODULE_CONTEXTS.LABELS];
     this.labelsConfig = importConfig.modules.labels;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'labels');
     this.labelsFolderPath = join(this.importConfig.backupDir, this.labelsConfig.dirName);
@@ -50,22 +57,32 @@ export default class ImportLabels extends BaseClass {
       }
 
       const progress = this.createNestedProgress(this.currentModuleName);
-      progress.addProcess('Create', labelsCount);
-      progress.addProcess('Update', labelsCount);
+      progress.addProcess(IMPORT_PROCESS_NAMES.LABELS_CREATE, labelsCount);
+      progress.addProcess(IMPORT_PROCESS_NAMES.LABELS_UPDATE, labelsCount);
 
       await this.prepareLabelMapper();
 
       // Step 1: Import labels (without parent references)
-      progress.startProcess('Create').updateStatus('Creating labels...', 'Create');
+      progress
+        .startProcess(IMPORT_PROCESS_NAMES.LABELS_CREATE)
+        .updateStatus(
+          IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.LABELS_CREATE].CREATING,
+          IMPORT_PROCESS_NAMES.LABELS_CREATE,
+        );
       log.info('Starting labels creation process', this.importConfig.context);
       await this.importLabels();
-      progress.completeProcess('Create', true);
+      progress.completeProcess(IMPORT_PROCESS_NAMES.LABELS_CREATE, true);
 
       // Step 2: Update labels with parent references
-      progress.startProcess('Update').updateStatus('Updating labels with parent references...', 'Update');
+      progress
+        .startProcess(IMPORT_PROCESS_NAMES.LABELS_UPDATE)
+        .updateStatus(
+          IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.LABELS_UPDATE].UPDATING,
+          IMPORT_PROCESS_NAMES.LABELS_UPDATE,
+        );
       log.info('Starting labels update process', this.importConfig.context);
       await this.updateLabels();
-      progress.completeProcess('Update', true);
+      progress.completeProcess(IMPORT_PROCESS_NAMES.LABELS_UPDATE, true);
 
       this.processLabelResults();
 
@@ -89,7 +106,7 @@ export default class ImportLabels extends BaseClass {
 
     const onSuccess = ({ response, apiData: { uid, name } = { uid: null, name: '' } }: any) => {
       this.labelUidMapper[uid] = response;
-      this.progressManager?.tick(true, `label: ${name || uid}`, null, 'Create');
+      this.progressManager?.tick(true, `label: ${name || uid}`, null, IMPORT_PROCESS_NAMES.LABELS_CREATE);
       log.success(`Label '${name}' imported successfully`, this.importConfig.context);
       log.debug(`Label UID mapping: ${uid} → ${response.uid}`, this.importConfig.context);
       fsUtil.writeFile(this.labelUidMapperPath, this.labelUidMapper);
@@ -101,7 +118,12 @@ export default class ImportLabels extends BaseClass {
       log.debug(`Label '${name}' (${uid}) failed to import`, this.importConfig.context);
 
       if (err?.errors?.name) {
-        this.progressManager?.tick(true, `label: ${name || uid} (already exists)`, null, 'Create');
+        this.progressManager?.tick(
+          true,
+          `label: ${name || uid} (already exists)`,
+          null,
+          IMPORT_PROCESS_NAMES.LABELS_CREATE,
+        );
         log.info(`Label '${name}' already exists`, this.importConfig.context);
       } else {
         this.failedLabel.push(apiData);
@@ -148,7 +170,12 @@ export default class ImportLabels extends BaseClass {
     if (this.labelUidMapper.hasOwnProperty(label.uid)) {
       log.info(`Label '${label.name}' already exists. Skipping it to avoid duplicates!`, this.importConfig.context);
       log.debug(`Skipping label serialization for: ${label.uid}`, this.importConfig.context);
-      this.progressManager?.tick(true, `label: ${label.name} (skipped - already exists)`, null, 'Create');
+      this.progressManager?.tick(
+        true,
+        `label: ${label.name} (skipped - already exists)`,
+        null,
+        IMPORT_PROCESS_NAMES.LABELS_CREATE,
+      );
       apiOptions.entity = undefined;
     } else {
       let labelReq = label;
@@ -172,7 +199,7 @@ export default class ImportLabels extends BaseClass {
 
       const onSuccess = ({ response, apiData: { uid, name } = { uid: null, name: '' } }: any) => {
         this.createdLabel.push(response);
-        this.progressManager?.tick(true, `label: ${name || uid}`, null, 'Update');
+        this.progressManager?.tick(true, `label: ${name || uid}`, null, IMPORT_PROCESS_NAMES.LABELS_UPDATE);
         log.success(`Label '${name}' updated successfully`, this.importConfig.context);
         log.debug(`Label update completed: ${name} (${uid})`, this.importConfig.context);
       };
@@ -247,13 +274,23 @@ export default class ImportLabels extends BaseClass {
         log.debug(`Updated label '${label.name}' with parent references`, this.importConfig.context);
       } else {
         log.debug(`Label '${label.name}' has no parent labels, adding to created list`, this.importConfig.context);
-        this.progressManager?.tick(true, `label: ${label.name} (no parent update needed)`, null, 'Update');
+        this.progressManager?.tick(
+          true,
+          `label: ${label.name} (no parent update needed)`,
+          null,
+          IMPORT_PROCESS_NAMES.LABELS_UPDATE,
+        );
         apiOptions.entity = undefined;
         this.createdLabel.push(newLabel);
       }
     } else {
       log.debug(`Label '${label.name}' not found in UID mapper, skipping update`, this.importConfig.context);
-      this.progressManager?.tick(true, `label: ${label.name} (skipped - not found)`, null, 'Update');
+      this.progressManager?.tick(
+        true,
+        `label: ${label.name} (skipped - not found)`,
+        null,
+        IMPORT_PROCESS_NAMES.LABELS_UPDATE,
+      );
       apiOptions.entity = undefined;
     }
     return apiOptions;

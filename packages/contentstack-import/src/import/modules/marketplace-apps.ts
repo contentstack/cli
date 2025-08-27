@@ -35,6 +35,10 @@ import {
   getAllStackSpecificApps,
   getConfirmationToCreateApps,
   getDeveloperHubUrl,
+  IMPORT_PROCESS_NAMES,
+  IMPORT_MODULE_CONTEXTS,
+  IMPORT_PROCESS_STATUS,
+  IMPORT_MODULE_NAMES,
 } from '../../utils';
 import BaseClass from './base-class';
 
@@ -56,8 +60,8 @@ export default class ImportMarketplaceApps extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = 'marketplace-apps';
-    this.currentModuleName = 'Marketplace Apps';
+    this.importConfig.context.module = IMPORT_MODULE_CONTEXTS.MARKETPLACE_APPS;
+    this.currentModuleName = IMPORT_MODULE_NAMES[IMPORT_MODULE_CONTEXTS.MARKETPLACE_APPS];
     this.marketPlaceAppConfig = importConfig.modules.marketplace_apps;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'marketplace_apps');
     this.marketPlaceFolderPath = join(this.importConfig.backupDir, this.marketPlaceAppConfig.dirName);
@@ -96,35 +100,48 @@ export default class ImportMarketplaceApps extends BaseClass {
       const progress = this.createNestedProgress(this.currentModuleName);
       const privateAppsCount = filter(this.marketplaceApps, { manifest: { visibility: 'private' } }).length;
 
-      progress.addProcess('Setup Environment', 1);
+      progress.addProcess(IMPORT_PROCESS_NAMES.SETUP_ENVIRONMENT, 1);
       if (privateAppsCount > 0) {
-        progress.addProcess('Create Apps', privateAppsCount);
+        progress.addProcess(IMPORT_PROCESS_NAMES.CREATE_APPS, privateAppsCount);
       }
-      progress.addProcess('Install', marketplaceAppsCount);
+      progress.addProcess(IMPORT_PROCESS_NAMES.INSTALL_APPS, marketplaceAppsCount);
 
       await this.prepareMarketplaceAppMapper();
 
       // Step 1: Setup Environment SDK and authentication
-      progress.startProcess('Setup Environment').updateStatus('Setting up marketplace SDK and authentication...', 'Setup Environment');
+      progress
+        .startProcess(IMPORT_PROCESS_NAMES.SETUP_ENVIRONMENT)
+        .updateStatus(
+          IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.SETUP_ENVIRONMENT].SETTING_UP,
+          IMPORT_PROCESS_NAMES.SETUP_ENVIRONMENT,
+        );
       log.info('Setting up marketplace SDK and authentication', this.importConfig.context);
       await this.setupMarketplaceEnvironment();
-      progress.completeProcess('Setup Environment', true);
+      progress.completeProcess(IMPORT_PROCESS_NAMES.SETUP_ENVIRONMENT, true);
 
       // Step 2: Handle private apps creation (if any)
       if (privateAppsCount > 0) {
         progress
-          .startProcess('Create Apps')
-          .updateStatus('Creating private apps...', 'Create Apps');
+          .startProcess(IMPORT_PROCESS_NAMES.CREATE_APPS)
+          .updateStatus(
+            IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.CREATE_APPS].CREATING,
+            IMPORT_PROCESS_NAMES.CREATE_APPS,
+          );
         log.info('Starting private apps creation process', this.importConfig.context);
         await this.handleAllPrivateAppsCreationProcess();
-        progress.completeProcess('Create Apps', true);
+        progress.completeProcess(IMPORT_PROCESS_NAMES.CREATE_APPS, true);
       }
 
       // Step 3: Install marketplace apps
-      progress.startProcess('Install').updateStatus('Installing marketplace apps...', 'Install');
+      progress
+        .startProcess(IMPORT_PROCESS_NAMES.INSTALL_APPS)
+        .updateStatus(
+          IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.INSTALL_APPS].INSTALLING,
+          IMPORT_PROCESS_NAMES.INSTALL_APPS,
+        );
       log.info('Starting marketplace apps installation process', this.importConfig.context);
       await this.importMarketplaceApps();
-      progress.completeProcess('Install', true);
+      progress.completeProcess(IMPORT_PROCESS_NAMES.INSTALL_APPS, true);
 
       this.completeProgress(true);
       log.success('Marketplace apps have been imported successfully!', this.importConfig.context);
@@ -326,7 +343,7 @@ export default class ImportMarketplaceApps extends BaseClass {
             true,
             `${app.manifest.name} (already exists)`,
             null,
-            'Create Apps',
+            IMPORT_PROCESS_NAMES.CREATE_APPS,
           );
           cliux.print(`App '${app.manifest.name}' already exist. skipping app recreation.!`, { color: 'yellow' });
           log.debug(`App '${app.manifest.name}' already exists, skipping recreation`, this.importConfig.context);
@@ -363,7 +380,7 @@ export default class ImportMarketplaceApps extends BaseClass {
           true,
           `${app.manifest.name} (creation skipped)`,
           null,
-          'Create Apps',
+          IMPORT_PROCESS_NAMES.CREATE_APPS,
         );
       }
     }
@@ -534,7 +551,7 @@ export default class ImportMarketplaceApps extends BaseClass {
         log.debug(`Retrying app creation with updated name: ${updatedApp.name}`, this.importConfig.context);
         return this.createPrivateApp(updatedApp, appSuffix + 1, true);
       } else {
-        this.progressManager?.tick(false, `${app.name}`, message, 'Create Apps');
+        this.progressManager?.tick(false, `${app.name}`, message, IMPORT_PROCESS_NAMES.CREATE_APPS);
         trace(response, 'error', true);
         log.error(formatError(message), this.importConfig.context);
 
@@ -559,19 +576,14 @@ export default class ImportMarketplaceApps extends BaseClass {
       }
     } else if (response.uid) {
       // NOTE new app installation
-      this.progressManager?.tick(true, `${response.name}`, null, 'Create Apps');
+      this.progressManager?.tick(true, `${response.name}`, null, IMPORT_PROCESS_NAMES.CREATE_APPS);
       log.success(`${response.name} app created successfully.!`, this.importConfig.context);
       log.debug(`App UID mapping: ${app.uid} → ${response.uid}`, this.importConfig.context);
       this.appUidMapping[app.uid] = response.uid;
       this.appNameMapping[this.appOriginalName] = response.name;
       log.debug(`App name mapping: ${this.appOriginalName} → ${response.name}`, this.importConfig.context);
     } else {
-      this.progressManager?.tick(
-        false,
-        `${app.name}`,
-        'Unexpected response format',
-        'Create Apps',
-      );
+      this.progressManager?.tick(false, `${app.name}`, 'Unexpected response format', IMPORT_PROCESS_NAMES.CREATE_APPS);
       log.debug(`Unexpected response format for app: ${app.name}`, this.importConfig.context);
     }
   }
@@ -597,7 +609,7 @@ export default class ImportMarketplaceApps extends BaseClass {
           true,
           `${app.manifest.name} (skipped - private app not allowed)`,
           null,
-          'Install',
+          IMPORT_PROCESS_NAMES.INSTALL_APPS,
         );
         log.info(`Skipping the installation of the private app ${app.manifest.name}...`, this.importConfig.context);
         return Promise.resolve();
@@ -615,7 +627,7 @@ export default class ImportMarketplaceApps extends BaseClass {
 
       if (installation.installation_uid) {
         const appName = this.appNameMapping[app.manifest.name] || app.manifest.name || app.manifest.uid;
-        this.progressManager?.tick(true, `${appName}`, null, 'Install');
+        this.progressManager?.tick(true, `${appName}`, null, IMPORT_PROCESS_NAMES.INSTALL_APPS);
         log.success(`${appName} app installed successfully.!`, this.importConfig.context);
         log.debug(`Installation UID: ${installation.installation_uid}`, this.importConfig.context);
 
@@ -626,7 +638,12 @@ export default class ImportMarketplaceApps extends BaseClass {
         log.debug(`Installation UID mapping: ${app.uid} → ${installation.installation_uid}`, this.importConfig.context);
         updateParam = { manifest: app.manifest, ...installation, configuration, server_configuration };
       } else if (installation.message) {
-        this.progressManager?.tick(false, `${app.manifest?.name}`, installation.message, 'Install');
+        this.progressManager?.tick(
+          false,
+          `${app.manifest?.name}`,
+          installation.message,
+          IMPORT_PROCESS_NAMES.INSTALL_APPS,
+        );
         log.info(formatError(installation.message), this.importConfig.context);
         log.debug(`Installation failed for app: ${app.manifest?.name}`, this.importConfig.context);
         await confirmToCloseProcess(installation, this.importConfig);
@@ -637,13 +654,18 @@ export default class ImportMarketplaceApps extends BaseClass {
         true,
         `${appName} (already installed, updating config)`,
         null,
-        'Install',
+        IMPORT_PROCESS_NAMES.INSTALL_APPS,
       );
       log.info(`${appName} is already installed`, this.importConfig.context);
       log.debug(`Handling existing app configuration for: ${appName}`, this.importConfig.context);
       updateParam = await ifAppAlreadyExist(app, currentStackApp, this.importConfig);
     } else {
-      this.progressManager?.tick(true, `${app.manifest?.name} (already installed)`, null, 'Install');
+      this.progressManager?.tick(
+        true,
+        `${app.manifest?.name} (already installed)`,
+        null,
+        IMPORT_PROCESS_NAMES.INSTALL_APPS,
+      );
       log.debug(
         `App ${app.manifest?.name} is already installed with no configuration to update`,
         this.importConfig.context,
