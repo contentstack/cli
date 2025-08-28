@@ -141,23 +141,21 @@ class CloneHandler {
           management_token: config.management_token,
         });
 
-        if (!config.sourceStackBranch && config.sourceStackBranchAlias) {
-          await this.resolveBranchAliases(true);
-          return resolve();
-        }
         // NOTE validate if source branch is exist
         if (isSource && config.sourceStackBranch) {
           await this.validateIfBranchExist(stackAPIClient, true);
           return resolve();
-        }
-
-        if (!config.targetStackBranch && config.targetStackBranchAlias) {
-          await this.resolveBranchAliases();
+        } else if(isSource && config.sourceStackBranchAlias) {
+          await this.resolveBranchAliases(true);
           return resolve();
         }
+
         // NOTE Validate target branch is exist
         if (!isSource && config.targetStackBranch) {
           await this.validateIfBranchExist(stackAPIClient, false);
+          return resolve();
+        } else if (!isSource && config.targetStackBranchAlias) {
+          await this.resolveBranchAliases();
           return resolve();
         }
         spinner = ora('Fetching Branches').start();
