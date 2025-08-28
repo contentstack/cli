@@ -7,7 +7,7 @@
   "dependencies": {
     "@colors/colors": "^1.6.0",
     "@contentstack/cli-cm-export": "~1.20.0",
-    "@contentstack/cli-cm-import": "~1.26.3",
+    "@contentstack/cli-cm-import": "~1.27.0",
     "@contentstack/cli-command": "~1.6.1",
     "@contentstack/cli-utilities": "~1.14.0",
     "@oclif/core": "^4.3.0",
