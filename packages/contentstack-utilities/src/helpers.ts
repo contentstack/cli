@@ -175,7 +175,7 @@ export const formatError = function (error: any) {
   }
 
   // Append detailed error information if available
-  if (parsedError.errors && Object.keys(parsedError.errors).length > 0) {
+  if (parsedError.errors && typeof parsedError.errors === 'object' && Object.keys(parsedError.errors).length > 0) {
     const entityNames: { [key: string]: string } = {
       authorization: 'Authentication',
       api_key: 'Stack API key',
@@ -184,11 +184,15 @@ export const formatError = function (error: any) {
       access_token: 'Delivery Token',
     };
 
-    message +=
-      ' ' +
-      Object.entries(parsedError.errors)
-        .map(([key, value]) => `${entityNames[key] || key} ${value}`)
-        .join(' ');
+    const errorList = Object.entries(parsedError.errors)
+      .map(([field, errors]) => {
+        const errorArray = Array.isArray(errors) ? errors : [errors];
+        const fieldName = entityNames[field] || field;
+        return `  • ${fieldName}: ${errorArray.join(', ')}`;
+      })
+      .join('\n');
+
+    message += `\n\nAPI Errors:\n${errorList}`;
   }
 
   return message;
