@@ -65,4 +65,6 @@ fileignoreconfig:
   checksum: a4a968a20d5ab7cbc08c266819907541bbf793cc098521a5e810ada3cbacbee6
 - filename: packages/contentstack-clone/src/commands/cm/stacks/clone.js
   checksum: 433a84a882ea3f12b27127d47d289dfc64dda6b6fc956369f5851daaa57ae493
+- filename: packages/contentstack-clone/src/lib/util/clone-handler.js
+  checksum: 89215a2549276407db2dbd25506acabdeb6f9bc53984a7c8b4456cd4df77cf43
 version: "1.0"
