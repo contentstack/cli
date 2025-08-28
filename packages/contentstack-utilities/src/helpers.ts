@@ -15,7 +15,7 @@ export const doesBranchExist = async (stack, branchName) => {
 
 export const getBranchFromAlias = async (stack: ReturnType<ContentstackClient['stack']>, branchAlias: string) => {
   if (!stack || !branchAlias || typeof branchAlias !== 'string') {
-    throw new Error('Invalid input: stack and branch alias are required');
+    throw new Error('Invalid input. Both stack and branch alias are required.');
   }
   try {
     const response = await stack.branchAlias(branchAlias).fetch();
