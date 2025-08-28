@@ -320,7 +320,6 @@ class ExportToCsvCommand extends Command {
         const { branch } = await util.chooseBranch(stackBranches);
         stack.branch_uid = branch;
         stackAPIClient = this.getStackClient(managementAPIClient, stack);
-        console.log(stackAPIClient);
       }
     }
     return stackAPIClient;
