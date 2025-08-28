@@ -21,7 +21,7 @@ const {
   Clone,
   HandleBranchCommand,
 } = require('../helpers/command-helpers');
-const { configHandler } = require('@contentstack/cli-utilities');
+const { configHandler, getBranchFromAlias } = require('@contentstack/cli-utilities');
 
 let client = {};
 let config;
@@ -137,16 +137,24 @@ class CloneHandler {
       let spinner;
       try {
         const stackAPIClient = client.stack({
-          api_key: config.target_stack ? config.target_stack : config.source_stack,
+          api_key: isSource ? config.source_stack : config.target_stack,
           management_token: config.management_token,
         });
 
+        if (!config.sourceStackBranch && config.sourceStackBranchAlias) {
+          await this.resolveBranchAliases(true);
+          return resolve();
+        }
         // NOTE validate if source branch is exist
         if (isSource && config.sourceStackBranch) {
           await this.validateIfBranchExist(stackAPIClient, true);
           return resolve();
         }
 
+        if (!config.targetStackBranch && config.targetStackBranchAlias) {
+          await this.resolveBranchAliases();
+          return resolve();
+        }
         // NOTE Validate target branch is exist
         if (!isSource && config.targetStackBranch) {
           await this.validateIfBranchExist(stackAPIClient, false);
@@ -272,6 +280,8 @@ class CloneHandler {
             return reject('Org not found.');
           }
         } else {
+          this.setExectingCommand(2);
+          await this.handleBranchSelection({ api_key: config.sourceStack });
           const exportRes = await cloneCommand.execute(new HandleExportCommand(null, this));
           await cloneCommand.execute(new SetBranchCommand(null, this));
 
@@ -471,7 +481,7 @@ class CloneHandler {
         } else {
           organizations = await client.organization().fetchAll({ limit: 100 });
         }
-        
+
         spinner.succeed('Fetched Organization');
         for (const element of organizations.items || [organizations]) {
           orgUidList[element.name] = element.uid;
@@ -577,6 +587,20 @@ class CloneHandler {
         },
       );
     });
+  }
+
+  async resolveBranchAliases(isSource = false) {
+    try {
+      if (isSource) {
+        const sourceStack = client.stack({ api_key: config.source_stack });
+        config.sourceStackBranch = await getBranchFromAlias(sourceStack, config.sourceStackBranchAlias);
+      } else {
+        const targetStack = client.stack({ api_key: config.target_stack });
+        config.targetStackBranch = await getBranchFromAlias(targetStack, config.targetStackBranchAlias);
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 
   async cloneTypeSelection() {
