@@ -6,7 +6,14 @@ import { addLocale, cliux, ContentstackClient, Logger } from '@contentstack/cli-
 import startModuleImport from './modules';
 import startJSModuleImport from './modules-js';
 import { ImportConfig, Modules } from '../types';
-import { backupHandler, log, validateBranch, masterLocalDetails, sanitizeStack, initLogger, trace } from '../utils';
+import {
+  backupHandler,
+  log,
+  masterLocalDetails,
+  sanitizeStack,
+  initLogger,
+  setupBranchConfig,
+} from '../utils';
 
 class ModuleImporter {
   private managementAPIClient: ContentstackClient;
@@ -28,8 +35,14 @@ class ModuleImporter {
       this.importConfig.stackName = stackDetails.name as string;
       this.importConfig.org_uid = stackDetails.org_uid as string;
     }
-    if (this.importConfig.branchName) {
-      await validateBranch(this.stackAPIClient, this.importConfig, this.importConfig.branchName);
+
+    await setupBranchConfig(this.importConfig, this.stackAPIClient);
+    if (this.importConfig.branchAlias && this.importConfig.branchName) {
+      this.stackAPIClient = this.managementAPIClient.stack({
+        api_key: this.importConfig.apiKey,
+        management_token: this.importConfig.management_token,
+        branch_uid: this.importConfig.branchName,
+      });
     }
 
     if (this.importConfig.management_token) {
@@ -50,15 +63,9 @@ class ModuleImporter {
     if (
       !this.importConfig.skipAudit &&
       (!this.importConfig.moduleName ||
-        [
-          'content-types',
-          'global-fields',
-          'entries',
-          'extensions',
-          'workflows',
-          'custom-roles',
-          'assets'
-        ].includes(this.importConfig.moduleName))
+        ['content-types', 'global-fields', 'entries', 'extensions', 'workflows', 'custom-roles', 'assets'].includes(
+          this.importConfig.moduleName,
+        ))
     ) {
       if (!(await this.auditImportData(logger))) {
         return { noSuccessMsg: true };
@@ -150,15 +157,9 @@ class ModuleImporter {
       } else if (this.importConfig.modules.types.length) {
         this.importConfig.modules.types
           .filter((val) =>
-            [
-              'content-types',
-              'global-fields',
-              'entries',
-              'extensions',
-              'workflows',
-              'custom-roles',
-              'assets'
-            ].includes(val),
+            ['content-types', 'global-fields', 'entries', 'extensions', 'workflows', 'custom-roles', 'assets'].includes(
+              val,
+            ),
           )
           .forEach((val) => {
             args.push('--modules', val);
