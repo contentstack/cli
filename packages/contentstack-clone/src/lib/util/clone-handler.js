@@ -8,7 +8,7 @@ let { default: importCmd } = require('@contentstack/cli-cm-import');
 const { CustomAbortController } = require('./abort-controller');
 const prompt = require('prompt');
 const colors = require('@colors/colors/safe');
-const cloneDeep = require("lodash/cloneDeep")
+const cloneDeep = require('lodash/cloneDeep');
 
 const {
   HandleOrgCommand,
@@ -21,7 +21,7 @@ const {
   Clone,
   HandleBranchCommand,
 } = require('../helpers/command-helpers');
-const { configHandler } = require('@contentstack/cli-utilities')
+const { configHandler } = require('@contentstack/cli-utilities');
 
 let client = {};
 let config;
@@ -618,7 +618,7 @@ class CloneHandler {
   async cmdExport() {
     return new Promise((resolve, reject) => {
       // Creating export specific config by merging external configurations
-      let exportConfig = Object.assign({}, cloneDeep(config), {...config?.export});
+      let exportConfig = Object.assign({}, cloneDeep(config), { ...config?.export });
       delete exportConfig.import;
       delete exportConfig.export;
 
@@ -632,10 +632,6 @@ class CloneHandler {
       }
       if (exportConfig.sourceStackBranch) {
         cmd.push('--branch', exportConfig.sourceStackBranch);
-      }
-
-      if (!exportConfig.sourceStackBranch && exportConfig.sourceStackBranchAlias) {
-        cmd.push('--branch-alias', exportConfig.sourceStackBranchAlias);
       }
 
       if (exportConfig.forceStopMarketplaceAppsPrompt) cmd.push('-y');
@@ -652,7 +648,7 @@ class CloneHandler {
   async cmdImport() {
     return new Promise(async (resolve, _reject) => {
       // Creating export specific config by merging external configurations
-      let importConfig = Object.assign({}, cloneDeep(config), {...config?.import});
+      let importConfig = Object.assign({}, cloneDeep(config), { ...config?.import });
       delete importConfig.import;
       delete importConfig.export;
 
@@ -667,10 +663,6 @@ class CloneHandler {
       if (importConfig.targetStackBranch) {
         cmd.push('--branch', importConfig.targetStackBranch);
       }
-            
-      if (!importConfig.targetStackBranch && importConfig.targetStackBranchAlias) {
-        cmd.push('--branch-alias', importConfig.targetStackBranchAlias);
-      }
       if (importConfig.importWebhookStatus) {
         cmd.push('--import-webhook-status', importConfig.importWebhookStatus);
       }
@@ -681,7 +673,7 @@ class CloneHandler {
 
       fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify(importConfig));
       await importCmd.run(cmd);
-      fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify({}))
+      fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify({}));
       return resolve();
     });
   }

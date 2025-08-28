@@ -63,4 +63,6 @@ fileignoreconfig:
   checksum: bb8093633dc7de888541990623c3e02a482b7e6f5db0ba396bedc20c4c74b782
 - filename: packages/contentstack-import/src/utils/setup-branch.ts
   checksum: a4a968a20d5ab7cbc08c266819907541bbf793cc098521a5e810ada3cbacbee6
+- filename: packages/contentstack-clone/src/commands/cm/stacks/clone.js
+  checksum: 433a84a882ea3f12b27127d47d289dfc64dda6b6fc956369f5851daaa57ae493
 version: "1.0"
