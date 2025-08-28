@@ -9,7 +9,6 @@ import { ImportConfig, Modules } from '../types';
 import {
   backupHandler,
   log,
-  validateBranch,
   masterLocalDetails,
   sanitizeStack,
   initLogger,
@@ -37,17 +36,13 @@ class ModuleImporter {
       this.importConfig.org_uid = stackDetails.org_uid as string;
     }
 
-    if (this.importConfig.branchName) {
-      await validateBranch(this.stackAPIClient, this.importConfig, this.importConfig.branchName);
-    } else if (!this.importConfig.branchName && this.importConfig.branchAlias) {
-      await setupBranchConfig(this.importConfig, this.managementAPIClient);
-      if (this.importConfig.branchName) {
-        this.stackAPIClient = this.managementAPIClient.stack({
-          api_key: this.importConfig.apiKey,
-          management_token: this.importConfig.management_token,
-          branch_uid: this.importConfig.branchName,
-        });
-      }
+    await setupBranchConfig(this.importConfig, this.stackAPIClient);
+    if (this.importConfig.branchAlias && this.importConfig.branchName) {
+      this.stackAPIClient = this.managementAPIClient.stack({
+        api_key: this.importConfig.apiKey,
+        management_token: this.importConfig.management_token,
+        branch_uid: this.importConfig.branchName,
+      });
     }
 
     if (this.importConfig.management_token) {
