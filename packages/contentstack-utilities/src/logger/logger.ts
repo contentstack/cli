@@ -9,9 +9,8 @@ export default class Logger {
   private loggers: Record<string, winston.Logger>;
   private config: LoggerConfig;
 
-  private sensitiveKeys = [
+  private consoleSensitiveKeys = [
     /authtoken/i,
-    /^email$/i,
     /^password$/i,
     /secret/i,
     /token/i,
@@ -21,6 +20,8 @@ export default class Logger {
     /orgid/i,
     /stack/i,
   ];
+
+  private logSensitiveKeys = [/authtoken/i, /secret/i, /token/i, /management[-._]?token/i, /delivery[-._]?token/i];
 
   constructor(config: LoggerConfig) {
     this.config = config;
@@ -56,13 +57,21 @@ export default class Logger {
         new winston.transports.File({
           ...this.loggerOptions,
           filename: `${filePath}/${level}.log`,
-          format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.printf((info) => {
+              // Apply minimal redaction for files (debugging info preserved)
+              const redactedInfo = this.redact(info, false);
+              return JSON.stringify(redactedInfo);
+            }),
+          ),
         }),
         new winston.transports.Console({
           format: winston.format.combine(
             winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
             winston.format.printf((info) => {
-              const redactedInfo = this.redact(info);
+              // Apply full redaction for console (user-facing)
+              const redactedInfo = this.redact(info, true);
               const colorizer = winston.format.colorize();
               const levelText = redactedInfo.level.toUpperCase();
               const { timestamp, message } = redactedInfo;
@@ -74,25 +83,31 @@ export default class Logger {
     });
   }
 
-  private isSensitiveKey(keyStr: string): boolean {
-    return typeof keyStr === 'string' ? this.sensitiveKeys.some((regex) => regex.test(keyStr)) : false;
+  private isSensitiveKey(keyStr: string, consoleMode: boolean = false): boolean {
+    if (keyStr && typeof keyStr === 'string') {
+      const keysToCheck = consoleMode ? this.consoleSensitiveKeys : this.logSensitiveKeys;
+      return keysToCheck.some((regex) => regex.test(keyStr));
+    }
+    return false;
   }
 
-  private redactObject(obj: any): void {
+  private redactObject(obj: any, consoleMode: boolean = false) {
     const self = this;
     traverse(obj).forEach(function redactor() {
-      if (this.key && self.isSensitiveKey(this.key)) {
+      if (this.key && self.isSensitiveKey(this.key, consoleMode)) {
         this.update('[REDACTED]');
       }
     });
+
+    return obj;
   }
 
-  private redact(info: any): any {
+  private redact(info: any, consoleMode: boolean = false): any {
     try {
       const copy = klona(info);
-      this.redactObject(copy);
+      this.redactObject(copy, consoleMode);
       const splat = copy[Symbol.for('splat')];
-      if (splat) this.redactObject(splat);
+      if (splat) this.redactObject(splat, consoleMode);
       return copy;
     } catch {
       return info;
@@ -162,7 +177,7 @@ export default class Logger {
     if (this.shouldLog('error', 'file')) {
       this.loggers.error.error(logPayload);
     }
-    
+
     // For console, use debug level if hidden, otherwise error level
     const consoleLevel: LogType = params.hidden ? 'debug' : 'error';
     if (this.shouldLog(consoleLevel, 'console')) {
