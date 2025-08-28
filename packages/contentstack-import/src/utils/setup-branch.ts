@@ -13,6 +13,7 @@ export const setupBranchConfig = async (
 
   if (config.branchAlias) {
     config.branchName = await getBranchFromAlias(stackAPIClient, config.branchAlias);
+    return;
   }
   try {
     const branches = await stackAPIClient

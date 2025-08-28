@@ -1,5 +1,5 @@
 const { Command } = require('@contentstack/cli-command');
-const { configHandler, flags, isAuthenticated, managementSDKClient } = require('@contentstack/cli-utilities');
+const { configHandler, flags, isAuthenticated, managementSDKClient, getBranchFromAlias } = require('@contentstack/cli-utilities');
 const { CloneHandler } = require('../../../lib/util/clone-handler');
 const path = require('path');
 const { rimraf } = require('rimraf');
@@ -82,6 +82,10 @@ class StackCloneCommand extends Command {
           config.importWebhookStatus = importWebhookStatus;
         }
 
+        const managementAPIClient = await managementSDKClient(config);
+        
+        await this.resolveBranchAliases(config, managementAPIClient);
+
         await this.removeContentDirIfNotEmptyBeforeClone(pathdir); // NOTE remove if folder not empty before clone
         this.registerCleanupOnInterrupt(pathdir);
 
@@ -90,7 +94,6 @@ class StackCloneCommand extends Command {
         config.cdn = this.cdaHost;
         config.pathDir = pathdir;
         const cloneHandler = new CloneHandler(config);
-        const managementAPIClient = await managementSDKClient(config);
         cloneHandler.setClient(managementAPIClient);
         cloneHandler.execute().catch((error) => {
           console.log(error);
@@ -120,6 +123,33 @@ class StackCloneCommand extends Command {
         // eslint-disable-next-line no-console
         console.log(error.message || error);
       }
+    }
+  }
+
+  async resolveBranchAliases(config, managementAPIClient) {
+    try {
+      if (config.sourceStackBranchAlias && !config.sourceStackBranch) {
+        console.log(`Resolving source branch alias: ${config.sourceStackBranchAlias}`);
+        const sourceStack = managementAPIClient.stack({ api_key: config.source_stack });
+        config.sourceStackBranch = await getBranchFromAlias(sourceStack, config.sourceStackBranchAlias);
+        console.log(`Source branch alias resolved to: ${config.sourceStackBranch}`);
+      }
+
+      if (config.targetStackBranchAlias && !config.targetStackBranch) {
+        console.log(`Resolving target branch alias: ${config.targetStackBranchAlias}`);
+        const targetStack = managementAPIClient.stack({ api_key: config.target_stack });
+        config.targetStackBranch = await getBranchFromAlias(targetStack, config.targetStackBranchAlias);
+      }
+
+      if (!config.sourceStackBranch && !config.sourceStackBranchAlias) {
+        console.log('No source branch specified, will use default branch');
+      }
+      if (!config.targetStackBranch && !config.targetStackBranchAlias) {
+        console.log('No target branch specified, will use default branch');
+      }
+
+    } catch (error) {
+      throw error;
     }
   }
 
