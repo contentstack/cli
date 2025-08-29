@@ -5,8 +5,9 @@ It is Contentstack’s CLI plugin to import content in the stack. To learn how t
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)it -m
 
 <!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
 
 For switching to EU region update the hosts at config/default.js
@@ -42,24 +43,27 @@ For switching to AZURE-EU region update the hosts at config/default.js
 # Usage
 
 <!-- usage -->
+
 ```sh-session
 $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-import/1.27.0 darwin-arm64 node-v22.14.0
+@contentstack/cli-cm-import/1.26.1 darwin-arm64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
+
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-* [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
-* [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
+
+- [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
+- [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
 
 ## `csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
 
@@ -200,4 +204,5 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cm/stacks/import.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/src/commands/cm/stacks/import.ts)_
+
 <!-- commandsstop -->
