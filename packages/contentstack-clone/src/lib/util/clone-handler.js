@@ -634,6 +634,10 @@ class CloneHandler {
         cmd.push('--branch', exportConfig.sourceStackBranch);
       }
 
+      if (!exportConfig.sourceStackBranch && exportConfig.sourceStackBranchAlias) {
+        cmd.push('--branch-alias', exportConfig.sourceStackBranchAlias);
+      }
+
       if (exportConfig.forceStopMarketplaceAppsPrompt) cmd.push('-y');
 
       cmd.push('-c');
@@ -662,6 +666,10 @@ class CloneHandler {
       }
       if (importConfig.targetStackBranch) {
         cmd.push('--branch', importConfig.targetStackBranch);
+      }
+            
+      if (!importConfig.targetStackBranch && importConfig.targetStackBranchAlias) {
+        cmd.push('--branch-alias', importConfig.targetStackBranchAlias);
       }
       if (importConfig.importWebhookStatus) {
         cmd.push('--import-webhook-status', importConfig.importWebhookStatus);
