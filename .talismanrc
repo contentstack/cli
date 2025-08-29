@@ -78,7 +78,7 @@ fileignoreconfig:
 - filename: packages/contentstack-clone/src/commands/cm/stacks/clone.js
   checksum: 433a84a882ea3f12b27127d47d289dfc64dda6b6fc956369f5851daaa57ae493
 - filename: packages/contentstack-clone/src/lib/util/clone-handler.js
-  checksum: 89215a2549276407db2dbd25506acabdeb6f9bc53984a7c8b4456cd4df77cf43
+  checksum: 7024f22a6ed3908d7cf074bbd8e7107e2d9f43bbcc42939b28d360c89d44cc29
 - filename: packages/contentstack-bulk-publish/src/util/generate-bulk-publish-url.js
   checksum: 5f7c1e2fac3e7fab21e861d609c54ca7191ee09fd076dd0adc66604043bf7a43
 version: "1.0"
