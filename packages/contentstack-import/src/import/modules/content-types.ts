@@ -114,7 +114,7 @@ export default class ContentTypesImport extends BaseClass {
     log.debug('Created content types mapper directory', this.importConfig.context);
 
     this.installedExtensions = (
-      ((await fsUtil.readFile(this.marketplaceAppMapperPath)) as any) || { extension_uid: {} }
+      (fsUtil.readFile(this.marketplaceAppMapperPath) as any) || { extension_uid: {} }
     ).extension_uid;
     log.debug(
       `Loaded ${Object.keys(this.installedExtensions)?.length} installed extensions`,

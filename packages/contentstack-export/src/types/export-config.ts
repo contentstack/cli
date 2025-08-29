@@ -11,6 +11,7 @@ export default interface ExportConfig extends DefaultConfig {
   forceStopMarketplaceAppsPrompt: boolean;
   auth_token?: string;
   branchName?: string;
+  branchAlias?: string;
   securedAssets?: boolean;
   contentTypes?: string[];
   branches?: branch[];

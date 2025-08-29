@@ -22,7 +22,7 @@ export const uploadAssetHelper = function (config: ImportConfig, req: any, fsPat
   return new Bluebird(function (resolve, reject) {
     try {
       log.debug(`Starting asset upload helper for path: ${fsPath}`);
-      
+
       managementSDKClient(config)
         .then((APIClient: ContentstackClient) => {
           validate(req);
@@ -34,13 +34,13 @@ export const uploadAssetHelper = function (config: ImportConfig, req: any, fsPat
           }
 
           log.debug(`Uploading asset (attempt ${RETRY}/${MAX_RETRY_LIMIT}): ${fsPath}`);
-          
+
           req.upload = fsPath;
           const stackAPIClient = APIClient.stack({
             api_key: config.target_stack,
             management_token: config.management_token,
           });
-          
+
           stackAPIClient
             .asset()
             .create(req)
@@ -81,9 +81,9 @@ export const lookupAssets = function (
   ) {
     throw new Error('Invalid inputs for lookupAssets!');
   }
-  
+
   log.debug(`Starting asset lookup for entry: ${data.entry?.uid}, content type: ${data.content_type?.uid}`);
-  
+
   let parent: string[] = [];
   let assetUids: string[] = [];
   let assetUrls: string[] = [];
@@ -138,7 +138,9 @@ export const lookupAssets = function (
         findAssetIdsFromJsonCustomFields(data.entry, data.content_type.schema);
       } else if (schema[i].data_type === 'json' && schema[i].field_metadata.extension) {
         if (installedExtensions && installedExtensions[schema[i].extension_uid]) {
-          log.debug(`Mapping extension UID: ${schema[i].extension_uid} to ${installedExtensions[schema[i].extension_uid]}`);
+          log.debug(
+            `Mapping extension UID: ${schema[i].extension_uid} to ${installedExtensions[schema[i].extension_uid]}`,
+          );
           schema[i].extension_uid = installedExtensions[schema[i].extension_uid];
         }
       }
@@ -267,9 +269,9 @@ export const lookupAssets = function (
   updateFileFields(data.entry, data, null, mappedAssetUids, matchedUids, unmatchedUids, mappedAssetUrls);
   assetUids = _.uniq(assetUids);
   assetUrls = _.uniq(assetUrls);
-  
+
   log.debug(`Found ${assetUids.length} unique asset UIDs and ${assetUrls.length} unique asset URLs`);
-  
+
   let entry = JSON.stringify(data.entry);
 
   assetUrls.forEach(function (assetUrl: any) {
@@ -310,7 +312,7 @@ export const lookupAssets = function (
   }
 
   if (unmatchedUids.length) {
-    log.warn(`Found ${unmatchedUids.length} unmatched asset UIDs`);
+    log.debug(`Found ${unmatchedUids.length} unmatched asset UIDs`);
     let unmatchedAssetUids = helper.readFileSync(path.join(assetUidMapperPath, 'unmatched-asset-uids.json'));
     unmatchedAssetUids = unmatchedAssetUids || {};
     if (unmatchedAssetUids.hasOwnProperty(data.content_type.uid)) {
@@ -324,7 +326,7 @@ export const lookupAssets = function (
   }
 
   if (unmatchedUrls.length) {
-    log.warn(`Found ${unmatchedUrls.length} unmatched asset URLs`);
+    log.debug(`Found ${unmatchedUrls.length} unmatched asset URLs`);
     let unmatchedAssetUrls = helper.readFileSync(path.join(assetUidMapperPath, 'unmatched-asset-urls.json'));
     unmatchedAssetUrls = unmatchedAssetUrls || {};
     if (unmatchedAssetUrls.hasOwnProperty(data.content_type.uid)) {

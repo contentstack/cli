@@ -8,7 +8,7 @@ const retryFailedLogs = require('../util/retryfailed');
 const { validateFile } = require('../util/fs');
 const { isEmpty } = require('../util');
 const { fetchBulkPublishLimit } = require('../util/common-utility');
-const { generateBulkPublishStatusUrl } = require('../util/bulk-publish-utils');
+const { generateBulkPublishStatusUrl } = require('../util/generate-bulk-publish-url');
 
 const queue = getQueue();
 let logFileName;

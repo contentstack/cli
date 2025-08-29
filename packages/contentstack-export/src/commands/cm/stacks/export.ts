@@ -93,6 +93,12 @@ export default class ExportCommand extends Command {
       description:
         "[optional] The name of the branch where you want to export your content. If you don't mention the branch name, then by default the content will be exported from all the branches of your stack.",
       parse: printFlagDeprecation(['-B'], ['--branch']),
+      exclusive: ['branch-alias'],
+    }),
+    'branch-alias': flags.string({
+      char: 'b',
+      description: '(Optional) The alias of the branch from which you want to export content.',
+      exclusive: ['branch'],
     }),
     'secured-assets': flags.boolean({
       description: '[optional] Use this flag for assets that are secured.',
@@ -138,7 +144,7 @@ export default class ExportCommand extends Command {
       log.success(`The log has been stored at '${getLogPath()}'`, exportConfig.context);
     } catch (error) {
       handleAndLogError(error);
-      log.info(`The log has been stored at '${getLogPath()}'`)
+      log.info(`The log has been stored at '${getLogPath()}'`);
     }
   }
 

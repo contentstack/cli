@@ -28,10 +28,13 @@ function generateBulkPublishStatusUrl(stack, config) {
   if (!apiKey) {
     return null;
   }
-  const branch = config?.branch || 'main';
+  const branch = config?.branch;
   const host = stack?.host || config?.host || 'app.contentstack.com';
   const appUrl = getAppUrlFromHost(host);
-  return `${appUrl}/#!/stack/${apiKey}/publish-queue?branch=${branch}`;
+  
+  // Only include branch parameter if branch is not empty
+  const branchParam = branch ? `?branch=${branch}` : '';
+  return `${appUrl}/#!/stack/${apiKey}/publish-queue${branchParam}`;
 }
 
 module.exports = {
