@@ -82,6 +82,8 @@ class StackCloneCommand extends Command {
           config.importWebhookStatus = importWebhookStatus;
         }
 
+        const managementAPIClient = await managementSDKClient(config);
+
         await this.removeContentDirIfNotEmptyBeforeClone(pathdir); // NOTE remove if folder not empty before clone
         this.registerCleanupOnInterrupt(pathdir);
 
@@ -90,7 +92,6 @@ class StackCloneCommand extends Command {
         config.cdn = this.cdaHost;
         config.pathDir = pathdir;
         const cloneHandler = new CloneHandler(config);
-        const managementAPIClient = await managementSDKClient(config);
         cloneHandler.setClient(managementAPIClient);
         cloneHandler.execute().catch((error) => {
           console.log(error);
@@ -122,6 +123,8 @@ class StackCloneCommand extends Command {
       }
     }
   }
+
+
 
   async removeContentDirIfNotEmptyBeforeClone(dir) {
     try {

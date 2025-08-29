@@ -8,7 +8,7 @@ let { default: importCmd } = require('@contentstack/cli-cm-import');
 const { CustomAbortController } = require('./abort-controller');
 const prompt = require('prompt');
 const colors = require('@colors/colors/safe');
-const cloneDeep = require("lodash/cloneDeep")
+const cloneDeep = require('lodash/cloneDeep');
 
 const {
   HandleOrgCommand,
@@ -21,7 +21,7 @@ const {
   Clone,
   HandleBranchCommand,
 } = require('../helpers/command-helpers');
-const { configHandler } = require('@contentstack/cli-utilities')
+const { configHandler, getBranchFromAlias } = require('@contentstack/cli-utilities');
 
 let client = {};
 let config;
@@ -137,7 +137,7 @@ class CloneHandler {
       let spinner;
       try {
         const stackAPIClient = client.stack({
-          api_key: config.target_stack ? config.target_stack : config.source_stack,
+          api_key: isSource ? config.source_stack : config.target_stack,
           management_token: config.management_token,
         });
 
@@ -145,11 +145,17 @@ class CloneHandler {
         if (isSource && config.sourceStackBranch) {
           await this.validateIfBranchExist(stackAPIClient, true);
           return resolve();
+        } else if(isSource && config.sourceStackBranchAlias) {
+          await this.resolveBranchAliases(true);
+          return resolve();
         }
 
         // NOTE Validate target branch is exist
         if (!isSource && config.targetStackBranch) {
           await this.validateIfBranchExist(stackAPIClient, false);
+          return resolve();
+        } else if (!isSource && config.targetStackBranchAlias) {
+          await this.resolveBranchAliases();
           return resolve();
         }
         spinner = ora('Fetching Branches').start();
@@ -272,6 +278,8 @@ class CloneHandler {
             return reject('Org not found.');
           }
         } else {
+          this.setExectingCommand(2);
+          await this.handleBranchSelection({ api_key: config.sourceStack });
           const exportRes = await cloneCommand.execute(new HandleExportCommand(null, this));
           await cloneCommand.execute(new SetBranchCommand(null, this));
 
@@ -471,7 +479,7 @@ class CloneHandler {
         } else {
           organizations = await client.organization().fetchAll({ limit: 100 });
         }
-        
+
         spinner.succeed('Fetched Organization');
         for (const element of organizations.items || [organizations]) {
           orgUidList[element.name] = element.uid;
@@ -579,6 +587,20 @@ class CloneHandler {
     });
   }
 
+  async resolveBranchAliases(isSource = false) {
+    try {
+      if (isSource) {
+        const sourceStack = client.stack({ api_key: config.source_stack });
+        config.sourceStackBranch = await getBranchFromAlias(sourceStack, config.sourceStackBranchAlias);
+      } else {
+        const targetStack = client.stack({ api_key: config.target_stack });
+        config.targetStackBranch = await getBranchFromAlias(targetStack, config.targetStackBranchAlias);
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async cloneTypeSelection() {
     console.clear();
     return new Promise(async (resolve, reject) => {
@@ -618,7 +640,7 @@ class CloneHandler {
   async cmdExport() {
     return new Promise((resolve, reject) => {
       // Creating export specific config by merging external configurations
-      let exportConfig = Object.assign({}, cloneDeep(config), {...config?.export});
+      let exportConfig = Object.assign({}, cloneDeep(config), { ...config?.export });
       delete exportConfig.import;
       delete exportConfig.export;
 
@@ -632,10 +654,6 @@ class CloneHandler {
       }
       if (exportConfig.sourceStackBranch) {
         cmd.push('--branch', exportConfig.sourceStackBranch);
-      }
-
-      if (!exportConfig.sourceStackBranch && exportConfig.sourceStackBranchAlias) {
-        cmd.push('--branch-alias', exportConfig.sourceStackBranchAlias);
       }
 
       if (exportConfig.forceStopMarketplaceAppsPrompt) cmd.push('-y');
@@ -652,7 +670,7 @@ class CloneHandler {
   async cmdImport() {
     return new Promise(async (resolve, _reject) => {
       // Creating export specific config by merging external configurations
-      let importConfig = Object.assign({}, cloneDeep(config), {...config?.import});
+      let importConfig = Object.assign({}, cloneDeep(config), { ...config?.import });
       delete importConfig.import;
       delete importConfig.export;
 
@@ -667,10 +685,6 @@ class CloneHandler {
       if (importConfig.targetStackBranch) {
         cmd.push('--branch', importConfig.targetStackBranch);
       }
-            
-      if (!importConfig.targetStackBranch && importConfig.targetStackBranchAlias) {
-        cmd.push('--branch-alias', importConfig.targetStackBranchAlias);
-      }
       if (importConfig.importWebhookStatus) {
         cmd.push('--import-webhook-status', importConfig.importWebhookStatus);
       }
@@ -681,7 +695,7 @@ class CloneHandler {
 
       fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify(importConfig));
       await importCmd.run(cmd);
-      fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify({}))
+      fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify({}));
       return resolve();
     });
   }
