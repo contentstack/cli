@@ -46,7 +46,7 @@ describe('Utils', function () {
         name: 'AWS-NA',
         cda: 'https://cdn.contentstack.com',
         cma: 'https://api.contentstack.com',
-        uiHost: 'https://app.contentstack.com'
+        uiHost: 'https://app.contentstack.com',
       };
       const managementAPIClient = {
         stack: () => {
