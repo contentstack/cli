@@ -6,7 +6,8 @@ const {
   isAuthenticated,
   cliux,
   doesBranchExist,
-  isManagementTokenValid
+  isManagementTokenValid,
+  log
 } = require('@contentstack/cli-utilities');
 const util = require('../../util');
 const config = require('../../util/config');
@@ -126,7 +127,7 @@ class ExportToCsvCommand extends Command {
             }
 
             stackAPIClient = this.getStackClient(managementAPIClient, stack);
-            await this.checkAndUpdateBranchDetail(branchUid, stack, stackAPIClient, managementAPIClient);
+            stackAPIClient = await this.checkAndUpdateBranchDetail(branchUid, stack, stackAPIClient, managementAPIClient);
 
             const contentTypeCount = await util.getContentTypeCount(stackAPIClient);
 
@@ -321,6 +322,7 @@ class ExportToCsvCommand extends Command {
         stackAPIClient = this.getStackClient(managementAPIClient, stack);
       }
     }
+    return stackAPIClient;
   }
 
   /**

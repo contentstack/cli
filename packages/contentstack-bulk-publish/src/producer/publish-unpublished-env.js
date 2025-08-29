@@ -4,12 +4,14 @@
 /* eslint-disable no-console */
 /* eslint-disable new-cap */
 /* eslint-disable camelcase */
+const { cliux } = require('@contentstack/cli-utilities');
 const { getQueue } = require('../util/queue');
 const { performBulkPublish, publishEntry, initializeLogger } = require('../consumer/publish');
 const retryFailedLogs = require('../util/retryfailed');
 const { validateFile } = require('../util/fs');
 const { isEmpty } = require('../util');
 const { fetchBulkPublishLimit } = require('../util/common-utility');
+const { generateBulkPublishStatusUrl } = require('../util/generate-bulk-publish-url');
 
 const queue = getQueue();
 let skipCount;
@@ -142,6 +144,18 @@ async function start({ sourceEnv, environments, locale, contentTypes, bulkPublis
     } else if (!isSuccessLogEmpty) {
       console.log(`The success log for this session is stored at ${filePath}.success`);
     }
+    
+    // Generate and display the bulk publish status link
+    if (bulkPublish && stack && config) {
+      const statusUrl = generateBulkPublishStatusUrl(stack, config);
+      if (statusUrl) {
+        process.stdout.write('\n');
+        process.stdout.write('\x1b[37mHere is the link to check the bulk unpublish status: \x1b[0m');
+        process.stdout.write('\x1b[34m' + statusUrl + '\x1b[0m');
+        process.stdout.write('\n');
+      }
+    }
+    
     process.exit(0);
   });
 

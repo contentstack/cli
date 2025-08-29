@@ -201,4 +201,7 @@ class UserConfig {
   }
 }
 
+// Export the regions object for use in other packages
+export { regions };
+
 export default new UserConfig();
