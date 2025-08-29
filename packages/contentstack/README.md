@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.45.1 darwin-arm64 node-v22.14.0
+@contentstack/cli/1.46.0 darwin-arm64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -578,18 +578,19 @@ Bootstrap contentstack apps
 ```
 USAGE
   $ csdx cm:bootstrap [--app-name <value>] [--project-dir <value>] [-k <value> | --org <value> | -n <value>] [-y
-    <value>] [-a <value>]
+    <value>] [--run-dev-server] [-a <value>]
 
 FLAGS
   -a, --alias=<value>          Alias of the management token
   -k, --stack-api-key=<value>  Provide stack API key to seed content
   -n, --stack-name=<value>     Name of the new stack that will be created.
   -y, --yes=<value>            [Optional] Skip stack confirmation
-      --app-name=<value>       App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter,
-                               vue-starter, stencil-starter
+      --app-name=<value>       App name, kickstart-next, kickstart-next-ssr, kickstart-next-ssg, kickstart-next-graphql,
+                               kickstart-next-middleware, kickstart-nuxt, kickstart-nuxt-ssr
       --org=<value>            Provide organization UID to create a new stack
       --project-dir=<value>    Directory to setup the project. If directory name has a space then provide the path as a
                                string or escap the space using back slash eg: "../../test space" or ../../test\ space
+      --run-dev-server         Automatically start the development server after setup
 
 DESCRIPTION
   Bootstrap contentstack apps
@@ -599,11 +600,13 @@ EXAMPLES
 
   $ csdx cm:bootstrap --project-dir <path/to/setup/the/app>
 
-  $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app>
+  $ csdx cm:bootstrap --app-name "kickstart-next" --project-dir <path/to/setup/the/app>
 
-  $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --stack-api-key "stack-api-key"
+  $ csdx cm:bootstrap --app-name "kickstart-next" --project-dir <path/to/setup/the/app> --stack-api-key "stack-api-key"
 
-  $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --org "your-org-uid" --stack-name "stack-name"
+  $ csdx cm:bootstrap --app-name "kickstart-next" --project-dir <path/to/setup/the/app> --org "your-org-uid" --stack-name "stack-name"
+
+  $ csdx cm:bootstrap --app-name "kickstart-next" --project-dir <path/to/setup/the/app> --run-dev-server
 ```
 
 _See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/main/packages/contentstack-bootstrap/src/commands/cm/bootstrap.ts)_
@@ -2184,6 +2187,7 @@ FLAGS
                                   mention the branch name, then by default the content will be exported from all the
                                   branches of your stack.
   -a, --alias=<value>             The management token alias of the source stack from which you will export content.
+  -b, --branch-alias=<value>      (Optional) The alias of the branch from which you want to export content.
   -c, --config=<value>            [optional] Path of the config
   -d, --data-dir=<value>          The path or the location in your file system to store the exported content. For e.g.,
                                   ./content
@@ -2357,6 +2361,9 @@ FLAGS
                                           extensions, marketplace-apps, global-fields, labels, locales, webhooks,
                                           workflows, custom-roles, personalize projects, and taxonomies.
   -y, --yes                               [optional] Force override all Marketplace prompts.
+      --branch-alias=<value>              The alias of the branch where you want to import your content. If you don't
+                                          mention the branch alias, then by default the content will be imported to the
+                                          main branch.
       --exclude-global-modules            Excludes the branch-independent module from the import operation.
       --import-webhook-status=<option>    [default: disable] [default: disable] (optional) This webhook state keeps the
                                           same state of webhooks as the source stack. <options: disable|current>
@@ -2527,7 +2534,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
 
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
@@ -2590,9 +2597,11 @@ FLAGS
       --skip-audit                                  (optional) Skips the audit fix that occurs during an import
                                                     operation.
       --source-branch=<value>                       Branch of the source stack.
+      --source-branch-alias=<value>                 Alias of Branch of the source stack.
       --source-management-token-alias=<value>       Source management token alias.
       --source-stack-api-key=<value>                Source stack API key
       --target-branch=<value>                       Branch of the target stack.
+      --target-branch-alias=<value>                 Alias of Branch of the target stack.
       --type=<option>                               Type of data to clone. You can select option a or b.
                                                     a) Structure (all modules except entries & assets).
                                                     b) Structure with content (all modules including entries & assets).
@@ -2754,9 +2763,11 @@ FLAGS
       --skip-audit                                  (optional) Skips the audit fix that occurs during an import
                                                     operation.
       --source-branch=<value>                       Branch of the source stack.
+      --source-branch-alias=<value>                 Alias of Branch of the source stack.
       --source-management-token-alias=<value>       Source management token alias.
       --source-stack-api-key=<value>                Source stack API key
       --target-branch=<value>                       Branch of the target stack.
+      --target-branch-alias=<value>                 Alias of Branch of the target stack.
       --type=<option>                               Type of data to clone. You can select option a or b.
                                                     a) Structure (all modules except entries & assets).
                                                     b) Structure with content (all modules including entries & assets).
@@ -2801,6 +2812,7 @@ FLAGS
                                   mention the branch name, then by default the content will be exported from all the
                                   branches of your stack.
   -a, --alias=<value>             The management token alias of the source stack from which you will export content.
+  -b, --branch-alias=<value>      (Optional) The alias of the branch from which you want to export content.
   -c, --config=<value>            [optional] Path of the config
   -d, --data-dir=<value>          The path or the location in your file system to store the exported content. For e.g.,
                                   ./content
@@ -2868,6 +2880,9 @@ FLAGS
                                           extensions, marketplace-apps, global-fields, labels, locales, webhooks,
                                           workflows, custom-roles, personalize projects, and taxonomies.
   -y, --yes                               [optional] Force override all Marketplace prompts.
+      --branch-alias=<value>              The alias of the branch where you want to import your content. If you don't
+                                          mention the branch alias, then by default the content will be imported to the
+                                          main branch.
       --exclude-global-modules            Excludes the branch-independent module from the import operation.
       --import-webhook-status=<option>    [default: disable] [default: disable] (optional) This webhook state keeps the
                                           same state of webhooks as the source stack. <options: disable|current>
@@ -2981,7 +2996,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
 
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
@@ -3820,8 +3835,7 @@ USAGE
   $ csdx launch:functions [-p <value>] [-d <value>]
 
 FLAGS
-  -d, --data-dir=<value>  [default: cli/packages/contentstack]
-                          Current working directory
+  -d, --data-dir=<value>  [default: /cli/packages/contentstack] Current working directory
   -p, --port=<value>      [default: 3000] Port number
 
 DESCRIPTION

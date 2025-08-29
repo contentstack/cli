@@ -48,7 +48,7 @@ $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-export/1.19.0 darwin-x64 node-v22.17.0
+@contentstack/cli-cm-export/1.18.0 darwin-arm64 node-v22.13.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -76,6 +76,7 @@ FLAGS
                                   mention the branch name, then by default the content will be exported from all the
                                   branches of your stack.
   -a, --alias=<value>             The management token alias of the source stack from which you will export content.
+  -b, --branch-alias=<value>      (Optional) The alias of the branch from which you want to export content.
   -c, --config=<value>            [optional] Path of the config
   -d, --data-dir=<value>          The path or the location in your file system to store the exported content. For e.g.,
                                   ./content
@@ -125,6 +126,7 @@ FLAGS
                                   mention the branch name, then by default the content will be exported from all the
                                   branches of your stack.
   -a, --alias=<value>             The management token alias of the source stack from which you will export content.
+  -b, --branch-alias=<value>      (Optional) The alias of the branch from which you want to export content.
   -c, --config=<value>            [optional] Path of the config
   -d, --data-dir=<value>          The path or the location in your file system to store the exported content. For e.g.,
                                   ./content
