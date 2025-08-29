@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.44.2 darwin-arm64 node-v22.18.0
+@contentstack/cli/1.46.0 darwin-arm64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -2187,6 +2187,7 @@ FLAGS
                                   mention the branch name, then by default the content will be exported from all the
                                   branches of your stack.
   -a, --alias=<value>             The management token alias of the source stack from which you will export content.
+  -b, --branch-alias=<value>      (Optional) The alias of the branch from which you want to export content.
   -c, --config=<value>            [optional] Path of the config
   -d, --data-dir=<value>          The path or the location in your file system to store the exported content. For e.g.,
                                   ./content
@@ -2360,6 +2361,9 @@ FLAGS
                                           extensions, marketplace-apps, global-fields, labels, locales, webhooks,
                                           workflows, custom-roles, personalize projects, and taxonomies.
   -y, --yes                               [optional] Force override all Marketplace prompts.
+      --branch-alias=<value>              The alias of the branch where you want to import your content. If you don't
+                                          mention the branch alias, then by default the content will be imported to the
+                                          main branch.
       --exclude-global-modules            Excludes the branch-independent module from the import operation.
       --import-webhook-status=<option>    [default: disable] [default: disable] (optional) This webhook state keeps the
                                           same state of webhooks as the source stack. <options: disable|current>
@@ -2593,9 +2597,11 @@ FLAGS
       --skip-audit                                  (optional) Skips the audit fix that occurs during an import
                                                     operation.
       --source-branch=<value>                       Branch of the source stack.
+      --source-branch-alias=<value>                 Alias of Branch of the source stack.
       --source-management-token-alias=<value>       Source management token alias.
       --source-stack-api-key=<value>                Source stack API key
       --target-branch=<value>                       Branch of the target stack.
+      --target-branch-alias=<value>                 Alias of Branch of the target stack.
       --type=<option>                               Type of data to clone. You can select option a or b.
                                                     a) Structure (all modules except entries & assets).
                                                     b) Structure with content (all modules including entries & assets).
@@ -2757,9 +2763,11 @@ FLAGS
       --skip-audit                                  (optional) Skips the audit fix that occurs during an import
                                                     operation.
       --source-branch=<value>                       Branch of the source stack.
+      --source-branch-alias=<value>                 Alias of Branch of the source stack.
       --source-management-token-alias=<value>       Source management token alias.
       --source-stack-api-key=<value>                Source stack API key
       --target-branch=<value>                       Branch of the target stack.
+      --target-branch-alias=<value>                 Alias of Branch of the target stack.
       --type=<option>                               Type of data to clone. You can select option a or b.
                                                     a) Structure (all modules except entries & assets).
                                                     b) Structure with content (all modules including entries & assets).
@@ -2804,6 +2812,7 @@ FLAGS
                                   mention the branch name, then by default the content will be exported from all the
                                   branches of your stack.
   -a, --alias=<value>             The management token alias of the source stack from which you will export content.
+  -b, --branch-alias=<value>      (Optional) The alias of the branch from which you want to export content.
   -c, --config=<value>            [optional] Path of the config
   -d, --data-dir=<value>          The path or the location in your file system to store the exported content. For e.g.,
                                   ./content
@@ -2871,6 +2880,9 @@ FLAGS
                                           extensions, marketplace-apps, global-fields, labels, locales, webhooks,
                                           workflows, custom-roles, personalize projects, and taxonomies.
   -y, --yes                               [optional] Force override all Marketplace prompts.
+      --branch-alias=<value>              The alias of the branch where you want to import your content. If you don't
+                                          mention the branch alias, then by default the content will be imported to the
+                                          main branch.
       --exclude-global-modules            Excludes the branch-independent module from the import operation.
       --import-webhook-status=<option>    [default: disable] [default: disable] (optional) This webhook state keeps the
                                           same state of webhooks as the source stack. <options: disable|current>
@@ -3682,7 +3694,7 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.29/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.32/src/commands/help.ts)_
 
 ## `csdx launch`
 
@@ -3691,10 +3703,10 @@ Launch related operations
 ```
 USAGE
   $ csdx launch [-d <value>] [-c <value>] [--type GitHub|FileUpload] [--framework Gatsby|NextJs|CRA (Create
-    React App)|CSR (Client-Side Rendered)|Angular|VueJs|Other] [--org <value>] [-n <value>] [-e <value>] [--branch
-    <value>] [--build-command <value>] [--out-dir <value>] [--server-command <value>] [--variable-type Import variables
-    from a stack|Manually add custom variables to the list|Import variables from the .env.local file|Skip adding
-    environment variables] [-a <value>] [--env-variables <value>] [--redeploy-latest] [--redeploy-last-upload]
+    React App)|CSR (Client-Side Rendered)|Angular|Nuxt|VueJs|Remix|Other] [--org <value>] [-n <value>] [-e <value>]
+    [--branch <value>] [--build-command <value>] [--out-dir <value>] [--server-command <value>] [--variable-type Import
+    variables from a stack|Manually add custom variables to the list|Import variables from the .env.local file|Skip
+    adding environment variables] [-a <value>] [--env-variables <value>] [--redeploy-latest] [--redeploy-last-upload]
 
 FLAGS
   -a, --alias=<value>           [optional] Alias (name) for the delivery token.
@@ -3708,7 +3720,7 @@ FLAGS
                                 comma. For example: APP_ENV:prod, TEST_ENV:testVal.
       --framework=<option>      [optional] Type of framework. <options: Gatsby|NextJS|Other>
                                 <options: Gatsby|NextJs|CRA (Create React App)|CSR (Client-Side
-                                Rendered)|Angular|VueJs|Other>
+                                Rendered)|Angular|Nuxt|VueJs|Remix|Other>
       --org=<value>             [optional] Provide the organization UID to create a new project or deployment.
       --out-dir=<value>         [optional] Output Directory.
       --redeploy-last-upload    [optional] Redeploy with last file upload
@@ -3823,7 +3835,7 @@ USAGE
   $ csdx launch:functions [-p <value>] [-d <value>]
 
 FLAGS
-  -d, --data-dir=<value>  [default: /Users/tim.benniks/Websites/cli/packages/contentstack] Current working directory
+  -d, --data-dir=<value>  [default: /cli/packages/contentstack] Current working directory
   -p, --port=<value>      [default: 3000] Port number
 
 DESCRIPTION
@@ -3999,7 +4011,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.46/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:add PLUGIN`
 
@@ -4073,7 +4085,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.46/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN`
 
@@ -4122,7 +4134,7 @@ EXAMPLES
     $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.46/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PATH`
 
@@ -4153,7 +4165,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.46/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:remove [PLUGIN]`
 
@@ -4194,7 +4206,7 @@ FLAGS
   --reinstall  Reinstall all plugins after uninstalling.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/reset.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.46/src/commands/plugins/reset.ts)_
 
 ## `csdx plugins:uninstall [PLUGIN]`
 
@@ -4222,7 +4234,7 @@ EXAMPLES
   $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.46/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:unlink [PLUGIN]`
 
@@ -4266,7 +4278,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.46/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
