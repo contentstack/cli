@@ -62,9 +62,11 @@ FLAGS
       --skip-audit                                  (optional) Skips the audit fix that occurs during an import
                                                     operation.
       --source-branch=<value>                       Branch of the source stack.
+      --source-branch-alias=<value>                 Alias of Branch of the source stack.
       --source-management-token-alias=<value>       Source management token alias.
       --source-stack-api-key=<value>                Source stack API key
       --target-branch=<value>                       Branch of the target stack.
+      --target-branch-alias=<value>                 Alias of Branch of the target stack.
       --type=<option>                               Type of data to clone. You can select option a or b.
                                                     a) Structure (all modules except entries & assets).
                                                     b) Structure with content (all modules including entries & assets).
@@ -115,9 +117,11 @@ FLAGS
       --skip-audit                                  (optional) Skips the audit fix that occurs during an import
                                                     operation.
       --source-branch=<value>                       Branch of the source stack.
+      --source-branch-alias=<value>                 Alias of Branch of the source stack.
       --source-management-token-alias=<value>       Source management token alias.
       --source-stack-api-key=<value>                Source stack API key
       --target-branch=<value>                       Branch of the target stack.
+      --target-branch-alias=<value>                 Alias of Branch of the target stack.
       --type=<option>                               Type of data to clone. You can select option a or b.
                                                     a) Structure (all modules except entries & assets).
                                                     b) Structure with content (all modules including entries & assets).

@@ -95,6 +95,9 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
   config.auth_token = configHandler.get('authtoken'); // TBD handle auth token in httpClient & sdk
   config.isAuthenticated = isAuthenticated();
 
+  if (exportCmdFlags['branch-alias']) {
+    config.branchAlias = exportCmdFlags['branch-alias'];
+  } 
   if (exportCmdFlags['branch']) {
     config.branchName = exportCmdFlags['branch'];
   }

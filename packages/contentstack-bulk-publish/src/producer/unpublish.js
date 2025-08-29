@@ -3,7 +3,7 @@
 /* eslint-disable complexity */
 /* eslint-disable no-console */
 /* eslint-disable camelcase */
-const { configHandler } = require('@contentstack/cli-utilities');
+const { configHandler, cliux } = require('@contentstack/cli-utilities');
 const { getQueue } = require('../util/queue');
 const { performBulkUnPublish, UnpublishEntry, UnpublishAsset, initializeLogger } = require('../consumer/publish');
 const retryFailedLogs = require('../util/retryfailed');
@@ -15,6 +15,7 @@ const { Command } = require('@contentstack/cli-command');
 const command = new Command();
 const { isEmpty } = require('../util');
 const { fetchBulkPublishLimit } = require('../util/common-utility');
+const { generateBulkPublishStatusUrl } = require('../util/generate-bulk-publish-url');
 const VARIANTS_UNPUBLISH_API_VERSION = '3.2';
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -325,6 +326,18 @@ async function start(
     } else if (!isSuccessLogEmpty) {
       console.log(`The success log for this session is stored at ${filePath}.success`);
     }
+    
+    // Generate and display the bulk publish status link
+    if (bulkUnpublish && stack && config) {
+      const statusUrl = generateBulkPublishStatusUrl(stack, config);
+      if (statusUrl) {
+        process.stdout.write('\n');
+        process.stdout.write('\x1b[37mHere is the link to check the bulk unpublish status: \x1b[0m');
+        process.stdout.write('\x1b[34m' + statusUrl + '\x1b[0m');
+        process.stdout.write('\n');
+      }
+    }
+    
     process.exit(0);
   });
   if (includeVariants) {
