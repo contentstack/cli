@@ -15,7 +15,7 @@ const { Command } = require('@contentstack/cli-command');
 const command = new Command();
 const { isEmpty } = require('../util');
 const { fetchBulkPublishLimit } = require('../util/common-utility');
-const { generateBulkPublishStatusUrl } = require('../util/bulk-publish-utils');
+const { generateBulkPublishStatusUrl } = require('../util/generate-bulk-publish-url');
 const VARIANTS_PUBLISH_API_VERSION = '3.2';
 
 let bulkPublishSet = [];

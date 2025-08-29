@@ -54,7 +54,7 @@ export const schemaTemplate = {
 
 export const suppressSchemaReference = function (schema: any, flag: any) {
   log.debug('Starting schema reference suppression process');
-  
+
   for (var i in schema) {
     if (schema[i].data_type === 'group' || schema[i].data_type === 'global_field') {
       log.debug(`Processing ${schema[i].data_type} field: ${schema[i].uid}`);
@@ -95,7 +95,7 @@ export const suppressSchemaReference = function (schema: any, flag: any) {
       }
     }
   }
-  
+
   log.debug('Schema reference suppression completed');
 };
 
@@ -105,7 +105,7 @@ export const removeReferenceFields = async function (
   stackAPIClient: any,
 ): Promise<boolean | void> {
   log.debug('Starting reference field removal process');
-  
+
   if (schema?.length) {
     for (let i = 0; i < schema.length; i++) {
       if (schema[i].data_type === 'group') {
@@ -119,11 +119,11 @@ export const removeReferenceFields = async function (
       } else if (schema[i].data_type === 'reference') {
         log.debug(`Processing reference field: ${schema[i].uid}`);
         flag.supressed = true;
-        
+
         // Check if content-type exists
         // If exists, then no change should be required.
         let isContentTypeError = false;
-        
+
         for (let j = 0; j < schema[i].reference_to.length; j++) {
           try {
             log.debug(`Checking if content type exists: ${schema[i].reference_to[j]}`);
@@ -132,16 +132,15 @@ export const removeReferenceFields = async function (
           } catch (error) {
             // Else warn and modify the schema object.
             isContentTypeError = true;
-            log.warn(`Content type does not exist: ${schema[i].reference_to[j]}`);
-            console.warn(`Content-type ${schema[i].reference_to[j]} does not exist. Removing the field from schema`);
+            log.warn(`Content-type ${schema[i].reference_to[j]} does not exist. Removing the field from schema`);
           }
         }
-        
+
         if (isContentTypeError) {
           log.debug(`Removing reference field due to missing content types: ${schema[i].uid}`);
           schema.splice(i, 1);
           --i;
-          
+
           if (schema.length < 1) {
             log.debug('Adding dummy field to prevent empty schema');
             schema.push({
@@ -197,30 +196,30 @@ export const removeReferenceFields = async function (
       }
     }
   }
-  
+
   log.debug('Reference field removal process completed');
 };
 
 export const updateFieldRules = function (contentType: any) {
   log.debug(`Starting field rules update for content type: ${contentType.uid}`);
-  
+
   const fieldDataTypeMap: { [key: string]: string } = {};
   for (let i = 0; i < contentType.schema.length; i++) {
     const field = contentType.schema[i];
     fieldDataTypeMap[field.uid] = field.data_type;
   }
-  
+
   log.debug(`Created field data type mapping for ${Object.keys(fieldDataTypeMap).length} fields`);
-  
+
   const fieldRules = [...contentType.field_rules];
   let len = fieldRules.length;
   let removedRules = 0;
-  
+
   // Looping backwards as we need to delete elements as we move.
   for (let i = len - 1; i >= 0; i--) {
     const conditions = fieldRules[i].conditions;
     let isReference = false;
-    
+
     for (let j = 0; j < conditions.length; j++) {
       const field = conditions[j].operand_field;
       if (fieldDataTypeMap[field] === 'reference') {
@@ -228,14 +227,14 @@ export const updateFieldRules = function (contentType: any) {
         isReference = true;
       }
     }
-    
+
     if (isReference) {
       log.debug(`Removing field rule with reference condition`);
       fieldRules.splice(i, 1);
       removedRules++;
     }
   }
-  
+
   log.debug(`Field rules update completed. Removed ${removedRules} rules with reference conditions`);
   return fieldRules;
 };

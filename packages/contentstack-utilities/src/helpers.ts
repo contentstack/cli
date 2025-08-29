@@ -1,7 +1,7 @@
 import { checkSync } from 'recheck';
 import traverse from 'traverse';
 import authHandler from './auth-handler';
-import { HttpClient, cliux, configHandler } from '.';
+import { ContentstackClient, HttpClient, cliux, configHandler } from '.';
 
 export const isAuthenticated = () => authHandler.isAuthenticated();
 export const doesBranchExist = async (stack, branchName) => {
@@ -11,6 +11,21 @@ export const doesBranchExist = async (stack, branchName) => {
     .catch((error) => {
       return error;
     });
+};
+
+export const getBranchFromAlias = async (stack: ReturnType<ContentstackClient['stack']>, branchAlias: string) => {
+  if (!stack || !branchAlias || typeof branchAlias !== 'string') {
+    throw new Error('Invalid input. Both stack and branch alias are required.');
+  }
+  try {
+    const response = await stack.branchAlias(branchAlias).fetch();
+    if (!response?.uid) {
+      throw new Error(`Invalid Branch Alias. No Branch found for the branch alias: ${branchAlias}`);
+    }
+    return response.uid;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const isManagementTokenValid = async (stackAPIKey, managementToken) => {
@@ -160,7 +175,7 @@ export const formatError = function (error: any) {
   }
 
   // Append detailed error information if available
-  if (parsedError.errors && Object.keys(parsedError.errors).length > 0) {
+  if (parsedError.errors && typeof parsedError.errors === 'object' && Object.keys(parsedError.errors).length > 0) {
     const entityNames: { [key: string]: string } = {
       authorization: 'Authentication',
       api_key: 'Stack API key',
@@ -169,11 +184,15 @@ export const formatError = function (error: any) {
       access_token: 'Delivery Token',
     };
 
-    message +=
-      ' ' +
-      Object.entries(parsedError.errors)
-        .map(([key, value]) => `${entityNames[key] || key} ${value}`)
-        .join(' ');
+    const errorList = Object.entries(parsedError.errors)
+      .map(([field, errors]) => {
+        const errorArray = Array.isArray(errors) ? errors : [errors];
+        const fieldName = entityNames[field] || field;
+        return `  • ${fieldName}: ${errorArray.join(', ')}`;
+      })
+      .join('\n');
+
+    message += `\n\nAPI Errors:\n${errorList}`;
   }
 
   return message;
