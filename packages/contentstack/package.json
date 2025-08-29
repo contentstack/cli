@@ -29,7 +29,7 @@
     "@contentstack/cli-cm-bulk-publish": "~1.10.0",
     "@contentstack/cli-cm-clone": "~1.16.0",
     "@contentstack/cli-cm-export": "~1.20.0",
-    "@contentstack/cli-cm-export-to-csv": "~1.9.2",
+    "@contentstack/cli-cm-export-to-csv": "~1.9.1",
     "@contentstack/cli-cm-import": "~1.27.0",
     "@contentstack/cli-cm-import-setup": "1.4.2",
     "@contentstack/cli-cm-migrate-rte": "~1.6.1",
