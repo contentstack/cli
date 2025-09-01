@@ -130,6 +130,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
       if (this.parentProgressManager) {
         progress = this.parentProgressManager;
         log.debug('Using parent progress manager for experiences import', this.config.context);
+        this.parentProgressManager.updateProcessTotal(PROCESS_NAMES.EXPERIENCES, experiencesCount);
       } else {
         progress = this.createSimpleProgress(PROCESS_NAMES.EXPERIENCES, experiencesCount);
         log.debug('Created standalone progress manager for experiences import', this.config.context);

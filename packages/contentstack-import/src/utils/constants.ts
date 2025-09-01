@@ -48,7 +48,7 @@ export const PROCESS_NAMES = {
   WORKFLOWS_CREATE: 'Workflows Create',
 
   // Additional processes for import modules
-  VARIANT_ENTRIES_IMPORT: 'Variant Entries Import',
+  VARIANT_ENTRIES_IMPORT: 'Variant Entries',
   ENVIRONMENTS_IMPORT: 'Environments Import',
   CUSTOM_ROLES_BUILD_MAPPINGS: 'Custom Roles Build Mappings',
   CUSTOM_ROLES_IMPORT: 'Custom Roles Import',

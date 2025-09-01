@@ -10,10 +10,10 @@ import {
   restoreJsonRteEntryRefs,
   fsUtil,
   fileHelper,
-  IMPORT_PROCESS_NAMES,
-  IMPORT_MODULE_CONTEXTS,
-  IMPORT_PROCESS_STATUS,
-  IMPORT_MODULE_NAMES,
+  PROCESS_NAMES,
+  MODULE_CONTEXTS,
+  PROCESS_STATUS,
+  MODULE_NAMES,
 } from '../../utils';
 import BaseClass from './base-class';
 
@@ -25,8 +25,8 @@ export default class ImportVariantEntries extends BaseClass {
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
     this.config = importConfig;
-    this.config.context.module = IMPORT_MODULE_CONTEXTS.VARIANT_ENTRIES;
-    this.currentModuleName = IMPORT_MODULE_NAMES[IMPORT_MODULE_CONTEXTS.VARIANT_ENTRIES];
+    this.config.context.module = MODULE_CONTEXTS.VARIANT_ENTRIES;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.VARIANT_ENTRIES];
     this.personalize = importConfig.modules.personalize;
     this.projectMapperFilePath = path.resolve(
       sanitizePath(this.config.data),
@@ -54,7 +54,7 @@ export default class ImportVariantEntries extends BaseClass {
 
       const progress = this.createSimpleProgress(this.currentModuleName);
 
-      progress.updateStatus(IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.VARIANT_ENTRIES_IMPORT].IMPORTING);
+      progress.updateStatus(PROCESS_STATUS[PROCESS_NAMES.VARIANT_ENTRIES_IMPORT].IMPORTING);
       log.info('Starting variant entries import process', this.config.context);
       await this.importVariantEntries();
 
@@ -90,15 +90,12 @@ export default class ImportVariantEntries extends BaseClass {
       log.debug('Creating VariantEntries instance', this.config.context);
       const variantEntriesImporter = new Import.VariantEntries(Object.assign(this.config, { helpers }));
 
+      variantEntriesImporter.setParentProgressManager(this.progressManager);
+
       log.debug('Starting variant entries import', this.config.context);
       await variantEntriesImporter.import();
 
-      this.progressManager?.tick(
-        true,
-        'variant entries import completed',
-        null,
-        IMPORT_PROCESS_NAMES.VARIANT_ENTRIES_IMPORT,
-      );
+      // this.progressManager?.tick(true, 'variant entries import completed', null, PROCESS_NAMES.VARIANT_ENTRIES_IMPORT);
       log.debug('Variant entries import completed successfully', this.config.context);
     } else {
       log.debug('No valid project found in mapper file', this.config.context);
@@ -106,32 +103,47 @@ export default class ImportVariantEntries extends BaseClass {
         false,
         'variant entries import',
         'No personalize project linked',
-        IMPORT_PROCESS_NAMES.VARIANT_ENTRIES_IMPORT,
+        PROCESS_NAMES.VARIANT_ENTRIES_IMPORT,
       );
       log.info('Skipping entry variants import because no personalize project is linked.', this.config.context);
     }
   }
 
-  private async analyzeVariantEntries(): Promise<[boolean]> {
+  private async analyzeVariantEntries(): Promise<[boolean, number]> {
     return this.withLoadingSpinner('VARIANT ENTRIES: Analyzing import data...', async () => {
       log.debug(`Reading project mapper from: ${this.projectMapperFilePath}`, this.config.context);
 
       if (!fileHelper.fileExistsSync(this.projectMapperFilePath)) {
         log.debug('Project mapper file does not exist', this.config.context);
         log.info('Skipping entry variants import because no personalize project mapper found.', this.config.context);
-        return [false] as [boolean];
+        return [false, 0] as [boolean, number];
       }
 
       const project = fsUtil.readFile(this.projectMapperFilePath) as ProjectStruct;
-      const hasValidProject = !!(project && project.uid); // Convert to boolean
+      const hasValidProject = !!(project && project.uid);
 
-      if (hasValidProject) {
-        log.debug(`Found valid personalize project: ${project.uid}`, this.config.context);
-      } else {
+      if (!hasValidProject) {
         log.debug('No valid project found in mapper file', this.config.context);
+        return [false, 0] as [boolean, number];
       }
 
-      return [hasValidProject] as [boolean];
+      // Basic validation - check if data file exists
+      const dataFilePath = path.resolve(
+        sanitizePath(this.config.data),
+        'mapper',
+        'entries',
+        'data-for-variant-entry.json',
+      );
+
+      const hasVariantData = fileHelper.fileExistsSync(dataFilePath);
+
+      log.debug(
+        `Found valid personalize project: ${project.uid} with variant data: ${hasVariantData}`,
+        this.config.context,
+      );
+
+      // Return 0 count - let the variant module update it dynamically
+      return [hasValidProject && hasVariantData, 0] as [boolean, number];
     });
   }
 }

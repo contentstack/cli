@@ -58,6 +58,7 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
       if (this.parentProgressManager) {
         progress = this.parentProgressManager;
         log.debug('Using parent progress manager for events import', this.config.context);
+        this.parentProgressManager.updateProcessTotal(PROCESS_NAMES.EVENTS, eventsCount);
       } else {
         progress = this.createSimpleProgress(PROCESS_NAMES.EVENTS, eventsCount);
         log.debug('Created standalone progress manager for events import', this.config.context);

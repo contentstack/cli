@@ -75,6 +75,8 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
     let totalVariantCount = 0; // Track total variants found across all entries
     let processedEntries = 0;
 
+    let processInitialized = false;
+
     for (let index = 0; index < entries.length; index++) {
       const entry = entries[index];
       log.debug(
@@ -116,11 +118,12 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
           variantCount = variantEntries.length;
           totalVariantCount += variantCount;
 
-          // Update progress total only for the first batch (when we have a better estimate)
-          if (this.parentProgressManager) {
-            // Start with current count, will be updated as we find more
-            this.parentProgressManager.updateProcessTotal(PROCESS_NAMES.VARIANT_ENTRIES, totalVariantCount);
+          if (!processInitialized && this.parentProgressManager) {
+            this.parentProgressManager.addProcess(PROCESS_NAMES.VARIANT_ENTRIES, variantEntries.length);
+            this.parentProgressManager.startProcess(PROCESS_NAMES.VARIANT_ENTRIES);
+            processInitialized = true;
           }
+          this.parentProgressManager?.updateProcessTotal(PROCESS_NAMES.VARIANT_ENTRIES, totalVariantCount);
 
           if (!existsSync(variantEntryBasePath)) {
             log.debug(`Creating directory: ${variantEntryBasePath}`, this.config.context);
@@ -198,6 +201,10 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
           `Error exporting variant entries of type '${entry.title} (${entry.uid})' locale '${locale}'`,
         );
       }
+    }
+
+    if (processInitialized && this.parentProgressManager) {
+      this.parentProgressManager.completeProcess(PROCESS_NAMES.VARIANT_ENTRIES, true);
     }
 
     log.debug(
