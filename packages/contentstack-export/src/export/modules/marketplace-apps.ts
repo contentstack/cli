@@ -23,10 +23,11 @@ import {
   getOrgUid,
   createNodeCryptoInstance,
   getDeveloperHubUrl,
-  EXPORT_MODULE_CONTEXTS,
-  EXPORT_MODULE_NAMES,
-  EXPORT_PROCESS_NAMES,
-  EXPORT_PROCESS_STATUS,
+  MODULE_CONTEXTS,
+  MODULE_NAMES,
+  PROCESS_NAMES,
+  PROCESS_STATUS,
+  askEncryptionKey,
 } from '../../utils';
 import { ModuleClassParams, MarketplaceAppsConfig, ExportConfig, Installation, Manifest } from '../../types';
 
@@ -45,8 +46,8 @@ export default class ExportMarketplaceApps extends BaseClass {
     super({ exportConfig, stackAPIClient });
     this.exportConfig = exportConfig;
     this.marketplaceAppConfig = exportConfig.modules.marketplace_apps;
-    this.exportConfig.context.module = EXPORT_MODULE_CONTEXTS.MARKETPLACE_APPS;
-    this.currentModuleName = EXPORT_MODULE_NAMES[EXPORT_MODULE_CONTEXTS.MARKETPLACE_APPS];
+    this.exportConfig.context.module = MODULE_CONTEXTS.MARKETPLACE_APPS;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.MARKETPLACE_APPS];
   }
 
   async start(): Promise<void> {
@@ -73,30 +74,40 @@ export default class ExportMarketplaceApps extends BaseClass {
         return;
       }
 
+      // Handle encryption key prompt BEFORE starting progress
+      if (!this.exportConfig.forceStopMarketplaceAppsPrompt) {
+        log.debug('Validating security configuration before progress start', this.exportConfig.context);
+        cliux.print('\n');
+        await askEncryptionKey(this.exportConfig);
+        this.nodeCrypto = await createNodeCryptoInstance(this.exportConfig);
+        
+        cliux.print('\n');
+      }
+
       // Create nested progress manager
       const progress = this.createNestedProgress(this.currentModuleName);
 
       // Add processes based on what we found
-      progress.addProcess(EXPORT_PROCESS_NAMES.FETCH_APPS, appsCount);
-      progress.addProcess(EXPORT_PROCESS_NAMES.FETCH_CONFIG_MANIFEST, appsCount); // Manifests and configurations
+      progress.addProcess(PROCESS_NAMES.FETCH_APPS, appsCount);
+      progress.addProcess(PROCESS_NAMES.FETCH_CONFIG_MANIFEST, appsCount); // Manifests and configurations
 
       // Fetch stack specific apps
       progress
-        .startProcess(EXPORT_PROCESS_NAMES.FETCH_APPS)
-        .updateStatus(EXPORT_PROCESS_STATUS[EXPORT_PROCESS_NAMES.FETCH_APPS].FETCHING, EXPORT_PROCESS_NAMES.FETCH_APPS);
+        .startProcess(PROCESS_NAMES.FETCH_APPS)
+        .updateStatus(PROCESS_STATUS[PROCESS_NAMES.FETCH_APPS].FETCHING, PROCESS_NAMES.FETCH_APPS);
       await this.exportApps();
-      progress.completeProcess(EXPORT_PROCESS_NAMES.FETCH_APPS, true);
+      progress.completeProcess(PROCESS_NAMES.FETCH_APPS, true);
 
       // Process apps (manifests and configurations)
       if (this.installedApps.length > 0) {
         progress
-          .startProcess(EXPORT_PROCESS_NAMES.FETCH_CONFIG_MANIFEST)
+          .startProcess(PROCESS_NAMES.FETCH_CONFIG_MANIFEST)
           .updateStatus(
-            EXPORT_PROCESS_STATUS[EXPORT_PROCESS_NAMES.FETCH_CONFIG_MANIFEST].PROCESSING,
-            EXPORT_PROCESS_NAMES.FETCH_CONFIG_MANIFEST,
+            PROCESS_STATUS[PROCESS_NAMES.FETCH_CONFIG_MANIFEST].PROCESSING,
+            PROCESS_NAMES.FETCH_CONFIG_MANIFEST,
           );
         await this.getAppManifestAndAppConfig();
-        progress.completeProcess(EXPORT_PROCESS_NAMES.FETCH_CONFIG_MANIFEST, true);
+        progress.completeProcess(PROCESS_NAMES.FETCH_CONFIG_MANIFEST, true);
       }
 
       this.completeProgress(true);
@@ -212,7 +223,7 @@ export default class ExportMarketplaceApps extends BaseClass {
           true,
           `app: ${app.manifest?.name || app.uid}`,
           null,
-          EXPORT_PROCESS_NAMES.FETCH_CONFIG_MANIFEST,
+          PROCESS_NAMES.FETCH_CONFIG_MANIFEST,
         );
       }
 
@@ -297,8 +308,12 @@ export default class ExportMarketplaceApps extends BaseClass {
           log.debug(`Found configuration data for app: ${app}`, this.exportConfig.context);
 
           if (!this.nodeCrypto && (has(data, 'server_configuration') || has(data, 'configuration'))) {
-            log.debug(`Initializing NodeCrypto for app: ${app}`, this.exportConfig.context);
             this.nodeCrypto = await createNodeCryptoInstance(this.exportConfig);
+
+            this.progressManager?.updateStatus(
+              PROCESS_STATUS[PROCESS_NAMES.FETCH_CONFIG_MANIFEST].PROCESSING,
+              PROCESS_NAMES.FETCH_CONFIG_MANIFEST,
+            );
           }
 
           if (!isEmpty(data?.configuration)) {
@@ -372,12 +387,7 @@ export default class ExportMarketplaceApps extends BaseClass {
 
       // Track progress for each app fetched
       installation.forEach((app) => {
-        this.progressManager?.tick(
-          true,
-          `app: ${app.manifest?.name || app.uid}`,
-          null,
-          EXPORT_PROCESS_NAMES.FETCH_APPS,
-        );
+        this.progressManager?.tick(true, `app: ${app.manifest?.name || app.uid}`, null, PROCESS_NAMES.FETCH_APPS);
       });
 
       this.installedApps = this.installedApps.concat(installation);

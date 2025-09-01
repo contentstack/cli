@@ -15,10 +15,10 @@ import {
   fileHelper,
   lookupExtension,
   removeReferenceFields,
-  IMPORT_PROCESS_NAMES,
-  IMPORT_MODULE_CONTEXTS,
-  IMPORT_PROCESS_STATUS,
-  IMPORT_MODULE_NAMES,
+  PROCESS_NAMES,
+  MODULE_CONTEXTS,
+  PROCESS_STATUS,
+  MODULE_NAMES,
 } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
@@ -52,8 +52,8 @@ export default class ImportGlobalFields extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = IMPORT_MODULE_CONTEXTS.GLOBAL_FIELDS;
-    this.currentModuleName = IMPORT_MODULE_NAMES[IMPORT_MODULE_CONTEXTS.GLOBAL_FIELDS];
+    this.importConfig.context.module = MODULE_CONTEXTS.GLOBAL_FIELDS;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.GLOBAL_FIELDS];
     this.config = importConfig;
     this.gFsConfig = importConfig.modules['global-fields'];
     this.gFs = [];
@@ -96,45 +96,39 @@ export default class ImportGlobalFields extends BaseClass {
       }
 
       const progress = this.createNestedProgress(this.currentModuleName);
-      progress.addProcess(IMPORT_PROCESS_NAMES.GLOBAL_FIELDS_CREATE, globalFieldsCount);
-      progress.addProcess(IMPORT_PROCESS_NAMES.GLOBAL_FIELDS_UPDATE, globalFieldsCount);
+      progress.addProcess(PROCESS_NAMES.GLOBAL_FIELDS_CREATE, globalFieldsCount);
+      progress.addProcess(PROCESS_NAMES.GLOBAL_FIELDS_UPDATE, globalFieldsCount);
 
       await this.prepareGlobalFieldMapper();
 
       // Step 1: Create global fields
       progress
-        .startProcess(IMPORT_PROCESS_NAMES.GLOBAL_FIELDS_CREATE)
-        .updateStatus(
-          IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.GLOBAL_FIELDS_CREATE].CREATING,
-          IMPORT_PROCESS_NAMES.GLOBAL_FIELDS_CREATE,
-        );
+        .startProcess(PROCESS_NAMES.GLOBAL_FIELDS_CREATE)
+        .updateStatus(PROCESS_STATUS[PROCESS_NAMES.GLOBAL_FIELDS_CREATE].CREATING, PROCESS_NAMES.GLOBAL_FIELDS_CREATE);
       log.info('Starting Create process', this.importConfig.context);
       await this.seedGFs();
-      progress.completeProcess(IMPORT_PROCESS_NAMES.GLOBAL_FIELDS_CREATE, true);
+      progress.completeProcess(PROCESS_NAMES.GLOBAL_FIELDS_CREATE, true);
 
       // Step 2: Update global fields with references
       progress
-        .startProcess(IMPORT_PROCESS_NAMES.GLOBAL_FIELDS_UPDATE)
-        .updateStatus(
-          IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.GLOBAL_FIELDS_UPDATE].UPDATING,
-          IMPORT_PROCESS_NAMES.GLOBAL_FIELDS_UPDATE,
-        );
+        .startProcess(PROCESS_NAMES.GLOBAL_FIELDS_UPDATE)
+        .updateStatus(PROCESS_STATUS[PROCESS_NAMES.GLOBAL_FIELDS_UPDATE].UPDATING, PROCESS_NAMES.GLOBAL_FIELDS_UPDATE);
       log.info('Starting Update process', this.importConfig.context);
       await this.updateGFs();
-      progress.completeProcess(IMPORT_PROCESS_NAMES.GLOBAL_FIELDS_UPDATE, true);
+      progress.completeProcess(PROCESS_NAMES.GLOBAL_FIELDS_UPDATE, true);
 
       // Step 3: Replace existing global fields if needed
       if (this.importConfig.replaceExisting && this.existingGFs.length > 0) {
-        progress.addProcess(IMPORT_PROCESS_NAMES.GLOBAL_FIELDS_REPLACE_EXISTING, this.existingGFs.length);
+        progress.addProcess(PROCESS_NAMES.GLOBAL_FIELDS_REPLACE_EXISTING, this.existingGFs.length);
         progress
-          .startProcess(IMPORT_PROCESS_NAMES.GLOBAL_FIELDS_REPLACE_EXISTING)
+          .startProcess(PROCESS_NAMES.GLOBAL_FIELDS_REPLACE_EXISTING)
           .updateStatus(
-            IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.GLOBAL_FIELDS_REPLACE_EXISTING].REPLACING,
-            IMPORT_PROCESS_NAMES.GLOBAL_FIELDS_REPLACE_EXISTING,
+            PROCESS_STATUS[PROCESS_NAMES.GLOBAL_FIELDS_REPLACE_EXISTING].REPLACING,
+            PROCESS_NAMES.GLOBAL_FIELDS_REPLACE_EXISTING,
           );
         log.info('Starting Replace Existing process', this.importConfig.context);
         await this.replaceGFs();
-        progress.completeProcess(IMPORT_PROCESS_NAMES.GLOBAL_FIELDS_REPLACE_EXISTING, true);
+        progress.completeProcess(PROCESS_NAMES.GLOBAL_FIELDS_REPLACE_EXISTING, true);
       }
 
       await this.processGlobalFieldResults();
@@ -156,12 +150,7 @@ export default class ImportGlobalFields extends BaseClass {
     const onSuccess = ({ response: globalField, apiData: { uid } = undefined }: any) => {
       this.createdGFs.push(globalField);
       this.gFsUidMapper[uid] = globalField;
-      this.progressManager?.tick(
-        true,
-        `global field: ${globalField.uid}`,
-        null,
-        IMPORT_PROCESS_NAMES.GLOBAL_FIELDS_CREATE,
-      );
+      this.progressManager?.tick(true, `global field: ${globalField.uid}`, null, PROCESS_NAMES.GLOBAL_FIELDS_CREATE);
       log.success(`Global field ${globalField.uid} created successfully`, this.importConfig.context);
       log.debug(`Global field Create completed: ${globalField.uid}`, this.importConfig.context);
     };
@@ -177,7 +166,7 @@ export default class ImportGlobalFields extends BaseClass {
             true,
             `global field: ${uid} (marked for replacement)`,
             null,
-            IMPORT_PROCESS_NAMES.GLOBAL_FIELDS_CREATE,
+            PROCESS_NAMES.GLOBAL_FIELDS_CREATE,
           );
           log.debug(`Global field '${uid}' marked for replacement`, this.importConfig.context);
         } else {
@@ -185,7 +174,7 @@ export default class ImportGlobalFields extends BaseClass {
             true,
             `global field: ${uid} (already exists)`,
             null,
-            IMPORT_PROCESS_NAMES.GLOBAL_FIELDS_CREATE,
+            PROCESS_NAMES.GLOBAL_FIELDS_CREATE,
           );
         }
         if (!this.importConfig.skipExisting) {
@@ -196,7 +185,7 @@ export default class ImportGlobalFields extends BaseClass {
           false,
           `global field: ${uid}`,
           error?.message || 'Failed to create global field',
-          'Create',
+          PROCESS_NAMES.GLOBAL_FIELDS_CREATE,
         );
         handleAndLogError(error, { ...this.importConfig.context, uid }, `Global fields '${uid}' failed to import`);
         this.failedGFs.push({ uid });
@@ -246,7 +235,7 @@ export default class ImportGlobalFields extends BaseClass {
     log.debug(`Updating ${gfsToUpdate} global fields`, this.importConfig.context);
 
     const onSuccess = ({ response: globalField, apiData: { uid } = undefined }: any) => {
-      this.progressManager?.tick(true, `global field: ${uid}`, null, IMPORT_PROCESS_NAMES.GLOBAL_FIELDS_UPDATE);
+      this.progressManager?.tick(true, `global field: ${uid}`, null, PROCESS_NAMES.GLOBAL_FIELDS_UPDATE);
       log.success(`Updated the global field ${uid}`, this.importConfig.context);
       log.debug(`Global field update completed: ${uid}`, this.importConfig.context);
     };
@@ -256,7 +245,7 @@ export default class ImportGlobalFields extends BaseClass {
         false,
         `global field: ${uid}`,
         error?.message || 'Failed to update global field',
-        'Update',
+        PROCESS_NAMES.GLOBAL_FIELDS_UPDATE,
       );
       log.debug(`Global field '${uid}' update failed`, this.importConfig.context);
       handleAndLogError(error, { ...this.importConfig.context, uid }, `Failed to update the global field '${uid}'`);
@@ -350,7 +339,7 @@ export default class ImportGlobalFields extends BaseClass {
         true,
         `global field: ${uid} (replaced)`,
         null,
-        IMPORT_PROCESS_NAMES.GLOBAL_FIELDS_REPLACE_EXISTING,
+        PROCESS_NAMES.GLOBAL_FIELDS_REPLACE_EXISTING,
       );
       fsUtil.writeFile(this.gFsUidMapperPath, this.gFsUidMapper);
       log.success(`Global field '${uid}' replaced successfully`, this.importConfig.context);
@@ -363,7 +352,7 @@ export default class ImportGlobalFields extends BaseClass {
         false,
         `global field: ${uid}`,
         error?.message || 'Failed to replace global field',
-        'Replace Existing',
+        PROCESS_NAMES.GLOBAL_FIELDS_REPLACE_EXISTING,
       );
       log.debug(`Global field '${uid}' replacement failed`, this.importConfig.context);
       handleAndLogError(error, { ...this.importConfig.context, uid }, `Global fields '${uid}' failed to replace`);

@@ -29,23 +29,27 @@ export async function createNodeCryptoInstance(config: ExportConfig): Promise<No
 
   if (config.forceStopMarketplaceAppsPrompt) {
     cryptoArgs['encryptionKey'] = config.marketplaceAppEncryptionKey;
+  } else if (config.marketplaceAppEncryptionKey) {
+    cryptoArgs['encryptionKey'] = config.marketplaceAppEncryptionKey;
   } else {
-    // Add spacing
     cliux.print('');
-
-    cryptoArgs['encryptionKey'] = await cliux.inquire({
-      type: 'input',
-      name: 'name',
-      default: config.marketplaceAppEncryptionKey,
-      validate: (url: any) => {
-        if (!url) return "Encryption key can't be empty.";
-
-        return true;
-      },
-      message: 'Enter Marketplace app configurations encryption key',
-    });
+    cryptoArgs['encryptionKey'] = await askEncryptionKey(config);
     cliux.print('');
   }
 
   return new NodeCrypto(cryptoArgs);
+}
+
+export async function askEncryptionKey(config: ExportConfig): Promise<string> {
+  return await cliux.inquire({
+    type: 'input',
+    name: 'name',
+    default: config.marketplaceAppEncryptionKey,
+    validate: (url: any) => {
+      if (!url) return "Encryption key can't be empty.";
+
+      return true;
+    },
+    message: 'Enter Marketplace app configurations encryption key',
+  });
 }

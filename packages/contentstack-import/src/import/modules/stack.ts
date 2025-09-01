@@ -2,14 +2,7 @@ import { join } from 'node:path';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
-import {
-  fileHelper,
-  fsUtil,
-  IMPORT_PROCESS_NAMES,
-  IMPORT_MODULE_CONTEXTS,
-  IMPORT_PROCESS_STATUS,
-  IMPORT_MODULE_NAMES,
-} from '../../utils';
+import { fileHelper, fsUtil, PROCESS_NAMES, MODULE_CONTEXTS, PROCESS_STATUS, MODULE_NAMES } from '../../utils';
 import { ModuleClassParams } from '../../types';
 
 export default class ImportStack extends BaseClass {
@@ -20,8 +13,8 @@ export default class ImportStack extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = IMPORT_MODULE_CONTEXTS.STACK;
-    this.currentModuleName = IMPORT_MODULE_NAMES[IMPORT_MODULE_CONTEXTS.STACK];
+    this.importConfig.context.module = MODULE_CONTEXTS.STACK;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.STACK];
     this.stackSettingsPath = join(this.importConfig.backupDir, 'stack', 'settings.json');
     this.envUidMapperPath = join(this.importConfig.backupDir, 'mapper', 'environments', 'uid-mapping.json');
   }
@@ -51,7 +44,7 @@ export default class ImportStack extends BaseClass {
 
       const progress = this.createSimpleProgress(this.currentModuleName, 1);
 
-      progress.updateStatus(IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.STACK_IMPORT].IMPORTING);
+      progress.updateStatus(PROCESS_STATUS[PROCESS_NAMES.STACK_IMPORT].IMPORTING);
       log.info('Starting stack settings import process', this.importConfig.context);
       await this.importStackSettings();
 
@@ -82,7 +75,7 @@ export default class ImportStack extends BaseClass {
     log.debug('Applying stack settings to target stack', this.importConfig.context);
     await this.stack.addSettings(this.stackSettings);
 
-    this.progressManager?.tick(true, 'stack settings applied', null, IMPORT_PROCESS_NAMES.STACK_IMPORT);
+    this.progressManager?.tick(true, 'stack settings applied', null, PROCESS_NAMES.STACK_IMPORT);
     log.debug('Stack settings applied successfully', this.importConfig.context);
   }
 

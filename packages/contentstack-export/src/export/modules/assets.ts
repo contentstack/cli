@@ -24,7 +24,7 @@ import {
 import config from '../../config';
 import { ModuleClassParams } from '../../types';
 import BaseClass, { CustomPromiseHandler, CustomPromiseHandlerInput } from './base-class';
-import { EXPORT_PROCESS_NAMES, EXPORT_MODULE_CONTEXTS, EXPORT_PROCESS_STATUS, EXPORT_MODULE_NAMES } from '../../utils';
+import { PROCESS_NAMES, MODULE_CONTEXTS, PROCESS_STATUS, MODULE_NAMES } from '../../utils';
 
 export default class ExportAssets extends BaseClass {
   private assetsRootPath: string;
@@ -34,8 +34,8 @@ export default class ExportAssets extends BaseClass {
 
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
-    this.exportConfig.context.module = EXPORT_MODULE_CONTEXTS.ASSETS;
-    this.currentModuleName = EXPORT_MODULE_NAMES[EXPORT_MODULE_CONTEXTS.ASSETS];
+    this.exportConfig.context.module = MODULE_CONTEXTS.ASSETS;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.ASSETS];
   }
 
   get commonQueryParam(): Record<string, unknown> {
@@ -65,44 +65,44 @@ export default class ExportAssets extends BaseClass {
 
     // Add sub-processes
     if (typeof assetsFolderCount === 'number' && assetsFolderCount > 0) {
-      progress.addProcess(EXPORT_PROCESS_NAMES.ASSET_FOLDERS, assetsFolderCount);
+      progress.addProcess(PROCESS_NAMES.ASSET_FOLDERS, assetsFolderCount);
     }
     if (typeof assetsCount === 'number' && assetsCount > 0) {
-      progress.addProcess(EXPORT_PROCESS_NAMES.ASSET_METADATA, assetsCount);
-      progress.addProcess(EXPORT_PROCESS_NAMES.ASSET_DOWNLOADS, assetsCount);
+      progress.addProcess(PROCESS_NAMES.ASSET_METADATA, assetsCount);
+      progress.addProcess(PROCESS_NAMES.ASSET_DOWNLOADS, assetsCount);
     }
 
     try {
       // Process asset folders
       if (typeof assetsFolderCount === 'number' && assetsFolderCount > 0) {
         progress
-          .startProcess(EXPORT_PROCESS_NAMES.ASSET_FOLDERS)
+          .startProcess(PROCESS_NAMES.ASSET_FOLDERS)
           .updateStatus(
-            EXPORT_PROCESS_STATUS[EXPORT_PROCESS_NAMES.ASSET_FOLDERS].FETCHING,
-            EXPORT_PROCESS_NAMES.ASSET_FOLDERS,
+            PROCESS_STATUS[PROCESS_NAMES.ASSET_FOLDERS].FETCHING,
+            PROCESS_NAMES.ASSET_FOLDERS,
           );
         await this.getAssetsFolders(assetsFolderCount);
-        progress.completeProcess(EXPORT_PROCESS_NAMES.ASSET_FOLDERS, true);
+        progress.completeProcess(PROCESS_NAMES.ASSET_FOLDERS, true);
       }
 
       // Process asset metadata
       if (typeof assetsCount === 'number' && assetsCount > 0) {
         progress
-          .startProcess(EXPORT_PROCESS_NAMES.ASSET_METADATA)
+          .startProcess(PROCESS_NAMES.ASSET_METADATA)
           .updateStatus(
-            EXPORT_PROCESS_STATUS[EXPORT_PROCESS_NAMES.ASSET_METADATA].FETCHING,
-            EXPORT_PROCESS_NAMES.ASSET_METADATA,
+            PROCESS_STATUS[PROCESS_NAMES.ASSET_METADATA].FETCHING,
+            PROCESS_NAMES.ASSET_METADATA,
           );
         await this.getAssets(assetsCount);
-        progress.completeProcess(EXPORT_PROCESS_NAMES.ASSET_METADATA, true);
+        progress.completeProcess(PROCESS_NAMES.ASSET_METADATA, true);
       }
 
       // Get versioned assets
       if (!isEmpty(this.versionedAssets) && this.assetConfig.includeVersionedAssets) {
         log.debug('Fetching versioned assets metadata...', this.exportConfig.context);
         progress.updateStatus(
-          EXPORT_PROCESS_STATUS[EXPORT_PROCESS_NAMES.ASSET_METADATA].FETCHING_VERSION,
-          EXPORT_PROCESS_NAMES.ASSET_METADATA,
+          PROCESS_STATUS[PROCESS_NAMES.ASSET_METADATA].FETCHING_VERSION,
+          PROCESS_NAMES.ASSET_METADATA,
         );
         await this.getVersionedAssets();
       }
@@ -110,14 +110,14 @@ export default class ExportAssets extends BaseClass {
       // Download all assets
       if (typeof assetsCount === 'number' && assetsCount > 0) {
         progress
-          .startProcess(EXPORT_PROCESS_NAMES.ASSET_DOWNLOADS)
+          .startProcess(PROCESS_NAMES.ASSET_DOWNLOADS)
           .updateStatus(
-            EXPORT_PROCESS_STATUS[EXPORT_PROCESS_NAMES.ASSET_DOWNLOADS].DOWNLOADING,
-            EXPORT_PROCESS_NAMES.ASSET_DOWNLOADS,
+            PROCESS_STATUS[PROCESS_NAMES.ASSET_DOWNLOADS].DOWNLOADING,
+            PROCESS_NAMES.ASSET_DOWNLOADS,
           );
         log.debug('Starting download of all assets...', this.exportConfig.context);
         await this.downloadAssets();
-        progress.completeProcess(EXPORT_PROCESS_NAMES.ASSET_DOWNLOADS, true);
+        progress.completeProcess(PROCESS_NAMES.ASSET_DOWNLOADS, true);
       }
 
       this.completeProgress(true);
@@ -151,7 +151,7 @@ export default class ExportAssets extends BaseClass {
             true,
             `folder: ${folder.name || folder.uid}`,
             null,
-            EXPORT_PROCESS_NAMES.ASSET_FOLDERS,
+            PROCESS_NAMES.ASSET_FOLDERS,
           );
         });
       }
@@ -161,8 +161,8 @@ export default class ExportAssets extends BaseClass {
       this.progressManager?.tick(
         false,
         'asset folder',
-        error?.message || EXPORT_PROCESS_STATUS[EXPORT_PROCESS_NAMES.ASSET_FOLDERS].FAILED,
-        EXPORT_PROCESS_NAMES.ASSET_FOLDERS,
+        error?.message || PROCESS_STATUS[PROCESS_NAMES.ASSET_FOLDERS].FAILED,
+        PROCESS_NAMES.ASSET_FOLDERS,
       );
       handleAndLogError(error, { ...this.exportConfig.context });
     };
@@ -229,8 +229,8 @@ export default class ExportAssets extends BaseClass {
       this.progressManager?.tick(
         false,
         'asset',
-        error?.message || EXPORT_PROCESS_STATUS[EXPORT_PROCESS_NAMES.ASSET_METADATA].FAILED,
-        EXPORT_PROCESS_NAMES.ASSET_METADATA,
+        error?.message || PROCESS_STATUS[PROCESS_NAMES.ASSET_METADATA].FAILED,
+        PROCESS_NAMES.ASSET_METADATA,
       );
       handleAndLogError(error, { ...this.exportConfig.context }, messageHandler.parse('ASSET_QUERY_FAILED'));
     };
@@ -257,7 +257,7 @@ export default class ExportAssets extends BaseClass {
             true,
             `asset: ${asset.filename || asset.uid}`,
             null,
-            EXPORT_PROCESS_NAMES.ASSET_METADATA,
+            PROCESS_NAMES.ASSET_METADATA,
           );
         });
       }
@@ -461,7 +461,7 @@ export default class ExportAssets extends BaseClass {
         true,
         `Downloaded asset: ${asset.filename || asset.uid}`,
         null,
-        EXPORT_PROCESS_NAMES.ASSET_DOWNLOADS,
+        PROCESS_NAMES.ASSET_DOWNLOADS,
       );
       log.success(messageHandler.parse('ASSET_DOWNLOAD_SUCCESS', asset.filename, asset.uid), this.exportConfig.context);
     };
@@ -472,7 +472,7 @@ export default class ExportAssets extends BaseClass {
         false,
         `Failed to download asset: ${asset.filename || asset.uid}`,
         null,
-        EXPORT_PROCESS_NAMES.ASSET_DOWNLOADS,
+        PROCESS_NAMES.ASSET_DOWNLOADS,
       );
       handleAndLogError(
         error,

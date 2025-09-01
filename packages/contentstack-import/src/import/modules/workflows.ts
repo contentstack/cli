@@ -13,10 +13,10 @@ import BaseClass, { ApiOptions } from './base-class';
 import {
   fsUtil,
   fileHelper,
-  IMPORT_PROCESS_NAMES,
-  IMPORT_MODULE_CONTEXTS,
-  IMPORT_PROCESS_STATUS,
-  IMPORT_MODULE_NAMES,
+  PROCESS_NAMES,
+  MODULE_CONTEXTS,
+  PROCESS_STATUS,
+  MODULE_NAMES,
 } from '../../utils';
 import { ModuleClassParams, WorkflowConfig } from '../../types';
 
@@ -35,8 +35,8 @@ export default class ImportWorkflows extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = IMPORT_MODULE_CONTEXTS.WORKFLOWS;
-    this.currentModuleName = IMPORT_MODULE_NAMES[IMPORT_MODULE_CONTEXTS.WORKFLOWS];
+    this.importConfig.context.module = MODULE_CONTEXTS.WORKFLOWS;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.WORKFLOWS];
     this.workflowsConfig = importConfig.modules.workflows;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'workflows');
     this.workflowsFolderPath = join(this.importConfig.backupDir, this.workflowsConfig.dirName);
@@ -66,29 +66,29 @@ export default class ImportWorkflows extends BaseClass {
       }
 
       const progress = this.createNestedProgress(this.currentModuleName);
-      progress.addProcess(IMPORT_PROCESS_NAMES.GET_ROLES, 1);
-      progress.addProcess(IMPORT_PROCESS_NAMES.WORKFLOWS_CREATE, workflowsCount);
+      progress.addProcess(PROCESS_NAMES.GET_ROLES, 1);
+      progress.addProcess(PROCESS_NAMES.WORKFLOWS_CREATE, workflowsCount);
 
       await this.prepareWorkflowMapper();
 
       // Step 1: Fetch and setup roles
       progress
-        .startProcess(IMPORT_PROCESS_NAMES.GET_ROLES)
-        .updateStatus(IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.GET_ROLES].FETCHING, IMPORT_PROCESS_NAMES.GET_ROLES);
+        .startProcess(PROCESS_NAMES.GET_ROLES)
+        .updateStatus(PROCESS_STATUS[PROCESS_NAMES.GET_ROLES].FETCHING, PROCESS_NAMES.GET_ROLES);
       log.info('Fetching all roles for workflow processing', this.importConfig.context);
       await this.getRoles();
-      progress.completeProcess(IMPORT_PROCESS_NAMES.GET_ROLES, true);
+      progress.completeProcess(PROCESS_NAMES.GET_ROLES, true);
 
       // Step 2: Import workflows
       progress
-        .startProcess(IMPORT_PROCESS_NAMES.WORKFLOWS_CREATE)
+        .startProcess(PROCESS_NAMES.WORKFLOWS_CREATE)
         .updateStatus(
-          IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.WORKFLOWS_CREATE].IMPORTING,
-          IMPORT_PROCESS_NAMES.WORKFLOWS_CREATE,
+          PROCESS_STATUS[PROCESS_NAMES.WORKFLOWS_CREATE].IMPORTING,
+          PROCESS_NAMES.WORKFLOWS_CREATE,
         );
       log.info('Starting workflows import process', this.importConfig.context);
       await this.importWorkflows();
-      progress.completeProcess(IMPORT_PROCESS_NAMES.WORKFLOWS_CREATE, true);
+      progress.completeProcess(PROCESS_NAMES.WORKFLOWS_CREATE, true);
 
       this.processWorkflowResults();
 
@@ -158,7 +158,7 @@ export default class ImportWorkflows extends BaseClass {
             false,
             `workflow: ${name || uid}`,
             error?.message || 'Failed to update next available stages',
-            'Create',
+            PROCESS_NAMES.WORKFLOWS_CREATE,
           );
           handleAndLogError(error, { ...this.importConfig.context, name }, `Workflow '${name}' update failed`);
         });
@@ -171,7 +171,7 @@ export default class ImportWorkflows extends BaseClass {
 
       this.createdWorkflows.push(response);
       this.workflowUidMapper[uid] = response.uid;
-      this.progressManager?.tick(true, `workflow: ${name || uid}`, null, IMPORT_PROCESS_NAMES.WORKFLOWS_CREATE);
+      this.progressManager?.tick(true, `workflow: ${name || uid}`, null, PROCESS_NAMES.WORKFLOWS_CREATE);
       log.success(`Workflow '${name}' imported successfully`, this.importConfig.context);
       log.debug(`Workflow UID mapping: ${uid} → ${response.uid}`, this.importConfig.context);
       fsUtil.writeFile(this.workflowUidMapperPath, this.workflowUidMapper);
@@ -188,7 +188,7 @@ export default class ImportWorkflows extends BaseClass {
           true,
           `workflow: ${name || uid} (already exists)`,
           null,
-          IMPORT_PROCESS_NAMES.WORKFLOWS_CREATE,
+          PROCESS_NAMES.WORKFLOWS_CREATE,
         );
         log.info(`Workflow '${name}' already exists`, this.importConfig.context);
       } else {
@@ -197,7 +197,7 @@ export default class ImportWorkflows extends BaseClass {
           false,
           `workflow: ${name || uid}`,
           error?.message || 'Failed to import workflow',
-          'Create',
+          PROCESS_NAMES.WORKFLOWS_CREATE,
         );
         if (error.errors['workflow_stages.0.users']) {
           log.error(
@@ -279,7 +279,7 @@ export default class ImportWorkflows extends BaseClass {
         true,
         `workflow: ${workflow.name} (skipped - already exists)`,
         null,
-        IMPORT_PROCESS_NAMES.WORKFLOWS_CREATE,
+        PROCESS_NAMES.WORKFLOWS_CREATE,
       );
       apiOptions.entity = undefined;
     } else {

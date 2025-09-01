@@ -3,6 +3,7 @@ import { existsSync } from 'fs';
 import { sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 import { PersonalizationAdapter, fsUtil } from '../utils';
 import { APIConfig, AttributeStruct, ImportConfig, LogType } from '../types';
+import { PROCESS_NAMES, MODULE_CONTEXTS, IMPORT_PROCESS_STATUS } from '../utils/constants';
 
 export default class Attribute extends PersonalizationAdapter<ImportConfig> {
   private mapperDirPath: string;
@@ -31,7 +32,7 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
     this.attrMapperDirPath = resolve(sanitizePath(this.mapperDirPath), sanitizePath(this.attributeConfig.dirName));
     this.attributesUidMapperPath = resolve(sanitizePath(this.attrMapperDirPath), 'uid-mapping.json');
     this.attributesUidMapper = {};
-    this.config.context.module = 'attributes';
+    this.config.context.module = MODULE_CONTEXTS.ATTRIBUTES;
     this.attributeData = [];
   }
 
@@ -47,19 +48,18 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
         log.info('No attributes found to import', this.config.context);
         // Still need to mark as complete for parent progress
         if (this.parentProgressManager) {
-          this.parentProgressManager.tick(true, 'attributes module (no data)', null, 'Attributes');
+          this.parentProgressManager.tick(true, 'attributes module (no data)', null, PROCESS_NAMES.ATTRIBUTES);
         }
         return;
       }
 
-      // If we have a parent progress manager, use it as a sub-module
-      // Otherwise create our own simple progress manager
+      // Don't create own progress manager if we have a parent
       let progress;
       if (this.parentProgressManager) {
         progress = this.parentProgressManager;
         log.debug('Using parent progress manager for attributes import', this.config.context);
       } else {
-        progress = this.createSimpleProgress('Attributes', attributesCount);
+        progress = this.createSimpleProgress(PROCESS_NAMES.ATTRIBUTES, attributesCount);
         log.debug('Created standalone progress manager for attributes import', this.config.context);
       }
 
@@ -73,14 +73,18 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
       for (const attribute of this.attributeData) {
         const { key, name, description, uid } = attribute;
         if (!this.parentProgressManager) {
-          progress.updateStatus(`Processing attribute: ${name}...`);
+          progress.updateStatus(IMPORT_PROCESS_STATUS[PROCESS_NAMES.ATTRIBUTES].CREATING);
         }
         log.debug(`Processing attribute: ${name} - ${attribute.__type}`, this.config.context);
 
         // skip creating preset attributes, as they are already present in the system
         if (attribute.__type === 'PRESET') {
           log.debug(`Skipping preset attribute: ${name}`, this.config.context);
-          this.updateProgress(true, `attribute: ${name} (preset - skipped)`, undefined, 'Attributes');
+          if (this.parentProgressManager) {
+            this.updateProgress(true, `attribute: ${name} (preset - skipped)`);
+          } else {
+            this.updateProgress(true, `attribute: ${name} (preset - skipped)`, undefined, PROCESS_NAMES.ATTRIBUTES);
+          }
           continue;
         }
 
@@ -91,10 +95,18 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
           //mapper file is used to check whether attribute created or not before creating audience
           this.attributesUidMapper[uid] = attributeRes?.uid ?? '';
 
-          this.updateProgress(true, `attribute: ${name}`, undefined, 'Attributes');
+          if (this.parentProgressManager) {
+            this.updateProgress(true, `attribute: ${name}`);
+          } else {
+            this.updateProgress(true, `attribute: ${name}`, undefined, PROCESS_NAMES.ATTRIBUTES);
+          }
           log.debug(`Created attribute: ${uid} -> ${attributeRes?.uid}`, this.config.context);
         } catch (error) {
-          this.updateProgress(false, `attribute: ${name}`, (error as any)?.message, 'Attributes');
+          if (this.parentProgressManager) {
+            this.updateProgress(false, `attribute: ${name}`);
+          } else {
+            this.updateProgress(false, `attribute: ${name}`, (error as any)?.message, PROCESS_NAMES.ATTRIBUTES);
+          }
           handleAndLogError(error, this.config.context, `Failed to create attribute: ${name}`);
         }
       }

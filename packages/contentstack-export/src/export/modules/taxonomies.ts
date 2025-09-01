@@ -7,10 +7,10 @@ import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilit
 import BaseClass from './base-class';
 import {
   fsUtil,
-  EXPORT_PROCESS_NAMES,
-  EXPORT_MODULE_CONTEXTS,
-  EXPORT_PROCESS_STATUS,
-  EXPORT_MODULE_NAMES,
+  PROCESS_NAMES,
+  MODULE_CONTEXTS,
+  PROCESS_STATUS,
+  MODULE_NAMES,
 } from '../../utils';
 import { ModuleClassParams, ExportConfig } from '../../types';
 
@@ -31,8 +31,8 @@ export default class ExportTaxonomies extends BaseClass {
     this.taxonomiesConfig = exportConfig.modules.taxonomies;
     this.qs = { include_count: true, limit: this.taxonomiesConfig.limit || 100, skip: 0 };
     this.applyQueryFilters(this.qs, 'taxonomies');
-    this.exportConfig.context.module = EXPORT_MODULE_CONTEXTS.TAXONOMIES;
-    this.currentModuleName = EXPORT_MODULE_NAMES[EXPORT_MODULE_CONTEXTS.TAXONOMIES];
+    this.exportConfig.context.module = MODULE_CONTEXTS.TAXONOMIES;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.TAXONOMIES];
   }
 
   async start(): Promise<void> {
@@ -66,18 +66,18 @@ export default class ExportTaxonomies extends BaseClass {
       const progress = this.createNestedProgress(this.currentModuleName);
 
       // Add sub-processes
-      progress.addProcess(EXPORT_PROCESS_NAMES.FETCH_TAXONOMIES, totalCount);
-      progress.addProcess(EXPORT_PROCESS_NAMES.EXPORT_TAXONOMIES_TERMS, totalCount);
+      progress.addProcess(PROCESS_NAMES.FETCH_TAXONOMIES, totalCount);
+      progress.addProcess(PROCESS_NAMES.EXPORT_TAXONOMIES_TERMS, totalCount);
 
       // Fetch taxonomies
       progress
-        .startProcess(EXPORT_PROCESS_NAMES.FETCH_TAXONOMIES)
+        .startProcess(PROCESS_NAMES.FETCH_TAXONOMIES)
         .updateStatus(
-          EXPORT_PROCESS_STATUS[EXPORT_PROCESS_NAMES.FETCH_TAXONOMIES].FETCHING,
-          EXPORT_PROCESS_NAMES.FETCH_TAXONOMIES,
+          PROCESS_STATUS[PROCESS_NAMES.FETCH_TAXONOMIES].FETCHING,
+          PROCESS_NAMES.FETCH_TAXONOMIES,
         );
       await this.getAllTaxonomies();
-      progress.completeProcess(EXPORT_PROCESS_NAMES.FETCH_TAXONOMIES, true);
+      progress.completeProcess(PROCESS_NAMES.FETCH_TAXONOMIES, true);
 
       const actualTaxonomyCount = Object.keys(this.taxonomies)?.length;
       log.debug(
@@ -88,19 +88,19 @@ export default class ExportTaxonomies extends BaseClass {
       // Update progress for export step if counts differ
       if (actualTaxonomyCount !== totalCount && actualTaxonomyCount > 0) {
         // Remove the old process and add with correct count
-        progress.addProcess(EXPORT_PROCESS_NAMES.EXPORT_TAXONOMIES_TERMS, actualTaxonomyCount);
+        progress.addProcess(PROCESS_NAMES.EXPORT_TAXONOMIES_TERMS, actualTaxonomyCount);
       }
 
       // Export detailed taxonomies
       if (actualTaxonomyCount > 0) {
         progress
-          .startProcess(EXPORT_PROCESS_NAMES.EXPORT_TAXONOMIES_TERMS)
+          .startProcess(PROCESS_NAMES.EXPORT_TAXONOMIES_TERMS)
           .updateStatus(
-            EXPORT_PROCESS_STATUS[EXPORT_PROCESS_NAMES.EXPORT_TAXONOMIES_TERMS].EXPORTING,
-            EXPORT_PROCESS_NAMES.EXPORT_TAXONOMIES_TERMS,
+            PROCESS_STATUS[PROCESS_NAMES.EXPORT_TAXONOMIES_TERMS].EXPORTING,
+            PROCESS_NAMES.EXPORT_TAXONOMIES_TERMS,
           );
         await this.exportTaxonomies();
-        progress.completeProcess(EXPORT_PROCESS_NAMES.EXPORT_TAXONOMIES_TERMS, true);
+        progress.completeProcess(PROCESS_NAMES.EXPORT_TAXONOMIES_TERMS, true);
       } else {
         log.info('No taxonomies found to export detailed information', this.exportConfig.context);
       }
@@ -173,7 +173,7 @@ export default class ExportTaxonomies extends BaseClass {
         true,
         `taxonomy: ${taxonomyName || taxonomyUid}`,
         null,
-        EXPORT_PROCESS_NAMES.FETCH_TAXONOMIES,
+        PROCESS_NAMES.FETCH_TAXONOMIES,
       );
     }
 
@@ -210,7 +210,7 @@ export default class ExportTaxonomies extends BaseClass {
         true,
         `taxonomy: ${taxonomyName || uid}`,
         null,
-        EXPORT_PROCESS_NAMES.EXPORT_TAXONOMIES_TERMS,
+        PROCESS_NAMES.EXPORT_TAXONOMIES_TERMS,
       );
 
       log.success(messageHandler.parse('TAXONOMY_EXPORT_SUCCESS', taxonomyName || uid), this.exportConfig.context);
@@ -223,8 +223,8 @@ export default class ExportTaxonomies extends BaseClass {
       this.progressManager?.tick(
         false,
         `taxonomy: ${taxonomyName || uid}`,
-        error?.message || EXPORT_PROCESS_STATUS[EXPORT_PROCESS_NAMES.EXPORT_TAXONOMIES_TERMS].FAILED,
-        EXPORT_PROCESS_NAMES.EXPORT_TAXONOMIES_TERMS,
+        error?.message || PROCESS_STATUS[PROCESS_NAMES.EXPORT_TAXONOMIES_TERMS].FAILED,
+        PROCESS_NAMES.EXPORT_TAXONOMIES_TERMS,
       );
 
       handleAndLogError(

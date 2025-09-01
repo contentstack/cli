@@ -3,7 +3,7 @@ import { ContentstackClient, handleAndLogError, messageHandler, log, sanitizePat
 
 import BaseClass from './base-class';
 import { ExportConfig, ModuleClassParams } from '../../types';
-import { fsUtil, EXPORT_MODULE_CONTEXTS, EXPORT_MODULE_NAMES } from '../../utils';
+import { fsUtil, MODULE_CONTEXTS, MODULE_NAMES } from '../../utils';
 
 export default class LocaleExport extends BaseClass {
   private stackAPIClient: ReturnType<ContentstackClient['stack']>;
@@ -48,8 +48,8 @@ export default class LocaleExport extends BaseClass {
     );
     this.locales = {};
     this.masterLocale = {};
-    this.exportConfig.context.module = EXPORT_MODULE_CONTEXTS.LOCALES;
-    this.currentModuleName = EXPORT_MODULE_NAMES[EXPORT_MODULE_CONTEXTS.LOCALES];
+    this.exportConfig.context.module = MODULE_CONTEXTS.LOCALES;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.LOCALES];
   }
 
   async start() {

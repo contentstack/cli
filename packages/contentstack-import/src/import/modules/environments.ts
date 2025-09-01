@@ -3,14 +3,7 @@ import values from 'lodash/values';
 import { join } from 'node:path';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
 
-import {
-  fsUtil,
-  fileHelper,
-  IMPORT_PROCESS_NAMES,
-  IMPORT_MODULE_CONTEXTS,
-  IMPORT_PROCESS_STATUS,
-  IMPORT_MODULE_NAMES,
-} from '../../utils';
+import { fsUtil, fileHelper, PROCESS_NAMES, MODULE_CONTEXTS, PROCESS_STATUS, MODULE_NAMES } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, EnvironmentConfig } from '../../types';
 
@@ -28,8 +21,8 @@ export default class ImportEnvironments extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = IMPORT_MODULE_CONTEXTS.ENVIRONMENTS;
-    this.currentModuleName = IMPORT_MODULE_NAMES[IMPORT_MODULE_CONTEXTS.ENVIRONMENTS];
+    this.importConfig.context.module = MODULE_CONTEXTS.ENVIRONMENTS;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.ENVIRONMENTS];
     this.environmentsConfig = importConfig.modules.environments;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'environments');
     this.environmentsFolderPath = join(this.importConfig.backupDir, this.environmentsConfig.dirName);
@@ -58,7 +51,7 @@ export default class ImportEnvironments extends BaseClass {
       const progress = this.createSimpleProgress(this.currentModuleName, environmentsCount);
       await this.prepareEnvironmentMapper();
 
-      progress.updateStatus(IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.ENVIRONMENTS_IMPORT].IMPORTING);
+      progress.updateStatus(PROCESS_STATUS[PROCESS_NAMES.ENVIRONMENTS_IMPORT].IMPORTING);
       await this.importEnvironments();
 
       await this.processImportResults();
@@ -85,7 +78,7 @@ export default class ImportEnvironments extends BaseClass {
     const onSuccess = ({ response, apiData: { uid, name } = { uid: null, name: '' } }: any) => {
       this.envSuccess.push(response);
       this.envUidMapper[uid] = response.uid;
-      this.progressManager?.tick(true, `environment: ${name || uid}`);
+      this.progressManager?.tick(true, `environment: ${name || uid}`, null, PROCESS_NAMES.ENVIRONMENTS_IMPORT);
       log.success(`Environment '${name}' imported successfully`, this.importConfig.context);
       log.debug(`Environment UID mapping: ${uid} → ${response.uid}`, this.importConfig.context);
       fsUtil.writeFile(this.envUidMapperPath, this.envUidMapper);
@@ -101,7 +94,12 @@ export default class ImportEnvironments extends BaseClass {
         const res = await this.getEnvDetails(name);
         this.envUidMapper[uid] = res?.uid || ' ';
         fsUtil.writeFile(this.envUidMapperPath, this.envUidMapper);
-        this.progressManager?.tick(true, `environment: ${name || uid} (already exists)`);
+        this.progressManager?.tick(
+          true,
+          null,
+          `environment: ${name || uid} (already exists)`,
+          PROCESS_NAMES.ENVIRONMENTS_IMPORT,
+        );
         log.info(`Environment '${name}' already exists`, this.importConfig.context);
         log.debug(`Added existing environment UID mapping: ${uid} → ${res?.uid}`, this.importConfig.context);
       } else {
@@ -110,6 +108,7 @@ export default class ImportEnvironments extends BaseClass {
           false,
           `environment: ${name || uid}`,
           error?.message || 'Failed to import environment',
+          PROCESS_NAMES.ENVIRONMENTS_IMPORT,
         );
         handleAndLogError(error, { ...this.importConfig.context, name }, `Environment '${name}' failed to be import`);
       }
@@ -152,7 +151,12 @@ export default class ImportEnvironments extends BaseClass {
       );
       log.debug(`Skipping environment serialization for: ${environment.uid}`, this.importConfig.context);
       // Still tick progress for skipped environments
-      this.progressManager?.tick(true, `environment: ${environment.name} (skipped - already exists)`);
+      this.progressManager?.tick(
+        true,
+        `environment: ${environment.name}`,
+        `environment: ${environment.name} (skipped - already exists)`,
+        PROCESS_NAMES.ENVIRONMENTS_IMPORT,
+      );
       apiOptions.entity = undefined;
     } else {
       log.debug(`Processing environment: ${environment.name}`, this.importConfig.context);

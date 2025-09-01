@@ -5,7 +5,7 @@ import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilit
 
 import BaseClass from './base-class';
 import { WorkflowConfig, ModuleClassParams } from '../../types';
-import { fsUtil, EXPORT_MODULE_CONTEXTS, EXPORT_MODULE_NAMES } from '../../utils';
+import { fsUtil, MODULE_CONTEXTS, MODULE_NAMES } from '../../utils';
 
 export default class ExportWorkFlows extends BaseClass {
   private workflows: Record<string, Record<string, string>>;
@@ -21,8 +21,8 @@ export default class ExportWorkFlows extends BaseClass {
     this.workflows = {};
     this.workflowConfig = exportConfig.modules.workflows;
     this.qs = { include_count: true };
-    this.exportConfig.context.module = EXPORT_MODULE_CONTEXTS.WORKFLOWS;
-    this.currentModuleName = EXPORT_MODULE_NAMES[EXPORT_MODULE_CONTEXTS.WORKFLOWS];
+    this.exportConfig.context.module = MODULE_CONTEXTS.WORKFLOWS;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.WORKFLOWS];
   }
 
   async start(): Promise<void> {

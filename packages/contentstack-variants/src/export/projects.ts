@@ -2,6 +2,7 @@ import { resolve as pResolve } from 'node:path';
 import { sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 import { PersonalizeConfig, ExportConfig, ProjectStruct } from '../types';
 import { fsUtil, PersonalizationAdapter } from '../utils';
+import { PROCESS_NAMES, MODULE_CONTEXTS, EXPORT_PROCESS_STATUS } from '../utils/constants';
 
 export default class ExportProjects extends PersonalizationAdapter<ExportConfig> {
   private projectsFolderPath: string;
@@ -21,9 +22,10 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
       sanitizePath(exportConfig.data),
       sanitizePath(exportConfig.branchName || ''),
       sanitizePath(this.personalizeConfig.dirName),
+      'projects',
     );
     this.projectsData = [];
-    this.exportConfig.context.module = 'projects';
+    this.exportConfig.context.module = MODULE_CONTEXTS.PROJECTS;
   }
 
   async start() {
@@ -67,11 +69,13 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
       if (this.parentProgressManager) {
         progress = this.parentProgressManager;
         this.progressManager = this.parentProgressManager;
-        progress.updateProcessTotal('Projects', this.projectsData?.length);
+        progress.updateProcessTotal(PROCESS_NAMES.PROJECTS, this.projectsData?.length);
       } else {
-        progress = this.createNestedProgress('Projects');
-        progress.addProcess('Projects', this.projectsData?.length);
-        progress.startProcess('Projects').updateStatus('Processing and exporting project data...', 'Projects');
+        progress = this.createNestedProgress(PROCESS_NAMES.PROJECTS);
+        progress.addProcess(PROCESS_NAMES.PROJECTS, this.projectsData?.length);
+        progress
+          .startProcess(PROCESS_NAMES.PROJECTS)
+          .updateStatus(EXPORT_PROCESS_STATUS[PROCESS_NAMES.PROJECTS].EXPORTING, PROCESS_NAMES.PROJECTS);
       }
 
       const projectsFilePath = pResolve(sanitizePath(this.projectsFolderPath), 'projects.json');
@@ -79,12 +83,12 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
       fsUtil.writeFile(projectsFilePath, this.projectsData);
       log.debug('Projects export completed successfully', this.exportConfig.context);
 
-      const processName = this.parentProgressManager ? 'Projects' : 'Projects';
+      const processName = PROCESS_NAMES.PROJECTS;
       this.updateProgress(true, 'project export', undefined, processName);
 
       // Complete process only if we're managing our own progress
       if (!this.parentProgressManager) {
-        progress.completeProcess('Projects', true);
+        progress.completeProcess(PROCESS_NAMES.PROJECTS, true);
         this.completeProgress(true);
       }
 

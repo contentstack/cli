@@ -5,7 +5,7 @@ import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilit
 
 import BaseClass from './base-class';
 import { LabelConfig, ModuleClassParams } from '../../types';
-import { fsUtil, EXPORT_MODULE_CONTEXTS, EXPORT_MODULE_NAMES } from '../../utils';
+import { fsUtil, MODULE_CONTEXTS, MODULE_NAMES } from '../../utils';
 
 export default class ExportLabels extends BaseClass {
   private labels: Record<string, Record<string, string>>;
@@ -21,8 +21,8 @@ export default class ExportLabels extends BaseClass {
     this.labels = {};
     this.labelConfig = exportConfig.modules.labels;
     this.qs = { include_count: true };
-    this.exportConfig.context.module = EXPORT_MODULE_CONTEXTS.LABELS;
-    this.currentModuleName = EXPORT_MODULE_NAMES[EXPORT_MODULE_CONTEXTS.LABELS];
+    this.exportConfig.context.module = MODULE_CONTEXTS.LABELS;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.LABELS];
   }
 
   async start(): Promise<void> {

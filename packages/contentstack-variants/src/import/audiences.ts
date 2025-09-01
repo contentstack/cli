@@ -3,6 +3,7 @@ import { existsSync } from 'fs';
 import { sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 import { APIConfig, AudienceStruct, ImportConfig } from '../types';
 import { PersonalizationAdapter, fsUtil, lookUpAttributes } from '../utils';
+import { PROCESS_NAMES, MODULE_CONTEXTS, IMPORT_PROCESS_STATUS } from '../utils/constants';
 
 export default class Audiences extends PersonalizationAdapter<ImportConfig> {
   private mapperDirPath: string;
@@ -39,7 +40,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
       'uid-mapping.json',
     );
     this.audiencesUidMapper = {};
-    this.config.context.module = 'audiences';
+    this.config.context.module = MODULE_CONTEXTS.AUDIENCES;
     this.audiences = [];
   }
 
@@ -55,19 +56,18 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
         log.info('No audiences found to import', this.config.context);
         // Still need to mark as complete for parent progress
         if (this.parentProgressManager) {
-          this.parentProgressManager.tick(true, 'audiences module (no data)', null, 'Audiences');
+          this.parentProgressManager.tick(true, 'audiences module (no data)', null, PROCESS_NAMES.AUDIENCES);
         }
         return;
       }
 
-      // If we have a parent progress manager, use it as a sub-module
-      // Otherwise create our own simple progress manager
+      // Don't create own progress manager if we have a parent
       let progress;
       if (this.parentProgressManager) {
         progress = this.parentProgressManager;
         log.debug('Using parent progress manager for audiences import', this.config.context);
       } else {
-        progress = this.createSimpleProgress('Audiences', audiencesCount);
+        progress = this.createSimpleProgress(PROCESS_NAMES.AUDIENCES, audiencesCount);
         log.debug('Created standalone progress manager for audiences import', this.config.context);
       }
 
@@ -84,7 +84,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
       for (const audience of this.audiences) {
         let { name, definition, description, uid } = audience;
         if (!this.parentProgressManager) {
-          progress.updateStatus(`Processing audience: ${name}...`);
+          progress.updateStatus(IMPORT_PROCESS_STATUS[PROCESS_NAMES.AUDIENCES].CREATING);
         }
         log.debug(`Processing audience: ${name} (${uid})`, this.config.context);
 
@@ -107,10 +107,14 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
           //mapper file is used to check whether audience created or not before creating experience
           this.audiencesUidMapper[uid] = audienceRes?.uid ?? '';
 
-          this.updateProgress(true, `audience: ${name}`, undefined, 'Audiences');
+          if (this.parentProgressManager) {
+            this.updateProgress(true, `audience: ${name}`);
+          } else {
+            this.updateProgress(true, `audience: ${name}`, undefined, PROCESS_NAMES.AUDIENCES);
+          }
           log.debug(`Created audience: ${uid} -> ${audienceRes?.uid}`, this.config.context);
         } catch (error) {
-          this.updateProgress(false, `audience: ${name}`, (error as any)?.message, 'Audiences');
+          this.updateProgress(false, `audience: ${name}`, (error as any)?.message, PROCESS_NAMES.AUDIENCES);
           handleAndLogError(error, this.config.context, `Failed to create audience: ${name} (${uid})`);
         }
       }
@@ -123,10 +127,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
         this.completeProgress(true);
       }
 
-      log.success(
-        `Audiences imported successfully! Total audiences: ${audiencesCount}`,
-        this.config.context,
-      );
+      log.success(`Audiences imported successfully! Total audiences: ${audiencesCount}`, this.config.context);
     } catch (error) {
       if (!this.parentProgressManager) {
         this.completeProgress(false, (error as any)?.message || 'Audiences import failed');
