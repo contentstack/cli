@@ -10,15 +10,13 @@ export default async function backupHandler(importConfig: ImportConfig): Promise
     return importConfig.useBackedupDir;
   }
 
+  const sourceDir = importConfig.branchDir || importConfig.contentDir;
+
   let backupDirPath: string;
-  const subDir = isSubDirectory(importConfig);
+  const subDir = isSubDirectory(importConfig, sourceDir);
 
   if (subDir) {
-    backupDirPath = path.resolve(
-      sanitizePath(importConfig.contentDir),
-      '..',
-      '_backup_' + Math.floor(Math.random() * 1000),
-    );
+    backupDirPath = path.resolve(sanitizePath(sourceDir), '..', '_backup_' + Math.floor(Math.random() * 1000));
     if (importConfig.createBackupDir) {
       cliux.print(
         `Warning!!! Provided backup directory path is a sub directory of the content directory, Cannot copy to a sub directory. Hence new backup directory created - ${backupDirPath}`,
@@ -42,7 +40,7 @@ export default async function backupHandler(importConfig: ImportConfig): Promise
   if (backupDirPath) {
     cliux.print('Copying content to the backup directory...');
     return new Promise((resolve, reject) => {
-      return copy(importConfig.contentDir, backupDirPath, (error: any) => {
+      return copy(sourceDir, backupDirPath, (error: any) => {
         if (error) {
           trace(error, 'error', true);
           return reject(error);
@@ -58,8 +56,8 @@ export default async function backupHandler(importConfig: ImportConfig): Promise
  * @param importConfig
  * @returns
  */
-function isSubDirectory(importConfig: ImportConfig) {
-  const parent = importConfig.contentDir;
+function isSubDirectory(importConfig: ImportConfig, sourceDir: string) {
+  const parent = sourceDir;
   const child = importConfig.createBackupDir ? importConfig.createBackupDir : process.cwd();
   const relative = path.relative(parent, child);
 

@@ -8,7 +8,8 @@
 import * as _ from 'lodash';
 import * as path from 'path';
 import { HttpClient, managementSDKClient, isAuthenticated, sanitizePath, log } from '@contentstack/cli-utilities';
-import { readFileSync, readdirSync, readFile } from './file-helper';
+import { readFileSync, readdirSync, readFile, fileExistsSync } from './file-helper';
+import { askBranchSelection } from './interactive';
 import chalk from 'chalk';
 import defaultConfig from '../config';
 import promiseLimit from 'promise-limit';
@@ -59,24 +60,23 @@ export const sanitizeStack = (importConfig: ImportConfig) => {
     log.debug('Stack version preservation not enabled, skipping sanitization');
     return Promise.resolve();
   }
-  
+
   if (importConfig.management_token) {
-    log.info('Skipping stack version sanitization: Operation is not supported when using a management token.', );
+    log.info('Skipping stack version sanitization: Operation is not supported when using a management token.');
     return Promise.resolve();
   }
-  
-  
+
   try {
     const httpClient = HttpClient.create();
     httpClient.headers(importConfig.headers);
-    
-    return httpClient.get(`https://${importConfig.host}/v3${importConfig.apis.stacks}`).then((stackDetails) => { 
+
+    return httpClient.get(`https://${importConfig.host}/v3${importConfig.apis.stacks}`).then((stackDetails) => {
       if (stackDetails.data && stackDetails.data.stack && stackDetails.data.stack.settings) {
         const newStackVersion = stackDetails.data.stack.settings.version;
         const newStackDate = new Date(newStackVersion).toString();
-        
+
         log.debug(`New stack version: ${newStackVersion} (${newStackDate})`);
-        
+
         const stackFilePath = path.join(
           sanitizePath(importConfig.data),
           sanitizePath(importConfig.modules.stack.dirName),
@@ -85,11 +85,11 @@ export const sanitizeStack = (importConfig: ImportConfig) => {
 
         log.debug(`Reading stack file from: ${stackFilePath}`);
         const oldStackDetails = readFileSync(stackFilePath);
-        
+
         if (!oldStackDetails || !oldStackDetails.settings || !oldStackDetails.settings.hasOwnProperty('version')) {
           throw new Error(`${JSON.stringify(oldStackDetails)} is invalid!`);
         }
-        
+
         const oldStackDate = new Date(oldStackDetails.settings.version).toString();
         log.debug(`Old stack version: ${oldStackDetails.settings.version} (${oldStackDate})`);
 
@@ -100,7 +100,7 @@ export const sanitizeStack = (importConfig: ImportConfig) => {
         } else if (oldStackDate === newStackDate) {
           return Promise.resolve();
         }
-        
+
         log.debug('Updating stack version to preserve compatibility');
 
         return httpClient
@@ -113,7 +113,7 @@ export const sanitizeStack = (importConfig: ImportConfig) => {
             log.info(`Stack version preserved successfully!\n${JSON.stringify(response.data)}`);
           });
       }
-      
+
       throw new Error(`Unexpected stack details ${stackDetails && JSON.stringify(stackDetails.data)}`);
     });
   } catch (error) {
@@ -143,34 +143,34 @@ export const field_rules_update = (importConfig: ImportConfig, ctPath: string) =
         log.debug('Processing field rules UID mapping');
         const ct_field_visibility_uid = JSON.parse(data);
         let ct_files = readdirSync(ctPath);
-        
+
         if (ct_field_visibility_uid && ct_field_visibility_uid != 'undefined') {
           log.debug(`Processing ${ct_field_visibility_uid.length} content types with field rules`);
-          
+
           for (const ele of ct_field_visibility_uid) {
             if (ct_files.indexOf(ele + '.json') > -1) {
               log.debug(`Updating field rules for content type: ${ele}`);
-              
+
               let schema = require(path.resolve(ctPath, ele));
               let fieldRuleLength = schema.field_rules.length;
-              
+
               for (let k = 0; k < fieldRuleLength; k++) {
                 let fieldRuleConditionLength = schema.field_rules[k].conditions.length;
-                
+
                 for (let i = 0; i < fieldRuleConditionLength; i++) {
                   if (schema.field_rules[k].conditions[i].operand_field === 'reference') {
                     log.debug(`Processing reference field rule condition`);
-                    
+
                     let entryMapperPath = path.resolve(importConfig.data, 'mapper', 'entries');
                     let entryUidMapperPath = path.join(entryMapperPath, 'uid-mapping.json');
                     let fieldRulesValue = schema.field_rules[k].conditions[i].value;
                     let fieldRulesArray = fieldRulesValue.split('.');
                     let updatedValue = [];
-                    
+
                     for (const element of fieldRulesArray) {
                       let splitedFieldRulesValue = element;
                       let oldUid = readFileSync(path.join(entryUidMapperPath));
-                      
+
                       if (oldUid.hasOwnProperty(splitedFieldRulesValue)) {
                         log.debug(`Mapped UID: ${splitedFieldRulesValue} -> ${oldUid[splitedFieldRulesValue]}`);
                         updatedValue.push(oldUid[splitedFieldRulesValue]);
@@ -182,19 +182,19 @@ export const field_rules_update = (importConfig: ImportConfig, ctPath: string) =
                     schema.field_rules[k].conditions[i].value = updatedValue.join('.');
                   }
                 }
-                
+
                 const stackAPIClient = client.stack({
                   api_key: importConfig.target_stack,
                   management_token: importConfig.management_token,
                 });
                 let ctObj = stackAPIClient.contentType(schema.uid);
-                
+
                 //NOTE:- Remove this code Object.assign(ctObj, _.cloneDeep(schema)); -> security vulnerabilities due to mass assignment
                 const schemaKeys = Object.keys(schema);
                 for (const key of schemaKeys) {
                   ctObj[key] = _.cloneDeep(schema[key]);
                 }
-                
+
                 ctObj
                   .update()
                   .then(() => {
@@ -220,17 +220,17 @@ export const getConfig = () => {
   return config;
 };
 
-export const formatError = (error: any) => {  
+export const formatError = (error: any) => {
   try {
     if (typeof error === 'string') {
       error = JSON.parse(error);
     } else {
       error = JSON.parse(error.message);
     }
-  } catch (e) { }
-  
+  } catch (e) {}
+
   let message = error?.errorMessage || error?.error_message || error?.message || error;
-  
+
   if (error && error.errors && Object.keys(error.errors).length > 0) {
     Object.keys(error.errors).forEach((e) => {
       let entity = e;
@@ -241,7 +241,7 @@ export const formatError = (error: any) => {
       message += ' ' + [entity, error.errors[e]].join(' ');
     });
   }
-  
+
   return message;
 };
 
@@ -251,15 +251,15 @@ export const executeTask = (
   options: { concurrency: number },
 ) => {
   log.debug(`Executing ${tasks.length} tasks with concurrency: ${options.concurrency}`);
-  
+
   if (typeof handler !== 'function') {
     log.error('Invalid handler function provided for task execution');
     throw new Error('Invalid handler');
   }
-  
+
   const { concurrency = 1 } = options;
   const limit = promiseLimit(concurrency);
-  
+
   return Promise.all(
     tasks.map((task) => {
       return limit(() => handler(task));
@@ -270,10 +270,10 @@ export const executeTask = (
 export const validateBranch = async (stackAPIClient: any, config: ImportConfig, branch: any) => {
   return new Promise(async (resolve, reject) => {
     log.debug(`Validating branch: ${branch}`);
-    
+
     try {
       const data = await stackAPIClient.branch(branch).fetch();
-      
+
       if (data && typeof data === 'object') {
         if (data.error_message) {
           log.error(`Branch validation failed: ${data.error_message}`);
@@ -299,12 +299,172 @@ export const formatDate = (date: Date = new Date()) => {
     .getDate()
     .toString()
     .padStart(2, '0')}T${date.getHours().toString().padStart(2, '0')}-${date
-      .getMinutes()
-      .toString()
-      .padStart(2, '0')}-${date.getSeconds().toString().padStart(2, '0')}-${date
-        .getMilliseconds()
-        .toString()
-        .padStart(3, '0')}Z`;
+    .getMinutes()
+    .toString()
+    .padStart(2, '0')}-${date.getSeconds().toString().padStart(2, '0')}-${date
+    .getMilliseconds()
+    .toString()
+    .padStart(3, '0')}Z`;
 
   return formattedDate;
+};
+
+export const selectBranchFromDirectory = async (contentDir: string): Promise<{ branchPath: string } | null> => {
+  log.debug('Selecting branch directory from directory structure');
+
+  const branchesJsonPath = path.join(contentDir, 'branches.json');
+  if (!fileExistsSync(branchesJsonPath)) {
+    log.debug('No branches.json found - not a branch-enabled export');
+    return null;
+  }
+
+  log.debug('Found branches.json - handling branch selection');
+
+  try {
+    const branchesData = readFileSync(branchesJsonPath);
+    const branches = Array.isArray(branchesData) ? branchesData : [];
+
+    if (branches.length === 0) {
+      log.debug('No branches found in branches.json - not a branch-enabled export');
+      return null;
+    }
+
+    if (branches.length === 1) {
+      const singleBranch = branches[0];
+      const branchPath = path.join(contentDir, singleBranch.uid);
+
+      if (!fileExistsSync(branchPath)) {
+        log.warn(`Branch path does not exist: ${branchPath}, not a valid branch export`);
+        return null;
+      }
+
+      log.debug(`Single branch detected: ${singleBranch.uid} - using path: ${branchPath}`);
+      return { branchPath };
+    } else {
+      log.debug(`Multiple branches detected: ${branches.map((b) => b.uid).join(', ')}`);
+
+      const branchNames = branches.map((b) => b.uid);
+      const selectedBranch = await askBranchSelection(branchNames);
+
+      const selectedBranchPath = path.join(contentDir, selectedBranch);
+
+      if (!fileExistsSync(selectedBranchPath)) {
+        log.warn(`Selected branch path does not exist: ${selectedBranchPath}, not a valid branch export`);
+        return null;
+      }
+
+      log.debug(`User selected branch directory: ${selectedBranch} - using path: ${selectedBranchPath}`);
+      return { branchPath: selectedBranchPath };
+    }
+  } catch (error) {
+    log.error(`Error reading branches.json: ${error}`);
+    throw new Error(`Failed to read branches.json: ${error}`);
+  }
+};
+
+export const resolveImportPath = async (importConfig: ImportConfig, stackAPIClient: any): Promise<string> => {
+  log.debug('Resolving import path based on directory structure');
+
+  const contentDir = importConfig.contentDir || importConfig.data;
+  log.debug(`Content directory: ${contentDir}`);
+
+  if (!fileExistsSync(contentDir)) {
+    throw new Error(`Content directory does not exist: ${contentDir}`);
+  }
+
+  if (importConfig.branchName) {
+    log.debug(`User specified branch: ${importConfig.branchName}`);
+
+    const currentDirName = path.basename(contentDir);
+    if (currentDirName === importConfig.branchName) {
+      log.debug(`Already in correct branch directory: ${contentDir}`);
+      return contentDir;
+    }
+
+    const branchPath = path.join(contentDir, importConfig.branchName);
+    if (fileExistsSync(branchPath)) {
+      log.debug(`Navigating to specified branch directory: ${branchPath}`);
+      return branchPath;
+    }
+
+    log.debug(`Branch directory not found: ${branchPath}, using contentDir as-is`);
+    return contentDir;
+  }
+
+  const exportInfoPath = path.join(contentDir, 'export-info.json');
+  if (fileExistsSync(exportInfoPath)) {
+    log.debug('Found export-info.json - using contentDir as-is (v2 export)');
+    return contentDir;
+  }
+
+  const moduleTypes = [
+    'content-types',
+    'global-fields',
+    'entries',
+    'extensions',
+    'workflows',
+    'custom-roles',
+    'assets',
+  ];
+  const hasModuleFolders = moduleTypes.some((moduleType) => fileExistsSync(path.join(contentDir, moduleType)));
+
+  if (hasModuleFolders) {
+    log.debug('Found module folders ');
+    return contentDir;
+  }
+
+  const branchSelection = await selectBranchFromDirectory(contentDir);
+  if (branchSelection) {
+    return branchSelection.branchPath;
+  }
+
+  log.debug('No specific structure detected - using contentDir as-is');
+  return contentDir;
+};
+
+export const updateImportConfigWithResolvedPath = (importConfig: ImportConfig, resolvedPath: string): void => {
+  log.debug(`Updating import config with resolved path: ${resolvedPath}`);
+
+  if (!fileExistsSync(resolvedPath)) {
+    log.warn(`Resolved path does not exist: ${resolvedPath}, skipping config update`);
+    return;
+  }
+
+  importConfig.branchDir = resolvedPath;
+
+  importConfig.contentDir = resolvedPath;
+
+  importConfig.data = resolvedPath;
+
+  log.debug(
+    `Import config updated - contentDir: ${importConfig.contentDir}, branchDir: ${importConfig.branchDir}, data: ${importConfig.data}`,
+  );
+};
+
+export const shouldUseUserSpecifiedPath = (importConfig: ImportConfig): boolean => {
+  if (importConfig.moduleName) {
+    log.debug(`User specified module flag: ${importConfig.moduleName}`);
+    return true;
+  }
+
+  if (importConfig.branchName) {
+    log.debug(`User specified branch explicitly: ${importConfig.branchName}`);
+    return true;
+  }
+
+  return false;
+};
+
+export const executeImportPathLogic = async (importConfig: ImportConfig, stackAPIClient: any): Promise<string> => {
+  log.debug('Executing import path resolution logic');
+
+  const resolvedPath = await resolveImportPath(importConfig, stackAPIClient);
+
+  updateImportConfigWithResolvedPath(importConfig, resolvedPath);
+
+  if (shouldUseUserSpecifiedPath(importConfig)) {
+    log.debug('User specified path explicitly - but path has been resolved and config updated');
+  }
+
+  return resolvedPath;
 };
