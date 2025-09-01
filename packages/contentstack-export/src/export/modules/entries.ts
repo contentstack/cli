@@ -5,10 +5,10 @@ import { sanitizePath } from '@contentstack/cli-utilities';
 
 import {
   fsUtil,
-  EXPORT_PROCESS_NAMES,
-  EXPORT_MODULE_CONTEXTS,
-  EXPORT_PROCESS_STATUS,
-  EXPORT_MODULE_NAMES,
+  PROCESS_NAMES,
+  MODULE_CONTEXTS,
+  PROCESS_STATUS,
+  MODULE_NAMES,
 } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ExportConfig, ModuleClassParams } from '../../types';
@@ -58,8 +58,8 @@ export default class EntriesExport extends BaseClass {
       'schema.json',
     );
     this.projectInstance = new ExportProjects(this.exportConfig);
-    this.exportConfig.context.module = EXPORT_MODULE_CONTEXTS.ENTRIES;
-    this.currentModuleName = EXPORT_MODULE_NAMES[EXPORT_MODULE_CONTEXTS.ENTRIES];
+    this.exportConfig.context.module = MODULE_CONTEXTS.ENTRIES;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.ENTRIES];
   }
 
   async start() {
@@ -109,22 +109,22 @@ export default class EntriesExport extends BaseClass {
 
       // Add sub-processes
       if (totalEntriesCount > 0) {
-        progress.addProcess(EXPORT_PROCESS_NAMES.ENTRIES, totalEntriesCount);
+        progress.addProcess(PROCESS_NAMES.ENTRIES, totalEntriesCount);
 
         if (this.entriesConfig.exportVersions) {
-          progress.addProcess(EXPORT_PROCESS_NAMES.ENTRY_VERSIONS, totalEntriesCount);
+          progress.addProcess(PROCESS_NAMES.ENTRY_VERSIONS, totalEntriesCount);
         }
 
         if (this.exportVariantEntry) {
-          progress.addProcess(EXPORT_PROCESS_NAMES.VARIANT_ENTRIES, 0);
+          progress.addProcess(PROCESS_NAMES.VARIANT_ENTRIES, 0);
         }
       }
 
       // Process entry collections
       if (totalEntriesCount > 0) {
         progress
-          .startProcess(EXPORT_PROCESS_NAMES.ENTRIES)
-          .updateStatus(EXPORT_PROCESS_STATUS[EXPORT_PROCESS_NAMES.ENTRIES].PROCESSING, EXPORT_PROCESS_NAMES.ENTRIES);
+          .startProcess(PROCESS_NAMES.ENTRIES)
+          .updateStatus(PROCESS_STATUS[PROCESS_NAMES.ENTRIES].PROCESSING, PROCESS_NAMES.ENTRIES);
 
         for (let entryRequestOption of entryRequestOptions) {
           try {
@@ -147,20 +147,20 @@ export default class EntriesExport extends BaseClass {
             this.progressManager?.tick(
               false,
               `${entryRequestOption.contentType}:${entryRequestOption.locale}`,
-              error?.message || EXPORT_PROCESS_STATUS[EXPORT_PROCESS_NAMES.ENTRIES].FAILED,
-              EXPORT_PROCESS_NAMES.ENTRIES,
+              error?.message || PROCESS_STATUS[PROCESS_NAMES.ENTRIES].FAILED,
+              PROCESS_NAMES.ENTRIES,
             );
             throw error;
           }
         }
-        progress.completeProcess(EXPORT_PROCESS_NAMES.ENTRIES, true);
+        progress.completeProcess(PROCESS_NAMES.ENTRIES, true);
 
         if (this.entriesConfig.exportVersions) {
-          progress.completeProcess(EXPORT_PROCESS_NAMES.ENTRY_VERSIONS, true);
+          progress.completeProcess(PROCESS_NAMES.ENTRY_VERSIONS, true);
         }
 
         if (this.exportVariantEntry) {
-          progress.completeProcess(EXPORT_PROCESS_NAMES.VARIANT_ENTRIES, true);
+          progress.completeProcess(PROCESS_NAMES.VARIANT_ENTRIES, true);
         }
       }
 
@@ -334,7 +334,7 @@ export default class EntriesExport extends BaseClass {
 
       // Track progress for individual entries
       entriesSearchResponse.items.forEach((entry: any) => {
-        this.progressManager?.tick(true, `entry: ${entry.uid}`, null, EXPORT_PROCESS_NAMES.ENTRIES);
+        this.progressManager?.tick(true, `entry: ${entry.uid}`, null, PROCESS_NAMES.ENTRIES);
       });
 
       if (this.entriesConfig.exportVersions) {
@@ -407,7 +407,7 @@ export default class EntriesExport extends BaseClass {
       log.debug(`Writing versioned entry to: ${versionFilePath}`, this.exportConfig.context);
       fsUtil.writeFile(versionFilePath, response);
       // Track version progress if the process exists
-      this.progressManager?.tick(true, `version: ${entry.uid}`, null, EXPORT_PROCESS_NAMES.ENTRY_VERSIONS);
+      this.progressManager?.tick(true, `version: ${entry.uid}`, null, PROCESS_NAMES.ENTRY_VERSIONS);
       log.success(
         messageHandler.parse('ENTRIES_VERSIONED_EXPORT_SUCCESS', options.contentType, entry.uid, options.locale),
         this.exportConfig.context,
@@ -419,8 +419,8 @@ export default class EntriesExport extends BaseClass {
       this.progressManager?.tick(
         false,
         `version: ${uid}`,
-        error?.message || EXPORT_PROCESS_STATUS[EXPORT_PROCESS_NAMES.ENTRY_VERSIONS].FAILED,
-        EXPORT_PROCESS_NAMES.ENTRY_VERSIONS,
+        error?.message || PROCESS_STATUS[PROCESS_NAMES.ENTRY_VERSIONS].FAILED,
+        PROCESS_NAMES.ENTRY_VERSIONS,
       );
       handleAndLogError(
         error,

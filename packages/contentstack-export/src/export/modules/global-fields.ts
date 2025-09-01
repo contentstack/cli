@@ -3,7 +3,7 @@ import { ContentstackClient, handleAndLogError, messageHandler, log, sanitizePat
 
 import BaseClass from './base-class';
 import { ExportConfig, ModuleClassParams } from '../../types';
-import { fsUtil, EXPORT_MODULE_CONTEXTS, EXPORT_MODULE_NAMES } from '../../utils';
+import { fsUtil, MODULE_CONTEXTS, MODULE_NAMES } from '../../utils';
 
 export default class GlobalFieldsExport extends BaseClass {
   private stackAPIClient: ReturnType<ContentstackClient['stack']>;
@@ -44,8 +44,8 @@ export default class GlobalFieldsExport extends BaseClass {
     );
     this.globalFields = [];
     this.applyQueryFilters(this.qs, 'global-fields');
-    this.exportConfig.context.module = EXPORT_MODULE_CONTEXTS.GLOBAL_FIELDS;
-    this.currentModuleName = EXPORT_MODULE_NAMES[EXPORT_MODULE_CONTEXTS.GLOBAL_FIELDS];
+    this.exportConfig.context.module = MODULE_CONTEXTS.GLOBAL_FIELDS;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.GLOBAL_FIELDS];
   }
 
   async start() {

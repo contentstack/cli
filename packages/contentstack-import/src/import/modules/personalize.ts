@@ -2,7 +2,7 @@ import { Import } from '@contentstack/cli-variants';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
 import BaseClass from './base-class';
 import { ImportConfig, ModuleClassParams } from '../../types';
-import { IMPORT_PROCESS_NAMES, IMPORT_MODULE_CONTEXTS, IMPORT_PROCESS_STATUS, IMPORT_MODULE_NAMES } from '../../utils';
+import { PROCESS_NAMES, MODULE_CONTEXTS, PROCESS_STATUS, MODULE_NAMES } from '../../utils';
 
 export default class ImportPersonalize extends BaseClass {
   private config: ImportConfig;
@@ -18,8 +18,8 @@ export default class ImportPersonalize extends BaseClass {
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
     this.config = importConfig;
-    this.config.context.module = IMPORT_MODULE_CONTEXTS.PERSONALIZE;
-    this.currentModuleName = IMPORT_MODULE_NAMES[IMPORT_MODULE_CONTEXTS.PERSONALIZE];
+    this.config.context.module = MODULE_CONTEXTS.PERSONALIZE;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.PERSONALIZE];
     this.personalizeConfig = importConfig.modules.personalize;
   }
 
@@ -66,15 +66,12 @@ export default class ImportPersonalize extends BaseClass {
   }
 
   private addProjectProcess(progress: any) {
-    progress.addProcess(IMPORT_PROCESS_NAMES.PERSONALIZE_PROJECTS, 1);
-    log.debug(
-      `Added ${IMPORT_PROCESS_NAMES.PERSONALIZE_PROJECTS} process to personalize progress`,
-      this.config.context,
-    );
+    log.debug('Adding personalize project process', this.config.context);
+    progress.addProcess(PROCESS_NAMES.PERSONALIZE_PROJECTS, 1);
   }
 
-  private addModuleProcesses(progress: any, moduleCount: number) {
-    if (moduleCount > 0) {
+  private addModuleProcesses(progress: any, modulesCount: number) {
+    if (this.personalizeConfig?.importOrder?.length > 0) {
       const order: (keyof typeof this.moduleDisplayMapper)[] = this.personalizeConfig
         .importOrder as (keyof typeof this.moduleDisplayMapper)[];
 
@@ -91,14 +88,14 @@ export default class ImportPersonalize extends BaseClass {
   }
 
   private async importProjects(progress: any): Promise<void> {
-    progress.updateStatus(IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.PERSONALIZE_PROJECTS].IMPORTING);
+    progress.updateStatus(PROCESS_STATUS[PROCESS_NAMES.PERSONALIZE_PROJECTS].IMPORTING);
     log.debug('Starting projects import for personalization...', this.config.context);
 
     const projectInstance = new Import.Project(this.config);
     projectInstance.setParentProgressManager(progress);
     await projectInstance.import();
 
-    progress.completeProcess(IMPORT_PROCESS_NAMES.PERSONALIZE_PROJECTS, true);
+    progress.completeProcess(PROCESS_NAMES.PERSONALIZE_PROJECTS, true);
   }
 
   private async importModules(progress: any): Promise<void> {
@@ -154,24 +151,12 @@ export default class ImportPersonalize extends BaseClass {
   }
 
   private async analyzePersonalize(): Promise<[boolean, number]> {
-    return this.withLoadingSpinner('PERSONALIZE: Analyzing import configuration...', async () => {
-      if (!this.personalizeConfig.baseURL[this.config.region.name]) {
-        log.debug(`No baseURL found for region: ${this.config.region.name}`, this.config.context);
-        log.info('Skipping Personalize project import, personalize url is not set', this.config.context);
-        this.personalizeConfig.importData = false;
-        return [false, 0];
-      }
-
-      if (this.config.management_token) {
-        log.debug('Management token detected, skipping personalize import', this.config.context);
-        log.info('Skipping Personalize project import when using management token', this.config.context);
-        return [false, 0];
-      }
-
-      const modulesCount = this.personalizeConfig.importData ? this.personalizeConfig.importOrder?.length || 0 : 0;
-
-      log.debug(`Personalize analysis complete: canImport=true, modulesCount=${modulesCount}`, this.config.context);
-      return [true, modulesCount];
-    });
+    log.debug('Analyzing personalize import data...', this.config.context);
+    
+    const hasPersonalizeData = this.personalizeConfig && this.personalizeConfig.importOrder?.length > 0;
+    const modulesCount = this.personalizeConfig?.importOrder?.length || 0;
+    
+    log.debug(`Personalize analysis: enabled=${!!hasPersonalizeData}, modules=${modulesCount}`, this.config.context);
+    return [hasPersonalizeData, modulesCount];
   }
 }

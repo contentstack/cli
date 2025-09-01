@@ -3,6 +3,7 @@ import { resolve as pResolve } from 'node:path';
 import { sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 import { PersonalizeConfig, ExportConfig, AudiencesConfig, AudienceStruct } from '../types';
 import { fsUtil, PersonalizationAdapter } from '../utils';
+import { PROCESS_NAMES, MODULE_CONTEXTS, EXPORT_PROCESS_STATUS } from '../utils/constants';
 
 export default class ExportAudiences extends PersonalizationAdapter<ExportConfig> {
   private audiencesConfig: AudiencesConfig;
@@ -27,7 +28,7 @@ export default class ExportAudiences extends PersonalizationAdapter<ExportConfig
       sanitizePath(this.audiencesConfig.dirName),
     );
     this.audiences = [];
-    this.exportConfig.context.module = 'audiences';
+    this.exportConfig.context.module = MODULE_CONTEXTS.AUDIENCES;
   }
 
   async start() {
@@ -56,24 +57,23 @@ export default class ExportAudiences extends PersonalizationAdapter<ExportConfig
       }
 
       let progress: any;
-      const processName = 'Audiences';
 
       if (this.parentProgressManager) {
         progress = this.parentProgressManager;
         this.progressManager = this.parentProgressManager;
-        progress.updateProcessTotal(processName, this.audiences.length);
+        progress.updateProcessTotal(PROCESS_NAMES.AUDIENCES, this.audiences.length);
       } else {
-        progress = this.createSimpleProgress('Audiences', this.audiences.length);
+        progress = this.createSimpleProgress(PROCESS_NAMES.AUDIENCES, this.audiences.length);
       }
 
       log.debug(`Processing ${this.audiences.length} audiences`, this.exportConfig.context);
-      progress.updateStatus('Sanitizing audiences data...', processName);
+      progress.updateStatus(EXPORT_PROCESS_STATUS[PROCESS_NAMES.AUDIENCES].EXPORTING, PROCESS_NAMES.AUDIENCES);
 
       this.sanitizeAttribs();
       log.debug('Audiences sanitization completed', this.exportConfig.context);
 
       // Write audiences to file
-      progress.updateStatus('Writing audiences data...', processName);
+      progress.updateStatus(EXPORT_PROCESS_STATUS[PROCESS_NAMES.AUDIENCES].EXPORTING, PROCESS_NAMES.AUDIENCES);
       const audiencesFilePath = pResolve(
         sanitizePath(this.audiencesFolderPath),
         sanitizePath(this.audiencesConfig.fileName),
@@ -110,7 +110,7 @@ export default class ExportAudiences extends PersonalizationAdapter<ExportConfig
 
         // Update progress for each processed audience
         if (this.progressManager) {
-          const processName = this.parentProgressManager ? 'Audiences' : undefined;
+          const processName = this.parentProgressManager ? PROCESS_NAMES.AUDIENCES : undefined;
           this.updateProgress(
             true,
             `audience ${index + 1}/${this.audiences.length}: ${

@@ -2,6 +2,7 @@ import * as path from 'path';
 import { sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 import { PersonalizeConfig, ExportConfig, ExperienceStruct } from '../types';
 import { fsUtil, PersonalizationAdapter } from '../utils';
+import { PROCESS_NAMES, MODULE_CONTEXTS, EXPORT_PROCESS_STATUS } from '../utils/constants';
 
 export default class ExportExperiences extends PersonalizationAdapter<ExportConfig> {
   private experiencesFolderPath: string;
@@ -26,7 +27,7 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
       sanitizePath(this.personalizeConfig.dirName),
       'experiences',
     );
-    this.exportConfig.context.module = 'experiences';
+    this.exportConfig.context.module = MODULE_CONTEXTS.EXPERIENCES;
   }
 
   async start() {
@@ -65,7 +66,7 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
       }
 
       let progress: any;
-      const processName = 'Experiences';
+      const processName = PROCESS_NAMES.EXPERIENCES;
 
       if (this.parentProgressManager) {
         progress = this.parentProgressManager;
@@ -73,11 +74,11 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
         progress.updateProcessTotal(processName, experiences.length);
       } else {
         // Create our own progress for standalone execution
-        progress = this.createSimpleProgress('Experiences', experiences.length);
+        progress = this.createSimpleProgress(PROCESS_NAMES.EXPERIENCES, experiences.length);
       }
 
       log.debug(`Processing ${experiences.length} experiences`, this.exportConfig.context);
-      progress.updateStatus('Writing experiences data...', processName);
+      progress.updateStatus(EXPORT_PROCESS_STATUS[PROCESS_NAMES.EXPERIENCES].EXPORTING, processName);
 
       const experiencesFilePath = path.resolve(sanitizePath(this.experiencesFolderPath), 'experiences.json');
       log.debug(`Writing experiences to: ${experiencesFilePath}`, this.exportConfig.context);
@@ -91,7 +92,7 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
         this.exportConfig.context,
       );
 
-      progress.updateStatus('Processing experiences variants and content types...', processName);
+      progress.updateStatus(EXPORT_PROCESS_STATUS[PROCESS_NAMES.EXPERIENCES].EXPORTING, processName);
 
       for (let experienceIndex = 0; experienceIndex < experiences.length; experienceIndex++) {
         const experience = experiences[experienceIndex];
@@ -185,7 +186,7 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
         }
       }
 
-      progress.updateStatus('Writing final mapping files...', processName);
+      progress.updateStatus(EXPORT_PROCESS_STATUS[PROCESS_NAMES.EXPERIENCES].EXPORTING, processName);
 
       // Write final mapping files
       const variantsIdsFilePath = path.resolve(

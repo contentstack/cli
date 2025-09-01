@@ -26,4 +26,4 @@ export {
 export * from './common-helper';
 export * from './log';
 export { lookUpTaxonomy, lookUpTerms } from './taxonomies-helper';
-export { IMPORT_MODULE_CONTEXTS, IMPORT_MODULE_NAMES, IMPORT_PROCESS_NAMES, IMPORT_PROCESS_STATUS } from './constants';
+export { MODULE_CONTEXTS, MODULE_NAMES, PROCESS_NAMES, PROCESS_STATUS } from './constants';

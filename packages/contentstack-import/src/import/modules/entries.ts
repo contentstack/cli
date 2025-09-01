@@ -19,10 +19,10 @@ import {
   lookupAssets,
   fileHelper,
   lookUpTerms,
-  IMPORT_PROCESS_NAMES,
-  IMPORT_MODULE_CONTEXTS,
-  IMPORT_PROCESS_STATUS,
-  IMPORT_MODULE_NAMES,
+  PROCESS_NAMES,
+  MODULE_CONTEXTS,
+  PROCESS_STATUS,
+  MODULE_NAMES,
 } from '../../utils';
 import { ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
@@ -64,8 +64,8 @@ export default class EntriesImport extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = IMPORT_MODULE_CONTEXTS.ENTRIES;
-    this.currentModuleName = IMPORT_MODULE_NAMES[IMPORT_MODULE_CONTEXTS.ENTRIES];
+    this.importConfig.context.module = MODULE_CONTEXTS.ENTRIES;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.ENTRIES];
     this.assetUidMapperPath = path.resolve(sanitizePath(importConfig.data), 'mapper', 'assets', 'uid-mapping.json');
     this.assetUrlMapperPath = path.resolve(sanitizePath(importConfig.data), 'mapper', 'assets', 'url-mapping.json');
     this.entriesMapperPath = path.resolve(sanitizePath(importConfig.data), 'mapper', 'entries');
@@ -114,7 +114,8 @@ export default class EntriesImport extends BaseClass {
     try {
       log.debug('Starting entries import process...', this.importConfig.context);
 
-      const [contentTypesCount, localesCount, totalEntryTasks] = await this.analyzeEntryData();
+      const [contentTypesCount, localesCount, totalEntryTasks, totalEntriesForPublishing] =
+        await this.analyzeEntryData();
       if (contentTypesCount === 0) {
         log.info('No content types found for entry import', this.importConfig.context);
         return;
@@ -125,88 +126,71 @@ export default class EntriesImport extends BaseClass {
         contentTypesCount,
         localesCount,
         totalEntryTasks,
+        totalEntriesForPublishing,
       });
 
       // Step 1: Prepare content types
       progress
-        .startProcess(IMPORT_PROCESS_NAMES.CT_PREPARATION)
-        .updateStatus(
-          IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.CT_PREPARATION].PREPARING,
-          IMPORT_PROCESS_NAMES.CT_PREPARATION,
-        );
+        .startProcess(PROCESS_NAMES.CT_PREPARATION)
+        .updateStatus(PROCESS_STATUS[PROCESS_NAMES.CT_PREPARATION].PREPARING, PROCESS_NAMES.CT_PREPARATION);
       await this.disableMandatoryCTReferences();
-      progress.completeProcess(IMPORT_PROCESS_NAMES.CT_PREPARATION, true);
+      progress.completeProcess(PROCESS_NAMES.CT_PREPARATION, true);
 
       // Step 2: Create entries
       progress
-        .startProcess(IMPORT_PROCESS_NAMES.ENTRIES_CREATE)
-        .updateStatus(
-          IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.ENTRIES_CREATE].CREATING,
-          IMPORT_PROCESS_NAMES.ENTRIES_CREATE,
-        );
+        .startProcess(PROCESS_NAMES.ENTRIES_CREATE)
+        .updateStatus(PROCESS_STATUS[PROCESS_NAMES.ENTRIES_CREATE].CREATING, PROCESS_NAMES.ENTRIES_CREATE);
       await this.processEntryCreation();
-      progress.completeProcess(IMPORT_PROCESS_NAMES.ENTRIES_CREATE, true);
+      progress.completeProcess(PROCESS_NAMES.ENTRIES_CREATE, true);
 
       // Step 3: Replace existing entries if needed
       if (this.importConfig.replaceExisting) {
         progress
-          .startProcess(IMPORT_PROCESS_NAMES.ENTRIES_REPLACE_EXISTING)
+          .startProcess(PROCESS_NAMES.ENTRIES_REPLACE_EXISTING)
           .updateStatus(
-            IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.ENTRIES_REPLACE_EXISTING].REPLACING,
-            IMPORT_PROCESS_NAMES.ENTRIES_REPLACE_EXISTING,
+            PROCESS_STATUS[PROCESS_NAMES.ENTRIES_REPLACE_EXISTING].REPLACING,
+            PROCESS_NAMES.ENTRIES_REPLACE_EXISTING,
           );
         await this.processEntryReplacement();
-        progress.completeProcess(IMPORT_PROCESS_NAMES.ENTRIES_REPLACE_EXISTING, true);
+        progress.completeProcess(PROCESS_NAMES.ENTRIES_REPLACE_EXISTING, true);
       }
 
       // Step 4: Update entries with references
       progress
-        .startProcess(IMPORT_PROCESS_NAMES.REFERENCE_UPDATES)
-        .updateStatus(
-          IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.REFERENCE_UPDATES].UPDATING,
-          IMPORT_PROCESS_NAMES.REFERENCE_UPDATES,
-        );
+        .startProcess(PROCESS_NAMES.REFERENCE_UPDATES)
+        .updateStatus(PROCESS_STATUS[PROCESS_NAMES.REFERENCE_UPDATES].UPDATING, PROCESS_NAMES.REFERENCE_UPDATES);
       await this.processEntryReferenceUpdates();
-      progress.completeProcess(IMPORT_PROCESS_NAMES.REFERENCE_UPDATES, true);
+      progress.completeProcess(PROCESS_NAMES.REFERENCE_UPDATES, true);
 
       // Step 5: Restore content types
       progress
-        .startProcess(IMPORT_PROCESS_NAMES.CT_RESTORATION)
-        .updateStatus(
-          IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.CT_RESTORATION].RESTORING,
-          IMPORT_PROCESS_NAMES.CT_RESTORATION,
-        );
+        .startProcess(PROCESS_NAMES.CT_RESTORATION)
+        .updateStatus(PROCESS_STATUS[PROCESS_NAMES.CT_RESTORATION].RESTORING, PROCESS_NAMES.CT_RESTORATION);
       await this.enableMandatoryCTReferences();
-      progress.completeProcess(IMPORT_PROCESS_NAMES.CT_RESTORATION, true);
+      progress.completeProcess(PROCESS_NAMES.CT_RESTORATION, true);
 
       // Step 6: Update field rules
       progress
-        .startProcess(IMPORT_PROCESS_NAMES.FIELD_RULES_UPDATE)
-        .updateStatus(
-          IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.FIELD_RULES_UPDATE].UPDATING,
-          IMPORT_PROCESS_NAMES.FIELD_RULES_UPDATE,
-        );
+        .startProcess(PROCESS_NAMES.FIELD_RULES_UPDATE)
+        .updateStatus(PROCESS_STATUS[PROCESS_NAMES.FIELD_RULES_UPDATE].UPDATING, PROCESS_NAMES.FIELD_RULES_UPDATE);
       await this.updateFieldRules();
-      progress.completeProcess(IMPORT_PROCESS_NAMES.FIELD_RULES_UPDATE, true);
+      progress.completeProcess(PROCESS_NAMES.FIELD_RULES_UPDATE, true);
 
       // Step 7: Publish entries if not skipped
       if (!this.importConfig.skipEntriesPublish) {
         progress
-          .startProcess(IMPORT_PROCESS_NAMES.ENTRIES_PUBLISH)
-          .updateStatus(
-            IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.ENTRIES_PUBLISH].PUBLISHING,
-            IMPORT_PROCESS_NAMES.ENTRIES_PUBLISH,
-          );
+          .startProcess(PROCESS_NAMES.ENTRIES_PUBLISH)
+          .updateStatus(PROCESS_STATUS[PROCESS_NAMES.ENTRIES_PUBLISH].PUBLISHING, PROCESS_NAMES.ENTRIES_PUBLISH);
         await this.processEntryPublishing();
-        progress.completeProcess(IMPORT_PROCESS_NAMES.ENTRIES_PUBLISH, true);
+        progress.completeProcess(PROCESS_NAMES.ENTRIES_PUBLISH, true);
       }
 
       // Step 8: Cleanup and finalization
       progress
-        .startProcess(IMPORT_PROCESS_NAMES.CLEANUP)
-        .updateStatus(IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.CLEANUP].CLEANING, IMPORT_PROCESS_NAMES.CLEANUP);
+        .startProcess(PROCESS_NAMES.CLEANUP)
+        .updateStatus(PROCESS_STATUS[PROCESS_NAMES.CLEANUP].CLEANING, PROCESS_NAMES.CLEANUP);
       await this.processCleanup();
-      progress.completeProcess(IMPORT_PROCESS_NAMES.CLEANUP, true);
+      progress.completeProcess(PROCESS_NAMES.CLEANUP, true);
 
       this.completeProgress(true);
       log.success('Entries imported successfully', this.importConfig.context);
@@ -218,13 +202,13 @@ export default class EntriesImport extends BaseClass {
     }
   }
 
-  private async analyzeEntryData(): Promise<[number, number, number]> {
+  private async analyzeEntryData(): Promise<[number, number, number, number]> {
     return this.withLoadingSpinner('ENTRIES: Analyzing import data...', async () => {
       log.debug('Loading content types for entry analysis', this.importConfig.context);
 
       this.cTs = fsUtil.readFile(path.join(this.cTsPath, 'schema.json')) as Record<string, unknown>[];
       if (!this.cTs || isEmpty(this.cTs)) {
-        return [0, 0, 0];
+        return [0, 0, 0, 0];
       }
 
       log.debug('Loading installed extensions for entry processing', this.importConfig.context);
@@ -250,38 +234,57 @@ export default class EntriesImport extends BaseClass {
       const localesCount = this.locales.length;
       const totalEntryTasks = contentTypesCount * localesCount;
 
+      // NEW: Count actual entries for publishing
+      let totalEntriesForPublishing = 0;
+      if (!this.importConfig.skipEntriesPublish) {
+        for (let locale of this.locales) {
+          for (let contentType of this.cTs) {
+            const basePath = path.join(this.entriesPath, contentType.uid, locale.code);
+            const fs = new FsUtility({ basePath, indexFileName: 'index.json' });
+            const indexer = fs.indexFileContent;
+            const entriesInThisCTLocale = values(indexer).length;
+            totalEntriesForPublishing += entriesInThisCTLocale;
+          }
+        }
+      }
+
       log.debug(
-        `Analysis complete: ${contentTypesCount} content types, ${localesCount} locales, ${totalEntryTasks} total tasks`,
+        `Analysis complete: ${contentTypesCount} content types, ${localesCount} locales, ${totalEntryTasks} total tasks, ${totalEntriesForPublishing} entries for publishing`,
         this.importConfig.context,
       );
 
-      return [contentTypesCount, localesCount, totalEntryTasks];
+      return [contentTypesCount, localesCount, totalEntryTasks, totalEntriesForPublishing];
     });
   }
 
   private initializeProgress(
     progress: any,
-    counts: { contentTypesCount: number; localesCount: number; totalEntryTasks: number },
+    counts: {
+      contentTypesCount: number;
+      localesCount: number;
+      totalEntryTasks: number;
+      totalEntriesForPublishing: number;
+    },
   ) {
-    const { contentTypesCount, localesCount, totalEntryTasks } = counts;
+    const { contentTypesCount, localesCount, totalEntryTasks, totalEntriesForPublishing } = counts;
 
     // Add main processes
-    progress.addProcess(IMPORT_PROCESS_NAMES.CT_PREPARATION, contentTypesCount);
-    progress.addProcess(IMPORT_PROCESS_NAMES.ENTRIES_CREATE, totalEntryTasks);
+    progress.addProcess(PROCESS_NAMES.CT_PREPARATION, contentTypesCount);
+    progress.addProcess(PROCESS_NAMES.ENTRIES_CREATE, totalEntryTasks);
 
     if (this.importConfig.replaceExisting) {
-      progress.addProcess(IMPORT_PROCESS_NAMES.ENTRIES_REPLACE_EXISTING, totalEntryTasks);
+      progress.addProcess(PROCESS_NAMES.ENTRIES_REPLACE_EXISTING, totalEntryTasks);
     }
 
-    progress.addProcess(IMPORT_PROCESS_NAMES.REFERENCE_UPDATES, totalEntryTasks);
-    progress.addProcess(IMPORT_PROCESS_NAMES.CT_RESTORATION, contentTypesCount);
-    progress.addProcess(IMPORT_PROCESS_NAMES.FIELD_RULES_UPDATE, 1);
+    progress.addProcess(PROCESS_NAMES.REFERENCE_UPDATES, totalEntryTasks);
+    progress.addProcess(PROCESS_NAMES.CT_RESTORATION, contentTypesCount);
+    progress.addProcess(PROCESS_NAMES.FIELD_RULES_UPDATE, 1);
 
     if (!this.importConfig.skipEntriesPublish) {
-      progress.addProcess(IMPORT_PROCESS_NAMES.ENTRIES_PUBLISH, totalEntryTasks);
+      progress.addProcess(PROCESS_NAMES.ENTRIES_PUBLISH, totalEntriesForPublishing);
     }
 
-    progress.addProcess(IMPORT_PROCESS_NAMES.CLEANUP, 1);
+    progress.addProcess(PROCESS_NAMES.CLEANUP, 1);
 
     log.debug(
       `Initialized progress tracking for ${contentTypesCount} content types across ${localesCount} locales`,
@@ -403,7 +406,7 @@ export default class EntriesImport extends BaseClass {
     );
 
     const onSuccess = ({ response: contentType, apiData: { uid } }: any) => {
-      this.progressManager?.tick(true, `content type: ${uid}`, null, IMPORT_PROCESS_NAMES.CT_PREPARATION);
+      this.progressManager?.tick(true, `content type: ${uid}`, null, PROCESS_NAMES.CT_PREPARATION);
       log.success(`${uid} content type references removed temporarily`, this.importConfig.context);
     };
     const onReject = ({ error, apiData: { uid } }: any) => {
@@ -411,7 +414,7 @@ export default class EntriesImport extends BaseClass {
         false,
         `content type: ${uid}`,
         error?.message || 'Failed to update content type',
-        'CT Preparation',
+        PROCESS_NAMES.CT_PREPARATION,
       );
       handleAndLogError(error, { ...this.importConfig.context, uid });
       throw new Error(`${uid} content type references removal failed`);
@@ -523,7 +526,7 @@ export default class EntriesImport extends BaseClass {
 
     if (indexerCount === 0) {
       log.debug(`No entries found for content type ${cTUid} in locale ${locale}`, this.importConfig.context);
-      this.progressManager?.tick(true, `${cTUid} - ${locale} (no entries)`, null, 'Create');
+      //this.progressManager?.tick(true, `${cTUid} - ${locale} (no entries)`, null, PROCESS_NAMES.ENTRIES_CREATE);
       return Promise.resolve();
     }
 
@@ -559,7 +562,7 @@ export default class EntriesImport extends BaseClass {
     log.debug(`Found content type schema for ${cTUid}`, this.importConfig.context);
 
     const onSuccess = ({ response, apiData: entry, additionalInfo }: any) => {
-      this.progressManager?.tick(true, `${entry?.title} - ${entry?.uid}`, null, 'Create');
+      this.progressManager?.tick(true, `${entry?.title} - ${entry?.uid}`, null, PROCESS_NAMES.ENTRIES_CREATE);
       if (additionalInfo[entry.uid]?.isLocalized) {
         let oldUid = additionalInfo[entry.uid].entryOldUid;
         this.entriesForVariant.push({ content_type: cTUid, entry_uid: oldUid, locale });
@@ -596,7 +599,12 @@ export default class EntriesImport extends BaseClass {
 
     const onReject = ({ error, apiData: entry, additionalInfo }: any) => {
       const { title, uid } = entry;
-      this.progressManager?.tick(false, `${title} - ${uid}`, 'Error while creating entries', 'Create');
+      this.progressManager?.tick(
+        false,
+        `${title} - ${uid}`,
+        'Error while creating entries',
+        PROCESS_NAMES.ENTRIES_CREATE,
+      );
       this.entriesForVariant = this.entriesForVariant.filter(
         (item) => !(item.locale === locale && item.entry_uid === uid),
       );
@@ -914,6 +922,7 @@ export default class EntriesImport extends BaseClass {
     const onSuccess = ({ response, apiData: { uid, url, title } }: any) => {
       log.info(`Updated entry: '${title}' of content type ${cTUid} in locale ${locale}`, this.importConfig.context);
       log.debug(`Updated entry references for: ${uid}`, this.importConfig.context);
+      this.progressManager?.tick(true, `content type: ${cTUid}`, null, PROCESS_NAMES.REFERENCE_UPDATES);
     };
     const onReject = ({ error, apiData: { uid, title } }: any) => {
       // NOTE Remove from list if any entry import failed
@@ -1039,7 +1048,7 @@ export default class EntriesImport extends BaseClass {
 
   async enableMandatoryCTReferences(): Promise<void> {
     const onSuccess = ({ response: contentType, apiData: { uid } }: any) => {
-      this.progressManager?.tick(true, `content type: ${uid}`, null, 'CT Restoration');
+      this.progressManager?.tick(true, `content type: ${uid}`, null, PROCESS_NAMES.CT_RESTORATION);
       log.success(`${uid} content type references updated`, this.importConfig.context);
     };
 
@@ -1048,7 +1057,7 @@ export default class EntriesImport extends BaseClass {
         false,
         `content type: ${uid}`,
         error?.message || 'Failed to restore content type',
-        'CT Restoration',
+        PROCESS_NAMES.CT_RESTORATION,
       );
       handleAndLogError(error, { ...this.importConfig.context, uid }, 'Error');
       throw new Error(`Failed to update references of content type ${uid}`);
@@ -1130,7 +1139,6 @@ export default class EntriesImport extends BaseClass {
     let cTsWithFieldRules = fsUtil.readFile(path.join(this.cTsPath + '/field_rules_uid.json')) as Record<string, any>[];
     if (!cTsWithFieldRules || cTsWithFieldRules?.length === 0) {
       log.debug('No content types with field rules found to update', this.importConfig.context);
-      this.progressManager?.tick(true, 'Field rules update completed (no rules found)', null, 'Field Rules Update');
       return;
     }
 
@@ -1218,14 +1226,14 @@ export default class EntriesImport extends BaseClass {
         true,
         `Updated field rules for ${cTsWithFieldRules.length} content types`,
         null,
-        'Field Rules Update',
+        PROCESS_NAMES.FIELD_RULES_UPDATE,
       );
     } catch (error) {
       this.progressManager?.tick(
         false,
         'Field rules update',
         (error as any)?.message || 'Field rules update failed',
-        'Field Rules Update',
+        PROCESS_NAMES.FIELD_RULES_UPDATE,
       );
       throw error;
     }
@@ -1264,7 +1272,7 @@ export default class EntriesImport extends BaseClass {
         true,
         `Published the entry: '${entryUid}' of Content Type '${cTUid}' and Locale '${locale}`,
         null,
-        'Publish',
+        PROCESS_NAMES.ENTRIES_PUBLISH,
       );
     };
     const onReject = ({ error, apiData: { environments, entryUid, locales }, additionalInfo }: any) => {
@@ -1279,7 +1287,7 @@ export default class EntriesImport extends BaseClass {
         false,
         `Failed to publish: '${entryUid}' entry of Content Type '${cTUid}' and Locale '${locale}'`,
         `Failed to publish: '${entryUid}' entry of Content Type '${cTUid}' and Locale '${locale}'`,
-        'Publish',
+        PROCESS_NAMES.ENTRIES_PUBLISH,
       );
     };
 

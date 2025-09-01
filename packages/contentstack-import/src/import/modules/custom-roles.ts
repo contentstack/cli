@@ -4,14 +4,7 @@ import { join } from 'node:path';
 import { forEach, map } from 'lodash';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
 
-import {
-  fsUtil,
-  fileHelper,
-  IMPORT_PROCESS_NAMES,
-  IMPORT_MODULE_CONTEXTS,
-  IMPORT_PROCESS_STATUS,
-  IMPORT_MODULE_NAMES,
-} from '../../utils';
+import { fsUtil, fileHelper, PROCESS_NAMES, MODULE_CONTEXTS, PROCESS_STATUS, MODULE_NAMES } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, CustomRoleConfig } from '../../types';
 
@@ -37,8 +30,8 @@ export default class ImportCustomRoles extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = IMPORT_MODULE_CONTEXTS.CUSTOM_ROLES;
-    this.currentModuleName = IMPORT_MODULE_NAMES[IMPORT_MODULE_CONTEXTS.CUSTOM_ROLES];
+    this.importConfig.context.module = MODULE_CONTEXTS.CUSTOM_ROLES;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.CUSTOM_ROLES];
     this.customRolesConfig = importConfig.modules.customRoles;
     this.customRolesMapperPath = join(this.importConfig.backupDir, 'mapper', 'custom-roles');
     this.customRolesFolderPath = join(this.importConfig.backupDir, this.customRolesConfig.dirName);
@@ -73,10 +66,10 @@ export default class ImportCustomRoles extends BaseClass {
       const progress = this.createSimpleProgress(this.currentModuleName, customRolesCount);
       await this.prepareForImport();
 
-      progress.updateStatus(IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.CUSTOM_ROLES_BUILD_MAPPINGS].BUILDING);
+      progress.updateStatus(PROCESS_STATUS[PROCESS_NAMES.CUSTOM_ROLES_BUILD_MAPPINGS].BUILDING);
       await this.getLocalesUidMap();
 
-      progress.updateStatus(IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.CUSTOM_ROLES_IMPORT].IMPORTING);
+      progress.updateStatus(PROCESS_STATUS[PROCESS_NAMES.CUSTOM_ROLES_IMPORT].IMPORTING);
       await this.importCustomRoles();
 
       this.handleImportResults();
@@ -141,7 +134,12 @@ export default class ImportCustomRoles extends BaseClass {
     const onSuccess = ({ response, apiData: { uid, name } = { uid: null, name: '' } }: any) => {
       this.createdCustomRoles.push(response);
       this.customRolesUidMapper[uid] = response.uid;
-      this.progressManager?.tick(true, `custom role: ${name || uid}`);
+      this.progressManager?.tick(
+        true,
+        `custom role: ${name}`,
+        `custom role: ${name || uid}`,
+        PROCESS_NAMES.CUSTOM_ROLES_IMPORT,
+      );
       log.success(`custom-role '${name}' imported successfully`, this.importConfig.context);
       log.debug(`Custom role import completed: ${name} (${uid})`, this.importConfig.context);
       fsUtil.writeFile(this.customRolesUidMapperPath, this.customRolesUidMapper);
@@ -153,11 +151,21 @@ export default class ImportCustomRoles extends BaseClass {
       log.debug(`Custom role '${name}' import failed`, this.importConfig.context);
 
       if (err?.errors?.name) {
-        this.progressManager?.tick(true, `custom role: ${name} (already exists)`);
+        this.progressManager?.tick(
+          true,
+          `custom role: ${name}`,
+          `custom role: ${name} (already exists)`,
+          PROCESS_NAMES.CUSTOM_ROLES_IMPORT,
+        );
         log.info(`custom-role '${name}' already exists`, this.importConfig.context);
       } else {
         this.failedCustomRoles.push(apiData);
-        this.progressManager?.tick(false, `custom role: ${name}`, error?.message || 'Failed to import custom role');
+        this.progressManager?.tick(
+          false,
+          `custom role: ${name}`,
+          error?.message || 'Failed to import custom role',
+          PROCESS_NAMES.CUSTOM_ROLES_IMPORT,
+        );
         handleAndLogError(error, { ...this.importConfig.context, name }, `custom-role '${name}' failed to be import`);
       }
     };
@@ -199,7 +207,11 @@ export default class ImportCustomRoles extends BaseClass {
       );
       log.debug(`Skipping custom role serialization for: ${customRole.uid}`, this.importConfig.context);
       // Still tick progress for skipped custom roles
-      this.progressManager?.tick(true, `custom role: ${customRole.name} (skipped - already exists)`);
+      this.progressManager?.tick(
+        true,
+        `custom role: ${customRole.name} (skipped - already exists)`,
+        PROCESS_NAMES.CUSTOM_ROLES_IMPORT,
+      );
       apiOptions.entity = undefined;
     } else {
       log.debug(`Processing custom role: ${customRole.name}`, this.importConfig.context);

@@ -5,7 +5,7 @@ import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilit
 
 import BaseClass from './base-class';
 import { ExtensionsConfig, ModuleClassParams } from '../../types';
-import { fsUtil, EXPORT_MODULE_CONTEXTS, EXPORT_MODULE_NAMES } from '../../utils';
+import { fsUtil, MODULE_CONTEXTS, MODULE_NAMES } from '../../utils';
 
 export default class ExportExtensions extends BaseClass {
   private extensionsFolderPath: string;
@@ -22,8 +22,8 @@ export default class ExportExtensions extends BaseClass {
     this.extensionConfig = exportConfig.modules.extensions;
     this.qs = { include_count: true };
     this.applyQueryFilters(this.qs, 'extensions');
-    this.exportConfig.context.module = EXPORT_MODULE_CONTEXTS.EXTENSIONS;
-    this.currentModuleName = EXPORT_MODULE_NAMES[EXPORT_MODULE_CONTEXTS.EXTENSIONS];
+    this.exportConfig.context.module = MODULE_CONTEXTS.EXTENSIONS;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.EXTENSIONS];
   }
 
   async start(): Promise<void> {

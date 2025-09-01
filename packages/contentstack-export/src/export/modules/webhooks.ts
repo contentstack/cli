@@ -5,7 +5,7 @@ import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilit
 
 import BaseClass from './base-class';
 import { WebhookConfig, ModuleClassParams } from '../../types';
-import { fsUtil, EXPORT_MODULE_CONTEXTS, EXPORT_MODULE_NAMES } from '../../utils';
+import { fsUtil, MODULE_CONTEXTS, MODULE_NAMES } from '../../utils';
 
 export default class ExportWebhooks extends BaseClass {
   private webhooks: Record<string, Record<string, string>>;
@@ -22,8 +22,8 @@ export default class ExportWebhooks extends BaseClass {
     this.webhooks = {};
     this.webhookConfig = exportConfig.modules.webhooks;
     this.qs = { include_count: true, asc: 'updated_at' };
-    this.exportConfig.context.module = EXPORT_MODULE_CONTEXTS.WEBHOOKS;
-    this.currentModuleName = EXPORT_MODULE_NAMES[EXPORT_MODULE_CONTEXTS.WEBHOOKS];
+    this.exportConfig.context.module = MODULE_CONTEXTS.WEBHOOKS;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.WEBHOOKS];
   }
 
   async start(): Promise<void> {

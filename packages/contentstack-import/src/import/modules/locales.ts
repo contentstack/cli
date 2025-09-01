@@ -14,10 +14,10 @@ import {
   fsUtil,
   formatError,
   fileHelper,
-  IMPORT_PROCESS_NAMES,
-  IMPORT_MODULE_CONTEXTS,
-  IMPORT_PROCESS_STATUS,
-  IMPORT_MODULE_NAMES,
+  PROCESS_NAMES,
+  MODULE_CONTEXTS,
+  PROCESS_STATUS,
+  MODULE_NAMES,
 } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
 
@@ -49,8 +49,8 @@ export default class ImportLocales extends BaseClass {
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
     this.config = importConfig;
-    this.config.context.module = IMPORT_MODULE_CONTEXTS.LOCALES;
-    this.currentModuleName = IMPORT_MODULE_NAMES[IMPORT_MODULE_CONTEXTS.LOCALES];
+    this.config.context.module = MODULE_CONTEXTS.LOCALES;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.LOCALES];
     this.localeConfig = importConfig.modules.locales;
     this.masterLanguage = importConfig.masterLocale;
     this.masterLanguageConfig = importConfig.modules.masterLocale;
@@ -132,7 +132,7 @@ export default class ImportLocales extends BaseClass {
     const onSuccess = ({ response = {}, apiData: { uid, code } = undefined }: any) => {
       this.langUidMapper[uid] = response.uid;
       this.createdLocales.push(pick(response, [...this.localeConfig.requiredKeys]));
-      this.progressManager?.tick(true, `locale: ${code}`, null, IMPORT_PROCESS_NAMES.LOCALES_CREATE);
+      this.progressManager?.tick(true, `locale: ${code}`, null, PROCESS_NAMES.LOCALES_CREATE);
       log.info(`Created locale: '${code}'`, this.config.context);
       log.debug(`Locale UID mapping: ${uid} → ${response.uid}`, this.config.context);
       fsUtil.writeFile(this.langUidMapperPath, this.langUidMapper);
@@ -143,7 +143,7 @@ export default class ImportLocales extends BaseClass {
         false,
         `locale: ${code}`,
         error?.message || 'Failed to create locale',
-        IMPORT_PROCESS_NAMES.LOCALES_CREATE,
+        PROCESS_NAMES.LOCALES_CREATE,
       );
       if (error?.errorCode === 247) {
         log.info(formatError(error), this.config.context);
@@ -173,17 +173,12 @@ export default class ImportLocales extends BaseClass {
     const onSuccess = ({ response = {}, apiData: { uid, code } = undefined }: any) => {
       log.info(`Updated locale: '${code}'`, this.config.context);
       log.debug(`Locale update completed for: ${code}`, this.config.context);
-      this.progressManager?.tick(true, `locale: ${code}`, null, IMPORT_PROCESS_NAMES.LOCALES_UPDATE);
+      this.progressManager?.tick(true, `locale: ${code}`, null, PROCESS_NAMES.LOCALES_UPDATE);
       fsUtil.writeFile(this.langSuccessPath, this.createdLocales);
     };
 
     const onReject = ({ error, apiData: { uid, code } = undefined }: any) => {
-      this.progressManager?.tick(
-        false,
-        `locale: ${code}`,
-        'Failed to update locale',
-        IMPORT_PROCESS_NAMES.LOCALES_UPDATE,
-      );
+      this.progressManager?.tick(false, `locale: ${code}`, 'Failed to update locale', PROCESS_NAMES.LOCALES_UPDATE);
       log.error(`Language '${code}' failed to update`, this.config.context);
       handleAndLogError(error, { ...this.config.context, code });
       fsUtil.writeFile(this.langFailsPath, this.failedLocales);
@@ -230,10 +225,10 @@ export default class ImportLocales extends BaseClass {
 
   private setupLocalesProgress(localesCount: number) {
     const progress = this.createNestedProgress(this.currentModuleName);
-    progress.addProcess(IMPORT_PROCESS_NAMES.MASTER_LOCALE, 1);
+    progress.addProcess(PROCESS_NAMES.MASTER_LOCALE, 1);
     if (localesCount > 0) {
-      progress.addProcess(IMPORT_PROCESS_NAMES.LOCALES_CREATE, localesCount);
-      progress.addProcess(IMPORT_PROCESS_NAMES.LOCALES_UPDATE, localesCount);
+      progress.addProcess(PROCESS_NAMES.LOCALES_CREATE, localesCount);
+      progress.addProcess(PROCESS_NAMES.LOCALES_UPDATE, localesCount);
     }
     return progress;
   }
@@ -254,18 +249,15 @@ export default class ImportLocales extends BaseClass {
 
   private async processMasterLocale(progress: any): Promise<void> {
     progress
-      .startProcess(IMPORT_PROCESS_NAMES.MASTER_LOCALE)
-      .updateStatus(
-        IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.MASTER_LOCALE].PROCESSING,
-        IMPORT_PROCESS_NAMES.MASTER_LOCALE,
-      );
+      .startProcess(PROCESS_NAMES.MASTER_LOCALE)
+      .updateStatus(PROCESS_STATUS[PROCESS_NAMES.MASTER_LOCALE].PROCESSING, PROCESS_NAMES.MASTER_LOCALE);
     log.debug('Checking and updating master locale', this.config.context);
 
     try {
       await this.checkAndUpdateMasterLocale();
-      progress.completeProcess(IMPORT_PROCESS_NAMES.MASTER_LOCALE, true);
+      progress.completeProcess(PROCESS_NAMES.MASTER_LOCALE, true);
     } catch (error) {
-      progress.completeProcess(IMPORT_PROCESS_NAMES.MASTER_LOCALE, false);
+      progress.completeProcess(PROCESS_NAMES.MASTER_LOCALE, false);
       //NOTE:- Continue locale creation in case of master locale error
       handleAndLogError(error, { ...this.config.context });
     }
@@ -273,36 +265,30 @@ export default class ImportLocales extends BaseClass {
 
   private async processLocaleCreation(progress: any): Promise<void> {
     progress
-      .startProcess(IMPORT_PROCESS_NAMES.LOCALES_CREATE)
-      .updateStatus(
-        IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.LOCALES_CREATE].CREATING,
-        IMPORT_PROCESS_NAMES.LOCALES_CREATE,
-      );
+      .startProcess(PROCESS_NAMES.LOCALES_CREATE)
+      .updateStatus(PROCESS_STATUS[PROCESS_NAMES.LOCALES_CREATE].CREATING, PROCESS_NAMES.LOCALES_CREATE);
     log.debug('Creating locales', this.config.context);
 
     try {
       await this.createLocales();
-      progress.completeProcess(IMPORT_PROCESS_NAMES.LOCALES_CREATE, true);
+      progress.completeProcess(PROCESS_NAMES.LOCALES_CREATE, true);
     } catch (error) {
-      progress.completeProcess(IMPORT_PROCESS_NAMES.LOCALES_CREATE, false);
+      progress.completeProcess(PROCESS_NAMES.LOCALES_CREATE, false);
       throw error;
     }
   }
 
   private async processLocaleUpdate(progress: any): Promise<void> {
     progress
-      .startProcess(IMPORT_PROCESS_NAMES.LOCALES_UPDATE)
-      .updateStatus(
-        IMPORT_PROCESS_STATUS[IMPORT_PROCESS_NAMES.LOCALES_UPDATE].UPDATING,
-        IMPORT_PROCESS_NAMES.LOCALES_UPDATE,
-      );
+      .startProcess(PROCESS_NAMES.LOCALES_UPDATE)
+      .updateStatus(PROCESS_STATUS[PROCESS_NAMES.LOCALES_UPDATE].UPDATING, PROCESS_NAMES.LOCALES_UPDATE);
     log.debug('Updating locales', this.config.context);
 
     try {
       await this.updateLocales();
-      progress.completeProcess(IMPORT_PROCESS_NAMES.LOCALES_UPDATE, true);
+      progress.completeProcess(PROCESS_NAMES.LOCALES_UPDATE, true);
     } catch (error) {
-      progress.completeProcess(IMPORT_PROCESS_NAMES.LOCALES_UPDATE, false);
+      progress.completeProcess(PROCESS_NAMES.LOCALES_UPDATE, false);
       throw error;
     }
   }
@@ -384,6 +370,6 @@ export default class ImportLocales extends BaseClass {
   }
 
   private tickProgress(success: boolean, message: string, error?: string): void {
-    this.progressManager?.tick(success, `master locale: ${message}`, error || null, IMPORT_PROCESS_NAMES.MASTER_LOCALE);
+    this.progressManager?.tick(success, `master locale: ${message}`, error || null, PROCESS_NAMES.MASTER_LOCALE);
   }
 }

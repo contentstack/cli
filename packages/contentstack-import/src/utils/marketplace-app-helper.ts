@@ -79,8 +79,7 @@ export const getOrgUid = async (config: ImportConfig): Promise<string> => {
     .stack({ api_key: config.target_stack })
     .fetch()
     .catch((error: any) => {
-      handleAndLogError(error);
-      trace(error, 'error', true);
+      throw error;
     });
 
   const orgUid = tempStackData?.org_uid || '';
@@ -122,7 +121,7 @@ export const getConfirmationToCreateApps = async (privateApps: any, config: Impo
           log.info('User confirmed to create private apps');
           return Promise.resolve(true);
         } else {
-          log.debug('User declined to create private apps (second prompt)');
+          log.warn('User declined to create private apps (second prompt)');
           return Promise.resolve(false);
         }
       }
@@ -131,7 +130,7 @@ export const getConfirmationToCreateApps = async (privateApps: any, config: Impo
       return Promise.resolve(true);
     }
   } else {
-    log.debug('Force prompt disabled, automatically creating private apps');
+    log.info('Force prompt disabled, automatically creating private apps');
     return Promise.resolve(true);
   }
 };

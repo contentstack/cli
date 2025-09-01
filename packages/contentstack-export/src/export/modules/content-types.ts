@@ -3,7 +3,7 @@ import { ContentstackClient, handleAndLogError, messageHandler, log, sanitizePat
 
 import BaseClass from './base-class';
 import { ExportConfig, ModuleClassParams } from '../../types';
-import { fsUtil, executeTask, EXPORT_MODULE_CONTEXTS, EXPORT_MODULE_NAMES } from '../../utils';
+import { fsUtil, executeTask, MODULE_CONTEXTS, MODULE_NAMES } from '../../utils';
 
 export default class ContentTypesExport extends BaseClass {
   private stackAPIClient: ReturnType<ContentstackClient['stack']>;
@@ -52,8 +52,8 @@ export default class ContentTypesExport extends BaseClass {
       sanitizePath(this.contentTypesConfig.dirName),
     );
     this.contentTypes = [];
-    this.exportConfig.context.module = EXPORT_MODULE_CONTEXTS.CONTENT_TYPES;
-    this.currentModuleName = EXPORT_MODULE_NAMES[EXPORT_MODULE_CONTEXTS.CONTENT_TYPES];
+    this.exportConfig.context.module = MODULE_CONTEXTS.CONTENT_TYPES;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.CONTENT_TYPES];
   }
 
   async start() {

@@ -1,8 +1,9 @@
 import { join, resolve as pResolve } from 'path';
 import { existsSync, readFileSync } from 'fs';
-import { sanitizePath, log } from '@contentstack/cli-utilities';
+import { sanitizePath, log, cliux } from '@contentstack/cli-utilities';
 import { PersonalizationAdapter, askProjectName, fsUtil } from '../utils';
 import { APIConfig, CreateProjectInput, ImportConfig, ProjectStruct } from '../types';
+import { PROCESS_NAMES, MODULE_CONTEXTS, IMPORT_PROCESS_STATUS } from '../utils/constants';
 
 export default class Project extends PersonalizationAdapter<ImportConfig> {
   private projectMapperFolderPath: string;
@@ -22,7 +23,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
       sanitizePath(this.config.modules.personalize.dirName),
       'projects',
     );
-    this.config.context.module = 'project';
+    this.config.context.module = MODULE_CONTEXTS.PROJECTS;
     this.projectsData = [];
   }
 
@@ -37,17 +38,20 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
       const [canImport, projectsCount] = await this.analyzeProjects();
       if (!canImport) {
         log.info('No projects found to import', this.config.context);
+        if (this.parentProgressManager) {
+          this.parentProgressManager.tick(true, 'projects module (no data)', null, PROCESS_NAMES.PROJECTS);
+        }
         return;
       }
 
-      // If we have a parent progress manager, use it as a sub-module
-      // Otherwise create our own simple progress manager
+      // Fix 1: Always use parent progress manager when available
       let progress;
       if (this.parentProgressManager) {
         progress = this.parentProgressManager;
         log.debug('Using parent progress manager for projects import', this.config.context);
+        // Don't create our own progress - use parent's
       } else {
-        progress = this.createSimpleProgress('Projects', projectsCount);
+        progress = this.createSimpleProgress(PROCESS_NAMES.PROJECTS, projectsCount);
         log.debug('Created standalone progress manager for projects import', this.config.context);
       }
 
@@ -55,7 +59,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
 
       for (const project of this.projectsData) {
         if (!this.parentProgressManager) {
-          progress.updateStatus(`Creating project: ${project.name}...`);
+          progress.updateStatus(IMPORT_PROCESS_STATUS[PROCESS_NAMES.PROJECTS].CREATING);
         }
         log.debug(`Processing project: ${project.name}`, this.config.context);
 
@@ -72,7 +76,12 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
               error.includes('personalize.PROJECTS.DUPLICATE_NAME')
             ) {
               log.warn(`Project name already exists, generating new name`, this.config.context);
+
+              // Prevent progress bar corruption with clean newlines
+              cliux.print('\n');
               const projectName = await askProjectName('Copy Of ' + (newName || project.name));
+              cliux.print('\n');
+
               return await createProject(projectName);
             }
             throw error;
@@ -87,10 +96,10 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
           await fsUtil.makeDirectory(this.projectMapperFolderPath);
           fsUtil.writeFile(pResolve(sanitizePath(this.projectMapperFolderPath), 'projects.json'), projectRes);
 
-          this.updateProgress(true, `project: ${project.name}`, undefined, 'Projects');
+          this.updateProgress(true, `project: ${project.name}`, undefined, PROCESS_NAMES.PROJECTS);
           log.success(`Project created successfully: ${projectRes.uid}`, this.config.context);
         } catch (error) {
-          this.updateProgress(false, `project: ${project.name}`, (error as any)?.message, 'Projects');
+          this.updateProgress(false, `project: ${project.name}`, (error as any)?.message, PROCESS_NAMES.PROJECTS);
           throw error;
         }
       }
@@ -105,7 +114,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
         this.config.context,
       );
     } catch (error) {
-      this.config.modules.personalize.importData = false; 
+      this.config.modules.personalize.importData = false;
       if (!this.parentProgressManager) {
         this.completeProgress(false, (error as any)?.message || 'Project import failed');
       }
