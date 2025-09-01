@@ -66,6 +66,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
       if (this.parentProgressManager) {
         progress = this.parentProgressManager;
         log.debug('Using parent progress manager for audiences import', this.config.context);
+        this.parentProgressManager.updateProcessTotal(PROCESS_NAMES.AUDIENCES, audiencesCount);
       } else {
         progress = this.createSimpleProgress(PROCESS_NAMES.AUDIENCES, audiencesCount);
         log.debug('Created standalone progress manager for audiences import', this.config.context);
@@ -107,11 +108,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
           //mapper file is used to check whether audience created or not before creating experience
           this.audiencesUidMapper[uid] = audienceRes?.uid ?? '';
 
-          if (this.parentProgressManager) {
-            this.updateProgress(true, `audience: ${name}`);
-          } else {
-            this.updateProgress(true, `audience: ${name}`, undefined, PROCESS_NAMES.AUDIENCES);
-          }
+          this.updateProgress(true, `audience: ${name}`, undefined, PROCESS_NAMES.AUDIENCES);
           log.debug(`Created audience: ${uid} -> ${audienceRes?.uid}`, this.config.context);
         } catch (error) {
           this.updateProgress(false, `audience: ${name}`, (error as any)?.message, PROCESS_NAMES.AUDIENCES);

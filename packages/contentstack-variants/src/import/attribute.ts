@@ -58,6 +58,8 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
       if (this.parentProgressManager) {
         progress = this.parentProgressManager;
         log.debug('Using parent progress manager for attributes import', this.config.context);
+        this.parentProgressManager.updateProcessTotal(PROCESS_NAMES.ATTRIBUTES, attributesCount);
+
       } else {
         progress = this.createSimpleProgress(PROCESS_NAMES.ATTRIBUTES, attributesCount);
         log.debug('Created standalone progress manager for attributes import', this.config.context);
@@ -80,11 +82,7 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
         // skip creating preset attributes, as they are already present in the system
         if (attribute.__type === 'PRESET') {
           log.debug(`Skipping preset attribute: ${name}`, this.config.context);
-          if (this.parentProgressManager) {
-            this.updateProgress(true, `attribute: ${name} (preset - skipped)`);
-          } else {
-            this.updateProgress(true, `attribute: ${name} (preset - skipped)`, undefined, PROCESS_NAMES.ATTRIBUTES);
-          }
+          this.updateProgress(true, `attribute: ${name} (preset - skipped)`, undefined, PROCESS_NAMES.ATTRIBUTES);
           continue;
         }
 
@@ -95,18 +93,10 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
           //mapper file is used to check whether attribute created or not before creating audience
           this.attributesUidMapper[uid] = attributeRes?.uid ?? '';
 
-          if (this.parentProgressManager) {
-            this.updateProgress(true, `attribute: ${name}`);
-          } else {
-            this.updateProgress(true, `attribute: ${name}`, undefined, PROCESS_NAMES.ATTRIBUTES);
-          }
+          this.updateProgress(true, `attribute: ${name}`, undefined, PROCESS_NAMES.ATTRIBUTES);
           log.debug(`Created attribute: ${uid} -> ${attributeRes?.uid}`, this.config.context);
         } catch (error) {
-          if (this.parentProgressManager) {
-            this.updateProgress(false, `attribute: ${name}`);
-          } else {
-            this.updateProgress(false, `attribute: ${name}`, (error as any)?.message, PROCESS_NAMES.ATTRIBUTES);
-          }
+          this.updateProgress(false, `attribute: ${name}`, (error as any)?.message, PROCESS_NAMES.ATTRIBUTES);
           handleAndLogError(error, this.config.context, `Failed to create attribute: ${name}`);
         }
       }

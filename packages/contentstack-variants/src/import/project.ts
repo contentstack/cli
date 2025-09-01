@@ -81,6 +81,12 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
               cliux.print('\n');
               const projectName = await askProjectName('Copy Of ' + (newName || project.name));
               cliux.print('\n');
+              if (this.parentProgressManager) {
+                this.parentProgressManager.updateStatus(
+                  IMPORT_PROCESS_STATUS[PROCESS_NAMES.PROJECTS].CREATING,
+                  PROCESS_NAMES.PROJECTS,
+                );
+              }
 
               return await createProject(projectName);
             }

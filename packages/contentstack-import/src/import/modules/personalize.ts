@@ -9,10 +9,10 @@ export default class ImportPersonalize extends BaseClass {
   public personalizeConfig: ImportConfig['modules']['personalize'];
 
   private readonly moduleDisplayMapper = {
-    events: 'events',
-    attributes: 'attributes',
-    audiences: 'audiences',
-    experiences: 'experiences',
+    events: 'Events',       
+    attributes: 'Attributes' , 
+    audiences: 'Audiences',  
+    experiences: 'Experiences', 
   };
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
@@ -66,12 +66,12 @@ export default class ImportPersonalize extends BaseClass {
   }
 
   private addProjectProcess(progress: any) {
-    log.debug('Adding personalize project process', this.config.context);
     progress.addProcess(PROCESS_NAMES.PERSONALIZE_PROJECTS, 1);
+    log.debug(`Added ${PROCESS_NAMES.PERSONALIZE_PROJECTS} process to personalize progress`, this.config.context);
   }
 
-  private addModuleProcesses(progress: any, modulesCount: number) {
-    if (this.personalizeConfig?.importOrder?.length > 0) {
+  private addModuleProcesses(progress: any, moduleCount: number) {
+    if (moduleCount > 0) {
       const order: (keyof typeof this.moduleDisplayMapper)[] = this.personalizeConfig
         .importOrder as (keyof typeof this.moduleDisplayMapper)[];
 
@@ -151,12 +151,24 @@ export default class ImportPersonalize extends BaseClass {
   }
 
   private async analyzePersonalize(): Promise<[boolean, number]> {
-    log.debug('Analyzing personalize import data...', this.config.context);
-    
-    const hasPersonalizeData = this.personalizeConfig && this.personalizeConfig.importOrder?.length > 0;
-    const modulesCount = this.personalizeConfig?.importOrder?.length || 0;
-    
-    log.debug(`Personalize analysis: enabled=${!!hasPersonalizeData}, modules=${modulesCount}`, this.config.context);
-    return [hasPersonalizeData, modulesCount];
+    return this.withLoadingSpinner('PERSONALIZE: Analyzing import configuration...', async () => {
+      if (!this.personalizeConfig.baseURL[this.config.region.name]) {
+        log.debug(`No baseURL found for region: ${this.config.region.name}`, this.config.context);
+        log.info('Skipping Personalize project import, personalize url is not set', this.config.context);
+        this.personalizeConfig.importData = false;
+        return [false, 0];
+      }
+
+      if (this.config.management_token) {
+        log.debug('Management token detected, skipping personalize import', this.config.context);
+        log.info('Skipping Personalize project import when using management token', this.config.context);
+        return [false, 0];
+      }
+
+      const modulesCount = this.personalizeConfig.importData ? this.personalizeConfig.importOrder?.length || 0 : 0;
+
+      log.debug(`Personalize analysis complete: canImport=true, modulesCount=${modulesCount}`, this.config.context);
+      return [true, modulesCount];
+    });
   }
 }

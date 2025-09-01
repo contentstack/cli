@@ -23,6 +23,7 @@ import {
   PublishVariantEntryDto,
 } from '../types';
 import { fsUtil } from '../utils';
+import { PROCESS_NAMES, MODULE_CONTEXTS } from '../utils/constants';
 
 export default class VariantEntries extends VariantAdapter<VariantHttpClient<ImportConfig>> {
   public entriesDirPath: string;
@@ -39,6 +40,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
   private failedVariantPath!: string;
   private failedVariantEntries!: Record<string, any>;
   private environments!: Record<string, any>;
+  public progress: any;
 
   constructor(readonly config: ImportConfig & { helpers?: ImportHelperMethodsConfig }) {
     const conf: APIConfig & AdapterType<VariantHttpClient<ImportConfig>, APIConfig> = {
@@ -61,7 +63,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     this.failedVariantPath = resolve(sanitizePath(this.entriesMapperPath), 'failed-entry-variants.json');
     this.failedVariantEntries = new Map();
     if (this.config && this.config.context) {
-      this.config.context.module = 'variant-entries';
+      this.config.context.module = MODULE_CONTEXTS.VARIANT_ENTRIES;
     }
   }
 
@@ -104,81 +106,86 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         return;
       }
 
-    const entriesUidMapperPath = join(sanitizePath(this.entriesMapperPath), 'uid-mapping.json');
-    const assetUidMapperPath = resolve(sanitizePath(this.config.backupDir), 'mapper', 'assets', 'uid-mapping.json');
-    const assetUrlMapperPath = resolve(sanitizePath(this.config.backupDir), 'mapper', 'assets', 'url-mapping.json');
-    const taxonomiesPath = resolve(
-      sanitizePath(this.config.backupDir),
-      'mapper',
-      sanitizePath(this.config.modules.taxonomies.dirName),
-      'terms',
-      'success.json',
-    );
-    const marketplaceAppMapperPath = resolve(
-      sanitizePath(this.config.backupDir),
-      'mapper',
-      'marketplace_apps',
-      'uid-mapping.json',
-    );
-    const envPath = resolve(sanitizePath(this.config.backupDir), 'environments', 'environments.json');
+      const entriesUidMapperPath = join(sanitizePath(this.entriesMapperPath), 'uid-mapping.json');
+      const assetUidMapperPath = resolve(sanitizePath(this.config.backupDir), 'mapper', 'assets', 'uid-mapping.json');
+      const assetUrlMapperPath = resolve(sanitizePath(this.config.backupDir), 'mapper', 'assets', 'url-mapping.json');
+      const taxonomiesPath = resolve(
+        sanitizePath(this.config.backupDir),
+        'mapper',
+        sanitizePath(this.config.modules.taxonomies.dirName),
+        'terms',
+        'success.json',
+      );
+      const marketplaceAppMapperPath = resolve(
+        sanitizePath(this.config.backupDir),
+        'mapper',
+        'marketplace_apps',
+        'uid-mapping.json',
+      );
+      const envPath = resolve(sanitizePath(this.config.backupDir), 'environments', 'environments.json');
 
-    log.debug('Loading variant ID mapping and dependency data', this.config.context);
+      log.debug('Loading variant ID mapping and dependency data', this.config.context);
 
-    // NOTE Read and store list of variant IDs
-    this.variantIdList = (fsUtil.readFile(variantIdPath, true) || {}) as Record<string, unknown>;
-    if (isEmpty(this.variantIdList)) {
-      log.warn('Empty variant UID data found', this.config.context);
-      return;
-    }
-
-    // NOTE entry relational data lookup dependencies.
-    this.entriesUidMapper = (fsUtil.readFile(entriesUidMapperPath, true) || {}) as Record<string, any>;
-    this.installedExtensions = ((fsUtil.readFile(marketplaceAppMapperPath) as any) || { extension_uid: {} })
-      .extension_uid as Record<string, any>[];
-    this.taxonomies = (fsUtil.readFile(taxonomiesPath, true) || {}) as Record<string, unknown>;
-    this.assetUidMapper = (fsUtil.readFile(assetUidMapperPath, true) || {}) as Record<string, any>;
-    this.assetUrlMapper = (fsUtil.readFile(assetUrlMapperPath, true) || {}) as Record<string, any>;
-    this.environments = (fsUtil.readFile(envPath, true) || {}) as Record<string, any>;
-
-    log.debug(
-      `Loaded dependency data - Entries: ${Object.keys(this.entriesUidMapper).length}, Assets: ${
-        Object.keys(this.assetUidMapper).length
-      }, Taxonomies: ${Object.keys(this.taxonomies).length}`,
-      this.config.context,
-    );
-
-    // If we have a parent progress manager, use it as a sub-module
-    // Otherwise create our own simple progress manager
-    let progress;
-    if (this.parentProgressManager) {
-      progress = this.parentProgressManager;
-      log.debug('Using parent progress manager for variant entries import', this.config.context);
-    } else {
-      progress = this.createSimpleProgress('Variant Entries', entriesForVariants.length);
-      log.debug('Created standalone progress manager for variant entries import', this.config.context);
-    }
-
-    // set the token
-    await this.variantInstance.init();
-
-    log.info(`Processing ${entriesForVariants.length} entries for variant import`, this.config.context);
-    for (const entriesForVariant of entriesForVariants) {
-      try {
-        await this.importVariantEntries(entriesForVariant);
-        this.updateProgress(true, `variant entry: ${entriesForVariant.content_type}/${entriesForVariant.locale}/${entriesForVariant.entry_uid}`, undefined, 'Variant Entries');
-        log.debug(`Successfully processed variant entry: ${entriesForVariant.content_type}/${entriesForVariant.locale}/${entriesForVariant.entry_uid}`, this.config.context);
-      } catch (error) {
-        this.updateProgress(false, `variant entry: ${entriesForVariant.content_type}/${entriesForVariant.locale}/${entriesForVariant.entry_uid}`, (error as any)?.message, 'Variant Entries');
-        handleAndLogError(error, this.config.context, `Failed to import variant entry: ${entriesForVariant.content_type}/${entriesForVariant.locale}/${entriesForVariant.entry_uid}`);
+      // NOTE Read and store list of variant IDs
+      this.variantIdList = (fsUtil.readFile(variantIdPath, true) || {}) as Record<string, unknown>;
+      if (isEmpty(this.variantIdList)) {
+        log.warn('Empty variant UID data found', this.config.context);
+        return;
       }
-    }
 
-    // Only complete progress if we own the progress manager (no parent)
-    if (!this.parentProgressManager) {
-      this.completeProgress(true);
-    }
+      // NOTE entry relational data lookup dependencies.
+      this.entriesUidMapper = (fsUtil.readFile(entriesUidMapperPath, true) || {}) as Record<string, any>;
+      this.installedExtensions = ((fsUtil.readFile(marketplaceAppMapperPath) as any) || { extension_uid: {} })
+        .extension_uid as Record<string, any>[];
+      this.taxonomies = (fsUtil.readFile(taxonomiesPath, true) || {}) as Record<string, unknown>;
+      this.assetUidMapper = (fsUtil.readFile(assetUidMapperPath, true) || {}) as Record<string, any>;
+      this.assetUrlMapper = (fsUtil.readFile(assetUrlMapperPath, true) || {}) as Record<string, any>;
+      this.environments = (fsUtil.readFile(envPath, true) || {}) as Record<string, any>;
 
-    log.success(`Variant entries imported successfully! Total entries: ${entriesForVariants.length} - processing completed`, this.config.context);
+      log.debug(
+        `Loaded dependency data - Entries: ${Object.keys(this.entriesUidMapper).length}, Assets: ${
+          Object.keys(this.assetUidMapper).length
+        }, Taxonomies: ${Object.keys(this.taxonomies).length}`,
+        this.config.context,
+      );
+
+      if (this.parentProgressManager) {
+        this.progress = this.parentProgressManager;
+        log.debug('Using parent progress manager for variant entries import', this.config.context);
+      } else {
+        this.progress = this.createSimpleProgress(PROCESS_NAMES.VARIANT_ENTRIES);
+        log.debug('Created standalone progress manager for variant entries import', this.config.context);
+      }
+
+      // set the token
+      await this.variantInstance.init();
+
+      log.info(`Processing ${entriesForVariants.length} entries for variant import`, this.config.context);
+      for (const entriesForVariant of entriesForVariants) {
+        try {
+          await this.importVariantEntries(entriesForVariant);
+          log.debug(
+            `Successfully processed variant entry: ${entriesForVariant.content_type}/${entriesForVariant.locale}/${entriesForVariant.entry_uid}`,
+            this.config.context,
+          );
+        } catch (error) {
+          handleAndLogError(
+            error,
+            this.config.context,
+            `Failed to import variant entry: ${entriesForVariant.content_type}/${entriesForVariant.locale}/${entriesForVariant.entry_uid}`,
+          );
+        }
+      }
+
+      // Only complete progress if we own the progress manager (no parent)
+      if (!this.parentProgressManager) {
+        this.completeProgress(true);
+      }
+
+      log.success(
+        `Variant entries imported successfully! Total entries: ${entriesForVariants.length} - processing completed`,
+        this.config.context,
+      );
     } catch (error) {
       if (!this.parentProgressManager) {
         this.completeProgress(false, (error as any)?.message || 'Variant entries import failed');
@@ -194,6 +201,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
    * @param {EntryDataForVariantEntries} entriesForVariant - EntryDataForVariantEntries {
    */
   async importVariantEntries(entriesForVariant: EntryDataForVariantEntries) {
+    let totalVariantEntries = 0;
     const variantEntry = this.config.modules.variantEntry;
     const { content_type, locale, entry_uid } = entriesForVariant;
 
@@ -226,6 +234,8 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       try {
         const variantEntries = (await fs.readChunkFiles.next()) as VariantEntryStruct[];
         if (variantEntries?.length) {
+          totalVariantEntries = totalVariantEntries + variantEntries.length;
+          this.progress.updateProcessTotal(PROCESS_NAMES.VARIANT_ENTRIES, totalVariantEntries);
           log.debug(`Processing batch of ${variantEntries.length} variant entries`, this.config.context);
           await this.handleConcurrency(contentType, variantEntries, entriesForVariant);
         }
@@ -283,6 +293,12 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
             `Created entry variant: '${variantUid}' of entry uid ${entryUid} locale '${locale}'`,
             this.config.context,
           );
+          this.updateProgress(
+            true,
+            `variant entry: '${variantUid}' of entry uid ${entryUid} locale '${locale}'`,
+            undefined,
+            PROCESS_NAMES.VARIANT_ENTRIES,
+          );
         };
 
         const onReject = ({ error, apiData }: any) => {
@@ -292,6 +308,13 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
             error,
             this.config.context,
             `Failed to create entry variant: '${variantUid}' of entry uid ${entryUid} locale '${locale}'`,
+          );
+          this.updateProgress(
+            false,
+            `'${variantUid}' of entry uid ${entryUid} locale '${locale}'`,
+            (error as any)?.message ||
+              `Failed to create entry variant: '${variantUid}' of entry uid ${entryUid} locale '${locale}'`,
+            PROCESS_NAMES.VARIANT_ENTRIES,
           );
         };
         // NOTE Find new variant Id by old Id

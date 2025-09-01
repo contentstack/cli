@@ -114,7 +114,7 @@ export default class EntriesImport extends BaseClass {
     try {
       log.debug('Starting entries import process...', this.importConfig.context);
 
-      const [contentTypesCount, localesCount, totalEntryTasks, totalEntriesForPublishing] =
+      const [contentTypesCount, localesCount, totalEntryChunks, totalActualEntries, totalEntriesForPublishing] =
         await this.analyzeEntryData();
       if (contentTypesCount === 0) {
         log.info('No content types found for entry import', this.importConfig.context);
@@ -125,7 +125,8 @@ export default class EntriesImport extends BaseClass {
       this.initializeProgress(progress, {
         contentTypesCount,
         localesCount,
-        totalEntryTasks,
+        totalEntryChunks,
+        totalActualEntries,
         totalEntriesForPublishing,
       });
 
@@ -202,13 +203,13 @@ export default class EntriesImport extends BaseClass {
     }
   }
 
-  private async analyzeEntryData(): Promise<[number, number, number, number]> {
+  private async analyzeEntryData(): Promise<[number, number, number, number, number]> {
     return this.withLoadingSpinner('ENTRIES: Analyzing import data...', async () => {
       log.debug('Loading content types for entry analysis', this.importConfig.context);
 
       this.cTs = fsUtil.readFile(path.join(this.cTsPath, 'schema.json')) as Record<string, unknown>[];
       if (!this.cTs || isEmpty(this.cTs)) {
-        return [0, 0, 0, 0];
+        return [0, 0, 0, 0, 0];
       }
 
       log.debug('Loading installed extensions for entry processing', this.importConfig.context);
@@ -232,28 +233,46 @@ export default class EntriesImport extends BaseClass {
 
       const contentTypesCount = this.cTs.length;
       const localesCount = this.locales.length;
-      const totalEntryTasks = contentTypesCount * localesCount;
-
-      // NEW: Count actual entries for publishing
+      let totalEntryChunks = 0;
+      let totalActualEntries = 0;
       let totalEntriesForPublishing = 0;
-      if (!this.importConfig.skipEntriesPublish) {
-        for (let locale of this.locales) {
-          for (let contentType of this.cTs) {
-            const basePath = path.join(this.entriesPath, contentType.uid, locale.code);
-            const fs = new FsUtility({ basePath, indexFileName: 'index.json' });
-            const indexer = fs.indexFileContent;
-            const entriesInThisCTLocale = values(indexer).length;
-            totalEntriesForPublishing += entriesInThisCTLocale;
+
+      for (let locale of this.locales) {
+        for (let contentType of this.cTs) {
+          const basePath = path.join(this.entriesPath, contentType.uid, locale.code);
+          const fs = new FsUtility({ basePath, indexFileName: 'index.json' });
+          const indexer = fs.indexFileContent;
+          const chunksInThisCTLocale = values(indexer).length;
+          totalEntryChunks += chunksInThisCTLocale;
+
+          for (const _ in indexer) {
+            try {
+              const chunk = await fs.readChunkFiles.next();
+              if (chunk) {
+                const entriesInChunk = values(chunk as Record<string, any>).length;
+                totalActualEntries += entriesInChunk;
+
+                // Count entries with publish details
+                if (!this.importConfig.skipEntriesPublish) {
+                  const publishableEntries = values(chunk as Record<string, any>).filter(
+                    (entry: any) => entry.publish_details && entry.publish_details.length > 0,
+                  );
+                  totalEntriesForPublishing += publishableEntries.length;
+                }
+              }
+            } catch (error) {
+              log.debug(`Error reading chunk for ${contentType.uid}/${locale.code}`, this.importConfig.context);
+            }
           }
         }
       }
 
       log.debug(
-        `Analysis complete: ${contentTypesCount} content types, ${localesCount} locales, ${totalEntryTasks} total tasks, ${totalEntriesForPublishing} entries for publishing`,
+        `Analysis complete: ${contentTypesCount} content types, ${localesCount} locales, ${totalEntryChunks} total chunks, ${totalActualEntries} total entries, ${totalEntriesForPublishing} total publishable entries`,
         this.importConfig.context,
       );
 
-      return [contentTypesCount, localesCount, totalEntryTasks, totalEntriesForPublishing];
+      return [contentTypesCount, localesCount, totalEntryChunks, totalActualEntries, totalEntriesForPublishing];
     });
   }
 
@@ -262,21 +281,22 @@ export default class EntriesImport extends BaseClass {
     counts: {
       contentTypesCount: number;
       localesCount: number;
-      totalEntryTasks: number;
+      totalEntryChunks: number;
+      totalActualEntries: number;
       totalEntriesForPublishing: number;
     },
   ) {
-    const { contentTypesCount, localesCount, totalEntryTasks, totalEntriesForPublishing } = counts;
+    const { contentTypesCount, totalEntryChunks, totalActualEntries, totalEntriesForPublishing } = counts;
 
-    // Add main processes
+    // Use appropriate counts for each process
     progress.addProcess(PROCESS_NAMES.CT_PREPARATION, contentTypesCount);
-    progress.addProcess(PROCESS_NAMES.ENTRIES_CREATE, totalEntryTasks);
+    progress.addProcess(PROCESS_NAMES.ENTRIES_CREATE, totalActualEntries); // Use actual entries
 
     if (this.importConfig.replaceExisting) {
-      progress.addProcess(PROCESS_NAMES.ENTRIES_REPLACE_EXISTING, totalEntryTasks);
+      progress.addProcess(PROCESS_NAMES.ENTRIES_REPLACE_EXISTING, totalActualEntries);
     }
 
-    progress.addProcess(PROCESS_NAMES.REFERENCE_UPDATES, totalEntryTasks);
+    progress.addProcess(PROCESS_NAMES.REFERENCE_UPDATES, totalActualEntries); 
     progress.addProcess(PROCESS_NAMES.CT_RESTORATION, contentTypesCount);
     progress.addProcess(PROCESS_NAMES.FIELD_RULES_UPDATE, 1);
 
@@ -287,7 +307,7 @@ export default class EntriesImport extends BaseClass {
     progress.addProcess(PROCESS_NAMES.CLEANUP, 1);
 
     log.debug(
-      `Initialized progress tracking for ${contentTypesCount} content types across ${localesCount} locales`,
+      `Initialized progress tracking for ${contentTypesCount} content types`,
       this.importConfig.context,
     );
   }
@@ -385,6 +405,7 @@ export default class EntriesImport extends BaseClass {
 
     log.debug('Creating entry data for variant entries', this.importConfig.context);
     this.createEntryDataForVariantEntry();
+    this.progressManager?.tick(true, 'Cleanup completed', null, PROCESS_NAMES.CLEANUP);
   }
 
   /**
@@ -922,7 +943,7 @@ export default class EntriesImport extends BaseClass {
     const onSuccess = ({ response, apiData: { uid, url, title } }: any) => {
       log.info(`Updated entry: '${title}' of content type ${cTUid} in locale ${locale}`, this.importConfig.context);
       log.debug(`Updated entry references for: ${uid}`, this.importConfig.context);
-      this.progressManager?.tick(true, `content type: ${cTUid}`, null, PROCESS_NAMES.REFERENCE_UPDATES);
+      this.progressManager?.tick(true, `${title} - ${uid}`, null, PROCESS_NAMES.REFERENCE_UPDATES);
     };
     const onReject = ({ error, apiData: { uid, title } }: any) => {
       // NOTE Remove from list if any entry import failed
@@ -938,6 +959,12 @@ export default class EntriesImport extends BaseClass {
         entry: { uid: this.entriesUidMapper[uid], title },
         entryId: uid,
       });
+      this.progressManager?.tick(
+        false,
+        `content type: ${cTUid}`,
+        error?.message || 'Failed to update references',
+        PROCESS_NAMES.REFERENCE_UPDATES,
+      );
     };
 
     for (const index in indexer) {
@@ -1221,7 +1248,6 @@ export default class EntriesImport extends BaseClass {
           log.info(`No field rules found in content type ${cTUid} to update`, this.importConfig.context);
         }
       }
-
       this.progressManager?.tick(
         true,
         `Updated field rules for ${cTsWithFieldRules.length} content types`,
