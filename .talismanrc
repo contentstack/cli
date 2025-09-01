@@ -55,4 +55,6 @@ fileignoreconfig:
   checksum: 0ceef8ec8489a05d8ecf07cfa7e92575b0da7d5a6c0ed65b64f46d23aab7074d
 - filename: packages/contentstack-export/src/utils/marketplace-app-helper.ts
   checksum: fcd17c120a0359baeb61b7bd0f8d1ace2662f7f7293d355867f578312fe3a1a0
+- filename: packages/contentstack-variants/src/import/variant-entries.ts
+  checksum: 6e645a3d95903058f32306d306912353272e86e60571919a34125a9cd7b69a59
 version: "1.0"
