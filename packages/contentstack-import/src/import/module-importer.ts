@@ -1,14 +1,13 @@
 import { resolve } from 'path';
 import { AuditFix } from '@contentstack/cli-audit';
 import messages, { $t } from '@contentstack/cli-audit/lib/messages';
-import { addLocale, cliux, ContentstackClient, Logger } from '@contentstack/cli-utilities';
+import { addLocale, cliux, ContentstackClient, Logger, log } from '@contentstack/cli-utilities';
 
 import startModuleImport from './modules';
 import startJSModuleImport from './modules-js';
 import { ImportConfig, Modules } from '../types';
 import {
   backupHandler,
-  log,
   masterLocalDetails,
   sanitizeStack,
   initLogger,
@@ -87,7 +86,7 @@ class ModuleImporter {
   }
 
   async import() {
-    log(this.importConfig, `Starting to import content version ${this.importConfig.contentVersion}`, 'info');
+    log.info(`Starting to import content version ${this.importConfig.contentVersion}`);
 
     // checks for single module or all modules
     if (this.importConfig.singleModuleImport) {
@@ -97,7 +96,7 @@ class ModuleImporter {
   }
 
   async importByModuleByName(moduleName: Modules) {
-    log(this.importConfig, `Starting import of ${moduleName} module`, 'info');
+    log.info(`Starting import of ${moduleName} module`);
     // import the modules by name
     // calls the module runner which inturn calls the module itself
     // NOTE: Implement a mechanism to determine whether module is new or old
@@ -123,11 +122,7 @@ class ModuleImporter {
     // use the algorithm to determine the parallel and sequential execution of modules
     for (let moduleName of this.importConfig.modules.types) {
       if (this.importConfig.globalModules.includes(moduleName) && this.importConfig['exclude-global-modules']) {
-        log(
-          this.importConfig,
-          `Skipping the import of the global module '${moduleName}', as it already exists in the stack.`,
-          'warn',
-        );
+        log.warn(`Skipping the import of the global module '${moduleName}', as it already exists in the stack.`);
         continue;
       }
       await this.importByModuleByName(moduleName);
@@ -141,9 +136,9 @@ class ModuleImporter {
   private async resolveImportPath(): Promise<void> {
     try {
       const resolvedPath = await executeImportPathLogic(this.importConfig, this.stackAPIClient);
-      log(this.importConfig, `Import path resolved to: ${resolvedPath}`, 'debug');
+      log.debug(`Import path resolved to: ${resolvedPath}`);
     } catch (error) {
-      log(this.importConfig, `Failed to resolve import path: ${error}`, 'error');
+      log.error(`Failed to resolve import path: ${error}`);
       // Continue with original path if resolution fails
     }
   }
@@ -183,9 +178,9 @@ class ModuleImporter {
           });
       }
       args.push('--modules', 'field-rules');
-      log(this.importConfig, 'Starting audit process', 'info');
+      log.info('Starting audit process');
       const result = await AuditFix.run(args);
-      log(this.importConfig, 'Audit process completed', 'info');
+      log.info('Audit process completed');
 
       if (result) {
         const { hasFix, config } = result;
@@ -211,7 +206,7 @@ class ModuleImporter {
 
       return true;
     } catch (error) {
-      log(this.importConfig, `Audit failed with following error. ${error}`, 'error');
+      log.error(`Audit failed with following error. ${error}`);
     }
   }
 }
