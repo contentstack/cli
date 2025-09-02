@@ -7,7 +7,7 @@
 
 import * as _ from 'lodash';
 import * as path from 'path';
-import { HttpClient, managementSDKClient, isAuthenticated, sanitizePath, log } from '@contentstack/cli-utilities';
+import { HttpClient, managementSDKClient, isAuthenticated, sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 import { readFileSync, readdirSync, readFile, fileExistsSync } from './file-helper';
 import { askBranchSelection } from './interactive';
 import chalk from 'chalk';
@@ -357,8 +357,8 @@ export const selectBranchFromDirectory = async (contentDir: string): Promise<{ b
       return { branchPath: selectedBranchPath };
     }
   } catch (error) {
-    log.error(`Error reading branches.json: ${error}`);
-    throw new Error(`Failed to read branches.json: ${error}`);
+    handleAndLogError(error, { module: 'branch-selection' }, 'Failed to read branches.json');
+    throw new Error('Failed to read branches.json file. Please ensure the file exists and is valid JSON.');
   }
 };
 
@@ -397,15 +397,7 @@ export const resolveImportPath = async (importConfig: ImportConfig, stackAPIClie
     return contentDir;
   }
 
-  const moduleTypes = [
-    'content-types',
-    'global-fields',
-    'entries',
-    'extensions',
-    'workflows',
-    'custom-roles',
-    'assets',
-  ];
+  const moduleTypes = defaultConfig.modules.types;
   const hasModuleFolders = moduleTypes.some((moduleType) => fileExistsSync(path.join(contentDir, moduleType)));
 
   if (hasModuleFolders) {
@@ -441,19 +433,6 @@ export const updateImportConfigWithResolvedPath = (importConfig: ImportConfig, r
   );
 };
 
-export const shouldUseUserSpecifiedPath = (importConfig: ImportConfig): boolean => {
-  if (importConfig.moduleName) {
-    log.debug(`User specified module flag: ${importConfig.moduleName}`);
-    return true;
-  }
-
-  if (importConfig.branchName) {
-    log.debug(`User specified branch explicitly: ${importConfig.branchName}`);
-    return true;
-  }
-
-  return false;
-};
 
 export const executeImportPathLogic = async (importConfig: ImportConfig, stackAPIClient: any): Promise<string> => {
   log.debug('Executing import path resolution logic');
@@ -461,10 +440,6 @@ export const executeImportPathLogic = async (importConfig: ImportConfig, stackAP
   const resolvedPath = await resolveImportPath(importConfig, stackAPIClient);
 
   updateImportConfigWithResolvedPath(importConfig, resolvedPath);
-
-  if (shouldUseUserSpecifiedPath(importConfig)) {
-    log.debug('User specified path explicitly - but path has been resolved and config updated');
-  }
 
   return resolvedPath;
 };

@@ -13,6 +13,7 @@ import {
   sanitizeStack,
   initLogger,
   setupBranchConfig,
+  executeImportPathLogic,
 } from '../utils';
 
 class ModuleImporter {
@@ -35,6 +36,8 @@ class ModuleImporter {
       this.importConfig.stackName = stackDetails.name as string;
       this.importConfig.org_uid = stackDetails.org_uid as string;
     }
+
+    await this.resolveImportPath();
 
     await setupBranchConfig(this.importConfig, this.stackAPIClient);
     if (this.importConfig.branchAlias && this.importConfig.branchName) {
@@ -128,6 +131,20 @@ class ModuleImporter {
         continue;
       }
       await this.importByModuleByName(moduleName);
+    }
+  }
+
+  /**
+   * Resolves the import path based on directory structure and user configuration
+   * @returns Promise<void>
+   */
+  private async resolveImportPath(): Promise<void> {
+    try {
+      const resolvedPath = await executeImportPathLogic(this.importConfig, this.stackAPIClient);
+      log(this.importConfig, `Import path resolved to: ${resolvedPath}`, 'debug');
+    } catch (error) {
+      log(this.importConfig, `Failed to resolve import path: ${error}`, 'error');
+      // Continue with original path if resolution fails
     }
   }
 

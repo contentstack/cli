@@ -1,17 +1,11 @@
 import { ContentstackClient, getBranchFromAlias, log } from '@contentstack/cli-utilities';
 import { ImportConfig } from 'src/types';
-import { validateBranch, executeImportPathLogic } from './common-helper';
+import { validateBranch } from './common-helper';
 
 export const setupBranchConfig = async (
   config: ImportConfig,
   stackAPIClient: ReturnType<ContentstackClient['stack']>,
 ): Promise<void> => {
-  try {
-    const resolvedPath = await executeImportPathLogic(config, stackAPIClient);
-    log.debug(`Import path resolved to: ${resolvedPath}`);
-  } catch (error) {
-    log.error(`Failed to resolve import path: ${error}`);
-  }
 
   if (config.branchName) {
     await validateBranch(stackAPIClient, config, config.branchName);
@@ -23,7 +17,6 @@ export const setupBranchConfig = async (
     return;
   }
 
-  if (!config.branchName) {
     try {
       const branches = await stackAPIClient
         .branch()
@@ -39,5 +32,4 @@ export const setupBranchConfig = async (
     } catch (error) {
       log.debug('Failed to fetch branches', { error });
     }
-  }
 };
