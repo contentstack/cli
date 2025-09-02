@@ -1,8 +1,8 @@
 fileignoreconfig:
 - filename: package-lock.json
-  checksum: b01e61e606c0f2fd26cee8c27e00f5910973020afa72ddfb9d995f09dff6229f
+  checksum: f05190896a586676aaff19ef4c28a3a07b1c4a256665723453aaeac90773b614
 - filename: pnpm-lock.yaml
-  checksum: e0310a5c5772a87bf606ee80722e29f9d0bc412ce10444f825a5c14dce4c1b88
+  checksum: a1cb283667e727f59fba12ca1ea352acceff8429d6fa65d5786ad505dbd0808b
 - filename: packages/contentstack-import-setup/test/unit/backup-handler.test.ts
   checksum: 0582d62b88834554cf12951c8690a73ef3ddbb78b82d2804d994cf4148e1ef93
 - filename: packages/contentstack-import-setup/test/config.json
@@ -57,8 +57,28 @@ fileignoreconfig:
   checksum: f93aa9b0c964608b60c88d4c72ff33840b58ec900297c4bae1f4ea365aa51048
 - filename: packages/contentstack-auth/test/utils/mfa-handler.test.ts
   checksum: b067f93cf0185d794e8419cc41e8fac96ed790dea8fc48dc083ee242ccacbd4d
-- filename: packages/contentstack-utilities/src/logger/logger.ts
-  checksum: 76429bc87e279624b386f00e7eb3f4ec25621ace7056289f812b9a076d6e184e
+- filename: packages/contentstack-import/src/import/module-importer.ts
+  checksum: 93fac2407e20070aa393f783e5a21093e99424e5fd2873aabc2099ac3ea02b27
+- filename: packages/contentstack-import/src/utils/import-config-handler.ts
+  checksum: bb8093633dc7de888541990623c3e02a482b7e6f5db0ba396bedc20c4c74b782
+- filename: packages/contentstack-import/src/utils/setup-branch.ts
+  checksum: a4a968a20d5ab7cbc08c266819907541bbf793cc098521a5e810ada3cbacbee6
+- filename: packages/contentstack-bulk-publish/src/producer/publish-unpublished-env.js
+  checksum: 96fd15e027f38b156c69f10943ea1d5a70e580fa8a5efeb3286cd7132145c72d
 - filename: packages/contentstack-import/src/import/modules/entries.ts
   checksum: 2fd4e8ecf75e077632a6408d09997f0921d2a3508f9f2cb8f47fe79a28592300
+- filename: packages/contentstack-utilities/src/logger/logger.ts
+  checksum: 76429bc87e279624b386f00e7eb3f4ec25621ace7056289f812b9a076d6e184e
+- filename: packages/contentstack-bootstrap/src/bootstrap/utils.ts
+  checksum: e66a08cb3cd444071688fbad1e14da309f8504f584cfaed85499d32b623e29e8
+- filename: packages/contentstack-bootstrap/messages/index.json
+  checksum: c435ceaa709a7504da303a6ea674e07a89030d8ad4152e7917cd17e7f3e58052
+- filename: packages/contentstack-bootstrap/src/config.ts
+  checksum: 65d300dc729fb84f5446c0b14921555db01fe5c90be3d297e3d0418a37b3696a
+- filename: packages/contentstack-clone/src/commands/cm/stacks/clone.js
+  checksum: 433a84a882ea3f12b27127d47d289dfc64dda6b6fc956369f5851daaa57ae493
+- filename: packages/contentstack-clone/src/lib/util/clone-handler.js
+  checksum: 7024f22a6ed3908d7cf074bbd8e7107e2d9f43bbcc42939b28d360c89d44cc29
+- filename: packages/contentstack-bulk-publish/src/util/generate-bulk-publish-url.js
+  checksum: 5f7c1e2fac3e7fab21e861d609c54ca7191ee09fd076dd0adc66604043bf7a43
 version: "1.0"
