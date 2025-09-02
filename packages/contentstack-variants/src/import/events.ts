@@ -3,6 +3,7 @@ import { existsSync } from 'fs';
 import { sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 import { PersonalizationAdapter, fsUtil } from '../utils';
 import { APIConfig, EventStruct, ImportConfig } from '../types';
+import { PROCESS_NAMES, MODULE_CONTEXTS, IMPORT_PROCESS_STATUS } from '../utils/constants';
 
 export default class Events extends PersonalizationAdapter<ImportConfig> {
   private mapperDirPath: string;
@@ -32,6 +33,7 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
     this.eventsUidMapperPath = resolve(sanitizePath(this.eventMapperDirPath), 'uid-mapping.json');
     this.eventsUidMapper = {};
     this.events = [];
+    this.config.context.module = MODULE_CONTEXTS.EVENTS;
   }
 
   /**
@@ -46,7 +48,7 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
         log.info('No events found to import', this.config.context);
         // Still need to mark as complete for parent progress
         if (this.parentProgressManager) {
-          this.parentProgressManager.tick(true, 'events module (no data)', null, 'Events');
+          this.parentProgressManager.tick(true, 'events module (no data)', null, PROCESS_NAMES.EVENTS);
         }
         return;
       }
@@ -56,8 +58,9 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
       if (this.parentProgressManager) {
         progress = this.parentProgressManager;
         log.debug('Using parent progress manager for events import', this.config.context);
+        this.parentProgressManager.updateProcessTotal(PROCESS_NAMES.EVENTS, eventsCount);
       } else {
-        progress = this.createSimpleProgress('Events', eventsCount);
+        progress = this.createSimpleProgress(PROCESS_NAMES.EVENTS, eventsCount);
         log.debug('Created standalone progress manager for events import', this.config.context);
       }
 
@@ -70,7 +73,7 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
       for (const event of this.events) {
         const { key, description, uid } = event;
         if (!this.parentProgressManager) {
-          progress.updateStatus(`Processing event: ${key}...`);
+          progress.updateStatus(IMPORT_PROCESS_STATUS[PROCESS_NAMES.EVENTS].CREATING);
         }
         log.debug(`Processing event: ${key} (${uid})`, this.config.context);
 
@@ -83,14 +86,14 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
           if (this.parentProgressManager) {
             this.updateProgress(true, `event: ${key}`);
           } else {
-            this.updateProgress(true, `event: ${key}`, undefined, 'Events');
+            this.updateProgress(true, `event: ${key}`, undefined, PROCESS_NAMES.EVENTS);
           }
           log.debug(`Created event: ${uid} -> ${eventRes?.uid}`, this.config.context);
         } catch (error) {
           if (this.parentProgressManager) {
             this.updateProgress(false, `event: ${key}`, (error as any)?.message);
           } else {
-            this.updateProgress(false, `event: ${key}`, (error as any)?.message, 'Events');
+            this.updateProgress(false, `event: ${key}`, (error as any)?.message, PROCESS_NAMES.EVENTS);
           }
           handleAndLogError(error, this.config.context, `Failed to create event: ${key} (${uid})`);
         }

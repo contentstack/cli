@@ -13,7 +13,7 @@ import { FsUtility, log, handleAndLogError } from '@contentstack/cli-utilities';
 
 import config from '../../config';
 import { ModuleClassParams } from '../../types';
-import { formatDate } from '../../utils';
+import { formatDate, PROCESS_NAMES, MODULE_CONTEXTS, MODULE_NAMES, PROCESS_STATUS } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 
 export default class ImportAssets extends BaseClass {
@@ -33,8 +33,8 @@ export default class ImportAssets extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = 'assets';
-    this.currentModuleName = 'Assets';
+    this.importConfig.context.module = MODULE_CONTEXTS.ASSETS;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.ASSETS];
 
     this.assetsPath = join(this.importConfig.backupDir, 'assets');
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'assets');
@@ -74,21 +74,39 @@ export default class ImportAssets extends BaseClass {
 
       // Step 3: Perform import steps based on data
       if (foldersCount > 0) {
-        await this.executeStep(progress, 'Folders', 'Importing folder structure...', () => this.importFolders());
+        await this.executeStep(
+          progress,
+          PROCESS_NAMES.ASSET_FOLDERS,
+          PROCESS_STATUS[PROCESS_NAMES.ASSET_FOLDERS].CREATING,
+          () => this.importFolders(),
+        );
       }
 
       if (this.assetConfig.includeVersionedAssets && versionedAssetsCount > 0) {
-        await this.executeStep(progress, 'Versions', 'Importing versioned assets...', () =>
-          this.importAssets(true),
+        await this.executeStep(
+          progress,
+          PROCESS_NAMES.ASSET_VERSIONS,
+          PROCESS_STATUS[PROCESS_NAMES.ASSET_VERSIONS].IMPORTING,
+          () => this.importAssets(true),
         );
       }
 
       if (assetsCount > 0) {
-        await this.executeStep(progress, 'Upload', 'Uploading asset files...', () => this.importAssets());
+        await this.executeStep(
+          progress,
+          PROCESS_NAMES.ASSET_UPLOAD,
+          PROCESS_STATUS[PROCESS_NAMES.ASSET_UPLOAD].UPLOADING,
+          () => this.importAssets(),
+        );
       }
 
       if (!this.importConfig.skipAssetsPublish && publishableAssetsCount > 0) {
-        await this.executeStep(progress, 'Publish', 'Publishing assets...', () => this.publish());
+        await this.executeStep(
+          progress,
+          PROCESS_NAMES.ASSET_PUBLISH,
+          PROCESS_STATUS[PROCESS_NAMES.ASSET_PUBLISH].PUBLISHING,
+          () => this.publish(),
+        );
       }
 
       this.completeProgress(true);
@@ -119,7 +137,7 @@ export default class ImportAssets extends BaseClass {
 
     const onSuccess = ({ response, apiData: { uid, name } = { uid: null, name: '' } }: any) => {
       this.assetsFolderMap[uid] = response.uid;
-      this.progressManager?.tick(true, `folder: ${name || uid}`, null, 'Folders');
+      this.progressManager?.tick(true, `folder: ${name || uid}`, null, PROCESS_NAMES.ASSET_FOLDERS);
       log.debug(`Created folder: ${name} (Mapped ${uid} → ${response.uid})`, this.importConfig.context);
       log.success(`Created folder: '${name}'`, this.importConfig.context);
     };
@@ -128,8 +146,8 @@ export default class ImportAssets extends BaseClass {
       this.progressManager?.tick(
         false,
         `folder: ${name || uid}`,
-        error?.message || 'Failed to create folder',
-        'Folders',
+        error?.message || PROCESS_STATUS[PROCESS_NAMES.ASSET_FOLDERS].FAILED,
+        PROCESS_NAMES.ASSET_FOLDERS,
       );
       log.error(`${name} folder creation failed.!`, this.importConfig.context);
       handleAndLogError(error, { ...this.importConfig.context, name });
@@ -192,7 +210,7 @@ export default class ImportAssets extends BaseClass {
     const processName = isVersion ? 'import versioned assets' : 'import assets';
     const indexFileName = isVersion ? 'versioned-assets.json' : 'assets.json';
     const basePath = isVersion ? join(this.assetsPath, 'versions') : this.assetsPath;
-    const progressProcessName = isVersion ? 'Versions' : 'Upload';
+    const progressProcessName = isVersion ? PROCESS_NAMES.ASSET_VERSIONS : PROCESS_NAMES.ASSET_UPLOAD;
 
     log.debug(`Importing ${processName} from ${basePath}`, this.importConfig.context);
 
@@ -214,7 +232,7 @@ export default class ImportAssets extends BaseClass {
       this.progressManager?.tick(
         false,
         `asset: ${title || uid}`,
-        error?.message || 'Failed to upload asset',
+        error?.message || PROCESS_STATUS[PROCESS_NAMES.ASSET_UPLOAD].FAILED,
         progressProcessName,
       );
       log.error(`${title} asset upload failed.!`, this.importConfig.context);
@@ -348,7 +366,7 @@ export default class ImportAssets extends BaseClass {
     log.debug(`Found ${indexerCount} asset chunks to publish`, this.importConfig.context);
 
     const onSuccess = ({ apiData: { uid, title } = undefined }: any) => {
-      this.progressManager?.tick(true, `published: ${title || uid}`, null, 'Publish');
+      this.progressManager?.tick(true, `published: ${title || uid}`, null, PROCESS_NAMES.ASSET_PUBLISH);
       log.success(`Asset '${uid}: ${title}' published successfully`, this.importConfig.context);
     };
 
@@ -356,8 +374,8 @@ export default class ImportAssets extends BaseClass {
       this.progressManager?.tick(
         false,
         `publish failed: ${title || uid}`,
-        error?.message || 'Failed to publish asset',
-        'Publish',
+        error?.message || PROCESS_STATUS[PROCESS_NAMES.ASSET_PUBLISH].FAILED,
+        PROCESS_NAMES.ASSET_PUBLISH,
       );
       log.error(`Asset '${uid}: ${title}' not published`, this.importConfig.context);
       handleAndLogError(error, { ...this.importConfig.context, uid, title });
@@ -513,16 +531,16 @@ export default class ImportAssets extends BaseClass {
     const { foldersCount, assetsCount, versionedAssetsCount, publishableAssetsCount } = counts;
 
     if (foldersCount > 0) {
-      progress.addProcess('Folders', foldersCount);
+      progress.addProcess(PROCESS_NAMES.ASSET_FOLDERS, foldersCount);
     }
     if (versionedAssetsCount > 0) {
-      progress.addProcess('Versions', versionedAssetsCount);
+      progress.addProcess(PROCESS_NAMES.ASSET_VERSIONS, versionedAssetsCount);
     }
     if (assetsCount > 0) {
-      progress.addProcess('Upload', assetsCount);
+      progress.addProcess(PROCESS_NAMES.ASSET_UPLOAD, assetsCount);
     }
     if (publishableAssetsCount > 0) {
-      progress.addProcess('Publish', publishableAssetsCount);
+      progress.addProcess(PROCESS_NAMES.ASSET_PUBLISH, publishableAssetsCount);
     }
   }
 

@@ -4,8 +4,8 @@ import { resolve as pResolve } from 'node:path';
 import { handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
-import { fsUtil } from '../../utils';
 import { WebhookConfig, ModuleClassParams } from '../../types';
+import { fsUtil, MODULE_CONTEXTS, MODULE_NAMES } from '../../utils';
 
 export default class ExportWebhooks extends BaseClass {
   private webhooks: Record<string, Record<string, string>>;
@@ -22,8 +22,8 @@ export default class ExportWebhooks extends BaseClass {
     this.webhooks = {};
     this.webhookConfig = exportConfig.modules.webhooks;
     this.qs = { include_count: true, asc: 'updated_at' };
-    this.exportConfig.context.module = 'webhooks';
-    this.currentModuleName = 'Webhooks';
+    this.exportConfig.context.module = MODULE_CONTEXTS.WEBHOOKS;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.WEBHOOKS];
   }
 
   async start(): Promise<void> {

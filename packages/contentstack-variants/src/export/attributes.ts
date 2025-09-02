@@ -3,6 +3,7 @@ import { resolve as pResolve } from 'node:path';
 import { sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 import { PersonalizeConfig, ExportConfig, AttributesConfig, AttributeStruct } from '../types';
 import { fsUtil, PersonalizationAdapter } from '../utils';
+import { PROCESS_NAMES, MODULE_CONTEXTS, EXPORT_PROCESS_STATUS } from '../utils/constants';
 
 export default class ExportAttributes extends PersonalizationAdapter<ExportConfig> {
   private attributesConfig: AttributesConfig;
@@ -27,7 +28,7 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
       sanitizePath(this.attributesConfig.dirName),
     );
     this.attributes = [];
-    this.exportConfig.context.module = 'attributes';
+    this.exportConfig.context.module = MODULE_CONTEXTS.ATTRIBUTES;
   }
 
   async start() {
@@ -55,26 +56,25 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
       }
 
       let progress: any;
-      const processName = 'Attributes';
 
       if (this.parentProgressManager) {
         // Use parent progress manager - we're part of the personalize modules process
         progress = this.parentProgressManager;
         this.progressManager = this.parentProgressManager;
 
-        progress.updateProcessTotal(processName, this.attributes.length); 
+        progress.updateProcessTotal(PROCESS_NAMES.ATTRIBUTES, this.attributes.length);
       } else {
-        progress = this.createSimpleProgress('Attributes', this.attributes.length);
+        progress = this.createSimpleProgress(PROCESS_NAMES.ATTRIBUTES, this.attributes.length);
       }
 
       log.debug(`Processing ${this.attributes.length} attributes`, this.exportConfig.context);
 
-      progress.updateStatus('Sanitizing attributes data...', processName);
+      progress.updateStatus(EXPORT_PROCESS_STATUS[PROCESS_NAMES.ATTRIBUTES].EXPORTING, PROCESS_NAMES.ATTRIBUTES);
 
       this.sanitizeAttribs();
       log.debug('Attributes sanitization completed', this.exportConfig.context);
 
-      progress.updateStatus('Writing attributes data...', processName);
+      progress.updateStatus(EXPORT_PROCESS_STATUS[PROCESS_NAMES.ATTRIBUTES].EXPORTING, PROCESS_NAMES.ATTRIBUTES);
       const attributesFilePath = pResolve(
         sanitizePath(this.attributesFolderPath),
         sanitizePath(this.attributesConfig.fileName),
@@ -111,7 +111,7 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
 
         // Update progress for each processed attribute
         if (this.progressManager) {
-          const processName = this.parentProgressManager ? 'Attributes' : undefined;
+          const processName = this.parentProgressManager ? PROCESS_NAMES.ATTRIBUTES : undefined;
           this.updateProgress(
             true,
             `attribute ${index + 1}/${this.attributes.length}: ${

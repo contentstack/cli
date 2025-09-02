@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync } from 'fs';
 import { join, resolve } from 'path';
 import { FsUtility, sanitizePath, log, handleAndLogError, CLIProgressManager } from '@contentstack/cli-utilities';
+import { PROCESS_NAMES, EXPORT_PROCESS_STATUS } from '../utils/constants';
 
 import { APIConfig, AdapterType, ExportConfig } from '../types';
 import VariantAdapter, { VariantHttpClient } from '../utils/variant-api-adapter';
@@ -74,6 +75,8 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
     let totalVariantCount = 0; // Track total variants found across all entries
     let processedEntries = 0;
 
+    let processInitialized = false;
+
     for (let index = 0; index < entries.length; index++) {
       const entry = entries[index];
       log.debug(
@@ -110,15 +113,17 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
           this.config.context,
         );
         if (variantEntries?.length) {
+          log.info(`Fetched ${variantEntries.length} variant entries for entry: ${entry.uid}`, this.config.context);
           entryHasVariants = true;
           variantCount = variantEntries.length;
-          totalVariantCount += variantCount; 
+          totalVariantCount += variantCount;
 
-          // Update progress total only for the first batch (when we have a better estimate)
-          if (processedEntries === 0 && this.parentProgressManager) {
-            // Start with current count, will be updated as we find more
-            this.parentProgressManager.updateProcessTotal('Variant Entries', totalVariantCount);
+          if (!processInitialized && this.parentProgressManager) {
+            this.parentProgressManager.addProcess(PROCESS_NAMES.VARIANT_ENTRIES, variantEntries.length);
+            this.parentProgressManager.startProcess(PROCESS_NAMES.VARIANT_ENTRIES);
+            processInitialized = true;
           }
+          this.parentProgressManager?.updateProcessTotal(PROCESS_NAMES.VARIANT_ENTRIES, totalVariantCount);
 
           if (!existsSync(variantEntryBasePath)) {
             log.debug(`Creating directory: ${variantEntryBasePath}`, this.config.context);
@@ -155,15 +160,25 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
         // After processing this entry, update the total if we found variants
         if (entryHasVariants && this.parentProgressManager) {
           // Update total with current accumulated count
-          this.parentProgressManager.updateProcessTotal('Variant Entries', totalVariantCount);
-          
+          this.parentProgressManager.updateProcessTotal(PROCESS_NAMES.VARIANT_ENTRIES, totalVariantCount);
+
           // Tick for each variant found in this entry
           for (let i = 0; i < variantCount; i++) {
-            this.updateProgress(true, `Variant ${i + 1}/${variantCount} for entry: ${entry.uid}`, undefined, 'Variant Entries');
+            this.updateProgress(
+              true,
+              `Variant ${i + 1}/${variantCount} for entry: ${entry.uid}`,
+              undefined,
+              PROCESS_NAMES.VARIANT_ENTRIES,
+            );
           }
         } else if (this.parentProgressManager) {
           // No variants found for this entry, but still tick once to show progress
-          this.updateProgress(true, `No variants found for entry: ${entry.uid}`, undefined, 'Variant Entries');
+          this.updateProgress(
+            true,
+            `No variants found for entry: ${entry.uid}`,
+            undefined,
+            PROCESS_NAMES.VARIANT_ENTRIES,
+          );
         }
 
         processedEntries++;
@@ -176,7 +191,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
             false,
             `Failed to export variants for entry: ${entry.uid}`,
             (error as any)?.message || 'Unknown error',
-            'Variant Entries',
+            PROCESS_NAMES.VARIANT_ENTRIES,
           );
         }
 
@@ -186,6 +201,10 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Exp
           `Error exporting variant entries of type '${entry.title} (${entry.uid})' locale '${locale}'`,
         );
       }
+    }
+
+    if (processInitialized && this.parentProgressManager) {
+      this.parentProgressManager.completeProcess(PROCESS_NAMES.VARIANT_ENTRIES, true);
     }
 
     log.debug(
