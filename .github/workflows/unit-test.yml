@@ -24,6 +24,10 @@ jobs:
         working-directory: ./packages/contentstack-command
         run: npm run test:unit
 
+      - name: Run tests for Contentstack Command
+        working-directory: ./packages/contentstack-command
+        run: npm run test:unit
+
       - name: Run tests for Audit plugin
         working-directory: ./packages/contentstack-audit
         run: npm run test:unit

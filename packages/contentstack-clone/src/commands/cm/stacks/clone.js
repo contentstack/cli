@@ -18,7 +18,9 @@ class StackCloneCommand extends Command {
         type: cloneType,
         'stack-name': stackName,
         'source-branch': sourceStackBranch,
+        'source-branch-alias': sourceStackBranchAlias,
         'target-branch': targetStackBranch,
+        'target-branch-alias': targetStackBranchAlias,
         'source-stack-api-key': sourceStackApiKey,
         'destination-stack-api-key': destinationStackApiKey,
         'source-management-token-alias': sourceManagementTokenAlias,
@@ -47,8 +49,14 @@ class StackCloneCommand extends Command {
         if (sourceStackBranch) {
           config.sourceStackBranch = sourceStackBranch;
         }
+        if (sourceStackBranchAlias) {
+          config.sourceStackBranchAlias = sourceStackBranchAlias;
+        }
         if (targetStackBranch) {
           config.targetStackBranch = targetStackBranch;
+        }
+         if (targetStackBranchAlias) {
+          config.targetStackBranchAlias = targetStackBranchAlias;
         }
         if (sourceStackApiKey) {
           config.source_stack = sourceStackApiKey;
@@ -74,6 +82,8 @@ class StackCloneCommand extends Command {
           config.importWebhookStatus = importWebhookStatus;
         }
 
+        const managementAPIClient = await managementSDKClient(config);
+
         await this.removeContentDirIfNotEmptyBeforeClone(pathdir); // NOTE remove if folder not empty before clone
         this.registerCleanupOnInterrupt(pathdir);
 
@@ -82,7 +92,6 @@ class StackCloneCommand extends Command {
         config.cdn = this.cdaHost;
         config.pathDir = pathdir;
         const cloneHandler = new CloneHandler(config);
-        const managementAPIClient = await managementSDKClient(config);
         cloneHandler.setClient(managementAPIClient);
         cloneHandler.execute().catch((error) => {
           console.log(error);
@@ -114,6 +123,8 @@ class StackCloneCommand extends Command {
       }
     }
   }
+
+
 
   async removeContentDirIfNotEmptyBeforeClone(dir) {
     try {
@@ -202,11 +213,25 @@ StackCloneCommand.flags = {
     required: false,
     multiple: false,
     description: 'Branch of the source stack.',
+    exclusive: ['source-branch-alias']
+  }),
+  'source-branch-alias': flags.string({
+    required: false,
+    multiple: false,
+    description: 'Alias of Branch of the source stack.',
+    exclusive: ['source-branch']
   }),
   'target-branch': flags.string({
     required: false,
     multiple: false,
     description: 'Branch of the target stack.',
+    exclusive: ['target-branch-alias']
+  }),
+  'target-branch-alias': flags.string({
+    required: false,
+    multiple: false,
+    description: 'Alias of Branch of the target stack.',
+    exclusive: ['target-branch']
   }),
   'source-management-token-alias': flags.string({
     required: false,
@@ -229,8 +254,8 @@ StackCloneCommand.flags = {
     multiple: false,
     options: ['a', 'b'],
     description: ` Type of data to clone. You can select option a or b.
-a) Structure (all modules except entries & assets).
-b) Structure with content (all modules including entries & assets).
+      a) Structure (all modules except entries & assets).
+      b) Structure with content (all modules including entries & assets).
     `,
   }),
   'source-stack-api-key': flags.string({
