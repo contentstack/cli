@@ -2,23 +2,24 @@ import { Import } from '@contentstack/cli-variants';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
 import BaseClass from './base-class';
 import { ImportConfig, ModuleClassParams } from '../../types';
+import { PROCESS_NAMES, MODULE_CONTEXTS, PROCESS_STATUS, MODULE_NAMES } from '../../utils';
 
 export default class ImportPersonalize extends BaseClass {
   private config: ImportConfig;
   public personalizeConfig: ImportConfig['modules']['personalize'];
 
   private readonly moduleDisplayMapper = {
-    events: 'Events',
-    attributes: 'Attributes',
-    audiences: 'Audiences',
-    experiences: 'Experiences',
+    events: 'Events',       
+    attributes: 'Attributes' , 
+    audiences: 'Audiences',  
+    experiences: 'Experiences', 
   };
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
     this.config = importConfig;
-    this.config.context.module = 'personalize';
-    this.currentModuleName = 'Personalize';
+    this.config.context.module = MODULE_CONTEXTS.PERSONALIZE;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.PERSONALIZE];
     this.personalizeConfig = importConfig.modules.personalize;
   }
 
@@ -65,8 +66,8 @@ export default class ImportPersonalize extends BaseClass {
   }
 
   private addProjectProcess(progress: any) {
-    progress.addProcess('Projects', 1);
-    log.debug('Added Projects process to personalize progress', this.config.context);
+    progress.addProcess(PROCESS_NAMES.PERSONALIZE_PROJECTS, 1);
+    log.debug(`Added ${PROCESS_NAMES.PERSONALIZE_PROJECTS} process to personalize progress`, this.config.context);
   }
 
   private addModuleProcesses(progress: any, moduleCount: number) {
@@ -87,14 +88,14 @@ export default class ImportPersonalize extends BaseClass {
   }
 
   private async importProjects(progress: any): Promise<void> {
-    progress.startProcess('Projects').updateStatus('Importing personalization projects...', 'Projects');
+    progress.updateStatus(PROCESS_STATUS[PROCESS_NAMES.PERSONALIZE_PROJECTS].IMPORTING);
     log.debug('Starting projects import for personalization...', this.config.context);
 
     const projectInstance = new Import.Project(this.config);
     projectInstance.setParentProgressManager(progress);
     await projectInstance.import();
 
-    progress.completeProcess('Projects', true);
+    progress.completeProcess(PROCESS_NAMES.PERSONALIZE_PROJECTS, true);
   }
 
   private async importModules(progress: any): Promise<void> {
@@ -119,12 +120,18 @@ export default class ImportPersonalize extends BaseClass {
         log.debug(`Starting import for module: ${module}`, this.config.context);
 
         if (this.personalizeConfig.importData) {
-          const importer = new ModuleClass(this.config);
-          importer.setParentProgressManager(progress);
-          await importer.import();
+          try {
+            const importer = new ModuleClass(this.config);
+            importer.setParentProgressManager(progress);
+            await importer.import();
 
-          progress.completeProcess(processName, true);
-          log.debug(`Completed import for module: ${module}`, this.config.context);
+            progress.completeProcess(processName, true);
+            log.debug(`Completed import for module: ${module}`, this.config.context);
+          } catch (error) {
+            progress.completeProcess(processName, false);
+            log.debug(`Failed to import module: ${module} - ${(error as any)?.message}`, this.config.context);
+            handleAndLogError(error, { ...this.config.context, module });
+          }
         } else {
           log.debug(`Skipping ${module} - personalization not enabled`, this.config.context);
           this.progressManager?.tick(true, `${module} skipped (no project)`, null, processName);

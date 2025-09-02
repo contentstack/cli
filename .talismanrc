@@ -44,7 +44,17 @@ fileignoreconfig:
 - filename: packages/contentstack-variants/src/import/audiences.ts
   checksum: f24697ef86e928bb4d16f93c021b647639cc344a7f02463d79d69f9434ebed56
 - filename: packages/contentstack-variants/src/import/events.ts
-  checksum: 6cb014b5518ffe204a9f894ad801c05e2ef91a1692049168f74dd12a224363c4
+  checksum: 88256a99c8ff8d6904df2e3767b39f4761d35ce680b3cabd712c33889bd02fca
 - filename: packages/contentstack-import/src/import/modules/personalize.ts
   checksum: 1311a613177160637e21b3983b281b384c2cb15837d001a398b67afef30a393a
+- filename: packages/contentstack-export/src/export/modules/environments.ts
+  checksum: fd33318628321583dbeedd70ba7ba97f1e167d364dd26847771d745db295b16f
+- filename: packages/contentstack-import/src/import/modules/environments.ts
+  checksum: 25ec3da4b218c5bbabcfa1af59f26d62e99110bf361a77aab30bfa3ab402da05
+- filename: packages/contentstack-variants/src/utils/constants.ts
+  checksum: 0ceef8ec8489a05d8ecf07cfa7e92575b0da7d5a6c0ed65b64f46d23aab7074d
+- filename: packages/contentstack-export/src/utils/marketplace-app-helper.ts
+  checksum: fcd17c120a0359baeb61b7bd0f8d1ace2662f7f7293d355867f578312fe3a1a0
+- filename: packages/contentstack-variants/src/import/variant-entries.ts
+  checksum: 6e645a3d95903058f32306d306912353272e86e60571919a34125a9cd7b69a59
 version: "1.0"

@@ -35,6 +35,10 @@ import {
   getAllStackSpecificApps,
   getConfirmationToCreateApps,
   getDeveloperHubUrl,
+  PROCESS_NAMES,
+  MODULE_CONTEXTS,
+  PROCESS_STATUS,
+  MODULE_NAMES,
 } from '../../utils';
 import BaseClass from './base-class';
 
@@ -56,8 +60,8 @@ export default class ImportMarketplaceApps extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = 'marketplace-apps';
-    this.currentModuleName = 'Marketplace Apps';
+    this.importConfig.context.module = MODULE_CONTEXTS.MARKETPLACE_APPS;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.MARKETPLACE_APPS];
     this.marketPlaceAppConfig = importConfig.modules.marketplace_apps;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'marketplace_apps');
     this.marketPlaceFolderPath = join(this.importConfig.backupDir, this.marketPlaceAppConfig.dirName);
@@ -93,38 +97,49 @@ export default class ImportMarketplaceApps extends BaseClass {
         return;
       }
 
+      // Handle encryption key prompt BEFORE starting progress
+      if (!this.importConfig.forceStopMarketplaceAppsPrompt) {
+        log.debug('Validating security configuration before progress start', this.importConfig.context);
+        await this.getAndValidateEncryptionKey(this.importConfig.marketplaceAppEncryptionKey);
+      }
+
       const progress = this.createNestedProgress(this.currentModuleName);
       const privateAppsCount = filter(this.marketplaceApps, { manifest: { visibility: 'private' } }).length;
 
-      progress.addProcess('Setup Environment', 1);
+      progress.addProcess(PROCESS_NAMES.SETUP_ENVIRONMENT, 1);
       if (privateAppsCount > 0) {
-        progress.addProcess('Create Apps', privateAppsCount);
+        progress.addProcess(PROCESS_NAMES.CREATE_APPS, privateAppsCount);
       }
-      progress.addProcess('Install', marketplaceAppsCount);
+      progress.addProcess(PROCESS_NAMES.INSTALL_APPS, marketplaceAppsCount);
 
-      await this.prepareMarketplaceAppMapper();
+      this.prepareMarketplaceAppMapper();
 
       // Step 1: Setup Environment SDK and authentication
-      progress.startProcess('Setup Environment').updateStatus('Setting up marketplace SDK and authentication...', 'Setup Environment');
       log.info('Setting up marketplace SDK and authentication', this.importConfig.context);
+      progress
+        .startProcess(PROCESS_NAMES.SETUP_ENVIRONMENT)
+        .updateStatus(PROCESS_STATUS[PROCESS_NAMES.SETUP_ENVIRONMENT].SETTING_UP, PROCESS_NAMES.SETUP_ENVIRONMENT);
       await this.setupMarketplaceEnvironment();
-      progress.completeProcess('Setup Environment', true);
+      progress.completeProcess(PROCESS_NAMES.SETUP_ENVIRONMENT, true);
 
       // Step 2: Handle private apps creation (if any)
       if (privateAppsCount > 0) {
-        progress
-          .startProcess('Create Apps')
-          .updateStatus('Creating private apps...', 'Create Apps');
         log.info('Starting private apps creation process', this.importConfig.context);
+        progress
+          .startProcess(PROCESS_NAMES.CREATE_APPS)
+          .updateStatus(PROCESS_STATUS[PROCESS_NAMES.CREATE_APPS].CREATING, PROCESS_NAMES.CREATE_APPS);
         await this.handleAllPrivateAppsCreationProcess();
-        progress.completeProcess('Create Apps', true);
+        progress.completeProcess(PROCESS_NAMES.CREATE_APPS, true);
       }
 
-      // Step 3: Install marketplace apps
-      progress.startProcess('Install').updateStatus('Installing marketplace apps...', 'Install');
+      // Step 3: Install marketplace apps - FIXED THIS PART
       log.info('Starting marketplace apps installation process', this.importConfig.context);
+      progress
+        .startProcess(PROCESS_NAMES.INSTALL_APPS)
+        .updateStatus(PROCESS_STATUS[PROCESS_NAMES.INSTALL_APPS].INSTALLING, PROCESS_NAMES.INSTALL_APPS);
+
       await this.importMarketplaceApps();
-      progress.completeProcess('Install', true);
+      progress.completeProcess(PROCESS_NAMES.INSTALL_APPS, true);
 
       this.completeProgress(true);
       log.success('Marketplace apps have been imported successfully!', this.importConfig.context);
@@ -146,11 +161,7 @@ export default class ImportMarketplaceApps extends BaseClass {
     if (this.importConfig.forceStopMarketplaceAppsPrompt) {
       log.debug('Using forced security configuration without validation', this.importConfig.context);
       this.nodeCrypto = new NodeCrypto(cryptoArgs);
-    } else {
-      log.debug('Validating security configuration', this.importConfig.context);
-      await this.getAndValidateEncryptionKey(this.importConfig.marketplaceAppEncryptionKey);
     }
-
     // NOTE getting all apps to validate if it's already installed in the stack to manage conflict
     log.debug('Getting all stack-specific apps for validation', this.importConfig.context);
     this.installedApps = await getAllStackSpecificApps(this.importConfig);
@@ -258,6 +269,7 @@ export default class ImportMarketplaceApps extends BaseClass {
     }
 
     log.debug('Found app configuration requiring security setup, asking for input', this.importConfig.context);
+    cliux.print('\n');
     const encryptionKey = await askEncryptionKey(defaultValue);
 
     try {
@@ -310,6 +322,7 @@ export default class ImportMarketplaceApps extends BaseClass {
     }
 
     log.debug('Getting confirmation to create private apps', this.importConfig.context);
+    cliux.print('\n');
     let canCreatePrivateApp = await getConfirmationToCreateApps(privateApps, this.importConfig);
     this.importConfig.canCreatePrivateApp = canCreatePrivateApp;
 
@@ -322,12 +335,7 @@ export default class ImportMarketplaceApps extends BaseClass {
         if (await this.isPrivateAppExistInDeveloperHub(app)) {
           // NOTE Found app already exist in the same org
           this.appUidMapping[app.uid] = app.uid;
-          this.progressManager?.tick(
-            true,
-            `${app.manifest.name} (already exists)`,
-            null,
-            'Create Apps',
-          );
+          this.progressManager?.tick(true, `${app.manifest.name} (already exists)`, null, PROCESS_NAMES.CREATE_APPS);
           cliux.print(`App '${app.manifest.name}' already exist. skipping app recreation.!`, { color: 'yellow' });
           log.debug(`App '${app.manifest.name}' already exists, skipping recreation`, this.importConfig.context);
           continue;
@@ -359,12 +367,7 @@ export default class ImportMarketplaceApps extends BaseClass {
       log.info('Skipping private apps creation on Developer Hub...', this.importConfig.context);
       // Mark all private apps as skipped in progress
       for (let app of privateApps) {
-        this.progressManager?.tick(
-          true,
-          `${app.manifest.name} (creation skipped)`,
-          null,
-          'Create Apps',
-        );
+        this.progressManager?.tick(true, `${app.manifest.name} (creation skipped)`, null, PROCESS_NAMES.CREATE_APPS);
       }
     }
 
@@ -534,7 +537,7 @@ export default class ImportMarketplaceApps extends BaseClass {
         log.debug(`Retrying app creation with updated name: ${updatedApp.name}`, this.importConfig.context);
         return this.createPrivateApp(updatedApp, appSuffix + 1, true);
       } else {
-        this.progressManager?.tick(false, `${app.name}`, message, 'Create Apps');
+        this.progressManager?.tick(false, `${app.name}`, message, PROCESS_NAMES.CREATE_APPS);
         trace(response, 'error', true);
         log.error(formatError(message), this.importConfig.context);
 
@@ -559,19 +562,14 @@ export default class ImportMarketplaceApps extends BaseClass {
       }
     } else if (response.uid) {
       // NOTE new app installation
-      this.progressManager?.tick(true, `${response.name}`, null, 'Create Apps');
+      this.progressManager?.tick(true, `${response.name}`, null, PROCESS_NAMES.CREATE_APPS);
       log.success(`${response.name} app created successfully.!`, this.importConfig.context);
       log.debug(`App UID mapping: ${app.uid} → ${response.uid}`, this.importConfig.context);
       this.appUidMapping[app.uid] = response.uid;
       this.appNameMapping[this.appOriginalName] = response.name;
       log.debug(`App name mapping: ${this.appOriginalName} → ${response.name}`, this.importConfig.context);
     } else {
-      this.progressManager?.tick(
-        false,
-        `${app.name}`,
-        'Unexpected response format',
-        'Create Apps',
-      );
+      this.progressManager?.tick(false, `${app.name}`, 'Unexpected response format', PROCESS_NAMES.CREATE_APPS);
       log.debug(`Unexpected response format for app: ${app.name}`, this.importConfig.context);
     }
   }
@@ -584,86 +582,102 @@ export default class ImportMarketplaceApps extends BaseClass {
    * @returns {Promise<void>}
    */
   async installApps(app: any): Promise<void> {
-    log.debug(`Installing app: ${app.manifest?.name || app.manifest?.uid}`, this.importConfig.context);
-    let updateParam;
-    const { configuration, server_configuration } = app;
-    const currentStackApp = find(this.installedApps, { manifest: { uid: app?.manifest?.uid } });
+    try {
+      log.debug(`Installing app: ${app.manifest?.name || app.manifest?.uid}`, this.importConfig.context);
+      let updateParam;
+      const { configuration, server_configuration } = app;
+      const currentStackApp = find(this.installedApps, { manifest: { uid: app?.manifest?.uid } });
 
-    if (!currentStackApp) {
-      log.debug(`App not found in current stack, installing new app: ${app.manifest?.name}`, this.importConfig.context);
-      // NOTE install new app
-      if (app.manifest.visibility === 'private' && !this.importConfig.canCreatePrivateApp) {
+      if (!currentStackApp) {
+        log.debug(
+          `App not found in current stack, installing new app: ${app.manifest?.name}`,
+          this.importConfig.context,
+        );
+        if (app.manifest.visibility === 'private' && !this.importConfig.canCreatePrivateApp) {
+          this.progressManager?.tick(
+            true,
+            `${app.manifest.name} (skipped - private app not allowed)`,
+            null,
+            PROCESS_NAMES.INSTALL_APPS,
+          );
+          log.info(`Skipping the installation of the private app ${app.manifest.name}...`, this.importConfig.context);
+          return Promise.resolve();
+        }
+
+        log.debug(
+          `Installing app with manifest UID: ${this.appUidMapping[app.manifest.uid] || app.manifest.uid}`,
+          this.importConfig.context,
+        );
+        const installation = await this.installApp(
+          this.importConfig,
+          // NOTE if it's private app it should get uid from mapper else will use manifest uid
+          this.appUidMapping[app.manifest.uid] || app.manifest.uid,
+        );
+
+        if (installation.installation_uid) {
+          const appName = this.appNameMapping[app.manifest.name] || app.manifest.name || app.manifest.uid;
+          this.progressManager?.tick(true, `${appName}`, null, PROCESS_NAMES.INSTALL_APPS);
+          log.success(`${appName} app installed successfully.!`, this.importConfig.context);
+          log.debug(`Installation UID: ${installation.installation_uid}`, this.importConfig.context);
+
+          log.debug(`Making redirect URL call for app: ${appName}`, this.importConfig.context);
+          await makeRedirectUrlCall(installation, appName, this.importConfig);
+
+          this.installationUidMapping[app.uid] = installation.installation_uid;
+          log.debug(
+            `Installation UID mapping: ${app.uid} → ${installation.installation_uid}`,
+            this.importConfig.context,
+          );
+          updateParam = { manifest: app.manifest, ...installation, configuration, server_configuration };
+        } else if (installation.message) {
+          this.progressManager?.tick(false, `${app.manifest?.name}`, installation.message, PROCESS_NAMES.INSTALL_APPS);
+          log.info(formatError(installation.message), this.importConfig.context);
+          log.debug(`Installation failed for app: ${app.manifest?.name}`, this.importConfig.context);
+          cliux.print('\n');
+          await confirmToCloseProcess(installation, this.importConfig);
+        }
+      } else if (!isEmpty(configuration) || !isEmpty(server_configuration)) {
+        const appName = app.manifest.name || app.manifest.uid;
         this.progressManager?.tick(
           true,
-          `${app.manifest.name} (skipped - private app not allowed)`,
+          `${appName} (already installed, updating config)`,
           null,
-          'Install',
+          PROCESS_NAMES.INSTALL_APPS,
         );
-        log.info(`Skipping the installation of the private app ${app.manifest.name}...`, this.importConfig.context);
-        return Promise.resolve();
+        log.info(`${appName} is already installed`, this.importConfig.context);
+        log.debug(`Handling existing app configuration for: ${appName}`, this.importConfig.context);
+        updateParam = await ifAppAlreadyExist(app, currentStackApp, this.importConfig);
+      } else {
+        this.progressManager?.tick(true, `${app.manifest?.name} (already installed)`, null, PROCESS_NAMES.INSTALL_APPS);
+        log.debug(
+          `App ${app.manifest?.name} is already installed with no configuration to update`,
+          this.importConfig.context,
+        );
       }
 
-      log.debug(
-        `Installing app with manifest UID: ${this.appUidMapping[app.manifest.uid] || app.manifest.uid}`,
-        this.importConfig.context,
-      );
-      const installation = await this.installApp(
-        this.importConfig,
-        // NOTE if it's private app it should get uid from mapper else will use manifest uid
-        this.appUidMapping[app.manifest.uid] || app.manifest.uid,
-      );
-
-      if (installation.installation_uid) {
-        const appName = this.appNameMapping[app.manifest.name] || app.manifest.name || app.manifest.uid;
-        this.progressManager?.tick(true, `${appName}`, null, 'Install');
-        log.success(`${appName} app installed successfully.!`, this.importConfig.context);
-        log.debug(`Installation UID: ${installation.installation_uid}`, this.importConfig.context);
-
-        log.debug(`Making redirect URL call for app: ${appName}`, this.importConfig.context);
-        await makeRedirectUrlCall(installation, appName, this.importConfig);
-
-        this.installationUidMapping[app.uid] = installation.installation_uid;
-        log.debug(`Installation UID mapping: ${app.uid} → ${installation.installation_uid}`, this.importConfig.context);
-        updateParam = { manifest: app.manifest, ...installation, configuration, server_configuration };
-      } else if (installation.message) {
-        this.progressManager?.tick(false, `${app.manifest?.name}`, installation.message, 'Install');
-        log.info(formatError(installation.message), this.importConfig.context);
-        log.debug(`Installation failed for app: ${app.manifest?.name}`, this.importConfig.context);
-        await confirmToCloseProcess(installation, this.importConfig);
+      if (!this.appUidMapping[app.manifest.uid]) {
+        this.appUidMapping[app.manifest.uid] = currentStackApp ? currentStackApp.manifest.uid : app.manifest.uid;
+        log.debug(
+          `App UID mapping: ${app.manifest.uid} → ${this.appUidMapping[app.manifest.uid]}`,
+          this.importConfig.context,
+        );
       }
-    } else if (!isEmpty(configuration) || !isEmpty(server_configuration)) {
-      const appName = app.manifest.name || app.manifest.uid;
+
+      // NOTE update configurations
+      if (updateParam && (!isEmpty(updateParam.configuration) || !isEmpty(updateParam.server_configuration))) {
+        log.debug(`Updating app configuration for: ${app.manifest?.name}`, this.importConfig.context);
+        await this.updateAppsConfig(updateParam);
+      } else {
+        log.debug(`No configuration update needed for: ${app.manifest?.name}`, this.importConfig.context);
+      }
+    } catch (error) {
       this.progressManager?.tick(
-        true,
-        `${appName} (already installed, updating config)`,
-        null,
-        'Install',
+        false,
+        `${app.manifest?.name}`,
+        error?.message || 'Failed to install apps',
+        PROCESS_NAMES.INSTALL_APPS,
       );
-      log.info(`${appName} is already installed`, this.importConfig.context);
-      log.debug(`Handling existing app configuration for: ${appName}`, this.importConfig.context);
-      updateParam = await ifAppAlreadyExist(app, currentStackApp, this.importConfig);
-    } else {
-      this.progressManager?.tick(true, `${app.manifest?.name} (already installed)`, null, 'Install');
-      log.debug(
-        `App ${app.manifest?.name} is already installed with no configuration to update`,
-        this.importConfig.context,
-      );
-    }
-
-    if (!this.appUidMapping[app.manifest.uid]) {
-      this.appUidMapping[app.manifest.uid] = currentStackApp ? currentStackApp.manifest.uid : app.manifest.uid;
-      log.debug(
-        `App UID mapping: ${app.manifest.uid} → ${this.appUidMapping[app.manifest.uid]}`,
-        this.importConfig.context,
-      );
-    }
-
-    // NOTE update configurations
-    if (updateParam && (!isEmpty(updateParam.configuration) || !isEmpty(updateParam.server_configuration))) {
-      log.debug(`Updating app configuration for: ${app.manifest?.name}`, this.importConfig.context);
-      await this.updateAppsConfig(updateParam);
-    } else {
-      log.debug(`No configuration update needed for: ${app.manifest?.name}`, this.importConfig.context);
+      throw error;
     }
   }
 
@@ -750,10 +764,10 @@ export default class ImportMarketplaceApps extends BaseClass {
     });
   }
 
-  private async prepareMarketplaceAppMapper(): Promise<void> {
+  private prepareMarketplaceAppMapper() {
     log.debug('Creating marketplace apps mapper directory', this.importConfig.context);
     fsUtil.makeDirectory(this.mapperDirPath);
-    log.debug('Created marketplace apps mapper directory', this.importConfig.context);
+    log.debug(`Created marketplace apps mapper directory, ${this.mapperDirPath}`, this.importConfig.context);
   }
 
   private async setupMarketplaceEnvironment(): Promise<void> {

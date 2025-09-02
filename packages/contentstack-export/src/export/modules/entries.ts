@@ -3,7 +3,13 @@ import { ContentstackClient, FsUtility, handleAndLogError, messageHandler, log }
 import { Export, ExportProjects } from '@contentstack/cli-variants';
 import { sanitizePath } from '@contentstack/cli-utilities';
 
-import { fsUtil } from '../../utils';
+import {
+  fsUtil,
+  PROCESS_NAMES,
+  MODULE_CONTEXTS,
+  PROCESS_STATUS,
+  MODULE_NAMES,
+} from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ExportConfig, ModuleClassParams } from '../../types';
 
@@ -52,21 +58,20 @@ export default class EntriesExport extends BaseClass {
       'schema.json',
     );
     this.projectInstance = new ExportProjects(this.exportConfig);
-    this.exportConfig.context.module = 'entries';
-    this.currentModuleName = 'Entries';
+    this.exportConfig.context.module = MODULE_CONTEXTS.ENTRIES;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.ENTRIES];
   }
 
   async start() {
     try {
       log.debug('Starting entries export process...', this.exportConfig.context);
-      
+
       // Initial analysis with loading spinner
-      const [locales, contentTypes, entryRequestOptions, totalEntriesCount, variantInfo] = await this.withLoadingSpinner(
-        'ENTRIES: Analyzing content structure and entries...',
-        async () => {
+      const [locales, contentTypes, entryRequestOptions, totalEntriesCount, variantInfo] =
+        await this.withLoadingSpinner('ENTRIES: Analyzing content structure and entries...', async () => {
           const locales = fsUtil.readFile(this.localesFilePath) as Array<Record<string, unknown>>;
           const contentTypes = fsUtil.readFile(this.schemaFilePath) as Array<Record<string, unknown>>;
-          
+
           if (!Array.isArray(locales) || locales?.length === 0) {
             log.debug(`No locales found in ${this.localesFilePath}`, this.exportConfig.context);
           } else {
@@ -77,7 +82,10 @@ export default class EntriesExport extends BaseClass {
             log.info(messageHandler.parse('CONTENT_TYPE_NO_TYPES'), this.exportConfig.context);
             return [locales, contentTypes, [], 0, null];
           }
-          log.debug(`Loaded ${contentTypes?.length} content types from ${this.schemaFilePath}`, this.exportConfig.context);
+          log.debug(
+            `Loaded ${contentTypes?.length} content types from ${this.schemaFilePath}`,
+            this.exportConfig.context,
+          );
 
           // Create entry request objects
           const entryRequestOptions = this.createRequestObjects(locales, contentTypes);
@@ -87,11 +95,10 @@ export default class EntriesExport extends BaseClass {
           );
 
           // Get total entries count for better progress tracking
-          const totalEntriesCount = await this.getTotalEntriesCount(entryRequestOptions);    
+          const totalEntriesCount = await this.getTotalEntriesCount(entryRequestOptions);
           const variantInfo = await this.setupVariantExport();
           return [locales, contentTypes, entryRequestOptions, totalEntriesCount, variantInfo];
-        }
-      );
+        });
 
       if (contentTypes?.length === 0) {
         return;
@@ -100,22 +107,24 @@ export default class EntriesExport extends BaseClass {
       // Create nested progress manager
       const progress = this.createNestedProgress(this.currentModuleName);
 
-      // Add sub-processes 
+      // Add sub-processes
       if (totalEntriesCount > 0) {
-        progress.addProcess('Entries', totalEntriesCount);
-        
+        progress.addProcess(PROCESS_NAMES.ENTRIES, totalEntriesCount);
+
         if (this.entriesConfig.exportVersions) {
-          progress.addProcess('Entry Versions', totalEntriesCount); 
+          progress.addProcess(PROCESS_NAMES.ENTRY_VERSIONS, totalEntriesCount);
         }
-        
+
         if (this.exportVariantEntry) {
-          progress.addProcess('Variant Entries', 0);
+          progress.addProcess(PROCESS_NAMES.VARIANT_ENTRIES, 0);
         }
       }
 
       // Process entry collections
       if (totalEntriesCount > 0) {
-        progress.startProcess('Entries').updateStatus('Processing entry collections...', 'Entries');
+        progress
+          .startProcess(PROCESS_NAMES.ENTRIES)
+          .updateStatus(PROCESS_STATUS[PROCESS_NAMES.ENTRIES].PROCESSING, PROCESS_NAMES.ENTRIES);
 
         for (let entryRequestOption of entryRequestOptions) {
           try {
@@ -127,33 +136,36 @@ export default class EntriesExport extends BaseClass {
             this.entriesFileHelper?.completeFile(true);
 
             log.success(
-              messageHandler.parse('ENTRIES_EXPORT_COMPLETE', entryRequestOption.contentType, entryRequestOption.locale),
+              messageHandler.parse(
+                'ENTRIES_EXPORT_COMPLETE',
+                entryRequestOption.contentType,
+                entryRequestOption.locale,
+              ),
               this.exportConfig.context,
             );
           } catch (error) {
             this.progressManager?.tick(
               false,
               `${entryRequestOption.contentType}:${entryRequestOption.locale}`,
-              error?.message || 'Failed to export entries',
-              'Entries',
+              error?.message || PROCESS_STATUS[PROCESS_NAMES.ENTRIES].FAILED,
+              PROCESS_NAMES.ENTRIES,
             );
             throw error;
           }
         }
-        progress.completeProcess('Entries', true);
+        progress.completeProcess(PROCESS_NAMES.ENTRIES, true);
 
         if (this.entriesConfig.exportVersions) {
-          progress.completeProcess('Entry Versions', true);
+          progress.completeProcess(PROCESS_NAMES.ENTRY_VERSIONS, true);
         }
-        
+
         if (this.exportVariantEntry) {
-          progress.completeProcess('Variant Entries', true);
+          progress.completeProcess(PROCESS_NAMES.VARIANT_ENTRIES, true);
         }
       }
 
       this.completeProgress(true);
       log.success(messageHandler.parse('ENTRIES_EXPORT_SUCCESS'), this.exportConfig.context);
-      
     } catch (error) {
       handleAndLogError(error, { ...this.exportConfig.context });
       this.completeProgress(false, error?.message || 'Entries export failed');
@@ -162,9 +174,9 @@ export default class EntriesExport extends BaseClass {
 
   async getTotalEntriesCount(entryRequestOptions: Array<Record<string, any>>): Promise<number> {
     log.debug('Calculating total entries count for progress tracking...', this.exportConfig.context);
-    
+
     let totalCount = 0;
-    
+
     try {
       for (const option of entryRequestOptions) {
         const countQuery = {
@@ -173,34 +185,27 @@ export default class EntriesExport extends BaseClass {
           include_count: true,
           query: { locale: option.locale },
         };
-        
+
         this.applyQueryFilters(countQuery, 'entries');
-        
+
         try {
-          const response = await this.stackAPIClient
-            .contentType(option.contentType)
-            .entry()
-            .query(countQuery)
-            .find();
-            
+          const response = await this.stackAPIClient.contentType(option.contentType).entry().query(countQuery).find();
+
           const count = response.count || 0;
           totalCount += count;
           log.debug(
             `Content type ${option.contentType} (${option.locale}): ${count} entries`,
-            this.exportConfig.context
+            this.exportConfig.context,
           );
         } catch (error) {
-          log.debug(
-            `Failed to get count for ${option.contentType}:${option.locale}`,
-            this.exportConfig.context
-          );
+          log.debug(`Failed to get count for ${option.contentType}:${option.locale}`, this.exportConfig.context);
         }
       }
     } catch (error) {
       log.debug('Error calculating total entries count, using collection count as fallback', this.exportConfig.context);
       return entryRequestOptions.length;
     }
-    
+
     log.debug(`Total entries count: ${totalCount}`, this.exportConfig.context);
     return totalCount;
   }
@@ -209,9 +214,9 @@ export default class EntriesExport extends BaseClass {
     if (!this.exportConfig.personalizationEnabled) {
       return null;
     }
-    
+
     log.debug('Personalization is enabled, checking for variant entries...', this.exportConfig.context);
-    
+
     try {
       const project = await this.projectInstance.projects({ connectedStackApiKey: this.exportConfig.apiKey });
 
@@ -219,7 +224,7 @@ export default class EntriesExport extends BaseClass {
         const project_id = project[0].uid;
         this.exportVariantEntry = true;
         log.debug(`Found project with ID: ${project_id}, enabling variant entry export`, this.exportConfig.context);
-        
+
         this.variantEntries = new Export.VariantEntries(Object.assign(this.exportConfig, { project_id }));
         return { project_id };
       }
@@ -227,7 +232,7 @@ export default class EntriesExport extends BaseClass {
       log.debug('Failed to setup variant export', this.exportConfig.context);
       handleAndLogError(error, { ...this.exportConfig.context });
     }
-    
+
     return null;
   }
 
@@ -329,7 +334,7 @@ export default class EntriesExport extends BaseClass {
 
       // Track progress for individual entries
       entriesSearchResponse.items.forEach((entry: any) => {
-        this.progressManager?.tick(true, `entry: ${entry.uid}`, null, 'Entries');
+        this.progressManager?.tick(true, `entry: ${entry.uid}`, null, PROCESS_NAMES.ENTRIES);
       });
 
       if (this.entriesConfig.exportVersions) {
@@ -357,14 +362,17 @@ export default class EntriesExport extends BaseClass {
           if (this.variantEntries && typeof this.variantEntries.setParentProgressManager === 'function') {
             this.variantEntries.setParentProgressManager(this.progressManager);
           }
-          
+
           await this.variantEntries.exportVariantEntry({
             locale: options.locale,
             contentTypeUid: options.contentType,
             entries: entriesSearchResponse.items,
           });
-          
-          log.debug(`Successfully exported variant entries for ${entriesSearchResponse.items.length} entries`, this.exportConfig.context);
+
+          log.debug(
+            `Successfully exported variant entries for ${entriesSearchResponse.items.length} entries`,
+            this.exportConfig.context,
+          );
         } catch (error) {
           log.debug('Failed to export variant entries', this.exportConfig.context);
         }
@@ -399,7 +407,7 @@ export default class EntriesExport extends BaseClass {
       log.debug(`Writing versioned entry to: ${versionFilePath}`, this.exportConfig.context);
       fsUtil.writeFile(versionFilePath, response);
       // Track version progress if the process exists
-      this.progressManager?.tick(true, `version: ${entry.uid}`, null, 'Entry Versions');
+      this.progressManager?.tick(true, `version: ${entry.uid}`, null, PROCESS_NAMES.ENTRY_VERSIONS);
       log.success(
         messageHandler.parse('ENTRIES_VERSIONED_EXPORT_SUCCESS', options.contentType, entry.uid, options.locale),
         this.exportConfig.context,
@@ -411,8 +419,8 @@ export default class EntriesExport extends BaseClass {
       this.progressManager?.tick(
         false,
         `version: ${uid}`,
-        error?.message || 'Failed to fetch versions',
-        'Entry Versions',
+        error?.message || PROCESS_STATUS[PROCESS_NAMES.ENTRY_VERSIONS].FAILED,
+        PROCESS_NAMES.ENTRY_VERSIONS,
       );
       handleAndLogError(
         error,

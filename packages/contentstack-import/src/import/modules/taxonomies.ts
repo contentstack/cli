@@ -4,7 +4,7 @@ import isEmpty from 'lodash/isEmpty';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
 
 import BaseClass, { ApiOptions } from './base-class';
-import { fsUtil, fileHelper } from '../../utils';
+import { fsUtil, fileHelper, MODULE_CONTEXTS, MODULE_NAMES, PROCESS_STATUS, PROCESS_NAMES } from '../../utils';
 import { ModuleClassParams, TaxonomiesConfig } from '../../types';
 
 export default class ImportTaxonomies extends BaseClass {
@@ -24,8 +24,8 @@ export default class ImportTaxonomies extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = 'taxonomies';
-    this.currentModuleName = 'Taxonomies';
+    this.importConfig.context.module = MODULE_CONTEXTS.TAXONOMIES;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.TAXONOMIES];
     this.taxonomiesConfig = importConfig.modules.taxonomies;
     this.taxonomiesMapperDirPath = join(importConfig.backupDir, 'mapper', 'taxonomies');
     this.termsMapperDirPath = join(this.taxonomiesMapperDirPath, 'terms');
@@ -52,7 +52,7 @@ export default class ImportTaxonomies extends BaseClass {
 
       const progress = this.createSimpleProgress(this.currentModuleName, taxonomiesCount);
       await this.prepareMapperDirectories();
-      progress.updateStatus('Importing taxonomies...');
+      progress.updateStatus(PROCESS_STATUS[PROCESS_NAMES.TAXONOMIES_IMPORT].IMPORTING);
       log.debug('Starting taxonomies import', this.importConfig.context);
       await this.importTaxonomies();
       this.createSuccessAndFailedFile();
@@ -89,7 +89,12 @@ export default class ImportTaxonomies extends BaseClass {
       this.createdTaxonomies[taxonomyUID] = apiData?.taxonomy;
       this.createdTerms[taxonomyUID] = apiData?.terms;
 
-      this.progressManager?.tick(true, `taxonomy: ${taxonomyName || taxonomyUID} (${termsCount} terms)`);
+      this.progressManager?.tick(
+        true,
+        null,
+        `taxonomy: ${taxonomyName || taxonomyUID} (${termsCount} terms)`,
+        PROCESS_NAMES.TAXONOMIES_IMPORT,
+      );
       log.success(`Taxonomy '${taxonomyUID}' imported successfully!`, this.importConfig.context);
       log.debug(
         `Taxonomy '${taxonomyName}' imported with ${termsCount} terms successfully!`,
@@ -105,7 +110,12 @@ export default class ImportTaxonomies extends BaseClass {
         log.debug(`Adding existing taxonomy '${taxonomyUID}' to created list`, this.importConfig.context);
         this.createdTaxonomies[taxonomyUID] = apiData?.taxonomy;
         this.createdTerms[taxonomyUID] = apiData?.terms;
-        this.progressManager?.tick(true, `taxonomy: ${taxonomyName || taxonomyUID}`);
+        this.progressManager?.tick(
+          true,
+          null,
+          `taxonomy: ${taxonomyName || taxonomyUID} already exists`,
+          PROCESS_NAMES.TAXONOMIES_IMPORT,
+        );
       } else {
         this.failedTaxonomies[taxonomyUID] = apiData?.taxonomy;
         this.failedTerms[taxonomyUID] = apiData?.terms;
@@ -114,6 +124,7 @@ export default class ImportTaxonomies extends BaseClass {
           false,
           `taxonomy: ${taxonomyName || taxonomyUID}`,
           error?.message || 'Failed to import taxonomy',
+          PROCESS_NAMES.TAXONOMIES_IMPORT,
         );
         handleAndLogError(
           error,

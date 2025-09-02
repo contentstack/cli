@@ -3,7 +3,7 @@ import values from 'lodash/values';
 import { join } from 'node:path';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
 
-import { fsUtil, fileHelper } from '../../utils';
+import { fsUtil, fileHelper, PROCESS_NAMES, MODULE_CONTEXTS, PROCESS_STATUS, MODULE_NAMES } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, WebhookConfig } from '../../types';
 
@@ -21,8 +21,8 @@ export default class ImportWebhooks extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = 'webhooks';
-    this.currentModuleName = 'Webhooks';
+    this.importConfig.context.module = MODULE_CONTEXTS.WEBHOOKS;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.WEBHOOKS];
     this.webhooksConfig = importConfig.modules.webhooks;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'webhooks');
     this.webhooksFolderPath = join(this.importConfig.backupDir, this.webhooksConfig.dirName);
@@ -53,7 +53,7 @@ export default class ImportWebhooks extends BaseClass {
       const progress = this.createSimpleProgress(this.currentModuleName, webhooksCount);
       await this.prepareWebhookMapper();
 
-      progress.updateStatus('Importing webhooks...');
+      progress.updateStatus(PROCESS_STATUS[PROCESS_NAMES.WEBHOOKS_IMPORT].IMPORTING);
       await this.importWebhooks();
 
       this.processWebhookResults();
@@ -79,7 +79,7 @@ export default class ImportWebhooks extends BaseClass {
     const onSuccess = ({ response, apiData: { uid, name } = { uid: null, name: '' } }: any) => {
       this.createdWebhooks.push(response);
       this.webhookUidMapper[uid] = response.uid;
-      this.progressManager?.tick(true, `webhook: ${name || uid}`);
+      this.progressManager?.tick(true, `webhook: ${name || uid}`, null, PROCESS_NAMES.WEBHOOKS_IMPORT);
       log.success(`Webhook '${name}' imported successfully`, this.importConfig.context);
       log.debug(`Webhook UID mapping: ${uid} → ${response.uid}`, this.importConfig.context);
       fsUtil.writeFile(this.webhookUidMapperPath, this.webhookUidMapper);
@@ -91,11 +91,21 @@ export default class ImportWebhooks extends BaseClass {
       log.debug(`Webhook '${name}' (${uid}) failed to import`, this.importConfig.context);
 
       if (err?.errors?.name) {
-        this.progressManager?.tick(true, `webhook: ${name || uid} (already exists)`);
+        this.progressManager?.tick(
+          true,
+          `webhook: ${name || uid} (already exists)`,
+          null,
+          PROCESS_NAMES.WEBHOOKS_IMPORT,
+        );
         log.info(`Webhook '${name}' already exists`, this.importConfig.context);
       } else {
         this.failedWebhooks.push(apiData);
-        this.progressManager?.tick(false, `webhook: ${name || uid}`, error?.message || 'Failed to import webhook');
+        this.progressManager?.tick(
+          false,
+          `webhook: ${name || uid}`,
+          error?.message || PROCESS_STATUS[PROCESS_NAMES.WEBHOOKS_IMPORT].FAILED,
+          PROCESS_NAMES.WEBHOOKS_IMPORT,
+        );
         handleAndLogError(
           error,
           { ...this.importConfig.context, webhookName: name },
@@ -137,7 +147,12 @@ export default class ImportWebhooks extends BaseClass {
     if (this.webhookUidMapper.hasOwnProperty(webhook.uid)) {
       log.info(`Webhook '${webhook.name}' already exists. Skipping it to avoid duplicates!`, this.importConfig.context);
       log.debug(`Skipping webhook serialization for: ${webhook.uid}`, this.importConfig.context);
-      this.progressManager?.tick(true, `webhook: ${webhook.name} (skipped - already exists)`);
+      this.progressManager?.tick(
+        true,
+        `webhook: ${webhook.name} (skipped - already exists)`,
+        null,
+        PROCESS_NAMES.WEBHOOKS_IMPORT,
+      );
       apiOptions.entity = undefined;
     } else {
       log.debug(`Processing webhook status configuration`, this.importConfig.context);

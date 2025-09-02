@@ -1,15 +1,9 @@
 import * as path from 'path';
-import {
-  ContentstackClient,
-  handleAndLogError,
-  messageHandler,
-  log,
-  sanitizePath,
-} from '@contentstack/cli-utilities';
+import { ContentstackClient, handleAndLogError, messageHandler, log, sanitizePath } from '@contentstack/cli-utilities';
 
-import { fsUtil } from '../../utils';
-import { ExportConfig, ModuleClassParams } from '../../types';
 import BaseClass from './base-class';
+import { ExportConfig, ModuleClassParams } from '../../types';
+import { fsUtil, MODULE_CONTEXTS, MODULE_NAMES } from '../../utils';
 
 export default class GlobalFieldsExport extends BaseClass {
   private stackAPIClient: ReturnType<ContentstackClient['stack']>;
@@ -50,8 +44,8 @@ export default class GlobalFieldsExport extends BaseClass {
     );
     this.globalFields = [];
     this.applyQueryFilters(this.qs, 'global-fields');
-    this.exportConfig.context.module = 'global-fields';
-    this.currentModuleName = 'Global Fields';
+    this.exportConfig.context.module = MODULE_CONTEXTS.GLOBAL_FIELDS;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.GLOBAL_FIELDS];
   }
 
   async start() {
@@ -59,17 +53,14 @@ export default class GlobalFieldsExport extends BaseClass {
       log.debug('Starting global fields export process...', this.exportConfig.context);
 
       // Get global fields count and setup with loading spinner
-      const [totalCount] = await this.withLoadingSpinner(
-        'GLOBAL-FIELDS: Analyzing global fields...',
-        async () => {
-          await fsUtil.makeDirectory(this.globalFieldsDirPath);
-          const countResponse = await this.stackAPIClient
-            .globalField()
-            .query({ ...this.qs, include_count: true, limit: 1 })
-            .find();
-          return [countResponse.count || 0];
-        },
-      );
+      const [totalCount] = await this.withLoadingSpinner('GLOBAL-FIELDS: Analyzing global fields...', async () => {
+        await fsUtil.makeDirectory(this.globalFieldsDirPath);
+        const countResponse = await this.stackAPIClient
+          .globalField()
+          .query({ ...this.qs, include_count: true, limit: 1 })
+          .find();
+        return [countResponse.count || 0];
+      });
 
       if (totalCount === 0) {
         log.info(messageHandler.parse('GLOBAL_FIELDS_NOT_FOUND'), this.exportConfig.context);

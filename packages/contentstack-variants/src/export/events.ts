@@ -3,6 +3,7 @@ import { resolve as pResolve } from 'node:path';
 import { sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 import { PersonalizeConfig, ExportConfig, EventsConfig, EventStruct } from '../types';
 import { fsUtil, PersonalizationAdapter } from '../utils';
+import { PROCESS_NAMES, MODULE_CONTEXTS, EXPORT_PROCESS_STATUS } from '../utils/constants';
 
 export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
   private eventsConfig: EventsConfig;
@@ -27,7 +28,7 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
       sanitizePath(this.eventsConfig.dirName),
     );
     this.events = [];
-    this.exportConfig.context.module = 'events';
+    this.exportConfig.context.module = MODULE_CONTEXTS.EVENTS;
   }
 
   async start() {
@@ -56,23 +57,22 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
       }
 
       let progress: any;
-      const processName = 'Events';
 
       if (this.parentProgressManager) {
         progress = this.parentProgressManager;
         this.progressManager = this.parentProgressManager;
-        progress.updateProcessTotal(processName, this.events.length);
+        progress.updateProcessTotal(PROCESS_NAMES.EVENTS, this.events.length);
       } else {
-        progress = this.createSimpleProgress('Events', this.events.length);
+        progress = this.createSimpleProgress(PROCESS_NAMES.EVENTS, this.events.length);
       }
 
       log.debug(`Processing ${this.events.length} events`, this.exportConfig.context);
-      progress.updateStatus('Sanitizing events data...', processName);
+      progress.updateStatus(EXPORT_PROCESS_STATUS[PROCESS_NAMES.EVENTS].EXPORTING, PROCESS_NAMES.EVENTS);
 
       this.sanitizeAttribs();
       log.debug('Events sanitization completed', this.exportConfig.context);
 
-      progress.updateStatus('Writing events data...', processName);
+      progress.updateStatus(EXPORT_PROCESS_STATUS[PROCESS_NAMES.EVENTS].EXPORTING, PROCESS_NAMES.EVENTS);
       const eventsFilePath = pResolve(sanitizePath(this.eventsFolderPath), sanitizePath(this.eventsConfig.fileName));
       log.debug(`Writing events to: ${eventsFilePath}`, this.exportConfig.context);
       fsUtil.writeFile(eventsFilePath, this.events);
@@ -107,7 +107,7 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
         const sanitizedEvent = omit(event, this.eventsConfig.invalidKeys);
 
         if (this.progressManager) {
-          const processName = this.parentProgressManager ? 'Events' : undefined;
+          const processName = this.parentProgressManager ? PROCESS_NAMES.EVENTS : undefined;
           this.updateProgress(
             true,
             `event ${index + 1}/${this.events.length}: ${

@@ -5,7 +5,16 @@ import { sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilitie
 import { ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
 import { updateFieldRules } from '../../utils/content-type-helper';
-import { fsUtil, schemaTemplate, lookupExtension, lookUpTaxonomy } from '../../utils';
+import {
+  fsUtil,
+  schemaTemplate,
+  lookupExtension,
+  lookUpTaxonomy,
+  PROCESS_NAMES,
+  MODULE_CONTEXTS,
+  PROCESS_STATUS,
+  MODULE_NAMES,
+} from '../../utils';
 
 export default class ContentTypesImport extends BaseClass {
   private cTsMapperPath: string;
@@ -47,8 +56,8 @@ export default class ContentTypesImport extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = 'content-types';
-    this.currentModuleName = 'Content Types';
+    this.importConfig.context.module = MODULE_CONTEXTS.CONTENT_TYPES;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.CONTENT_TYPES];
     this.cTsConfig = importConfig.modules['content-types'];
     this.gFsConfig = importConfig.modules['global-fields'];
     this.reqConcurrency = this.cTsConfig.writeConcurrency || this.importConfig.writeConcurrency;
@@ -130,7 +139,7 @@ export default class ContentTypesImport extends BaseClass {
   async seedCTs(): Promise<any> {
     const onSuccess = ({ response: globalField, apiData: { content_type: { uid = null } = {} } = {} }: any) => {
       this.createdCTs.push(uid);
-      this.progressManager?.tick(true, `content type: ${uid}`, null, 'Create');
+      this.progressManager?.tick(true, `content type: ${uid}`, null, PROCESS_NAMES.CONTENT_TYPES_CREATE);
       log.success(`Content type '${uid}' created successfully`, this.importConfig.context);
       log.debug(`Successfully seeded content type: ${uid}`, this.importConfig.context);
     };
@@ -139,7 +148,7 @@ export default class ContentTypesImport extends BaseClass {
         false,
         `content type: ${uid}`,
         error?.message || 'Failed to create content type',
-        'Create',
+        PROCESS_NAMES.CONTENT_TYPES_CREATE,
       );
       if (error.errorCode === 115 && (error.errors.uid || error.errors.title)) {
         log.info(`${uid} content type already exist`, this.importConfig.context);
@@ -181,7 +190,7 @@ export default class ContentTypesImport extends BaseClass {
 
   async updateCTs(): Promise<any> {
     const onSuccess = ({ response: contentType, apiData: { uid } }: any) => {
-      this.progressManager?.tick(true, `content type: ${uid}`, null, 'Update');
+      this.progressManager?.tick(true, `content type: ${uid}`, null, PROCESS_NAMES.CONTENT_TYPES_UPDATE);
       log.success(`'${uid}' updated with references`, this.importConfig.context);
       log.debug(`Content type update completed for: ${uid}`, this.importConfig.context);
     };
@@ -191,7 +200,7 @@ export default class ContentTypesImport extends BaseClass {
         false,
         `content type: ${uid}`,
         error?.message || 'Failed to update content type',
-        'Update',
+        PROCESS_NAMES.CONTENT_TYPES_UPDATE,
       );
       handleAndLogError(error, { ...this.importConfig.context, uid }, `Content type '${uid}' update failed`);
     };
@@ -267,7 +276,7 @@ export default class ContentTypesImport extends BaseClass {
     log.debug(`Loaded ${this.gFs?.length || 0} global fields from file`, this.importConfig.context);
 
     const onSuccess = ({ response: globalField, apiData: { uid } = undefined }: any) => {
-      this.progressManager?.tick(true, `global field: ${uid}`, null, 'GF Update');
+      this.progressManager?.tick(true, `global field: ${uid}`, null, PROCESS_NAMES.CONTENT_TYPES_GF_UPDATE);
       log.success(`Updated the global field ${uid} with content type references`, this.importConfig.context);
       log.debug(`Global field update completed for: ${uid}`, this.importConfig.context);
     };
@@ -276,7 +285,7 @@ export default class ContentTypesImport extends BaseClass {
         false,
         `global field: ${uid}`,
         error?.message || 'Failed to update global field',
-        'GF Update',
+        PROCESS_NAMES.CONTENT_TYPES_GF_UPDATE,
       );
       handleAndLogError(error, { ...this.importConfig.context, uid }, `Failed to update the global field '${uid}'`);
     };
@@ -350,7 +359,12 @@ export default class ContentTypesImport extends BaseClass {
     this.isExtensionsUpdate = true;
 
     const onSuccess = ({ response, apiData: { uid, title } = { uid: null, title: '' } }: any) => {
-      this.progressManager?.tick(true, `extension: ${response.title || title || uid}`, null, 'Ext Update');
+      this.progressManager?.tick(
+        true,
+        `extension: ${response.title || title || uid}`,
+        null,
+        PROCESS_NAMES.CONTENT_TYPES_EXT_UPDATE,
+      );
       log.success(`Successfully updated the '${response.title}' extension.`, this.importConfig.context);
       log.debug(`Extension update completed for: ${uid}`, this.importConfig.context);
     };
@@ -361,7 +375,7 @@ export default class ContentTypesImport extends BaseClass {
         false,
         `extension: ${title || uid}`,
         error?.message || 'Failed to update extension',
-        'Ext Update',
+        PROCESS_NAMES.CONTENT_TYPES_EXT_UPDATE,
       );
       if (error?.errors?.title) {
         if (!this.importConfig.skipExisting) {
@@ -425,30 +439,35 @@ export default class ContentTypesImport extends BaseClass {
   initializeProgress() {
     const progress = this.createNestedProgress(this.currentModuleName);
     if (this.cTs.length) {
-      progress.addProcess('Create', this.cTs.length);
-      progress.addProcess('Update', this.cTs.length);
+      progress.addProcess(PROCESS_NAMES.CONTENT_TYPES_CREATE, this.cTs.length);
+      progress.addProcess(PROCESS_NAMES.CONTENT_TYPES_UPDATE, this.cTs.length);
     }
     if (this.pendingGFs.length) {
-      progress.addProcess('GF Update', this.pendingGFs.length);
+      progress.addProcess(PROCESS_NAMES.CONTENT_TYPES_GF_UPDATE, this.pendingGFs.length);
     }
     if (this.pendingExts.length) {
-      progress.addProcess('Ext Update', this.pendingExts.length);
+      progress.addProcess(PROCESS_NAMES.CONTENT_TYPES_EXT_UPDATE, this.pendingExts.length);
     }
     return progress;
   }
 
   async handlePendingGlobalFields(progress: any) {
     progress
-      .startProcess('GF Update')
-      .updateStatus('Updating global fields with content type references...', 'GF Update');
+      .startProcess(PROCESS_NAMES.CONTENT_TYPES_GF_UPDATE)
+      .updateStatus(
+        PROCESS_STATUS[PROCESS_NAMES.CONTENT_TYPES_GF_UPDATE].UPDATING,
+        PROCESS_NAMES.CONTENT_TYPES_GF_UPDATE,
+      );
 
     log.info('Starting pending global fields update process', this.importConfig.context);
     await this.updatePendingGFs();
-    progress.completeProcess('GF Update', true);
+    progress.completeProcess(PROCESS_NAMES.CONTENT_TYPES_GF_UPDATE, true);
   }
 
   async handleContentTypesCreation(progress: any) {
-    progress.startProcess('Create').updateStatus('Creating content types...', 'Create');
+    progress
+      .startProcess(PROCESS_NAMES.CONTENT_TYPES_CREATE)
+      .updateStatus(PROCESS_STATUS[PROCESS_NAMES.CONTENT_TYPES_CREATE].CREATING, PROCESS_NAMES.CONTENT_TYPES_CREATE);
 
     log.info('Starting content types seeding process', this.importConfig.context);
     await this.seedCTs();
@@ -458,24 +477,31 @@ export default class ContentTypesImport extends BaseClass {
       log.debug(`Written ${this.createdCTs.length} successful content types to file`, this.importConfig.context);
     }
 
-    progress.completeProcess('Create', true);
+    progress.completeProcess(PROCESS_NAMES.CONTENT_TYPES_CREATE, true);
   }
 
   async handleContentTypesUpdate(progress: any) {
-    progress.startProcess('Update').updateStatus('Updating content types with references...', 'Update');
+    progress
+      .startProcess(PROCESS_NAMES.CONTENT_TYPES_UPDATE)
+      .updateStatus(PROCESS_STATUS[PROCESS_NAMES.CONTENT_TYPES_UPDATE].UPDATING, PROCESS_NAMES.CONTENT_TYPES_UPDATE);
 
     log.info('Starting Update process', this.importConfig.context);
     await this.updateCTs();
 
-    progress.completeProcess('Update', true);
+    progress.completeProcess(PROCESS_NAMES.CONTENT_TYPES_UPDATE, true);
   }
 
   async handlePendingExtensions(progress: any) {
-    progress.startProcess('Ext Update').updateStatus('Updating extensions...', 'Ext Update');
+    progress
+      .startProcess(PROCESS_NAMES.CONTENT_TYPES_EXT_UPDATE)
+      .updateStatus(
+        PROCESS_STATUS[PROCESS_NAMES.CONTENT_TYPES_EXT_UPDATE].UPDATING,
+        PROCESS_NAMES.CONTENT_TYPES_EXT_UPDATE,
+      );
 
     log.info('Starting pending extensions update process', this.importConfig.context);
     await this.updatePendingExtensions();
-    progress.completeProcess('Ext Update', true);
+    progress.completeProcess(PROCESS_NAMES.CONTENT_TYPES_EXT_UPDATE, true);
 
     if (this.isExtensionsUpdate) {
       log.success('Successfully updated the extensions.', this.importConfig.context);
