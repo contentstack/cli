@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.46.0 darwin-arm64 node-v22.14.0
+@contentstack/cli/1.46.1 darwin-arm64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -2187,7 +2187,6 @@ FLAGS
                                   mention the branch name, then by default the content will be exported from all the
                                   branches of your stack.
   -a, --alias=<value>             The management token alias of the source stack from which you will export content.
-  -b, --branch-alias=<value>      (Optional) The alias of the branch from which you want to export content.
   -c, --config=<value>            [optional] Path of the config
   -d, --data-dir=<value>          The path or the location in your file system to store the exported content. For e.g.,
                                   ./content
@@ -2199,6 +2198,7 @@ FLAGS
   -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
                                   of multiple content types, specify the IDs separated by spaces.
   -y, --yes                       [optional] Force override all Marketplace prompts.
+      --branch-alias=<value>      (Optional) The alias of the branch from which you want to export content.
       --secured-assets            [optional] Use this flag for assets that are secured.
 
 DESCRIPTION
@@ -2812,7 +2812,6 @@ FLAGS
                                   mention the branch name, then by default the content will be exported from all the
                                   branches of your stack.
   -a, --alias=<value>             The management token alias of the source stack from which you will export content.
-  -b, --branch-alias=<value>      (Optional) The alias of the branch from which you want to export content.
   -c, --config=<value>            [optional] Path of the config
   -d, --data-dir=<value>          The path or the location in your file system to store the exported content. For e.g.,
                                   ./content
@@ -2824,6 +2823,7 @@ FLAGS
   -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
                                   of multiple content types, specify the IDs separated by spaces.
   -y, --yes                       [optional] Force override all Marketplace prompts.
+      --branch-alias=<value>      (Optional) The alias of the branch from which you want to export content.
       --secured-assets            [optional] Use this flag for assets that are secured.
 
 DESCRIPTION
