@@ -18,7 +18,7 @@ importers:
       '@contentstack/cli-cm-branches': ~1.5.1
       '@contentstack/cli-cm-bulk-publish': ~1.10.0
       '@contentstack/cli-cm-clone': ~1.16.0
-      '@contentstack/cli-cm-export': ~1.20.0
+      '@contentstack/cli-cm-export': ~1.20.1
       '@contentstack/cli-cm-export-to-csv': ~1.9.1
       '@contentstack/cli-cm-import': ~1.27.0
       '@contentstack/cli-cm-import-setup': 1.4.2
@@ -379,7 +379,7 @@ importers:
   packages/contentstack-clone:
     specifiers:
       '@colors/colors': ^1.6.0
-      '@contentstack/cli-cm-export': ~1.20.0
+      '@contentstack/cli-cm-export': ~1.20.1
       '@contentstack/cli-cm-import': ~1.27.0
       '@contentstack/cli-command': ~1.6.1
       '@contentstack/cli-utilities': ~1.14.0
@@ -2069,11 +2069,11 @@ packages:
     engines: {node: '>=0.1.90'}
     dev: false
 
-  /@contentstack/cli-command/1.6.0_debug@4.4.1:
-    resolution: {integrity: sha512-PZI0MmXRC05SRr0SJMHxGqTGItyUxt9gwZSJ6O7C7O6pqbwzOzUdEY0YpxgbIAj3/ZTE1ADPIj0xsVlH7yFqKQ==}
+  /@contentstack/cli-command/1.6.1_debug@4.4.1:
+    resolution: {integrity: sha512-WS4k2i+chuwmOrHqJC2N4aWOEpQ+DxrHXtMhya2uMwH25ES203C0o4hm+NwD2gi7Ea5AQycBoi8JHOF0vAQ4WA==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      '@contentstack/cli-utilities': 1.13.2_debug@4.4.1
+      '@contentstack/cli-utilities': 1.14.0_debug@4.4.1
       '@oclif/core': 4.5.2
       '@oclif/plugin-help': 6.2.32
       contentstack: 3.26.2
@@ -2087,7 +2087,7 @@ packages:
     hasBin: true
     dependencies:
       '@apollo/client': 3.14.0_graphql@16.11.0
-      '@contentstack/cli-command': 1.6.0_debug@4.4.1
+      '@contentstack/cli-command': 1.6.1_debug@4.4.1
       '@contentstack/cli-utilities': 1.13.2_debug@4.4.1
       '@oclif/core': 4.5.2
       '@oclif/plugin-help': 6.2.32
@@ -2161,6 +2161,42 @@ packages:
 
   /@contentstack/cli-utilities/1.13.2_debug@4.4.1:
     resolution: {integrity: sha512-jOiX99fs4XD811ipPo3N0yj/QBN63m7AIq/egzddKt39xhRTmrzdmQ/jaQdZphcl/65W6OennDdt/ThgBBtQhQ==}
+    dependencies:
+      '@contentstack/management': 1.22.0_debug@4.4.1
+      '@contentstack/marketplace-sdk': 1.4.0_debug@4.4.1
+      '@oclif/core': 4.5.2
+      axios: 1.11.0_debug@4.4.1
+      chalk: 4.1.2
+      cli-cursor: 3.1.0
+      cli-progress: 3.12.0
+      cli-table: 0.3.11
+      conf: 10.2.0
+      dotenv: 16.6.1
+      figures: 3.2.0
+      inquirer: 8.2.6
+      inquirer-search-checkbox: 1.0.0
+      inquirer-search-list: 1.2.6
+      js-yaml: 4.1.0
+      klona: 2.0.6
+      lodash: 4.17.21
+      mkdirp: 1.0.4
+      open: 8.4.2
+      ora: 5.4.1
+      papaparse: 5.5.3
+      recheck: 4.4.5
+      rxjs: 6.6.7
+      traverse: 0.6.11
+      tty-table: 4.2.3
+      unique-string: 2.0.0
+      uuid: 9.0.1
+      winston: 3.17.0
+      xdg-basedir: 4.0.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
+  /@contentstack/cli-utilities/1.14.0_debug@4.4.1:
+    resolution: {integrity: sha512-dGTje9w6rGepJqJm8Fk8vIA8ja2x3AJFaNUTYIimdpMTBtA5N95STTUeV36sxKcjDaY/FmOsu0N/iZd0N2kZ5A==}
     dependencies:
       '@contentstack/management': 1.22.0_debug@4.4.1
       '@contentstack/marketplace-sdk': 1.4.0_debug@4.4.1

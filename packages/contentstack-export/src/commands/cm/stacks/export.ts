@@ -96,7 +96,6 @@ export default class ExportCommand extends Command {
       exclusive: ['branch-alias'],
     }),
     'branch-alias': flags.string({
-      char: 'b',
       description: '(Optional) The alias of the branch from which you want to export content.',
       exclusive: ['branch'],
     }),
