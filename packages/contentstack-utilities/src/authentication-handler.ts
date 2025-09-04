@@ -33,10 +33,10 @@ class AuthenticationHandler {
           break;
       }
     } catch (error) {
-      ux.print(`Error occurred while fetching auth details: ${error.message}`, {
+      ux.print(`Error occurred while fetching auth details: ${error?.message}`, {
         color: 'red',
       });
-      throw new Error(`Error occurred while fetching auth details: ${error.message}`);
+      throw error;
     }
   }
 
