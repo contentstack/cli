@@ -7,7 +7,7 @@
   "dependencies": {
     "@contentstack/cli-cm-import": "~1.27.0",
     "@contentstack/cli-command": "~1.6.1",
-    "@contentstack/cli-utilities": "~1.14.0",
+    "@contentstack/cli-utilities": "~1.14.1",
     "@contentstack/management": "~1.22.0",
     "inquirer": "8.2.6",
     "mkdirp": "^1.0.4",
