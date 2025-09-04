@@ -84,7 +84,7 @@ class AuthenticationHandler {
         case 429:
         case 408:
           if (maxRetryCount >= 3) {
-            ux.print('Max retry count reached, please login to proceed', {
+            ux.print(`Max retry count reached, please login to proceed, status code: ${error.response.status}`, {
               color: 'yellow',
             });
             return;
