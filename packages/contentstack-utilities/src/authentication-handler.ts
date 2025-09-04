@@ -28,7 +28,7 @@ class AuthenticationHandler {
             ux.print('Session timed out, please login to proceed', {
               color: 'yellow',
             });
-            process.exit(1);
+            throw new Error('Session timed out, please login to proceed');
           }
           break;
       }
@@ -36,7 +36,7 @@ class AuthenticationHandler {
       ux.print(`Error occurred while fetching auth details: ${error.message}`, {
         color: 'red',
       });
-      process.exit(1);
+      throw new Error(`Error occurred while fetching auth details: ${error.message}`);
     }
   }
 
@@ -87,7 +87,7 @@ class AuthenticationHandler {
             ux.print('Max retry count reached, please login to proceed', {
               color: 'yellow',
             });
-            process.exit(1);
+            return;
           }
           maxRetryCount++; // Increment for the next retry attempt
           // These cases require a wait, adding a delay before retrying
@@ -106,7 +106,7 @@ class AuthenticationHandler {
         ux.print('Session timed out, please login to proceed', {
           color: 'yellow',
         });
-        process.exit();
+        resolve(false);
       } else if (this.authType === 'OAUTH') {
         authHandler.host = hostName;
         // NOTE Handle OAuth refresh token
@@ -124,7 +124,7 @@ class AuthenticationHandler {
         ux.print('You do not have the permissions to perform this action, please login to proceed', {
           color: 'yellow',
         });
-        process.exit();
+        resolve(false);
       }
     });
   }
