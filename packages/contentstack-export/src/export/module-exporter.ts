@@ -1,11 +1,5 @@
 import * as path from 'path';
-import {
-  ContentstackClient,
-  handleAndLogError,
-  messageHandler,
-  log,
-  CLIProgressManager,
-} from '@contentstack/cli-utilities';
+import { ContentstackClient, handleAndLogError, messageHandler, log, getBranchFromAlias, CLIProgressManager } from '@contentstack/cli-utilities';
 import { setupBranches, setupExportDir, writeExportMetaFile } from '../utils';
 import startModuleExport from './modules';
 import startJSModuleExport from './modules-js';
@@ -27,16 +21,23 @@ class ModuleExporter {
 
   async start(): Promise<any> {
     // setup the branches
-    await setupBranches(this.exportConfig, this.stackAPIClient);
-    await setupExportDir(this.exportConfig);
-    // if branches available run it export by branches
-    if (this.exportConfig.branches) {
-      this.exportConfig.branchEnabled = true;
-      return this.exportByBranches();
-    }
-    // If branches disabled then initialize the global summary
+    try {
+      if (!this.exportConfig.branchName && this.exportConfig.branchAlias) {
+        this.exportConfig.branchName = await getBranchFromAlias(this.stackAPIClient, this.exportConfig.branchAlias);
+      }
+      await setupBranches(this.exportConfig, this.stackAPIClient);
+      await setupExportDir(this.exportConfig);
+      // if branches available run it export by branches
+      if (this.exportConfig.branches) {
+        this.exportConfig.branchEnabled = true;
+        return this.exportByBranches();
+      }
+      // If branches disabled then initialize the global summary
     CLIProgressManager.initializeGlobalSummary('EXPORT', this.exportConfig.branchName, 'EXPORTING CONTENT');
     return this.export();
+    } catch (error) {
+      throw error;
+    }
   }
 
   async exportByBranches(): Promise<void> {

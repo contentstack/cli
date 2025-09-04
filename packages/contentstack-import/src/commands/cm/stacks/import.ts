@@ -88,6 +88,12 @@ export default class ImportCommand extends Command {
       description:
         "The name of the branch where you want to import your content. If you don't mention the branch name, then by default the content will be imported to the main branch.",
       parse: printFlagDeprecation(['-B'], ['--branch']),
+      exclusive: ['branch-alias'],
+    }),
+    'branch-alias': flags.string({
+      description:
+        "The alias of the branch where you want to import your content. If you don't mention the branch alias, then by default the content will be imported to the main branch.",
+      exclusive: ['branch'],
     }),
     'import-webhook-status': flags.string({
       description:
@@ -161,26 +167,6 @@ export default class ImportCommand extends Command {
       if (this.personalizeUrl) importConfig.modules.personalize.baseURL[importConfig.region.name] = this.personalizeUrl;
 
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
-
-      if (!flags.branch) {
-        try {
-          // Use stack configuration to check for branch availability
-          // false positive - no hardcoded secret here
-          // @ts-ignore-next-line secret-detection
-          const keyProp = 'api_key';
-          const branches = await managementAPIClient
-            .stack({ [keyProp]: importConfig.apiKey })
-            .branch()
-            .query()
-            .find()
-            .then(({ items }: any) => items);
-          if (branches.length) {
-            flags.branch = 'main';
-          }
-        } catch (error) {
-          // Branch not enabled, just the let flow continue
-        }
-      }
 
       if (flags.branch) {
         CLIProgressManager.initializeGlobalSummary(

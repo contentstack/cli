@@ -99,7 +99,14 @@ export default class CLIErrorHandler {
       const formattedMessage = formatError(error);
       return formattedMessage || 'An error occurred. Please try again.';
     } catch {
-      return 'An error occurred. Please try again.';
+      // Fallback to basic error message extraction if formatError fails
+      if (typeof error?.response?.data?.errorMessage === 'string') {
+        return error.response.data.errorMessage;
+      }
+
+      if (typeof error?.errorMessage === 'string') {
+        return error.errorMessage;
+      }
     }
   }
 
@@ -119,7 +126,19 @@ export default class CLIErrorHandler {
         const errorObj = error as Record<string, any>;
         const normalizedError = new Error('Error occurred');
 
-        const essentialProps = ['code', 'status', 'statusText', 'response', 'request', 'config', 'message', 'errorMessage', 'error_message', 'error'];
+        // Only copy essential properties
+        const essentialProps = [
+          'code',
+          'status',
+          'statusText',
+          'response',
+          'request',
+          'message',
+          'errorMessage',
+          'error_message',
+          'error',
+          'errors',
+        ];
         essentialProps.forEach((prop) => {
           if (errorObj[prop] !== undefined) {
             (normalizedError as any)[prop] = errorObj[prop];
@@ -176,6 +195,20 @@ export default class CLIErrorHandler {
     // Add error identifiers
     if (code) payload.code = code;
     if (status || response?.status) payload.status = status || response?.status;
+
+    // Add detailed field-level errors if available
+    if (response?.data?.errors && typeof response.data.errors === 'object') {
+      payload.errors = response.data.errors;
+    } else if (error?.errors && typeof error.errors === 'object') {
+      payload.errors = error.errors;
+    }
+
+    // Add error code if available
+    if (response?.data?.error_code) {
+      payload.errorCode = response.data.error_code;
+    } else if (error?.error_code) {
+      payload.errorCode = error.error_code;
+    }
 
     // Add request context with sensitive data redaction
     if (request || config) {

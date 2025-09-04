@@ -1,7 +1,13 @@
 import merge from 'merge';
 import * as path from 'path';
 import { omit, filter, includes, isArray } from 'lodash';
-import { configHandler, isAuthenticated, cliux, sanitizePath, log } from '@contentstack/cli-utilities';
+import {
+  configHandler,
+  isAuthenticated,
+  cliux,
+  sanitizePath,
+  log,
+} from '@contentstack/cli-utilities';
 import defaultConfig from '../config';
 import { readFile, fileExistsSync } from './file-helper';
 import { askContentDir, askAPIKey } from './interactive';
@@ -97,6 +103,10 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   config.forceStopMarketplaceAppsPrompt = importCmdFlags.yes;
   config.importWebhookStatus = importCmdFlags['import-webhook-status'];
   config.skipPrivateAppRecreationIfExist = !importCmdFlags['skip-app-recreation'];
+
+  if (importCmdFlags['branch-alias']) {
+    config.branchAlias = importCmdFlags['branch-alias'];
+  }
 
   if (importCmdFlags['branch']) {
     config.branchName = importCmdFlags['branch'];

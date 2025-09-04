@@ -1,3 +1,4 @@
+export { setupBranchConfig } from './setup-branch';
 export * as interactive from './interactive';
 export { default as setupImportConfig } from './import-config-handler';
 export * as fileHelper from './file-helper';

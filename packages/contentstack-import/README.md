@@ -5,9 +5,8 @@ It is Contentstack’s CLI plugin to import content in the stack. To learn how t
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)it -m
 
 <!-- toc -->
-
-- [Usage](#usage)
-- [Commands](#commands)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 For switching to EU region update the hosts at config/default.js
@@ -43,27 +42,24 @@ For switching to AZURE-EU region update the hosts at config/default.js
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-import/1.26.1 darwin-arm64 node-v22.14.0
+@contentstack/cli-cm-import/1.27.0 darwin-arm64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
-- [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
+* [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
+* [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
 
 ## `csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
 
@@ -95,6 +91,9 @@ FLAGS
                                           extensions, marketplace-apps, global-fields, labels, locales, webhooks,
                                           workflows, custom-roles, personalize projects, and taxonomies.
   -y, --yes                               [optional] Force override all Marketplace prompts.
+      --branch-alias=<value>              The alias of the branch where you want to import your content. If you don't
+                                          mention the branch alias, then by default the content will be imported to the
+                                          main branch.
       --exclude-global-modules            Excludes the branch-independent module from the import operation.
       --import-webhook-status=<option>    [default: disable] [default: disable] (optional) This webhook state keeps the
                                           same state of webhooks as the source stack. <options: disable|current>
@@ -161,6 +160,9 @@ FLAGS
                                           extensions, marketplace-apps, global-fields, labels, locales, webhooks,
                                           workflows, custom-roles, personalize projects, and taxonomies.
   -y, --yes                               [optional] Force override all Marketplace prompts.
+      --branch-alias=<value>              The alias of the branch where you want to import your content. If you don't
+                                          mention the branch alias, then by default the content will be imported to the
+                                          main branch.
       --exclude-global-modules            Excludes the branch-independent module from the import operation.
       --import-webhook-status=<option>    [default: disable] [default: disable] (optional) This webhook state keeps the
                                           same state of webhooks as the source stack. <options: disable|current>
@@ -198,5 +200,4 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cm/stacks/import.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/src/commands/cm/stacks/import.ts)_
-
 <!-- commandsstop -->

@@ -48,7 +48,7 @@ $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-export/1.18.0 darwin-arm64 node-v22.13.1
+@contentstack/cli-cm-export/1.20.1 darwin-arm64 node-v22.13.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -87,6 +87,7 @@ FLAGS
   -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
                                   of multiple content types, specify the IDs separated by spaces.
   -y, --yes                       [optional] Force override all Marketplace prompts.
+      --branch-alias=<value>      (Optional) The alias of the branch from which you want to export content.
       --secured-assets            [optional] Use this flag for assets that are secured.
 
 DESCRIPTION
@@ -136,6 +137,7 @@ FLAGS
   -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
                                   of multiple content types, specify the IDs separated by spaces.
   -y, --yes                       [optional] Force override all Marketplace prompts.
+      --branch-alias=<value>      (Optional) The alias of the branch from which you want to export content.
       --secured-assets            [optional] Use this flag for assets that are secured.
 
 DESCRIPTION
