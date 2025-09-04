@@ -199,7 +199,6 @@ export default class EntriesImport extends BaseClass {
       this.createEntryDataForVariantEntry();
       this.completeProgress(false, (error as any)?.message || 'Entries import failed');
       handleAndLogError(error, { ...this.importConfig.context });
-      throw new Error('Error while importing entries');
     }
   }
 
@@ -550,7 +549,6 @@ export default class EntriesImport extends BaseClass {
       //this.progressManager?.tick(true, `${cTUid} - ${locale} (no entries)`, null, PROCESS_NAMES.ENTRIES_CREATE);
       return Promise.resolve();
     }
-
     log.debug(
       `Starting to create entries for ${cTUid} in locale ${locale} - ${indexerCount} chunks to process`,
       this.importConfig.context,
@@ -974,7 +972,11 @@ export default class EntriesImport extends BaseClass {
       );
 
       const chunk = await fs.readChunkFiles.next().catch((error) => {
-        handleAndLogError(error, { ...this.importConfig.context, cTUid, locale }, 'Error');
+        handleAndLogError(
+          error,
+          { ...this.importConfig.context, cTUid, locale },
+          'Failed to load data chunks due to a read error. Ensure the files are accessible and not corrupted.',
+        );
       });
 
       if (chunk) {
@@ -1163,7 +1165,10 @@ export default class EntriesImport extends BaseClass {
   }
 
   async updateFieldRules(): Promise<void> {
-    let cTsWithFieldRules = fsUtil.readFile(path.join(this.cTsPath + '/field_rules_uid.json')) as Record<string, any>[];
+    let cTsWithFieldRules = (fsUtil.readFile(path.join(this.cTsPath + '/field_rules_uid.json')) || []) as Record<
+      string,
+      any
+    >[];
     if (!cTsWithFieldRules || cTsWithFieldRules?.length === 0) {
       log.debug('No content types with field rules found to update', this.importConfig.context);
       return;

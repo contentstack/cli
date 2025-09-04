@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { execSync, spawn } from 'child_process';
 import { cliux, sanitizePath } from '@contentstack/cli-utilities';
 import { default as ContentStackSeed } from '@contentstack/cli-cm-seed/lib/commands/cm/stacks/seed';
 
@@ -19,6 +20,7 @@ export interface BootstrapOptions {
   accessToken?: string;
   appType: string;
   livePreviewEnabled?: boolean;
+  runDevServer?: boolean;
   master_locale: any;
 }
 
@@ -113,13 +115,14 @@ export default class Bootstrap {
           this.options.livePreviewEnabled as boolean,
           this.options.seedParams.managementToken as string,
         );
+
       } else {
         throw new Error(messageHandler.parse('CLI_BOOTSTRAP_NO_API_KEY_FOUND'));
       }
 
       if (this.options.livePreviewEnabled) {
         cliux.print(
-          'Note: Before running the app, please configure a preview token, preview host, and app host in the environment file',
+          messageHandler.parse('CLI_BOOTSTRAP_SUCCESS_LIVE_PREVIEW_NOTE'),
           {
             color: 'yellow',
           },
@@ -127,6 +130,53 @@ export default class Bootstrap {
       }
 
       cliux.print(messageHandler.parse('CLI_BOOTSTRAP_SUCCESS'));
+
+      // Install dependencies and start development server if requested (after all other operations)
+      if (this.options.runDevServer) {
+        // Install project dependencies
+        cliux.loader(messageHandler.parse('CLI_BOOTSTRAP_INSTALLING_DEPENDENCIES'));
+        try {
+          execSync('npm install', {
+            cwd: this.cloneDirectory,
+            stdio: 'inherit'
+          });
+          cliux.loader();
+          cliux.print(messageHandler.parse('CLI_BOOTSTRAP_DEPENDENCIES_INSTALLED'));
+
+          // Start development server
+          cliux.print(messageHandler.parse('CLI_BOOTSTRAP_STARTING_DEV_SERVER'));
+          cliux.print(messageHandler.parse('CLI_BOOTSTRAP_DEV_SERVER_STARTED'));
+          cliux.print('You can now access your application. Check the output above for the local URL.');
+
+          // Run npm run dev using spawn for long-running process
+          const devProcess = spawn('npm', ['run', 'dev'], {
+            cwd: this.cloneDirectory,
+            stdio: 'inherit',
+            shell: true
+          });
+
+          devProcess.on('error', (error) => {
+            cliux.print(messageHandler.parse('CLI_BOOTSTRAP_DEV_SERVER_FAILED'), {
+              color: 'yellow',
+            });
+            console.error('Failed to start dev server:', error);
+          });
+
+          // Handle process exit
+          devProcess.on('exit', (code) => {
+            if (code !== 0 && code !== null) {
+              cliux.print(messageHandler.parse('CLI_BOOTSTRAP_DEV_SERVER_FAILED'), {
+                color: 'yellow',
+              });
+            }
+          });
+        } catch (installError: any) {
+          cliux.loader();
+          cliux.print(messageHandler.parse('CLI_BOOTSTRAP_DEPENDENCIES_INSTALL_FAILED'), {
+            color: 'yellow',
+          });
+        }
+      }
     } catch (error) {
       cliux.error(messageHandler.parse('CLI_BOOTSTRAP_STACK_CREATION_FAILED', this.appConfig.stack));
     }
