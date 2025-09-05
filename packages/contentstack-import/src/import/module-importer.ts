@@ -1,7 +1,7 @@
 import { resolve } from 'path';
 import { AuditFix } from '@contentstack/cli-audit';
 import messages, { $t } from '@contentstack/cli-audit/lib/messages';
-import { addLocale, cliux, ContentstackClient, Logger, log, handleAndLogError } from '@contentstack/cli-utilities';
+import { addLocale, cliux, ContentstackClient, Logger, handleAndLogError, log } from '@contentstack/cli-utilities';
 
 import startModuleImport from './modules';
 import startJSModuleImport from './modules-js';
@@ -12,6 +12,7 @@ import {
   sanitizeStack,
   initLogger,
   setupBranchConfig,
+  executeImportPathLogic,
 } from '../utils';
 
 class ModuleImporter {
@@ -34,6 +35,8 @@ class ModuleImporter {
       this.importConfig.stackName = stackDetails.name as string;
       this.importConfig.org_uid = stackDetails.org_uid as string;
     }
+
+    await this.resolveImportPath();
 
     await setupBranchConfig(this.importConfig, this.stackAPIClient);
     if (this.importConfig.branchAlias && this.importConfig.branchName) {
@@ -126,6 +129,20 @@ class ModuleImporter {
         continue;
       }
       await this.importByModuleByName(moduleName);
+    }
+  }
+
+  /**
+   * Resolves the import path based on directory structure and user configuration
+   * @returns Promise<void>
+   */
+  private async resolveImportPath(): Promise<void> {
+    try {
+      const resolvedPath = await executeImportPathLogic(this.importConfig, this.stackAPIClient);
+      log.debug(`Import path resolved to: ${resolvedPath}`);
+    } catch (error) {
+      log.error(`Failed to resolve import path: ${error}`);
+      // Continue with original path if resolution fails
     }
   }
 
