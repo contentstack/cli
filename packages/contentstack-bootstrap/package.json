@@ -16,7 +16,7 @@
     "test:report": "nyc --reporter=lcov mocha \"test/**/*.test.js\""
   },
   "dependencies": {
-    "@contentstack/cli-cm-seed": "~1.12.1",
+    "@contentstack/cli-cm-seed": "~1.12.2",
     "@contentstack/cli-command": "~1.6.1",
     "@contentstack/cli-utilities": "~1.14.0",
     "@oclif/core": "^4.3.0",
