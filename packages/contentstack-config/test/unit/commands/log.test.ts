@@ -48,8 +48,8 @@ describe('Log Commands', () => {
       expect(
         setStub.calledWith('log', {
           level: 'debug',
-          path: './logs/app.log',
-          showConsoleLogs: false,
+          path: expectedAbsolutePath, // Should be directory path, not file path
+          'show-console-logs': false,
         }),
       ).to.be.true;
 
@@ -88,13 +88,9 @@ describe('Log Commands', () => {
 
       await cmd.run();
 
-      expect(
-        setStub.calledWith('log', {
-          level: 'info',
-          path: './custom/logs/app.log',
-          showConsoleLogs: false,
-        }),
-      ).to.be.true;
+      // Should call set even when no flags are provided
+      expect(setStub.called).to.be.true;
+      expect(setStub.calledWith('log', {})).to.be.true;
 
       // Should not display any success messages when no flags are provided
       expect(successMessage.length).to.equal(0);
@@ -121,8 +117,8 @@ describe('Log Commands', () => {
       expect(
         setStub.calledWith('log', {
           level: 'warn',
-          path: './existing/logs/app.log',
-          showConsoleLogs: false,
+          path: existingPath,  // Should preserve existing path unchanged
+          'show-console-logs': true,  // Should preserve existing console logs setting
         }),
       ).to.be.true;
 
@@ -153,8 +149,8 @@ describe('Log Commands', () => {
       expect(
         setStub.calledWith('log', {
           level: 'error',
-          path: './new/logs/app.log',
-          showConsoleLogs: false,
+          path: expectedAbsolutePath,
+          'show-console-logs': false,
         }),
       ).to.be.true;
 
@@ -176,9 +172,9 @@ describe('Log Commands', () => {
 
       expect(
         setStub.calledWith('log', {
-          level: 'info',
-          path: './logs/app.log',
-          showConsoleLogs: true,
+          level: 'debug', 
+          path: './existing.log',
+          'show-console-logs': true,
         }),
       ).to.be.true;
 
@@ -201,8 +197,7 @@ describe('Log Commands', () => {
       expect(
         setStub.calledWith('log', {
           level: 'info',
-          path: './logs/app.log',
-          showConsoleLogs: false,
+          'show-console-logs': false,
         }),
       ).to.be.true;
 
@@ -232,8 +227,8 @@ describe('Log Commands', () => {
       expect(
         setStub.calledWith('log', {
           level: 'warn',
-          path: './logs/warnings.log',
-          showConsoleLogs: true,
+          path: expectedAbsolutePath, 
+          'show-console-logs': true,
         }),
       ).to.be.true;
 
@@ -262,9 +257,8 @@ describe('Log Commands', () => {
 
       expect(
         setStub.calledWith('log', {
-          level: 'info',
-          path: './logs/app.log',
-          showConsoleLogs: false,
+          path: expectedDirectoryPath,
+          'show-console-logs': false,
         }),
       ).to.be.true;
     });
@@ -311,12 +305,22 @@ describe('Log Commands', () => {
       await cmd.run();
 
       expect(tableMessage).to.have.length(1);
-      expect(tableMessage[0].headers).to.deep.equal([{ value: 'Log Level' }, { value: 'Log Path' }, { value: 'Show Console Logs' }]);
+      expect(tableMessage[0].headers).to.deep.equal([
+        { value: 'Setting' }, 
+        { value: 'Value' }
+      ]);
       expect(tableMessage[0].data).to.deep.equal([
         {
-          'Log Level': 'debug',
-          'Log Path': './logs/app.log',
-          'Show Console Logs': 'Not set',
+          'Setting': 'Log Level',
+          'Value': 'debug'
+        },
+        {
+          'Setting': 'Log Path',
+          'Value': expectedAbsolutePath
+        },
+        {
+          'Setting': 'Show Console Logs',
+          'Value': 'false'
         },
       ]);
     });
@@ -328,12 +332,22 @@ describe('Log Commands', () => {
       await cmd.run();
 
       expect(tableMessage).to.have.length(1);
-      expect(tableMessage[0].headers).to.deep.equal([{ value: 'Log Level' }, { value: 'Log Path' }, { value: 'Show Console Logs' }]);
+      expect(tableMessage[0].headers).to.deep.equal([
+        { value: 'Setting' }, 
+        { value: 'Value' }
+      ]);
       expect(tableMessage[0].data).to.deep.equal([
         {
-          'Log Level': 'info',
-          'Log Path': 'Not set',
-          'Show Console Logs': 'Not set',
+          'Setting': 'Log Level',
+          'Value': 'info'
+        },
+        {
+          'Setting': 'Log Path',
+          'Value': LOG_CONFIG_DEFAULTS.PATH
+        },
+        {
+          'Setting': 'Show Console Logs',
+          'Value': 'false'
         },
       ]);
     });
@@ -348,12 +362,22 @@ describe('Log Commands', () => {
       await cmd.run();
 
       expect(tableMessage).to.have.length(1);
-      expect(tableMessage[0].headers).to.deep.equal([{ value: 'Log Level' }, { value: 'Log Path' }, { value: 'Show Console Logs' }]);
+      expect(tableMessage[0].headers).to.deep.equal([
+        { value: 'Setting' }, 
+        { value: 'Value' }
+      ]);
       expect(tableMessage[0].data).to.deep.equal([
         {
-          'Log Level': 'Not set',
-          'Log Path': './custom/logs/app.log',
-          'Show Console Logs': 'Not set',
+          'Setting': 'Log Level',
+          'Value': LOG_CONFIG_DEFAULTS.LEVEL
+        },
+        {
+          'Setting': 'Log Path',
+          'Value': expectedAbsolutePath
+        },
+        {
+          'Setting': 'Show Console Logs',
+          'Value': 'false'
         },
       ]);
     });
