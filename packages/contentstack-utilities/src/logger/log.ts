@@ -9,9 +9,15 @@ import { configHandler } from '..';
 let loggerInstance: Logger | null = null;
 
 function createLoggerInstance(): Logger {
+  const logConfig = configHandler.get('log');
+  const logLevel = logConfig?.level || 'info';
+  const showConsoleLogs = logConfig?.['show-console-logs'] ?? false;
+
   const config = {
     basePath: getLogPath(),
-    logLevel: configHandler.get('log.level') || 'info',
+    logLevel: logLevel,
+    consoleLoggingEnabled: showConsoleLogs,
+    consoleLogLevel: logLevel,
   };
   return new Logger(config);
 }
