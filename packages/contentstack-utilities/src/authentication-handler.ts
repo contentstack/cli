@@ -1,4 +1,4 @@
-import { cliux as ux, authHandler, configHandler } from './index';
+import { cliux as ux, authHandler, configHandler, formatError } from './index';
 
 class AuthenticationHandler {
   private authType: string;
@@ -33,7 +33,8 @@ class AuthenticationHandler {
           break;
       }
     } catch (error) {
-      ux.print(`Error occurred while fetching auth details: ${error?.message}`, {
+      const formattedError = formatError(error);
+      ux.print(`Error occurred while fetching auth details: ${formattedError}`, {
         color: 'red',
       });
       throw error;
@@ -75,7 +76,9 @@ class AuthenticationHandler {
             if (refreshed) {
               return this.refreshAccessToken(error, maxRetryCount); // Retry after refreshing the token
             }
-            console.log('API(401) case error:-', error.response);
+
+            const errorDetails = formatError(error);
+            ux.print(`Authentication failed: ${errorDetails}`, { color: 'red' });
             // For Basic Auth, exit immediately without retrying
             return;
           }
@@ -84,9 +87,11 @@ class AuthenticationHandler {
         case 429:
         case 408:
           if (maxRetryCount >= 3) {
-            ux.print(`Max retry count reached, please login to proceed, status code: ${error.response.status}`, {
-              color: 'yellow',
-            });
+            const errorDetails = formatError(error);
+            const statusText = error?.response?.status === 429 ? 'Rate Limited' : 'Request Timeout';
+            ux.print(`Max retry attempts exceeded (${maxRetryCount}/3)`, { color: 'red' });
+            ux.print(`Status: ${error?.response?.status} - ${statusText}`, { color: 'yellow' });
+            ux.print(`Error: ${errorDetails}`, { color: 'white' });
             return;
           }
           maxRetryCount++; // Increment for the next retry attempt
@@ -106,6 +111,8 @@ class AuthenticationHandler {
         ux.print('Session timed out, please login to proceed', {
           color: 'yellow',
         });
+        ux.print('\nTo fix this:', { color: 'cyan' });
+        ux.print('• Run: "csdx auth:login"', { color: 'white' });
         resolve(false);
       } else if (this.authType === 'OAUTH') {
         authHandler.host = hostName;
@@ -117,7 +124,9 @@ class AuthenticationHandler {
             resolve(true);
           })
           .catch((error: any) => {
-            console.log(error);
+            const errorDetails = formatError(error);
+            ux.print('OAuth Token Refresh Failed', { color: 'red' });
+            ux.print(`Error: ${errorDetails}`, { color: 'white' });
             resolve(false);
           });
       } else {

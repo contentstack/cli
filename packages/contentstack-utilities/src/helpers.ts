@@ -108,6 +108,29 @@ export const formatError = function (error: any) {
     parsedError = error;
   }
 
+  // Helper function to append error details
+  const appendErrorDetails = (message: string, errorObj: any): string => {
+    if (errorObj.errors && typeof errorObj.errors === 'object' && Object.keys(errorObj.errors).length > 0) {
+      const entityNames: { [key: string]: string } = {
+        authorization: 'Authentication',
+        api_key: 'Stack API key',
+        uid: 'Content Type',
+        access_token: 'Delivery Token',
+      };
+
+      const errorList = Object.entries(errorObj.errors)
+        .map(([field, errors]) => {
+          const errorArray = Array.isArray(errors) ? errors : [errors];
+          const fieldName = entityNames[field] || field;
+          return `  • ${fieldName}: ${errorArray.join(', ')}`;
+        })
+        .join('\n');
+
+      return `${message}\n\nError Details:\n${errorList}\n`;
+    }
+    return message;
+  };
+
   if (parsedError && typeof parsedError === 'object' && Object.keys(parsedError).length === 0) {
     if (
       !parsedError.message &&
@@ -121,25 +144,25 @@ export const formatError = function (error: any) {
   }
 
   if (parsedError?.response?.data?.errorMessage) {
-    return parsedError.response.data.errorMessage;
+    return appendErrorDetails(parsedError.response.data.errorMessage, parsedError?.response?.data || parsedError);
   }
 
   if (parsedError?.errorMessage) {
-    return parsedError.errorMessage;
+    return appendErrorDetails(parsedError.errorMessage, parsedError);
   }
 
   const status = parsedError?.status || parsedError?.response?.status;
   const errorCode = parsedError?.errorCode || parsedError?.response?.data?.errorCode;
   if (status === 422 && errorCode === 104) {
-    return 'Invalid email or password. Please check your credentials and try again.';
+    return appendErrorDetails('Invalid email or password. Please check your credentials and try again.', parsedError);
   }
 
   if (status === 401) {
-    return 'Authentication failed. Please check your credentials.';
+    return appendErrorDetails('Authentication failed. Please check your credentials.', parsedError);
   }
 
   if (status === 403) {
-    return 'Access denied. Please check your permissions.';
+    return appendErrorDetails('Access denied. Please check your permissions.', parsedError);
   }
 
   // Check for specific SSL error
@@ -174,28 +197,8 @@ export const formatError = function (error: any) {
     // message is not in JSON format, no need to parse
   }
 
-  // Append detailed error information if available
-  if (parsedError.errors && typeof parsedError.errors === 'object' && Object.keys(parsedError.errors).length > 0) {
-    const entityNames: { [key: string]: string } = {
-      authorization: 'Authentication',
-      api_key: 'Stack API key',
-      uid: 'Content Type',
-      // deepcode ignore HardcodedNonCryptoSecret: The hardcoded value 'access_token' is used as a key in an error message mapping object and does not represent a sensitive secret or cryptographic key.
-      access_token: 'Delivery Token',
-    };
-
-    const errorList = Object.entries(parsedError.errors)
-      .map(([field, errors]) => {
-        const errorArray = Array.isArray(errors) ? errors : [errors];
-        const fieldName = entityNames[field] || field;
-        return `  • ${fieldName}: ${errorArray.join(', ')}`;
-      })
-      .join('\n');
-
-    message += `\n\nAPI Errors:\n${errorList}`;
-  }
-
-  return message;
+  // Always append error details at the end
+  return appendErrorDetails(message, parsedError);
 };
 
 /**

@@ -187,7 +187,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       sanitizePath(entry_uid),
     );
 
-    log.info(`Processing variant entries from: ${variantEntryBasePath}`, this.config.context);
+    log.debug(`Processing variant entries from: ${variantEntryBasePath}`, this.config.context);
     const fs = new FsUtility({ basePath: variantEntryBasePath, createDirIfNotExist: false });
 
     for (const _ in fs.indexFileContent) {
@@ -278,7 +278,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         };
 
         if (variantId) {
-          log.info(`Creating variant entry for variant ID: ${variantId}`, this.config.context);
+          log.debug(`Creating variant entry for variant ID: ${variantId}`, this.config.context);
           const promise = this.variantInstance.createVariantEntry(
             createVariantReq,
             {
@@ -420,7 +420,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
    * @param variantEntry - The entry variant to update.
    */
   updateFileFields(variantEntry: VariantEntryStruct) {
-    log.info(`Updating file fields for variant entry: ${variantEntry.uid}`, this.config.context);
+    log.debug(`Updating file fields for variant entry: ${variantEntry.uid}`, this.config.context);
 
     const setValue = (currentObj: VariantEntryStruct, keys: string[]) => {
       if (!currentObj || keys.length === 0) return;
