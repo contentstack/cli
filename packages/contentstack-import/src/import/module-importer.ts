@@ -86,7 +86,7 @@ class ModuleImporter {
   }
 
   async import() {
-    log.info(`Starting to import content version ${this.importConfig.contentVersion}`);
+    log.info(`Starting to import content version ${this.importConfig.contentVersion}`, this.importConfig.context);
 
     // checks for single module or all modules
     if (this.importConfig.singleModuleImport) {
@@ -96,7 +96,7 @@ class ModuleImporter {
   }
 
   async importByModuleByName(moduleName: Modules) {
-    log.info(`Starting import of ${moduleName} module`);
+    log.info(`Starting import of ${moduleName} module`, this.importConfig.context);
     // import the modules by name
     // calls the module runner which inturn calls the module itself
     // NOTE: Implement a mechanism to determine whether module is new or old
@@ -122,7 +122,10 @@ class ModuleImporter {
     // use the algorithm to determine the parallel and sequential execution of modules
     for (let moduleName of this.importConfig.modules.types) {
       if (this.importConfig.globalModules.includes(moduleName) && this.importConfig['exclude-global-modules']) {
-        log.warn(`Skipping the import of the global module '${moduleName}', as it already exists in the stack.`);
+        log.warn(
+          `Skipping the import of the global module '${moduleName}', as it already exists in the stack.`,
+          this.importConfig.context,
+        );
         continue;
       }
       await this.importByModuleByName(moduleName);
@@ -178,9 +181,9 @@ class ModuleImporter {
           });
       }
       args.push('--modules', 'field-rules');
-      log.info('Starting audit process');
+      log.info('Starting audit process', this.importConfig.context);
       const result = await AuditFix.run(args);
-      log.info('Audit process completed');
+      log.info('Audit process completed', this.importConfig.context);
 
       if (result) {
         const { hasFix, config } = result;
@@ -206,7 +209,7 @@ class ModuleImporter {
 
       return true;
     } catch (error) {
-      log.error(`Audit failed with following error. ${error}`);
+      log.error(`Audit failed with following error. ${error}`, this.importConfig.context);
     }
   }
 }
