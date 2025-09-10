@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.46.1 darwin-arm64 node-v22.14.0
+@contentstack/cli/1.47.0 darwin-arm64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -3574,9 +3574,10 @@ USAGE
   $ csdx config:set:log [--level debug|info|warn|error] [--path <value>] [--show-console-logs]
 
 FLAGS
-  --level=<option>          Set the log level for the CLI.
+  --level=<option>          Set the log level for the CLI. Defaults to "info" if not specified.
                             <options: debug|info|warn|error>
-  --path=<value>            Specify the file path where logs should be saved.
+  --path=<value>            Specify the directory path where logs should be saved. Supports both relative and absolute
+                            paths. Defaults to ~/.contentstack/logs if not specified.
   --[no-]show-console-logs  Enable console logging.
 
 DESCRIPTION
@@ -3585,9 +3586,19 @@ DESCRIPTION
 EXAMPLES
   $ csdx config:set:log
 
-  $ csdx config:set:log --level debug --path ./logs/app.log --show-console-logs
+  $ csdx config:set:log --level debug
+
+  $ csdx config:set:log --path ./logs
+
+  $ csdx config:set:log --level debug --path ./logs --show-console-logs
 
   $ csdx config:set:log --no-show-console-logs
+
+  $ csdx config:set:log --level warn --show-console-logs
+
+  $ csdx config:set:log --path ~/custom/logs
+
+  $ csdx config:set:log --path /var/log/contentstack
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/log.ts)_
