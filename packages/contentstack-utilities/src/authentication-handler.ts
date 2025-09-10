@@ -92,6 +92,7 @@ class AuthenticationHandler {
             ux.print(`Max retry attempts exceeded (${maxRetryCount}/3)`, { color: 'red' });
             ux.print(`Status: ${error?.response?.status} - ${statusText}`, { color: 'yellow' });
             ux.print(`Error: ${errorDetails}`, { color: 'white' });
+            return;
           }
           maxRetryCount++; // Increment for the next retry attempt
           // These cases require a wait, adding a delay before retrying
