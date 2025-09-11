@@ -49,7 +49,7 @@ importers:
       eslint: ^8.57.1
       eslint-config-oclif: ^6.0.62
       eslint-config-oclif-typescript: ^3.1.14
-      figlet: ^1.8.1
+      figlet: 1.8.1
       globby: ^10.0.2
       inquirer: 8.2.6
       mocha: 10.8.2
@@ -95,7 +95,7 @@ importers:
       '@oclif/plugin-plugins': 5.4.46
       chalk: 4.1.2
       debug: 4.4.1
-      figlet: 1.8.2
+      figlet: 1.8.1
       inquirer: 8.2.6
       node-machine-id: 1.1.12
       open: 8.4.2
@@ -9564,8 +9564,8 @@ packages:
     resolution: {integrity: sha512-OP2IUU6HeYKJi3i0z4A19kHMQoLVs4Hc+DPqqxI2h/DPZHTm/vjsfC6P0b4jCMy14XizLBqvndQ+UilD7707Jw==}
     dev: false
 
-  /figlet/1.8.2:
-    resolution: {integrity: sha512-iPCpE9B/rOcjewIzDnagP9F2eySzGeHReX8WlrZQJkqFBk2wvq8gY0c6U6Hd2y9HnX1LQcYSeP7aEHoPt6sVKQ==}
+  /figlet/1.8.1:
+    resolution: {integrity: sha512-kEC3Sme+YvA8Hkibv0NR1oClGcWia0VB2fC1SlMy027cwe795Xx40Xiv/nw/iFAwQLupymWh+uhAAErn/7hwPg==}
     engines: {node: '>= 0.4.0'}
     hasBin: true
     dev: false
