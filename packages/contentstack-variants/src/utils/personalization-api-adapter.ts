@@ -197,7 +197,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     log.debug(`Creating project: ${project.name}`, this.exportConfig?.context);
     const data = await this.apiClient.post<ProjectStruct>('/projects', project);
     const result = (await this.handleVariantAPIRes(data)) as ProjectStruct;
-    log.debug(`Project created successfully: ${result.uid}`, this.exportConfig?.context);
+    log.info(`Project created successfully: ${result?.uid}`, this.exportConfig?.context);
     return result;
   }
 
@@ -214,7 +214,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     log.debug(`Creating attribute: ${attribute.name}`, this.exportConfig?.context);
     const data = await this.apiClient.post<AttributeStruct>('/attributes', attribute);
     const result = (await this.handleVariantAPIRes(data)) as AttributeStruct;
-    log.debug(`Attribute created successfully: ${result.uid}`, this.exportConfig?.context);
+    log.info(`Attribute created successfully: ${result?.name || result?.uid}`, this.exportConfig?.context );
     return result;
   }
 
@@ -259,7 +259,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     }
     const data = await this.apiClient.get(getExperiencesVersionsEndPoint);
     const result = (await this.handleVariantAPIRes(data)) as ExperienceStruct;
-    log.debug(`Experience versions fetched successfully for: ${experienceUid}`, this.exportConfig?.context);
+    log.info(`Experience versions fetched successfully for: ${experienceUid}`, this.exportConfig?.context );
     return result;
   }
 
@@ -301,10 +301,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
         .queryParams({ experience_uid: input.experienceUid })
         .get(getVariantGroupEndPoint);
       const result = (await this.handleVariantAPIRes(data)) as VariantGroupStruct;
-      log.debug(
-        `Variant group fetched successfully for experience: ${input.experienceUid}`,
-        this.exportConfig?.context,
-      );
+      log.debug(`Variant group fetched successfully for experience: ${input?.experienceUid}`, this.exportConfig?.context );
       return result;
     } else {
       log.debug('CMA API client not available for variant group fetch', this.exportConfig?.context);
@@ -317,7 +314,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
       const updateVariantGroupEndPoint = `/variant_groups/${input.uid}`;
       const data = await this.cmaAPIClient.put(updateVariantGroupEndPoint, input);
       const result = (await this.handleVariantAPIRes(data)) as VariantGroup;
-      log.debug(`Variant group updated successfully: ${input.uid}`, this.exportConfig?.context);
+      log.debug(`Variant group updated successfully: ${input?.uid}`, this.exportConfig?.context );
       return result;
     } else {
       log.debug('CMA API client not available for variant group update', this.exportConfig?.context);
@@ -341,7 +338,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
   async createEvents(event: CreateEventInput): Promise<void | EventStruct> {
     const data = await this.apiClient.post<EventStruct>('/events', event);
     const result = (await this.handleVariantAPIRes(data)) as EventStruct;
-    log.debug(`Event created successfully: ${result.uid}`, this.exportConfig?.context);
+    log.info(`Event created successfully: ${result?.uid}`, this.exportConfig?.context );
     return result;
   }
 
@@ -360,17 +357,11 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
   }
 
   async getAttributes(): Promise<AttributeStruct[] | void> {
-    log.debug('Fetching attributes from personalization API', this.exportConfig?.context);
-    try {
-      const data = await this.apiClient.get<AttributeStruct>('/attributes');
-      const result = (await this.handleVariantAPIRes(data)) as AttributeStruct[];
-      log.debug(`Fetched ${result?.length || 0} attributes`, this.exportConfig?.context);
-      return result;
-    } catch (error: any) {
-      log.debug(`Failed to fetch attributes: ${error}`, this.exportConfig?.context);
-      // Return empty array instead of throwing to prevent spinner from hanging
-      throw error;
-    }
+    log.debug('Fetching attributes from personalization API', this.exportConfig?.context );
+    const data = await this.apiClient.get<AttributeStruct>('/attributes');
+    const result = (await this.handleVariantAPIRes(data)) as AttributeStruct[];
+    log.info(`Fetched ${result?.length || 0} attributes`, this.exportConfig?.context );
+    return result;
   }
 
   /**
@@ -385,7 +376,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     log.debug(`Creating audience: ${audience.name}`, this.exportConfig?.context);
     const data = await this.apiClient.post<AudienceStruct>('/audiences', audience);
     const result = (await this.handleVariantAPIRes(data)) as AudienceStruct;
-    log.debug(`Audience created successfully: ${result.uid}`, this.exportConfig?.context);
+    log.info(`Audience created successfully: ${result?.name || result?.uid}`, this.exportConfig?.context );
     return result;
   }
 
@@ -401,7 +392,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     log.debug(`Creating experience: ${experience.name}`, this.exportConfig?.context);
     const data = await this.apiClient.post<ExperienceStruct>('/experiences', experience);
     const result = (await this.handleVariantAPIRes(data)) as ExperienceStruct;
-    log.debug(`Experience created successfully: ${result.uid}`, this.exportConfig?.context);
+    log.info(`Experience created successfully: ${result?.name || result?.uid}`, this.exportConfig?.context );
     return result;
   }
 
@@ -418,7 +409,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     const updateCTInExpEndPoint = `/experiences/${experienceUid}/cms-integration/variant-group`;
     const data = await this.apiClient.post<CMSExperienceStruct>(updateCTInExpEndPoint, experience);
     const result = (await this.handleVariantAPIRes(data)) as CMSExperienceStruct;
-    log.debug(`Content types updated successfully in experience: ${experienceUid}`, this.exportConfig?.context);
+    log.info(`Content types updated successfully in experience: ${experienceUid}`, this.exportConfig?.context );
     return result;
   }
 
@@ -432,7 +423,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     const getCTFromExpEndPoint = `/experiences/${experienceUid}/cms-integration/variant-group`;
     const data = await this.apiClient.get<CMSExperienceStruct>(getCTFromExpEndPoint);
     const result = (await this.handleVariantAPIRes(data)) as CMSExperienceStruct;
-    log.debug(`Content types fetched successfully from experience: ${experienceUid}`, this.exportConfig?.context);
+    log.info(`Content types fetched successfully from experience: ${experienceUid}`, this.exportConfig?.context );
     return result;
   }
 

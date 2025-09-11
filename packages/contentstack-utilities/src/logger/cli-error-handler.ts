@@ -85,16 +85,7 @@ export default class CLIErrorHandler {
    * Extracts a clear, concise error message from various error types.
    */
   private extractClearMessage(error: Error & Record<string, any>): string {
-    // Quick check for direct response error messages
-    if (error?.response?.data?.errorMessage && typeof error.response.data.errorMessage === 'string') {
-      return error.response.data.errorMessage;
-    }
-
-    if (error?.errorMessage && typeof error.errorMessage === 'string') {
-      return error.errorMessage;
-    }
-
-    // Use existing formatError function for comprehensive message extraction
+    // Use existing formatError function for other cases
     try {
       const formattedMessage = formatError(error);
       return formattedMessage || 'An error occurred. Please try again.';

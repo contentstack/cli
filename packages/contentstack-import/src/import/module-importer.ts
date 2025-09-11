@@ -209,7 +209,7 @@ class ModuleImporter {
 
       return true;
     } catch (error) {
-      handleAndLogError(error, { ...this.importConfig.context });
+      log.error(`Audit failed with following error. ${error}`, this.importConfig.context);
     }
   }
 }

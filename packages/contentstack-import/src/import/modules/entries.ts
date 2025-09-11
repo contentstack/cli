@@ -295,7 +295,7 @@ export default class EntriesImport extends BaseClass {
       progress.addProcess(PROCESS_NAMES.ENTRIES_REPLACE_EXISTING, totalActualEntries);
     }
 
-    progress.addProcess(PROCESS_NAMES.REFERENCE_UPDATES, totalActualEntries); 
+    progress.addProcess(PROCESS_NAMES.REFERENCE_UPDATES, totalActualEntries);
     progress.addProcess(PROCESS_NAMES.CT_RESTORATION, contentTypesCount);
     progress.addProcess(PROCESS_NAMES.FIELD_RULES_UPDATE, 1);
 
@@ -305,10 +305,7 @@ export default class EntriesImport extends BaseClass {
 
     progress.addProcess(PROCESS_NAMES.CLEANUP, 1);
 
-    log.debug(
-      `Initialized progress tracking for ${contentTypesCount} content types`,
-      this.importConfig.context,
-    );
+    log.debug(`Initialized progress tracking for ${contentTypesCount} content types`, this.importConfig.context);
   }
 
   private async processEntryCreation(): Promise<void> {
@@ -427,7 +424,8 @@ export default class EntriesImport extends BaseClass {
 
     const onSuccess = ({ response: contentType, apiData: { uid } }: any) => {
       this.progressManager?.tick(true, `content type: ${uid}`, null, PROCESS_NAMES.CT_PREPARATION);
-      log.success(`${uid} content type references removed temporarily`, this.importConfig.context);
+      log.success(`'${uid}' content type references removed temporarily`, this.importConfig.context);
+      log.debug(`Successfully processed content type: '${uid}'`, this.importConfig.context);
     };
     const onReject = ({ error, apiData: { uid } }: any) => {
       this.progressManager?.tick(
@@ -436,8 +434,11 @@ export default class EntriesImport extends BaseClass {
         error?.message || 'Failed to update content type',
         PROCESS_NAMES.CT_PREPARATION,
       );
-      handleAndLogError(error, { ...this.importConfig.context, uid });
-      throw new Error(`${uid} content type references removal failed`);
+      handleAndLogError(
+        error,
+        { ...this.importConfig.context, uid },
+        `'${uid}' content type references removal failed`,
+      );
     };
     return await this.makeConcurrentCall({
       processName: 'Update content types (removing mandatory references temporarily)',
