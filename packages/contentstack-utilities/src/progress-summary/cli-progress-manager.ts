@@ -597,18 +597,15 @@ export default class CLIProgressManager {
       this.log(
         `  ${status} ${processName}: ${process.successCount}✓ ${process.failureCount}✗ (${process.current}/${process.total})`,
       );
-
-      // Show first few failures for this process - TEMPORARILY DISABLED - will be shown in separate section later
-      // if (process.failures.length > 0) {
-      //   process.failures.slice(0, 3).forEach((failure) => {
-      //     this.log(`    ✗ ${failure.item}: ${failure.error}`);
-      //   });
-      //   if (process.failures.length > 3) {
-      //     this.log(`    ... and ${process.failures.length - 3} more failures`);
-      //   }
-      // }
     }
 
     this.log(`\nOverall: ${this.successCount}✓ ${this.failureCount}✗`);
+  }
+
+  /**
+   * Get the current failure count
+   */
+  getFailureCount(): number {
+    return this.failureCount;
   }
 }

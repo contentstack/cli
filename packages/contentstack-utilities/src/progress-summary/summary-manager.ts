@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import { ModuleResult, SummaryOptions } from '../interfaces/index';
+import { getLogPath } from '../logger/log';
 
 export default class SummaryManager {
   private modules: Map<string, ModuleResult> = new Map();
@@ -12,7 +13,7 @@ export default class SummaryManager {
     this.operationName = operationName;
     this.context = context;
     this.operationStartTime = Date.now();
-    this.branchName = context.branchName || ''; 
+    this.branchName = context.branchName || '';
   }
 
   getModules() {
@@ -60,7 +61,7 @@ export default class SummaryManager {
       if (!module.processes) {
         module.processes = [];
       }
-      
+
       const existingIndex = module.processes.findIndex((p: any) => p.processName === processName);
       if (existingIndex >= 0) {
         module.processes[existingIndex] = { processName, ...processData };
@@ -125,17 +126,6 @@ export default class SummaryManager {
           `${this.formatSuccessRate(successRate).padStart(6)} | ` +
           `${duration.padStart(8)}`,
       );
-
-      // Show failures if any - TEMPORARILY DISABLED - will be shown in separate section later
-      // if (module.failures.length > 0) {
-      //   console.log(chalk.red(`     Failures (${module.failures.length}):`));
-      //   module.failures.slice(0, 5).forEach((failure) => {
-      //     console.log(chalk.red(`       - ${failure.item}: ${failure.error}`));
-      //   });
-      //   if (module.failures.length > 5) {
-      //     console.log(chalk.red(`       ... and ${module.failures.length - 5} more`));
-      //   }
-      // }
     });
 
     // Final Status
@@ -149,6 +139,39 @@ export default class SummaryManager {
     }
 
     console.log(chalk.bold('='.repeat(80)));
+    console.log(chalk.bold('='.repeat(80)));
+
+    // Simple failure summary with log reference
+    this.printFailureSummaryWithLogReference();
+  }
+
+  private printFailureSummaryWithLogReference(): void {
+    const modulesWithFailures = Array.from(this.modules.values()).filter((m) => m.failures.length > 0);
+
+    if (modulesWithFailures.length === 0) return;
+
+    const totalFailures = modulesWithFailures.reduce((sum, m) => sum + m.failures.length, 0);
+
+    console.log('\n' + chalk.bold.red('Failure Summary:'));
+    console.log(chalk.red('-'.repeat(50)));
+
+    modulesWithFailures.forEach((module) => {
+      console.log(`${chalk.bold.red('✗')} ${chalk.bold(module.name)}: ${chalk.red(module.failures.length)} failures`);
+
+      // Show just first 2-3 failures briefly
+      const preview = module.failures.slice(0, 2);
+      preview.forEach((failure) => {
+        console.log(`    • ${chalk.gray(failure.item)}`);
+      });
+
+      if (module.failures.length > 2) {
+        console.log(`    ${chalk.gray(`... and ${module.failures.length - 2} more`)}`);
+      }
+    });
+
+    console.log(chalk.blue('\n📋 For detailed error information, check the log files:'));
+    //console.log(chalk.blue(`   ${getLogPath()}`));
+    console.log(chalk.gray('   Recent errors are logged with full context and stack traces.'));
   }
 
   private getStatusIcon(status: string): string {

@@ -147,7 +147,7 @@ export default class ContentTypesImport extends BaseClass {
       this.progressManager?.tick(
         false,
         `content type: ${uid}`,
-        error?.message || 'Failed to create content type',
+        error?.message || `Failed to create content type '${uid}'`,
         PROCESS_NAMES.CONTENT_TYPES_CREATE,
       );
       if (error.errorCode === 115 && (error.errors.uid || error.errors.title)) {
@@ -199,7 +199,7 @@ export default class ContentTypesImport extends BaseClass {
       this.progressManager?.tick(
         false,
         `content type: ${uid}`,
-        error?.message || 'Failed to update content type',
+        error?.message || `Content type '${uid}' update failed`,
         PROCESS_NAMES.CONTENT_TYPES_UPDATE,
       );
       handleAndLogError(error, { ...this.importConfig.context, uid }, `Content type '${uid}' update failed`);
@@ -284,7 +284,7 @@ export default class ContentTypesImport extends BaseClass {
       this.progressManager?.tick(
         false,
         `global field: ${uid}`,
-        error?.message || 'Failed to update global field',
+        error?.message || `Failed to update the global field '${uid}'`,
         PROCESS_NAMES.CONTENT_TYPES_GF_UPDATE,
       );
       handleAndLogError(error, { ...this.importConfig.context, uid }, `Failed to update the global field '${uid}'`);
@@ -374,7 +374,7 @@ export default class ContentTypesImport extends BaseClass {
       this.progressManager?.tick(
         false,
         `extension: ${title || uid}`,
-        error?.message || 'Failed to update extension',
+        error?.message || `Failed to update '${uid}' extension`,
         PROCESS_NAMES.CONTENT_TYPES_EXT_UPDATE,
       );
       if (error?.errors?.title) {

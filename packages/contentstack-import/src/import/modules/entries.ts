@@ -431,7 +431,7 @@ export default class EntriesImport extends BaseClass {
       this.progressManager?.tick(
         false,
         `content type: ${uid}`,
-        error?.message || 'Failed to update content type',
+        error?.message || `${uid} content type references removal failed`,
         PROCESS_NAMES.CT_PREPARATION,
       );
       handleAndLogError(
@@ -622,7 +622,7 @@ export default class EntriesImport extends BaseClass {
       this.progressManager?.tick(
         false,
         `${title} - ${uid}`,
-        'Error while creating entries',
+        `Error while creating entry title '${title}'`,
         PROCESS_NAMES.ENTRIES_CREATE,
       );
       this.entriesForVariant = this.entriesForVariant.filter(
@@ -960,8 +960,8 @@ export default class EntriesImport extends BaseClass {
       });
       this.progressManager?.tick(
         false,
-        `content type: ${cTUid}`,
-        error?.message || 'Failed to update references',
+        `Entry: '${title}' of content type ${cTUid} in locale ${locale}`,
+        error?.message || `Failed to update references of entry '${uid}'`,
         PROCESS_NAMES.REFERENCE_UPDATES,
       );
     };
@@ -1086,11 +1086,10 @@ export default class EntriesImport extends BaseClass {
       this.progressManager?.tick(
         false,
         `content type: ${uid}`,
-        error?.message || 'Failed to restore content type',
+        error?.message || `Failed to update references of content type ${uid}`,
         PROCESS_NAMES.CT_RESTORATION,
       );
-      handleAndLogError(error, { ...this.importConfig.context, uid }, 'Error');
-      throw new Error(`Failed to update references of content type ${uid}`);
+      handleAndLogError(error, { ...this.importConfig.context, uid }, `Failed to update references of content type ${uid}`);
     };
 
     return await this.makeConcurrentCall({
