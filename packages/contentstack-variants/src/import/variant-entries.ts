@@ -140,16 +140,15 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     this.environments = (fsUtil.readFile(envPath, true) || {}) as Record<string, any>;
 
     log.debug(
-      `Loaded dependency data - Entries: ${Object.keys(this.entriesUidMapper).length}, Assets: ${
-        Object.keys(this.assetUidMapper).length
-      }, Taxonomies: ${Object.keys(this.taxonomies).length}`,
+      `Loaded dependency data - Entries: ${Object.keys(this.entriesUidMapper)?.length}, Assets: ${
+        Object.keys(this.assetUidMapper)?.length
+      }, Taxonomies: ${Object.keys(this.taxonomies)?.length}`,
       this.config.context,
     );
 
     // set the token
     await this.variantInstance.init();
-
-    log.info(`Processing ${entriesForVariants.length} entries for variant import`, this.config.context);
+    log.info(`Processing ${entriesForVariants?.length} entries for variant import`, this.config.context);
     for (const entriesForVariant of entriesForVariants) {
       await this.importVariantEntries(entriesForVariant);
     }
@@ -166,7 +165,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     const variantEntry = this.config.modules.variantEntry;
     const { content_type, locale, entry_uid } = entriesForVariant;
 
-    log.debug(`Importing variant entries for: ${content_type}/${locale}/${entry_uid}`, this.config.context);
+    log.info(`Importing variant entries for: ${content_type}/${locale}/${entry_uid}`, this.config.context);
 
     const ctConfig = this.config.modules['content-types'];
     const contentType: ContentTypeStruct = JSON.parse(
@@ -195,7 +194,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       try {
         const variantEntries = (await fs.readChunkFiles.next()) as VariantEntryStruct[];
         if (variantEntries?.length) {
-          log.debug(`Processing batch of ${variantEntries.length} variant entries`, this.config.context);
+          log.info(`Processing batch of ${variantEntries.length} variant entries`, this.config.context);
           await this.handleConcurrency(contentType, variantEntries, entriesForVariant);
         }
       } catch (error) {
@@ -234,7 +233,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     const batches = chunk(variantEntries, variantEntryConfig.apiConcurrency || 5);
     if (isEmpty(batches)) return;
 
-    log.debug(`Starting concurrent processing for ${variantEntries.length} variant entries`, this.config.context);
+    log.debug(`Starting concurrent processing for ${variantEntries?.length} variant entries`, this.config.context);
 
     for (const [, batch] of entries(batches)) {
       batchNo += 1;
@@ -242,7 +241,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       const start = Date.now();
 
       log.debug(
-        `Processing batch ${batchNo}/${batches.length} with ${batch.length} variant entries`,
+        `Processing batch ${batchNo}/${batches?.length} with ${batch?.length} variant entries`,
         this.config.context,
       );
 
@@ -302,7 +301,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       }
 
       // NOTE Handle the API response here
-      log.debug(`Waiting for ${allPromise.length} variant entry creation promises to complete`, this.config.context);
+      log.debug(`Waiting for ${allPromise.length} variant entry creation promises to complete`, this.config.context);     
       await Promise.allSettled(allPromise);
       log.debug(`Batch ${batchNo} creation completed`, this.config.context);
 
@@ -455,7 +454,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         ?.filter((ref: any) => ref._content_type_uid === 'sys_assets')
         .map((ref: any) => ref.path) || [];
 
-    log.debug(`Found ${pathsToUpdate.length} file field paths to update`, this.config.context);
+    log.debug(`Found ${pathsToUpdate?.length} file field paths to update`, this.config.context);
     pathsToUpdate.forEach((path: string) => setValue(variantEntry, path.split('.')));
   }
 
@@ -485,12 +484,12 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       }
 
       if (this.failedVariantEntries.has(variantEntryUID)) {
-        log.debug(`Variant UID not found. Skipping entry variant publish for ${variantEntryUID}`, this.config.context);
+        log.info(`Variant UID not found. Skipping entry variant publish for ${variantEntryUID}`, this.config.context);
         continue;
       }
 
       if (this.environments?.length) {
-        log.debug('No environment found! Skipping entry variant publishing...', this.config.context);
+        log.info('No environment found! Skipping entry variant publishing...', this.config.context);
         return;
       }
 
@@ -510,7 +509,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
 
       const { environments, locales } = this.serializePublishEntries(variantEntry);
       if (environments?.length === 0 || locales?.length === 0) {
-        log.debug(`Skipping publish for variant ${newVariantUid} - no environments or locales`, this.config.context);
+        log.info(`Skipping publish for variant ${newVariantUid} - no environments or locales`, this.config.context);
         continue;
       }
 
