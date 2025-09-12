@@ -244,7 +244,7 @@ export default class ImportGlobalFields extends BaseClass {
       this.progressManager?.tick(
         false,
         `global field: ${uid}`,
-        error?.message || 'Failed to update global field',
+        error?.message || `Failed to update the global field '${uid}'`,
         PROCESS_NAMES.GLOBAL_FIELDS_UPDATE,
       );
       log.debug(`Global field '${uid}' update failed`, this.importConfig.context);
@@ -351,7 +351,7 @@ export default class ImportGlobalFields extends BaseClass {
       this.progressManager?.tick(
         false,
         `global field: ${uid}`,
-        error?.message || 'Failed to replace global field',
+        error?.message || `Global fields '${uid}' failed to replace`,
         PROCESS_NAMES.GLOBAL_FIELDS_REPLACE_EXISTING,
       );
       log.debug(`Global field '${uid}' replacement failed`, this.importConfig.context);

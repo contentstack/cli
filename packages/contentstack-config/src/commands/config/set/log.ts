@@ -48,7 +48,7 @@ export default class LogSetCommand extends Command {
         if (pathExt && pathExt.length > 0) {
           resolvedPath = path.dirname(resolvedPath);
         }
-        
+
         currentLoggingConfig.path = resolvedPath;
       }
 
@@ -70,6 +70,7 @@ export default class LogSetCommand extends Command {
           messageHandler.parse('CLI_CONFIG_LOG_CONSOLE_SET', String(currentLoggingConfig['show-console-logs'])),
         );
       }
+      cliux.success(messageHandler.parse('CLI_CONFIG_LOG_SET_SUCCESS'));
     } catch (error) {
       cliux.error('error', error);
     }

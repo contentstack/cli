@@ -142,7 +142,7 @@ export default class ImportLocales extends BaseClass {
       this.progressManager?.tick(
         false,
         `locale: ${code}`,
-        error?.message || 'Failed to create locale',
+        error?.message || `Language '${code}' failed to import`,
         PROCESS_NAMES.LOCALES_CREATE,
       );
       if (error?.errorCode === 247) {
@@ -178,7 +178,12 @@ export default class ImportLocales extends BaseClass {
     };
 
     const onReject = ({ error, apiData: { uid, code } = undefined }: any) => {
-      this.progressManager?.tick(false, `locale: ${code}`, 'Failed to update locale', PROCESS_NAMES.LOCALES_UPDATE);
+      this.progressManager?.tick(
+        false,
+        `locale: ${code}`,
+        `Failed to update locale ${code}`,
+        PROCESS_NAMES.LOCALES_UPDATE,
+      );
       log.error(`Language '${code}' failed to update`, this.config.context);
       handleAndLogError(error, { ...this.config.context, code });
       fsUtil.writeFile(this.langFailsPath, this.failedLocales);
@@ -258,7 +263,6 @@ export default class ImportLocales extends BaseClass {
       progress.completeProcess(PROCESS_NAMES.MASTER_LOCALE, true);
     } catch (error) {
       progress.completeProcess(PROCESS_NAMES.MASTER_LOCALE, false);
-      //NOTE:- Continue locale creation in case of master locale error
       handleAndLogError(error, { ...this.config.context });
     }
   }
@@ -364,7 +368,7 @@ export default class ImportLocales extends BaseClass {
         this.config.context,
       );
     } catch (error) {
-      this.tickProgress(false, source.name, error?.message || 'Failed to update master locale');
+      this.tickProgress(false, source?.name, error?.message || 'Failed to update master locale');
       throw error;
     }
   }
