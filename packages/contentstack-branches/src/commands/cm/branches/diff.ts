@@ -20,9 +20,12 @@ export default class BranchDiffCommand extends Command {
     'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --module "content-types"',
     'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content-types"',
     'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content-types" --format "detailed-text"',
-  ]
+    'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content-types" --format "compact-text"',
+    'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content-types" --format "detailed-text" --csv-path "./reports/diff-report.csv"',
+  ];
 
-  static usage: string = 'cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]';
+  static usage: string =
+    'cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>] [--format <value>] [--csv-path <value>]';
 
   static flags = {
     'base-branch': flags.string({
@@ -43,9 +46,13 @@ export default class BranchDiffCommand extends Command {
       default: 'compact-text',
       multiple: false,
       options: ['compact-text', 'detailed-text'],
-      description: '[default: compact-text] [optional] Type of flags to show the difference between two branches. <options: compact-text, detailed-text>',
+      description:
+        '[default: compact-text] [optional] Type of flags to show the difference between two branches. <options: compact-text, detailed-text>',
     }),
-  };  
+    'csv-path': flags.string({
+      description: '[optional] Custom path for CSV output file. If not provided, will prompt for path.',
+    }),
+  };
 
   static aliases: string[] = []; // Note: alternative usage if any
 
@@ -58,7 +65,8 @@ export default class BranchDiffCommand extends Command {
         compareBranch: branchDiffFlags['compare-branch'],
         module: branchDiffFlags.module,
         format: branchDiffFlags.format,
-        host: this.cmaHost
+        csvPath: branchDiffFlags['csv-path'],
+        host: this.cmaHost,
       };
       if (!isAuthenticated()) {
         const err = { errorMessage: 'You are not logged in. Please login with command $ csdx auth:login' };
