@@ -2,7 +2,8 @@ import isEmpty from 'lodash/isEmpty';
 import startCase from 'lodash/startCase';
 import camelCase from 'lodash/camelCase';
 import forEach from 'lodash/forEach';
-import { cliux, messageHandler } from '@contentstack/cli-utilities';
+import path from 'path';
+import { cliux, messageHandler, validatePath } from '@contentstack/cli-utilities';
 
 import { BranchDiffRes } from '../interfaces';
 
@@ -179,6 +180,21 @@ export async function askExportMergeSummaryPath(): Promise<string> {
     name: 'filePath',
     validate: inquireRequireFieldValidation,
   });
+}
+
+export async function askCSVOutputPath(): Promise<string> {
+  let result = await cliux.inquire<string>({
+    type: 'input',
+    message: 'Enter the file path for CSV output: (current folder)',
+    name: 'csvPath',
+    validate: validatePath,
+  });
+  if (!result || result.trim() === '') {
+    return process.cwd();
+  } else {
+    result = result.replace(/['"]/g, '');
+    return path.resolve(result);
+  }
 }
 
 export async function askMergeComment(): Promise<string> {

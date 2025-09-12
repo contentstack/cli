@@ -2,8 +2,8 @@ import startCase from 'lodash/startCase';
 import camelCase from 'lodash/camelCase';
 import { cliux } from '@contentstack/cli-utilities';
 import { getbranchConfig } from '../utils';
-import { BranchOptions, BranchDiffRes, BranchDiffPayload } from '../interfaces';
-import { askBaseBranch, askCompareBranch, askStackAPIKey, selectModule } from '../utils/interactive';
+import { BranchOptions, BranchDiffPayload } from '../interfaces';
+import { askBaseBranch, askCompareBranch, askStackAPIKey, selectModule, askCSVOutputPath } from '../utils/interactive';
 import {
   fetchBranchesDiff,
   parseSummary,
@@ -14,6 +14,7 @@ import {
   printVerboseTextView,
   filterBranchDiffDataByModule,
 } from '../utils/branch-diff-utility';
+import { exportCSVReport } from '../utils/csv-utility';
 
 export default class BranchDiffHandler {
   private options: BranchOptions;
@@ -55,6 +56,10 @@ export default class BranchDiffHandler {
       this.options.module = await selectModule();
     }
 
+    if (this.options.format === 'detailed-text' && !this.options.csvPath) {
+      this.options.csvPath = await askCSVOutputPath();
+    }
+
     if(baseBranch){
       cliux.print(`\nBase branch: ${baseBranch}`, { color: 'grey' });
     }
@@ -87,15 +92,15 @@ export default class BranchDiffHandler {
    
     if(this.options.module === 'all'){
       for (let module in diffData) {
-        const branchDiff = diffData[module];
+          const branchDiff = diffData[module];
           payload.module = module;
           this.displaySummary(branchDiff, module);
           await this.displayBranchDiffTextAndVerbose(branchDiff, payload);
       }
     }else{
-      const branchDiff = diffData[payload.module];
-      this.displaySummary(branchDiff, this.options.module);
-      await this.displayBranchDiffTextAndVerbose(branchDiff, payload);
+        const branchDiff = diffData[payload.module];
+        this.displaySummary(branchDiff, this.options.module);
+        await this.displayBranchDiffTextAndVerbose(branchDiff, payload);
     }
   }
 
@@ -126,6 +131,8 @@ export default class BranchDiffHandler {
       const verboseRes = await parseVerbose(branchDiffData, payload);
       cliux.loaderV2('', spinner);
       printVerboseTextView(verboseRes);
+
+      exportCSVReport(payload.module, verboseRes, this.options.csvPath);
     }
   }
 }
