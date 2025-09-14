@@ -91,6 +91,11 @@ export interface CSVRow {
   targetBranchValue: string;
 }
 
+export interface ContentTypeItem {
+  title?: string;
+  uid?: string;
+}
+
 export interface ModifiedFieldsInput {
   modified?: ModifiedFieldsType[];
   added?: ModifiedFieldsType[];

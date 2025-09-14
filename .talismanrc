@@ -89,4 +89,6 @@ fileignoreconfig:
   checksum: 4f7a8bea92ebffbc34a0979b3a63fef327562a899b773481d67a675140cfa4bf
 - filename: packages/contentstack-branches/src/branch/diff-handler.ts
   checksum: 3491158f9d8f38f83bb81118a2e4d78001bdfcdb78994e1a15d3088586c5d831
+- filename: packages/contentstack-branches/src/utils/csv-utility.ts
+  checksum: 74a4341d583d484a701b10bbde07be14dced05ab7549391ce6d4600fbd66e8c4
 version: "1.0"
