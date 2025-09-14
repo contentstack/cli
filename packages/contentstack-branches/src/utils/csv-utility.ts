@@ -1,24 +1,24 @@
 import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { cliux, log, sanitizePath } from '@contentstack/cli-utilities';
-import { BranchDiffVerboseRes, CSVRow, ModifiedFieldsInput } from '../interfaces';
+import { BranchDiffVerboseRes, CSVRow, ModifiedFieldsInput, ContentTypeItem } from '../interfaces';
 
 /**
  * Get display name for a field with special handling for system fields
  * @param field - The field object
  * @returns {string} Display name for the field
  */
-export function getFieldDisplayName(field: any): string {
-  let fieldName = field.displayName || field.display_name || field.title || field.uid;
+export function getFieldDisplayName(field: Record<string, any>): string {
+  let fieldName = field?.displayName || field?.display_name || field?.title || field?.uid;
   
   // Special handling for field_rules
-  if (!fieldName && field.path === 'field_rules') {
+  if (!fieldName && field?.path === 'field_rules') {
     fieldName = 'Field Rules';
   } else if (!fieldName) {
     fieldName = 'Unknown Field';
   }
   
-  return fieldName;
+  return fieldName as string;
 }
 
 /**
@@ -43,12 +43,18 @@ export function formatValue(value: any): string {
     return value.length > 0 ? value.join(', ') : 'Empty Array';
   }
   
-  if (typeof value === 'object') {
-    if (value.title) return value.title;
-    if (value.display_name) return value.display_name;
-    if (value.uid) return value.uid;
+  if (typeof value === 'object' && value !== null) {
+    // Priority order for extracting meaningful values
+    const priorityKeys = ['title', 'display_name', 'uid', 'value', 'key'];
+    for (const key of priorityKeys) {
+      if (value?.[key]) return value[key];
+    }
     
-    return '[Object]';
+    // For enum choices or other structured objects, try to extract meaningful info
+    const metadataKeys = ['mandatory', 'multiple', 'non_localizable'];
+    for (const key of metadataKeys) {
+      if (value?.[key] !== undefined) return `${key}: ${value[key]}`;
+    }
   }
   
   return String(value);
@@ -80,13 +86,13 @@ export function generateChangeDescription(changeType: string, item: any, itemTyp
   const template = templates[changeType]?.[itemType] || `${changeType}: {name}`;
   
   if (itemType === 'contentType') {
-    const name = item.title || item.uid || 'Unknown';
+    const name = item?.title || item?.uid || 'Unknown';
     return template.replace('{name}', name);
   }
   
   // Field-level changes
   const name = getFieldDisplayName(item);
-  const type = item.fieldType || item.data_type || item.field || 'field';
+  const type = item?.fieldType || item?.data_type || item?.field || 'field';
   const cleanType = type === 'field' ? 'field' : type;
   
   return template.replace('{name}', name).replace('{type}', cleanType);
@@ -108,6 +114,36 @@ export function getOldValueFromDiff(diff: any, fieldContext: any): string {
 }
 
 /**
+ * Get a human-readable property name from a path
+ * @param path - The property path
+ * @param fieldContext - The field context for enum choices
+ * @returns {string} Human-readable property name
+ */
+function getPropertyName(path: string, fieldContext?: Record<string, unknown>): string {
+  if (path.includes('enum.choices.')) {
+    const choiceIndex = path.match(/enum\.choices\.(\d+)/)?.[1];
+    if (choiceIndex && fieldContext?.enum && Array.isArray((fieldContext.enum as any).choices)) {
+      const choices = (fieldContext.enum as any).choices;
+      const choice = choices[parseInt(choiceIndex)];
+      if (choice) {
+        const choiceName = choice.key || choice.value || `Choice ${parseInt(choiceIndex) + 1}`;
+        return `enum choice '${choiceName}'`;
+      }
+    }
+    return `enum choice ${parseInt(choiceIndex) + 1}`;
+  }
+  
+  // Handle other nested properties
+  if (path.includes('.')) {
+    const parts = path.split('.');
+    const lastPart = parts[parts.length - 1];
+    return lastPart.replace(/_/g, ' ');
+  }
+  
+  return path;
+}
+
+/**
  * Generate descriptive text for property-level changes in diff operations
  * @param diff - The diff object containing change information
  * @param fieldContext - The field context for additional information
@@ -116,11 +152,12 @@ export function getOldValueFromDiff(diff: any, fieldContext: any): string {
 export function generatePropertyChangeDescription(diff: any, fieldContext: any): string {
   const fieldName = fieldContext?.display_name || fieldContext?.title || fieldContext?.uid || 'Field';
   const fieldType = fieldContext?.data_type || 'field';
-  const property = diff.path.join('.');
+  const property = diff?.path?.join('.');
   const cleanType = fieldType === 'field' ? 'field' : fieldType;
   
-  const newValue = formatValue(diff.value);
+  const newValue = formatValue(diff?.value);
   const oldValue = getOldValueFromDiff(diff, fieldContext);
+  
   
   // Schema-level changes
   if (property === 'schema') {
@@ -139,11 +176,13 @@ export function generatePropertyChangeDescription(diff: any, fieldContext: any):
     }
   }
   
-  // Property changes
+  // Property changes 
+  const readableProperty = getPropertyName(property, fieldContext);
+
   switch (diff.op) {
-    case 'add': return `Property '${property}' added to ${fieldName} with value: ${newValue}`;
-    case 'remove': return `Property '${property}' removed from ${fieldName} (was: ${oldValue})`;
-    case 'replace': return `Property '${property}' in ${fieldName} changed from '${oldValue}' to '${newValue}'`;
+    case 'add': return `${readableProperty} added to ${fieldName} with value: ${newValue}`;
+    case 'remove': return `${readableProperty} removed from ${fieldName}`;
+    case 'replace': return `${readableProperty} in ${fieldName} changed from '${oldValue}' to '${newValue}'`;
     default: return `${diff.op}: ${newValue}`;
   }
 }
@@ -181,15 +220,16 @@ export function extractValueFromPath(obj: any, path: (string | number)[]): any {
  * @param contentTypeName - The name of the content type (for root-level context)
  * @returns {string} Descriptive field path in readable format
  */
-export function generateFieldPath(field: any, contentTypeName?: string): string {
-  if (!field.path || field.path === 'N/A') {
+export function generateFieldPath(field: Record<string, unknown>, contentTypeName?: string): string {
+  if (!field?.path || field.path === 'N/A') {
     return 'N/A';
   }
 
   let readablePath = contentTypeName || '';
+  const fieldPath = field.path as string;
   
-  if (field.path.includes('.')) {
-    const pathParts = field.path.split('.');
+  if (fieldPath.includes('.')) {
+    const pathParts = fieldPath.split('.');
     const readableParts = pathParts.map(part => {
       if (part === 'schema') return '';
       return part;
@@ -199,16 +239,18 @@ export function generateFieldPath(field: any, contentTypeName?: string): string 
       readablePath += readablePath ? ' → ' : '';
       readablePath += readableParts.join(' → ');
     }
-  } else if (field.path.includes('[') && field.path.includes(']')) {
+  } else if (fieldPath.includes('[') && fieldPath.includes(']')) {
     if (readablePath) {
       readablePath += ' → ';
     }
-    readablePath += field.displayName || field.uid || field.path;
+    const displayName = typeof field?.displayName === 'string' ? field.displayName : '';
+    const uid = typeof field?.uid === 'string' ? field.uid : '';
+    readablePath += displayName || uid || fieldPath;
   } else {
     if (readablePath) {
       readablePath += ' → ';
     }
-    readablePath += field.path;
+    readablePath += fieldPath;
   }
   
   return readablePath || 'N/A';
@@ -216,6 +258,38 @@ export function generateFieldPath(field: any, contentTypeName?: string): string 
 
 
 
+
+/**
+ * Add content type rows to CSV data
+ * @param csvRows - The CSV rows array to add to
+ * @param items - Array of content type items
+ * @param operation - The operation type ('added' or 'deleted')
+ * @param getSrNo - Function to get the next serial number
+ */
+function addContentTypeRows(
+  csvRows: CSVRow[], 
+  items: ContentTypeItem[] | undefined, 
+  operation: 'added' | 'deleted',
+  getSrNo: () => number
+): void {
+  if (!items?.length) return;
+  
+  for (const item of items) {
+    const contentTypeName = item?.title || item?.uid || 'Unknown';
+    const modifiedValue = generateChangeDescription(operation, { title: contentTypeName }, 'contentType');
+    
+    csvRows.push({
+      srNo: getSrNo(),
+      contentTypeName,
+      fieldName: 'Content Type',
+      fieldPath: 'N/A',
+      operation,
+      modifiedValue,
+      sourceBranchValue: 'N/A',
+      targetBranchValue: 'N/A',
+    });
+  }
+}
 
 /**
  * Generate CSV data from verbose results
@@ -228,7 +302,7 @@ export function generateCSVDataFromVerbose(verboseRes: BranchDiffVerboseRes): CS
 
   if (verboseRes.modified?.length) {
     for (const moduleDetail of verboseRes.modified) {
-      const contentTypeName = moduleDetail.moduleDetails.title || moduleDetail.moduleDetails.uid || 'Unknown';
+      const contentTypeName = moduleDetail?.moduleDetails?.title || moduleDetail?.moduleDetails?.uid || 'Unknown';
       
       if (moduleDetail.modifiedFields) {
         addFieldChangesToCSV(csvRows, contentTypeName, moduleDetail.modifiedFields, 'modified', srNo);
@@ -237,41 +311,8 @@ export function generateCSVDataFromVerbose(verboseRes: BranchDiffVerboseRes): CS
     }
   }
 
-  if (verboseRes.added?.length) {
-    for (const item of verboseRes.added) {
-      const contentTypeName = item.title || item.uid || 'Unknown';
-      const modifiedValue = generateChangeDescription('added', { title: contentTypeName }, 'contentType');
-      
-      csvRows.push({
-        srNo: srNo++,
-        contentTypeName,
-        fieldName: 'Content Type',
-        fieldPath: 'N/A',
-        operation: 'added',
-        modifiedValue,
-        sourceBranchValue: 'N/A',
-        targetBranchValue: 'N/A',
-      });
-    }
-  }
-
-  if (verboseRes.deleted?.length) {
-    for (const item of verboseRes.deleted) {
-      const contentTypeName = item.title || item.uid || 'Unknown';
-      const modifiedValue = generateChangeDescription('deleted', { title: contentTypeName }, 'contentType');
-      
-      csvRows.push({
-        srNo: srNo++,
-        contentTypeName,
-        fieldName: 'Content Type',
-        fieldPath: 'N/A',
-        operation: 'deleted',
-        modifiedValue,
-        sourceBranchValue: 'N/A',
-        targetBranchValue: 'N/A',
-      });
-    }
-  }
+  addContentTypeRows(csvRows, verboseRes.added, 'added', () => srNo++);
+  addContentTypeRows(csvRows, verboseRes.deleted, 'deleted', () => srNo++);
 
   return csvRows;
 }
