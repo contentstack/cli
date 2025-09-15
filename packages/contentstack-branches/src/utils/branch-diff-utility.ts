@@ -8,7 +8,7 @@ import find from 'lodash/find';
 import { cliux, messageHandler, managementSDKClient } from '@contentstack/cli-utilities';
 import isArray from 'lodash/isArray';
 import { diff } from 'just-diff';
-import { generatePropertyChangeDescription, extractValueFromPath, getFieldDisplayName, generateCSVDataFromVerbose } from './csv-utility';
+import { extractValueFromPath, getFieldDisplayName, generateCSVDataFromVerbose } from './csv-utility';
 
 import {
   BranchDiffRes,
@@ -568,6 +568,8 @@ function prepareAddedField(params: { path: string; changes: any; compareField: a
       uid: compareField['uid'],
       displayName: compareField['display_name'],
       fieldType: compareField['data_type'],
+      oldValue: undefined,
+      newValue: compareField,
     };
     changes.added[path] = obj;
   }
@@ -615,7 +617,6 @@ function prepareModifiedField(params: {
         return {
           property: diff.path.join('.'),
           changeType: diff.op === 'add' ? 'added' : diff.op === 'remove' ? 'deleted' : 'modified',
-          changeDescription: generatePropertyChangeDescription(diff, fullFieldContext),
           oldValue: oldValue,
           newValue: newValue,
         };

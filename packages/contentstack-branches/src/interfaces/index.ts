@@ -75,7 +75,6 @@ export interface ModifiedFieldsType {
 export interface PropertyChange {
   property: string;
   changeType: 'modified' | 'added' | 'deleted';
-  changeDescription: string;
   oldValue?: any;
   newValue?: any;
 }
@@ -86,7 +85,6 @@ export interface CSVRow {
   fieldName: string;
   fieldPath: string;
   operation: string;
-  modifiedValue: string;
   sourceBranchValue: string;
   targetBranchValue: string;
 }
