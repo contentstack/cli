@@ -50,7 +50,7 @@ export default class BranchDiffCommand extends Command {
         '[default: compact-text] [optional] Type of flags to show the difference between two branches. <options: compact-text, detailed-text>',
     }),
     'csv-path': flags.string({
-      description: '[optional] Custom path for CSV output file. If not provided, will prompt for path.',
+      description: '[optional] Custom path for CSV output file. If not provided, will use the current working directory.',
     }),
   };
 
