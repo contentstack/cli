@@ -115,6 +115,11 @@ export default class Logger {
   }
 
   private shouldLog(level: LogType, target: 'console' | 'file'): boolean {
+    // If console logging is disabled, don't log to console
+    if (target === 'console' && this.config.consoleLoggingEnabled === false) {
+      return false;
+    }
+    
     const configLevel = target === 'console' ? this.config.consoleLogLevel : this.config.logLevel;
     const minLevel = configLevel ? logLevels[configLevel] : 2;
     return logLevels[level] <= minLevel;

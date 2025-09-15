@@ -277,11 +277,11 @@ export default class EntriesImport extends BaseClass {
     );
 
     const onSuccess = ({ response: contentType, apiData: { uid } }: any) => {
-      log.success(`${uid} content type references removed temporarily`, this.importConfig.context);
-      log.debug(`Successfully processed content type: ${uid}`, this.importConfig.context);
+      log.success(`'${uid}' content type references removed temporarily`, this.importConfig.context);
+      log.debug(`Successfully processed content type: '${uid}'`, this.importConfig.context);
     };
     const onReject = ({ error, apiData: { uid } }: any) => {
-      handleAndLogError(error, { ...this.importConfig.context, uid }, `${uid} content type references removal failed`);
+      handleAndLogError(error, { ...this.importConfig.context, uid }, `'${uid}' content type references removal failed`);
     };
     return await this.makeConcurrentCall({
       processName: 'Update content types (removing mandatory references temporarily)',
