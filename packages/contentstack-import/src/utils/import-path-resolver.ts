@@ -55,7 +55,8 @@ export const selectBranchFromDirectory = async (contentDir: string): Promise<{ b
       return { branchPath: selectedBranchPath };
     }
   } catch (error) {
-    throw new Error(error);
+      log.error(`Error selecting branch directory from directory structure: ${error}`);
+      throw error;
   }
 };
 
