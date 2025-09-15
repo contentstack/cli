@@ -55,8 +55,8 @@ export const selectBranchFromDirectory = async (contentDir: string): Promise<{ b
       return { branchPath: selectedBranchPath };
     }
   } catch (error) {
-    log.error(`Error reading branches.json: ${error}`);
-    throw new Error('Failed to read branches.json file. Please ensure the file exists and is valid JSON.');
+      log.error(`Error selecting branch directory from directory structure: ${error}`);
+      throw error;
   }
 };
 
