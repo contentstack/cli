@@ -3,7 +3,7 @@ import camelCase from 'lodash/camelCase';
 import { cliux } from '@contentstack/cli-utilities';
 import { getbranchConfig } from '../utils';
 import { BranchOptions, BranchDiffPayload } from '../interfaces';
-import { askBaseBranch, askCompareBranch, askStackAPIKey, selectModule, askCSVOutputPath } from '../utils/interactive';
+import { askBaseBranch, askCompareBranch, askStackAPIKey, selectModule } from '../utils/interactive';
 import {
   fetchBranchesDiff,
   parseSummary,
@@ -57,7 +57,7 @@ export default class BranchDiffHandler {
     }
 
     if (this.options.format === 'detailed-text' && !this.options.csvPath) {
-      this.options.csvPath = await askCSVOutputPath();
+      this.options.csvPath = process.cwd();
     }
 
     if(baseBranch){

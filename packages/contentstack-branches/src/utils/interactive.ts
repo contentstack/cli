@@ -182,20 +182,6 @@ export async function askExportMergeSummaryPath(): Promise<string> {
   });
 }
 
-export async function askCSVOutputPath(): Promise<string> {
-  let result = await cliux.inquire<string>({
-    type: 'input',
-    message: 'Enter the file path for CSV output: (current folder)',
-    name: 'csvPath',
-    validate: validatePath,
-  });
-  if (!result || result.trim() === '') {
-    return process.cwd();
-  } else {
-    result = result.replace(/['"]/g, '');
-    return path.resolve(result);
-  }
-}
 
 export async function askMergeComment(): Promise<string> {
   return await cliux.inquire<string>({
