@@ -73,8 +73,9 @@ describe('Log Commands', () => {
       expect(setStub.called).to.be.true;
       expect(setStub.calledWith('log', { level: 'warn', path: './existing.log' })).to.be.true;
 
-      // Should not display any success messages when no flags are provided
-      expect(successMessage.length).to.equal(0);
+      // Should display the overall success message when no flags are provided
+      expect(successMessage.length).to.equal(1);
+      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
 
     it('should call set even when no flags are provided and no existing config', async () => {
@@ -92,8 +93,9 @@ describe('Log Commands', () => {
       expect(setStub.called).to.be.true;
       expect(setStub.calledWith('log', {})).to.be.true;
 
-      // Should not display any success messages when no flags are provided
-      expect(successMessage.length).to.equal(0);
+      // Should display the overall success message when no flags are provided
+      expect(successMessage.length).to.equal(1);
+      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
 
     it('should preserve existing config values when only setting level', async () => {
@@ -125,6 +127,7 @@ describe('Log Commands', () => {
       expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_LEVEL_SET'))).to.be.true;
       expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.false;
       expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_CONSOLE_SET'))).to.be.false;
+      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
 
     it('should preserve existing config values when only setting path', async () => {
@@ -157,6 +160,7 @@ describe('Log Commands', () => {
       expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_LEVEL_SET'))).to.be.false;
       expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.true;
       expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_CONSOLE_SET'))).to.be.false;
+      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
 
     it('should set show-console-logs flag only when explicitly provided', async () => {
@@ -181,6 +185,7 @@ describe('Log Commands', () => {
       expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_LEVEL_SET'))).to.be.false;
       expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.false;
       expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_CONSOLE_SET'))).to.be.true;
+      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
 
     it('should set show-console-logs flag to false (--no-show-console-logs)', async () => {
@@ -204,6 +209,7 @@ describe('Log Commands', () => {
       expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_LEVEL_SET'))).to.be.false;
       expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.false;
       expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_CONSOLE_SET'))).to.be.true;
+      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
 
     it('should set all flags together (level, path, show-console-logs) with absolute path', async () => {
@@ -232,10 +238,11 @@ describe('Log Commands', () => {
         }),
       ).to.be.true;
 
-      expect(successMessage).to.have.length(3);
+      expect(successMessage).to.have.length(4);
       expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_LEVEL_SET'))).to.be.true;
       expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.true;
       expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_CONSOLE_SET'))).to.be.true;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
 
     it('should handle absolute paths correctly', async () => {
@@ -543,6 +550,7 @@ describe('Log Commands', () => {
       expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_LEVEL_SET'))).to.be.false;
       expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.true;
       expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_CONSOLE_SET'))).to.be.true;
+      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
 
     it('should override existing values when flags are provided with file-to-directory conversion', async () => {
@@ -578,6 +586,7 @@ describe('Log Commands', () => {
       expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_LEVEL_SET'))).to.be.true;
       expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.true;
       expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_CONSOLE_SET'))).to.be.true;
+      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
 
     it('should convert file paths to directory paths automatically', async () => {
@@ -603,6 +612,7 @@ describe('Log Commands', () => {
       ).to.be.true;
 
       expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.true;
+      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
 
     it('should keep directory paths unchanged', async () => {
@@ -629,6 +639,7 @@ describe('Log Commands', () => {
 
       // Should show success message for path only
       expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.true;
+      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
   });
 });
