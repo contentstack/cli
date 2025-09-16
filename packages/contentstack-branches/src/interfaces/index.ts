@@ -89,6 +89,15 @@ export interface CSVRow {
   targetBranchValue: string;
 }
 
+export interface AddCSVRowParams {
+  srNo: number;
+  contentTypeName: string;
+  fieldName: string;
+  fieldType: string;
+  sourceValue: string;
+  targetValue: string;
+}
+
 export interface ContentTypeItem {
   title?: string;
   uid?: string;
