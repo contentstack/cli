@@ -1,7 +1,7 @@
 import { resolve } from 'path';
 import { AuditFix } from '@contentstack/cli-audit';
 import messages, { $t } from '@contentstack/cli-audit/lib/messages';
-import { addLocale, cliux, ContentstackClient, Logger, log } from '@contentstack/cli-utilities';
+import { addLocale, cliux, ContentstackClient, log } from '@contentstack/cli-utilities';
 
 import startModuleImport from './modules';
 import startJSModuleImport from './modules-js';
@@ -10,7 +10,6 @@ import {
   backupHandler,
   masterLocalDetails,
   sanitizeStack,
-  initLogger,
   setupBranchConfig,
   executeImportPathLogic,
 } from '../utils';
@@ -30,13 +29,13 @@ class ModuleImporter {
   }
 
   async start(): Promise<any> {
+    await this.resolveImportPath();
+
     if (!this.importConfig.management_token) {
       const stackDetails: Record<string, unknown> = await this.stackAPIClient.fetch();
       this.importConfig.stackName = stackDetails.name as string;
       this.importConfig.org_uid = stackDetails.org_uid as string;
     }
-
-    await this.resolveImportPath();
 
     await setupBranchConfig(this.importConfig, this.stackAPIClient);
     if (this.importConfig.branchAlias && this.importConfig.branchName) {
@@ -58,9 +57,6 @@ class ModuleImporter {
       this.importConfig.data = backupDir;
     }
 
-    // NOTE init log
-    const logger = initLogger(this.importConfig);
-
     // NOTE audit and fix the import content.
     if (
       !this.importConfig.skipAudit &&
@@ -69,7 +65,7 @@ class ModuleImporter {
           this.importConfig.moduleName,
         ))
     ) {
-      if (!(await this.auditImportData(logger))) {
+      if (!(await this.auditImportData())) {
         return { noSuccessMsg: true };
       }
     }
@@ -152,7 +148,7 @@ class ModuleImporter {
    * @returns The function `auditImportData()` returns a boolean value. It returns `true` if there is a
    * fix available and the user confirms to proceed with the fix, otherwise it returns `false`.
    */
-  async auditImportData(logger: Logger) {
+  async auditImportData() {
     const basePath = resolve(this.importConfig.cliLogsPath || this.importConfig.backupDir, 'logs', 'audit');
     const auditConfig = this.importConfig.auditConfig;
     auditConfig.config.basePath = basePath;
@@ -189,7 +185,7 @@ class ModuleImporter {
         const { hasFix, config } = result;
 
         if (hasFix) {
-          logger.log($t(messages.FINAL_REPORT_PATH, { path: config.reportPath }), 'warn');
+          log.warn($t(messages.FINAL_REPORT_PATH, { path: config.reportPath }), this.importConfig.context);
 
           if (
             this.importConfig.forceStopMarketplaceAppsPrompt ||
