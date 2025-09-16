@@ -1,8 +1,7 @@
 import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { cliux, log, sanitizePath } from '@contentstack/cli-utilities';
-import { BranchDiffVerboseRes, CSVRow, ModifiedFieldsInput, ContentTypeItem, AddCSVRowParams } from '../interfaces';
-import { FIELD_TYPES } from '../config';
+import { BranchDiffVerboseRes, CSVRow, ModifiedFieldsInput, ContentTypeItem, AddCSVRowParams, FIELD_TYPES, CSV_HEADER } from '../interfaces';
 
 /**
  * Get display name for a field with special handling for system fields
@@ -333,7 +332,7 @@ export function exportCSVReport(
 
   const csvRows = diffData.csvData || [];
 
-    const csvHeader = 'Sr No,Content Type Name,Field Name,Field Path,Operation,Source Branch Value,Target Branch Value\n';
+    const csvHeader = CSV_HEADER;
     const csvContent = csvRows.map(row =>
       `${row.srNo},"${row.contentTypeName}","${row.fieldName}","${row.fieldPath}","${row.operation}","${row.sourceBranchValue}","${row.targetBranchValue}"`
     ).join('\n');
