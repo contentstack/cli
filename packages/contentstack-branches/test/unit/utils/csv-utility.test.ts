@@ -1,11 +1,10 @@
 import { describe, it, beforeEach, afterEach } from 'mocha';
 import { expect } from 'chai';
 import { stub } from 'sinon';
-import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { cliux } from '@contentstack/cli-utilities';
 import * as csvUtility from '../../../src/utils/csv-utility';
-import { BranchDiffVerboseRes, CSVRow } from '../../../src/interfaces';
+import { BranchDiffVerboseRes } from '../../../src/interfaces';
 
 describe('CSV Utility Testcases', () => {
   let writeFileSyncStub, existsSyncStub, mkdirSyncStub, cliuxPrintStub;
@@ -42,7 +41,15 @@ describe('CSV Utility Testcases', () => {
                   path: 'title',
                   displayName: 'Title',
                   uid: 'title',
-                  field: 'text'
+                  field: 'text',
+                  propertyChanges: [
+                    {
+                      property: 'default_value',
+                      changeType: 'modified',
+                      oldValue: 'Old Title',
+                      newValue: 'New Title'
+                    }
+                  ]
                 }
               ],
               added: [
@@ -85,37 +92,42 @@ describe('CSV Utility Testcases', () => {
       const result = csvUtility.generateCSVDataFromVerbose(mockVerboseRes);
 
       expect(result).to.be.an('array');
-      expect(result.length).to.equal(5); // 1 modified + 1 added + 1 deleted + 1 added CT + 1 deleted CT
+      expect(result.length).to.equal(5); // 1 modified property change + 1 added + 1 deleted + 1 added CT + 1 deleted CT
 
       // Check modified field
       const modifiedRow = result.find(row => row.fieldName === 'Title');
       expect(modifiedRow).to.exist;
       expect(modifiedRow?.operation).to.equal('modified');
-      expect(modifiedRow?.modifiedValue).to.equal('text field \'Title\' has been modified');
+      expect(modifiedRow?.sourceBranchValue).to.equal('New Title');
+      expect(modifiedRow?.targetBranchValue).to.equal('Old Title');
 
       // Check added field
       const addedRow = result.find(row => row.fieldName === 'New Field');
       expect(addedRow).to.exist;
       expect(addedRow?.operation).to.equal('added');
-      expect(addedRow?.modifiedValue).to.equal('New text field \'New Field\' added to content type');
+      expect(addedRow?.sourceBranchValue).to.equal('N/A');
+      expect(addedRow?.targetBranchValue).to.equal('new_field');
 
       // Check deleted field
       const deletedRow = result.find(row => row.fieldName === 'Old Field');
       expect(deletedRow).to.exist;
       expect(deletedRow?.operation).to.equal('deleted');
-      expect(deletedRow?.modifiedValue).to.equal('text field \'Old Field\' removed from content type');
+      expect(deletedRow?.sourceBranchValue).to.equal('old_field');
+      expect(deletedRow?.targetBranchValue).to.equal('N/A');
 
       // Check added content type
       const addedCTRow = result.find(row => row.contentTypeName === 'New Content Type');
       expect(addedCTRow).to.exist;
       expect(addedCTRow?.operation).to.equal('added');
-      expect(addedCTRow?.modifiedValue).to.equal('Content type \'New Content Type\' added to stack');
+      expect(addedCTRow?.sourceBranchValue).to.equal('N/A');
+      expect(addedCTRow?.targetBranchValue).to.equal('N/A');
 
       // Check deleted content type
       const deletedCTRow = result.find(row => row.contentTypeName === 'Deleted Content Type');
       expect(deletedCTRow).to.exist;
       expect(deletedCTRow?.operation).to.equal('deleted');
-      expect(deletedCTRow?.modifiedValue).to.equal('Content type \'Deleted Content Type\' removed from stack');
+      expect(deletedCTRow?.sourceBranchValue).to.equal('N/A');
+      expect(deletedCTRow?.targetBranchValue).to.equal('N/A');
     });
 
     it('should handle empty verbose results gracefully', () => {
@@ -143,9 +155,8 @@ describe('CSV Utility Testcases', () => {
             srNo: 1,
             contentTypeName: 'Test CT',
             fieldName: 'Test Field',
-            fieldPath: 'Test CT → Test Field',
+            fieldPath: 'N/A',
             operation: 'modified',
-            modifiedValue: 'Field modified',
             sourceBranchValue: 'new_value',
             targetBranchValue: 'old_value'
           }
@@ -167,8 +178,8 @@ describe('CSV Utility Testcases', () => {
       expect(filePath).to.equal(join(customPath, 'content-types-diff.csv'));
 
       // Verify CSV content
-      expect(content).to.include('Sr No,Content Type Name,Field Name,Field Path,Operation,Modified Value,Source Branch Value,Target Branch Value');
-      expect(content).to.include('1,"Test CT","Test Field","Test CT → Test Field","modified","Field modified","new_value","old_value"');
+      expect(content).to.include('Sr No,Content Type Name,Field Name,Field Path,Operation,Source Branch Value,Target Branch Value');
+      expect(content).to.include('1,"Test CT","Test Field","N/A","modified","new_value","old_value"');
 
       // Verify success message
       expect(cliuxPrintStub.calledWith(`CSV report generated at: ${join(customPath, 'content-types-diff.csv')}`, { color: 'green' })).to.be.true;
@@ -184,9 +195,8 @@ describe('CSV Utility Testcases', () => {
             srNo: 1,
             contentTypeName: 'Test CT',
             fieldName: 'Test Field',
-            fieldPath: 'Test CT → Test Field',
+            fieldPath: 'N/A',
             operation: 'added',
-            modifiedValue: 'New field added',
             sourceBranchValue: 'N/A',
             targetBranchValue: ''
           }
