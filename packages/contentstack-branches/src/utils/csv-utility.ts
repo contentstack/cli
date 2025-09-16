@@ -1,7 +1,8 @@
 import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { cliux, log, sanitizePath } from '@contentstack/cli-utilities';
-import { BranchDiffVerboseRes, CSVRow, ModifiedFieldsInput, ContentTypeItem } from '../interfaces';
+import { BranchDiffVerboseRes, CSVRow, ModifiedFieldsInput, ContentTypeItem, AddCSVRowParams } from '../interfaces';
+import { FIELD_TYPES } from '../config';
 
 /**
  * Get display name for a field with special handling for system fields
@@ -178,14 +179,13 @@ function addContentTypeRows(
   for (const item of items) {
     const contentTypeName = item?.title || item?.uid || 'Unknown';
     
-    csvRows.push({
+    addCSVRow(csvRows, {
       srNo: getSrNo(),
       contentTypeName,
       fieldName: 'Content Type',
-      fieldPath: 'N/A',
-      operation,
-      sourceBranchValue: 'N/A',
-      targetBranchValue: 'N/A',
+      fieldType: operation,
+      sourceValue: 'N/A',
+      targetValue: 'N/A'
     });
   }
 }
@@ -204,7 +204,12 @@ export function generateCSVDataFromVerbose(verboseRes: BranchDiffVerboseRes): CS
       const contentTypeName = moduleDetail?.moduleDetails?.title || moduleDetail?.moduleDetails?.uid || 'Unknown';
       
       if (moduleDetail.modifiedFields) {
-        addFieldChangesToCSV(csvRows, contentTypeName, moduleDetail.modifiedFields, 'modified', srNo);
+        addFieldChangesToCSV(csvRows, {
+          contentTypeName,
+          modifiedFields: moduleDetail.modifiedFields,
+          operation: 'modified',
+          startSrNo: srNo
+        });
         srNo += getFieldCount(moduleDetail.modifiedFields);
       }
     }
@@ -217,46 +222,62 @@ export function generateCSVDataFromVerbose(verboseRes: BranchDiffVerboseRes): CS
 }
 
 /**
+ * Add a CSV row with common properties
+ * @param csvRows - Array of CSV rows to add to
+ * @param params - Object containing CSV row parameters
+ */
+function addCSVRow(csvRows: CSVRow[], params: AddCSVRowParams): void {
+  csvRows.push({
+    srNo: params.srNo,
+    contentTypeName: params.contentTypeName,
+    fieldName: params.fieldName,
+    fieldPath: 'N/A',
+    operation: params.fieldType,
+    sourceBranchValue: params.sourceValue,
+    targetBranchValue: params.targetValue,
+  });
+}
+
+/**
  * Add field changes to CSV rows
  * @param csvRows - Array of CSV rows to add to
- * @param contentTypeName - Name of the content type
- * @param modifiedFields - Field changes data
- * @param operation - Type of operation (modified, added, deleted)
- * @param startSrNo - Starting serial number
+ * @param params - Object containing field changes parameters
  */
-function addFieldChangesToCSV(csvRows: CSVRow[], contentTypeName: string, modifiedFields: ModifiedFieldsInput, operation: string, startSrNo: number): void {
-  const fieldTypes = ['modified', 'added', 'deleted'];
-  let srNo = startSrNo;
+function addFieldChangesToCSV(csvRows: CSVRow[], params: {
+  contentTypeName: string;
+  modifiedFields: ModifiedFieldsInput;
+  operation: string;
+  startSrNo: number;
+}): void {
+  const fieldTypes = FIELD_TYPES;
+  let srNo = params.startSrNo;
 
   fieldTypes.forEach(fieldType => {
-    const fields = modifiedFields[fieldType];
+    const fields = params.modifiedFields[fieldType];
     if (!fields) return;
 
     fields.forEach(field => {
       const fieldName = getFieldDisplayName(field);
-      const fieldPath = generateFieldPath(field, contentTypeName);
 
       if (field.propertyChanges?.length > 0) {
         field.propertyChanges.forEach(propertyChange => {
-          csvRows.push({
+          addCSVRow(csvRows, {
             srNo: srNo++,
-            contentTypeName,
+            contentTypeName: params.contentTypeName,
             fieldName,
-            fieldPath,
-            operation: fieldType,
-            sourceBranchValue: formatValue(propertyChange.newValue),
-            targetBranchValue: formatValue(propertyChange.oldValue),
+            fieldType,
+            sourceValue: formatValue(propertyChange.newValue),
+            targetValue: formatValue(propertyChange.oldValue)
           });
         });
       } else {
-        csvRows.push({
+        addCSVRow(csvRows, {
           srNo: srNo++,
-          contentTypeName,
+          contentTypeName: params.contentTypeName,
           fieldName,
-          fieldPath,
-          operation: fieldType,
-          sourceBranchValue: fieldType === 'added' ? 'N/A' : formatValue(field),
-          targetBranchValue: fieldType === 'deleted' ? 'N/A' : formatValue(field),
+          fieldType,
+          sourceValue: fieldType === 'added' ? 'N/A' : formatValue(field),
+          targetValue: fieldType === 'deleted' ? 'N/A' : formatValue(field)
         });
       }
     });
@@ -270,7 +291,7 @@ function addFieldChangesToCSV(csvRows: CSVRow[], contentTypeName: string, modifi
  */
 function getFieldCount(modifiedFields: ModifiedFieldsInput): number {
   let count = 0;
-  const fieldTypes = ['modified', 'added', 'deleted'];
+  const fieldTypes = FIELD_TYPES;
   
   fieldTypes.forEach(fieldType => {
     const fields = modifiedFields[fieldType];
