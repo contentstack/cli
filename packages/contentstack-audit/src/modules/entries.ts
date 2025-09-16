@@ -37,7 +37,6 @@ import {
   EntrySelectFeildDataType,
   SelectFeildStruct,
 } from '../types';
-import { print } from '../util';
 import GlobalField from './global-fields';
 import { MarketplaceAppsInstallationData } from '../types/extension';
 import { keys } from 'lodash';
@@ -230,7 +229,7 @@ export default class Entries {
               module: this.config.moduleConfig.entries.name,
             });
             this.log(message, 'hidden');
-            print([{ message: `info: ${message}`, color: 'green' }]);
+            this.log(`info: ${message}`, 'info');
           }
 
           if (this.fix) {
