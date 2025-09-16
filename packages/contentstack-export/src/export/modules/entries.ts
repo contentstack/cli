@@ -115,9 +115,6 @@ export default class EntriesExport extends BaseClass {
           progress.addProcess(PROCESS_NAMES.ENTRY_VERSIONS, totalEntriesCount);
         }
 
-        if (this.exportVariantEntry) {
-          progress.addProcess(PROCESS_NAMES.VARIANT_ENTRIES, 0);
-        }
       }
 
       // Process entry collections
@@ -159,8 +156,9 @@ export default class EntriesExport extends BaseClass {
           progress.completeProcess(PROCESS_NAMES.ENTRY_VERSIONS, true);
         }
 
-        if (this.exportVariantEntry) {
-          progress.completeProcess(PROCESS_NAMES.VARIANT_ENTRIES, true);
+        if (this.exportVariantEntry && this.variantEntries) {
+          // Complete the variant entries export process
+          this.variantEntries.completeExport();
         }
       }
 
