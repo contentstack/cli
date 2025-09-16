@@ -98,6 +98,10 @@ export interface AddCSVRowParams {
   targetValue: string;
 }
 
+export const FIELD_TYPES = ['modified', 'added', 'deleted'] as const;
+
+export const CSV_HEADER = 'Sr No,Content Type Name,Field Name,Field Path,Operation,Source Branch Value,Target Branch Value\n';
+
 export interface ContentTypeItem {
   title?: string;
   uid?: string;
