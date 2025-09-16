@@ -23,7 +23,7 @@ import { $t, auditMsg } from '../../src/messages';
 describe('AuditBaseCommand class', () => {
   class AuditCMD extends AuditBaseCommand {
     async run() {
-      console.warn('warn Reports ready. Please find the reports at');
+      console.warn('WARN: Reports ready. Please find the reports at');
       await this.start('cm:stacks:audit');
     }
   }
@@ -71,7 +71,7 @@ describe('AuditBaseCommand class', () => {
           .getCalls()
           .map((call) => call.args[0])
           .join('');
-        expect(warnOutput).to.includes('warn Reports ready. Please find the reports at');
+        expect(warnOutput).to.includes('WARN: Reports ready. Please find the reports at');
       });
 
     fancy
@@ -96,7 +96,7 @@ describe('AuditBaseCommand class', () => {
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .it('should print info of no ref found', async (ctx) => {
         await AuditCMD.run([]);
-        expect(ctx.stdout).to.includes('info No missing references found.');
+        expect(ctx.stdout).to.includes('INFO: No missing references found.');
       });
   });
 
@@ -135,7 +135,7 @@ describe('AuditBaseCommand class', () => {
       .stub(AuditBaseCommand.prototype, 'createBackUp', () => {})
       .it('should print missing ref and fix status on table formate', async (ctx) => {
         await AuditFixCMD.run(['--data-dir', resolve(__dirname, 'mock', 'contents')]);
-        expect(ctx.stdout).to.includes('warn You can locate the fixed content at');
+        expect(ctx.stdout).to.includes('WARN: You can locate the fixed content at');
       });
 
     fancy
