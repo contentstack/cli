@@ -95,13 +95,9 @@ class Config {
   }
 
   private fallbackInit(): Conf {
-    try {
-      return new Conf({ configName: CONFIG_NAME, encryptionKey: ENC_KEY });
-    } catch (error) {
-      // If even fallback fails, use the safe fallback
-      console.warn('Fallback config initialization failed, using safe fallback');
-      return this.createSafeFallbackConfig();
-    }
+    // Skip trying the original config and go straight to safe fallback
+    console.warn('Using safe fallback config to avoid corruption issues');
+    return this.createSafeFallbackConfig();
   }
 
   private createSafeFallbackConfig(): Conf {
@@ -305,15 +301,9 @@ class Config {
         this.importOldConfig();
         this.initialized = true;
       } catch (error) {
-        // If initialization fails during build time, create a fallback config
-        console.warn('Config initialization failed, using fallback config');
-        try {
-          this.config = this.fallbackInit();
-        } catch (fallbackError) {
-          // If fallback also fails, use the ultimate safe fallback
-          console.warn('Fallback config also failed, using safe fallback');
-          this.config = this.createSafeFallbackConfig();
-        }
+        // If initialization fails, use safe fallback immediately
+        console.warn('Config initialization failed, using safe fallback');
+        this.config = this.createSafeFallbackConfig();
         this.initialized = true;
       }
     }
