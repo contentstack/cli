@@ -37,9 +37,12 @@ class AuthHandler {
   private oauthHandler: any;
   private managementAPIClient: ContentstackClient;
   private isRefreshingToken: boolean = false; // Flag to track if a refresh operation is in progress
+  private cmaHost: string;
 
   set host(contentStackHost) {
     this._host = contentStackHost;
+    // Update cmaHost when host is set
+    this.cmaHost = this.getCmaHost();
   }
 
   constructor() {
@@ -76,6 +79,24 @@ class AuthHandler {
         this.authorisationTypeKeyName,
       ],
     };
+    this.cmaHost = this.getCmaHost();
+  }
+
+  private getCmaHost(): string {
+    if (this._host) {
+      return this._host;
+    }
+    
+    const cma = configHandler.get('region')?.cma;
+    if (cma && cma.startsWith('http')) {
+      try {
+        const u = new URL(cma);
+        if (u.host) return u.host;
+      } catch (error) {
+        // If URL parsing fails, return the original cma value
+      }
+    }
+    return cma;
   }
   initLog() {
     this.logger = new LoggerService(process.cwd(), 'cli-log');
@@ -91,7 +112,9 @@ class AuthHandler {
   }
 
   async initSDK() {
-    this.managementAPIClient = await managementSDKClient({ host: this._host });
+    // Ensure we have a valid host for the SDK initialization
+    const host = this._host || this.getCmaHost();
+    this.managementAPIClient = await managementSDKClient({ host });
     this.oauthHandler = this.managementAPIClient.oauth({
       appId: this.OAuthAppId,
       clientId: this.OAuthClientId,
