@@ -125,7 +125,6 @@ describe('Branch Diff Utility Testcases', () => {
     await branchDiffUtility.prepareModifiedDiff({
       baseBranchFieldExists: baseBranchDiff,
       compareBranchFieldExists: compareBranchDiff,
-      diffData: mockData.branchDiff,
       listOfModifiedFields: mockData.verboseRes.listOfModifiedFields,
       listOfAddedFields: mockData.verboseRes.listOfAddedFields,
       listOfDeletedFields: mockData.verboseRes.listOfDeletedFields,
