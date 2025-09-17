@@ -31,6 +31,7 @@ describe('AuditBaseCommand class', () => {
 
   class AuditFixCMD extends AuditBaseCommand {
     async run() {
+      await this.init();
       await this.start('cm:stacks:audit:fix');
     }
   }
@@ -40,11 +41,11 @@ describe('AuditBaseCommand class', () => {
   } as FileTransportInstance;
 
   const createMockWinstonLogger = () => ({
-    log: (message: string) => console.log(message),
-    error: (message: string) => console.error(`ERROR: ${message}`),
-    info: (message: string) => console.info(`INFO: ${message}`),
-    warn: (message: string) => console.warn(`WARN: ${message}`),
-    debug: (message: string) => console.debug(`DEBUG: ${message}`),
+    log: (message: string) => process.stdout.write(message + '\n'),
+    error: (message: string) => process.stdout.write(`ERROR: ${message}\n`),
+    info: (message: string) => process.stdout.write(`INFO: ${message}\n`),
+    warn: (message: string) => process.stdout.write(`WARN: ${message}\n`),
+    debug: (message: string) => process.stdout.write(`DEBUG: ${message}\n`),
     level: 'info'
   });
 
@@ -144,22 +145,29 @@ describe('AuditBaseCommand class', () => {
       .stub(AuditBaseCommand.prototype, 'showOutputOnScreenWorkflowsAndExtension', () => {})
       .stub(ux.action, 'stop', () => {})
       .stub(ux.action, 'start', () => {})
-      .stub(Entries.prototype, 'run', () => ({
-        entry_1: {
-          name: 'T1',
-          display_name: 'T1',
-          data_type: 'reference',
-          missingRefs: ['gf_0'],
-          treeStr: 'T1 -> gf_0',
+      .stub(AuditBaseCommand.prototype, 'scanAndFix', () => ({
+        missingCtRefs: { ct_1: {} },
+        missingGfRefs: { gf_1: {} },
+        missingEntryRefs: {
+          entry_1: {
+            name: 'T1',
+            display_name: 'T1',
+            data_type: 'reference',
+            missingRefs: ['gf_0'],
+            treeStr: 'T1 -> gf_0',
+          },
         },
+        missingCtRefsInExtensions: {},
+        missingCtRefsInWorkflow: {},
+        missingSelectFeild: {},
+        missingMandatoryFields: {},
+        missingTitleFields: {},
+        missingRefInCustomRoles: {},
+        missingEnvLocalesInAssets: {},
+        missingEnvLocalesInEntries: {},
+        missingFieldRules: {},
+        missingMultipleFields: {}
       }))
-      .stub(ContentType.prototype, 'run', () => ({ ct_1: {} }))
-      .stub(GlobalField.prototype, 'run', () => ({ gf_1: {} }))
-      .stub(Workflows.prototype, 'run', () => ({ wf_1: {} }))
-      .stub(Extensions.prototype, 'run', () => ({ ext_1: {} }))
-      .stub(CustomRoles.prototype, 'run', () => ({ ext_1: {} }))
-      .stub(Assets.prototype, 'run', () => ({ ext_1: {} }))
-      .stub(FieldRule.prototype, 'run', () => ({ ext_1: {} }))
       .stub(fs, 'createBackUp', () => {})
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .stub(AuditBaseCommand.prototype, 'createBackUp', () => {})
