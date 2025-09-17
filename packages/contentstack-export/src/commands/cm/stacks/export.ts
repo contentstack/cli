@@ -13,6 +13,7 @@ import {
   log,
   handleAndLogError,
   getLogPath,
+  CLIProgressManager,
 } from '@contentstack/cli-utilities';
 
 import { ModuleExporter } from '../../../export';
@@ -141,9 +142,18 @@ export default class ExportCommand extends Command {
       );
       log.info(`The exported content has been stored at '${exportDir}'`, exportConfig.context);
       log.success(`The log has been stored at '${getLogPath()}'`, exportConfig.context);
+
+      // Print comprehensive summary at the end
+      if (!exportConfig.branches) CLIProgressManager.printGlobalSummary();
+      if (!configHandler.get('log')?.showConsoleLogs) {
+        cliux.print(`The log has been stored at '${getLogPath()}'`, { color: 'green' });
+      }
     } catch (error) {
       handleAndLogError(error);
-      log.info(`The log has been stored at '${getLogPath()}'`);
+      if (!configHandler.get('log')?.showConsoleLogs) {
+        cliux.print(`Error: ${error}`, { color: 'red' });
+        cliux.print(`The log has been stored at '${getLogPath()}'`, { color: 'green' });
+      };
     }
   }
 
@@ -153,7 +163,6 @@ export default class ExportCommand extends Command {
       command: this.context?.info?.command || 'cm:stacks:export',
       module: '',
       userId: configHandler.get('userUid') || '',
-      email: configHandler.get('email') || '',
       sessionId: this.context?.sessionId || '',
       apiKey: apiKey || '',
       orgId: configHandler.get('oauthOrgUid') || '',

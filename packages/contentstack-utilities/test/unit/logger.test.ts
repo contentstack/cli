@@ -39,12 +39,31 @@ describe('Logger', () => {
     expect(redacted.other).to.equal('safe');
   });
 
-  fancy.it('should detect valid LogEntry object', () => {
-    const validEntry = { level: 'info', message: 'Test message' };
-    expect(logger['isLogEntry'](validEntry)).to.equal(true);
+  fancy.it('should handle complex nested objects in redaction', () => {
+    const complexObj = {
+      user: {
+        email: 'test@example.com',
+        profile: {
+          password: 'secret123',
+          settings: {
+            apiKey: 'key123',
+            normal: 'value'
+          }
+        }
+      },
+      config: {
+        token: 'token123',
+        other: 'safe'
+      }
+    };
 
-    const invalidEntry = { msg: 'nope' };
-    expect(logger['isLogEntry'](invalidEntry)).to.equal(false);
+    const redacted = logger['redact'](complexObj);
+    expect(redacted.user.email).to.equal('[REDACTED]');
+    expect(redacted.user.profile.password).to.equal('[REDACTED]');
+    expect(redacted.user.profile.settings.apiKey).to.equal('[REDACTED]');
+    expect(redacted.user.profile.settings.normal).to.equal('value');
+    expect(redacted.config.token).to.equal('[REDACTED]');
+    expect(redacted.config.other).to.equal('safe');
   });
 
   fancy.it('should log error messages using error method', () => {
@@ -54,7 +73,7 @@ describe('Logger', () => {
 
     logger.error('error message', { some: 'meta' });
     expect(spy.calledOnce).to.be.true;
-    expect(spy.calledWith('error message', { some: 'meta' })).to.be.true;
+    expect(spy.calledWith('error message', { some: 'meta', level: 'error' })).to.be.true;
   });
 
   fancy.it('should return correct result from shouldLog()', () => {
@@ -145,7 +164,7 @@ describe('Logger', () => {
     logger.logWarn({
       type: 'testType',
       message: 'Warn occurred',
-      context: 'warnContext',
+      context: { module: 'test' },
       meta: { custom: 'value' }
     });
 
@@ -197,5 +216,70 @@ describe('Logger', () => {
 
     expect(defaultLogger['shouldLog']('info', 'console')).to.equal(true);
     expect(defaultLogger['shouldLog']('debug', 'console')).to.equal(false);
+  });
+
+  fancy.it('shouldLog should handle undefined levels gracefully', () => {
+    expect(logger['shouldLog']('unknown' as any, 'console')).to.equal(true); // Should default to info level
+  });
+
+  fancy.it('success method should use info logger with success type', () => {
+    const successLogger = logger['loggers'].success;
+    const spy = sinon.spy();
+    successLogger.info = spy;
+
+    logger.success('Success message', { extra: 'data' });
+    expect(spy.calledOnce).to.be.true;
+    expect(spy.args[0][1].type).to.equal('success');
+  });
+
+  fancy.it('logSuccess should use info method instead of log', () => {
+    const successLogger = logger['loggers'].success;
+    const spy = sinon.spy();
+    successLogger.info = spy;
+
+    logger.logSuccess({
+      type: 'test',
+      message: 'Test success',
+      data: { test: 'data' },
+    });
+
+    expect(spy.calledOnce).to.be.true;
+    expect(spy.args[0][0].meta.type).to.equal('test');
+    expect(spy.args[0][0].meta.data.test).to.equal('data');
+  });
+
+  fancy.it('should handle redaction errors gracefully', () => {
+    const problematicLogger = new Logger({
+      basePath: './logs',
+      consoleLogLevel: 'info',
+      logLevel: 'info',
+    });
+
+    const obj = {
+      password: 'secret',
+      get circular() {
+        return this;
+      },
+    };
+
+    // Should not throw error
+    const result = problematicLogger['redact'](obj);
+    // If redaction fails, it should return the original object
+    expect(result).to.not.be.undefined;
+  });
+
+  fancy.it('should detect sensitive keys correctly', () => {
+    expect(logger['isSensitiveKey']('password')).to.be.true;
+    expect(logger['isSensitiveKey']('authtoken')).to.be.true;
+    expect(logger['isSensitiveKey']('api_key')).to.be.true;
+    expect(logger['isSensitiveKey']('management-token')).to.be.true;
+    expect(logger['isSensitiveKey']('normalKey')).to.be.false;
+    expect(logger['isSensitiveKey']('')).to.be.false;
+  });
+
+  fancy.it('should handle non-string keys in sensitive key detection', () => {
+    expect(logger['isSensitiveKey'](123 as any)).to.be.false;
+    expect(logger['isSensitiveKey'](null as any)).to.be.false;
+    expect(logger['isSensitiveKey'](undefined as any)).to.be.false;
   });
 });
