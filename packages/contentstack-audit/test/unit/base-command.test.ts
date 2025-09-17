@@ -20,10 +20,22 @@ describe('BaseCommand class', () => {
 
   const createMockWinstonLogger = () => ({
     log: (message: any) => process.stdout.write(typeof message === 'string' ? message : JSON.stringify(message) + '\n'),
-    error: (message: any) => process.stdout.write(`ERROR: ${typeof message === 'string' ? message : JSON.stringify(message)}\n`),
-    info: (message: any) => process.stdout.write(`INFO: ${typeof message === 'string' ? message : JSON.stringify(message)}\n`),
-    warn: (message: any) => process.stdout.write(`WARN: ${typeof message === 'string' ? message : JSON.stringify(message)}\n`),
-    debug: (message: any) => process.stdout.write(`DEBUG: ${typeof message === 'string' ? message : JSON.stringify(message)}\n`),
+    error: (message: any) => {
+      const errorMsg = typeof message === 'string' ? message : (message?.message || JSON.stringify(message));
+      process.stdout.write(`ERROR: ${errorMsg}\n`);
+    },
+    info: (message: any) => {
+      const infoMsg = typeof message === 'string' ? message : (message?.message || JSON.stringify(message));
+      process.stdout.write(`INFO: ${infoMsg}\n`);
+    },
+    warn: (message: any) => {
+      const warnMsg = typeof message === 'string' ? message : (message?.message || JSON.stringify(message));
+      process.stdout.write(`WARN: ${warnMsg}\n`);
+    },
+    debug: (message: any) => {
+      const debugMsg = typeof message === 'string' ? message : (message?.message || JSON.stringify(message));
+      process.stdout.write(`DEBUG: ${debugMsg}\n`);
+    },
     level: 'info'
   });
 
