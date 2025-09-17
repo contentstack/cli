@@ -98,9 +98,31 @@ class Config {
     try {
       return new Conf({ configName: CONFIG_NAME, encryptionKey: ENC_KEY });
     } catch (error) {
-      // If even fallback fails, create a minimal config
-      console.warn('Fallback config initialization failed, using minimal config');
-      return new Conf({ configName: `${CONFIG_NAME}_minimal`, encryptionKey: ENC_KEY });
+      // If even fallback fails, use the safe fallback
+      console.warn('Fallback config initialization failed, using safe fallback');
+      return this.createSafeFallbackConfig();
+    }
+  }
+
+  private createSafeFallbackConfig(): Conf {
+    // Create a completely safe fallback that won't fail
+    const safeConfigName = `safe_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const tempDir = require('os').tmpdir();
+    
+    try {
+      return new Conf({ 
+        configName: safeConfigName,
+        cwd: tempDir
+      });
+    } catch (error) {
+      // If even this fails, we have a serious problem - just return a mock config
+      console.error('All config initialization methods failed, using mock config');
+      return {
+        get: () => undefined,
+        set: () => {},
+        delete: () => {},
+        clear: () => {}
+      } as any;
     }
   }
 
@@ -148,7 +170,11 @@ class Config {
         } catch (confError) {
           // If Conf constructor fails due to corrupted config, use fallback
           console.warn('Conf constructor failed, using fallback config');
-          this.config = this.fallbackInit();
+          try {
+            this.config = this.fallbackInit();
+          } catch (fallbackError) {
+            this.config = this.createSafeFallbackConfig();
+          }
         }
 
         if (Object.keys(configData || {})?.length) {
@@ -164,7 +190,11 @@ class Config {
           // Use console instead of cliux during build time
           if (process.env.NODE_ENV === 'production' || process.env.CI) {
             console.warn('Config file is corrupted, using fallback config');
-            this.config = this.fallbackInit();
+            try {
+              this.config = this.fallbackInit();
+            } catch (fallbackError) {
+              this.config = this.createSafeFallbackConfig();
+            }
           } else {
             if (typeof cliux !== 'undefined' && cliux.print) {
               cliux.print(chalk.red('Error: Config file is corrupted'));
@@ -202,11 +232,15 @@ class Config {
       this.safeDeleteConfigIfInvalid(oldConfigPath);
       try {
         this.config = new Conf({ configName: CONFIG_NAME, cwd });
-      } catch (confError) {
-        // If Conf constructor fails due to corrupted config, use fallback
-        console.warn('Conf constructor failed, using fallback config');
-        this.config = this.fallbackInit();
-      }
+        } catch (confError) {
+          // If Conf constructor fails due to corrupted config, use fallback
+          console.warn('Conf constructor failed, using fallback config');
+          try {
+            this.config = this.fallbackInit();
+          } catch (fallbackError) {
+            this.config = this.createSafeFallbackConfig();
+          }
+        }
 
       if (Object.keys(configData || {})?.length) {
         this.config.set(configData); // NOTE set config data if passed any
@@ -222,7 +256,11 @@ class Config {
           config = new Conf({ configName: CONFIG_NAME, encryptionKey, cwd });
         } catch (confError) {
           console.warn('Conf constructor failed, using fallback config');
-          config = this.fallbackInit();
+          try {
+            config = this.fallbackInit();
+          } catch (fallbackError) {
+            config = this.createSafeFallbackConfig();
+          }
         }
         const oldConfigData = this.getConfigDataAndUnlinkConfigFile(config);
         this.getDecryptedConfig(oldConfigData); // NOTE NOTE reinitialize the config with old data and new decrypted file
@@ -238,7 +276,11 @@ class Config {
           // Use console instead of cliux during build time
           if (process.env.NODE_ENV === 'production' || process.env.CI) {
             console.warn('Config file is corrupted, using fallback config');
-            this.config = this.fallbackInit();
+            try {
+              this.config = this.fallbackInit();
+            } catch (fallbackError) {
+              this.config = this.createSafeFallbackConfig();
+            }
           } else {
             if (typeof cliux !== 'undefined' && cliux.print) {
               cliux.print(chalk.red('Error: Config file is corrupted'));
@@ -265,7 +307,13 @@ class Config {
       } catch (error) {
         // If initialization fails during build time, create a fallback config
         console.warn('Config initialization failed, using fallback config');
-        this.config = this.fallbackInit();
+        try {
+          this.config = this.fallbackInit();
+        } catch (fallbackError) {
+          // If fallback also fails, use the ultimate safe fallback
+          console.warn('Fallback config also failed, using safe fallback');
+          this.config = this.createSafeFallbackConfig();
+        }
         this.initialized = true;
       }
     }
