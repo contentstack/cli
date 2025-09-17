@@ -307,6 +307,14 @@ class Config {
 
   private ensureInitialized() {
     if (!this.initialized) {
+      // During build time (oclif manifest generation), skip config initialization entirely
+      if (process.env.NODE_ENV === 'production' || process.env.CI || process.argv.includes('manifest')) {
+        console.warn('Skipping config initialization during build time');
+        this.config = this.createSafeFallbackConfig();
+        this.initialized = true;
+        return;
+      }
+      
       try {
         this.init();
         this.importOldConfig();
