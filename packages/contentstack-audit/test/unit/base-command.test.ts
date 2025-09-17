@@ -31,11 +31,6 @@ describe('BaseCommand class', () => {
         logMsg = JSON.stringify(message);
       }
       
-      // Debug logging in CI
-      if (process.env.CI) {
-        console.log('Mock logger log called with:', typeof message, message);
-        console.log('Mock logger output:', logMsg);
-      }
       
       process.stdout.write(logMsg + '\n');
     },
@@ -139,11 +134,6 @@ describe('BaseCommand class', () => {
           await CMD.run([`--config=${configPath}`]);
           // If no error was thrown, check if error was logged
           expect(ctx.stdout).to.not.be.empty;
-          
-          // Debug: Log what we actually got in CI
-          if (process.env.CI) {
-            console.log('CI Debug - Actual stdout:', JSON.stringify(ctx.stdout));
-          }
           
           // Check for various possible error message patterns that might appear in different environments
           const hasUnexpectedToken = ctx.stdout.includes('Unexpected token');
