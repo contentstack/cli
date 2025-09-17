@@ -5,9 +5,10 @@ import { v4 as uuid } from 'uuid';
 import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
 import cloneDeep from 'lodash/cloneDeep';
-import { cliux, sanitizePath, TableFlags, TableHeader, log } from '@contentstack/cli-utilities';
+import { cliux, sanitizePath, TableFlags, TableHeader } from '@contentstack/cli-utilities';
 import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'fs';
 import config from './config';
+import { print } from './util/log';
 import { auditMsg } from './messages';
 import { BaseCommand } from './base-command';
 import {
@@ -186,7 +187,13 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
     let dataModuleWise: Record<string, any> = await new ModuleDataReader(cloneDeep(constructorParam)).run();
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
-      log.info(this.$t(this.messages.AUDIT_START_SPINNER, { module }));
+      print([
+        {
+          bold: true,
+          color: 'whiteBright',
+          message: this.$t(this.messages.AUDIT_START_SPINNER, { module }),
+        },
+      ]);
 
       constructorParam['moduleName'] = module;
 
@@ -262,7 +269,18 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           break;
       }
 
-      log.info(`${this.$t(this.messages.AUDIT_START_SPINNER, { module })} done`);
+      print([
+        {
+          bold: true,
+          color: 'whiteBright',
+          message: this.$t(this.messages.AUDIT_START_SPINNER, { module }),
+        },
+        {
+          bold: true,
+          message: ' done',
+          color: 'whiteBright',
+        },
+      ]);
     }
 
     this.prepareReport('Summary', this.summaryDataToPrint);
@@ -361,7 +379,13 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       this.log(''); // NOTE adding new line
       for (const { module, missingRefs } of allMissingRefs) {
         if (!isEmpty(missingRefs)) {
-          log.info(` ${module}`);
+          print([
+            {
+              bold: true,
+              color: 'cyan',
+              message: ` ${module}`,
+            },
+          ]);
           const tableValues = Object.values(missingRefs).flat();
 
           const tableHeaders: TableHeader[] = [
@@ -417,8 +441,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         continue;
       }
 
-      log.info(` ${module}`);
-
+      print([{ bold: true, color: 'cyan', message: ` ${module}` }]);
+      
       const tableValues = Object.values(missingRefs).flat();
       missingRefs = Object.values(missingRefs).flat();
       const tableKeys = Object.keys(missingRefs[0]);
