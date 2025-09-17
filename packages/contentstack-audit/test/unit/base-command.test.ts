@@ -19,11 +19,11 @@ describe('BaseCommand class', () => {
   } as FileTransportInstance;
 
   const createMockWinstonLogger = () => ({
-    log: (message: string) => console.log(message),
-    error: (message: string) => console.error(`ERROR: ${message}`),
-    info: (message: string) => console.info(`INFO: ${message}`),
-    warn: (message: string) => console.warn(`WARN: ${message}`),
-    debug: (message: string) => console.debug(`DEBUG: ${message}`),
+    log: (message: any) => process.stdout.write(typeof message === 'string' ? message : JSON.stringify(message) + '\n'),
+    error: (message: any) => process.stdout.write(`ERROR: ${typeof message === 'string' ? message : JSON.stringify(message)}\n`),
+    info: (message: any) => process.stdout.write(`INFO: ${typeof message === 'string' ? message : JSON.stringify(message)}\n`),
+    warn: (message: any) => process.stdout.write(`WARN: ${typeof message === 'string' ? message : JSON.stringify(message)}\n`),
+    debug: (message: any) => process.stdout.write(`DEBUG: ${typeof message === 'string' ? message : JSON.stringify(message)}\n`),
     level: 'info'
   });
 
