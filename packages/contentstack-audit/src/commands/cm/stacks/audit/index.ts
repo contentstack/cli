@@ -1,4 +1,4 @@
-import { FlagInput, Flags, ux } from '@contentstack/cli-utilities';
+import { FlagInput, Flags, ux, handleAndLogError } from '@contentstack/cli-utilities';
 
 import config from '../../../../config';
 import { auditMsg } from '../../../../messages';
@@ -42,8 +42,7 @@ export default class Audit extends AuditBaseCommand {
     try {
       await this.start('cm:stacks:audit');
     } catch (error) {
-      console.trace(error);
-      this.log(error instanceof Error ? error.message : error, 'error');
+      handleAndLogError(error);
       ux.action.stop('Process failed.!');
       this.exit(1);
     }

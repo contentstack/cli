@@ -77,8 +77,8 @@ describe('Entries module', () => {
           }
         })();
         const missingRefs = await ctInstance.run();
-        expect(missingRefs.missingEntryRefs).not.to.be.empty;
-        expect(missingRefs.missingEntryRefs).deep.contain({ 'test-entry-id': [{ uid: 'test', treeStr: 'gf_0' }] });
+        expect((missingRefs as any).missingEntryRefs).not.to.be.empty;
+        expect((missingRefs as any).missingEntryRefs).deep.contain({ 'test-entry-id': [{ uid: 'test', treeStr: 'gf_0' }] });
       });
 
     fancy
@@ -95,7 +95,7 @@ describe('Entries module', () => {
         const writeFixContent = Sinon.spy(Entries.prototype, 'writeFixContent');
         const ctInstance = new Entries({ ...constructorParam, fix: true });
         const missingRefs = await ctInstance.run();
-        expect(missingRefs.missingEntryRefs).to.be.empty;
+        expect((missingRefs as any).missingEntryRefs).to.be.empty;
         expect(writeFixContent.callCount).to.be.equals(1);
         expect(lookForReference.callCount).to.be.equals(1);
         expect(fixPrerequisiteData.callCount).to.be.equals(1);
