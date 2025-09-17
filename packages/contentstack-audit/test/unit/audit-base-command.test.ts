@@ -24,6 +24,7 @@ describe('AuditBaseCommand class', () => {
   class AuditCMD extends AuditBaseCommand {
     async run() {
       console.warn('WARN: Reports ready. Please find the reports at');
+      await this.init();
       await this.start('cm:stacks:audit');
     }
   }
@@ -38,19 +39,31 @@ describe('AuditBaseCommand class', () => {
     filename!: string;
   } as FileTransportInstance;
 
+  const createMockWinstonLogger = () => ({
+    log: (message: string) => console.log(message),
+    error: (message: string) => console.error(`ERROR: ${message}`),
+    info: (message: string) => console.info(`INFO: ${message}`),
+    warn: (message: string) => console.warn(`WARN: ${message}`),
+    debug: (message: string) => console.debug(`DEBUG: ${message}`),
+    level: 'info'
+  });
+
   let consoleWarnSpy: sinon.SinonSpy;
+  let consoleInfoSpy: sinon.SinonSpy;
   beforeEach(() => {
     consoleWarnSpy = sinon.spy(console, 'warn');
+    consoleInfoSpy = sinon.spy(console, 'info');
   });
   afterEach(() => {
     consoleWarnSpy.restore();
+    consoleInfoSpy.restore();
     sinon.restore(); // Restore all stubs and mocks
   });
   describe('Audit command flow', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(winston.transports, 'File', () => fsTransport)
-      .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
+      .stub(winston, 'createLogger', createMockWinstonLogger)
       .stub(fs, 'mkdirSync', () => {})
       .stub(fs, 'writeFileSync', () => {})
       .stub(cliux, 'table', () => {})
@@ -77,14 +90,31 @@ describe('AuditBaseCommand class', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(winston.transports, 'File', () => fsTransport)
-      .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
+      .stub(winston, 'createLogger', createMockWinstonLogger)
       .stub(fs, 'mkdirSync', () => {})
       .stub(fs, 'writeFileSync', () => {})
       .stub(ux, 'table', () => {})
       .stub(ux.action, 'stop', () => {})
       .stub(ux.action, 'start', () => {})
       .stub(cliux, 'inquire', () => resolve(__dirname, 'mock', 'contents'))
-      .stub(AuditBaseCommand.prototype, 'scanAndFix', () => ({ val_1: {} }))
+      .stub(AuditBaseCommand.prototype, 'scanAndFix', () => {
+        console.log('scanAndFix called, returning empty object');
+        return {
+          missingCtRefs: {},
+          missingGfRefs: {},
+          missingEntryRefs: {},
+          missingCtRefsInExtensions: {},
+          missingCtRefsInWorkflow: {},
+          missingSelectFeild: {},
+          missingMandatoryFields: {},
+          missingTitleFields: {},
+          missingRefInCustomRoles: {},
+          missingEnvLocalesInAssets: {},
+          missingEnvLocalesInEntries: {},
+          missingFieldRules: {},
+          missingMultipleFields: {}
+        };
+      })
       .stub(Entries.prototype, 'run', () => ({ entry_1: {} }))
       .stub(ContentType.prototype, 'run', () => ({ ct_1: {} }))
       .stub(GlobalField.prototype, 'run', () => ({ gf_1: {} }))
@@ -104,7 +134,7 @@ describe('AuditBaseCommand class', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(winston.transports, 'File', () => fsTransport)
-      .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
+      .stub(winston, 'createLogger', createMockWinstonLogger)
       .stub(fs, 'mkdirSync', () => {})
       .stub(fs, 'writeFileSync', () => {})
       .stub(AuditBaseCommand.prototype, 'showOutputOnScreenWorkflowsAndExtension', () => {})
@@ -141,7 +171,7 @@ describe('AuditBaseCommand class', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(winston.transports, 'File', () => fsTransport)
-      .stub(winston, 'createLogger', () => ({ log: () => {}, error: () => {} }))
+      .stub(winston, 'createLogger', createMockWinstonLogger)
       .it('return the status column object ', async () => {
         class FixCMD extends AuditBaseCommand {
           async run() {
@@ -161,7 +191,7 @@ describe('AuditBaseCommand class', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(winston.transports, 'File', () => fsTransport)
-      .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
+      .stub(winston, 'createLogger', createMockWinstonLogger)
       .stub(AuditBaseCommand.prototype, 'promptQueue', async () => {})
       .stub(AuditBaseCommand.prototype, 'scanAndFix', async () => ({}))
       .stub(AuditBaseCommand.prototype, 'showOutputOnScreen', () => {})
@@ -188,7 +218,7 @@ describe('AuditBaseCommand class', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(winston.transports, 'File', () => fsTransport)
-      .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
+      .stub(winston, 'createLogger', createMockWinstonLogger)
       .stub(AuditBaseCommand.prototype, 'promptQueue', async () => {})
       .stub(AuditBaseCommand.prototype, 'scanAndFix', async () => ({}))
       .stub(AuditBaseCommand.prototype, 'showOutputOnScreen', () => {})
@@ -223,7 +253,7 @@ describe('AuditBaseCommand class', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(winston.transports, 'File', () => fsTransport)
-      .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
+      .stub(winston, 'createLogger', createMockWinstonLogger)
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .it('should print missing ref and fix status on table formate', async () => {
         class CMD extends AuditBaseCommand {
@@ -254,7 +284,7 @@ describe('AuditBaseCommand class', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(winston.transports, 'File', () => fsTransport)
-      .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
+      .stub(winston, 'createLogger', createMockWinstonLogger)
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .it('should apply filter on output', async () => {
         class CMD extends AuditBaseCommand {
@@ -287,7 +317,7 @@ describe('AuditBaseCommand class', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(winston.transports, 'File', () => fsTransport)
-      .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
+      .stub(winston, 'createLogger', createMockWinstonLogger)
       .it('should fail with error', async () => {
         class CMD extends AuditBaseCommand {
           async run() {
@@ -312,7 +342,7 @@ describe('AuditBaseCommand class', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(winston.transports, 'File', () => fsTransport)
-      .stub(winston, 'createLogger', () => ({ log: () => {}, error: () => {} }))
+      .stub(winston, 'createLogger', createMockWinstonLogger)
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .it('should log error and return empty array', async () => {
         class CMD extends AuditBaseCommand {
