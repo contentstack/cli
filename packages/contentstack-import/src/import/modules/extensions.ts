@@ -196,7 +196,7 @@ export default class ImportExtensions extends BaseClass {
       this.progressManager?.tick(
         false,
         `extension: ${title || uid}`,
-        error?.message || 'Failed to update extension',
+        error?.message || `Extension '${title}' failed to be updated`,
         PROCESS_NAMES.EXTENSIONS_REPLACE_EXISTING,
       );
       log.debug(`Extension '${title}' update failed`, this.importConfig.context);

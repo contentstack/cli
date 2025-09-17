@@ -673,7 +673,7 @@ export default class ImportMarketplaceApps extends BaseClass {
     } catch (error) {
       this.progressManager?.tick(
         false,
-        `${app.manifest?.name}`,
+        `APP name: ${app.manifest?.name}`,
         error?.message || 'Failed to install apps',
         PROCESS_NAMES.INSTALL_APPS,
       );
