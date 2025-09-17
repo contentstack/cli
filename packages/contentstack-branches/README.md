@@ -149,7 +149,8 @@ FLAGS
   -k, --stack-api-key=<value>   [optional] Provide the stack API key to show the difference between branches.
       --base-branch=<value>     [optional] Base branch (Target branch).
       --compare-branch=<value>  [optional] Compare branch (Source branch).
-      --csv-path=<value>        [optional] Custom path for CSV output file. If not provided, will prompt for path.
+      --csv-path=<value>        [optional] Custom path for CSV output file. If not provided, will use the current
+                                working directory.
       --format=<option>         [default: compact-text] [default: compact-text] [optional] Type of flags to show the
                                 difference between two branches. <options: compact-text, detailed-text>
                                 <options: compact-text|detailed-text>
