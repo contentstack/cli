@@ -52,9 +52,13 @@ export default class ImportVariantEntries extends BaseClass {
         return;
       }
 
-      const progress = this.createSimpleProgress(this.currentModuleName);
+      const progress = this.createNestedProgress(this.currentModuleName);
 
-      progress.updateStatus(PROCESS_STATUS[PROCESS_NAMES.VARIANT_ENTRIES_IMPORT].IMPORTING);
+      // Add the variant entries process that will be managed by the actual VariantEntries class
+      progress.addProcess(PROCESS_NAMES.VARIANT_ENTRIES_IMPORT, 0); // Start with 0, will be updated dynamically
+      progress.startProcess(PROCESS_NAMES.VARIANT_ENTRIES_IMPORT);
+      progress.updateStatus(PROCESS_STATUS[PROCESS_NAMES.VARIANT_ENTRIES_IMPORT].IMPORTING, PROCESS_NAMES.VARIANT_ENTRIES_IMPORT);
+
       log.info('Starting variant entries import process', this.config.context);
       await this.importVariantEntries();
 

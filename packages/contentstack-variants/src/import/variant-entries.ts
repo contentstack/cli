@@ -41,6 +41,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
   private failedVariantEntries!: Record<string, any>;
   private environments!: Record<string, any>;
   public progress: any;
+  private processInitialized: boolean = false;
 
   constructor(readonly config: ImportConfig & { helpers?: ImportHelperMethodsConfig }) {
     const conf: APIConfig & AdapterType<VariantHttpClient<ImportConfig>, APIConfig> = {
@@ -64,6 +65,23 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     this.failedVariantEntries = new Map();
     if (this.config && this.config.context) {
       this.config.context.module = MODULE_CONTEXTS.VARIANT_ENTRIES;
+    }
+  }
+
+  /**
+   * Set parent progress manager for integration with entries module
+   */
+  public setParentProgressManager(parentProgress: any): void {
+    this.parentProgressManager = parentProgress;
+    this.progress = parentProgress;
+  }
+
+  /**
+   * Update progress for a specific item
+   */
+  protected updateProgress(success: boolean, itemName: string, error?: string, processName?: string): void {
+    if (this.progress) {
+      this.progress.tick(success, itemName, error, processName);
     }
   }
 
@@ -149,6 +167,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       this.config.context,
     );
 
+      // Initialize progress manager - will be set up lazily when first variants are found
       if (this.parentProgressManager) {
         this.progress = this.parentProgressManager;
         log.debug('Using parent progress manager for variant entries import', this.config.context);
@@ -176,7 +195,19 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         }
       }
 
-      // Only complete progress if we own the progress manager (no parent)
+      // Complete progress if we initialized it and own the progress manager
+      if (this.processInitialized && this.progress) {
+        const processName = this.parentProgressManager ? 'Variant Entries' : PROCESS_NAMES.VARIANT_ENTRIES;
+        this.progress.completeProcess(processName, true);
+        log.success(
+          `Completed import of variant entries across ${entriesForVariants.length} entries`,
+          this.config.context,
+        );
+      } else if (entriesForVariants.length === 0) {
+        log.info(`No variant entries found for import`, this.config.context);
+      }
+
+      // Only complete overall progress if we own the progress manager (no parent)
       if (!this.parentProgressManager) {
         this.completeProgress(true);
       }
@@ -186,6 +217,12 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         this.config.context,
       );
     } catch (error) {
+      // Complete progress with error if we initialized it
+      if (this.processInitialized && this.progress) {
+        const processName = this.parentProgressManager ? 'Variant Entries' : PROCESS_NAMES.VARIANT_ENTRIES;
+        this.progress.completeProcess(processName, false);
+      }
+
       if (!this.parentProgressManager) {
         this.completeProgress(false, (error as any)?.message || 'Variant entries import failed');
       }
@@ -234,7 +271,28 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         const variantEntries = (await fs.readChunkFiles.next()) as VariantEntryStruct[];
         if (variantEntries?.length) {
           totalVariantEntries = totalVariantEntries + variantEntries.length;
-          this.progress.updateProcessTotal(PROCESS_NAMES.VARIANT_ENTRIES, totalVariantEntries);
+          
+          // Initialize progress ONLY when we find the first variants (lazy initialization)
+          if (!this.processInitialized && this.progress) {
+            const processName = this.parentProgressManager ? 'Variant Entries' : PROCESS_NAMES.VARIANT_ENTRIES;
+            
+            if (this.parentProgressManager) {
+              // Update the existing process total instead of creating a new one
+              this.progress.updateProcessTotal(processName, variantEntries.length);
+            } else {
+              this.progress.addProcess(PROCESS_NAMES.VARIANT_ENTRIES, variantEntries.length);
+              this.progress.startProcess(PROCESS_NAMES.VARIANT_ENTRIES);
+            }
+            this.processInitialized = true;
+            log.debug(`Initialized variant entries progress with first batch of ${variantEntries.length} variants`, this.config.context);
+          }
+
+          if (this.processInitialized && this.progress) {
+            const processName = this.parentProgressManager ? 'Variant Entries' : PROCESS_NAMES.VARIANT_ENTRIES;
+            this.progress.updateProcessTotal(processName, totalVariantEntries);
+            log.debug(`Updated progress total to: ${totalVariantEntries}`, this.config.context);
+          }
+
           log.debug(`Processing batch of ${variantEntries.length} variant entries`, this.config.context);
           await this.handleConcurrency(contentType, variantEntries, entriesForVariant);
         }
@@ -292,11 +350,12 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
             `Created entry variant: '${variantUid}' of entry uid ${entryUid} locale '${locale}'`,
             this.config.context,
           );
+          const processName = this.parentProgressManager ? 'Variant Entries' : PROCESS_NAMES.VARIANT_ENTRIES;
           this.updateProgress(
             true,
             `variant entry: '${variantUid}' of entry uid ${entryUid} locale '${locale}'`,
             undefined,
-            PROCESS_NAMES.VARIANT_ENTRIES,
+            processName,
           );
         };
 
@@ -308,12 +367,13 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
             this.config.context,
             `Failed to create entry variant: '${variantUid}' of entry uid ${entryUid} locale '${locale}'`,
           );
+          const processName = this.parentProgressManager ? 'Variant Entries' : PROCESS_NAMES.VARIANT_ENTRIES;
           this.updateProgress(
             false,
             `'${variantUid}' of entry uid ${entryUid} locale '${locale}'`,
             (error as any)?.message ||
               `Failed to create entry variant: '${variantUid}' of entry uid ${entryUid} locale '${locale}'`,
-            PROCESS_NAMES.VARIANT_ENTRIES,
+            processName,
           );
         };
         // NOTE Find new variant Id by old Id

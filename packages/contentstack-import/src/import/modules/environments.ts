@@ -55,7 +55,6 @@ export default class ImportEnvironments extends BaseClass {
       await this.importEnvironments();
 
       await this.processImportResults();
-
       this.completeProgress(true);
       log.success('Environments have been imported successfully!', this.importConfig.context);
     } catch (error) {
@@ -103,6 +102,7 @@ export default class ImportEnvironments extends BaseClass {
         log.info(`Environment '${name}' already exists`, this.importConfig.context);
         log.debug(`Added existing environment UID mapping: ${uid} → ${res?.uid}`, this.importConfig.context);
       } else {
+        this.envFailed.push(apiData);
         this.envFailed.push(apiData);
         this.progressManager?.tick(
           false,

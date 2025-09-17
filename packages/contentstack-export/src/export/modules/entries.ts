@@ -115,9 +115,6 @@ export default class EntriesExport extends BaseClass {
           progress.addProcess(PROCESS_NAMES.ENTRY_VERSIONS, totalEntriesCount);
         }
 
-        if (this.exportVariantEntry) {
-          progress.addProcess(PROCESS_NAMES.VARIANT_ENTRIES, 0);
-        }
       }
 
       // Process entry collections
@@ -159,8 +156,9 @@ export default class EntriesExport extends BaseClass {
           progress.completeProcess(PROCESS_NAMES.ENTRY_VERSIONS, true);
         }
 
-        if (this.exportVariantEntry) {
-          progress.completeProcess(PROCESS_NAMES.VARIANT_ENTRIES, true);
+        if (this.exportVariantEntry && this.variantEntries) {
+          // Complete the variant entries export process
+          this.variantEntries.completeExport();
         }
       }
 
@@ -175,36 +173,31 @@ export default class EntriesExport extends BaseClass {
   async getTotalEntriesCount(entryRequestOptions: Array<Record<string, any>>): Promise<number> {
     log.debug('Calculating total entries count for progress tracking...', this.exportConfig.context);
 
-    let totalCount = 0;
+    const countPromises = entryRequestOptions.map(async (option) => {
+      const countQuery = {
+        locale: option.locale,
+        limit: 1,
+        include_count: true,
+        query: { locale: option.locale },
+      };
 
-    try {
-      for (const option of entryRequestOptions) {
-        const countQuery = {
-          locale: option.locale,
-          limit: 1,
-          include_count: true,
-          query: { locale: option.locale },
-        };
+      this.applyQueryFilters(countQuery, 'entries');
 
-        this.applyQueryFilters(countQuery, 'entries');
-
-        try {
-          const response = await this.stackAPIClient.contentType(option.contentType).entry().query(countQuery).find();
-
-          const count = response.count || 0;
-          totalCount += count;
-          log.debug(
-            `Content type ${option.contentType} (${option.locale}): ${count} entries`,
-            this.exportConfig.context,
-          );
-        } catch (error) {
-          log.debug(`Failed to get count for ${option.contentType}:${option.locale}`, this.exportConfig.context);
-        }
+      try {
+        const response = await this.stackAPIClient.contentType(option.contentType).entry().query(countQuery).find();
+        const count = response.count || 0;
+        log.debug(`Content type ${option.contentType} (${option.locale}): ${count} entries`, this.exportConfig.context);
+        return count;
+      } catch (error) {
+        log.debug(`Failed to get count for ${option.contentType}:${option.locale}`, this.exportConfig.context);
+        return 0;
       }
-    } catch (error) {
-      log.debug('Error calculating total entries count, using collection count as fallback', this.exportConfig.context);
-      return entryRequestOptions.length;
-    }
+    });
+
+    const results = await Promise.allSettled(countPromises);
+    const totalCount = results.reduce((sum, result) => {
+      return sum + (result.status === 'fulfilled' ? result.value : 0);
+    }, 0);
 
     log.debug(`Total entries count: ${totalCount}`, this.exportConfig.context);
     return totalCount;
