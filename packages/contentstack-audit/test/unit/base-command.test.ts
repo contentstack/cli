@@ -21,19 +21,48 @@ describe('BaseCommand class', () => {
   const createMockWinstonLogger = () => ({
     log: (message: any) => process.stdout.write(typeof message === 'string' ? message : JSON.stringify(message) + '\n'),
     error: (message: any) => {
-      const errorMsg = typeof message === 'string' ? message : (message?.message || JSON.stringify(message));
+      let errorMsg;
+      if (typeof message === 'string') {
+        errorMsg = message;
+      } else if (message && typeof message === 'object') {
+        // Extract message from logPayload structure: { level, message, meta }
+        errorMsg = message.message || JSON.stringify(message);
+      } else {
+        errorMsg = JSON.stringify(message);
+      }
       process.stdout.write(`ERROR: ${errorMsg}\n`);
     },
     info: (message: any) => {
-      const infoMsg = typeof message === 'string' ? message : (message?.message || JSON.stringify(message));
+      let infoMsg;
+      if (typeof message === 'string') {
+        infoMsg = message;
+      } else if (message && typeof message === 'object') {
+        infoMsg = message.message || JSON.stringify(message);
+      } else {
+        infoMsg = JSON.stringify(message);
+      }
       process.stdout.write(`INFO: ${infoMsg}\n`);
     },
     warn: (message: any) => {
-      const warnMsg = typeof message === 'string' ? message : (message?.message || JSON.stringify(message));
+      let warnMsg;
+      if (typeof message === 'string') {
+        warnMsg = message;
+      } else if (message && typeof message === 'object') {
+        warnMsg = message.message || JSON.stringify(message);
+      } else {
+        warnMsg = JSON.stringify(message);
+      }
       process.stdout.write(`WARN: ${warnMsg}\n`);
     },
     debug: (message: any) => {
-      const debugMsg = typeof message === 'string' ? message : (message?.message || JSON.stringify(message));
+      let debugMsg;
+      if (typeof message === 'string') {
+        debugMsg = message;
+      } else if (message && typeof message === 'object') {
+        debugMsg = message.message || JSON.stringify(message);
+      } else {
+        debugMsg = JSON.stringify(message);
+      }
       process.stdout.write(`DEBUG: ${debugMsg}\n`);
     },
     level: 'info'
