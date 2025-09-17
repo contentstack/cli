@@ -114,10 +114,21 @@ class Config {
       // If even this fails, we have a serious problem - just return a mock config
       console.error('All config initialization methods failed, using mock config');
       return {
-        get: () => undefined,
-        set: () => {},
-        delete: () => {},
-        clear: () => {}
+        get: (key: string) => {
+          // Return sensible defaults for common keys
+          if (key === 'region') return { cma: 'https://api.contentstack.io', uiHost: 'https://app.contentstack.io' };
+          if (key === 'authorisationType') return 'BASIC';
+          return undefined;
+        },
+        set: (key: string, value: any) => {
+          // Mock set - do nothing but don't throw
+        },
+        delete: (key: string) => {
+          // Mock delete - do nothing but don't throw
+        },
+        clear: () => {
+          // Mock clear - do nothing but don't throw
+        }
       } as any;
     }
   }
