@@ -87,4 +87,22 @@ fileignoreconfig:
   checksum: 7db02c6f2627400b28fc96d505bf074d477080a45ba13943709d4845b6ca0908
 - filename: packages/contentstack-import/src/utils/backup-handler.ts
   checksum: 0a9accdafce01837166223ed00cd801e2ebb39a4ef952231f67232859a5beea8
+- filename: packages/contentstack-audit/src/modules/global-fields.ts
+  checksum: 5bf047089724fa7603e4cc788b401f895900ccb40622ac50109cea957caf638f
+- filename: packages/contentstack-audit/src/audit-base-command.ts
+  checksum: b6649afa15ce69a51a78452238cbbf3184355b1984b99d195bcba3511f334cc2
+- filename: packages/contentstack-audit/src/modules/custom-roles.ts
+  checksum: d066bb3e4feb019fcb4353bc35ca5d02e56f3e8015f67a8c724744f018746244
+- filename: packages/contentstack-audit/src/modules/extensions.ts
+  checksum: b29ca6f83ae8852d4212dc9efb6000f6392db1e8b2d10e9a8535642c75301ec5
+- filename: packages/contentstack-audit/src/modules/modulesData.ts
+  checksum: 368a3328ca39fd5ca7056e141441ddfa7d2eef1822626028ecdf28d94f10ab78
+- filename: packages/contentstack-audit/src/modules/assets.ts
+  checksum: 1c1b1947d1ecf81e82fd19f796128a3ea03bd93210de7e44d817bf2794daaef4
+- filename: packages/contentstack-audit/src/modules/workflows.ts
+  checksum: 71151de09e926c04da1da980e7aa1809143ef127d5785517ac8fb3c99a4427c0
+- filename: packages/contentstack-audit/src/modules/field_rules.ts
+  checksum: 0f08ab50b9e6007638b420c66a3e5a77b1cfe9dfa03cd864a2ce28fe933ef123
+- filename: packages/contentstack-audit/src/modules/entries.ts
+  checksum: 1a07d908af9d4657ecc5379bfb72e3b58cc14431352f02be62f8153e4ff1b19a
 version: "1.0"
