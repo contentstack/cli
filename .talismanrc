@@ -105,4 +105,6 @@ fileignoreconfig:
   checksum: 0f08ab50b9e6007638b420c66a3e5a77b1cfe9dfa03cd864a2ce28fe933ef123
 - filename: packages/contentstack-audit/src/modules/entries.ts
   checksum: 1a07d908af9d4657ecc5379bfb72e3b58cc14431352f02be62f8153e4ff1b19a
+- filename: packages/contentstack-audit/test/unit/base-command.test.ts
+  checksum: 34bdde6f85e8b60ebc73e627b315ec3886e5577102fca04c3e20c463c42eb681
 version: "1.0"
