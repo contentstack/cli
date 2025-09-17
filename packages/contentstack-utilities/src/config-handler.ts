@@ -23,10 +23,10 @@ const cwd = process.env.CS_CLI_CONFIG_PATH;
 
 class Config {
   private config: Conf;
+  private initialized: boolean = false;
 
   constructor() {
-    this.init();
-    this.importOldConfig();
+    // Don't initialize eagerly - wait for first access
   }
 
   init() {
@@ -95,7 +95,13 @@ class Config {
   }
 
   private fallbackInit(): Conf {
-    return new Conf({ configName: CONFIG_NAME, encryptionKey: ENC_KEY });
+    try {
+      return new Conf({ configName: CONFIG_NAME, encryptionKey: ENC_KEY });
+    } catch (error) {
+      // If even fallback fails, create a minimal config
+      console.warn('Fallback config initialization failed, using minimal config');
+      return new Conf({ configName: `${CONFIG_NAME}_minimal`, encryptionKey: ENC_KEY });
+    }
   }
 
   private getObfuscationKey() {
@@ -116,8 +122,15 @@ class Config {
 
     if (config?.path) {
       if (existsSync(config.path)) {
-        configData = JSON.parse(JSON.stringify(config?.store || {})); // NOTE convert prototype object to plain object
-        unlinkSync(config.path); // NOTE remove old config file
+        try {
+          configData = JSON.parse(JSON.stringify(config?.store || {})); // NOTE convert prototype object to plain object
+          unlinkSync(config.path); // NOTE remove old config file
+        } catch (error) {
+          // If config file is corrupted, just remove it and continue
+          console.warn(`Corrupted config file detected at ${config.path}, removing...`);
+          unlinkSync(config.path);
+          configData = {};
+        }
       }
     }
 
@@ -130,7 +143,13 @@ class Config {
         // NOTE reading current code base encrypted file if exist
         const encryptionKey: any = this.getObfuscationKey();
         this.safeDeleteConfigIfInvalid(oldConfigPath);
-        this.config = new Conf({ configName: CONFIG_NAME, encryptionKey, cwd });
+        try {
+          this.config = new Conf({ configName: CONFIG_NAME, encryptionKey, cwd });
+        } catch (confError) {
+          // If Conf constructor fails due to corrupted config, use fallback
+          console.warn('Conf constructor failed, using fallback config');
+          this.config = this.fallbackInit();
+        }
 
         if (Object.keys(configData || {})?.length) {
           this.config.set(configData); // NOTE set config data if passed any
@@ -142,9 +161,20 @@ class Config {
           const oldConfigData = this.getConfigDataAndUnlinkConfigFile(config);
           this.getEncryptedConfig(oldConfigData, true);
         } catch (_error) {
-          cliux.print(chalk.red('Error: Config file is corrupted'));
-          cliux.print(_error);
-          process.exit(1);
+          // Use console instead of cliux during build time
+          if (process.env.NODE_ENV === 'production' || process.env.CI) {
+            console.warn('Config file is corrupted, using fallback config');
+            this.config = this.fallbackInit();
+          } else {
+            if (typeof cliux !== 'undefined' && cliux.print) {
+              cliux.print(chalk.red('Error: Config file is corrupted'));
+              cliux.print(_error);
+            } else {
+              console.error('Error: Config file is corrupted');
+              console.error(_error);
+            }
+            process.exit(1);
+          }
         }
       }
     };
@@ -170,7 +200,13 @@ class Config {
   private getDecryptedConfig(configData?: Record<string, unknown>) {
     try {
       this.safeDeleteConfigIfInvalid(oldConfigPath);
-      this.config = new Conf({ configName: CONFIG_NAME, cwd });
+      try {
+        this.config = new Conf({ configName: CONFIG_NAME, cwd });
+      } catch (confError) {
+        // If Conf constructor fails due to corrupted config, use fallback
+        console.warn('Conf constructor failed, using fallback config');
+        this.config = this.fallbackInit();
+      }
 
       if (Object.keys(configData || {})?.length) {
         this.config.set(configData); // NOTE set config data if passed any
@@ -181,7 +217,13 @@ class Config {
       try {
         const encryptionKey: any = this.getObfuscationKey();
         this.safeDeleteConfigIfInvalid(oldConfigPath);
-        let config = new Conf({ configName: CONFIG_NAME, encryptionKey, cwd });
+        let config;
+        try {
+          config = new Conf({ configName: CONFIG_NAME, encryptionKey, cwd });
+        } catch (confError) {
+          console.warn('Conf constructor failed, using fallback config');
+          config = this.fallbackInit();
+        }
         const oldConfigData = this.getConfigDataAndUnlinkConfigFile(config);
         this.getDecryptedConfig(oldConfigData); // NOTE NOTE reinitialize the config with old data and new decrypted file
       } catch (_error) {
@@ -193,9 +235,20 @@ class Config {
           this.getDecryptedConfig(_configData); // NOTE reinitialize the config with old data and new decrypted file
         } catch (__error) {
           // console.trace(error.message)
-          cliux.print(chalk.red('Error: Config file is corrupted'));
-          cliux.print(_error);
-          process.exit(1);
+          // Use console instead of cliux during build time
+          if (process.env.NODE_ENV === 'production' || process.env.CI) {
+            console.warn('Config file is corrupted, using fallback config');
+            this.config = this.fallbackInit();
+          } else {
+            if (typeof cliux !== 'undefined' && cliux.print) {
+              cliux.print(chalk.red('Error: Config file is corrupted'));
+              cliux.print(_error);
+            } else {
+              console.error('Error: Config file is corrupted');
+              console.error(_error);
+            }
+            process.exit(1);
+          }
         }
       }
     }
@@ -203,21 +256,40 @@ class Config {
     return this.config;
   }
 
+  private ensureInitialized() {
+    if (!this.initialized) {
+      try {
+        this.init();
+        this.importOldConfig();
+        this.initialized = true;
+      } catch (error) {
+        // If initialization fails during build time, create a fallback config
+        console.warn('Config initialization failed, using fallback config');
+        this.config = this.fallbackInit();
+        this.initialized = true;
+      }
+    }
+  }
+
   get(key): string | any {
+    this.ensureInitialized();
     return this.config?.get(key);
   }
 
   set(key, value) {
+    this.ensureInitialized();
     this.config?.set(key, value);
     return this.config;
   }
 
   delete(key) {
+    this.ensureInitialized();
     this.config?.delete(key);
     return this.config;
   }
 
   clear() {
+    this.ensureInitialized();
     this.config?.clear();
   }
 }
