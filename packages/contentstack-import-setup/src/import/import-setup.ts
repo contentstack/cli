@@ -1,5 +1,5 @@
 import { ImportConfig, Modules } from '../types';
-import { backupHandler, log } from '../utils';
+import { backupHandler, log, setupBranchConfig } from '../utils';
 import { ContentstackClient } from '@contentstack/cli-utilities';
 import { validateBranch } from '../utils';
 
@@ -102,9 +102,7 @@ export default class ImportSetup {
       if (backupDir) {
         this.config.backupDir = backupDir;
       }
-      if (this.config.branchName) {
-        await validateBranch(this.stackAPIClient, this.config, this.config.branchName);
-      }
+      await setupBranchConfig(this.config, this.stackAPIClient);
 
       await this.generateDependencyTree();
       await this.runModuleImports();
