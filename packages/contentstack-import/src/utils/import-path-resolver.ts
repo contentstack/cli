@@ -123,7 +123,7 @@ export const resolveImportPath = async (importConfig: ImportConfig, stackAPIClie
  * @param importConfig - The import configuration object
  * @param resolvedPath - The resolved path
  */
-export const updateImportConfigWithResolvedPath = (importConfig: ImportConfig, resolvedPath: string): void => {
+export const updateImportConfigWithResolvedPath = async (importConfig: ImportConfig, resolvedPath: string): Promise<void> => {
   log.debug(`Updating import config with resolved path: ${resolvedPath}`);
 
   if (!fileExistsSync(resolvedPath)) {
@@ -137,8 +137,18 @@ export const updateImportConfigWithResolvedPath = (importConfig: ImportConfig, r
 
   importConfig.data = resolvedPath;
 
+  const exportInfoPath = path.join(resolvedPath, 'export-info.json');
+  if (fileExistsSync(exportInfoPath)) {
+    const exportInfo = await readFile(exportInfoPath);
+    importConfig.contentVersion = exportInfo?.contentVersion || 2;
+    log.debug(`Content version set to ${importConfig.contentVersion} from ${exportInfoPath}`);
+  } else {
+    importConfig.contentVersion = 1;
+    log.debug(`No export-info.json found at ${exportInfoPath}, setting content version to 1`);
+  }
+
   log.debug(
-    `Import config updated - contentDir: ${importConfig.contentDir}, branchDir: ${importConfig.branchDir}, data: ${importConfig.data}`,
+    `Import config updated - contentDir: ${importConfig.contentDir}, branchDir: ${importConfig.branchDir}, data: ${importConfig.data}, contentVersion: ${importConfig.contentVersion}`,
   );
 };
 
@@ -153,7 +163,7 @@ export const executeImportPathLogic = async (importConfig: ImportConfig, stackAP
 
   const resolvedPath = await resolveImportPath(importConfig, stackAPIClient);
 
-  updateImportConfigWithResolvedPath(importConfig, resolvedPath);
+  await updateImportConfigWithResolvedPath(importConfig, resolvedPath);
 
   return resolvedPath;
 };
