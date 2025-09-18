@@ -229,9 +229,19 @@ function createConfigInstance(): Config {
 }
 
 function getConfigInstance(): Config {
-  if (!configInstance) {
-    configInstance = createConfigInstance();
+  // If already exists, just return it
+  if (configInstance) {
+    return configInstance;
   }
+
+  // For development mode: create once and reuse
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Creating config instance for development mode (one-time initialization)');
+    configInstance = createConfigInstance();
+    return configInstance;
+  }
+
+  configInstance = createConfigInstance();
   return configInstance;
 }
 
