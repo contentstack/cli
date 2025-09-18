@@ -6,3 +6,4 @@ export { default as backupHandler } from './backup-handler';
 export { log, unlinkFileLogger } from './logger';
 export * from './log';
 export * from './common-helper';
+export { setupBranchConfig } from './setup-branch';

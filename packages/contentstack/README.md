@@ -2424,6 +2424,8 @@ FLAGS
                                branches involved, then the path should point till the particular branch. For example,
                                “-d "C:\Users\Name\Desktop\cli\content\branch_name"
   -k, --stack-api-key=<value>  API key of the target stack
+      --branch-alias=<value>   The alias of the branch where you want to import your content. If you don't mention the
+                               branch alias, then by default the content will be imported to the main branch.
       --module=<option>...     [optional] Specify the modules/module to import into the target stack. currently options
                                are global-fields, content-types, entries
                                <options: global-fields|content-types|entries>
@@ -2945,6 +2947,8 @@ FLAGS
                                branches involved, then the path should point till the particular branch. For example,
                                “-d "C:\Users\Name\Desktop\cli\content\branch_name"
   -k, --stack-api-key=<value>  API key of the target stack
+      --branch-alias=<value>   The alias of the branch where you want to import your content. If you don't mention the
+                               branch alias, then by default the content will be imported to the main branch.
       --module=<option>...     [optional] Specify the modules/module to import into the target stack. currently options
                                are global-fields, content-types, entries
                                <options: global-fields|content-types|entries>
