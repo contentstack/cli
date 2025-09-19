@@ -234,13 +234,6 @@ function getConfigInstance(): Config {
     return configInstance;
   }
 
-  // For development mode: create once and reuse
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Creating config instance for development mode (one-time initialization)');
-    configInstance = createConfigInstance();
-    return configInstance;
-  }
-
   configInstance = createConfigInstance();
   return configInstance;
 }
