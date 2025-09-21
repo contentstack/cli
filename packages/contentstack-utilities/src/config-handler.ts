@@ -7,7 +7,7 @@ import { cliux } from '.';
 
 const ENC_KEY = process.env.ENC_KEY || 'encryptionKey';
 const ENCRYPT_CONF: boolean = has(process.env, 'ENCRYPT_CONF') ? process.env.ENCRYPT_CONF === 'true' : true;
-const CONFIG_NAME = process.env.CONFIG_NAME || 'contentstack_cli';
+const CONFIG_NAME = getConfigName();
 const ENC_CONFIG_NAME = process.env.ENC_CONFIG_NAME || 'contentstack_cli_obfuscate';
 const OLD_CONFIG_BACKUP_FLAG = 'isOldConfigBackup';
 
@@ -262,5 +262,17 @@ const lazyConfig = {
     return getConfigInstance().clear();
   },
 };
+
+// Get config name with proper fallback logic
+function getConfigName(): string {
+  // 1. Use package name if available (during prepack/development)
+  if (process.env.npm_package_name) {
+    const sanitizedName = process.env.npm_package_name?.replace('@', '').replace('/', '_');
+    return `contentstack_cli_${sanitizedName}`;
+  }
+
+  // 2. Final fallback: Default name for production
+  return process.env.CONFIG_NAME || 'contentstack_cli';
+}
 
 export default lazyConfig;
