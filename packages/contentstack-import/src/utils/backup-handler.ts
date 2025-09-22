@@ -54,7 +54,7 @@ export default async function backupHandler(importConfig: ImportConfig): Promise
 
   if (backupDirPath) {
     log.debug(`Starting content copy to backup directory: ${backupDirPath}`);
-    cliux.print('Copying content to the backup directory...');
+    log.info('Copying content to the backup directory...', importConfig.context);
 
     return new Promise((resolve, reject) => {
       return copy(sourceDir, backupDirPath, (error: any) => {
