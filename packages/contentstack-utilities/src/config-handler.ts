@@ -7,7 +7,7 @@ import { cliux } from '.';
 
 const ENC_KEY = process.env.ENC_KEY || 'encryptionKey';
 const ENCRYPT_CONF: boolean = has(process.env, 'ENCRYPT_CONF') ? process.env.ENCRYPT_CONF === 'true' : true;
-const CONFIG_NAME = getConfigName();
+const CONFIG_NAME = process.env.CONFIG_NAME || 'contentstack_cli';
 const ENC_CONFIG_NAME = process.env.ENC_CONFIG_NAME || 'contentstack_cli_obfuscate';
 const OLD_CONFIG_BACKUP_FLAG = 'isOldConfigBackup';
 
@@ -23,13 +23,31 @@ const cwd = process.env.CS_CLI_CONFIG_PATH;
 
 class Config {
   private config: Conf;
+  private inMemoryStore: Map<string, any> = new Map();
+  private isPrepackMode: boolean;
 
   constructor() {
+    this.isPrepackMode = this.detectPrepackMode();
     this.init();
-    this.importOldConfig();
+    if (!this.isPrepackMode) {
+      this.importOldConfig();
+    }
+  }
+  
+  private detectPrepackMode(): boolean {
+    return !!(
+      process.env.npm_package_name || 
+      process.env.npm_lifecycle_event === 'prepack' ||
+      process.argv.some(arg => arg.includes('oclif') && arg.includes('manifest'))
+    );
   }
 
   init() {
+    // Skip file-based config during prepack to prevent race conditions
+    if (this.isPrepackMode) {
+      // Initialize with empty in-memory store for prepack
+      return;
+    }
     return ENCRYPT_CONF === true ? this.getEncryptedConfig() : this.getDecryptedConfig();
   }
 
@@ -204,75 +222,37 @@ class Config {
   }
 
   get(key): string | any {
+    if (this.isPrepackMode) {
+      return this.inMemoryStore.get(key);
+    }
     return this.config?.get(key);
   }
 
   set(key, value) {
+    if (this.isPrepackMode) {
+      this.inMemoryStore.set(key, value);
+      return this;
+    }
     this.config?.set(key, value);
     return this.config;
   }
 
   delete(key) {
+    if (this.isPrepackMode) {
+      this.inMemoryStore.delete(key);
+      return this;
+    }
     this.config?.delete(key);
     return this.config;
   }
 
   clear() {
+    if (this.isPrepackMode) {
+      this.inMemoryStore.clear();
+      return;
+    }
     this.config?.clear();
   }
 }
 
-let configInstance: Config | null = null;
-
-function createConfigInstance(): Config {
-  return new Config();
-}
-
-function getConfigInstance(): Config {
-  // If already exists, just return it
-  if (configInstance) {
-    return configInstance;
-  }
-
-  configInstance = createConfigInstance();
-  return configInstance;
-}
-
-// Sinon based lazy config object
-const lazyConfig = {
-  // false positive - no hardcoded secret here
-  // @ts-ignore-next-line secret-detection
-  get(key: string) {
-    return getConfigInstance().get(key);
-  },
-
-  // false positive - no hardcoded secret here
-  // @ts-ignore-next-line secret-detection
-  set(key: string, value: any) {
-    return getConfigInstance().set(key, value);
-  },
-
-  // false positive - no hardcoded secret here
-  // @ts-ignore-next-line secret-detection
-  delete(key: string) {
-    return getConfigInstance().delete(key);
-  },
-
-  clear() {
-    return getConfigInstance().clear();
-  },
-};
-
-// Get config name with proper fallback logic
-function getConfigName(): string {
-  // 1. Use package name if available (during prepack/development)
-  if (process.env.npm_package_name) {
-    const sanitizedName = process.env.npm_package_name?.replace('@', '').replace('/', '_');
-    return `contentstack_cli_${sanitizedName}`;
-  }
-
-  // 2. Final fallback: Default name for production
-  return process.env.CONFIG_NAME || 'contentstack_cli';
-}
-
-export default lazyConfig;
+export default new Config();
