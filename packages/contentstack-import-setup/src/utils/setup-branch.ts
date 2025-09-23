@@ -24,7 +24,7 @@ export const setupBranchConfig = async (
         .find()
         .then(({ items }) => items);
       if (branches.length) {
-        log.info(`Stack is branch enabled and branches exist. Default import will be done in main branch.`);
+        log.info(`The stack is branch-enabled, and branches exist. By default, content will be imported into the main branch.`);
 
         config.branchName = 'main';
         log.debug(`Setting default target branch to 'main'`);
