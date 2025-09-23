@@ -111,7 +111,7 @@ export default class Extensions {
         this.log(`Extension ${title} has ${ctNotPresent.length} missing content types`, 'debug');
         ext.content_types = ctNotPresent;
         ctNotPresent.forEach((ct) => {
-          this.log(`Adding missing content type: ${ct}`, 'debug');
+          this.log(`Adding missing content type: ${ct} to the Audit report.`, 'debug');
           this.missingCts?.add(ct);
         });
         this.missingCtInExtensions?.push(cloneDeep(ext));

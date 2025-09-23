@@ -90,9 +90,9 @@ fileignoreconfig:
 - filename: packages/contentstack-audit/src/modules/global-fields.ts
   checksum: 5bf047089724fa7603e4cc788b401f895900ccb40622ac50109cea957caf638f
 - filename: packages/contentstack-audit/src/audit-base-command.ts
-  checksum: b6649afa15ce69a51a78452238cbbf3184355b1984b99d195bcba3511f334cc2
+  checksum: 80cafbc007aeb436e87e76a00a584940dc795be17a321680f5ec87fef40e1f39
 - filename: packages/contentstack-audit/src/modules/custom-roles.ts
-  checksum: d066bb3e4feb019fcb4353bc35ca5d02e56f3e8015f67a8c724744f018746244
+  checksum: 0ae765bb2a882a1eed8148512bae3c31335c6f9c6a9dc4579d6fcb3eca2dd285
 - filename: packages/contentstack-audit/src/modules/extensions.ts
   checksum: b29ca6f83ae8852d4212dc9efb6000f6392db1e8b2d10e9a8535642c75301ec5
 - filename: packages/contentstack-audit/src/modules/modulesData.ts
@@ -104,7 +104,9 @@ fileignoreconfig:
 - filename: packages/contentstack-audit/src/modules/field_rules.ts
   checksum: 0f08ab50b9e6007638b420c66a3e5a77b1cfe9dfa03cd864a2ce28fe933ef123
 - filename: packages/contentstack-audit/src/modules/entries.ts
-  checksum: 1a07d908af9d4657ecc5379bfb72e3b58cc14431352f02be62f8153e4ff1b19a
+  checksum: f5f555c28671c12afd0f1e0f501954f7fa6bb688d14294d07ce745d6cdc5112f
 - filename: packages/contentstack-audit/test/unit/base-command.test.ts
   checksum: 34bdde6f85e8b60ebc73e627b315ec3886e5577102fca04c3e20c463c42eb681
+- filename: packages/contentstack-audit/src/modules/content-types.ts
+  checksum: 7b311cc8d9c742587bc5e75c14decd284f61ec6a37e3b3b9725bd06f3e220fd9
 version: "1.0"

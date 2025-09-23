@@ -22,6 +22,7 @@ export default class CustomRoles {
 
   constructor({ log, fix, config, moduleName }: ModuleConstructorParam & Pick<CtConstructorParam, 'ctSchema'>) {
     this.log = log;
+    this.log(`Initializing Custom Roles module`, 'debug');
     this.config = config;
     this.fix = fix ?? false;
     this.customRoleSchema = [];
@@ -34,14 +35,25 @@ export default class CustomRoles {
     this.missingFieldsInCustomRoles = [];
     this.customRolePath = '';
     this.isBranchFixDone = false;
+    this.log(`Starting ${this.moduleName} audit process`, 'debug');
+    this.log(`Data directory: ${this.folderPath}`, 'debug');
+    this.log(`Fix mode: ${this.fix}`, 'debug');
+    this.log(`Branch filter: ${this.config?.branch || 'none'}`, 'debug');
+
   }
   validateModules(
     moduleName: keyof typeof auditConfig.moduleConfig,
     moduleConfig: Record<string, unknown>,
   ): keyof typeof auditConfig.moduleConfig {
+    this.log(`Validating module: ${moduleName}`, 'debug');
+    this.log(`Available modules in config: ${Object.keys(moduleConfig).join(', ')}`, 'debug');
+    
     if (Object.keys(moduleConfig).includes(moduleName)) {
+      this.log(`Module ${moduleName} found in config, returning: ${moduleName}`, 'debug');
       return moduleName;
     }
+    
+    this.log(`Module ${moduleName} not found in config, defaulting to: custom-roles`, 'debug');
     return 'custom-roles';
   }
 
@@ -52,11 +64,7 @@ export default class CustomRoles {
    * @returns Array of object containing the custom role name, uid and content_types that are missing
    */
   async run() {
-    this.log(`Starting ${this.moduleName} audit process`, 'debug');
-    this.log(`Data directory: ${this.folderPath}`, 'debug');
-    this.log(`Fix mode: ${this.fix}`, 'debug');
-    this.log(`Branch filter: ${this.config?.branch || 'none'}`, 'debug');
-
+   
     if (!existsSync(this.folderPath)) {
       this.log(`Skipping ${this.moduleName} audit - path does not exist`, 'debug');
       this.log(`Skipping ${this.moduleName} audit`, 'warn');
@@ -79,6 +87,7 @@ export default class CustomRoles {
       
       let branchesToBeRemoved: string[] = [];
       if (this.config?.branch) {
+        this.log(`Config branch : ${this.config.branch}`, 'debug');
         this.log(`Checking branch rules for custom role: ${customRole.name}`, 'debug');
         customRole?.rules?.filter((rule) => {
           if (rule.module === 'branch') {

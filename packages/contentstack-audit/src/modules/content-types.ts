@@ -56,15 +56,23 @@ export default class ContentType {
       sanitizePath(config.basePath),
       sanitizePath(config.moduleConfig[this.moduleName].dirName),
     );
+
+    this.log(`Starting ${this.moduleName} audit process`, 'debug');
   }
 
   validateModules(
     moduleName: keyof typeof auditConfig.moduleConfig,
     moduleConfig: Record<string, unknown>,
   ): keyof typeof auditConfig.moduleConfig {
+    this.log(`Validating module: ${moduleName}`, 'debug');
+    this.log(`Available modules in config: ${Object.keys(moduleConfig).join(', ')}`, 'debug');
+    
     if (Object.keys(moduleConfig).includes(moduleName)) {
+      this.log(`Module ${moduleName} found in config, returning: ${moduleName}`, 'debug');
       return moduleName;
     }
+    
+    this.log(`Module ${moduleName} not found in config, defaulting to: content-types`, 'debug');
     return 'content-types';
   }
   /**
@@ -74,7 +82,6 @@ export default class ContentType {
    */
   async run(returnFixSchema = false) {
     this.inMemoryFix = returnFixSchema;
-    this.log(`Starting ${this.moduleName} audit process`, 'debug');
 
     if (!existsSync(this.folderPath)) {
       this.log(`Skipping ${this.moduleName} audit`, 'warn');
@@ -111,8 +118,14 @@ export default class ContentType {
     }
 
     this.log('Cleaning up empty missing references', 'debug');
+    this.log(`Total missing reference properties: ${Object.keys(this.missingRefs).length}`, 'debug');
+    
     for (let propName in this.missingRefs) {
-      if (!this.missingRefs[propName].length) {
+      const refCount = this.missingRefs[propName].length;
+      this.log(`Property ${propName}: ${refCount} missing references`, 'debug');
+      
+      if (!refCount) {
+        this.log(`Removing empty property: ${propName}`, 'debug');
         delete this.missingRefs[propName];
       }
     }
@@ -445,7 +458,7 @@ export default class ContentType {
    * like `uid` and `title`.
    */
   async validateModularBlocksField(tree: Record<string, unknown>[], field: ModularBlocksDataType): Promise<void> {
-    this.log(`Validating modular blocks field: ${field.display_name} (${field.uid})`, 'debug');
+    this.log(`[CONTENT-TYPES] Validating modular blocks field: ${field.display_name} (${field.uid})`, 'debug');
     const { blocks } = field;
     this.log(`Found ${blocks.length} blocks in modular blocks field`, 'debug');
     
@@ -471,10 +484,10 @@ export default class ContentType {
    * represents the group field that needs to be validated.
    */
   async validateGroupField(tree: Record<string, unknown>[], field: GroupFieldDataType): Promise<void> {
-    this.log(`Validating group field: ${field.display_name} (${field.uid})`, 'debug');
+    this.log(`[CONTENT-TYPES] Validating group field: ${field.display_name} (${field.uid})`, 'debug');
     // NOTE Any Group Field related logic can be added here (Ex data serialization or picking any metadata for report etc.,)
     await this.lookForReference(tree, field);
-    this.log(`Group field validation completed: ${field.display_name}`, 'debug');
+    this.log(`[CONTENT-TYPES] Group field validation completed: ${field.display_name}`, 'debug');
   }
 
   /**
