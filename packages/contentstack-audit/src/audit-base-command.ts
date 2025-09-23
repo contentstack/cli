@@ -57,12 +57,12 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
   async start(command: CommandNames): Promise<boolean> {
     this.currentCommand = command;
     this.log(`Starting audit command: ${command}`, 'debug');
-    this.log(`Data directory: ${this.flags['data-dir']}`, 'debug');
-    this.log(`Report path: ${this.flags['report-path'] || process.cwd()}`, 'debug');
     
     await this.promptQueue();
     await this.createBackUp();
     this.sharedConfig.reportPath = resolve(this.flags['report-path'] || process.cwd(), 'audit-report');
+    this.log(`Data directory: ${this.flags['data-dir']}`, 'debug');
+    this.log(`Report path: ${this.flags['report-path'] || process.cwd()}`, 'debug');
 
     const {
       missingCtRefs,
@@ -200,6 +200,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     };
 
     let dataModuleWise: Record<string, any> = await new ModuleDataReader(cloneDeep(constructorParam)).run();
+    this.log(`Data module wise: ${JSON.stringify(dataModuleWise)}`, 'debug');
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       this.log(`Starting audit for module: ${module}`, 'debug');
       print([
@@ -524,19 +525,29 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       | 'Summary',
     listOfMissingRefs: Record<string, any>,
   ): Promise<void> {
-    if (isEmpty(listOfMissingRefs)) return Promise.resolve(void 0);
+    this.log(`Preparing report for module: ${moduleName}`, 'debug');
+    this.log(`Report path: ${this.sharedConfig.reportPath}`, 'debug');
+    this.log(`Missing references count: ${Object.keys(listOfMissingRefs).length}`, 'debug');
+    
+    if (isEmpty(listOfMissingRefs)) {
+      this.log(`No missing references found for ${moduleName}, skipping report generation`, 'debug');
+      return Promise.resolve(void 0);
+    }
 
     if (!existsSync(this.sharedConfig.reportPath)) {
+      this.log(`Creating report directory: ${this.sharedConfig.reportPath}`, 'debug');
       mkdirSync(this.sharedConfig.reportPath, { recursive: true });
+    } else {
+      this.log(`Report directory already exists: ${this.sharedConfig.reportPath}`, 'debug');
     }
 
     // NOTE write int json
-    writeFileSync(
-      join(sanitizePath(this.sharedConfig.reportPath), `${sanitizePath(moduleName)}.json`),
-      JSON.stringify(listOfMissingRefs),
-    );
+    const jsonFilePath = join(sanitizePath(this.sharedConfig.reportPath), `${sanitizePath(moduleName)}.json`);
+    this.log(`Writing JSON report to: ${jsonFilePath}`, 'debug');
+    writeFileSync(jsonFilePath, JSON.stringify(listOfMissingRefs));
 
     // NOTE write into CSV
+    this.log(`Preparing CSV report for: ${moduleName}`, 'debug');
     return this.prepareCSV(moduleName, listOfMissingRefs);
   }
 

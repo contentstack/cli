@@ -82,9 +82,6 @@ export default class Workflows {
    * @returns Array of object containing the workflow name, uid and content_types that are missing
    */
   async run() {
-    this.log(`Starting ${this.moduleName} audit process`, 'debug');
-    this.log(`Workflows folder path: ${this.folderPath}`, 'debug');
-    this.log(`Fix mode: ${this.fix}`, 'debug');
     
     if (!existsSync(this.folderPath)) {
       this.log(`Skipping ${this.moduleName} audit - path does not exist`, 'debug');
@@ -115,7 +112,8 @@ export default class Workflows {
       
       const ctNotPresent = workflow.content_types.filter((ct) => !this.ctUidSet.has(ct));
       this.log(`Missing content types in workflow: ${ctNotPresent?.join(', ') || 'none'}`, 'debug');
-      
+      this.log(`Config branch : ${this.config.branch}`, 'debug');
+
       let branchesToBeRemoved: string[] = [];
       if (this.config?.branch) {
         branchesToBeRemoved = workflow?.branches?.filter((branch) => branch !== this.config?.branch) || [];
@@ -140,7 +138,7 @@ export default class Workflows {
         }
 
         ctNotPresent.forEach((ct) => {
-          this.log(`Adding missing content type: ${ct}`, 'debug');
+          this.log(`Adding missing content type: ${ct} to the Audit report.`, 'debug');
           this.missingCts.add(ct);
         });
         this.missingCtInWorkflows.push(tempwf);
@@ -198,6 +196,7 @@ export default class Workflows {
         const fixedBranches: string[] = [];
 
         if (this.config.branch) {
+          this.log(`Config branch : ${this.config.branch}`, 'debug');
           this.log(`Processing branches for workflow ${name}`, 'debug');
           workflow?.branches?.forEach((branch) => {
             if (branch !== this.config?.branch) {

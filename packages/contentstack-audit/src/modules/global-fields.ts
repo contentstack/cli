@@ -28,7 +28,7 @@ export default class GlobalField extends ContentType {
    * @param {ModularBlocksDataType} field - The `field` parameter is of type `ModularBlocksDataType`.
    */
   async validateModularBlocksField(tree: Record<string, unknown>[], field: ModularBlocksDataType): Promise<void> {
-    this.log(`Validating modular blocks field: ${field.uid}`, 'debug');
+    this.log(`[GLOBAL-FIELDS] Validating modular blocks field: ${field.uid}`, 'debug');
     this.log(`Tree depth: ${tree.length}`, 'debug');
     
     const { blocks } = field;
@@ -41,7 +41,7 @@ export default class GlobalField extends ContentType {
       this.log(`Block validation completed: ${block.uid}`, 'debug');
     }
     
-    this.log(`Modular blocks field validation completed: ${field.uid}`, 'debug');
+    this.log(`[GLOBAL-FIELDS] Modular blocks field validation completed: ${field.uid}`, 'debug');
   }
 
   /**
@@ -53,7 +53,7 @@ export default class GlobalField extends ContentType {
    * @param {GroupFieldDataType} field - The `field` parameter is of type `GroupFieldDataType`.
    */
   async validateGroupField(tree: Record<string, unknown>[], field: GroupFieldDataType): Promise<void> {
-    this.log(`Validating group field: ${field.uid} (${field.display_name})`, 'debug');
+    this.log(`[GLOBAL-FIELDS] Validating group field: ${field.uid} (${field.display_name})`, 'debug');
     this.log(`Tree depth: ${tree.length}`, 'debug');
     
     // NOTE Any Group Field related logic can be added here (Ex data serialization or picking any metadata for report etc.,)
@@ -61,6 +61,6 @@ export default class GlobalField extends ContentType {
     this.log(`Updated tree depth: ${updatedTree.length}`, 'debug');
     
     await this.lookForReference(updatedTree, field);
-    this.log(`Group field validation completed: ${field.uid}`, 'debug');
+    this.log(`[GLOBAL-FIELDS] Group field validation completed: ${field.uid}`, 'debug');
   }
 }

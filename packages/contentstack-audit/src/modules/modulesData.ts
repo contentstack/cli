@@ -74,12 +74,12 @@ export default class ModuleDataReader {
           
           this.log(`Loading master locales`, 'debug');
           this.locales = values(await this.readUsingFsModule(masterLocalesPath));
-          this.log(`Loaded ${this.locales.length} master locales`, 'debug');
+          this.log(`Loaded ${this.locales.length} master locales: ${this.locales.map(locale => locale.code).join(', ')}`, 'debug');
 
           if (existsSync(localesPath)) {
             this.log(`Loading additional locales from file`, 'debug');
             this.locales.push(...values(JSON.parse(readFileSync(localesPath, 'utf8'))));
-            this.log(`Total locales after loading: ${this.locales.length}`, 'debug');
+            this.log(`Total locales after loading: ${this.locales.length} - ${this.locales.map(locale => locale.code).join(', ')}`, 'debug');
           } else {
             this.log(`Additional locales file not found`, 'debug');
           }
@@ -108,11 +108,11 @@ export default class ModuleDataReader {
           sanitizePath(this.config.moduleConfig[moduleName].dirName),
           sanitizePath(this.config.moduleConfig[moduleName].fileName),
         );
-        this.log(`${moduleName} path: ${modulePath}`, 'debug');
+        this.log(`Reading module: ${moduleName} from file: ${modulePath}`, 'debug');
         
         const moduleData = await this.readUsingFsModule(modulePath);
         count = keys(moduleData).length;
-        this.log(`${moduleName} count: ${count}`, 'debug');
+        this.log(`module:${moduleName} count: ${count}`, 'debug');
         break;
       }
     }

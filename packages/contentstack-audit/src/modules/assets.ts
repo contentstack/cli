@@ -149,7 +149,7 @@ export default class Assets {
     if (this.fix) {
       this.log('Fix mode enabled, checking write permissions', 'debug');
       if (!this.config.flags['copy-dir'] && !this.config.flags['external-config']?.skipConfirm) {
-        this.log('Asking user for confirmation to write fix content', 'debug');
+        this.log(`Asking user for confirmation to write fix content (--yes flag: ${this.config.flags.yes})`, 'debug');
         canWrite = this.config.flags.yes || (await cliux.confirm(commonMsg.FIX_CONFIRMATION));
       } else {
         this.log('Skipping confirmation due to copy-dir or external-config flags', 'debug');

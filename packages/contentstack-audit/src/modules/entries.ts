@@ -40,6 +40,7 @@ import {
 import GlobalField from './global-fields';
 import { MarketplaceAppsInstallationData } from '../types/extension';
 import { keys } from 'lodash';
+import { print } from '../util/log';
 
 export default class Entries {
   public log: LogFn;
@@ -66,6 +67,7 @@ export default class Entries {
 
   constructor({ log, fix, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
     this.log = log;
+    this.log(`Initializing Entries module`, 'debug');
     this.config = config;
     this.fix = fix ?? false;
     this.ctSchema = ctSchema;
@@ -73,15 +75,24 @@ export default class Entries {
     this.moduleName = this.validateModules(moduleName!, this.config.moduleConfig);
     this.fileName = config.moduleConfig[this.moduleName].fileName;
     this.folderPath = resolve(sanitizePath(config.basePath), sanitizePath(config.moduleConfig.entries.dirName));
+    this.log(`Starting ${this.moduleName} audit process`, 'debug');
+    this.log(`Data directory: ${this.folderPath}`, 'debug');
+    this.log(`Fix mode: ${this.fix}`, 'debug');
   }
 
   validateModules(
     moduleName: keyof typeof auditConfig.moduleConfig,
     moduleConfig: Record<string, unknown>,
   ): keyof typeof auditConfig.moduleConfig {
+    this.log(`Validating module: ${moduleName}`, 'debug');
+    this.log(`Available modules in config: ${Object.keys(moduleConfig).join(', ')}`, 'debug');
+    
     if (Object.keys(moduleConfig).includes(moduleName)) {
+      this.log(`Module ${moduleName} found in config, returning: ${moduleName}`, 'debug');
       return moduleName;
     }
+    
+    this.log(`Module ${moduleName} not found in config, defaulting to: entries`, 'debug');
     return 'entries';
   }
 
@@ -91,9 +102,6 @@ export default class Entries {
    * @returns the `missingRefs` object.
    */
   async run() {
-    this.log(`Starting ${this.moduleName} audit process`, 'debug');
-    this.log(`Data directory: ${this.folderPath}`, 'debug');
-    this.log(`Fix mode: ${this.fix}`, 'debug');
     
     if (!existsSync(this.folderPath)) {
       this.log(`Skipping ${this.moduleName} audit - path does not exist`, 'debug');
@@ -117,7 +125,7 @@ export default class Entries {
     for (const { code } of this.locales) {
       this.log(`Processing locale: ${code}`, 'debug');
       for (const ctSchema of this.ctSchema) {
-        this.log(`Processing content type: ${ctSchema.title} (${ctSchema.uid}) in locale ${code}`, 'debug');
+        this.log(`Processing content type: ${ctSchema.uid} in locale ${code}`, 'debug');
         const basePath = join(this.folderPath, ctSchema.uid, code);
         this.log(`Base path for entries: ${basePath}`, 'debug');
         
@@ -140,7 +148,7 @@ export default class Entries {
               this.currentTitle = this.removeEmojiAndImages(this.currentTitle);
             }
 
-            this.log(`Processing entry: ${this.currentTitle} (${uid})`, 'debug');
+            this.log(`Processing entry - title:${this.currentTitle} with uid:(${uid})`, 'debug');
 
             if (!this.missingRefs[this.currentUid]) {
               this.missingRefs[this.currentUid] = [];
@@ -195,10 +203,14 @@ export default class Entries {
             
             if ((this.fix && fields.length && isPublished) || (!this.fix && fields)) {
               const fixStatus = this.fix ? 'Fixed' : '';
-              fields?.forEach((field: { isPublished: boolean; fixStatus?: string }) => {
+              this.log(`Applying fix status: ${fixStatus} to ${fields.length} fields`, 'debug');
+              
+              fields?.forEach((field: { isPublished: boolean; fixStatus?: string }, index: number) => {
+                this.log(`Processing field ${index + 1}/${fields.length}`, 'debug');
                 field.isPublished = isPublished;
                 if (this.fix && isPublished) {
                   field.fixStatus = fixStatus;
+                  this.log(`Field ${index + 1} marked as published and fixed`, 'debug');
                 }
               });
 
@@ -272,6 +284,7 @@ export default class Entries {
               module: this.config.moduleConfig.entries.name,
             });
             this.log(message, 'hidden');
+            print([{ message: `info: ${message}`, color: 'green' }]);
             this.log(`info: ${message}`, 'info');
           }
 
@@ -867,17 +880,17 @@ export default class Entries {
       this.log(`Processing reference ${index}: ${uid || reference}`, 'debug');
       
       if (!uid && reference.startsWith('blt')) {
-        this.log(`Checking blt reference: ${reference}`, 'debug');
+        this.log(`Checking reference: ${reference}`, 'debug');
         const refExist = find(this.entryMetaData, { uid: reference });
         if (!refExist) {
-          this.log(`Missing blt reference: ${reference}`, 'debug');
+          this.log(`Missing reference: ${reference}`, 'debug');
           if (Array.isArray(reference_to) && reference_to.length === 1) {
             missingRefs.push({ uid: reference, _content_type_uid: reference_to[0] });
           } else {
             missingRefs.push(reference);
           }
         } else {
-          this.log(`Blt reference ${reference} is valid`, 'debug');
+          this.log(`Reference ${reference} is valid`, 'debug');
         }
       }
       // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
