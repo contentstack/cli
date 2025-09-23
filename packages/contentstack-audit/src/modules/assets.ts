@@ -72,7 +72,7 @@ export default class Assets {
     this.log('Loading prerequisite data (locales and environments)', 'debug');
     await this.prerequisiteData();
     
-    this.log('Starting asset reference validation', 'debug');
+    this.log('Starting asset Reference, Environment and Locale validation', 'debug');
     await this.lookForReference();
 
     if (returnFixSchema) {
