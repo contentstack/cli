@@ -1,5 +1,6 @@
 import ContentType from './content-types';
 import { GroupFieldDataType, ModularBlocksDataType } from '../types';
+import { log } from '@contentstack/cli-utilities';
 
 export default class GlobalField extends ContentType {
   /**
@@ -8,15 +9,15 @@ export default class GlobalField extends ContentType {
    * @returns the value of the variable `missingRefs`.
    */
   async run(returnFixSchema = false) {
-    this.log(`Starting GlobalField audit process`, 'debug');
-    this.log(`Return fix schema: ${returnFixSchema}`, 'debug');
+    log.debug(`Starting GlobalField audit process`);
+    log.debug(`Return fix schema: ${returnFixSchema}`);
     
     // NOTE add any validation if required
-    this.log(`Calling parent ContentType.run() method`, 'debug');
+    log.debug(`Calling parent ContentType.run() method`);
     const missingRefs = await super.run(returnFixSchema);
-    this.log(`Parent method completed, found ${Object.keys(missingRefs || {}).length} missing references`, 'debug');
+    log.debug(`Parent method completed, found ${Object.keys(missingRefs || {}).length} missing references`);
 
-    this.log(`GlobalField audit completed`, 'debug');
+    log.debug(`GlobalField audit completed`);
     return missingRefs;
   }
 
@@ -28,20 +29,20 @@ export default class GlobalField extends ContentType {
    * @param {ModularBlocksDataType} field - The `field` parameter is of type `ModularBlocksDataType`.
    */
   async validateModularBlocksField(tree: Record<string, unknown>[], field: ModularBlocksDataType): Promise<void> {
-    this.log(`[GLOBAL-FIELDS] Validating modular blocks field: ${field.uid}`, 'debug');
-    this.log(`Tree depth: ${tree.length}`, 'debug');
+    log.debug(`[GLOBAL-FIELDS] Validating modular blocks field: ${field.uid}`);
+    log.debug(`Tree depth: ${tree.length}`);
     
     const { blocks } = field;
-    this.log(`Found ${blocks.length} blocks to validate`, 'debug');
+    log.debug(`Found ${blocks.length} blocks to validate`);
 
     // NOTE Traverse each and every module and look for reference
     for (const block of blocks) {
-      this.log(`Validating block: ${block.uid} (${block.title})`, 'debug');
+      log.debug(`Validating block: ${block.uid} (${block.title})`);
       await this.lookForReference(tree, block);
-      this.log(`Block validation completed: ${block.uid}`, 'debug');
+      log.debug(`Block validation completed: ${block.uid}`);
     }
     
-    this.log(`[GLOBAL-FIELDS] Modular blocks field validation completed: ${field.uid}`, 'debug');
+    log.debug(`[GLOBAL-FIELDS] Modular blocks field validation completed: ${field.uid}`);
   }
 
   /**
@@ -53,14 +54,14 @@ export default class GlobalField extends ContentType {
    * @param {GroupFieldDataType} field - The `field` parameter is of type `GroupFieldDataType`.
    */
   async validateGroupField(tree: Record<string, unknown>[], field: GroupFieldDataType): Promise<void> {
-    this.log(`[GLOBAL-FIELDS] Validating group field: ${field.uid} (${field.display_name})`, 'debug');
-    this.log(`Tree depth: ${tree.length}`, 'debug');
+    log.debug(`[GLOBAL-FIELDS] Validating group field: ${field.uid} (${field.display_name})`);
+    log.debug(`Tree depth: ${tree.length}`);
     
     // NOTE Any Group Field related logic can be added here (Ex data serialization or picking any metadata for report etc.,)
     const updatedTree = [...tree, { uid: field.uid, name: field.display_name }];
-    this.log(`Updated tree depth: ${updatedTree.length}`, 'debug');
+    log.debug(`Updated tree depth: ${updatedTree.length}`);
     
     await this.lookForReference(updatedTree, field);
-    this.log(`[GLOBAL-FIELDS] Group field validation completed: ${field.uid}`, 'debug');
+    log.debug(`[GLOBAL-FIELDS] Group field validation completed: ${field.uid}`);
   }
 }

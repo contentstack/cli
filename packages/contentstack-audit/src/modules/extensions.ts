@@ -1,15 +1,14 @@
 import path, { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { cloneDeep } from 'lodash';
-import { LogFn, ConfigType, ContentTypeStruct, CtConstructorParam, ModuleConstructorParam, Extension } from '../types';
-import { sanitizePath, cliux } from '@contentstack/cli-utilities';
+import { ConfigType, ContentTypeStruct, CtConstructorParam, ModuleConstructorParam, Extension } from '../types';
+import { sanitizePath, cliux, log } from '@contentstack/cli-utilities';
 
 import auditConfig from '../config';
 import { $t, auditMsg, commonMsg } from '../messages';
 import { values } from 'lodash';
 
 export default class Extensions {
-  public log: LogFn;
   protected fix: boolean;
   public fileName: any;
   public config: ConfigType;
@@ -23,173 +22,170 @@ export default class Extensions {
   public extensionsPath: string;
 
   constructor({
-    log,
     fix,
     config,
     moduleName,
     ctSchema,
   }: ModuleConstructorParam & Pick<CtConstructorParam, 'ctSchema'>) {
-    this.log = log;
     this.config = config;
     this.fix = fix ?? false;
     this.ctSchema = ctSchema;
     this.extensionsSchema = [];
     
-    this.log(`Initializing Extensions module`, 'debug');
-    this.log(`Fix mode: ${this.fix}`, 'debug');
-    this.log(`Content types count: ${ctSchema.length}`, 'debug');
-    this.log(`Module name: ${moduleName}`, 'debug');
+    log.debug(`Initializing Extensions module`);
+    log.debug(`Fix mode: ${this.fix}`);
+    log.debug(`Content types count: ${ctSchema.length}`);
+    log.debug(`Module name: ${moduleName}`);
     
     this.moduleName = this.validateModules(moduleName!, this.config.moduleConfig);
     this.fileName = config.moduleConfig[this.moduleName].fileName;
-    this.log(`File name: ${this.fileName}`, 'debug');
+    log.debug(`File name: ${this.fileName}`);
     
     this.folderPath = resolve(
       sanitizePath(config.basePath),
       sanitizePath(config.moduleConfig[this.moduleName].dirName),
     );
-    this.log(`Folder path: ${this.folderPath}`, 'debug');
+    log.debug(`Folder path: ${this.folderPath}`);
     
     this.ctUidSet = new Set(['$all']);
     this.missingCtInExtensions = [];
     this.missingCts = new Set();
     this.extensionsPath = '';
     
-    this.log(`Extensions module initialization completed`, 'debug');
+    log.debug(`Extensions module initialization completed`);
   }
   validateModules(
     moduleName: keyof typeof auditConfig.moduleConfig,
     moduleConfig: Record<string, unknown>,
   ): keyof typeof auditConfig.moduleConfig {
-    this.log(`Validating module: ${moduleName}`, 'debug');
-    this.log(`Available modules: ${Object.keys(moduleConfig).join(', ')}`, 'debug');
+    log.debug(`Validating module: ${moduleName}`);
+    log.debug(`Available modules: ${Object.keys(moduleConfig).join(', ')}`);
     
     if (Object.keys(moduleConfig).includes(moduleName)) {
-      this.log(`Module ${moduleName} is valid`, 'debug');
+      log.debug(`Module ${moduleName} is valid`);
       return moduleName;
     }
     
-    this.log(`Module ${moduleName} not found, defaulting to 'extensions'`, 'debug');
+    log.debug(`Module ${moduleName} not found, defaulting to 'extensions'`);
     return 'extensions';
   }
 
   async run() {
-    this.log(`Starting ${this.moduleName} audit process`, 'debug');
-    this.log(`Extensions folder path: ${this.folderPath}`, 'debug');
-    this.log(`Fix mode: ${this.fix}`, 'debug');
+    log.debug(`Starting ${this.moduleName} audit process`);
+    log.debug(`Extensions folder path: ${this.folderPath}`);
+    log.debug(`Fix mode: ${this.fix}`);
     
     if (!existsSync(this.folderPath)) {
-      this.log(`Skipping ${this.moduleName} audit - path does not exist`, 'debug');
-      this.log(`Skipping ${this.moduleName} audit`, 'warn');
-      this.log($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
+      log.debug(`Skipping ${this.moduleName} audit - path does not exist`);
+      log.warn(`Skipping ${this.moduleName} audit`);
+      cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
       return {};
     }
 
     this.extensionsPath = path.join(this.folderPath, this.fileName);
-    this.log(`Extensions file path: ${this.extensionsPath}`, 'debug');
+    log.debug(`Extensions file path: ${this.extensionsPath}`);
 
-    this.log(`Loading extensions schema from file`, 'debug');
+    log.debug(`Loading extensions schema from file`);
     this.extensionsSchema = existsSync(this.extensionsPath)
       ? values(JSON.parse(readFileSync(this.extensionsPath, 'utf-8')) as Extension[])
       : [];
-    this.log(`Loaded ${this.extensionsSchema.length} extensions`, 'debug');
+    log.debug(`Loaded ${this.extensionsSchema.length} extensions`);
 
-    this.log(`Building content type UID set from ${this.ctSchema.length} content types`, 'debug');
+    log.debug(`Building content type UID set from ${this.ctSchema.length} content types`);
     this.ctSchema.map((ct) => this.ctUidSet.add(ct.uid));
-    this.log(`Content type UID set contains: ${Array.from(this.ctUidSet).join(', ')}`, 'debug');
+    log.debug(`Content type UID set contains: ${Array.from(this.ctUidSet).join(', ')}`);
 
-    this.log(`Processing ${this.extensionsSchema.length} extensions`, 'debug');
+    log.debug(`Processing ${this.extensionsSchema.length} extensions`);
     for (const ext of this.extensionsSchema) {
       const { title, uid, scope } = ext;
-      this.log(`Processing extension: ${title} (${uid})`, 'debug');
-      this.log(`Extension scope content types: ${scope?.content_types?.join(', ') || 'none'}`, 'debug');
+      log.debug(`Processing extension: ${title} (${uid})`);
+      log.debug(`Extension scope content types: ${scope?.content_types?.join(', ') || 'none'}`);
       
       const ctNotPresent = scope?.content_types.filter((ct) => !this.ctUidSet.has(ct));
-      this.log(`Missing content types in extension: ${ctNotPresent?.join(', ') || 'none'}`, 'debug');
+      log.debug(`Missing content types in extension: ${ctNotPresent?.join(', ') || 'none'}`);
 
       if (ctNotPresent?.length && ext.scope) {
-        this.log(`Extension ${title} has ${ctNotPresent.length} missing content types`, 'debug');
+        log.debug(`Extension ${title} has ${ctNotPresent.length} missing content types`);
         ext.content_types = ctNotPresent;
         ctNotPresent.forEach((ct) => {
-          this.log(`Adding missing content type: ${ct} to the Audit report.`, 'debug');
+          log.debug(`Adding missing content type: ${ct} to the Audit report.`);
           this.missingCts?.add(ct);
         });
         this.missingCtInExtensions?.push(cloneDeep(ext));
       } else {
-        this.log(`Extension ${title} has no missing content types`, 'debug');
+        log.debug(`Extension ${title} has no missing content types`);
       }
 
-      this.log(
+      log.info(
         $t(auditMsg.SCAN_EXT_SUCCESS_MSG, {
           title,
           module: this.config.moduleConfig[this.moduleName].name,
           uid,
-        }),
-        'info',
+        })
       );
     }
 
-    this.log(`Extensions audit completed. Found ${this.missingCtInExtensions.length} extensions with missing content types`, 'debug');
-    this.log(`Total missing content types: ${this.missingCts.size}`, 'debug');
+    log.debug(`Extensions audit completed. Found ${this.missingCtInExtensions.length} extensions with missing content types`);
+    log.debug(`Total missing content types: ${this.missingCts.size}`);
 
     if (this.fix && this.missingCtInExtensions.length) {
-      this.log(`Fix mode enabled, fixing ${this.missingCtInExtensions.length} extensions`, 'debug');
+      log.debug(`Fix mode enabled, fixing ${this.missingCtInExtensions.length} extensions`);
       await this.fixExtensionsScope(cloneDeep(this.missingCtInExtensions));
       this.missingCtInExtensions.forEach((ext) => {
-        this.log(`Marking extension ${ext.title} as fixed`, 'debug');
+        log.debug(`Marking extension ${ext.title} as fixed`);
         ext.fixStatus = 'Fixed';
       });
-      this.log(`Extensions fix completed`, 'debug');
+      log.debug(`Extensions fix completed`);
       return this.missingCtInExtensions;
     }
     
-    this.log(`Extensions audit completed without fixes`, 'debug');
+    log.debug(`Extensions audit completed without fixes`);
     return this.missingCtInExtensions;
   }
 
   async fixExtensionsScope(missingCtInExtensions: Extension[]) {
-    this.log(`Starting extensions scope fix for ${missingCtInExtensions.length} extensions`, 'debug');
+    log.debug(`Starting extensions scope fix for ${missingCtInExtensions.length} extensions`);
     
-    this.log(`Loading current extensions schema from: ${this.extensionsPath}`, 'debug');
+    log.debug(`Loading current extensions schema from: ${this.extensionsPath}`);
     let newExtensionSchema: Record<string, Extension> = existsSync(this.extensionsPath)
       ? JSON.parse(readFileSync(this.extensionsPath, 'utf8'))
       : {};
-    this.log(`Loaded ${Object.keys(newExtensionSchema).length} existing extensions`, 'debug');
+    log.debug(`Loaded ${Object.keys(newExtensionSchema).length} existing extensions`);
     
     for (const ext of missingCtInExtensions) {
       const { uid, title } = ext;
-      this.log(`Fixing extension: ${title} (${uid})`, 'debug');
-      this.log(`Extension scope content types: ${ext?.scope?.content_types?.join(', ') || 'none'}`, 'debug');
+      log.debug(`Fixing extension: ${title} (${uid})`);
+      log.debug(`Extension scope content types: ${ext?.scope?.content_types?.join(', ') || 'none'}`);
       
       const fixedCts = ext?.scope?.content_types.filter((ct) => !this.missingCts.has(ct));
-      this.log(`Valid content types after filtering: ${fixedCts?.join(', ') || 'none'}`, 'debug');
+      log.debug(`Valid content types after filtering: ${fixedCts?.join(', ') || 'none'}`);
       
       if (fixedCts?.length && newExtensionSchema[uid]?.scope) {
-        this.log(`Updating extension ${title} scope with ${fixedCts.length} valid content types`, 'debug');
+        log.debug(`Updating extension ${title} scope with ${fixedCts.length} valid content types`);
         newExtensionSchema[uid].scope.content_types = fixedCts;
       } else {
-        this.log(`Extension ${title} has no valid content types or scope not found`, 'debug');
-        this.log($t(commonMsg.EXTENSION_FIX_WARN, { title: title, uid }), { color: 'yellow' });
+        log.debug(`Extension ${title} has no valid content types or scope not found`);
+        cliux.print($t(commonMsg.EXTENSION_FIX_WARN, { title: title, uid }), { color: 'yellow' });
         const shouldDelete = this.config.flags.yes || (await cliux.confirm(commonMsg.EXTENSION_FIX_CONFIRMATION));
         if (shouldDelete) {
-          this.log(`Deleting extension: ${title} (${uid})`, 'debug');
+          log.debug(`Deleting extension: ${title} (${uid})`);
           delete newExtensionSchema[uid];
         } else {
-          this.log(`Keeping extension: ${title} (${uid})`, 'debug');
+          log.debug(`Keeping extension: ${title} (${uid})`);
         }
       }
     }
     
-    this.log(`Extensions scope fix completed, writing updated schema`, 'debug');
+    log.debug(`Extensions scope fix completed, writing updated schema`);
     await this.writeFixContent(newExtensionSchema);
   }
 
   async writeFixContent(fixedExtensions: Record<string, Extension>) {
-    this.log(`Writing fix content for ${Object.keys(fixedExtensions).length} extensions`, 'debug');
-    this.log(`Fix mode: ${this.fix}`, 'debug');
-    this.log(`Copy directory flag: ${this.config.flags['copy-dir']}`, 'debug');
-    this.log(`External config skip confirm: ${this.config.flags['external-config']?.skipConfirm}`, 'debug');
-    this.log(`Yes flag: ${this.config.flags.yes}`, 'debug');
+    log.debug(`Writing fix content for ${Object.keys(fixedExtensions).length} extensions`);
+    log.debug(`Fix mode: ${this.fix}`);
+    log.debug(`Copy directory flag: ${this.config.flags['copy-dir']}`);
+    log.debug(`External config skip confirm: ${this.config.flags['external-config']?.skipConfirm}`);
+    log.debug(`Yes flag: ${this.config.flags.yes}`);
     
     if (
       this.fix &&
@@ -199,13 +195,13 @@ export default class Extensions {
         (await cliux.confirm(commonMsg.FIX_CONFIRMATION)))
     ) {
       const outputPath = join(this.folderPath, this.config.moduleConfig[this.moduleName].fileName);
-      this.log(`Writing fixed extensions to: ${outputPath}`, 'debug');
-      this.log(`Extensions to write: ${Object.keys(fixedExtensions).join(', ')}`, 'debug');
+      log.debug(`Writing fixed extensions to: ${outputPath}`);
+      log.debug(`Extensions to write: ${Object.keys(fixedExtensions).join(', ')}`);
       
       writeFileSync(outputPath, JSON.stringify(fixedExtensions));
-      this.log(`Successfully wrote fixed extensions to file`, 'debug');
+      log.debug(`Successfully wrote fixed extensions to file`);
     } else {
-      this.log(`Skipping file write - fix mode disabled or user declined confirmation`, 'debug');
+      log.debug(`Skipping file write - fix mode disabled or user declined confirmation`);
     }
   }
 }

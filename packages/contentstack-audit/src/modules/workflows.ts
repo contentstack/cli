@@ -1,15 +1,14 @@
 import { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { cloneDeep } from 'lodash';
-import { LogFn, ConfigType, ContentTypeStruct, CtConstructorParam, ModuleConstructorParam, Workflow } from '../types';
-import { cliux, sanitizePath } from '@contentstack/cli-utilities';
+import { ConfigType, ContentTypeStruct, CtConstructorParam, ModuleConstructorParam, Workflow } from '../types';
+import { cliux, sanitizePath, log } from '@contentstack/cli-utilities';
 
 import auditConfig from '../config';
 import { $t, auditMsg, commonMsg } from '../messages';
 import { values } from 'lodash';
 
 export default class Workflows {
-  public log: LogFn;
   protected fix: boolean;
   public fileName: any;
   public config: ConfigType;
@@ -24,32 +23,30 @@ export default class Workflows {
   public isBranchFixDone: boolean;
 
   constructor({
-    log,
     fix,
     config,
     moduleName,
     ctSchema,
   }: ModuleConstructorParam & Pick<CtConstructorParam, 'ctSchema'>) {
-    this.log = log;
     this.config = config;
     this.fix = fix ?? false;
     this.ctSchema = ctSchema;
     this.workflowSchema = [];
     
-    this.log(`Initializing Workflows module`, 'debug');
-    this.log(`Fix mode: ${this.fix}`, 'debug');
-    this.log(`Content types count: ${ctSchema.length}`, 'debug');
-    this.log(`Module name: ${moduleName}`, 'debug');
+    log.debug(`Initializing Workflows module`);
+    log.debug(`Fix mode: ${this.fix}`);
+    log.debug(`Content types count: ${ctSchema.length}`);
+    log.debug(`Module name: ${moduleName}`);
     
     this.moduleName = this.validateModules(moduleName!, this.config.moduleConfig);
     this.fileName = config.moduleConfig[this.moduleName].fileName;
-    this.log(`File name: ${this.fileName}`, 'debug');
+    log.debug(`File name: ${this.fileName}`);
     
     this.folderPath = resolve(
       sanitizePath(config.basePath),
       sanitizePath(config.moduleConfig[this.moduleName].dirName),
     );
-    this.log(`Folder path: ${this.folderPath}`, 'debug');
+    log.debug(`Folder path: ${this.folderPath}`);
     
     this.ctUidSet = new Set(['$all']);
     this.missingCtInWorkflows = [];
@@ -57,21 +54,21 @@ export default class Workflows {
     this.workflowPath = '';
     this.isBranchFixDone = false;
     
-    this.log(`Workflows module initialization completed`, 'debug');
+    log.debug(`Workflows module initialization completed`);
   }
   validateModules(
     moduleName: keyof typeof auditConfig.moduleConfig,
     moduleConfig: Record<string, unknown>,
   ): keyof typeof auditConfig.moduleConfig {
-    this.log(`Validating module: ${moduleName}`, 'debug');
-    this.log(`Available modules: ${Object.keys(moduleConfig).join(', ')}`, 'debug');
+    log.debug(`Validating module: ${moduleName}`);
+    log.debug(`Available modules: ${Object.keys(moduleConfig).join(', ')}`);
     
     if (Object.keys(moduleConfig).includes(moduleName)) {
-      this.log(`Module ${moduleName} is valid`, 'debug');
+      log.debug(`Module ${moduleName} is valid`);
       return moduleName;
     }
     
-    this.log(`Module ${moduleName} not found, defaulting to 'workflows'`, 'debug');
+    log.debug(`Module ${moduleName} not found, defaulting to 'workflows'`);
     return 'workflows';
   }
 
@@ -84,46 +81,46 @@ export default class Workflows {
   async run() {
     
     if (!existsSync(this.folderPath)) {
-      this.log(`Skipping ${this.moduleName} audit - path does not exist`, 'debug');
-      this.log(`Skipping ${this.moduleName} audit`, 'warn');
-      this.log($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
+      log.debug(`Skipping ${this.moduleName} audit - path does not exist`);
+      log.warn(`Skipping ${this.moduleName} audit`);
+      cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
       return {};
     }
 
     this.workflowPath = join(this.folderPath, this.fileName);
-    this.log(`Workflows file path: ${this.workflowPath}`, 'debug');
+    log.debug(`Workflows file path: ${this.workflowPath}`);
 
-    this.log(`Loading workflows schema from file`, 'debug');
+    log.debug(`Loading workflows schema from file`);
     this.workflowSchema = existsSync(this.workflowPath)
       ? values(JSON.parse(readFileSync(this.workflowPath, 'utf8')) as Workflow[])
       : [];
-    this.log(`Loaded ${this.workflowSchema.length} workflows`, 'debug');
+    log.debug(`Loaded ${this.workflowSchema.length} workflows`);
 
-    this.log(`Building content type UID set from ${this.ctSchema.length} content types`, 'debug');
+    log.debug(`Building content type UID set from ${this.ctSchema.length} content types`);
     this.ctSchema.forEach((ct) => this.ctUidSet.add(ct.uid));
-    this.log(`Content type UID set contains: ${Array.from(this.ctUidSet).join(', ')}`, 'debug');
+    log.debug(`Content type UID set contains: ${Array.from(this.ctUidSet).join(', ')}`);
 
-    this.log(`Processing ${this.workflowSchema.length} workflows`, 'debug');
+    log.debug(`Processing ${this.workflowSchema.length} workflows`);
     for (const workflow of this.workflowSchema) {
       const { name, uid } = workflow;
-      this.log(`Processing workflow: ${name} (${uid})`, 'debug');
-      this.log(`Workflow content types: ${workflow.content_types?.join(', ') || 'none'}`, 'debug');
-      this.log(`Workflow branches: ${workflow.branches?.join(', ') || 'none'}`, 'debug');
+      log.debug(`Processing workflow: ${name} (${uid})`);
+      log.debug(`Workflow content types: ${workflow.content_types?.join(', ') || 'none'}`);
+      log.debug(`Workflow branches: ${workflow.branches?.join(', ') || 'none'}`);
       
       const ctNotPresent = workflow.content_types.filter((ct) => !this.ctUidSet.has(ct));
-      this.log(`Missing content types in workflow: ${ctNotPresent?.join(', ') || 'none'}`, 'debug');
-      this.log(`Config branch : ${this.config.branch}`, 'debug');
+      log.debug(`Missing content types in workflow: ${ctNotPresent?.join(', ') || 'none'}`);
+      log.debug(`Config branch : ${this.config.branch}`);
 
       let branchesToBeRemoved: string[] = [];
       if (this.config?.branch) {
         branchesToBeRemoved = workflow?.branches?.filter((branch) => branch !== this.config?.branch) || [];
-        this.log(`Branches to be removed: ${branchesToBeRemoved?.join(', ') || 'none'}`, 'debug');
+        log.debug(`Branches to be removed: ${branchesToBeRemoved?.join(', ') || 'none'}`);
       } else {
-        this.log(`No branch configuration found`, 'debug');
+        log.debug(`No branch configuration found`);
       }
 
       if (ctNotPresent.length || branchesToBeRemoved?.length) {
-        this.log(`Workflow ${name} has issues - missing content types: ${ctNotPresent.length}, branches to remove: ${branchesToBeRemoved.length}`, 'debug');
+        log.debug(`Workflow ${name} has issues - missing content types: ${ctNotPresent.length}, branches to remove: ${branchesToBeRemoved.length}`);
         
         const tempwf = cloneDeep(workflow);
         tempwf.content_types = ctNotPresent || [];
@@ -133,122 +130,121 @@ export default class Workflows {
         }
 
         if (branchesToBeRemoved?.length) {
-          this.log(`Branch fix will be needed`, 'debug');
+          log.debug(`Branch fix will be needed`);
           this.isBranchFixDone = true;
         }
 
         ctNotPresent.forEach((ct) => {
-          this.log(`Adding missing content type: ${ct} to the Audit report.`, 'debug');
+          log.debug(`Adding missing content type: ${ct} to the Audit report.`);
           this.missingCts.add(ct);
         });
         this.missingCtInWorkflows.push(tempwf);
       } else {
-        this.log(`Workflow ${name} has no issues`, 'debug');
+        log.debug(`Workflow ${name} has no issues`);
       }
 
-      this.log(
+      log.info(
         $t(auditMsg.SCAN_WF_SUCCESS_MSG, {
           name: workflow.name,
           uid: workflow.uid,
-        }),
-        'info',
+        })
       );
     }
 
-    this.log(`Workflows audit completed. Found ${this.missingCtInWorkflows.length} workflows with issues`, 'debug');
-    this.log(`Total missing content types: ${this.missingCts.size}`, 'debug');
-    this.log(`Branch fix needed: ${this.isBranchFixDone}`, 'debug');
+    log.debug(`Workflows audit completed. Found ${this.missingCtInWorkflows.length} workflows with issues`);
+    log.debug(`Total missing content types: ${this.missingCts.size}`);
+    log.debug(`Branch fix needed: ${this.isBranchFixDone}`);
 
     if (this.fix && (this.missingCtInWorkflows.length || this.isBranchFixDone)) {
-      this.log(`Fix mode enabled, fixing ${this.missingCtInWorkflows.length} workflows`, 'debug');
+      log.debug(`Fix mode enabled, fixing ${this.missingCtInWorkflows.length} workflows`);
       await this.fixWorkflowSchema();
       this.missingCtInWorkflows.forEach((wf) => {
-        this.log(`Marking workflow ${wf.name} as fixed`, 'debug');
+        log.debug(`Marking workflow ${wf.name} as fixed`);
         wf.fixStatus = 'Fixed';
       });
-      this.log(`Workflows fix completed`, 'debug');
+      log.debug(`Workflows fix completed`);
       return this.missingCtInWorkflows;
     }
     
-    this.log(`Workflows audit completed without fixes`, 'debug');
+    log.debug(`Workflows audit completed without fixes`);
     return this.missingCtInWorkflows;
   }
 
   async fixWorkflowSchema() {
-    this.log(`Starting workflow schema fix`, 'debug');
+    log.debug(`Starting workflow schema fix`);
     
     const newWorkflowSchema: Record<string, Workflow> = existsSync(this.workflowPath)
       ? JSON.parse(readFileSync(this.workflowPath, 'utf8'))
       : {};
     
-    this.log(`Loaded ${Object.keys(newWorkflowSchema).length} workflows for fixing`, 'debug');
+    log.debug(`Loaded ${Object.keys(newWorkflowSchema).length} workflows for fixing`);
 
     if (Object.keys(newWorkflowSchema).length !== 0) {
-      this.log(`Processing ${this.workflowSchema.length} workflows for fixes`, 'debug');
+      log.debug(`Processing ${this.workflowSchema.length} workflows for fixes`);
       
       for (const workflow of this.workflowSchema) {
         const { name, uid } = workflow;
-        this.log(`Fixing workflow: ${name} (${uid})`, 'debug');
+        log.debug(`Fixing workflow: ${name} (${uid})`);
         
         const fixedCts = workflow.content_types.filter((ct) => !this.missingCts.has(ct));
-        this.log(`Fixed content types: ${fixedCts.join(', ') || 'none'}`, 'debug');
+        log.debug(`Fixed content types: ${fixedCts.join(', ') || 'none'}`);
         
         const fixedBranches: string[] = [];
 
         if (this.config.branch) {
-          this.log(`Config branch : ${this.config.branch}`, 'debug');
-          this.log(`Processing branches for workflow ${name}`, 'debug');
+          log.debug(`Config branch : ${this.config.branch}`);
+          log.debug(`Processing branches for workflow ${name}`);
           workflow?.branches?.forEach((branch) => {
             if (branch !== this.config?.branch) {
-              this.log(`Removing branch: ${branch} from workflow ${name}`, 'debug');
-              this.log($t(commonMsg.WF_BRANCH_REMOVAL, { uid, name, branch }), { color: 'yellow' });
+              log.debug(`Removing branch: ${branch} from workflow ${name}`);
+              cliux.print($t(commonMsg.WF_BRANCH_REMOVAL, { uid, name, branch }), { color: 'yellow' });
             } else {
-              this.log(`Keeping branch: ${branch} for workflow ${name}`, 'debug');
+              log.debug(`Keeping branch: ${branch} for workflow ${name}`);
               fixedBranches.push(branch);
             }
           });
 
           if (fixedBranches.length > 0) {
-            this.log(`Setting ${fixedBranches.length} fixed branches for workflow ${name}`, 'debug');
+            log.debug(`Setting ${fixedBranches.length} fixed branches for workflow ${name}`);
             newWorkflowSchema[workflow.uid].branches = fixedBranches;
           }
         } else {
-          this.log(`No branch configuration for workflow ${name}`, 'debug');
+          log.debug(`No branch configuration for workflow ${name}`);
         }
 
         if (fixedCts.length) {
-          this.log(`Setting ${fixedCts.length} fixed content types for workflow ${name}`, 'debug');
+          log.debug(`Setting ${fixedCts.length} fixed content types for workflow ${name}`);
           newWorkflowSchema[workflow.uid].content_types = fixedCts;
         } else {
           const { name, uid } = workflow;
-          this.log(`No valid content types for workflow ${name}, considering deletion`, 'debug');
+          log.debug(`No valid content types for workflow ${name}, considering deletion`);
           const warningMessage = $t(commonMsg.WORKFLOW_FIX_WARN, { name, uid });
 
-          this.log(warningMessage, { color: 'yellow' });
+          cliux.print(warningMessage, { color: 'yellow' });
 
           if (this.config.flags.yes || (await cliux.confirm(commonMsg.WORKFLOW_FIX_CONFIRMATION))) {
-            this.log(`Deleting workflow ${name} (${uid})`, 'debug');
+            log.debug(`Deleting workflow ${name} (${uid})`);
             delete newWorkflowSchema[workflow.uid];
           } else {
-            this.log(`Keeping workflow ${name} (${uid}) despite no valid content types`, 'debug');
+            log.debug(`Keeping workflow ${name} (${uid}) despite no valid content types`);
           }
         }
       }
     } else {
-      this.log(`No workflows found to fix`, 'debug');
+      log.debug(`No workflows found to fix`);
     }
 
-    this.log(`Workflow schema fix completed`, 'debug');
+    log.debug(`Workflow schema fix completed`);
     await this.writeFixContent(newWorkflowSchema);
   }
 
   async writeFixContent(newWorkflowSchema: Record<string, Workflow>) {
-    this.log(`Writing fix content`, 'debug');
-    this.log(`Fix mode: ${this.fix}`, 'debug');
-    this.log(`Copy directory flag: ${this.config.flags['copy-dir']}`, 'debug');
-    this.log(`External config skip confirm: ${this.config.flags['external-config']?.skipConfirm}`, 'debug');
-    this.log(`Yes flag: ${this.config.flags.yes}`, 'debug');
-    this.log(`Workflows to write: ${Object.keys(newWorkflowSchema).length}`, 'debug');
+    log.debug(`Writing fix content`);
+    log.debug(`Fix mode: ${this.fix}`);
+    log.debug(`Copy directory flag: ${this.config.flags['copy-dir']}`);
+    log.debug(`External config skip confirm: ${this.config.flags['external-config']?.skipConfirm}`);
+    log.debug(`Yes flag: ${this.config.flags.yes}`);
+    log.debug(`Workflows to write: ${Object.keys(newWorkflowSchema).length}`);
     
     if (
       this.fix &&
@@ -258,12 +254,12 @@ export default class Workflows {
         (await cliux.confirm(commonMsg.FIX_CONFIRMATION)))
     ) {
       const outputPath = join(this.folderPath, this.config.moduleConfig[this.moduleName].fileName);
-      this.log(`Writing fixed workflows to: ${outputPath}`, 'debug');
+      log.debug(`Writing fixed workflows to: ${outputPath}`);
       
       writeFileSync(outputPath, JSON.stringify(newWorkflowSchema));
-      this.log(`Successfully wrote fixed workflows to file`, 'debug');
+      log.debug(`Successfully wrote fixed workflows to file`);
     } else {
-      this.log(`Skipping file write - fix mode disabled or user declined confirmation`, 'debug');
+      log.debug(`Skipping file write - fix mode disabled or user declined confirmation`);
     }
   }
 }

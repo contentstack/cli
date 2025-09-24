@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
 import cloneDeep from 'lodash/cloneDeep';
-import { cliux, sanitizePath, TableFlags, TableHeader } from '@contentstack/cli-utilities';
+import { cliux, sanitizePath, TableFlags, TableHeader, log } from '@contentstack/cli-utilities';
 import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'fs';
 import config from './config';
 import { print } from './util/log';
@@ -56,13 +56,13 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    */
   async start(command: CommandNames): Promise<boolean> {
     this.currentCommand = command;
-    this.log(`Starting audit command: ${command}`, 'debug');
+    log.debug(`Starting audit command: ${command}`);
     
     await this.promptQueue();
     await this.createBackUp();
     this.sharedConfig.reportPath = resolve(this.flags['report-path'] || process.cwd(), 'audit-report');
-    this.log(`Data directory: ${this.flags['data-dir']}`, 'debug');
-    this.log(`Report path: ${this.flags['report-path'] || process.cwd()}`, 'debug');
+    log.debug(`Data directory: ${this.flags['data-dir']}`);
+    log.debug(`Report path: ${this.flags['report-path'] || process.cwd()}`);
 
     const {
       missingCtRefs,
@@ -126,13 +126,13 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       !isEmpty(missingMultipleFields)
     ) {
       if (this.currentCommand === 'cm:stacks:audit') {
-        this.log(this.$t(auditMsg.FINAL_REPORT_PATH, { path: this.sharedConfig.reportPath }), 'warn');
+        log.warn(this.$t(auditMsg.FINAL_REPORT_PATH, { path: this.sharedConfig.reportPath }));
       } else {
-        this.log(this.$t(this.messages.FIXED_CONTENT_PATH_MAG, { path: this.sharedConfig.basePath }), 'warn');
+        log.warn(this.$t(this.messages.FIXED_CONTENT_PATH_MAG, { path: this.sharedConfig.basePath }));
       }
     } else {
-      this.log(this.messages.NO_MISSING_REF_FOUND, 'info');
-      this.log('');
+      log.info(this.messages.NO_MISSING_REF_FOUND);
+      cliux.print('');
 
       if (
         this.flags['copy-dir'] &&
@@ -165,9 +165,9 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    * and `missingEntryRefs`.
    */
   async scanAndFix() {
-    this.log('Starting scan and fix process', 'debug');
+    log.debug('Starting scan and fix process');
     let { ctSchema, gfSchema } = this.getCtAndGfSchema();
-    this.log(`Retrieved ${ctSchema?.length || 0} content types and ${gfSchema?.length || 0} global fields`, 'debug');
+    log.debug(`Retrieved ${ctSchema?.length || 0} content types and ${gfSchema?.length || 0} global fields`);
     
     let missingCtRefs,
       missingGfRefs,
@@ -194,15 +194,14 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     const constructorParam: ModuleConstructorParam & CtConstructorParam = {
       ctSchema,
       gfSchema,
-      log: this.log,
       config: this.sharedConfig,
       fix: this.currentCommand === 'cm:stacks:audit:fix',
     };
 
     let dataModuleWise: Record<string, any> = await new ModuleDataReader(cloneDeep(constructorParam)).run();
-    this.log(`Data module wise: ${JSON.stringify(dataModuleWise)}`, 'debug');
+    log.debug(`Data module wise: ${JSON.stringify(dataModuleWise)}`);
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
-      this.log(`Starting audit for module: ${module}`, 'debug');
+      log.debug(`Starting audit for module: ${module}`);
       print([
         {
           bold: true,
@@ -215,27 +214,27 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
       switch (module) {
         case 'assets':
-          this.log('Executing assets audit', 'debug');
+          log.debug('Executing assets audit');
           missingEnvLocalesInAssets = await new Assets(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingEnvLocalesInAssets);
           this.getAffectedData('assets', dataModuleWise['assets'], missingEnvLocalesInAssets);
-          this.log(`Assets audit completed. Found ${Object.keys(missingEnvLocalesInAssets || {}).length} issues`, 'debug');
+          log.debug(`Assets audit completed. Found ${Object.keys(missingEnvLocalesInAssets || {}).length} issues`);
           break;
         case 'content-types':
-          this.log('Executing content-types audit', 'debug');
+          log.debug('Executing content-types audit');
           missingCtRefs = await new ContentType(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingCtRefs);
           this.getAffectedData('content-types', dataModuleWise['content-types'], missingCtRefs);
-          this.log(`Content-types audit completed. Found ${Object.keys(missingCtRefs || {}).length} issues`, 'debug');
+          log.debug(`Content-types audit completed. Found ${Object.keys(missingCtRefs || {}).length} issues`);
           break;
         case 'global-fields':
-          this.log('Executing global-fields audit', 'debug');
+          log.debug('Executing global-fields audit');
           missingGfRefs = await new GlobalField(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingGfRefs);
           this.getAffectedData('global-fields', dataModuleWise['global-fields'], missingGfRefs);
           break;
         case 'entries':
-          this.log('Executing entries audit', 'debug');
+          log.debug('Executing entries audit');
           missingEntry = await new Entries(cloneDeep(constructorParam)).run();
           missingEntryRefs = (missingEntry as any).missingEntryRefs ?? {};
           missingSelectFeild = (missingEntry as any).missingSelectFeild ?? {};
@@ -255,40 +254,39 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
           await this.prepareReport('Entry_Multiple_Fields', missingMultipleFields);
           this.getAffectedData('entries', dataModuleWise['entries'], missingEntry);
-          this.log(`Entries audit completed. Found ${Object.keys(missingEntryRefs || {}).length} reference issues`, 'debug');
+          log.debug(`Entries audit completed. Found ${Object.keys(missingEntryRefs || {}).length} reference issues`);
 
           break;
         case 'workflows':
-          this.log('Executing workflows audit', 'debug');
+          log.debug('Executing workflows audit');
           missingCtRefsInWorkflow = await new Workflows({
             ctSchema,
-            log: this.log,
             moduleName: module,
             config: this.sharedConfig,
             fix: this.currentCommand === 'cm:stacks:audit:fix',
           }).run();
           await this.prepareReport(module, missingCtRefsInWorkflow);
           this.getAffectedData('workflows', dataModuleWise['workflows'], missingCtRefsInWorkflow);
-          this.log(`Workflows audit completed. Found ${Object.keys(missingCtRefsInWorkflow || {}).length} issues`, 'debug');
+          log.debug(`Workflows audit completed. Found ${Object.keys(missingCtRefsInWorkflow || {}).length} issues`);
 
           break;
         case 'extensions':
-          this.log('Executing extensions audit', 'debug');
+          log.debug('Executing extensions audit');
           missingCtRefsInExtensions = await new Extensions(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingCtRefsInExtensions);
           this.getAffectedData('extensions', dataModuleWise['extensions'], missingCtRefsInExtensions);
-          this.log(`Extensions audit completed. Found ${Object.keys(missingCtRefsInExtensions || {}).length} issues`, 'debug');
+          log.debug(`Extensions audit completed. Found ${Object.keys(missingCtRefsInExtensions || {}).length} issues`);
           break;
         case 'custom-roles':
-          this.log('Executing custom-roles audit', 'debug');
+          log.debug('Executing custom-roles audit');
           missingRefInCustomRoles = await new CustomRoles(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingRefInCustomRoles);
           this.getAffectedData('custom-roles', dataModuleWise['custom-roles'], missingRefInCustomRoles);
-          this.log(`Custom-roles audit completed. Found ${Object.keys(missingRefInCustomRoles || {}).length} issues`, 'debug');
+          log.debug(`Custom-roles audit completed. Found ${Object.keys(missingRefInCustomRoles || {}).length} issues`);
 
           break;
         case 'field-rules':
-          this.log('Executing field-rules audit', 'debug');
+          log.debug('Executing field-rules audit');
           // NOTE: We are using the fixed content-type for validation of field rules
           const data =  this.getCtAndGfSchema();
           constructorParam.ctSchema = data.ctSchema;
@@ -296,7 +294,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           missingFieldRules = await new FieldRule(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingFieldRules);
           this.getAffectedData('field-rules', dataModuleWise['content-types'], missingFieldRules);
-          this.log(`Field-rules audit completed. Found ${Object.keys(missingFieldRules || {}).length} issues`, 'debug');
+          log.debug(`Field-rules audit completed. Found ${Object.keys(missingFieldRules || {}).length} issues`);
           break;
       }
 
@@ -314,7 +312,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       ]);
     }
 
-    this.log('Scan and fix process completed', 'debug');
+    log.debug('Scan and fix process completed');
     this.prepareReport('Summary', this.summaryDataToPrint);
     this.prepareCSV('Summary', this.summaryDataToPrint);
     return {
@@ -408,7 +406,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    */
   showOutputOnScreen(allMissingRefs: { module: string; missingRefs?: Record<string, any> }[]) {
     if (this.sharedConfig.showTerminalOutput && !this.flags['external-config']?.noTerminalOutput) {
-      this.log(''); // NOTE adding new line
+      cliux.print(''); // NOTE adding new line
       for (const { module, missingRefs } of allMissingRefs) {
         if (!isEmpty(missingRefs)) {
           print([
@@ -455,7 +453,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           ];
 
           cliux.table(tableHeaders, tableValues, { ...(this.flags as TableFlags) });
-          this.log(''); // NOTE adding new line
+          cliux.print(''); // NOTE adding new line
         }
       }
     }
@@ -466,7 +464,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     if (!this.sharedConfig.showTerminalOutput || this.flags['external-config']?.noTerminalOutput) {
       return;
     }
-    this.log(''); // Adding a new line
+    cliux.print(''); // Adding a new line
 
     for (let { module, missingRefs } of allMissingRefs) {
       if (isEmpty(missingRefs)) {
@@ -503,7 +501,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         }));
 
       cliux.table(tableHeaders, tableValues, { ...(this.flags as TableFlags) });
-      this.log(''); // Adding a new line
+      cliux.print(''); // Adding a new line
     }
   }
 
@@ -525,29 +523,29 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       | 'Summary',
     listOfMissingRefs: Record<string, any>,
   ): Promise<void> {
-    this.log(`Preparing report for module: ${moduleName}`, 'debug');
-    this.log(`Report path: ${this.sharedConfig.reportPath}`, 'debug');
-    this.log(`Missing references count: ${Object.keys(listOfMissingRefs).length}`, 'debug');
+    log.debug(`Preparing report for module: ${moduleName}`);
+    log.debug(`Report path: ${this.sharedConfig.reportPath}`);
+    log.debug(`Missing references count: ${Object.keys(listOfMissingRefs).length}`);
     
     if (isEmpty(listOfMissingRefs)) {
-      this.log(`No missing references found for ${moduleName}, skipping report generation`, 'debug');
+      log.debug(`No missing references found for ${moduleName}, skipping report generation`);
       return Promise.resolve(void 0);
     }
 
     if (!existsSync(this.sharedConfig.reportPath)) {
-      this.log(`Creating report directory: ${this.sharedConfig.reportPath}`, 'debug');
+      log.debug(`Creating report directory: ${this.sharedConfig.reportPath}`);
       mkdirSync(this.sharedConfig.reportPath, { recursive: true });
     } else {
-      this.log(`Report directory already exists: ${this.sharedConfig.reportPath}`, 'debug');
+      log.debug(`Report directory already exists: ${this.sharedConfig.reportPath}`);
     }
 
     // NOTE write int json
     const jsonFilePath = join(sanitizePath(this.sharedConfig.reportPath), `${sanitizePath(moduleName)}.json`);
-    this.log(`Writing JSON report to: ${jsonFilePath}`, 'debug');
+    log.debug(`Writing JSON report to: ${jsonFilePath}`);
     writeFileSync(jsonFilePath, JSON.stringify(listOfMissingRefs));
 
     // NOTE write into CSV
-    this.log(`Preparing CSV report for: ${moduleName}`, 'debug');
+    log.debug(`Preparing CSV report for: ${moduleName}`);
     return this.prepareCSV(moduleName, listOfMissingRefs);
   }
 

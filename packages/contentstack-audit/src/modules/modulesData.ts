@@ -1,8 +1,7 @@
 import { join, resolve } from 'path';
 import { existsSync, readFileSync } from 'fs';
-import { FsUtility, sanitizePath } from '@contentstack/cli-utilities';
+import { FsUtility, sanitizePath, log } from '@contentstack/cli-utilities';
 import {
-  LogFn,
   ConfigType,
   ContentTypeStruct,
   CtConstructorParam,
@@ -12,7 +11,6 @@ import { keys, values } from 'lodash';
 
 
 export default class ModuleDataReader {
-  public log: LogFn;
   public config: ConfigType;
   public folderPath: string;
   public assets!: Record<string, any>;
@@ -23,157 +21,156 @@ export default class ModuleDataReader {
   public auditData: Record<string, unknown> = {};
   protected schema: ContentTypeStruct[] = [];
 
-  constructor({ log, config, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
-    this.log = log;
+  constructor({ config, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
     this.config = config;
     this.ctSchema = ctSchema;
     this.gfSchema = gfSchema;
     
-    this.log(`Initializing ModuleDataReader`, 'debug');
-    this.log(`Content types count: ${ctSchema.length}`, 'debug');
-    this.log(`Global fields count: ${gfSchema.length}`, 'debug');
+    log.debug(`Initializing ModuleDataReader`);
+    log.debug(`Content types count: ${ctSchema.length}`);
+    log.debug(`Global fields count: ${gfSchema.length}`);
     
     this.folderPath = resolve(sanitizePath(config.basePath));
-    this.log(`Folder path: ${this.folderPath}`, 'debug');
+    log.debug(`Folder path: ${this.folderPath}`);
     
-    this.log(`ModuleDataReader initialization completed`, 'debug');
+    log.debug(`ModuleDataReader initialization completed`);
   }
 
   async getModuleItemCount(moduleName: string): Promise<number> {
-    this.log(`Getting item count for module: ${moduleName}`, 'debug');
+    log.debug(`Getting item count for module: ${moduleName}`);
     let count = 0;
     switch (moduleName) {
       case "content-types":
-        this.log(`Counting content types`, 'debug');
+        log.debug(`Counting content types`);
         count = this.ctSchema.length;
-        this.log(`Content types count: ${count}`, 'debug');
+        log.debug(`Content types count: ${count}`);
         break;
       case 'global-fields':
-        this.log(`Counting global fields`, 'debug');
+        log.debug(`Counting global fields`);
         count = this.gfSchema.length;
-        this.log(`Global fields count: ${count}`, 'debug');
+        log.debug(`Global fields count: ${count}`);
         break;
       case 'assets': {
-        this.log(`Counting assets`, 'debug');
+        log.debug(`Counting assets`);
         const assetsPath = join(this.folderPath, 'assets');
-        this.log(`Assets path: ${assetsPath}`, 'debug');
+        log.debug(`Assets path: ${assetsPath}`);
         count = await this.readEntryAssetsModule(assetsPath,'assets') || 0;
-        this.log(`Assets count: ${count}`, 'debug');
+        log.debug(`Assets count: ${count}`);
         break;
       }
       case 'entries':
-        this.log(`Counting entries`, 'debug');
+        log.debug(`Counting entries`);
         {
           const localesFolderPath = resolve(this.config.basePath, this.config.moduleConfig.locales.dirName);
           const localesPath = join(localesFolderPath, this.config.moduleConfig.locales.fileName);
           const masterLocalesPath = join(localesFolderPath, 'master-locale.json');
           
-          this.log(`Locales folder path: ${localesFolderPath}`, 'debug');
-          this.log(`Locales path: ${localesPath}`, 'debug');
-          this.log(`Master locales path: ${masterLocalesPath}`, 'debug');
+          log.debug(`Locales folder path: ${localesFolderPath}`);
+          log.debug(`Locales path: ${localesPath}`);
+          log.debug(`Master locales path: ${masterLocalesPath}`);
           
-          this.log(`Loading master locales`, 'debug');
+          log.debug(`Loading master locales`);
           this.locales = values(await this.readUsingFsModule(masterLocalesPath));
-          this.log(`Loaded ${this.locales.length} master locales: ${this.locales.map(locale => locale.code).join(', ')}`, 'debug');
+          log.debug(`Loaded ${this.locales.length} master locales: ${this.locales.map(locale => locale.code).join(', ')}`);
 
           if (existsSync(localesPath)) {
-            this.log(`Loading additional locales from file`, 'debug');
+            log.debug(`Loading additional locales from file`);
             this.locales.push(...values(JSON.parse(readFileSync(localesPath, 'utf8'))));
-            this.log(`Total locales after loading: ${this.locales.length} - ${this.locales.map(locale => locale.code).join(', ')}`, 'debug');
+            log.debug(`Total locales after loading: ${this.locales.length} - ${this.locales.map(locale => locale.code).join(', ')}`);
           } else {
-            this.log(`Additional locales file not found`, 'debug');
+            log.debug(`Additional locales file not found`);
           }
           
-          this.log(`Processing ${this.locales.length} locales and ${this.ctSchema.length} content types`, 'debug');
+          log.debug(`Processing ${this.locales.length} locales and ${this.ctSchema.length} content types`);
           for (const {code} of this.locales) {
-            this.log(`Processing locale: ${code}`, 'debug');
+            log.debug(`Processing locale: ${code}`);
             for (const ctSchema of this.ctSchema) {
-              this.log(`Processing content type: ${ctSchema.uid}`, 'debug');
+              log.debug(`Processing content type: ${ctSchema.uid}`);
               const basePath = join(this.folderPath,'entries', ctSchema.uid, code);
-              this.log(`Base path: ${basePath}`, 'debug');
+              log.debug(`Base path: ${basePath}`);
               const entryCount = await this.readEntryAssetsModule(basePath, 'index') || 0;
-              this.log(`Found ${entryCount} entries for ${ctSchema.uid} in ${code}`, 'debug');
+              log.debug(`Found ${entryCount} entries for ${ctSchema.uid} in ${code}`);
               count = count + entryCount;
             }
           }
-          this.log(`Total entries count: ${count}`, 'debug');
+          log.debug(`Total entries count: ${count}`);
         }
         break;
       case 'custom-roles':
       case 'extensions':
       case 'workflows': {
-        this.log(`Counting ${moduleName}`, 'debug');
+        log.debug(`Counting ${moduleName}`);
         const modulePath = resolve(
           this.folderPath,
           sanitizePath(this.config.moduleConfig[moduleName].dirName),
           sanitizePath(this.config.moduleConfig[moduleName].fileName),
         );
-        this.log(`Reading module: ${moduleName} from file: ${modulePath}`, 'debug');
+        log.debug(`Reading module: ${moduleName} from file: ${modulePath}`);
         
         const moduleData = await this.readUsingFsModule(modulePath);
         count = keys(moduleData).length;
-        this.log(`module:${moduleName} count: ${count}`, 'debug');
+        log.debug(`module:${moduleName} count: ${count}`);
         break;
       }
     }
     
-    this.log(`Module ${moduleName} item count: ${count}`, 'debug');
+    log.debug(`Module ${moduleName} item count: ${count}`);
     return count;
 
   }
 
   async readUsingFsModule(path: string): Promise<Record<string,any>>{
-    this.log(`Reading file: ${path}`, 'debug');
+    log.debug(`Reading file: ${path}`);
     
     const data = existsSync(path) ? (JSON.parse(readFileSync(path, 'utf-8'))) : [];
-    this.log(`File ${existsSync(path) ? 'exists' : 'not found'}, data type: ${Array.isArray(data) ? 'array' : 'object'}`, 'debug');
+    log.debug(`File ${existsSync(path) ? 'exists' : 'not found'}, data type: ${Array.isArray(data) ? 'array' : 'object'}`);
     
     if (existsSync(path)) {
       const dataSize = Array.isArray(data) ? data.length : Object.keys(data).length;
-      this.log(`Loaded ${dataSize} items from file`, 'debug');
+      log.debug(`Loaded ${dataSize} items from file`);
     } else {
-      this.log(`Returning empty array for non-existent file`, 'debug');
+      log.debug(`Returning empty array for non-existent file`);
     }
     
     return data;
   }
 
   async readEntryAssetsModule(basePath: string, module: string): Promise<number> {
-    this.log(`Reading entry/assets module: ${module}`, 'debug');
-    this.log(`Base path: ${basePath}`, 'debug');
+    log.debug(`Reading entry/assets module: ${module}`);
+    log.debug(`Base path: ${basePath}`);
     
     let fsUtility = new FsUtility({ basePath, indexFileName: `${module}.json` });
     let indexer = fsUtility.indexFileContent;
-    this.log(`Found ${Object.keys(indexer).length} index files`, 'debug');
+    log.debug(`Found ${Object.keys(indexer).length} index files`);
     
     let count = 0;
     for (const _ in indexer) {
-      this.log(`Reading chunk file`, 'debug');
+      log.debug(`Reading chunk file`);
       const entries = (await fsUtility.readChunkFiles.next()) as Record<string, any>;
       const chunkCount = Object.keys(entries).length;
-      this.log(`Loaded ${chunkCount} items from chunk`, 'debug');
+      log.debug(`Loaded ${chunkCount} items from chunk`);
       count = count + chunkCount;
     }
     
-    this.log(`Total ${module} count: ${count}`, 'debug');
+    log.debug(`Total ${module} count: ${count}`);
     return count;
   }
 
   async run(): Promise<Object> {
-    this.log(`Starting ModuleDataReader run process`, 'debug');
-    this.log(`Available modules: ${Object.keys(this.config.moduleConfig).join(', ')}`, 'debug');
+    log.debug(`Starting ModuleDataReader run process`);
+    log.debug(`Available modules: ${Object.keys(this.config.moduleConfig).join(', ')}`);
     
     await Promise.allSettled(
       Object.keys(this.config.moduleConfig).map(async (module) => {
-        this.log(`Processing module: ${module}`, 'debug');
+        log.debug(`Processing module: ${module}`);
         const count = await this.getModuleItemCount(module);
         this.auditData[module] = { Total: count };
-        this.log(`Module ${module} processed with count: ${count}`, 'debug');
+        log.debug(`Module ${module} processed with count: ${count}`);
       })
     );
     
-    this.log(`ModuleDataReader run completed`, 'debug');
-    this.log(`Audit data: ${JSON.stringify(this.auditData)}`, 'debug');
+    log.debug(`ModuleDataReader run completed`);
+    log.debug(`Audit data: ${JSON.stringify(this.auditData)}`);
     return this.auditData;
   }
 }

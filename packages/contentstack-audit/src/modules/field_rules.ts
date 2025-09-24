@@ -2,10 +2,9 @@ import map from 'lodash/map';
 import { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 
-import { FsUtility, Locale, sanitizePath, cliux } from '@contentstack/cli-utilities';
+import { FsUtility, Locale, sanitizePath, cliux, log } from '@contentstack/cli-utilities';
 
 import {
-  LogFn,
   ConfigType,
   ModularBlockType,
   ContentTypeStruct,
@@ -25,7 +24,6 @@ import { values } from 'lodash';
 /* The `ContentType` class is responsible for scanning content types, looking for references, and
 generating a report in JSON and CSV formats. */
 export default class FieldRule {
-  public log: LogFn;
   protected fix: boolean;
   public fileName: string;
   public config: ConfigType;
@@ -47,45 +45,44 @@ export default class FieldRule {
   protected missingEnvLocale: Record<string, any> = {};
   public entryMetaData: Record<string, any>[] = [];
   public action: string[] = ['show', 'hide'];
-  constructor({ log, fix, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
-    this.log = log;
+  constructor({ fix, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
     this.config = config;
     this.fix = fix ?? false;
     this.ctSchema = ctSchema;
     this.gfSchema = gfSchema;
     
-    this.log(`Initializing FieldRule module`, 'debug');
-    this.log(`Fix mode: ${this.fix}`, 'debug');
-    this.log(`Content types count: ${ctSchema?.length || 0}`, 'debug');
-    this.log(`Global fields count: ${gfSchema?.length || 0}`, 'debug');
-    this.log(`Module name: ${moduleName}`, 'debug');
+    log.debug(`Initializing FieldRule module`);
+    log.debug(`Fix mode: ${this.fix}`);
+    log.debug(`Content types count: ${ctSchema?.length || 0}`);
+    log.debug(`Global fields count: ${gfSchema?.length || 0}`);
+    log.debug(`Module name: ${moduleName}`);
     
     this.moduleName = this.validateModules(moduleName!, this.config.moduleConfig);
     this.fileName = config.moduleConfig[this.moduleName].fileName;
-    this.log(`File name: ${this.fileName}`, 'debug');
+    log.debug(`File name: ${this.fileName}`);
     
     this.folderPath = resolve(
       sanitizePath(config.basePath),
       sanitizePath(config.moduleConfig[this.moduleName].dirName),
     );
-    this.log(`Folder path: ${this.folderPath}`, 'debug');
+    log.debug(`Folder path: ${this.folderPath}`);
     
-    this.log(`FieldRule module initialization completed`, 'debug');
+    log.debug(`FieldRule module initialization completed`);
   }
 
   validateModules(
     moduleName: keyof typeof auditConfig.moduleConfig,
     moduleConfig: Record<string, unknown>,
   ): keyof typeof auditConfig.moduleConfig {
-    this.log(`Validating module: ${moduleName}`, 'debug');
-    this.log(`Available modules: ${Object.keys(moduleConfig).join(', ')}`, 'debug');
+    log.debug(`Validating module: ${moduleName}`);
+    log.debug(`Available modules: ${Object.keys(moduleConfig).join(', ')}`);
     
     if (Object.keys(moduleConfig).includes(moduleName)) {
-      this.log(`Module ${moduleName} is valid`, 'debug');
+      log.debug(`Module ${moduleName} is valid`);
       return moduleName;
     }
     
-    this.log(`Module ${moduleName} not found, defaulting to 'content-types'`, 'debug');
+    log.debug(`Module ${moduleName} not found, defaulting to 'content-types'`);
     return 'content-types';
   }
   /**
@@ -94,220 +91,232 @@ export default class FieldRule {
    * @returns the `missingRefs` object.
    */
   async run() {
-    this.log(`Starting ${this.moduleName} field rules audit process`, 'debug');
-    this.log(`Field rules folder path: ${this.folderPath}`, 'debug');
-    this.log(`Fix mode: ${this.fix}`, 'debug');
+    log.debug(`Starting ${this.moduleName} field rules audit process`);
+    log.debug(`Field rules folder path: ${this.folderPath}`);
+    log.debug(`Fix mode: ${this.fix}`);
     
     if (!existsSync(this.folderPath)) {
-      this.log(`Skipping ${this.moduleName} audit - path does not exist`, 'debug');
-      this.log(`Skipping ${this.moduleName} audit`, 'warn');
-      this.log($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
+      log.debug(`Skipping ${this.moduleName} audit - path does not exist`);
+      log.warn(`Skipping ${this.moduleName} audit`);
+      cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
       return {};
     }
 
     this.schema = this.moduleName === 'content-types' ? this.ctSchema : this.gfSchema;
-    this.log(`Using ${this.moduleName} schema with ${this.schema?.length || 0} items`, 'debug');
+    log.debug(`Using ${this.moduleName} schema with ${this.schema?.length || 0} items`);
     
-    this.log(`Loading prerequisite data`, 'debug');
+    log.debug(`Loading prerequisite data`);
     await this.prerequisiteData();
-    this.log(`Loaded ${this.extensions.length} extensions`, 'debug');
+    log.debug(`Loaded ${this.extensions.length} extensions`);
     
-    this.log(`Preparing entry metadata`, 'debug');
+    log.debug(`Preparing entry metadata`);
     await this.prepareEntryMetaData();
-    this.log(`Prepared metadata for ${this.entryMetaData.length} entries`, 'debug');
+    log.debug(`Prepared metadata for ${this.entryMetaData.length} entries`);
     
-    this.log(`Processing ${this.schema?.length || 0} schemas for field rules`, 'debug');
+    log.debug(`Processing ${this.schema?.length || 0} schemas for field rules`);
     for (const schema of this.schema ?? []) {
       this.currentUid = schema.uid;
       this.currentTitle = schema.title;
       this.missingRefs[this.currentUid] = [];
       const { uid, title } = schema;
       
-      this.log(`Processing schema: ${title} (${uid})`, 'debug');
-      this.log(`Field rules count: ${Array.isArray(schema.field_rules) ? schema.field_rules.length : 0}`, 'debug');
+      log.debug(`Processing schema: ${title} (${uid})`);
+      log.debug(`Field rules count: ${Array.isArray(schema.field_rules) ? schema.field_rules.length : 0}`);
 
-      this.log(`Looking for references in schema: ${title}`, 'debug');
+      log.debug(`Looking for references in schema: ${title}`);
       await this.lookForReference([{ uid, name: title }], schema, null);
-      this.log(`Schema map contains ${this.schemaMap.length} field references`, 'debug');
+      log.debug(`Schema map contains ${this.schemaMap.length} field references`);
 
       this.missingRefs[this.currentUid] = [];
 
       if (this.fix) {
-        this.log(`Fixing field rules for schema: ${title}`, 'debug');
+        log.debug(`Fixing field rules for schema: ${title}`);
         this.fixFieldRules(schema);
       } else {
-        this.log(`Validating field rules for schema: ${title}`, 'debug');
+        log.debug(`Validating field rules for schema: ${title}`);
         this.validateFieldRules(schema);
       }
 
       this.schemaMap = [];
-      this.log(
-        $t(auditMsg.SCAN_CT_SUCCESS_MSG, { title, module: this.config.moduleConfig[this.moduleName].name }),
-        'info',
+      log.info(
+        $t(auditMsg.SCAN_CT_SUCCESS_MSG, { title, module: this.config.moduleConfig[this.moduleName].name })
       );
     }
 
     if (this.fix) {
-      this.log(`Fix mode enabled, writing fix content`, 'debug');
+      log.debug(`Fix mode enabled, writing fix content`);
       await this.writeFixContent();
     }
 
-    this.log(`Cleaning up empty missing references`, 'debug');
+    log.debug(`Cleaning up empty missing references`);
     for (let propName in this.missingRefs) {
       if (!this.missingRefs[propName].length) {
-        this.log(`Removing empty missing references for: ${propName}`, 'debug');
+        log.debug(`Removing empty missing references for: ${propName}`);
         delete this.missingRefs[propName];
       }
     }
 
-    this.log(`Field rules audit completed. Found ${Object.keys(this.missingRefs).length} schemas with issues`, 'debug');
+    log.debug(`Field rules audit completed. Found ${Object.keys(this.missingRefs).length} schemas with issues`);
     return this.missingRefs;
   }
 
   validateFieldRules(schema: Record<string, unknown>): void {
-    this.log(`Validating field rules for schema: ${schema.uid}`, 'debug');
+    log.debug(`Validating field rules for schema: ${schema.uid}`);
     
     if (Array.isArray(schema.field_rules)) {
-      this.log(`Found ${schema.field_rules.length} field rules to validate`, 'debug');
+      log.debug(`Found ${schema.field_rules.length} field rules to validate`);
       let count = 0;
       
       schema.field_rules.forEach((fr, index) => {
-        this.log(`Validating field rule ${index + 1}`, 'debug');
-        this.log(`Field rule actions count: ${fr.actions?.length || 0}`, 'debug');
-        this.log(`Field rule conditions count: ${fr.conditions?.length || 0}`, 'debug');
+        log.debug(`Validating field rule ${index + 1}`);
+        log.debug(`Field rule actions count: ${fr.actions?.length || 0}`);
+        log.debug(`Field rule conditions count: ${fr.conditions?.length || 0}`);
         
         fr.actions.forEach((actions: { target_field: any }, actionIndex: number) => {
-          this.log(`Validating action ${actionIndex + 1}: target_field=${actions.target_field}`, 'debug');
+          log.debug(`Validating action ${actionIndex + 1}: target_field=${actions.target_field}`);
           
           if (!this.schemaMap.includes(actions.target_field)) {
-            this.log(`Missing target field: ${actions.target_field}`, 'debug');
-            this.log(
+            log.debug(`Missing target field: ${actions.target_field}`);
+            log.error(
               $t(auditMsg.FIELD_RULE_TARGET_ABSENT, {
                 target_field: actions.target_field,
                 ctUid: schema.uid as string,
-              }),
-              'error',
+              })
             );
 
             this.addMissingReferences(actions);
           } else {
-            this.log(`Target field ${actions.target_field} is valid`, 'debug');
+            log.debug(`Target field ${actions.target_field} is valid`);
           }
-          this.log(
-            $t(auditMsg.FIELD_RULE_TARGET_SCAN_MESSAGE, { num: count.toString(), ctUid: schema.uid as string }),
-            'info',
+          log.info(
+            $t(auditMsg.FIELD_RULE_TARGET_SCAN_MESSAGE, { num: count.toString(), ctUid: schema.uid as string })
           );
         });
 
         fr.conditions.forEach((actions: { operand_field: any }, conditionIndex: number) => {
-          this.log(`Validating condition ${conditionIndex + 1}: operand_field=${actions.operand_field}`, 'debug');
+          log.debug(`Validating condition ${conditionIndex + 1}: operand_field=${actions.operand_field}`);
           
           if (!this.schemaMap.includes(actions.operand_field)) {
-            this.log(`Missing operand field: ${actions.operand_field}`, 'debug');
+            log.debug(`Missing operand field: ${actions.operand_field}`);
             this.addMissingReferences(actions);
 
-            this.log($t(auditMsg.FIELD_RULE_CONDITION_ABSENT, { condition_field: actions.operand_field }), 'error');
+            log.error($t(auditMsg.FIELD_RULE_CONDITION_ABSENT, { condition_field: actions.operand_field }));
           } else {
-            this.log(`Operand field ${actions.operand_field} is valid`, 'debug');
+            log.debug(`Operand field ${actions.operand_field} is valid`);
           }
-          this.log(
-            $t(auditMsg.FIELD_RULE_CONDITION_SCAN_MESSAGE, { num: count.toString(), ctUid: schema.uid as string }),
-            'info',
+          log.info(
+            $t(auditMsg.FIELD_RULE_CONDITION_SCAN_MESSAGE, { num: count.toString(), ctUid: schema.uid as string })
           );
         });
         count = count + 1;
       });
     } else {
-      this.log(`No field rules found in schema: ${schema.uid}`, 'debug');
+      log.debug(`No field rules found in schema: ${schema.uid}`);
     }
     
-    this.log(`Field rules validation completed for schema: ${schema.uid}`, 'debug');
+    log.debug(`Field rules validation completed for schema: ${schema.uid}`);
   }
 
   fixFieldRules(schema: Record<string, unknown>): void {
-    this.log(`Fixing field rules for schema: ${schema.uid}`, 'debug');
+    log.debug(`Fixing field rules for schema: ${schema.uid}`);
     
     if (!Array.isArray(schema.field_rules)) {
-      this.log(`No field rules found in schema: ${schema.uid}`, 'debug');
+      log.debug(`No field rules found in schema: ${schema.uid}`);
       return;
     }
     
-    this.log(`Found ${schema.field_rules.length} field rules to fix`, 'debug');
+    log.debug(`Found ${schema.field_rules.length} field rules to fix`);
   
     schema.field_rules = schema.field_rules
       .map((fr: FieldRuleStruct, index: number) => {
-        this.log(`Fixing field rule ${index + 1}`, 'debug');
-        this.log(`Original actions count: ${fr.actions?.length || 0}`, 'debug');
-        this.log(`Original conditions count: ${fr.conditions?.length || 0}`, 'debug');
+        log.debug(`Fixing field rule ${index + 1}`);
+        log.debug(`Original actions count: ${fr.actions?.length || 0}`);
+        log.debug(`Original conditions count: ${fr.conditions?.length || 0}`);
         
         const validActions = fr.actions?.filter(action => {
           const isValid = this.schemaMap.includes(action.target_field);
-          this.log(`Action target_field=${action.target_field}, valid=${isValid}`, 'debug');
+          log.debug(`Action target_field=${action.target_field}, valid=${isValid}`);
           
           const logMsg = isValid 
             ? auditMsg.FIELD_RULE_TARGET_SCAN_MESSAGE
             : auditMsg.FIELD_RULE_TARGET_ABSENT;
           
-          this.log(
-            $t(logMsg, { 
-              num: index.toString(), 
-              ctUid: schema.uid as string,
-              ...(action.target_field && { target_field: action.target_field })
-            }),
-            isValid ? 'info' : 'error'
-          );
+          if (isValid) {
+            log.info(
+              $t(logMsg, { 
+                num: index.toString(), 
+                ctUid: schema.uid as string,
+                ...(action.target_field && { target_field: action.target_field })
+              })
+            );
+          } else {
+            log.error(
+              $t(logMsg, { 
+                num: index.toString(), 
+                ctUid: schema.uid as string,
+                ...(action.target_field && { target_field: action.target_field })
+              })
+            );
+          }
   
           if (!isValid) {
-            this.log(`Fixing invalid action target_field: ${action.target_field}`, 'debug');
+            log.debug(`Fixing invalid action target_field: ${action.target_field}`);
             this.addMissingReferences(action, 'Fixed');
-            this.log(
+            log.info(
               $t(auditFixMsg.FIELD_RULE_FIX_MESSAGE, { 
                 num: index.toString(), 
                 ctUid: schema.uid as string 
-              }),
-              'info'
+              })
             );
           }
           return isValid;
         }) ?? [];
         
-        this.log(`Valid actions after filtering: ${validActions.length}`, 'debug');
+        log.debug(`Valid actions after filtering: ${validActions.length}`);
   
         const validConditions = fr.conditions?.filter(condition => {
           const isValid = this.schemaMap.includes(condition.operand_field);
-          this.log(`Condition operand_field=${condition.operand_field}, valid=${isValid}`, 'debug');
+          log.debug(`Condition operand_field=${condition.operand_field}, valid=${isValid}`);
           
           const logMsg = isValid 
             ? auditMsg.FIELD_RULE_CONDITION_SCAN_MESSAGE
             : auditMsg.FIELD_RULE_CONDITION_ABSENT;
           
-          this.log(
-            $t(logMsg, { 
-              num: index.toString(), 
-              ctUid: schema.uid as string,
-              ...(condition.operand_field && { condition_field: condition.operand_field })
-            }),
-            isValid ? 'info' : 'error'
-          );
+          if (isValid) {
+            log.info(
+              $t(logMsg, { 
+                num: index.toString(), 
+                ctUid: schema.uid as string,
+                ...(condition.operand_field && { condition_field: condition.operand_field })
+              })
+            );
+          } else {
+            log.error(
+              $t(logMsg, { 
+                num: index.toString(), 
+                ctUid: schema.uid as string,
+                ...(condition.operand_field && { condition_field: condition.operand_field })
+              })
+            );
+          }
   
           if (!isValid) {
-            this.log(`Fixing invalid condition operand_field: ${condition.operand_field}`, 'debug');
+            log.debug(`Fixing invalid condition operand_field: ${condition.operand_field}`);
             this.addMissingReferences(condition, 'Fixed');
-            this.log(
+            log.info(
               $t(auditFixMsg.FIELD_RULE_FIX_MESSAGE, { 
                 num: index.toString(), 
                 ctUid: schema.uid as string 
-              }),
-              'info'
+              })
             );
           }
           return isValid;
         }) ?? [];
         
-        this.log(`Valid conditions after filtering: ${validConditions.length}`, 'debug');
+        log.debug(`Valid conditions after filtering: ${validConditions.length}`);
   
         const shouldKeepRule = validActions.length && validConditions.length;
-        this.log(`Field rule ${index + 1} ${shouldKeepRule ? 'kept' : 'removed'} (actions: ${validActions.length}, conditions: ${validConditions.length})`, 'debug');
+        log.debug(`Field rule ${index + 1} ${shouldKeepRule ? 'kept' : 'removed'} (actions: ${validActions.length}, conditions: ${validConditions.length})`);
         
         return shouldKeepRule ? {
           ...fr,
@@ -317,28 +326,28 @@ export default class FieldRule {
       })
       .filter(Boolean);
       
-    this.log(`Field rules fix completed for schema: ${schema.uid}. ${(schema.field_rules as any[]).length} rules remaining`, 'debug');
+    log.debug(`Field rules fix completed for schema: ${schema.uid}. ${(schema.field_rules as any[]).length} rules remaining`);
   }
 
 
   addMissingReferences(actions: Record<string, unknown>, fixStatus?: string) {
-    this.log(`Adding missing reference for schema: ${this.currentUid}`, 'debug');
-    this.log(`Action data: ${JSON.stringify(actions)}`, 'debug');
-    this.log(`Fix status: ${fixStatus || 'none'}`, 'debug');
+    log.debug(`Adding missing reference for schema: ${this.currentUid}`);
+    log.debug(`Action data: ${JSON.stringify(actions)}`);
+    log.debug(`Fix status: ${fixStatus || 'none'}`);
     
     if (fixStatus) {
-      this.log(`Recording fixed missing reference`, 'debug');
+      log.debug(`Recording fixed missing reference`);
       this.missingRefs[this.currentUid].push({
         ctUid: this.currentUid,
         action: actions,
         fixStatus: 'Fixed',
       });
     } else {
-      this.log(`Recording missing reference for validation`, 'debug');
+      log.debug(`Recording missing reference for validation`);
       this.missingRefs[this.currentUid].push({ ctUid: this.currentUid, action: actions });
     }
     
-    this.log(`Missing references count for ${this.currentUid}: ${this.missingRefs[this.currentUid].length}`, 'debug');
+    log.debug(`Missing references count for ${this.currentUid}: ${this.missingRefs[this.currentUid].length}`);
   }
   /**
    * @method prerequisiteData
@@ -346,48 +355,48 @@ export default class FieldRule {
    * app data, and stores them in the `extensions` array.
    */
   async prerequisiteData(): Promise<void> {
-    this.log(`Loading prerequisite data`, 'debug');
+    log.debug(`Loading prerequisite data`);
     
     const extensionPath = resolve(this.config.basePath, 'extensions', 'extensions.json');
     const marketplacePath = resolve(this.config.basePath, 'marketplace_apps', 'marketplace_apps.json');
     
-    this.log(`Extensions path: ${extensionPath}`, 'debug');
-    this.log(`Marketplace apps path: ${marketplacePath}`, 'debug');
+    log.debug(`Extensions path: ${extensionPath}`);
+    log.debug(`Marketplace apps path: ${marketplacePath}`);
 
     if (existsSync(extensionPath)) {
-      this.log(`Loading extensions from file`, 'debug');
+      log.debug(`Loading extensions from file`);
       try {
         this.extensions = Object.keys(JSON.parse(readFileSync(extensionPath, 'utf8')));
-        this.log(`Loaded ${this.extensions.length} extensions`, 'debug');
+        log.debug(`Loaded ${this.extensions.length} extensions`);
       } catch (error) {
-        this.log(`Error loading extensions: ${error}`, 'debug');
+        log.debug(`Error loading extensions: ${error}`);
       }
     } else {
-      this.log(`Extensions file not found`, 'debug');
+      log.debug(`Extensions file not found`);
     }
 
     if (existsSync(marketplacePath)) {
-      this.log(`Loading marketplace apps from file`, 'debug');
+      log.debug(`Loading marketplace apps from file`);
       try {
         const marketplaceApps: MarketplaceAppsInstallationData[] = JSON.parse(readFileSync(marketplacePath, 'utf8'));
-        this.log(`Found ${marketplaceApps.length} marketplace apps`, 'debug');
+        log.debug(`Found ${marketplaceApps.length} marketplace apps`);
 
         for (const app of marketplaceApps) {
-          this.log(`Processing marketplace app: ${app.uid}`, 'debug');
+          log.debug(`Processing marketplace app: ${app.uid}`);
           const metaData = map(map(app?.ui_location?.locations, 'meta').flat(), 'extension_uid').filter(
             (val) => val,
           ) as string[];
-          this.log(`Found ${metaData.length} extension UIDs in app`, 'debug');
+          log.debug(`Found ${metaData.length} extension UIDs in app`);
           this.extensions.push(...metaData);
         }
       } catch (error) {
-        this.log(`Error loading marketplace apps: ${error}`, 'debug');
+        log.debug(`Error loading marketplace apps: ${error}`);
       }
     } else {
-      this.log(`Marketplace apps file not found`, 'debug');
+      log.debug(`Marketplace apps file not found`);
     }
     
-    this.log(`Prerequisite data loading completed. Total extensions: ${this.extensions.length}`, 'debug');
+    log.debug(`Prerequisite data loading completed. Total extensions: ${this.extensions.length}`);
   }
 
   /**
@@ -395,35 +404,35 @@ export default class FieldRule {
    * JSON to the specified file path.
    */
   async writeFixContent(): Promise<void> {
-    this.log(`Writing fix content`, 'debug');
-    this.log(`Fix mode: ${this.fix}`, 'debug');
-    this.log(`Copy directory flag: ${this.config.flags['copy-dir']}`, 'debug');
-    this.log(`External config skip confirm: ${this.config.flags['external-config']?.skipConfirm}`, 'debug');
-    this.log(`Yes flag: ${this.config.flags.yes}`, 'debug');
+    log.debug(`Writing fix content`);
+    log.debug(`Fix mode: ${this.fix}`);
+    log.debug(`Copy directory flag: ${this.config.flags['copy-dir']}`);
+    log.debug(`External config skip confirm: ${this.config.flags['external-config']?.skipConfirm}`);
+    log.debug(`Yes flag: ${this.config.flags.yes}`);
     
     let canWrite = true;
 
     if (this.fix) {
       if (!this.config.flags['copy-dir'] && !this.config.flags['external-config']?.skipConfirm) {
-        this.log(`Asking user for confirmation to write fix content`, 'debug');
+        log.debug(`Asking user for confirmation to write fix content`);
         canWrite = this.config.flags.yes ?? (await cliux.confirm(commonMsg.FIX_CONFIRMATION));
-        this.log(`User confirmation: ${canWrite}`, 'debug');
+        log.debug(`User confirmation: ${canWrite}`);
       } else {
-        this.log(`Skipping confirmation due to flags`, 'debug');
+        log.debug(`Skipping confirmation due to flags`);
       }
 
       if (canWrite) {
         const outputPath = join(this.folderPath, this.config.moduleConfig[this.moduleName].fileName);
-        this.log(`Writing fixed schema to: ${outputPath}`, 'debug');
-        this.log(`Schema items to write: ${this.schema?.length || 0}`, 'debug');
+        log.debug(`Writing fixed schema to: ${outputPath}`);
+        log.debug(`Schema items to write: ${this.schema?.length || 0}`);
         
         writeFileSync(outputPath, JSON.stringify(this.schema));
-        this.log(`Successfully wrote fixed schema to file`, 'debug');
+        log.debug(`Successfully wrote fixed schema to file`);
       } else {
-        this.log(`Skipping file write - user declined confirmation`, 'debug');
+        log.debug(`Skipping file write - user declined confirmation`);
       }
     } else {
-      this.log(`Skipping file write - fix mode disabled`, 'debug');
+      log.debug(`Skipping file write - fix mode disabled`);
     }
   }
 
@@ -432,16 +441,16 @@ export default class FieldRule {
     field: ContentTypeStruct | GlobalFieldDataType | ModularBlockType | GroupFieldDataType,
     parent: string | null = null,
   ): Promise<void> {
-    this.log(`Looking for references in field: ${(field as any).uid || (field as any).title || 'unknown'}`, 'debug');
-    this.log(`Parent: ${parent || 'none'}`, 'debug');
-    this.log(`Schema fields count: ${field.schema?.length || 0}`, 'debug');
+    log.debug(`Looking for references in field: ${(field as any).uid || (field as any).title || 'unknown'}`);
+    log.debug(`Parent: ${parent || 'none'}`);
+    log.debug(`Schema fields count: ${field.schema?.length || 0}`);
     
     const fixTypes = this.config.flags['fix-only'] ?? this.config['fix-fields'];
-    this.log(`Fix types: ${fixTypes.join(', ')}`, 'debug');
+    log.debug(`Fix types: ${fixTypes.join(', ')}`);
 
     for (let child of field.schema ?? []) {
       const fieldPath = parent !== null ? `${parent}.${child?.uid}` : child.uid;
-      this.log(`Processing field: ${child.uid} (${child.data_type}) at path: ${fieldPath}`, 'debug');
+      log.debug(`Processing field: ${child.uid} (${child.data_type}) at path: ${fieldPath}`);
       
       if (parent !== null) {
         this.schemaMap.push(`${parent}.${child?.uid}`);
@@ -450,14 +459,14 @@ export default class FieldRule {
       }
 
       if (!fixTypes.includes(child.data_type) && child.data_type !== 'json') {
-        this.log(`Skipping field ${child.uid} - data type ${child.data_type} not in fix types`, 'debug');
+        log.debug(`Skipping field ${child.uid} - data type ${child.data_type} not in fix types`);
         continue;
       }
 
-      this.log(`Validating field ${child.uid} of type ${child.data_type}`, 'debug');
+      log.debug(`Validating field ${child.uid} of type ${child.data_type}`);
       switch (child.data_type) {
         case 'global_field':
-          this.log(`Validating global field: ${child.uid}`, 'debug');
+          log.debug(`Validating global field: ${child.uid}`);
           await this.validateGlobalField(
             [...tree, { uid: child.uid, name: child.display_name }],
             child as GlobalFieldDataType,
@@ -465,7 +474,7 @@ export default class FieldRule {
           );
           break;
         case 'blocks':
-          this.log(`Validating modular blocks field: ${child.uid}`, 'debug');
+          log.debug(`Validating modular blocks field: ${child.uid}`);
           await this.validateModularBlocksField(
             [...tree, { uid: child.uid, name: child.display_name }],
             child as ModularBlocksDataType,
@@ -473,7 +482,7 @@ export default class FieldRule {
           );
           break;
         case 'group':
-          this.log(`Validating group field: ${child.uid}`, 'debug');
+          log.debug(`Validating group field: ${child.uid}`);
           await this.validateGroupField(
             [...tree, { uid: child.uid, name: child.display_name }],
             child as GroupFieldDataType,
@@ -483,7 +492,7 @@ export default class FieldRule {
       }
     }
     
-    this.log(`Reference lookup completed for field: ${(field as any).uid || (field as any).title || 'unknown'}`, 'debug');
+    log.debug(`Reference lookup completed for field: ${(field as any).uid || (field as any).title || 'unknown'}`);
   }
 
   async validateGlobalField(
@@ -491,12 +500,12 @@ export default class FieldRule {
     field: GlobalFieldDataType,
     parent: string | null,
   ): Promise<void> {
-    this.log(`Validating global field: ${field.uid} (${field.display_name})`, 'debug');
-    this.log(`Tree depth: ${tree.length}`, 'debug');
-    this.log(`Parent: ${parent || 'none'}`, 'debug');
+    log.debug(`Validating global field: ${field.uid} (${field.display_name})`);
+    log.debug(`Tree depth: ${tree.length}`);
+    log.debug(`Parent: ${parent || 'none'}`);
     
     await this.lookForReference(tree, field, parent);
-    this.log(`Global field validation completed: ${field.uid}`, 'debug');
+    log.debug(`Global field validation completed: ${field.uid}`);
   }
 
   async validateModularBlocksField(
@@ -504,26 +513,26 @@ export default class FieldRule {
     field: ModularBlocksDataType,
     parent: string | null,
   ): Promise<void> {
-    this.log(`Validating modular blocks field: ${field.uid} (${field.display_name})`, 'debug');
-    this.log(`Tree depth: ${tree.length}`, 'debug');
-    this.log(`Parent: ${parent || 'none'}`, 'debug');
+    log.debug(`Validating modular blocks field: ${field.uid} (${field.display_name})`);
+    log.debug(`Tree depth: ${tree.length}`);
+    log.debug(`Parent: ${parent || 'none'}`);
     
     const { blocks } = field;
-    this.log(`Found ${blocks.length} blocks to validate`, 'debug');
+    log.debug(`Found ${blocks.length} blocks to validate`);
     
     for (const block of blocks) {
       const { uid, title } = block;
-      this.log(`Validating block: ${uid} (${title})`, 'debug');
+      log.debug(`Validating block: ${uid} (${title})`);
       
       const updatedTree = [...tree, { uid, name: title }];
       const blockParent = parent + '.' + block.uid;
-      this.log(`Updated tree depth: ${updatedTree.length}, block parent: ${blockParent}`, 'debug');
+      log.debug(`Updated tree depth: ${updatedTree.length}, block parent: ${blockParent}`);
 
       await this.lookForReference(updatedTree, block, blockParent);
-      this.log(`Block validation completed: ${uid}`, 'debug');
+      log.debug(`Block validation completed: ${uid}`);
     }
     
-    this.log(`Modular blocks field validation completed: ${field.uid}`, 'debug');
+    log.debug(`Modular blocks field validation completed: ${field.uid}`);
   }
 
   async validateGroupField(
@@ -531,57 +540,57 @@ export default class FieldRule {
     field: GroupFieldDataType,
     parent: string | null,
   ): Promise<void> {
-    this.log(`Validating group field: ${field.uid} (${field.display_name})`, 'debug');
-    this.log(`Tree depth: ${tree.length}`, 'debug');
-    this.log(`Parent: ${parent || 'none'}`, 'debug');
+    log.debug(`Validating group field: ${field.uid} (${field.display_name})`);
+    log.debug(`Tree depth: ${tree.length}`);
+    log.debug(`Parent: ${parent || 'none'}`);
     
     // NOTE Any Group Field related logic can be added here (Ex data serialization or picking any metadata for report etc.,)
     await this.lookForReference(tree, field, parent);
-    this.log(`Group field validation completed: ${field.uid}`, 'debug');
+    log.debug(`Group field validation completed: ${field.uid}`);
   }
 
   async prepareEntryMetaData() {
-    this.log(`Preparing entry metadata`, 'debug');
-    this.log(auditMsg.PREPARING_ENTRY_METADATA, 'info');
+    log.debug(`Preparing entry metadata`);
+    log.info(auditMsg.PREPARING_ENTRY_METADATA);
     const localesFolderPath = resolve(this.config.basePath, this.config.moduleConfig.locales.dirName);
     const localesPath = join(localesFolderPath, this.config.moduleConfig.locales.fileName);
     const masterLocalesPath = join(localesFolderPath, 'master-locale.json');
     
-    this.log(`Locales folder path: ${localesFolderPath}`, 'debug');
-    this.log(`Locales path: ${localesPath}`, 'debug');
-    this.log(`Master locales path: ${masterLocalesPath}`, 'debug');
+    log.debug(`Locales folder path: ${localesFolderPath}`);
+    log.debug(`Locales path: ${localesPath}`);
+    log.debug(`Master locales path: ${masterLocalesPath}`);
     
-    this.log(`Loading master locales`, 'debug');
+    log.debug(`Loading master locales`);
     this.locales = existsSync(masterLocalesPath) ? values(JSON.parse(readFileSync(masterLocalesPath, 'utf8'))) : [];
-    this.log(`Loaded ${this.locales.length} master locales`, 'debug');
+    log.debug(`Loaded ${this.locales.length} master locales`);
 
     if (existsSync(localesPath)) {
-      this.log(`Loading additional locales from file`, 'debug');
+      log.debug(`Loading additional locales from file`);
       this.locales.push(...values(JSON.parse(readFileSync(localesPath, 'utf8'))));
-      this.log(`Total locales after loading: ${this.locales.length}`, 'debug');
+      log.debug(`Total locales after loading: ${this.locales.length}`);
     } else {
-      this.log(`Additional locales file not found`, 'debug');
+      log.debug(`Additional locales file not found`);
     }
 
     const entriesFolderPath = resolve(sanitizePath(this.config.basePath), 'entries');
-    this.log(`Entries folder path: ${entriesFolderPath}`, 'debug');
-    this.log(`Processing ${this.locales.length} locales and ${this.ctSchema?.length || 0} content types`, 'debug');
+    log.debug(`Entries folder path: ${entriesFolderPath}`);
+    log.debug(`Processing ${this.locales.length} locales and ${this.ctSchema?.length || 0} content types`);
     
     for (const { code } of this.locales) {
-      this.log(`Processing locale: ${code}`, 'debug');
+      log.debug(`Processing locale: ${code}`);
       for (const { uid } of this.ctSchema??[]) {
-        this.log(`Processing content type: ${uid}`, 'debug');
+        log.debug(`Processing content type: ${uid}`);
         let basePath = join(entriesFolderPath, uid, code);
-        this.log(`Base path: ${basePath}`, 'debug');
+        log.debug(`Base path: ${basePath}`);
         
         let fsUtility = new FsUtility({ basePath, indexFileName: 'index.json' });
         let indexer = fsUtility.indexFileContent;
-        this.log(`Found ${Object.keys(indexer).length} entry files`, 'debug');
+        log.debug(`Found ${Object.keys(indexer).length} entry files`);
 
         for (const _ in indexer) {
-          this.log(`Loading entries from file`, 'debug');
+          log.debug(`Loading entries from file`);
           const entries = (await fsUtility.readChunkFiles.next()) as Record<string, EntryStruct>;
-          this.log(`Loaded ${Object.keys(entries).length} entries`, 'debug');
+          log.debug(`Loaded ${Object.keys(entries).length} entries`);
           
           for (const entryUid in entries) {
             let { title } = entries[entryUid];
@@ -591,6 +600,6 @@ export default class FieldRule {
       }
     }
     
-    this.log(`Entry metadata preparation completed. Total entries: ${this.entryMetaData.length}`, 'debug');
+    log.debug(`Entry metadata preparation completed. Total entries: ${this.entryMetaData.length}`);
   }
 }
