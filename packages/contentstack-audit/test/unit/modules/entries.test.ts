@@ -19,6 +19,7 @@ import {
   ctGroupField,
   entryGroupField,
 } from '../mock/mock.json';
+import { mockLogger } from '../mock-logger';
 
 describe('Entries module', () => {
   let constructorParam: ModuleConstructorParam & CtConstructorParam;
@@ -32,6 +33,9 @@ describe('Entries module', () => {
       gfSchema: cloneDeep(require('../mock/contents/global_fields/globalfields.json')),
       config: Object.assign(config, { basePath: resolve(__dirname, '..', 'mock', 'contents'), flags: {} }),
     };
+    
+    // Mock the logger for all tests
+    Sinon.stub(require('@contentstack/cli-utilities'), 'log').value(mockLogger);
   });
 
   before(() => {

@@ -4,13 +4,24 @@ import { fancy } from 'fancy-test';
 import { expect } from 'chai';
 import cloneDeep from 'lodash/cloneDeep';
 import { ux } from '@contentstack/cli-utilities';
+import sinon from 'sinon';
 
 import config from '../../../src/config';
 import { Workflows } from '../../../src/modules';
 import { $t, auditMsg } from '../../../src/messages';
 import { values } from 'lodash';
+import { mockLogger } from '../mock-logger';
 
 describe('Workflows', () => {
+  beforeEach(() => {
+    // Mock the logger for all tests
+    sinon.stub(require('@contentstack/cli-utilities'), 'log').value(mockLogger);
+  });
+  
+  afterEach(() => {
+    sinon.restore();
+  });
+  
   describe('run method with invalid path for workflows', () => {
     const wf = new Workflows({
       moduleName: 'workflows',

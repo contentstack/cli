@@ -6,6 +6,7 @@ import Sinon from 'sinon';
 import config from '../../../src/config';
 import { CustomRoles } from '../../../src/modules';
 import { CtConstructorParam, ModuleConstructorParam } from '../../../src/types';
+import { mockLogger } from '../mock-logger';
 
 describe('Custom roles module', () => {
   let constructorParam: ModuleConstructorParam & Pick<CtConstructorParam, 'ctSchema'>;
@@ -16,6 +17,9 @@ describe('Custom roles module', () => {
       config: Object.assign(config, { basePath: resolve(__dirname, '..', 'mock', 'contents'), flags: {} }),
       ctSchema: cloneDeep(require('../mock/contents/content_types/schema.json')),
     };
+    
+    // Mock the logger for all tests
+    Sinon.stub(require('@contentstack/cli-utilities'), 'log').value(mockLogger);
   });
 
   describe('run method', () => {
@@ -60,7 +64,7 @@ describe('Custom roles module', () => {
       });
   });
 
-  after(() => {
+  afterEach(() => {
     Sinon.restore(); // Clears Sinon spies/stubs/mocks
   });
 });

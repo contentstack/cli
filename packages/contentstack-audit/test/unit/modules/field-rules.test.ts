@@ -10,6 +10,7 @@ import config from '../../../src/config';
 import { FieldRule } from '../../../src/modules';
 import { $t, auditMsg } from '../../../src/messages';
 import { CtConstructorParam, ModuleConstructorParam } from '../../../src/types';
+import { mockLogger } from '../mock-logger';
 
 const missingRefs = require('../mock/contents/field_rules/schema.json');
 
@@ -48,6 +49,9 @@ describe('Field Rules', () => {
       gfSchema: cloneDeep(require('../mock/contents/global_fields/globalfields.json')),
       config: Object.assign(config, { basePath: resolve(__dirname, '..', 'mock', 'contents'), flags: {} }),
     };
+    
+    // Mock the logger for all tests
+    sinon.stub(require('@contentstack/cli-utilities'), 'log').value(mockLogger);
   });
 
   afterEach(() => {
