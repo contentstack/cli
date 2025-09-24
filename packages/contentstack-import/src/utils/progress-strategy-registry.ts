@@ -21,7 +21,18 @@ ProgressStrategyRegistry.register(
 // Register strategy for Assets - use Asset Upload as primary process
 ProgressStrategyRegistry.register(
   MODULE_NAMES[MODULE_CONTEXTS.ASSETS],
-  new PrimaryProcessStrategy(PROCESS_NAMES.ASSET_UPLOAD),
+  new CustomProgressStrategy((processes) => {
+    const uploadsProcess = processes.get(PROCESS_NAMES.ASSET_UPLOAD);
+    if (uploadsProcess) {
+      return {
+        total: uploadsProcess.total,
+        success: uploadsProcess.successCount,
+        failures: uploadsProcess.failureCount,
+      };
+    }
+
+    return null; // Fall back to default aggregation
+  }),
 );
 
 // Register strategy for Entries - use Entry Creation as primary process
