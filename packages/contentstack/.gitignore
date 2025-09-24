@@ -11,3 +11,5 @@ coverage
 tsconfig.tsbuildinfo
 /merge_scripts
 /merge-summary.json
+/branch
+/migration-logs
