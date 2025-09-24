@@ -104,7 +104,7 @@ fileignoreconfig:
 - filename: packages/contentstack-audit/src/modules/field_rules.ts
   checksum: 0f08ab50b9e6007638b420c66a3e5a77b1cfe9dfa03cd864a2ce28fe933ef123
 - filename: packages/contentstack-audit/src/modules/entries.ts
-  checksum: f5f555c28671c12afd0f1e0f501954f7fa6bb688d14294d07ce745d6cdc5112f
+  checksum: d1af0a193183a4721ee821fdaf2d0539ed5a2ddb36433b6d6659fb4ca140ac00
 - filename: packages/contentstack-audit/test/unit/base-command.test.ts
   checksum: 34bdde6f85e8b60ebc73e627b315ec3886e5577102fca04c3e20c463c42eb681
 - filename: packages/contentstack-audit/src/modules/content-types.ts
