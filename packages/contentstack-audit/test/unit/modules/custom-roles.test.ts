@@ -12,7 +12,6 @@ describe('Custom roles module', () => {
 
   beforeEach(() => {
     constructorParam = {
-      log: () => {},
       moduleName: 'custom-roles',
       config: Object.assign(config, { basePath: resolve(__dirname, '..', 'mock', 'contents'), flags: {} }),
       ctSchema: cloneDeep(require('../mock/contents/content_types/schema.json')),

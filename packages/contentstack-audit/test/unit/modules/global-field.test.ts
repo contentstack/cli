@@ -28,7 +28,6 @@ describe('Global Fields', () => {
 
   beforeEach(() => {
     constructorParam = {
-      log: () => {},
       moduleName: 'global-fields',
       ctSchema: cloneDeep(require('../mock/contents/content_types/schema.json')),
       gfSchema: cloneDeep(require('../mock/contents/global_fields/globalfields.json')),

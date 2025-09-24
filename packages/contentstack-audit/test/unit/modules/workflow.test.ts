@@ -13,7 +13,6 @@ import { values } from 'lodash';
 describe('Workflows', () => {
   describe('run method with invalid path for workflows', () => {
     const wf = new Workflows({
-      log: () => {},
       moduleName: 'workflows',
       ctSchema: cloneDeep(require('./../mock/contents/workflows/ctSchema.json')),
       config: Object.assign(config, { basePath: resolve(__dirname, '..', 'mock', 'workflows'), flags: {} }),
@@ -32,7 +31,6 @@ describe('Workflows', () => {
   });
   describe('run method with valid path for workflows and ctSchema', () => {
     const wf = new Workflows({
-      log: () => {},
       moduleName: 'workflows',
       ctSchema: cloneDeep(require('./../mock/contents/workflows/ctSchema.json')),
       config: Object.assign(config, {
@@ -86,7 +84,6 @@ describe('Workflows', () => {
 
   describe('run method with audit fix for workflows with valid path and empty ctSchema', () => {
     const wf = new Workflows({
-      log: () => {},
       moduleName: 'workflows',
       ctSchema: cloneDeep(require('./../mock/contents/workflows/ctSchema.json')),
       config: Object.assign(config, {

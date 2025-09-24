@@ -50,7 +50,6 @@ describe('Content types', () => {
 
   beforeEach(() => {
     constructorParam = {
-      log: () => {},
       moduleName: 'content-types',
       ctSchema: cloneDeep(require('../mock/contents/content_types/schema.json')),
       gfSchema: cloneDeep(require('../mock/contents/global_fields/globalfields.json')),

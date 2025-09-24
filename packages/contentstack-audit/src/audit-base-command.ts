@@ -236,12 +236,12 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         case 'entries':
           log.debug('Executing entries audit');
           missingEntry = await new Entries(cloneDeep(constructorParam)).run();
-          missingEntryRefs = (missingEntry as any).missingEntryRefs ?? {};
-          missingSelectFeild = (missingEntry as any).missingSelectFeild ?? {};
-          missingMandatoryFields = (missingEntry as any).missingMandatoryFields ?? {};
-          missingTitleFields = (missingEntry as any).missingTitleFields ?? {};
-          missingEnvLocalesInEntries = (missingEntry as any).missingEnvLocale ?? {};
-          missingMultipleFields = (missingEntry as any).missingMultipleFields ?? {};
+          missingEntryRefs = missingEntry.missingEntryRefs ?? {};
+          missingSelectFeild = missingEntry.missingSelectFeild ?? {};
+          missingMandatoryFields = missingEntry.missingMandatoryFields ?? {};
+          missingTitleFields = missingEntry.missingTitleFields ?? {};
+          missingEnvLocalesInEntries = missingEntry.missingEnvLocale ?? {};
+          missingMultipleFields = missingEntry.missingMultipleFields ?? {};
           await this.prepareReport(module, missingEntryRefs);
 
           await this.prepareReport(`Entries_Select_feild`, missingSelectFeild);
