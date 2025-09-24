@@ -20,6 +20,7 @@ import {
 } from '../../src/modules';
 import { FileTransportInstance } from 'winston/lib/winston/transports';
 import { $t, auditMsg } from '../../src/messages';
+import { mockLogger } from './mock-logger';
 describe('AuditBaseCommand class', () => {
   class AuditCMD extends AuditBaseCommand {
     async run() {
@@ -54,6 +55,9 @@ describe('AuditBaseCommand class', () => {
   beforeEach(() => {
     consoleWarnSpy = sinon.spy(console, 'warn');
     consoleInfoSpy = sinon.spy(console, 'info');
+    
+    // Mock the logger for all tests
+    sinon.stub(require('@contentstack/cli-utilities'), 'log').value(mockLogger);
   });
   afterEach(() => {
     consoleWarnSpy.restore();

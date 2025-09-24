@@ -18,6 +18,8 @@ import {
   ModuleConstructorParam,
   ReferenceFieldDataType,
 } from '../../../src/types';
+import { mockLogger } from '../mock-logger';
+
 
 describe('Content types', () => {
   type CtType = ContentTypeStruct | GlobalFieldDataType | ModularBlockType | GroupFieldDataType;
@@ -55,6 +57,9 @@ describe('Content types', () => {
       gfSchema: cloneDeep(require('../mock/contents/global_fields/globalfields.json')),
       config: Object.assign(config, { basePath: resolve(__dirname, '..', 'mock', 'contents'), flags: {} }),
     };
+    
+    // Mock the logger for all tests
+    sinon.stub(require('@contentstack/cli-utilities'), 'log').value(mockLogger);
   });
 
   afterEach(() => {
@@ -62,7 +67,9 @@ describe('Content types', () => {
   });
 
   describe('run method', () => {
-    fancy.stdout({ print: process.env.PRINT === 'true' || false }).it('should validate base path', async () => {
+    fancy
+      .stdout({ print: process.env.PRINT === 'true' || false })
+      .it('should validate base path', async () => {
       const ctInstance = new ContentType({
         ...constructorParam,
         config: { ...constructorParam.config, basePath: resolve(__dirname, '..', 'mock', 'contents-1') },

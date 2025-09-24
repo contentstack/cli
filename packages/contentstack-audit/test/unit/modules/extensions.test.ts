@@ -9,6 +9,7 @@ import { Extensions } from '../../../src/modules';
 import { $t, auditMsg } from '../../../src/messages';
 import sinon from 'sinon';
 import { Extension } from '../../../src/types';
+import { mockLogger } from '../mock-logger';
 
 const fixedSchema = [
   {
@@ -82,6 +83,15 @@ const fixedSchema = [
   },
 ];
 describe('Extensions scope containing content_types uids', () => {
+  beforeEach(() => {
+    // Mock the logger for all tests
+    sinon.stub(require('@contentstack/cli-utilities'), 'log').value(mockLogger);
+  });
+  
+  afterEach(() => {
+    sinon.restore();
+  });
+  
   describe('run method with invalid path for extensions', () => {
     const ext = new Extensions({
       moduleName: 'extensions',

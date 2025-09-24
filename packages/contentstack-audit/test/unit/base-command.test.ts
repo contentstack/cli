@@ -5,8 +5,21 @@ import { expect } from 'chai';
 import { FileTransportInstance } from 'winston/lib/winston/transports';
 
 import { BaseCommand } from '../../src/base-command';
+import { mockLogger } from './mock-logger';
+
 
 describe('BaseCommand class', () => {
+  beforeEach(() => {
+    // Mock the logger for all tests
+    const sinon = require('sinon');
+    sinon.stub(require('@contentstack/cli-utilities'), 'log').value(mockLogger);
+  });
+  
+  afterEach(() => {
+    const sinon = require('sinon');
+    sinon.restore();
+  });
+  
   class Command extends BaseCommand<typeof Command> {
     async run() {
       // this.parse();
