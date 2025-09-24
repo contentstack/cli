@@ -3,14 +3,13 @@ import find from 'lodash/find';
 import values from 'lodash/values';
 import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
-import { FsUtility, sanitizePath, cliux } from '@contentstack/cli-utilities';
+import { FsUtility, sanitizePath, cliux, log } from '@contentstack/cli-utilities';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 
 import auditConfig from '../config';
 import ContentType from './content-types';
 import { $t, auditFixMsg, auditMsg, commonMsg } from '../messages';
 import {
-  LogFn,
   Locale,
   ConfigType,
   EntryStruct,
@@ -40,10 +39,8 @@ import {
 import GlobalField from './global-fields';
 import { MarketplaceAppsInstallationData } from '../types/extension';
 import { keys } from 'lodash';
-import { print } from '../util/log';
 
 export default class Entries {
-  public log: LogFn;
   protected fix: boolean;
   public fileName: string;
   public locales!: Locale[];
@@ -65,9 +62,9 @@ export default class Entries {
   public entryMetaData: Record<string, any>[] = [];
   public moduleName: keyof typeof auditConfig.moduleConfig = 'entries';
 
-  constructor({ log, fix, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
-    this.log = log;
-    this.log(`Initializing Entries module`, 'debug');
+  constructor({ fix, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
+
+    log.debug(`Initializing Entries module`);
     this.config = config;
     this.fix = fix ?? false;
     this.ctSchema = ctSchema;
@@ -75,24 +72,24 @@ export default class Entries {
     this.moduleName = this.validateModules(moduleName!, this.config.moduleConfig);
     this.fileName = config.moduleConfig[this.moduleName].fileName;
     this.folderPath = resolve(sanitizePath(config.basePath), sanitizePath(config.moduleConfig.entries.dirName));
-    this.log(`Starting ${this.moduleName} audit process`, 'debug');
-    this.log(`Data directory: ${this.folderPath}`, 'debug');
-    this.log(`Fix mode: ${this.fix}`, 'debug');
+    log.debug(`Starting ${this.moduleName} audit process`);
+    log.debug(`Data directory: ${this.folderPath}`);
+    log.debug(`Fix mode: ${this.fix}`);
   }
 
   validateModules(
     moduleName: keyof typeof auditConfig.moduleConfig,
     moduleConfig: Record<string, unknown>,
   ): keyof typeof auditConfig.moduleConfig {
-    this.log(`Validating module: ${moduleName}`, 'debug');
-    this.log(`Available modules in config: ${Object.keys(moduleConfig).join(', ')}`, 'debug');
+    log.debug(`Validating module: ${moduleName}`);
+    log.debug(`Available modules in config: ${Object.keys(moduleConfig).join(', ')}`);
     
     if (Object.keys(moduleConfig).includes(moduleName)) {
-      this.log(`Module ${moduleName} found in config, returning: ${moduleName}`, 'debug');
+      log.debug(`Module ${moduleName} found in config, returning: ${moduleName}`);
       return moduleName;
     }
     
-    this.log(`Module ${moduleName} not found in config, defaulting to: entries`, 'debug');
+    log.debug(`Module ${moduleName} not found in config, defaulting to: entries`);
     return 'entries';
   }
 
@@ -104,40 +101,40 @@ export default class Entries {
   async run() {
     
     if (!existsSync(this.folderPath)) {
-      this.log(`Skipping ${this.moduleName} audit - path does not exist`, 'debug');
-      this.log(`Skipping ${this.moduleName} audit`, 'warn');
-      this.log($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
+      log.debug(`Skipping ${this.moduleName} audit - path does not exist`);
+      log.warn(`Skipping ${this.moduleName} audit`);
+      cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
       return {};
     }
 
-    this.log(`Found ${this.ctSchema?.length || 0} content types to audit`, 'debug');
-    this.log(`Found ${this.locales?.length || 0} locales to process`, 'debug');
+    log.debug(`Found ${this.ctSchema?.length || 0} content types to audit`);
+    log.debug(`Found ${this.locales?.length || 0} locales to process`);
 
-    this.log('Preparing entry metadata', 'debug');
+    log.debug('Preparing entry metadata');
     await this.prepareEntryMetaData();
-    this.log(`Entry metadata prepared: ${this.entryMetaData.length} entries found`, 'debug');
+    log.debug(`Entry metadata prepared: ${this.entryMetaData.length} entries found`);
 
-    this.log('Fixing prerequisite data', 'debug');
+    log.debug('Fixing prerequisite data');
     await this.fixPrerequisiteData();
-    this.log('Prerequisite data fix completed', 'debug');
+    log.debug('Prerequisite data fix completed');
 
-    this.log(`Processing ${this.locales.length} locales and ${this.ctSchema.length} content types`, 'debug');
+    log.debug(`Processing ${this.locales.length} locales and ${this.ctSchema.length} content types`);
     for (const { code } of this.locales) {
-      this.log(`Processing locale: ${code}`, 'debug');
+      log.debug(`Processing locale: ${code}`);
       for (const ctSchema of this.ctSchema) {
-        this.log(`Processing content type: ${ctSchema.uid} in locale ${code}`, 'debug');
+        log.debug(`Processing content type: ${ctSchema.uid} in locale ${code}`);
         const basePath = join(this.folderPath, ctSchema.uid, code);
-        this.log(`Base path for entries: ${basePath}`, 'debug');
+        log.debug(`Base path for entries: ${basePath}`);
         
         const fsUtility = new FsUtility({ basePath, indexFileName: 'index.json', createDirIfNotExist: false });
         const indexer = fsUtility.indexFileContent;
-        this.log(`Found ${Object.keys(indexer).length} entry files to process`, 'debug');
+        log.debug(`Found ${Object.keys(indexer).length} entry files to process`);
 
         for (const fileIndex in indexer) {
-          this.log(`Processing entry file: ${indexer[fileIndex]}`, 'debug');
+          log.debug(`Processing entry file: ${indexer[fileIndex]}`);
           const entries = (await fsUtility.readChunkFiles.next()) as Record<string, EntryStruct>;
           this.entries = entries;
-          this.log(`Loaded ${Object.keys(entries).length} entries from file`, 'debug');
+          log.debug(`Loaded ${Object.keys(entries).length} entries from file`);
 
           for (const entryUid in this.entries) {
             const entry = this.entries[entryUid];
@@ -148,7 +145,7 @@ export default class Entries {
               this.currentTitle = this.removeEmojiAndImages(this.currentTitle);
             }
 
-            this.log(`Processing entry - title:${this.currentTitle} with uid:(${uid})`, 'debug');
+            log.debug(`Processing entry - title:${this.currentTitle} with uid:(${uid})`);
 
             if (!this.missingRefs[this.currentUid]) {
               this.missingRefs[this.currentUid] = [];
@@ -162,11 +159,11 @@ export default class Entries {
               this.missingMandatoryFields[this.currentUid] = [];
             }
             if (this.fix) {
-              this.log(`Removing missing keys from entry ${uid}`, 'debug');
+              log.debug(`Removing missing keys from entry ${uid}`);
               this.removeMissingKeysOnEntry(ctSchema.schema as ContentTypeSchemaType[], this.entries[entryUid]);
             }
 
-            this.log(`Looking for references in entry ${uid}`, 'debug');
+            log.debug(`Looking for references in entry ${uid}`);
             this.lookForReference(
               [{ locale: code, uid, name: this.removeEmojiAndImages(this.currentTitle) }],
               ctSchema,
@@ -174,7 +171,7 @@ export default class Entries {
             );
 
             if (this.missingRefs[this.currentUid]?.length) {
-              this.log(`Found ${this.missingRefs[this.currentUid].length} missing references for entry ${uid}`, 'debug');
+              log.debug(`Found ${this.missingRefs[this.currentUid].length} missing references for entry ${uid}`);
               this.missingRefs[this.currentUid].forEach((entry: any) => {
                 entry.ct = ctSchema.uid;
                 entry.locale = code;
@@ -182,7 +179,7 @@ export default class Entries {
             }
 
             if (this.missingSelectFeild[this.currentUid]?.length) {
-              this.log(`Found ${this.missingSelectFeild[this.currentUid].length} missing select fields for entry ${uid}`, 'debug');
+              log.debug(`Found ${this.missingSelectFeild[this.currentUid].length} missing select fields for entry ${uid}`);
               this.missingSelectFeild[this.currentUid].forEach((entry: any) => {
                 entry.ct = ctSchema.uid;
                 entry.locale = code;
@@ -190,7 +187,7 @@ export default class Entries {
             }
 
             if (this.missingMandatoryFields[this.currentUid]?.length) {
-              this.log(`Found ${this.missingMandatoryFields[this.currentUid].length} missing mandatory fields for entry ${uid}`, 'debug');
+              log.debug(`Found ${this.missingMandatoryFields[this.currentUid].length} missing mandatory fields for entry ${uid}`);
               this.missingMandatoryFields[this.currentUid].forEach((entry: any) => {
                 entry.ct = ctSchema.uid;
                 entry.locale = code;
@@ -199,24 +196,24 @@ export default class Entries {
 
             const fields = this.missingMandatoryFields[uid];
             const isPublished = entry.publish_details?.length > 0;
-            this.log(`Entry ${uid} published status: ${isPublished}, missing mandatory fields: ${fields?.length || 0}`, 'debug');
+            log.debug(`Entry ${uid} published status: ${isPublished}, missing mandatory fields: ${fields?.length || 0}`);
             
             if ((this.fix && fields.length && isPublished) || (!this.fix && fields)) {
               const fixStatus = this.fix ? 'Fixed' : '';
-              this.log(`Applying fix status: ${fixStatus} to ${fields.length} fields`, 'debug');
+              log.debug(`Applying fix status: ${fixStatus} to ${fields.length} fields`);
               
               fields?.forEach((field: { isPublished: boolean; fixStatus?: string }, index: number) => {
-                this.log(`Processing field ${index + 1}/${fields.length}`, 'debug');
+                log.debug(`Processing field ${index + 1}/${fields.length}`);
                 field.isPublished = isPublished;
                 if (this.fix && isPublished) {
                   field.fixStatus = fixStatus;
-                  this.log(`Field ${index + 1} marked as published and fixed`, 'debug');
+                  log.debug(`Field ${index + 1} marked as published and fixed`);
                 }
               });
 
               if (this.fix && isPublished) {
-                this.log(`Fixing mandatory field issue for entry ${uid}`, 'debug');
-                this.log($t(auditFixMsg.ENTRY_MANDATORY_FIELD_FIX, { uid, locale: code }), 'error');
+                log.debug(`Fixing mandatory field issue for entry ${uid}`);
+                log.error($t(auditFixMsg.ENTRY_MANDATORY_FIELD_FIX, { uid, locale: code }));
                 entry.publish_details = [];
               }
             } else {
@@ -224,23 +221,23 @@ export default class Entries {
             }
 
             const localKey = this.locales.map((locale: any) => locale.code);
-            this.log(`Available locales: ${localKey.join(', ')}, environments: ${this.environments.join(', ')}`, 'debug');
+            log.debug(`Available locales: ${localKey.join(', ')}, environments: ${this.environments.join(', ')}`);
 
             if (this.entries[entryUid]?.publish_details && !Array.isArray(this.entries[entryUid].publish_details)) {
-              this.log(`Entry ${entryUid} has invalid publish_details format`, 'debug');
-              this.log($t(auditMsg.ENTRY_PUBLISH_DETAILS_NOT_EXIST, { uid: entryUid }), { color: 'red' });
+              log.debug(`Entry ${entryUid} has invalid publish_details format`);
+              log.debug($t(auditMsg.ENTRY_PUBLISH_DETAILS_NOT_EXIST, { uid: entryUid }), { color: 'red' });
             }
 
             const originalPublishDetails = this.entries[entryUid]?.publish_details?.length || 0;
             this.entries[entryUid].publish_details = this.entries[entryUid]?.publish_details.filter((pd: any) => {
-              this.log(`Checking publish detail: locale=${pd.locale}, environment=${pd.environment}`, 'debug');
+              log.debug(`Checking publish detail: locale=${pd.locale}, environment=${pd.environment}`);
               
               if (localKey?.includes(pd.locale) && this.environments?.includes(pd.environment)) {
-                this.log(`Publish detail valid for entry ${entryUid}: locale=${pd.locale}, environment=${pd.environment}`, 'debug');
+                log.debug(`Publish detail valid for entry ${entryUid}: locale=${pd.locale}, environment=${pd.environment}`);
                 return true;
               } else {
-                this.log(`Publish detail invalid for entry ${entryUid}: locale=${pd.locale}, environment=${pd.environment}`, 'debug');
-                this.log(
+                log.debug(`Publish detail invalid for entry ${entryUid}: locale=${pd.locale}, environment=${pd.environment}`);
+                log.debug(
                   $t(auditMsg.ENTRY_PUBLISH_DETAILS, {
                     uid: entryUid,
                     ctuid: ctSchema.uid,
@@ -251,7 +248,7 @@ export default class Entries {
                   { color: 'red' },
                 );
                 if (!Object.keys(this.missingEnvLocale).includes(entryUid)) {
-                  this.log(`Creating new missing environment/locale entry for ${entryUid}`, 'debug');
+                  log.debug(`Creating new missing environment/locale entry for ${entryUid}`);
                   this.missingEnvLocale[entryUid] = [
                     {
                       entry_uid: entryUid,
@@ -262,7 +259,7 @@ export default class Entries {
                     },
                   ];
                 } else {
-                  this.log(`Adding to existing missing environment/locale entry for ${entryUid}`, 'debug');
+                  log.debug(`Adding to existing missing environment/locale entry for ${entryUid}`);
                   this.missingEnvLocale[entryUid].push({
                     entry_uid: entryUid,
                     publish_locale: pd.locale,
@@ -276,28 +273,27 @@ export default class Entries {
             });
 
             const remainingPublishDetails = this.entries[entryUid].publish_details?.length || 0;
-            this.log(`Entry ${entryUid} publish details: ${originalPublishDetails} -> ${remainingPublishDetails}`, 'debug');
+            log.debug(`Entry ${entryUid} publish details: ${originalPublishDetails} -> ${remainingPublishDetails}`);
 
             const message = $t(auditMsg.SCAN_ENTRY_SUCCESS_MSG, {
               title,
               local: code,
               module: this.config.moduleConfig.entries.name,
             });
-            this.log(message, 'hidden');
-            print([{ message: `info: ${message}`, color: 'green' }]);
-            this.log(`info: ${message}`, 'info');
+            log.debug(message);
+            log.info(message);
           }
 
           if (this.fix) {
-            this.log(`Writing fix content for ${Object.keys(this.entries).length} entries`, 'debug');
+            log.debug(`Writing fix content for ${Object.keys(this.entries).length} entries`);
             await this.writeFixContent(`${basePath}/${indexer[fileIndex]}`, this.entries);
           }
         }
       }
     }
-    // this.log('', 'info'); // Adding empty line
 
-    this.log('Cleaning up empty missing references', 'debug');
+
+    log.debug('Cleaning up empty missing references');
     this.removeEmptyVal();
     
     const result = {
@@ -309,13 +305,13 @@ export default class Entries {
       missingMultipleFields: this.missingMultipleField,
     };
     
-    this.log(`Entries audit completed. Found issues:`, 'debug');
-    this.log(`- Missing references: ${Object.keys(this.missingRefs).length}`, 'debug');
-    this.log(`- Missing select fields: ${Object.keys(this.missingSelectFeild).length}`, 'debug');
-    this.log(`- Missing mandatory fields: ${Object.keys(this.missingMandatoryFields).length}`, 'debug');
-    this.log(`- Missing title fields: ${Object.keys(this.missingTitleFields).length}`, 'debug');
-    this.log(`- Missing environment/locale: ${Object.keys(this.missingEnvLocale).length}`, 'debug');
-    this.log(`- Missing multiple fields: ${Object.keys(this.missingMultipleField).length}`, 'debug');
+    log.debug(`Entries audit completed. Found issues:`);
+    log.debug(`- Missing references: ${Object.keys(this.missingRefs).length}`);
+    log.debug(`- Missing select fields: ${Object.keys(this.missingSelectFeild).length}`);
+    log.debug(`- Missing mandatory fields: ${Object.keys(this.missingMandatoryFields).length}`);
+    log.debug(`- Missing title fields: ${Object.keys(this.missingTitleFields).length}`);
+    log.debug(`- Missing environment/locale: ${Object.keys(this.missingEnvLocale).length}`);
+    log.debug(`- Missing multiple fields: ${Object.keys(this.missingMultipleField).length}`);
     
     return result;
   }
@@ -324,12 +320,12 @@ export default class Entries {
    * The function removes any properties from the `missingRefs` object that have an empty array value.
    */
   removeEmptyVal() {
-    this.log('Removing empty missing reference arrays', 'debug');
+    log.debug('Removing empty missing reference arrays');
     
     let removedRefs = 0;
     for (let propName in this.missingRefs) {
       if (!this.missingRefs[propName].length) {
-        this.log(`Removing empty missing references for entry: ${propName}`, 'debug');
+        log.debug(`Removing empty missing references for entry: ${propName}`);
         delete this.missingRefs[propName];
         removedRefs++;
       }
@@ -338,7 +334,7 @@ export default class Entries {
     let removedSelectFields = 0;
     for (let propName in this.missingSelectFeild) {
       if (!this.missingSelectFeild[propName].length) {
-        this.log(`Removing empty missing select fields for entry: ${propName}`, 'debug');
+        log.debug(`Removing empty missing select fields for entry: ${propName}`);
         delete this.missingSelectFeild[propName];
         removedSelectFields++;
       }
@@ -347,13 +343,13 @@ export default class Entries {
     let removedMandatoryFields = 0;
     for (let propName in this.missingMandatoryFields) {
       if (!this.missingMandatoryFields[propName].length) {
-        this.log(`Removing empty missing mandatory fields for entry: ${propName}`, 'debug');
+        log.debug(`Removing empty missing mandatory fields for entry: ${propName}`);
         delete this.missingMandatoryFields[propName];
         removedMandatoryFields++;
       }
     }
     
-    this.log(`Cleanup completed: removed ${removedRefs} empty refs, ${removedSelectFields} empty select fields, ${removedMandatoryFields} empty mandatory fields`, 'debug');
+    log.debug(`Cleanup completed: removed ${removedRefs} empty refs, ${removedSelectFields} empty select fields, ${removedMandatoryFields} empty mandatory fields`);
   }
 
   /**
@@ -361,67 +357,65 @@ export default class Entries {
    * `gfSchema` properties using the `ContentType` class.
    */
   async fixPrerequisiteData() {
-    this.log('Starting prerequisite data fix process', 'debug');
+    log.debug('Starting prerequisite data fix process');
     
-    this.log('Fixing content type schema', 'debug');
+    log.debug('Fixing content type schema');
     this.ctSchema = (await new ContentType({
       fix: true,
-      log: () => {},
       config: this.config,
       moduleName: 'content-types',
       ctSchema: this.ctSchema,
       gfSchema: this.gfSchema,
     }).run(true)) as ContentTypeStruct[];
-    this.log(`Content type schema fixed: ${this.ctSchema.length} schemas`, 'debug');
+    log.debug(`Content type schema fixed: ${this.ctSchema.length} schemas`);
     
-    this.log('Fixing global field schema', 'debug');
+    log.debug('Fixing global field schema');
     this.gfSchema = (await new GlobalField({
       fix: true,
-      log: () => {},
       config: this.config,
       moduleName: 'global-fields',
       ctSchema: this.ctSchema,
       gfSchema: this.gfSchema,
     }).run(true)) as ContentTypeStruct[];
-    this.log(`Global field schema fixed: ${this.gfSchema.length} schemas`, 'debug');
+    log.debug(`Global field schema fixed: ${this.gfSchema.length} schemas`);
 
     const extensionPath = resolve(this.config.basePath, 'extensions', 'extensions.json');
     const marketplacePath = resolve(this.config.basePath, 'marketplace_apps', 'marketplace_apps.json');
     
-    this.log(`Loading extensions from: ${extensionPath}`, 'debug');
+    log.debug(`Loading extensions from: ${extensionPath}`);
     if (existsSync(extensionPath)) {
       try {
         this.extensions = Object.keys(JSON.parse(readFileSync(extensionPath, 'utf8')));
-        this.log(`Loaded ${this.extensions.length} extensions`, 'debug');
+        log.debug(`Loaded ${this.extensions.length} extensions`);
       } catch (error) {
-        this.log(`Failed to load extensions: ${error}`, 'debug');
+        log.debug(`Failed to load extensions: ${error}`);
       }
     } else {
-      this.log('No extensions.json found', 'debug');
+      log.debug('No extensions.json found');
     }
 
-    this.log(`Loading marketplace apps from: ${marketplacePath}`, 'debug');
+    log.debug(`Loading marketplace apps from: ${marketplacePath}`);
     if (existsSync(marketplacePath)) {
       try {
         const marketplaceApps: MarketplaceAppsInstallationData[] = JSON.parse(readFileSync(marketplacePath, 'utf8'));
-        this.log(`Found ${marketplaceApps.length} marketplace apps`, 'debug');
+        log.debug(`Found ${marketplaceApps.length} marketplace apps`);
 
         for (const app of marketplaceApps) {
           const metaData = map(map(app?.ui_location?.locations, 'meta').flat(), 'extension_uid').filter(
             (val) => val,
           ) as string[];
           this.extensions.push(...metaData);
-          this.log(`Added ${metaData.length} extension UIDs from app: ${app.manifest?.name || app.uid}`, 'debug');
+          log.debug(`Added ${metaData.length} extension UIDs from app: ${app.manifest?.name || app.uid}`);
         }
       } catch (error) {
-        this.log(`Failed to load marketplace apps: ${error}`, 'debug');
+        log.debug(`Failed to load marketplace apps: ${error}`);
       }
     } else {
-      this.log('No marketplace_apps.json found', 'debug');
+      log.debug('No marketplace_apps.json found');
     }
     
-    this.log(`Total extensions loaded: ${this.extensions.length}`, 'debug');
-    this.log('Prerequisite data fix process completed', 'debug');
+    log.debug(`Total extensions loaded: ${this.extensions.length}`);
+    log.debug('Prerequisite data fix process completed');
   }
 
   /**
@@ -429,32 +423,32 @@ export default class Entries {
    * JSON to the specified file path.
    */
   async writeFixContent(filePath: string, schema: Record<string, EntryStruct>) {
-    this.log(`Starting writeFixContent process for entries`, 'debug');
-    this.log(`Target file path: ${filePath}`, 'debug');
-    this.log(`Entries to write: ${Object.keys(schema).length}`, 'debug');
+    log.debug(`Starting writeFixContent process for entries`);
+    log.debug(`Target file path: ${filePath}`);
+    log.debug(`Entries to write: ${Object.keys(schema).length}`);
 
     if (this.fix) {
-      this.log('Fix mode enabled, checking write permissions', 'debug');
+      log.debug('Fix mode enabled, checking write permissions');
       
       const skipConfirm = this.config.flags['copy-dir'] || this.config.flags['external-config']?.skipConfirm;
       
       if (skipConfirm) {
-        this.log('Skipping confirmation due to copy-dir or external-config flags', 'debug');
+        log.debug('Skipping confirmation due to copy-dir or external-config flags');
       } else {
-        this.log('Asking user for confirmation to write fix content', 'debug');
+        log.debug('Asking user for confirmation to write fix content');
       }
 
       const canWrite = skipConfirm || this.config.flags.yes || (await cliux.confirm(commonMsg.FIX_CONFIRMATION));
       
       if (canWrite) {
-        this.log(`Writing fixed entries to: ${filePath}`, 'debug');
+        log.debug(`Writing fixed entries to: ${filePath}`);
         writeFileSync(filePath, JSON.stringify(schema));
-        this.log(`Successfully wrote ${Object.keys(schema).length} entries to file`, 'debug');
+        log.debug(`Successfully wrote ${Object.keys(schema).length} entries to file`);
       } else {
-        this.log('User declined to write fix content', 'debug');
+        log.debug('User declined to write fix content');
       }
     } else {
-      this.log('Skipping writeFixContent - not in fix mode', 'debug');
+      log.debug('Skipping writeFixContent - not in fix mode');
     }
   }
 
@@ -475,21 +469,21 @@ export default class Entries {
     field: ContentTypeStruct | GlobalFieldDataType | ModularBlockType | GroupFieldDataType,
     entry: EntryFieldType,
   ) {
-    this.log(`Looking for references in field: ${(field as any).uid || (field as any).title || 'unknown'}`, 'debug');
+    log.debug(`Looking for references in field: ${(field as any).uid || (field as any).title || 'unknown'}`);
     const schemaFields = field?.schema ?? [];
-    this.log(`Processing ${schemaFields.length} fields in schema`, 'debug');
+    log.debug(`Processing ${schemaFields.length} fields in schema`);
 
     if (this.fix) {
-      this.log('Running fix on schema', 'debug');
+      log.debug('Running fix on schema');
       entry = this.runFixOnSchema(tree, field.schema as ContentTypeSchemaType[], entry);
     }
 
     for (const child of schemaFields) {
       const { uid, multiple, data_type, display_name } = child;
-      this.log(`Processing field: ${display_name} (${uid}) - ${data_type}`, 'debug');
+      log.debug(`Processing field: ${display_name} (${uid}) - ${data_type}`);
 
       if (multiple && entry[uid] && !Array.isArray(entry[uid])) {
-        this.log(`Field ${display_name} should be array but is not`, 'debug');
+        log.debug(`Field ${display_name} should be array but is not`);
         if (!this.missingMultipleField[this.currentUid]) {
           this.missingMultipleField[this.currentUid] = [];
         }
@@ -508,7 +502,7 @@ export default class Entries {
         });
       }
       
-      this.log(`Validating mandatory fields for: ${display_name}`, 'debug');
+      log.debug(`Validating mandatory fields for: ${display_name}`);
       this.missingMandatoryFields[this.currentUid].push(
         ...this.validateMandatoryFields(
           [...tree, { uid: field.uid, name: child.display_name, field: uid }],
@@ -517,24 +511,24 @@ export default class Entries {
         ),
       );
       if (!entry?.[uid] && !child.hasOwnProperty('display_type')) {
-        this.log(`Skipping field ${display_name} - no entry value and no display_type`, 'debug');
+        log.debug(`Skipping field ${display_name} - no entry value and no display_type`);
         continue;
       }
 
-      this.log(`Validating field type: ${data_type} for ${display_name}`, 'debug');
+      log.debug(`Validating field type: ${data_type} for ${display_name}`);
       switch (child.data_type) {
         case 'reference':
-          this.log(`Validating reference field: ${display_name}`, 'debug');
+          log.debug(`Validating reference field: ${display_name}`);
           const refResults = this.validateReferenceField(
             [...tree, { uid: child.uid, name: child.display_name, field: uid }],
             child as ReferenceFieldDataType,
             entry[uid] as EntryReferenceFieldDataType[],
           );
           this.missingRefs[this.currentUid].push(...refResults);
-          this.log(`Found ${refResults.length} missing references in field: ${display_name}`, 'debug');
+          log.debug(`Found ${refResults.length} missing references in field: ${display_name}`);
           break;
         case 'global_field':
-          this.log(`Validating global field: ${display_name}`, 'debug');
+          log.debug(`Validating global field: ${display_name}`);
           this.validateGlobalField(
             [...tree, { uid: child.uid, name: child.display_name, field: uid }],
             child as GlobalFieldDataType,
@@ -543,17 +537,17 @@ export default class Entries {
           break;
         case 'json':
           if ('extension' in child.field_metadata && child.field_metadata.extension) {
-            this.log(`Validating extension field: ${display_name}`, 'debug');
+            log.debug(`Validating extension field: ${display_name}`);
             const extResults = this.validateExtensionAndAppField(
               [...tree, { uid: child.uid, name: child.display_name, field: uid }],
               child as ExtensionOrAppFieldDataType,
               entry as EntryExtensionOrAppFieldDataType,
             );
             this.missingRefs[this.currentUid].push(...extResults);
-            this.log(`Found ${extResults.length} missing extension references in field: ${display_name}`, 'debug');
+            log.debug(`Found ${extResults.length} missing extension references in field: ${display_name}`);
           } else if ('allow_json_rte' in child.field_metadata && child.field_metadata.allow_json_rte) {
             // NOTE JSON RTE field type
-            this.log(`Validating JSON RTE field: ${display_name}`, 'debug');
+            log.debug(`Validating JSON RTE field: ${display_name}`);
             this.validateJsonRTEFields(
               [...tree, { uid: child.uid, name: child.display_name, field: uid }],
               child as JsonRTEFieldDataType,
@@ -562,7 +556,7 @@ export default class Entries {
           }
           break;
         case 'blocks':
-          this.log(`Validating modular blocks field: ${display_name}`, 'debug');
+          log.debug(`Validating modular blocks field: ${display_name}`);
           this.validateModularBlocksField(
             [...tree, { uid: child.uid, name: child.display_name, field: uid }],
             child as ModularBlocksDataType,
@@ -570,7 +564,7 @@ export default class Entries {
           );
           break;
         case 'group':
-          this.log(`Validating group field: ${display_name}`, 'debug');
+          log.debug(`Validating group field: ${display_name}`);
           this.validateGroupField(
             [...tree, { uid: field.uid, name: child.display_name, field: uid }],
             child as GroupFieldDataType,
@@ -580,19 +574,19 @@ export default class Entries {
         case 'text':
         case 'number':
           if (child.hasOwnProperty('display_type')) {
-            this.log(`Validating select field: ${display_name}`, 'debug');
+            log.debug(`Validating select field: ${display_name}`);
             const selectResults = this.validateSelectField(
               [...tree, { uid: field.uid, name: child.display_name, field: uid }],
               child as SelectFeildStruct,
               entry[uid],
             );
             this.missingSelectFeild[this.currentUid].push(...selectResults);
-            this.log(`Found ${selectResults.length} missing select field values in field: ${display_name}`, 'debug');
+            log.debug(`Found ${selectResults.length} missing select field values in field: ${display_name}`);
           }
           break;
       }
     }
-    this.log(`Field reference validation completed: ${(field as any).uid || (field as any).title || 'unknown'}`, 'debug');
+    log.debug(`Field reference validation completed: ${(field as any).uid || (field as any).title || 'unknown'}`);
   }
 
   /**
@@ -613,17 +607,17 @@ export default class Entries {
     fieldStructure: ReferenceFieldDataType,
     field: EntryReferenceFieldDataType[],
   ) {
-    this.log(`Validating reference field: ${fieldStructure.display_name}`, 'debug');
+    log.debug(`Validating reference field: ${fieldStructure.display_name}`);
     
     if (typeof field === 'string') {
-      this.log(`Converting string reference to JSON: ${field}`, 'debug');
+      log.debug(`Converting string reference to JSON: ${field}`);
       let stringReference = field as string;
       stringReference = stringReference.replace(/'/g, '"');
       field = JSON.parse(stringReference);
     }
     
     const result = this.validateReferenceValues(tree, fieldStructure, field);
-    this.log(`Reference field validation completed: ${result?.length || 0} missing references found`, 'debug');
+    log.debug(`Reference field validation completed: ${result?.length || 0} missing references found`);
     return result;
   }
 
@@ -645,29 +639,29 @@ export default class Entries {
     fieldStructure: ExtensionOrAppFieldDataType,
     field: EntryExtensionOrAppFieldDataType,
   ) {
-    this.log(`Validating extension/app field: ${fieldStructure.display_name}`, 'debug');
+    log.debug(`Validating extension/app field: ${fieldStructure.display_name}`);
     
     if (this.fix) {
-      this.log('Fix mode enabled, skipping extension/app validation', 'debug');
+      log.debug('Fix mode enabled, skipping extension/app validation');
       return [];
     }
 
     const missingRefs = [];
     let { uid, display_name, data_type } = fieldStructure || {};
-    this.log(`Checking extension/app field: ${uid}`, 'debug');
+    log.debug(`Checking extension/app field: ${uid}`);
 
     if (field[uid]) {
       let { metadata: { extension_uid } = { extension_uid: '' } } = field[uid] || {};
-      this.log(`Found extension UID: ${extension_uid}`, 'debug');
+      log.debug(`Found extension UID: ${extension_uid}`);
 
       if (extension_uid && !this.extensions.includes(extension_uid)) {
-        this.log(`Missing extension: ${extension_uid}`, 'debug');
+        log.debug(`Missing extension: ${extension_uid}`);
         missingRefs.push({ uid, extension_uid, type: 'Extension or Apps' } as any);
       } else {
-        this.log(`Extension ${extension_uid} is valid`, 'debug');
+        log.debug(`Extension ${extension_uid} is valid`);
       }
     } else {
-      this.log(`No extension/app data found for field: ${uid}`, 'debug');
+      log.debug(`No extension/app data found for field: ${uid}`);
     }
 
     const result = missingRefs.length
@@ -687,7 +681,7 @@ export default class Entries {
         ]
       : [];
     
-    this.log(`Extension/app field validation completed: ${result.length} missing references found`, 'debug');
+    log.debug(`Extension/app field validation completed: ${result.length} missing references found`);
     return result;
   }
 
@@ -708,13 +702,13 @@ export default class Entries {
     fieldStructure: GlobalFieldDataType,
     field: EntryGlobalFieldDataType,
   ) {
-    this.log(`Validating global field: ${fieldStructure.display_name}`, 'debug');
-    this.log(`Global field UID: ${fieldStructure.uid}`, 'debug');
+    log.debug(`Validating global field: ${fieldStructure.display_name}`);
+    log.debug(`Global field UID: ${fieldStructure.uid}`);
     
     // NOTE Any GlobalField related logic can be added here
     this.lookForReference(tree, fieldStructure, field);
     
-    this.log(`Global field validation completed for: ${fieldStructure.display_name}`, 'debug');
+    log.debug(`Global field validation completed for: ${fieldStructure.display_name}`);
   }
 
   /**
@@ -734,28 +728,28 @@ export default class Entries {
     fieldStructure: JsonRTEFieldDataType,
     field: EntryJsonRTEFieldDataType,
   ) {
-    this.log(`Validating JSON RTE field: ${fieldStructure.display_name}`, 'debug');
-    this.log(`JSON RTE field UID: ${fieldStructure.uid}`, 'debug');
-    this.log(`Found ${field?.children?.length || 0} children in JSON RTE field`, 'debug');
+    log.debug(`Validating JSON RTE field: ${fieldStructure.display_name}`);
+    log.debug(`JSON RTE field UID: ${fieldStructure.uid}`);
+    log.debug(`Found ${field?.children?.length || 0} children in JSON RTE field`);
     
     // NOTE Other possible reference logic will be added related to JSON RTE (Ex missing assets, extensions etc.,)
     for (const index in field?.children ?? []) {
       const child = field.children[index];
       const { children } = child;
-      this.log(`Processing JSON RTE child ${index}`, 'debug');
+      log.debug(`Processing JSON RTE child ${index}`);
 
       if (!this.fix) {
-        this.log(`Checking JSON RTE references for child ${index}`, 'debug');
+        log.debug(`Checking JSON RTE references for child ${index}`);
         this.jsonRefCheck(tree, fieldStructure, child);
       }
 
       if (!isEmpty(children)) {
-        this.log(`Recursively validating JSON RTE children for child ${index}`, 'debug');
+        log.debug(`Recursively validating JSON RTE children for child ${index}`);
         this.validateJsonRTEFields(tree, fieldStructure, field.children[index]);
       }
     }
     
-    this.log(`JSON RTE field validation completed for: ${fieldStructure.display_name}`, 'debug');
+    log.debug(`JSON RTE field validation completed for: ${fieldStructure.display_name}`);
   }
 
   /**
@@ -776,32 +770,32 @@ export default class Entries {
     fieldStructure: ModularBlocksDataType,
     field: EntryModularBlocksDataType[],
   ) {
-    this.log(`Validating modular blocks field: ${fieldStructure.display_name}`, 'debug');
-    this.log(`Modular blocks field UID: ${fieldStructure.uid}`, 'debug');
-    this.log(`Found ${field.length} modular blocks`, 'debug');
-    this.log(`Available blocks: ${fieldStructure.blocks.map(b => b.title).join(', ')}`, 'debug');
+    log.debug(`Validating modular blocks field: ${fieldStructure.display_name}`);
+    log.debug(`Modular blocks field UID: ${fieldStructure.uid}`);
+    log.debug(`Found ${field.length} modular blocks`);
+    log.debug(`Available blocks: ${fieldStructure.blocks.map(b => b.title).join(', ')}`);
     
     if (!this.fix) {
-      this.log('Checking modular block references (non-fix mode)', 'debug');
+      log.debug('Checking modular block references (non-fix mode)');
       for (const index in field) {
-        this.log(`Checking references for modular block ${index}`, 'debug');
+        log.debug(`Checking references for modular block ${index}`);
         this.modularBlockRefCheck(tree, fieldStructure.blocks, field[index], +index);
       }
     }
 
     for (const block of fieldStructure.blocks) {
       const { uid, title } = block;
-      this.log(`Processing block: ${title} (${uid})`, 'debug');
+      log.debug(`Processing block: ${title} (${uid})`);
 
       for (const eBlock of field) {
         if (eBlock[uid]) {
-          this.log(`Found entry block data for: ${title}`, 'debug');
+          log.debug(`Found entry block data for: ${title}`);
           this.lookForReference([...tree, { uid, name: title }], block, eBlock[uid] as EntryModularBlocksDataType);
         }
       }
     }
     
-    this.log(`Modular blocks field validation completed for: ${fieldStructure.display_name}`, 'debug');
+    log.debug(`Modular blocks field validation completed for: ${fieldStructure.display_name}`);
   }
 
   /**
@@ -818,15 +812,15 @@ export default class Entries {
     fieldStructure: GroupFieldDataType,
     field: EntryGroupFieldDataType | EntryGroupFieldDataType[],
   ) {
-    this.log(`Validating group field: ${fieldStructure.display_name}`, 'debug');
-    this.log(`Group field UID: ${fieldStructure.uid}`, 'debug');
-    this.log(`Group field type: ${Array.isArray(field) ? 'array' : 'single'}`, 'debug');
+    log.debug(`Validating group field: ${fieldStructure.display_name}`);
+    log.debug(`Group field UID: ${fieldStructure.uid}`);
+    log.debug(`Group field type: ${Array.isArray(field) ? 'array' : 'single'}`);
     
     // NOTE Any Group Field related logic can be added here (Ex data serialization or picking any metadata for report etc.,)
     if (Array.isArray(field)) {
-      this.log(`Processing ${field.length} group field entries`, 'debug');
+      log.debug(`Processing ${field.length} group field entries`);
       field.forEach((eGroup, index) => {
-        this.log(`Processing group field entry ${index}`, 'debug');
+        log.debug(`Processing group field entry ${index}`);
         this.lookForReference(
           [...tree, { uid: fieldStructure.uid, display_name: fieldStructure.display_name }],
           fieldStructure,
@@ -834,11 +828,11 @@ export default class Entries {
         );
       });
     } else {
-      this.log('Processing single group field entry', 'debug');
+      log.debug('Processing single group field entry');
       this.lookForReference(tree, fieldStructure, field);
     }
     
-    this.log(`Group field validation completed for: ${fieldStructure.display_name}`, 'debug');
+    log.debug(`Group field validation completed for: ${fieldStructure.display_name}`);
   }
 
   /**
@@ -861,49 +855,49 @@ export default class Entries {
     fieldStructure: ReferenceFieldDataType,
     field: EntryReferenceFieldDataType[],
   ): EntryRefErrorReturnType[] {
-    this.log(`Validating reference values for field: ${fieldStructure.display_name}`, 'debug');
+    log.debug(`Validating reference values for field: ${fieldStructure.display_name}`);
     
     if (this.fix) {
-      this.log('Fix mode enabled, skipping reference validation', 'debug');
+      log.debug('Fix mode enabled, skipping reference validation');
       return [];
     }
 
     const missingRefs: Record<string, any>[] = [];
     const { uid: data_type, display_name, reference_to } = fieldStructure;
-    this.log(`Reference field UID: ${data_type}`, 'debug');
-    this.log(`Reference to: ${reference_to?.join(', ') || 'none'}`, 'debug');
-    this.log(`Found ${field?.length || 0} references to validate`, 'debug');
+    log.debug(`Reference field UID: ${data_type}`);
+    log.debug(`Reference to: ${reference_to?.join(', ') || 'none'}`);
+    log.debug(`Found ${field?.length || 0} references to validate`);
 
     for (const index in field ?? []) {
       const reference: any = field[index];
       const { uid } = reference;
-      this.log(`Processing reference ${index}: ${uid || reference}`, 'debug');
+      log.debug(`Processing reference ${index}: ${uid || reference}`);
       
       if (!uid && reference.startsWith('blt')) {
-        this.log(`Checking reference: ${reference}`, 'debug');
+        log.debug(`Checking reference: ${reference}`);
         const refExist = find(this.entryMetaData, { uid: reference });
         if (!refExist) {
-          this.log(`Missing reference: ${reference}`, 'debug');
+          log.debug(`Missing reference: ${reference}`);
           if (Array.isArray(reference_to) && reference_to.length === 1) {
             missingRefs.push({ uid: reference, _content_type_uid: reference_to[0] });
           } else {
             missingRefs.push(reference);
           }
         } else {
-          this.log(`Reference ${reference} is valid`, 'debug');
+          log.debug(`Reference ${reference} is valid`);
         }
       }
       // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
       // if (this.config.skipRefs.includes(reference)) continue;
       else {
-        this.log(`Checking standard reference: ${uid}`, 'debug');
+        log.debug(`Checking standard reference: ${uid}`);
         const refExist = find(this.entryMetaData, { uid });
 
         if (!refExist) {
-          this.log(`Missing reference: ${uid}`, 'debug');
+          log.debug(`Missing reference: ${uid}`);
           missingRefs.push(reference);
         } else {
-          this.log(`Reference ${uid} is valid`, 'debug');
+          log.debug(`Reference ${uid} is valid`);
         }
       }
     }
@@ -925,28 +919,28 @@ export default class Entries {
         ]
       : [];
     
-    this.log(`Reference values validation completed: ${result.length} missing references found`, 'debug');
+    log.debug(`Reference values validation completed: ${result.length} missing references found`);
     return result;
   }
 
   removeMissingKeysOnEntry(schema: ContentTypeSchemaType[], entry: EntryFieldType) {
-    this.log(`Removing missing keys from entry: ${this.currentUid}`, 'debug');
+    log.debug(`Removing missing keys from entry: ${this.currentUid}`);
     
     // NOTE remove invalid entry keys
     const ctFields = map(schema, 'uid');
     const entryFields = Object.keys(entry ?? {});
-    this.log(`Content type fields: ${ctFields.length}, Entry fields: ${entryFields.length}`, 'debug');
-    this.log(`System keys: ${this.config.entries.systemKeys.join(', ')}`, 'debug');
+    log.debug(`Content type fields: ${ctFields.length}, Entry fields: ${entryFields.length}`);
+    log.debug(`System keys: ${this.config.entries.systemKeys.join(', ')}`);
 
     entryFields.forEach((eKey) => {
       // NOTE Key should not be system key and not exist in schema means it's invalid entry key
       if (!this.config.entries.systemKeys.includes(eKey) && !ctFields.includes(eKey)) {
-        this.log(`Removing invalid field: ${eKey}`, 'debug');
+        log.debug(`Removing invalid field: ${eKey}`);
         delete entry[eKey];
       }
     });
     
-    this.log(`Missing keys removal completed for entry: ${this.currentUid}`, 'debug');
+    log.debug(`Missing keys removal completed for entry: ${this.currentUid}`);
   }
 
   /**
@@ -964,21 +958,21 @@ export default class Entries {
    * `schema`.
    */
   runFixOnSchema(tree: Record<string, unknown>[], schema: ContentTypeSchemaType[], entry: EntryFieldType) {
-    this.log(`Running fix on schema for entry: ${this.currentUid}`, 'debug');
-    this.log(`Schema fields: ${schema.length}, Entry fields: ${Object.keys(entry).length}`, 'debug');
+    log.debug(`Running fix on schema for entry: ${this.currentUid}`);
+    log.debug(`Schema fields: ${schema.length}, Entry fields: ${Object.keys(entry).length}`);
     
     // NOTE Global field Fix
     schema.forEach((field) => {
       const { uid, data_type, multiple } = field;
-      this.log(`Processing field: ${uid} (${data_type})`, 'debug');
+      log.debug(`Processing field: ${uid} (${data_type})`);
 
       if (!Object(entry).hasOwnProperty(uid)) {
-        this.log(`Field ${uid} not found in entry, skipping`, 'debug');
+        log.debug(`Field ${uid} not found in entry, skipping`);
         return;
       }
 
       if (multiple && entry[uid] && !Array.isArray(entry[uid])) {
-        this.log(`Fixing multiple field: ${uid} - converting to array`, 'debug');
+        log.debug(`Fixing multiple field: ${uid} - converting to array`);
         this.missingMultipleField[this.currentUid] ??= [];
 
         this.missingMultipleField[this.currentUid].push({
@@ -1000,7 +994,7 @@ export default class Entries {
 
       switch (data_type) {
         case 'global_field':
-          this.log(`Fixing global field: ${uid}`, 'debug');
+          log.debug(`Fixing global field: ${uid}`);
           entry[uid] = this.fixGlobalFieldReferences(
             [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }],
             field as GlobalFieldDataType,
@@ -1009,11 +1003,11 @@ export default class Entries {
           break;
         case 'json':
         case 'reference':
-          this.log(`Fixing ${data_type} field: ${uid}`, 'debug');
+          log.debug(`Fixing ${data_type} field: ${uid}`);
           if (data_type === 'json') {
             if ('extension' in field.field_metadata && field.field_metadata.extension) {
               // NOTE Custom field type
-              this.log(`Fixing extension/app field: ${uid}`, 'debug');
+              log.debug(`Fixing extension/app field: ${uid}`);
               this.fixMissingExtensionOrApp(
                 [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }],
                 field as ExtensionOrAppFieldDataType,
@@ -1021,7 +1015,7 @@ export default class Entries {
               );
               break;
             } else if ('allow_json_rte' in field.field_metadata && field.field_metadata.allow_json_rte) {
-              this.log(`Fixing JSON RTE field: ${uid}`, 'debug');
+              log.debug(`Fixing JSON RTE field: ${uid}`);
               this.fixJsonRteMissingReferences(
                 [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }],
                 field as JsonRTEFieldDataType,
@@ -1031,19 +1025,19 @@ export default class Entries {
             }
           }
           // NOTE Reference field
-          this.log(`Fixing reference field: ${uid}`, 'debug');
+          log.debug(`Fixing reference field: ${uid}`);
           entry[uid] = this.fixMissingReferences(
             [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }],
             field as ReferenceFieldDataType,
             entry[uid] as EntryReferenceFieldDataType[],
           );
           if (!entry[uid]) {
-            this.log(`Deleting empty reference field: ${uid}`, 'debug');
+            log.debug(`Deleting empty reference field: ${uid}`);
             delete entry[uid];
           }
           break;
         case 'blocks':
-          this.log(`Fixing modular blocks field: ${uid}`, 'debug');
+          log.debug(`Fixing modular blocks field: ${uid}`);
           entry[uid] = this.fixModularBlocksReferences(
             [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }],
             (field as ModularBlocksDataType).blocks,
@@ -1051,7 +1045,7 @@ export default class Entries {
           );
           break;
         case 'group':
-          this.log(`Fixing group field: ${uid}`, 'debug');
+          log.debug(`Fixing group field: ${uid}`);
           entry[uid] = this.fixGroupField(
             [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }],
             field as GroupFieldDataType,
@@ -1061,7 +1055,7 @@ export default class Entries {
         case 'text':
         case 'number':
           if (field.hasOwnProperty('display_type')) {
-            this.log(`Fixing select field: ${uid}`, 'debug');
+            log.debug(`Fixing select field: ${uid}`);
             entry[uid] = this.fixSelectField(
               [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }],
               field as SelectFeildStruct,
@@ -1072,7 +1066,7 @@ export default class Entries {
       }
     });
 
-    this.log(`Schema fix completed for entry: ${this.currentUid}`, 'debug');
+    log.debug(`Schema fix completed for entry: ${this.currentUid}`);
     return entry;
   }
 
@@ -1093,10 +1087,10 @@ export default class Entries {
   }
 
   validateSelectField(tree: Record<string, unknown>[], fieldStructure: SelectFeildStruct, field: any) {
-    this.log(`Validating select field: ${fieldStructure.display_name}`, 'debug');
-    this.log(`Select field UID: ${fieldStructure.uid}`, 'debug');
-    this.log(`Field value: ${JSON.stringify(field)}`, 'debug');
-    this.log(`Multiple: ${fieldStructure.multiple}, Display type: ${fieldStructure.display_type}`, 'debug');
+    log.debug(`Validating select field: ${fieldStructure.display_name}`);
+    log.debug(`Select field UID: ${fieldStructure.uid}`);
+    log.debug(`Field value: ${JSON.stringify(field)}`);
+    log.debug(`Multiple: ${fieldStructure.multiple}, Display type: ${fieldStructure.display_type}`);
     
     const { display_name, enum: selectOptions, multiple, min_instance, display_type, data_type } = fieldStructure;
     if (
@@ -1105,7 +1099,7 @@ export default class Entries {
       (Array.isArray(field) && field.length === 0) ||
       (!field && data_type !== 'number')
     ) {
-      this.log(`Select field is empty or null: ${display_name}`, 'debug');
+      log.debug(`Select field is empty or null: ${display_name}`);
       let missingCTSelectFieldValues = 'Not Selected';
       return [
         {
@@ -1126,29 +1120,29 @@ export default class Entries {
     let missingCTSelectFieldValues;
 
     if (multiple) {
-      this.log(`Validating multiple select field: ${display_name}`, 'debug');
+      log.debug(`Validating multiple select field: ${display_name}`);
       if (Array.isArray(field)) {
-        this.log(`Field is array with ${field.length} values`, 'debug');
+        log.debug(`Field is array with ${field.length} values`);
         let obj = this.findNotPresentSelectField(field, selectOptions);
         let { notPresent } = obj;
         if (notPresent.length) {
-          this.log(`Found ${notPresent.length} missing select values: ${notPresent.join(', ')}`, 'debug');
+          log.debug(`Found ${notPresent.length} missing select values: ${notPresent.join(', ')}`);
           missingCTSelectFieldValues = notPresent;
         } else {
-          this.log(`All select values are valid`, 'debug');
+          log.debug(`All select values are valid`);
         }
       }
     } else {
-      this.log(`Validating single select field: ${display_name}`, 'debug');
+      log.debug(`Validating single select field: ${display_name}`);
       if (!selectOptions.choices.some((choice) => choice.value === field)) {
-        this.log(`Invalid select value: ${field}`, 'debug');
+        log.debug(`Invalid select value: ${field}`);
         missingCTSelectFieldValues = field;
       } else {
-        this.log(`Select value is valid: ${field}`, 'debug');
+        log.debug(`Select value is valid: ${field}`);
       }
     }
     if (display_type && missingCTSelectFieldValues) {
-      this.log(`Select field validation found issues: ${JSON.stringify(missingCTSelectFieldValues)}`, 'debug');
+      log.debug(`Select field validation found issues: ${JSON.stringify(missingCTSelectFieldValues)}`);
       return [
         {
           uid: this.currentUid,
@@ -1165,7 +1159,7 @@ export default class Entries {
         },
       ];
     } else {
-      this.log(`Select field validation completed successfully: ${display_name}`, 'debug');
+      log.debug(`Select field validation completed successfully: ${display_name}`);
       return [];
     }
   }
@@ -1181,73 +1175,73 @@ export default class Entries {
    * @returns
    */
   fixSelectField(tree: Record<string, unknown>[], field: SelectFeildStruct, entry: any) {
-    this.log(`Fixing select field: ${field.display_name}`, 'debug');
-    this.log(`Select field UID: ${field.uid}`, 'debug');
-    this.log(`Current entry value: ${JSON.stringify(entry)}`, 'debug');
+    log.debug(`Fixing select field: ${field.display_name}`);
+    log.debug(`Select field UID: ${field.uid}`);
+    log.debug(`Current entry value: ${JSON.stringify(entry)}`);
     
     if (!this.config.fixSelectField) {
-      this.log('Select field fixing is disabled in config', 'debug');
+      log.debug('Select field fixing is disabled in config');
       return entry;
     }
     const { enum: selectOptions, multiple, min_instance, display_type, display_name, uid } = field;
-    this.log(`Select options: ${selectOptions.choices.length} choices, Multiple: ${multiple}, Min instance: ${min_instance}`, 'debug');
+    log.debug(`Select options: ${selectOptions.choices.length} choices, Multiple: ${multiple}, Min instance: ${min_instance}`);
 
     let missingCTSelectFieldValues;
     let isMissingValuePresent = false;
     let selectedValue: unknown = '';
     if (multiple) {
-      this.log('Processing multiple select field', 'debug');
+      log.debug('Processing multiple select field');
       let obj = this.findNotPresentSelectField(entry, selectOptions);
       let { notPresent, filteredFeild } = obj;
-      this.log(`Found ${notPresent.length} invalid values, filtered to ${filteredFeild.length} values`, 'debug');
+      log.debug(`Found ${notPresent.length} invalid values, filtered to ${filteredFeild.length} values`);
       entry = filteredFeild;
       missingCTSelectFieldValues = notPresent;
       if (missingCTSelectFieldValues.length) {
         isMissingValuePresent = true;
-        this.log(`Missing values found: ${missingCTSelectFieldValues.join(', ')}`, 'debug');
+        log.debug(`Missing values found: ${missingCTSelectFieldValues.join(', ')}`);
       }
       if (min_instance && Array.isArray(entry)) {
         const missingInstances = min_instance - entry.length;
-        this.log(`Checking min instance requirement: ${min_instance}, current: ${entry.length}, missing: ${missingInstances}`, 'debug');
+        log.debug(`Checking min instance requirement: ${min_instance}, current: ${entry.length}, missing: ${missingInstances}`);
         if (missingInstances > 0) {
           isMissingValuePresent = true;
           const newValues = selectOptions.choices
             .filter((choice) => !entry.includes(choice.value))
             .slice(0, missingInstances)
             .map((choice) => choice.value);
-          this.log(`Adding ${newValues.length} values to meet min instance requirement: ${newValues.join(', ')}`, 'debug');
+          log.debug(`Adding ${newValues.length} values to meet min instance requirement: ${newValues.join(', ')}`);
           entry.push(...newValues);
           selectedValue = newValues;
-          this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: newValues.join(' '), uid }), 'error');
+          log.error($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: newValues.join(' '), uid }));
         }
       } else {
         if (entry.length === 0) {
           isMissingValuePresent = true;
           const defaultValue = selectOptions.choices.length > 0 ? selectOptions.choices[0].value : null;
-          this.log(`Empty multiple select field, adding default value: ${defaultValue}`, 'debug');
+          log.debug(`Empty multiple select field, adding default value: ${defaultValue}`);
           entry.push(defaultValue);
           selectedValue = defaultValue;
-          this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: defaultValue as string, uid }), 'error');
+          log.error($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: defaultValue as string, uid }));
         }
       }
     } else {
-      this.log('Processing single select field', 'debug');
+      log.debug('Processing single select field');
       const isPresent = selectOptions.choices.some((choice) => choice.value === entry);
       if (!isPresent) {
-        this.log(`Invalid single select value: ${entry}`, 'debug');
+        log.debug(`Invalid single select value: ${entry}`);
         missingCTSelectFieldValues = entry;
         isMissingValuePresent = true;
         let defaultValue = selectOptions.choices.length > 0 ? selectOptions.choices[0].value : null;
-        this.log(`Replacing with default value: ${defaultValue}`, 'debug');
+        log.debug(`Replacing with default value: ${defaultValue}`);
         entry = defaultValue;
         selectedValue = defaultValue;
-        this.log($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: defaultValue as string, uid }), 'error');
+        log.error($t(auditFixMsg.ENTRY_SELECT_FIELD_FIX, { value: defaultValue as string, uid }));
       } else {
-        this.log(`Single select value is valid: ${entry}`, 'debug');
+        log.debug(`Single select value is valid: ${entry}`);
       }
     }
     if (display_type && isMissingValuePresent) {
-      this.log(`Recording select field fix for entry: ${this.currentUid}`, 'debug');
+      log.debug(`Recording select field fix for entry: ${this.currentUid}`);
       this.missingSelectFeild[this.currentUid].push({
         uid: this.currentUid,
         name: this.currentTitle,
@@ -1264,13 +1258,13 @@ export default class Entries {
         fixStatus: 'Fixed',
       });
     }
-    this.log(`Select field fix completed for: ${field.display_name}`, 'debug');
+    log.debug(`Select field fix completed for: ${field.display_name}`);
     return entry;
   }
 
   validateMandatoryFields(tree: Record<string, unknown>[], fieldStructure: any, entry: any) {
-    this.log(`Validating mandatory field: ${fieldStructure.display_name}`, 'debug');
-    this.log(`Field UID: ${fieldStructure.uid}, Mandatory: ${fieldStructure.mandatory}`, 'debug');
+    log.debug(`Validating mandatory field: ${fieldStructure.display_name}`);
+    log.debug(`Field UID: ${fieldStructure.uid}, Mandatory: ${fieldStructure.mandatory}`);
     
     const { display_name, multiple, data_type, mandatory, field_metadata, uid } = fieldStructure;
 
@@ -1278,7 +1272,7 @@ export default class Entries {
       const jsonNode = multiple
         ? entry[uid]?.[0]?.children?.[0]?.children?.[0]?.text
         : entry[uid]?.children?.[0]?.children?.[0]?.text;
-      this.log(`JSON RTE empty check: ${jsonNode === ''}`, 'debug');
+      log.debug(`JSON RTE empty check: ${jsonNode === ''}`);
       return jsonNode === '';
     };
 
@@ -1293,14 +1287,14 @@ export default class Entries {
       if (Array.isArray(entry[uid]) && data_type === 'reference') {
         fieldValue = entry[uid]?.length ? true : false;
       }
-      this.log(`Entry empty check: ${fieldValue === '' || !fieldValue}`, 'debug');
+      log.debug(`Entry empty check: ${fieldValue === '' || !fieldValue}`);
       return fieldValue === '' || !fieldValue;
     };
 
     if (mandatory) {
-      this.log(`Field is mandatory, checking if empty`, 'debug');
+      log.debug(`Field is mandatory, checking if empty`);
       if ((data_type === 'json' && field_metadata.allow_json_rte && isJsonRteEmpty()) || isEntryEmpty()) {
-        this.log(`Mandatory field is empty: ${display_name}`, 'debug');
+        log.debug(`Mandatory field is empty: ${display_name}`);
         return [
           {
             uid: this.currentUid,
@@ -1315,13 +1309,13 @@ export default class Entries {
           },
         ];
       } else {
-        this.log(`Mandatory field has value: ${display_name}`, 'debug');
+        log.debug(`Mandatory field has value: ${display_name}`);
       }
     } else {
-      this.log(`Field is not mandatory: ${display_name}`, 'debug');
+      log.debug(`Field is not mandatory: ${display_name}`);
     }
 
-    this.log(`Mandatory field validation completed: ${display_name}`, 'debug');
+    log.debug(`Mandatory field validation completed: ${display_name}`);
     return [];
   }
 
@@ -1332,33 +1326,33 @@ export default class Entries {
    * @returns An Array of entry containing only the values that were present in CT, An array of not present entries
    */
   findNotPresentSelectField(field: any, selectOptions: any) {
-    this.log(`Finding not present select field values`, 'debug');
-    this.log(`Field values: ${JSON.stringify(field)}`, 'debug');
-    this.log(`Available choices: ${selectOptions.choices.length}`, 'debug');
+    log.debug(`Finding not present select field values`);
+    log.debug(`Field values: ${JSON.stringify(field)}`);
+    log.debug(`Available choices: ${selectOptions.choices.length}`);
     
     if (!field) {
-      this.log('Field is null/undefined, initializing as empty array', 'debug');
+      log.debug('Field is null/undefined, initializing as empty array');
       field = [];
     }
     let present = [];
     let notPresent = [];
     const choicesMap = new Map(selectOptions.choices.map((choice: { value: any }) => [choice.value, choice]));
-    this.log(`Created choices map with ${choicesMap.size} entries`, 'debug');
+    log.debug(`Created choices map with ${choicesMap.size} entries`);
     
     for (const value of field) {
       const choice: any = choicesMap.get(value);
-      this.log(`Checking value: ${value}`, 'debug');
+      log.debug(`Checking value: ${value}`);
 
       if (choice) {
-        this.log(`Value ${value} is present in choices`, 'debug');
+        log.debug(`Value ${value} is present in choices`);
         present.push(choice.value);
       } else {
-        this.log(`Value ${value} is not present in choices`, 'debug');
+        log.debug(`Value ${value} is not present in choices`);
         notPresent.push(value);
       }
     }
     
-    this.log(`Result: ${present.length} present, ${notPresent.length} not present`, 'debug');
+    log.debug(`Result: ${present.length} present, ${notPresent.length} not present`);
     return { filteredFeild: present, notPresent };
   }
 
@@ -1378,13 +1372,13 @@ export default class Entries {
     field: GlobalFieldDataType,
     entry: EntryGlobalFieldDataType,
   ) {
-    this.log(`Fixing global field references: ${field.display_name}`, 'debug');
-    this.log(`Global field UID: ${field.uid}`, 'debug');
-    this.log(`Schema fields: ${field.schema?.length || 0}`, 'debug');
+    log.debug(`Fixing global field references: ${field.display_name}`);
+    log.debug(`Global field UID: ${field.uid}`);
+    log.debug(`Schema fields: ${field.schema?.length || 0}`);
     
     const result = this.runFixOnSchema([...tree, { uid: field.uid, display_name: field.display_name }], field.schema, entry);
     
-    this.log(`Global field references fix completed: ${field.display_name}`, 'debug');
+    log.debug(`Global field references fix completed: ${field.display_name}`);
     return result;
   }
 
@@ -1405,27 +1399,27 @@ export default class Entries {
     blocks: ModularBlockType[],
     entry: EntryModularBlocksDataType[],
   ) {
-    this.log(`Fixing modular blocks references`, 'debug');
-    this.log(`Available blocks: ${blocks.length}, Entry blocks: ${entry?.length || 0}`, 'debug');
+    log.debug(`Fixing modular blocks references`);
+    log.debug(`Available blocks: ${blocks.length}, Entry blocks: ${entry?.length || 0}`);
     
     entry = entry
       ?.map((block, index) => {
-        this.log(`Checking modular block ${index}`, 'debug');
+        log.debug(`Checking modular block ${index}`);
         return this.modularBlockRefCheck(tree, blocks, block, index);
       })
       .filter((val) => {
         const isEmpty = !val || Object.keys(val).length === 0;
-        this.log(`Block ${val ? 'kept' : 'filtered out'} (empty: ${isEmpty})`, 'debug');
+        log.debug(`Block ${val ? 'kept' : 'filtered out'} (empty: ${isEmpty})`);
         return !isEmpty;
       });
 
     blocks.forEach((block) => {
-      this.log(`Processing block: ${block.title} (${block.uid})`, 'debug');
+      log.debug(`Processing block: ${block.title} (${block.uid})`);
       entry = entry
         ?.map((eBlock) => {
           if (!isEmpty(block.schema)) {
             if (eBlock[block.uid]) {
-              this.log(`Fixing schema for block: ${block.title}`, 'debug');
+              log.debug(`Fixing schema for block: ${block.title}`);
               eBlock[block.uid] = this.runFixOnSchema(
                 [...tree, { uid: block.uid, display_name: block.title }],
                 block.schema as ContentTypeSchemaType[],
@@ -1438,12 +1432,12 @@ export default class Entries {
         })
         .filter((val) => {
           const isEmpty = !val || Object.keys(val).length === 0;
-          this.log(`Entry block ${val ? 'kept' : 'filtered out'} (empty: ${isEmpty})`, 'debug');
+          log.debug(`Entry block ${val ? 'kept' : 'filtered out'} (empty: ${isEmpty})`);
           return !isEmpty;
         });
     });
 
-    this.log(`Modular blocks references fix completed: ${entry?.length || 0} blocks remaining`, 'debug');
+    log.debug(`Modular blocks references fix completed: ${entry?.length || 0} blocks remaining`);
     return entry;
   }
 
@@ -1465,8 +1459,8 @@ export default class Entries {
     field: ExtensionOrAppFieldDataType,
     entry: EntryExtensionOrAppFieldDataType,
   ) {
-    this.log(`Fixing missing extension/app: ${field.display_name}`, 'debug');
-    this.log(`Extension/app field UID: ${field.uid}`, 'debug');
+    log.debug(`Fixing missing extension/app: ${field.display_name}`);
+    log.debug(`Extension/app field UID: ${field.uid}`);
     
     const missingRefs = [];
 
@@ -1474,20 +1468,20 @@ export default class Entries {
 
     if (entry[uid]) {
       let { metadata: { extension_uid } = { extension_uid: '' } } = entry[uid] || {};
-      this.log(`Found extension UID: ${extension_uid}`, 'debug');
+      log.debug(`Found extension UID: ${extension_uid}`);
 
       if (extension_uid && !this.extensions.includes(extension_uid)) {
-        this.log(`Missing extension: ${extension_uid}`, 'debug');
+        log.debug(`Missing extension: ${extension_uid}`);
         missingRefs.push({ uid, extension_uid, type: 'Extension or Apps' } as any);
       } else {
-        this.log(`Extension ${extension_uid} is valid`, 'debug');
+        log.debug(`Extension ${extension_uid} is valid`);
       }
     } else {
-      this.log(`No extension/app data found for field: ${uid}`, 'debug');
+      log.debug(`No extension/app data found for field: ${uid}`);
     }
 
     if (this.fix && !isEmpty(missingRefs)) {
-      this.log(`Recording extension/app fix for entry: ${this.currentUid}`, 'debug');
+      log.debug(`Recording extension/app fix for entry: ${this.currentUid}`);
       this.missingRefs[this.currentUid].push({
         tree,
         data_type,
@@ -1499,11 +1493,11 @@ export default class Entries {
         treeStr: tree.map(({ name }) => name).join(' ➜ '),
       });
 
-      this.log(`Deleting invalid extension/app field: ${uid}`, 'debug');
+      log.debug(`Deleting invalid extension/app field: ${uid}`);
       delete entry[uid];
     }
 
-    this.log(`Extension/app fix completed for: ${field.display_name}`, 'debug');
+    log.debug(`Extension/app fix completed for: ${field.display_name}`);
     return field;
   }
 
@@ -1526,17 +1520,17 @@ export default class Entries {
     field: GroupFieldDataType,
     entry: EntryGroupFieldDataType | EntryGroupFieldDataType[],
   ) {
-    this.log(`Fixing group field: ${field.display_name}`, 'debug');
-    this.log(`Group field UID: ${field.uid}`, 'debug');
-    this.log(`Schema fields: ${field.schema?.length || 0}`, 'debug');
-    this.log(`Entry type: ${Array.isArray(entry) ? 'array' : 'single'}`, 'debug');
+    log.debug(`Fixing group field: ${field.display_name}`);
+    log.debug(`Group field UID: ${field.uid}`);
+    log.debug(`Schema fields: ${field.schema?.length || 0}`);
+    log.debug(`Entry type: ${Array.isArray(entry) ? 'array' : 'single'}`);
     
     if (!isEmpty(field.schema)) {
-      this.log(`Group field has schema, applying fixes`, 'debug');
+      log.debug(`Group field has schema, applying fixes`);
       if (Array.isArray(entry)) {
-        this.log(`Processing ${entry.length} group field entries`, 'debug');
+        log.debug(`Processing ${entry.length} group field entries`);
         entry = entry.map((eGroup, index) => {
-          this.log(`Fixing group field entry ${index}`, 'debug');
+          log.debug(`Fixing group field entry ${index}`);
           return this.runFixOnSchema(
             [...tree, { uid: field.uid, display_name: field.display_name }],
             field.schema as ContentTypeSchemaType[],
@@ -1544,7 +1538,7 @@ export default class Entries {
           );
         }) as EntryGroupFieldDataType[];
       } else {
-        this.log(`Processing single group field entry`, 'debug');
+        log.debug(`Processing single group field entry`);
         entry = this.runFixOnSchema(
           [...tree, { uid: field.uid, display_name: field.display_name }],
           field.schema as ContentTypeSchemaType[],
@@ -1552,10 +1546,10 @@ export default class Entries {
         ) as EntryGroupFieldDataType;
       }
     } else {
-      this.log(`Group field has no schema, skipping fixes`, 'debug');
+      log.debug(`Group field has no schema, skipping fixes`);
     }
 
-    this.log(`Group field fix completed for: ${field.display_name}`, 'debug');
+    log.debug(`Group field fix completed for: ${field.display_name}`);
     return entry;
   }
 
@@ -1574,48 +1568,48 @@ export default class Entries {
     field: ReferenceFieldDataType | JsonRTEFieldDataType,
     entry: EntryJsonRTEFieldDataType | EntryJsonRTEFieldDataType[],
   ) {
-    this.log(`Fixing JSON RTE missing references`, 'debug');
-    this.log(`Field UID: ${field.uid}`, 'debug');
-    this.log(`Entry type: ${Array.isArray(entry) ? 'array' : 'single'}`, 'debug');
+    log.debug(`Fixing JSON RTE missing references`);
+    log.debug(`Field UID: ${field.uid}`);
+    log.debug(`Entry type: ${Array.isArray(entry) ? 'array' : 'single'}`);
     
     if (Array.isArray(entry)) {
-      this.log(`Processing ${entry.length} JSON RTE entries`, 'debug');
+      log.debug(`Processing ${entry.length} JSON RTE entries`);
       entry = entry.map((child: any, index) => {
-        this.log(`Fixing JSON RTE entry ${index}: ${child?.type || 'unknown type'}`, 'debug');
+        log.debug(`Fixing JSON RTE entry ${index}: ${child?.type || 'unknown type'}`);
         return this.fixJsonRteMissingReferences([...tree, { index, type: child?.type, uid: child?.uid }], field, child);
       }) as EntryJsonRTEFieldDataType[];
     } else {
       if (entry?.children) {
-        this.log(`Processing ${entry.children.length} JSON RTE children`, 'debug');
+        log.debug(`Processing ${entry.children.length} JSON RTE children`);
         entry.children = entry.children
           .map((child, index) => {
-            this.log(`Checking JSON RTE child ${index}: ${(child as any).type || 'unknown type'}`, 'debug');
+            log.debug(`Checking JSON RTE child ${index}: ${(child as any).type || 'unknown type'}`);
             const refExist = this.jsonRefCheck(tree, field, child);
 
             if (!refExist) {
-              this.log(`JSON RTE child ${index} has invalid reference, removing`, 'debug');
+              log.debug(`JSON RTE child ${index} has invalid reference, removing`);
               return null;
             }
 
             if (!isEmpty(child.children)) {
-              this.log(`JSON RTE child ${index} has children, recursively fixing`, 'debug');
+              log.debug(`JSON RTE child ${index} has children, recursively fixing`);
               child = this.fixJsonRteMissingReferences(tree, field, child) as EntryJsonRTEFieldDataType;
             }
 
-            this.log(`JSON RTE child ${index} reference is valid`, 'debug');
+            log.debug(`JSON RTE child ${index} reference is valid`);
             return child;
           })
           .filter((val) => {
             const isValid = val !== null;
-            this.log(`JSON RTE child ${val ? 'kept' : 'filtered out'}`, 'debug');
+            log.debug(`JSON RTE child ${val ? 'kept' : 'filtered out'}`);
             return isValid;
           }) as EntryJsonRTEFieldDataType[];
       } else {
-        this.log(`JSON RTE entry has no children`, 'debug');
+        log.debug(`JSON RTE entry has no children`);
       }
     }
 
-    this.log(`JSON RTE missing references fix completed`, 'debug');
+    log.debug(`JSON RTE missing references fix completed`);
     return entry;
   }
 
@@ -1635,60 +1629,60 @@ export default class Entries {
     field: ReferenceFieldDataType | JsonRTEFieldDataType,
     entry: EntryReferenceFieldDataType[],
   ) {
-    this.log(`Fixing missing references`, 'debug');
-    this.log(`Field UID: ${field.uid}`, 'debug');
-    this.log(`Reference to: ${(field as any).reference_to?.join(', ') || 'none'}`, 'debug');
-    this.log(`Entry type: ${typeof entry}, length: ${Array.isArray(entry) ? entry.length : 'N/A'}`, 'debug');
+    log.debug(`Fixing missing references`);
+    log.debug(`Field UID: ${field.uid}`);
+    log.debug(`Reference to: ${(field as any).reference_to?.join(', ') || 'none'}`);
+    log.debug(`Entry type: ${typeof entry}, length: ${Array.isArray(entry) ? entry.length : 'N/A'}`);
     
     const missingRefs: Record<string, any>[] = [];
     if (typeof entry === 'string') {
-      this.log(`Entry is string, parsing JSON`, 'debug');
+      log.debug(`Entry is string, parsing JSON`);
       let stringReference = entry as string;
       stringReference = stringReference.replace(/'/g, '"');
       entry = JSON.parse(stringReference);
-      this.log(`Parsed entry: ${Array.isArray(entry) ? entry.length : 'N/A'} references`, 'debug');
+      log.debug(`Parsed entry: ${Array.isArray(entry) ? entry.length : 'N/A'} references`);
     }
     entry = entry
       ?.map((reference: any, index) => {
         const { uid } = reference;
         const { reference_to } = field;
-        this.log(`Processing reference ${index}: ${uid || reference}`, 'debug');
+        log.debug(`Processing reference ${index}: ${uid || reference}`);
         
         if (!uid && reference.startsWith('blt')) {
-          this.log(`Checking blt reference: ${reference}`, 'debug');
+          log.debug(`Checking blt reference: ${reference}`);
           const refExist = find(this.entryMetaData, { uid: reference });
           if (!refExist) {
-            this.log(`Missing blt reference: ${reference}`, 'debug');
+            log.debug(`Missing blt reference: ${reference}`);
             if (Array.isArray(reference_to) && reference_to.length === 1) {
               missingRefs.push({ uid: reference, _content_type_uid: reference_to[0] });
             } else {
               missingRefs.push(reference);
             }
           } else {
-            this.log(`Blt reference ${reference} is valid`, 'debug');
+            log.debug(`Blt reference ${reference} is valid`);
             return { uid: reference, _content_type_uid: refExist.ctUid };
           }
         } else {
-          this.log(`Checking standard reference: ${uid}`, 'debug');
+          log.debug(`Checking standard reference: ${uid}`);
           const refExist = find(this.entryMetaData, { uid });
           if (!refExist) {
-            this.log(`Missing reference: ${uid}`, 'debug');
+            log.debug(`Missing reference: ${uid}`);
             missingRefs.push(reference);
             return null;
           } else {
-            this.log(`Reference ${uid} is valid`, 'debug');
+            log.debug(`Reference ${uid} is valid`);
             return reference;
           }
         }
       })
       .filter((val) => {
         const isValid = val !== null;
-        this.log(`Reference ${val ? 'kept' : 'filtered out'}`, 'debug');
+        log.debug(`Reference ${val ? 'kept' : 'filtered out'}`);
         return isValid;
       }) as EntryReferenceFieldDataType[];
 
     if (!isEmpty(missingRefs)) {
-      this.log(`Recording ${missingRefs.length} missing references for entry: ${this.currentUid}`, 'debug');
+      log.debug(`Recording ${missingRefs.length} missing references for entry: ${this.currentUid}`);
       this.missingRefs[this.currentUid].push({
         tree,
         fixStatus: 'Fixed',
@@ -1703,10 +1697,10 @@ export default class Entries {
         missingRefs,
       });
     } else {
-      this.log(`No missing references found`, 'debug');
+      log.debug(`No missing references found`);
     }
 
-    this.log(`Missing references fix completed: ${entry?.length || 0} references remaining`, 'debug');
+    log.debug(`Missing references fix completed: ${entry?.length || 0} references remaining`);
     return entry;
   }
 
@@ -1730,21 +1724,21 @@ export default class Entries {
     entryBlock: EntryModularBlocksDataType,
     index: number,
   ) {
-    this.log(`Checking modular block references for block ${index}`, 'debug');
-    this.log(`Available block UIDs: ${blocks.map(b => b.uid).join(', ')}`, 'debug');
-    this.log(`Entry block keys: ${Object.keys(entryBlock).join(', ')}`, 'debug');
+    log.debug(`Checking modular block references for block ${index}`);
+    log.debug(`Available block UIDs: ${blocks.map(b => b.uid).join(', ')}`);
+    log.debug(`Entry block keys: ${Object.keys(entryBlock).join(', ')}`);
     
     const validBlockUid = blocks.map((block) => block.uid);
     const invalidKeys = Object.keys(entryBlock).filter((key) => !validBlockUid.includes(key));
-    this.log(`Found ${invalidKeys.length} invalid keys: ${invalidKeys.join(', ')}`, 'debug');
+    log.debug(`Found ${invalidKeys.length} invalid keys: ${invalidKeys.join(', ')}`);
 
     invalidKeys.forEach((key) => {
       if (this.fix) {
-        this.log(`Deleting invalid key: ${key}`, 'debug');
+        log.debug(`Deleting invalid key: ${key}`);
         delete entryBlock[key];
       }
 
-      this.log(`Recording invalid modular block key: ${key}`, 'debug');
+      log.debug(`Recording invalid modular block key: ${key}`);
       this.missingRefs[this.currentUid].push({
         uid: this.currentUid,
         name: this.currentTitle,
@@ -1760,7 +1754,7 @@ export default class Entries {
       });
     });
 
-    this.log(`Modular block reference check completed for block ${index}`, 'debug');
+    log.debug(`Modular block reference check completed for block ${index}`);
     return entryBlock;
   }
 
@@ -1776,19 +1770,19 @@ export default class Entries {
    * @returns The function `jsonRefCheck` returns either `null` or `true`.
    */
   jsonRefCheck(tree: Record<string, unknown>[], schema: JsonRTEFieldDataType, child: EntryJsonRTEFieldDataType) {
-    this.log(`Checking JSON reference for child: ${(child as any).type || 'unknown type'}`, 'debug');
-    this.log(`Child UID: ${child.uid}`, 'debug');
+    log.debug(`Checking JSON reference for child: ${(child as any).type || 'unknown type'}`);
+    log.debug(`Child UID: ${child.uid}`);
     
     const { uid: childrenUid } = child;
     const { 'entry-uid': entryUid, 'content-type-uid': contentTypeUid } = child.attrs || {};
-    this.log(`Entry UID: ${entryUid}, Content type UID: ${contentTypeUid}`, 'debug');
+    log.debug(`Entry UID: ${entryUid}, Content type UID: ${contentTypeUid}`);
 
     if (entryUid) {
-      this.log(`Checking entry reference: ${entryUid}`, 'debug');
+      log.debug(`Checking entry reference: ${entryUid}`);
       const refExist = find(this.entryMetaData, { uid: entryUid });
 
       if (!refExist) {
-        this.log(`Missing entry reference: ${entryUid}`, 'debug');
+        log.debug(`Missing entry reference: ${entryUid}`);
         tree.push({ field: 'children' }, { field: childrenUid, uid: schema.uid });
         this.missingRefs[this.currentUid].push({
           tree,
@@ -1804,16 +1798,16 @@ export default class Entries {
           missingRefs: [{ uid: entryUid, 'content-type-uid': contentTypeUid }],
         });
 
-        this.log(`JSON reference check failed for entry: ${entryUid}`, 'debug');
+        log.debug(`JSON reference check failed for entry: ${entryUid}`);
         return null;
       } else {
-        this.log(`Entry reference ${entryUid} is valid`, 'debug');
+        log.debug(`Entry reference ${entryUid} is valid`);
       }
     } else {
-      this.log(`No entry UID found in JSON child`, 'debug');
+      log.debug(`No entry UID found in JSON child`);
     }
 
-    this.log(`JSON reference check passed`, 'debug');
+    log.debug(`JSON reference check passed`);
     return true;
   }
 
@@ -1822,23 +1816,23 @@ export default class Entries {
    * schemas.
    */
   async prepareEntryMetaData() {
-    this.log('Starting entry metadata preparation', 'debug');
-    this.log(auditMsg.PREPARING_ENTRY_METADATA, 'info');
+    log.debug('Starting entry metadata preparation');
+    log.info(auditMsg.PREPARING_ENTRY_METADATA);
     const localesFolderPath = resolve(this.config.basePath, this.config.moduleConfig.locales.dirName);
     const localesPath = join(localesFolderPath, this.config.moduleConfig.locales.fileName);
     const masterLocalesPath = join(localesFolderPath, 'master-locale.json');
     
-    this.log(`Loading locales from: ${masterLocalesPath}`, 'debug');
+    log.debug(`Loading locales from: ${masterLocalesPath}`);
     this.locales = existsSync(masterLocalesPath) ? values(JSON.parse(readFileSync(masterLocalesPath, 'utf8'))) : [];
-    this.log(`Loaded ${this.locales.length} master locales`, 'debug');
+    log.debug(`Loaded ${this.locales.length} master locales`);
 
-    this.log(`Loading additional locales from: ${localesPath}`, 'debug');
+    log.debug(`Loading additional locales from: ${localesPath}`);
     if (existsSync(localesPath)) {
       const additionalLocales = values(JSON.parse(readFileSync(localesPath, 'utf8')));
       this.locales.push(...additionalLocales);
-      this.log(`Added ${additionalLocales.length} additional locales`, 'debug');
+      log.debug(`Added ${additionalLocales.length} additional locales`);
     } else {
-      this.log('No additional locales file found', 'debug');
+      log.debug('No additional locales file found');
     }
 
     const environmentPath = resolve(
@@ -1846,44 +1840,44 @@ export default class Entries {
       this.config.moduleConfig.environments.dirName,
       this.config.moduleConfig.environments.fileName,
     );
-    this.log(`Loading environments from: ${environmentPath}`, 'debug');
+    log.debug(`Loading environments from: ${environmentPath}`);
     this.environments = existsSync(environmentPath) ? keys(JSON.parse(readFileSync(environmentPath, 'utf8'))) : [];
-    this.log(`Loaded ${this.environments.length} environments: ${this.environments.join(', ')}`, 'debug');
+    log.debug(`Loaded ${this.environments.length} environments: ${this.environments.join(', ')}`);
     
-    this.log(`Processing ${this.locales.length} locales and ${this.ctSchema.length} content types for entry metadata`, 'debug');
+    log.debug(`Processing ${this.locales.length} locales and ${this.ctSchema.length} content types for entry metadata`);
     for (const { code } of this.locales) {
-      this.log(`Processing locale: ${code}`, 'debug');
+      log.debug(`Processing locale: ${code}`);
       for (const { uid } of this.ctSchema) {
-        this.log(`Processing content type: ${uid} in locale ${code}`, 'debug');
+        log.debug(`Processing content type: ${uid} in locale ${code}`);
         let basePath = join(this.folderPath, uid, code);
-        this.log(`Entry base path: ${basePath}`, 'debug');
+        log.debug(`Entry base path: ${basePath}`);
         
         let fsUtility = new FsUtility({ basePath, indexFileName: 'index.json' });
         let indexer = fsUtility.indexFileContent;
-        this.log(`Found ${Object.keys(indexer).length} entry files for ${uid}/${code}`, 'debug');
+        log.debug(`Found ${Object.keys(indexer).length} entry files for ${uid}/${code}`);
 
         for (const _ in indexer) {
           const entries = (await fsUtility.readChunkFiles.next()) as Record<string, EntryStruct>;
-          this.log(`Processing ${Object.keys(entries).length} entries from file`, 'debug');
+          log.debug(`Processing ${Object.keys(entries).length} entries from file`);
           
           for (const entryUid in entries) {
             let { title } = entries[entryUid];
-            this.log(`Processing entry metadata: ${entryUid} (${title || 'no title'})`, 'debug');
+            log.debug(`Processing entry metadata: ${entryUid} (${title || 'no title'})`);
 
             if (entries[entryUid].hasOwnProperty('title') && !title) {
-              this.log(`Entry ${entryUid} has empty title field`, 'debug');
+              log.debug(`Entry ${entryUid} has empty title field`);
               this.missingTitleFields[entryUid] = {
                 'Entry UID': entryUid,
                 'Content Type UID': uid,
                 Locale: code,
               };
-              this.log(
+              log.debug(
                 `The 'title' field in Entry with UID '${entryUid}' of Content Type '${uid}' in Locale '${code}' is empty.`,
                 `error`,
               );
             } else if (!title) {
-              this.log(`Entry ${entryUid} has no title field`, 'debug');
-              this.log(
+              log.debug(`Entry ${entryUid} has no title field`);
+              log.debug(
                 `The 'title' field in Entry with UID '${entryUid}' of Content Type '${uid}' in Locale '${code}' is empty.`,
                 `error`,
               );
@@ -1894,7 +1888,7 @@ export default class Entries {
       }
     }
     
-    this.log(`Entry metadata preparation completed: ${this.entryMetaData.length} entries processed`, 'debug');
-    this.log(`Missing title fields found: ${Object.keys(this.missingTitleFields).length}`, 'debug');
+    log.debug(`Entry metadata preparation completed: ${this.entryMetaData.length} entries processed`);
+    log.debug(`Missing title fields found: ${Object.keys(this.missingTitleFields).length}`);
   }
 }

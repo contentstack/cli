@@ -1,15 +1,14 @@
 import { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { cloneDeep } from 'lodash';
-import { LogFn, ConfigType, CtConstructorParam, ModuleConstructorParam, CustomRole, Rule } from '../types';
-import { cliux, sanitizePath } from '@contentstack/cli-utilities';
+import { ConfigType, CtConstructorParam, ModuleConstructorParam, CustomRole, Rule } from '../types';
+import { cliux, sanitizePath, log } from '@contentstack/cli-utilities';
 
 import auditConfig from '../config';
 import { $t, auditMsg, commonMsg } from '../messages';
 import { values } from 'lodash';
 
 export default class CustomRoles {
-  public log: LogFn;
   protected fix: boolean;
   public fileName: any;
   public config: ConfigType;
@@ -20,9 +19,8 @@ export default class CustomRoles {
   public customRolePath: string;
   public isBranchFixDone: boolean;
 
-  constructor({ log, fix, config, moduleName }: ModuleConstructorParam & Pick<CtConstructorParam, 'ctSchema'>) {
-    this.log = log;
-    this.log(`Initializing Custom Roles module`, 'debug');
+  constructor({ fix, config, moduleName }: ModuleConstructorParam & Pick<CtConstructorParam, 'ctSchema'>) {
+    log.debug(`Initializing Custom Roles module`);
     this.config = config;
     this.fix = fix ?? false;
     this.customRoleSchema = [];
@@ -35,25 +33,25 @@ export default class CustomRoles {
     this.missingFieldsInCustomRoles = [];
     this.customRolePath = '';
     this.isBranchFixDone = false;
-    this.log(`Starting ${this.moduleName} audit process`, 'debug');
-    this.log(`Data directory: ${this.folderPath}`, 'debug');
-    this.log(`Fix mode: ${this.fix}`, 'debug');
-    this.log(`Branch filter: ${this.config?.branch || 'none'}`, 'debug');
+    log.debug(`Starting ${this.moduleName} audit process`);
+    log.debug(`Data directory: ${this.folderPath}`);
+    log.debug(`Fix mode: ${this.fix}`);
+    log.debug(`Branch filter: ${this.config?.branch || 'none'}`);
 
   }
   validateModules(
     moduleName: keyof typeof auditConfig.moduleConfig,
     moduleConfig: Record<string, unknown>,
   ): keyof typeof auditConfig.moduleConfig {
-    this.log(`Validating module: ${moduleName}`, 'debug');
-    this.log(`Available modules in config: ${Object.keys(moduleConfig).join(', ')}`, 'debug');
+    log.debug(`Validating module: ${moduleName}`);
+    log.debug(`Available modules in config: ${Object.keys(moduleConfig).join(', ')}`);
     
     if (Object.keys(moduleConfig).includes(moduleName)) {
-      this.log(`Module ${moduleName} found in config, returning: ${moduleName}`, 'debug');
+      log.debug(`Module ${moduleName} found in config, returning: ${moduleName}`);
       return moduleName;
     }
     
-    this.log(`Module ${moduleName} not found in config, defaulting to: custom-roles`, 'debug');
+    log.debug(`Module ${moduleName} not found in config, defaulting to: custom-roles`);
     return 'custom-roles';
   }
 
@@ -66,118 +64,117 @@ export default class CustomRoles {
   async run() {
    
     if (!existsSync(this.folderPath)) {
-      this.log(`Skipping ${this.moduleName} audit - path does not exist`, 'debug');
-      this.log(`Skipping ${this.moduleName} audit`, 'warn');
-      this.log($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
+      log.debug(`Skipping ${this.moduleName} audit - path does not exist`);
+      log.warn(`Skipping ${this.moduleName} audit`);
+      cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
       return {};
     }
 
     this.customRolePath = join(this.folderPath, this.fileName);
-    this.log(`Custom roles file path: ${this.customRolePath}`, 'debug');
+    log.debug(`Custom roles file path: ${this.customRolePath}`);
     
     this.customRoleSchema = existsSync(this.customRolePath)
       ? values(JSON.parse(readFileSync(this.customRolePath, 'utf8')) as CustomRole[])
       : [];
     
-    this.log(`Found ${this.customRoleSchema.length} custom roles to audit`, 'debug');
+    log.debug(`Found ${this.customRoleSchema.length} custom roles to audit`);
 
     for (let index = 0; index < this.customRoleSchema?.length; index++) {
       const customRole = this.customRoleSchema[index];
-      this.log(`Processing custom role: ${customRole.name} (${customRole.uid})`, 'debug');
+      log.debug(`Processing custom role: ${customRole.name} (${customRole.uid})`);
       
       let branchesToBeRemoved: string[] = [];
       if (this.config?.branch) {
-        this.log(`Config branch : ${this.config.branch}`, 'debug');
-        this.log(`Checking branch rules for custom role: ${customRole.name}`, 'debug');
+        log.debug(`Config branch : ${this.config.branch}`);
+        log.debug(`Checking branch rules for custom role: ${customRole.name}`);
         customRole?.rules?.filter((rule) => {
           if (rule.module === 'branch') {
-            this.log(`Found branch rule with branches: ${rule?.branches?.join(', ') || 'none'}`, 'debug');
+            log.debug(`Found branch rule with branches: ${rule?.branches?.join(', ') || 'none'}`);
             branchesToBeRemoved = rule?.branches?.filter((branch) => branch !== this.config?.branch) || [];
-            this.log(`Branches to be removed: ${branchesToBeRemoved.join(', ') || 'none'}`, 'debug');
+            log.debug(`Branches to be removed: ${branchesToBeRemoved.join(', ') || 'none'}`);
           }
         });
       } else {
-        this.log(`No branch filter configured, skipping branch validation`, 'debug');
+        log.debug(`No branch filter configured, skipping branch validation`);
       }
 
       if (branchesToBeRemoved?.length) {
-        this.log(`Custom role ${customRole.name} has branches to be removed: ${branchesToBeRemoved.join(', ')}`, 'debug');
+        log.debug(`Custom role ${customRole.name} has branches to be removed: ${branchesToBeRemoved.join(', ')}`);
         this.isBranchFixDone = true;
         const tempCR = cloneDeep(customRole);
 
         if (customRole?.rules && this.config?.branch) {
-          this.log(`Applying branch fix to custom role: ${customRole.name}`, 'debug');
+          log.debug(`Applying branch fix to custom role: ${customRole.name}`);
           tempCR.rules.forEach((rule: Rule) => {
             if (rule.module === 'branch') {
-              this.log(`Updating branch rule branches from ${rule.branches?.join(', ')} to ${branchesToBeRemoved.join(', ')}`, 'debug');
+              log.debug(`Updating branch rule branches from ${rule.branches?.join(', ')} to ${branchesToBeRemoved.join(', ')}`);
               rule.branches = branchesToBeRemoved;
             }
           });
         }
 
         this.missingFieldsInCustomRoles.push(tempCR);
-        this.log(`Added custom role ${customRole.name} to missing fields list`, 'debug');
+        log.debug(`Added custom role ${customRole.name} to missing fields list`);
       } else {
-        this.log(`Custom role ${customRole.name} has no branch issues`, 'debug');
+        log.debug(`Custom role ${customRole.name} has no branch issues`);
       }
 
-      this.log(
+      log.info(
         $t(auditMsg.SCAN_CR_SUCCESS_MSG, {
           name: customRole.name,
           uid: customRole.uid,
-        }),
-        'info',
+        })
       );
     }
 
-    this.log(`Found ${this.missingFieldsInCustomRoles.length} custom roles with issues`, 'debug');
-    this.log(`Branch fix done: ${this.isBranchFixDone}`, 'debug');
+    log.debug(`Found ${this.missingFieldsInCustomRoles.length} custom roles with issues`);
+    log.debug(`Branch fix done: ${this.isBranchFixDone}`);
 
     if (this.fix && (this.missingFieldsInCustomRoles.length || this.isBranchFixDone)) {
-      this.log('Fix mode enabled and issues found, applying fixes', 'debug');
+      log.debug('Fix mode enabled and issues found, applying fixes');
       await this.fixCustomRoleSchema();
       this.missingFieldsInCustomRoles.forEach((cr) => (cr.fixStatus = 'Fixed'));
-      this.log(`Applied fixes to ${this.missingFieldsInCustomRoles.length} custom roles`, 'debug');
+      log.debug(`Applied fixes to ${this.missingFieldsInCustomRoles.length} custom roles`);
     } else {
-      this.log('No fixes needed or fix mode disabled', 'debug');
+      log.debug('No fixes needed or fix mode disabled');
     }
 
-    this.log(`${this.moduleName} audit completed. Found ${this.missingFieldsInCustomRoles.length} custom roles with issues`, 'debug');
+    log.debug(`${this.moduleName} audit completed. Found ${this.missingFieldsInCustomRoles.length} custom roles with issues`);
     return this.missingFieldsInCustomRoles;
   }
 
   async fixCustomRoleSchema() {
-    this.log('Starting custom role schema fix process', 'debug');
+    log.debug('Starting custom role schema fix process');
     const newCustomRoleSchema: Record<string, CustomRole> = existsSync(this.customRolePath)
       ? JSON.parse(readFileSync(this.customRolePath, 'utf8'))
       : {};
 
-    this.log(`Loaded ${Object.keys(newCustomRoleSchema).length} custom roles from file`, 'debug');
+    log.debug(`Loaded ${Object.keys(newCustomRoleSchema).length} custom roles from file`);
 
     if (Object.keys(newCustomRoleSchema).length === 0 || !this.customRoleSchema?.length) {
-      this.log('No custom roles to fix or empty schema, skipping fix process', 'debug');
+      log.debug('No custom roles to fix or empty schema, skipping fix process');
       return;
     }
 
-    this.log(`Processing ${this.customRoleSchema.length} custom roles for branch fixes`, 'debug');
+    log.debug(`Processing ${this.customRoleSchema.length} custom roles for branch fixes`);
     this.customRoleSchema.forEach((customRole) => {
-      this.log(`Fixing custom role: ${customRole.name} (${customRole.uid})`, 'debug');
+      log.debug(`Fixing custom role: ${customRole.name} (${customRole.uid})`);
       
       if (!this.config.branch) {
-        this.log(`No branch configured, skipping fix for ${customRole.name}`, 'debug');
+        log.debug(`No branch configured, skipping fix for ${customRole.name}`);
         return;
       }
 
-      this.log(`Looking for branch rules in custom role: ${customRole.name}`, 'debug');
+      log.debug(`Looking for branch rules in custom role: ${customRole.name}`);
       const fixedBranches = customRole.rules
         ?.filter((rule) => rule.module === 'branch' && rule.branches?.length)
         ?.reduce((acc: string[], rule) => {
-          this.log(`Processing branch rule with branches: ${rule.branches?.join(', ')}`, 'debug');
+          log.debug(`Processing branch rule with branches: ${rule.branches?.join(', ')}`);
           const relevantBranches =
             rule.branches?.filter((branch) => {
               if (branch !== this.config.branch) {
-                this.log(`Removing branch ${branch} from custom role ${customRole.name}`, 'debug');
-                this.log(
+                log.debug(`Removing branch ${branch} from custom role ${customRole.name}`);
+                log.debug(
                   $t(commonMsg.CR_BRANCH_REMOVAL, {
                     uid: customRole.uid,
                     name: customRole.name,
@@ -187,64 +184,64 @@ export default class CustomRoles {
                 );
                 return false;
               } else {
-                this.log(`Keeping branch ${branch} for custom role ${customRole.name}`, 'debug');
+                log.debug(`Keeping branch ${branch} for custom role ${customRole.name}`);
               }
               return true;
             }) || [];
-          this.log(`Relevant branches after filtering: ${relevantBranches.join(', ')}`, 'debug');
+          log.debug(`Relevant branches after filtering: ${relevantBranches.join(', ')}`);
           return [...acc, ...relevantBranches];
         }, []);
 
-      this.log(`Fixed branches for ${customRole.name}: ${fixedBranches?.join(', ') || 'none'}`, 'debug');
+      log.debug(`Fixed branches for ${customRole.name}: ${fixedBranches?.join(', ') || 'none'}`);
 
       if (fixedBranches?.length) {
-        this.log(`Applying branch fix to custom role ${customRole.name}`, 'debug');
+        log.debug(`Applying branch fix to custom role ${customRole.name}`);
         newCustomRoleSchema[customRole.uid].rules
           ?.filter((rule: Rule) => rule.module === 'branch')
           ?.forEach((rule) => {
-            this.log(`Updating branch rule from ${rule.branches?.join(', ')} to ${fixedBranches.join(', ')}`, 'debug');
+            log.debug(`Updating branch rule from ${rule.branches?.join(', ')} to ${fixedBranches.join(', ')}`);
             rule.branches = fixedBranches;
           });
       } else {
-        this.log(`No branch fixes needed for custom role ${customRole.name}`, 'debug');
+        log.debug(`No branch fixes needed for custom role ${customRole.name}`);
       }
     });
 
-    this.log('Writing fixed custom role schema to file', 'debug');
+    log.debug('Writing fixed custom role schema to file');
     await this.writeFixContent(newCustomRoleSchema);
-    this.log('Custom role schema fix process completed', 'debug');
+    log.debug('Custom role schema fix process completed');
   }
 
   async writeFixContent(newCustomRoleSchema: Record<string, CustomRole>) {
-    this.log('Starting writeFixContent process for custom roles', 'debug');
+    log.debug('Starting writeFixContent process for custom roles');
     const filePath = join(this.folderPath, this.config.moduleConfig[this.moduleName].fileName);
-    this.log(`Target file path: ${filePath}`, 'debug');
-    this.log(`Custom roles to write: ${Object.keys(newCustomRoleSchema).length}`, 'debug');
+    log.debug(`Target file path: ${filePath}`);
+    log.debug(`Custom roles to write: ${Object.keys(newCustomRoleSchema).length}`);
 
     if (this.fix) {
-      this.log('Fix mode enabled, checking write permissions', 'debug');
+      log.debug('Fix mode enabled, checking write permissions');
       
       const skipConfirm = this.config.flags['copy-dir'] || 
                          this.config.flags['external-config']?.skipConfirm || 
                          this.config.flags.yes;
       
       if (skipConfirm) {
-        this.log('Skipping confirmation due to copy-dir, external-config, or yes flags', 'debug');
+        log.debug('Skipping confirmation due to copy-dir, external-config, or yes flags');
       } else {
-        this.log('Asking user for confirmation to write fix content', 'debug');
+        log.debug('Asking user for confirmation to write fix content');
       }
 
       const canWrite = skipConfirm || (await cliux.confirm(commonMsg.FIX_CONFIRMATION));
       
       if (canWrite) {
-        this.log(`Writing fixed custom roles to: ${filePath}`, 'debug');
+        log.debug(`Writing fixed custom roles to: ${filePath}`);
         writeFileSync(filePath, JSON.stringify(newCustomRoleSchema));
-        this.log(`Successfully wrote ${Object.keys(newCustomRoleSchema).length} custom roles to file`, 'debug');
+        log.debug(`Successfully wrote ${Object.keys(newCustomRoleSchema).length} custom roles to file`);
       } else {
-        this.log('User declined to write fix content', 'debug');
+        log.debug('User declined to write fix content');
       }
     } else {
-      this.log('Skipping writeFixContent - not in fix mode', 'debug');
+      log.debug('Skipping writeFixContent - not in fix mode');
     }
   }
 }

@@ -4,10 +4,9 @@ import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 
-import { sanitizePath, cliux } from '@contentstack/cli-utilities';
+import { sanitizePath, cliux, log } from '@contentstack/cli-utilities';
 
 import {
-  LogFn,
   ConfigType,
   ModularBlockType,
   ContentTypeStruct,
@@ -30,7 +29,7 @@ import { MarketplaceAppsInstallationData } from '../types/extension';
 /* The `ContentType` class is responsible for scanning content types, looking for references, and
 generating a report in JSON and CSV formats. */
 export default class ContentType {
-  public log: LogFn;
+
   protected fix: boolean;
   public fileName: string;
   public config: ConfigType;
@@ -44,8 +43,7 @@ export default class ContentType {
   protected schema: ContentTypeStruct[] = [];
   protected missingRefs: Record<string, any> = {};
   public moduleName: keyof typeof auditConfig.moduleConfig;
-  constructor({ log, fix, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
-    this.log = log;
+  constructor({  fix, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
     this.config = config;
     this.fix = fix ?? false;
     this.ctSchema = ctSchema;
@@ -57,22 +55,22 @@ export default class ContentType {
       sanitizePath(config.moduleConfig[this.moduleName].dirName),
     );
 
-    this.log(`Starting ${this.moduleName} audit process`, 'debug');
+    log.debug(`Starting ${this.moduleName} audit process`);
   }
 
   validateModules(
     moduleName: keyof typeof auditConfig.moduleConfig,
     moduleConfig: Record<string, unknown>,
   ): keyof typeof auditConfig.moduleConfig {
-    this.log(`Validating module: ${moduleName}`, 'debug');
-    this.log(`Available modules in config: ${Object.keys(moduleConfig).join(', ')}`, 'debug');
+    log.debug(`Validating module: ${moduleName}`);
+    log.debug(`Available modules in config: ${Object.keys(moduleConfig).join(', ')}`);
     
     if (Object.keys(moduleConfig).includes(moduleName)) {
-      this.log(`Module ${moduleName} found in config, returning: ${moduleName}`, 'debug');
+      log.debug(`Module ${moduleName} found in config, returning: ${moduleName}`);
       return moduleName;
     }
     
-    this.log(`Module ${moduleName} not found in config, defaulting to: content-types`, 'debug');
+    log.debug(`Module ${moduleName} not found in config, defaulting to: content-types`);
     return 'content-types';
   }
   /**
@@ -84,13 +82,13 @@ export default class ContentType {
     this.inMemoryFix = returnFixSchema;
 
     if (!existsSync(this.folderPath)) {
-      this.log(`Skipping ${this.moduleName} audit`, 'warn');
-      this.log($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
+      log.warn(`Skipping ${this.moduleName} audit`);
+      cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
       return returnFixSchema ? [] : {};
     }
 
     this.schema = this.moduleName === 'content-types' ? this.ctSchema : this.gfSchema;
-    this.log(`Found ${this.schema?.length || 0} ${this.moduleName} schemas to audit`, 'debug');
+    log.debug(`Found ${this.schema?.length || 0} ${this.moduleName} schemas to audit`);
 
     await this.prerequisiteData();
 
@@ -99,39 +97,39 @@ export default class ContentType {
       this.currentTitle = schema.title;
       this.missingRefs[this.currentUid] = [];
       const { uid, title } = schema;
-      this.log(`Auditing ${this.moduleName}: ${title} (${uid})`, 'debug');
+      log.debug(`Auditing ${this.moduleName}: ${title} (${uid})`);
       await this.lookForReference([{ uid, name: title }], schema);
-      this.log(
+      log.debug(
         $t(auditMsg.SCAN_CT_SUCCESS_MSG, { title, module: this.config.moduleConfig[this.moduleName].name }),
         'info',
       );
     }
 
     if (returnFixSchema) {
-      this.log(`Returning fixed schema with ${this.schema?.length || 0} items`, 'debug');
+      log.debug(`Returning fixed schema with ${this.schema?.length || 0} items`);
       return this.schema;
     }
 
     if (this.fix) {
-      this.log('Writing fix content to files', 'debug');
+      log.debug('Writing fix content to files');
       await this.writeFixContent();
     }
 
-    this.log('Cleaning up empty missing references', 'debug');
-    this.log(`Total missing reference properties: ${Object.keys(this.missingRefs).length}`, 'debug');
+    log.debug('Cleaning up empty missing references');
+    log.debug(`Total missing reference properties: ${Object.keys(this.missingRefs).length}`);
     
     for (let propName in this.missingRefs) {
       const refCount = this.missingRefs[propName].length;
-      this.log(`Property ${propName}: ${refCount} missing references`, 'debug');
+      log.debug(`Property ${propName}: ${refCount} missing references`);
       
       if (!refCount) {
-        this.log(`Removing empty property: ${propName}`, 'debug');
+        log.debug(`Removing empty property: ${propName}`);
         delete this.missingRefs[propName];
       }
     }
 
     const totalIssues = Object.keys(this.missingRefs).length;
-    this.log(`${this.moduleName} audit completed. Found ${totalIssues} schemas with issues`, 'debug');
+    log.debug(`${this.moduleName} audit completed. Found ${totalIssues} schemas with issues`);
     return this.missingRefs;
   }
 
@@ -141,43 +139,43 @@ export default class ContentType {
    * app data, and stores them in the `extensions` array.
    */
   async prerequisiteData() {
-    this.log('Loading prerequisite data (extensions and marketplace apps)', 'debug');
+    log.debug('Loading prerequisite data (extensions and marketplace apps)');
     const extensionPath = resolve(this.config.basePath, 'extensions', 'extensions.json');
     const marketplacePath = resolve(this.config.basePath, 'marketplace_apps', 'marketplace_apps.json');
 
     if (existsSync(extensionPath)) {
-      this.log(`Loading extensions from: ${extensionPath}`, 'debug');
+      log.debug(`Loading extensions from: ${extensionPath}`);
       try {
         this.extensions = Object.keys(JSON.parse(readFileSync(extensionPath, 'utf8')));
-        this.log(`Loaded ${this.extensions.length} extensions`, 'debug');
+        log.debug(`Loaded ${this.extensions.length} extensions`);
       } catch (error) {
-        this.log(`Failed to load extensions: ${error}`, 'debug');
+        log.debug(`Failed to load extensions: ${error}`);
       }
     } else {
-      this.log('No extensions.json found', 'debug');
+      log.debug('No extensions.json found');
     }
 
     if (existsSync(marketplacePath)) {
-      this.log(`Loading marketplace apps from: ${marketplacePath}`, 'debug');
+      log.debug(`Loading marketplace apps from: ${marketplacePath}`);
       try {
         const marketplaceApps: MarketplaceAppsInstallationData[] = JSON.parse(readFileSync(marketplacePath, 'utf8'));
-        this.log(`Found ${marketplaceApps.length} marketplace apps`, 'debug');
+        log.debug(`Found ${marketplaceApps.length} marketplace apps`);
 
         for (const app of marketplaceApps) {
           const metaData = map(map(app?.ui_location?.locations, 'meta').flat(), 'extension_uid').filter(
             (val) => val,
           ) as string[];
           this.extensions.push(...metaData);
-          this.log(`Added ${metaData.length} extension UIDs from app: ${app.manifest?.name || app.uid}`, 'debug');
+          log.debug(`Added ${metaData.length} extension UIDs from app: ${app.manifest?.name || app.uid}`);
         }
       } catch (error) {
-        this.log(`Failed to load marketplace apps: ${error}`, 'debug');
+        log.debug(`Failed to load marketplace apps: ${error}`);
       }
     } else {
-      this.log('No marketplace_apps.json found', 'debug');
+      log.debug('No marketplace_apps.json found');
     }
     
-    this.log(`Total extensions loaded: ${this.extensions.length}`, 'debug');
+    log.debug(`Total extensions loaded: ${this.extensions.length}`);
   }
 
   /**
@@ -185,28 +183,28 @@ export default class ContentType {
    * JSON to the specified file path.
    */
   async writeFixContent() {
-    this.log('Starting writeFixContent process', 'debug');
+    log.debug('Starting writeFixContent process');
     let canWrite = true;
     
     if (!this.inMemoryFix && this.fix) {
-      this.log('Fix mode enabled, checking write permissions', 'debug');
+      log.debug('Fix mode enabled, checking write permissions');
       if (!this.config.flags['copy-dir'] && !this.config.flags['external-config']?.skipConfirm) {
-        this.log('Asking user for confirmation to write fix content', 'debug');
+        log.debug('Asking user for confirmation to write fix content');
         canWrite = this.config.flags.yes ?? (await cliux.confirm(commonMsg.FIX_CONFIRMATION));
       } else {
-        this.log('Skipping confirmation due to copy-dir or external-config flags', 'debug');
+        log.debug('Skipping confirmation due to copy-dir or external-config flags');
       }
 
       if (canWrite) {
         const filePath = join(this.folderPath, this.config.moduleConfig[this.moduleName].fileName);
-        this.log(`Writing fixed schema to: ${filePath}`, 'debug');
+        log.debug(`Writing fixed schema to: ${filePath}`);
         writeFileSync(filePath, JSON.stringify(this.schema));
-        this.log(`Successfully wrote ${this.schema?.length || 0} schemas to file`, 'debug');
+        log.debug(`Successfully wrote ${this.schema?.length || 0} schemas to file`);
       } else {
-        this.log('User declined to write fix content', 'debug');
+        log.debug('User declined to write fix content');
       }
     } else {
-      this.log('Skipping writeFixContent - not in fix mode or in-memory fix', 'debug');
+      log.debug('Skipping writeFixContent - not in fix mode or in-memory fix');
     }
   }
 
@@ -225,38 +223,38 @@ export default class ContentType {
     tree: Record<string, unknown>[],
     field: ContentTypeStruct | GlobalFieldDataType | ModularBlockType | GroupFieldDataType,
   ): Promise<void> {
-    this.log(`Looking for references in field: ${field.uid}`, 'debug');
+    log.debug(`Looking for references in field: ${field.uid}`);
     const fixTypes = this.config.flags['fix-only'] ?? this.config['fix-fields'];
-    this.log(`Fix types filter: ${fixTypes.join(', ')}`, 'debug');
+    log.debug(`Fix types filter: ${fixTypes.join(', ')}`);
 
     if (this.fix) {
-      this.log('Running fix on schema', 'debug');
+      log.debug('Running fix on schema');
       field.schema = this.runFixOnSchema(tree, field.schema as ContentTypeSchemaType[]);
     }
     
     const schemaFields = field.schema ?? [];
-    this.log(`Processing ${schemaFields.length} fields in schema`, 'debug');
+    log.debug(`Processing ${schemaFields.length} fields in schema`);
     
     for (let child of schemaFields) {
       if (!fixTypes.includes(child.data_type) && child.data_type !== 'json') {
-        this.log(`Skipping field ${child.display_name} (${child.data_type}) - not in fix types`, 'debug');
+        log.debug(`Skipping field ${child.display_name} (${child.data_type}) - not in fix types`);
         continue;
       }
       
-      this.log(`Processing field: ${child.display_name} (${child.data_type})`, 'debug');
+      log.debug(`Processing field: ${child.display_name} (${child.data_type})`);
 
       switch (child.data_type) {
         case 'reference':
-          this.log(`Validating reference field: ${child.display_name}`, 'debug');
+          log.debug(`Validating reference field: ${child.display_name}`);
           const refResults = this.validateReferenceField(
             [...tree, { uid: field.uid, name: child.display_name }],
             child as ReferenceFieldDataType,
           );
           this.missingRefs[this.currentUid].push(...refResults);
-          this.log(`Found ${refResults.length} missing references in field: ${child.display_name}`, 'debug');
+          log.debug(`Found ${refResults.length} missing references in field: ${child.display_name}`);
           break;
         case 'global_field':
-          this.log(`Validating global field: ${child.display_name}`, 'debug');
+          log.debug(`Validating global field: ${child.display_name}`);
           await this.validateGlobalField(
             [...tree, { uid: child.uid, name: child.display_name }],
             child as GlobalFieldDataType,
@@ -265,41 +263,41 @@ export default class ContentType {
         case 'json':
           if ('extension' in child.field_metadata && child.field_metadata.extension) {
             if (!fixTypes.includes('json:extension')) {
-              this.log(`Skipping extension field ${child.display_name} - not in fix types`, 'debug');
+              log.debug(`Skipping extension field ${child.display_name} - not in fix types`);
               continue;
             }
-            this.log(`Validating extension field: ${child.display_name}`, 'debug');
+            log.debug(`Validating extension field: ${child.display_name}`);
             // NOTE Custom field type
             const extResults = this.validateExtensionAndAppField(
               [...tree, { uid: child.uid, name: child.display_name }],
               child as ExtensionOrAppFieldDataType,
             );
             this.missingRefs[this.currentUid].push(...extResults);
-            this.log(`Found ${extResults.length} missing extension references in field: ${child.display_name}`, 'debug');
+            log.debug(`Found ${extResults.length} missing extension references in field: ${child.display_name}`);
           } else if ('allow_json_rte' in child.field_metadata && child.field_metadata.allow_json_rte) {
             if (!fixTypes.includes('json:rte')) {
-              this.log(`Skipping JSON RTE field ${child.display_name} - not in fix types`, 'debug');
+              log.debug(`Skipping JSON RTE field ${child.display_name} - not in fix types`);
               continue;
             }
-            this.log(`Validating JSON RTE field: ${child.display_name}`, 'debug');
+            log.debug(`Validating JSON RTE field: ${child.display_name}`);
             // NOTE JSON RTE field type
             const rteResults = this.validateJsonRTEFields(
                 [...tree, { uid: child.uid, name: child.display_name }],
                 child as ReferenceFieldDataType,
               );
             this.missingRefs[this.currentUid].push(...rteResults);
-            this.log(`Found ${rteResults.length} missing RTE references in field: ${child.display_name}`, 'debug');
+            log.debug(`Found ${rteResults.length} missing RTE references in field: ${child.display_name}`);
           }
           break;
         case 'blocks':
-          this.log(`Validating modular blocks field: ${child.display_name}`, 'debug');
+          log.debug(`Validating modular blocks field: ${child.display_name}`);
           await this.validateModularBlocksField(
             [...tree, { uid: child.uid, name: child.display_name }],
             child as ModularBlocksDataType,
           );
           break;
         case 'group':
-          this.log(`Validating group field: ${child.display_name}`, 'debug');
+          log.debug(`Validating group field: ${child.display_name}`);
           await this.validateGroupField(
             [...tree, { uid: child.uid, name: child.display_name }],
             child as GroupFieldDataType,
@@ -318,9 +316,9 @@ export default class ContentType {
    * @returns an array of RefErrorReturnType.
    */
   validateReferenceField(tree: Record<string, unknown>[], field: ReferenceFieldDataType): RefErrorReturnType[] {
-    this.log(`Validating reference field: ${field.display_name} (${field.uid})`, 'debug');
+    log.debug(`Validating reference field: ${field.display_name} (${field.uid})`);
     const results = this.validateReferenceToValues(tree, field);
-    this.log(`Reference field validation completed. Found ${results.length} missing references`, 'debug');
+    log.debug(`Reference field validation completed. Found ${results.length} missing references`);
     return results;
   }
 
@@ -336,21 +334,21 @@ export default class ContentType {
     tree: Record<string, unknown>[],
     field: ExtensionOrAppFieldDataType,
   ): RefErrorReturnType[] {
-    this.log(`Validating extension/app field: ${field.display_name} (${field.uid})`, 'debug');
+    log.debug(`Validating extension/app field: ${field.display_name} (${field.uid})`);
     if (this.fix) {
-      this.log('Skipping extension validation in fix mode', 'debug');
+      log.debug('Skipping extension validation in fix mode');
       return [];
     }
 
     const missingRefs = [];
     let { uid, extension_uid, display_name, data_type } = field;
 
-    this.log(`Checking if extension ${extension_uid} exists in loaded extensions`, 'debug');
+    log.debug(`Checking if extension ${extension_uid} exists in loaded extensions`);
     if (!this.extensions.includes(extension_uid)) {
-      this.log(`Extension ${extension_uid} not found in loaded extensions`, 'debug');
+      log.debug(`Extension ${extension_uid} not found in loaded extensions`);
       missingRefs.push({ uid, extension_uid, type: 'Extension or Apps' } as any);
     } else {
-      this.log(`Extension ${extension_uid} found in loaded extensions`, 'debug');
+      log.debug(`Extension ${extension_uid} found in loaded extensions`);
     }
 
     const result = missingRefs.length
@@ -370,7 +368,7 @@ export default class ContentType {
         ]
       : [];
     
-    this.log(`Extension/app field validation completed. Found ${result.length} issues`, 'debug');
+    log.debug(`Extension/app field validation completed. Found ${result.length} issues`);
     return result;
   }
 
@@ -384,14 +382,14 @@ export default class ContentType {
    * represents the field that needs to be validated.
    */
   async validateGlobalField(tree: Record<string, unknown>[], field: GlobalFieldDataType): Promise<void> {
-    this.log(`Validating global field: ${field.display_name} (${field.uid})`, 'debug');
+    log.debug(`Validating global field: ${field.display_name} (${field.uid})`);
     // NOTE Any GlobalField related logic can be added here
     if (this.moduleName === 'global-fields') {
       let { reference_to } = field;
-      this.log(`Checking if global field ${reference_to} exists in schema`, 'debug');
+      log.debug(`Checking if global field ${reference_to} exists in schema`);
       const refExist = find(this.schema, { uid: reference_to });
       if (!refExist) {
-        this.log(`Global field ${reference_to} not found in schema`, 'debug');
+        log.debug(`Global field ${reference_to} not found in schema`);
         this.missingRefs[this.currentUid].push({
           tree,
           ct: this.currentUid,
@@ -403,12 +401,12 @@ export default class ContentType {
         });
         return void 0;
       } else {
-        this.log(`Global field ${reference_to} found in schema`, 'debug');
+        log.debug(`Global field ${reference_to} found in schema`);
       }
     } else if (this.moduleName === 'content-types') {
-      this.log('Processing global field in content-types module', 'debug');
+      log.debug('Processing global field in content-types module');
       if (!field.schema && !this.fix) {
-        this.log(`Global field ${field.display_name} has no schema and not in fix mode`, 'debug');
+        log.debug(`Global field ${field.display_name} has no schema and not in fix mode`);
         this.missingRefs[this.currentUid].push({
           tree,
           ct_uid: this.currentUid,
@@ -421,13 +419,13 @@ export default class ContentType {
 
         return void 0;
       } else {
-        this.log(`Global field ${field.display_name} has schema, proceeding with validation`, 'debug');
+        log.debug(`Global field ${field.display_name} has schema, proceeding with validation`);
       }
     }
 
-    this.log(`Calling lookForReference for global field: ${field.display_name}`, 'debug');
+    log.debug(`Calling lookForReference for global field: ${field.display_name}`);
     await this.lookForReference(tree, field);
-    this.log(`Global field validation completed: ${field.display_name}`, 'debug');
+    log.debug(`Global field validation completed: ${field.display_name}`);
   }
 
   /**
@@ -440,10 +438,10 @@ export default class ContentType {
    * objects.
    */
   validateJsonRTEFields(tree: Record<string, unknown>[], field: JsonRTEFieldDataType): RefErrorReturnType[] {
-    this.log(`Validating JSON RTE field: ${field.display_name} (${field.uid})`, 'debug');
+    log.debug(`Validating JSON RTE field: ${field.display_name} (${field.uid})`);
     // NOTE Other possible reference logic will be added related to JSON RTE (Ex missing assets, extensions etc.,)
     const results = this.validateReferenceToValues(tree, field);
-    this.log(`JSON RTE field validation completed. Found ${results.length} missing references`, 'debug');
+    log.debug(`JSON RTE field validation completed. Found ${results.length} missing references`);
     return results;
   }
 
@@ -458,19 +456,19 @@ export default class ContentType {
    * like `uid` and `title`.
    */
   async validateModularBlocksField(tree: Record<string, unknown>[], field: ModularBlocksDataType): Promise<void> {
-    this.log(`[CONTENT-TYPES] Validating modular blocks field: ${field.display_name} (${field.uid})`, 'debug');
+    log.debug(`[CONTENT-TYPES] Validating modular blocks field: ${field.display_name} (${field.uid})`);
     const { blocks } = field;
-    this.log(`Found ${blocks.length} blocks in modular blocks field`, 'debug');
+    log.debug(`Found ${blocks.length} blocks in modular blocks field`);
     
     this.fixModularBlocksReferences(tree, blocks);
 
     for (const block of blocks) {
       const { uid, title } = block;
-      this.log(`Processing block: ${title} (${uid})`, 'debug');
+      log.debug(`Processing block: ${title} (${uid})`);
 
       await this.lookForReference([...tree, { uid, name: title }], block);
     }
-    this.log(`Modular blocks field validation completed: ${field.display_name}`, 'debug');
+    log.debug(`Modular blocks field validation completed: ${field.display_name}`);
   }
 
   /**
@@ -484,10 +482,10 @@ export default class ContentType {
    * represents the group field that needs to be validated.
    */
   async validateGroupField(tree: Record<string, unknown>[], field: GroupFieldDataType): Promise<void> {
-    this.log(`[CONTENT-TYPES] Validating group field: ${field.display_name} (${field.uid})`, 'debug');
+    log.debug(`[CONTENT-TYPES] Validating group field: ${field.display_name} (${field.uid})`);
     // NOTE Any Group Field related logic can be added here (Ex data serialization or picking any metadata for report etc.,)
     await this.lookForReference(tree, field);
-    this.log(`[CONTENT-TYPES] Group field validation completed: ${field.display_name}`, 'debug');
+    log.debug(`[CONTENT-TYPES] Group field validation completed: ${field.display_name}`);
   }
 
   /**
@@ -504,51 +502,51 @@ export default class ContentType {
     tree: Record<string, unknown>[],
     field: ReferenceFieldDataType | JsonRTEFieldDataType,
   ): RefErrorReturnType[] {
-    this.log(`Validating reference to values for field: ${field.display_name} (${field.uid})`, 'debug');
+    log.debug(`Validating reference to values for field: ${field.display_name} (${field.uid})`);
     if (this.fix) {
-      this.log('Skipping reference validation in fix mode', 'debug');
+      log.debug('Skipping reference validation in fix mode');
       return [];
     }
 
     const missingRefs: string[] = [];
     let { reference_to, display_name, data_type } = field;
 
-    this.log(`Reference_to type: ${Array.isArray(reference_to) ? 'array' : 'single'}, value: ${JSON.stringify(reference_to)}`, 'debug');
+    log.debug(`Reference_to type: ${Array.isArray(reference_to) ? 'array' : 'single'}, value: ${JSON.stringify(reference_to)}`);
 
     if (!Array.isArray(reference_to)) {
-      this.log(`Processing single reference: ${reference_to}`, 'debug');
-      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, data_type, display_name }), 'error');
-      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, display_name }), 'info');
+      log.debug(`Processing single reference: ${reference_to}`);
+      log.debug($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, data_type, display_name }));
+      log.debug($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, display_name }));
       if (!this.config.skipRefs.includes(reference_to)) {
-        this.log(`Checking if reference ${reference_to} exists in content type schema`, 'debug');
+        log.debug(`Checking if reference ${reference_to} exists in content type schema`);
         const refExist = find(this.ctSchema, { uid: reference_to });
 
         if (!refExist) {
-          this.log(`Reference ${reference_to} not found in schema`, 'debug');
+          log.debug(`Reference ${reference_to} not found in schema`);
           missingRefs.push(reference_to);
         } else {
-          this.log(`Reference ${reference_to} found in schema`, 'debug');
+          log.debug(`Reference ${reference_to} found in schema`);
         }
       } else {
-        this.log(`Skipping reference ${reference_to} - in skip list`, 'debug');
+        log.debug(`Skipping reference ${reference_to} - in skip list`);
       }
     } else {
-      this.log(`Processing ${reference_to?.length || 0} references in array`, 'debug');
+      log.debug(`Processing ${reference_to?.length || 0} references in array`);
       for (const reference of reference_to ?? []) {
         // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
         if (this.config.skipRefs.includes(reference)) {
-          this.log(`Skipping reference ${reference} - in skip list`, 'debug');
+          log.debug(`Skipping reference ${reference} - in skip list`);
           continue;
         }
 
-        this.log(`Checking if reference ${reference} exists in content type schema`, 'debug');
+        log.debug(`Checking if reference ${reference} exists in content type schema`);
         const refExist = find(this.ctSchema, { uid: reference });
 
         if (!refExist) {
-          this.log(`Reference ${reference} not found in schema`, 'debug');
+          log.debug(`Reference ${reference} not found in schema`);
           missingRefs.push(reference);
         } else {
-          this.log(`Reference ${reference} found in schema`, 'debug');
+          log.debug(`Reference ${reference} found in schema`);
         }
       }
     }
@@ -570,7 +568,7 @@ export default class ContentType {
         ]
       : [];
     
-    this.log(`Reference validation completed. Found ${missingRefs.length} missing references: ${missingRefs.join(', ')}`, 'debug');
+    log.debug(`Reference validation completed. Found ${missingRefs.length} missing references: ${missingRefs.join(', ')}`);
     return result;
   }
 
@@ -585,22 +583,22 @@ export default class ContentType {
    * @returns an array of ContentTypeSchemaType objects.
    */
   runFixOnSchema(tree: Record<string, unknown>[], schema: ContentTypeSchemaType[]) {
-    this.log(`Running fix on schema with ${schema?.length || 0} fields`, 'debug');
+    log.debug(`Running fix on schema with ${schema?.length || 0} fields`);
     // NOTE Global field Fix
     const result = schema
       ?.map((field) => {
         const { data_type, display_name, uid } = field;
         const fixTypes = this.config.flags['fix-only'] ?? this.config['fix-fields'];
-        this.log(`Processing field for fix: ${display_name} (${uid}) - ${data_type}`, 'debug');
+        log.debug(`Processing field for fix: ${display_name} (${uid}) - ${data_type}`);
 
         if (!fixTypes.includes(data_type) && data_type !== 'json') {
-          this.log(`Skipping field ${display_name} - not in fix types`, 'debug');
+          log.debug(`Skipping field ${display_name} - not in fix types`);
           return field;
         }
 
         switch (data_type) {
           case 'global_field':
-            this.log(`Fixing global field references for: ${display_name}`, 'debug');
+            log.debug(`Fixing global field references for: ${display_name}`);
             return this.fixGlobalFieldReferences(tree, field as GlobalFieldDataType);
           case 'json':
           case 'reference':
@@ -608,45 +606,45 @@ export default class ContentType {
               if ('extension' in field.field_metadata && field.field_metadata.extension) {
                 // NOTE Custom field type
                 if (!fixTypes.includes('json:extension')) {
-                  this.log(`Skipping extension field ${display_name} - not in fix types`, 'debug');
+                  log.debug(`Skipping extension field ${display_name} - not in fix types`);
                   return field;
                 }
-                this.log(`Fixing extension/app field: ${display_name}`, 'debug');
+                log.debug(`Fixing extension/app field: ${display_name}`);
                 // NOTE Fix logic
                 return this.fixMissingExtensionOrApp(tree, field as ExtensionOrAppFieldDataType);
               } else if ('allow_json_rte' in field.field_metadata && field.field_metadata.allow_json_rte) {
                 if (!fixTypes.includes('json:rte')) {
-                  this.log(`Skipping JSON RTE field ${display_name} - not in fix types`, 'debug');
+                  log.debug(`Skipping JSON RTE field ${display_name} - not in fix types`);
                   return field;
                 }
-                this.log(`Fixing JSON RTE field: ${display_name}`, 'debug');
+                log.debug(`Fixing JSON RTE field: ${display_name}`);
                 return this.fixMissingReferences(tree, field as JsonRTEFieldDataType);
               }
             }
-            this.log(`Fixing reference field: ${display_name}`, 'debug');
+            log.debug(`Fixing reference field: ${display_name}`);
             return this.fixMissingReferences(tree, field as ReferenceFieldDataType);
           case 'blocks':
-            this.log(`Fixing modular blocks field: ${display_name}`, 'debug');
+            log.debug(`Fixing modular blocks field: ${display_name}`);
             (field as ModularBlocksDataType).blocks = this.fixModularBlocksReferences(
               [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }],
               (field as ModularBlocksDataType).blocks,
             );
             if (isEmpty((field as ModularBlocksDataType).blocks)) {
-              this.log(`Modular blocks field ${display_name} became empty after fix`, 'debug');
+              log.debug(`Modular blocks field ${display_name} became empty after fix`);
               return null;
             }
             return field;
           case 'group':
-            this.log(`Fixing group field: ${display_name}`, 'debug');
+            log.debug(`Fixing group field: ${display_name}`);
             return this.fixGroupField(tree, field as GroupFieldDataType);
           default:
-            this.log(`No fix needed for field type ${data_type}: ${display_name}`, 'debug');
+            log.debug(`No fix needed for field type ${data_type}: ${display_name}`);
             return field;
         }
       })
       .filter((val: any) => {
         if (this.config.skipFieldTypes.includes(val?.data_type)) {
-          this.log(`Keeping field ${val?.display_name} - in skip field types`, 'debug');
+          log.debug(`Keeping field ${val?.display_name} - in skip field types`);
           return true;
         }
         if (
@@ -654,18 +652,18 @@ export default class ContentType {
           isEmpty(val?.schema) &&
           (!val?.data_type || this.config['schema-fields-data-type'].includes(val.data_type))
         ) {
-          this.log(`Filtering out field ${val?.display_name} - empty schema`, 'debug');
+          log.debug(`Filtering out field ${val?.display_name} - empty schema`);
           return false;
         }
         if (val?.reference_to && isEmpty(val?.reference_to) && val.data_type === 'reference') {
-          this.log(`Filtering out field ${val?.display_name} - empty reference_to`, 'debug');
+          log.debug(`Filtering out field ${val?.display_name} - empty reference_to`);
           return false;
         }
 
         return !!val;
       }) as ContentTypeSchemaType[];
     
-    this.log(`Schema fix completed. ${result?.length || 0} fields remain after filtering`, 'debug');
+    log.debug(`Schema fix completed. ${result?.length || 0} fields remain after filtering`);
     return result;
   }
 
@@ -679,15 +677,15 @@ export default class ContentType {
    * doesn't.
    */
   fixGlobalFieldReferences(tree: Record<string, unknown>[], field: GlobalFieldDataType) {
-    this.log(`Fixing global field references for: ${field.display_name} (${field.uid})`, 'debug');
+    log.debug(`Fixing global field references for: ${field.display_name} (${field.uid})`);
     const { reference_to, display_name, data_type } = field;
     if (reference_to && data_type === 'global_field') {
-      this.log(`Processing global field reference: ${reference_to}`, 'debug');
+      log.debug(`Processing global field reference: ${reference_to}`);
       tree = [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }];
       const refExist = find(this.gfSchema, { uid: reference_to });
 
       if (!refExist) {
-        this.log(`Global field reference ${reference_to} not found, marking as fixed`, 'debug');
+        log.debug(`Global field reference ${reference_to} not found, marking as fixed`);
         this.missingRefs[this.currentUid].push({
           tree,
           data_type,
@@ -699,13 +697,13 @@ export default class ContentType {
           treeStr: tree.map(({ name }) => name).join(' ➜ '),
         });
       } else if (!field.schema && this.moduleName === 'content-types') {
-        this.log(`Global field ${reference_to} found, copying schema to field`, 'debug');
+        log.debug(`Global field ${reference_to} found, copying schema to field`);
         const gfSchema = find(this.gfSchema, { uid: field.reference_to })?.schema;
         if (gfSchema) {
-          this.log(`Successfully copied schema from global field ${reference_to}`, 'debug');
+          log.debug(`Successfully copied schema from global field ${reference_to}`);
           field.schema = gfSchema as GlobalFieldSchemaTypes[];
         } else {
-          this.log(`Global field ${reference_to} has no schema, marking as fixed`, 'debug');
+          log.debug(`Global field ${reference_to} has no schema, marking as fixed`);
           this.missingRefs[this.currentUid].push({
             tree,
             data_type,
@@ -718,13 +716,13 @@ export default class ContentType {
           });
         }
       } else if (!field.schema && this.moduleName === 'global-fields') {
-        this.log(`Processing global field in global-fields module: ${reference_to}`, 'debug');
+        log.debug(`Processing global field in global-fields module: ${reference_to}`);
         const gfSchema = find(this.gfSchema, { uid: field.reference_to })?.schema;
         if (gfSchema) {
-          this.log(`Successfully copied schema from global field ${reference_to}`, 'debug');
+          log.debug(`Successfully copied schema from global field ${reference_to}`);
           field.schema = gfSchema as GlobalFieldSchemaTypes[];
         } else {
-          this.log(`Global field ${reference_to} has no schema, marking as fixed`, 'debug');
+          log.debug(`Global field ${reference_to} has no schema, marking as fixed`);
           this.missingRefs[this.currentUid].push({
             tree,
             data_type,
@@ -739,15 +737,15 @@ export default class ContentType {
       }
 
       if(field.schema && !isEmpty(field.schema)){
-        this.log(`Running recursive fix on global field schema: ${display_name}`, 'debug');
+        log.debug(`Running recursive fix on global field schema: ${display_name}`);
         field.schema = this.runFixOnSchema(tree, field.schema as ContentTypeSchemaType[]);
       }
       const result = refExist ? field : null;
-      this.log(`Global field fix completed for ${display_name}. Result: ${result ? 'kept' : 'removed'}`, 'debug');
+      log.debug(`Global field fix completed for ${display_name}. Result: ${result ? 'kept' : 'removed'}`);
       return result;
     }
 
-    this.log(`Skipping global field fix for ${display_name} - not a global field or no reference_to`, 'debug');
+    log.debug(`Skipping global field fix for ${display_name} - not a global field or no reference_to`);
     return field;
   }
 
@@ -760,11 +758,11 @@ export default class ContentType {
    * @returns an array of `ModularBlockType` objects.
    */
   fixModularBlocksReferences(tree: Record<string, unknown>[], blocks: ModularBlockType[]) {
-    this.log(`Fixing modular blocks references for ${blocks?.length || 0} blocks`, 'debug');
+    log.debug(`Fixing modular blocks references for ${blocks?.length || 0} blocks`);
     const result = blocks
       ?.map((block) => {
         const { reference_to, schema, title: display_name, uid } = block;
-        this.log(`Processing modular block: ${display_name} (${uid})`, 'debug');
+        log.debug(`Processing modular block: ${display_name} (${uid})`);
         tree = [...tree, { uid: block.uid, name: block.title }];
         const refErrorObj = {
           tree,
@@ -777,7 +775,7 @@ export default class ContentType {
         };
 
         if (!schema && this.moduleName === 'content-types') {
-          this.log(`Modular block ${display_name} has no schema, marking as fixed`, 'debug');
+          log.debug(`Modular block ${display_name} has no schema, marking as fixed`);
           this.missingRefs[this.currentUid].push(refErrorObj);
 
           return false;
@@ -785,10 +783,10 @@ export default class ContentType {
 
         // NOTE Global field section
         if (reference_to) {
-          this.log(`Checking global field reference ${reference_to} for block ${display_name}`, 'debug');
+          log.debug(`Checking global field reference ${reference_to} for block ${display_name}`);
           const refExist = find(this.gfSchema, { uid: reference_to });
           if (!refExist) {
-            this.log(`Global field reference ${reference_to} not found for block ${display_name}`, 'debug');
+            log.debug(`Global field reference ${reference_to} not found for block ${display_name}`);
             this.missingRefs[this.currentUid].push(refErrorObj);
 
             return false;
@@ -800,28 +798,28 @@ export default class ContentType {
           }
         }
 
-        this.log(`Running fix on block schema for: ${display_name}`, 'debug');
+        log.debug(`Running fix on block schema for: ${display_name}`);
         block.schema = this.runFixOnSchema(tree, block.schema as ContentTypeSchemaType[]);
 
         if (isEmpty(block.schema) && this.moduleName === 'content-types') {
-          this.log(`Block ${display_name} became empty after fix`, 'debug');
+          log.debug(`Block ${display_name} became empty after fix`);
           this.missingRefs[this.currentUid].push({
             ...refErrorObj,
             missingRefs: 'Empty schema found',
             treeStr: tree.map(({ name }) => name).join(' ➜ '),
           });
 
-          this.log($t(auditFixMsg.EMPTY_FIX_MSG, { path: tree.map(({ name }) => name).join(' ➜ ') }), 'info');
+          log.info($t(auditFixMsg.EMPTY_FIX_MSG, { path: tree.map(({ name }) => name).join(' ➜ ') }));
 
           return null;
         }
 
-        this.log(`Block ${display_name} fix completed successfully`, 'debug');
+        log.debug(`Block ${display_name} fix completed successfully`);
         return block;
       })
       .filter((val) => val) as ModularBlockType[];
     
-    this.log(`Modular blocks fix completed. ${result?.length || 0} blocks remain`, 'debug');
+    log.debug(`Modular blocks fix completed. ${result?.length || 0} blocks remain`);
     return result;
   }
 
@@ -835,20 +833,20 @@ export default class ContentType {
    * then `null` is returned. Otherwise, the `field` parameter is returned.
    */
   fixMissingExtensionOrApp(tree: Record<string, unknown>[], field: ExtensionOrAppFieldDataType) {
-    this.log(`Fixing missing extension/app for field: ${field.display_name} (${field.uid})`, 'debug');
+    log.debug(`Fixing missing extension/app for field: ${field.display_name} (${field.uid})`);
     const missingRefs: string[] = [];
     const { uid, extension_uid, data_type, display_name } = field;
 
-    this.log(`Checking if extension ${extension_uid} exists in loaded extensions`, 'debug');
+    log.debug(`Checking if extension ${extension_uid} exists in loaded extensions`);
     if (!this.extensions.includes(extension_uid)) {
-      this.log(`Extension ${extension_uid} not found, adding to missing refs`, 'debug');
+      log.debug(`Extension ${extension_uid} not found, adding to missing refs`);
       missingRefs.push({ uid, extension_uid, type: 'Extension or Apps' } as any);
     } else {
-      this.log(`Extension ${extension_uid} found in loaded extensions`, 'debug');
+      log.debug(`Extension ${extension_uid} found in loaded extensions`);
     }
 
     if (this.fix && !isEmpty(missingRefs)) {
-      this.log(`Fix mode enabled and missing refs found, marking as fixed`, 'debug');
+      log.debug(`Fix mode enabled and missing refs found, marking as fixed`);
       this.missingRefs[this.currentUid].push({
         tree,
         data_type,
@@ -863,7 +861,7 @@ export default class ContentType {
       return null;
     }
 
-    this.log(`Extension/app fix completed for ${display_name}. Result: ${missingRefs.length > 0 ? 'issues found' : 'no issues'}`, 'debug');
+    log.debug(`Extension/app fix completed for ${display_name}. Result: ${missingRefs.length > 0 ? 'issues found' : 'no issues'}`);
     return field;
   }
 
@@ -877,69 +875,69 @@ export default class ContentType {
    * @returns the `field` object.
    */
   fixMissingReferences(tree: Record<string, unknown>[], field: ReferenceFieldDataType | JsonRTEFieldDataType) {
-    this.log(`Fixing missing references for field: ${field.display_name} (${field.uid})`, 'debug');
+    log.debug(`Fixing missing references for field: ${field.display_name} (${field.uid})`);
     let fixStatus;
     const missingRefs: string[] = [];
     const { reference_to, data_type, display_name } = field;
     
-    this.log(`Reference_to type: ${Array.isArray(reference_to) ? 'array' : 'single'}, value: ${JSON.stringify(reference_to)}`, 'debug');
+    log.debug(`Reference_to type: ${Array.isArray(reference_to) ? 'array' : 'single'}, value: ${JSON.stringify(reference_to)}`);
     
     if (!Array.isArray(reference_to)) {
-      this.log(`Processing single reference: ${reference_to}`, 'debug');
-      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, display_name }), 'error');
-      this.log($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, display_name }), 'info');
+      log.debug(`Processing single reference: ${reference_to}`);
+      log.error($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, display_name }));
+      log.info($t(auditMsg.CT_REFERENCE_FIELD, { reference_to, display_name }));
       if (!this.config.skipRefs.includes(reference_to)) {
-        this.log(`Checking if reference ${reference_to} exists in content type schema`, 'debug');
+        log.debug(`Checking if reference ${reference_to} exists in content type schema`);
         const refExist = find(this.ctSchema, { uid: reference_to });
 
         if (!refExist) {
-          this.log(`Reference ${reference_to} not found, adding to missing refs`, 'debug');
+          log.debug(`Reference ${reference_to} not found, adding to missing refs`);
           missingRefs.push(reference_to);
         } else {
-          this.log(`Reference ${reference_to} found in schema`, 'debug');
+          log.debug(`Reference ${reference_to} found in schema`);
         }
       } else {
-        this.log(`Skipping reference ${reference_to} - in skip list`, 'debug');
+        log.debug(`Skipping reference ${reference_to} - in skip list`);
       }
 
-      this.log(`Converting single reference to array format`, 'debug');
+      log.debug(`Converting single reference to array format`);
       field.reference_to = [reference_to];
       field.field_metadata = {
         ...field.field_metadata,
         ref_multiple_content_types: true,
       };
     } else {
-      this.log(`Processing ${reference_to?.length || 0} references in array`, 'debug');
+      log.debug(`Processing ${reference_to?.length || 0} references in array`);
       for (const reference of reference_to ?? []) {
         // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
         if (this.config.skipRefs.includes(reference)) {
-          this.log(`Skipping reference ${reference} - in skip list`, 'debug');
+          log.debug(`Skipping reference ${reference} - in skip list`);
           continue;
         }
 
-        this.log(`Checking if reference ${reference} exists in content type schema`, 'debug');
+        log.debug(`Checking if reference ${reference} exists in content type schema`);
         const refExist = find(this.ctSchema, { uid: reference });
 
         if (!refExist) {
-          this.log(`Reference ${reference} not found, adding to missing refs`, 'debug');
+          log.debug(`Reference ${reference} not found, adding to missing refs`);
           missingRefs.push(reference);
         } else {
-          this.log(`Reference ${reference} found in schema`, 'debug');
+          log.debug(`Reference ${reference} found in schema`);
         }
       }
     }
 
-    this.log(`Found ${missingRefs.length} missing references: ${missingRefs.join(', ')}`, 'debug');
+    log.debug(`Found ${missingRefs.length} missing references: ${missingRefs.join(', ')}`);
 
     if (this.fix && !isEmpty(missingRefs)) {
-      this.log(`Fix mode enabled, removing missing references from field`, 'debug');
+      log.debug(`Fix mode enabled, removing missing references from field`);
       try {
         field.reference_to = field.reference_to.filter((ref) => !missingRefs.includes(ref));
         fixStatus = 'Fixed';
-        this.log(`Successfully removed missing references. New reference_to: ${JSON.stringify(field.reference_to)}`, 'debug');
+        log.debug(`Successfully removed missing references. New reference_to: ${JSON.stringify(field.reference_to)}`);
       } catch (error) {
         fixStatus = `Not Fixed (${JSON.stringify(error)})`;
-        this.log(`Failed to remove missing references: ${error}`, 'debug');
+        log.debug(`Failed to remove missing references: ${error}`);
       }
 
       this.missingRefs[this.currentUid].push({
@@ -954,7 +952,7 @@ export default class ContentType {
       });
     }
 
-    this.log(`Missing references fix completed for ${display_name}. Status: ${fixStatus || 'no fix needed'}`, 'debug');
+    log.debug(`Missing references fix completed for ${display_name}. Status: ${fixStatus || 'no fix needed'}`);
     return field;
   }
 
@@ -967,14 +965,14 @@ export default class ContentType {
    * @returns The function `fixGroupField` returns either `null` or the `field` object.
    */
   fixGroupField(tree: Record<string, unknown>[], field: GroupFieldDataType) {
-    this.log(`Fixing group field: ${field.display_name} (${field.uid})`, 'debug');
+    log.debug(`Fixing group field: ${field.display_name} (${field.uid})`);
     const { data_type, display_name } = field;
 
-    this.log(`Running fix on group field schema for: ${display_name}`, 'debug');
+    log.debug(`Running fix on group field schema for: ${display_name}`);
     field.schema = this.runFixOnSchema(tree, field.schema as ContentTypeSchemaType[]);
 
     if (isEmpty(field.schema)) {
-      this.log(`Group field ${display_name} became empty after fix`, 'debug');
+      log.debug(`Group field ${display_name} became empty after fix`);
       this.missingRefs[this.currentUid].push({
         tree,
         data_type,
@@ -985,12 +983,12 @@ export default class ContentType {
         missingRefs: 'Empty schema found',
         treeStr: tree.map(({ name }) => name).join(' ➜ '),
       });
-      this.log($t(auditFixMsg.EMPTY_FIX_MSG, { path: tree.map(({ name }) => name).join(' ➜ ') }), 'info');
+      log.debug($t(auditFixMsg.EMPTY_FIX_MSG, { path: tree.map(({ name }) => name).join(' ➜ ') }));
 
       return null;
     }
 
-    this.log(`Group field fix completed successfully for: ${display_name}`, 'debug');
+    log.debug(`Group field fix completed successfully for: ${display_name}`);
     return field;
   }
 }

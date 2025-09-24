@@ -2,19 +2,16 @@ import merge from 'lodash/merge';
 import isEmpty from 'lodash/isEmpty';
 import { existsSync, readFileSync } from 'fs';
 import { Command } from '@contentstack/cli-command';
-import { Flags, FlagInput, Interfaces, cliux, ux, PrintOptions, log, handleAndLogError } from '@contentstack/cli-utilities';
+import { Flags, FlagInput, Interfaces, cliux, ux, handleAndLogError } from '@contentstack/cli-utilities';
 
 import config from './config';
-import { ConfigType, LogFn, LoggerType } from './types';
+import { ConfigType } from './types';
 import messages, { $t, commonMsg } from './messages';
 
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
 export type Flags<T extends typeof Command> = Interfaces.InferredFlags<(typeof BaseCommand)['baseFlags'] & T['flags']>;
 
-const noLog = (_message: string | any, _logType?: LoggerType | PrintOptions | undefined) => {};
-
 export abstract class BaseCommand<T extends typeof Command> extends Command {
-  public log!: LogFn;
   public readonly $t = $t;
   protected sharedConfig: ConfigType = {
     ...config,
@@ -69,39 +66,8 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
     // Init logger
     if (this.flags['external-config']?.noLog) {
-      this.log = noLog;
       ux.action.start = () => {};
       ux.action.stop = () => {};
-    } else {
-      // Use the new logger from utilities
-      this.log = (message: string | any, logType?: LoggerType | PrintOptions | undefined) => {
-        if (typeof logType === 'string') {
-          switch (logType) {
-            case 'error':
-              log.error(typeof message === 'string' ? message : JSON.stringify(message));
-              break;
-            case 'warn':
-              log.warn(typeof message === 'string' ? message : JSON.stringify(message));
-              break;
-            case 'info':
-              log.info(typeof message === 'string' ? message : JSON.stringify(message));
-              break;
-            case 'debug':
-              log.debug(typeof message === 'string' ? message : JSON.stringify(message));
-              break;
-            case 'hidden':
-              // Hidden logs are logged as debug level
-              log.debug(typeof message === 'string' ? message : JSON.stringify(message));
-              break;
-            default:
-              cliux.print(message, logType || {});
-              break;
-          }
-        } else {
-          // Handle PrintOptions (color formatting, etc.)
-          cliux.print(message, logType || {});
-        }
-      };
     }
   }
 
