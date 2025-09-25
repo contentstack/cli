@@ -6,6 +6,7 @@ export interface BranchOptions {
   baseBranch?: string;
   authToken?: string;
   host?: string;
+  csvPath?: string;
 }
 
 export interface BranchDiffRes {
@@ -64,6 +65,46 @@ export interface ModifiedFieldsType {
   displayName: string;
   path: string;
   field: string;
+  propertyChanges?: PropertyChange[];
+  changeCount?: number;
+  changeDetails?: string;
+  oldValue?: any;
+  newValue?: any;
+}
+
+export interface PropertyChange {
+  property: string;
+  changeType: 'modified' | 'added' | 'deleted';
+  oldValue?: any;
+  newValue?: any;
+}
+
+export interface CSVRow {
+  srNo: number;
+  contentTypeName: string;
+  fieldName: string;
+  fieldPath: string;
+  operation: string;
+  sourceBranchValue: string;
+  targetBranchValue: string;
+}
+
+export interface AddCSVRowParams {
+  srNo: number;
+  contentTypeName: string;
+  fieldName: string;
+  fieldType: string;
+  sourceValue: string;
+  targetValue: string;
+}
+
+export const FIELD_TYPES = ['modified', 'added', 'deleted'] as const;
+
+export const CSV_HEADER = 'Sr No,Content Type Name,Field Name,Field Path,Operation,Source Branch Value,Target Branch Value\n';
+
+export interface ContentTypeItem {
+  title?: string;
+  uid?: string;
 }
 
 export interface ModifiedFieldsInput {
@@ -81,6 +122,7 @@ export interface BranchDiffVerboseRes {
   modified?: BranchModifiedDetails[];
   added?: BranchDiffRes[];
   deleted?: BranchDiffRes[];
+  csvData?: CSVRow[]; // Pre-processed CSV data
 }
 
 export interface BranchDiffPayload {
