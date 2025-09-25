@@ -14,10 +14,33 @@ import {
 
 ProgressStrategyRegistry.register(MODULE_NAMES[MODULE_CONTEXTS.CONTENT_TYPES], new DefaultProgressStrategy());
 
-// Register strategy for Assets - use Asset Metadata as primary process
+// Register strategy for Assets - custom strategy to avoid double counting
 ProgressStrategyRegistry.register(
   MODULE_NAMES[MODULE_CONTEXTS.ASSETS],
-  new PrimaryProcessStrategy(PROCESS_NAMES.ASSET_METADATA),
+  new CustomProgressStrategy((processes) => {
+    // Both ASSET_METADATA and ASSET_DOWNLOADS represent the same assets
+    // Count only the downloads process to avoid double counting in summary
+    const downloadsProcess = processes.get(PROCESS_NAMES.ASSET_DOWNLOADS);
+    if (downloadsProcess) {
+      return {
+        total: downloadsProcess.total,
+        success: downloadsProcess.successCount,
+        failures: downloadsProcess.failureCount,
+      };
+    }
+
+    // Fallback to metadata process if downloads don't exist
+    const metadataProcess = processes.get(PROCESS_NAMES.ASSET_METADATA);
+    if (metadataProcess) {
+      return {
+        total: metadataProcess.total,
+        success: metadataProcess.successCount,
+        failures: metadataProcess.failureCount,
+      };
+    }
+
+    return null; // Fall back to default aggregation
+  }),
 );
 
 ProgressStrategyRegistry.register(MODULE_NAMES[MODULE_CONTEXTS.GLOBAL_FIELDS], new DefaultProgressStrategy());
