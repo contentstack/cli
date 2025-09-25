@@ -42,30 +42,48 @@ export default class ExportPersonalize extends BaseClass {
     try {
       log.debug('Starting personalize export process...', this.exportConfig.context);
 
-      const [canProceed, moduleCount] = await this.withLoadingSpinner(
-        'PERSONALIZE: Analyzing personalization configuration...',
+      const [canProceed, projectCount, moduleCount] = await this.withLoadingSpinner(
+        'PERSONALIZE: Analyzing personalization configuration and connectivity...',
         async () => {
-          const canProceed = this.validatePersonalizeSetup();
-          const moduleCount = canProceed ? this.getPersonalizeModuleCount() : 0;
+          // Step 1: Basic validation (URL, tokens)
+          const basicValidation = this.validatePersonalizeSetup();
+          if (!basicValidation) {
+            return [false, 0, 0];
+          }
+
+          // Step 2: Check actual project connectivity
+          const projectCount = await this.validateProjectConnectivity();
+          if (projectCount === 0) {
+            log.info('No Personalize Project connected with the given stack', this.exportConfig.context);
+            this.exportConfig.personalizationEnabled = false;
+            return [false, 0, 0];
+          }
+
+          // Step 3: Get module count only if projects exist
+          const moduleCount = this.getPersonalizeModuleCount();
 
           log.debug(
-            `Personalize validation - canProceed: ${canProceed}, moduleCount: ${moduleCount}`,
+            `Personalize validation - canProceed: true, projectCount: ${projectCount}, moduleCount: ${moduleCount}`,
             this.exportConfig.context,
           );
 
-          return [canProceed, moduleCount];
+          // Enable personalization since we have connected projects
+          this.exportConfig.personalizationEnabled = true;
+          return [true, projectCount, moduleCount];
         },
       );
 
       if (!canProceed) {
-        log.debug('Personalization setup validation failed, exiting', this.exportConfig.context);
         return;
       }
 
-      log.debug(`Creating personalize progress with moduleCount: ${moduleCount}`, this.exportConfig.context);
+      log.debug(
+        `Creating personalize progress with projectCount: ${projectCount}, moduleCount: ${moduleCount}`,
+        this.exportConfig.context,
+      );
       const progress = this.createNestedProgress(this.currentModuleName);
 
-      this.addProjectProcess(progress);
+      this.addProjectProcess(progress, projectCount);
       this.addModuleProcesses(progress, moduleCount);
 
       try {
@@ -118,15 +136,35 @@ export default class ExportPersonalize extends BaseClass {
     return true;
   }
 
+  private async validateProjectConnectivity(): Promise<number> {
+    try {
+      // Create a temporary ExportProjects instance to check connectivity
+      const tempProjectsExporter = new ExportProjects(this.exportConfig);
+
+      // Initialize and fetch projects
+      await tempProjectsExporter.init();
+      // talisman-ignore-line
+      const projectsData = await tempProjectsExporter.projects({ connectedStackApiKey: this.exportConfig.apiKey });
+
+      const projectCount = projectsData?.length || 0;
+      log.debug(`Found ${projectCount} connected projects`, this.exportConfig.context);
+
+      return projectCount;
+    } catch (error) {
+      log.debug(`Error checking project connectivity: ${error}`, this.exportConfig.context);
+      return 0;
+    }
+  }
+
   private getPersonalizeModuleCount(): number {
     const order = this.exportConfig.modules?.personalize?.exportOrder;
     return Array.isArray(order) ? order.length : 0;
   }
 
-  private addProjectProcess(progress: CLIProgressManager) {
-    progress.addProcess(PROCESS_NAMES.PERSONALIZE_PROJECTS, 1);
+  private addProjectProcess(progress: CLIProgressManager, projectCount: number) {
+    progress.addProcess(PROCESS_NAMES.PERSONALIZE_PROJECTS, projectCount);
     log.debug(
-      `Added ${PROCESS_NAMES.PERSONALIZE_PROJECTS} process to personalize progress`,
+      `Added ${PROCESS_NAMES.PERSONALIZE_PROJECTS} process with count: ${projectCount}`,
       this.exportConfig.context,
     );
   }
@@ -153,10 +191,7 @@ export default class ExportPersonalize extends BaseClass {
   private async exportProjects(progress: CLIProgressManager) {
     progress
       .startProcess(PROCESS_NAMES.PERSONALIZE_PROJECTS)
-      .updateStatus(
-        PROCESS_STATUS[PROCESS_NAMES.PERSONALIZE_PROJECTS].EXPORTING,
-        PROCESS_NAMES.PERSONALIZE_PROJECTS,
-      );
+      .updateStatus(PROCESS_STATUS[PROCESS_NAMES.PERSONALIZE_PROJECTS].EXPORTING, PROCESS_NAMES.PERSONALIZE_PROJECTS);
     log.debug('Starting projects export for personalization...', this.exportConfig.context);
 
     const projectsExporter = new ExportProjects(this.exportConfig);
@@ -188,10 +223,7 @@ export default class ExportPersonalize extends BaseClass {
       if (ModuleClass) {
         progress
           .startProcess(processName)
-          .updateStatus(
-            (PROCESS_STATUS as any)[processName]?.EXPORTING || `Exporting ${module}...`,
-            processName,
-          );
+          .updateStatus((PROCESS_STATUS as any)[processName]?.EXPORTING || `Exporting ${module}...`, processName);
         log.debug(`Starting export for module: ${module}`, this.exportConfig.context);
 
         if (this.exportConfig.personalizationEnabled) {

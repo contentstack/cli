@@ -33,9 +33,6 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
       log.debug('Starting projects export process...', this.exportConfig.context);
       log.info('Starting projects export', this.exportConfig.context);
 
-      // Set project personalization config before starting
-      this.exportConfig.personalizationEnabled = false;
-
       // Initial setup with loading spinner
       await this.withLoadingSpinner('PROJECTS: Initializing export and fetching data...', async () => {
         log.debug('Initializing personalization adapter...', this.exportConfig.context);
@@ -69,7 +66,8 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
       if (this.parentProgressManager) {
         progress = this.parentProgressManager;
         this.progressManager = this.parentProgressManager;
-        progress.updateProcessTotal(PROCESS_NAMES.PROJECTS, this.projectsData?.length);
+        // Parent already has correct count, just update status
+        progress.updateStatus(EXPORT_PROCESS_STATUS[PROCESS_NAMES.PROJECTS].EXPORTING, PROCESS_NAMES.PROJECTS);
       } else {
         progress = this.createNestedProgress(PROCESS_NAMES.PROJECTS);
         progress.addProcess(PROCESS_NAMES.PROJECTS, this.projectsData?.length);
