@@ -2,6 +2,7 @@ import { client, ContentstackClient, ContentstackConfig } from '@contentstack/ma
 import authHandler from './auth-handler';
 import { Agent } from 'node:https';
 import configHandler, { default as configStore } from './config-handler';
+import { addApiDelay } from './api-delay-helper';
 
 class ManagementSDKInitiator {
   private analyticsInfo: string;
@@ -114,5 +115,110 @@ class ManagementSDKInitiator {
 }
 
 export const managementSDKInitiator = new ManagementSDKInitiator();
-export default managementSDKInitiator.createAPIClient.bind(managementSDKInitiator);
+
+// Original function that automatically detects if delays should be applied
+const originalCreateAPIClient = managementSDKInitiator.createAPIClient.bind(managementSDKInitiator);
+
+export default async function managementSDKClient(config: any): Promise<ContentstackClient> {
+  // Check if delays should be applied
+  const delayMs = '10000'
+  
+  if (delayMs) {
+    // Use the delay-enabled version
+    return createManagementSDKClientWithDelay(config);
+  } else {
+    // Use the normal version
+    return originalCreateAPIClient(config);
+  }
+}
+
 export { ContentstackConfig, ContentstackClient };
+/**
+ * Creates a management SDK client with delay support
+ * This wraps the client to add delays before API calls
+ * @param config Configuration for the SDK client
+ * @returns Promise that resolves to a ContentstackClient with delay support
+ */
+export async function createManagementSDKClientWithDelay(
+  config: any
+): Promise<ContentstackClient> {
+  // Create the client
+  const client = await managementSDKInitiator.createAPIClient(config);
+  
+  // Return a wrapped client that adds delays to API calls
+  return wrapClientWithDelay(client);
+}
+
+/**
+ * Wraps a ContentstackClient with delay functionality
+ * This intercepts all method calls and adds delays before any async operation
+ * @param client The original ContentstackClient
+ * @returns Wrapped client with delay support
+ */
+function wrapClientWithDelay(client: ContentstackClient): ContentstackClient {
+  return new Proxy(client, {
+    get(target, prop) {
+      const originalMethod = target[prop];
+      
+      if (typeof originalMethod === 'function') {
+        return function(...args: any[]) {
+          const result = originalMethod.apply(target, args);
+          
+          // If the result is a Promise, wrap it with delay
+          if (result && typeof result.then === 'function') {
+            return (async () => {
+              await addApiDelay('api-call');
+              return await result;
+            })();
+          }
+          
+          // If the result is an object (for method chaining), wrap it
+          if (result && typeof result === 'object') {
+            return wrapObjectWithDelay(result);
+          }
+          
+          return result;
+        };
+      }
+      
+      return originalMethod;
+    }
+  });
+}
+
+/**
+ * Wraps objects with delay functionality
+ * This recursively wraps all methods to add delays before async operations
+ * @param obj The object to wrap
+ * @returns Wrapped object with delay support
+ */
+function wrapObjectWithDelay(obj: any): any {
+  return new Proxy(obj, {
+    get(target, prop) {
+      const originalMethod = target[prop];
+      
+      if (typeof originalMethod === 'function') {
+        return function(...args: any[]) {
+          const result = originalMethod.apply(target, args);
+          
+          // If the result is a Promise, wrap it with delay
+          if (result && typeof result.then === 'function') {
+            return (async () => {
+              await addApiDelay('api-call');
+              return await result;
+            })();
+          }
+          
+          // If the result is an object (for method chaining), wrap it recursively
+          if (result && typeof result === 'object') {
+            return wrapObjectWithDelay(result);
+          }
+          
+          return result;
+        };
+      }
+      
+      return originalMethod;
+    }
+  });
+}
