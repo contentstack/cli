@@ -53,14 +53,13 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
   /**
    * Create audit context object similar to export command
    */
-  private createAuditContext(): AuditContext {
+  private createAuditContext(moduleName?: string): AuditContext {
     return {
       command: this.context?.info?.command || 'cm:stacks:audit',
-      module: 'audit',
+      module: moduleName || 'audit',
       email: configHandler.get('email') || '',
       sessionId: this.context?.sessionId || '',
       authenticationMethod: configHandler.get('authenticationMethod') || '',
-      basePath: this.sharedConfig.basePath,
     };
   }
 
@@ -222,6 +221,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     let dataModuleWise: Record<string, any> = await new ModuleDataReader(cloneDeep(constructorParam)).run();
     log.debug(`Data module wise: ${JSON.stringify(dataModuleWise)}`, this.auditContext);
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
+      // Update audit context with current module
+      this.auditContext = this.createAuditContext(module);
       log.debug(`Starting audit for module: ${module}`, this.auditContext);
       print([
         {

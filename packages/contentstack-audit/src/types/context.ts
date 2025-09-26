@@ -5,5 +5,4 @@ export interface AuditContext {
   sessionId: string | undefined;
   clientId?: string;
   authenticationMethod?: string;
-  basePath: string;
 }
