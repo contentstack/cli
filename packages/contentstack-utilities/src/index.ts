@@ -18,6 +18,7 @@ export { default as configHandler } from './config-handler';
 export {
   default as managementSDKClient,
   managementSDKInitiator,
+  createManagementSDKClientWithDelay,
   ContentstackClient,
   ContentstackConfig,
 } from './contentstack-management-sdk';
@@ -31,6 +32,7 @@ export * from './interfaces';
 export * from './date-time';
 export * from './add-locale';
 export * from './path-validator';
+export * from './api-delay-helper';
 export { default as CLITable, TableFlags, TableHeader, TableOptions, TableData } from './cli-table';
 
 // Marketplace SDK export
