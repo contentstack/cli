@@ -74,6 +74,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     // Initialize audit context
     this.auditContext = this.createAuditContext();
     log.debug(`Starting audit command: ${command}`, this.auditContext);
+    log.info(`Starting audit command: ${command}`, this.auditContext);
+
     
     await this.promptQueue();
     await this.createBackUp();
@@ -224,6 +226,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       // Update audit context with current module
       this.auditContext = this.createAuditContext(module);
       log.debug(`Starting audit for module: ${module}`, this.auditContext);
+      log.info(`Starting audit for module: ${module}`, this.auditContext);
+
       print([
         {
           bold: true,
