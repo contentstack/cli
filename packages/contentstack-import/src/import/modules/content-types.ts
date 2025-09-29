@@ -423,7 +423,7 @@ export default class ContentTypesImport extends BaseClass {
     this.pendingExts = (Array.isArray(pendingExt) ? pendingExt : []) as unknown as string[];
 
     const marketplaceAppData = fsUtil.readFile(this.marketplaceAppMapperPath) as any;
-    this.installedExtensions = marketplaceAppData?.extension_uid || {};
+    this.installedExtensions = marketplaceAppData?.extension_uid || { extension_uid: {} };
     this.taxonomies = fsUtil.readFile(this.taxonomiesPath) as Record<string, unknown>;
 
     log.debug(

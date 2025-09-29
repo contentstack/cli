@@ -12,6 +12,7 @@ import {
   getLogPath,
   CLIProgressManager,
   cliux,
+  clearProgressModuleSetting,
 } from '@contentstack/cli-utilities';
 
 import { Context, ImportConfig } from '../../../types';
@@ -172,15 +173,18 @@ export default class ImportCommand extends Command {
         CLIProgressManager.initializeGlobalSummary(
           `IMPORT-${flags.branch}`,
           flags.branch,
-          `IMPORTING DATA INTO "${flags.branch}" BRANCH`,
+          `Importing content into "${flags.branch}" branch...`,
         );
       } else {
-        CLIProgressManager.initializeGlobalSummary(`IMPORT`, flags.branch, 'IMPORTING CONTENT');
+        CLIProgressManager.initializeGlobalSummary(`IMPORT`, flags.branch, 'Importing content...');
       }
 
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       const result = await moduleImporter.start();
       backupDir = importConfig.backupDir;
+
+      // Clear progress module setting now that import is complete
+      clearProgressModuleSetting();
 
       if (!result?.noSuccessMsg) {
         const successMessage = importConfig.stackName
@@ -192,6 +196,9 @@ export default class ImportCommand extends Command {
       CLIProgressManager.printGlobalSummary();
       this.logSuccessAndBackupMessages(backupDir, importConfig);
     } catch (error) {
+      // Clear progress module setting even on error
+      clearProgressModuleSetting();
+
       handleAndLogError(error);
       this.logAndPrintErrorDetails(error, importConfig);
     }

@@ -246,3 +246,11 @@ const sensitiveKeys = [
   /management[-._]?token/i,
   /delivery[-._]?token/i,
 ];
+
+export function clearProgressModuleSetting(): void {
+  const logConfig = configHandler.get('log') || {};
+  if (logConfig?.progressSupportedModule) {
+    delete logConfig.progressSupportedModule;
+    configHandler.set('log', logConfig);
+  }
+}
