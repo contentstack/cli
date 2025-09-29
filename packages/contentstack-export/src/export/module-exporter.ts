@@ -1,5 +1,12 @@
 import * as path from 'path';
-import { ContentstackClient, handleAndLogError, messageHandler, log, getBranchFromAlias, CLIProgressManager } from '@contentstack/cli-utilities';
+import {
+  ContentstackClient,
+  handleAndLogError,
+  messageHandler,
+  log,
+  getBranchFromAlias,
+  CLIProgressManager,
+} from '@contentstack/cli-utilities';
 import { setupBranches, setupExportDir, writeExportMetaFile } from '../utils';
 import startModuleExport from './modules';
 import startJSModuleExport from './modules-js';
@@ -33,8 +40,8 @@ class ModuleExporter {
         return this.exportByBranches();
       }
       // If branches disabled then initialize the global summary
-    CLIProgressManager.initializeGlobalSummary('EXPORT', this.exportConfig.branchName, 'EXPORTING CONTENT');
-    return this.export();
+      CLIProgressManager.initializeGlobalSummary('EXPORT', this.exportConfig.branchName, 'Exporting content...');
+      return this.export();
     } catch (error) {
       throw error;
     }
@@ -54,7 +61,7 @@ class ModuleExporter {
           CLIProgressManager.initializeGlobalSummary(
             `EXPORT-${branch.uid}`,
             branch.uid,
-            `EXPORTING "${branch.uid}" BRANCH CONTENT`,
+            `Exporting "${branch.uid}" branch content...`,
           );
         }
 

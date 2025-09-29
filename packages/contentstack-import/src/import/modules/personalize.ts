@@ -1,18 +1,20 @@
 import { Import } from '@contentstack/cli-variants';
-import { log, handleAndLogError } from '@contentstack/cli-utilities';
+import { log, handleAndLogError, sanitizePath } from '@contentstack/cli-utilities';
 import BaseClass from './base-class';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import { PROCESS_NAMES, MODULE_CONTEXTS, PROCESS_STATUS, MODULE_NAMES } from '../../utils';
+import { join } from 'path';
+import { existsSync } from 'fs';
 
 export default class ImportPersonalize extends BaseClass {
   private config: ImportConfig;
   public personalizeConfig: ImportConfig['modules']['personalize'];
 
   private readonly moduleDisplayMapper = {
-    events: 'Events',       
-    attributes: 'Attributes' , 
-    audiences: 'Audiences',  
-    experiences: 'Experiences', 
+    events: 'Events',
+    attributes: 'Attributes',
+    audiences: 'Audiences',
+    experiences: 'Experiences',
   };
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
@@ -155,6 +157,23 @@ export default class ImportPersonalize extends BaseClass {
       if (!this.personalizeConfig.baseURL[this.config.region.name]) {
         log.debug(`No baseURL found for region: ${this.config.region.name}`, this.config.context);
         log.info('Skipping Personalize project import, personalize url is not set', this.config.context);
+        this.personalizeConfig.importData = false;
+        return [false, 0];
+      }
+
+      const personalize = this.config.modules.personalize;
+      const { dirName, fileName } = personalize.projects;
+      const projectPath = join(
+        sanitizePath(this.config.data),
+        sanitizePath(personalize.dirName),
+        sanitizePath(dirName),
+        sanitizePath(fileName),
+      );
+
+      log.debug(`Checking for project file: ${projectPath}`, this.config.context);
+      if (!existsSync(projectPath)) {
+        this.config.modules.personalize.importData = false;
+        log.warn(`Project file not found: ${projectPath}`, this.config.context);
         this.personalizeConfig.importData = false;
         return [false, 0];
       }

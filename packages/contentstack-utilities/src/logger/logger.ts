@@ -71,7 +71,9 @@ export default class Logger {
 
     if (configHandler && typeof configHandler.get === 'function') {
       const logConfig = configHandler.get('log') || {};
-      const hasProgressSupport = PROGRESS_SUPPORTED_MODULES.includes(logConfig.progressSupportedModule);
+      const currentModule = logConfig.progressSupportedModule;
+      const hasProgressSupport = currentModule && PROGRESS_SUPPORTED_MODULES.includes(currentModule);
+      
       if (hasProgressSupport) {
         // Plugin has progress bars - respect user's showConsoleLogs setting
         showConsoleLogs = logConfig.showConsoleLogs ?? true;
