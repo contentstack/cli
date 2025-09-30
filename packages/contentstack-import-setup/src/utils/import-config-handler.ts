@@ -80,6 +80,10 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
     config.branchName = importCmdFlags['branch'];
   }
 
+  if (importCmdFlags['branch-alias']) {
+    config.branchAlias = importCmdFlags['branch-alias'];
+  }
+
   config.selectedModules = importCmdFlags['module'] || [await askSelectedModules()];
   if (importCmdFlags['backup-dir']) {
     config.useBackedupDir = importCmdFlags['backup-dir'];
