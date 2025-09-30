@@ -1,6 +1,6 @@
 import { ContentstackClient, getBranchFromAlias, log } from '@contentstack/cli-utilities';
-import { ImportConfig } from 'src/types';
 import { validateBranch } from './common-helper';
+import { ImportConfig } from 'src/types';
 
 export const setupBranchConfig = async (
   config: ImportConfig,
