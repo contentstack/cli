@@ -219,7 +219,7 @@ export default class Assets {
                 publish_environment: pd.environment,
               });
             }
-            log.info($t(auditMsg.SCAN_ASSET_SUCCESS_MSG, { uid: assetUid }), this.config.auditContext);
+            log.success($t(auditMsg.SCAN_ASSET_SUCCESS_MSG, { uid: assetUid }), this.config.auditContext);
             return false;
           }
         });
