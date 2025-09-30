@@ -1871,7 +1871,7 @@ export default class Entries {
                 'Content Type UID': uid,
                 Locale: code,
               };
-              log.debug(
+              log.info(
                 `The 'title' field in Entry with UID '${entryUid}' of Content Type '${uid}' in Locale '${code}' is empty.`,
                 this.config.auditContext,
               );

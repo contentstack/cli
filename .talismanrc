@@ -90,7 +90,7 @@ fileignoreconfig:
 - filename: packages/contentstack-audit/src/modules/global-fields.ts
   checksum: 556bd27f78e8261491a7f918919128b8c2cc9d2d55113f440b89384a30481e5f
 - filename: packages/contentstack-audit/src/audit-base-command.ts
-  checksum: e5621f6206dd36a59aaf124df987567350e4d7647009c970b3c40ef6546aed76
+  checksum: 2c710267332619d310dd24461076fc9ca00cc1c991c2913e74a98808fac42c39
 - filename: packages/contentstack-audit/src/modules/custom-roles.ts
   checksum: bbe1130f5f5ebf2fa452daef743fe4d40ae9f8fc05c7f8c59c82a3d3d1ed69e8
 - filename: packages/contentstack-audit/src/modules/extensions.ts
