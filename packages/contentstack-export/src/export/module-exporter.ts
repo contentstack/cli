@@ -5,6 +5,7 @@ import {
   messageHandler,
   log,
   getBranchFromAlias,
+  CLIProgressManager,
 } from '@contentstack/cli-utilities';
 import { setupBranches, setupExportDir, writeExportMetaFile } from '../utils';
 import startModuleExport from './modules';
@@ -38,6 +39,8 @@ class ModuleExporter {
         this.exportConfig.branchEnabled = true;
         return this.exportByBranches();
       }
+      // If branches disabled then initialize the global summary
+      CLIProgressManager.initializeGlobalSummary('EXPORT', this.exportConfig.branchName, 'Exporting content...');
       return this.export();
     } catch (error) {
       throw error;
@@ -46,14 +49,31 @@ class ModuleExporter {
 
   async exportByBranches(): Promise<void> {
     // loop through the branches and export it parallel
-    for (const branch of this.exportConfig.branches) {
+    for (const [index, branch] of this.exportConfig.branches.entries()) {
       try {
         this.exportConfig.branchName = branch.uid;
         this.stackAPIClient.stackHeaders.branch = branch.uid;
         this.exportConfig.branchDir = path.join(this.exportConfig.exportDir, branch.uid);
+
+        // Reset progress manager for each branch (except the first one which was initialized in export command)
+        if (index >= 0) {
+          CLIProgressManager.clearGlobalSummary();
+          CLIProgressManager.initializeGlobalSummary(
+            `EXPORT-${branch.uid}`,
+            branch.uid,
+            `Exporting "${branch.uid}" branch content...`,
+          );
+        }
+
         log.info(`Exporting content from branch ${branch.uid}`, this.exportConfig.context);
         writeExportMetaFile(this.exportConfig, this.exportConfig.branchDir);
         await this.export();
+
+        // Print branch-specific summary
+        if (index <= this.exportConfig.branches.length - 1) {
+          CLIProgressManager.printGlobalSummary();
+        }
+
         log.success(`The content of branch ${branch.uid} has been exported successfully!`, this.exportConfig.context);
       } catch (error) {
         handleAndLogError(
@@ -79,9 +99,8 @@ class ModuleExporter {
     log.info(`Exporting module: ${moduleName}`, this.exportConfig.context);
     // export the modules by name
     // calls the module runner which inturn calls the module itself
-    let exportedModuleResponse;
     if (this.exportConfig.contentVersion === 2) {
-      exportedModuleResponse = await startModuleExport({
+      await startModuleExport({
         stackAPIClient: this.stackAPIClient,
         exportConfig: this.exportConfig,
         moduleName,
@@ -89,17 +108,12 @@ class ModuleExporter {
     } else {
       //NOTE - new modules support only ts
       if (this.exportConfig.onlyTSModules.indexOf(moduleName) === -1) {
-        exportedModuleResponse = await startJSModuleExport({
+        await startJSModuleExport({
           stackAPIClient: this.stackAPIClient,
           exportConfig: this.exportConfig,
           moduleName,
         });
       }
-    }
-
-    // set master locale to config
-    if (moduleName === 'stack' && exportedModuleResponse?.code) {
-      this.exportConfig.master_locale = { code: exportedModuleResponse.code };
     }
   }
 

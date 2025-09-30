@@ -1,13 +1,13 @@
 import { expect } from 'chai';
 import { fancy } from 'fancy-test';
-import CLIErrorHandler from '../../src/logger/cliErrorHandler';
+import CLIErrorHandler from '../../src/logger/cli-error-handler';
 import { ERROR_TYPES } from '../../src/constants/errorTypes';
 
 describe('CLIErrorHandler', () => {
   let errorHandler: CLIErrorHandler;
 
   beforeEach(() => {
-    errorHandler = new CLIErrorHandler(true); // debug mode enabled
+    errorHandler = new CLIErrorHandler(); 
   });
 
   fancy.it('should normalize string error to Error object', () => {
@@ -38,6 +38,8 @@ describe('CLIErrorHandler', () => {
 
   fancy.it('should extract debug payload correctly', () => {
     const error = new Error('API error');
+    (error as any).status = 500;
+    (error as any).statusText = 'Internal Server Error';
     (error as any).request = {
       method: 'GET',
       url: 'http://api.test/resource',
@@ -48,12 +50,13 @@ describe('CLIErrorHandler', () => {
       status: 500,
       statusText: 'Internal Server Error',
       data: { error: 'fail' },
+      headers: { 'content-type': 'application/json' },
     };
 
-    const debugPayload = errorHandler['extractDebugPayload'](error);
+    const debugPayload = errorHandler['extractErrorPayload'](error);
     expect(debugPayload.request.method).to.equal('GET');
     expect(debugPayload.response.status).to.equal(500);
-    expect(debugPayload.command).to.be.undefined;
+    expect(debugPayload.status).to.equal(500);
   });
 
   fancy.it('should return full classified error with context', () => {
@@ -65,8 +68,9 @@ describe('CLIErrorHandler', () => {
     });
 
     expect(classified.type).to.equal(ERROR_TYPES.SERVER_ERROR);
-    expect(classified.message).to.equal('Test error');
-    expect(classified.context).to.contain('testOp');
+    expect(classified.message).to.equal('Test error (HTTP 502)');
+    expect(classified.meta?.operation).to.equal('testOp');
+    expect(classified.meta?.component).to.equal('testComponent');
     expect(classified.meta?.email).to.be.undefined;
     expect(classified.hidden).to.be.false;
   });
@@ -80,17 +84,19 @@ describe('CLIErrorHandler', () => {
   fancy.it('extractMeta should return full meta', () => {
     const meta = errorHandler['extractMeta']({
       email: 'a@b.com',
-      apiKey: '123',
       sessionId: 's1',
       userId: 'u1',
       orgId: 'o1',
+      operation: 'test',
+      component: 'testComponent',
     });
     expect(meta).to.deep.equal({
       email: 'a@b.com',
-      apiKey: '123',
       sessionId: 's1',
       userId: 'u1',
       orgId: 'o1',
+      operation: 'test',
+      component: 'testComponent',
     });
   });
 
@@ -103,6 +109,6 @@ describe('CLIErrorHandler', () => {
 
     const result = errorHandler.classifyError(invalidError);
     expect(result.type).to.equal(ERROR_TYPES.NORMALIZATION);
-    expect(result.message).to.include('Failed to normalize');
+    expect(result.message).to.include('Failed to process error');
   });
 });

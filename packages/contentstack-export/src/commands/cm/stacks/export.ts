@@ -13,6 +13,8 @@ import {
   log,
   handleAndLogError,
   getLogPath,
+  CLIProgressManager,
+  clearProgressModuleSetting,
 } from '@contentstack/cli-utilities';
 
 import { ModuleExporter } from '../../../export';
@@ -132,6 +134,7 @@ export default class ExportCommand extends Command {
       const managementAPIClient: ContentstackClient = await managementSDKClient(exportConfig);
       const moduleExporter = new ModuleExporter(managementAPIClient, exportConfig);
       await moduleExporter.start();
+
       if (!exportConfig.branches?.length) {
         writeExportMetaFile(exportConfig);
       }
@@ -141,9 +144,22 @@ export default class ExportCommand extends Command {
       );
       log.info(`The exported content has been stored at '${exportDir}'`, exportConfig.context);
       log.success(`The log has been stored at '${getLogPath()}'`, exportConfig.context);
+
+      // Print comprehensive summary at the end
+      if (!exportConfig.branches) CLIProgressManager.printGlobalSummary();
+      if (!configHandler.get('log')?.showConsoleLogs) {
+        cliux.print(`The log has been stored at '${getLogPath()}'`, { color: 'green' });
+      }
+      // Clear progress module setting now that export is complete
+      clearProgressModuleSetting();
     } catch (error) {
+      // Clear progress module setting even on error
+      clearProgressModuleSetting();
       handleAndLogError(error);
-      log.info(`The log has been stored at '${getLogPath()}'`);
+      if (!configHandler.get('log')?.showConsoleLogs) {
+        cliux.print(`Error: ${error}`, { color: 'red' });
+        cliux.print(`The log has been stored at '${getLogPath()}'`, { color: 'green' });
+      }
     }
   }
 
@@ -153,7 +169,6 @@ export default class ExportCommand extends Command {
       command: this.context?.info?.command || 'cm:stacks:export',
       module: '',
       userId: configHandler.get('userUid') || '',
-      email: configHandler.get('email') || '',
       sessionId: this.context?.sessionId || '',
       apiKey: apiKey || '',
       orgId: configHandler.get('oauthOrgUid') || '',

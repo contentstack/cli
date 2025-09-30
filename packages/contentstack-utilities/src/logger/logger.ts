@@ -2,8 +2,9 @@ import traverse from 'traverse';
 import { klona } from 'klona/full';
 import { normalize } from 'path';
 import * as winston from 'winston';
-import { levelColors, logLevels } from '../constants/logging';
+import { levelColors, logLevels, PROGRESS_SUPPORTED_MODULES } from '../constants/logging';
 import { LoggerConfig, LogLevel, LogType } from '../interfaces/index';
+import { configHandler } from '..';
 
 export default class Logger {
   private loggers: Record<string, winston.Logger>;
@@ -50,14 +51,11 @@ export default class Logger {
   }
 
   private createLogger(level: LogLevel, filePath: string): winston.Logger {
-    return winston.createLogger({
-      levels: logLevels,
-      level,
-      transports: [
-        new winston.transports.File({
-          ...this.loggerOptions,
-          filename: `${filePath}/${level}.log`,
-          format: winston.format.combine(
+    const transports: winston.transport[] = [
+      new winston.transports.File({
+        ...this.loggerOptions,
+        filename: `${filePath}/${level}.log`,
+        format: winston.format.combine(
             winston.format.timestamp(),
             winston.format.printf((info) => {
               // Apply minimal redaction for files (debugging info preserved)
@@ -65,7 +63,28 @@ export default class Logger {
               return JSON.stringify(redactedInfo);
             }),
           ),
-        }),
+      }),
+    ];
+
+    // Determine console logging based on configuration
+    let showConsoleLogs = true;
+
+    if (configHandler && typeof configHandler.get === 'function') {
+      const logConfig = configHandler.get('log') || {};
+      const currentModule = logConfig.progressSupportedModule;
+      const hasProgressSupport = currentModule && PROGRESS_SUPPORTED_MODULES.includes(currentModule);
+      
+      if (hasProgressSupport) {
+        // Plugin has progress bars - respect user's showConsoleLogs setting
+        showConsoleLogs = logConfig.showConsoleLogs ?? true;
+      } else {
+        // Plugin doesn't have progress support - always show console logs
+        showConsoleLogs = true;
+      }
+    }
+
+    if (showConsoleLogs) {
+      transports.push(
         new winston.transports.Console({
           format: winston.format.combine(
             winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
@@ -79,7 +98,13 @@ export default class Logger {
             }),
           ),
         }),
-      ],
+      );
+    }
+
+    return winston.createLogger({
+      levels: logLevels,
+      level,
+      transports,
     });
   }
 
