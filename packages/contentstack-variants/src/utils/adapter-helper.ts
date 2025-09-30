@@ -28,7 +28,32 @@ export class AdapterHelper<C, ApiClient> implements AdapterHelperInterface<C, Ap
       'responseType',
     ];
     this.apiClient = new HttpClient(pick(adapterConfig, pickConfig), options) as ApiClient;
-    if (adapterConfig.cmaConfig) {
+    
+    // Add delay interceptor if configured
+    if (adapterConfig.delayMs) {
+      console.log('Adding request interceptor for delay', adapterConfig.delayMs);
+      
+      (this.apiClient as any).interceptors?.request?.use(async (requestConfig: any) => {
+        console.log('API Interceptor called, applying delay of', adapterConfig.delayMs, 'ms');
+        await this.delay(adapterConfig.delayMs!);
+        console.log('API Delay completed, proceeding with request');
+        return requestConfig;
+      });
+      
+      // Create CMA client if configured
+      if (adapterConfig.cmaConfig) {
+        this.cmaAPIClient = new HttpClient(pick(adapterConfig.cmaConfig, pickConfig), options) as ApiClient;
+        
+        // Add delay interceptor to CMA client (no inner condition needed)
+        (this.cmaAPIClient as any).interceptors?.request?.use(async (requestConfig: any) => {
+          console.log('CMA Interceptor called, applying delay of', adapterConfig.delayMs, 'ms');
+          await this.delay(adapterConfig.delayMs!);
+          console.log('CMA Delay completed, proceeding with request');
+          return requestConfig;
+        });
+      }
+    } else if (adapterConfig.cmaConfig) {
+      // Create CMA client without delay
       this.cmaAPIClient = new HttpClient(pick(adapterConfig.cmaConfig, pickConfig), options) as ApiClient;
     }
   }
@@ -74,6 +99,7 @@ export class AdapterHelper<C, ApiClient> implements AdapterHelperInterface<C, Ap
    * @returns A Promise that resolves after the specified delay in milliseconds.
    */
   delay(ms: number): Promise<void> {
+    console.log('Delay called, applying delay of', ms, 'ms');
     return new Promise((resolve) => setTimeout(resolve, ms <= 0 ? 0 : ms));
   }
 }
