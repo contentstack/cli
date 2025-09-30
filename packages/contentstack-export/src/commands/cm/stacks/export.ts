@@ -14,7 +14,7 @@ import {
   handleAndLogError,
   getLogPath,
   CLIProgressManager,
-  clearProgressModuleSetting
+  clearProgressModuleSetting,
 } from '@contentstack/cli-utilities';
 
 import { ModuleExporter } from '../../../export';
@@ -135,9 +135,6 @@ export default class ExportCommand extends Command {
       const moduleExporter = new ModuleExporter(managementAPIClient, exportConfig);
       await moduleExporter.start();
 
-      // Clear progress module setting now that export is complete
-      clearProgressModuleSetting();
-
       if (!exportConfig.branches?.length) {
         writeExportMetaFile(exportConfig);
       }
@@ -153,6 +150,8 @@ export default class ExportCommand extends Command {
       if (!configHandler.get('log')?.showConsoleLogs) {
         cliux.print(`The log has been stored at '${getLogPath()}'`, { color: 'green' });
       }
+      // Clear progress module setting now that export is complete
+      clearProgressModuleSetting();
     } catch (error) {
       // Clear progress module setting even on error
       clearProgressModuleSetting();
