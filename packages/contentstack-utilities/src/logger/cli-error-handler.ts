@@ -88,7 +88,6 @@ export default class CLIErrorHandler {
     // Use existing formatError function for other cases
     try {
       const formattedMessage = formatError(error);
-
       return formattedMessage || 'An error occurred. Please try again.';
     } catch {
       // Fallback to basic error message extraction if formatError fails
@@ -116,8 +115,7 @@ export default class CLIErrorHandler {
     if (typeof error === 'object') {
       try {
         const errorObj = error as Record<string, any>;
-        const message = errorObj.message || errorObj.error || errorObj.statusText || 'Unknown error';
-        const normalizedError = new Error(message);
+        const normalizedError = new Error('Error occurred');
 
         // Only copy essential properties
         const essentialProps = [

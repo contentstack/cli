@@ -11,6 +11,7 @@ import {
   CreateExperienceInput,
   CreateExperienceVersionInput,
 } from '../types';
+import { PROCESS_NAMES, MODULE_CONTEXTS } from '../utils/constants';
 
 export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   private createdCTs: string[];
@@ -40,9 +41,10 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
   private personalizeConfig: ImportConfig['modules']['personalize'];
   private audienceConfig: ImportConfig['modules']['personalize']['audiences'];
   private experienceConfig: ImportConfig['modules']['personalize']['experiences'];
+  private experiences: ExperienceStruct[];
 
   constructor(public readonly config: ImportConfig) {
-   const conf: APIConfig = {
+    const conf: APIConfig = {
       config,
       baseURL: config.modules.personalize.baseURL[config.region.name],
       headers: { 'X-Project-Uid': config.modules.personalize.project_id },
@@ -52,7 +54,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
       },
     };
     super(Object.assign(config, conf));
-    
+
     this.personalizeConfig = this.config.modules.personalize;
     this.experiencesDirPath = resolve(
       sanitizePath(this.config.data),
@@ -101,33 +103,55 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     this.createdCTs = [];
     this.audiencesUid = (fsUtil.readFile(this.audiencesMapperPath, true) as Record<string, string>) || {};
     this.eventsUid = (fsUtil.readFile(this.eventsMapperPath, true) as Record<string, string>) || {};
-    this.config.context.module = 'experiences';
+    this.config.context.module = MODULE_CONTEXTS.EXPERIENCES;
+    this.experiences = [];
   }
 
   /**
    * The function asynchronously imports experiences from a JSON file and creates them in the system.
    */
-  async import() {   
-    await this.init();
-    await fsUtil.makeDirectory(this.expMapperDirPath);
-    log.debug(`Created mapper directory: ${this.expMapperDirPath}`, this.config.context);
+  async import() {
+    try {
+      log.debug('Starting experiences import...', this.config.context);
 
-    if (existsSync(this.experiencesPath)) {
-      log.debug(`Loading experiences from: ${this.experiencesPath}`, this.config.context);
-      
-      try {
-        const experiences = fsUtil.readFile(this.experiencesPath, true) as ExperienceStruct[];
-        log.info(`Found ${experiences.length} experiences to import`, this.config.context);
+      const [canImport, experiencesCount] = await this.analyzeExperiences();
+      if (!canImport) {
+        log.info('No experiences found to import', this.config.context);
+        // Still need to mark as complete for parent progress
+        if (this.parentProgressManager) {
+          this.parentProgressManager.tick(true, 'experiences module (no data)', null, PROCESS_NAMES.EXPERIENCES);
+        }
+        return;
+      }
 
-        for (const experience of experiences) {
-          const { uid, ...restExperienceData } = experience;
-          log.debug(`Processing experience: ${uid}`, this.config.context);
-          
-          //check whether reference audience exists or not that referenced in variations having __type equal to AudienceBasedVariation & targeting
-          let experienceReqObj: CreateExperienceInput = lookUpAudiences(restExperienceData, this.audiencesUid);
-          //check whether events exists or not that referenced in metrics
-          experienceReqObj = lookUpEvents(experienceReqObj, this.eventsUid);
+      // If we have a parent progress manager, use it as a sub-module
+      // Otherwise create our own simple progress manager
+      let progress;
+      if (this.parentProgressManager) {
+        progress = this.parentProgressManager;
+        log.debug('Using parent progress manager for experiences import', this.config.context);
+        this.parentProgressManager.updateProcessTotal(PROCESS_NAMES.EXPERIENCES, experiencesCount);
+      } else {
+        progress = this.createSimpleProgress(PROCESS_NAMES.EXPERIENCES, experiencesCount);
+        log.debug('Created standalone progress manager for experiences import', this.config.context);
+      }
 
+      await this.init();
+      await fsUtil.makeDirectory(this.expMapperDirPath);
+      log.debug(`Created mapper directory: ${this.expMapperDirPath}`, this.config.context);
+
+      log.info(`Processing ${experiencesCount} experiences for import`, this.config.context);
+
+      for (const experience of this.experiences) {
+        const { uid, ...restExperienceData } = experience;
+        log.debug(`Processing experience: ${uid}`, this.config.context);
+
+        //check whether reference audience exists or not that referenced in variations having __type equal to AudienceBasedVariation & targeting
+        let experienceReqObj: CreateExperienceInput = lookUpAudiences(restExperienceData, this.audiencesUid);
+        //check whether events exists or not that referenced in metrics
+        experienceReqObj = lookUpEvents(experienceReqObj, this.eventsUid);
+
+        try {
           const expRes = (await this.createExperience(experienceReqObj)) as ExperienceStruct;
           //map old experience uid to new experience uid
           this.experiencesUidMapper[uid] = expRes?.uid ?? '';
@@ -139,37 +163,82 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
           } catch (error) {
             handleAndLogError(error, this.config.context, `Failed to import experience versions for ${expRes.uid}`);
           }
-        }
-        
-        fsUtil.writeFile(this.experiencesUidMapperPath, this.experiencesUidMapper);
-        log.success('Experiences created successfully', this.config.context);
 
-        log.info('Validating variant and variant group creation',this.config.context);
-        this.pendingVariantAndVariantGrpForExperience = values(cloneDeep(this.experiencesUidMapper));
-        const jobRes = await this.validateVariantGroupAndVariantsCreated();
-        fsUtil.writeFile(this.cmsVariantPath, this.cmsVariants);
-        fsUtil.writeFile(this.cmsVariantGroupPath, this.cmsVariantGroups);
-        
-        if (jobRes) {
-          log.success('Variant and variant groups created successfully', this.config.context);
-        } else {
-          log.error('Failed to create variants and variant groups', this.config.context);
-          this.personalizeConfig.importData = false;
+          this.updateProgress(true, `experience: ${experience.name || uid}`, undefined, PROCESS_NAMES.EXPERIENCES);
+          log.debug(`Successfully processed experience: ${uid}`, this.config.context);
+        } catch (error) {
+          this.updateProgress(
+            false,
+            `experience: ${experience.name || uid}`,
+            (error as any)?.message,
+            PROCESS_NAMES.EXPERIENCES,
+          );
+          handleAndLogError(error, this.config.context, `Failed to create experience: ${uid}`);
         }
-
-        if (this.personalizeConfig.importData) {
-          log.info('Attaching content types to experiences', this.config.context);
-          await this.attachCTsInExperience();
-          log.success('Content types attached to experiences successfully', this.config.context);
-        }
-
-        await this.createVariantIdMapper();
-      } catch (error) {
-        handleAndLogError(error, this.config.context);
       }
-    } else {
-      log.warn(`Experiences file not found: ${this.experiencesPath}`, this.config.context);
+
+      fsUtil.writeFile(this.experiencesUidMapperPath, this.experiencesUidMapper);
+      log.success('Experiences created successfully', this.config.context);
+
+      log.info('Validating variant and variant group creation', this.config.context);
+      this.pendingVariantAndVariantGrpForExperience = values(cloneDeep(this.experiencesUidMapper));
+      const jobRes = await this.validateVariantGroupAndVariantsCreated();
+      fsUtil.writeFile(this.cmsVariantPath, this.cmsVariants);
+      fsUtil.writeFile(this.cmsVariantGroupPath, this.cmsVariantGroups);
+
+      if (jobRes) {
+        log.success('Variant and variant groups created successfully', this.config.context);
+      } else {
+        log.error('Failed to create variants and variant groups', this.config.context);
+        this.personalizeConfig.importData = false;
+      }
+
+      if (this.personalizeConfig.importData) {
+        log.info('Attaching content types to experiences', this.config.context);
+        await this.attachCTsInExperience();
+        log.success('Content types attached to experiences successfully', this.config.context);
+      }
+
+      await this.createVariantIdMapper();
+
+      // Only complete progress if we own the progress manager (no parent)
+      if (!this.parentProgressManager) {
+        this.completeProgress(true);
+      }
+
+      log.success(
+        `Experiences imported successfully! Total experiences: ${experiencesCount} - personalization enabled`,
+        this.config.context,
+      );
+    } catch (error) {
+      if (!this.parentProgressManager) {
+        this.completeProgress(false, (error as any)?.message || 'Experiences import failed');
+      }
+      handleAndLogError(error, this.config.context);
+      throw error;
     }
+  }
+
+  private async analyzeExperiences(): Promise<[boolean, number]> {
+    return this.withLoadingSpinner('EXPERIENCES: Analyzing import data...', async () => {
+      log.debug(`Checking for experiences file: ${this.experiencesPath}`, this.config.context);
+
+      if (!existsSync(this.experiencesPath)) {
+        log.warn(`Experiences file not found: ${this.experiencesPath}`, this.config.context);
+        return [false, 0];
+      }
+
+      this.experiences = fsUtil.readFile(this.experiencesPath, true) as ExperienceStruct[];
+      const experiencesCount = this.experiences?.length || 0;
+
+      if (experiencesCount < 1) {
+        log.warn('No experiences found in file', this.config.context);
+        return [false, 0];
+      }
+
+      log.debug(`Found ${experiencesCount} experiences to import`, this.config.context);
+      return [true, experiencesCount];
+    });
   }
 
   /**
@@ -177,7 +246,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
    */
   async importExperienceVersions(experience: ExperienceStruct, oldExperienceUid: string) {
     log.debug(`Importing versions for experience: ${oldExperienceUid}`, this.config.context);
-    
+
     const versionsPath = resolve(
       sanitizePath(this.experiencesDirPath),
       'versions',
@@ -191,7 +260,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
 
     const versions = fsUtil.readFile(versionsPath, true) as ExperienceStruct[];
     log.debug(`Found ${versions.length} versions for experience: ${oldExperienceUid}`, this.config.context);
-    
+
     const versionMap: Record<string, CreateExperienceVersionInput | undefined> = {
       ACTIVE: undefined,
       DRAFT: undefined,
@@ -258,8 +327,11 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
    * @returns
    */
   async validateVariantGroupAndVariantsCreated(retryCount = 0): Promise<any> {
-    log.debug(`Validating variant groups and variants creation - attempt ${retryCount + 1}/${this.maxValidateRetry}`, this.config.context);
-    
+    log.debug(
+      `Validating variant groups and variants creation - attempt ${retryCount + 1}/${this.maxValidateRetry}`,
+      this.config.context,
+    );
+
     try {
       const promises = this.pendingVariantAndVariantGrpForExperience.map(async (expUid) => {
         log.debug(`Checking experience: ${expUid}`, this.config.context);
@@ -289,7 +361,10 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
           return this.validateVariantGroupAndVariantsCreated(retryCount);
         } else {
           log.error('Personalize job failed to create variants and variant groups', this.config.context);
-          log.error(`Failed experiences: ${this.pendingVariantAndVariantGrpForExperience.join(', ')}`, this.config.context);
+          log.error(
+            `Failed experiences: ${this.pendingVariantAndVariantGrpForExperience.join(', ')}`,
+            this.config.context,
+          );
           fsUtil.writeFile(this.failedCmsExpPath, this.pendingVariantAndVariantGrpForExperience);
           return false;
         }
@@ -305,7 +380,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
 
   async attachCTsInExperience() {
     log.debug('Attaching content types to experiences', this.config.context);
-    
+
     try {
       // Read the created content types from the file
       this.createdCTs = fsUtil.readFile(this.cTsSuccessPath, true) as any;
@@ -313,22 +388,25 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
         log.debug('No Content types created, skipping following process', this.config.context);
         return;
       }
-      
+
       log.debug(`Found ${this.createdCTs.length} created content types`, this.config.context);
       const experienceCTsMap = fsUtil.readFile(this.experienceCTsPath, true) as Record<string, string[]>;
-      
+
       return await Promise.allSettled(
         Object.entries(this.experiencesUidMapper).map(async ([oldExpUid, newExpUid]) => {
           if (experienceCTsMap[oldExpUid]?.length) {
             log.debug(`Processing content types for experience: ${oldExpUid} -> ${newExpUid}`, this.config.context);
-            
+
             // Filter content types that were created
             const updatedContentTypes = experienceCTsMap[oldExpUid].filter(
               (ct: any) => this.createdCTs.includes(ct?.uid) && ct.status === 'linked',
             );
-            
+
             if (updatedContentTypes?.length) {
-              log.debug(`Attaching ${updatedContentTypes.length} content types to experience: ${newExpUid}`, this.config.context);
+              log.debug(
+                `Attaching ${updatedContentTypes.length} content types to experience: ${newExpUid}`,
+                this.config.context,
+              );
               const { variant_groups: [variantGroup] = [] } =
                 (await this.getVariantGroup({ experienceUid: newExpUid })) || {};
               variantGroup.content_types = updatedContentTypes;
@@ -349,11 +427,11 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
 
   async createVariantIdMapper() {
     log.debug('Creating variant ID mapper', this.config.context);
-    
+
     try {
       const experienceVariantIds: any = fsUtil.readFile(this.experienceVariantsIdsPath, true) || [];
       log.debug(`Found ${experienceVariantIds.length} experience variant IDs to process`, this.config.context);
-      
+
       const variantUIDMapper: Record<string, string> = {};
       for (let experienceVariantId of experienceVariantIds) {
         const [experienceId, variantShortId, oldVariantId] = experienceVariantId.split('-');

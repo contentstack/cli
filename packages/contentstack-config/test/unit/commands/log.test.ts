@@ -31,7 +31,7 @@ describe('Log Commands', () => {
       const cmd = new LogSetCommand([], {} as any);
       const relativePath = './logs/app.log';
       const expectedAbsolutePath = path.resolve(process.cwd(), './logs'); // Directory, not file
-      
+
       sinon.stub(cmd as any, 'parse').resolves({
         flags: {
           level: 'debug',
@@ -49,7 +49,7 @@ describe('Log Commands', () => {
         setStub.calledWith('log', {
           level: 'debug',
           path: expectedAbsolutePath, // Should be directory path, not file path
-          'show-console-logs': false,
+          showConsoleLogs: false,
         }),
       ).to.be.true;
 
@@ -73,8 +73,9 @@ describe('Log Commands', () => {
       expect(setStub.called).to.be.true;
       expect(setStub.calledWith('log', { level: 'warn', path: './existing.log' })).to.be.true;
 
-      // Should not display any success messages when no flags are provided
-      expect(successMessage.length).to.equal(0);
+      // Should display the overall success message when no flags are provided
+      expect(successMessage.length).to.equal(1);
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
 
     it('should call set even when no flags are provided and no existing config', async () => {
@@ -92,23 +93,24 @@ describe('Log Commands', () => {
       expect(setStub.called).to.be.true;
       expect(setStub.calledWith('log', {})).to.be.true;
 
-      // Should not display any success messages when no flags are provided
-      expect(successMessage.length).to.equal(0);
+      // Should display the overall success message when no flags are provided
+      expect(successMessage.length).to.equal(1);
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
 
     it('should preserve existing config values when only setting level', async () => {
       const cmd = new LogSetCommand([], {} as any);
       const existingPath = './existing/logs/app.log';
-      
+
       sinon.stub(cmd as any, 'parse').resolves({
         flags: {
           level: 'warn',
         },
       });
 
-      sinon.stub(configHandler, 'get').returns({ 
+      sinon.stub(configHandler, 'get').returns({
         path: existingPath,
-        'show-console-logs': true 
+        'show-console-logs': true,
       });
       const setStub = sinon.stub(configHandler, 'set');
 
@@ -117,30 +119,31 @@ describe('Log Commands', () => {
       expect(
         setStub.calledWith('log', {
           level: 'warn',
-          path: existingPath,  // Should preserve existing path unchanged
-          'show-console-logs': true,  // Should preserve existing console logs setting
+          path: existingPath, // Should preserve existing path unchanged
+          'show-console-logs': true, // Should preserve existing console logs setting
         }),
       ).to.be.true;
 
-      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_LEVEL_SET'))).to.be.true;
-      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.false;
-      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_CONSOLE_SET'))).to.be.false;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_LEVEL_SET'))).to.be.true;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.false;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_CONSOLE_SET'))).to.be.false;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
 
     it('should preserve existing config values when only setting path', async () => {
       const cmd = new LogSetCommand([], {} as any);
       const newPath = './new/logs/app.log';
       const expectedAbsolutePath = path.resolve(process.cwd(), './new/logs');
-      
+
       sinon.stub(cmd as any, 'parse').resolves({
         flags: {
           path: newPath,
         },
       });
 
-      sinon.stub(configHandler, 'get').returns({ 
+      sinon.stub(configHandler, 'get').returns({
         level: 'error',
-        'show-console-logs': false 
+        'show-console-logs': false,
       });
       const setStub = sinon.stub(configHandler, 'set');
 
@@ -154,9 +157,10 @@ describe('Log Commands', () => {
         }),
       ).to.be.true;
 
-      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_LEVEL_SET'))).to.be.false;
-      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.true;
-      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_CONSOLE_SET'))).to.be.false;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_LEVEL_SET'))).to.be.false;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.true;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_CONSOLE_SET'))).to.be.false;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
 
     it('should set show-console-logs flag only when explicitly provided', async () => {
@@ -172,15 +176,16 @@ describe('Log Commands', () => {
 
       expect(
         setStub.calledWith('log', {
-          level: 'debug', 
+          level: 'debug',
           path: './existing.log',
-          'show-console-logs': true,
+          showConsoleLogs: true,
         }),
       ).to.be.true;
 
-      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_LEVEL_SET'))).to.be.false;
-      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.false;
-      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_CONSOLE_SET'))).to.be.true;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_LEVEL_SET'))).to.be.false;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.false;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_CONSOLE_SET'))).to.be.true;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
 
     it('should set show-console-logs flag to false (--no-show-console-logs)', async () => {
@@ -197,20 +202,21 @@ describe('Log Commands', () => {
       expect(
         setStub.calledWith('log', {
           level: 'info',
-          'show-console-logs': false,
+          showConsoleLogs: false,
         }),
       ).to.be.true;
 
-      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_LEVEL_SET'))).to.be.false;
-      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.false;
-      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_CONSOLE_SET'))).to.be.true;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_LEVEL_SET'))).to.be.false;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.false;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_CONSOLE_SET'))).to.be.true;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
 
     it('should set all flags together (level, path, show-console-logs) with absolute path', async () => {
       const cmd = new LogSetCommand([], {} as any);
       const relativePath = './logs/warnings.log';
-      const expectedAbsolutePath = path.resolve(process.cwd(), './logs'); 
-      
+      const expectedAbsolutePath = path.resolve(process.cwd(), './logs');
+
       sinon.stub(cmd as any, 'parse').resolves({
         flags: {
           level: 'warn',
@@ -227,22 +233,23 @@ describe('Log Commands', () => {
       expect(
         setStub.calledWith('log', {
           level: 'warn',
-          path: expectedAbsolutePath, 
-          'show-console-logs': true,
+          path: expectedAbsolutePath,
+          showConsoleLogs: true,
         }),
       ).to.be.true;
 
-      expect(successMessage).to.have.length(3);
+      expect(successMessage).to.have.length(4);
       expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_LEVEL_SET'))).to.be.true;
       expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.true;
       expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_CONSOLE_SET'))).to.be.true;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
 
     it('should handle absolute paths correctly', async () => {
       const cmd = new LogSetCommand([], {} as any);
       const absolutePath = '/tmp/cli.log';
-      const expectedDirectoryPath = '/tmp'; 
-      
+      const expectedDirectoryPath = '/tmp';
+
       sinon.stub(cmd as any, 'parse').resolves({
         flags: {
           path: absolutePath,
@@ -258,7 +265,7 @@ describe('Log Commands', () => {
       expect(
         setStub.calledWith('log', {
           path: expectedDirectoryPath,
-          'show-console-logs': false,
+          showConsoleLogs: false,
         }),
       ).to.be.true;
     });
@@ -299,28 +306,25 @@ describe('Log Commands', () => {
       const cmd = new LogGetCommand([], {} as any);
       const relativePath = './logs/app.log';
       const expectedAbsolutePath = path.resolve(process.cwd(), relativePath);
-      
+
       sinon.stub(configHandler, 'get').returns({ level: 'debug', path: relativePath });
 
       await cmd.run();
 
       expect(tableMessage).to.have.length(1);
-      expect(tableMessage[0].headers).to.deep.equal([
-        { value: 'Setting' }, 
-        { value: 'Value' }
-      ]);
+      expect(tableMessage[0].headers).to.deep.equal([{ value: 'Setting' }, { value: 'Value' }]);
       expect(tableMessage[0].data).to.deep.equal([
         {
-          'Setting': 'Log Level',
-          'Value': 'debug'
+          Setting: 'Log Level',
+          Value: 'debug',
         },
         {
-          'Setting': 'Log Path',
-          'Value': expectedAbsolutePath
+          Setting: 'Log Path',
+          Value: expectedAbsolutePath,
         },
         {
-          'Setting': 'Show Console Logs',
-          'Value': 'false'
+          Setting: 'Show Console Logs',
+          Value: 'false',
         },
       ]);
     });
@@ -332,22 +336,19 @@ describe('Log Commands', () => {
       await cmd.run();
 
       expect(tableMessage).to.have.length(1);
-      expect(tableMessage[0].headers).to.deep.equal([
-        { value: 'Setting' }, 
-        { value: 'Value' }
-      ]);
+      expect(tableMessage[0].headers).to.deep.equal([{ value: 'Setting' }, { value: 'Value' }]);
       expect(tableMessage[0].data).to.deep.equal([
         {
-          'Setting': 'Log Level',
-          'Value': 'info'
+          Setting: 'Log Level',
+          Value: 'info',
         },
         {
-          'Setting': 'Log Path',
-          'Value': LOG_CONFIG_DEFAULTS.PATH
+          Setting: 'Log Path',
+          Value: LOG_CONFIG_DEFAULTS.PATH,
         },
         {
-          'Setting': 'Show Console Logs',
-          'Value': 'false'
+          Setting: 'Show Console Logs',
+          Value: 'false',
         },
       ]);
     });
@@ -356,28 +357,25 @@ describe('Log Commands', () => {
       const cmd = new LogGetCommand([], {} as any);
       const customPath = './custom/logs/app.log';
       const expectedAbsolutePath = path.resolve(process.cwd(), customPath);
-      
+
       sinon.stub(configHandler, 'get').returns({ path: customPath });
 
       await cmd.run();
 
       expect(tableMessage).to.have.length(1);
-      expect(tableMessage[0].headers).to.deep.equal([
-        { value: 'Setting' }, 
-        { value: 'Value' }
-      ]);
+      expect(tableMessage[0].headers).to.deep.equal([{ value: 'Setting' }, { value: 'Value' }]);
       expect(tableMessage[0].data).to.deep.equal([
         {
-          'Setting': 'Log Level',
-          'Value': LOG_CONFIG_DEFAULTS.LEVEL
+          Setting: 'Log Level',
+          Value: LOG_CONFIG_DEFAULTS.LEVEL,
         },
         {
-          'Setting': 'Log Path',
-          'Value': expectedAbsolutePath
+          Setting: 'Log Path',
+          Value: expectedAbsolutePath,
         },
         {
-          'Setting': 'Show Console Logs',
-          'Value': 'false'
+          Setting: 'Show Console Logs',
+          Value: 'false',
         },
       ]);
     });
@@ -391,26 +389,26 @@ describe('Log Commands', () => {
       expect(tableMessage).to.have.length(1);
       expect(tableMessage[0].data).to.deep.equal([
         {
-          'Setting': 'Log Level',
-          'Value': LOG_CONFIG_DEFAULTS.LEVEL
+          Setting: 'Log Level',
+          Value: LOG_CONFIG_DEFAULTS.LEVEL,
         },
         {
-          'Setting': 'Log Path',
-          'Value': LOG_CONFIG_DEFAULTS.PATH
+          Setting: 'Log Path',
+          Value: LOG_CONFIG_DEFAULTS.PATH,
         },
         {
-          'Setting': 'Show Console Logs',
-          'Value': 'false'
+          Setting: 'Show Console Logs',
+          Value: 'false',
         },
       ]);
     });
 
     it('should display configured console logs setting', async () => {
       const cmd = new LogGetCommand([], {} as any);
-      sinon.stub(configHandler, 'get').returns({ 
-        level: 'debug', 
+      sinon.stub(configHandler, 'get').returns({
+        level: 'debug',
         path: '/tmp/cli.log',
-        'show-console-logs': true 
+        showConsoleLogs: true,
       });
 
       await cmd.run();
@@ -418,16 +416,16 @@ describe('Log Commands', () => {
       expect(tableMessage).to.have.length(1);
       expect(tableMessage[0].data).to.deep.equal([
         {
-          'Setting': 'Log Level',
-          'Value': 'debug'
+          Setting: 'Log Level',
+          Value: 'debug',
         },
         {
-          'Setting': 'Log Path',
-          'Value': '/tmp/cli.log' 
+          Setting: 'Log Path',
+          Value: '/tmp/cli.log',
         },
         {
-          'Setting': 'Show Console Logs',
-          'Value': 'true'
+          Setting: 'Show Console Logs',
+          Value: 'true',
         },
       ]);
     });
@@ -465,14 +463,14 @@ describe('Log Commands', () => {
     it('should use existing config values when available and no flags provided', async () => {
       const cmd = new LogSetCommand([], {} as any);
       const existingPath = '/existing/path/cli.log';
-      
+
       sinon.stub(cmd as any, 'parse').resolves({
         flags: { 'show-console-logs': false },
       });
 
-      sinon.stub(configHandler, 'get').returns({ 
-        level: 'warn', 
-        path: existingPath 
+      sinon.stub(configHandler, 'get').returns({
+        level: 'warn',
+        path: existingPath,
       });
       const setStub = sinon.stub(configHandler, 'set');
 
@@ -480,9 +478,9 @@ describe('Log Commands', () => {
 
       expect(
         setStub.calledWith('log', {
-          level: 'warn', 
-          path: existingPath, 
-          'show-console-logs': false,
+          level: 'warn',
+          path: existingPath,
+          showConsoleLogs: false,
         }),
       ).to.be.true;
     });
@@ -490,17 +488,17 @@ describe('Log Commands', () => {
     it('should mix existing config with new flag values', async () => {
       const cmd = new LogSetCommand([], {} as any);
       const newPath = './new-logs/cli.log';
-      const expectedAbsolutePath = path.resolve(process.cwd(), './new-logs'); 
-      
+      const expectedAbsolutePath = path.resolve(process.cwd(), './new-logs');
+
       sinon.stub(cmd as any, 'parse').resolves({
-        flags: { 
+        flags: {
           path: newPath,
-          'show-console-logs': true 
+          'show-console-logs': true,
         },
       });
 
-      sinon.stub(configHandler, 'get').returns({ 
-        level: 'error' 
+      sinon.stub(configHandler, 'get').returns({
+        level: 'error',
       });
       const setStub = sinon.stub(configHandler, 'set');
 
@@ -508,9 +506,9 @@ describe('Log Commands', () => {
 
       expect(
         setStub.calledWith('log', {
-          level: 'error', 
-          path: expectedAbsolutePath, 
-          'show-console-logs': true, 
+          level: 'error',
+          path: expectedAbsolutePath,
+          showConsoleLogs: true,
         }),
       ).to.be.true;
     });
@@ -519,12 +517,12 @@ describe('Log Commands', () => {
       const cmd = new LogSetCommand([], {} as any);
       const windowsPath = 'C:\\logs\\cli.log';
       const resolvedPath = path.resolve(process.cwd(), windowsPath);
-      const expectedPath = path.dirname(resolvedPath); 
-      
+      const expectedPath = path.dirname(resolvedPath);
+
       sinon.stub(cmd as any, 'parse').resolves({
-        flags: { 
+        flags: {
           path: windowsPath,
-          'show-console-logs': false 
+          'show-console-logs': false,
         },
       });
 
@@ -535,33 +533,34 @@ describe('Log Commands', () => {
 
       expect(
         setStub.calledWith('log', {
-          level: 'debug', 
-          path: expectedPath, 
-          'show-console-logs': false,
+          level: 'debug',
+          path: expectedPath,
+          showConsoleLogs: false,
         }),
       ).to.be.true;
-      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_LEVEL_SET'))).to.be.false;
-      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.true;
-      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_CONSOLE_SET'))).to.be.true;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_LEVEL_SET'))).to.be.false;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.true;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_CONSOLE_SET'))).to.be.true;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
 
     it('should override existing values when flags are provided with file-to-directory conversion', async () => {
       const cmd = new LogSetCommand([], {} as any);
       const newPath = './override/logs/cli.log';
       const expectedAbsolutePath = path.resolve(process.cwd(), './override/logs'); // Directory, not file
-      
+
       sinon.stub(cmd as any, 'parse').resolves({
-        flags: { 
+        flags: {
           level: 'error',
           path: newPath,
-          'show-console-logs': true
+          'show-console-logs': true,
         },
       });
 
-      sinon.stub(configHandler, 'get').returns({ 
-        level: 'debug', 
+      sinon.stub(configHandler, 'get').returns({
+        level: 'debug',
         path: './old/path.log',
-        'show-console-logs': false
+        showConsoleLogs: false,
       });
       const setStub = sinon.stub(configHandler, 'set');
 
@@ -569,25 +568,26 @@ describe('Log Commands', () => {
 
       expect(
         setStub.calledWith('log', {
-          level: 'error', 
+          level: 'error',
           path: expectedAbsolutePath,
-          'show-console-logs': true,  
+          showConsoleLogs: true,
         }),
       ).to.be.true;
 
-      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_LEVEL_SET'))).to.be.true;
-      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.true;
-      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_CONSOLE_SET'))).to.be.true;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_LEVEL_SET'))).to.be.true;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.true;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_CONSOLE_SET'))).to.be.true;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
 
     it('should convert file paths to directory paths automatically', async () => {
       const cmd = new LogSetCommand([], {} as any);
       const filePath = './custom/logs/debug.log';
       const expectedDirectoryPath = path.resolve(process.cwd(), './custom/logs');
-      
+
       sinon.stub(cmd as any, 'parse').resolves({
-        flags: { 
-          path: filePath
+        flags: {
+          path: filePath,
         },
       });
 
@@ -602,17 +602,18 @@ describe('Log Commands', () => {
         }),
       ).to.be.true;
 
-      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.true;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.true;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
 
     it('should keep directory paths unchanged', async () => {
       const cmd = new LogSetCommand([], {} as any);
       const directoryPath = './custom/logs';
       const expectedDirectoryPath = path.resolve(process.cwd(), directoryPath);
-      
+
       sinon.stub(cmd as any, 'parse').resolves({
-        flags: { 
-          path: directoryPath
+        flags: {
+          path: directoryPath,
         },
       });
 
@@ -623,12 +624,13 @@ describe('Log Commands', () => {
 
       expect(
         setStub.calledWith('log', {
-          path: expectedDirectoryPath, 
+          path: expectedDirectoryPath,
         }),
       ).to.be.true;
 
       // Should show success message for path only
-      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.true;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.true;
+      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
     });
   });
 });
