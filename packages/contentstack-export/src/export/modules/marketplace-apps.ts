@@ -232,7 +232,7 @@ export default class ExportMarketplaceApps extends BaseClass {
       fsUtil.writeFile(marketplaceAppsFilePath, this.installedApps);
 
       log.success(
-        messageHandler.parse('MARKETPLACE_APPS_EXPORT_COMPLETE', Object.keys(this.installedApps).length),
+        messageHandler.parse('MARKETPLACE_APPS_EXPORT_COMPLETE', Object.keys(this.installedApps || {}).length),
         this.exportConfig.context,
       );
     }

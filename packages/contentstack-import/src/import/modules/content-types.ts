@@ -429,8 +429,8 @@ export default class ContentTypesImport extends BaseClass {
     log.debug(
       `Analysis complete: ${this.cTs?.length} content types, ${this.gFs?.length} global fields, ${
         this.pendingGFs?.length
-      } pending GFs, ${Object.keys(this.installedExtensions)?.length} extensions, ${
-        Object.keys(this.taxonomies)?.length
+      } pending GFs, ${Object.keys(this.installedExtensions || {})?.length} extensions, ${
+        Object.keys(this.taxonomies || {})?.length
       } taxonomies`,
       this.importConfig.context,
     );

@@ -74,8 +74,8 @@ export default class LocaleExport extends BaseClass {
       progress.updateStatus('Fetching locale definitions...');
       await this.getLocales();
       log.debug(
-        `Retrieved ${Object.keys(this.locales).length} locales and ${
-          Object.keys(this.masterLocale).length
+        `Retrieved ${Object.keys(this.locales || {}).length} locales and ${
+          Object.keys(this.masterLocale || {}).length
         } master locales`,
         this.exportConfig.context,
       );
@@ -89,8 +89,8 @@ export default class LocaleExport extends BaseClass {
       log.success(
         messageHandler.parse(
           'LOCALES_EXPORT_COMPLETE',
-          Object.keys(this.locales).length,
-          Object.keys(this.masterLocale).length,
+          Object.keys(this.locales || {}).length,
+          Object.keys(this.masterLocale || {}).length,
         ),
         this.exportConfig.context,
       );
@@ -156,8 +156,8 @@ export default class LocaleExport extends BaseClass {
     });
 
     log.debug(
-      `Sanitization complete. Master locales: ${Object.keys(this.masterLocale).length}, Regular locales: ${
-        Object.keys(this.locales).length
+      `Sanitization complete. Master locales: ${Object.keys(this.masterLocale || {}).length}, Regular locales: ${
+        Object.keys(this.locales || {}).length
       }`,
       this.exportConfig.context,
     );

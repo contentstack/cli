@@ -104,7 +104,7 @@ export default class ExportCustomRoles extends BaseClass {
       progress.completeProcess(PROCESS_NAMES.PROCESS_MAPPINGS, true);
 
       log.debug(
-        `Custom roles export completed. Total custom roles: ${Object.keys(this.customRoles).length}`,
+        `Custom roles export completed. Total custom roles: ${Object.keys(this.customRoles || {}).length}`,
         this.exportConfig.context,
       );
       this.completeProgress(true);
@@ -177,7 +177,7 @@ export default class ExportCustomRoles extends BaseClass {
       this.progressManager?.tick(true, `locale: ${locale.name}`, null, PROCESS_NAMES.FETCH_LOCALES);
     }
 
-    log.debug(`Mapped ${Object.keys(this.sourceLocalesMap).length} locales`, this.exportConfig.context);
+    log.debug(`Mapped ${Object.keys(this.sourceLocalesMap || {}).length} locales`, this.exportConfig.context);
   }
 
   async getCustomRolesLocales() {
