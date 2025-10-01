@@ -57,7 +57,7 @@ export default class ExportEnvironments extends BaseClass {
 
       progress.updateStatus('Fetching environments...');
       await this.getEnvironments();
-      log.debug(`Retrieved ${Object.keys(this.environments).length} environments`, this.exportConfig.context);
+      log.debug(`Retrieved ${Object.keys(this.environments || {}).length} environments`, this.exportConfig.context);
 
       if (this.environments === undefined || isEmpty(this.environments)) {
         log.info(messageHandler.parse('ENVIRONMENT_NOT_FOUND'), this.exportConfig.context);
@@ -66,7 +66,7 @@ export default class ExportEnvironments extends BaseClass {
         log.debug(`Writing environments to: ${environmentsFilePath}`, this.exportConfig.context);
         fsUtil.writeFile(environmentsFilePath, this.environments);
         log.success(
-          messageHandler.parse('ENVIRONMENT_EXPORT_COMPLETE', Object.keys(this.environments).length),
+          messageHandler.parse('ENVIRONMENT_EXPORT_COMPLETE', Object.keys(this.environments || {}).length),
           this.exportConfig.context,
         );
       }
@@ -130,7 +130,7 @@ export default class ExportEnvironments extends BaseClass {
     }
 
     log.debug(
-      `Sanitization complete. Total environments processed: ${Object.keys(this.environments).length}`,
+      `Sanitization complete. Total environments processed: ${Object.keys(this.environments || {}).length}`,
       this.exportConfig.context,
     );
   }
