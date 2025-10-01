@@ -20,7 +20,6 @@ import {
   handleAndLogError,
 } from '@contentstack/cli-utilities';
 
-import { trace } from '../../utils/log';
 import { askEncryptionKey, getLocationName } from '../../utils/interactive';
 import { ModuleClassParams, MarketplaceAppsConfig, ImportConfig, Installation, Manifest } from '../../types';
 import {
@@ -538,7 +537,6 @@ export default class ImportMarketplaceApps extends BaseClass {
         return this.createPrivateApp(updatedApp, appSuffix + 1, true);
       } else {
         this.progressManager?.tick(false, `${app.name}`, message, PROCESS_NAMES.CREATE_APPS);
-        trace(response, 'error', true);
         log.error(formatError(message), this.importConfig.context);
 
         if (this.importConfig.forceStopMarketplaceAppsPrompt) {
@@ -700,7 +698,7 @@ export default class ImportMarketplaceApps extends BaseClass {
         .setConfiguration(this.nodeCrypto.decrypt(configuration))
         .then(({ data }: any) => {
           if (data?.message) {
-            trace(data, 'error', true);
+            log.debug(data, this.importConfig.context);
             log.info(formatError(data.message), this.importConfig.context);
           } else {
             log.success(`${appName} app config updated successfully.!`, this.importConfig.context);
@@ -708,7 +706,7 @@ export default class ImportMarketplaceApps extends BaseClass {
           }
         })
         .catch((error: any) => {
-          trace(error, 'error', true);
+          log.debug(error, this.importConfig.context);
           log.error(formatError(error), this.importConfig.context);
           log.debug(`Configuration update failed for: ${appName}`, this.importConfig.context);
         });
@@ -722,7 +720,7 @@ export default class ImportMarketplaceApps extends BaseClass {
         .setServerConfig(this.nodeCrypto.decrypt(server_configuration))
         .then(({ data }: any) => {
           if (data?.message) {
-            trace(data, 'error', true);
+            log.debug(data, this.importConfig.context);
             log.error(formatError(data.message), this.importConfig.context);
           } else {
             log.success(`${appName} app server config updated successfully.!`, this.importConfig.context);
@@ -730,7 +728,7 @@ export default class ImportMarketplaceApps extends BaseClass {
           }
         })
         .catch((error: any) => {
-          trace(error, 'error', true);
+          log.debug(error, this.importConfig.context);
           log.error(formatError(error), this.importConfig.context);
           log.debug(`Server configuration update failed for: ${appName}`, this.importConfig.context);
         });
