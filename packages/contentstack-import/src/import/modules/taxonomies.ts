@@ -193,10 +193,10 @@ export default class ImportTaxonomies extends BaseClass {
   createSuccessAndFailedFile() {
     log.debug('Creating success and failed files for taxonomies and terms', this.importConfig.context);
 
-    const createdTaxCount = Object.keys(this.createdTaxonomies)?.length;
-    const failedTaxCount = Object.keys(this.failedTaxonomies)?.length;
-    const createdTermsCount = Object.keys(this.createdTerms)?.length;
-    const failedTermsCount = Object.keys(this.failedTerms)?.length;
+    const createdTaxCount = Object.keys(this.createdTaxonomies || {})?.length;
+    const failedTaxCount = Object.keys(this.failedTaxonomies || {})?.length;
+    const createdTermsCount = Object.keys(this.createdTerms || {})?.length;
+    const failedTermsCount = Object.keys(this.failedTerms || {})?.length;
 
     log.debug(
       `Summary - Created taxonomies: ${createdTaxCount}, Failed taxonomies: ${failedTaxCount}`,

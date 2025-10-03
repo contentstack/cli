@@ -366,7 +366,7 @@ export default class EntriesImport extends BaseClass {
   private async processEntryPublishing(): Promise<void> {
     log.info('Starting entry publishing process', this.importConfig.context);
     this.envs = fileHelper.readFileSync(this.envPath);
-    log.debug(`Loaded ${Object.keys(this.envs).length} environments for publishing`, this.importConfig.context);
+    log.debug(`Loaded ${Object.keys(this.envs || {}).length} environments for publishing`, this.importConfig.context);
 
     const entryRequestOptions = this.populateEntryCreatePayload();
     for (let entryRequestOption of entryRequestOptions) {

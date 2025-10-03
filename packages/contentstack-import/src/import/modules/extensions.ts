@@ -367,7 +367,7 @@ export default class ImportExtensions extends BaseClass {
         return [0];
       }
 
-      const count = Object.keys(this.extensions).length;
+      const count = Object.keys(this.extensions || {}).length;
       log.debug(`Loaded ${count} extension items from file`, this.importConfig.context);
       return [count];
     });

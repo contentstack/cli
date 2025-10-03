@@ -79,7 +79,7 @@ export default class ExportTaxonomies extends BaseClass {
       await this.getAllTaxonomies();
       progress.completeProcess(PROCESS_NAMES.FETCH_TAXONOMIES, true);
 
-      const actualTaxonomyCount = Object.keys(this.taxonomies)?.length;
+      const actualTaxonomyCount = Object.keys(this.taxonomies || {})?.length;
       log.debug(
         `Found ${actualTaxonomyCount} taxonomies to export (API reported ${totalCount})`,
         this.exportConfig.context,
@@ -105,7 +105,7 @@ export default class ExportTaxonomies extends BaseClass {
         log.info('No taxonomies found to export detailed information', this.exportConfig.context);
       }
 
-      const taxonomyCount = Object.keys(this.taxonomies).length;
+      const taxonomyCount = Object.keys(this.taxonomies || {}).length;
       log.success(messageHandler.parse('TAXONOMY_EXPORT_COMPLETE', taxonomyCount), this.exportConfig.context);
       this.completeProgress(true);
     } catch (error) {
@@ -178,7 +178,7 @@ export default class ExportTaxonomies extends BaseClass {
     }
 
     log.debug(
-      `Sanitization complete. Total taxonomies processed: ${Object.keys(this.taxonomies).length}`,
+      `Sanitization complete. Total taxonomies processed: ${Object.keys(this.taxonomies || {}).length}`,
       this.exportConfig.context,
     );
   }
@@ -189,7 +189,7 @@ export default class ExportTaxonomies extends BaseClass {
    */
   async exportTaxonomies(): Promise<any> {
     log.debug(
-      `Exporting ${Object.keys(this.taxonomies)?.length} taxonomies with detailed information`,
+      `Exporting ${Object.keys(this.taxonomies || {})?.length} taxonomies with detailed information`,
       this.exportConfig.context,
     );
 

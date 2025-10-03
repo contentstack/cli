@@ -58,7 +58,7 @@ export default class ExportLabels extends BaseClass {
 
       progress.updateStatus('Fetching labels...');
       await this.getLabels();
-      log.debug(`Retrieved ${Object.keys(this.labels).length} labels`, this.exportConfig.context);
+      log.debug(`Retrieved ${Object.keys(this.labels || {}).length} labels`, this.exportConfig.context);
 
       if (this.labels === undefined || isEmpty(this.labels)) {
         log.info(messageHandler.parse('LABELS_NOT_FOUND'), this.exportConfig.context);
@@ -67,7 +67,7 @@ export default class ExportLabels extends BaseClass {
         log.debug(`Writing labels to: ${labelsFilePath}`, this.exportConfig.context);
         fsUtil.writeFile(labelsFilePath, this.labels);
         log.success(
-          messageHandler.parse('LABELS_EXPORT_COMPLETE', Object.keys(this.labels).length),
+          messageHandler.parse('LABELS_EXPORT_COMPLETE', Object.keys(this.labels || {}).length),
           this.exportConfig.context,
         );
       }

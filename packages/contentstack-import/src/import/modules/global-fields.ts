@@ -144,7 +144,7 @@ export default class ImportGlobalFields extends BaseClass {
   async seedGFs(): Promise<any> {
     log.debug('Starting global fields seeding process', this.importConfig.context);
 
-    const gfsToSeed = Array.isArray(this.gFs) ? this.gFs.length : Object.keys(this.gFs).length;
+    const gfsToSeed = Array.isArray(this.gFs) ? this.gFs.length : Object.keys(this.gFs || {}).length;
     log.debug(`Seeding ${gfsToSeed} global fields`, this.importConfig.context);
 
     const onSuccess = ({ response: globalField, apiData: { uid } = undefined }: any) => {
@@ -231,7 +231,7 @@ export default class ImportGlobalFields extends BaseClass {
   async updateGFs(): Promise<any> {
     log.debug('Starting Update process', this.importConfig.context);
 
-    const gfsToUpdate = Array.isArray(this.gFs) ? this.gFs.length : Object.keys(this.gFs).length;
+    const gfsToUpdate = Array.isArray(this.gFs) ? this.gFs.length : Object.keys(this.gFs || {}).length;
     log.debug(`Updating ${gfsToUpdate} global fields`, this.importConfig.context);
 
     const onSuccess = ({ response: globalField, apiData: { uid } = undefined }: any) => {
@@ -424,7 +424,7 @@ export default class ImportGlobalFields extends BaseClass {
         return [0];
       }
 
-      const count = Array.isArray(this.gFs) ? this.gFs?.length : Object.keys(this.gFs)?.length;
+      const count = Array.isArray(this.gFs) ? this.gFs?.length : Object.keys(this.gFs || {})?.length;
       log.debug(`Loaded ${count} global field items from file`, this.importConfig.context);
       return [count];
     });

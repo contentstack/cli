@@ -19,7 +19,7 @@ import {
 
 import { ModuleExporter } from '../../../export';
 import { Context, ExportConfig } from '../../../types';
-import { setupExportConfig, writeExportMetaFile } from '../../../utils';
+import { setupExportConfig } from '../../../utils';
 
 export default class ExportCommand extends Command {
   static description: string = messageHandler.parse('Export content from a stack');
@@ -134,10 +134,6 @@ export default class ExportCommand extends Command {
       const managementAPIClient: ContentstackClient = await managementSDKClient(exportConfig);
       const moduleExporter = new ModuleExporter(managementAPIClient, exportConfig);
       await moduleExporter.start();
-
-      if (!exportConfig.branches?.length) {
-        writeExportMetaFile(exportConfig);
-      }
       log.success(
         `The content of the stack ${exportConfig.apiKey} has been exported successfully!`,
         exportConfig.context,

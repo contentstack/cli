@@ -245,7 +245,7 @@ export default class ImportLocales extends BaseClass {
 
     if (fileHelper.fileExistsSync(this.langUidMapperPath)) {
       this.langUidMapper = fsUtil.readFile(this.langUidMapperPath) || {};
-      const langUidCount = Object.keys(this.langUidMapper).length;
+      const langUidCount = Object.keys(this.langUidMapper || {}).length;
       log.debug(`Loaded existing language UID data: ${langUidCount} items`, this.config.context);
     } else {
       log.debug('No existing language UID mappings found', this.config.context);

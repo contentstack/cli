@@ -58,7 +58,7 @@ export default class ExportWorkFlows extends BaseClass {
       progress.updateStatus('Fetching workflow definitions...');
       await this.getWorkflows();
 
-      log.debug(`Retrieved ${Object.keys(this.workflows).length} workflows`, this.exportConfig.context);
+      log.debug(`Retrieved ${Object.keys(this.workflows || {}).length} workflows`, this.exportConfig.context);
 
       if (this.workflows === undefined || isEmpty(this.workflows)) {
         log.info(messageHandler.parse('WORKFLOW_NOT_FOUND'), this.exportConfig.context);
@@ -67,7 +67,7 @@ export default class ExportWorkFlows extends BaseClass {
         log.debug(`Writing workflows to: ${workflowsFilePath}`, this.exportConfig.context);
         fsUtil.writeFile(workflowsFilePath, this.workflows);
         log.success(
-          messageHandler.parse('WORKFLOW_EXPORT_COMPLETE', Object.keys(this.workflows).length),
+          messageHandler.parse('WORKFLOW_EXPORT_COMPLETE', Object.keys(this.workflows || {}).length),
           this.exportConfig.context,
         );
       }
