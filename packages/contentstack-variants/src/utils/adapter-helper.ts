@@ -29,27 +29,24 @@ export class AdapterHelper<C, ApiClient> implements AdapterHelperInterface<C, Ap
     ];
     this.apiClient = new HttpClient(pick(adapterConfig, pickConfig), options) as ApiClient;
     
-    // Add delay interceptor if configured
+    if (adapterConfig.cmaConfig) {
+      this.cmaAPIClient = new HttpClient(pick(adapterConfig.cmaConfig, pickConfig), options) as ApiClient;
+    }
+    
     if (adapterConfig.delayMs) {
+      if (this.apiClient) {
+        (this.apiClient as any).interceptors?.request?.use(async (requestConfig: any) => {
+          await this.delay(adapterConfig.delayMs!);
+          return requestConfig;
+        });
+      }
       
-      (this.apiClient as any).interceptors?.request?.use(async (requestConfig: any) => {
-        await this.delay(adapterConfig.delayMs!);
-        return requestConfig;
-      });
-      
-      // Create CMA client if configured
-      if (adapterConfig.cmaConfig) {
-        this.cmaAPIClient = new HttpClient(pick(adapterConfig.cmaConfig, pickConfig), options) as ApiClient;
-        
-        // Add delay interceptor to CMA client (no inner condition needed)
+      if (this.cmaAPIClient) {
         (this.cmaAPIClient as any).interceptors?.request?.use(async (requestConfig: any) => {
           await this.delay(adapterConfig.delayMs!);
           return requestConfig;
         });
       }
-    } else if (adapterConfig.cmaConfig) {
-      // Create CMA client without delay
-      this.cmaAPIClient = new HttpClient(pick(adapterConfig.cmaConfig, pickConfig), options) as ApiClient;
     }
   }
 
