@@ -5,7 +5,6 @@ interface AnyProperty {
 }
 
 export default interface DefaultConfig {
-  contentVersion: number;
   versioning: boolean;
   host: string;
   cdn?: string;
@@ -215,5 +214,4 @@ export default interface DefaultConfig {
   writeConcurrency: number;
   developerHubBaseUrl: string;
   marketplaceAppEncryptionKey: string;
-  onlyTSModules: string[];
 }

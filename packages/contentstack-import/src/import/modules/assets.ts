@@ -297,12 +297,12 @@ export default class ImportAssets extends BaseClass {
 
     if (!isVersion) {
       if (!isEmpty(this.assetsUidMap)) {
-        const uidMappingCount = Object.keys(this.assetsUidMap).length;
+        const uidMappingCount = Object.keys(this.assetsUidMap || {}).length;
         log.debug(`Writing ${uidMappingCount} UID mappings`, this.importConfig.context);
         this.fs.writeFile(this.assetUidMapperPath, this.assetsUidMap);
       }
       if (!isEmpty(this.assetsUrlMap)) {
-        const urlMappingCount = Object.keys(this.assetsUrlMap).length;
+        const urlMappingCount = Object.keys(this.assetsUrlMap || {}).length;
         log.debug(`Writing ${urlMappingCount} URL mappings`, this.importConfig.context);
         this.fs.writeFile(this.assetUrlMapperPath, this.assetsUrlMap);
       }

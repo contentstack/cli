@@ -55,7 +55,7 @@ export default class ExportWebhooks extends BaseClass {
 
       progress.updateStatus('Fetching webhooks...');
       await this.getWebhooks();
-      log.debug(`Retrieved ${Object.keys(this.webhooks).length} webhooks`, this.exportConfig.context);
+      log.debug(`Retrieved ${Object.keys(this.webhooks || {}).length} webhooks`, this.exportConfig.context);
 
       if (this.webhooks === undefined || isEmpty(this.webhooks)) {
         log.info(messageHandler.parse('WEBHOOK_NOT_FOUND'), this.exportConfig.context);
@@ -64,7 +64,7 @@ export default class ExportWebhooks extends BaseClass {
         log.debug(`Writing webhooks to: ${webhooksFilePath}`, this.exportConfig.context);
         fsUtil.writeFile(webhooksFilePath, this.webhooks);
         log.success(
-          messageHandler.parse('WEBHOOK_EXPORT_COMPLETE', Object.keys(this.webhooks).length),
+          messageHandler.parse('WEBHOOK_EXPORT_COMPLETE', Object.keys(this.webhooks || {}).length),
           this.exportConfig.context,
         );
       }
@@ -130,7 +130,7 @@ export default class ExportWebhooks extends BaseClass {
     }
 
     log.debug(
-      `Sanitization complete. Total webhooks processed: ${Object.keys(this.webhooks).length}`,
+      `Sanitization complete. Total webhooks processed: ${Object.keys(this.webhooks || {}).length}`,
       this.exportConfig.context,
     );
   }
