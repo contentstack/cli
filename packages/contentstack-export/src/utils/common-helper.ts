@@ -4,7 +4,6 @@
  * MIT Licensed
  */
 
-import * as path from 'path';
 import promiseLimit from 'promise-limit';
 import { isAuthenticated, getLogPath, sanitizePath } from '@contentstack/cli-utilities';
 
@@ -78,13 +77,4 @@ export const executeTask = function (
       return limit(() => handler(task));
     }),
   );
-};
-
-// Note: we can add more useful details in meta file
-export const writeExportMetaFile = (exportConfig: ExportConfig, metaFilePath?: string) => {
-  const exportMeta = {
-    contentVersion: exportConfig.contentVersion,
-    logsPath: getLogPath(),
-  };
-  fsUtil.writeFile(path.join(sanitizePath(metaFilePath || exportConfig.exportDir), 'export-info.json'), exportMeta);
 };

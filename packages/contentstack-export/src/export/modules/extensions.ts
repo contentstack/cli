@@ -58,7 +58,7 @@ export default class ExportExtensions extends BaseClass {
 
       progress.updateStatus('Fetching extensions...');
       await this.getExtensions();
-      log.debug(`Retrieved ${Object.keys(this.extensions).length} extensions`, this.exportConfig.context);
+      log.debug(`Retrieved ${Object.keys(this.extensions || {}).length} extensions`, this.exportConfig.context);
 
       if (this.extensions === undefined || isEmpty(this.extensions)) {
         log.info(messageHandler.parse('EXTENSION_NOT_FOUND'), this.exportConfig.context);
@@ -67,7 +67,7 @@ export default class ExportExtensions extends BaseClass {
         log.debug(`Writing extensions to: ${extensionsFilePath}`, this.exportConfig.context);
         fsUtil.writeFile(extensionsFilePath, this.extensions);
         log.success(
-          messageHandler.parse('EXTENSION_EXPORT_COMPLETE', Object.keys(this.extensions).length),
+          messageHandler.parse('EXTENSION_EXPORT_COMPLETE', Object.keys(this.extensions || {}).length),
           this.exportConfig.context,
         );
       }
@@ -131,7 +131,7 @@ export default class ExportExtensions extends BaseClass {
     }
 
     log.debug(
-      `Sanitization complete. Total extensions processed: ${Object.keys(this.extensions).length}`,
+      `Sanitization complete. Total extensions processed: ${Object.keys(this.extensions || {}).length}`,
       this.exportConfig.context,
     );
   }
