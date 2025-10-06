@@ -32,6 +32,18 @@ npm install -g @contentstack/cli
 
 To verify the installation, run `csdx` in the command window.
 
+## Migration Guide
+
+If you're upgrading from CLI 1.x to 2.x.x-beta, please refer to our comprehensive [Migration Guide](./MIGRATION.md) for:
+
+- **Breaking changes** and new default behaviors
+- **Step-by-step migration instructions**
+- **New features** like TypeScript module support and Progress Manager UI
+- **Command syntax updates** and configuration changes
+- **Troubleshooting tips** for common migration issues
+
+📖 **[View Migration Guide →](./MIGRATION.md)**
+
 ## Usage
 After the successful installation of CLI, use the `--help` parameter to display the help section of the CLI. You can even combine this parameter with a specific command to get the help section of that command.
 
