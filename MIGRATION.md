@@ -1,4 +1,4 @@
-# Contentstack CLI Migration Guide: 1.x to 2.x.x-beta
+# Contentstack CLI Migration Guide: 1.x.x to 2.x.x-beta
 
 ## Overview
 
@@ -10,7 +10,7 @@ This guide helps you migrate from Contentstack CLI 1.x to the new 2.x.x-beta ver
 
 **What Changed:**
 - Removed `export-info.json` support
-- TypeScript modules are now the default for export & import operations
+- TypeScript modules are now the default for export and import operations
 - Improved performance and reliability
 
 **Before (1.x):**
@@ -59,7 +59,7 @@ csdx cm:stacks:export --branch feature-branch -d "./export-data" -k bltxxxxxx
 csdx cm:stacks:export --branch-alias production -d "./export-data" -k bltxxxxxx
 ```
 
-**Migration Action:** If you need to export specific branches, add the `--branch` flag to your commands.
+**Migration Action:** To export specific branches, add the `--branch` flag to your commands.
 
 ### 3. 📊 Progress Manager UI (Default)
 
@@ -72,7 +72,7 @@ csdx cm:stacks:export --branch-alias production -d "./export-data" -k bltxxxxxx
 
 ### Default Mode: Visual Progress Manager
 
-When you run export/import commands, you'll see a beautiful progress interface:
+When you run the export or import commands, a visual progress interface appears.
 
 ```
 STACK:
@@ -117,20 +117,20 @@ csdx config:set:log --no-show-console-logs
 ### Common Issues
 
 **1. Command not found errors:**
-- Ensure you've installed the 2.x.x-beta version
+- Ensure you have installed the 2.x.x-beta version
 - Clear npm cache: `npm cache clean --force`
 
 **2. Missing branch content:**
-- Check if you need to specify `--branch` flag for non-main branches
-- Verify branch exists in your stack
+- Check if you need to specify the `--branch` flag for non-main branches
+- Verify the branch exists in your stack
 
 **3. Progress display issues:**
 - Try switching between console logs and progress manager modes
 - Check terminal compatibility for progress bars
 
 **4. Performance differences:**
-- 2.x.x-beta should be faster due to TypeScript modules
-- If experiencing issues, switch to console log mode for debugging
+- The 2.x.x-beta version should be faster due to TypeScript modules
+- If you are experiencing issues, switch to console log mode for debugging
 
 ### Getting Help
 
