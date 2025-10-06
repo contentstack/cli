@@ -91,7 +91,7 @@ export default class ImportCommand extends Command {
     }),
     'branch-alias': flags.string({
       description:
-        "The alias of the branch where you want to import your content. If you don't mention the branch alias, then by default the content will be imported to the main branch.",
+        "Specify the branch alias where you want to import your content. If not specified, the content is imported into the main branch by default.",
       exclusive: ['branch'],
     }),
     'import-webhook-status': flags.string({
