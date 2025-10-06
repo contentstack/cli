@@ -22,6 +22,7 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   branches?: branch[];
   branchEnabled?: boolean;
   branchDir?: string;
+  branchAlias?: string;
   moduleName?: Modules;
   master_locale: masterLocale;
   headers?: {
