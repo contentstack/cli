@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide helps you migrate from Contentstack CLI 1.x to the new 2.x.x-beta version. The new version introduces significant improvements in performance, user experience, and functionality.
+This guide helps you migrate from Contentstack CLI 1.x.x to the new 2.x.x-beta version. The new version introduces significant improvements in performance, user experience, and functionality.
 
 ## Major Changes
 
@@ -13,7 +13,7 @@ This guide helps you migrate from Contentstack CLI 1.x to the new 2.x.x-beta ver
 - TypeScript modules are now the default for export and import operations
 - Improved performance and reliability
 
-**Before (1.x):**
+**Before (1.x.x):**
 ```bash
 csdx cm:stacks:export -d "./export-data" -k bltxxxxxx
 ```
@@ -39,7 +39,7 @@ Simplified export structure with consistent module formatting
 - Consistent behavior with import operations
 - Faster exports for most use cases
 
-**Before (1.x):**
+**Before (1.x.x):**
 - Exported all branches by default
 
 **After (2.x.x-beta):**
