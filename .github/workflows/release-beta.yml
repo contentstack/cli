@@ -365,4 +365,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ steps.publish-core.outputs.version }}
-        run: gh release create v"$VERSION"-beta --title "Beta Release $VERSION" --generate-notes --prerelease
+        run: gh release create v"$VERSION" --title "Beta Release $VERSION" --generate-notes --prerelease

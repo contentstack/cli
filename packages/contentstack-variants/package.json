@@ -27,7 +27,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@contentstack/cli-utilities": "~1.14.1",
+    "@contentstack/cli-utilities": "~1.14.3",
     "@oclif/core": "^4.3.0",
     "@oclif/plugin-help": "^6.2.28",
     "lodash": "^4.17.21",
