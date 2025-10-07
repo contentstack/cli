@@ -12,22 +12,22 @@ importers:
 
   packages/contentstack:
     specifiers:
-      '@contentstack/cli-audit': ~1.14.1
-      '@contentstack/cli-auth': ~1.6.1
+      '@contentstack/cli-audit': ~1.14.2
+      '@contentstack/cli-auth': ~1.6.2
       '@contentstack/cli-cm-bootstrap': ~2.0.0-beta.1
-      '@contentstack/cli-cm-branches': ~1.6.0
-      '@contentstack/cli-cm-bulk-publish': ~1.10.0
+      '@contentstack/cli-cm-branches': ~1.6.1
+      '@contentstack/cli-cm-bulk-publish': ~1.10.1
       '@contentstack/cli-cm-clone': ~2.0.0-beta.1
       '@contentstack/cli-cm-export': ~2.0.0-beta.1
-      '@contentstack/cli-cm-export-to-csv': ~1.9.1
+      '@contentstack/cli-cm-export-to-csv': ~1.9.2
       '@contentstack/cli-cm-import': ~2.0.0-beta.1
-      '@contentstack/cli-cm-import-setup': 1.6.0
-      '@contentstack/cli-cm-migrate-rte': ~1.6.1
+      '@contentstack/cli-cm-import-setup': 1.6.1
+      '@contentstack/cli-cm-migrate-rte': ~1.6.2
       '@contentstack/cli-cm-seed': ~2.0.0-beta.1
-      '@contentstack/cli-command': ~1.6.1
-      '@contentstack/cli-config': ~1.15.2
+      '@contentstack/cli-command': ~1.6.2
+      '@contentstack/cli-config': ~1.15.3
       '@contentstack/cli-launch': ^1.9.2
-      '@contentstack/cli-migration': ~1.8.1
+      '@contentstack/cli-migration': ~1.8.2
       '@contentstack/cli-utilities': ~1.15.0
       '@contentstack/cli-variants': ~2.0.0-beta.1
       '@contentstack/management': ~1.22.0
@@ -726,7 +726,7 @@ importers:
   packages/contentstack-import-setup:
     specifiers:
       '@contentstack/cli-command': ~1.6.1
-      '@contentstack/cli-utilities': ~1.14.1
+      '@contentstack/cli-utilities': ~1.15.0
       '@oclif/core': ^4.3.0
       '@types/big-json': ^3.2.5
       '@types/bluebird': ^3.5.42
@@ -758,7 +758,7 @@ importers:
       winston: ^3.17.0
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
-      '@contentstack/cli-utilities': 1.14.3
+      '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/core': 4.5.4
       big-json: 3.2.0
       chalk: 4.1.2
@@ -2126,42 +2126,6 @@ packages:
       - supports-color
       - tslib
       - typescript
-    dev: false
-
-  /@contentstack/cli-utilities/1.14.3:
-    resolution: {integrity: sha512-FQGw3wKqFRWXl8wfrCKEcUis/pG4wz74fBBjG9qp2mp4n4h4SyPu80QthYYebXi1RroZ+WJnUJ2PcRkreDaMcw==}
-    dependencies:
-      '@contentstack/management': 1.22.0
-      '@contentstack/marketplace-sdk': 1.4.0
-      '@oclif/core': 4.5.4
-      axios: 1.12.2
-      chalk: 4.1.2
-      cli-cursor: 3.1.0
-      cli-progress: 3.12.0
-      cli-table: 0.3.11
-      conf: 10.2.0
-      dotenv: 16.6.1
-      figures: 3.2.0
-      inquirer: 8.2.6
-      inquirer-search-checkbox: 1.0.0
-      inquirer-search-list: 1.2.6
-      js-yaml: 4.1.0
-      klona: 2.0.6
-      lodash: 4.17.21
-      mkdirp: 1.0.4
-      open: 8.4.2
-      ora: 5.4.1
-      papaparse: 5.5.3
-      recheck: 4.4.5
-      rxjs: 6.6.7
-      traverse: 0.6.11
-      tty-table: 4.2.3
-      unique-string: 2.0.0
-      uuid: 9.0.1
-      winston: 3.18.3
-      xdg-basedir: 4.0.0
-    transitivePeerDependencies:
-      - debug
     dev: false
 
   /@contentstack/cli-utilities/1.14.3_debug@4.4.3:
