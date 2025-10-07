@@ -33,7 +33,6 @@ export type masterLocale = {
 
 export interface DefaultConfig {
   context: Context;
-  contentVersion: number;
   versioning: boolean;
   host: string;
   cdn?: string;
@@ -233,7 +232,6 @@ export interface DefaultConfig {
   writeConcurrency: number;
   developerHubBaseUrl: string;
   marketplaceAppEncryptionKey: string;
-  onlyTSModules: string[];
 }
 
 export interface ExportConfig extends DefaultConfig {

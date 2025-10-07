@@ -4,7 +4,7 @@ import isEmpty from 'lodash/isEmpty';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
 
 import BaseClass, { ApiOptions } from './base-class';
-import { fsUtil, fileHelper } from '../../utils';
+import { fsUtil, fileHelper, MODULE_CONTEXTS, MODULE_NAMES, PROCESS_STATUS, PROCESS_NAMES } from '../../utils';
 import { ModuleClassParams, TaxonomiesConfig } from '../../types';
 
 export default class ImportTaxonomies extends BaseClass {
@@ -24,7 +24,8 @@ export default class ImportTaxonomies extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = 'taxonomies';
+    this.importConfig.context.module = MODULE_CONTEXTS.TAXONOMIES;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.TAXONOMIES];
     this.taxonomiesConfig = importConfig.modules.taxonomies;
     this.taxonomiesMapperDirPath = join(importConfig.backupDir, 'mapper', 'taxonomies');
     this.termsMapperDirPath = join(this.taxonomiesMapperDirPath, 'terms');
@@ -40,37 +41,28 @@ export default class ImportTaxonomies extends BaseClass {
    * @returns {Promise<void>} Promise<void>
    */
   async start(): Promise<void> {
-    log.debug('Checking for taxonomies folder existence', this.importConfig.context);
+    try {
+      log.debug('Starting taxonomies import process...', this.importConfig.context);
 
-    //Step1 check folder exists or not
-    if (fileHelper.fileExistsSync(this.taxonomiesFolderPath)) {
-      log.debug(`Found taxonomies folder: ${this.taxonomiesFolderPath}`, this.importConfig.context);
-      this.taxonomies = fsUtil.readFile(join(this.taxonomiesFolderPath, 'taxonomies.json'), true) as Record<
-        string,
-        unknown
-      >;
-      const taxonomyCount = Object.keys(this.taxonomies || {}).length;
-      log.debug(`Loaded ${taxonomyCount} taxonomy items from file`, this.importConfig.context);
-    } else {
-      log.info(`No Taxonomies Found! - '${this.taxonomiesFolderPath}'`, this.importConfig.context);
-      return;
+      const [taxonomiesCount] = await this.analyzeTaxonomies();
+      if (taxonomiesCount === 0) {
+        log.info('No taxonomies found to import', this.importConfig.context);
+        return;
+      }
+
+      const progress = this.createSimpleProgress(this.currentModuleName, taxonomiesCount);
+      await this.prepareMapperDirectories();
+      progress.updateStatus(PROCESS_STATUS[PROCESS_NAMES.TAXONOMIES_IMPORT].IMPORTING);
+      log.debug('Starting taxonomies import', this.importConfig.context);
+      await this.importTaxonomies();
+      this.createSuccessAndFailedFile();
+
+      this.completeProgress(true);
+      log.success('Taxonomies imported successfully!', this.importConfig.context);
+    } catch (error) {
+      this.completeProgress(false, error?.message || 'Taxonomies import failed');
+      handleAndLogError(error, { ...this.importConfig.context });
     }
-
-    //Step 2 create taxonomies & terms mapper directory
-    log.debug('Creating mapper directories', this.importConfig.context);
-    await fsUtil.makeDirectory(this.taxonomiesMapperDirPath);
-    await fsUtil.makeDirectory(this.termsMapperDirPath);
-    log.debug('Created taxonomies and terms mapper directories', this.importConfig.context);
-
-    // Step 3 import taxonomies
-    log.debug('Starting taxonomies import', this.importConfig.context);
-    await this.importTaxonomies();
-
-    //Step 4 create taxonomy & related terms success & failure file
-    log.debug('Creating success and failure files', this.importConfig.context);
-    this.createSuccessAndFailedFile();
-
-    log.success('Taxonomies imported successfully!', this.importConfig.context);
   }
 
   /**
@@ -97,10 +89,15 @@ export default class ImportTaxonomies extends BaseClass {
       this.createdTaxonomies[taxonomyUID] = apiData?.taxonomy;
       this.createdTerms[taxonomyUID] = apiData?.terms;
 
+      this.progressManager?.tick(
+        true,
+        null,
+        `taxonomy: ${taxonomyName || taxonomyUID} (${termsCount} terms)`,
+        PROCESS_NAMES.TAXONOMIES_IMPORT,
+      );
       log.success(`Taxonomy '${taxonomyUID}' imported successfully!`, this.importConfig.context);
-      log.debug(`Created taxonomy '${taxonomyName}' with ${termsCount} terms`, this.importConfig.context);
       log.debug(
-        `Taxonomy details: ${JSON.stringify({ uid: taxonomyUID, name: taxonomyName, termsCount })}`,
+        `Taxonomy '${taxonomyName}' imported with ${termsCount} terms successfully!`,
         this.importConfig.context,
       );
     };
@@ -108,41 +105,42 @@ export default class ImportTaxonomies extends BaseClass {
     const onReject = ({ error, apiData }: any) => {
       const taxonomyUID = apiData?.taxonomy?.uid;
       const taxonomyName = apiData?.taxonomy?.name;
-
-      log.debug(`Taxonomy '${taxonomyUID}' failed to import`, this.importConfig.context);
-
       if (error?.status === 409 && error?.statusText === 'Conflict') {
         log.info(`Taxonomy '${taxonomyUID}' already exists!`, this.importConfig.context);
         log.debug(`Adding existing taxonomy '${taxonomyUID}' to created list`, this.importConfig.context);
         this.createdTaxonomies[taxonomyUID] = apiData?.taxonomy;
         this.createdTerms[taxonomyUID] = apiData?.terms;
+        this.progressManager?.tick(
+          true,
+          null,
+          `taxonomy: ${taxonomyName || taxonomyUID} already exists`,
+          PROCESS_NAMES.TAXONOMIES_IMPORT,
+        );
       } else {
-        log.debug(`Adding taxonomy '${taxonomyUID}' to failed list`, this.importConfig.context);
-        if (error?.errorMessage || error?.message) {
-          const errorMsg = error?.errorMessage || error?.errors?.taxonomy || error?.errors?.term || error?.message;
-          log.error(`Taxonomy '${taxonomyUID}' failed to be import! ${errorMsg}`, this.importConfig.context);
-        } else {
-          handleAndLogError(
-            error,
-            { ...this.importConfig.context, taxonomyUID },
-            `Taxonomy '${taxonomyUID}' failed to import`,
-          );
-        }
         this.failedTaxonomies[taxonomyUID] = apiData?.taxonomy;
         this.failedTerms[taxonomyUID] = apiData?.terms;
+
+        this.progressManager?.tick(
+          false,
+          `taxonomy: ${taxonomyName || taxonomyUID}`,
+          error?.message || 'Failed to import taxonomy',
+          PROCESS_NAMES.TAXONOMIES_IMPORT,
+        );
+        handleAndLogError(
+          error,
+          { ...this.importConfig.context, taxonomyUID },
+          `Taxonomy '${taxonomyUID}' failed to be imported`,
+        );
       }
     };
 
-    log.debug(
-      `Using concurrency limit: ${this.importConfig.concurrency || this.importConfig.fetchConcurrency || 1}`,
-      this.importConfig.context,
-    );
+    log.debug(`Using concurrency limit: ${this.importConfig.fetchConcurrency || 2}`, this.importConfig.context);
     await this.makeConcurrentCall(
       {
         apiContent,
         processName: 'import taxonomies',
         apiParams: {
-          serializeData: this.serializeTaxonomy.bind(this),
+          serializeData: this.serializeTaxonomiesData.bind(this),
           reject: onReject,
           resolve: onSuccess,
           entity: 'import-taxonomy',
@@ -158,23 +156,27 @@ export default class ImportTaxonomies extends BaseClass {
   }
 
   /**
-   * @method serializeTaxonomy
+   * @method serializeTaxonomiesData
    * @param {ApiOptions} apiOptions ApiOptions
    * @returns {ApiOptions} ApiOptions
    */
-  serializeTaxonomy(apiOptions: ApiOptions): ApiOptions {
-    const { apiData } = apiOptions;
-    const taxonomyUID = apiData?.uid;
+  serializeTaxonomiesData(apiOptions: ApiOptions): ApiOptions {
+    const { apiData: taxonomyData } = apiOptions;
+    log.debug(
+      `Serializing taxonomy: ${taxonomyData.taxonomy?.name} (${taxonomyData.taxonomy?.uid})`,
+      this.importConfig.context,
+    );
+
+    const taxonomyUID = taxonomyData?.uid;
     const filePath = join(this.taxonomiesFolderPath, `${taxonomyUID}.json`);
 
-    log.debug(`Serializing taxonomy: ${taxonomyUID}`, this.importConfig.context);
     log.debug(`Looking for taxonomy file: ${filePath}`, this.importConfig.context);
 
     if (fileHelper.fileExistsSync(filePath)) {
       const taxonomyDetails = fsUtil.readFile(filePath, true) as Record<string, unknown>;
       log.debug(`Successfully loaded taxonomy details from ${filePath}`, this.importConfig.context);
-        const termCount = Object.keys(taxonomyDetails?.terms || {}).length;
-        log.debug(`Taxonomy has ${termCount} term entries`, this.importConfig.context);
+      const termCount = Object.keys(taxonomyDetails?.terms || {}).length;
+      log.debug(`Taxonomy has ${termCount} term entries`, this.importConfig.context);
       apiOptions.apiData = { filePath, taxonomy: taxonomyDetails?.taxonomy, terms: taxonomyDetails?.terms };
     } else {
       log.debug(`File does not exist for taxonomy: ${taxonomyUID}`, this.importConfig.context);
@@ -191,10 +193,10 @@ export default class ImportTaxonomies extends BaseClass {
   createSuccessAndFailedFile() {
     log.debug('Creating success and failed files for taxonomies and terms', this.importConfig.context);
 
-    const createdTaxCount = Object.keys(this.createdTaxonomies)?.length;
-    const failedTaxCount = Object.keys(this.failedTaxonomies)?.length;
-    const createdTermsCount = Object.keys(this.createdTerms)?.length;
-    const failedTermsCount = Object.keys(this.failedTerms)?.length;
+    const createdTaxCount = Object.keys(this.createdTaxonomies || {})?.length;
+    const failedTaxCount = Object.keys(this.failedTaxonomies || {})?.length;
+    const createdTermsCount = Object.keys(this.createdTerms || {})?.length;
+    const failedTermsCount = Object.keys(this.failedTerms || {})?.length;
 
     log.debug(
       `Summary - Created taxonomies: ${createdTaxCount}, Failed taxonomies: ${failedTaxCount}`,
@@ -233,5 +235,34 @@ export default class ImportTaxonomies extends BaseClass {
         this.importConfig.context,
       );
     }
+  }
+
+  private async analyzeTaxonomies(): Promise<[number]> {
+    return this.withLoadingSpinner('TAXONOMIES: Analyzing import data...', async () => {
+      log.debug('Checking for taxonomies folder existence', this.importConfig.context);
+
+      if (fileHelper.fileExistsSync(this.taxonomiesFolderPath)) {
+        log.debug(`Found taxonomies folder: ${this.taxonomiesFolderPath}`, this.importConfig.context);
+
+        this.taxonomies = fsUtil.readFile(join(this.taxonomiesFolderPath, 'taxonomies.json'), true) as Record<
+          string,
+          unknown
+        >;
+
+        const taxonomyCount = Object.keys(this.taxonomies || {}).length;
+        log.debug(`Loaded ${taxonomyCount} taxonomy items from file`, this.importConfig.context);
+        return [taxonomyCount];
+      } else {
+        log.info(`No Taxonomies Found! - '${this.taxonomiesFolderPath}'`, this.importConfig.context);
+        return [0];
+      }
+    });
+  }
+
+  private async prepareMapperDirectories(): Promise<void> {
+    log.debug('Creating mapper directories', this.importConfig.context);
+    await fsUtil.makeDirectory(this.taxonomiesMapperDirPath);
+    await fsUtil.makeDirectory(this.termsMapperDirPath);
+    log.debug('Created taxonomies and terms mapper directories', this.importConfig.context);
   }
 }

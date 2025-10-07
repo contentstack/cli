@@ -5,11 +5,11 @@ import {
   messageHandler,
   log,
   getBranchFromAlias,
+  CLIProgressManager,
 } from '@contentstack/cli-utilities';
-import { setupBranches, setupExportDir, writeExportMetaFile } from '../utils';
 import startModuleExport from './modules';
-import startJSModuleExport from './modules-js';
 import { ExportConfig, Modules } from '../types';
+import { setupBranches, setupExportDir } from '../utils';
 
 class ModuleExporter {
   private managementAPIClient: ContentstackClient;
@@ -38,6 +38,8 @@ class ModuleExporter {
         this.exportConfig.branchEnabled = true;
         return this.exportByBranches();
       }
+      // If branches disabled then initialize the global summary
+      CLIProgressManager.initializeGlobalSummary('EXPORT', this.exportConfig.branchName, 'Exporting content...');
       return this.export();
     } catch (error) {
       throw error;
@@ -45,29 +47,55 @@ class ModuleExporter {
   }
 
   async exportByBranches(): Promise<void> {
-    // loop through the branches and export it parallel
-    for (const branch of this.exportConfig.branches) {
-      try {
-        this.exportConfig.branchName = branch.uid;
-        this.stackAPIClient.stackHeaders.branch = branch.uid;
-        this.exportConfig.branchDir = path.join(this.exportConfig.exportDir, branch.uid);
-        log.info(`Exporting content from branch ${branch.uid}`, this.exportConfig.context);
-        writeExportMetaFile(this.exportConfig, this.exportConfig.branchDir);
-        await this.export();
-        log.success(`The content of branch ${branch.uid} has been exported successfully!`, this.exportConfig.context);
-      } catch (error) {
-        handleAndLogError(
-          error,
-          { ...this.exportConfig.context, branch: branch.uid },
-          messageHandler.parse('FAILED_EXPORT_CONTENT_BRANCH', { branch: branch.uid }),
-        );
-        throw new Error(messageHandler.parse('FAILED_EXPORT_CONTENT_BRANCH', { branch: branch.uid }));
+    let targetBranch;
+
+    if (this.exportConfig.branchName) {
+      // User specified a branch - export only that branch
+      targetBranch = this.exportConfig.branches.find((branch) => branch.uid === this.exportConfig.branchName);
+      if (!targetBranch) {
+        throw new Error(`Branch '${this.exportConfig.branchName}' not found in available branches`);
       }
+    } else {
+      // No specific branch mentioned - export only the main branch
+      targetBranch = this.exportConfig.branches.find((branch) => branch.uid === 'main');
+      if (!targetBranch) {
+        throw new Error('No main branch or available branches found');
+      }
+    }
+
+    try {
+      this.exportConfig.branchName = targetBranch.uid;
+      this.stackAPIClient.stackHeaders.branch = targetBranch.uid;
+      this.exportConfig.branchDir = path.join(this.exportConfig.exportDir, targetBranch.uid);
+
+      // Initialize progress manager for the target branch
+      CLIProgressManager.clearGlobalSummary();
+      CLIProgressManager.initializeGlobalSummary(
+        `EXPORT-${targetBranch.uid}`,
+        targetBranch.uid,
+        `Exporting "${targetBranch.uid}" branch content...`,
+      );
+
+      log.info(`Exporting content from '${targetBranch.uid}' branch`, this.exportConfig.context);
+      await this.export();
+      CLIProgressManager.printGlobalSummary();
+
+      log.success(
+        `The content of branch ${targetBranch.uid} has been exported successfully!`,
+        this.exportConfig.context,
+      );
+    } catch (error) {
+      handleAndLogError(
+        error,
+        { ...this.exportConfig.context, branch: targetBranch?.uid },
+        messageHandler.parse('FAILED_EXPORT_CONTENT_BRANCH', { branch: targetBranch?.uid }),
+      );
+      throw new Error(messageHandler.parse('FAILED_EXPORT_CONTENT_BRANCH', { branch: targetBranch?.uid }));
     }
   }
 
   async export() {
-    log.info(`Started to export content, version is ${this.exportConfig.contentVersion}`, this.exportConfig.context);
+    log.info(`Started to export content`, this.exportConfig.context);
     // checks for single module or all modules
     if (this.exportConfig.singleModuleExport) {
       return this.exportSingleModule(this.exportConfig.moduleName);
@@ -79,28 +107,11 @@ class ModuleExporter {
     log.info(`Exporting module: ${moduleName}`, this.exportConfig.context);
     // export the modules by name
     // calls the module runner which inturn calls the module itself
-    let exportedModuleResponse;
-    if (this.exportConfig.contentVersion === 2) {
-      exportedModuleResponse = await startModuleExport({
-        stackAPIClient: this.stackAPIClient,
-        exportConfig: this.exportConfig,
-        moduleName,
-      });
-    } else {
-      //NOTE - new modules support only ts
-      if (this.exportConfig.onlyTSModules.indexOf(moduleName) === -1) {
-        exportedModuleResponse = await startJSModuleExport({
-          stackAPIClient: this.stackAPIClient,
-          exportConfig: this.exportConfig,
-          moduleName,
-        });
-      }
-    }
-
-    // set master locale to config
-    if (moduleName === 'stack' && exportedModuleResponse?.code) {
-      this.exportConfig.master_locale = { code: exportedModuleResponse.code };
-    }
+    await startModuleExport({
+      stackAPIClient: this.stackAPIClient,
+      exportConfig: this.exportConfig,
+      moduleName,
+    });
   }
 
   async exportSingleModule(moduleName: Modules): Promise<void> {

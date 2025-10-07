@@ -1,73 +1,97 @@
 import omit from 'lodash/omit';
 import { resolve as pResolve } from 'node:path';
-import { log, handleAndLogError } from '@contentstack/cli-utilities';
-
+import { sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
+import { PersonalizeConfig, ExportConfig, EventsConfig, EventStruct } from '../types';
 import { fsUtil, PersonalizationAdapter } from '../utils';
-import { PersonalizeConfig, ExportConfig, EventStruct, EventsConfig } from '../types';
+import { PROCESS_NAMES, MODULE_CONTEXTS, EXPORT_PROCESS_STATUS } from '../utils/constants';
 
 export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
   private eventsConfig: EventsConfig;
   private eventsFolderPath: string;
   private events: Record<string, unknown>[];
+  public exportConfig: ExportConfig;
   public personalizeConfig: PersonalizeConfig;
 
-  constructor(readonly exportConfig: ExportConfig) {
+  constructor(exportConfig: ExportConfig) {
     super({
       config: exportConfig,
       baseURL: exportConfig.modules.personalize.baseURL[exportConfig.region.name],
       headers: { 'X-Project-Uid': exportConfig.project_id },
     });
+    this.exportConfig = exportConfig;
     this.personalizeConfig = exportConfig.modules.personalize;
     this.eventsConfig = exportConfig.modules.events;
     this.eventsFolderPath = pResolve(
-      exportConfig.data,
-      exportConfig.branchName || '',
-      this.personalizeConfig.dirName,
-      this.eventsConfig.dirName,
+      sanitizePath(exportConfig.data),
+      sanitizePath(exportConfig.branchName || ''),
+      sanitizePath(this.personalizeConfig.dirName),
+      sanitizePath(this.eventsConfig.dirName),
     );
     this.events = [];
-    this.exportConfig.context.module = 'events';
+    this.exportConfig.context.module = MODULE_CONTEXTS.EVENTS;
   }
 
   async start() {
     try {
       log.debug('Starting events export process...', this.exportConfig.context);
       log.info('Starting events export', this.exportConfig.context);
-      
-      log.debug('Initializing personalization adapter...', this.exportConfig.context);
-      await this.init();
-      log.debug('Personalization adapter initialized successfully', this.exportConfig.context);
-      
-      log.debug(`Creating events directory at: ${this.eventsFolderPath}`, this.exportConfig.context);
-      await fsUtil.makeDirectory(this.eventsFolderPath);
-      log.debug('Events directory created successfully', this.exportConfig.context);
-      
-      log.debug('Fetching events from personalization API...', this.exportConfig.context);
-      this.events = (await this.getEvents()) as EventStruct[];
-      log.debug(`Fetched ${this.events?.length || 0} events`, this.exportConfig.context);
+
+      await this.withLoadingSpinner('EVENTS: Initializing export and fetching data...', async () => {
+        log.debug('Initializing personalization adapter...', this.exportConfig.context);
+        await this.init();
+        log.debug('Personalization adapter initialized successfully', this.exportConfig.context);
+
+        log.debug(`Creating events directory at: ${this.eventsFolderPath}`, this.exportConfig.context);
+        await fsUtil.makeDirectory(this.eventsFolderPath);
+        log.debug('Events directory created successfully', this.exportConfig.context);
+
+        log.debug('Fetching events from personalization API...', this.exportConfig.context);
+        this.events = (await this.getEvents()) as EventStruct[];
+        log.debug(`Fetched ${this.events?.length || 0} events`, this.exportConfig.context);
+      });
 
       if (!this.events?.length) {
         log.debug('No events found, completing export', this.exportConfig.context);
         log.info('No Events found with the given project!', this.exportConfig.context);
         return;
-      } else {
-        log.debug(`Processing ${this.events.length} events`, this.exportConfig.context);
-        this.sanitizeAttribs();
-        log.debug('Events sanitization completed', this.exportConfig.context);
-        
-        const eventsFilePath = pResolve(this.eventsFolderPath, this.eventsConfig.fileName);
-        log.debug(`Writing events to: ${eventsFilePath}`, this.exportConfig.context);
-        fsUtil.writeFile(eventsFilePath, this.events);
-        
-        log.debug('Events export completed successfully', this.exportConfig.context);
-        log.success(
-          `Events exported successfully! Total events: ${this.events.length}`,
-          this.exportConfig.context,
-        );
-        return;
       }
-    } catch (error) {
+
+      let progress: any;
+
+      if (this.parentProgressManager) {
+        progress = this.parentProgressManager;
+        this.progressManager = this.parentProgressManager;
+        progress.updateProcessTotal(PROCESS_NAMES.EVENTS, this.events.length);
+      } else {
+        progress = this.createSimpleProgress(PROCESS_NAMES.EVENTS, this.events.length);
+      }
+
+      log.debug(`Processing ${this.events.length} events`, this.exportConfig.context);
+      progress.updateStatus(EXPORT_PROCESS_STATUS[PROCESS_NAMES.EVENTS].EXPORTING, PROCESS_NAMES.EVENTS);
+
+      this.sanitizeAttribs();
+      log.debug('Events sanitization completed', this.exportConfig.context);
+
+      progress.updateStatus(EXPORT_PROCESS_STATUS[PROCESS_NAMES.EVENTS].EXPORTING, PROCESS_NAMES.EVENTS);
+      const eventsFilePath = pResolve(sanitizePath(this.eventsFolderPath), sanitizePath(this.eventsConfig.fileName));
+      log.debug(`Writing events to: ${eventsFilePath}`, this.exportConfig.context);
+      fsUtil.writeFile(eventsFilePath, this.events);
+
+      // Final progress update
+      if (this.progressManager) {
+        //this.updateProgress(true, `${this.events.length} events exported`, undefined, processName);
+      }
+
+      // Complete progress only if we're managing our own progress
+      if (!this.parentProgressManager) {
+        this.completeProgress(true);
+      }
+
+      log.debug('Events export completed successfully', this.exportConfig.context);
+      log.success(`Events exported successfully! Total events: ${this.events.length}`, this.exportConfig.context);
+    } catch (error: any) {
       log.debug(`Error occurred during events export: ${error}`, this.exportConfig.context);
+      this.completeProgress(false, error?.message || 'Events export failed');
       handleAndLogError(error, { ...this.exportConfig.context });
     }
   }
@@ -77,10 +101,29 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
    */
   sanitizeAttribs() {
     log.debug(`Sanitizing ${this.events?.length || 0} events`, this.exportConfig.context);
-    log.debug(`Invalid keys to remove: ${JSON.stringify(this.eventsConfig.invalidKeys)}`, this.exportConfig.context);
-    
-    this.events = this.events?.map((event) => omit(event, this.eventsConfig.invalidKeys)) || [];
-    
-    log.debug(`Sanitization complete. Total events after sanitization: ${this.events.length}`, this.exportConfig.context);
+
+    this.events =
+      this.events?.map((event, index) => {
+        const sanitizedEvent = omit(event, this.eventsConfig.invalidKeys);
+
+        if (this.progressManager) {
+          const processName = this.parentProgressManager ? PROCESS_NAMES.EVENTS : undefined;
+          this.updateProgress(
+            true,
+            `event ${index + 1}/${this.events.length}: ${
+              (event as any).key || (event as any).name || (event as any).uid || 'unknown'
+            }`,
+            undefined,
+            processName,
+          );
+        }
+
+        return sanitizedEvent;
+      }) || [];
+
+    log.debug(
+      `Sanitization complete. Total events after sanitization: ${this.events.length}`,
+      this.exportConfig.context,
+    );
   }
 }
