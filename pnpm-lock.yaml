@@ -153,8 +153,6 @@ importers:
       eslint-config-oclif-typescript: ^3.1.14
       fast-csv: ^4.3.6
       fs-extra: ^11.3.0
-      inquirer-search-checkbox: ^1.0.0
-      inquirer-search-list: ^1.2.6
       lodash: ^4.17.21
       mocha: ^10.8.2
       nyc: ^15.1.0
@@ -174,8 +172,6 @@ importers:
       chalk: 4.1.2
       fast-csv: 4.3.6
       fs-extra: 11.3.2
-      inquirer-search-checkbox: 1.0.0
-      inquirer-search-list: 1.2.6
       lodash: 4.17.21
       uuid: 9.0.1
       winston: 3.18.3
