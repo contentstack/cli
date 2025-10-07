@@ -21,7 +21,7 @@ importers:
       '@contentstack/cli-cm-export': ~2.0.1-beta
       '@contentstack/cli-cm-export-to-csv': ~1.9.1
       '@contentstack/cli-cm-import': ~2.0.1-beta
-      '@contentstack/cli-cm-import-setup': 2.0.0-beta
+      '@contentstack/cli-cm-import-setup': 1.6.0
       '@contentstack/cli-cm-migrate-rte': ~1.6.1
       '@contentstack/cli-cm-seed': ~2.0.1-beta
       '@contentstack/cli-command': ~1.6.1
@@ -730,7 +730,7 @@ importers:
   packages/contentstack-import-setup:
     specifiers:
       '@contentstack/cli-command': ~1.6.1
-      '@contentstack/cli-utilities': ~1.14.3
+      '@contentstack/cli-utilities': ~1.14.1
       '@oclif/core': ^4.3.0
       '@types/big-json': ^3.2.5
       '@types/bluebird': ^3.5.42
