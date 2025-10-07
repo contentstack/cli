@@ -365,4 +365,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ steps.publish-core.outputs.version }}
-        run: gh release create v"$VERSION" --title "Beta Release $VERSION" --generate-notes --prerelease
+        run: |
+          # Get the previous beta release for comparison
+          PREVIOUS_BETA=$(gh release list --limit 10 | grep 'beta' | head -1 | cut -f1)
+          
+          if [ -n "$PREVIOUS_BETA" ]; then
+            gh release create v"$VERSION" --title "Beta Release $VERSION" --notes-from-tag "$PREVIOUS_BETA" --prerelease
+          else
+            gh release create v"$VERSION" --title "Beta Release $VERSION" --generate-notes --prerelease
+          fi
