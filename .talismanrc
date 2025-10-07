@@ -87,4 +87,6 @@ fileignoreconfig:
   checksum: 7db02c6f2627400b28fc96d505bf074d477080a45ba13943709d4845b6ca0908
 - filename: packages/contentstack-import/src/utils/backup-handler.ts
   checksum: 0a9accdafce01837166223ed00cd801e2ebb39a4ef952231f67232859a5beea8
+- filename: packages/contentstack-import/test/unit/import/modules/base-class.test.ts
+  checksum: d5c2f4af5d179b9c8e9a0d8be266844ed101e678d6b783526227b5e4b5535dd6
 version: "1.0"
