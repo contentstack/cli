@@ -89,4 +89,6 @@ fileignoreconfig:
   checksum: 0a9accdafce01837166223ed00cd801e2ebb39a4ef952231f67232859a5beea8
 - filename: packages/contentstack-import/test/unit/import/modules/base-class.test.ts
   checksum: d5c2f4af5d179b9c8e9a0d8be266844ed101e678d6b783526227b5e4b5535dd6
+- filename: packages/contentstack-import/test/unit/commands/cm/stacks/import.test.ts
+  checksum: 2a652b7b06b9e4d1bdae368137a683392861505df76021c96ac9066124fd050f
 version: "1.0"
