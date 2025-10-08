@@ -57,7 +57,7 @@
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
     "test:integration": "mocha --forbid-only \"test/run.test.js\" --integration-test --timeout 60000",
-    "test:unit": "mocha --forbid-only \"test/unit/*.test.ts\""
+    "test:unit": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
   },
   "engines": {
     "node": ">=14.0.0"
