@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import { fancy } from 'fancy-test';
 import sinon from 'sinon';
-import ImportCommand from '../../../../../src/commands/cm/stacks/import';
 import { managementSDKClient, configHandler, log, handleAndLogError, getLogPath } from '@contentstack/cli-utilities';
+import ImportCommand from '../../../../../src/commands/cm/stacks/import';
 import { ModuleImporter } from '../../../../../src/import';
 import { ImportConfig } from '../../../../../src/types';
 
