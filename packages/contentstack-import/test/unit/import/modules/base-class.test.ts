@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import { fancy } from 'fancy-test';
 import sinon from 'sinon';
+import { log } from '@contentstack/cli-utilities';
 import BaseClass from '../../../../src/import/modules/base-class';
 import { ImportConfig } from '../../../../src/types';
-import { log } from '@contentstack/cli-utilities';
 
 // Create a concrete implementation of BaseClass for testing
 class TestBaseClass extends BaseClass {
