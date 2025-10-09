@@ -2,21 +2,16 @@ import merge from 'lodash/merge';
 import isEmpty from 'lodash/isEmpty';
 import { existsSync, readFileSync } from 'fs';
 import { Command } from '@contentstack/cli-command';
-import { Flags, FlagInput, Interfaces, cliux, ux, PrintOptions } from '@contentstack/cli-utilities';
+import { Flags, FlagInput, Interfaces, cliux, ux, handleAndLogError } from '@contentstack/cli-utilities';
 
 import config from './config';
-import { Logger } from './util';
-import { ConfigType, LogFn, LoggerType } from './types';
+import { ConfigType } from './types';
 import messages, { $t, commonMsg } from './messages';
 
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
 export type Flags<T extends typeof Command> = Interfaces.InferredFlags<(typeof BaseCommand)['baseFlags'] & T['flags']>;
 
-const noLog = (_message: string | any, _logType?: LoggerType | PrintOptions | undefined) => {};
-
 export abstract class BaseCommand<T extends typeof Command> extends Command {
-  public log!: LogFn;
-  public logger!: Logger;
   public readonly $t = $t;
   protected sharedConfig: ConfigType = {
     ...config,
@@ -71,12 +66,8 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
     // Init logger
     if (this.flags['external-config']?.noLog) {
-      this.log = noLog;
       ux.action.start = () => {};
       ux.action.stop = () => {};
-    } else {
-      const logger = new Logger(this.sharedConfig);
-      this.log = logger.log.bind(logger);
     }
   }
 
@@ -117,7 +108,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
           JSON.parse(readFileSync(this.flags.config, { encoding: 'utf-8' })),
         );
       } catch (error) {
-        this.log(error, 'error');
+        handleAndLogError(error);
       }
     }
   }
