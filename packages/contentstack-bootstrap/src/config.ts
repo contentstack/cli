@@ -28,8 +28,8 @@ const config: Configuration = {
     { displayName: 'Kickstart Next.js SSG', configKey: 'kickstart-next-ssg' },
     { displayName: 'Kickstart Next.js GraphQL', configKey: 'kickstart-next-graphql' },
     { displayName: 'Kickstart Next.js Middleware', configKey: 'kickstart-next-middleware' },
-    { displayName: 'Kickstart NuxtJS', configKey: 'kickstart-next-nuxt' },
-    { displayName: 'Kickstart NuxtJS SSR', configKey: 'kickstart-next-nuxt-ssr' },
+    { displayName: 'Kickstart NuxtJS', configKey: 'kickstart-nuxt' },
+    { displayName: 'Kickstart NuxtJS SSR', configKey: 'kickstart-nuxt-ssr' },
 
     { displayName: 'React JS (Deprecated)', configKey: 'reactjs-starter' },
     { displayName: 'Next JS (Deprecated)', configKey: 'nextjs-starter' },
@@ -66,12 +66,12 @@ const config: Configuration = {
       stack: 'contentstack/kickstart-stack-seed',
     },
 
-    'kickstart-next-nuxt': {
-      source: 'contentstack/kickstart-next-nuxt',
+    'kickstart-nuxt': {
+      source: 'contentstack/kickstart-nuxt',
       stack: 'contentstack/kickstart-stack-seed',
     },
-    'kickstart-next-nuxt-ssr': {
-      source: 'contentstack/kickstart-next-nuxt-ssr',
+    'kickstart-nuxt-ssr': {
+      source: 'contentstack/kickstart-nuxt-ssr',
       stack: 'contentstack/kickstart-stack-seed',
     },
     nextjs: {
