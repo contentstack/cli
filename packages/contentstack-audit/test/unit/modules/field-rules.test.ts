@@ -10,6 +10,7 @@ import config from '../../../src/config';
 import { FieldRule } from '../../../src/modules';
 import { $t, auditMsg } from '../../../src/messages';
 import { CtConstructorParam, ModuleConstructorParam } from '../../../src/types';
+import { mockLogger } from '../mock-logger';
 
 const missingRefs = require('../mock/contents/field_rules/schema.json');
 
@@ -43,12 +44,14 @@ describe('Field Rules', () => {
 
   beforeEach(() => {
     constructorParam = {
-      log: () => {},
       moduleName: 'content-types',
       ctSchema: cloneDeep(require('../mock/contents/content_types/schema.json')),
       gfSchema: cloneDeep(require('../mock/contents/global_fields/globalfields.json')),
       config: Object.assign(config, { basePath: resolve(__dirname, '..', 'mock', 'contents'), flags: {} }),
     };
+    
+    // Mock the logger for all tests
+    sinon.stub(require('@contentstack/cli-utilities'), 'log').value(mockLogger);
   });
 
   afterEach(() => {
@@ -181,7 +184,6 @@ describe('Field Rules', () => {
       .stub(FieldRule.prototype, 'writeFixContent', async () => {})
       .it('Check the calls for other methods when field_rules are empty', async () => {
         const frInstance = new FieldRule({
-          log: () => {},
           moduleName: 'content-types',
           ctSchema: [
             {
