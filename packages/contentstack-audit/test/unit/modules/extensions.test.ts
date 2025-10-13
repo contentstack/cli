@@ -9,6 +9,7 @@ import { Extensions } from '../../../src/modules';
 import { $t, auditMsg } from '../../../src/messages';
 import sinon from 'sinon';
 import { Extension } from '../../../src/types';
+import { mockLogger } from '../mock-logger';
 
 const fixedSchema = [
   {
@@ -82,9 +83,17 @@ const fixedSchema = [
   },
 ];
 describe('Extensions scope containing content_types uids', () => {
+  beforeEach(() => {
+    // Mock the logger for all tests
+    sinon.stub(require('@contentstack/cli-utilities'), 'log').value(mockLogger);
+  });
+  
+  afterEach(() => {
+    sinon.restore();
+  });
+  
   describe('run method with invalid path for extensions', () => {
     const ext = new Extensions({
-      log: () => {},
       moduleName: 'extensions',
       ctSchema: cloneDeep(require('./../mock/contents/extensions/ctSchema.json')),
       config: Object.assign(config, { basePath: resolve(__dirname, '..', 'mock', 'workflows'), flags: {} }),
@@ -103,7 +112,6 @@ describe('Extensions scope containing content_types uids', () => {
   });
   describe('run method with valid path for extensions containing extensions with missing content types', () => {
     const ext = new Extensions({
-      log: () => {},
       moduleName: 'extensions',
       ctSchema: cloneDeep(require('./../mock/contents/extensions/ctSchema.json')),
       config: Object.assign(config, {
@@ -192,7 +200,6 @@ describe('Extensions scope containing content_types uids', () => {
   });
   describe('run method with valid path for extensions containing extensions with no missing content types and ct set to $all', () => {
     const ext = new Extensions({
-      log: () => {},
       moduleName: 'extensions',
       ctSchema: cloneDeep(require('./../mock/contents/extensions/ctSchema.json')),
       config: Object.assign(config, {
@@ -213,7 +220,7 @@ describe('Extensions scope containing content_types uids', () => {
   });
   describe('run method with valid path for extensions containing extensions with no missing content types and ct set content types that are present', () => {
     const ext = new Extensions({
-      log: () => {},
+      
       moduleName: 'extensions',
       ctSchema: cloneDeep(require('./../mock/contents/extensions/ctSchema.json')),
       config: Object.assign(config, {
@@ -238,7 +245,7 @@ describe('Extensions scope containing content_types uids', () => {
       public fixedExtensions!: Record<string, Extension>;
       constructor() {
         super({
-          log: () => {},
+          
           moduleName: 'extensions',
           ctSchema: cloneDeep(require('./../mock/contents/extensions/ctSchema.json')),
           config: Object.assign(config, {
@@ -331,7 +338,7 @@ describe('Extensions scope containing content_types uids', () => {
   });
   describe('fixSchema method with valid path for extensions containing extensions with missing content types checking the fixed content', () => {
     const ext = new Extensions({
-      log: () => {},
+      
       moduleName: 'extensions',
       ctSchema: cloneDeep(require('./../mock/contents/extensions/ctSchema.json')),
       config: Object.assign(config, {
@@ -358,7 +365,6 @@ describe('Extensions scope containing content_types uids', () => {
   });
   describe('fixSchema method with valid path for extensions containing extensions with no missing content types and ct set to $all', () => {
     const ext = new Extensions({
-      log: () => {},
       moduleName: 'extensions',
       ctSchema: cloneDeep(require('./../mock/contents/extensions/ctSchema.json')),
       config: Object.assign(config, {

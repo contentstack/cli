@@ -19,6 +19,7 @@ import {
   ctGroupField,
   entryGroupField,
 } from '../mock/mock.json';
+import { mockLogger } from '../mock-logger';
 
 describe('Entries module', () => {
   let constructorParam: ModuleConstructorParam & CtConstructorParam;
@@ -27,12 +28,14 @@ describe('Entries module', () => {
 
   beforeEach(() => {
     constructorParam = {
-      log: () => {},
       moduleName: 'entries',
       ctSchema: cloneDeep(require('../mock/contents/content_types/schema.json')),
       gfSchema: cloneDeep(require('../mock/contents/global_fields/globalfields.json')),
       config: Object.assign(config, { basePath: resolve(__dirname, '..', 'mock', 'contents'), flags: {} }),
     };
+    
+    // Mock the logger for all tests
+    Sinon.stub(require('@contentstack/cli-utilities'), 'log').value(mockLogger);
   });
 
   before(() => {
@@ -77,8 +80,8 @@ describe('Entries module', () => {
           }
         })();
         const missingRefs = await ctInstance.run();
-        expect(missingRefs.missingEntryRefs).not.to.be.empty;
-        expect(missingRefs.missingEntryRefs).deep.contain({ 'test-entry-id': [{ uid: 'test', treeStr: 'gf_0' }] });
+        expect((missingRefs as any).missingEntryRefs).not.to.be.empty;
+        expect((missingRefs as any).missingEntryRefs).deep.contain({ 'test-entry-id': [{ uid: 'test', treeStr: 'gf_0' }] });
       });
 
     fancy
@@ -95,7 +98,7 @@ describe('Entries module', () => {
         const writeFixContent = Sinon.spy(Entries.prototype, 'writeFixContent');
         const ctInstance = new Entries({ ...constructorParam, fix: true });
         const missingRefs = await ctInstance.run();
-        expect(missingRefs.missingEntryRefs).to.be.empty;
+        expect((missingRefs as any).missingEntryRefs).to.be.empty;
         expect(writeFixContent.callCount).to.be.equals(1);
         expect(lookForReference.callCount).to.be.equals(1);
         expect(fixPrerequisiteData.callCount).to.be.equals(1);
