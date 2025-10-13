@@ -1,8 +1,8 @@
 fileignoreconfig:
 - filename: package-lock.json
-  checksum: 1625bf05fa92826c389d702552d5027df7632a96bac74a970f78f866bbb59e7e
+  checksum: 23c42f846dfb95e8516b980e4d65a1f6d97ce6bd2b483d14af1e182ff2598da9
 - filename: pnpm-lock.yaml
-  checksum: 87a6d67aa28e2675ac544cebd0cad703382b799fb46abfe96398c96522374624
+  checksum: 4bfcc1a77f91a411e825884e375ef588dd16f2950ba0ec970f6a9b9a544fc0b6
 - filename: packages/contentstack-import-setup/test/unit/backup-handler.test.ts
   checksum: 0582d62b88834554cf12951c8690a73ef3ddbb78b82d2804d994cf4148e1ef93
 - filename: packages/contentstack-import-setup/test/config.json
@@ -87,4 +87,30 @@ fileignoreconfig:
   checksum: 7db02c6f2627400b28fc96d505bf074d477080a45ba13943709d4845b6ca0908
 - filename: packages/contentstack-import/src/utils/backup-handler.ts
   checksum: 0a9accdafce01837166223ed00cd801e2ebb39a4ef952231f67232859a5beea8
+- filename: packages/contentstack-audit/src/modules/global-fields.ts
+  checksum: 556bd27f78e8261491a7f918919128b8c2cc9d2d55113f440b89384a30481e5f
+- filename: packages/contentstack-audit/src/audit-base-command.ts
+  checksum: 2c710267332619d310dd24461076fc9ca00cc1c991c2913e74a98808fac42c39
+- filename: packages/contentstack-audit/src/modules/custom-roles.ts
+  checksum: bbe1130f5f5ebf2fa452daef743fe4d40ae9f8fc05c7f8c59c82a3d3d1ed69e8
+- filename: packages/contentstack-audit/src/modules/extensions.ts
+  checksum: 32af019f0df8288448d11559fe9f7ef61d3e43c3791d45eeec25fd0937c6baad
+- filename: packages/contentstack-audit/src/modules/modulesData.ts
+  checksum: bac8f1971ac2e39bc04d9297b81951fe34ed265dfc985137135f9bbe775cd63c
+- filename: packages/contentstack-audit/src/modules/assets.ts
+  checksum: 457e92d8bc57d1beaa71f8eea79ada450db50469b5410e8678f2607ef3862099
+- filename: packages/contentstack-audit/src/modules/workflows.ts
+  checksum: 20d1f1985ea2657d3f9fc41d565a44000cbda47e2a60a576fee2aaff06f49352
+- filename: packages/contentstack-audit/src/modules/field_rules.ts
+  checksum: 3eaca968126c9e0e12115491f7942341124c9962d5285dd1cfb355d9e60c6106
+- filename: packages/contentstack-audit/src/modules/entries.ts
+  checksum: 2ed5d64bba0d6ec4529f5cab54ba86b290d10206c0429a57afe2d104cee9d039
+- filename: packages/contentstack-audit/test/unit/base-command.test.ts
+  checksum: 34bdde6f85e8b60ebc73e627b315ec3886e5577102fca04c3e20c463c42eb681
+- filename: packages/contentstack-audit/src/modules/content-types.ts
+  checksum: ddf7b08e6a80af09c6a7019a637c26089fb76572c7c3d079a8af244b02985f16
+- filename: packages/contentstack-import/test/unit/import/modules/base-class.test.ts
+  checksum: 850383016629ed840bf12c8bea5b7640230a6e4f6af03d958d2bcbdcc740945d
+- filename: packages/contentstack-import/test/unit/commands/cm/stacks/import.test.ts
+  checksum: 183feddf5ceee765a228c9c3d2759df459722fac20edce3c2fe957a7a28d790a
 version: "1.0"
