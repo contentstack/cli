@@ -50,6 +50,12 @@ export default class ImportSetupCommand extends Command {
       description:
         "The name of the branch where you want to import your content. If you don't mention the branch name, then by default the content will be imported to the main branch.",
       parse: printFlagDeprecation(['-B'], ['--branch']),
+      exclusive: ['branch-alias']
+    }),
+    'branch-alias': flags.string({
+      description:
+        "Specify the branch alias where you want to import your content. If not specified, the content is imported into the main branch by default.",
+      exclusive: ['branch'],
     }),
   };
 
