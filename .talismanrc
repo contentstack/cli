@@ -1,8 +1,8 @@
 fileignoreconfig:
 - filename: package-lock.json
-  checksum: 23c42f846dfb95e8516b980e4d65a1f6d97ce6bd2b483d14af1e182ff2598da9
+  checksum: 39e71326fd3b883372e1153b8c2cf6b408fa6afe046cbe1bcf7e117a3d5f198d
 - filename: pnpm-lock.yaml
-  checksum: 4bfcc1a77f91a411e825884e375ef588dd16f2950ba0ec970f6a9b9a544fc0b6
+  checksum: 13c2f106f912e03bd2b25fc5305893d3f439416209d170f9846d254d98b5bcbb
 - filename: packages/contentstack-import-setup/test/unit/backup-handler.test.ts
   checksum: 0582d62b88834554cf12951c8690a73ef3ddbb78b82d2804d994cf4148e1ef93
 - filename: packages/contentstack-import-setup/test/config.json
@@ -113,4 +113,6 @@ fileignoreconfig:
   checksum: 850383016629ed840bf12c8bea5b7640230a6e4f6af03d958d2bcbdcc740945d
 - filename: packages/contentstack-import/test/unit/commands/cm/stacks/import.test.ts
   checksum: 183feddf5ceee765a228c9c3d2759df459722fac20edce3c2fe957a7a28d790a
+- filename: packages/contentstack-import/test/unit/import/modules/assets.test.ts
+  checksum: 69d762d41c9b27f1563d2595549e581d3fcab723af3321d9db065468d0c60b79
 version: "1.0"
