@@ -5,6 +5,8 @@ const fastcsv = require('fast-csv');
 module.exports = ({ migration, stackSDKInstance, managementAPIClient, config }) => {
   const dataDir = config['data-dir'];
   const delimiter = config['delimiter'] ?? ','; // default comma
+  const locale = config['locale'];
+  const includeFallback = config['include_fallback'] ?? false;
   //parent and child term pointer
   let parentDetails = { taxonomy_uid: '' };
   let stack;
@@ -30,7 +32,8 @@ module.exports = ({ migration, stackSDKInstance, managementAPIClient, config }) 
   function handleErrorMsg(err) {
     let errMsg;
     if (err?.errorMessage || err?.message) {
-      errMsg = err?.errorMessage || err?.errors?.taxonomy || err?.errors?.term || JSON.stringify(err?.errors) || err?.message;
+      errMsg =
+        err?.errorMessage || err?.errors?.taxonomy || err?.errors?.term || JSON.stringify(err?.errors) || err?.message;
     }
     throw errMsg ?? err;
   }
@@ -56,9 +59,15 @@ module.exports = ({ migration, stackSDKInstance, managementAPIClient, config }) 
       if (!fs.existsSync(filePath)) {
         fs.writeFileSync(filePath, JSON.stringify(taxonomies[taxonomyUID]));
       }
+      const queryParam = {};
+      if (locale) {
+        queryParam.locale = locale;
+        queryParam.include_fallback = includeFallback;
+      }
+
       await stack
         .taxonomy()
-        .import({ taxonomy: filePath })
+        .import({ taxonomy: filePath }, queryParam)
         .then(() => console.log(`Taxonomy ${taxonomyUID} migrated successfully!`))
         .catch((err) => {
           handleErrorMsg(err);
@@ -102,7 +111,7 @@ module.exports = ({ migration, stackSDKInstance, managementAPIClient, config }) 
             } else if (!taxonomyName && parentDetails['taxonomy_uid']) {
               const column = Object.keys(taxDetails).find((col) => taxDetails[col] !== '');
               if (!column) continue;
-               
+
               const termLevel = (column.match(/Level \d+/) || [''])[0]; // Output:- Level 1/Level 2
               const termDepth = +termLevel.replace(/\D/g, ''); // fetch depth from header
               const termName = taxDetails[`${termLevel} Term Name`] ?? '';
