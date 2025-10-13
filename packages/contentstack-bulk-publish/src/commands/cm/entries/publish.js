@@ -50,6 +50,7 @@ class PublishEntriesCommand extends Command {
           host: this.cmaHost,
           cda: this.cdaHost,
           branch: entriesFlags.branch,
+          delayMs: updatedFlags.delayMs,
         };
         if (updatedFlags.alias) {
           try {
