@@ -190,12 +190,17 @@ const envFileHandler = async (
   if (regionName !== 'eu' && !isUSRegion) {
     customHost = region?.cma?.substring(8);
   }
+  let graphqlHost = "graphql.contentstack.com";
+  if(regionName != 'na'){
+    graphqlHost = `${regionName}-.graphql.contentstack.com`;
+  }
+
   
   // Construct image hostname based on the actual host being used
   let imageHostname = '*-images.contentstack.com'; // default fallback
   if (region?.cda) {
     const baseHost = region.cda.replace(/^https?:\/\//, '').replace(/^[^.]+\./, '');
-    imageHostname = `*-images.${baseHost}`;
+    imageHostname = `images.${baseHost}`;
   }
   const production = environmentVariables.environment === 'production' ? true : false;
   switch (appConfigKey) {
@@ -212,7 +217,7 @@ const envFileHandler = async (
         }\nNEXT_PUBLIC_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment
         }\nNEXT_PUBLIC_CONTENTSTACK_REGION=${regionName
         }\nNEXT_PUBLIC_CONTENTSTACK_PREVIEW=${livePreviewEnabled ? 'true' : 'false'
-        }\nNEXT_PUBLIC_CONTENTSTACK_CONTENT_DELIVERY = ${cdnHost
+        }\nNEXT_PUBLIC_CONTENTSTACK_CONTENT_DELIVERY = ${graphqlHost
         }\nNEXT_PUBLIC_CONTENTSTACK_CONTENT_APPLICATION = ${appHost
         }\nNEXT_PUBLIC_CONTENTSTACK_PREVIEW_HOST = ${previewHost
         }\nNEXT_PUBLIC_CONTENTSTACK_IMAGE_HOSTNAME=${imageHostname}`;

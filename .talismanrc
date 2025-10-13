@@ -74,7 +74,7 @@ fileignoreconfig:
 - filename: packages/contentstack-bootstrap/messages/index.json
   checksum: c435ceaa709a7504da303a6ea674e07a89030d8ad4152e7917cd17e7f3e58052
 - filename: packages/contentstack-bootstrap/src/config.ts
-  checksum: 65d300dc729fb84f5446c0b14921555db01fe5c90be3d297e3d0418a37b3696a
+  checksum: cc3270acd9d37479b24792f45a108e0f1c99265f92d59c35c0ec3ee2d1cc390d
 - filename: packages/contentstack-clone/src/commands/cm/stacks/clone.js
   checksum: 433a84a882ea3f12b27127d47d289dfc64dda6b6fc956369f5851daaa57ae493
 - filename: packages/contentstack-clone/src/lib/util/clone-handler.js
