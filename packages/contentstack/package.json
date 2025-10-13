@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli",
   "description": "Command-line tool (CLI) to interact with Contentstack",
-  "version": "1.49.0",
+  "version": "1.50.0",
   "author": "Contentstack",
   "bin": {
     "csdx": "./bin/run.js"
@@ -22,7 +22,7 @@
     "prepack": "pnpm compile && oclif manifest && oclif readme"
   },
   "dependencies": {
-    "@contentstack/cli-audit": "~1.14.1",
+    "@contentstack/cli-audit": "~1.15.0",
     "@contentstack/cli-auth": "~1.6.1",
     "@contentstack/cli-cm-bootstrap": "~1.16.0",
     "@contentstack/cli-cm-branches": "~1.6.0",
@@ -30,7 +30,7 @@
     "@contentstack/cli-cm-clone": "~1.16.1",
     "@contentstack/cli-cm-export": "~1.20.1",
     "@contentstack/cli-cm-export-to-csv": "~1.9.1",
-    "@contentstack/cli-cm-import": "~1.28.1",
+    "@contentstack/cli-cm-import": "~1.28.2",
     "@contentstack/cli-cm-import-setup": "1.6.0",
     "@contentstack/cli-cm-migrate-rte": "~1.6.1",
     "@contentstack/cli-cm-seed": "~1.12.2",
