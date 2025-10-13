@@ -17,6 +17,8 @@ export default class ImportTaxonomies extends BaseClass {
   private termsMapperDirPath: string;
   private termsSuccessPath: string;
   private termsFailsPath: string;
+  private localesFilePath: string;
+  private isLocaleBasedStructure: boolean = false;
   public createdTaxonomies: Record<string, unknown> = {};
   public failedTaxonomies: Record<string, unknown> = {};
   public createdTerms: Record<string, Record<string, unknown>> = {};
@@ -33,6 +35,11 @@ export default class ImportTaxonomies extends BaseClass {
     this.taxFailsPath = join(this.taxonomiesMapperDirPath, 'fails.json');
     this.termsSuccessPath = join(this.termsMapperDirPath, 'success.json');
     this.termsFailsPath = join(this.termsMapperDirPath, 'fails.json');
+    this.localesFilePath = join(
+      importConfig.backupDir,
+      importConfig.modules.locales.dirName,
+      importConfig.modules.locales.fileName,
+    );
   }
 
   /**
@@ -62,11 +69,22 @@ export default class ImportTaxonomies extends BaseClass {
     await fsUtil.makeDirectory(this.termsMapperDirPath);
     log.debug('Created taxonomies and terms mapper directories', this.importConfig.context);
 
-    // Step 3 import taxonomies
-    log.debug('Starting taxonomies import', this.importConfig.context);
-    await this.importTaxonomies();
+    // Step 3: Check if locale-based structure exists and scan taxonomies by locale
+    log.debug('Checking for locale-based folder structure', this.importConfig.context);
+    this.isLocaleBasedStructure = this.detectAndScanLocaleStructure();
 
-    //Step 4 create taxonomy & related terms success & failure file
+    // Step 4 import taxonomies
+    if (this.isLocaleBasedStructure) {
+      log.debug('Detected locale-based folder structure for taxonomies', this.importConfig.context);
+      log.debug('Starting taxonomies import', this.importConfig.context);
+      await this.importTaxonomiesByLocale();
+    } else {
+      log.debug('Starting taxonomies import', this.importConfig.context);
+      await this.importTaxonomiesLegacy();
+      log.debug('Using legacy folder structure for taxonomies', this.importConfig.context);
+    }
+
+    //Step 5 create taxonomy & related terms success & failure file
     log.debug('Creating success and failure files', this.importConfig.context);
     this.createSuccessAndFailedFile();
 
@@ -79,64 +97,10 @@ export default class ImportTaxonomies extends BaseClass {
    * @async
    * @returns {Promise<any>} Promise<any>
    */
-  async importTaxonomies(): Promise<any> {
-    log.debug('Validating taxonomies data', this.importConfig.context);
-    if (this.taxonomies === undefined || isEmpty(this.taxonomies)) {
-      log.info('No Taxonomies Found!', this.importConfig.context);
-      return;
-    }
+  async importTaxonomies({ apiContent, localeCode }: { apiContent: any[]; localeCode?: string }): Promise<void> {
+    const onSuccess = ({ apiData }: any) => this.handleSuccess(apiData, localeCode);
+    const onReject = ({ error, apiData }: any) => this.handleFailure(error, apiData, localeCode);
 
-    const apiContent = values(this.taxonomies);
-    log.debug(`Starting to import ${apiContent.length} taxonomies`, this.importConfig.context);
-
-    const onSuccess = ({ apiData }: any) => {
-      const taxonomyUID = apiData?.taxonomy?.uid;
-      const taxonomyName = apiData?.taxonomy?.name;
-      const termsCount = Object.keys(apiData?.terms || {}).length;
-
-      this.createdTaxonomies[taxonomyUID] = apiData?.taxonomy;
-      this.createdTerms[taxonomyUID] = apiData?.terms;
-
-      log.success(`Taxonomy '${taxonomyUID}' imported successfully!`, this.importConfig.context);
-      log.debug(`Created taxonomy '${taxonomyName}' with ${termsCount} terms`, this.importConfig.context);
-      log.debug(
-        `Taxonomy details: ${JSON.stringify({ uid: taxonomyUID, name: taxonomyName, termsCount })}`,
-        this.importConfig.context,
-      );
-    };
-
-    const onReject = ({ error, apiData }: any) => {
-      const taxonomyUID = apiData?.taxonomy?.uid;
-      const taxonomyName = apiData?.taxonomy?.name;
-
-      log.debug(`Taxonomy '${taxonomyUID}' failed to import`, this.importConfig.context);
-
-      if (error?.status === 409 && error?.statusText === 'Conflict') {
-        log.info(`Taxonomy '${taxonomyUID}' already exists!`, this.importConfig.context);
-        log.debug(`Adding existing taxonomy '${taxonomyUID}' to created list`, this.importConfig.context);
-        this.createdTaxonomies[taxonomyUID] = apiData?.taxonomy;
-        this.createdTerms[taxonomyUID] = apiData?.terms;
-      } else {
-        log.debug(`Adding taxonomy '${taxonomyUID}' to failed list`, this.importConfig.context);
-        if (error?.errorMessage || error?.message) {
-          const errorMsg = error?.errorMessage || error?.errors?.taxonomy || error?.errors?.term || error?.message;
-          log.error(`Taxonomy '${taxonomyUID}' failed to be import! ${errorMsg}`, this.importConfig.context);
-        } else {
-          handleAndLogError(
-            error,
-            { ...this.importConfig.context, taxonomyUID },
-            `Taxonomy '${taxonomyUID}' failed to import`,
-          );
-        }
-        this.failedTaxonomies[taxonomyUID] = apiData?.taxonomy;
-        this.failedTerms[taxonomyUID] = apiData?.terms;
-      }
-    };
-
-    log.debug(
-      `Using concurrency limit: ${this.importConfig.concurrency || this.importConfig.fetchConcurrency || 1}`,
-      this.importConfig.context,
-    );
     await this.makeConcurrentCall(
       {
         apiContent,
@@ -147,40 +111,199 @@ export default class ImportTaxonomies extends BaseClass {
           resolve: onSuccess,
           entity: 'import-taxonomy',
           includeParamOnCompletion: true,
+          queryParam: {
+            locale: localeCode,
+          },
         },
         concurrencyLimit: this.importConfig.concurrency || this.importConfig.fetchConcurrency || 1,
       },
       undefined,
       false,
     );
+  }
 
-    log.debug('Taxonomies import process completed', this.importConfig.context);
+  async importTaxonomiesLegacy(): Promise<void> {
+    const apiContent = values(this.taxonomies);
+    await this.importTaxonomies({
+      apiContent,
+    });
+  }
+
+  async importTaxonomiesByLocale(): Promise<void> {
+    const locales = this.loadAvailableLocales();
+    const apiContent = values(this.taxonomies);
+    for (const localeCode of Object.keys(locales)) {
+      await this.importTaxonomies({
+        apiContent,
+        localeCode,
+      });
+    }
+  }
+
+  handleSuccess(apiData: any, locale?: string) {
+    const { taxonomy, terms } = apiData || {};
+    const taxonomyUID = taxonomy?.uid;
+    const taxonomyName = taxonomy?.name;
+    const termsCount = Object.keys(terms || {}).length;
+
+    this.createdTaxonomies[taxonomyUID] = taxonomy;
+    this.createdTerms[taxonomyUID] = terms;
+
+    log.success(
+      `Taxonomy '${taxonomyUID}' imported successfully${locale ? ` for locale: ${locale}` : ''}!`,
+      this.importConfig.context,
+    );
+    log.debug(
+      `Created taxonomy '${taxonomyName}' with ${termsCount} terms${locale ? ` for locale: ${locale}` : ''}`,
+      this.importConfig.context,
+    );
+  }
+
+  handleFailure(error: any, apiData: any, locale?: string) {
+    const taxonomyUID = apiData?.taxonomy?.uid;
+
+    if (error?.status === 409 && error?.statusText === 'Conflict') {
+      log.info(
+        `Taxonomy '${taxonomyUID}' already exists${locale ? ` for locale: ${locale}` : ''}!`,
+        this.importConfig.context,
+      );
+      this.createdTaxonomies[taxonomyUID] = apiData?.taxonomy;
+      this.createdTerms[taxonomyUID] = apiData?.terms;
+      return;
+    }
+
+    const errMsg = error?.errorMessage || error?.errors?.taxonomy || error?.errors?.term || error?.message;
+
+    if (errMsg) {
+      log.error(
+        `Taxonomy '${taxonomyUID}' failed to import${locale ? ` for locale: ${locale}` : ''}! ${errMsg}`,
+        this.importConfig.context,
+      );
+    } else {
+      handleAndLogError(
+        error,
+        { ...this.importConfig.context, taxonomyUID, locale },
+        `Taxonomy '${taxonomyUID}' failed`,
+      );
+    }
+
+    this.failedTaxonomies[taxonomyUID] = apiData?.taxonomy;
+    this.failedTerms[taxonomyUID] = apiData?.terms;
   }
 
   /**
-   * @method serializeTaxonomy
-   * @param {ApiOptions} apiOptions ApiOptions
-   * @returns {ApiOptions} ApiOptions
+   *
+   * @param {ApiOptions} apiOptions
+   * @param {?string} [localeCode]
+   * @returns {ApiOptions}
    */
   serializeTaxonomy(apiOptions: ApiOptions): ApiOptions {
-    const { apiData } = apiOptions;
+    const {
+      apiData,
+      queryParam: { locale },
+    } = apiOptions;
     const taxonomyUID = apiData?.uid;
-    const filePath = join(this.taxonomiesFolderPath, `${taxonomyUID}.json`);
 
-    log.debug(`Serializing taxonomy: ${taxonomyUID}`, this.importConfig.context);
-    log.debug(`Looking for taxonomy file: ${filePath}`, this.importConfig.context);
+    if (!taxonomyUID) {
+      log.debug('No taxonomy UID provided for serialization', this.importConfig.context);
+      apiOptions.apiData = undefined;
+      return apiOptions;
+    }
 
-    if (fileHelper.fileExistsSync(filePath)) {
-      const taxonomyDetails = fsUtil.readFile(filePath, true) as Record<string, unknown>;
-      log.debug(`Successfully loaded taxonomy details from ${filePath}`, this.importConfig.context);
-        const termCount = Object.keys(taxonomyDetails?.terms || {}).length;
-        log.debug(`Taxonomy has ${termCount} term entries`, this.importConfig.context);
-      apiOptions.apiData = { filePath, taxonomy: taxonomyDetails?.taxonomy, terms: taxonomyDetails?.terms };
+    const context = locale ? ` for locale: ${locale}` : '';
+    log.debug(`Serializing taxonomy: ${taxonomyUID}${context}`, this.importConfig.context);
+
+    // Determine file path - if locale is provided, use it directly, otherwise search
+    const filePath = locale
+      ? join(this.taxonomiesFolderPath, locale, `${taxonomyUID}.json`)
+      : this.findTaxonomyFilePath(taxonomyUID);
+
+    if (!filePath || !fileHelper.fileExistsSync(filePath)) {
+      log.debug(`Taxonomy file not found for: ${taxonomyUID}${context}`, this.importConfig.context);
+      apiOptions.apiData = undefined;
+      return apiOptions;
+    }
+
+    const taxonomyDetails = this.loadTaxonomyFile(filePath, locale || 'auto-detected');
+    if (taxonomyDetails) {
+      const termCount = Object.keys(taxonomyDetails?.terms || {}).length;
+      log.debug(`Taxonomy has ${termCount} term entries${context}`, this.importConfig.context);
+
+      apiOptions.apiData = {
+        filePath,
+        taxonomy: taxonomyDetails?.taxonomy,
+        terms: taxonomyDetails?.terms,
+      };
     } else {
-      log.debug(`File does not exist for taxonomy: ${taxonomyUID}`, this.importConfig.context);
       apiOptions.apiData = undefined;
     }
+
     return apiOptions;
+  }
+
+  loadTaxonomyFile(filePath: string, context: string): Record<string, unknown> | undefined {
+    if (!fileHelper.fileExistsSync(filePath)) {
+      log.debug(`File does not exist: ${filePath}`, this.importConfig.context);
+      return undefined;
+    }
+
+    try {
+      const taxonomyDetails = fsUtil.readFile(filePath, true) as Record<string, unknown>;
+      log.debug(`Successfully loaded taxonomy from: ${context}`, this.importConfig.context);
+      return taxonomyDetails;
+    } catch (error) {
+      log.debug(`Error loading taxonomy file: ${filePath}`, this.importConfig.context);
+      return undefined;
+    }
+  }
+
+  findTaxonomyFilePath(taxonomyUID: string): string | undefined {
+    if (this.isLocaleBasedStructure) {
+      // For locale-based structure, search in locale folders
+      return this.findTaxonomyInLocaleFolders(taxonomyUID);
+    } else {
+      // For legacy structure, only check the root folder
+      const legacyPath = join(this.taxonomiesFolderPath, `${taxonomyUID}.json`);
+      return fileHelper.fileExistsSync(legacyPath) ? legacyPath : undefined;
+    }
+  }
+
+  findTaxonomyInLocaleFolders(taxonomyUID: string): string | undefined {
+    const locales = this.loadAvailableLocales();
+
+    for (const localeCode of Object.keys(locales)) {
+      const filePath = join(this.taxonomiesFolderPath, localeCode, `${taxonomyUID}.json`);
+      if (fileHelper.fileExistsSync(filePath)) {
+        return filePath;
+      }
+    }
+
+    return undefined;
+  }
+
+  loadAvailableLocales(): Record<string, string> {
+    if (!fileHelper.fileExistsSync(this.localesFilePath)) {
+      log.debug('No locales file found', this.importConfig.context);
+      return {};
+    }
+
+    try {
+      const localesData = fsUtil.readFile(this.localesFilePath, true) as Record<string, Record<string, any>>;
+      const locales: Record<string, string> = {};
+      locales[this.importConfig.master_locale?.code] = this.importConfig.master_locale?.code;
+
+      for (const [code, locale] of Object.entries(localesData)) {
+        if (locale?.code) {
+          locales[locale.code] = code;
+        }
+      }
+
+      log.debug(`Loaded ${Object.keys(locales).length} locales from file`, this.importConfig.context);
+      return locales;
+    } catch (error) {
+      log.debug('Error loading locales file', this.importConfig.context);
+      return {};
+    }
   }
 
   /**
@@ -233,5 +356,24 @@ export default class ImportTaxonomies extends BaseClass {
         this.importConfig.context,
       );
     }
+  }
+
+  /**
+   * Detect if locale-based folder structure exists and scan taxonomies by locale
+   * @returns {boolean} true if locale-based structure detected, false otherwise
+   */
+  detectAndScanLocaleStructure(): boolean {
+    const masterLocaleCode = this.importConfig.master_locale?.code || 'en-us';
+    const masterLocaleFolder = join(this.taxonomiesFolderPath, masterLocaleCode);
+
+    // Check if master locale folder exists (indicates new locale-based structure)
+    if (!fileHelper.fileExistsSync(masterLocaleFolder)) {
+      log.debug('No locale-based folder structure detected', this.importConfig.context);
+      return false;
+    }
+
+    log.debug('Locale-based folder structure detected', this.importConfig.context);
+
+    return true;
   }
 }
