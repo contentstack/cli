@@ -18,7 +18,7 @@ jobs:
 
       - name: Install dependencies for all plugins
         run: |
-          npm run setup-repo-old
+          NODE_ENV=PREPACK_MODE npm run setup-repo-old
 
       - name: Run tests for Contentstack Command
         working-directory: ./packages/contentstack-command
