@@ -113,4 +113,6 @@ fileignoreconfig:
   checksum: 850383016629ed840bf12c8bea5b7640230a6e4f6af03d958d2bcbdcc740945d
 - filename: packages/contentstack-import/test/unit/commands/cm/stacks/import.test.ts
   checksum: 183feddf5ceee765a228c9c3d2759df459722fac20edce3c2fe957a7a28d790a
+- filename: packages/contentstack-import/test/unit/import/modules/content-types.test.ts
+  checksum: 61fca8cda7873430d2a926c1b6d35d67f8707e0d68855e6c13c55e4be73a0ce3
 version: "1.0"
