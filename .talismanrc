@@ -117,4 +117,6 @@ fileignoreconfig:
   checksum: 61fca8cda7873430d2a926c1b6d35d67f8707e0d68855e6c13c55e4be73a0ce3
 - filename: packages/contentstack-import/test/unit/import/modules/assets.test.ts
   checksum: 69d762d41c9b27f1563d2595549e581d3fcab723af3321d9db065468d0c60b79
+- filename: packages/contentstack-import/test/unit/import/modules/global-fields.test.ts
+  checksum: 0de6c9c9f778d770a04da0c9927820090eb6478d9499f12a3329b580a1dc115b
 version: "1.0"
