@@ -119,4 +119,6 @@ fileignoreconfig:
   checksum: 69d762d41c9b27f1563d2595549e581d3fcab723af3321d9db065468d0c60b79
 - filename: packages/contentstack-import/test/unit/import/modules/global-fields.test.ts
   checksum: 0de6c9c9f778d770a04da0c9927820090eb6478d9499f12a3329b580a1dc115b
+- filename: packages/contentstack-import/test/unit/import/modules/workflows.test.ts
+  checksum: 42db46379556a837866dfa39bcd8cfc215a4be1b421c61a6508e8c3b958d39f9
 version: "1.0"
