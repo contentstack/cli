@@ -46,7 +46,7 @@ describe('ImportGlobalFields', () => {
     };
 
     mockImportConfig = {
-      apiKey: 'test-api-key',
+      apiKey: 'test',
       contentDir: '/test/content',
       data: '/test/content',
       contentVersion: 1,
@@ -60,7 +60,7 @@ describe('ImportGlobalFields', () => {
         userId: 'user-123',
         email: 'test@example.com',
         sessionId: 'session-123',
-        apiKey: 'test-api-key',
+        apiKey: 'test',
         orgId: 'org-123',
         authenticationMethod: 'Basic Auth'
       },

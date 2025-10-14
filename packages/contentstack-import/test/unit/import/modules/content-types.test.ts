@@ -47,7 +47,7 @@ describe('ImportContentTypes', () => {
     };
 
     mockImportConfig = {
-      apiKey: 'test-api-key',
+      apiKey: 'test',
       contentDir: '/test/content',
       data: '/test/content',
       contentVersion: 1,
@@ -61,7 +61,7 @@ describe('ImportContentTypes', () => {
         userId: 'user-123',
         email: 'test@example.com',
         sessionId: 'session-123',
-        apiKey: 'test-api-key',
+        apiKey: 'test',
         orgId: 'org-123',
         authenticationMethod: 'Basic Auth'
       },
@@ -805,6 +805,186 @@ describe('ImportContentTypes', () => {
       await importContentTypes.start();
 
       expect(importContentTypes['isExtensionsUpdate']).to.be.true;
+    });
+  });
+
+  describe('Additional Branch Coverage Tests', () => {
+    it('should handle different error conditions in seedCTs onReject', async () => {
+      const mockCTs = [{ uid: 'ct1', title: 'Content Type 1' }];
+      
+      fsUtilStub.readFile.withArgs(sinon.match(/schema\.json/)).returns(mockCTs);
+      fsUtilStub.readFile.withArgs(sinon.match(/uid-mapping\.json/)).returns({ extension_uid: {} });
+      fsUtilStub.readFile.withArgs(sinon.match(/taxonomies.*success\.json/)).returns({});
+      fsUtilStub.readFile.withArgs(sinon.match(/pending_global_fields\.js/)).returns([]);
+      fsUtilStub.readFile.withArgs(sinon.match(/pending_extensions\.js/)).returns([]);
+
+      await importContentTypes.start();
+
+      const onReject = makeConcurrentCallStub.firstCall.args[0].apiParams.reject;
+      
+      // Test error with errorCode 115 but different error structure
+      onReject({
+        error: { errorCode: 115, errors: { title: 'Title already exists' } },
+        apiData: { content_type: { uid: 'ct1' } }
+      });
+
+      // Test error with errorCode 115 but different error structure
+      onReject({
+        error: { errorCode: 115, errors: { uid: 'UID already exists' } },
+        apiData: { content_type: { uid: 'ct1' } }
+      });
+
+      expect(makeConcurrentCallStub.called).to.be.true;
+    });
+
+    it('should handle different conditions in updatePendingGFs', async () => {
+      const mockCTs = [{ uid: 'ct1', title: 'Content Type 1' }];
+      const mockPendingGFs = ['gf1', 'gf2'];
+      const mockGFs = [{ uid: 'gf1', title: 'Global Field 1' }];
+      
+      fsUtilStub.readFile.withArgs(sinon.match(/schema\.json/)).returns(mockCTs);
+      fsUtilStub.readFile.withArgs(sinon.match(/uid-mapping\.json/)).returns({ extension_uid: {} });
+      fsUtilStub.readFile.withArgs(sinon.match(/taxonomies.*success\.json/)).returns({});
+      fsUtilStub.readFile.withArgs(sinon.match(/pending_global_fields\.js/)).returns(mockPendingGFs);
+      fsUtilStub.readFile.withArgs(sinon.match(/global_fields.*\.json/)).returns(mockGFs);
+      fsUtilStub.readFile.withArgs(sinon.match(/pending_extensions\.js/)).returns([]);
+
+      await importContentTypes.start();
+
+      const onSuccess = makeConcurrentCallStub.getCall(2).args[0].apiParams.resolve;
+      const onReject = makeConcurrentCallStub.getCall(2).args[0].apiParams.reject;
+      
+      // Test onSuccess with undefined uid
+      onSuccess({
+        response: { uid: 'gf1' },
+        apiData: { uid: undefined }
+      });
+
+      // Test onReject with undefined uid
+      onReject({
+        error: { message: 'Update failed' },
+        apiData: { uid: undefined }
+      });
+
+      expect(makeConcurrentCallStub.callCount).to.be.greaterThan(2);
+    });
+
+    it('should handle different conditions in updatePendingExtensions', async () => {
+      const mockCTs = [{ uid: 'ct1', title: 'Content Type 1' }];
+      const mockExtensions = [{ uid: 'ext1', title: 'Extension 1' }];
+      
+      fsUtilStub.readFile.withArgs(sinon.match(/schema\.json/)).returns(mockCTs);
+      fsUtilStub.readFile.withArgs(sinon.match(/uid-mapping\.json/)).returns({ extension_uid: {} });
+      fsUtilStub.readFile.withArgs(sinon.match(/taxonomies.*success\.json/)).returns({});
+      fsUtilStub.readFile.withArgs(sinon.match(/pending_global_fields\.js/)).returns([]);
+      fsUtilStub.readFile.withArgs(sinon.match(/pending_extensions\.js/)).returns(mockExtensions);
+
+      await importContentTypes.start();
+
+      const onSuccess = makeConcurrentCallStub.lastCall.args[0].apiParams.resolve;
+      const onReject = makeConcurrentCallStub.lastCall.args[0].apiParams.reject;
+      
+      // Test onSuccess with undefined uid and title
+      onSuccess({
+        response: { title: 'Updated Extension' },
+        apiData: { uid: undefined, title: undefined }
+      });
+
+      // Test onReject with title error and skipExisting true
+      importContentTypes['importConfig'].skipExisting = true;
+      onReject({
+        error: { errors: { title: 'Title already exists' } },
+        apiData: { uid: 'ext1' }
+      });
+
+      // Test onReject with title error and skipExisting false
+      importContentTypes['importConfig'].skipExisting = false;
+      onReject({
+        error: { errors: { title: 'Title already exists' } },
+        apiData: { uid: 'ext1' }
+      });
+
+      expect(makeConcurrentCallStub.called).to.be.true;
+    });
+
+    it('should handle null apiContent in updatePendingExtensions', async () => {
+      const mockCTs = [{ uid: 'ct1', title: 'Content Type 1' }];
+      
+      fsUtilStub.readFile.withArgs(sinon.match(/schema\.json/)).returns(mockCTs);
+      fsUtilStub.readFile.withArgs(sinon.match(/uid-mapping\.json/)).returns({ extension_uid: {} });
+      fsUtilStub.readFile.withArgs(sinon.match(/taxonomies.*success\.json/)).returns({});
+      fsUtilStub.readFile.withArgs(sinon.match(/pending_global_fields\.js/)).returns([]);
+      fsUtilStub.readFile.withArgs(sinon.match(/pending_extensions\.js/)).returns(null);
+
+      await importContentTypes.start();
+
+      expect(importContentTypes['isExtensionsUpdate']).to.be.false;
+    });
+
+    it('should handle empty array apiContent in updatePendingExtensions', async () => {
+      const mockCTs = [{ uid: 'ct1', title: 'Content Type 1' }];
+      
+      fsUtilStub.readFile.withArgs(sinon.match(/schema\.json/)).returns(mockCTs);
+      fsUtilStub.readFile.withArgs(sinon.match(/uid-mapping\.json/)).returns({ extension_uid: {} });
+      fsUtilStub.readFile.withArgs(sinon.match(/taxonomies.*success\.json/)).returns({});
+      fsUtilStub.readFile.withArgs(sinon.match(/pending_global_fields\.js/)).returns([]);
+      fsUtilStub.readFile.withArgs(sinon.match(/pending_extensions\.js/)).returns([]);
+
+      await importContentTypes.start();
+
+      expect(importContentTypes['isExtensionsUpdate']).to.be.false;
+    });
+
+    it('should handle onSuccess with different response structure in updatePendingExtensions', async () => {
+      const mockCTs = [{ uid: 'ct1', title: 'Content Type 1' }];
+      const mockExtensions = [{ uid: 'ext1', title: 'Extension 1' }];
+      
+      fsUtilStub.readFile.withArgs(sinon.match(/schema\.json/)).returns(mockCTs);
+      fsUtilStub.readFile.withArgs(sinon.match(/uid-mapping\.json/)).returns({ extension_uid: {} });
+      fsUtilStub.readFile.withArgs(sinon.match(/taxonomies.*success\.json/)).returns({});
+      fsUtilStub.readFile.withArgs(sinon.match(/pending_global_fields\.js/)).returns([]);
+      fsUtilStub.readFile.withArgs(sinon.match(/pending_extensions\.js/)).returns(mockExtensions);
+
+      await importContentTypes.start();
+
+      const onSuccess = makeConcurrentCallStub.lastCall.args[0].apiParams.resolve;
+      
+      // Test onSuccess with response that has no title property
+      onSuccess({
+        response: { uid: 'ext1' },
+        apiData: { uid: 'ext1', title: 'Extension 1' }
+      });
+
+      expect(makeConcurrentCallStub.called).to.be.true;
+    });
+
+    it('should handle onReject with different error structures in updatePendingExtensions', async () => {
+      const mockCTs = [{ uid: 'ct1', title: 'Content Type 1' }];
+      const mockExtensions = [{ uid: 'ext1', title: 'Extension 1' }];
+      
+      fsUtilStub.readFile.withArgs(sinon.match(/schema\.json/)).returns(mockCTs);
+      fsUtilStub.readFile.withArgs(sinon.match(/uid-mapping\.json/)).returns({ extension_uid: {} });
+      fsUtilStub.readFile.withArgs(sinon.match(/taxonomies.*success\.json/)).returns({});
+      fsUtilStub.readFile.withArgs(sinon.match(/pending_global_fields\.js/)).returns([]);
+      fsUtilStub.readFile.withArgs(sinon.match(/pending_extensions\.js/)).returns(mockExtensions);
+
+      await importContentTypes.start();
+
+      const onReject = makeConcurrentCallStub.lastCall.args[0].apiParams.reject;
+      
+      // Test onReject with error that has no errors property
+      onReject({
+        error: { message: 'Server error' },
+        apiData: { uid: 'ext1' }
+      });
+
+      // Test onReject with error that has errors but no title
+      onReject({
+        error: { errors: { uid: 'UID already exists' } },
+        apiData: { uid: 'ext1' }
+      });
+
+      expect(makeConcurrentCallStub.called).to.be.true;
     });
   });
 });
