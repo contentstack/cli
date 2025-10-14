@@ -182,7 +182,7 @@ export default class ImportWorkflows extends BaseClass {
         log.info(`Workflow '${name}' already exists`, this.importConfig.context);
       } else {
         this.failedWebhooks.push(apiData);
-        if (error.errors['workflow_stages.0.users']) {
+        if (error.errors?.['workflow_stages.0.users']) {
           log.error(
             "Failed to import Workflows as you've specified certain roles in the Stage transition and access rules section. We currently don't import roles to the stack.",
             this.importConfig.context,
