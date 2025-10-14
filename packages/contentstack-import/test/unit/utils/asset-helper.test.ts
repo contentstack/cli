@@ -12,7 +12,7 @@ describe('Asset Helper', () => {
 
   beforeEach(() => {
     mockImportConfig = {
-      apiKey: 'test-api-key',
+      apiKey: 'test',
       target_stack: 'target-stack-key',
       management_token: 'test-mgmt-token',
       data: '/test/content',
