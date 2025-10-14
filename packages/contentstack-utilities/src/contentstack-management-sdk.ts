@@ -37,6 +37,7 @@ class ManagementSDKInitiator {
             case 401:
             case 429:
             case 408:
+            case 422:
               return true;
 
             default:
