@@ -41,7 +41,7 @@ describe('ImportWorkflows', () => {
     };
 
     mockImportConfig = {
-      apiKey: 'test-api-key',
+      apiKey: 'test',
       backupDir: '/test/backup',
       data: '/test/content',
       contentVersion: 1,
@@ -53,7 +53,7 @@ describe('ImportWorkflows', () => {
         userId: 'user-123',
         email: 'test@example.com',
         sessionId: 'session-123',
-        apiKey: 'test-api-key',
+        apiKey: 'test',
         orgId: 'org-123',
         authenticationMethod: 'Basic Auth'
       },
