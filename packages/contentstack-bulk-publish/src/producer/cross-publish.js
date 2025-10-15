@@ -227,7 +227,7 @@ async function getSyncEntries(
         await bulkAction(stack, entriesResponse.items, bulkPublish, filter, destEnv, apiVersion, bulkPublishLimit, variantsFlag);
       }
       if (!entriesResponse.pagination_token) {
-        if (!changedFlag) console.log('No Entries/Assets Found published on specified environment');
+        if (!changedFlag) console.log('No entries or assets found published in the specified environment.');
         return resolve();
       }
       setTimeout(async () => {

@@ -134,7 +134,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
       cliux.success(`Personalize URL: ${regionDetails.personalizeUrl}`);
       cliux.success(`Launch URL: ${regionDetails.launchHubUrl}`);
     } else {
-      cliux.error(`Invalid region is given`);
+      cliux.error(`Invalid region specified.`);
     }
   }
   transformUrl(url: string, replacement: string): string {

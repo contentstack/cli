@@ -68,7 +68,7 @@ class StackCloneCommand extends Command {
           config.source_alias = sourceManagementTokenAlias;
           config.source_stack = listOfTokens[sourceManagementTokenAlias].apiKey;
         } else if (sourceManagementTokenAlias) {
-          console.log(`Provided source token alias (${sourceManagementTokenAlias}) not found in your config.!`);
+          console.log(`The source token alias '${sourceManagementTokenAlias}' was not found in your configuration file.`);
         }
         if (destinationManagementTokenAlias && listOfTokens[destinationManagementTokenAlias]) {
           config.destination_alias = destinationManagementTokenAlias;
@@ -103,7 +103,7 @@ class StackCloneCommand extends Command {
           if (isAuthenticated()) {
             handleClone();
           } else {
-            console.log('Please login to execute this command, csdx auth:login');
+            console.log('Log in to execute this command,csdx auth:login');
             this.exit(1);
           }
         } else {
@@ -151,7 +151,7 @@ class StackCloneCommand extends Command {
       }
     } catch (err) {
       if (err) {
-        console.log('\nCleaning up');
+        console.log('\nCleaning up...');
         const skipCodeArr = ['ENOENT', 'EBUSY', 'EPERM', 'EMFILE', 'ENOTEMPTY'];
 
         if (skipCodeArr.includes(err.code)) {
@@ -168,10 +168,10 @@ class StackCloneCommand extends Command {
     const cleanUp = async (exitOrError) => {
       if (exitOrError) {
         // eslint-disable-next-line no-console
-        console.log('\nCleaning up');
+        console.log('\nCleaning up...');
         await this.cleanUp(pathDir);
         // eslint-disable-next-line no-console
-        console.log('done');
+        console.log('Done.');
         // eslint-disable-next-line no-process-exit
 
         if (exitOrError instanceof Promise) {
