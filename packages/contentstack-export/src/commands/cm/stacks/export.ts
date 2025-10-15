@@ -139,11 +139,11 @@ export default class ExportCommand extends Command {
         `The content of the stack ${exportConfig.apiKey} has been exported successfully!`,
         exportConfig.context,
       );
-      log.info(`The exported content has been stored at '${exportDir}'`, exportConfig.context);
-      log.success(`The log has been stored at '${getLogPath()}'`, exportConfig.context);
+      log.info(`The exported content has been stored at '${exportDir}'.`, exportConfig.context);
+      log.success(`The log has been stored at '${getLogPath()}'.`, exportConfig.context);
     } catch (error) {
       handleAndLogError(error);
-      log.info(`The log has been stored at '${getLogPath()}'`);
+      log.info(`The log has been stored at '${getLogPath()}'.`);
     }
   }
 

@@ -8,7 +8,7 @@ class PublishOnlyUnpublished extends Command {
     try {
       await publishOnlyUnpublishedService.apply(this, [PublishOnlyUnpublished]);
     } catch (error) {
-      this.error(error, { exit: 2 });
+      this.error(error.message || error, { exit: 2 });
     }
   }
 }

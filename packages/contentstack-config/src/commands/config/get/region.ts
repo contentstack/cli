@@ -10,18 +10,18 @@ export default class RegionGetCommand extends BaseCommand<typeof RegionGetComman
   async run() {
     let currentRegion: Region = this.region;
     if (!currentRegion) {
-      this.logger.error('No region set');
+      this.logger.error('No region is set.');
       cliux.error('CLI_CONFIG_GET_REGION_NOT_FOUND');
       this.exit();
     }
-    cliux.print(`Currently using ${currentRegion.name} region`);
-    cliux.print(`CDA HOST: ${currentRegion.cda}`);
-    cliux.print(`CMA HOST: ${currentRegion.cma}`);
-    cliux.print(`UI HOST: ${currentRegion.uiHost}`);
+    cliux.print(`Currently using the '${currentRegion.name}' region.`);
+    cliux.print(`CDA host: ${currentRegion.cda}`);
+    cliux.print(`CMA host: ${currentRegion.cma}`);
+    cliux.print(`UI host: ${currentRegion.uiHost}`);
     cliux.print(`Developer Hub URL: ${currentRegion.developerHubUrl}`);
     cliux.print(`Launch URL: ${currentRegion.launchHubUrl}`);
     cliux.print(`Personalize URL: ${currentRegion.personalizeUrl}`);
-    this.logger.error(`Currently using ${currentRegion.name} region`);
+    this.logger.error(`Currently using the '${currentRegion.name}' region.`);
 
   }
 }
