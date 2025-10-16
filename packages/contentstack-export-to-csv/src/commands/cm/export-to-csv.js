@@ -7,7 +7,6 @@ const {
   cliux,
   doesBranchExist,
   isManagementTokenValid,
-  log
 } = require('@contentstack/cli-utilities');
 const util = require('../../util');
 const config = require('../../util/config');
@@ -18,7 +17,8 @@ class ExportToCsvCommand extends Command {
       required: false,
       multiple: false,
       options: ['entries', 'users', 'teams', 'taxonomies'],
-      description: 'Option to export data (entries, users, teams, taxonomies). <options: entries|users|teams|taxonomies>',
+      description:
+        'Option to export data (entries, users, teams, taxonomies). <options: entries|users|teams|taxonomies>',
     }),
     alias: flags.string({
       char: 'a',
@@ -67,12 +67,22 @@ class ExportToCsvCommand extends Command {
     'taxonomy-uid': flags.string({
       description: 'Provide the taxonomy UID of the related terms you want to export.',
     }),
+    'include-fallback': flags.boolean({
+      description:
+        "[Optional] Include fallback locale data when exporting taxonomies. When enabled, if a taxonomy term doesn't exist in the specified locale, it will fallback to the hierarchy defined in the branch settings.",
+      default: false,
+    }),
+    'fallback-locale': flags.string({
+      description:
+        "[Optional] Specify a specific fallback locale for taxonomy export. This locale will be used when a taxonomy term doesn't exist in the primary locale. Takes priority over branch fallback hierarchy when both are specified.",
+      required: false,
+    }),
     delimiter: flags.string({
-      description: '[optional] Provide a delimiter to separate individual data fields within the CSV file. For example: cm:export-to-csv --delimiter \'|\'',
+      description:
+        "[optional] Provide a delimiter to separate individual data fields within the CSV file. For example: cm:export-to-csv --delimiter '|'",
       default: ',',
     }),
-  };  
-
+  };
   async run() {
     try {
       let action, managementAPIClient;
@@ -87,9 +97,11 @@ class ExportToCsvCommand extends Command {
           'content-type': contentTypesFlag,
           alias: managementTokenAlias,
           branch: branchUid,
-          "team-uid": teamUid,
+          'team-uid': teamUid,
           'taxonomy-uid': taxonomyUID,
-          delimiter
+          'include-fallback': includeFallback,
+          'fallback-locale': fallbackLocale,
+          delimiter,
         },
       } = await this.parse(ExportToCsvCommand);
 
@@ -127,7 +139,12 @@ class ExportToCsvCommand extends Command {
             }
 
             stackAPIClient = this.getStackClient(managementAPIClient, stack);
-            stackAPIClient = await this.checkAndUpdateBranchDetail(branchUid, stack, stackAPIClient, managementAPIClient);
+            stackAPIClient = await this.checkAndUpdateBranchDetail(
+              branchUid,
+              stack,
+              stackAPIClient,
+              managementAPIClient,
+            );
 
             const contentTypeCount = await util.getContentTypeCount(stackAPIClient);
 
@@ -223,15 +240,15 @@ class ExportToCsvCommand extends Command {
         }
         case config.exportTeams:
         case 'teams': {
-          try{
+          try {
             let organization;
             if (org) {
               organization = { uid: org, name: orgName || org };
             } else {
               organization = await util.chooseOrganization(managementAPIClient, action); // prompt for organization
             }
-          
-            await util.exportTeams(managementAPIClient,organization,teamUid, delimiter);
+
+            await util.exportTeams(managementAPIClient, organization, teamUid, delimiter);
           } catch (error) {
             if (error.message || error.errorMessage) {
               cliux.error(util.formatError(error));
@@ -242,7 +259,11 @@ class ExportToCsvCommand extends Command {
         case config.exportTaxonomies:
         case 'taxonomies': {
           let stack;
+          let language;
           let stackAPIClient;
+          let finalIncludeFallback = includeFallback;
+          let finalFallbackLocale = fallbackLocale;
+
           if (managementTokenAlias) {
             const { stackDetails, apiClient } = await this.getAliasDetails(managementTokenAlias, stackName);
             managementAPIClient = apiClient;
@@ -252,7 +273,29 @@ class ExportToCsvCommand extends Command {
           }
 
           stackAPIClient = this.getStackClient(managementAPIClient, stack);
-          await this.createTaxonomyAndTermCsvFile(stackAPIClient, stackName, stack, taxonomyUID, delimiter);
+          if (locale) {
+            language = { code: locale };
+          } else {
+            language = await util.chooseLanguage(stackAPIClient);
+          }
+
+          if (includeFallback === undefined || fallbackLocale === undefined) {
+            const fallbackOptions = await util.chooseFallbackOptions(stackAPIClient);
+
+            if (includeFallback === undefined) {
+              finalIncludeFallback = fallbackOptions.includeFallback;
+            }
+            if (fallbackLocale === undefined && fallbackOptions.fallbackLocale) {
+              finalFallbackLocale = fallbackOptions.fallbackLocale;
+            }
+          }
+
+          await this.createTaxonomyAndTermCsvFile(stackAPIClient, stackName, stack, taxonomyUID, delimiter, {
+            locale: language.code,
+            branch: branchUid,
+            include_fallback: finalIncludeFallback,
+            fallback_locale: finalFallbackLocale,
+          });
           break;
         }
       }
@@ -287,7 +330,7 @@ class ExportToCsvCommand extends Command {
       .query()
       .find()
       .then(({ items }) => (items !== undefined ? items : []))
-      .catch((_err) => {});
+      .catch(() => {});
   }
 
   /**
@@ -335,9 +378,14 @@ class ExportToCsvCommand extends Command {
     let apiClient, stackDetails;
     const listOfTokens = configHandler.get('tokens');
     if (managementTokenAlias && listOfTokens[managementTokenAlias]) {
-      const checkManagementTokenValidity = await isManagementTokenValid((listOfTokens[managementTokenAlias].apiKey) ,listOfTokens[managementTokenAlias].token);
-      if(checkManagementTokenValidity.hasOwnProperty('message')) {
-        throw checkManagementTokenValidity.valid==='failedToCheck'?checkManagementTokenValidity.message:(`error: Management token or stack API key is invalid. ${checkManagementTokenValidity.message}`);
+      const checkManagementTokenValidity = await isManagementTokenValid(
+        listOfTokens[managementTokenAlias].apiKey,
+        listOfTokens[managementTokenAlias].token,
+      );
+      if (Object.prototype.hasOwnProperty.call(checkManagementTokenValidity, 'message')) {
+        throw checkManagementTokenValidity.valid === 'failedToCheck'
+          ? checkManagementTokenValidity.message
+          : `error: Management token or stack API key is invalid. ${checkManagementTokenValidity.message}`;
       }
       apiClient = await managementSDKClient({
         host: this.cmaHost,
@@ -393,13 +441,12 @@ class ExportToCsvCommand extends Command {
    * @param {object} stack
    * @param {string} taxUID
    */
-  async createTaxonomyAndTermCsvFile(stackAPIClient, stackName, stack, taxUID, delimiter) {
-    //TODO: Temp variable to export taxonomies in importable format will replaced with flag once decided
-    const importableCSV = true;
+  async createTaxonomyAndTermCsvFile(stackAPIClient, stackName, stack, taxUID, delimiter, localeOptions = {}) {
     const payload = {
       stackAPIClient,
       type: '',
       limit: config.limit || 100,
+      ...localeOptions, // Spread locale, branch, include_fallback, fallback_locale
     };
     //check whether the taxonomy is valid or not
     let taxonomies = [];
@@ -410,37 +457,14 @@ class ExportToCsvCommand extends Command {
     } else {
       taxonomies = await util.getAllTaxonomies(payload);
     }
-
-    if (!importableCSV) {
-      const formattedTaxonomiesData = util.formatTaxonomiesData(taxonomies);
-      if (formattedTaxonomiesData?.length) {
-        const fileName = `${stackName ? stackName : stack.name}_taxonomies.csv`;
-        util.write(this, formattedTaxonomiesData, fileName, 'taxonomies', delimiter);
-      } else {
-        cliux.print('info: No taxonomies found! Please provide a valid stack.', { color: 'blue' });
-      }
-
-      for (let index = 0; index < taxonomies?.length; index++) {
-        const taxonomy = taxonomies[index];
-        const taxonomyUID = taxonomy?.uid;
-        if (taxonomyUID) {
-          payload['taxonomyUID'] = taxonomyUID;
-          const terms = await util.getAllTermsOfTaxonomy(payload);
-          const formattedTermsData = util.formatTermsOfTaxonomyData(terms, taxonomyUID);
-          const taxonomyName = taxonomy?.name ?? '';
-          const termFileName = `${stackName ?? stack.name}_${taxonomyName}_${taxonomyUID}_terms.csv`;
-          if (formattedTermsData?.length) {
-            util.write(this, formattedTermsData, termFileName, 'terms', delimiter);
-          } else {
-            cliux.print(`info: No terms found for the taxonomy UID - '${taxonomyUID}'!`, { color: 'blue' });
-          }
-        }
-      }
+    
+    if (!taxonomies?.length) {
+      cliux.print('info: No taxonomies found!', { color: 'blue' });
     } else {
       const fileName = `${stackName ?? stack.name}_taxonomies.csv`;
       const { taxonomiesData, headers } = await util.createImportableCSV(payload, taxonomies);
       if (taxonomiesData?.length) {
-        util.write(this, taxonomiesData, fileName, 'taxonomies',delimiter, headers);
+        util.write(this, taxonomiesData, fileName, 'taxonomies', delimiter, headers);
       }
     }
   }
@@ -486,6 +510,16 @@ ExportToCsvCommand.examples = [
   '',
   'Exporting taxonomies and respective terms to a .CSV file with a delimiter',
   'csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --delimiter <delimiter>',
+  '',
+  'Exporting taxonomies with specific locale',
+  'csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --locale <locale>',
+  '',
+  'Exporting taxonomies with fallback locale support',
+  'csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --locale <locale> --include-fallback',
+  '',
+  'Exporting taxonomies with custom fallback locale',
+  'csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --locale <locale> --include-fallback --fallback-locale <fallback-locale>',
+  '',
 ];
 
 module.exports = ExportToCsvCommand;
