@@ -2130,4 +2130,444 @@ describe('ImportMarketplaceApps', () => {
       }
     });
   });
+
+  describe('Additional Coverage Tests for Uncovered Lines', () => {
+    beforeEach(() => {
+      importMarketplaceApps = new ImportMarketplaceApps(mockModuleClassParams);
+      importMarketplaceApps.appSdk = mockAppSdk;
+      importMarketplaceApps.nodeCrypto = new NodeCrypto({ encryptionKey: 'test-key' });
+    });
+
+    it('should handle updateAppsConfig with configuration success - uncovered success path', async () => {
+      const app = {
+        uid: 'test-uid',
+        status: 'active',
+        installation_uid: 'test-installation-uid',
+        manifest: { name: 'Test App', uid: 'test-manifest-uid' },
+        configuration: { encrypted: 'config-data' },
+        server_configuration: {},
+        target: { type: 'stack', uid: 'test-stack' },
+        ui_location: { locations: [] }
+      } as any;
+
+      // Mock successful configuration update with no message (success path - lines 650-652)
+      const setConfigStub = sandbox.stub();
+      setConfigStub.returns({
+        then: sandbox.stub().callsFake((callback) => {
+          callback({ data: {} }); // No message property means success
+          return { catch: sandbox.stub() };
+        })
+      });
+      mockAppSdk.marketplace().installation().setConfiguration = setConfigStub;
+
+      await importMarketplaceApps.updateAppsConfig(app);
+
+      expect(mockAppSdk.marketplace.calledWith('test-org-uid')).to.be.true;
+    });
+
+    it('should handle updateAppsConfig with configuration error - uncovered error path', async () => {
+      const app = {
+        uid: 'test-uid',
+        status: 'active',
+        installation_uid: 'test-installation-uid',
+        manifest: { name: 'Test App', uid: 'test-manifest-uid' },
+        configuration: { encrypted: 'config-data' },
+        server_configuration: {},
+        target: { type: 'stack', uid: 'test-stack' },
+        ui_location: { locations: [] }
+      } as any;
+
+      // Mock configuration update that throws an error in catch block (lines 654-658)
+      const setConfigStub = sandbox.stub();
+      setConfigStub.returns({
+        then: sandbox.stub().callsFake((callback) => {
+          callback({ data: { message: 'Configuration error' } });
+          return { 
+            catch: sandbox.stub().callsFake((errorCallback) => {
+              errorCallback(new Error('Configuration update failed'));
+            })
+          };
+        })
+      });
+      mockAppSdk.marketplace().installation().setConfiguration = setConfigStub;
+
+      await importMarketplaceApps.updateAppsConfig(app);
+
+      expect(mockAppSdk.marketplace.calledWith('test-org-uid')).to.be.true;
+    });
+
+    it('should handle updateAppsConfig with server configuration success - uncovered success path', async () => {
+      const app = {
+        uid: 'test-uid',
+        status: 'active',
+        installation_uid: 'test-installation-uid',
+        manifest: { name: 'Test App', uid: 'test-manifest-uid' },
+        configuration: {},
+        server_configuration: { encrypted: 'server-data' },
+        target: { type: 'stack', uid: 'test-stack' },
+        ui_location: { locations: [] }
+      } as any;
+
+      // Mock successful server configuration update with no message (success path - lines 672-674)
+      const setServerConfigStub = sandbox.stub();
+      setServerConfigStub.returns({
+        then: sandbox.stub().callsFake((callback) => {
+          callback({ data: {} }); // No message property means success
+          return { catch: sandbox.stub() };
+        })
+      });
+      mockAppSdk.marketplace().installation().setServerConfig = setServerConfigStub;
+
+      await importMarketplaceApps.updateAppsConfig(app);
+
+      expect(mockAppSdk.marketplace.calledWith('test-org-uid')).to.be.true;
+    });
+
+    it('should handle updateAppsConfig with server configuration error - uncovered error path', async () => {
+      const app = {
+        uid: 'test-uid',
+        status: 'active',
+        installation_uid: 'test-installation-uid',
+        manifest: { name: 'Test App', uid: 'test-manifest-uid' },
+        configuration: {},
+        server_configuration: { encrypted: 'server-data' },
+        target: { type: 'stack', uid: 'test-stack' },
+        ui_location: { locations: [] }
+      } as any;
+
+      // Mock server configuration update that throws an error in catch block (lines 676-680)
+      const setServerConfigStub = sandbox.stub();
+      setServerConfigStub.returns({
+        then: sandbox.stub().callsFake((callback) => {
+          callback({ data: { message: 'Server configuration error' } });
+          return { 
+            catch: sandbox.stub().callsFake((errorCallback) => {
+              errorCallback(new Error('Server configuration update failed'));
+            })
+          };
+        })
+      });
+      mockAppSdk.marketplace().installation().setServerConfig = setServerConfigStub;
+
+      await importMarketplaceApps.updateAppsConfig(app);
+
+      expect(mockAppSdk.marketplace.calledWith('test-org-uid')).to.be.true;
+    });
+
+    it('should handle getAndValidateEncryptionKey with no app config requiring encryption', async () => {
+      // Set up marketplace apps with no configuration requiring encryption
+      (importMarketplaceApps as any).marketplaceApps = [
+        { configuration: {}, server_configuration: {} }
+      ];
+
+      const result = await importMarketplaceApps.getAndValidateEncryptionKey('default-key');
+
+      expect(result).to.equal('default-key');
+    });
+
+    it('should handle getAndValidateEncryptionKey with server_configuration instead of configuration', async () => {
+      // Set up marketplace apps with only server_configuration
+      (importMarketplaceApps as any).marketplaceApps = [
+        { configuration: {}, server_configuration: { encrypted: 'server-data' } }
+      ];
+      interactiveStub.askEncryptionKey.resolves('user-key');
+
+      const result = await importMarketplaceApps.getAndValidateEncryptionKey('default-key');
+
+      expect(result).to.equal('user-key');
+    });
+
+    it('should handle updateManifestUILocations with location.meta but no meta.name', async () => {
+      const locations = [
+        {
+          meta: [
+            { extension_uid: 'ext-1' }, // no name property
+            { name: 'Test Extension', extension_uid: 'ext-2' }
+          ]
+        }
+      ];
+
+      const result = importMarketplaceApps.updateManifestUILocations(locations, 1);
+
+      expect(result).to.be.an('array');
+      expect(result[0].meta[0]).to.deep.equal({ extension_uid: 'ext-1' });
+    });
+
+    it('should handle updateManifestUILocations with location.meta and matching appOriginalName', async () => {
+      // Set appOriginalName
+      (importMarketplaceApps as any).appOriginalName = 'Test App';
+      
+      const locations = [
+        {
+          meta: [
+            { name: 'Test App', extension_uid: 'ext-1' },
+            { name: 'Other Extension', extension_uid: 'ext-2' }
+          ]
+        }
+      ];
+
+      const result = importMarketplaceApps.updateManifestUILocations(locations, 1);
+
+      expect(result).to.be.an('array');
+      expect(result[0].meta[0].name).to.not.equal('Test App');
+    });
+
+    it('should handle updateManifestUILocations with existing appNameMapping', async () => {
+      // Set appOriginalName and existing mapping
+      (importMarketplaceApps as any).appOriginalName = 'Test App';
+      (importMarketplaceApps as any).appNameMapping = { 'Test App': 'Existing Mapped Name' };
+      
+      const locations = [
+        {
+          meta: [
+            { name: 'Test App', extension_uid: 'ext-1' }
+          ]
+        }
+      ];
+
+      const result = importMarketplaceApps.updateManifestUILocations(locations, 1);
+
+      expect(result).to.be.an('array');
+      expect(result[0].meta[0].name).to.not.equal('Test App');
+    });
+
+    it('should handle appCreationCallback with no message and no uid in response', async () => {
+      const app = mockData.mockPrivateApps[0];
+      const response = { unexpected: 'format' }; // No message, no uid
+
+      const result = await importMarketplaceApps.appCreationCallback(app, response, 1);
+
+      expect(result).to.be.undefined;
+    });
+
+    it('should handle installApps with private app and canCreatePrivateApp false', async () => {
+      const app = {
+        ...mockData.mockMarketplaceApps[0],
+        manifest: { ...mockData.mockMarketplaceApps[0].manifest, visibility: 'private' }
+      };
+      mockImportConfig.canCreatePrivateApp = false;
+      importMarketplaceApps.importConfig = mockImportConfig;
+
+      await importMarketplaceApps.installApps(app);
+
+      expect(mockAppSdk.marketplace.called).to.be.false;
+    });
+
+    it('should handle installApps with existing app and no configuration - else branch', async () => {
+      const app = {
+        ...mockData.mockMarketplaceApps[0],
+        configuration: {},
+        server_configuration: {}
+      };
+      // Set installedApps so the app is found as existing
+      (importMarketplaceApps as any).installedApps = [app];
+
+      await importMarketplaceApps.installApps(app);
+
+      expect(mockAppSdk.marketplace.called).to.be.false;
+    });
+
+    it('should handle installApps with appUidMapping already set', async () => {
+      const app = mockData.mockMarketplaceApps[0];
+      // Set appUidMapping
+      (importMarketplaceApps as any).appUidMapping = { [app.manifest.uid]: 'mapped-uid' };
+
+      await importMarketplaceApps.installApps(app);
+
+      expect(mockAppSdk.marketplace.called).to.be.true;
+    });
+
+    it('should handle createPrivateApp with updateUiLocation true and empty locations', async () => {
+      const app = {
+        ...mockData.mockPrivateApps[0].manifest,
+        ui_location: { locations: [] }
+      };
+
+      // Mock the appCreationCallback to return the expected value
+      const appCreationCallbackStub = sandbox.stub(importMarketplaceApps, 'appCreationCallback').resolves('new-app-uid');
+
+      const result = await importMarketplaceApps.createPrivateApp(app, 1, true);
+
+      expect(result).to.equal('new-app-uid');
+      expect(appCreationCallbackStub.calledOnce).to.be.true;
+    });
+
+    it('should handle createPrivateApp with app name exactly 20 characters', async () => {
+      const app = {
+        ...mockData.mockPrivateApps[0].manifest,
+        name: '12345678901234567890' // exactly 20 characters
+      };
+
+      // Mock the appCreationCallback to return the expected value
+      const appCreationCallbackStub = sandbox.stub(importMarketplaceApps, 'appCreationCallback').resolves('new-app-uid');
+
+      const result = await importMarketplaceApps.createPrivateApp(app);
+
+      expect(result).to.equal('new-app-uid');
+      expect(app.name.length).to.equal(20);
+      expect(appCreationCallbackStub.calledOnce).to.be.true;
+    });
+
+    it('should handle appCreationCallback with user choosing to proceed despite error', async () => {
+      const app = mockData.mockPrivateApps[0];
+      const response = { message: 'Error occurred', statusText: 'error' };
+      cliuxStub.confirm.resolves(true); // User chooses to proceed
+
+      const result = await importMarketplaceApps.appCreationCallback(app, response, 1);
+
+      expect(result).to.be.undefined;
+      expect(cliuxStub.confirm.calledOnce).to.be.true;
+    });
+
+    it('should handle appCreationCallback with user choosing to exit due to error', async () => {
+      const app = mockData.mockPrivateApps[0];
+      const response = { message: 'Error occurred', statusText: 'error' };
+      cliuxStub.confirm.resolves(false); // User chooses to exit
+      const exitStub = sandbox.stub(process, 'exit');
+
+      const result = await importMarketplaceApps.appCreationCallback(app, response, 1);
+
+      expect(result).to.be.undefined;
+      expect(cliuxStub.confirm.calledOnce).to.be.true;
+      expect(exitStub.calledOnce).to.be.true;
+    });
+
+    it('should handle appCreationCallback with successful response containing name', async () => {
+      const app = mockData.mockPrivateApps[0];
+      const response = { uid: 'new-app-uid', name: 'Created App Name' };
+
+      const result = await importMarketplaceApps.appCreationCallback(app, response, 1);
+
+      expect(result).to.be.undefined; // The method doesn't return the uid
+      // Verify that the mappings were set correctly by accessing private properties
+      expect((importMarketplaceApps as any).appUidMapping[app.uid]).to.equal('new-app-uid');
+      expect((importMarketplaceApps as any).appNameMapping[(importMarketplaceApps as any).appOriginalName]).to.equal('Created App Name');
+    });
+
+    it('should handle updateManifestUILocations with location without meta', async () => {
+      const locations = [
+        { name: 'Location 1' }, // no meta property
+        { meta: [] as any[] } // empty meta array
+      ];
+
+      const result = importMarketplaceApps.updateManifestUILocations(locations, 1);
+
+      expect(result).to.be.an('array');
+      expect(result[0]).to.deep.equal(locations[0]);
+      expect(result[1]).to.deep.equal(locations[1]);
+    });
+
+    it('should handle generateUidMapper with no matching meta entries', async () => {
+      // Set up marketplace apps with UI locations
+      (importMarketplaceApps as any).marketplaceApps = [
+        {
+          manifest: { name: 'App 1' },
+          uid: 'app1',
+          ui_location: {
+            locations: [
+              {
+                meta: [
+                  { name: 'Extension 1', extension_uid: 'ext-1', uid: 'meta-1' }
+                ]
+              }
+            ]
+          }
+        }
+      ];
+
+      // Mock installed apps with different meta structure
+      marketplaceAppHelperStub.getAllStackSpecificApps.resolves([
+        {
+          manifest: { name: 'App 1' },
+          uid: 'app1',
+          ui_location: {
+            locations: [
+              {
+                meta: [
+                  { name: 'Different Extension', extension_uid: 'ext-2', uid: 'meta-2' }
+                ]
+              }
+            ]
+          }
+        }
+      ]);
+
+      const result = await importMarketplaceApps.generateUidMapper();
+
+      expect(result).to.be.an('object');
+      expect(Object.keys(result).length).to.equal(0);
+    });
+
+    it('should handle generateUidMapper with matching meta entries', async () => {
+      // Set up marketplace apps with UI locations
+      (importMarketplaceApps as any).marketplaceApps = [
+        {
+          manifest: { name: 'App 1' },
+          uid: 'app1',
+          ui_location: {
+            locations: [
+              {
+                meta: [
+                  { name: 'Extension 1', extension_uid: 'ext-1', uid: 'meta-1' }
+                ]
+              }
+            ]
+          }
+        }
+      ];
+
+      // Mock installed apps with matching meta
+      marketplaceAppHelperStub.getAllStackSpecificApps.resolves([
+        {
+          manifest: { name: 'App 1' },
+          uid: 'app1',
+          ui_location: {
+            locations: [
+              {
+                meta: [
+                  { name: 'Extension 1', extension_uid: 'ext-2', uid: 'meta-1' }
+                ]
+              }
+            ]
+          }
+        }
+      ]);
+
+      const result = await importMarketplaceApps.generateUidMapper();
+
+      expect(result).to.be.an('object');
+      expect(result['ext-1']).to.equal('ext-2');
+    });
+
+    it('should handle getAndValidateEncryptionKey with configuration instead of server_configuration', async () => {
+      // Set up marketplace apps with only configuration (not server_configuration)
+      (importMarketplaceApps as any).marketplaceApps = [
+        { configuration: { encrypted: 'config-data' }, server_configuration: {} }
+      ];
+      interactiveStub.askEncryptionKey.resolves('user-key');
+
+      const result = await importMarketplaceApps.getAndValidateEncryptionKey('default-key');
+
+      expect(result).to.equal('user-key');
+    });
+
+    it('should handle getAndValidateEncryptionKey with non-OSSL error', async () => {
+      // Set up marketplace apps with configuration
+      (importMarketplaceApps as any).marketplaceApps = [
+        { configuration: { encrypted: 'config-data' }, server_configuration: {} }
+      ];
+      interactiveStub.askEncryptionKey.resolves('user-key');
+      
+      // Mock NodeCrypto to throw a non-OSSL error
+      const nodeCryptoStub = {
+        decrypt: sandbox.stub().throws(new Error('Some other error'))
+      };
+      (importMarketplaceApps as any).nodeCrypto = nodeCryptoStub;
+
+      const result = await importMarketplaceApps.getAndValidateEncryptionKey('default-key');
+
+      expect(result).to.equal('user-key');
+    });
+
+  });
 });
