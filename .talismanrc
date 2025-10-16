@@ -113,4 +113,6 @@ fileignoreconfig:
   checksum: b11e57f1b824d405f86438e9e7c59183f8c59b66b42d8d16dbeaf76195a30548
 - filename: packages/contentstack-import/test/unit/utils/asset-helper.test.ts
   checksum: d45ae4939a98a7f50306408d5dc305c8513b54f5d539ddcb0e6bbbd4a97d9675
+- filename: packages/contentstack-import/test/unit/import/modules/marketplace-apps.test.ts
+  checksum: 773bf4b093d6cfb5c6254e3883d773e50cdff97434e04bd2dc9e543105708eb7
 version: "1.0"
