@@ -180,6 +180,11 @@ export default class ExportTaxonomies extends BaseClass {
           ...this.exportConfig.context,
           ...(localeCode && { locale: localeCode }),
         });
+        if (checkLocaleSupport) {
+          this.isLocaleBasedExportSupported = false;
+        }
+        // Break to avoid infinite retry loop on errors
+        break;
       }
     } while (true);
   }
