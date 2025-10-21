@@ -378,7 +378,7 @@ function getContentTypeCount(stackAPIClient) {
 }
 
 function exitProgram() {
-  debug('Exiting');
+  debug('Exiting...');
   // eslint-disable-next-line no-undef
   process.exit();
 }
@@ -460,7 +460,7 @@ function write(command, entries, fileName, message, delimiter, headers) {
     process.chdir(directory);
   }
   // eslint-disable-next-line no-undef
-  cliux.print(`Writing ${message} to file: "${process.cwd()}${delimeter}${fileName}"`);
+  cliux.print(`Writing '${message}' to file: "${process.cwd()}${delimeter}${fileName}"`);
   if (headers?.length) fastcsv.writeToPath(fileName, entries, { headers, delimiter });
   else fastcsv.writeToPath(fileName, entries, { headers: true, delimiter });
 }

@@ -349,7 +349,7 @@ class ExportToCsvCommand extends Command {
         token: listOfTokens[managementTokenAlias].token,
       };
     } else if (managementTokenAlias) {
-      this.error('Provided management token alias not found in your config.!');
+      this.error('The provided management token alias was not found in your configuration file.');
     }
     return {
       apiClient,
@@ -417,7 +417,7 @@ class ExportToCsvCommand extends Command {
         const fileName = `${stackName ? stackName : stack.name}_taxonomies.csv`;
         util.write(this, formattedTaxonomiesData, fileName, 'taxonomies', delimiter);
       } else {
-        cliux.print('info: No taxonomies found! Please provide a valid stack.', { color: 'blue' });
+        cliux.print('Info: No taxonomies found. Provide a valid stack to continue.', { color: 'blue' });
       }
 
       for (let index = 0; index < taxonomies?.length; index++) {
@@ -432,7 +432,7 @@ class ExportToCsvCommand extends Command {
           if (formattedTermsData?.length) {
             util.write(this, formattedTermsData, termFileName, 'terms', delimiter);
           } else {
-            cliux.print(`info: No terms found for the taxonomy UID - '${taxonomyUID}'!`, { color: 'blue' });
+            cliux.print(`Info: No terms found for taxonomy UID '${taxonomyUID}'.`, { color: 'blue' });
           }
         }
       }
