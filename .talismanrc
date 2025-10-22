@@ -115,4 +115,12 @@ fileignoreconfig:
   checksum: d45ae4939a98a7f50306408d5dc305c8513b54f5d539ddcb0e6bbbd4a97d9675
 - filename: packages/contentstack-import/test/unit/import/modules/marketplace-apps.test.ts
   checksum: 773bf4b093d6cfb5c6254e3883d773e50cdff97434e04bd2dc9e543105708eb7
+- filename: packages/contentstack-import/test/unit/import/modules/mock-data/entries/empty-environments.json
+  checksum: 1db7db30b8491f79f2881bb862986748c54f75d63d7ee6343517083f7e42a6bf
+- filename: packages/contentstack-import/test/unit/import/modules/mock-data/entries/environments.json
+  checksum: 17f94f500dcb265575b60f8d2cb7464372a234e452527b3bdec6052c606cee28
+- filename: packages/contentstack-import/test/unit/import/modules/entries.test.ts
+  checksum: 7b984d292a534f9d075d801de2aeff802b2832bc5e2efadf8613a7059f4317fc
+- filename: packages/contentstack-import/test/unit/import/modules/marketplace-apps.test.ts
+  checksum: 82ea6954ff0d925892de27d7a920e27183744dd40415ef32e1009a18aed87161
 version: "1.0"
