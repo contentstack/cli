@@ -1,0 +1,22 @@
+{
+  "env_1": {
+    "uid": "env_1",
+    "name": "production",
+    "urls": [
+      {
+        "locale": "en-us",
+        "url": "https://example.com"
+      }
+    ]
+  },
+  "env_2": {
+    "uid": "env_2",
+    "name": "staging",
+    "urls": [
+      {
+        "locale": "en-us",
+        "url": "https://staging.example.com"
+      }
+    ]
+  }
+}
