@@ -11,6 +11,13 @@ module.exports = async ({ migration, config }) => {
     successMessage: 'Changed master locale successfully for the given data',
     failMessage: 'Failed to execute successfully',
     task: async (params) => {
+      // Validate required config properties
+      if (!config.data_dir) {
+        throw new Error('config.data_dir is required but not provided');
+      }
+      if (!config.target_locale) {
+        throw new Error('config.target_locale is required but not provided');
+      }
       if (!supportedLocales[config.target_locale]) {
         throw new Error(
           'Please specify a supported language in config.json. For a list of all supported languages, refer to https://www.contentstack.com/docs/developers/multilingual-content/list-of-supported-languages',
@@ -28,6 +35,11 @@ module.exports = async ({ migration, config }) => {
           masterLocale = JSON.parse(masterLocale);
           masterLocale = Object.values(masterLocale);
           masterLocale = masterLocale[0]?.code;
+          
+          // Validate that we have a valid master locale code
+          if (!masterLocale) {
+            throw new Error('Unable to determine master locale code from master-locale.json');
+          }
         }
         locales = JSON.parse(locales);
         let id = crypto.randomBytes(8).toString('hex');
@@ -71,18 +83,37 @@ module.exports = async ({ migration, config }) => {
         for (let contentType of contentTypes) {
           let sourceMasterLocaleEntries, targetMasterLocaleEntries;
 
+          // Check if index.json exists (if no entries, index.json won't be created)
+          const indexFilePath = pathValidator(path.resolve(sanitizePath(config.data_dir), sanitizePath(`entries/${contentType}/${masterLocale}/index.json`)));
+          if (!existsSync(indexFilePath)) {
+            console.log(`Skipping ${contentType} - no index.json found (likely no entries)`);
+            continue;
+          }
+
           sourceMasterLocaleEntries = await fs.readFile(
-            pathValidator(path.resolve(sanitizePath(config.data_dir), sanitizePath(`entries/${contentType}/${masterLocale}/index.json`))),
+            indexFilePath,
             { encoding: 'utf8' },
           );
 
-          sourceMasterLocaleEntries = await fs.readFile(
-            pathValidator(
-              path.resolve(
-                sanitizePath(config.data_dir),
-                `entries/${sanitizePath(contentType)}/${sanitizePath(masterLocale)}/${Object.values(JSON.parse(sanitizePath(sourceMasterLocaleEntries)))}`,
-              ),
+          // Parse the index.json to get the entries file name
+          const indexData = JSON.parse(sourceMasterLocaleEntries);
+          const entriesFileName = Object.values(indexData)[0];
+          
+          // Check if we have a valid entries file name
+          if (!entriesFileName) {
+            console.log(`Skipping ${contentType} - no entries file found in index.json`);
+            continue;
+          }
+
+          const entriesFilePath = pathValidator(
+            path.resolve(
+              sanitizePath(config.data_dir),
+              `entries/${sanitizePath(contentType)}/${sanitizePath(masterLocale)}/${entriesFileName}`,
             ),
+          );
+
+          sourceMasterLocaleEntries = await fs.readFile(
+            entriesFilePath,
             { encoding: 'utf8' },
           );
           sourceMasterLocaleEntries = JSON.parse(sourceMasterLocaleEntries);
@@ -94,18 +125,23 @@ module.exports = async ({ migration, config }) => {
               { encoding: 'utf8', flag: 'a+' },
             );
             if (targetMasterLocaleEntries) {
-              targetMasterLocaleEntries = await fs.readFile(
-                pathValidator(
-                  path.resolve(
-                    config.data_dir,
-                    `entries/${contentType}/${config.target_locale}/${
-                      Object.values(JSON.parse(targetMasterLocaleEntries))[0]
-                    }`,
+              const targetIndexData = JSON.parse(targetMasterLocaleEntries);
+              const targetEntriesFileName = Object.values(targetIndexData)[0];
+              
+              if (targetEntriesFileName) {
+                targetMasterLocaleEntries = await fs.readFile(
+                  pathValidator(
+                    path.resolve(
+                      config.data_dir,
+                      `entries/${contentType}/${config.target_locale}/${targetEntriesFileName}`,
+                    ),
                   ),
-                ),
-                { encoding: 'utf8' },
-              );
-              targetMasterLocaleEntries = JSON.parse(targetMasterLocaleEntries);
+                  { encoding: 'utf8' },
+                );
+                targetMasterLocaleEntries = JSON.parse(targetMasterLocaleEntries);
+              } else {
+                targetMasterLocaleEntries = {};
+              }
             } else {
               targetMasterLocaleEntries = {};
             }
@@ -128,17 +164,21 @@ module.exports = async ({ migration, config }) => {
               pathValidator(path.resolve(config.data_dir, `entries/${contentType}/${config.target_locale}/index.json`)),
               { encoding: 'utf8', flag: 'a+' },
             );
-            await fs.writeFile(
-              pathValidator(
-                path.resolve(
-                  config.data_dir,
-                  `entries/${contentType}/${config.target_locale}/${
-                    Object.values(JSON.parse(exsitingTargetMasterLocalEntries))[0]
-                  }`,
+            
+            const existingIndexData = JSON.parse(exsitingTargetMasterLocalEntries);
+            const existingEntriesFileName = Object.values(existingIndexData)[0];
+            
+            if (existingEntriesFileName) {
+              await fs.writeFile(
+                pathValidator(
+                  path.resolve(
+                    config.data_dir,
+                    `entries/${contentType}/${config.target_locale}/${existingEntriesFileName}`,
+                  ),
                 ),
-              ),
-              JSON.stringify(targetMasterLocaleEntries),
-            );
+                JSON.stringify(targetMasterLocaleEntries),
+              );
+            }
           } else {
             const entryBasePath = path.join(config.data_dir, `entries`, contentType, config.target_locale);
             let entriesFileHelper = new FsUtility({
