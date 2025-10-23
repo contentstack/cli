@@ -3,6 +3,7 @@
 /* eslint-disable complexity */
 /* eslint-disable no-console */
 /* eslint-disable camelcase */
+const chalk = require('chalk');
 const { configHandler, cliux } = require('@contentstack/cli-utilities');
 const { getQueue } = require('../util/queue');
 const { performBulkUnPublish, UnpublishEntry, UnpublishAsset, initializeLogger } = require('../consumer/publish');
@@ -13,7 +14,7 @@ const entryQueue = getQueue();
 const assetQueue = getQueue();
 const { Command } = require('@contentstack/cli-command');
 const command = new Command();
-const { isEmpty } = require('../util');
+const { isEmpty, formatError } = require('../util');
 const { fetchBulkPublishLimit } = require('../util/common-utility');
 const { generateBulkPublishStatusUrl } = require('../util/generate-bulk-publish-url');
 const VARIANTS_UNPUBLISH_API_VERSION = '3.2';
@@ -217,7 +218,13 @@ async function getSyncEntries(
         syncData['content_type_uid'] = queryParamsObj.content_type_uid;
       }
 
-      const entriesResponse = await Stack.sync(syncData);
+      let entriesResponse;
+      try {
+        entriesResponse = await Stack.sync(syncData);
+      } catch (syncError) {
+        console.log(chalk.red(`Failed to sync from environment '${queryParamsObj.environment}' with error ${formatError(syncError)}`));
+        return reject(syncError);
+      }
       if (entriesResponse.items.length > 0) {
         if (variantsFlag) {
           queryParamsObj.apiVersion = VARIANTS_UNPUBLISH_API_VERSION;

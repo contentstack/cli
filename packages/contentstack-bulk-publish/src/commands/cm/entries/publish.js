@@ -88,16 +88,16 @@ class PublishEntriesCommand extends Command {
             updatedFlags.environment = updatedFlags['source-env'];
             updatedFlags.onlyEntries = true;
             if (updatedFlags.locales instanceof Array) {
-              updatedFlags.locales.forEach((locale) => {
+              for (const locale of updatedFlags.locales) {
                 updatedFlags.locale = locale;
-                publishFunction(startCrossPublish);
-              });
+                await publishFunction(startCrossPublish);
+              }
             } else {
-              updatedFlags.locale = locales;
-              publishFunction(startCrossPublish);
+              updatedFlags.locale = updatedFlags.locales;
+              await publishFunction(startCrossPublish);
             }
           } else {
-            publishFunction(startPublish);
+            await publishFunction(startPublish);
           }
         } catch (error) {
           let message = formatError(error);
