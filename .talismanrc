@@ -122,5 +122,5 @@ fileignoreconfig:
 - filename: packages/contentstack-import/test/unit/import/modules/entries.test.ts
   checksum: 7b984d292a534f9d075d801de2aeff802b2832bc5e2efadf8613a7059f4317fc
 - filename: packages/contentstack-import/test/unit/import/modules/marketplace-apps.test.ts
-  checksum: 82ea6954ff0d925892de27d7a920e27183744dd40415ef32e1009a18aed87161
+  checksum: 0d4db99c346e35f49c9da647b4e60c2e3c0203471772e1897affb71cb28f53d8
 version: "1.0"

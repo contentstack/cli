@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import ImportMarketplaceApps from '../../../../src/import/modules/marketplace-apps';
 import { ImportConfig, ModuleClassParams } from '../../../../src/types';
-import { NodeCrypto, cliux, isAuthenticated, marketplaceSDKClient } from '@contentstack/cli-utilities';
+import { NodeCrypto, cliux } from '@contentstack/cli-utilities';
 import { fsUtil, fileHelper } from '../../../../src/utils';
 import * as marketplaceAppHelper from '../../../../src/utils/marketplace-app-helper';
 import * as interactive from '../../../../src/utils/interactive';
@@ -186,6 +186,15 @@ describe('ImportMarketplaceApps', () => {
   describe('start() - Complete Flow', () => {
     it('should successfully complete the full start process', async () => {
       importMarketplaceApps = new ImportMarketplaceApps(mockModuleClassParams);
+
+      // Mock configHandler.get to return 'OAUTH' for authorisationType, making isAuthenticated() return true
+      const configHandler = require('@contentstack/cli-utilities').configHandler;
+      sandbox.stub(configHandler, 'get').callsFake((key) => {
+        if (key === 'authorisationType') {
+          return 'OAUTH'; // This will make isAuthenticated() return true
+        }
+        return 'some-value'; // Return something for other keys
+      });
 
       await importMarketplaceApps.start();
 
@@ -1661,6 +1670,17 @@ describe('ImportMarketplaceApps', () => {
     // });
 
     it('should handle errors during start process', async () => {
+      importMarketplaceApps = new ImportMarketplaceApps(mockModuleClassParams);
+      
+      // Mock configHandler.get to return 'OAUTH' for authorisationType, making isAuthenticated() return true
+      const configHandler = require('@contentstack/cli-utilities').configHandler;
+      sandbox.stub(configHandler, 'get').callsFake((key) => {
+        if (key === 'authorisationType') {
+          return 'OAUTH'; // This will make isAuthenticated() return true
+        }
+        return 'some-value'; // Return something for other keys
+      });
+      
       const error = new Error('Start process failed');
       sandbox.stub(importMarketplaceApps, 'getAndValidateEncryptionKey').rejects(error);
 
@@ -2193,6 +2213,17 @@ describe('ImportMarketplaceApps', () => {
     // });
 
     it('should handle network errors gracefully', async () => {
+      importMarketplaceApps = new ImportMarketplaceApps(mockModuleClassParams);
+      
+      // Mock configHandler.get to return 'OAUTH' for authorisationType, making isAuthenticated() return true
+      const configHandler = require('@contentstack/cli-utilities').configHandler;
+      sandbox.stub(configHandler, 'get').callsFake((key) => {
+        if (key === 'authorisationType') {
+          return 'OAUTH'; // This will make isAuthenticated() return true
+        }
+        return 'some-value'; // Return something for other keys
+      });
+      
       const error = new Error('Network error');
       marketplaceAppHelperStub.getAllStackSpecificApps.rejects(error);
 
