@@ -1,8 +1,8 @@
 fileignoreconfig:
 - filename: package-lock.json
-  checksum: a1a942a134a341af947c4c5f72dde02887feb5a58d46846527e156d47efea642
+  checksum: ac70357dfebdab2dc91150b19062310c825e48adcec59b857161d80a844fd814
 - filename: pnpm-lock.yaml
-  checksum: f54dd2edd773c8ba8953ffb30eec4a774ad538127956f4297215ec3f822a77f8
+  checksum: 945d2620b53b3eb7964e07a9b92ad87f3d6bba42bf932794d1c347e113d0e0f4
 - filename: packages/contentstack-import-setup/test/unit/backup-handler.test.ts
   checksum: 0582d62b88834554cf12951c8690a73ef3ddbb78b82d2804d994cf4148e1ef93
 - filename: packages/contentstack-import-setup/test/config.json
@@ -115,4 +115,12 @@ fileignoreconfig:
   checksum: d45ae4939a98a7f50306408d5dc305c8513b54f5d539ddcb0e6bbbd4a97d9675
 - filename: packages/contentstack-import/test/unit/import/modules/marketplace-apps.test.ts
   checksum: 773bf4b093d6cfb5c6254e3883d773e50cdff97434e04bd2dc9e543105708eb7
+- filename: packages/contentstack-import/test/unit/import/modules/mock-data/entries/empty-environments.json
+  checksum: 1db7db30b8491f79f2881bb862986748c54f75d63d7ee6343517083f7e42a6bf
+- filename: packages/contentstack-import/test/unit/import/modules/mock-data/entries/environments.json
+  checksum: 17f94f500dcb265575b60f8d2cb7464372a234e452527b3bdec6052c606cee28
+- filename: packages/contentstack-import/test/unit/import/modules/entries.test.ts
+  checksum: 7b984d292a534f9d075d801de2aeff802b2832bc5e2efadf8613a7059f4317fc
+- filename: packages/contentstack-import/test/unit/import/modules/marketplace-apps.test.ts
+  checksum: 0d4db99c346e35f49c9da647b4e60c2e3c0203471772e1897affb71cb28f53d8
 version: "1.0"
