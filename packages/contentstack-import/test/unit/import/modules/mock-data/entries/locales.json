@@ -1,0 +1,17 @@
+{
+  "en-us": {
+    "code": "en-us",
+    "name": "English (United States)",
+    "fallback_locale": null
+  },
+  "fr-fr": {
+    "code": "fr-fr",
+    "name": "French (France)",
+    "fallback_locale": "en-us"
+  },
+  "es-es": {
+    "code": "es-es",
+    "name": "Spanish (Spain)",
+    "fallback_locale": "en-us"
+  }
+}
