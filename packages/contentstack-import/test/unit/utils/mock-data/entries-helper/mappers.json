@@ -1,0 +1,17 @@
+{
+  "entriesUidMapper": {
+    "ref_entry_1": "new_ref_entry_1",
+    "ref_entry_2": "new_ref_entry_2",
+    "old_ref_entry_1": "new_old_ref_entry_1"
+  },
+  "assetUidMapper": {
+    "asset_1": "new_asset_1",
+    "asset_2": "new_asset_2",
+    "asset_3": "new_asset_3"
+  },
+  "assetUrlMapper": {
+    "https://old-asset-url.com/asset1.jpg": "https://new-asset-url.com/asset1.jpg",
+    "https://old-asset-url.com/asset2.jpg": "https://new-asset-url.com/asset2.jpg",
+    "https://old-asset-url.com/asset3.jpg": "https://new-asset-url.com/asset3.jpg"
+  }
+}
