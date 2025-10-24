@@ -248,6 +248,7 @@ async function getSyncEntries(
           destEnv,
           apiVersion,
           bulkPublishLimit,
+          variantsFlag,
           entriesResponse.pagination_token,
         );
       }, 3000);
