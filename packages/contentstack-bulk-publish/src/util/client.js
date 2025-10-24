@@ -6,6 +6,7 @@ async function getStack(data) {
   const options = {
     host: data.host,
     branchName: data.branch,
+    delayMs: data.delayMs,
   };
   const stackOptions = {};
   if (data.alias) {
