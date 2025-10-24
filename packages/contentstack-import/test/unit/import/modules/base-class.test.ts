@@ -86,7 +86,7 @@ describe('BaseClass', () => {
     };
 
     mockImportConfig = {
-      apiKey: 'test-api-key',
+      apiKey: 'test',
       contentDir: '/test/content',
       data: '/test/content',
       contentVersion: 1,
@@ -99,7 +99,7 @@ describe('BaseClass', () => {
         userId: 'user-123',
         email: 'test@example.com',
         sessionId: 'session-123',
-        apiKey: 'test-api-key',
+        apiKey: 'test',
         orgId: 'org-123',
         authenticationMethod: 'Management Token'
       },
