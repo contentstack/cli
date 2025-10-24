@@ -26,6 +26,7 @@ class CrossPublishCommand extends Command {
           host: this.cmaHost,
           cda: this.cdaHost,
           branch: crossPublishFlags.branch,
+          delayMs: updatedFlags.delayMs,
         };
         if (updatedFlags.alias) {
           try {

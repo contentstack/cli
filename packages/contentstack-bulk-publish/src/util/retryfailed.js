@@ -5,7 +5,7 @@ module.exports = async (filename, queue, Type) => {
   const logs = await getAllLogs(filename);
   if (logs.file.length > 0) {
     logs.file.forEach(async (log) => {
-      const stackOptions = {host: log.message.host };
+      const stackOptions = {host: log.message.host, delayMs: log.message.delayMs };
       if(log.message.alias) {
         stackOptions["alias"] = log.message.alias
       } else {
