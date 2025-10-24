@@ -34,6 +34,7 @@ class AssetsPublishCommand extends Command {
           host: this.cmaHost,
           cda: this.cdaHost,
           branch: assetsFlags.branch,
+          delayMs: updatedFlags.delayMs,
         };
         if (updatedFlags.alias) {
           // Validate management token alias.
