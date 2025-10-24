@@ -35,6 +35,7 @@ class UpdateAndPublishCommand extends Command {
           host: this.cmaHost,
           cda: this.cdaHost,
           branch: addFieldsFlags.branch,
+          delayMs: updatedFlags.delayMs,
         };
         if (updatedFlags.alias) {
           try {
