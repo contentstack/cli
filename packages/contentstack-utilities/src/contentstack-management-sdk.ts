@@ -20,6 +20,7 @@ class ManagementSDKInitiator {
       maxRequests: 10,
       retryLimit: 3,
       timeout: 60000,
+      delayMs: config.delayMs,
       httpsAgent: new Agent({
         maxSockets: 100,
         maxFreeSockets: 10,
