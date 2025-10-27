@@ -6,7 +6,7 @@
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@contentstack/cli-command": "~1.6.1",
-    "@contentstack/cli-utilities": "~1.14.1",
+    "@contentstack/cli-utilities": "~1.14.4",
     "@oclif/core": "^4.3.0",
     "@oclif/plugin-help": "^6.2.32",
     "fast-csv": "^4.3.6",
