@@ -20,7 +20,7 @@ importers:
       '@contentstack/cli-cm-clone': ~1.16.1
       '@contentstack/cli-cm-export': ~1.20.1
       '@contentstack/cli-cm-export-to-csv': ~1.9.1
-      '@contentstack/cli-cm-import': ~1.28.3
+      '@contentstack/cli-cm-import': ~1.28.4
       '@contentstack/cli-cm-import-setup': 1.6.0
       '@contentstack/cli-cm-migrate-rte': ~1.6.1
       '@contentstack/cli-cm-seed': ~1.12.2
@@ -90,9 +90,9 @@ importers:
       '@contentstack/cli-variants': link:../contentstack-variants
       '@contentstack/management': 1.22.0_debug@4.4.3
       '@oclif/core': 4.7.2
-      '@oclif/plugin-help': 6.2.33
-      '@oclif/plugin-not-found': 3.2.70_@types+node@14.18.63
-      '@oclif/plugin-plugins': 5.4.50
+      '@oclif/plugin-help': 6.2.34
+      '@oclif/plugin-not-found': 3.2.71_@types+node@14.18.63
+      '@oclif/plugin-plugins': 5.4.51
       chalk: 4.1.2
       debug: 4.4.3
       figlet: 1.8.1
@@ -114,13 +114,13 @@ importers:
       '@types/sinon': 10.0.20
       chai: 4.5.0
       eslint: 8.57.1
-      eslint-config-oclif: 6.0.110_avq3eyf5kaj6ssrwo7fvkrwnji
+      eslint-config-oclif: 6.0.114_avq3eyf5kaj6ssrwo7fvkrwnji
       eslint-config-oclif-typescript: 3.1.14_avq3eyf5kaj6ssrwo7fvkrwnji
       globby: 10.0.2
       mocha: 10.8.2
       nock: 13.5.6
       nyc: 15.1.0
-      oclif: 4.22.32_@types+node@14.18.63
+      oclif: 4.22.38_@types+node@14.18.63
       rimraf: 5.0.10
       shelljs: 0.10.0
       sinon: 19.0.5
@@ -163,8 +163,8 @@ importers:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/core': 4.7.2
-      '@oclif/plugin-help': 6.2.33
-      '@oclif/plugin-plugins': 5.4.50
+      '@oclif/plugin-help': 6.2.34
+      '@oclif/plugin-plugins': 5.4.51
       chalk: 4.1.2
       fast-csv: 4.3.6
       fs-extra: 11.3.2
@@ -180,11 +180,11 @@ importers:
       '@types/uuid': 9.0.8
       chai: 4.5.0
       eslint: 8.57.1
-      eslint-config-oclif: 6.0.110_k2rwabtyo525wwqr6566umnmhy
+      eslint-config-oclif: 6.0.114_k2rwabtyo525wwqr6566umnmhy
       eslint-config-oclif-typescript: 3.1.14_k2rwabtyo525wwqr6566umnmhy
       mocha: 10.8.2
       nyc: 15.1.0
-      oclif: 4.22.32_@types+node@20.19.23
+      oclif: 4.22.38_@types+node@20.19.23
       shx: 0.4.0
       sinon: 19.0.5
       ts-node: 10.9.2_vburyywbnr74ar467nlu2aqn2u
@@ -219,7 +219,7 @@ importers:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/core': 4.7.2
-      '@oclif/plugin-help': 6.2.33
+      '@oclif/plugin-help': 6.2.34
       otplib: 12.0.1
     devDependencies:
       '@fancy-test/nock': 0.1.1
@@ -236,7 +236,7 @@ importers:
       eslint-config-oclif-typescript: 3.1.14_avq3eyf5kaj6ssrwo7fvkrwnji
       mocha: 10.8.2
       nyc: 15.1.0
-      oclif: 4.22.32_@types+node@14.18.63
+      oclif: 4.22.38_@types+node@14.18.63
       sinon: 19.0.5
       ts-node: 10.9.2_ogreqof3k35xezedraj6pnd45y
       typescript: 4.9.5
@@ -271,7 +271,7 @@ importers:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/core': 4.7.2
-      '@oclif/plugin-help': 6.2.33
+      '@oclif/plugin-help': 6.2.34
       inquirer: 8.2.6
       mkdirp: 1.0.4
       tar: 6.2.1
@@ -283,11 +283,11 @@ importers:
       '@types/tar': 6.1.13
       chai: 4.5.0
       eslint: 8.57.1
-      eslint-config-oclif: 6.0.110_avq3eyf5kaj6ssrwo7fvkrwnji
+      eslint-config-oclif: 6.0.114_avq3eyf5kaj6ssrwo7fvkrwnji
       eslint-config-oclif-typescript: 3.1.14_avq3eyf5kaj6ssrwo7fvkrwnji
       mocha: 10.8.2
       nyc: 15.1.0
-      oclif: 4.22.32_@types+node@14.18.63
+      oclif: 4.22.38_@types+node@14.18.63
       tmp: 0.2.5
       ts-node: 8.10.2_typescript@4.9.5
       typescript: 4.9.5
@@ -318,7 +318,7 @@ importers:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/core': 4.7.2
-      '@oclif/plugin-help': 6.2.33
+      '@oclif/plugin-help': 6.2.34
       chalk: 4.1.2
       just-diff: 6.0.2
       lodash: 4.17.21
@@ -329,10 +329,10 @@ importers:
       dotenv: 16.6.1
       dotenv-expand: 9.0.0
       eslint: 8.57.1
-      eslint-config-oclif: 6.0.110_avq3eyf5kaj6ssrwo7fvkrwnji
+      eslint-config-oclif: 6.0.114_avq3eyf5kaj6ssrwo7fvkrwnji
       mocha: 10.8.2
       nyc: 15.1.0
-      oclif: 4.22.32
+      oclif: 4.22.38
       sinon: 19.0.5
       ts-node: 10.9.2_typescript@4.9.5
       typescript: 4.9.5
@@ -361,7 +361,7 @@ importers:
       '@contentstack/cli-config': link:../contentstack-config
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/core': 4.7.2
-      '@oclif/plugin-help': 6.2.33
+      '@oclif/plugin-help': 6.2.34
       chalk: 4.1.2
       dotenv: 16.6.1
       inquirer: 8.2.6
@@ -371,16 +371,16 @@ importers:
       '@oclif/test': 4.1.14_@oclif+core@4.7.2
       chai: 4.5.0
       eslint: 8.57.1
-      eslint-config-oclif: 6.0.110_eslint@8.57.1
+      eslint-config-oclif: 6.0.114_eslint@8.57.1
       mocha: 10.8.2
       nyc: 15.1.0
-      oclif: 4.22.32
+      oclif: 4.22.38
 
   packages/contentstack-clone:
     specifiers:
       '@colors/colors': ^1.6.0
       '@contentstack/cli-cm-export': ~1.20.1
-      '@contentstack/cli-cm-import': ~1.28.3
+      '@contentstack/cli-cm-import': ~1.28.4
       '@contentstack/cli-command': ~1.6.1
       '@contentstack/cli-utilities': ~1.14.4
       '@oclif/core': ^4.3.0
@@ -408,7 +408,7 @@ importers:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/core': 4.7.2
-      '@oclif/plugin-help': 6.2.33
+      '@oclif/plugin-help': 6.2.34
       chalk: 4.1.2
       inquirer: 8.2.6
       lodash: 4.17.21
@@ -421,10 +421,10 @@ importers:
       '@oclif/test': 4.1.14_@oclif+core@4.7.2
       chai: 4.5.0
       eslint: 8.57.1
-      eslint-config-oclif: 6.0.110_eslint@8.57.1
+      eslint-config-oclif: 6.0.114_eslint@8.57.1
       mocha: 10.8.2
       nyc: 15.1.0
-      oclif: 4.22.32
+      oclif: 4.22.38
       sinon: 19.0.5
 
   packages/contentstack-command:
@@ -447,7 +447,7 @@ importers:
     dependencies:
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/core': 4.7.2
-      '@oclif/plugin-help': 6.2.33
+      '@oclif/plugin-help': 6.2.34
       contentstack: 3.26.2
     devDependencies:
       '@oclif/test': 4.1.14_@oclif+core@4.7.2
@@ -455,7 +455,7 @@ importers:
       '@types/mocha': 8.2.3
       '@types/node': 14.18.63
       eslint: 8.57.1
-      eslint-config-oclif: 6.0.110_avq3eyf5kaj6ssrwo7fvkrwnji
+      eslint-config-oclif: 6.0.114_avq3eyf5kaj6ssrwo7fvkrwnji
       eslint-config-oclif-typescript: 3.1.14_avq3eyf5kaj6ssrwo7fvkrwnji
       mocha: 10.8.2
       nyc: 15.1.0
@@ -488,7 +488,7 @@ importers:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/core': 4.7.2
-      '@oclif/plugin-help': 6.2.33
+      '@oclif/plugin-help': 6.2.34
       lodash: 4.17.21
     devDependencies:
       '@oclif/test': 4.1.14_@oclif+core@4.7.2
@@ -498,11 +498,11 @@ importers:
       '@types/sinon': 10.0.20
       chai: 4.5.0
       eslint: 8.57.1
-      eslint-config-oclif: 6.0.110_avq3eyf5kaj6ssrwo7fvkrwnji
+      eslint-config-oclif: 6.0.114_avq3eyf5kaj6ssrwo7fvkrwnji
       eslint-config-oclif-typescript: 3.1.14_avq3eyf5kaj6ssrwo7fvkrwnji
       mocha: 10.8.2
       nyc: 15.1.0
-      oclif: 4.22.32_@types+node@14.18.63
+      oclif: 4.22.38_@types+node@14.18.63
       sinon: 19.0.5
       ts-node: 10.9.2_ogreqof3k35xezedraj6pnd45y
       typescript: 4.9.5
@@ -584,7 +584,7 @@ importers:
       '@contentstack/cli-auth': link:../contentstack-auth
       '@contentstack/cli-config': link:../contentstack-config
       '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
-      '@oclif/plugin-help': 6.2.33
+      '@oclif/plugin-help': 6.2.34
       '@oclif/test': 4.1.14_@oclif+core@4.7.2
       '@types/big-json': 3.2.5
       '@types/mkdirp': 1.0.2
@@ -592,10 +592,10 @@ importers:
       dotenv: 16.6.1
       dotenv-expand: 9.0.0
       eslint: 8.57.1
-      eslint-config-oclif: 6.0.110_avq3eyf5kaj6ssrwo7fvkrwnji
+      eslint-config-oclif: 6.0.114_avq3eyf5kaj6ssrwo7fvkrwnji
       mocha: 10.8.2
       nyc: 15.1.0
-      oclif: 4.22.32
+      oclif: 4.22.38
       ts-node: 10.9.2_typescript@4.9.5
       typescript: 4.9.5
 
@@ -623,7 +623,7 @@ importers:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/core': 4.7.2
-      '@oclif/plugin-help': 6.2.33
+      '@oclif/plugin-help': 6.2.34
       fast-csv: 4.3.6
       inquirer: 8.2.7
       inquirer-checkbox-plus-prompt: 1.4.2_inquirer@8.2.7
@@ -635,10 +635,10 @@ importers:
       chai: 4.5.0
       debug: 4.4.3
       eslint: 7.32.0
-      eslint-config-oclif: 6.0.110_eslint@7.32.0
+      eslint-config-oclif: 6.0.114_eslint@7.32.0
       mocha: 10.8.2
       nyc: 15.1.0
-      oclif: 4.22.32
+      oclif: 4.22.38
 
   packages/contentstack-import:
     specifiers:
@@ -711,10 +711,10 @@ importers:
       '@types/uuid': 9.0.8
       '@typescript-eslint/eslint-plugin': 5.62.0_avq3eyf5kaj6ssrwo7fvkrwnji
       eslint: 8.57.1
-      eslint-config-oclif: 6.0.110_avq3eyf5kaj6ssrwo7fvkrwnji
+      eslint-config-oclif: 6.0.114_avq3eyf5kaj6ssrwo7fvkrwnji
       mocha: 10.8.2
       nyc: 15.1.0
-      oclif: 4.22.32_@types+node@14.18.63
+      oclif: 4.22.38_@types+node@14.18.63
       rewire: 9.0.1
       ts-node: 10.9.2_ogreqof3k35xezedraj6pnd45y
       typescript: 4.9.5
@@ -777,10 +777,10 @@ importers:
       '@typescript-eslint/eslint-plugin': 5.62.0_avq3eyf5kaj6ssrwo7fvkrwnji
       chai: 4.5.0
       eslint: 8.57.1
-      eslint-config-oclif: 6.0.110_avq3eyf5kaj6ssrwo7fvkrwnji
+      eslint-config-oclif: 6.0.114_avq3eyf5kaj6ssrwo7fvkrwnji
       mocha: 10.8.2
       nyc: 15.1.0
-      oclif: 4.22.32_@types+node@14.18.63
+      oclif: 4.22.38_@types+node@14.18.63
       rewire: 9.0.1
       ts-node: 10.9.2_ogreqof3k35xezedraj6pnd45y
       tsx: 4.20.6
@@ -813,7 +813,7 @@ importers:
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/json-rte-serializer': 2.1.0
       '@oclif/core': 4.7.2
-      '@oclif/plugin-help': 6.2.33
+      '@oclif/plugin-help': 6.2.34
       chalk: 4.1.2
       collapse-whitespace: 1.1.7
       jsdom: 20.0.3
@@ -826,10 +826,10 @@ importers:
       '@oclif/test': 4.1.14_@oclif+core@4.7.2
       chai: 4.5.0
       eslint: 8.57.1
-      eslint-config-oclif: 6.0.110_eslint@8.57.1
+      eslint-config-oclif: 6.0.114_eslint@8.57.1
       mocha: 10.8.2
       nyc: 15.1.0
-      oclif: 4.22.32
+      oclif: 4.22.38
 
   packages/contentstack-migration:
     specifiers:
@@ -856,7 +856,7 @@ importers:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/core': 4.7.2
-      '@oclif/plugin-help': 6.2.33
+      '@oclif/plugin-help': 6.2.34
       async: 3.2.6
       callsites: 3.1.0
       cardinal: 2.1.1
@@ -868,15 +868,15 @@ importers:
       '@oclif/test': 4.1.14_@oclif+core@4.7.2
       chai: 4.5.0
       eslint: 8.57.1
-      eslint-config-oclif: 6.0.110_eslint@8.57.1
+      eslint-config-oclif: 6.0.114_eslint@8.57.1
       jsdoc-to-markdown: 8.0.3
       nock: 13.5.6
       nyc: 15.1.0
-      oclif: 4.22.32
+      oclif: 4.22.38
 
   packages/contentstack-seed:
     specifiers:
-      '@contentstack/cli-cm-import': ~1.28.3
+      '@contentstack/cli-cm-import': ~1.28.4
       '@contentstack/cli-command': ~1.6.1
       '@contentstack/cli-utilities': ~1.14.4
       '@contentstack/management': ~1.22.0
@@ -917,10 +917,10 @@ importers:
       '@types/tmp': 0.2.6
       axios: 1.12.2
       eslint: 8.57.1
-      eslint-config-oclif: 6.0.110_avq3eyf5kaj6ssrwo7fvkrwnji
+      eslint-config-oclif: 6.0.114_avq3eyf5kaj6ssrwo7fvkrwnji
       eslint-config-oclif-typescript: 3.1.14_avq3eyf5kaj6ssrwo7fvkrwnji
       jest: 29.7.0_gmerzvnqkqd6hvbwzqmybfpwqi
-      oclif: 4.22.32_@types+node@14.18.63
+      oclif: 4.22.38_@types+node@14.18.63
       ts-jest: 29.4.5_67xnt3v64q2pgz6kguni4h37hu
       ts-node: 8.10.2_typescript@4.9.5
       typescript: 4.9.5
@@ -1013,7 +1013,7 @@ importers:
       '@types/traverse': 0.6.37
       chai: 4.5.0
       eslint: 8.57.1
-      eslint-config-oclif: 6.0.110_avq3eyf5kaj6ssrwo7fvkrwnji
+      eslint-config-oclif: 6.0.114_avq3eyf5kaj6ssrwo7fvkrwnji
       eslint-config-oclif-typescript: 3.1.14_avq3eyf5kaj6ssrwo7fvkrwnji
       fancy-test: 2.0.42
       mocha: 10.8.2
@@ -1040,7 +1040,7 @@ importers:
     dependencies:
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/core': 4.7.2
-      '@oclif/plugin-help': 6.2.33
+      '@oclif/plugin-help': 6.2.34
       lodash: 4.17.21
       mkdirp: 1.0.4
       winston: 3.18.3
@@ -1154,14 +1154,14 @@ packages:
       tslib: 2.8.1
     dev: true
 
-  /@aws-sdk/client-cloudfront/3.916.0:
-    resolution: {integrity: sha512-5EnPpehyVkyyeRDUkaWZrAizkbKw0Awp8L6349UBFKh+GfHQdfh+ETU+mKUYyPqmvMd6uRWxIkrbDvPE0nJj+A==}
+  /@aws-sdk/client-cloudfront/3.917.0:
+    resolution: {integrity: sha512-ZnbhUpnVWh/E0wWw0PygCq8fj7Pytun29Pu3PqIl6Qh9d0XU5kx0Ecis0vNi9HWqj/jmJ5+UDiUcVxC2ft0Utw==}
     engines: {node: '>=18.0.0'}
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
       '@aws-sdk/core': 3.916.0
-      '@aws-sdk/credential-provider-node': 3.916.0
+      '@aws-sdk/credential-provider-node': 3.917.0
       '@aws-sdk/middleware-host-header': 3.914.0
       '@aws-sdk/middleware-logger': 3.914.0
       '@aws-sdk/middleware-recursion-detection': 3.914.0
@@ -1204,17 +1204,17 @@ packages:
       - aws-crt
     dev: true
 
-  /@aws-sdk/client-s3/3.916.0:
-    resolution: {integrity: sha512-myfO8UkJzF3wxLUV1cKzzxI1oVOe+tsEyUypFt8yrs0WT0usNfjpUOmA4XNjp/wRClpImkEHT0XC1p6xQCuktQ==}
+  /@aws-sdk/client-s3/3.917.0:
+    resolution: {integrity: sha512-3L73mDCpH7G0koFv3p3WkkEKqC5wn2EznKtNMrJ6hczPIr2Cu6DJz8VHeTZp9wFZLPrIBmh3ZW1KiLujT5Fd2w==}
     engines: {node: '>=18.0.0'}
     dependencies:
       '@aws-crypto/sha1-browser': 5.2.0
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
       '@aws-sdk/core': 3.916.0
-      '@aws-sdk/credential-provider-node': 3.916.0
+      '@aws-sdk/credential-provider-node': 3.917.0
       '@aws-sdk/middleware-bucket-endpoint': 3.914.0
-      '@aws-sdk/middleware-expect-continue': 3.916.0
+      '@aws-sdk/middleware-expect-continue': 3.917.0
       '@aws-sdk/middleware-flexible-checksums': 3.916.0
       '@aws-sdk/middleware-host-header': 3.914.0
       '@aws-sdk/middleware-location-constraint': 3.914.0
@@ -1361,8 +1361,8 @@ packages:
       tslib: 2.8.1
     dev: true
 
-  /@aws-sdk/credential-provider-ini/3.916.0:
-    resolution: {integrity: sha512-iR0FofvdPs87o6MhfNPv0F6WzB4VZ9kx1hbvmR7bSFCk7l0gc7G4fHJOg4xg2lsCptuETboX3O/78OQ2Djeakw==}
+  /@aws-sdk/credential-provider-ini/3.917.0:
+    resolution: {integrity: sha512-rvQ0QamLySRq+Okc0ZqFHZ3Fbvj3tYuWNIlzyEKklNmw5X5PM1idYKlOJflY2dvUGkIqY3lUC9SC2WL+1s7KIw==}
     engines: {node: '>=18.0.0'}
     dependencies:
       '@aws-sdk/core': 3.916.0
@@ -1370,7 +1370,7 @@ packages:
       '@aws-sdk/credential-provider-http': 3.916.0
       '@aws-sdk/credential-provider-process': 3.916.0
       '@aws-sdk/credential-provider-sso': 3.916.0
-      '@aws-sdk/credential-provider-web-identity': 3.916.0
+      '@aws-sdk/credential-provider-web-identity': 3.917.0
       '@aws-sdk/nested-clients': 3.916.0
       '@aws-sdk/types': 3.914.0
       '@smithy/credential-provider-imds': 4.2.3
@@ -1382,16 +1382,16 @@ packages:
       - aws-crt
     dev: true
 
-  /@aws-sdk/credential-provider-node/3.916.0:
-    resolution: {integrity: sha512-8TrMpHqct0zTalf2CP2uODiN/PH9LPdBC6JDgPVK0POELTT4ITHerMxIhYGEiKN+6E4oRwSjM/xVTHCD4nMcrQ==}
+  /@aws-sdk/credential-provider-node/3.917.0:
+    resolution: {integrity: sha512-n7HUJ+TgU9wV/Z46yR1rqD9hUjfG50AKi+b5UXTlaDlVD8bckg40i77ROCllp53h32xQj/7H0yBIYyphwzLtmg==}
     engines: {node: '>=18.0.0'}
     dependencies:
       '@aws-sdk/credential-provider-env': 3.916.0
       '@aws-sdk/credential-provider-http': 3.916.0
-      '@aws-sdk/credential-provider-ini': 3.916.0
+      '@aws-sdk/credential-provider-ini': 3.917.0
       '@aws-sdk/credential-provider-process': 3.916.0
       '@aws-sdk/credential-provider-sso': 3.916.0
-      '@aws-sdk/credential-provider-web-identity': 3.916.0
+      '@aws-sdk/credential-provider-web-identity': 3.917.0
       '@aws-sdk/types': 3.914.0
       '@smithy/credential-provider-imds': 4.2.3
       '@smithy/property-provider': 4.2.3
@@ -1430,8 +1430,8 @@ packages:
       - aws-crt
     dev: true
 
-  /@aws-sdk/credential-provider-web-identity/3.916.0:
-    resolution: {integrity: sha512-VFnL1EjHiwqi2kR19MLXjEgYBuWViCuAKLGSFGSzfFF/+kSpamVrOSFbqsTk8xwHan8PyNnQg4BNuusXwwLoIw==}
+  /@aws-sdk/credential-provider-web-identity/3.917.0:
+    resolution: {integrity: sha512-pZncQhFbwW04pB0jcD5OFv3x2gAddDYCVxyJVixgyhSw7bKCYxqu6ramfq1NxyVpmm+qsw+ijwi/3cCmhUHF/A==}
     engines: {node: '>=18.0.0'}
     dependencies:
       '@aws-sdk/core': 3.916.0
@@ -1458,8 +1458,8 @@ packages:
       tslib: 2.8.1
     dev: true
 
-  /@aws-sdk/middleware-expect-continue/3.916.0:
-    resolution: {integrity: sha512-p7TMLZZ/j5NbC7/cz7xNgxLz/OHYuh91MeCZdCedJiyh3rx6gunFtl9eiDtrh+Y8hjs0EwR0zYIuhd6pL1O8zg==}
+  /@aws-sdk/middleware-expect-continue/3.917.0:
+    resolution: {integrity: sha512-UPBq1ZP2CaxwbncWSbVqkhYXQrmfNiqAtHyBxi413hjRVZ4JhQ1UyH7pz5yqiG8zx2/+Po8cUD4SDUwJgda4nw==}
     engines: {node: '>=18.0.0'}
     dependencies:
       '@aws-sdk/types': 3.914.0
@@ -2074,7 +2074,7 @@ packages:
     dependencies:
       '@contentstack/cli-utilities': 1.14.3_debug@4.4.3
       '@oclif/core': 4.7.2
-      '@oclif/plugin-help': 6.2.33
+      '@oclif/plugin-help': 6.2.34
       contentstack: 3.26.2
     transitivePeerDependencies:
       - debug
@@ -2089,9 +2089,9 @@ packages:
       '@contentstack/cli-command': 1.6.1_debug@4.4.3
       '@contentstack/cli-utilities': 1.14.3_debug@4.4.3
       '@oclif/core': 4.7.2
-      '@oclif/plugin-help': 6.2.33
-      '@oclif/plugin-plugins': 5.4.50
-      '@rollup/plugin-commonjs': 28.0.8_rollup@4.52.5
+      '@oclif/plugin-help': 6.2.34
+      '@oclif/plugin-plugins': 5.4.51
+      '@rollup/plugin-commonjs': 28.0.9_rollup@4.52.5
       '@rollup/plugin-json': 6.1.0_rollup@4.52.5
       '@rollup/plugin-node-resolve': 16.0.3_rollup@4.52.5
       '@rollup/plugin-typescript': 12.3.0_y3mjwtuvsssgu73dtiy7sqc5gu
@@ -3899,14 +3899,14 @@ packages:
       wordwrap: 1.0.0
       wrap-ansi: 7.0.0
 
-  /@oclif/plugin-help/6.2.33:
-    resolution: {integrity: sha512-9L07S61R0tuXrURdLcVtjF79Nbyv3qGplJ88DVskJBxShbROZl3hBG7W/CNltAK3cnMPlXV8K3kKh+C0N0p4xw==}
+  /@oclif/plugin-help/6.2.34:
+    resolution: {integrity: sha512-RvcDSp1PcXFuPJx8IvkI1sQKAPp7TuR+4QVg+uS+Dv3xG6QSqGW5IMNBdvfmB2NLrvSeIiDHadLv/bz9n4iQWQ==}
     engines: {node: '>=18.0.0'}
     dependencies:
       '@oclif/core': 4.7.2
 
-  /@oclif/plugin-not-found/3.2.70:
-    resolution: {integrity: sha512-pFU32i0hpOrpb2k+HXTp2MuGB/FaaTDrbCkbcoA+0uxjGAqhifxCJlDLZI/BCjsjd0nKJ0pZEDbiIAA6+2oKoA==}
+  /@oclif/plugin-not-found/3.2.71:
+    resolution: {integrity: sha512-Vp93vWBzAyZFYtovQtAH3lBAtJE8Z0XUYu1/3uN2Y1kE7ywCNnivaEYRw8n4D3G4uF1g4GaXKAQP+HiYL/d2Ug==}
     engines: {node: '>=18.0.0'}
     dependencies:
       '@inquirer/prompts': 7.9.0
@@ -3917,8 +3917,8 @@ packages:
       - '@types/node'
     dev: true
 
-  /@oclif/plugin-not-found/3.2.70_@types+node@14.18.63:
-    resolution: {integrity: sha512-pFU32i0hpOrpb2k+HXTp2MuGB/FaaTDrbCkbcoA+0uxjGAqhifxCJlDLZI/BCjsjd0nKJ0pZEDbiIAA6+2oKoA==}
+  /@oclif/plugin-not-found/3.2.71_@types+node@14.18.63:
+    resolution: {integrity: sha512-Vp93vWBzAyZFYtovQtAH3lBAtJE8Z0XUYu1/3uN2Y1kE7ywCNnivaEYRw8n4D3G4uF1g4GaXKAQP+HiYL/d2Ug==}
     engines: {node: '>=18.0.0'}
     dependencies:
       '@inquirer/prompts': 7.9.0_@types+node@14.18.63
@@ -3928,8 +3928,8 @@ packages:
     transitivePeerDependencies:
       - '@types/node'
 
-  /@oclif/plugin-not-found/3.2.70_@types+node@20.19.23:
-    resolution: {integrity: sha512-pFU32i0hpOrpb2k+HXTp2MuGB/FaaTDrbCkbcoA+0uxjGAqhifxCJlDLZI/BCjsjd0nKJ0pZEDbiIAA6+2oKoA==}
+  /@oclif/plugin-not-found/3.2.71_@types+node@20.19.23:
+    resolution: {integrity: sha512-Vp93vWBzAyZFYtovQtAH3lBAtJE8Z0XUYu1/3uN2Y1kE7ywCNnivaEYRw8n4D3G4uF1g4GaXKAQP+HiYL/d2Ug==}
     engines: {node: '>=18.0.0'}
     dependencies:
       '@inquirer/prompts': 7.9.0_@types+node@20.19.23
@@ -3940,8 +3940,8 @@ packages:
       - '@types/node'
     dev: true
 
-  /@oclif/plugin-plugins/5.4.50:
-    resolution: {integrity: sha512-HNhmmgxH0xoFsYKubtWWhgSasbDEyoT+o/q5QDljiytNvqWP3wWiP6cqqWvGpKG2El7+g17crdWpv4jzrf3Lyg==}
+  /@oclif/plugin-plugins/5.4.51:
+    resolution: {integrity: sha512-n9WT0MSw6mQyZOAiMeRDZIhz3l1OKbkyviR5IEWgrkP0lKZz5+0t3jWKHLp45US1sg/42YWzkuo7/m4MLvfxkQ==}
     engines: {node: '>=18.0.0'}
     dependencies:
       '@oclif/core': 4.7.2
@@ -3959,8 +3959,8 @@ packages:
       - supports-color
     dev: false
 
-  /@oclif/plugin-warn-if-update-available/3.1.50:
-    resolution: {integrity: sha512-JAN0qm5z4FrgZ5i1K1vDGCglOTYrdHtSwSi0R6EAqv0SlrlY5ZKDqpRFklT0i2KGr4M6XPoDr1QiDsZbpN62EQ==}
+  /@oclif/plugin-warn-if-update-available/3.1.51:
+    resolution: {integrity: sha512-++PpRVemEasTc8X54EL4Td0BQz+DzRilWofUxmzVHnZGJsXcM8e9VdoKkrk5yUs/7sO+MqJm17Yvsk7JHqcN3A==}
     engines: {node: '>=18.0.0'}
     dependencies:
       '@oclif/core': 4.7.2
@@ -4045,8 +4045,8 @@ packages:
       config-chain: 1.1.13
     dev: true
 
-  /@rollup/plugin-commonjs/28.0.8_rollup@4.52.5:
-    resolution: {integrity: sha512-o1Ug9PxYsF61R7/NXO/GgMZZproLd/WH2XA53Tp9ppf6bU1lMlTtC/gUM6zM3mesi2E0rypk+PNtVrELREyWEQ==}
+  /@rollup/plugin-commonjs/28.0.9_rollup@4.52.5:
+    resolution: {integrity: sha512-PIR4/OHZ79romx0BVVll/PkwWpJ7e5lsqFa3gFfcrFPWwLXLV39JVUzQV9RKjWerE7B845Hqjj9VYlQeieZ2dA==}
     engines: {node: '>=16.0.0 || 14 >= 14.17'}
     peerDependencies:
       rollup: ^2.68.0||^3.0.0||^4.0.0
@@ -8385,8 +8385,8 @@ packages:
       - eslint
     dev: true
 
-  /eslint-config-oclif/6.0.110_avq3eyf5kaj6ssrwo7fvkrwnji:
-    resolution: {integrity: sha512-rSabSewuQudsmSSYjUnYuzROlObc4ESjPYS7L5HS9yUR7VXhX2l/jX2e5C6K6x650Mj/Q0/bd8LEbZyO4AvvCQ==}
+  /eslint-config-oclif/6.0.114_avq3eyf5kaj6ssrwo7fvkrwnji:
+    resolution: {integrity: sha512-KBl29BbP9dELCBqiF0fVNXp1tDB97ZWEjW2mXzDWkvvVWdDxdrmCM5nV4PJdnzlaGQ559FwfbUS2rWag4VsvAQ==}
     engines: {node: '>=18.18.0'}
     dependencies:
       '@eslint/compat': 1.4.0_eslint@8.57.1
@@ -8414,8 +8414,8 @@ packages:
       - typescript
     dev: true
 
-  /eslint-config-oclif/6.0.110_eslint@7.32.0:
-    resolution: {integrity: sha512-rSabSewuQudsmSSYjUnYuzROlObc4ESjPYS7L5HS9yUR7VXhX2l/jX2e5C6K6x650Mj/Q0/bd8LEbZyO4AvvCQ==}
+  /eslint-config-oclif/6.0.114_eslint@7.32.0:
+    resolution: {integrity: sha512-KBl29BbP9dELCBqiF0fVNXp1tDB97ZWEjW2mXzDWkvvVWdDxdrmCM5nV4PJdnzlaGQ559FwfbUS2rWag4VsvAQ==}
     engines: {node: '>=18.18.0'}
     dependencies:
       '@eslint/compat': 1.4.0_eslint@7.32.0
@@ -8443,8 +8443,8 @@ packages:
       - typescript
     dev: true
 
-  /eslint-config-oclif/6.0.110_eslint@8.57.1:
-    resolution: {integrity: sha512-rSabSewuQudsmSSYjUnYuzROlObc4ESjPYS7L5HS9yUR7VXhX2l/jX2e5C6K6x650Mj/Q0/bd8LEbZyO4AvvCQ==}
+  /eslint-config-oclif/6.0.114_eslint@8.57.1:
+    resolution: {integrity: sha512-KBl29BbP9dELCBqiF0fVNXp1tDB97ZWEjW2mXzDWkvvVWdDxdrmCM5nV4PJdnzlaGQ559FwfbUS2rWag4VsvAQ==}
     engines: {node: '>=18.18.0'}
     dependencies:
       '@eslint/compat': 1.4.0_eslint@8.57.1
@@ -8472,8 +8472,8 @@ packages:
       - typescript
     dev: true
 
-  /eslint-config-oclif/6.0.110_k2rwabtyo525wwqr6566umnmhy:
-    resolution: {integrity: sha512-rSabSewuQudsmSSYjUnYuzROlObc4ESjPYS7L5HS9yUR7VXhX2l/jX2e5C6K6x650Mj/Q0/bd8LEbZyO4AvvCQ==}
+  /eslint-config-oclif/6.0.114_k2rwabtyo525wwqr6566umnmhy:
+    resolution: {integrity: sha512-KBl29BbP9dELCBqiF0fVNXp1tDB97ZWEjW2mXzDWkvvVWdDxdrmCM5nV4PJdnzlaGQ559FwfbUS2rWag4VsvAQ==}
     engines: {node: '>=18.18.0'}
     dependencies:
       '@eslint/compat': 1.4.0_eslint@8.57.1
@@ -8682,7 +8682,7 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 8.46.2_k2rwabtyo525wwqr6566umnmhy
+      '@typescript-eslint/parser': 8.46.2_avq3eyf5kaj6ssrwo7fvkrwnji
       debug: 3.2.7
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
@@ -8712,7 +8712,7 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 6.21.0_k2rwabtyo525wwqr6566umnmhy
+      '@typescript-eslint/parser': 6.21.0_avq3eyf5kaj6ssrwo7fvkrwnji
       debug: 3.2.7
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
@@ -8778,7 +8778,7 @@ packages:
         optional: true
     dependencies:
       '@rtsao/scc': 1.1.0
-      '@typescript-eslint/parser': 6.21.0_k2rwabtyo525wwqr6566umnmhy
+      '@typescript-eslint/parser': 6.21.0_avq3eyf5kaj6ssrwo7fvkrwnji
       array-includes: 3.1.9
       array.prototype.findlastindex: 1.2.6
       array.prototype.flat: 1.3.3
@@ -8815,7 +8815,7 @@ packages:
         optional: true
     dependencies:
       '@rtsao/scc': 1.1.0
-      '@typescript-eslint/parser': 8.46.2_k2rwabtyo525wwqr6566umnmhy
+      '@typescript-eslint/parser': 8.46.2_avq3eyf5kaj6ssrwo7fvkrwnji
       array-includes: 3.1.9
       array.prototype.findlastindex: 1.2.6
       array.prototype.flat: 1.3.3
@@ -10513,8 +10513,8 @@ packages:
     engines: {node: '>= 4'}
     dev: true
 
-  /immer/10.1.3:
-    resolution: {integrity: sha512-tmjF/k8QDKydUlm3mZU+tjM6zeq9/fFpPqH9SzWmBnVVKsPBg/V66qsMwb3/Bo90cgUN+ghdVBess+hPsxUyRw==}
+  /immer/10.2.0:
+    resolution: {integrity: sha512-d/+XTN3zfODyjr89gM3mPq1WNX2B8pYsu7eORitdwyA2sBubnTl3laYlBk4sXY5FUa5qTZGBDPJICVbvqzjlbw==}
     dev: false
 
   /import-fresh/3.3.1:
@@ -12732,20 +12732,20 @@ packages:
       es-object-atoms: 1.1.1
     dev: true
 
-  /oclif/4.22.32:
-    resolution: {integrity: sha512-zeM5Ezgh2Eo+dw5gPByyPmpoHBH6i0Lv0I8QrWwyphAHsR1PtSqIOwm24I8jzE0iiZuqKOlhMivLruMrLWfhXg==}
+  /oclif/4.22.38:
+    resolution: {integrity: sha512-h9DiPdiu61/NjBqBQroSZ+cRhcaQZuXUmUejmbYoNZ+yASthZ88fAY2GkR4vfEDUt7pLVXpJYmoLulM2Nl3TWA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
     dependencies:
-      '@aws-sdk/client-cloudfront': 3.916.0
-      '@aws-sdk/client-s3': 3.916.0
+      '@aws-sdk/client-cloudfront': 3.917.0
+      '@aws-sdk/client-s3': 3.917.0
       '@inquirer/confirm': 3.2.0
       '@inquirer/input': 2.3.0
       '@inquirer/select': 2.5.0
       '@oclif/core': 4.7.2
-      '@oclif/plugin-help': 6.2.33
-      '@oclif/plugin-not-found': 3.2.70
-      '@oclif/plugin-warn-if-update-available': 3.1.50
+      '@oclif/plugin-help': 6.2.34
+      '@oclif/plugin-not-found': 3.2.71
+      '@oclif/plugin-warn-if-update-available': 3.1.51
       ansis: 3.17.0
       async-retry: 1.3.3
       change-case: 4.1.2
@@ -12767,20 +12767,20 @@ packages:
       - supports-color
     dev: true
 
-  /oclif/4.22.32_@types+node@14.18.63:
-    resolution: {integrity: sha512-zeM5Ezgh2Eo+dw5gPByyPmpoHBH6i0Lv0I8QrWwyphAHsR1PtSqIOwm24I8jzE0iiZuqKOlhMivLruMrLWfhXg==}
+  /oclif/4.22.38_@types+node@14.18.63:
+    resolution: {integrity: sha512-h9DiPdiu61/NjBqBQroSZ+cRhcaQZuXUmUejmbYoNZ+yASthZ88fAY2GkR4vfEDUt7pLVXpJYmoLulM2Nl3TWA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
     dependencies:
-      '@aws-sdk/client-cloudfront': 3.916.0
-      '@aws-sdk/client-s3': 3.916.0
+      '@aws-sdk/client-cloudfront': 3.917.0
+      '@aws-sdk/client-s3': 3.917.0
       '@inquirer/confirm': 3.2.0
       '@inquirer/input': 2.3.0
       '@inquirer/select': 2.5.0
       '@oclif/core': 4.7.2
-      '@oclif/plugin-help': 6.2.33
-      '@oclif/plugin-not-found': 3.2.70_@types+node@14.18.63
-      '@oclif/plugin-warn-if-update-available': 3.1.50
+      '@oclif/plugin-help': 6.2.34
+      '@oclif/plugin-not-found': 3.2.71_@types+node@14.18.63
+      '@oclif/plugin-warn-if-update-available': 3.1.51
       ansis: 3.17.0
       async-retry: 1.3.3
       change-case: 4.1.2
@@ -12802,20 +12802,20 @@ packages:
       - supports-color
     dev: true
 
-  /oclif/4.22.32_@types+node@20.19.23:
-    resolution: {integrity: sha512-zeM5Ezgh2Eo+dw5gPByyPmpoHBH6i0Lv0I8QrWwyphAHsR1PtSqIOwm24I8jzE0iiZuqKOlhMivLruMrLWfhXg==}
+  /oclif/4.22.38_@types+node@20.19.23:
+    resolution: {integrity: sha512-h9DiPdiu61/NjBqBQroSZ+cRhcaQZuXUmUejmbYoNZ+yASthZ88fAY2GkR4vfEDUt7pLVXpJYmoLulM2Nl3TWA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
     dependencies:
-      '@aws-sdk/client-cloudfront': 3.916.0
-      '@aws-sdk/client-s3': 3.916.0
+      '@aws-sdk/client-cloudfront': 3.917.0
+      '@aws-sdk/client-s3': 3.917.0
       '@inquirer/confirm': 3.2.0
       '@inquirer/input': 2.3.0
       '@inquirer/select': 2.5.0
       '@oclif/core': 4.7.2
-      '@oclif/plugin-help': 6.2.33
-      '@oclif/plugin-not-found': 3.2.70_@types+node@20.19.23
-      '@oclif/plugin-warn-if-update-available': 3.1.50
+      '@oclif/plugin-help': 6.2.34
+      '@oclif/plugin-not-found': 3.2.71_@types+node@20.19.23
+      '@oclif/plugin-warn-if-update-available': 3.1.51
       ansis: 3.17.0
       async-retry: 1.3.3
       change-case: 4.1.2
@@ -14031,7 +14031,7 @@ packages:
   /slate/0.103.0:
     resolution: {integrity: sha512-eCUOVqUpADYMZ59O37QQvUdnFG+8rin0OGQAXNHvHbQeVJ67Bu0spQbcy621vtf8GQUXTEQBlk6OP9atwwob4w==}
     dependencies:
-      immer: 10.1.3
+      immer: 10.2.0
       is-plain-object: 5.0.0
       tiny-warning: 1.0.3
     dev: false
