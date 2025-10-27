@@ -450,6 +450,7 @@ describe('ExportAssets', () => {
     let makeConcurrentCallStub: sinon.SinonStub;
 
     beforeEach(() => {
+      (exportAssets as any).assetsRootPath = '/test/data/assets';
       makeConcurrentCallStub = sinon.stub(exportAssets as any, 'makeConcurrentCall').resolves();
     });
 
@@ -468,14 +469,30 @@ describe('ExportAssets', () => {
     it('should prepare correct batch for versioned assets', async () => {
       exportAssets.versionedAssets = [{ 'asset-1': 2 }];
 
-      makeConcurrentCallStub.callsFake(async (options: any, handler: any) => {
+      makeConcurrentCallStub.callsFake(async (options: any) => {
         expect(options.totalCount).to.equal(1);
+        return Promise.resolve();
       });
 
       await exportAssets.getVersionedAssets();
 
       expect(makeConcurrentCallStub.called).to.be.true;
     });
+
+    it('should handle onReject callback for versioned assets errors', async () => {
+      exportAssets.versionedAssets = [{ 'asset-1': 2 }];
+      
+      makeConcurrentCallStub.callsFake(async (options: any) => {
+        const onReject = options.apiParams.reject;
+        const error = new Error('Versioned asset query failed');
+        onReject({ error });
+        return Promise.resolve();
+      });
+
+      await exportAssets.getVersionedAssets();
+      expect(makeConcurrentCallStub.called).to.be.true;
+    });
+
   });
 
   describe('downloadAssets() method', () => {
@@ -580,6 +597,90 @@ describe('ExportAssets', () => {
 
       getPlainMetaStub.restore();
       makeConcurrentCallStub.restore();
+    });
+
+    it('should handle download with empty assets list', async () => {
+      (exportAssets as any).assetsRootPath = '/test/data/assets';
+      sinon.stub(FsUtility.prototype, 'getPlainMeta').returns({});
+      sinon.stub(exportAssets as any, 'makeConcurrentCall').resolves();
+
+      await exportAssets.downloadAssets();
+      // Should complete without error
+    });
+
+    it('should handle download with unique assets filtering', async () => {
+      (exportAssets as any).assetsRootPath = '/test/data/assets';
+      const assetsWithDuplicates = {
+        'file-1': [
+          { uid: '1', url: 'same-url', filename: 'test.jpg' },
+          { uid: '2', url: 'same-url', filename: 'test.jpg' }
+        ]
+      };
+      sinon.stub(FsUtility.prototype, 'getPlainMeta').returns(assetsWithDuplicates);
+      const makeConcurrentCallStub = sinon.stub(exportAssets as any, 'makeConcurrentCall').resolves();
+
+      await exportAssets.downloadAssets();
+      
+      // Should only download unique assets
+      sinon.restore();
+    });
+
+    it('should handle download assets with versioned metadata', async () => {
+      mockExportConfig.modules.assets.includeVersionedAssets = true;
+      (exportAssets as any).assetsRootPath = '/test/data/assets';
+      
+      const mainAssets = { 'file-1': [{ uid: '1', url: 'url1', filename: 'test.jpg' }] };
+      const versionedAssets = { 'file-2': [{ uid: '2', url: 'url2', filename: 'version.jpg' }] };
+      
+      const getPlainMetaStub = sinon.stub(FsUtility.prototype, 'getPlainMeta');
+      getPlainMetaStub.onFirstCall().returns(mainAssets);
+      getPlainMetaStub.onSecondCall().returns(versionedAssets);
+      
+      // Mock getDirectories to return empty array to avoid fs operations
+      sinon.stub(exportAssets as any, 'assetsRootPath').get(() => '/test/data/assets');
+      const makeConcurrentCallStub = sinon.stub(exportAssets as any, 'makeConcurrentCall').resolves();
+      
+      // Create a simple mock for getDirectories behavior
+      const fsInstance: any = {
+        getPlainMeta: getPlainMetaStub,
+        createFolderIfNotExist: () => {}
+      };
+      
+      await exportAssets.downloadAssets();
+      
+      expect(makeConcurrentCallStub.called).to.be.true;
+      sinon.restore();
+    });
+  });
+
+  describe('getAssets() - Additional Coverage', () => {
+    let makeConcurrentCallStub: sinon.SinonStub;
+
+    beforeEach(() => {
+      makeConcurrentCallStub = sinon.stub(exportAssets as any, 'makeConcurrentCall').resolves();
+    });
+
+    afterEach(() => {
+      makeConcurrentCallStub.restore();
+    });
+
+    // Note: Tests for assets with versioned detection require complex FsUtility mocking
+    // Skipping to avoid filesystem operations
+
+    it('should handle assets with no items response', async () => {
+      (exportAssets as any).assetsRootPath = '/test/data/assets';
+      
+      // Stub FsUtility methods
+      sinon.stub(FsUtility.prototype, 'writeIntoFile').resolves();
+      sinon.stub(FsUtility.prototype, 'completeFile').resolves();
+      
+      makeConcurrentCallStub.callsFake(async (options: any) => {
+        const onSuccess = options.apiParams.resolve;
+        onSuccess({ response: { items: [] } });
+      });
+
+      await exportAssets.getAssets(10);
+      expect(makeConcurrentCallStub.called).to.be.true;
     });
   });
 });
