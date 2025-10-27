@@ -94,7 +94,8 @@ class PublishEntriesCommand extends Command {
                 if (Array.isArray(updatedFlags.locales)) {
                   for (const locale of updatedFlags.locales) {
                     updatedFlags.locale = locale;
-                    publishFunction(startCrossPublish);
+                    console.log(`Bulk publish started for content type \x1b[36m${updatedFlags.contentType}\x1b[0m and locale is \x1b[36m${updatedFlags.locale}\x1b[0m`);
+                    await publishFunction(startCrossPublish);
                   }
                 } else {
                   updatedFlags.locale = updatedFlags.locales;
