@@ -123,4 +123,8 @@ fileignoreconfig:
   checksum: 7b984d292a534f9d075d801de2aeff802b2832bc5e2efadf8613a7059f4317fc
 - filename: packages/contentstack-import/test/unit/import/modules/labels.test.ts
   checksum: 46fe0d1602ab386f7eaee9839bc376b98ab8d4262f823784eda9cfa2bf893758
+- filename: packages/contentstack-export/test/unit/export/modules/assets.test.ts
+  checksum: 192c515e32db3f5d8c4f47d57aa65597b41167f83e70ec9592e4deb88dc47802
+- filename: packages/contentstack-export/test/unit/export/modules/base-class.test.ts
+  checksum: c7f9801faeb300f8bd97534ac72441bde5aac625dd4beaf5531945d14d9d4db0
 version: "1.0"
