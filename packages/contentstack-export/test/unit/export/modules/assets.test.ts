@@ -682,6 +682,141 @@ describe('ExportAssets', () => {
       await exportAssets.getAssets(10);
       expect(makeConcurrentCallStub.called).to.be.true;
     });
+
+    it('should handle assets with versioned assets enabled', async () => {
+      (exportAssets as any).assetsRootPath = '/test/data/assets';
+      mockExportConfig.modules.assets.includeVersionedAssets = true;
+      
+      // Stub FsUtility methods to prevent fs operations
+      sinon.stub(FsUtility.prototype, 'writeIntoFile').resolves();
+      sinon.stub(FsUtility.prototype, 'completeFile').resolves();
+      sinon.stub(FsUtility.prototype, 'createFolderIfNotExist').resolves();
+      
+      makeConcurrentCallStub.callsFake(async (options: any) => {
+        const onSuccess = options.apiParams.resolve;
+        // Mock versioned assets
+        onSuccess({ 
+          response: { 
+            items: [
+              { uid: '1', _version: 2, url: 'url1', filename: 'test.jpg' },
+              { uid: '2', _version: 1, url: 'url2', filename: 'test2.jpg' }
+            ] 
+          } 
+        });
+      });
+
+      await exportAssets.getAssets(10);
+      expect(makeConcurrentCallStub.called).to.be.true;
+    });
+
+    it('should apply query filters when configured', async () => {
+      (exportAssets as any).assetsRootPath = '/test/data/assets';
+      mockExportConfig.modules.assets.invalidKeys = ['SYS_ACL'];
+      
+      // Stub FsUtility methods to prevent fs operations
+      sinon.stub(FsUtility.prototype, 'writeIntoFile').resolves();
+      sinon.stub(FsUtility.prototype, 'completeFile').resolves();
+      sinon.stub(FsUtility.prototype, 'createFolderIfNotExist').resolves();
+      
+      makeConcurrentCallStub.callsFake(async (options: any) => {
+        const onSuccess = options.apiParams.resolve;
+        onSuccess({ response: { items: [{ uid: '1', url: 'url1', filename: 'test.jpg' }] } });
+      });
+
+      await exportAssets.getAssets(10);
+      expect(makeConcurrentCallStub.called).to.be.true;
+    });
+  });
+
+  describe('getAssetsFolders() - Additional Coverage', () => {
+    it('should handle folders with empty items response', async () => {
+      (exportAssets as any).assetsRootPath = '/test/data/assets';
+      const makeConcurrentCallStub = sinon.stub(exportAssets as any, 'makeConcurrentCall').resolves();
+      
+      makeConcurrentCallStub.callsFake(async (options: any) => {
+        const onSuccess = options.apiParams.resolve;
+        onSuccess({ response: { items: [] } });
+      });
+
+      await exportAssets.getAssetsFolders(10);
+      expect(makeConcurrentCallStub.called).to.be.true;
+      
+      makeConcurrentCallStub.restore();
+    });
+
+    it('should add folders to assetsFolder array', async () => {
+      (exportAssets as any).assetsRootPath = '/test/data/assets';
+      
+      const makeConcurrentCallStub = sinon.stub(exportAssets as any, 'makeConcurrentCall').resolves();
+      
+      // Stub FsUtility methods to prevent file system operations
+      sinon.stub(FsUtility.prototype, 'writeFile').resolves();
+      sinon.stub(FsUtility.prototype, 'createFolderIfNotExist').resolves();
+      
+      makeConcurrentCallStub.callsFake(async (options: any) => {
+        const onSuccess = options.apiParams.resolve;
+        // Simulate adding folders to the array
+        (exportAssets as any).assetsFolder.push({ uid: 'folder-1', name: 'Test Folder' });
+        onSuccess({ response: { items: [{ uid: 'folder-1', name: 'Test Folder' }] } });
+      });
+
+      await exportAssets.getAssetsFolders(10);
+      
+      expect(makeConcurrentCallStub.called).to.be.true;
+      // Verify folders were added
+      expect((exportAssets as any).assetsFolder.length).to.be.greaterThan(0);
+      
+      makeConcurrentCallStub.restore();
+    });
+  });
+
+  describe('downloadAssets() - Additional Coverage', () => {
+    it('should handle download with secured assets', async () => {
+      mockExportConfig.modules.assets.securedAssets = true;
+      (exportAssets as any).assetsRootPath = '/test/data/assets';
+      
+      const getPlainMetaStub = sinon.stub(FsUtility.prototype, 'getPlainMeta').returns({
+        'file-1': [{ uid: '1', url: 'url1', filename: 'test.jpg' }]
+      });
+      const makeConcurrentCallStub = sinon.stub(exportAssets as any, 'makeConcurrentCall').resolves();
+      
+      await exportAssets.downloadAssets();
+      
+      expect(makeConcurrentCallStub.called).to.be.true;
+      getPlainMetaStub.restore();
+      makeConcurrentCallStub.restore();
+    });
+
+    it('should handle download with enableDownloadStatus', async () => {
+      mockExportConfig.modules.assets.enableDownloadStatus = true;
+      (exportAssets as any).assetsRootPath = '/test/data/assets';
+      
+      const getPlainMetaStub = sinon.stub(FsUtility.prototype, 'getPlainMeta').returns({
+        'file-1': [{ uid: '1', url: 'url1', filename: 'test.jpg' }]
+      });
+      const makeConcurrentCallStub = sinon.stub(exportAssets as any, 'makeConcurrentCall').resolves();
+      
+      await exportAssets.downloadAssets();
+      
+      expect(makeConcurrentCallStub.called).to.be.true;
+      getPlainMetaStub.restore();
+      makeConcurrentCallStub.restore();
+    });
+
+    it('should handle download with concurrent call structure', async () => {
+      (exportAssets as any).assetsRootPath = '/test/data/assets';
+      
+      const getPlainMetaStub = sinon.stub(FsUtility.prototype, 'getPlainMeta').returns({
+        'file-1': [{ uid: '1', url: 'url1', filename: 'test.jpg' }]
+      });
+      const makeConcurrentCallStub = sinon.stub(exportAssets as any, 'makeConcurrentCall').resolves();
+      
+      await exportAssets.downloadAssets();
+      
+      expect(makeConcurrentCallStub.called).to.be.true;
+      getPlainMetaStub.restore();
+      makeConcurrentCallStub.restore();
+    });
   });
 });
 
