@@ -208,13 +208,7 @@ async function getSyncEntries(
       }
       let entriesResponse;
       entriesResponse = await Stack.sync(syncData);
-      
 
-      // if (filter?.content_type_uid?.length) {
-      //   entriesResponse.items = entriesResponse.items.filter((entry) =>
-      //     filter?.content_type_uid.includes(entry.content_type_uid),
-      //   );
-      // }
 
       if (variantsFlag) {
         for (let index = 0; index < entriesResponse?.items?.length; index++) {
