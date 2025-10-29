@@ -13,20 +13,20 @@ describe('ImportWorkflows', () => {
   let makeConcurrentCallStub: sinon.SinonStub;
 
   beforeEach(() => {
-    // Setup filesystem stubs
+    // Setup filesystem stubs using sinon.replace to avoid interference
     fsUtilStub = {
       readFile: sinon.stub(),
       writeFile: sinon.stub(),
       makeDirectory: sinon.stub().resolves()
     };
-    sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
-    sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
-    sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
-
+    
     fileHelperStub = {
       fileExistsSync: sinon.stub()
     };
-    sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
+
+    // Use sinon.replace to replace the entire modules
+    sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
+    sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
 
     // Setup mock stack client
     const mockWorkflowUpdate = sinon.stub().resolves({ uid: 'wf-123', name: 'Test WF' });
