@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.15.2",
+  "version": "1.15.3",
   "author": "Contentstack",
   "scripts": {
     "build": "npm run clean && npm run compile",
