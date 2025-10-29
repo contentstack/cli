@@ -2,9 +2,10 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import * as path from 'node:path';
 import * as utilities from '@contentstack/cli-utilities';
+import proxyquire from 'proxyquire';
 
-// Use require for proxyquire to ensure CommonJS compatibility
-const proxyquire = require('proxyquire').noPreserveCache();
+// Create proxyquire instance with noPreserveCache for clean module loading
+const proxyquireNoPreserveCache = proxyquire.noPreserveCache();
 
 describe('File Helper Utils', () => {
   let sandbox: sinon.SinonSandbox;
@@ -48,7 +49,7 @@ describe('File Helper Utils', () => {
     };
 
     // Load file-helper with mocked dependencies
-    fileHelper = proxyquire('../../../src/utils/file-helper', {
+    fileHelper = proxyquireNoPreserveCache('../../../src/utils/file-helper', {
       'fs': mockFs,
       'mkdirp': mockMkdirp,
       'big-json': mockBigJson,
