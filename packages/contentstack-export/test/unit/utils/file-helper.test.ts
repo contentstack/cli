@@ -1,8 +1,10 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import * as path from 'node:path';
-import proxyquire from 'proxyquire';
 import * as utilities from '@contentstack/cli-utilities';
+
+// Use require for proxyquire to ensure CommonJS compatibility
+const proxyquire = require('proxyquire').noPreserveCache();
 
 describe('File Helper Utils', () => {
   let sandbox: sinon.SinonSandbox;
