@@ -200,17 +200,15 @@ async function getSyncEntries(
       if (queryParamsObj.locale) {
         syncData['locale'] = queryParamsObj.locale;
       }
+      if (filter?.content_type_uid) {
+        syncData['content_type_uid'] = filter.content_type_uid;
+      }
       if (queryParamsObj.type) {
         syncData['type'] = queryParamsObj.type;
       }
+      let entriesResponse;
+      entriesResponse = await Stack.sync(syncData);
 
-      const entriesResponse = await Stack.sync(syncData);
-
-      if (filter?.content_type_uid?.length) {
-        entriesResponse.items = entriesResponse.items.filter((entry) =>
-          filter?.content_type_uid.includes(entry.content_type_uid),
-        );
-      }
 
       if (variantsFlag) {
         for (let index = 0; index < entriesResponse?.items?.length; index++) {
@@ -241,6 +239,7 @@ async function getSyncEntries(
           destEnv,
           apiVersion,
           bulkPublishLimit,
+          variantsFlag,
           entriesResponse.pagination_token,
         );
       }, 3000);
@@ -314,7 +313,7 @@ async function start(
     retryFailed,
     bulkPublish,
     deliveryToken,
-    contentTypes,
+    contentType,
     environment,
     locale,
     onlyAssets,
@@ -372,8 +371,8 @@ async function start(
     };
     if (f_types) filter.type = f_types;
     // filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
-    if (contentTypes) {
-      filter.content_type_uid = contentTypes;
+    if (contentType) {
+      filter.content_type_uid = contentType;
       filter.type = 'entry_published';
     }
     if (onlyAssets) {
