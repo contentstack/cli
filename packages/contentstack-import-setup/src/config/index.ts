@@ -26,6 +26,10 @@ const config: DefaultConfig = {
       dirName: 'environments',
       fileName: 'environments.json',
     },
+    locales: {
+      dirName: 'locales',
+      fileName: 'locales.json',
+    },
     extensions: {
       dirName: 'extensions',
       fileName: 'extensions.json',
