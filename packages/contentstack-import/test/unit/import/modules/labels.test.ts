@@ -22,7 +22,7 @@ describe('ImportLabels', () => {
 
     // Mock import config
     mockImportConfig = {
-      apiKey: 'test-api-key',
+      apiKey: 'test',
       backupDir: '/test/backup',
       context: { module: 'labels' },
       fetchConcurrency: 3,
