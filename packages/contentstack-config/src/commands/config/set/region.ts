@@ -119,23 +119,22 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
         this.logger.error('failed to set the region', error);
         cliux.error(`Failed to set region due to: ${error.message}`);
       }
-    } else if (
-      ['NA', 'EU', 'AU', 'AWS-NA', 'AWS-EU', 'AWS-AU', 'AZURE-NA', 'AZURE-EU', 'GCP-NA', 'GCP-EU'].includes(
-        selectedRegion,
-      )
-    ) {
-      const regionDetails: Region = regionHandler.setRegion(selectedRegion);
-      await authHandler.setConfigData('logout'); //Todo: Handle this logout flow well through logout command call
-      cliux.success(`Region has been set to ${regionDetails.name}`);
-      cliux.success(`CDA HOST: ${regionDetails.cda}`);
-      cliux.success(`CMA HOST: ${regionDetails.cma}`);
-      cliux.success(`UI HOST: ${regionDetails.uiHost}`);
-      cliux.success(`Developer Hub URL: ${regionDetails.developerHubUrl}`);
-      cliux.success(`Personalize URL: ${regionDetails.personalizeUrl}`);
-      cliux.success(`Launch URL: ${regionDetails.launchHubUrl}`);
     } else {
-      cliux.error(`Invalid region is given`);
-    }
+      try {
+        const regionDetails: Region = regionHandler.setRegion(selectedRegion);
+        await authHandler.setConfigData('logout'); //Todo: Handle this logout flow well through logout command call
+        cliux.success(`Region has been set to ${regionDetails.name}`);
+        cliux.success(`CDA HOST: ${regionDetails.cda}`);
+        cliux.success(`CMA HOST: ${regionDetails.cma}`);
+        cliux.success(`UI HOST: ${regionDetails.uiHost}`);
+        cliux.success(`Developer Hub URL: ${regionDetails.developerHubUrl}`);
+        cliux.success(`Personalize URL: ${regionDetails.personalizeUrl}`);
+        cliux.success(`Launch URL: ${regionDetails.launchHubUrl}`);
+      } catch { 
+        cliux.error(`Invalid region is given`);
+      }
+      
+    } 
   }
   transformUrl(url: string, replacement: string): string {
     let transformedUrl = url.replace('api', replacement);

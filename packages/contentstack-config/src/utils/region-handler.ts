@@ -1,4 +1,5 @@
 import { configHandler } from '@contentstack/cli-utilities';
+import * as regionHostMap from '../assets/regions.json';
 
 function validURL(str) {
   const pattern = new RegExp(
@@ -15,100 +16,6 @@ function validURL(str) {
   return pattern.test(str);
 }
 
-// Available region list
-const regions = {
-  NA: {
-    name: 'NA',
-    cma: 'https://api.contentstack.io',
-    cda: 'https://cdn.contentstack.io',
-    uiHost: 'https://app.contentstack.com',
-    developerHubUrl: 'https://developerhub-api.contentstack.com',
-    launchHubUrl: 'https://launch-api.contentstack.com',
-    personalizeUrl: 'https://personalize-api.contentstack.com',
-  },
-  'AWS-NA': {
-    name: 'AWS-NA',
-    cma: 'https://api.contentstack.io',
-    cda: 'https://cdn.contentstack.io',
-    uiHost: 'https://app.contentstack.com',
-    developerHubUrl: 'https://developerhub-api.contentstack.com',
-    launchHubUrl: 'https://launch-api.contentstack.com',
-    personalizeUrl: 'https://personalize-api.contentstack.com',
-  },
-  EU: {
-    name: 'EU',
-    cma: 'https://eu-api.contentstack.com',
-    cda: 'https://eu-cdn.contentstack.com',
-    uiHost: 'https://eu-app.contentstack.com',
-    developerHubUrl: 'https://eu-developerhub-api.contentstack.com',
-    launchHubUrl: 'https://eu-launch-api.contentstack.com',
-    personalizeUrl: 'https://eu-personalize-api.contentstack.com',
-  },
-  'AWS-EU': {
-    name: 'AWS-EU',
-    cma: 'https://eu-api.contentstack.com',
-    cda: 'https://eu-cdn.contentstack.com',
-    uiHost: 'https://eu-app.contentstack.com',
-    developerHubUrl: 'https://eu-developerhub-api.contentstack.com',
-    launchHubUrl: 'https://eu-launch-api.contentstack.com',
-    personalizeUrl: 'https://eu-personalize-api.contentstack.com',
-  },
-  AU: {
-    name: 'AU',
-    cma: 'https://au-api.contentstack.com',
-    cda: 'https://au-cdn.contentstack.com',
-    uiHost: 'https://au-app.contentstack.com',
-    developerHubUrl: 'https://au-developerhub-api.contentstack.com',
-    launchHubUrl: 'https://au-launch-api.contentstack.com',
-    personalizeUrl: 'https://au-personalize-api.contentstack.com',
-  },
-  'AWS-AU': {
-    name: 'AWS-AU',
-    cma: 'https://au-api.contentstack.com',
-    cda: 'https://au-cdn.contentstack.com',
-    uiHost: 'https://au-app.contentstack.com',
-    developerHubUrl: 'https://au-developerhub-api.contentstack.com',
-    launchHubUrl: 'https://au-launch-api.contentstack.com',
-    personalizeUrl: 'https://au-personalize-api.contentstack.com',
-  },
-  'AZURE-NA': {
-    name: 'AZURE-NA',
-    cma: 'https://azure-na-api.contentstack.com',
-    cda: 'https://azure-na-cdn.contentstack.com',
-    uiHost: 'https://azure-na-app.contentstack.com',
-    developerHubUrl: 'https://azure-na-developerhub-api.contentstack.com',
-    launchHubUrl: 'https://azure-na-launch-api.contentstack.com',
-    personalizeUrl: 'https://azure-na-personalize-api.contentstack.com',
-  },
-  'AZURE-EU': {
-    name: 'AZURE-EU',
-    cma: 'https://azure-eu-api.contentstack.com',
-    cda: 'https://azure-eu-cdn.contentstack.com',
-    uiHost: 'https://azure-eu-app.contentstack.com',
-    developerHubUrl: 'https://azure-eu-developerhub-api.contentstack.com',
-    launchHubUrl: 'https://azure-eu-launch-api.contentstack.com',
-    personalizeUrl: 'https://azure-eu-personalize-api.contentstack.com',
-  },
-  'GCP-NA': {
-    name: 'GCP-NA',
-    cma: 'https://gcp-na-api.contentstack.com',
-    cda: 'https://gcp-na-cdn.contentstack.com',
-    uiHost: 'https://gcp-na-app.contentstack.com',
-    developerHubUrl: 'https://gcp-na-developerhub-api.contentstack.com',
-    launchHubUrl: 'https://gcp-na-launch-api.contentstack.com',
-    personalizeUrl: 'https://gcp-na-personalize-api.contentstack.com',
-  },
-  'GCP-EU': {
-    name: 'GCP-EU',
-    cma: 'https://gcp-eu-api.contentstack.com',
-    cda: 'https://gcp-eu-cdn.contentstack.com',
-    uiHost: 'https://gcp-eu-app.contentstack.com',
-    developerHubUrl: 'https://gcp-eu-developerhub-api.contentstack.com',
-    launchHubUrl: 'https://gcp-eu-launch-api.contentstack.com',
-    personalizeUrl: 'https://gcp-eu-personalize-api.contentstack.com',
-  },
-};
-
 class UserConfig {
   /**
    *
@@ -116,13 +23,37 @@ class UserConfig {
    * @param {string} region It Can be AWS-NA, AWS-EU, AWS-AU, AZURE-NA, AZURE-EU, GCP-NA, GCP-EU
    * @returns {object} region object with cma, cda, region property
    */
-  setRegion(region) {
-    const selectedRegion = regions[region];
-    if (selectedRegion) {
-      configHandler.set('region', selectedRegion);
-      return selectedRegion;
+  setRegion(region) { 
+    try {
+      const normalizedRegion = region.toLowerCase();
+      const regionData = regionHostMap.regions.find(r =>
+        r.id === normalizedRegion ||
+        r.alias.some(alias => alias === normalizedRegion)
+      )
+
+      if (!regionData) {
+        return undefined;
+      }
+
+      const selectedRegion = {
+        name: region,
+        cma: regionData.endpoints.contentManagement,
+        cda: regionData.endpoints.contentDelivery,
+        uiHost: regionData.endpoints.application,
+        developerHubUrl: regionData.endpoints.developerHub,
+        launchHubUrl: regionData.endpoints.launch,
+        personalizeUrl: regionData.endpoints.personalize,
+      };
+    
+      if (selectedRegion) {
+        configHandler.set('region', selectedRegion);
+        return selectedRegion;
+      }
+    } catch {
+      return undefined
     }
   }
+
 
   /**
    *
@@ -134,7 +65,20 @@ class UserConfig {
     if (regionDetails) return regionDetails;
 
     // returns AWS-NA region if not found in config
-    return regions['AWS-NA'];
+    const defaultAwsNaRegion = regionHostMap.regions.find(r =>
+      r.id === "aws-na" ||
+      r.alias.some(alias => alias === "aws-na")
+    );
+
+    return {
+      name: "AWS-NA",
+      cma: defaultAwsNaRegion.endpoints.contentManagement,
+      cda: defaultAwsNaRegion.endpoints.contentDelivery,
+      uiHost: defaultAwsNaRegion.endpoints.application,
+      developerHubUrl: defaultAwsNaRegion.endpoints.developerHub,
+      launchHubUrl: defaultAwsNaRegion.endpoints.launch,
+      personalizeUrl: defaultAwsNaRegion.endpoints.personalize,
+    };
   }
 
   /**
@@ -201,7 +145,5 @@ class UserConfig {
   }
 }
 
-// Export the regions object for use in other packages
-export { regions };
 
 export default new UserConfig();
