@@ -118,7 +118,7 @@ describe('ImportMarketplaceApps', () => {
 
     // Setup mock config
     mockImportConfig = {
-      apiKey: 'test-api-key',
+      apiKey: 'test',
       backupDir: '/test/backup',
       // developerHubBaseUrl: 'https://test-dev-hub.com', // Remove this to test getDeveloperHubUrl call
       org_uid: 'test-org-uid',
@@ -130,7 +130,7 @@ describe('ImportMarketplaceApps', () => {
         userId: 'user-123',
         email: 'test@example.com',
         sessionId: 'session-123',
-        apiKey: 'test-api-key',
+        apiKey: 'test',
         orgId: 'test-org-id',
       },
       modules: {
