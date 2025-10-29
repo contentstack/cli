@@ -30,8 +30,13 @@ class UserConfig {
         r.id === normalizedRegion ||
         r.alias.some(alias => alias === normalizedRegion)
       )
+
+      if (!regionData) {
+        return undefined;
+      }
+
       const selectedRegion = {
-        name: regionData['name'],
+        name: region,
         cma: regionData.endpoints.contentManagement,
         cda: regionData.endpoints.contentDelivery,
         uiHost: regionData.endpoints.application,
@@ -45,7 +50,7 @@ class UserConfig {
         return selectedRegion;
       }
     } catch {
-      throw new TypeError('Invalid region is given');
+      return undefined
     }
   }
 
@@ -59,7 +64,21 @@ class UserConfig {
     const regionDetails = configHandler.get('region');
     if (regionDetails) return regionDetails;
 
-    throw new TypeError('Region is not set yet, Please set the region first');
+    // returns AWS-NA region if not found in config
+    const defaultAwsNaRegion = regionHostMap.regions.find(r =>
+      r.id === "aws-na" ||
+      r.alias.some(alias => alias === "aws-na")
+    );
+
+    return {
+      name: "AWS-NA",
+      cma: defaultAwsNaRegion.endpoints.contentManagement,
+      cda: defaultAwsNaRegion.endpoints.contentDelivery,
+      uiHost: defaultAwsNaRegion.endpoints.application,
+      developerHubUrl: defaultAwsNaRegion.endpoints.developerHub,
+      launchHubUrl: defaultAwsNaRegion.endpoints.launch,
+      personalizeUrl: defaultAwsNaRegion.endpoints.personalize,
+    };
   }
 
   /**
