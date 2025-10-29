@@ -151,4 +151,6 @@ fileignoreconfig:
   checksum: 457912f0f1ad3cadabbdf19cff6c325164e76063f12b968a00af37ec15a875e9
 - filename: packages/contentstack-export/test/unit/export/modules/global-fields.test.ts
   checksum: 64d204d0ff6232d161275b1df5b2ea5612b53c72d9ba2c22bd13564229353c4d
+- filename: packages/contentstack-import/test/unit/import/modules/webhooks.test.ts
+  checksum: 9f6dc9fb12f0d30600dac28846c7a9972e1dafe7c7bf5385ea677100a1d8fbd1
 version: "1.0"
