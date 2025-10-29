@@ -16,7 +16,7 @@ importers:
       '@contentstack/cli-auth': ~1.6.1
       '@contentstack/cli-cm-bootstrap': ~1.16.1
       '@contentstack/cli-cm-branches': ~1.6.0
-      '@contentstack/cli-cm-bulk-publish': ~1.10.1
+      '@contentstack/cli-cm-bulk-publish': ~1.10.2
       '@contentstack/cli-cm-clone': ~1.16.1
       '@contentstack/cli-cm-export': ~1.20.1
       '@contentstack/cli-cm-export-to-csv': ~1.9.1
@@ -2072,7 +2072,7 @@ packages:
     resolution: {integrity: sha512-WS4k2i+chuwmOrHqJC2N4aWOEpQ+DxrHXtMhya2uMwH25ES203C0o4hm+NwD2gi7Ea5AQycBoi8JHOF0vAQ4WA==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      '@contentstack/cli-utilities': 1.14.3_debug@4.4.3
+      '@contentstack/cli-utilities': 1.14.4_debug@4.4.3
       '@oclif/core': 4.7.2
       '@oclif/plugin-help': 6.2.34
       contentstack: 3.26.2
@@ -2087,7 +2087,7 @@ packages:
     dependencies:
       '@apollo/client': 3.14.0_graphql@16.11.0
       '@contentstack/cli-command': 1.6.1_debug@4.4.3
-      '@contentstack/cli-utilities': 1.14.3_debug@4.4.3
+      '@contentstack/cli-utilities': 1.14.4_debug@4.4.3
       '@oclif/core': 4.7.2
       '@oclif/plugin-help': 6.2.34
       '@oclif/plugin-plugins': 5.4.51
@@ -2122,10 +2122,10 @@ packages:
       - typescript
     dev: false
 
-  /@contentstack/cli-utilities/1.14.3_debug@4.4.3:
-    resolution: {integrity: sha512-FQGw3wKqFRWXl8wfrCKEcUis/pG4wz74fBBjG9qp2mp4n4h4SyPu80QthYYebXi1RroZ+WJnUJ2PcRkreDaMcw==}
+  /@contentstack/cli-utilities/1.14.4_debug@4.4.3:
+    resolution: {integrity: sha512-Pg124tYh/p688aerqVgk8lEsCF8F5Ky35yes3KO23Wzt44Hvzps7X27psOTHs/aD4jhZkw3aB+jTItQlL84b8g==}
     dependencies:
-      '@contentstack/management': 1.22.0_debug@4.4.3
+      '@contentstack/management': 1.25.1_debug@4.4.3
       '@contentstack/marketplace-sdk': 1.4.0_debug@4.4.3
       '@oclif/core': 4.7.2
       axios: 1.12.2_debug@4.4.3
@@ -2213,6 +2213,23 @@ packages:
     dependencies:
       assert: 2.1.0
       axios: 1.12.2
+      buffer: 6.0.3
+      form-data: 4.0.4
+      husky: 9.1.7
+      lodash: 4.17.21
+      otplib: 12.0.1
+      qs: 6.14.0
+      stream-browserify: 3.0.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
+  /@contentstack/management/1.25.1_debug@4.4.3:
+    resolution: {integrity: sha512-454V3zGw4nrxnlYxXm82Z+yNjuechiN+TRE7SXWyHFUsexYVpKNyGyKZCvG6b4JymRTVUZpy/KnFixo01GP9Sg==}
+    engines: {node: '>=8.0.0'}
+    dependencies:
+      assert: 2.1.0
+      axios: 1.12.2_debug@4.4.3
       buffer: 6.0.3
       form-data: 4.0.4
       husky: 9.1.7
