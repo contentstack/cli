@@ -1,0 +1,19 @@
+{
+  "taxonomy_1": {
+    "uid": "taxonomy_1",
+    "name": "Category Taxonomy",
+    "description": "Product categories"
+  },
+  "taxonomy_2": {
+    "uid": "taxonomy_2",
+    "name": "Tag Taxonomy",
+    "description": "Content tags"
+  },
+  "taxonomy_3": {
+    "uid": "taxonomy_3",
+    "name": "Region Taxonomy",
+    "description": "Geographic regions"
+  }
+}
+
+
