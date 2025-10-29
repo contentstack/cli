@@ -12,5 +12,6 @@
   "writeConcurrency": 5,
   "securedAssets": false,
   "maxContentLength": 100000000,
-  "maxBodyLength": 100000000
+  "maxBodyLength": 100000000,
+  "delayMs": 1000
 }
