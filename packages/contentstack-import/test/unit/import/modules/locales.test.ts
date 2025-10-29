@@ -24,7 +24,7 @@ describe('ImportLocales', () => {
     mockConfig = {
       data: tempDir,
       backupDir: tempDir,
-      apiKey: 'test-api-key',
+      apiKey: 'test',
       management_token: 'test-token',
       contentDir: tempDir,
       modules: {
