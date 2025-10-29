@@ -150,4 +150,5 @@ export type TaxonomyQueryParams = {
   limit: number;
   skip: number;
   depth?: number;
+  locale?: string;
 };
