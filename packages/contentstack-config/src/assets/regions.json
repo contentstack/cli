@@ -1,0 +1,211 @@
+{
+  "regions": [
+    {
+      "id": "na",
+      "name": "AWS North America",
+      "cloudProvider": "AWS",
+      "location": "North America",
+      "alias": [
+        "na",
+        "us",
+        "aws-na",
+        "aws_na"
+      ],
+      "isDefault": true,
+      "endpoints": {
+        "application": "https://app.contentstack.com",
+        "contentDelivery": "https://cdn.contentstack.io",
+        "contentManagement": "https://api.contentstack.io",
+        "auth": "https://auth-api.contentstack.com",
+        "graphqlDelivery": "https://graphql.contentstack.com",
+        "preview": "https://rest-preview.contentstack.com",
+        "graphqlPreview": "https://graphql-preview.contentstack.com",
+        "images": "https://images.contentstack.io",
+        "assets": "https://assets.contentstack.io",
+        "automate": "https://automations-api.contentstack.com",
+        "launch": "https://launch-api.contentstack.com",
+        "developerHub": "https://developerhub-api.contentstack.com",
+        "brandKit": "https://brand-kits-api.contentstack.com",
+        "genAI": "https://ai.contentstack.com",
+        "personalize": "https://personalize-api.contentstack.com",
+        "personalizeEdge": "https://personalize-edge.contentstack.com"
+      }
+    },
+    {
+      "id": "eu",
+      "name": "AWS Europe",
+      "cloudProvider": "AWS",
+      "location": "Europe",
+      "alias": [
+        "eu",
+        "aws-eu",
+        "aws_eu"
+      ],
+      "isDefault": false,
+      "endpoints": {
+        "application": "https://eu-app.contentstack.com",
+        "contentDelivery": "https://eu-cdn.contentstack.com",
+        "contentManagement": "https://eu-api.contentstack.com",
+        "auth": "https://eu-auth-api.contentstack.com",
+        "graphqlDelivery": "https://eu-graphql.contentstack.com",
+        "preview": "https://eu-rest-preview.contentstack.com",
+        "graphqlPreview": "https://eu-graphql-preview.contentstack.com",
+        "images": "https://eu-images.contentstack.com",
+        "assets": "https://eu-assets.contentstack.com",
+        "automate": "https://eu-prod-automations-api.contentstack.com",
+        "launch": "https://eu-launch-api.contentstack.com",
+        "developerHub": "https://eu-developerhub-api.contentstack.com",
+        "brandKit": "https://eu-brand-kits-api.contentstack.com",
+        "genAI": "https://eu-ai.contentstack.com",
+        "personalize": "https://eu-personalize-api.contentstack.com",
+        "personalizeEdge": "https://eu-personalize-edge.contentstack.com"
+      }
+    },
+    {
+      "id": "au",
+      "name": "AWS Australia",
+      "cloudProvider": "AWS",
+      "location": "Australia",
+      "alias": [
+        "au",
+        "aws-au",
+        "aws_au"
+      ],
+      "isDefault": false,
+      "endpoints": {
+        "application": "https://au-app.contentstack.com",
+        "contentDelivery": "https://au-cdn.contentstack.com",
+        "contentManagement": "https://au-api.contentstack.com",
+        "auth": "https://au-auth-api.contentstack.com",
+        "graphqlDelivery": "https://au-graphql.contentstack.com",
+        "preview": "https://au-rest-preview.contentstack.com",
+        "graphqlPreview": "https://au-graphql-preview.contentstack.com",
+        "images": "https://au-images.contentstack.com",
+        "assets": "https://au-assets.contentstack.com",
+        "automate": "https://au-prod-automations-api.contentstack.com",
+        "launch": "https://au-launch-api.contentstack.com",
+        "developerHub": "https://au-developerhub-api.contentstack.com",
+        "brandKit": "https://au-brand-kits-api.contentstack.com",
+        "genAI": "https://au-ai.contentstack.com",
+        "personalize": "https://au-personalize-api.contentstack.com",
+        "personalizeEdge": "https://au-personalize-edge.contentstack.com"
+      }
+    },
+    {
+      "id": "azure-na",
+      "name": "Azure North America",
+      "cloudProvider": "Azure",
+      "location": "North America",
+      "alias": [
+        "azure-na",
+        "azure_na"
+      ],
+      "isDefault": false,
+      "endpoints": {
+        "application": "https://azure-na-app.contentstack.com",
+        "contentDelivery": "https://azure-na-cdn.contentstack.com",
+        "contentManagement": "https://azure-na-api.contentstack.com",
+        "auth": "https://azure-na-auth-api.contentstack.com",
+        "graphqlDelivery": "https://azure-na-graphql.contentstack.com",
+        "preview": "https://azure-na-rest-preview.contentstack.com",
+        "graphqlPreview": "https://azure-na-graphql-preview.contentstack.com",
+        "images": "https://azure-na-images.contentstack.com",
+        "assets": "https://azure-na-assets.contentstack.com",
+        "automate": "https://azure-na-automations-api.contentstack.com",
+        "launch": "https://azure-na-launch-api.contentstack.com",
+        "developerHub": "https://azure-na-developerhub-api.contentstack.com",
+        "brandKit": "https://azure-na-brand-kits-api.contentstack.com",
+        "genAI": "https://azure-na-ai.contentstack.com",
+        "personalize": "https://azure-na-personalize-api.contentstack.com",
+        "personalizeEdge": "https://azure-na-personalize-edge.contentstack.com"
+      }
+    },
+    {
+      "id": "azure-eu",
+      "name": "Azure Europe",
+      "cloudProvider": "Azure",
+      "location": "Europe",
+      "alias": [
+        "azure-eu",
+        "azure_eu"
+      ],
+      "isDefault": false,
+      "endpoints": {
+        "application": "https://azure-eu-app.contentstack.com",
+        "contentDelivery": "https://azure-eu-cdn.contentstack.com",
+        "contentManagement": "https://azure-eu-api.contentstack.com",
+        "auth": "https://azure-eu-auth-api.contentstack.com",
+        "graphqlDelivery": "https://azure-eu-graphql.contentstack.com",
+        "preview": "https://azure-eu-rest-preview.contentstack.com",
+        "graphqlPreview": "https://azure-eu-graphql-preview.contentstack.com",
+        "images": "https://azure-eu-images.contentstack.com",
+        "assets": "https://azure-eu-assets.contentstack.com",
+        "automate": "https://azure-eu-automations-api.contentstack.com",
+        "launch": "https://azure-eu-launch-api.contentstack.com",
+        "developerHub": "https://azure-eu-developerhub-api.contentstack.com",
+        "brandKit": "https://azure-eu-brand-kits-api.contentstack.com",
+        "genAI": "https://azure-eu-ai.contentstack.com",
+        "personalize": "https://azure-eu-personalize-api.contentstack.com",
+        "personalizeEdge": "https://azure-eu-personalize-edge.contentstack.com"
+      }
+    },
+    {
+      "id": "gcp-na",
+      "name": "GCP North America",
+      "cloudProvider": "GCP",
+      "location": "North America",
+      "alias": [
+        "gcp-na",
+        "gcp_na"
+      ],
+      "isDefault": false,
+      "endpoints": {
+        "application": "https://gcp-na-app.contentstack.com",
+        "contentDelivery": "https://gcp-na-cdn.contentstack.com",
+        "contentManagement": "https://gcp-na-api.contentstack.com",
+        "auth": "https://gcp-na-auth-api.contentstack.com",
+        "graphqlDelivery": "https://gcp-na-graphql.contentstack.com",
+        "preview": "https://gcp-na-rest-preview.contentstack.com",
+        "graphqlPreview": "https://gcp-na-graphql-preview.contentstack.com",
+        "images": "https://gcp-na-images.contentstack.com",
+        "assets": "https://gcp-na-assets.contentstack.com",
+        "automate": "https://gcp-na-automations-api.contentstack.com",
+        "launch": "https://gcp-na-launch-api.contentstack.com",
+        "developerHub": "https://gcp-na-developerhub-api.contentstack.com",
+        "brandKit": "https://gcp-na-brand-kits-api.contentstack.com",
+        "genAI": "https://gcp-na-brand-kits-api.contentstack.com",
+        "personalize": "https://gcp-na-personalize-api.contentstack.com",
+        "personalizeEdge": "https://gcp-na-personalize-edge.contentstack.com"
+      }
+    },
+    {
+      "id": "gcp-eu",
+      "name": "GCP Europe",
+      "cloudProvider": "GCP",
+      "location": "Europe",
+      "alias": [
+        "gcp-eu",
+        "gcp_eu"
+      ],
+      "isDefault": false,
+      "endpoints": {
+        "application": "https://gcp-eu-app.contentstack.com",
+        "contentDelivery": "https://gcp-eu-cdn.contentstack.com",
+        "contentManagement": "https://gcp-eu-api.contentstack.com",
+        "auth": "https://gcp-eu-auth-api.contentstack.com",
+        "graphqlDelivery": "https://gcp-eu-graphql.contentstack.com",
+        "preview": "https://gcp-eu-rest-preview.contentstack.com",
+        "graphqlPreview": "https://gcp-eu-graphql-preview.contentstack.com",
+        "images": "https://gcp-eu-images.contentstack.com",
+        "assets": "https://gcp-eu-assets.contentstack.com",
+        "automate": "https://gcp-eu-automations-api.contentstack.com",
+        "launch": "https://gcp-eu-launch-api.contentstack.com",
+        "developerHub": "https://gcp-eu-developerhub-api.contentstack.com",
+        "brandKit": "https://gcp-eu-brand-kits-api.contentstack.com",
+        "genAI": "https://gcp-eu-brand-kits-api.contentstack.com",
+        "personalize": "https://gcp-eu-personalize-api.contentstack.com",
+        "personalizeEdge": "https://gcp-eu-personalize-edge.contentstack.com"
+      }
+    }
+  ]
+}
