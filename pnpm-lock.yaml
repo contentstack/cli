@@ -16,7 +16,7 @@ importers:
       '@contentstack/cli-auth': ~1.6.1
       '@contentstack/cli-cm-bootstrap': ~1.16.1
       '@contentstack/cli-cm-branches': ~1.6.0
-      '@contentstack/cli-cm-bulk-publish': ~1.10.1
+      '@contentstack/cli-cm-bulk-publish': ~1.10.2
       '@contentstack/cli-cm-clone': ~1.16.1
       '@contentstack/cli-cm-export': ~1.20.1
       '@contentstack/cli-cm-export-to-csv': ~1.9.1
@@ -2242,6 +2242,23 @@ packages:
     dependencies:
       assert: 2.1.0
       axios: 1.13.0_debug@4.4.3
+      buffer: 6.0.3
+      form-data: 4.0.4
+      husky: 9.1.7
+      lodash: 4.17.21
+      otplib: 12.0.1
+      qs: 6.14.0
+      stream-browserify: 3.0.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
+  /@contentstack/management/1.25.1_debug@4.4.3:
+    resolution: {integrity: sha512-454V3zGw4nrxnlYxXm82Z+yNjuechiN+TRE7SXWyHFUsexYVpKNyGyKZCvG6b4JymRTVUZpy/KnFixo01GP9Sg==}
+    engines: {node: '>=8.0.0'}
+    dependencies:
+      assert: 2.1.0
+      axios: 1.12.2_debug@4.4.3
       buffer: 6.0.3
       form-data: 4.0.4
       husky: 9.1.7
