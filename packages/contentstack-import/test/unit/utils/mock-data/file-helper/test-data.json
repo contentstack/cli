@@ -1,0 +1,38 @@
+{
+  "simpleObject": {
+    "key": "value",
+    "number": 123,
+    "boolean": true
+  },
+  "nestedObject": {
+    "level1": {
+      "level2": {
+        "level3": "deep_value"
+      }
+    }
+  },
+  "array": [
+    "item1",
+    "item2",
+    "item3"
+  ],
+  "complex": {
+    "users": [
+      {
+        "id": 1,
+        "name": "John",
+        "email": "john@example.com"
+      },
+      {
+        "id": 2,
+        "name": "Jane",
+        "email": "jane@example.com"
+      }
+    ],
+    "settings": {
+      "theme": "dark",
+      "notifications": true
+    }
+  }
+}
+
