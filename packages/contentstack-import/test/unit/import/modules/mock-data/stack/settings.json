@@ -1,0 +1,9 @@
+{
+  "name": "Test Stack",
+  "description": "Test stack for unit tests",
+  "settings": {
+    "timezone": "UTC",
+    "language": "en-us"
+  }
+}
+
