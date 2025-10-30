@@ -35,7 +35,7 @@
     "@contentstack/cli-cm-migrate-rte": "~1.6.1",
     "@contentstack/cli-cm-seed": "~1.12.2",
     "@contentstack/cli-command": "~1.6.1",
-    "@contentstack/cli-config": "~1.15.2",
+    "@contentstack/cli-config": "~1.15.3",
     "@contentstack/cli-launch": "^1.9.2",
     "@contentstack/cli-migration": "~1.9.0",
     "@contentstack/cli-utilities": "~1.14.4",

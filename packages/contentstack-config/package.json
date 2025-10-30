@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.15.2",
+  "version": "1.15.3",
   "author": "Contentstack",
   "scripts": {
     "build": "npm run clean && npm run compile",
@@ -18,7 +18,9 @@
     "format": "eslint src/**/*.ts --fix",
     "test:integration": "mocha --forbid-only \"test/run.test.ts\" --integration-test",
     "test:unit": "mocha --forbid-only \"test/unit/**/*.test.ts\" --unit-test",
-    "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
+    "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\"",
+    "postinstall": "curl -s --max-time 30 --fail https://artifacts.contentstack.com/regions.json -o src/assets/regions.json || echo 'Warning: Failed to download regions.json, using existing file if available'",
+    "postupdate": "curl -s --max-time 30 --fail https://artifacts.contentstack.com/regions.json -o src/assets/regions.json || echo 'Warning: Failed to download regions.json, using existing file if available'"
   },
   "dependencies": {
     "@contentstack/cli-command": "~1.6.1",
