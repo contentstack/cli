@@ -159,6 +159,8 @@ fileignoreconfig:
   checksum: ba02c3d580e02fc4ecd5e6a0fc59e6c7d56d7de735339aa00e2c2241ffe22176
 - filename: packages/contentstack-import/test/unit/import/modules/webhooks.test.ts
   checksum: 9f6dc9fb12f0d30600dac28846c7a9972e1dafe7c7bf5385ea677100a1d8fbd1
+- filename: packages/contentstack-import/test/unit/import/module-importer.test.ts
+  checksum: aa265917b806286c8d4d1d3f422cf5d6736a0cf6a5f50f2e9c04ec0f81eee376
 - filename: packages/contentstack-export/test/unit/utils/interactive.test.ts
   checksum: b619744ebba28dbafe3a0e65781a61a6823ccaa3eb84e2b380a323c105324c1a
 - filename: packages/contentstack-import/test/unit/import/modules/index.test.ts
