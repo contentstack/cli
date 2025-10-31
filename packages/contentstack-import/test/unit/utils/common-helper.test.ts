@@ -87,6 +87,15 @@ describe('Common Helper', () => {
 
   describe('initialization()', () => {
     it('should initialize config successfully when validation passes', () => {
+      // Stub configHandler.get to make isAuthenticated() return true
+      const configHandler = require('@contentstack/cli-utilities').configHandler;
+      sandbox.stub(configHandler, 'get').callsFake((key) => {
+        if (key === 'authorisationType') {
+          return 'OAUTH'; // This will make isAuthenticated() return true
+        }
+        return undefined;
+      });
+
       const configData: ImportConfig = {
         apiKey: 'test-api-key',
         target_stack: 'test-api-key',
@@ -108,11 +117,9 @@ describe('Common Helper', () => {
     });
 
     it('should return undefined when validation fails - covers line 30', () => {
-      const configData: ImportConfig = {
+      const configData: any = {
         email: 'test@example.com',
         password: 'password',
-        // Don't set target_stack - this should trigger validation error (line 42-45)
-        // buildAppConfig will merge with defaultConfig, but undefined won't override anything
         data: '/test/data',
         contentVersion: 1,
         masterLocale: { code: 'en-us' },
@@ -122,12 +129,22 @@ describe('Common Helper', () => {
         host: 'https://api.contentstack.io',
         'exclude-global-modules': false,
         context: { command: 'cm:stacks:import' },
-      } as any as ImportConfig;
+      };
 
-      const result = initialization(configData);
+      // Stub buildAppConfig on the module so initialization uses the stubbed version
+      const commonHelperModule = require('../../../src/utils/common-helper');
+      const originalBuildAppConfig = commonHelperModule.buildAppConfig;
+      sandbox.stub(commonHelperModule, 'buildAppConfig').callsFake((config: ImportConfig) => {
+        const merged = originalBuildAppConfig(config);
+        // Delete target_stack to ensure validation fails (email/password without target_stack)
+        delete merged.target_stack;
+        return merged;
+      });
 
-      // When validation fails (returns 'error'), the condition on line 26 is false,
-      // so it falls through to line 30 which implicitly returns undefined
+      const result = initialization(configData as ImportConfig);
+
+      // When validation fails (returns 'error'), the condition on line 23 is false,
+      // so it falls through and implicitly returns undefined
       expect(result).to.be.undefined;
     });
   });
