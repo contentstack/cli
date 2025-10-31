@@ -168,7 +168,7 @@ fileignoreconfig:
 - filename: packages/contentstack-import/test/unit/utils/file-helper.test.ts
   checksum: a5cd371d7f327c083027da4157b3c5b4df548f2c2c3ad6193aa133031994252e
 - filename: packages/contentstack-import/test/unit/utils/common-helper.test.ts
-  checksum: fa2d4819d3e3f682bc83e3a6442fdff45e206b4a90a80f98fa0fb35feb99d1c4
+  checksum: 61b3cfe0c0571dcc366e372990e3c11ced2b49703ac88155110d33897e58ca5d
 - filename: packages/contentstack-import/test/unit/import/module-importer.test.ts
   checksum: aa265917b806286c8d4d1d3f422cf5d6736a0cf6a5f50f2e9c04ec0f81eee376
 - filename: packages/contentstack-export/test/unit/utils/interactive.test.ts
