@@ -159,6 +159,16 @@ fileignoreconfig:
   checksum: ba02c3d580e02fc4ecd5e6a0fc59e6c7d56d7de735339aa00e2c2241ffe22176
 - filename: packages/contentstack-import/test/unit/import/modules/webhooks.test.ts
   checksum: 9f6dc9fb12f0d30600dac28846c7a9972e1dafe7c7bf5385ea677100a1d8fbd1
+- filename: packages/contentstack-import/test/unit/utils/backup-handler.test.ts
+  checksum: 696aea5f9a4ccd75fe22e4a839f9ad279077f59d738ed62864b91aed7b54f053
+- filename: packages/contentstack-import/test/unit/utils/mock-data/common-helper/import-configs.json
+  checksum: 1f48841db580d53ec39db163c8ef45bff26545dd51cdeb9b201a66ff96c31693
+- filename: packages/contentstack-import/test/unit/utils/mock-data/file-helper/test-data.json
+  checksum: db64a1f13a3079080ffd0aeea36a3a7576e56f27b57befc6e077aa45f147a3de
+- filename: packages/contentstack-import/test/unit/utils/file-helper.test.ts
+  checksum: a5cd371d7f327c083027da4157b3c5b4df548f2c2c3ad6193aa133031994252e
+- filename: packages/contentstack-import/test/unit/utils/common-helper.test.ts
+  checksum: 61b3cfe0c0571dcc366e372990e3c11ced2b49703ac88155110d33897e58ca5d
 - filename: packages/contentstack-import/test/unit/import/module-importer.test.ts
   checksum: aa265917b806286c8d4d1d3f422cf5d6736a0cf6a5f50f2e9c04ec0f81eee376
 - filename: packages/contentstack-export/test/unit/utils/interactive.test.ts
