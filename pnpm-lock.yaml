@@ -8644,7 +8644,7 @@ packages:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.4.3
       eslint: 8.57.1
-      eslint-plugin-import: 2.32.0_ar3c7zjwtto324sxhascv2p7uq
+      eslint-plugin-import: 2.32.0_syd5kfjkzgnd3njko5lecukj2a
       get-tsconfig: 4.13.0
       is-bun-module: 2.0.0
       stable-hash: 0.0.5
