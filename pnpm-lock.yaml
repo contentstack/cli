@@ -20,7 +20,7 @@ importers:
       '@contentstack/cli-cm-clone': ~1.16.1
       '@contentstack/cli-cm-export': ~1.20.1
       '@contentstack/cli-cm-export-to-csv': ~1.9.1
-      '@contentstack/cli-cm-import': ~1.28.5
+      '@contentstack/cli-cm-import': ~1.28.4
       '@contentstack/cli-cm-import-setup': 1.6.0
       '@contentstack/cli-cm-migrate-rte': ~1.6.1
       '@contentstack/cli-cm-seed': ~1.12.2
@@ -380,7 +380,7 @@ importers:
     specifiers:
       '@colors/colors': ^1.6.0
       '@contentstack/cli-cm-export': ~1.20.1
-      '@contentstack/cli-cm-import': ~1.28.5
+      '@contentstack/cli-cm-import': ~1.28.4
       '@contentstack/cli-command': ~1.6.1
       '@contentstack/cli-utilities': ~1.14.4
       '@oclif/core': ^4.3.0
@@ -888,7 +888,7 @@ importers:
 
   packages/contentstack-seed:
     specifiers:
-      '@contentstack/cli-cm-import': ~1.28.5
+      '@contentstack/cli-cm-import': ~1.28.4
       '@contentstack/cli-command': ~1.6.1
       '@contentstack/cli-utilities': ~1.14.4
       '@contentstack/management': ~1.22.0
@@ -8644,7 +8644,7 @@ packages:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.4.3
       eslint: 8.57.1
-      eslint-plugin-import: 2.32.0_syd5kfjkzgnd3njko5lecukj2a
+      eslint-plugin-import: 2.32.0_ar3c7zjwtto324sxhascv2p7uq
       get-tsconfig: 4.13.0
       is-bun-module: 2.0.0
       stable-hash: 0.0.5
