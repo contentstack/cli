@@ -181,4 +181,15 @@ fileignoreconfig:
   checksum: a5cd371d7f327c083027da4157b3c5b4df548f2c2c3ad6193aa133031994252e
 - filename: packages/contentstack-import/test/unit/utils/common-helper.test.ts
   checksum: fa2d4819d3e3f682bc83e3a6442fdff45e206b4a90a80f98fa0fb35feb99d1c4
+  checksum: 61b3cfe0c0571dcc366e372990e3c11ced2b49703ac88155110d33897e58ca5d
+- filename: packages/contentstack-import/test/unit/import/module-importer.test.ts
+  checksum: aa265917b806286c8d4d1d3f422cf5d6736a0cf6a5f50f2e9c04ec0f81eee376
+- filename: packages/contentstack-export/test/unit/utils/interactive.test.ts
+  checksum: b619744ebba28dbafe3a0e65781a61a6823ccaa3eb84e2b380a323c105324c1a
+- filename: packages/contentstack-import/test/unit/import/modules/index.test.ts
+  checksum: aab773ccbe05b990a4b934396ee2fcd2a780e7d886d080740cfddd8a4d4f73f7
+- filename: packages/contentstack-import/test/unit/import/modules/personalize.test.ts
+  checksum: ea4140a1516630fbfcdd61c4fe216414b733b4df2410b5d090d58ab1a22e7dbf
+- filename: packages/contentstack-import/test/unit/import/modules/variant-entries.test.ts
+  checksum: abcc2ce0b305afb655eb46a1652b3d9e807a2a2e0eef1caeb16c8ae83af4f1a1
 version: "1.0"
