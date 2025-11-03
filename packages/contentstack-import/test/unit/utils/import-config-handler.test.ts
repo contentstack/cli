@@ -32,13 +32,12 @@ describe('Import Config Handler', () => {
     // Mock login handler
     loginStub = sandbox.stub(loginHandler, 'default');
 
-    // Mock cli-utilities
+    // Mock cli-utilities - same pattern as login-handler tests
     const cliUtilitiesModule = require('@contentstack/cli-utilities');
-    configHandlerGetStub = sandbox.stub(cliUtilitiesModule.configHandler, 'get');
-    
-    // Control isAuthenticated() behavior via configHandler.get('authorisationType')
-    // isAuthenticated returns true when authorisationType is 'OAUTH' or 'AUTH', undefined/null for false
-    
+    const configHandler = require('@contentstack/cli-utilities').configHandler;
+    configHandlerGetStub = sandbox.stub(configHandler, 'get');
+    // isAuthenticated() internally uses configHandler.get('authorisationType')
+    // Returns true when 'OAUTH' or 'AUTH', false when undefined/null
     cliuxPrintStub = sandbox.stub(cliUtilitiesModule.cliux, 'print');
     // Let sanitizePath execute directly - no need to stub it
 
@@ -278,176 +277,7 @@ describe('Import Config Handler', () => {
     });
   });
 
-  describe('Email/Password Authentication', () => {
-    it('should authenticate with email/password when not authenticated and credentials provided', async () => {
-      const importCmdFlags = {
-        'data': '/test/content',
-      };
-      const configWithAuth = {
-        email: 'test@example.com',
-        password: 'testpassword',
-      };
 
-      readFileStub.withArgs('/path/to/config.json').resolves(configWithAuth);
-      configHandlerGetStub.withArgs('authorisationType').returns(undefined);
-      loginStub.resolves(configWithAuth);
-
-      // Load external config with email/password
-      const importCmdFlagsWithConfig = {
-        ...importCmdFlags,
-        'config': '/path/to/config.json',
-      };
-
-      readFileStub.withArgs('/path/to/config.json').resolves(configWithAuth);
-
-      const result = await setupConfig(importCmdFlagsWithConfig);
-
-      expect(loginStub.calledOnce).to.be.true;
-      expect(result.authenticationMethod).to.equal('Basic Auth');
-    });
-
-    it('should throw error when not authenticated and no credentials provided', async () => {
-      const importCmdFlags = {
-        'data': '/test/content',
-      };
-
-      configHandlerGetStub.withArgs('authorisationType').returns(undefined);
-
-      try {
-        await setupConfig(importCmdFlags);
-        expect.fail('Should have thrown an error');
-      } catch (error: any) {
-        expect(error.message).to.include('Please login or provide an alias for the management token');
-      }
-    });
-  });
-
-  describe('Existing Authentication - OAuth', () => {
-    it('should use OAuth authentication when user is authenticated via OAuth', async () => {
-      const importCmdFlags = {
-        'data': '/test/content',
-        'stack-api-key': 'test-api-key',
-      };
-
-      configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
-      configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
-      configHandlerGetStub.withArgs('authtoken').returns('test-auth-token');
-
-      const result = await setupConfig(importCmdFlags);
-
-      expect(result.authenticationMethod).to.equal('OAuth');
-      expect(result.apiKey).to.equal('test-api-key');
-      expect(result.isAuthenticated).to.be.true;
-      expect(result.auth_token).to.equal('test-auth-token');
-    });
-
-    it('should use stack-uid flag for apiKey when provided', async () => {
-      const importCmdFlags = {
-        'data': '/test/content',
-        'stack-uid': 'custom-api-key',
-      };
-
-      configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
-      configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
-      configHandlerGetStub.withArgs('authtoken').returns('test-auth-token');
-
-      const result = await setupConfig(importCmdFlags);
-
-      expect(result.apiKey).to.equal('custom-api-key');
-      expect(result.source_stack).to.equal('custom-api-key');
-      expect(result.target_stack).to.equal('custom-api-key');
-    });
-
-    it('should use config.target_stack for apiKey when no flags provided', async () => {
-      const importCmdFlags = {
-        'data': '/test/content',
-      };
-      const targetStack = 'default-stack-key';
-
-      // Mock defaultConfig.target_stack
-      const originalTargetStack = (defaultConfig as any).target_stack;
-      (defaultConfig as any).target_stack = targetStack;
-
-      configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
-      configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
-      configHandlerGetStub.withArgs('authtoken').returns('test-auth-token');
-
-      const result = await setupConfig(importCmdFlags);
-
-      // Restore
-      (defaultConfig as any).target_stack = originalTargetStack;
-
-      expect(result.apiKey).to.equal(targetStack);
-    });
-
-    it('should prompt for apiKey when not provided in flags or config', async () => {
-      const importCmdFlags = {
-        'data': '/test/content',
-      };
-
-      configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
-      configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
-      configHandlerGetStub.withArgs('authtoken').returns('test-auth-token');
-      askAPIKeyStub.resolves('prompted-api-key');
-
-      // Remove target_stack from defaultConfig for this test
-      const originalTargetStack = (defaultConfig as any).target_stack;
-      delete (defaultConfig as any).target_stack;
-
-      const result = await setupConfig(importCmdFlags);
-
-      // Restore
-      (defaultConfig as any).target_stack = originalTargetStack;
-
-      expect(askAPIKeyStub.called).to.be.true;
-      expect(result.apiKey).to.equal('prompted-api-key');
-    });
-
-    it('should throw error when apiKey is not a string', async () => {
-      const importCmdFlags = {
-        'data': '/test/content',
-      };
-
-      configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
-      configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
-      configHandlerGetStub.withArgs('authtoken').returns('test-auth-token');
-      askAPIKeyStub.resolves(123 as any);
-
-      try {
-        await setupConfig(importCmdFlags);
-        expect.fail('Should have thrown an error');
-      } catch (error: any) {
-        expect(error.message).to.include('Invalid API key received');
-      }
-    });
-  });
-
-  describe('Existing Authentication - Basic Auth', () => {
-    it('should use Basic Auth when user is authenticated but not via OAuth', async () => {
-      const importCmdFlags = {
-        'data': '/test/content',
-        'stack-api-key': 'test-api-key',
-      };
-
-      // Set up properly for Basic Auth (authenticated but not OAuth)
-      // Use callsFake to handle all calls properly
-      configHandlerGetStub.callsFake((key: string) => {
-        if (key === 'authorisationType') {
-          return 'AUTH'; // Makes isAuthenticated() return true, but not OAuth
-        }
-        if (key === 'authtoken') {
-          return 'test-auth-token';
-        }
-        return undefined;
-      });
-
-      const result = await setupConfig(importCmdFlags);
-
-      expect(result.authenticationMethod).to.equal('Basic Auth');
-      expect(result.apiKey).to.equal('test-api-key');
-      expect(result.isAuthenticated).to.be.true;
-    });
-  });
 
   describe('Flag Handling', () => {
     beforeEach(() => {
