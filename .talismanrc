@@ -178,5 +178,27 @@ fileignoreconfig:
 - filename: packages/contentstack-import/test/unit/utils/file-helper.test.ts
   checksum: a5cd371d7f327c083027da4157b3c5b4df548f2c2c3ad6193aa133031994252e
 - filename: packages/contentstack-import/test/unit/utils/common-helper.test.ts
-  checksum: fa2d4819d3e3f682bc83e3a6442fdff45e206b4a90a80f98fa0fb35feb99d1c4
+  checksum: 61b3cfe0c0571dcc366e372990e3c11ced2b49703ac88155110d33897e58ca5d
+- filename: packages/contentstack-import/test/unit/import/module-importer.test.ts
+  checksum: aa265917b806286c8d4d1d3f422cf5d6736a0cf6a5f50f2e9c04ec0f81eee376
+- filename: packages/contentstack-export/test/unit/utils/interactive.test.ts
+  checksum: b619744ebba28dbafe3a0e65781a61a6823ccaa3eb84e2b380a323c105324c1a
+- filename: packages/contentstack-import/test/unit/import/modules/index.test.ts
+  checksum: aab773ccbe05b990a4b934396ee2fcd2a780e7d886d080740cfddd8a4d4f73f7
+- filename: packages/contentstack-import/test/unit/import/modules/personalize.test.ts
+  checksum: ea4140a1516630fbfcdd61c4fe216414b733b4df2410b5d090d58ab1a22e7dbf
+- filename: packages/contentstack-import/test/unit/import/modules/variant-entries.test.ts
+  checksum: abcc2ce0b305afb655eb46a1652b3d9e807a2a2e0eef1caeb16c8ae83af4f1a1
+- filename: packages/contentstack-import/test/unit/utils/import-path-resolver.test.ts
+  checksum: 05436c24619b2d79b51eda9ce9a338182cc69b078ede60d310bfd55a62db8369
+- filename: packages/contentstack-import/test/unit/utils/interactive.test.ts
+  checksum: 77a45bd7326062053b98d1333fa59147757a5a8abdb34057a347ca2a1b95b343
+- filename: packages/contentstack-import/test/unit/utils/import-config-handler.test.ts
+  checksum: 20bbfb405a183b577f8ae8f2b47013bc42729aa817d617264e0c3a70b3fa752b
+- filename: packages/contentstack-import/test/unit/utils/login-handler.test.ts
+  checksum: bea00781cdffc2d085b3c85d6bde75f12faa3ee51930c92e59777750a6727325
+- filename: packages/contentstack-import/test/unit/utils/marketplace-app-helper.test.ts
+  checksum: eca2702d1f7ed075b9b857964b9e56f69b16e4a31942423d6b1265e4bf398db5
+- filename: packages/contentstack-import/test/unit/utils/logger.test.ts
+  checksum: 794e06e657a7337c8f094d6042fb04c779683f97b860efae14e075098d2af024
 version: "1.0"
