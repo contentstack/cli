@@ -1,0 +1,95 @@
+{
+  "validWithEmailPassword": {
+    "email": "test@example.com",
+    "password": "password123",
+    "target_stack": "stack-api-key",
+    "apiKey": "stack-api-key",
+    "data": "/path/to/data",
+    "context": {
+      "command": "cm:stacks:import"
+    }
+  },
+  "validWithManagementToken": {
+    "management_token": "mgmt-token-123",
+    "target_stack": "stack-api-key",
+    "apiKey": "stack-api-key",
+    "data": "/path/to/data",
+    "context": {
+      "command": "cm:stacks:import"
+    }
+  },
+  "emailWithoutPassword": {
+    "email": "test@example.com",
+    "target_stack": "stack-api-key",
+    "apiKey": "stack-api-key",
+    "data": "/path/to/data"
+  },
+  "passwordWithoutEmail": {
+    "password": "password123",
+    "target_stack": "stack-api-key",
+    "apiKey": "stack-api-key",
+    "data": "/path/to/data"
+  },
+  "emailPasswordWithoutTargetStack": {
+    "email": "test@example.com",
+    "password": "password123",
+    "apiKey": "stack-api-key",
+    "data": "/path/to/data"
+  },
+  "preserveStackVersionWithoutAuth": {
+    "preserveStackVersion": true,
+    "target_stack": "stack-api-key",
+    "apiKey": "stack-api-key",
+    "data": "/path/to/data",
+    "context": {
+      "command": "cm:stacks:import"
+    }
+  },
+  "preserveStackVersionWithMgmtToken": {
+    "preserveStackVersion": true,
+    "management_token": "mgmt-token-123",
+    "target_stack": "stack-api-key",
+    "apiKey": "stack-api-key",
+    "host": "https://api.contentstack.io",
+    "apis": {
+      "stacks": "/stacks"
+    },
+    "data": "/path/to/data",
+    "modules": {
+      "stack": {
+        "dirName": "stack",
+        "fileName": "settings.json"
+      }
+    },
+    "context": {
+      "command": "cm:stacks:import"
+    }
+  },
+  "preserveStackVersionWithEmailPassword": {
+    "preserveStackVersion": true,
+    "email": "test@example.com",
+    "password": "password123",
+    "target_stack": "stack-api-key",
+    "apiKey": "stack-api-key",
+    "host": "https://api.contentstack.io",
+    "apis": {
+      "stacks": "/stacks"
+    },
+    "data": "/path/to/data",
+    "modules": {
+      "stack": {
+        "dirName": "stack",
+        "fileName": "settings.json"
+      }
+    },
+    "context": {
+      "command": "cm:stacks:import"
+    }
+  },
+  "noAuthWithTargetStack": {
+    "target_stack": "stack-api-key",
+    "apiKey": "stack-api-key",
+    "data": "/path/to/data"
+  }
+}
+

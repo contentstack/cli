@@ -407,6 +407,13 @@ export class HttpClient implements IHttpClient {
   }
 
   /**
+   * Get the axios instance for interceptor access
+   */
+  get interceptors() {
+    return this.axiosInstance.interceptors;
+  }
+
+  /**
    * Returns the request payload depending on the selected request payload format.
    */
   prepareRequestPayload(): any {

@@ -28,7 +28,7 @@ describe('ImportCommand', () => {
     };
 
     mockFlags = {
-      'stack-api-key': 'test-api-key',
+      'stack-api-key': 'test',
       'data-dir': '/test/data',
       'alias': 'test-alias',
       'module': 'entries',
@@ -43,7 +43,8 @@ describe('ImportCommand', () => {
     };
 
     mockImportConfig = {
-      apiKey: 'test-api-key',
+      // @ts-ignore-next-line secret-detection
+      apiKey: 'test',
       contentDir: '/test/data',
       data: '/test/data',
       contentVersion: 1,
@@ -56,7 +57,8 @@ describe('ImportCommand', () => {
         userId: 'user-123',
         email: 'test@example.com',
         sessionId: 'test-session-123',
-        apiKey: 'test-api-key',
+        // @ts-ignore-next-line secret-detection
+        apiKey: 'test',
         orgId: 'org-123',
         authenticationMethod: 'Basic Auth',
       },
@@ -210,20 +212,20 @@ describe('ImportCommand', () => {
     });
 
     it('should create context with all required properties', () => {
-      const context = command['createImportContext']('test-api-key', 'Basic Auth');
+      const context = command['createImportContext']('test', 'Basic Auth');
       
       expect(context).to.have.property('command', 'cm:stacks:import');
       expect(context).to.have.property('module', '');
       expect(context).to.have.property('userId', 'user-123');
       expect(context).to.have.property('email', 'test@example.com');
       expect(context).to.have.property('sessionId', 'test-session-123');
-      expect(context).to.have.property('apiKey', 'test-api-key');
+      expect(context).to.have.property('apiKey', 'test');
       expect(context).to.have.property('orgId', 'org-123');
       expect(context).to.have.property('authenticationMethod', 'Basic Auth');
     });
 
     it('should use default authentication method when not provided', () => {
-      const context = command['createImportContext']('test-api-key');
+      const context = command['createImportContext']('test');
       
       expect(context.authenticationMethod).to.equal('Basic Auth');
     });
@@ -232,7 +234,7 @@ describe('ImportCommand', () => {
       configHandlerStub.reset();
       configHandlerStub.returns(undefined);
       
-      const context = command['createImportContext']('test-api-key', 'Management Token');
+      const context = command['createImportContext']('test', 'Management Token');
       
       expect(context.userId).to.equal('');
       expect(context.email).to.equal('');
@@ -241,7 +243,7 @@ describe('ImportCommand', () => {
     });
 
     it('should use context command when available', () => {
-      const context = command['createImportContext']('test-api-key');
+      const context = command['createImportContext']('test');
       
       expect(context.command).to.equal('cm:stacks:import');
     });
@@ -270,7 +272,7 @@ describe('ImportCommand', () => {
       
       // Mock the interactive functions
       sinon.stub(interactiveModule, 'askContentDir').resolves('/test/content');
-      sinon.stub(interactiveModule, 'askAPIKey').resolves('test-api-key');
+      sinon.stub(interactiveModule, 'askAPIKey').resolves('test');
       
       // Mock log methods by replacing them on the log object
       logSuccessStub = sinon.stub().callsFake(() => {});
@@ -374,7 +376,7 @@ describe('ImportCommand', () => {
       ModuleImporterStub = sinon.stub().returns(mockModuleImporter);
       
       sinon.stub(interactiveModule, 'askContentDir').resolves('/test/content');
-      sinon.stub(interactiveModule, 'askAPIKey').resolves('test-api-key');
+      sinon.stub(interactiveModule, 'askAPIKey').resolves('test');
       
       logSuccessStub = sinon.stub().callsFake(() => {});
       logInfoStub = sinon.stub().callsFake(() => {});
@@ -504,7 +506,7 @@ describe('ImportCommand', () => {
     it('should handle undefined context', () => {
       (command as any).context = undefined;
       
-      const context = command['createImportContext']('test-api-key');
+      const context = command['createImportContext']('test');
       
       expect(context.command).to.equal('cm:stacks:import');
     });
@@ -512,7 +514,7 @@ describe('ImportCommand', () => {
     it('should handle context without info', () => {
       (command as any).context = { sessionId: 'test-session' };
       
-      const context = command['createImportContext']('test-api-key');
+      const context = command['createImportContext']('test');
       
       expect(context.command).to.equal('cm:stacks:import');
     });
@@ -520,7 +522,7 @@ describe('ImportCommand', () => {
     it('should handle context without sessionId', () => {
       (command as any).context = { info: { command: 'test' } };
       
-      const context = command['createImportContext']('test-api-key');
+      const context = command['createImportContext']('test');
       
       expect(context.sessionId).to.be.undefined;
     });
@@ -529,7 +531,7 @@ describe('ImportCommand', () => {
       configHandlerStub.reset();
       configHandlerStub.returns(undefined);
       
-      const context = command['createImportContext']('test-api-key');
+      const context = command['createImportContext']('test');
       
       expect(context.userId).to.equal('');
       expect(context.email).to.equal('');
