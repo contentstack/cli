@@ -163,7 +163,7 @@ export default class ImportLocales extends BaseClass {
 
           const langUpdateRequest = this.stackAPIClient.locale(sourceMasterLanguage.code);
           langUpdateRequest.name = sourceMasterLanguage.name;
-          await langUpdateRequest.update().catch(function (error: Error) {
+          await langUpdateRequest.update().catch((error: Error) => {
             log.debug('Error updating master language name', this.config.context);
             handleAndLogError(error, { ...this.config.context });
           });

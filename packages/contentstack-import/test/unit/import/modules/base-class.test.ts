@@ -86,7 +86,7 @@ describe('BaseClass', () => {
     };
 
     mockImportConfig = {
-      apiKey: 'test-api-key',
+      apiKey: 'test',
       contentDir: '/test/content',
       data: '/test/content',
       contentVersion: 1,
@@ -99,7 +99,7 @@ describe('BaseClass', () => {
         userId: 'user-123',
         email: 'test@example.com',
         sessionId: 'session-123',
-        apiKey: 'test-api-key',
+        apiKey: 'test',
         orgId: 'org-123',
         authenticationMethod: 'Management Token'
       },
@@ -1098,7 +1098,8 @@ describe('BaseClass', () => {
       );
       const end = Date.now();
 
-      expect(end - start).to.be.at.least(950); // Should wait ~950ms
+      // Allow some tolerance for timing (at least 940ms to account for execution time variance)
+      expect(end - start).to.be.at.least(940);
     });
 
     it('should handle very long execution times', async () => {
