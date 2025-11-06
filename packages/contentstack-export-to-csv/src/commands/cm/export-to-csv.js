@@ -261,8 +261,8 @@ class ExportToCsvCommand extends Command {
           let stack;
           let language;
           let stackAPIClient;
-          // let finalIncludeFallback = includeFallback;
-          // let finalFallbackLocale = fallbackLocale;
+          let finalIncludeFallback = includeFallback;
+          let finalFallbackLocale = fallbackLocale;
 
           if (managementTokenAlias) {
             const { stackDetails, apiClient } = await this.getAliasDetails(managementTokenAlias, stackName);
@@ -281,20 +281,18 @@ class ExportToCsvCommand extends Command {
 
           // if (includeFallback === undefined || fallbackLocale === undefined) {
           //   const fallbackOptions = await util.chooseFallbackOptions(stackAPIClient);
-
-          //   if (includeFallback === undefined) {
-          //     finalIncludeFallback = fallbackOptions.includeFallback;
-          //   }
-          //   if (fallbackLocale === undefined && fallbackOptions.fallbackLocale) {
-          //     finalFallbackLocale = fallbackOptions.fallbackLocale;
-          //   }
           // }
+
+
+          if (fallbackLocale !== undefined) {
+            finalFallbackLocale = fallbackLocale;
+          }
 
           await this.createTaxonomyAndTermCsvFile(stackAPIClient, stackName, stack, taxonomyUID, delimiter, {
             locale: language.code,
             branch: branchUid,
-            include_fallback: includeFallback,
-            fallback_locale: fallbackLocale,
+            include_fallback: finalIncludeFallback,
+            fallback_locale: finalFallbackLocale,
           });
           break;
         }
@@ -457,7 +455,7 @@ class ExportToCsvCommand extends Command {
     } else {
       taxonomies = await util.getAllTaxonomies(payload);
     }
-    
+
     if (!taxonomies?.length) {
       cliux.print('info: No taxonomies found!', { color: 'blue' });
     } else {
