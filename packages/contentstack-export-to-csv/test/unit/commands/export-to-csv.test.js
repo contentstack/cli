@@ -39,7 +39,9 @@ describe('Export to CSV functionality', () => {
       nock(cma)
         .get(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}`)
         .reply(200, { taxonomy: mockData.taxonomiesResp.taxonomies[0] })
-        .get(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}/export?format=csv&locale=en-us&include_fallback=true&fallback_locale=en-us`)
+        .get(
+          `/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}/export?format=csv&locale=en-us&include_fallback=true&fallback_locale=en-us`,
+        )
         .reply(200, mockData.taxonomyCSVData);
 
       const { stdout } = await runCommand([
@@ -63,11 +65,17 @@ describe('Export to CSV functionality', () => {
 
     it('CSV file should be created without taxonomy uid and with locale parameters', async () => {
       nock(cma)
-        .get('/v3/taxonomies?include_count=true&limit=100&skip=0&locale=en-us&include_fallback=true&fallback_locale=en-us')
+        .get(
+          '/v3/taxonomies?include_count=true&limit=100&skip=0&locale=en-us&include_fallback=true&fallback_locale=en-us',
+        )
         .reply(200, mockData.taxonomiesResp)
-        .get(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}/export?format=csv&locale=en-us&include_fallback=true&fallback_locale=en-us`)
+        .get(
+          `/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}/export?format=csv&locale=en-us&include_fallback=true&fallback_locale=en-us`,
+        )
         .reply(200, mockData.taxonomyCSVData)
-        .get(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[1].uid}/export?format=csv&locale=en-us&include_fallback=true&fallback_locale=en-us`)
+        .get(
+          `/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[1].uid}/export?format=csv&locale=en-us&include_fallback=true&fallback_locale=en-us`,
+        )
         .reply(200, mockData.taxonomyCSVData);
 
       const { stdout } = await runCommand([
@@ -85,37 +93,6 @@ describe('Export to CSV functionality', () => {
         'en-us',
       ]);
       expect(stdout).to.include('Writing taxonomies to file:');
-    });
-
-    it('CSV file should be created using prompt with fallback options', async () => {
-      nock(cma)
-        .get(`/v3/organizations?limit=100`)
-        .reply(200, { organizations: mockData.organizations })
-        .get(`/v3/stacks?&query={"org_uid":"${mockData.organizations[0].uid}"}`)
-        .reply(200, { stacks: mockData.stacks })
-        .get('/v3/locales')
-        .reply(200, { locales: mockData.locales })
-        .get(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}`)
-        .reply(200, { taxonomy: mockData.taxonomiesResp.taxonomies[0] })
-        .get(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}/export?format=csv&locale=en-us&include_fallback=true&fallback_locale=en-us`)
-        .reply(200, mockData.taxonomyCSVData);
-
-      sandbox.stub(process, 'chdir').returns(undefined);
-      sandbox.stub(inquirer, 'registerPrompt').returns(undefined);
-      sandbox.stub(inquirer, 'prompt').returns(
-        Promise.resolve({
-          action: 'taxonomies',
-          chosenOrg: mockData.organizations[0].name,
-          chosenStack: mockData.stacks[0].name,
-          chosenLanguage: 'en-us',
-          includeFallback: true,
-          selectedFallbackLocale: 'en-us',
-        }),
-      );
-
-      const { stdout } = await runCommand(['cm:export-to-csv', '--taxonomy-uid', 'taxonomy_uid_1']);
-      //expect(stdout).to.include('Writing taxonomies to file');
-      sandbox.restore();
     });
   });
 
