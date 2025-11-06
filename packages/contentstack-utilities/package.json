@@ -43,7 +43,7 @@
     "conf": "^10.2.0",
     "dotenv": "^16.5.0",
     "figures": "^3.2.0",
-    "inquirer": "8.2.6",
+    "inquirer": "8.2.7",
     "inquirer-search-checkbox": "^1.0.0",
     "inquirer-search-list": "^1.2.6",
     "js-yaml": "^4.1.0",

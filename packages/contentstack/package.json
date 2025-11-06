@@ -48,7 +48,7 @@
     "chalk": "^4.1.2",
     "debug": "^4.4.1",
     "figlet": "1.8.1",
-    "inquirer": "8.2.6",
+    "inquirer": "8.2.7",
     "node-machine-id": "^1.1.12",
     "open": "^8.4.2",
     "semver": "^7.7.2",
