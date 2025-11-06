@@ -142,7 +142,7 @@ fileignoreconfig:
 - filename: packages/contentstack-export/test/unit/export/modules/stack.test.ts
   checksum: bb0f20845d85fd56197f1a8c67b8f71c57dcd1836ed9cfd86d1f49f41e84d3a0
 - filename: packages/contentstack-export/test/unit/export/modules/taxonomies.test.ts
-  checksum: 621c1de129488b6a0372a91056ebb84353bcc642ce06de59e3852cfee8d0ce49
+  checksum: 5b1d2ba5ec9100fd6174e9c6771b7e49c93a09fa2d6aedadd338e56bc3e3610f
 - filename: packages/contentstack-export/test/unit/export/modules/custom-roles.test.ts
   checksum: 39f0166a8030ee8f504301f3a42cc71b46ddc027189b90029ef19800b79a46e5
 - filename: packages/contentstack-export/test/unit/export/modules/workflows.test.ts
