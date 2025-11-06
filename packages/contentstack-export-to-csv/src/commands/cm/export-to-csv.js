@@ -261,8 +261,8 @@ class ExportToCsvCommand extends Command {
           let stack;
           let language;
           let stackAPIClient;
-          let finalIncludeFallback = includeFallback;
-          let finalFallbackLocale = fallbackLocale;
+          // let finalIncludeFallback = includeFallback;
+          // let finalFallbackLocale = fallbackLocale;
 
           if (managementTokenAlias) {
             const { stackDetails, apiClient } = await this.getAliasDetails(managementTokenAlias, stackName);
@@ -279,22 +279,22 @@ class ExportToCsvCommand extends Command {
             language = await util.chooseLanguage(stackAPIClient);
           }
 
-          if (includeFallback === undefined || fallbackLocale === undefined) {
-            const fallbackOptions = await util.chooseFallbackOptions(stackAPIClient);
+          // if (includeFallback === undefined || fallbackLocale === undefined) {
+          //   const fallbackOptions = await util.chooseFallbackOptions(stackAPIClient);
 
-            if (includeFallback === undefined) {
-              finalIncludeFallback = fallbackOptions.includeFallback;
-            }
-            if (fallbackLocale === undefined && fallbackOptions.fallbackLocale) {
-              finalFallbackLocale = fallbackOptions.fallbackLocale;
-            }
-          }
+          //   if (includeFallback === undefined) {
+          //     finalIncludeFallback = fallbackOptions.includeFallback;
+          //   }
+          //   if (fallbackLocale === undefined && fallbackOptions.fallbackLocale) {
+          //     finalFallbackLocale = fallbackOptions.fallbackLocale;
+          //   }
+          // }
 
           await this.createTaxonomyAndTermCsvFile(stackAPIClient, stackName, stack, taxonomyUID, delimiter, {
             locale: language.code,
             branch: branchUid,
-            include_fallback: finalIncludeFallback,
-            fallback_locale: finalFallbackLocale,
+            include_fallback: includeFallback,
+            fallback_locale: fallbackLocale,
           });
           break;
         }
