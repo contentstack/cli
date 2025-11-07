@@ -12,7 +12,7 @@ importers:
 
   packages/contentstack:
     specifiers:
-      '@contentstack/cli-audit': ~1.14.2
+      '@contentstack/cli-audit': ~1.16.0
       '@contentstack/cli-auth': ~1.6.2
       '@contentstack/cli-cm-bootstrap': ~2.0.0-beta.2
       '@contentstack/cli-cm-branches': ~1.6.1
@@ -72,7 +72,7 @@ importers:
       uuid: ^9.0.1
       winston: ^3.17.0
     dependencies:
-      '@contentstack/cli-audit': 1.14.2_debug@4.4.3
+      '@contentstack/cli-audit': link:../contentstack-audit
       '@contentstack/cli-auth': link:../contentstack-auth
       '@contentstack/cli-cm-bootstrap': link:../contentstack-bootstrap
       '@contentstack/cli-cm-branches': link:../contentstack-branches
@@ -136,7 +136,7 @@ importers:
   packages/contentstack-audit:
     specifiers:
       '@contentstack/cli-command': ~1.6.1
-      '@contentstack/cli-utilities': ~1.14.4
+      '@contentstack/cli-utilities': ~1.15.0
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@oclif/plugin-plugins': ^5.4.38
@@ -165,7 +165,7 @@ importers:
       winston: ^3.17.0
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
-      '@contentstack/cli-utilities': 1.14.4
+      '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.35
       '@oclif/plugin-plugins': 5.4.53
@@ -2089,27 +2089,6 @@ packages:
     engines: {node: '>=0.1.90'}
     dev: false
 
-  /@contentstack/cli-audit/1.14.2_debug@4.4.3:
-    resolution: {integrity: sha512-vuX80L3RlkGnKIyBDTOPcqXiyyrEYvpUsaj41ORDUuILnw+AVJAi0fESIUOqocvKlON2KYVoqODHaYzF0SeWpA==}
-    engines: {node: '>=16'}
-    hasBin: true
-    dependencies:
-      '@contentstack/cli-command': 1.6.2_debug@4.4.3
-      '@contentstack/cli-utilities': 1.15.0_debug@4.4.3
-      '@oclif/core': 4.8.0
-      '@oclif/plugin-help': 6.2.35
-      '@oclif/plugin-plugins': 5.4.53
-      chalk: 4.1.2
-      fast-csv: 4.3.6
-      fs-extra: 11.3.2
-      lodash: 4.17.21
-      uuid: 9.0.1
-      winston: 3.18.3
-    transitivePeerDependencies:
-      - debug
-      - supports-color
-    dev: false
-
   /@contentstack/cli-cm-bulk-publish/1.10.2_debug@4.4.3:
     resolution: {integrity: sha512-b0SVF7SMOey5TDvT2BAL+UucqAKXBUdb2m7Q3bjJZHXJ2cR7BRAiaZRSlnKl8rd5pphbkUC64vDSjm3LedejvA==}
     engines: {node: '>=14.0.0'}
@@ -2160,7 +2139,7 @@ packages:
     dependencies:
       '@apollo/client': 3.14.0_graphql@16.12.0
       '@contentstack/cli-command': 1.6.2_debug@4.4.3
-      '@contentstack/cli-utilities': 1.14.4_debug@4.4.3
+      '@contentstack/cli-utilities': 1.15.0_debug@4.4.3
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.35
       '@oclif/plugin-plugins': 5.4.53
@@ -2193,42 +2172,6 @@ packages:
       - supports-color
       - tslib
       - typescript
-    dev: false
-
-  /@contentstack/cli-utilities/1.14.4:
-    resolution: {integrity: sha512-Pg124tYh/p688aerqVgk8lEsCF8F5Ky35yes3KO23Wzt44Hvzps7X27psOTHs/aD4jhZkw3aB+jTItQlL84b8g==}
-    dependencies:
-      '@contentstack/management': 1.25.1
-      '@contentstack/marketplace-sdk': 1.4.0
-      '@oclif/core': 4.8.0
-      axios: 1.13.2
-      chalk: 4.1.2
-      cli-cursor: 3.1.0
-      cli-progress: 3.12.0
-      cli-table: 0.3.11
-      conf: 10.2.0
-      dotenv: 16.6.1
-      figures: 3.2.0
-      inquirer: 8.2.6
-      inquirer-search-checkbox: 1.0.0
-      inquirer-search-list: 1.2.6
-      js-yaml: 4.1.0
-      klona: 2.0.6
-      lodash: 4.17.21
-      mkdirp: 1.0.4
-      open: 8.4.2
-      ora: 5.4.1
-      papaparse: 5.5.3
-      recheck: 4.4.5
-      rxjs: 6.6.7
-      traverse: 0.6.11
-      tty-table: 4.2.3
-      unique-string: 2.0.0
-      uuid: 9.0.1
-      winston: 3.18.3
-      xdg-basedir: 4.0.0
-    transitivePeerDependencies:
-      - debug
     dev: false
 
   /@contentstack/cli-utilities/1.14.4_debug@4.4.3:
