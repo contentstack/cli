@@ -28,7 +28,7 @@ describe('Extension Helper', () => {
   });
 
   const createMockConfig = (backupDir?: string): ImportConfig => ({
-    backupDir,
+    backupDir: backupDir || '',
     apiKey: 'test-api-key',
     management_token: 'test-token',
     contentDir: '/test/content',
@@ -122,7 +122,6 @@ describe('Extension Helper', () => {
     marketplaceAppEncryptionKey: 'test-key',
     getEncryptionKeyMaxRetry: 3,
     overwriteSupportedModules: [],
-    onlyTSModules: [],
     globalModules: [],
     entriesPublish: false,
     cliLogsPath: '/test/logs',
