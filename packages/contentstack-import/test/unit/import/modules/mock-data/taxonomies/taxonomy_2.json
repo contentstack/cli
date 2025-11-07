@@ -1,0 +1,16 @@
+{
+  "taxonomy": {
+    "uid": "taxonomy_2",
+    "name": "Tag Taxonomy",
+    "description": "Content tags"
+  },
+  "terms": {
+    "term_4": {
+      "uid": "term_4",
+      "name": "Featured",
+      "parent_uid": null
+    }
+  }
+}
+
+

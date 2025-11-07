@@ -335,7 +335,7 @@ FLAGS
   -e, --environment=<value>    Environment name for delivery token
   -k, --stack-api-key=<value>  Stack API Key
   -m, --management             Set this flag to save management token
-  -t, --token=<value>          Add the token name
+  -t, --token=<value>          [env: TOKEN] Add the token name
   -y, --yes                    Use this flag to skip confirmation
 
 DESCRIPTION
@@ -2238,24 +2238,30 @@ Export entries, taxonomies, terms or organization users to csv using this comman
 USAGE
   $ csdx cm:export-to-csv [--action entries|users|teams|taxonomies] [-a <value>] [--org <value>] [-n <value>] [-k
     <value>] [--org-name <value>] [--locale <value>] [--content-type <value>] [--branch <value>] [--team-uid <value>]
-    [--taxonomy-uid <value>] [--delimiter <value>]
+    [--taxonomy-uid <value>] [--include-fallback] [--fallback-locale <value>] [--delimiter <value>]
 
 FLAGS
-  -a, --alias=<value>          Alias of the management token.
-  -k, --stack-api-key=<value>  API Key of the source stack.
-  -n, --stack-name=<value>     Name of the stack that needs to be created as CSV filename.
-      --action=<option>        Option to export data (entries, users, teams, taxonomies). <options:
-                               entries|users|teams|taxonomies>
-                               <options: entries|users|teams|taxonomies>
-      --branch=<value>         Branch from which entries will be exported.
-      --content-type=<value>   Content type of entries that will be exported.
-      --delimiter=<value>      [default: ,] [optional] Provide a delimiter to separate individual data fields within the
-                               CSV file. For example: cm:export-to-csv --delimiter '|'
-      --locale=<value>         Locale of entries that will be exported.
-      --org=<value>            Provide organization UID to clone org users.
-      --org-name=<value>       Name of the organization that needs to be created as CSV filename.
-      --taxonomy-uid=<value>   Provide the taxonomy UID of the related terms you want to export.
-      --team-uid=<value>       Provide the UID of a specific team in an organization.
+  -a, --alias=<value>            Alias of the management token.
+  -k, --stack-api-key=<value>    API Key of the source stack.
+  -n, --stack-name=<value>       Name of the stack that needs to be created as CSV filename.
+      --action=<option>          Option to export data (entries, users, teams, taxonomies). <options:
+                                 entries|users|teams|taxonomies>
+                                 <options: entries|users|teams|taxonomies>
+      --branch=<value>           Branch from which entries will be exported.
+      --content-type=<value>     Content type of entries that will be exported.
+      --delimiter=<value>        [default: ,] [optional] Provide a delimiter to separate individual data fields within
+                                 the CSV file. For example: cm:export-to-csv --delimiter '|'
+      --fallback-locale=<value>  [Optional] Specify a specific fallback locale for taxonomy export. This locale will be
+                                 used when a taxonomy term doesn't exist in the primary locale. Takes priority over
+                                 branch fallback hierarchy when both are specified.
+      --include-fallback         [Optional] Include fallback locale data when exporting taxonomies. When enabled, if a
+                                 taxonomy term doesn't exist in the specified locale, it will fallback to the hierarchy
+                                 defined in the branch settings.
+      --locale=<value>           Locale of entries that will be exported.
+      --org=<value>              Provide organization UID to clone org users.
+      --org-name=<value>         Name of the organization that needs to be created as CSV filename.
+      --taxonomy-uid=<value>     Provide the taxonomy UID of the related terms you want to export.
+      --team-uid=<value>         Provide the UID of a specific team in an organization.
 
 DESCRIPTION
   Export entries, taxonomies, terms or organization users to csv using this command
@@ -2334,6 +2340,24 @@ EXAMPLES
   Exporting taxonomies and respective terms to a .CSV file with a delimiter
 
   $ csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --delimiter <delimiter>
+
+
+
+  Exporting taxonomies with specific locale
+
+  $ csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --locale <locale>
+
+
+
+  Exporting taxonomies with fallback locale support
+
+  $ csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --locale <locale> --include-fallback
+
+
+
+  Exporting taxonomies with custom fallback locale
+
+  $ csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --locale <locale> --include-fallback --fallback-locale <fallback-locale>
 ```
 
 _See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/cli/blob/main/packages/contentstack-export-to-csv/src/commands/cm/export-to-csv.js)_
@@ -3657,7 +3681,7 @@ USAGE
     [--personalize <value>] [--launch <value>]
 
 ARGUMENTS
-  REGION  Name for the region
+  [REGION]  Name for the region
 
 FLAGS
   -d, --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and
@@ -3713,7 +3737,7 @@ USAGE
   $ csdx help [COMMAND...] [-n]
 
 ARGUMENTS
-  COMMAND...  Command to show help for.
+  [COMMAND...]  Command to show help for.
 
 FLAGS
   -n, --nested-commands  Include all nested commands in the output.
@@ -3722,7 +3746,7 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.33/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.34/src/commands/help.ts)_
 
 ## `csdx launch`
 
@@ -4205,7 +4229,7 @@ USAGE
   $ csdx plugins:remove [PLUGIN...] [-h] [-v]
 
 ARGUMENTS
-  PLUGIN...  plugin to uninstall
+  [PLUGIN...]  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
@@ -4246,7 +4270,7 @@ USAGE
   $ csdx plugins:uninstall [PLUGIN...] [-h] [-v]
 
 ARGUMENTS
-  PLUGIN...  plugin to uninstall
+  [PLUGIN...]  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
@@ -4274,7 +4298,7 @@ USAGE
   $ csdx plugins:unlink [PLUGIN...] [-h] [-v]
 
 ARGUMENTS
-  PLUGIN...  plugin to uninstall
+  [PLUGIN...]  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
