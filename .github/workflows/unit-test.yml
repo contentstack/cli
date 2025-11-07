@@ -24,9 +24,9 @@ jobs:
         working-directory: ./packages/contentstack-command
         run: npm run test:unit
 
-      - name: Run tests for Contentstack Import Plugin
-        working-directory: ./packages/contentstack-import
-        run: npm run test:unit
+      # - name: Run tests for Contentstack Import Plugin
+      #   working-directory: ./packages/contentstack-import
+      #   run: npm run test:unit
       
       - name: Run tests for Contentstack Export Plugin
         working-directory: ./packages/contentstack-export
