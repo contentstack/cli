@@ -1,0 +1,17 @@
+{
+  "webhook-1": {
+    "uid": "webhook-1",
+    "name": "Test Webhook 1",
+    "url": "https://example.com/webhook1",
+    "channels": ["test-channel"],
+    "disabled": false
+  },
+  "webhook-2": {
+    "uid": "webhook-2", 
+    "name": "Test Webhook 2",
+    "url": "https://example.com/webhook2",
+    "channels": ["test-channel"],
+    "disabled": false
+  }
+}
+
