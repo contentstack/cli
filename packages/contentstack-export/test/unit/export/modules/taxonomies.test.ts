@@ -70,6 +70,11 @@ describe('ExportTaxonomies', () => {
           fileName: 'taxonomies.json',
           invalidKeys: [],
           limit: 100
+        },
+        locales: {
+          dirName: 'locales',
+          fileName: 'locales.json',
+          requiredKeys: ['code', 'uid', 'name', 'fallback_locale']
         }
       }
     } as any;
@@ -82,6 +87,7 @@ describe('ExportTaxonomies', () => {
 
     sinon.stub(FsUtility.prototype, 'writeFile').resolves();
     sinon.stub(FsUtility.prototype, 'makeDirectory').resolves();
+    sinon.stub(FsUtility.prototype, 'readFile').resolves({});
   });
 
   afterEach(() => {
@@ -102,7 +108,7 @@ describe('ExportTaxonomies', () => {
     });
   });
 
-  describe('getAllTaxonomies() method', () => {
+  describe('fetchTaxonomies() method', () => {
     it('should fetch and process taxonomies correctly', async () => {
       const taxonomies = [
         { uid: 'taxonomy-1', name: 'Category', invalidField: 'remove' },
@@ -118,7 +124,7 @@ describe('ExportTaxonomies', () => {
         })
       });
 
-      await exportTaxonomies.getAllTaxonomies();
+      await exportTaxonomies.fetchTaxonomies();
       
       // Verify taxonomies were processed
       expect(Object.keys(exportTaxonomies.taxonomies).length).to.equal(2);
@@ -126,7 +132,7 @@ describe('ExportTaxonomies', () => {
       expect(exportTaxonomies.taxonomies['taxonomy-1'].name).to.equal('Category');
     });
 
-    it('should call getAllTaxonomies recursively when more taxonomies exist', async () => {
+    it('should call fetchTaxonomies recursively when more taxonomies exist', async () => {
       let callCount = 0;
       mockStackClient.taxonomy.returns({
         query: sinon.stub().returns({
@@ -147,7 +153,7 @@ describe('ExportTaxonomies', () => {
         })
       });
 
-      await exportTaxonomies.getAllTaxonomies();
+      await exportTaxonomies.fetchTaxonomies();
       
       // Verify multiple calls were made
       expect(callCount).to.be.greaterThan(1);
@@ -159,7 +165,7 @@ describe('ExportTaxonomies', () => {
       const mockMakeAPICall = sinon.stub(exportTaxonomies, 'makeAPICall').resolves();
       const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
       
-      // Mock getAllTaxonomies to return one taxonomy
+      // Mock fetchTaxonomies to return one taxonomy
       const mockTaxonomy = {
         uid: 'taxonomy-1',
         name: 'Category'
@@ -208,7 +214,7 @@ describe('ExportTaxonomies', () => {
     });
   });
 
-  describe('getAllTaxonomies() method - edge cases', () => {
+  describe('fetchTaxonomies() method - edge cases', () => {
     it('should handle no items response and not process taxonomies', async () => {
       mockStackClient.taxonomy.returns({
         query: sinon.stub().returns({
@@ -220,7 +226,7 @@ describe('ExportTaxonomies', () => {
       });
 
       const initialCount = Object.keys(exportTaxonomies.taxonomies).length;
-      await exportTaxonomies.getAllTaxonomies();
+      await exportTaxonomies.fetchTaxonomies();
       
       // Verify no new taxonomies were added
       expect(Object.keys(exportTaxonomies.taxonomies).length).to.equal(initialCount);
@@ -237,7 +243,7 @@ describe('ExportTaxonomies', () => {
       });
 
       const initialCount = Object.keys(exportTaxonomies.taxonomies).length;
-      await exportTaxonomies.getAllTaxonomies();
+      await exportTaxonomies.fetchTaxonomies();
       
       // Verify no processing occurred with null items
       expect(Object.keys(exportTaxonomies.taxonomies).length).to.equal(initialCount);
@@ -250,7 +256,7 @@ describe('ExportTaxonomies', () => {
         })
       });
 
-      await exportTaxonomies.getAllTaxonomies();
+      await exportTaxonomies.fetchTaxonomies();
       
       // Verify method completes without throwing
       expect(exportTaxonomies.taxonomies).to.exist;
@@ -268,7 +274,7 @@ describe('ExportTaxonomies', () => {
         })
       });
 
-      await exportTaxonomies.getAllTaxonomies();
+      await exportTaxonomies.fetchTaxonomies();
       
       // Verify taxonomies were still processed despite undefined count
       expect(exportTaxonomies.taxonomies['taxonomy-1']).to.exist;
