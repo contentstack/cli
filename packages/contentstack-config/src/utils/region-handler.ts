@@ -1,4 +1,5 @@
 import { configHandler } from '@contentstack/cli-utilities';
+import * as Utils from '@contentstack/utils';
 
 function validURL(str) {
   const pattern = new RegExp(
@@ -117,10 +118,19 @@ class UserConfig {
    * @returns {object} region object with cma, cda, region property
    */
   setRegion(region) {
-    const selectedRegion = regions[region];
-    if (selectedRegion) {
-      configHandler.set('region', selectedRegion);
-      return selectedRegion;
+    const endpointsObj = Utils.getEndpointsByRegion(region);
+    if (endpointsObj) {
+      const regionObj = {
+        name: region.toUpperCase(),
+        cma: endpointsObj.contentManagement,
+        cda: endpointsObj.contentDelivery,
+        uiHost: endpointsObj.application,
+        developerHubUrl: endpointsObj.developerHub,
+        launchHubUrl: endpointsObj.launch,
+        personalizeUrl: endpointsObj.personalizeManagement,
+      }
+      configHandler.set('region', regionObj);
+      return regionObj;
     }
   }
 
