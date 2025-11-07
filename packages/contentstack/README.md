@@ -2370,6 +2370,8 @@ FLAGS
   -y, --yes                               [optional] Force override all Marketplace prompts.
       --branch-alias=<value>              Specify the branch alias where you want to import your content. If not
                                           specified, the content is imported into the main branch by default.
+      --branch-alias=<value>              Specify the branch alias where you want to import your content. If not
+                                          specified, the content is imported into the main branch by default.
       --exclude-global-modules            Excludes the branch-independent module from the import operation.
       --import-webhook-status=<option>    [default: disable] [default: disable] (optional) This webhook state keeps the
                                           same state of webhooks as the source stack. <options: disable|current>
@@ -2423,6 +2425,8 @@ FLAGS
                                branches involved, then the path should point till the particular branch. For example,
                                “-d "C:\Users\Name\Desktop\cli\content\branch_name"
   -k, --stack-api-key=<value>  API key of the target stack
+      --branch-alias=<value>   Specify the branch alias where you want to import your content. If not specified, the
+                               content is imported into the main branch by default.
       --branch-alias=<value>   Specify the branch alias where you want to import your content. If not specified, the
                                content is imported into the main branch by default.
       --module=<option>...     [optional] Specify the modules/module to import into the target stack. currently options
@@ -2890,6 +2894,8 @@ FLAGS
   -y, --yes                               [optional] Force override all Marketplace prompts.
       --branch-alias=<value>              Specify the branch alias where you want to import your content. If not
                                           specified, the content is imported into the main branch by default.
+      --branch-alias=<value>              Specify the branch alias where you want to import your content. If not
+                                          specified, the content is imported into the main branch by default.
       --exclude-global-modules            Excludes the branch-independent module from the import operation.
       --import-webhook-status=<option>    [default: disable] [default: disable] (optional) This webhook state keeps the
                                           same state of webhooks as the source stack. <options: disable|current>
@@ -2945,6 +2951,8 @@ FLAGS
                                branches involved, then the path should point till the particular branch. For example,
                                “-d "C:\Users\Name\Desktop\cli\content\branch_name"
   -k, --stack-api-key=<value>  API key of the target stack
+      --branch-alias=<value>   Specify the branch alias where you want to import your content. If not specified, the
+                               content is imported into the main branch by default.
       --branch-alias=<value>   Specify the branch alias where you want to import your content. If not specified, the
                                content is imported into the main branch by default.
       --module=<option>...     [optional] Specify the modules/module to import into the target stack. currently options
