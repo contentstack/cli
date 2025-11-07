@@ -56,6 +56,7 @@ export type ApiOptions = {
   url?: string;
   entity: ApiModuleType;
   apiData?: Record<any, any> | any;
+  queryParam?: Record<any, any>;
   resolve: (value: any) => Promise<void> | void;
   reject: (error: any) => Promise<void> | void;
   additionalInfo?: Record<any, any>;
@@ -419,7 +420,9 @@ export default abstract class BaseClass {
         if (!apiData || !apiData.filePath) {
           return Promise.resolve();
         }
-        return this.stack.taxonomy(uid).import({ taxonomy: apiData.filePath }).then(onSuccess).catch(onReject);
+        const importParams = { taxonomy: apiData.filePath };
+        const importQueryParam = apiOptions.queryParam || {};
+        return this.stack.taxonomy(uid).import(importParams, importQueryParam).then(onSuccess).catch(onReject);
       default:
         return Promise.resolve();
     }

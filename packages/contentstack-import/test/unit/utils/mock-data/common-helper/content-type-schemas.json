@@ -1,0 +1,43 @@
+{
+  "withFieldRules": {
+    "uid": "content_type_1",
+    "title": "Test Content Type",
+    "schema": [],
+    "field_rules": [
+      {
+        "conditions": [
+          {
+            "operand_field": "reference",
+            "value": "entry1.entry2"
+          },
+          {
+            "operand_field": "text",
+            "value": "some_value"
+          }
+        ]
+      }
+    ]
+  },
+  "withoutFieldRules": {
+    "uid": "content_type_2",
+    "title": "Another Content Type",
+    "schema": [],
+    "field_rules": []
+  },
+  "withNonReferenceFieldRules": {
+    "uid": "content_type_3",
+    "title": "Third Content Type",
+    "schema": [],
+    "field_rules": [
+      {
+        "conditions": [
+          {
+            "operand_field": "text",
+            "value": "test"
+          }
+        ]
+      }
+    ]
+  }
+}
+
