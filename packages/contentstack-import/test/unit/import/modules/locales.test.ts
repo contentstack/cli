@@ -123,7 +123,6 @@ describe('ImportLocales', () => {
       marketplaceAppEncryptionKey: 'test-key',
       getEncryptionKeyMaxRetry: 3,
       overwriteSupportedModules: [],
-      onlyTSModules: [],
       globalModules: [],
       entriesPublish: false,
       cliLogsPath: '/test/logs',
