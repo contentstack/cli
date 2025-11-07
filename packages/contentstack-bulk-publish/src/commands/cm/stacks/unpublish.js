@@ -42,6 +42,7 @@ class UnpublishCommand extends Command {
           host: this.cmaHost,
           cda: this.cdaHost,
           branch: unpublishFlags.branch,
+          delayMs: updatedFlags.delayMs,
         };
         if (updatedFlags.alias) {
           try {

@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli",
   "description": "Command-line tool (CLI) to interact with Contentstack",
-  "version": "2.0.0-beta",
+  "version": "2.0.0-beta.1",
   "author": "Contentstack",
   "bin": {
     "csdx": "./bin/run.js"
@@ -22,11 +22,11 @@
     "prepack": "pnpm compile && oclif manifest && oclif readme"
   },
   "dependencies": {
-    "@contentstack/cli-audit": "~1.14.1",
+    "@contentstack/cli-audit": "~1.16.0",
     "@contentstack/cli-auth": "~1.6.1",
     "@contentstack/cli-cm-bootstrap": "~2.0.0-beta",
     "@contentstack/cli-cm-branches": "~1.6.0",
-    "@contentstack/cli-cm-bulk-publish": "~1.10.0",
+    "@contentstack/cli-cm-bulk-publish": "~1.10.2",
     "@contentstack/cli-cm-clone": "~2.0.0-beta",
     "@contentstack/cli-cm-export": "~2.0.0-beta",
     "@contentstack/cli-cm-export-to-csv": "~1.9.1",
@@ -37,8 +37,8 @@
     "@contentstack/cli-command": "~1.6.1",
     "@contentstack/cli-config": "~1.15.2",
     "@contentstack/cli-launch": "^1.9.2",
-    "@contentstack/cli-migration": "~1.8.1",
-    "@contentstack/cli-utilities": "~1.14.3",
+    "@contentstack/cli-migration": "~1.10.0",
+    "@contentstack/cli-utilities": "~1.14.4",
     "@contentstack/cli-variants": "~2.0.0-beta",
     "@contentstack/management": "~1.22.0",
     "@oclif/core": "^4.3.0",
@@ -49,7 +49,7 @@
     "cli-progress": "^3.12.0",
     "debug": "^4.4.1",
     "figlet": "1.8.1",
-    "inquirer": "8.2.6",
+    "inquirer": "8.2.7",
     "node-machine-id": "^1.1.12",
     "open": "^8.4.2",
     "ora": "^8.2.0",

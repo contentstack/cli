@@ -1,4 +1,4 @@
-import { FlagInput, Flags, ux } from '@contentstack/cli-utilities';
+import { FlagInput, Flags, ux, handleAndLogError } from '@contentstack/cli-utilities';
 
 import config from '../../../../config';
 import { ConfigType } from '../../../../types';
@@ -68,8 +68,7 @@ export default class AuditFix extends AuditBaseCommand {
         return { config: this.sharedConfig, hasFix };
       }
     } catch (error) {
-      this.log(error instanceof Error ? error.message : error, 'error');
-      console.trace(error);
+      handleAndLogError(error);
       ux.action.stop('Process failed.!');
       this.exit(1);
     }

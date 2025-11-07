@@ -261,6 +261,26 @@
       "updated_at": "2023-09-11T10:44:40.213Z",
       "ACL": [],
       "_version": 1
+    },
+    {
+      "code": "en-us",
+      "name": "English - United States",
+      "locale": null,
+      "uid": "en-us-uid",
+      "created_at": "2023-09-11T10:44:40.213Z",
+      "updated_at": "2023-09-11T10:44:40.213Z",
+      "ACL": [],
+      "_version": 1
+    },
+    {
+      "code": "fr-fr",
+      "name": "French - France",
+      "fallback_locale": "en-us",
+      "uid": "fr-fr-uid",
+      "created_at": "2023-09-11T10:44:40.213Z",
+      "updated_at": "2023-09-11T10:44:40.213Z",
+      "ACL": [],
+      "_version": 1
     }
   ],
   "Teams": {

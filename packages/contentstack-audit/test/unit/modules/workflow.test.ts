@@ -4,16 +4,26 @@ import { fancy } from 'fancy-test';
 import { expect } from 'chai';
 import cloneDeep from 'lodash/cloneDeep';
 import { ux } from '@contentstack/cli-utilities';
+import sinon from 'sinon';
 
 import config from '../../../src/config';
 import { Workflows } from '../../../src/modules';
 import { $t, auditMsg } from '../../../src/messages';
 import { values } from 'lodash';
+import { mockLogger } from '../mock-logger';
 
 describe('Workflows', () => {
+  beforeEach(() => {
+    // Mock the logger for all tests
+    sinon.stub(require('@contentstack/cli-utilities'), 'log').value(mockLogger);
+  });
+  
+  afterEach(() => {
+    sinon.restore();
+  });
+  
   describe('run method with invalid path for workflows', () => {
     const wf = new Workflows({
-      log: () => {},
       moduleName: 'workflows',
       ctSchema: cloneDeep(require('./../mock/contents/workflows/ctSchema.json')),
       config: Object.assign(config, { basePath: resolve(__dirname, '..', 'mock', 'workflows'), flags: {} }),
@@ -32,7 +42,6 @@ describe('Workflows', () => {
   });
   describe('run method with valid path for workflows and ctSchema', () => {
     const wf = new Workflows({
-      log: () => {},
       moduleName: 'workflows',
       ctSchema: cloneDeep(require('./../mock/contents/workflows/ctSchema.json')),
       config: Object.assign(config, {
@@ -86,7 +95,6 @@ describe('Workflows', () => {
 
   describe('run method with audit fix for workflows with valid path and empty ctSchema', () => {
     const wf = new Workflows({
-      log: () => {},
       moduleName: 'workflows',
       ctSchema: cloneDeep(require('./../mock/contents/workflows/ctSchema.json')),
       config: Object.assign(config, {

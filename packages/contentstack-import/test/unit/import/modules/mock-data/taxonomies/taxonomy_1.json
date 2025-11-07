@@ -1,0 +1,26 @@
+{
+  "taxonomy": {
+    "uid": "taxonomy_1",
+    "name": "Category Taxonomy",
+    "description": "Product categories"
+  },
+  "terms": {
+    "term_1": {
+      "uid": "term_1",
+      "name": "Electronics",
+      "parent_uid": null
+    },
+    "term_2": {
+      "uid": "term_2",
+      "name": "Books",
+      "parent_uid": null
+    },
+    "term_3": {
+      "uid": "term_3",
+      "name": "Laptops",
+      "parent_uid": "term_1"
+    }
+  }
+}
+
+
