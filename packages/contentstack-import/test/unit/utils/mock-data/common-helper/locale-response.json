@@ -1,0 +1,20 @@
+{
+  "success": {
+    "items": [
+      {
+        "code": "en-us",
+        "name": "English - United States",
+        "fallback_locale": null
+      },
+      {
+        "code": "fr-fr",
+        "name": "French - France",
+        "fallback_locale": "en-us"
+      }
+    ]
+  },
+  "empty": {
+    "items": []
+  }
+}
+

@@ -44,9 +44,9 @@ export default class Logger {
   private get loggerOptions(): winston.transports.FileTransportOptions {
     return {
       filename: '',
-      maxFiles: 20,
+      maxFiles: 50,
       tailable: true,
-      maxsize: 1000000,
+      maxsize: 5000000, // 5MB
     };
   }
 
@@ -144,7 +144,7 @@ export default class Logger {
     if (target === 'console' && this.config.consoleLoggingEnabled === false) {
       return false;
     }
-    
+
     const configLevel = target === 'console' ? this.config.consoleLogLevel : this.config.logLevel;
     const minLevel = configLevel ? logLevels[configLevel] : 2;
     return logLevels[level] <= minLevel;

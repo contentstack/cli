@@ -29,6 +29,7 @@ async function publishOnlyUnpublishedService(UnpublishedEntriesCommand) {
         host: this.cmaHost,
         cda: this.cdaHost,
         branch: unpublishedEntriesFlags.branch,
+        delayMs: updatedFlags.delayMs,
       };
       if (updatedFlags.alias) {
         try {

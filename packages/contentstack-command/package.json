@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-command",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "author": "Contentstack",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -19,7 +19,7 @@
     "test:unit": "mocha --timeout 10000 --forbid-only \"test/unit/**/*.test.ts\""
   },
   "dependencies": {
-    "@contentstack/cli-utilities": "~1.14.1",
+    "@contentstack/cli-utilities": "~1.15.0",
     "contentstack": "^3.25.3",
     "@oclif/core": "^4.3.0",
     "@oclif/plugin-help": "^6.2.28"

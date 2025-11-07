@@ -1,0 +1,46 @@
+{
+  "assetUidMapper": {
+    "asset_1": "new_asset_1",
+    "asset_2": "new_asset_2",
+    "asset_3": "new_asset_3"
+  },
+  "assetUrlMapper": {
+    "https://old-asset-url.com/asset1.jpg": "https://new-asset-url.com/asset1.jpg",
+    "https://old-asset-url.com/asset2.jpg": "https://new-asset-url.com/asset2.jpg",
+    "https://old-asset-url.com/asset3.jpg": "https://new-asset-url.com/asset3.jpg"
+  },
+  "entriesUidMapper": {
+    "simple_entry_1": "new_simple_entry_1",
+    "ref_entry_1": "new_ref_entry_1",
+    "existing_entry_1": "new_existing_entry_1",
+    "localized_entry_1": "new_localized_entry_1"
+  },
+  "installedExtensions": {
+    "extension_1": {
+      "uid": "extension_1",
+      "name": "Test Extension",
+      "type": "field"
+    }
+  },
+  "taxonomies": {
+    "taxonomy_1": [
+      {
+        "uid": "term_1",
+        "name": "Test Term",
+        "taxonomy_uid": "taxonomy_1"
+      },
+      {
+        "uid": "term_2",
+        "name": "Another Term",
+        "taxonomy_uid": "taxonomy_1"
+      }
+    ],
+    "taxonomy_2": [
+      {
+        "uid": "term_3",
+        "name": "Third Term",
+        "taxonomy_uid": "taxonomy_2"
+      }
+    ]
+  }
+}
