@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-config/1.15.2 darwin-arm64 node-v22.14.0
+@contentstack/cli-config/1.15.3 darwin-arm64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -395,7 +395,7 @@ USAGE
     [--personalize <value>] [--launch <value>]
 
 ARGUMENTS
-  REGION  Name for the region
+  [REGION]  Name for the region
 
 FLAGS
   -d, --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and

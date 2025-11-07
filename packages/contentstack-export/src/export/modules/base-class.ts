@@ -230,7 +230,7 @@ export default abstract class BaseClass {
       case 'export-taxonomy':
         return this.stack
           .taxonomy(uid)
-          .export()
+          .export(queryParam)
           .then((response: any) => resolve({ response, uid }))
           .catch((error: any) => reject({ error, uid }));
       default:

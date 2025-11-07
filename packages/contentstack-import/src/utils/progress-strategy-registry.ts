@@ -12,14 +12,16 @@ import {
 } from '@contentstack/cli-utilities';
 import { MODULE_CONTEXTS, MODULE_NAMES, PROCESS_NAMES } from './constants';
 
-// Register strategy for Content Types - use Create as primary process
-ProgressStrategyRegistry.register(
-  MODULE_NAMES[MODULE_CONTEXTS.CONTENT_TYPES],
-  new PrimaryProcessStrategy(PROCESS_NAMES.CONTENT_TYPES_CREATE),
-);
+// Wrap all registrations in try-catch to prevent module loading errors
+try {
+  // Register strategy for Content Types - use Create as primary process
+  ProgressStrategyRegistry.register(
+    MODULE_NAMES[MODULE_CONTEXTS.CONTENT_TYPES],
+    new PrimaryProcessStrategy(PROCESS_NAMES.CONTENT_TYPES_CREATE),
+  );
 
-// Register strategy for Assets - use Asset Upload as primary process
-ProgressStrategyRegistry.register(
+  // Register strategy for Assets - use Asset Upload as primary process
+  ProgressStrategyRegistry.register(
   MODULE_NAMES[MODULE_CONTEXTS.ASSETS],
   new CustomProgressStrategy((processes) => {
     const uploadsProcess = processes.get(PROCESS_NAMES.ASSET_UPLOAD);
@@ -122,5 +124,9 @@ ProgressStrategyRegistry.register(
 
 // Register strategy for Variant Entries - sub-process of entries
 ProgressStrategyRegistry.register(MODULE_NAMES[MODULE_CONTEXTS.VARIANT_ENTRIES], new DefaultProgressStrategy());
+
+} catch (error) {
+  // Silently ignore registration errors during module loading
+}
 
 export default ProgressStrategyRegistry;

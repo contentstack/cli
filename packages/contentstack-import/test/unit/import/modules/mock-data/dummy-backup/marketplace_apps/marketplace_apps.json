@@ -1,0 +1,27 @@
+[
+  {
+    "uid": "app-1",
+    "status": "active",
+    "manifest": {
+      "uid": "manifest-1",
+      "name": "Test App 1",
+      "description": "Test Description",
+      "organization_uid": "org-1",
+      "target_type": "stack",
+      "visibility": "public",
+      "ui_location": {
+        "signed": false,
+        "base_url": "https://test.com",
+        "locations": []
+      }
+    },
+    "configuration": {},
+    "server_configuration": {},
+    "target": { "type": "stack", "uid": "stack-1" },
+    "ui_location": {
+      "signed": false,
+      "base_url": "https://test.com",
+      "locations": []
+    }
+  }
+]

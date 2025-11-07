@@ -13,6 +13,7 @@ export type APIConfig = HttpRequestConfig & {
   config: ExportConfig | Record<string, any> | undefined;
   baseURL?: string;
   cmaConfig?: HttpRequestConfig;
+  delayMs?: number;
 };
 
 export interface AdapterConstructor<T, C> {
