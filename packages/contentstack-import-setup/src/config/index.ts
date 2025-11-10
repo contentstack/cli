@@ -22,6 +22,11 @@ const config: DefaultConfig = {
       fileName: 'custom-roles.json',
       dependencies: ['environments', 'entries'],
     },
+    locales: {
+      dirName: 'locales',
+      fileName: 'locales.json',
+      dependencies: [],
+    },
     environments: {
       dirName: 'environments',
       fileName: 'environments.json',
