@@ -201,4 +201,10 @@ fileignoreconfig:
   checksum: eca2702d1f7ed075b9b857964b9e56f69b16e4a31942423d6b1265e4bf398db5
 - filename: packages/contentstack-import/test/unit/utils/logger.test.ts
   checksum: 794e06e657a7337c8f094d6042fb04c779683f97b860efae14e075098d2af024
+- filename: packages/contentstack-export/test/unit/utils/marketplace-app-helper.test.ts
+  checksum: c454b0f52739cb9adef3d44f5ce123826f6c78d7709bd84eb281f84fb3a46606
+- filename: packages/contentstack-export/test/unit/export/modules/labels.test.ts
+  checksum: 978b2e96ee2682286b9aee6d76de0caa5a42c9e9371cb4041340f4e5f6f6ca1b
+- filename: packages/contentstack-export/test/unit/export/modules/marketplace-apps.test.ts
+  checksum: 720d0b915078ceecc153e352fdb28850e7ea29fe0cd317643f55906f83e0bdbd
 version: "1.0"
