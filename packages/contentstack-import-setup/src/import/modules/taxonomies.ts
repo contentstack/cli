@@ -21,6 +21,7 @@ export default class TaxonomiesImportSetup {
   private isLocaleBasedStructure: boolean = false;
   public taxonomiesMapper: Record<string, unknown> = {};
   public termsMapper: Record<string, unknown> = {};
+  public masterLocaleFilePath: string;
 
   constructor({ config, stackAPIClient }: ModuleClassParams) {
     this.config = config;
@@ -37,6 +38,12 @@ export default class TaxonomiesImportSetup {
       config.modules.locales?.dirName || 'locales',
       config.modules.locales?.fileName || 'locales.json',
     );
+    this.masterLocaleFilePath = join(
+      sanitizePath(this.config.contentDir),
+      config.modules.locales?.dirName || 'locales',
+      'master-locale.json',
+    );
+
     this.taxonomiesMapper = {};
     this.termsMapper = {};
   }
@@ -94,8 +101,13 @@ export default class TaxonomiesImportSetup {
       targetTaxonomy = this.sanitizeTaxonomyAttribs(targetTaxonomy);
       this.taxonomiesMapper[taxonomy.uid] = targetTaxonomy;
       const terms = await this.getAllTermsOfTaxonomy(targetTaxonomy);
-      const sanitizedTerms = this.sanitizeTermsAttribs(terms);
-      this.termsMapper[taxonomy.uid] = sanitizedTerms;
+      if (Array.isArray(terms) && terms.length > 0) {
+        log(this.config, `Terms found for taxonomy '${taxonomy.uid}', processing...`, 'info');
+        const sanitizedTerms = this.sanitizeTermsAttribs(terms);
+        this.termsMapper[taxonomy.uid] = sanitizedTerms;
+      } else {
+        log(this.config, `No terms found for taxonomy '${taxonomy.uid}', skipping...`, 'info');
+      }
     }
   }
 
@@ -120,13 +132,24 @@ export default class TaxonomiesImportSetup {
         targetTaxonomy = this.sanitizeTaxonomyAttribs(targetTaxonomy);
 
         // Store with composite key: taxonomyUID_locale
-        const mapperKey = `${taxonomy.uid}_${localeCode}`;
-        this.taxonomiesMapper[mapperKey] = targetTaxonomy;
-
-        // Get terms for this taxonomy+locale from target stack
+        // const mapperKey = `${taxonomy.uid}_${localeCode}`; // TODO: Unsure about this required or not
+        this.taxonomiesMapper[taxonomy.uid] = targetTaxonomy;
         const terms = await this.getAllTermsOfTaxonomy(targetTaxonomy, localeCode);
-        const sanitizedTerms = this.sanitizeTermsAttribs(terms);
-        this.termsMapper[mapperKey] = sanitizedTerms;
+        if (Array.isArray(terms) && terms.length > 0) {
+          log(
+            this.config,
+            `Terms found for taxonomy '${taxonomy.uid} for locale: ${localeCode}', processing...`,
+            'info',
+          );
+          const sanitizedTerms = this.sanitizeTermsAttribs(terms);
+          this.termsMapper[taxonomy.uid] = sanitizedTerms;
+        } else {
+          log(
+            this.config,
+            `No terms found for taxonomy '${taxonomy.uid} for locale: ${localeCode}', skipping...`,
+            'info',
+          );
+        }
       }
     }
   }
@@ -136,7 +159,7 @@ export default class TaxonomiesImportSetup {
    * @returns {boolean} true if locale-based structure detected, false otherwise
    */
   detectLocaleBasedStructure(): boolean {
-    const masterLocaleCode = this.config.master_locale?.code || 'en-us';
+    const masterLocaleCode = this.getMasterLocaleCode();
     const masterLocaleFolder = join(this.taxonomiesFolderPath, masterLocaleCode);
 
     // Check if master locale folder exists (indicates new locale-based structure)
@@ -150,31 +173,70 @@ export default class TaxonomiesImportSetup {
   }
 
   /**
+   * Get the master locale code
+   * First tries to read from master-locale.json, then falls back to config, then 'en-us'
+   * @returns {string} The master locale code
+   */
+  getMasterLocaleCode(): string {
+    // Try to read from master-locale.json file
+    if (fileHelper.fileExistsSync(this.masterLocaleFilePath)) {
+      try {
+        const masterLocaleData = fsUtil.readFile(this.masterLocaleFilePath, true) as Record<
+          string,
+          Record<string, any>
+        >;
+        // The file contains an object with UID as key, extract the code
+        const firstLocale = Object.values(masterLocaleData)[0];
+        if (firstLocale?.code) {
+          log(this.config, `Master locale loaded from file: ${firstLocale.code}`, 'info');
+          return firstLocale.code;
+        }
+      } catch (error) {
+        log(this.config, 'Error reading master-locale.json, using fallback', 'warn');
+      }
+    }
+
+    // Fallback to config or default
+    const fallbackCode = this.config.master_locale?.code || 'en-us';
+    log(this.config, `Using fallback master locale: ${fallbackCode}`, 'info');
+    return fallbackCode;
+  }
+
+  /**
    * Load available locales from locales file
    * @returns {Record<string, string>} Map of locale codes
    */
   loadAvailableLocales(): Record<string, string> {
+    const locales: Record<string, string> = {};
+
+    // First, get the master locale
+    const masterLocaleCode = this.getMasterLocaleCode();
+    locales[masterLocaleCode] = masterLocaleCode;
+
+    // Then load additional locales from locales.json if it exists
     if (!fileHelper.fileExistsSync(this.localesFilePath)) {
-      log(this.config, 'No locales file found, using default locale', 'info');
-      return { [this.config.master_locale?.code || 'en-us']: this.config.master_locale?.code || 'en-us' };
+      log(this.config, 'No locales file found, using only master locale', 'info');
+      return locales;
     }
 
     try {
       const localesData = fsUtil.readFile(this.localesFilePath, true) as Record<string, Record<string, any>>;
-      const locales: Record<string, string> = {};
-      locales[this.config.master_locale?.code] = this.config.master_locale?.code;
 
-      for (const [code, locale] of Object.entries(localesData)) {
+      for (const [uid, locale] of Object.entries(localesData)) {
         if (locale?.code) {
-          locales[locale.code] = code;
+          locales[locale.code] = locale.code;
         }
       }
 
-      log(this.config, `Loaded ${Object.keys(locales).length} locales from file`, 'info');
+      log(
+        this.config,
+        `Loaded ${Object.keys(locales).length} locales (1 master + ${Object.keys(locales).length - 1} additional)`,
+        'info',
+      );
       return locales;
     } catch (error) {
-      log(this.config, 'Error loading locales file', 'error');
-      return { [this.config.master_locale?.code || 'en-us']: this.config.master_locale?.code || 'en-us' };
+      log(this.config, 'Error loading locales file, using only master locale', 'error');
+      return locales;
     }
   }
 

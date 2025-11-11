@@ -48,7 +48,7 @@ const config: DefaultConfig = {
     entries: {
       dirName: 'entries',
       fileName: 'entries.json',
-      dependencies: ['assets', 'marketplace-apps', 'taxonomies'],
+      dependencies: ['assets', 'extensions', 'marketplace-apps', 'taxonomies'],
     },
     'global-fields': {
       dirName: 'global_fields',
