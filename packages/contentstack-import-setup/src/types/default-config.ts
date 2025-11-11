@@ -14,6 +14,11 @@ export default interface DefaultConfig {
       fileName: string;
       dependencies?: Modules[];
     };
+    locales: {
+      dirName: string;
+      fileName: string;
+      dependencies?: Modules[];
+    };
     extensions: {
       dirName: string;
       fileName: string;
