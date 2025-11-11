@@ -209,4 +209,6 @@ fileignoreconfig:
   checksum: 720d0b915078ceecc153e352fdb28850e7ea29fe0cd317643f55906f83e0bdbd
 - filename: packages/contentstack-import-setup/src/import/modules/taxonomies.ts
   checksum: 49dd8e754a0d3635585a74e943ab097593f061089a7cddc22683ec6caddbb3c5
+- filename: packages/contentstack-export/test/unit/export/modules/personalize.test.ts
+  checksum: 83cf034fabee00b42b4243a8c0b8ba280ab7c1e68ffd741c49c31aaee8ca0315
 version: "1.0"
