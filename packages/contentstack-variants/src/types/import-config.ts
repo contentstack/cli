@@ -79,7 +79,6 @@ export interface ImportConfig extends ImportDefaultConfig, AnyProperty {
   authtoken?: string;
   destinationStackName?: string;
   org_uid?: string;
-  contentVersion: number;
   replaceExisting?: boolean;
   skipExisting?: boolean;
   stackName?: string;

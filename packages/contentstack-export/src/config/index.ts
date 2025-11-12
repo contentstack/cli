@@ -1,7 +1,6 @@
 import { DefaultConfig } from '../types';
 
 const config: DefaultConfig = {
-  contentVersion: 2,
   versioning: false,
   host: 'https://api.contentstack.io/v3',
   developerHubUrls: {
@@ -489,7 +488,6 @@ const config: DefaultConfig = {
   writeConcurrency: 5,
   developerHubBaseUrl: '',
   marketplaceAppEncryptionKey: 'nF2ejRQcTv',
-  onlyTSModules: ['taxonomies'],
 };
 
 export default config;

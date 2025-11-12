@@ -185,7 +185,6 @@ export default interface DefaultConfig {
   getEncryptionKeyMaxRetry: number;
   createBackupDir?: string;
   overwriteSupportedModules: string[];
-  onlyTSModules: string[];
   auditConfig?: {
     noLog?: boolean; // Skip logs printing on terminal
     skipConfirm?: boolean; // Skip confirmation if any
