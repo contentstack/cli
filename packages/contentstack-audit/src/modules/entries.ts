@@ -529,11 +529,24 @@ export default class Entries {
           break;
         case 'global_field':
           log.debug(`Validating global field: ${display_name}`, this.config.auditContext);
-          this.validateGlobalField(
-            [...tree, { uid: child.uid, name: child.display_name, field: uid }],
-            child as GlobalFieldDataType,
-            entry[uid] as EntryGlobalFieldDataType,
-          );
+          if (child.multiple && Array.isArray(entry[uid])) {
+            log.debug(`Processing ${entry[uid].length} multiple global field entries`, this.config.auditContext);
+            entry[uid].forEach((globalFieldEntry, index) => {
+              log.debug(`Processing global field entry ${index}`, this.config.auditContext);
+              this.validateGlobalField(
+                [...tree, { uid: child.uid, name: child.display_name, field: uid }],
+                child as GlobalFieldDataType,
+                globalFieldEntry as EntryGlobalFieldDataType,
+              );
+            });
+          } else {
+            log.debug(`Processing single global field entry`, this.config.auditContext);
+            this.validateGlobalField(
+              [...tree, { uid: child.uid, name: child.display_name, field: uid }],
+              child as GlobalFieldDataType,
+              entry[uid] as EntryGlobalFieldDataType,
+            );
+          }
           break;
         case 'json':
           if ('extension' in child.field_metadata && child.field_metadata.extension) {
@@ -995,11 +1008,24 @@ export default class Entries {
       switch (data_type) {
         case 'global_field':
           log.debug(`Fixing global field: ${uid}`);
-          entry[uid] = this.fixGlobalFieldReferences(
-            [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }],
-            field as GlobalFieldDataType,
-            entry[uid] as EntryGlobalFieldDataType,
-          ) as EntryGlobalFieldDataType;
+          if (field.multiple && Array.isArray(entry[uid])) {
+            log.debug(`Fixing ${entry[uid].length} multiple global field entries`, this.config.auditContext);
+            entry[uid] = entry[uid].map((globalFieldEntry, index) => {
+              log.debug(`Fixing global field entry ${index}`, this.config.auditContext);
+              return this.fixGlobalFieldReferences(
+                [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }],
+                field as GlobalFieldDataType,
+                globalFieldEntry as EntryGlobalFieldDataType,
+              ) as EntryGlobalFieldDataType;
+            });
+          } else {
+            log.debug(`Fixing single global field entry`, this.config.auditContext);
+            entry[uid] = this.fixGlobalFieldReferences(
+              [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }],
+              field as GlobalFieldDataType,
+              entry[uid] as EntryGlobalFieldDataType,
+            ) as EntryGlobalFieldDataType;
+          }
           break;
         case 'json':
         case 'reference':

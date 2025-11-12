@@ -1,0 +1,50 @@
+{
+  "withUseBackedupDir": {
+    "useBackedupDir": "/path/to/existing/backup",
+    "contentDir": "/path/to/content",
+    "context": {
+      "command": "cm:stacks:import",
+      "module": "all"
+    }
+  },
+  "withBranchDir": {
+    "branchDir": "/path/to/branch/content",
+    "contentDir": "/path/to/content",
+    "context": {
+      "command": "cm:stacks:import",
+      "module": "all"
+    }
+  },
+  "withContentDir": {
+    "contentDir": "/path/to/content",
+    "context": {
+      "command": "cm:stacks:import",
+      "module": "all"
+    }
+  },
+  "withCustomBackupDir": {
+    "contentDir": "/path/to/content",
+    "createBackupDir": "/custom/backup/path",
+    "context": {
+      "command": "cm:stacks:import",
+      "module": "all"
+    }
+  },
+  "withSubDirectoryBackup": {
+    "contentDir": "/path/to/content",
+    "createBackupDir": "/path/to/content/subdirectory",
+    "context": {
+      "command": "cm:stacks:import",
+      "module": "all"
+    }
+  },
+  "withExistingCustomBackupDir": {
+    "contentDir": "/path/to/content",
+    "createBackupDir": "/existing/backup/path",
+    "context": {
+      "command": "cm:stacks:import",
+      "module": "all"
+    }
+  }
+}
+
