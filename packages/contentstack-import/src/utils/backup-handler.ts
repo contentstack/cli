@@ -2,7 +2,7 @@ import * as path from 'path';
 import { copy } from 'fs-extra';
 import { cliux, sanitizePath, log } from '@contentstack/cli-utilities';
 
-import { fileHelper, trace } from './index';
+import { fileHelper } from './index';
 import { ImportConfig } from '../types';
 
 export default async function backupHandler(importConfig: ImportConfig): Promise<string> {
@@ -59,7 +59,6 @@ export default async function backupHandler(importConfig: ImportConfig): Promise
     return new Promise((resolve, reject) => {
       return copy(sourceDir, backupDirPath, (error: any) => {
         if (error) {
-          trace(error, 'error', true);
           return reject(error);
         }
         

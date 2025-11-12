@@ -5,7 +5,13 @@ import { resolve as pResolve } from 'node:path';
 import { handleAndLogError, messageHandler, log, sanitizePath } from '@contentstack/cli-utilities';
 
 import BaseClass from './base-class';
-import { fsUtil } from '../../utils';
+import {
+  fsUtil,
+  PROCESS_NAMES,
+  MODULE_CONTEXTS,
+  PROCESS_STATUS,
+  MODULE_NAMES,
+} from '../../utils';
 import { ModuleClassParams, ExportConfig } from '../../types';
 
 export default class ExportTaxonomies extends BaseClass {
