@@ -1,0 +1,6 @@
+{
+  "config": {
+    "basePath": "/test/logs/audit",
+    "branch": "main"
+  }
+}
