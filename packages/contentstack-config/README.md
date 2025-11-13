@@ -395,7 +395,7 @@ USAGE
     [--personalize <value>] [--launch <value>]
 
 ARGUMENTS
-  REGION  Name for the region
+  [REGION]  Name for the region
 
 FLAGS
   -d, --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and
