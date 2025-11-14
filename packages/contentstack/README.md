@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/2.0.0-beta.1 darwin-arm64 node-v22.14.0
+@contentstack/cli/2.0.0-beta.3 darwin-arm64 node-v24.11.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -331,12 +331,12 @@ USAGE
 
 FLAGS
   -a, --alias=<value>          Alias (name) you want to assign to the token
-  -d, --delivery               Set this flag to save delivery token
   -e, --environment=<value>    Environment name for delivery token
   -k, --stack-api-key=<value>  Stack API Key
-  -m, --management             Set this flag to save management token
-  -t, --token=<value>          [env: TOKEN] Add the token name
   -y, --yes                    Use this flag to skip confirmation
+      --delivery               Set this flag to save delivery token
+      --management             Set this flag to save management token
+      --token=<value>          Add the token name
 
 DESCRIPTION
   Adds management/delivery tokens to your session to use it with other CLI commands
@@ -2394,8 +2394,6 @@ FLAGS
   -y, --yes                               [optional] Force override all Marketplace prompts.
       --branch-alias=<value>              Specify the branch alias where you want to import your content. If not
                                           specified, the content is imported into the main branch by default.
-      --branch-alias=<value>              Specify the branch alias where you want to import your content. If not
-                                          specified, the content is imported into the main branch by default.
       --exclude-global-modules            Excludes the branch-independent module from the import operation.
       --import-webhook-status=<option>    [default: disable] [default: disable] (optional) This webhook state keeps the
                                           same state of webhooks as the source stack. <options: disable|current>
@@ -2449,8 +2447,6 @@ FLAGS
                                branches involved, then the path should point till the particular branch. For example,
                                “-d "C:\Users\Name\Desktop\cli\content\branch_name"
   -k, --stack-api-key=<value>  API key of the target stack
-      --branch-alias=<value>   Specify the branch alias where you want to import your content. If not specified, the
-                               content is imported into the main branch by default.
       --branch-alias=<value>   Specify the branch alias where you want to import your content. If not specified, the
                                content is imported into the main branch by default.
       --module=<option>...     [optional] Specify the modules/module to import into the target stack. currently options
@@ -2570,7 +2566,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
 
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
@@ -2918,8 +2914,6 @@ FLAGS
   -y, --yes                               [optional] Force override all Marketplace prompts.
       --branch-alias=<value>              Specify the branch alias where you want to import your content. If not
                                           specified, the content is imported into the main branch by default.
-      --branch-alias=<value>              Specify the branch alias where you want to import your content. If not
-                                          specified, the content is imported into the main branch by default.
       --exclude-global-modules            Excludes the branch-independent module from the import operation.
       --import-webhook-status=<option>    [default: disable] [default: disable] (optional) This webhook state keeps the
                                           same state of webhooks as the source stack. <options: disable|current>
@@ -2975,8 +2969,6 @@ FLAGS
                                branches involved, then the path should point till the particular branch. For example,
                                “-d "C:\Users\Name\Desktop\cli\content\branch_name"
   -k, --stack-api-key=<value>  API key of the target stack
-      --branch-alias=<value>   Specify the branch alias where you want to import your content. If not specified, the
-                               content is imported into the main branch by default.
       --branch-alias=<value>   Specify the branch alias where you want to import your content. If not specified, the
                                content is imported into the main branch by default.
       --module=<option>...     [optional] Specify the modules/module to import into the target stack. currently options
@@ -3037,7 +3029,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
 
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
@@ -3681,7 +3673,7 @@ USAGE
     [--personalize <value>] [--launch <value>]
 
 ARGUMENTS
-  [REGION]  Name for the region
+  REGION  Name for the region
 
 FLAGS
   -d, --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and
@@ -3737,7 +3729,7 @@ USAGE
   $ csdx help [COMMAND...] [-n]
 
 ARGUMENTS
-  [COMMAND...]  Command to show help for.
+  COMMAND...  Command to show help for.
 
 FLAGS
   -n, --nested-commands  Include all nested commands in the output.
@@ -3746,7 +3738,7 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.34/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.33/src/commands/help.ts)_
 
 ## `csdx launch`
 
@@ -3887,8 +3879,8 @@ USAGE
   $ csdx launch:functions [-p <value>] [-d <value>]
 
 FLAGS
-  -d, --data-dir=<value>  [default: /Users/aman.kumar/Documents/cli-repos/beta-release/cli/packages/contentstack]
-                          Current working directory
+  -d, --data-dir=<value>  [default: /Users/netraj.patel/projects/contentstack/cli/packages/contentstack] Current working
+                          directory
   -p, --port=<value>      [default: 3000] Port number
 
 DESCRIPTION
@@ -4229,7 +4221,7 @@ USAGE
   $ csdx plugins:remove [PLUGIN...] [-h] [-v]
 
 ARGUMENTS
-  [PLUGIN...]  plugin to uninstall
+  PLUGIN...  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
@@ -4270,7 +4262,7 @@ USAGE
   $ csdx plugins:uninstall [PLUGIN...] [-h] [-v]
 
 ARGUMENTS
-  [PLUGIN...]  plugin to uninstall
+  PLUGIN...  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
@@ -4298,7 +4290,7 @@ USAGE
   $ csdx plugins:unlink [PLUGIN...] [-h] [-v]
 
 ARGUMENTS
-  [PLUGIN...]  plugin to uninstall
+  PLUGIN...  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
