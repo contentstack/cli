@@ -56,7 +56,7 @@ describe('Migration Config validation', () => {
     .stub(cliux, 'confirm', () => true)
     .stub(command, 'getToken', getTokenCallback)
     .it('throw error on Empty paths', async () => {
-      const {error} = await runCommand(
+      const { error } = await runCommand(
         ['cm:entries:migrate-html-rte', '--config-path', './test/dummy/config/configWithEmptyPath.json', '--yes'],
         { root: process.cwd() },
       );
@@ -67,7 +67,7 @@ describe('Migration Config validation', () => {
     .stub(cliux, 'confirm', () => true)
     .stub(command, 'getToken', getTokenCallback)
     .it('throw error on invalid config type', async () => {
-      const {error} = await runCommand(
+      const { error } = await runCommand(
         ['cm:entries:migrate-html-rte', '--config-path', '../test/dummy/config/invalidConfig.json', '--yes'],
         { root: process.cwd() },
       );
@@ -354,20 +354,23 @@ describe('Content Type with Single RTE Field of Single Type', function () {
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .it('throw error on invalid html rte path', async () => {
-      const { error } = await runCommand([
-        'cm:entries:migrate-html-rte',
-        '--alias',
-        'test1',
-        '--content-type',
-        'contenttypewithsinglerte',
-        '--html-path',
-        'rich_text_editor.invalidPath',
-        '--json-path',
-        'supercharged_rte',
-        '--yes',
-        '--delay',
-        '50',
-      ],{ root: process.cwd() });
+      const { error } = await runCommand(
+        [
+          'cm:entries:migrate-html-rte',
+          '--alias',
+          'test1',
+          '--content-type',
+          'contenttypewithsinglerte',
+          '--html-path',
+          'rich_text_editor.invalidPath',
+          '--json-path',
+          'supercharged_rte',
+          '--yes',
+          '--delay',
+          '50',
+        ],
+        { root: process.cwd() },
+      );
       expect(error.message).to.contain('The specified path to invalidPath HTML RTE does not exist.');
     });
 
@@ -748,7 +751,7 @@ describe('Content Type with single rte of multiple type', () => {
     .stub(cliux, 'confirm', () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
     .it('execute using config file', async () => {
-      const {stdout} = await runCommand(
+      const { stdout } = await runCommand(
         ['cm:entries:migrate-html-rte', '--config-path', './test/dummy/config/configForMultipleRte.json', '--yes'],
         { root: process.cwd() },
       );
@@ -882,59 +885,5 @@ describe('Content Type with multiple file field', () => {
         { root: process.cwd() },
       );
       expect(stdout).to.contain('Updated 1 Content Type(s) and 1 Entrie(s)');
-    });
-});
-
-describe('Migration with old flags and command', () => {
-  const getTokenCallback = sinon.stub();
-  getTokenCallback.withArgs('test1').returns({
-    token: 'testManagementToken',
-    apiKey: 'testApiKey',
-    type: 'management',
-  });
-
-  fancy
-    .stub(cliux, 'confirm', () => 'yes')
-    .stub(command, 'getToken', getTokenCallback)
-    .it('execute using config file w/o locale', async (ctx) => {
-      const { stdout } = await runCommand(
-        ['cm:migrate-rte', '--configPath', './test/dummy/config/config.json', '--yes'],
-        { root: process.cwd() },
-      );
-      expect(stdout).to.contain(
-        `WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-p, --configPath). We recommend you to use the updated flags (-c, --config-path).`,
-      );
-    });
-
-  fancy
-    .stub(cliux, 'confirm', () => 'yes')
-    .stub(command, 'getToken', getTokenCallback)
-    .it('execute using flags (w/o locale)', async () => {
-      const { stdout } = await runCommand(
-        [
-          'cm:entries:migrate-html-rte',
-          '--alias',
-          'test1',
-          '--content_type',
-          'contenttypewithsinglerte',
-          '--htmlPath',
-          'rich_text_editor',
-          '--jsonPath',
-          'supercharged_rte',
-          '--delay',
-          '50',
-        ],
-        { root: process.cwd() },
-      );
-
-      expect(stdout).to.contain(
-        `WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-c, --content_type). We recommend you to use the updated flags (--content-type).`,
-      );
-      expect(stdout).to.contain(
-        `WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-h, --htmlPath). We recommend you to use the updated flags (--html-path)`,
-      );
-      expect(stdout).to.contain(
-        `WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (-j, --jsonPath). We recommend you to use the updated flags (--json-path).`,
-      );
     });
 });
