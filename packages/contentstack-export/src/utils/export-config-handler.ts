@@ -118,19 +118,44 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
 
   // Handle query flag - can be inline JSON or file path
   if (exportCmdFlags['query']) {
+    log.info('Query parameter detected, parsing query configuration...', { queryInput: exportCmdFlags['query'] });
     try {
       const queryInput = exportCmdFlags['query'];
 
       // Check if it's a file path (contains .json extension or path separators)
       if (queryInput.includes('.json') || queryInput.includes('/') || queryInput.includes('\\')) {
+        log.debug(`Reading query from file: ${queryInput}`);
         // Try to read as file path
         config.query = await readFile(queryInput);
+        log.info(`Successfully loaded query configuration from file: ${queryInput}`);
+        log.debug(`Query configuration loaded: ${JSON.stringify(config.query)}`);
       } else {
+        log.debug('Parsing query as inline JSON string');
         config.query = JSON.parse(queryInput);
+        log.info('Successfully parsed inline query configuration');
+        log.debug(`Query configuration parsed: ${JSON.stringify(config.query)}`);
+      }
+      
+      // Log which modules have query filters
+      if (config.query?.modules) {
+        const modulesWithFilters = Object.keys(config.query.modules);
+        log.info(
+          `Query filters configured for ${modulesWithFilters.length} module(s): ${modulesWithFilters.join(', ')}`,
+        );
+        modulesWithFilters.forEach((moduleName) => {
+          log.debug(
+            `Query filters for module '${moduleName}': ${JSON.stringify(config.query.modules[moduleName])}`,
+          );
+        });
+      } else {
+        log.debug('No module-specific query filters found in query configuration');
       }
     } catch (error) {
+      log.error('Failed to parse query configuration', { error: error.message, queryInput: exportCmdFlags['query'] });
       throw new Error(`Invalid query format: ${error.message}`);
     }
+  } else {
+    log.debug('No query parameter provided, proceeding without query filters');
   }
 
     // Add authentication details to config for context tracking

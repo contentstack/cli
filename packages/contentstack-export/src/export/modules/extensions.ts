@@ -21,7 +21,9 @@ export default class ExportExtensions extends BaseClass {
     this.extensions = {};
     this.extensionConfig = exportConfig.modules.extensions;
     this.qs = { include_count: true };
+    log.debug('Applying query filters for extensions export', this.exportConfig.context);
     this.applyQueryFilters(this.qs, 'extensions');
+    log.debug(`Extensions query parameters after applying filters: ${JSON.stringify(this.qs)}`, this.exportConfig.context);
     this.exportConfig.context.module = 'extensions';
   }
 

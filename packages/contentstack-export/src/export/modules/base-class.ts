@@ -140,10 +140,11 @@ export default abstract class BaseClass {
     );
 
     if (this.exportConfig.modules.assets.displayExecutionTime) {
-      console.log(
+      log.debug(
         `Time taken to execute: ${exeTime} milliseconds; wait time: ${
           exeTime < 1000 ? 1000 - exeTime : 0
         } milliseconds`,
+        this.exportConfig.context,
       );
     }
 
@@ -194,13 +195,39 @@ export default abstract class BaseClass {
   protected applyQueryFilters(requestObject: any, moduleName: string): any {
     if (this.exportConfig.query?.modules?.[moduleName]) {
       const moduleQuery = this.exportConfig.query.modules[moduleName];
+      log.debug(
+        `Applying query filters for module: ${moduleName}`,
+        this.exportConfig.context,
+      );
+      log.debug(
+        `Query filters to apply: ${JSON.stringify(moduleQuery)}`,
+        this.exportConfig.context,
+      );
       // Merge the query parameters with existing requestObject
       if (moduleQuery) {
         if (!requestObject.query) {
           requestObject.query = moduleQuery;
+          log.debug(
+            `Initialized query object with filters for module: ${moduleName}`,
+            this.exportConfig.context,
+          );
+        } else {
+          log.debug(
+            `Merging query filters with existing query for module: ${moduleName}`,
+            this.exportConfig.context,
+          );
+          Object.assign(requestObject.query, moduleQuery);
         }
-        Object.assign(requestObject.query, moduleQuery);
+        log.debug(
+          `Query filters applied successfully for module: ${moduleName}. Final query: ${JSON.stringify(requestObject.query)}`,
+          this.exportConfig.context,
+        );
       }
+    } else {
+      log.debug(
+        `No query filters found for module: ${moduleName}`,
+        this.exportConfig.context,
+      );
     }
     return requestObject;
   }

@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import mkdirp from 'mkdirp';
 import bigJSON from 'big-json';
-import { FsUtility, sanitizePath } from '@contentstack/cli-utilities';
+import { FsUtility, sanitizePath, log } from '@contentstack/cli-utilities';
 
 export const readFileSync = function (filePath: string, parse: boolean): unknown {
   let data;
@@ -47,7 +47,7 @@ export const readLargeFile = function (filePath: string, options: { type?: strin
         resolve(data);
       });
       parseStream.on('error', (error: Error) => {
-        console.log('error', error);
+        log.error('Error parsing large file', { filePath, error: error.message });
         reject(error);
       });
       readStream.pipe(parseStream);

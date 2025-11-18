@@ -33,7 +33,9 @@ export default class ExportTaxonomies extends BaseClass {
     this.taxonomiesConfig = exportConfig.modules.taxonomies;
     this.qs = { include_count: true, limit: this.taxonomiesConfig.limit || 100, skip: 0 };
 
+    log.debug('Applying query filters for taxonomies export', this.exportConfig.context);
     this.applyQueryFilters(this.qs, 'taxonomies');
+    log.debug(`Taxonomies query parameters after applying filters: ${JSON.stringify(this.qs)}`, this.exportConfig.context);
     this.exportConfig.context.module = 'taxonomies';
     this.localesFilePath = pResolve(
       sanitizePath(exportConfig.data),

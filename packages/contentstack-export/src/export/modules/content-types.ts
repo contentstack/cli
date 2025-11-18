@@ -50,7 +50,9 @@ export default class ContentTypesExport extends BaseClass {
     }
 
     // Add after existing qs setup and before contentTypesDirPath
+    log.debug('Applying query filters for content types export', this.exportConfig.context);
     this.applyQueryFilters(this.qs, 'content-types');
+    log.debug(`Content types query parameters after applying filters: ${JSON.stringify(this.qs)}`, this.exportConfig.context);
 
     this.contentTypesDirPath = path.resolve(
       sanitizePath(exportConfig.data),

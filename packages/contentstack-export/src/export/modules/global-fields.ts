@@ -49,7 +49,9 @@ export default class GlobalFieldsExport extends BaseClass {
       sanitizePath(this.globalFieldsConfig.dirName),
     );
     this.globalFields = [];
+    log.debug('Applying query filters for global fields export', this.exportConfig.context);
     this.applyQueryFilters(this.qs, 'global-fields');
+    log.debug(`Global fields query parameters after applying filters: ${JSON.stringify(this.qs)}`, this.exportConfig.context);
     this.exportConfig.context.module = 'global-fields';
   }
 

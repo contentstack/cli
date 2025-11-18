@@ -119,19 +119,36 @@ export default class ExportCommand extends Command {
     let exportDir: string = pathValidator('logs');
     try {
       const { flags } = await this.parse(ExportCommand);
+      log.info('Starting export command execution', { stackApiKey: flags['stack-api-key'] || flags.alias });
+      log.debug('Parsed command flags', { flags: JSON.stringify(flags) });
+      
       const exportConfig = await setupExportConfig(flags);
+      log.debug('Export configuration setup completed', { 
+        apiKey: exportConfig.apiKey,
+        module: exportConfig.moduleName,
+        hasQuery: !!exportConfig.query,
+      });
+      
       // Prepare the context object
       const context = this.createExportContext(exportConfig.apiKey, exportConfig.authenticationMethod);
       exportConfig.context = { ...context };
       //log.info(`Using Cli Version: ${this.context?.cliVersion}`, exportConfig.context);
+      log.debug('Export context created', exportConfig.context);
 
       // Assign exportConfig variables
       this.assignExportConfig(exportConfig);
 
       exportDir = sanitizePath(exportConfig.cliLogsPath || exportConfig.data || exportConfig.exportDir);
+      log.info(`Export directory set to: ${exportDir}`, exportConfig.context);
+      log.debug('Initializing management API client', exportConfig.context);
+      
       const managementAPIClient: ContentstackClient = await managementSDKClient(exportConfig);
+      log.debug('Management API client initialized successfully', exportConfig.context);
+      
+      log.info('Starting module exporter', exportConfig.context);
       const moduleExporter = new ModuleExporter(managementAPIClient, exportConfig);
       await moduleExporter.start();
+      log.debug('Module exporter completed successfully', exportConfig.context);
       if (!exportConfig.branches?.length) {
         writeExportMetaFile(exportConfig);
       }

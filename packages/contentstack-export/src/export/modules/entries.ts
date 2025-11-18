@@ -163,6 +163,10 @@ export default class EntriesExport extends BaseClass {
         locale: options.locale,
       },
     };
+    log.debug(
+      `Applying query filters for entries export (content type: ${options.contentType}, locale: ${options.locale})`,
+      this.exportConfig.context,
+    );
     this.applyQueryFilters(requestObject, 'entries');
 
     log.debug(`Fetching entries with request: ${JSON.stringify(requestObject)}`, this.exportConfig.context);

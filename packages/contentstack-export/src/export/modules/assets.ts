@@ -84,7 +84,9 @@ export default class ExportAssets extends BaseClass {
       ...this.commonQueryParam,
       query: { is_dir: true },
     };
-
+    
+    log.debug('Applying query filters for asset folders export', this.exportConfig.context);
+    this.applyQueryFilters(queryParam, 'assets');
     log.debug(`Fetching asset folders with query: ${JSON.stringify(queryParam)}`, this.exportConfig.context);
 
     const onSuccess = ({ response: { items } }: any) => {
@@ -137,7 +139,9 @@ export default class ExportAssets extends BaseClass {
       include_publish_details: true,
       except: { BASE: this.assetConfig.invalidKeys },
     };
+    log.debug('Applying query filters for assets export', this.exportConfig.context);
     this.applyQueryFilters(queryParam, 'assets');
+    log.debug(`Assets query parameters after applying filters: ${JSON.stringify(queryParam)}`, this.exportConfig.context);
 
     if (this.assetConfig.includeVersionedAssets) {
       const customHandler = (array: Array<any>) => {
@@ -364,8 +368,11 @@ export default class ExportAssets extends BaseClass {
           time: 5000,
           length: data.headers['content-length'],
         });
-        str.on('progress', function (progressData) {
-          console.log(`${asset.filename}: ${Math.round(progressData.percentage)}%`);
+        str.on('progress', (progressData) => {
+          log.debug(
+            `${asset.filename}: ${Math.round(progressData.percentage)}%`,
+            { ...this.exportConfig.context, uid: asset.uid, filename: asset.filename },
+          );
         });
         data.pipe(str).pipe(assetWriterStream);
       } else {
