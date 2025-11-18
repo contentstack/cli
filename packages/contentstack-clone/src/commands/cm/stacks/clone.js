@@ -1,5 +1,5 @@
 const { Command } = require('@contentstack/cli-command');
-const { configHandler, flags, isAuthenticated, managementSDKClient } = require('@contentstack/cli-utilities');
+const { configHandler, flags, isAuthenticated, managementSDKClient, log } = require('@contentstack/cli-utilities');
 const { CloneHandler } = require('../../../lib/util/clone-handler');
 const path = require('path');
 const { rimraf } = require('rimraf');
@@ -68,13 +68,13 @@ class StackCloneCommand extends Command {
           config.source_alias = sourceManagementTokenAlias;
           config.source_stack = listOfTokens[sourceManagementTokenAlias].apiKey;
         } else if (sourceManagementTokenAlias) {
-          console.log(`Provided source token alias (${sourceManagementTokenAlias}) not found in your config.!`);
+          log.warn(`Provided source token alias (${sourceManagementTokenAlias}) not found in your config.!`);
         }
         if (destinationManagementTokenAlias && listOfTokens[destinationManagementTokenAlias]) {
           config.destination_alias = destinationManagementTokenAlias;
           config.target_stack = listOfTokens[destinationManagementTokenAlias].apiKey;
         } else if (destinationManagementTokenAlias) {
-          console.log(
+          log.warn(
             `Provided destination token alias (${destinationManagementTokenAlias}) not found in your config.!`,
           );
         }
@@ -93,8 +93,9 @@ class StackCloneCommand extends Command {
         config.pathDir = pathdir;
         const cloneHandler = new CloneHandler(config);
         cloneHandler.setClient(managementAPIClient);
+        log.debug('Starting clone operation', { sourceStack: config.source_stack, targetStack: config.target_stack });
         cloneHandler.execute().catch((error) => {
-          console.log(error);
+          log.error('Clone operation failed', { error });
         });
       };
 
@@ -103,7 +104,7 @@ class StackCloneCommand extends Command {
           if (isAuthenticated()) {
             handleClone();
           } else {
-            console.log('Please login to execute this command, csdx auth:login');
+            log.warn('Please login to execute this command, csdx auth:login');
             this.exit(1);
           }
         } else {
@@ -112,14 +113,13 @@ class StackCloneCommand extends Command {
       } else if (isAuthenticated()) {
         handleClone();
       } else {
-        console.log('Please login to execute this command, csdx auth:login');
+        log.warn('Please login to execute this command, csdx auth:login');
         this.exit(1);
       }
     } catch (error) {
       if (error) {
         await this.cleanUp(pathdir);
-        // eslint-disable-next-line no-console
-        console.log(error.message || error);
+        log.error('Stack clone command failed', { error: error.message || error });
       }
     }
   }
@@ -128,34 +128,40 @@ class StackCloneCommand extends Command {
 
   async removeContentDirIfNotEmptyBeforeClone(dir) {
     try {
+      log.debug('Checking if content directory is empty', { dir });
       const dirNotEmpty = readdirSync(dir).length;
 
       if (dirNotEmpty) {
+        log.debug('Content directory is not empty, cleaning up', { dir });
         await this.cleanUp(dir);
       }
     } catch (error) {
       const omit = ['ENOENT']; // NOTE add emittable error codes in the array
 
       if (!omit.includes(error.code)) {
-        console.log(error.message);
+        log.error('Error checking content directory', { error: error.message, code: error.code });
       }
     }
   }
 
   async cleanUp(pathDir, message) {
     try {
+      log.debug('Starting cleanup', { pathDir });
       await rimraf(pathDir);
       if (message) {
-        // eslint-disable-next-line no-console
-        console.log(message);
+        log.info(message);
       }
+      log.debug('Cleanup completed', { pathDir });
     } catch (err) {
       if (err) {
-        console.log('\nCleaning up');
+        log.debug('Cleaning up');
         const skipCodeArr = ['ENOENT', 'EBUSY', 'EPERM', 'EMFILE', 'ENOTEMPTY'];
 
         if (skipCodeArr.includes(err.code)) {
+          log.debug('Cleanup error code is in skip list, exiting', { code: err.code });
           process.exit();
+        } else {
+          log.error('Cleanup failed', { error: err.message, code: err.code });
         }
       }
     }
@@ -167,21 +173,18 @@ class StackCloneCommand extends Command {
 
     const cleanUp = async (exitOrError) => {
       if (exitOrError) {
-        // eslint-disable-next-line no-console
-        console.log('\nCleaning up');
+        log.debug('Cleaning up on interrupt');
         await this.cleanUp(pathDir);
-        // eslint-disable-next-line no-console
-        console.log('done');
-        // eslint-disable-next-line no-process-exit
+        log.info('Cleanup done');
 
         if (exitOrError instanceof Promise) {
           exitOrError.catch((error) => {
-            console.log((error && error.message) || '');
+            log.error('Error during cleanup', { error: (error && error.message) || '' });
           });
         } else if (exitOrError.message) {
-          console.log(exitOrError.message);
+          log.error('Cleanup error', { error: exitOrError.message });
         } else if (exitOrError.errorMessage) {
-          console.log(exitOrError.message);
+          log.error('Cleanup error', { error: exitOrError.message });
         }
 
         if (exitOrError === true) process.exit();
