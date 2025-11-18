@@ -4,6 +4,7 @@ import { normalize } from 'path';
 import * as winston from 'winston';
 import { levelColors, logLevels } from '../constants/logging';
 import { LoggerConfig, LogLevel, LogType } from '../interfaces/index';
+import { getSessionLogPath } from './session-path';
 
 export default class Logger {
   private loggers: Record<string, winston.Logger>;
@@ -36,7 +37,9 @@ export default class Logger {
   }
 
   getLoggerInstance(level: 'error' | 'info' | 'warn' | 'debug' | 'hidden' = 'info'): winston.Logger {
-    const filePath = normalize(process.env.CS_CLI_LOG_PATH || this.config.basePath).replace(/^(\.\.(\/|\\|$))+/, '');
+    // Use session-based path for date-organized logging
+    const sessionPath = getSessionLogPath();
+    const filePath = normalize(sessionPath).replace(/^(\.\.(\/|\\|$))+/, '');
     return this.createLogger(level === 'hidden' ? 'error' : level, filePath);
   }
 
