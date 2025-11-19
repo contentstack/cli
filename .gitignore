@@ -23,3 +23,5 @@ talisman_output.log
 snyk_output.log
 # Snyk Security Extension - AI Rules (auto-generated)
 .cursor/rules/snyk_rules.mdc
+**/migration-logs
+**/migration-logs/**

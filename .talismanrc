@@ -1,12 +1,12 @@
 fileignoreconfig:
-  - filename: pnpm-lock.yaml
-    checksum: 7b060ffea8f5fb4854dc637340b8dd210d2eb5f70bf06a0d92059e02dcc6aed0
   - filename: package-lock.json
-    checksum: 78f7a84da921fa2b52a1ca53a99f601d2f9846a8f61d112c1161354df257ba44
-  - filename: packages/contentstack-migration/README.md
-    checksum: 583d2a86d435864dead086b4d5552c7cadbd1c1f755b3865fc057e9fa8053da3
-  - filename: packages/contentstack-migration/src/commands/cm/stacks/migration.js
-    checksum: ee9995fd8da99cbefeede23165d3ab8cd37126db9c914bf1de4b95ce185b7742
-  - filename: packages/contentstack/README.md
-    checksum: ff117939e3867c4d39a95cca3d1a31e79bebd6425110d2dcb9b52a4a6eca7f6f
+    checksum: dbb4e0ec893dd445678e47864d3f3a0b14c3c0eff933fb50ef5ba6b300c1cba2
+  - filename: packages/contentstack-migration/test/unit/utils/map.test.js
+    checksum: 7d570280b2f379531dde84946b06171d50f92489ff0de6336f7fbd81c336ee89
+  - filename: packages/contentstack-migration/test/unit/modules/parser.test.js
+    checksum: 243fa1c45875675f719f660c0c988e2ba9266c562a37aaeb09b0db93a0cb037d
+  - filename: packages/contentstack-migration/test/unit/validators/create-content-type-validator.test.js
+    checksum: f92e39a542cd2d561c441d23395515cadc24c9514de55c3edb038f70bd2458b3
+  - filename: packages/contentstack-migration/test/unit/validators/edit-content-type-validator.test.js
+    checksum: bde4bc6b2a90e7ce5872e6fbbabef9f2db352705be4d2f8d28d71d84209a714e
 version: '1.0'
