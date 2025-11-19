@@ -10,22 +10,46 @@ let config = {};
 
 class StackCloneCommand extends Command {
   /**
+   * Determine authentication method based on user preference
+   */
+  determineAuthenticationMethod(sourceManagementTokenAlias, destinationManagementTokenAlias) {
+    // Track authentication method
+    let authenticationMethod = 'unknown';
+
+    // Determine authentication method based on user preference
+    if (sourceManagementTokenAlias || destinationManagementTokenAlias) {
+      authenticationMethod = 'Management Token';
+    } else if (isAuthenticated()) {
+      // Check if user is authenticated via OAuth
+      const isOAuthUser = configHandler.get('authorisationType') === 'OAUTH' || false;
+      if (isOAuthUser) {
+        authenticationMethod = 'OAuth';
+      } else {
+        authenticationMethod = 'Basic Auth';
+      }
+    } else {
+      authenticationMethod = 'Basic Auth';
+    }
+
+    return authenticationMethod;
+  }
+
+  /**
    * Create clone context object for logging
    */
-  createCloneContext() {
+  createCloneContext(authenticationMethod) {
     return {
       command: this.context?.info?.command || 'cm:stacks:clone',
       module: 'clone',
       email: configHandler.get('email') || '',
       sessionId: this.context?.sessionId || '',
-      authenticationMethod: configHandler.get('authenticationMethod') || '',
+      authenticationMethod: authenticationMethod || 'Basic Auth',
     };
   }
 
   async run() {
     try {
       let self = this;
-      const cloneContext = this.createCloneContext();
       const { flags: cloneCommandFlags } = await self.parse(StackCloneCommand);
       const {
         yes,
@@ -44,8 +68,13 @@ class StackCloneCommand extends Command {
       } = cloneCommandFlags;
 
       const handleClone = async () => {
-        log.debug('Starting clone operation setup', cloneContext);
         const listOfTokens = configHandler.get('tokens');
+        const authenticationMethod = this.determineAuthenticationMethod(
+          sourceManagementTokenAlias,
+          destinationManagementTokenAlias,
+        );
+        const cloneContext = this.createCloneContext(authenticationMethod);
+        log.debug('Starting clone operation setup', cloneContext);
 
         if (externalConfigPath) {
           log.debug(`Loading external configuration from: ${externalConfigPath}`, cloneContext);
@@ -55,7 +84,8 @@ class StackCloneCommand extends Command {
         }
         config.forceStopMarketplaceAppsPrompt = yes;
         config.skipAudit = cloneCommandFlags['skip-audit'];
-        log.debug('Clone configuration prepared', cloneContext, { 
+        log.debug('Clone configuration prepared', { 
+          ...cloneContext,
           cloneType: config.cloneType, 
           skipAudit: config.skipAudit,
           forceStopMarketplaceAppsPrompt: config.forceStopMarketplaceAppsPrompt 
@@ -123,7 +153,7 @@ class StackCloneCommand extends Command {
         cloneHandler.setClient(managementAPIClient);
         log.debug('Starting clone operation', cloneContext);
         cloneHandler.execute().catch((error) => {
-          log.error('Clone operation failed', cloneContext, { error });
+          log.error('Clone operation failed', { ...cloneContext, error });
         });
       };
 
@@ -132,7 +162,7 @@ class StackCloneCommand extends Command {
           if (isAuthenticated()) {
             handleClone();
           } else {
-            log.warn('Please login to execute this command, csdx auth:login', cloneContext);
+            log.error('Please login to execute this command, csdx auth:login', cloneContext);
             this.exit(1);
           }
         } else {
@@ -141,13 +171,13 @@ class StackCloneCommand extends Command {
       } else if (isAuthenticated()) {
         handleClone();
       } else {
-        log.warn('Please login to execute this command, csdx auth:login', cloneContext);
+        log.error('Please login to execute this command, csdx auth:login', cloneContext);
         this.exit(1);
       }
     } catch (error) {
       if (error) {
         await this.cleanUp(pathdir, null, cloneContext);
-        log.error('Stack clone command failed', cloneContext, { error: error.message || error });
+        log.error('Stack clone command failed', { ...cloneContext, error: error?.message || error });
       }
     }
   }
@@ -156,37 +186,37 @@ class StackCloneCommand extends Command {
 
   async removeContentDirIfNotEmptyBeforeClone(dir, cloneContext) {
     try {
-      log.debug('Checking if content directory is empty', cloneContext, { dir });
+      log.debug('Checking if content directory is empty', { ...cloneContext, dir });
       const dirNotEmpty = readdirSync(dir).length;
 
       if (dirNotEmpty) {
-        log.debug('Content directory is not empty, cleaning up', cloneContext, { dir });
+        log.debug('Content directory is not empty, cleaning up', { ...cloneContext, dir });
         await this.cleanUp(dir, null, cloneContext);
       }
     } catch (error) {
       const omit = ['ENOENT']; // NOTE add emittable error codes in the array
 
       if (!omit.includes(error.code)) {
-        log.error('Error checking content directory', cloneContext, { error: error.message, code: error.code });
+        log.error('Error checking content directory', { ...cloneContext, error: error?.message, code: error.code });
       }
     }
   }
 
   async cleanUp(pathDir, message, cloneContext) {
     try {
-      log.debug('Starting cleanup', cloneContext, { pathDir });
+      log.debug('Starting cleanup', { ...cloneContext, pathDir });
       await rimraf(pathDir);
       if (message) {
         log.info(message, cloneContext);
       }
-      log.debug('Cleanup completed', cloneContext, { pathDir });
+      log.debug('Cleanup completed', { ...cloneContext, pathDir });
     } catch (err) {
       if (err) {
         log.debug('Cleaning up', cloneContext);
         const skipCodeArr = ['ENOENT', 'EBUSY', 'EPERM', 'EMFILE', 'ENOTEMPTY'];
 
         if (skipCodeArr.includes(err.code)) {
-          log.debug('Cleanup error code is in skip list, exiting', cloneContext, { code: err.code });
+          log.debug('Cleanup error code is in skip list, exiting', { ...cloneContext, code: err?.code });
           process.exit();
         }
       }
@@ -205,12 +235,12 @@ class StackCloneCommand extends Command {
 
         if (exitOrError instanceof Promise) {
           exitOrError.catch((error) => {
-            log.error('Error during cleanup', cloneContext, { error: (error && error.message) || '' });
+            log.error('Error during cleanup', { ...cloneContext, error: (error && error?.message) || '' });
           });
         } else if (exitOrError.message) {
-          log.error('Cleanup error', cloneContext, { error: exitOrError.message });
+          log.error('Cleanup error', { ...cloneContext, error: exitOrError?.message });
         } else if (exitOrError.errorMessage) {
-          log.error('Cleanup error', cloneContext, { error: exitOrError.message });
+          log.error('Cleanup error', { ...cloneContext, error: exitOrError?.errorMessage });
         }
 
         if (exitOrError === true) process.exit();
