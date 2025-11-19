@@ -1,5 +1,5 @@
 const { Command } = require('@contentstack/cli-command');
-const { printFlagDeprecation, flags } = require('@contentstack/cli-utilities');
+const { flags } = require('@contentstack/cli-utilities');
 const { isEmpty } = require('lodash');
 const chalk = require('chalk');
 let {
@@ -22,10 +22,10 @@ class JsonMigrationCommand extends Command {
       }
       const stackOptions = { host: this.cmaHost };
       if (config.alias) {
-        stackOptions.token = getToken(config.alias)
+        stackOptions.token = getToken(config.alias);
       }
       if (config['stack-api-key']) {
-        stackOptions.stackApiKey = config['stack-api-key']
+        stackOptions.stackApiKey = config['stack-api-key'];
       }
       if (config.branch) stackOptions.branch = config.branch;
       let stack = await getStack(stackOptions);
@@ -83,7 +83,8 @@ JsonMigrationCommand.flags = {
     required: false,
   }),
   'global-field': flags.boolean({
-    description: 'Checks whether the specified UID belongs to a content type or a global field. This flag is set to false by default.',
+    description:
+      'Checks whether the specified UID belongs to a content type or a global field. This flag is set to false by default.',
     default: false,
     required: false,
   }),
@@ -108,7 +109,8 @@ JsonMigrationCommand.flags = {
     required: false,
   }),
   delay: flags.integer({
-    description: 'To set the interval time between the migration of HTML RTE to JSON RTE in subsequent entries of a content type. The default value is 1,000 milliseconds.',
+    description:
+      'To set the interval time between the migration of HTML RTE to JSON RTE in subsequent entries of a content type. The default value is 1,000 milliseconds.',
     default: 1000,
     required: false,
   }),
@@ -119,37 +121,6 @@ JsonMigrationCommand.flags = {
   'batch-limit': flags.integer({
     description: 'Provide batch limit for updating entries (default: 50).',
     default: 50,
-  }),
-
-  // To be deprecated
-  configPath: flags.string({
-    char: 'p',
-    description: 'Path to the config file',
-    hidden: true,
-    parse: printFlagDeprecation(['-p', '--configPath'], ['-c', '--config-path']),
-  }),
-  content_type: flags.string({
-    description: 'The content-type from which entries need to be migrated',
-    hidden: true,
-    parse: printFlagDeprecation(['-c', '--content_type'], ['--content-type']),
-  }),
-  isGlobalField: flags.boolean({
-    char: 'g',
-    description: 'Indicates that the current content type is a global field (default: false)',
-    hidden: true,
-    parse: printFlagDeprecation(['-g', '--isGlobalField'], ['--global-field']),
-  }),
-  htmlPath: flags.string({
-    char: 'h',
-    description: 'Provide the path of HTML RTE to migrate',
-    hidden: true,
-    parse: printFlagDeprecation(['-h', '--htmlPath'], ['--html-path']),
-  }),
-  jsonPath: flags.string({
-    char: 'j',
-    description: 'Provide the path of JSON RTE to migrate',
-    hidden: true,
-    parse: printFlagDeprecation(['-j', '--jsonPath'], ['--json-path']),
   }),
 };
 
