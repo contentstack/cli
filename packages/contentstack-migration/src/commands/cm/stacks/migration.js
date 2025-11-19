@@ -14,7 +14,6 @@ const fs = require('fs');
 const chalk = require('chalk');
 const isEmpty = require('lodash/isEmpty');
 const {
-  printFlagDeprecation,
   managementSDKClient,
   flags,
   isAuthenticated,
@@ -41,12 +40,12 @@ const {
 
 class MigrationCommand extends Command {
   static examples = [
-    '$ csdx cm:migration --file-path <migration/script/file/path> -k <api-key>',
-    '$ csdx cm:migration --file-path <migration/script/file/path> -k <api-key> --branch <target branch name>',
+    '$ csdx cm:migration --file-path <migration/script/file/path> --stack-api-key <stack-api-key>',
+    '$ csdx cm:migration --file-path <migration/script/file/path> --stack-api-key <stack-api-key> --branch <target branch name>',
     '$ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... --file-path <migration/script/file/path>',
     '$ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>',
     '$ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> ',
-    '$ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>',
+    '$ csdx cm:migration --alias <management-token-alias> --file-path <migration/script/file/path>',
   ];
 
   async run() {
@@ -246,65 +245,33 @@ MigrationCommand.description = 'Contentstack migration script.';
 MigrationCommand.flags = {
   'stack-api-key': flags.string({
     char: 'k',
-    description: 'Use this flag to add the API key of your stack. You must use either the --stack-api-key flag or the --alias flag.',
+    description:
+      'Use this flag to add the API key of your stack. You must use either the --stack-api-key flag or the --alias flag.',
     exclusive: ['alias'],
   }),
   alias: flags.string({
     char: 'a',
-    description: 'Use this flag to add the management token alias. You must use either the --alias flag or the --stack-api-key flag.',
+    description:
+      'Use this flag to add the management token alias. You must use either the --alias flag or the --stack-api-key flag.',
+    exclusive: ['stack-api-key'],
   }),
   'file-path': flags.string({
     description: 'Use this flag to provide the path of the file of the migration script.',
   }),
   branch: flags.string({
-    char: 'B',
     description: 'Use this flag to add the branch name where you want to perform the migration. (target branch name)',
-    parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
   'config-file': flags.string({
     description: '[optional] Path of the JSON configuration file.',
   }),
   config: flags.string({
-    description: '[optional] Inline configuration, <key1>:<value1>. Passing an external configuration makes the script re-usable.',
+    description:
+      '[optional] Inline configuration, <key1>:<value1>. Passing an external configuration makes the script re-usable.',
     multiple: true,
   }),
   multiple: flags.boolean({
-    description: 'This flag helps you to migrate multiple content files in a single instance. Mention the folder path where your migration script files are stored.',
-  }),
-
-  // To be deprecated
-  'api-key': flags.string({
-    char: 'k',
-    description: 'With this flag add the API key of your stack.',
-    // dependsOn: ['authtoken'],
-    exclusive: ['alias'],
-    parse: printFlagDeprecation(['--api-key'], ['-k', '--stack-api-key']),
-    hidden: true,
-  }),
-  authtoken: flags.boolean({
-    char: 'A',
-    description: 'Use this flag to use the auth token of the current session. After logging in CLI, an auth token is generated for each new session.',
-    dependsOn: ['api-key'],
-    exclusive: ['alias'],
-    parse: printFlagDeprecation(['-A', '--authtoken']),
-    hidden: true,
-  }),
-  'management-token-alias': flags.string({
-    description: 'Alias of the management token.',
-    exclusive: ['authtoken'],
-    hidden: true,
-    parse: printFlagDeprecation(['--management-token-alias'], ['-a', '--alias']),
-  }),
-  filePath: flags.string({
-    char: 'n',
-    description: 'Use this flag to provide the path of the file of the migration script provided by the user.',
-    parse: printFlagDeprecation(['-n', '--filePath'], ['--file-path']),
-    hidden: true,
-  }),
-  multi: flags.boolean({
-    description: 'This flag helps you to migrate multiple content files in a single instance.',
-    parse: printFlagDeprecation(['--multi'], ['--multiple']),
-    hidden: true,
+    description:
+      'This flag helps you to migrate multiple content files in a single instance. Mention the folder path where your migration script files are stored.',
   }),
 };
 
