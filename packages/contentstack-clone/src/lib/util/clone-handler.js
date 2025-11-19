@@ -155,22 +155,22 @@ class CloneHandler {
 
         // NOTE validate if source branch is exist
         if (isSource && config.sourceStackBranch) {
-          log.debug('Validating source branch exists', config.cloneContext, { branch: config.sourceStackBranch });
+          log.debug('Validating source branch exists', { ...config.cloneContext, branch: config.sourceStackBranch });
           await this.validateIfBranchExist(stackAPIClient, true);
           return resolve();
         } else if(isSource && config.sourceStackBranchAlias) {
-          log.debug('Resolving source branch alias', config.cloneContext, { alias: config.sourceStackBranchAlias });
+          log.debug('Resolving source branch alias', { ...config.cloneContext, alias: config.sourceStackBranchAlias });
           await this.resolveBranchAliases(true);
           return resolve();
         }
 
         // NOTE Validate target branch is exist
         if (!isSource && config.targetStackBranch) {
-          log.debug('Validating target branch exists', config.cloneContext, { branch: config.targetStackBranch });
+          log.debug('Validating target branch exists', { ...config.cloneContext, branch: config.targetStackBranch });
           await this.validateIfBranchExist(stackAPIClient, false);
           return resolve();
         } else if (!isSource && config.targetStackBranchAlias) {
-          log.debug('Resolving target branch alias', config.cloneContext, { alias: config.targetStackBranchAlias });
+          log.debug('Resolving target branch alias', { ...config.cloneContext, alias: config.targetStackBranchAlias });
           await this.resolveBranchAliases();
           return resolve();
         }
@@ -216,7 +216,6 @@ class CloneHandler {
         }
       } catch (e) {
         if (spinner) spinner.fail();
-        log.error('Error in handleBranchSelection', config.cloneContext, { error: e && e.message, isSource });
         return reject(e);
       }
     });
@@ -246,7 +245,6 @@ class CloneHandler {
         process.exit();
       }
     } catch (e) {
-      log.error('Branch validation failed', config.cloneContext, { isSource, branch, error: e.message });
       completeSpinner(`${isSource ? 'Source' : 'Target'} branch not found.!`, 'fail');
       throw e;
     }
@@ -271,7 +269,7 @@ class CloneHandler {
     return new Promise(async (resolve, reject) => {
       let keyPressHandler;
       try {
-        log.debug('Starting clone execution', config.cloneContext, { sourceStack: config.source_stack, targetStack: config.target_stack });
+        log.debug('Starting clone execution', { ...config.cloneContext, sourceStack: config.source_stack, targetStack: config.target_stack });
         if (!config.source_stack) {
           const orgMsg = 'Choose an organization where your source stack exists:';
           log.debug('Source stack not provided, prompting for organization', config.cloneContext);
@@ -518,7 +516,6 @@ class CloneHandler {
         }
 
         spinner.succeed('Fetched Organization');
-        const orgCount = organizations.items ? organizations.items.length : 1;
         log.debug('Fetched organizations', config.cloneContext);
         for (const element of organizations.items || [organizations]) {
           orgUidList[element.name] = element.uid;
@@ -559,7 +556,6 @@ class CloneHandler {
           })
           .catch((error) => {
             spinner.fail();
-            log.error('Failed to fetch stacks', { error: error.message || error });
             return reject(error);
           });
       } catch (e) {
@@ -641,15 +637,15 @@ class CloneHandler {
 
   async resolveBranchAliases(isSource = false) {
     try {
-      log.debug('Resolving branch aliases', config.cloneContext, { isSource, alias: isSource ? config.sourceStackBranchAlias : config.targetStackBranchAlias });
+      log.debug('Resolving branch aliases', { ...config.cloneContext, isSource, alias: isSource ? config.sourceStackBranchAlias : config.targetStackBranchAlias });
       if (isSource) {
         const sourceStack = client.stack({ api_key: config.source_stack });
         config.sourceStackBranch = await getBranchFromAlias(sourceStack, config.sourceStackBranchAlias);
-        log.debug('Source branch alias resolved', config.cloneContext, { alias: config.sourceStackBranchAlias, branch: config.sourceStackBranch });
+        log.debug('Source branch alias resolved', { ...config.cloneContext, alias: config.sourceStackBranchAlias, branch: config.sourceStackBranch });
       } else {
         const targetStack = client.stack({ api_key: config.target_stack });
         config.targetStackBranch = await getBranchFromAlias(targetStack, config.targetStackBranchAlias);
-        log.debug('Target branch alias resolved', config.cloneContext, { alias: config.targetStackBranchAlias, branch: config.targetStackBranch });
+        log.debug('Target branch alias resolved', { ...config.cloneContext, alias: config.targetStackBranchAlias, branch: config.targetStackBranch });
       }
     } catch (error) {
       throw error;
@@ -704,7 +700,7 @@ class CloneHandler {
 
   async cmdExport() {
     return new Promise((resolve, reject) => {
-      log.debug('Preparing export command', config.cloneContext, { sourceStack: config.source_stack, cloneType: config.cloneType });
+      log.debug('Preparing export command', { ...config.cloneContext, sourceStack: config.source_stack, cloneType: config.cloneType });
       // Creating export specific config by merging external configurations
       let exportConfig = Object.assign({}, cloneDeep(config), { ...config?.export });
       delete exportConfig.import;
@@ -751,7 +747,6 @@ class CloneHandler {
         log.debug('Export command completed successfully', config.cloneContext);
         resolve(true);
       }).catch((error) => {
-        log.error('Export command failed', config.cloneContext, { error: error.message || error });
         reject(error);
       });
     });
@@ -759,7 +754,7 @@ class CloneHandler {
 
   async cmdImport() {
     return new Promise(async (resolve, _reject) => {
-      log.debug('Preparing import command', config.cloneContext, { targetStack: config.target_stack, targetBranch: config.targetStackBranch });
+      log.debug('Preparing import command', { ...config.cloneContext, targetStack: config.target_stack, targetBranch: config.targetStackBranch });
       // Creating export specific config by merging external configurations
       let importConfig = Object.assign({}, cloneDeep(config), { ...config?.import });
       delete importConfig.import;
