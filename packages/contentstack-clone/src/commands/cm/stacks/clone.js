@@ -9,9 +9,23 @@ const { readdirSync, readFileSync } = require('fs');
 let config = {};
 
 class StackCloneCommand extends Command {
+  /**
+   * Create clone context object for logging
+   */
+  createCloneContext() {
+    return {
+      command: this.context?.info?.command || 'cm:stacks:clone',
+      module: 'clone',
+      email: configHandler.get('email') || '',
+      sessionId: this.context?.sessionId || '',
+      authenticationMethod: configHandler.get('authenticationMethod') || '',
+    };
+  }
+
   async run() {
     try {
       let self = this;
+      const cloneContext = this.createCloneContext();
       const { flags: cloneCommandFlags } = await self.parse(StackCloneCommand);
       const {
         yes,
@@ -30,15 +44,22 @@ class StackCloneCommand extends Command {
       } = cloneCommandFlags;
 
       const handleClone = async () => {
+        log.debug('Starting clone operation setup', cloneContext);
         const listOfTokens = configHandler.get('tokens');
 
         if (externalConfigPath) {
+          log.debug(`Loading external configuration from: ${externalConfigPath}`, cloneContext);
           let externalConfig = readFileSync(externalConfigPath, 'utf-8');
           externalConfig = JSON.parse(externalConfig);
           config = merge.recursive(config, externalConfig);
         }
         config.forceStopMarketplaceAppsPrompt = yes;
         config.skipAudit = cloneCommandFlags['skip-audit'];
+        log.debug('Clone configuration prepared', cloneContext, { 
+          cloneType: config.cloneType, 
+          skipAudit: config.skipAudit,
+          forceStopMarketplaceAppsPrompt: config.forceStopMarketplaceAppsPrompt 
+        });
 
         if (cloneType) {
           config.cloneType = cloneType;
@@ -67,15 +88,18 @@ class StackCloneCommand extends Command {
         if (sourceManagementTokenAlias && listOfTokens[sourceManagementTokenAlias]) {
           config.source_alias = sourceManagementTokenAlias;
           config.source_stack = listOfTokens[sourceManagementTokenAlias].apiKey;
+          log.debug(`Using source token alias: ${sourceManagementTokenAlias}`, cloneContext);
         } else if (sourceManagementTokenAlias) {
-          log.warn(`Provided source token alias (${sourceManagementTokenAlias}) not found in your config.!`);
+          log.warn(`Provided source token alias (${sourceManagementTokenAlias}) not found in your config.!`, cloneContext);
         }
         if (destinationManagementTokenAlias && listOfTokens[destinationManagementTokenAlias]) {
           config.destination_alias = destinationManagementTokenAlias;
           config.target_stack = listOfTokens[destinationManagementTokenAlias].apiKey;
+          log.debug(`Using destination token alias: ${destinationManagementTokenAlias}`, cloneContext);
         } else if (destinationManagementTokenAlias) {
           log.warn(
             `Provided destination token alias (${destinationManagementTokenAlias}) not found in your config.!`,
+            cloneContext,
           );
         }
         if (importWebhookStatus) {
@@ -83,19 +107,23 @@ class StackCloneCommand extends Command {
         }
 
         const managementAPIClient = await managementSDKClient(config);
+        log.debug('Management API client initialized successfully', cloneContext);
 
-        await this.removeContentDirIfNotEmptyBeforeClone(pathdir); // NOTE remove if folder not empty before clone
-        this.registerCleanupOnInterrupt(pathdir);
+        log.debug(`Content directory path: ${pathdir}`, cloneContext);
+        await this.removeContentDirIfNotEmptyBeforeClone(pathdir, cloneContext); // NOTE remove if folder not empty before clone
+        this.registerCleanupOnInterrupt(pathdir, cloneContext);
 
         config.auth_token = configHandler.get('authtoken');
         config.host = this.cmaHost;
         config.cdn = this.cdaHost;
         config.pathDir = pathdir;
+        config.cloneContext = cloneContext;
+        log.debug('Clone configuration finalized', cloneContext);
         const cloneHandler = new CloneHandler(config);
         cloneHandler.setClient(managementAPIClient);
-        log.debug('Starting clone operation', { sourceStack: config.source_stack, targetStack: config.target_stack });
+        log.debug('Starting clone operation', cloneContext);
         cloneHandler.execute().catch((error) => {
-          log.error('Clone operation failed', { error });
+          log.error('Clone operation failed', cloneContext, { error });
         });
       };
 
@@ -104,7 +132,7 @@ class StackCloneCommand extends Command {
           if (isAuthenticated()) {
             handleClone();
           } else {
-            log.warn('Please login to execute this command, csdx auth:login');
+            log.warn('Please login to execute this command, csdx auth:login', cloneContext);
             this.exit(1);
           }
         } else {
@@ -113,78 +141,76 @@ class StackCloneCommand extends Command {
       } else if (isAuthenticated()) {
         handleClone();
       } else {
-        log.warn('Please login to execute this command, csdx auth:login');
+        log.warn('Please login to execute this command, csdx auth:login', cloneContext);
         this.exit(1);
       }
     } catch (error) {
       if (error) {
-        await this.cleanUp(pathdir);
-        log.error('Stack clone command failed', { error: error.message || error });
+        await this.cleanUp(pathdir, null, cloneContext);
+        log.error('Stack clone command failed', cloneContext, { error: error.message || error });
       }
     }
   }
 
 
 
-  async removeContentDirIfNotEmptyBeforeClone(dir) {
+  async removeContentDirIfNotEmptyBeforeClone(dir, cloneContext) {
     try {
-      log.debug('Checking if content directory is empty', { dir });
+      log.debug('Checking if content directory is empty', cloneContext, { dir });
       const dirNotEmpty = readdirSync(dir).length;
 
       if (dirNotEmpty) {
-        log.debug('Content directory is not empty, cleaning up', { dir });
-        await this.cleanUp(dir);
+        log.debug('Content directory is not empty, cleaning up', cloneContext, { dir });
+        await this.cleanUp(dir, null, cloneContext);
       }
     } catch (error) {
       const omit = ['ENOENT']; // NOTE add emittable error codes in the array
 
       if (!omit.includes(error.code)) {
-        log.error('Error checking content directory', { error: error.message, code: error.code });
+        log.error('Error checking content directory', cloneContext, { error: error.message, code: error.code });
       }
     }
   }
 
-  async cleanUp(pathDir, message) {
+  async cleanUp(pathDir, message, cloneContext) {
     try {
-      log.debug('Starting cleanup', { pathDir });
+      log.debug('Starting cleanup', cloneContext, { pathDir });
       await rimraf(pathDir);
       if (message) {
-        log.info(message);
+        log.info(message, cloneContext);
       }
-      log.debug('Cleanup completed', { pathDir });
+      log.debug('Cleanup completed', cloneContext, { pathDir });
     } catch (err) {
       if (err) {
-        log.debug('Cleaning up');
+        log.debug('Cleaning up', cloneContext);
         const skipCodeArr = ['ENOENT', 'EBUSY', 'EPERM', 'EMFILE', 'ENOTEMPTY'];
 
         if (skipCodeArr.includes(err.code)) {
-          log.debug('Cleanup error code is in skip list, exiting', { code: err.code });
+          log.debug('Cleanup error code is in skip list, exiting', cloneContext, { code: err.code });
           process.exit();
-        } else {
-          log.error('Cleanup failed', { error: err.message, code: err.code });
         }
       }
     }
   }
 
-  registerCleanupOnInterrupt(pathDir) {
+  registerCleanupOnInterrupt(pathDir, cloneContext) {
     const interrupt = ['SIGINT', 'SIGQUIT', 'SIGTERM'];
     const exceptions = ['unhandledRejection', 'uncaughtException'];
 
     const cleanUp = async (exitOrError) => {
       if (exitOrError) {
-        log.debug('Cleaning up on interrupt');
-        await this.cleanUp(pathDir);
-        log.info('Cleanup done');
+        log.debug('Cleaning up on interrupt', cloneContext);
+        await this.cleanUp(pathDir, null, cloneContext);
+        log.info('Cleanup done', cloneContext);
 
         if (exitOrError instanceof Promise) {
           exitOrError.catch((error) => {
-            log.error('Error during cleanup', { error: (error && error.message) || '' });
+            log.error('Error during cleanup', cloneContext, { error: (error && error.message) || '' });
           });
         } else if (exitOrError.message) {
-          log.error('Cleanup error', { error: exitOrError.message });
+          log.error('Cleanup error', cloneContext, { error: exitOrError.message });
         } else if (exitOrError.errorMessage) {
-          log.error('Cleanup error', { error: exitOrError.message });
+          log.error('Cleanup error', cloneContext, { error: exitOrError.message });
         }
 
         if (exitOrError === true) process.exit();

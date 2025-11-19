@@ -72,11 +72,11 @@ prompt.stop = function () {
 
 class CloneHandler {
   constructor(opt) {
-    log.debug('Initializing CloneHandler', { pathDir: opt.pathDir, cloneType: opt.cloneType });
     config = opt;
     cloneCommand = new Clone();
     this.pathDir = opt.pathDir;
     process.stdin.setMaxListeners(50);
+    log.debug('Initializing CloneHandler', config.cloneContext, { pathDir: opt.pathDir, cloneType: opt.cloneType });
   }
   setClient(managementSDKClient) {
     client = managementSDKClient;
@@ -85,20 +85,24 @@ class CloneHandler {
   handleOrgSelection(options = {}) {
     return new Promise(async (resolve, reject) => {
       const { msg = '', isSource = true } = options || {};
-      log.debug('Handling organization selection', { isSource, msg });
+      log.debug('Handling organization selection', config.cloneContext);
       const orgList = await this.getOrganizationChoices(msg).catch(reject);
 
-      if (orgList) {
-        const orgSelected = await inquirer.prompt(orgList);
+        if (orgList) {
+          log.debug(`Found ${orgList.choices?.length || 0} organization(s) to choose from`, config.cloneContext);
+          const orgSelected = await inquirer.prompt(orgList);
+          log.debug(`Organization selected: ${orgSelected.Organization}`, config.cloneContext);
 
-        if (isSource) {
-          config.sourceOrg = orgUidList[orgSelected.Organization];
-        } else {
-          config.targetOrg = orgUidList[orgSelected.Organization];
+          if (isSource) {
+            config.sourceOrg = orgUidList[orgSelected.Organization];
+            log.debug(`Source organization UID: ${config.sourceOrg}`, config.cloneContext);
+          } else {
+            config.targetOrg = orgUidList[orgSelected.Organization];
+            log.debug(`Target organization UID: ${config.targetOrg}`, config.cloneContext);
+          }
+
+          resolve(orgSelected);
         }
-
-        resolve(orgSelected);
-      }
     });
   }
 
@@ -106,14 +110,16 @@ class CloneHandler {
     return new Promise(async (resolve, reject) => {
       try {
         const { org = {}, msg = '', isSource = true } = options || {};
-        log.debug('Handling stack selection', { isSource, orgName: org.Organization, msg });
+        log.debug('Handling stack selection', config.cloneContext, { isSource, orgName: org.Organization, msg });
 
         const stackList = await this.getStack(org, msg, isSource).catch(reject);
 
         if (stackList) {
           this.displayBackOptionMessage();
 
+          log.debug(`Found ${stackList.choices?.length || 0} stack(s) to choose from`, config.cloneContext);
           const selectedStack = await inquirer.prompt(stackList);
+          log.debug(`Stack selected: ${selectedStack.stack}`, config.cloneContext);
           if (this.executingCommand != 1) {
             return reject();
           }
@@ -121,9 +127,11 @@ class CloneHandler {
             config.sourceStackName = selectedStack.stack;
             master_locale = masterLocaleList[selectedStack.stack];
             config.source_stack = stackUidList[selectedStack.stack];
+            log.debug(`Source stack configured`, config.cloneContext);
           } else {
             config.target_stack = stackUidList[selectedStack.stack];
             config.destinationStackName = selectedStack.stack;
+            log.debug(`Target stack configured`, config.cloneContext);
           }
 
           resolve(selectedStack);
@@ -139,7 +147,7 @@ class CloneHandler {
     return new Promise(async (resolve, reject) => {
       let spinner;
       try {
-        log.debug('Handling branch selection', { isSource, returnBranch, stackApiKey: isSource ? config.source_stack : config.target_stack });
+        log.debug('Handling branch selection', config.cloneContext, { isSource, returnBranch, stackApiKey: isSource ? config.source_stack : config.target_stack });
         const stackAPIClient = client.stack({
           api_key: isSource ? config.source_stack : config.target_stack,
           management_token: config.management_token,
@@ -147,26 +155,27 @@ class CloneHandler {
 
         // NOTE validate if source branch is exist
         if (isSource && config.sourceStackBranch) {
-          log.debug('Validating source branch exists', { branch: config.sourceStackBranch });
+          log.debug('Validating source branch exists', config.cloneContext, { branch: config.sourceStackBranch });
           await this.validateIfBranchExist(stackAPIClient, true);
           return resolve();
         } else if(isSource && config.sourceStackBranchAlias) {
-          log.debug('Resolving source branch alias', { alias: config.sourceStackBranchAlias });
+          log.debug('Resolving source branch alias', config.cloneContext, { alias: config.sourceStackBranchAlias });
           await this.resolveBranchAliases(true);
           return resolve();
         }
 
         // NOTE Validate target branch is exist
         if (!isSource && config.targetStackBranch) {
-          log.debug('Validating target branch exists', { branch: config.targetStackBranch });
+          log.debug('Validating target branch exists', config.cloneContext, { branch: config.targetStackBranch });
           await this.validateIfBranchExist(stackAPIClient, false);
           return resolve();
         } else if (!isSource && config.targetStackBranchAlias) {
-          log.debug('Resolving target branch alias', { alias: config.targetStackBranchAlias });
+          log.debug('Resolving target branch alias', config.cloneContext, { alias: config.targetStackBranchAlias });
           await this.resolveBranchAliases();
           return resolve();
         }
         spinner = ora('Fetching Branches').start();
+        log.debug(`Querying branches for stack: ${isSource ? config.source_stack : config.target_stack}`, config.cloneContext);
         const result = await stackAPIClient
           .branch()
           .query()
@@ -175,6 +184,7 @@ class CloneHandler {
           .catch((_err) => {});
 
         const condition = result && Array.isArray(result) && result.length > 0;
+        log.debug(`Found ${result?.length || 0} branch(es)`, config.cloneContext);
 
         // NOTE if want to get only list of branches (Pass param -> returnBranch = true )
         if (returnBranch) {
@@ -193,8 +203,10 @@ class CloneHandler {
             }
             if (isSource) {
               config.sourceStackBranch = branch;
+              log.debug(`Source branch selected: ${branch}`, config.cloneContext);
             } else {
               config.targetStackBranch = branch;
+              log.debug(`Target branch selected: ${branch}`, config.cloneContext);
             }
           } else {
             spinner.succeed('No branches found.!');
@@ -204,7 +216,7 @@ class CloneHandler {
         }
       } catch (e) {
         if (spinner) spinner.fail();
-        log.error('Error in handleBranchSelection', { error: e && e.message, isSource });
+        log.error('Error in handleBranchSelection', config.cloneContext, { error: e && e.message, isSource });
         return reject(e);
       }
     });
@@ -218,7 +230,7 @@ class CloneHandler {
     };
     try {
       const branch = isSource ? config.sourceStackBranch : config.targetStackBranch;
-      log.debug('Validating branch existence', { isSource, branch });
+      log.debug('Validating branch existence', config.cloneContext);
       spinner = ora(`Validation if ${isSource ? 'source' : 'target'} branch exist.!`).start();
       const isBranchExist = await stackAPIClient
         .branch(branch)
@@ -226,13 +238,15 @@ class CloneHandler {
         .then((data) => data);
 
       if (isBranchExist && typeof isBranchExist === 'object') {
-        log.debug('Branch validation successful', { isSource, branch });
+        log.debug('Branch validation successful', config.cloneContext);
         completeSpinner(`${isSource ? 'Source' : 'Target'} branch verified.!`);
       } else {
+        log.error('Branch not found', config.cloneContext);
         completeSpinner(`${isSource ? 'Source' : 'Target'} branch not found.!`, 'fail');
         process.exit();
       }
     } catch (e) {
+      log.error('Branch validation failed', config.cloneContext, { isSource, branch, error: e.message });
       completeSpinner(`${isSource ? 'Source' : 'Target'} branch not found.!`, 'fail');
       throw e;
     }
@@ -257,10 +271,10 @@ class CloneHandler {
     return new Promise(async (resolve, reject) => {
       let keyPressHandler;
       try {
-        log.debug('Starting clone execution', { sourceStack: config.source_stack, targetStack: config.target_stack });
+        log.debug('Starting clone execution', config.cloneContext, { sourceStack: config.source_stack, targetStack: config.target_stack });
         if (!config.source_stack) {
           const orgMsg = 'Choose an organization where your source stack exists:';
-          log.debug('Source stack not provided, prompting for organization');
+          log.debug('Source stack not provided, prompting for organization', config.cloneContext);
           this.setExectingCommand(0);
           this.removeBackKeyPressHandler();
           const org = await cloneCommand.execute(new HandleOrgCommand({ msg: orgMsg, isSource: true }, this));
@@ -290,21 +304,21 @@ class CloneHandler {
             return reject('Org not found.');
           }
         } else {
-          log.debug('Source stack provided, proceeding with branch selection and export', { sourceStack: config.source_stack });
+          log.debug('Source stack provided, proceeding with branch selection and export', config.cloneContext);
           this.setExectingCommand(2);
           await this.handleBranchSelection({ api_key: config.sourceStack });
-          log.debug('Starting export operation');
+          log.debug('Starting export operation', config.cloneContext);
           const exportRes = await cloneCommand.execute(new HandleExportCommand(null, this));
           await cloneCommand.execute(new SetBranchCommand(null, this));
 
           if (exportRes) {
-            log.debug('Export completed, proceeding with destination setup');
+            log.debug('Export completed, proceeding with destination setup', config.cloneContext);
             this.executeDestination().catch((error) => {
               return reject(error);
             });
           }
         }
-        log.debug('Clone execution completed successfully');
+        log.debug('Clone execution completed successfully', config.cloneContext);
         return resolve();
       } catch (error) {
         return reject(error);
@@ -343,12 +357,12 @@ class CloneHandler {
 
   async executeExport() {
     try {
-      log.debug('Executing export operation');
+      log.debug('Executing export operation', config.cloneContext);
       const exportRes = await cloneCommand.execute(new HandleExportCommand(null, this));
       await cloneCommand.execute(new SetBranchCommand(null, this));
 
       if (exportRes) {
-        log.debug('Export operation completed, proceeding with destination');
+        log.debug('Export operation completed, proceeding with destination', config.cloneContext);
         this.executeDestination().catch(() => {
           throw '';
         });
@@ -364,10 +378,10 @@ class CloneHandler {
     return new Promise(async (resolve, reject) => {
       let keyPressHandler;
       try {
-        log.debug('Executing destination setup', { targetStack: config.target_stack });
+        log.debug('Executing destination setup', config.cloneContext);
         let canCreateStack = false;
         if (!config.target_stack) {
-          log.debug('Target stack not provided, prompting for stack creation');
+          log.debug('Target stack not provided, prompting for stack creation', config.cloneContext);
           canCreateStack = await inquirer.prompt(stackCreationConfirmation);
         }
 
@@ -417,7 +431,7 @@ class CloneHandler {
           await this.executeBranchDestinationPrompt(params);
         }
 
-        log.debug('Destination setup completed successfully');
+        log.debug('Destination setup completed successfully', config.cloneContext);
         return resolve();
       } catch (error) {
         reject(error);
@@ -490,12 +504,12 @@ class CloneHandler {
       choices: [],
     };
     return new Promise(async (resolve, reject) => {
-      log.debug('Fetching organization choices', { orgMessage });
+      log.debug('Fetching organization choices', config.cloneContext);
       const spinner = ora('Fetching Organization').start();
       try {
         let organizations;
         const configOrgUid = configHandler.get('oauthOrgUid');
-        log.debug('Getting organizations', { hasConfigOrgUid: !!configOrgUid });
+        log.debug('Getting organizations', config.cloneContext, { hasConfigOrgUid: !!configOrgUid });
 
         if (configOrgUid) {
           organizations = await client.organization(configOrgUid).fetch();
@@ -505,7 +519,7 @@ class CloneHandler {
 
         spinner.succeed('Fetched Organization');
         const orgCount = organizations.items ? organizations.items.length : 1;
-        log.debug('Fetched organizations', { count: orgCount });
+        log.debug('Fetched organizations', config.cloneContext);
         for (const element of organizations.items || [organizations]) {
           orgUidList[element.name] = element.uid;
           orgChoice.choices.push(element.name);
@@ -526,15 +540,15 @@ class CloneHandler {
         message: stkMessage !== undefined ? stkMessage : 'Select the stack',
         choices: [],
       };
-      log.debug('Fetching stacks', { organization: answer.Organization });
+      log.debug('Fetching stacks', config.cloneContext);
       const spinner = ora('Fetching stacks').start();
       try {
         const organization_uid = orgUidList[answer.Organization];
-        log.debug('Querying stacks for organization', { organizationUid: organization_uid });
+        log.debug('Querying stacks for organization', config.cloneContext, { organizationUid: organization_uid });
         const stackList = client.stack().query({ organization_uid }).find();
         stackList
           .then((stacklist) => {
-            log.debug('Fetched stacks', { count: stacklist.items ? stacklist.items.length : 0 });
+            log.debug('Fetched stacks', config.cloneContext, { count: stacklist.items ? stacklist.items.length : 0 });
             for (const element of stacklist.items) {
               stackUidList[element.name] = element.api_key;
               masterLocaleList[element.name] = element.master_locale;
@@ -559,11 +573,11 @@ class CloneHandler {
     return new Promise(async (resolve, reject) => {
       try {
         const { orgUid } = options;
-        log.debug('Creating new stack', { orgUid, masterLocale: master_locale, stackName: config.stackName });
+        log.debug('Creating new stack', config.cloneContext, { orgUid, masterLocale: master_locale, stackName: config.stackName });
         this.displayBackOptionMessage();
         let inputvalue;
         if (!config.stackName) {
-          log.debug('Stack name not provided, prompting user');
+          log.debug('Stack name not provided, prompting user', config.cloneContext);
           prompt.start();
           prompt.message = '';
           this.setCreateNewStackPrompt(prompt);
@@ -573,20 +587,24 @@ class CloneHandler {
           inputvalue = { stack: config.stackName };
         }
         if (this.executingCommand === 0 || !inputvalue) {
-          log.debug('Stack creation cancelled or invalid input');
+          log.debug('Stack creation cancelled or invalid input', config.cloneContext);
           return reject();
         }
 
         let stack = { name: inputvalue.stack, master_locale: master_locale };
-        log.debug('Creating stack with configuration', { stackName: stack.name, masterLocale: stack.master_locale });
+        log.debug('Creating stack with configuration', config.cloneContext);
         const spinner = ora('Creating New stack').start();
+        log.debug('Sending stack creation API request', config.cloneContext);
         let newStack = client.stack().create({ stack }, { organization_uid: orgUid });
         newStack
           .then((result) => {
-            log.debug('Stack created successfully', { stackName: result.name });
+            log.debug('Stack created successfully', config.cloneContext, { 
+              stackName: result.name,
+            });
             spinner.succeed('New Stack created Successfully name as ' + result.name);
             config.target_stack = result.api_key;
             config.destinationStackName = result.name;
+            log.debug('Target stack configuration updated', config.cloneContext);
             return resolve(result);
           })
           .catch((error) => {
@@ -623,15 +641,15 @@ class CloneHandler {
 
   async resolveBranchAliases(isSource = false) {
     try {
-      log.debug('Resolving branch aliases', { isSource, alias: isSource ? config.sourceStackBranchAlias : config.targetStackBranchAlias });
+      log.debug('Resolving branch aliases', config.cloneContext, { isSource, alias: isSource ? config.sourceStackBranchAlias : config.targetStackBranchAlias });
       if (isSource) {
         const sourceStack = client.stack({ api_key: config.source_stack });
         config.sourceStackBranch = await getBranchFromAlias(sourceStack, config.sourceStackBranchAlias);
-        log.debug('Source branch alias resolved', { alias: config.sourceStackBranchAlias, branch: config.sourceStackBranch });
+        log.debug('Source branch alias resolved', config.cloneContext, { alias: config.sourceStackBranchAlias, branch: config.sourceStackBranch });
       } else {
         const targetStack = client.stack({ api_key: config.target_stack });
         config.targetStackBranch = await getBranchFromAlias(targetStack, config.targetStackBranchAlias);
-        log.debug('Target branch alias resolved', { alias: config.targetStackBranchAlias, branch: config.targetStackBranch });
+        log.debug('Target branch alias resolved', config.cloneContext, { alias: config.targetStackBranchAlias, branch: config.targetStackBranch });
       }
     } catch (error) {
       throw error;
@@ -641,6 +659,7 @@ class CloneHandler {
   async cloneTypeSelection() {
     console.clear();
     return new Promise(async (resolve, reject) => {
+      log.debug('Starting clone type selection', config.cloneContext);
       const choices = [
         'Structure (all modules except entries & assets)',
         'Structure with content (all modules including entries & assets)',
@@ -656,56 +675,83 @@ class CloneHandler {
       let successMsg;
       let selectedValue = {};
       config['data'] = path.join(__dirname.split('src')[0], 'contents', config.sourceStackBranch || '');
+      log.debug(`Clone data directory: ${config['data']}`, config.cloneContext);
 
       if (!config.cloneType) {
+        log.debug('Clone type not specified, prompting user for selection', config.cloneContext);
         selectedValue = await inquirer.prompt(cloneTypeSelection);
+      } else {
+        log.debug(`Using pre-configured clone type: ${config.cloneType}`, config.cloneContext);
       }
 
       if (config.cloneType === 'a' || selectedValue.type === 'Structure (all modules except entries & assets)') {
         config['modules'] = structureList;
         successMsg = 'Stack clone Structure completed';
+        log.debug(`Clone type: Structure only. Modules to clone: ${structureList.join(', ')}`, config.cloneContext);
       } else {
         successMsg = 'Stack clone completed with structure and content';
+        log.debug('Clone type: Structure with content (all modules)', config.cloneContext);
       }
 
       this.cmdImport()
-        .then(() => resolve(successMsg))
+        .then(() => {
+          log.debug('Clone type selection and import completed successfully', config.cloneContext);
+          resolve(successMsg);
+        })
         .catch(reject);
     });
   }
 
   async cmdExport() {
     return new Promise((resolve, reject) => {
-      log.debug('Preparing export command', { sourceStack: config.source_stack, cloneType: config.cloneType });
+      log.debug('Preparing export command', config.cloneContext, { sourceStack: config.source_stack, cloneType: config.cloneType });
       // Creating export specific config by merging external configurations
       let exportConfig = Object.assign({}, cloneDeep(config), { ...config?.export });
       delete exportConfig.import;
       delete exportConfig.export;
 
-      const cmd = ['-k', exportConfig.source_stack, '-d', __dirname.split('src')[0] + 'contents'];
+      const exportDir = __dirname.split('src')[0] + 'contents';
+      log.debug(`Export directory: ${exportDir}`, config.cloneContext);
+      const cmd = ['-k', exportConfig.source_stack, '-d', exportDir];
+      
       if (exportConfig.cloneType === 'a') {
         exportConfig.filteredModules = ['stack'].concat(structureList);
+        log.debug(`Filtered modules for structure-only export: ${exportConfig.filteredModules.join(', ')}`, config.cloneContext);
       }
 
       if (exportConfig.source_alias) {
         cmd.push('-a', exportConfig.source_alias);
+        log.debug(`Using source alias: ${exportConfig.source_alias}`, config.cloneContext);
       }
       if (exportConfig.sourceStackBranch) {
         cmd.push('--branch', exportConfig.sourceStackBranch);
+        log.debug(`Using source branch: ${exportConfig.sourceStackBranch}`, config.cloneContext);
       }
 
-      if (exportConfig.forceStopMarketplaceAppsPrompt) cmd.push('-y');
+      if (exportConfig.forceStopMarketplaceAppsPrompt) {
+        cmd.push('-y');
+        log.debug('Force stop marketplace apps prompt enabled', config.cloneContext);
+      }
 
+      const configFilePath = path.join(__dirname, 'dummyConfig.json');
       cmd.push('-c');
-      cmd.push(path.join(__dirname, 'dummyConfig.json'));
+      cmd.push(configFilePath);
+      log.debug(`Writing export config to: ${configFilePath}`, config.cloneContext);
 
-      fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify(exportConfig));
-      log.debug('Running export command', { cmd });
+      fs.writeFileSync(configFilePath, JSON.stringify(exportConfig));
+      log.debug('Export command prepared', config.cloneContext, { 
+        cmd: cmd.join(' '),
+        exportDir,
+        sourceStack: exportConfig.source_stack,
+        branch: exportConfig.sourceStackBranch 
+      });
+      log.debug('Running export command', config.cloneContext, { cmd });
       let exportData = exportCmd.run(cmd);
       exportData.then(() => {
-        log.debug('Export command completed successfully');
+        log.debug('Export command completed successfully', config.cloneContext);
         resolve(true);
       }).catch((error) => {
+        log.error('Export command failed', config.cloneContext, { error: error.message || error });
         reject(error);
       });
     });
@@ -713,36 +759,56 @@ class CloneHandler {
 
   async cmdImport() {
     return new Promise(async (resolve, _reject) => {
-      log.debug('Preparing import command', { targetStack: config.target_stack, targetBranch: config.targetStackBranch });
+      log.debug('Preparing import command', config.cloneContext, { targetStack: config.target_stack, targetBranch: config.targetStackBranch });
       // Creating export specific config by merging external configurations
       let importConfig = Object.assign({}, cloneDeep(config), { ...config?.import });
       delete importConfig.import;
       delete importConfig.export;
 
-      const cmd = ['-c', path.join(__dirname, 'dummyConfig.json')];
+      const configFilePath = path.join(__dirname, 'dummyConfig.json');
+      const cmd = ['-c', configFilePath];
 
       if (importConfig.destination_alias) {
         cmd.push('-a', importConfig.destination_alias);
+        log.debug(`Using destination alias: ${importConfig.destination_alias}`, config.cloneContext);
       }
       if (!importConfig.data && importConfig.sourceStackBranch) {
-        cmd.push('-d', path.join(importConfig.pathDir, importConfig.sourceStackBranch));
+        const dataPath = path.join(importConfig.pathDir, importConfig.sourceStackBranch);
+        cmd.push('-d', dataPath);
+        log.debug(`Import data path: ${dataPath}`, config.cloneContext);
       }
       if (importConfig.targetStackBranch) {
         cmd.push('--branch', importConfig.targetStackBranch);
+        log.debug(`Using target branch: ${importConfig.targetStackBranch}`, config.cloneContext);
       }
       if (importConfig.importWebhookStatus) {
         cmd.push('--import-webhook-status', importConfig.importWebhookStatus);
+        log.debug(`Import webhook status: ${importConfig.importWebhookStatus}`, config.cloneContext);
       }
 
-      if (importConfig.skipAudit) cmd.push('--skip-audit');
+      if (importConfig.skipAudit) {
+        cmd.push('--skip-audit');
+        log.debug('Skip audit flag enabled', config.cloneContext);
+      }
 
-      if (importConfig.forceStopMarketplaceAppsPrompt) cmd.push('-y');
+      if (importConfig.forceStopMarketplaceAppsPrompt) {
+        cmd.push('-y');
+        log.debug('Force stop marketplace apps prompt enabled', config.cloneContext);
+      }
 
-      fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify(importConfig));
-      log.debug('Running import command', { cmd });
+      log.debug(`Writing import config to: ${configFilePath}`, config.cloneContext);
+      fs.writeFileSync(configFilePath, JSON.stringify(importConfig));
+      log.debug('Import command prepared', config.cloneContext, { 
+        cmd: cmd.join(' '),
+        targetStack: importConfig.target_stack,
+        targetBranch: importConfig.targetStackBranch,
+        dataPath: importConfig.data || path.join(importConfig.pathDir, importConfig.sourceStackBranch)
+      });
+      log.debug('Running import command', config.cloneContext, { cmd });
       await importCmd.run(cmd);
-      log.debug('Import command completed successfully');
-      fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify({}));
+      log.debug('Import command completed successfully', config.cloneContext);
+      log.debug('Clearing import config file', config.cloneContext);
+      fs.writeFileSync(configFilePath, JSON.stringify({}));
       return resolve();
     });
   }
