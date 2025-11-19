@@ -146,7 +146,7 @@ FLAGS
   -y, --yes                    Use this flag to skip confirmation
       --delivery               Set this flag to save delivery token
       --management             Set this flag to save management token
-      --token=<value>          Add the token name
+      --token=<value>          [env: TOKEN] Add the token name
 
 DESCRIPTION
   Adds management/delivery tokens to your session to use it with other CLI commands
