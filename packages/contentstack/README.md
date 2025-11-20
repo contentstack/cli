@@ -336,7 +336,7 @@ FLAGS
   -y, --yes                    Use this flag to skip confirmation
       --delivery               Set this flag to save delivery token
       --management             Set this flag to save management token
-      --token=<value>          Add the token name
+      --token=<value>          [env: TOKEN] Add the token name
 
 DESCRIPTION
   Adds management/delivery tokens to your session to use it with other CLI commands
@@ -2538,12 +2538,12 @@ USAGE
     [--config-file <value>] [--config <value>] [--multiple]
 
 FLAGS
-  -B, --branch=<value>         Use this flag to add the branch name where you want to perform the migration. (target
-                               branch name)
   -a, --alias=<value>          Use this flag to add the management token alias. You must use either the --alias flag or
                                the --stack-api-key flag.
   -k, --stack-api-key=<value>  Use this flag to add the API key of your stack. You must use either the --stack-api-key
                                flag or the --alias flag.
+      --branch=<value>         Use this flag to add the branch name where you want to perform the migration. (target
+                               branch name)
       --config=<value>...      [optional] Inline configuration, <key1>:<value1>. Passing an external configuration makes
                                the script re-usable.
       --config-file=<value>    [optional] Path of the JSON configuration file.
@@ -2558,9 +2558,9 @@ ALIASES
   $ csdx cm:migration
 
 EXAMPLES
-  $ csdx cm:migration --file-path <migration/script/file/path> -k <api-key>
+  $ csdx cm:migration --file-path <migration/script/file/path> --stack-api-key <stack-api-key>
 
-  $ csdx cm:migration --file-path <migration/script/file/path> -k <api-key> --branch <target branch name>
+  $ csdx cm:migration --file-path <migration/script/file/path> --stack-api-key <stack-api-key> --branch <target branch name>
 
   $ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... --file-path <migration/script/file/path>
 
@@ -2568,7 +2568,7 @@ EXAMPLES
 
   $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
 
-  $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
+  $ csdx cm:migration --alias <management-token-alias> --file-path <migration/script/file/path>
 ```
 
 ## `csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]`
@@ -3001,12 +3001,12 @@ USAGE
     [--config <value>] [--multiple]
 
 FLAGS
-  -B, --branch=<value>         Use this flag to add the branch name where you want to perform the migration. (target
-                               branch name)
   -a, --alias=<value>          Use this flag to add the management token alias. You must use either the --alias flag or
                                the --stack-api-key flag.
   -k, --stack-api-key=<value>  Use this flag to add the API key of your stack. You must use either the --stack-api-key
                                flag or the --alias flag.
+      --branch=<value>         Use this flag to add the branch name where you want to perform the migration. (target
+                               branch name)
       --config=<value>...      [optional] Inline configuration, <key1>:<value1>. Passing an external configuration makes
                                the script re-usable.
       --config-file=<value>    [optional] Path of the JSON configuration file.
@@ -3021,9 +3021,9 @@ ALIASES
   $ csdx cm:migration
 
 EXAMPLES
-  $ csdx cm:migration --file-path <migration/script/file/path> -k <api-key>
+  $ csdx cm:migration --file-path <migration/script/file/path> --stack-api-key <stack-api-key>
 
-  $ csdx cm:migration --file-path <migration/script/file/path> -k <api-key> --branch <target branch name>
+  $ csdx cm:migration --file-path <migration/script/file/path> --stack-api-key <stack-api-key> --branch <target branch name>
 
   $ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... --file-path <migration/script/file/path>
 
@@ -3031,7 +3031,7 @@ EXAMPLES
 
   $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
 
-  $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
+  $ csdx cm:migration --alias <management-token-alias> --file-path <migration/script/file/path>
 ```
 
 _See code: [@contentstack/cli-migration](https://github.com/contentstack/cli/blob/main/packages/contentstack-migration/src/commands/cm/stacks/migration.js)_
@@ -3673,7 +3673,7 @@ USAGE
     [--personalize <value>] [--launch <value>]
 
 ARGUMENTS
-  REGION  Name for the region
+  [REGION]  Name for the region
 
 FLAGS
   -d, --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and
@@ -3729,7 +3729,7 @@ USAGE
   $ csdx help [COMMAND...] [-n]
 
 ARGUMENTS
-  COMMAND...  Command to show help for.
+  [COMMAND...]  Command to show help for.
 
 FLAGS
   -n, --nested-commands  Include all nested commands in the output.
@@ -3738,7 +3738,7 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.33/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.35/src/commands/help.ts)_
 
 ## `csdx launch`
 
@@ -4056,7 +4056,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.49/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.54/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:add PLUGIN`
 
@@ -4130,7 +4130,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.49/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.54/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN`
 
@@ -4179,7 +4179,7 @@ EXAMPLES
     $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.49/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.54/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PATH`
 
@@ -4210,7 +4210,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.49/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.54/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:remove [PLUGIN]`
 
@@ -4221,7 +4221,7 @@ USAGE
   $ csdx plugins:remove [PLUGIN...] [-h] [-v]
 
 ARGUMENTS
-  PLUGIN...  plugin to uninstall
+  [PLUGIN...]  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
@@ -4251,7 +4251,7 @@ FLAGS
   --reinstall  Reinstall all plugins after uninstalling.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.49/src/commands/plugins/reset.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.54/src/commands/plugins/reset.ts)_
 
 ## `csdx plugins:uninstall [PLUGIN]`
 
@@ -4262,7 +4262,7 @@ USAGE
   $ csdx plugins:uninstall [PLUGIN...] [-h] [-v]
 
 ARGUMENTS
-  PLUGIN...  plugin to uninstall
+  [PLUGIN...]  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
@@ -4279,7 +4279,7 @@ EXAMPLES
   $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.49/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.54/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:unlink [PLUGIN]`
 
@@ -4290,7 +4290,7 @@ USAGE
   $ csdx plugins:unlink [PLUGIN...] [-h] [-v]
 
 ARGUMENTS
-  PLUGIN...  plugin to uninstall
+  [PLUGIN...]  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
@@ -4323,7 +4323,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.49/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.54/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
