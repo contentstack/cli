@@ -1,12 +1,8 @@
 fileignoreconfig:
-  - filename: package-lock.json
-    checksum: dbb4e0ec893dd445678e47864d3f3a0b14c3c0eff933fb50ef5ba6b300c1cba2
-  - filename: packages/contentstack-migration/test/unit/utils/map.test.js
-    checksum: 7d570280b2f379531dde84946b06171d50f92489ff0de6336f7fbd81c336ee89
-  - filename: packages/contentstack-migration/test/unit/modules/parser.test.js
-    checksum: 243fa1c45875675f719f660c0c988e2ba9266c562a37aaeb09b0db93a0cb037d
-  - filename: packages/contentstack-migration/test/unit/validators/create-content-type-validator.test.js
-    checksum: f92e39a542cd2d561c441d23395515cadc24c9514de55c3edb038f70bd2458b3
-  - filename: packages/contentstack-migration/test/unit/validators/edit-content-type-validator.test.js
-    checksum: bde4bc6b2a90e7ce5872e6fbbabef9f2db352705be4d2f8d28d71d84209a714e
+  - filename: packages/contentstack-seed/src/commands/cm/stacks/seed.ts
+    checksum: d04770564196b080878566255ea0faf1c82c1460161d2004d2b1edece0546493
+  - filename: packages/contentstack/README.md
+    checksum: 4408912cb1af1bd383af181b0e2faa21009d0a09915c37b674c8159178774314
+  - filename: packages/contentstack-seed/README.md
+    checksum: 13982c74b6428b73f5409bbd3943a44debcae16d39ed7ff6db3291b3a7036ddf
 version: '1.0'
