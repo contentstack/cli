@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-migration",
-  "version": "1.8.2",
+  "version": "2.0.0-beta.1",
   "author": "@contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
@@ -22,9 +22,12 @@
     "eslint": "^8.57.1",
     "eslint-config-oclif": "^6.0.62",
     "jsdoc-to-markdown": "^8.0.3",
+    "mocha": "^10.8.2",
     "nock": "^13.5.6",
     "nyc": "^15.1.0",
-    "oclif": "^4.17.46"
+    "oclif": "^4.17.46",
+    "sinon": "^19.0.5",
+    "sinon-chai": "^3.7.0"
   },
   "engines": {
     "node": ">=8.3.0"
@@ -55,12 +58,8 @@
     "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
   },
   "csdxConfig": {
-    "expiredCommands": {
-      "cm:migration": "csdx cm:stacks:migration"
-    },
     "shortCommandName": {
-      "cm:stacks:migration": "MGRTN",
-      "cm:migration": "O-MGRTN"
+      "cm:stacks:migration": "MGRTN"
     }
   }
 }
