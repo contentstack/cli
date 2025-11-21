@@ -1,6 +1,5 @@
 import merge from 'merge';
 import * as path from 'path';
-import { omit, filter, includes, isArray } from 'lodash';
 import { configHandler, isAuthenticated, cliux, sanitizePath } from '@contentstack/cli-utilities';
 import defaultConfig from '../config';
 import { readFile, fileExistsSync } from './file-helper';
@@ -9,7 +8,7 @@ import login from './login-handler';
 import { ImportConfig } from '../types';
 
 const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
-  let config: ImportConfig = merge({}, defaultConfig);
+  const config: ImportConfig = merge({}, defaultConfig);
   // setup the config
   // if (importCmdFlags['config']) {
   //   let externalConfig = await readFile(importCmdFlags['config']);

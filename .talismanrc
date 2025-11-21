@@ -5,4 +5,9 @@ fileignoreconfig:
     checksum: 854c1d29d1ff5afa12dcf84fda385485d6127c284095ee728acd7a28db62d2fc
   - filename: packages/contentstack/README.md
     checksum: ac0563a0d1863948d2ac1478076d46b47228c3b6a758e10d4cc15bd717f89f5c
+  - filename: package-lock.json
+    checksum: c7e66aaf4f28d626870dcc6b8d09d93ef00e56da769fd8f2b42e644eea101026
+  - filename: packages/contentstack-import-setup/src/utils/login-handler.ts
+    checksum: 726749e17135b30616b246d6ffb9e53ac890f59872b680212ed4b8efa370b163
+
 version: '1.0'
