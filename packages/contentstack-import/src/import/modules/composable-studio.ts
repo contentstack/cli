@@ -41,12 +41,24 @@ export default class ImportComposableStudio {
    * Entry point for Composable Studio import
    */
   async start(): Promise<void> {
+    if (this.importConfig.management_token) {
+      log.warn('Skipping Composable Studio project import when using management token', this.importConfig.context);
+      return;
+    }
+
     log.debug('Starting Composable Studio project import process...', this.importConfig.context);
     cliux.print(messageHandler.parse('COMPOSABLE_STUDIO_IMPORT_START'), { color: 'blue' });
 
     try {
       // Initialize authentication
-      await this.addAuthHeaders();
+      const authInitialized = await this.addAuthHeaders();
+      if (!authInitialized) {
+        log.warn(
+          'Skipping Composable Studio project import when using OAuth authentication',
+          this.importConfig.context,
+        );
+        return;
+      }
 
       // Load environment UID mapper
       await this.loadEnvironmentMapper();
@@ -86,7 +98,7 @@ export default class ImportComposableStudio {
   /**
    * Initialize authentication headers for API calls
    */
-  async addAuthHeaders(): Promise<void> {
+  async addAuthHeaders(): Promise<boolean> {
     log.debug('Initializing Composable Studio API authentication...', this.importConfig.context);
 
     // Get authentication details - following personalization-api-adapter pattern
@@ -99,9 +111,13 @@ export default class ImportComposableStudio {
 
     // Set authentication headers based on auth type
     if (authenticationHandler.isOauthEnabled) {
-      log.debug('Setting OAuth authorization header', this.importConfig.context);
-      this.apiClient.headers({ authorization: token });
+      log.debug(
+        'Skipping setting OAuth authorization header when using OAuth authentication',
+        this.importConfig.context,
+      );
+      return false;
     } else {
+      // TODO: Currenlty assuming if auth type is not OAuth, it is Basic Auth and we are setting authtoken header
       log.debug('Setting authtoken header', this.importConfig.context);
       this.apiClient.headers({ authtoken: token });
     }
@@ -114,6 +130,7 @@ export default class ImportComposableStudio {
     });
 
     log.debug('Composable Studio API authentication initialized', this.importConfig.context);
+    return true;
   }
 
   /**
