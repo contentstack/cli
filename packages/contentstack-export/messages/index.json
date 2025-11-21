@@ -57,6 +57,12 @@
 "MARKETPLACE_APP_CONFIG_EXPORT_FAILED": "Failed to export configuration for app '%s'",
 "MARKETPLACE_APP_MANIFEST_EXPORT_FAILED": "Failed to export manifest for app '%s'",
 
+"COMPOSABLE_STUDIO_EXPORT_START": "Starting Composable Studio project export...",
+"COMPOSABLE_STUDIO_NOT_FOUND": "No Composable Studio project found for this stack",
+"COMPOSABLE_STUDIO_EXPORT_COMPLETE": "Successfully exported Composable Studio project '%s'",
+"COMPOSABLE_STUDIO_EXPORT_FAILED": "Failed to export Composable Studio project: %s",
+"COMPOSABLE_STUDIO_AUTH_REQUIRED": "To export Composable Studio projects, you must be logged in",
+
 "ENTRIES_EXPORT_COMPLETE": "Successfully exported entries (Content Type: %s, Locale: %s)",
 "ENTRIES_EXPORT_SUCCESS": "All entries exported successfully",
 "ENTRIES_VERSIONED_EXPORT_SUCCESS": "Successfully exported versioned entry (Content Type: %s, UID: %s, Locale: %s)",
