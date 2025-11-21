@@ -391,18 +391,18 @@ Set region for CLI
 
 ```
 USAGE
-  $ csdx config:set:region [REGION] [-d <value> -m <value> --ui-host <value> -n <value>] [--developer-hub <value>]
-    [--personalize <value>] [--launch <value>]
+  $ csdx config:set:region [REGION] [--cda <value> --cma <value> --ui-host <value> -n <value>] [--developer-hub
+    <value>] [--personalize <value>] [--launch <value>]
 
 ARGUMENTS
   [REGION]  Name for the region
 
 FLAGS
-  -d, --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and
-                               name flags are required
-  -m, --cma=<value>            Custom host to set for content management API, , if this flag is added then cda, ui-host
-                               and name flags are required
   -n, --name=<value>           Name for the region, if this flag is added then cda, cma and ui-host flags are required
+      --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and
+                               name flags are required
+      --cma=<value>            Custom host to set for content management API, , if this flag is added then cda, ui-host
+                               and name flags are required
       --developer-hub=<value>  Custom host to set for Developer hub API
       --launch=<value>         Custom host to set for Launch API
       --personalize=<value>    Custom host to set for Personalize API
