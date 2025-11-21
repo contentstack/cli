@@ -56,12 +56,12 @@ export default class ImportSetupCommand extends Command {
 
   static aliases: string[] = [];
 
-  static usage: string = 'cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]';
+  static usage = 'cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]';
 
   async run(): Promise<void> {
     try {
       const { flags } = await this.parse(ImportSetupCommand);
-      let importSetupConfig = await setupImportConfig(flags);
+      const importSetupConfig = await setupImportConfig(flags);
       // Note setting host to create cma client
       importSetupConfig.host = this.cmaHost;
       importSetupConfig.region = this.region;

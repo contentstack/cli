@@ -35,7 +35,7 @@ const login = async (config: ImportConfig): Promise<any> => {
       management_token: config.management_token,
     });
     const stack = await stackAPIClient.fetch().catch((error: any) => {
-      let errorstack_key = error?.errors?.api_key;
+      const errorstack_key = error?.errors?.api_key;
       if (errorstack_key) {
         log(config, 'Stack Api key ' + errorstack_key[0] + 'Please enter valid Key', 'error');
         throw error;

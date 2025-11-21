@@ -1,13 +1,12 @@
 import { ImportConfig, Modules } from '../types';
 import { backupHandler, log, setupBranchConfig } from '../utils';
 import { ContentstackClient } from '@contentstack/cli-utilities';
-import { validateBranch } from '../utils';
 
 export default class ImportSetup {
   protected config: ImportConfig;
-  private managementAPIClient: ContentstackClient;
-  private importConfig: ImportConfig;
-  private stackAPIClient: any;
+  private readonly managementAPIClient: ContentstackClient;
+  private readonly importConfig: ImportConfig;
+  private readonly stackAPIClient: any;
   public dependencyTree: { [key: string]: string[] } = {};
 
   constructor(config: ImportConfig, managementAPIClient: ContentstackClient) {
@@ -35,7 +34,7 @@ export default class ImportSetup {
       visited.add(module);
       const dependencies: Modules[] = this.config.modules[module]?.dependencies || [];
 
-      let allDeps: Modules[] = [...dependencies];
+      const allDeps: Modules[] = [...dependencies];
 
       for (const dependency of dependencies) {
         allDeps.push(...getAllDependencies(dependency as ModulesKey));
@@ -53,7 +52,9 @@ export default class ImportSetup {
       this.dependencyTree[module] = allDependencies;
 
       // Mark these dependencies as assigned so they won't be included in later modules
-      allDependencies.forEach((dep) => assignedDependencies.add(dep));
+      for (const dep of allDependencies) {
+        assignedDependencies.add(dep);
+      }
     }
   }
 
@@ -107,7 +108,7 @@ export default class ImportSetup {
       await this.generateDependencyTree();
       await this.runModuleImports();
     } catch (error) {
-      console.log(error);
+      log(this.config, `Error during import setup: ${error instanceof Error ? error.message : String(error)}`, 'error');
       throw error;
     }
   }

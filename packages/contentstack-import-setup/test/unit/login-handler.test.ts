@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import { stub, restore, SinonStub } from 'sinon';
-import proxyquire from 'proxyquire';
-import loginHandler from '../../src/utils/login-handler';
-import * as logger from '../../src/utils/logger';
 import { ImportConfig } from '../../src/types';
+
+// Use CommonJS require for proxyquire to work properly
+const proxyquire = require('proxyquire');
 
 describe('Login Handler', () => {
   let managementSDKClientStub: SinonStub;
@@ -13,34 +13,7 @@ describe('Login Handler', () => {
   let logStub: SinonStub;
   let isAuthenticatedStub: SinonStub;
   let mockStack: any;
-
-  // Setup stubs for client methods
-  clientLoginStub = stub();
-  fetchStub = stub();
-
-  mockStack = {
-    fetch: fetchStub,
-  };
-
-  stackStub = stub().returns(mockStack);
-
-  // Create a mock client that will be returned by managementSDKClient
-  const mockClient = {
-    login: clientLoginStub,
-    stack: stackStub,
-  };
-
-  // Make managementSDKClient return our mock client
-  managementSDKClientStub = stub().resolves(mockClient);
-  isAuthenticatedStub = stub().returns(false);
-
-  // Load the compiled JS version of your TS file
-  const { default: loginHandler } = proxyquire('../../src/utils/login-handler', {
-    '@contentstack/cli-utilities': {
-      managementSDKClient: managementSDKClientStub,
-      isAuthenticated: isAuthenticatedStub,
-    },
-  });
+  let loginHandler: any;
 
   // Base mock config that satisfies ImportConfig type
   const baseConfig: Partial<ImportConfig> = {
@@ -60,7 +33,48 @@ describe('Login Handler', () => {
   beforeEach(() => {
     restore();
 
-    logStub = stub(logger, 'log');
+    // Setup stubs for client methods
+    clientLoginStub = stub();
+    fetchStub = stub();
+    logStub = stub();
+
+    mockStack = {
+      fetch: fetchStub,
+    };
+
+    stackStub = stub().returns(mockStack);
+
+    // Create a mock client that will be returned by managementSDKClient
+    const mockClient = {
+      login: clientLoginStub,
+      stack: stackStub,
+    };
+
+    // Make managementSDKClient return our mock client
+    managementSDKClientStub = stub().resolves(mockClient);
+    isAuthenticatedStub = stub().returns(false);
+
+    // Use proxyquire to load the compiled JS module with mocked dependencies
+    // Need to use require.resolve to get the proper module path
+    // Clear cache to ensure fresh module load
+    const loginHandlerPath = require.resolve('../../lib/utils/login-handler.js');
+    if (require.cache[loginHandlerPath]) {
+      delete require.cache[loginHandlerPath];
+    }
+
+    // Use proxyquire to mock the dependencies
+    // Also stub the logger module so we can verify log calls
+    const loginHandlerModule = proxyquire(loginHandlerPath, {
+      '@contentstack/cli-utilities': {
+        managementSDKClient: managementSDKClientStub,
+        isAuthenticated: isAuthenticatedStub,
+      },
+      './logger': {
+        log: logStub,
+      },
+    });
+
+    loginHandler = loginHandlerModule.default || loginHandlerModule;
   });
 
   afterEach(() => {
