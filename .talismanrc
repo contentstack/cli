@@ -1,12 +1,10 @@
 fileignoreconfig:
-  - filename: package-lock.json
-    checksum: dbb4e0ec893dd445678e47864d3f3a0b14c3c0eff933fb50ef5ba6b300c1cba2
-  - filename: packages/contentstack-migration/test/unit/utils/map.test.js
-    checksum: 7d570280b2f379531dde84946b06171d50f92489ff0de6336f7fbd81c336ee89
-  - filename: packages/contentstack-migration/test/unit/modules/parser.test.js
-    checksum: 243fa1c45875675f719f660c0c988e2ba9266c562a37aaeb09b0db93a0cb037d
-  - filename: packages/contentstack-migration/test/unit/validators/create-content-type-validator.test.js
-    checksum: f92e39a542cd2d561c441d23395515cadc24c9514de55c3edb038f70bd2458b3
-  - filename: packages/contentstack-migration/test/unit/validators/edit-content-type-validator.test.js
-    checksum: bde4bc6b2a90e7ce5872e6fbbabef9f2db352705be4d2f8d28d71d84209a714e
+  - filename: packages/contentstack-bootstrap/test/bootstrap-integration.test.js
+    checksum: d3e3902b2ee72aa41483da5c135e5c4bcec85f65939695708e9bec9478f6336c
+  - filename: packages/contentstack-bootstrap/test/interactive.test.js
+    checksum: fb0c32cd846cce3a53927316699a1c5aaa814939fe9b33bcd9141addbbe447d0
+  - filename: packages/contentstack-bootstrap/test/bootstrap.test.js
+    checksum: b1f46b3447b1b358f80d6404d9d5b385fb385714e5c1f865ca97d64d6edaefc2
+  - filename: packages/contentstack-config/test/unit/commands/remove-base-branch.test.ts
+    checksum: 7e98fa2a3bc763ea8a35a229533fb815729c39e08531480c46326737fbe07810
 version: '1.0'
