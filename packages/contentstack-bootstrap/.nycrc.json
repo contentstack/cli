@@ -1,5 +1,8 @@
 {
-    "inlcude": [
+    "include": [
         "lib/**/*.js"
-    ]
+    ],
+    "check-coverage": false,
+    "reporter": ["text", "text-summary"],
+    "all": true
 }
