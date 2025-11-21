@@ -55,7 +55,7 @@ class StackCloneCommand extends Command {
         if (targetStackBranch) {
           config.targetStackBranch = targetStackBranch;
         }
-         if (targetStackBranchAlias) {
+        if (targetStackBranchAlias) {
           config.targetStackBranchAlias = targetStackBranchAlias;
         }
         if (sourceStackApiKey) {
@@ -123,8 +123,6 @@ class StackCloneCommand extends Command {
       }
     }
   }
-
-
 
   async removeContentDirIfNotEmptyBeforeClone(dir) {
     try {
@@ -206,32 +204,32 @@ StackCloneCommand.examples = [
   'csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias> --type <value a or b>',
 ];
 
-StackCloneCommand.aliases = ['cm:stack-clone'];
+StackCloneCommand.aliases = [];
 
 StackCloneCommand.flags = {
   'source-branch': flags.string({
     required: false,
     multiple: false,
     description: 'Branch of the source stack.',
-    exclusive: ['source-branch-alias']
+    exclusive: ['source-branch-alias'],
   }),
   'source-branch-alias': flags.string({
     required: false,
     multiple: false,
     description: 'Alias of Branch of the source stack.',
-    exclusive: ['source-branch']
+    exclusive: ['source-branch'],
   }),
   'target-branch': flags.string({
     required: false,
     multiple: false,
     description: 'Branch of the target stack.',
-    exclusive: ['target-branch-alias']
+    exclusive: ['target-branch-alias'],
   }),
   'target-branch-alias': flags.string({
     required: false,
     multiple: false,
     description: 'Alias of Branch of the target stack.',
-    exclusive: ['target-branch']
+    exclusive: ['target-branch'],
   }),
   'source-management-token-alias': flags.string({
     required: false,
