@@ -1,8 +1,10 @@
 fileignoreconfig:
-  - filename: packages/contentstack-seed/src/commands/cm/stacks/seed.ts
-    checksum: d04770564196b080878566255ea0faf1c82c1460161d2004d2b1edece0546493
-  - filename: packages/contentstack/README.md
-    checksum: 4408912cb1af1bd383af181b0e2faa21009d0a09915c37b674c8159178774314
-  - filename: packages/contentstack-seed/README.md
-    checksum: 13982c74b6428b73f5409bbd3943a44debcae16d39ed7ff6db3291b3a7036ddf
+  - filename: packages/contentstack-seed/test/seed/importer.test.ts
+    checksum: 77bc27f5217c6d69c21bac51afc94d677ad67374c1b39b0575646300eb0decd3
+  - filename: packages/contentstack-seed/test/seed/interactive.test.ts
+    checksum: e7a823051b5eb27f2674ca2c31719205fa822e9cac1524dbd14e48b1ec078c06
+  - filename: packages/contentstack-seed/test/commands/cm/stacks/seed.test.ts
+    checksum: 61143bbb2ac86c24afc6972d17d9179c6181ec68a909b84570afdad2aaa13ade
+  - filename: packages/contentstack-seed/test/seed/contentstack/client.test.ts
+    checksum: f1bc369c9c3c4a84ddd590864c0f3e8b13be956b8fb8891b6324f44cdcc7d568
 version: '1.0'
