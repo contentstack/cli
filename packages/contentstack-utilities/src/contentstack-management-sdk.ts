@@ -13,13 +13,49 @@ class ManagementSDKInitiator {
   }
 
   async createAPIClient(config): Promise<ContentstackClient> {
+    // Get proxy configuration with priority: config.proxy > configStore.proxy > HTTPS_PROXY > HTTP_PROXY
+    let proxyConfig = config.proxy;
+    
+    // Check global config store if not provided in config
+    if (!proxyConfig) {
+      proxyConfig = configStore.get('proxy');
+    }
+    
+    // Check environment variables if still not found
+    if (!proxyConfig) {
+      const proxyUrl = process.env.HTTPS_PROXY || process.env.HTTP_PROXY;
+      if (proxyUrl) {
+        // Parse URL string into proxy object format (SDK expects object with host, port, protocol)
+        try {
+          const url = new URL(proxyUrl);
+          const parsedProxy: any = {
+            protocol: url.protocol.replace(':', '') as 'http' | 'https',
+            host: url.hostname,
+            port: Number.parseInt(url.port) || (url.protocol === 'https:' ? 443 : 80),
+          };
+          // Include auth if present in URL
+          if (url.username || url.password) {
+            parsedProxy.auth = {
+              username: url.username,
+              password: url.password,
+            };
+          }
+          proxyConfig = parsedProxy;
+        } catch (error) {
+          // If URL parsing fails, ignore proxy config
+          proxyConfig = undefined;
+        }
+      }
+    }
+
     const option: ContentstackConfig = {
       host: config.host,
       maxContentLength: config.maxContentLength || 100000000,
       maxBodyLength: config.maxBodyLength || 1000000000,
       maxRequests: 10,
       retryLimit: 3,
-      timeout: 60000,
+      // Reduce timeout when proxy is configured to fail faster on invalid proxy
+      timeout: proxyConfig ? 10000 : 60000, // 10s timeout with proxy, 60s without
       delayMs: config.delayMs,
       httpsAgent: new Agent({
         maxSockets: 100,
@@ -76,6 +112,35 @@ class ManagementSDKInitiator {
       },
     };
 
+    // Set proxy configuration if found
+    if (proxyConfig) {
+      if (typeof proxyConfig === 'object') {
+        option.proxy = proxyConfig;
+        // Log proxy configuration for debugging (enable with DEBUG_PROXY=true)
+        if (process.env.DEBUG_PROXY === 'true') {
+          console.log('[PROXY] Using proxy:', JSON.stringify(proxyConfig));
+        }
+      } else if (typeof proxyConfig === 'string') {
+        // If proxy is provided as string URL, parse it to object format
+        try {
+          const url = new URL(proxyConfig);
+          const parsedProxy: any = {
+            protocol: url.protocol.replace(':', '') as 'http' | 'https',
+            host: url.hostname,
+            port: Number.parseInt(url.port) || (url.protocol === 'https:' ? 443 : 80),
+          };
+          if (url.username || url.password) {
+            parsedProxy.auth = {
+              username: url.username,
+              password: url.password,
+            };
+          }
+          option.proxy = parsedProxy;
+        } catch {
+          // If URL parsing fails, ignore proxy config
+        }
+      }
+    }
     if (config.endpoint) {
       option.endpoint = config.endpoint;
     }
