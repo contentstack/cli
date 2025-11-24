@@ -34,44 +34,68 @@ describe('Extension Helper', () => {
     contentDir: '/test/content',
     data: '/test/content',
     modules: {
+      'composable-studio': {
+        dirName: 'composable_studio',
+        fileName: 'composable_studio.json',
+        apiBaseUrl: 'https://composable-studio-api.contentstack.com/v1',
+      },
       apiConcurrency: 1,
       types: [],
       locales: { dirName: 'locales', fileName: 'locales.json', requiredKeys: ['code', 'name'] },
-      customRoles: { dirName: 'custom_roles', fileName: 'custom_roles.json', customRolesLocalesFileName: 'custom_roles_locales.json' },
+      customRoles: {
+        dirName: 'custom_roles',
+        fileName: 'custom_roles.json',
+        customRolesLocalesFileName: 'custom_roles_locales.json',
+      },
       environments: { dirName: 'environments', fileName: 'environments.json' },
       labels: { dirName: 'labels', fileName: 'labels.json' },
       extensions: { dirName: 'extensions', fileName: 'extensions.json', validKeys: ['uid', 'title'] },
       webhooks: { dirName: 'webhooks', fileName: 'webhooks.json' },
       releases: { dirName: 'releases', fileName: 'releases.json', invalidKeys: ['uid'] },
       workflows: { dirName: 'workflows', fileName: 'workflows.json', invalidKeys: ['uid'] },
-      assets: { 
-        dirName: 'assets', 
-        assetBatchLimit: 10, 
-        fileName: 'assets.json', 
-        importSameStructure: false, 
-        uploadAssetsConcurrency: 1, 
-        displayExecutionTime: false, 
-        importFoldersConcurrency: 1, 
-        includeVersionedAssets: false, 
-        host: 'https://api.contentstack.io', 
-        folderValidKeys: ['uid', 'name'], 
-        validKeys: ['uid', 'title'] 
+      assets: {
+        dirName: 'assets',
+        assetBatchLimit: 10,
+        fileName: 'assets.json',
+        importSameStructure: false,
+        uploadAssetsConcurrency: 1,
+        displayExecutionTime: false,
+        importFoldersConcurrency: 1,
+        includeVersionedAssets: false,
+        host: 'https://api.contentstack.io',
+        folderValidKeys: ['uid', 'name'],
+        validKeys: ['uid', 'title'],
       },
-      'assets-old': { 
-        dirName: 'assets', 
-        fileName: 'assets.json', 
-        limit: 100, 
-        host: 'https://api.contentstack.io', 
-        validKeys: ['uid', 'title'], 
-        assetBatchLimit: 10, 
-        uploadAssetsConcurrency: 1, 
-        importFoldersConcurrency: 1 
+      'assets-old': {
+        dirName: 'assets',
+        fileName: 'assets.json',
+        limit: 100,
+        host: 'https://api.contentstack.io',
+        validKeys: ['uid', 'title'],
+        assetBatchLimit: 10,
+        uploadAssetsConcurrency: 1,
+        importFoldersConcurrency: 1,
       },
-      content_types: { dirName: 'content_types', fileName: 'content_types.json', validKeys: ['uid', 'title'], limit: 100 },
-      'content-types': { dirName: 'content_types', fileName: 'content_types.json', validKeys: ['uid', 'title'], limit: 100 },
+      content_types: {
+        dirName: 'content_types',
+        fileName: 'content_types.json',
+        validKeys: ['uid', 'title'],
+        limit: 100,
+      },
+      'content-types': {
+        dirName: 'content_types',
+        fileName: 'content_types.json',
+        validKeys: ['uid', 'title'],
+        limit: 100,
+      },
       entries: { dirName: 'entries', fileName: 'entries.json', invalidKeys: ['uid'], limit: 100, assetBatchLimit: 10 },
       globalfields: { dirName: 'globalfields', fileName: 'globalfields.json', validKeys: ['uid', 'title'], limit: 100 },
-      'global-fields': { dirName: 'globalfields', fileName: 'globalfields.json', validKeys: ['uid', 'title'], limit: 100 },
+      'global-fields': {
+        dirName: 'globalfields',
+        fileName: 'globalfields.json',
+        validKeys: ['uid', 'title'],
+        limit: 100,
+      },
       stack: { dirName: 'stack', fileName: 'stack.json' },
       marketplace_apps: { dirName: 'marketplace_apps', fileName: 'marketplace_apps.json' },
       masterLocale: { dirName: 'master_locale', fileName: 'master_locale.json', requiredKeys: ['code', 'name'] },
@@ -85,9 +109,19 @@ describe('Extension Helper', () => {
         attributes: { dirName: 'attributes', fileName: 'attributes.json' },
         audiences: { dirName: 'audiences', fileName: 'audiences.json' },
         events: { dirName: 'events', fileName: 'events.json' },
-        experiences: { dirName: 'experiences', fileName: 'experiences.json', thresholdTimer: 1000, checkIntervalDuration: 100 }
+        experiences: {
+          dirName: 'experiences',
+          fileName: 'experiences.json',
+          thresholdTimer: 1000,
+          checkIntervalDuration: 100,
+        },
       },
-      variantEntry: { dirName: 'variant_entries', fileName: 'variant_entries.json', apiConcurrency: 1, query: { locale: 'en-us' } }
+      variantEntry: {
+        dirName: 'variant_entries',
+        fileName: 'variant_entries.json',
+        apiConcurrency: 1,
+        query: { locale: 'en-us' },
+      },
     },
     branches: [{ uid: 'main', source: 'main' }],
     isAuthenticated: true,
@@ -110,7 +144,7 @@ describe('Extension Helper', () => {
       globalfields: '/v3/globalfields',
       folders: '/v3/folders',
       stacks: '/v3/stacks',
-      labels: '/v3/labels'
+      labels: '/v3/labels',
     },
     rateLimit: 5,
     preserveStackVersion: false,
@@ -134,7 +168,7 @@ describe('Extension Helper', () => {
     contentVersion: 1,
     region: 'us' as any,
     'exclude-global-modules': false,
-    context: {} as any
+    context: {} as any,
   });
 
   describe('lookupExtension', () => {
@@ -152,10 +186,10 @@ describe('Extension Helper', () => {
             {
               uid: 'nested-field',
               data_type: 'text',
-              extension_uid: 'ext-123'
-            }
-          ]
-        }
+              extension_uid: 'ext-123',
+            },
+          ],
+        },
       ];
       const preserveStackVersion = false;
       const installedExtensions = {};
@@ -178,12 +212,12 @@ describe('Extension Helper', () => {
               schema: [
                 {
                   uid: 'block-field',
-                  data_type: 'text'
-                }
-              ]
-            }
-          ]
-        }
+                  data_type: 'text',
+                },
+              ],
+            },
+          ],
+        },
       ];
       const preserveStackVersion = false;
       const installedExtensions = {};
@@ -207,12 +241,12 @@ describe('Extension Helper', () => {
                 {
                   uid: 'block-field',
                   data_type: 'text',
-                  extension_uid: 'ext-123'
-                }
-              ]
-            }
-          ]
-        }
+                  extension_uid: 'ext-123',
+                },
+              ],
+            },
+          ],
+        },
       ];
       const preserveStackVersion = false;
       const installedExtensions = {};
@@ -229,8 +263,8 @@ describe('Extension Helper', () => {
           uid: 'ref-field',
           data_type: 'reference',
           reference_to: 'content-type-1',
-          field_metadata: {} as any
-        }
+          field_metadata: {} as any,
+        },
       ];
       const preserveStackVersion = false;
       const installedExtensions = {};
@@ -248,8 +282,8 @@ describe('Extension Helper', () => {
           uid: 'ref-field',
           data_type: 'reference',
           reference_to: 'content-type-1',
-          field_metadata: {} as any
-        }
+          field_metadata: {} as any,
+        },
       ];
       const preserveStackVersion = true;
       const installedExtensions = {};
@@ -268,13 +302,13 @@ describe('Extension Helper', () => {
           data_type: 'reference',
           extension_uid: 'old-ext-123',
           field_metadata: {
-            ref_multiple_content_types: true
-          }
-        }
+            ref_multiple_content_types: true,
+          },
+        },
       ];
       const preserveStackVersion = false;
       const installedExtensions = {
-        'old-ext-123': 'new-ext-456'
+        'old-ext-123': 'new-ext-456',
       };
 
       lookupExtension(config, schema, preserveStackVersion, installedExtensions);
@@ -288,12 +322,12 @@ describe('Extension Helper', () => {
         {
           uid: 'text-field',
           data_type: 'text',
-          extension_uid: 'old-ext-123'
-        }
+          extension_uid: 'old-ext-123',
+        },
       ];
       const preserveStackVersion = false;
       const installedExtensions = {
-        'old-ext-123': 'new-ext-456'
+        'old-ext-123': 'new-ext-456',
       };
 
       lookupExtension(config, schema, preserveStackVersion, installedExtensions);
@@ -307,14 +341,14 @@ describe('Extension Helper', () => {
         {
           uid: 'global-field',
           data_type: 'global_field',
-          reference_to: 'global-field-123'
-        }
+          reference_to: 'global-field-123',
+        },
       ];
       const preserveStackVersion = false;
       const installedExtensions = {};
 
       const globalFieldsMapping = {
-        'global-field-123': 'mapped-global-field-456'
+        'global-field-123': 'mapped-global-field-456',
       };
 
       fsUtilityStub.withArgs(path.join(tempDir, 'mapper/globalfields/uid-mapping.json')).returns(globalFieldsMapping);
@@ -330,8 +364,8 @@ describe('Extension Helper', () => {
         {
           uid: 'global-field',
           data_type: 'global_field',
-          reference_to: 'global-field-123'
-        }
+          reference_to: 'global-field-123',
+        },
       ];
       const preserveStackVersion = false;
       const installedExtensions = {};
@@ -349,14 +383,14 @@ describe('Extension Helper', () => {
         {
           uid: 'ext-field',
           data_type: 'text',
-          extension_uid: 'old-ext-123'
-        }
+          extension_uid: 'old-ext-123',
+        },
       ];
       const preserveStackVersion = false;
       const installedExtensions = {};
 
       const extensionMapping = {
-        'old-ext-123': 'new-ext-456'
+        'old-ext-123': 'new-ext-456',
       };
 
       fsUtilityStub.withArgs(path.join(tempDir, 'mapper/extensions/uid-mapping.json')).returns(extensionMapping);
@@ -374,9 +408,9 @@ describe('Extension Helper', () => {
           data_type: 'text',
           extension_uid: 'old-ext-123',
           field_metadata: {
-            extension: true
-          }
-        }
+            extension: true,
+          },
+        },
       ];
       const preserveStackVersion = false;
       const installedExtensions = {};
@@ -396,13 +430,13 @@ describe('Extension Helper', () => {
           data_type: 'text',
           extension_uid: 'old-ext-123',
           field_metadata: {
-            extension: true
-          }
-        }
+            extension: true,
+          },
+        },
       ];
       const preserveStackVersion = false;
       const installedExtensions = {
-        'old-ext-123': 'new-ext-456'
+        'old-ext-123': 'new-ext-456',
       };
 
       fsUtilityStub.withArgs(path.join(tempDir, 'mapper/extensions/uid-mapping.json')).returns({});
@@ -418,24 +452,26 @@ describe('Extension Helper', () => {
         {
           uid: 'json-field',
           data_type: 'json',
-          plugins: ['plugin-1', 'plugin-2']
-        }
+          plugins: ['plugin-1', 'plugin-2'],
+        },
       ];
       const preserveStackVersion = false;
       const installedExtensions = {};
 
       const extensionMapping = {
-        'plugin-1': 'mapped-plugin-1'
+        'plugin-1': 'mapped-plugin-1',
       };
 
       const marketplaceMapping = {
         extension_uid: {
-          'plugin-2': 'mapped-plugin-2'
-        }
+          'plugin-2': 'mapped-plugin-2',
+        },
       };
 
       fsUtilityStub.withArgs(path.join(tempDir, 'mapper/extensions/uid-mapping.json')).returns(extensionMapping);
-      fsUtilityStub.withArgs(path.join(tempDir, 'mapper/marketplace_apps/uid-mapping.json')).returns(marketplaceMapping);
+      fsUtilityStub
+        .withArgs(path.join(tempDir, 'mapper/marketplace_apps/uid-mapping.json'))
+        .returns(marketplaceMapping);
 
       lookupExtension(config, schema, preserveStackVersion, installedExtensions);
 
@@ -448,8 +484,8 @@ describe('Extension Helper', () => {
         {
           uid: 'json-field',
           data_type: 'json',
-          plugins: ['plugin-1', 'plugin-2']
-        }
+          plugins: ['plugin-1', 'plugin-2'],
+        },
       ];
       const preserveStackVersion = false;
       const installedExtensions = {};
@@ -468,8 +504,8 @@ describe('Extension Helper', () => {
         {
           uid: 'json-field',
           data_type: 'json',
-          plugins: [] as string[]
-        }
+          plugins: [] as string[],
+        },
       ];
       const preserveStackVersion = false;
       const installedExtensions = {};
@@ -485,27 +521,27 @@ describe('Extension Helper', () => {
         {
           uid: 'text-field',
           data_type: 'text',
-          extension_uid: 'ext-1'
+          extension_uid: 'ext-1',
         },
         {
           uid: 'ref-field',
           data_type: 'reference',
           reference_to: 'content-type-1',
-          field_metadata: {} as any
+          field_metadata: {} as any,
         },
         {
           uid: 'global-field',
           data_type: 'global_field',
-          reference_to: 'global-1'
-        }
+          reference_to: 'global-1',
+        },
       ];
       const preserveStackVersion = false;
       const installedExtensions = {
-        'ext-1': 'new-ext-1'
+        'ext-1': 'new-ext-1',
       };
 
       const globalFieldsMapping = {
-        'global-1': 'mapped-global-1'
+        'global-1': 'mapped-global-1',
       };
 
       fsUtilityStub.withArgs(path.join(tempDir, 'mapper/globalfields/uid-mapping.json')).returns(globalFieldsMapping);
@@ -523,13 +559,13 @@ describe('Extension Helper', () => {
         {
           uid: 'global-field',
           data_type: 'global_field',
-          reference_to: 'global-1'
+          reference_to: 'global-1',
         },
         {
           uid: 'ext-field',
           data_type: 'text',
-          extension_uid: 'ext-1'
-        }
+          extension_uid: 'ext-1',
+        },
       ];
       const preserveStackVersion = false;
       const installedExtensions = {};
@@ -561,14 +597,14 @@ describe('Extension Helper', () => {
           data_type: 'reference',
           reference_to: 'content-type-1',
           field_metadata: {
-            ref_multiple_content_types: true
+            ref_multiple_content_types: true,
           },
-          extension_uid: 'ext-123'
-        }
+          extension_uid: 'ext-123',
+        },
       ];
       const preserveStackVersion = false;
       const installedExtensions = {
-        'ext-123': 'new-ext-456'
+        'ext-123': 'new-ext-456',
       };
 
       lookupExtension(config, schema, preserveStackVersion, installedExtensions);
@@ -584,24 +620,26 @@ describe('Extension Helper', () => {
         {
           uid: 'json-field',
           data_type: 'json',
-          plugins: ['marketplace-plugin-1', 'extension-plugin-1']
-        }
+          plugins: ['marketplace-plugin-1', 'extension-plugin-1'],
+        },
       ];
       const preserveStackVersion = false;
       const installedExtensions = {};
 
       const extensionMapping = {
-        'extension-plugin-1': 'mapped-extension-plugin-1'
+        'extension-plugin-1': 'mapped-extension-plugin-1',
       };
 
       const marketplaceMapping = {
         extension_uid: {
-          'marketplace-plugin-1': 'mapped-marketplace-plugin-1'
-        }
+          'marketplace-plugin-1': 'mapped-marketplace-plugin-1',
+        },
       };
 
       fsUtilityStub.withArgs(path.join(tempDir, 'mapper/extensions/uid-mapping.json')).returns(extensionMapping);
-      fsUtilityStub.withArgs(path.join(tempDir, 'mapper/marketplace_apps/uid-mapping.json')).returns(marketplaceMapping);
+      fsUtilityStub
+        .withArgs(path.join(tempDir, 'mapper/marketplace_apps/uid-mapping.json'))
+        .returns(marketplaceMapping);
 
       lookupExtension(config, schema, preserveStackVersion, installedExtensions);
 
@@ -614,14 +652,14 @@ describe('Extension Helper', () => {
         {
           uid: 'ext-field',
           data_type: 'text',
-          extension_uid: 'old-ext-123'
-        }
+          extension_uid: 'old-ext-123',
+        },
       ];
       const preserveStackVersion = false;
       const installedExtensions = {};
 
       const extensionMapping = {
-        'old-ext-123': 'new-ext-456'
+        'old-ext-123': 'new-ext-456',
       };
 
       fsUtilityStub.withArgs(path.join(tempDir, 'mapper/extensions/uid-mapping.json')).returns(extensionMapping);
