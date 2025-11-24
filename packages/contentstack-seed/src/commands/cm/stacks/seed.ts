@@ -1,12 +1,5 @@
 import { Command } from '@contentstack/cli-command';
-import {
-  printFlagDeprecation,
-  flags,
-  isAuthenticated,
-  FlagInput,
-  cliux,
-  configHandler,
-} from '@contentstack/cli-utilities';
+import { flags, isAuthenticated, FlagInput, cliux, configHandler } from '@contentstack/cli-utilities';
 import ContentModelSeeder, { ContentModelSeederOptions } from '../../../seed';
 
 export default class SeedCommand extends Command {
@@ -20,37 +13,34 @@ export default class SeedCommand extends Command {
     '$ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack in given org uid',
   ];
 
-  static usage = 'cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]';
+  static usage =
+    'cm:stacks:seed [--repo <value>] [--org <value>] [--stack-api-key <value>] [--stack-name <value>] [--yes <value>] [--alias <value>] [--locale <value>]';
 
   static flags: FlagInput = {
     repo: flags.string({
-      char: 'r',
       description: 'GitHub organization name or GitHub user name/repository name.',
       multiple: false,
       required: false,
-      parse: printFlagDeprecation(['-r'], ['--repo']),
     }),
     org: flags.string({
-      char: 'o',
       description: 'Provide Organization UID to create a new stack',
       multiple: false,
       required: false,
-      exclusive: ['stack'],
-      parse: printFlagDeprecation(['-o'], ['--org']),
+      exclusive: ['stack-api-key'],
     }),
     'stack-api-key': flags.string({
       char: 'k',
       description: 'Provide stack API key to seed content to',
       multiple: false,
       required: false,
-      exclusive: ['org'],
+      exclusive: ['org', 'stack-name'],
     }),
     'stack-name': flags.string({
       char: 'n',
       description: 'Name of a new stack that needs to be created.',
       multiple: false,
       required: false,
-      exclusive: ['stack'],
+      exclusive: ['stack-api-key'],
     }),
     'fetch-limit': flags.string({
       char: 'l',
@@ -64,16 +54,6 @@ export default class SeedCommand extends Command {
       required: false,
       description: '[Optional] Skip the stack confirmation.',
     }),
-
-    //To be deprecated
-    stack: flags.string({
-      char: 's',
-      description: 'Provide the stack UID to seed content.',
-      multiple: false,
-      required: false,
-      exclusive: ['org', 'name'],
-      parse: printFlagDeprecation(['s', 'stack'], ['-k', 'stack-api-key']),
-    }),
     alias: flags.string({
       char: 'a',
       description: 'Alias of the management token',
@@ -83,8 +63,6 @@ export default class SeedCommand extends Command {
       hidden: true,
     }),
   };
-
-  static aliases = ['cm:seed'];
 
   async run() {
     try {
@@ -103,7 +81,7 @@ export default class SeedCommand extends Command {
         cmaHost: this.cmaHost,
         gitHubPath: seedFlags.repo,
         orgUid: seedFlags.org,
-        stackUid: seedFlags['stack-api-key'] || seedFlags.stack,
+        stackUid: seedFlags['stack-api-key'],
         stackName: seedFlags['stack-name'],
         fetchLimit: seedFlags['fetch-limit'],
         skipStackConfirmation: seedFlags['yes'],

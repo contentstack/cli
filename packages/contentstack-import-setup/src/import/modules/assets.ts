@@ -89,7 +89,7 @@ export default class AssetImportSetup extends BaseImportSetup {
       });
 
       if (chunk) {
-        let apiContent = orderBy(values(chunk as Record<string, any>[]), '_version');
+        const apiContent = orderBy(values(chunk as Record<string, any>[]), '_version');
 
         await this.makeConcurrentCall(
           {

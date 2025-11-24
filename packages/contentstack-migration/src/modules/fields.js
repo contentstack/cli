@@ -59,9 +59,9 @@ class Field extends Base {
    *   .data_type('text')
    *   .mandatory(false);
    * };
-   * 
+   *
    * Create a taxonomy field
-   * 
+   *
    *  module.exports =({ migration })=> {
    *  const blog = migration.editContentType('blog');
    *
@@ -333,6 +333,7 @@ class Field extends Base {
     allKeys.forEach((_key) => {
       this.buildSchema(_key, field, opts[_key]);
     });
+    return this;
   }
 }
 

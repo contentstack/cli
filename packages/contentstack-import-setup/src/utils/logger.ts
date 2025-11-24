@@ -6,11 +6,8 @@
 
 import * as winston from 'winston';
 import * as path from 'path';
-import mkdirp from 'mkdirp';
 import { ImportConfig } from '../types';
 import { sanitizePath, redactObject } from '@contentstack/cli-utilities';
-
-const slice = Array.prototype.slice;
 
 const ansiRegexPattern = [
   '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',
@@ -18,7 +15,7 @@ const ansiRegexPattern = [
 ].join('|');
 
 function returnString(args: any[]) {
-  var returnStr = '';
+  let returnStr = '';
   if (args && args.length) {
     returnStr = args
       .map(function (item) {
@@ -39,7 +36,7 @@ function returnString(args: any[]) {
   returnStr = returnStr.replace(new RegExp(ansiRegexPattern, 'g'), '').trim();
   return returnStr;
 }
-var myCustomLevels = {
+const myCustomLevels = {
   levels: {
     warn: 1,
     info: 2,
@@ -108,30 +105,26 @@ function init(_logPath: string) {
   }
 
   return {
-    log: function (message: any) {
-      let args = slice.call(arguments);
-      let logString = returnString(args);
+    log: function (...args: any[]) {
+      const logString = returnString(args);
       if (logString) {
         logger.log('info', logString);
       }
     },
-    warn: function (message: any) {
-      let args = slice.call(arguments);
-      let logString = returnString(args);
+    warn: function (...args: any[]) {
+      const logString = returnString(args);
       if (logString) {
         logger.log('warn', logString);
       }
     },
-    error: function (message: any) {
-      let args = slice.call(arguments);
-      let logString = returnString(args);
+    error: function (...args: any[]) {
+      const logString = returnString(args);
       if (logString) {
         errorLogger.log('error', logString);
       }
     },
-    debug: function () {
-      let args = slice.call(arguments);
-      let logString = returnString(args);
+    debug: function (...args: any[]) {
+      const logString = returnString(args);
       if (logString) {
         logger.log('debug', logString);
       }
