@@ -8,14 +8,7 @@ import {
   inquireLivePreviewSupport,
   inquireRunDevServer,
 } from '../../bootstrap/interactive';
-import {
-  printFlagDeprecation,
-  managementSDKClient,
-  flags,
-  isAuthenticated,
-  FlagInput,
-  configHandler,
-} from '@contentstack/cli-utilities';
+import { managementSDKClient, flags, isAuthenticated, FlagInput, configHandler } from '@contentstack/cli-utilities';
 import config, { getAppLevelConfigByName, AppConfig } from '../../config';
 import messageHandler from '../../messages';
 
@@ -83,33 +76,6 @@ export default class BootstrapCommand extends Command {
       required: false,
       default: false,
     }),
-
-    // To be deprecated
-    appName: flags.string({
-      char: 'a',
-      description: 'App name, kickstart-next, kickstart-next-ssr, kickstart-next-ssg, kickstart-next-graphql, kickstart-next-middleware, kickstart-nuxt, kickstart-nuxt-ssr',
-      multiple: false,
-      required: false,
-      hidden: true,
-      parse: printFlagDeprecation(['-a', '--appName'], ['--app-name']),
-    }),
-    directory: flags.string({
-      char: 'd',
-      description:
-        'Directory to set up the project. If directory name has a space then provide the path as a string or escape the space using backslash eg: "../../test space" or ../../test\\ space',
-      multiple: false,
-      required: false,
-      hidden: true,
-      parse: printFlagDeprecation(['-d', '--directory'], ['--project-dir']),
-    }),
-    appType: flags.string({
-      char: 's',
-      description: 'Sample or Starter app',
-      multiple: false,
-      required: false,
-      hidden: true,
-      parse: printFlagDeprecation(['-s', '--appType'], ['--app-type']),
-    }),
     alias: flags.string({
       char: 'a',
       description: 'Alias of the management token',
@@ -171,8 +137,8 @@ export default class BootstrapCommand extends Command {
       cloneDirectory = resolve(cloneDirectory);
 
       const livePreviewEnabled = bootstrapCommandFlags.yes ? true : await inquireLivePreviewSupport();
-      const runDevServer = bootstrapCommandFlags['run-dev-server'] ||
-        (bootstrapCommandFlags.yes ? false : await inquireRunDevServer());
+      const runDevServer =
+        bootstrapCommandFlags['run-dev-server'] || (bootstrapCommandFlags.yes ? false : await inquireRunDevServer());
 
       const seedParams: SeedParams = {};
       const stackAPIKey = bootstrapCommandFlags['stack-api-key'];

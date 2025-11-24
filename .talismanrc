@@ -1,0 +1,8 @@
+fileignoreconfig:
+  - filename: packages/contentstack-bootstrap/test/bootstrap-integration.test.js
+    checksum: d3e3902b2ee72aa41483da5c135e5c4bcec85f65939695708e9bec9478f6336c
+  - filename: packages/contentstack-bootstrap/test/interactive.test.js
+    checksum: fb0c32cd846cce3a53927316699a1c5aaa814939fe9b33bcd9141addbbe447d0
+  - filename: packages/contentstack-bootstrap/test/bootstrap.test.js
+    checksum: b1f46b3447b1b358f80d6404d9d5b385fb385714e5c1f865ca97d64d6edaefc2
+version: '1.0'
