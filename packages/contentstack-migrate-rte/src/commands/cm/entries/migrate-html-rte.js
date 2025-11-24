@@ -140,6 +140,6 @@ JsonMigrationCommand.examples = [
   'csdx cm:entries:migrate-html-rte --alias alias --content-type global_field_uid --global-field --html-path html-path --json-path json-path',
 ];
 
-JsonMigrationCommand.aliases = ['cm:migrate-rte'];
+JsonMigrationCommand.aliases = [];
 
 module.exports = JsonMigrationCommand;

@@ -275,7 +275,7 @@ MigrationCommand.flags = {
   }),
 };
 
-MigrationCommand.aliases = ['cm:migration'];
+MigrationCommand.aliases = [];
 
 MigrationCommand.usage =
   'cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]';
