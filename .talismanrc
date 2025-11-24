@@ -1,8 +1,8 @@
 fileignoreconfig:
   - filename: package-lock.json
-    checksum: d3b93fad9630655f037e36b78fea3354f1a038988562254afdad0f6e54ece12d
+    checksum: e79c27cf2fa46f146c1f94ea324fc4a2ebc31df8b2eb05720fcc64153e090a3f
   - filename: pnpm-lock.yaml
-    checksum: aa6177859aaa87caf2892e8034657fd485c3abe7c13a833fd28449a1d33fa950
+    checksum: fe3e9d9f6eba0158d4985b8bdb8ec6e35419b3a9e9768e5610bf74f2f59454d1
   - filename: packages/contentstack-import-setup/test/unit/backup-handler.test.ts
     checksum: 0582d62b88834554cf12951c8690a73ef3ddbb78b82d2804d994cf4148e1ef93
   - filename: packages/contentstack-import-setup/test/config.json
@@ -129,12 +129,16 @@ fileignoreconfig:
     checksum: c7f9801faeb300f8bd97534ac72441bde5aac625dd4beaf5531945d14d9d4db0
   - filename: packages/contentstack-import/test/unit/import/modules/environments.test.ts
     checksum: 58165d06d92f55be8abb04c4ecc47df775a1a47f1cee529f1be5277187700f97
+  - filename: packages/contentstack-import/test/unit/import/modules/locales.test.ts
+    checksum: 011ec3efd7a29ed274f073f8678229eaef46f33e272e7e1db1206fa1a20383f0
   - filename: packages/contentstack-export/test/unit/export/modules/environments.test.ts
     checksum: 530573c4c92387b755ca1b4eef88ae8bb2ae076be9a726bba7b67a525cba23e9
   - filename: packages/contentstack-export/test/unit/export/modules/extensions.test.ts
     checksum: 857978a21ea981183254245f6b3cb5f51778d68fc726ddb26005ac96c706650f
   - filename: packages/contentstack-export/test/unit/export/modules/webhooks.test.ts
     checksum: 2e2d75281a57f873fb7f5fff0e5a9e863b631efd2fd92c4d2c81d9c8aeb3e252
+  - filename: packages/contentstack-export/test/unit/export/modules/locales.test.ts
+    checksum: 93bdd99ee566fd38545b38a8b528947af1d42a31908aca85e2cb221e39a5b6cc
   - filename: packages/contentstack-export/test/unit/export/modules/stack.test.ts
     checksum: bb0f20845d85fd56197f1a8c67b8f71c57dcd1836ed9cfd86d1f49f41e84d3a0
   - filename: packages/contentstack-export/test/unit/export/modules/taxonomies.test.ts
@@ -207,8 +211,14 @@ fileignoreconfig:
     checksum: 49dd8e754a0d3635585a74e943ab097593f061089a7cddc22683ec6caddbb3c5
   - filename: packages/contentstack-export/test/unit/export/modules/personalize.test.ts
     checksum: 83cf034fabee00b42b4243a8c0b8ba280ab7c1e68ffd741c49c31aaee8ca0315
-  - filename: packages/contentstack-import/test/unit/utils/extension-helper.test.ts
-    checksum: ec14c9645d054c02da64b73f82a219f7930a2e7bc52a677c612be739da2904f7
-  - filename: packages/contentstack-import/test/unit/import/modules/locales.test.ts
-    checksum: 153ad7d95011d52429df695adf1a766051d8c739d2839974e3fbf275673b50d0
+  - filename: packages/contentstack-audit/test/unit/audit-base-command.test.ts
+    checksum: 17a16b4457c820494442f335d94d0949961e68e8ca72ca0f1fa9d4d0eeb0c17a
+  - filename: packages/contentstack-import/src/import/modules/taxonomies.ts
+    checksum: ed7037a220754ecfdf800f6b747059ad309e23e7bafa09f6938021246f67d998
+  - filename: packages/contentstack-export/test/unit/utils/logger.test.ts
+    checksum: ce8438d323fd0e42a88ece3dfd826313993c0198dbeffe01d046f835d6aad95f
+  - filename: packages/contentstack-export/test/unit/export/modules/taxonomies.test.ts
+    checksum: 57566af0bbd95a28b454e4436b0396dfec2fe05ddd5b448d46e3a8b68db8b9cb
+  - filename: packages/contentstack-export/test/unit/export/modules/entries.test.ts
+    checksum: 5950c6f697224e11bec32736e6a967b0ab7ac98e9c8f8bb8eaaf10af60913e40
 version: '1.0'
