@@ -243,20 +243,6 @@ jobs:
           package: ./packages/contentstack-export-to-csv/package.json
           tag: beta
 
-      # Migrate RTE
-      - name: Installing dependencies of migrate rte
-        id: migrate-rte-installation
-        if: ${{env.release_releaseAll == 'true' || env.release_plugins_migrate-rte == 'true'}}
-        working-directory: ./packages/contentstack-migrate-rte
-        run: npm install
-      - name: Publishing migrate rte (Beta)
-        uses: JS-DevTools/npm-publish@v3
-        if: ${{ steps.migrate-rte-installation.conclusion == 'success'  }}
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/contentstack-migrate-rte/package.json
-          tag: beta
-
       # Migration
       - name: Installing dependencies of migration
         id: migration-installation
