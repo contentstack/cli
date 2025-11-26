@@ -49,7 +49,8 @@ export type Modules =
   | 'labels'
   | 'marketplace-apps'
   | 'taxonomies'
-  | 'personalize';
+  | 'personalize'
+  | 'composable-studio';
 
 export type ModuleClassParams = {
   stackAPIClient: ReturnType<ContentstackClient['stack']>;
@@ -128,6 +129,33 @@ export interface StackConfig {
   fileName: string;
   dependencies?: Modules[];
   limit?: number;
+}
+
+export interface ComposableStudioConfig {
+  dirName: string;
+  fileName: string;
+  apiBaseUrl: string;
+}
+
+export interface ComposableStudioProject {
+  name: string;
+  description: string;
+  canvasUrl: string;
+  connectedStackApiKey: string;
+  contentTypeUid: string;
+  organizationUid: string;
+  settings: {
+    configuration: {
+      environment: string;
+      locale: string;
+    };
+  };
+  createdBy: string;
+  updatedBy: string;
+  deletedAt: boolean;
+  createdAt: string;
+  updatedAt: string;
+  uid: string;
 }
 export interface Context {
   command: string;

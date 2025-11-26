@@ -162,6 +162,11 @@ export default interface DefaultConfig {
       fileName: string;
       dependencies?: Modules[];
     };
+    'composable-studio': {
+      dirName: string;
+      fileName: string;
+      apiBaseUrl: string;
+    };
     masterLocale: {
       dirName: string;
       fileName: string;
