@@ -118,7 +118,14 @@ class ManagementSDKInitiator {
         option.proxy = proxyConfig;
         // Log proxy configuration for debugging (enable with DEBUG_PROXY=true)
         if (process.env.DEBUG_PROXY === 'true') {
-          console.log('[PROXY] Using proxy:', JSON.stringify(proxyConfig));
+          const safeProxyConfig = { ...proxyConfig };
+          if (safeProxyConfig.auth) {
+            safeProxyConfig.auth = {
+              username: safeProxyConfig.auth.username || '',
+              password: safeProxyConfig.auth.password ? 'REDACTED' : undefined,
+            };
+          }
+          console.log('[PROXY] Using proxy:', JSON.stringify(safeProxyConfig));
         }
       } else if (typeof proxyConfig === 'string') {
         // If proxy is provided as string URL, parse it to object format

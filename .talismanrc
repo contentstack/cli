@@ -222,5 +222,5 @@ fileignoreconfig:
 - filename: packages/contentstack-export/test/unit/export/modules/entries.test.ts
   checksum: 5950c6f697224e11bec32736e6a967b0ab7ac98e9c8f8bb8eaaf10af60913e40
 - filename: packages/contentstack-utilities/src/contentstack-management-sdk.ts
-  checksum: 2b20b992391cb4b321c415630eea0a00a890470a3f4a47fbc9e3e80b8760470c
+  checksum: 3e6f6cf2a88632069a1c4c8fffa76f9631b29f5bb917fff9da8bca36fd5e192f
 version: "1.0"
