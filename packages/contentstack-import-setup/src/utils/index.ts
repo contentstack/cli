@@ -7,3 +7,4 @@ export { log, unlinkFileLogger } from './logger';
 export * from './log';
 export * from './common-helper';
 export { setupBranchConfig } from './setup-branch';
+export { initializeContext } from './context-helper';
