@@ -43,6 +43,9 @@ class ManagementSDKInitiator {
           proxyConfig = parsedProxy;
         } catch (error) {
           // If URL parsing fails, ignore proxy config
+          if (process.env.DEBUG_PROXY === 'true') {
+            console.log('[PROXY] Failed to parse proxy URL:', error instanceof Error ? error.message : String(error));
+          }
           proxyConfig = undefined;
         }
       }
@@ -118,13 +121,18 @@ class ManagementSDKInitiator {
         option.proxy = proxyConfig;
         // Log proxy configuration for debugging (enable with DEBUG_PROXY=true)
         if (process.env.DEBUG_PROXY === 'true') {
-          const safeProxyConfig = { ...proxyConfig };
-          if (safeProxyConfig.auth) {
-            safeProxyConfig.auth = {
-              username: safeProxyConfig.auth.username ? 'REDACTED' : undefined,
-              password: safeProxyConfig.auth.password ? 'REDACTED' : undefined,
-            };
-          }
+          // Only log non-sensitive proxy information
+          const safeProxyConfig: any = {
+            protocol: proxyConfig.protocol,
+            port: proxyConfig.port,
+            // Host is redacted as it may contain sensitive internal network information
+            host: proxyConfig.host ? 'REDACTED' : undefined,
+            // Auth information is always redacted
+            auth: proxyConfig.auth ? {
+              username: proxyConfig.auth.username ? 'REDACTED' : undefined,
+              password: proxyConfig.auth.password ? 'REDACTED' : undefined,
+            } : undefined,
+          };
           console.log('[PROXY] Using proxy:', JSON.stringify(safeProxyConfig));
         }
       } else if (typeof proxyConfig === 'string') {
