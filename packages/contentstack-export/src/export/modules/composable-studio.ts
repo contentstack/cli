@@ -130,13 +130,9 @@ export default class ExportComposableStudio {
       );
     } catch (error: any) {
       log.debug('Error occurred while exporting Composable Studio project', this.exportConfig.context);
-      handleAndLogError(
-        error,
-        {
-          ...this.exportConfig.context,
-        },
-        messageHandler.parse('COMPOSABLE_STUDIO_EXPORT_FAILED', error.message),
-      );
+      handleAndLogError(error, {
+        ...this.exportConfig.context,
+      });
     }
   }
 }
