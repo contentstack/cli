@@ -1,9 +1,9 @@
 import * as chalk from 'chalk';
-import { log, fsUtil } from '../../utils';
+import { fsUtil, initializeContext, fileHelper } from '../../utils';
 import { join } from 'path';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import { isEmpty } from 'lodash';
-import { formatError, sanitizePath } from '@contentstack/cli-utilities';
+import { formatError, sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 
 export default class ExtensionImportSetup {
   private config: ImportConfig;
@@ -16,8 +16,9 @@ export default class ExtensionImportSetup {
   private extensionsFolderPath: string;
   private extUidMapperPath: string;
 
-  constructor({ config, stackAPIClient }: ModuleClassParams) {
+  constructor({ config, stackAPIClient, dependencies }: ModuleClassParams) {
     this.config = config;
+    initializeContext(this.config, 'extensions');
     this.stackAPIClient = stackAPIClient;
     this.extensionsFilePath = join(sanitizePath(this.config.contentDir), 'extensions', 'extensions.json');
     this.extensionsConfig = config.modules.extensions;
@@ -32,6 +33,10 @@ export default class ExtensionImportSetup {
    */
   async start() {
     try {
+      if (!fileHelper.fileExistsSync(this.extensionsFilePath)) {
+        log.info('No extensions found in the content folder.');
+        return;
+      }
       const extensions: any = await fsUtil.readFile(this.extensionsFilePath);
       if (!isEmpty(extensions)) {
         // 2. Create mapper directory
@@ -41,7 +46,7 @@ export default class ExtensionImportSetup {
         for (const extension of Object.values(extensions) as any) {
           const targetExtension: any = await this.getExtension(extension);
           if (!targetExtension) {
-            log(this.config, `Extension with the title '${extension.title}' not found in the stack.`, 'info');
+            log.info(`Extension with the title '${extension.title}' not found in the stack.`);
             continue;
           }
           this.extensionMapper[extension.uid] = targetExtension.uid;
@@ -49,12 +54,12 @@ export default class ExtensionImportSetup {
 
         await fsUtil.writeFile(this.extUidMapperPath, this.extensionMapper);
 
-        log(this.config, `The required setup files for extensions have been generated successfully.`, 'success');
+        log.success(`The required setup files for extensions have been generated successfully.`);
       } else {
-        log(this.config, 'No extensions found in the content folder.', 'info');
+        log.info('No extensions found in the content folder.');
       }
     } catch (error) {
-      log(this.config, `Error occurred while generating the extension mapper: ${formatError(error)}.`, 'error');
+      handleAndLogError(error, { ...this.config.context }, 'Error occurred while generating the extension mapper');
     }
   }
 

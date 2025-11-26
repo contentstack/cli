@@ -1,4 +1,4 @@
-import { log, fsUtil } from '../../utils';
+import { fsUtil, initializeContext, fileHelper } from '../../utils';
 import { join } from 'path';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import { get, isEmpty } from 'lodash';
@@ -10,6 +10,8 @@ import {
   NodeCrypto,
   createDeveloperHubUrl,
   sanitizePath,
+  log,
+  handleAndLogError,
 } from '@contentstack/cli-utilities';
 
 export default class marketplaceAppImportSetup {
@@ -27,8 +29,9 @@ export default class marketplaceAppImportSetup {
   public nodeCrypto: NodeCrypto;
   public appSdk: ContentstackMarketplaceClient;
 
-  constructor({ config, stackAPIClient }: ModuleClassParams) {
+  constructor({ config, stackAPIClient, dependencies }: ModuleClassParams) {
     this.config = config;
+    initializeContext(this.config, 'marketplace-apps');
     this.stackAPIClient = stackAPIClient;
     this.marketplaceAppsFilePath = join(
       sanitizePath(this.config.contentDir),
@@ -47,6 +50,10 @@ export default class marketplaceAppImportSetup {
    */
   async start() {
     try {
+      if (!fileHelper.fileExistsSync(this.marketplaceAppsFilePath)) {
+        log.info('No Marketplace apps found in the content folder.');
+        return;
+      }
       const sourceMarketplaceApps: any = await fsUtil.readFile(this.marketplaceAppsFilePath);
       if (!isEmpty(sourceMarketplaceApps)) {
         fsUtil.makeDirectory(this.marketplaceAppsUidMapperPath); // Use fsUtil
@@ -58,12 +65,12 @@ export default class marketplaceAppImportSetup {
         this.createMapper(sourceMarketplaceApps, targetMarketplaceApps);
         await fsUtil.writeFile(join(this.marketplaceAppsUidMapperPath, 'uid-mapping.json'), this.marketplaceAppMapper);
 
-        log(this.config, `The required setup files for Marketplace apps have been generated successfully.`, 'success');
+        log.success(`The required setup files for Marketplace apps have been generated successfully.`);
       } else {
-        log(this.config, 'No Marketplace apps found in the content folder.', 'info');
+        log.info('No Marketplace apps found in the content folder.');
       }
     } catch (error) {
-      log(this.config, `Error occurred while generating the Marketplace app mapper: ${error.message}.`, 'error');
+      handleAndLogError(error, { ...this.config.context }, 'Error occurred while generating the Marketplace app mapper');
     }
   }
 
@@ -120,7 +127,7 @@ export default class marketplaceAppImportSetup {
           }
         });
       } else {
-        log(this.config, `No matching Marketplace app found in the target stack with name ${sourceAppName}`, 'info');
+        log.info(`No matching Marketplace app found in the target stack with name ${sourceAppName}`);
       }
     });
   }
