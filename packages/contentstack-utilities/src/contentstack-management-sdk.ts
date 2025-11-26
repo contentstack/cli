@@ -121,7 +121,7 @@ class ManagementSDKInitiator {
           const safeProxyConfig = { ...proxyConfig };
           if (safeProxyConfig.auth) {
             safeProxyConfig.auth = {
-              username: safeProxyConfig.auth.username || '',
+              username: safeProxyConfig.auth.username ? 'REDACTED' : undefined,
               password: safeProxyConfig.auth.password ? 'REDACTED' : undefined,
             };
           }
