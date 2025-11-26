@@ -91,7 +91,6 @@ export default class ImportComposableStudio {
       );
     } catch (error) {
       handleAndLogError(error, { ...this.importConfig.context });
-      cliux.print(messageHandler.parse('COMPOSABLE_STUDIO_IMPORT_FAILED', error.message), { color: 'red' });
     }
   }
 
@@ -246,32 +245,14 @@ export default class ImportComposableStudio {
       attemptCount++;
       log.debug(`Attempt ${attemptCount} to create project with name: ${currentName}`, this.importConfig.context);
 
-      try {
-        projectData.name = currentName;
-        const response = await this.apiClient.post('/projects', projectData);
+      projectData.name = currentName;
+      const response = await this.apiClient.post('/projects', projectData);
 
-        if (response.status >= 200 && response.status < 300) {
-          projectCreated = true;
-          log.debug(`Project created successfully with UID: ${response.data?.uid}`, this.importConfig.context);
-        } else {
-          throw new Error(`API call failed with status ${response.status}: ${JSON.stringify(response.data)}`);
-        }
-      } catch (error) {
-        const errorMessage = error.message || JSON.stringify(error);
-        log.debug(`Project creation failed: ${errorMessage}`, this.importConfig.context);
-
-        // Check if error is due to name conflict
-        if (
-          errorMessage.includes('already exists') ||
-          errorMessage.includes('duplicate') ||
-          errorMessage.includes('name')
-        ) {
-          log.debug('Name conflict detected, prompting user for new name', this.importConfig.context);
-          currentName = await this.promptForNewProjectName(currentName);
-        } else {
-          // Not a name conflict error, throw it
-          throw error;
-        }
+      if (response.status >= 200 && response.status < 300) {
+        projectCreated = true;
+        log.debug(`Project created successfully with UID: ${response.data?.uid}`, this.importConfig.context);
+      } else {
+        throw new Error(`API call failed with status ${response.status}: ${JSON.stringify(response.data)}`);
       }
     }
   }
