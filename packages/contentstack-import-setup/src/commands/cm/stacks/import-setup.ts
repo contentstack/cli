@@ -95,13 +95,13 @@ export default class ImportSetupCommand extends Command {
   }
 
   // Create import setup context object
-  private createImportSetupContext(apiKey: string, authenticationMethod?: string): Context {
+  private createImportSetupContext(apiKey: string, authenticationMethod?: string, module?: string): Context {
     return {
       command: this.context?.info?.command || 'cm:stacks:import-setup',
-      module: '',
-      userId: configHandler.get('userUid') || '',
-      email: configHandler.get('email') || '',
-      sessionId: this.context?.sessionId || '',
+      module: module || '',
+      userId: configHandler.get('userUid') || undefined,
+      email: configHandler.get('email') || undefined,
+      sessionId: this.context?.sessionId,
       apiKey: apiKey || '',
       orgId: configHandler.get('oauthOrgUid') || '',
       authenticationMethod: authenticationMethod || 'Basic Auth',

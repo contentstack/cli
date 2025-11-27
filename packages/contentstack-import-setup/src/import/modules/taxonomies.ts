@@ -2,7 +2,7 @@ import { join } from 'path';
 import omit from 'lodash/omit';
 import isEmpty from 'lodash/isEmpty';
 
-import { fsUtil, fileHelper, initializeContext } from '../../utils';
+import { fsUtil, fileHelper } from '../../utils';
 import { ImportConfig, ModuleClassParams, TaxonomyQueryParams } from '../../types';
 import { sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 
@@ -25,7 +25,9 @@ export default class TaxonomiesImportSetup {
 
   constructor({ config, stackAPIClient, dependencies }: ModuleClassParams) {
     this.config = config;
-    initializeContext(this.config, 'taxonomies');
+    if (this.config.context) {
+      this.config.context.module = 'taxonomies';
+    }
     this.stackAPIClient = stackAPIClient;
     this.taxonomiesFolderPath = join(sanitizePath(this.config.contentDir), 'taxonomies');
     this.taxonomiesFilePath = join(this.taxonomiesFolderPath, 'taxonomies.json');

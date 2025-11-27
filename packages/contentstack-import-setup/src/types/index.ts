@@ -159,7 +159,6 @@ export interface Context {
   userId: string | undefined;
   email: string | undefined;
   sessionId: string | undefined;
-  clientId?: string | undefined;
   apiKey: string;
   orgId: string;
   authenticationMethod?: string;

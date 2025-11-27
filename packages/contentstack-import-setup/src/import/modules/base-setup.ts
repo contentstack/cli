@@ -1,4 +1,4 @@
-import { fsUtil, initializeContext } from '../../utils';
+import { fsUtil } from '../../utils';
 import { ApiOptions, CustomPromiseHandler, EnvType, ImportConfig, ModuleClassParams, Modules } from '../../types';
 import { chunk, entries, isEmpty, isEqual, last } from 'lodash';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
@@ -15,12 +15,14 @@ export default class BaseImportSetup {
   }
 
   /**
-   * Initialize context if it doesn't exist and optionally set the module name
-   * @param module - Optional module name to set
+   * Set the module name in context directly
+   * @param module - Module name to set
    * @returns {void}
    */
   protected initializeContext(module?: Modules): void {
-    initializeContext(this.config, module);
+    if (this.config.context && module) {
+      this.config.context.module = module;
+    }
   }
 
   async setupDependencies() {
@@ -31,10 +33,9 @@ export default class BaseImportSetup {
         const modulePath = `./${moduleName}`;
         const { default: ModuleClass } = await import(modulePath);
 
-        const modulePayload: ModuleClassParams = {
+        const modulePayload = {
           config: this.config,
           stackAPIClient: this.stackAPIClient,
-          dependencies: [],
         };
 
         const moduleInstance = new ModuleClass(modulePayload);
@@ -42,7 +43,6 @@ export default class BaseImportSetup {
         log.debug(`Dependency module ${moduleName} imported successfully`);
       } catch (error) {
         handleAndLogError(error, { ...this.config.context }, `Error importing '${moduleName}'`);
-        throw error;
       }
     }
   }
