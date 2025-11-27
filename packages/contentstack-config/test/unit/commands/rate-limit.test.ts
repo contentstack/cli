@@ -59,7 +59,7 @@ describe('Rate Limit Commands', () => {
       const args = ['--org', 'test-org-id', '--utilize', '150', '--limit-name', 'getLimit'];
       await SetRateLimitCommand.run(args);
 
-      expect(errorMessage).to.equal('Utilization percentages must be numbers between 0 and 100.');
+      expect(errorMessage).to.equal('Utilize percentages must be numbers between 0 and 100.');
 
       expect(exitStub.calledWith(1)).to.be.true;
 
@@ -74,7 +74,7 @@ describe('Rate Limit Commands', () => {
       await SetRateLimitCommand.run(args);
 
       expect(errorMessage).to.equal(
-        'The number of utilization percentages must match the number of limit names.',
+        'The number of utilization percentages must match the number of limit names provided.',
       );
 
       expect(exitStub.calledWith(1)).to.be.true;
@@ -90,7 +90,7 @@ describe('Rate Limit Commands', () => {
       await SetRateLimitCommand.run(args);
 
       expect(errorMessage).to.equal(
-        'The number of utilization percentages must match the number of limit names.',
+        'The number of utilization percentages must match the number of limit names provided.',
       );
 
       expect(exitStub.calledWith(1)).to.be.true;

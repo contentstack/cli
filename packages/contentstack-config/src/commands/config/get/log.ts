@@ -34,7 +34,7 @@ export default class LogGetCommand extends Command {
         color: 'dim',
       });
     } catch (error) {
-      cliux.error('Error', error);
+      cliux.error('error', error);
     }
   }
 }

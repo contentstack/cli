@@ -54,11 +54,11 @@ export default class SetRateLimitCommand extends BaseCommand<typeof SetRateLimit
     if (utilize) {
       const utilizeValues = utilize?.split(',')?.map((u: string) => Number(u.trim()));
       if (utilizeValues.some((u: number) => isNaN(u) || u < 0 || u > 100)) {
-        cliux.error('Utilization percentages must be numbers between 0 and 100.');
+        cliux.error('Utilize percentages must be numbers between 0 and 100.');
         return;
       }
       if (limitName?.length > 0 && limitName[0]?.split(',')?.length !== utilizeValues.length) {
-        cliux.error('The number of utilization percentages must match the number of limit names.');
+        cliux.error('The number of utilization percentages must match the number of limit names provided.');
         return;
       } else {
         config.utilize = utilize.split(',').map((v: string) => v.trim());
@@ -85,7 +85,7 @@ export default class SetRateLimitCommand extends BaseCommand<typeof SetRateLimit
       if (error?.message) {
         cliux.error(error.message);
       } else {
-        cliux.error(`Error: Failed to set rate limits for organization UID ${org}`);
+        cliux.error(`Error: Something went wrong while setting rate limit for org: ${org}`);
       }
     }
   }

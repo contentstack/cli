@@ -17,7 +17,7 @@ export default class RemoveBranchConfigCommand extends Command {
         configRemoveFlags['stack-api-key'] = await interactive.askStackAPIKey();
       }
       if (configHandler.get(`baseBranch.${configRemoveFlags['stack-api-key']}`) === undefined) {
-        cliux.error(`No configuration found for stack API key: ${configRemoveFlags['stack-api-key']}`);
+        cliux.error(`No config set for stack-api-key : ${configRemoveFlags['stack-api-key']}`);
         return;
       } else {
         function deleteConfig() {

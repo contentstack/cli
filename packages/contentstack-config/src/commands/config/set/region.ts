@@ -48,9 +48,6 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     launch: _flags.string({
       description: 'Custom host to set for Launch API',
     }),
-    studio: _flags.string({
-      description: 'Custom host to set for Studio API',
-    }),
   };
   static examples = [
     '$ csdx config:set:region',
@@ -65,8 +62,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url>',
     '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --personalize <custom_personalize_url>',
     '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --launch <custom_launch_url>',
-    '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --studio <custom_studio_url>',
-    '$ csdx config:set:region --cda <custom_cda_host_url> --cma <custom_cma_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url> --launch <custom_launch_url> --personalize <custom_personalize_url> --studio <custom_studio_url>',
+    '$ csdx config:set:region --cda <custom_cda_host_url> --cma <custom_cma_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url> --launch <custom_launch_url> --personalize <custom_personalize_url>',
   ];
 
   static args: ArgInput = {
@@ -82,7 +78,6 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     let developerHubUrl = regionSetFlags['developer-hub'];
     let personalizeUrl = regionSetFlags['personalize'];
     let launchHubUrl = regionSetFlags['launch'];
-    let composableStudioUrl = regionSetFlags['studio'];
     let selectedRegion = args.region;
     if (!(cda && cma && uiHost && name) && !selectedRegion) {
       selectedRegion = await interactive.askRegions();
@@ -110,29 +105,16 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
         if (!personalizeUrl) {
           personalizeUrl = this.transformUrl(cma, 'personalize-api');
         }
-        if (!composableStudioUrl) {
-          composableStudioUrl = this.transformUrl(cma, 'composable-studio-api');
-        }
-        let customRegion: Region = {
-          cda,
-          cma,
-          uiHost,
-          name,
-          developerHubUrl,
-          personalizeUrl,
-          launchHubUrl,
-          composableStudioUrl,
-        };
+        let customRegion: Region = { cda, cma, uiHost, name, developerHubUrl, personalizeUrl, launchHubUrl };
         customRegion = regionHandler.setCustomRegion(customRegion);
         await authHandler.setConfigData('logout'); //Todo: Handle this logout flow well through logout command call
         cliux.success(`Custom region has been set to ${customRegion.name}`);
-        cliux.success(`CMA host: ${customRegion.cma}`);
-        cliux.success(`CDA host: ${customRegion.cda}`);
-        cliux.success(`UI host: ${customRegion.uiHost}`);
+        cliux.success(`CMA HOST: ${customRegion.cma}`);
+        cliux.success(`CDA HOST: ${customRegion.cda}`);
+        cliux.success(`UI HOST: ${customRegion.uiHost}`);
         cliux.success(`Developer Hub URL: ${customRegion.developerHubUrl}`);
         cliux.success(`Personalize URL: ${customRegion.personalizeUrl}`);
         cliux.success(`Launch URL: ${customRegion.launchHubUrl}`);
-        cliux.success(`Studio URL: ${customRegion.composableStudioUrl}`);
       } catch (error) {
         this.logger.error('failed to set the region', error);
         cliux.error(`Failed to set region due to: ${error.message}`);
@@ -145,15 +127,14 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
       const regionDetails: Region = regionHandler.setRegion(selectedRegion);
       await authHandler.setConfigData('logout'); //Todo: Handle this logout flow well through logout command call
       cliux.success(`Region has been set to ${regionDetails.name}`);
-      cliux.success(`CDA host: ${regionDetails.cda}`);
-      cliux.success(`CMA host: ${regionDetails.cma}`);
-      cliux.success(`UI host: ${regionDetails.uiHost}`);
+      cliux.success(`CDA HOST: ${regionDetails.cda}`);
+      cliux.success(`CMA HOST: ${regionDetails.cma}`);
+      cliux.success(`UI HOST: ${regionDetails.uiHost}`);
       cliux.success(`Developer Hub URL: ${regionDetails.developerHubUrl}`);
       cliux.success(`Personalize URL: ${regionDetails.personalizeUrl}`);
       cliux.success(`Launch URL: ${regionDetails.launchHubUrl}`);
-      cliux.success(`Studio URL: ${regionDetails.composableStudioUrl}`);
     } else {
-      cliux.error(`Invalid region specified.`);
+      cliux.error(`Invalid region is given`);
     }
   }
   transformUrl(url: string, replacement: string): string {
