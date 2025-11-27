@@ -485,6 +485,50 @@ function startupQuestions() {
   });
 }
 
+function chooseFallbackOptions(stackAPIClient) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const questions = [
+        {
+          type: 'confirm',
+          name: 'includeFallback',
+          message: 'Include fallback locale data when exporting taxonomies?',
+          default: false,
+        },
+      ];
+
+      const { includeFallback } = await inquirer.prompt(questions);
+
+      let fallbackLocale = null;
+
+      if (includeFallback) {
+        // Get available languages for fallback locale selection
+        const languages = await getLanguages(stackAPIClient);
+        const languagesList = Object.keys(languages);
+
+        const fallbackQuestion = [
+          {
+            type: 'list',
+            name: 'selectedFallbackLocale',
+            message: 'Choose fallback locale',
+            choices: languagesList,
+          },
+        ];
+
+        const { selectedFallbackLocale } = await inquirer.prompt(fallbackQuestion);
+        fallbackLocale = languages[selectedFallbackLocale];
+      }
+
+      resolve({
+        includeFallback,
+        fallbackLocale,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
 function getOrgUsers(managementAPIClient, orgUid) {
   return new Promise((resolve, reject) => {
     managementAPIClient
@@ -1080,10 +1124,16 @@ async function getTaxonomy(payload) {
  * @returns  {*} Promise<any>
  */
 async function taxonomySDKHandler(payload, skip) {
-  const { stackAPIClient, taxonomyUID, type, format } = payload;
+  const { stackAPIClient, taxonomyUID, type, format, locale, branch, include_fallback, fallback_locale } = payload;
 
   const queryParams = { include_count: true, limit: payload.limit };
   if (skip >= 0) queryParams['skip'] = skip || 0;
+
+  // Add locale and branch parameters if provided
+  if (locale) queryParams['locale'] = locale;
+  if (branch) queryParams['branch'] = branch;
+  if (include_fallback !== undefined) queryParams['include_fallback'] = include_fallback;
+  if (fallback_locale) queryParams['fallback_locale'] = fallback_locale;
 
   switch (type) {
     case 'taxonomies':
@@ -1109,9 +1159,15 @@ async function taxonomySDKHandler(payload, skip) {
         .then((data) => data)
         .catch((err) => handleTaxonomyErrorMsg(err));
     case 'export-taxonomies':
+      const exportParams = { format };
+      if (locale) exportParams.locale = locale;
+      if (branch) exportParams.branch = branch;
+      if (include_fallback !== undefined) exportParams.include_fallback = include_fallback;
+      if (fallback_locale) exportParams.fallback_locale = fallback_locale;
+
       return await stackAPIClient
         .taxonomy(taxonomyUID)
-        .export({ format })
+        .export(exportParams)
         .then((data) => data)
         .catch((err) => handleTaxonomyErrorMsg(err));
     default:
@@ -1176,20 +1232,20 @@ function handleTaxonomyErrorMsg(err) {
  * @returns
  */
 async function createImportableCSV(payload, taxonomies) {
-    let taxonomiesData = [];
-    let headers = [];
-    payload['type'] = 'export-taxonomies';
-    payload['format'] = 'csv';
-    for (const taxonomy of taxonomies) {
-      if (taxonomy?.uid) {
-        payload['taxonomyUID'] = taxonomy?.uid;
-        const data = await taxonomySDKHandler(payload);
-        const taxonomies = await csvParse(data, headers);
-        taxonomiesData.push(...taxonomies);
-      }
+  let taxonomiesData = [];
+  let headers = [];
+  payload['type'] = 'export-taxonomies';
+  payload['format'] = 'csv';
+  for (const taxonomy of taxonomies) {
+    if (taxonomy?.uid) {
+      payload['taxonomyUID'] = taxonomy?.uid;
+      const data = await taxonomySDKHandler(payload);
+      const taxonomies = await csvParse(data, headers);
+      taxonomiesData.push(...taxonomies);
     }
+  }
 
-    return { taxonomiesData, headers };
+  return { taxonomiesData, headers };
 }
 
 /**
@@ -1224,6 +1280,7 @@ module.exports = {
   chooseBranch: chooseBranch,
   chooseContentType: chooseContentType,
   chooseLanguage: chooseLanguage,
+  chooseFallbackOptions: chooseFallbackOptions,
   getEntries: getEntries,
   getEnvironments: getEnvironments,
   cleanEntries: cleanEntries,
