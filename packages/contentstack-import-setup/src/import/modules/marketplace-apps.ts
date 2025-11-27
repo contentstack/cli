@@ -1,4 +1,4 @@
-import { fsUtil, initializeContext, fileHelper } from '../../utils';
+import { fsUtil, fileHelper } from '../../utils';
 import { join } from 'path';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import { get, isEmpty } from 'lodash';
@@ -31,7 +31,9 @@ export default class marketplaceAppImportSetup {
 
   constructor({ config, stackAPIClient, dependencies }: ModuleClassParams) {
     this.config = config;
-    initializeContext(this.config, 'marketplace-apps');
+    if (this.config.context) {
+      this.config.context.module = 'marketplace-apps';
+    }
     this.stackAPIClient = stackAPIClient;
     this.marketplaceAppsFilePath = join(
       sanitizePath(this.config.contentDir),

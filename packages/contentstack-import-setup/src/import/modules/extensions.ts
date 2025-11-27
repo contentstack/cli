@@ -1,5 +1,5 @@
 import * as chalk from 'chalk';
-import { fsUtil, initializeContext, fileHelper } from '../../utils';
+import { fsUtil, fileHelper } from '../../utils';
 import { join } from 'path';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import { isEmpty } from 'lodash';
@@ -18,7 +18,9 @@ export default class ExtensionImportSetup {
 
   constructor({ config, stackAPIClient, dependencies }: ModuleClassParams) {
     this.config = config;
-    initializeContext(this.config, 'extensions');
+    if (this.config.context) {
+      this.config.context.module = 'extensions';
+    }
     this.stackAPIClient = stackAPIClient;
     this.extensionsFilePath = join(sanitizePath(this.config.contentDir), 'extensions', 'extensions.json');
     this.extensionsConfig = config.modules.extensions;
