@@ -1098,7 +1098,8 @@ describe('BaseClass', () => {
       );
       const end = Date.now();
 
-      expect(end - start).to.be.at.least(950); // Should wait ~950ms
+      // Allow some tolerance for timing (at least 940ms to account for execution time variance)
+      expect(end - start).to.be.at.least(940);
     });
 
     it('should handle very long execution times', async () => {

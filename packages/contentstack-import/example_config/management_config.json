@@ -14,5 +14,6 @@
   "developerHubBaseUrl": "",
   "cliLogsPath": "./tmp",
   "maxContentLength": 100000000,
-  "maxBodyLength": 100000000
+  "maxBodyLength": 100000000,
+  "delayMs": 1000
 }

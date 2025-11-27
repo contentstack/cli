@@ -50,6 +50,7 @@ class PublishEntriesCommand extends Command {
           host: this.cmaHost,
           cda: this.cdaHost,
           branch: entriesFlags.branch,
+          delayMs: updatedFlags.delayMs,
         };
         if (updatedFlags.alias) {
           try {
@@ -87,14 +88,20 @@ class PublishEntriesCommand extends Command {
             updatedFlags.destEnv = updatedFlags.environments;
             updatedFlags.environment = updatedFlags['source-env'];
             updatedFlags.onlyEntries = true;
-            if (updatedFlags.locales instanceof Array) {
-              updatedFlags.locales.forEach((locale) => {
-                updatedFlags.locale = locale;
-                publishFunction(startCrossPublish);
-              });
-            } else {
-              updatedFlags.locale = locales;
-              publishFunction(startCrossPublish);
+            if(Array.isArray(updatedFlags.contentTypes) && updatedFlags.contentTypes.length > 0){
+              for (const contentType of updatedFlags.contentTypes) {
+                updatedFlags.contentType = contentType;
+                if (Array.isArray(updatedFlags.locales)) {
+                  for (const locale of updatedFlags.locales) {
+                    updatedFlags.locale = locale;
+                    console.log(`Bulk publish started for content type \x1b[36m${updatedFlags.contentType}\x1b[0m and locale is \x1b[36m${updatedFlags.locale}\x1b[0m`);
+                    await publishFunction(startCrossPublish);
+                  }
+                } else {
+                  updatedFlags.locale = updatedFlags.locales;
+                  publishFunction(startCrossPublish);
+                }
+              }
             }
           } else {
             publishFunction(startPublish);

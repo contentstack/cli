@@ -38,6 +38,7 @@ function get(key, filePath) {
     }
     return {
       alias: bulkPublish.alias,
+      delayMs: bulkPublish.delayMs,
       ...bulkPublish[key],
     };
   } catch (error) {

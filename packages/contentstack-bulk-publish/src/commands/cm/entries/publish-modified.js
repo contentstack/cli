@@ -37,6 +37,7 @@ class PublishModifiedCommand extends Command {
           host: this.cmaHost,
           cda: this.cdaHost,
           branch: entryEditsFlags.branch,
+          delayMs: updatedFlags.delayMs,
         };
         if (updatedFlags.alias) {
           try {
