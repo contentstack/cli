@@ -157,7 +157,7 @@ export default class ImportCommand extends Command {
       // Prepare the context object
       const context = this.createImportContext(importConfig.apiKey, importConfig.authenticationMethod);
       importConfig.context = { ...context };
-      //log.info(`Using Cli Version: ${this.context?.cliVersion}`, importConfig.context);
+      log.info(`Using CLI version: ${this.context?.cliVersion}`, importConfig.context);
 
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;
@@ -178,13 +178,13 @@ export default class ImportCommand extends Command {
         log.success(successMessage, importConfig.context);
       }
 
-      log.success(`The log has been stored at '${getLogPath()}'`, importConfig.context);
-      log.info(`The backup content has been stored at '${backupDir}'`, importConfig.context);
+      log.success(`The log has been stored at: ${getLogPath()}`, importConfig.context);
+      log.info(`The backup content has been stored at: ${backupDir}`, importConfig.context);
     } catch (error) {
       handleAndLogError(error);
       log.info(`The log has been stored at '${getLogPath()}'`);
       if (importConfig?.backupDir) {
-        log.info(`The backup content has been stored at '${importConfig?.backupDir}'`);
+        log.info(`The backup content has been stored at: ${importConfig?.backupDir}`);
       } else {
         log.info('No backup directory was created due to early termination');
       }

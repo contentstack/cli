@@ -59,22 +59,22 @@ export default class LocaleExport extends BaseClass {
 
   async start() {
     try {
-      log.debug('Starting locales export process...', this.exportConfig.context);
-      log.debug(`Locales path: ${this.localesPath}`, this.exportConfig.context);
+      log.debug('Starting export process for locales...', this.exportConfig.context);
+      log.debug(`Locales path: '${this.localesPath}'`, this.exportConfig.context);
       
       await fsUtil.makeDirectory(this.localesPath);
-      log.debug('Created locales directory', this.exportConfig.context);
+      log.debug('Created locales directory.', this.exportConfig.context);
       
       await this.getLocales();
-      log.debug(`Retrieved ${Object.keys(this.locales).length} locales and ${Object.keys(this.masterLocale).length} master locales`, this.exportConfig.context);
+      log.debug(`Retrieved ${Object.keys(this.locales).length} locales.`, this.exportConfig.context);
       
       const localesFilePath = path.join(this.localesPath, this.localeConfig.fileName);
       const masterLocaleFilePath = path.join(this.localesPath, this.masterLocaleConfig.fileName);
       
-      log.debug(`Writing locales to: ${localesFilePath}`, this.exportConfig.context);
+      log.debug(`Writing locales to: '${localesFilePath}'`, this.exportConfig.context);
       fsUtil.writeFile(localesFilePath, this.locales);
       
-      log.debug(`Writing master locale to: ${masterLocaleFilePath}`, this.exportConfig.context);
+      log.debug(`Writing master locale to: '${masterLocaleFilePath}'`, this.exportConfig.context);
       fsUtil.writeFile(masterLocaleFilePath, this.masterLocale);
       
       log.success(
@@ -94,32 +94,32 @@ export default class LocaleExport extends BaseClass {
   async getLocales(skip: number = 0): Promise<any> {
     if (skip) {
       this.qs.skip = skip;
-      log.debug(`Fetching locales with skip: ${skip}`, this.exportConfig.context);
+      log.debug(`Fetching locales with skip: ${skip}.`, this.exportConfig.context);
     }
-    log.debug(`Query parameters: ${JSON.stringify(this.qs)}`, this.exportConfig.context);
+    log.debug(`Query parameters: ${JSON.stringify(this.qs)}.`, this.exportConfig.context);
     
     let localesFetchResponse = await this.stackAPIClient.locale().query(this.qs).find();
     
-    log.debug(`Fetched ${localesFetchResponse.items?.length || 0} locales out of total ${localesFetchResponse.count}`, this.exportConfig.context);
+    log.debug(`Fetched ${localesFetchResponse.items?.length || 0} locales out of ${localesFetchResponse.count}.`, this.exportConfig.context);
     
     if (Array.isArray(localesFetchResponse.items) && localesFetchResponse.items.length > 0) {
-      log.debug(`Processing ${localesFetchResponse.items.length} locales`, this.exportConfig.context);
+      log.debug(`Processing ${localesFetchResponse.items.length} locales...`, this.exportConfig.context);
       this.sanitizeAttribs(localesFetchResponse.items);
       
       skip += this.localeConfig.limit || 100;
       if (skip > localesFetchResponse.count) {
-        log.debug('Completed fetching all locales', this.exportConfig.context);
+        log.debug('Completed fetching all locales.', this.exportConfig.context);
         return;
       }
-      log.debug(`Continuing to fetch locales with skip: ${skip}`, this.exportConfig.context);
+      log.debug(`Continuing to fetch locales with skip: ${skip}.`, this.exportConfig.context);
       return await this.getLocales(skip);
     } else {
-      log.debug('No locales found to process', this.exportConfig.context);
+      log.debug('No locales found to process.', this.exportConfig.context);
     }
   }
 
   sanitizeAttribs(locales: Record<string, string>[]) {
-    log.debug(`Sanitizing ${locales.length} locales`, this.exportConfig.context);
+    log.debug(`Sanitizing ${locales.length} locales...`, this.exportConfig.context);
     
     locales.forEach((locale: Record<string, string>) => {
       for (let key in locale) {
@@ -129,14 +129,14 @@ export default class LocaleExport extends BaseClass {
       }
 
       if (locale?.code === this.exportConfig?.master_locale?.code) {
-        log.debug(`Adding locale ${locale.uid} to master locale`, this.exportConfig.context);
+        log.debug(`Adding locale UID '${locale.uid}' to master locale.`, this.exportConfig.context);
         this.masterLocale[locale.uid] = locale;
       } else {
-        log.debug(`Adding locale ${locale.uid} to regular locales`, this.exportConfig.context);
+        log.debug(`Adding locale UID '${locale.uid}' to regular locales.`, this.exportConfig.context);
         this.locales[locale.uid] = locale;
       }
     });
     
-    log.debug(`Sanitization complete. Master locales: ${Object.keys(this.masterLocale).length}, Regular locales: ${Object.keys(this.locales).length}`, this.exportConfig.context);
+    log.debug(`Sanitization complete. Master locales: ${Object.keys(this.masterLocale).length}.`, this.exportConfig.context);
   }
 }

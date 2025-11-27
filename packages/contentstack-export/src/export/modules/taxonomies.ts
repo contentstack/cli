@@ -29,7 +29,7 @@ export default class ExportTaxonomies extends BaseClass {
   }
 
   async start(): Promise<void> {
-    log.debug('Starting taxonomies export process...', this.exportConfig.context);
+    log.debug('Starting export process for taxonomies...', this.exportConfig.context);
     
     //create taxonomies folder
     this.taxonomiesFolderPath = pResolve(
@@ -37,22 +37,22 @@ export default class ExportTaxonomies extends BaseClass {
       this.exportConfig.branchName || '',
       this.taxonomiesConfig.dirName,
     );
-    log.debug(`Taxonomies folder path: ${this.taxonomiesFolderPath}`, this.exportConfig.context);
+    log.debug(`Taxonomies folder path: '${this.taxonomiesFolderPath}'`, this.exportConfig.context);
     
     await fsUtil.makeDirectory(this.taxonomiesFolderPath);
-    log.debug('Created taxonomies directory', this.exportConfig.context);
+    log.debug('Created taxonomies directory.', this.exportConfig.context);
 
     //fetch all taxonomies and write into taxonomies folder
     log.debug('Fetching all taxonomies...', this.exportConfig.context);
     await this.getAllTaxonomies();
-    log.debug(`Retrieved ${Object.keys(this.taxonomies).length} taxonomies`, this.exportConfig.context);
+    log.debug(`Retrieved ${Object.keys(this.taxonomies).length} taxonomies.`, this.exportConfig.context);
     
     if (this.taxonomies === undefined || isEmpty(this.taxonomies)) {
       log.info(messageHandler.parse('TAXONOMY_NOT_FOUND'), this.exportConfig.context);
       return;
     } else {
       const taxonomiesFilePath = pResolve(this.taxonomiesFolderPath, 'taxonomies.json');
-      log.debug(`Writing taxonomies metadata to: ${taxonomiesFilePath}`, this.exportConfig.context);
+      log.debug(`Writing taxonomy metadata to: '${taxonomiesFilePath}'`, this.exportConfig.context);
       fsUtil.writeFile(taxonomiesFilePath, this.taxonomies);
       
       log.debug('Starting detailed taxonomy export...', this.exportConfig.context);
