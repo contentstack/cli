@@ -12,7 +12,7 @@ function save(key, data) {
       console.log(chalk.red(error));
       return;
     }
-    console.log(chalk.green(`Configuration file has been successfully created at ${filePath}`));
+    console.log(chalk.green(`Configuration file successfully created at '${filePath}'.`));
   });
 }
 
@@ -53,7 +53,7 @@ function updateMissing(key, flags) {
   savedConfig = get(key, pathValidator(flags.config));
   Object.keys(savedConfig).forEach((element) => {
     if (flags[element] === undefined) {
-      console.log(`Using ${element} from config file`);
+      console.log(`Using '${element}' from the configuration file.`);
       flags[element] = savedConfig[element];
     }
   });

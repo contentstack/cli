@@ -93,7 +93,7 @@ module.exports = class ImportMarketplaceApps {
       .stack({ api_key: this.config.target_stack })
       .fetch()
       .catch((error) => {
-        console.log(error);
+        console.log('Error', error);
       });
 
     if (tempStackData?.org_uid) {
@@ -493,7 +493,7 @@ module.exports = class ImportMarketplaceApps {
   }
 
   async confirmToCloseProcess(installation) {
-    cliux.print(`\nWARNING!!! ${formatError(installation.message)}\n`, { color: 'yellow' });
+      cliux.print(`\nWARNING: ${formatError(installation.message)}\n`, { color: 'yellow' });
 
     if (!this.config.forceStopMarketplaceAppsPrompt) {
       if (

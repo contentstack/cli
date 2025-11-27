@@ -277,7 +277,7 @@ module.exports = class ExportAssets {
 
     return new Promise((resolve, reject) => {
       if (self.assetDownloadRetry[uid + version] > self.assetDownloadRetryLimit) {
-        console.log('Reached max', self.assetDownloadRetry[uid + version]);
+        console.log('Reached the maximum limit.', self.assetDownloadRetry[uid + version]);
         return reject(new Error('Asset Max download retry limit exceeded! ' + uid));
       }
 
@@ -314,7 +314,7 @@ module.exports = class ExportAssets {
           log(self.config, error, 'error');
 
           if (error.status === 408) {
-            console.log('retrying', uid);
+            console.log('Retrying...', uid);
             // retrying when timeout
             self.assetDownloadRetry[uid + version]
               ? ++self.assetDownloadRetry[uid + version]
@@ -360,7 +360,7 @@ module.exports = class ExportAssets {
               length: assetStreamRequest.headers['content-length'],
             });
             str.on('progress', (progressData) => {
-              console.log(`${asset.filename}: ${Math.round(progressData.percentage)}%`);
+              console.log(`${asset.filename}: ${Math.round(progressData.percentage)}% complete`);
             });
             assetStreamRequest.pipe(str).pipe(assetFileStream);
           }

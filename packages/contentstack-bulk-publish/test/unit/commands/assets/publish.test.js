@@ -57,7 +57,7 @@ describe('AssetsPublish', () => {
 
   it('Should fail when alias and stack api key flags are not passed', async () => {
     const args = ['--environments', environments[0], '--locales', locales[0], '--yes'];
-    const expectedError = 'Please use `--alias` or `--stack-api-key` to proceed.';
+    const expectedError = 'Use the `--alias` or `--stack-api-key` flag to proceed.';
     try {
       await AssetsPublish.run(args);
     } catch (error) {

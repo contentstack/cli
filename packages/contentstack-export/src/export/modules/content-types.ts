@@ -63,9 +63,9 @@ export default class ContentTypesExport extends BaseClass {
 
   async start() {
     try {
-      log.debug('Starting content types export process...', this.exportConfig.context);
+      log.debug('Starting content type export process...', this.exportConfig.context);
       await fsUtil.makeDirectory(this.contentTypesDirPath);
-      log.debug(`Created directory at path: ${this.contentTypesDirPath}`, this.exportConfig.context);
+      log.debug(`Created directory at: '${this.contentTypesDirPath}'.`, this.exportConfig.context);
 
       await this.getContentTypes();
       await this.writeContentTypes(this.contentTypes);
@@ -105,7 +105,7 @@ export default class ContentTypesExport extends BaseClass {
   }
 
   sanitizeAttribs(contentTypes: Record<string, unknown>[]): Record<string, unknown>[] {
-    log.debug(`Sanitizing ${contentTypes?.length} content types`, this.exportConfig.context);
+    log.debug(`Sanitizing ${contentTypes?.length} content types...`, this.exportConfig.context);
 
     const updatedContentTypes: Record<string, unknown>[] = [];
 
@@ -121,7 +121,7 @@ export default class ContentTypesExport extends BaseClass {
   }
 
   async writeContentTypes(contentTypes: Record<string, unknown>[]) {
-    log.debug(`Writing ${contentTypes?.length} content types to disk`, this.exportConfig.context);
+    log.debug(`Writing ${contentTypes?.length} content types to disk...`, this.exportConfig.context);
 
     function write(contentType: Record<string, unknown>) {
       return fsUtil.writeFile(
