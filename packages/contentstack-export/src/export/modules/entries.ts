@@ -343,7 +343,7 @@ export default class EntriesExport extends BaseClass {
       version: entry._version,
     };
 
-    log.debug(`Fetching entry version ${entry._version} for uid: ${entry.uid}`, this.exportConfig.context);
+    log.debug(`Fetching entry version ${entry._version} for entry UID: '${entry.uid}'.`, this.exportConfig.context);
 
     const entryResponse = await this.stackAPIClient
       .contentType(options.contentType)

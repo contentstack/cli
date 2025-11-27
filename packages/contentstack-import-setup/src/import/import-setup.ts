@@ -107,7 +107,7 @@ export default class ImportSetup {
       await this.generateDependencyTree();
       await this.runModuleImports();
     } catch (error) {
-      console.log(error);
+      console.log('Error', error);
       throw error;
     }
   }

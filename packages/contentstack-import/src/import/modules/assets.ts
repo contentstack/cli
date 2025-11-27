@@ -55,27 +55,27 @@ export default class ImportAssets extends BaseClass {
   async start(): Promise<void> {
     try {
     // NOTE Step 1: Import folders and create uid mapping file
-      log.debug('Starting folder import process.', this.importConfig.context);
+      log.debug('Starting folder import process...', this.importConfig.context);
       await this.importFolders();
 
     // NOTE Step 2: Import versioned assets and create it mapping files (uid, url)
       if (this.assetConfig.includeVersionedAssets) {
         const versionsPath = `${this.assetsPath}/versions`;
         if (existsSync(versionsPath)) {
-          log.debug('Starting versioned assets import.', this.importConfig.context);
+          log.debug('Starting versioned assets import...', this.importConfig.context);
           await this.importAssets(true);
         } else {
-          log.info('No Versioned assets found to import.', this.importConfig.context);
+          log.info('No versioned assets found to import.', this.importConfig.context);
         }
       }
 
     // NOTE Step 3: Import Assets and create it mapping files (uid, url)
-      log.debug('Starting assets import.', this.importConfig.context);
+      log.debug('Starting assets import...', this.importConfig.context);
       await this.importAssets();
 
     // NOTE Step 4: Publish assets
       if (!this.importConfig.skipAssetsPublish) {
-        log.debug('Starting assets publishing.', this.importConfig.context);
+        log.debug('Starting assets publishing...', this.importConfig.context);
         await this.publish();
       }
 
@@ -110,7 +110,7 @@ export default class ImportAssets extends BaseClass {
     };
 
     const onReject = ({ error, apiData: { name } = { name: '' } }: any) => {
-      log.error(`${name} folder creation failed.!`, this.importConfig.context);
+      log.error(`${name} folder creation failed.`, this.importConfig.context);
       handleAndLogError(error, { ...this.importConfig.context, name });
     };
 
@@ -187,7 +187,7 @@ export default class ImportAssets extends BaseClass {
     };
 
     const onReject = ({ error, apiData: { title } = undefined }: any) => {
-      log.error(`${title} asset upload failed.!`, this.importConfig.context);
+      log.error(`${title} asset upload failed.`, this.importConfig.context);
       handleAndLogError(error, { ...this.importConfig.context, title });
     };
 
@@ -204,7 +204,7 @@ export default class ImportAssets extends BaseClass {
         log.debug(`Processing ${apiContent.length} assets in chunk`, this.importConfig.context);
 
         if (isVersion && this.assetConfig.importSameStructure) {
-          log.debug('Processing version 1 assets first', this.importConfig.context);
+          log.debug('Processing version 1 assets first...', this.importConfig.context);
           const versionOneAssets = filter(apiContent, ({ _version }) => _version === 1);
 
           await this.makeConcurrentCall({
@@ -309,7 +309,7 @@ export default class ImportAssets extends BaseClass {
   async publish() {
     const fs = new FsUtility({ basePath: this.assetsPath, indexFileName: 'assets.json' });
     if (isEmpty(this.assetsUidMap)) {
-      log.debug('Loading asset UID mappings from file', this.importConfig.context);
+      log.debug('Loading asset UID mappings from file...', this.importConfig.context);
       this.assetsUidMap = fs.readFile(this.assetUidMapperPath, true) as any;
     }
 
@@ -413,7 +413,7 @@ export default class ImportAssets extends BaseClass {
     }
 
     if (this.importConfig.replaceExisting) {
-      log.debug('Setting up root folder for import', this.importConfig.context);
+      log.debug('Setting up root folder for import...', this.importConfig.context);
       // Note: adds a root folder to distinguish latest asset uploads
       // Todo: This temporary approach should be updated with asset and folder overwrite strategy, which follows
       // folder overwrite
@@ -437,7 +437,7 @@ export default class ImportAssets extends BaseClass {
       });
 
       importOrder.unshift(this.rootFolder);
-      log.debug('Added root folder to import order', this.importConfig.context);
+      log.debug('Added root folder to import order.', this.importConfig.context);
     }
     return importOrder;
   }
