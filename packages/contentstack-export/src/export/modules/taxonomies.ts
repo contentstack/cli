@@ -182,10 +182,16 @@ export default class ExportTaxonomies extends BaseClass {
         log.debug(`Error fetching taxonomies ${localeInfo}`, this.exportConfig.context);
 
         if (checkLocaleSupport && this.isLocalePlanLimitationError(error)) {
+          log.debug(
+            'Taxonomy localization is not included in your plan. Falling back to non-localized export.',
+            this.exportConfig.context,
+          );
+          this.isLocaleBasedExportSupported = false;
+        } else if (checkLocaleSupport) {
           log.debug('Locale-based taxonomy export not supported, will use legacy method', this.exportConfig.context);
           this.isLocaleBasedExportSupported = false;
         } else {
-          // Log actual errors during normal fetch
+          // Log actual errors during normal fetch (not locale check)
           handleAndLogError(error, {
             ...this.exportConfig.context,
             ...(localeCode && { locale: localeCode }),

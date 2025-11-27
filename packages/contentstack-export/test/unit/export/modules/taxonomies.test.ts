@@ -535,15 +535,41 @@ describe('ExportTaxonomies', () => {
     });
 
     it('should disable locale-based export on API error when checkLocaleSupport is true', async () => {
+      // Create a structured API error (not a plan limitation error)
+      const apiError: any = new Error('API Error');
+      apiError.status = 500;
+      apiError.errors = { general: ['Internal server error'] };
+      
       mockStackClient.taxonomy.returns({
         query: sinon.stub().returns({
-          find: sinon.stub().rejects(new Error('API Error'))
+          find: sinon.stub().rejects(apiError)
         })
       });
 
       await exportTaxonomies.fetchTaxonomies('en-us', true);
 
       // Should disable locale-based export on error
+      expect(exportTaxonomies.isLocaleBasedExportSupported).to.be.false;
+    });
+
+    it('should handle taxonomy localization plan limitation error gracefully', async () => {
+      // Create the exact 403 error from the plan limitation
+      const planLimitationError: any = new Error('Forbidden');
+      planLimitationError.status = 403;
+      planLimitationError.statusText = 'Forbidden';
+      planLimitationError.errors = {
+        taxonomies: ['Taxonomy localization is not included in your plan. Please contact the support@contentstack.com team for assistance.']
+      };
+      
+      mockStackClient.taxonomy.returns({
+        query: sinon.stub().returns({
+          find: sinon.stub().rejects(planLimitationError)
+        })
+      });
+
+      await exportTaxonomies.fetchTaxonomies('en-us', true);
+
+      // Should disable locale-based export and not throw error
       expect(exportTaxonomies.isLocaleBasedExportSupported).to.be.false;
     });
   });
@@ -579,6 +605,37 @@ describe('ExportTaxonomies', () => {
       expect(mockExportTaxonomies.called).to.be.true;
       expect(mockExportTaxonomies.calledWith()).to.be.true; // Called without locale
       expect(mockWriteMetadata.called).to.be.true;
+
+      mockFetchTaxonomies.restore();
+      mockExportTaxonomies.restore();
+      mockWriteMetadata.restore();
+      mockGetLocales.restore();
+    });
+
+    it('should clear taxonomies and re-fetch when falling back to legacy export', async () => {
+      let fetchCallCount = 0;
+      const mockFetchTaxonomies = sinon.stub(exportTaxonomies, 'fetchTaxonomies').callsFake(async (locale, checkSupport) => {
+        fetchCallCount++;
+        if (checkSupport) {
+          // First call fails locale check
+          exportTaxonomies.isLocaleBasedExportSupported = false;
+          exportTaxonomies.taxonomies = { 'partial-data': { uid: 'partial-data' } }; // Simulate partial data
+        } else {
+          // Second call should have cleared data
+          expect(exportTaxonomies.taxonomies).to.deep.equal({});
+        }
+      });
+      const mockExportTaxonomies = sinon.stub(exportTaxonomies, 'exportTaxonomies').resolves();
+      const mockWriteMetadata = sinon.stub(exportTaxonomies, 'writeTaxonomiesMetadata').resolves();
+      const mockGetLocales = sinon.stub(exportTaxonomies, 'getLocalesToExport').returns(['en-us']);
+
+      await exportTaxonomies.start();
+
+      // Should call fetchTaxonomies twice: once for check, once for legacy
+      expect(fetchCallCount).to.equal(2);
+      // First call with locale, second without
+      expect(mockFetchTaxonomies.firstCall.args).to.deep.equal(['en-us', true]);
+      expect(mockFetchTaxonomies.secondCall.args).to.deep.equal([]);
 
       mockFetchTaxonomies.restore();
       mockExportTaxonomies.restore();
