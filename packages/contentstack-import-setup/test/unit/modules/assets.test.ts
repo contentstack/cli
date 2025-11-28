@@ -24,7 +24,6 @@ describe('AssetImportSetup', () => {
     branchName: '',
     selectedModules: ['assets'],
     backupDir: '/path/to/backup',
-    contentVersion: 1,
     region: 'us',
     fetchConcurrency: 2,
     writeConcurrency: 1,

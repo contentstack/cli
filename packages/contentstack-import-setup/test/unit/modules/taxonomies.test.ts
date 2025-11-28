@@ -24,7 +24,6 @@ describe('TaxonomiesImportSetup', () => {
     branchName: '',
     selectedModules: ['taxonomies'],
     backupDir: '/path/to/backup',
-    contentVersion: 1,
     region: 'us',
     fetchConcurrency: 2,
     writeConcurrency: 1,

@@ -20,7 +20,6 @@ describe('EntriesImportSetup', () => {
     branchName: '',
     selectedModules: ['entries'],
     backupDir: '',
-    contentVersion: 1,
     region: 'us',
     fetchConcurrency: 2,
     writeConcurrency: 1,

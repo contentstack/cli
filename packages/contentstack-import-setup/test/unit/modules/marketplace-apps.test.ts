@@ -22,7 +22,6 @@ describe('MarketplaceAppsImportSetup', () => {
     branchName: '',
     selectedModules: ['marketplace-apps'],
     backupDir: '/path/to/backup',
-    contentVersion: 1,
     region: 'us',
     fetchConcurrency: 2,
     writeConcurrency: 1,

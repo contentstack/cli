@@ -29,7 +29,6 @@ describe('ImportSetup', () => {
     branchName: '',
     selectedModules: ['entries'],
     backupDir: '',
-    contentVersion: 1,
     region: 'us',
     modules: {
       extensions: {
@@ -56,6 +55,11 @@ describe('ImportSetup', () => {
       environments: {
         dirName: 'environments',
         fileName: 'environments',
+        dependencies: [],
+      },
+      locales: {
+        dirName: 'locales',
+        fileName: 'locales',
         dependencies: [],
       },
       entries: {
