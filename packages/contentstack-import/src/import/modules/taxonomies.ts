@@ -47,27 +47,27 @@ export default class ImportTaxonomies extends BaseClass {
    * @returns {Promise<void>} Promise<void>
    */
   async start(): Promise<void> {
-    log.debug('Checking for taxonomies folder existence', this.importConfig.context);
+    log.debug('Checking for taxonomy folder existence…', this.importConfig.context);
 
     //Step1 check folder exists or not
     if (fileHelper.fileExistsSync(this.taxonomiesFolderPath)) {
-      log.debug(`Found taxonomies folder: ${this.taxonomiesFolderPath}`, this.importConfig.context);
+      log.debug(`Found taxonomy folder at: ${this.taxonomiesFolderPath}`, this.importConfig.context);
       this.taxonomies = fsUtil.readFile(join(this.taxonomiesFolderPath, 'taxonomies.json'), true) as Record<
         string,
         unknown
       >;
       const taxonomyCount = Object.keys(this.taxonomies || {}).length;
-      log.debug(`Loaded ${taxonomyCount} taxonomy items from file`, this.importConfig.context);
+      log.debug(`Loaded ${taxonomyCount} taxonomy items from file.`, this.importConfig.context);
     } else {
-      log.info(`No Taxonomies Found! - '${this.taxonomiesFolderPath}'`, this.importConfig.context);
+      log.info(`No taxonomies found at: '${this.taxonomiesFolderPath}'`, this.importConfig.context);
       return;
     }
 
     //Step 2 create taxonomies & terms mapper directory
-    log.debug('Creating mapper directories', this.importConfig.context);
+    log.debug('Creating mapper directories...', this.importConfig.context);
     await fsUtil.makeDirectory(this.taxonomiesMapperDirPath);
     await fsUtil.makeDirectory(this.termsMapperDirPath);
-    log.debug('Created taxonomies and terms mapper directories', this.importConfig.context);
+    log.debug('Created taxonomies and terms mapper directories.', this.importConfig.context);
 
     // Step 3: Check if locale-based structure exists and scan taxonomies by locale
     log.debug('Checking for locale-based folder structure', this.importConfig.context);
@@ -76,7 +76,7 @@ export default class ImportTaxonomies extends BaseClass {
     // Step 4 import taxonomies
     if (this.isLocaleBasedStructure) {
       log.debug('Detected locale-based folder structure for taxonomies', this.importConfig.context);
-      log.debug('Starting taxonomies import', this.importConfig.context);
+      log.debug('Starting taxonomies import...', this.importConfig.context);
       await this.importTaxonomiesByLocale();
     } else {
       log.debug('Starting taxonomies import', this.importConfig.context);
@@ -85,7 +85,7 @@ export default class ImportTaxonomies extends BaseClass {
     }
 
     //Step 5 create taxonomy & related terms success & failure file
-    log.debug('Creating success and failure files', this.importConfig.context);
+    log.debug('Creating success and failure files...', this.importConfig.context);
     this.createSuccessAndFailedFile();
 
     log.success('Taxonomies imported successfully!', this.importConfig.context);
@@ -164,7 +164,7 @@ export default class ImportTaxonomies extends BaseClass {
 
     if (error?.status === 409 && error?.statusText === 'Conflict') {
       log.info(
-        `Taxonomy '${taxonomyUID}' already exists${locale ? ` for locale: ${locale}` : ''}!`,
+        `Taxonomy '${taxonomyUID}' already exists.`,
         this.importConfig.context,
       );
       this.createdTaxonomies[taxonomyUID] = apiData?.taxonomy;
@@ -176,7 +176,7 @@ export default class ImportTaxonomies extends BaseClass {
 
     if (errMsg) {
       log.error(
-        `Taxonomy '${taxonomyUID}' failed to import${locale ? ` for locale: ${locale}` : ''}! ${errMsg}`,
+        `Failed to import taxonomy '${taxonomyUID}': ${errMsg}`,
         this.importConfig.context,
       );
     } else {
@@ -312,7 +312,7 @@ export default class ImportTaxonomies extends BaseClass {
    * @method createSuccessAndFailedFile
    */
   createSuccessAndFailedFile() {
-    log.debug('Creating success and failed files for taxonomies and terms', this.importConfig.context);
+    log.debug('Creating success and failed files for taxonomies and terms...', this.importConfig.context);
 
     const createdTaxCount = Object.keys(this.createdTaxonomies)?.length;
     const failedTaxCount = Object.keys(this.failedTaxonomies)?.length;
