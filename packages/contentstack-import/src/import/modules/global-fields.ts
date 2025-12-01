@@ -63,31 +63,31 @@ export default class ImportGlobalFields extends BaseClass {
   }
 
   async start(): Promise<any> {
-    log.debug('Reading global fields from file', this.importConfig.context);
+    log.debug('Reading global fields from file...', this.importConfig.context);
     
     this.gFs = fsUtil.readFile(path.join(this.gFsFolderPath, this.gFsConfig.fileName)) as Record<string, unknown>[];
     
     if (!this.gFs || isEmpty(this.gFs)) {
-      log.info('No global fields found to import', this.importConfig.context);
+      log.info('No global fields found to import.', this.importConfig.context);
       return;
     }
     
     const gfsCount = Array.isArray(this.gFs) ? this.gFs.length : Object.keys(this.gFs).length;
     log.debug(`Loaded ${gfsCount} global field items from file`, this.importConfig.context);
     
-    log.debug('Creating global fields mapper directory', this.importConfig.context);
+    log.debug('Creating global fields mapper directory...', this.importConfig.context);
     await fsUtil.makeDirectory(this.gFsMapperPath);
     
-    log.debug('Loading existing global fields UID data', this.importConfig.context);
+    log.debug('Loading existing global fields UID data...', this.importConfig.context);
     if (fileHelper.fileExistsSync(this.gFsUidMapperPath)) {
       this.gFsUidMapper = (fsUtil.readFile(this.gFsUidMapperPath) || {}) as Record<string, string>;
       const gfsUidCount = Object.keys(this.gFsUidMapper || {}).length;
       log.debug(`Loaded existing global fields UID data: ${gfsUidCount} items`, this.importConfig.context);
     } else {
-      log.debug('No existing global fields UID data found', this.importConfig.context);
+      log.debug('No existing global fields UID data found.', this.importConfig.context);
     }
     
-    log.debug('Loading installed extensions data', this.importConfig.context);
+    log.debug('Loading installed extensions data...', this.importConfig.context);
     this.installedExtensions = (
       ((await fsUtil.readFile(this.marketplaceAppMapperPath)) as any) || { extension_uid: {} }
     ).extension_uid;
@@ -113,12 +113,12 @@ export default class ImportGlobalFields extends BaseClass {
     if (this.importConfig.replaceExisting && this.existingGFs.length > 0) {
       log.debug(`Replacing ${this.existingGFs.length} existing global fields`, this.importConfig.context);
       await this.replaceGFs().catch((error: Error) => {
-        log.debug('Error replacing global fields', this.importConfig.context);
+        log.debug('Error replacing global fields!', this.importConfig.context);
         handleAndLogError(error, { ...this.importConfig.context});
       });
     }
 
-    log.debug('Processing global fields import results', this.importConfig.context);
+    log.debug('Processing global fields import results...', this.importConfig.context);
     if (this.createdGFs?.length) {
       fsUtil.writeFile(this.gFsSuccessPath, this.createdGFs);
       log.debug(`Written ${this.createdGFs.length} successful global fields to file`, this.importConfig.context);
@@ -133,7 +133,7 @@ export default class ImportGlobalFields extends BaseClass {
   }
 
   async seedGFs(): Promise<any> {
-    log.debug('Starting global fields seeding process', this.importConfig.context);
+    log.debug('Starting global fields seeding process...', this.importConfig.context);
     
     const gfsToSeed = Array.isArray(this.gFs) ? this.gFs.length : Object.keys(this.gFs).length;
     log.debug(`Seeding ${gfsToSeed} global fields`, this.importConfig.context);
@@ -155,7 +155,7 @@ export default class ImportGlobalFields extends BaseClass {
           log.debug(`Global field '${uid}' marked for replacement`, this.importConfig.context);
         }
         if (!this.importConfig.skipExisting) {
-          log.info(`Global fields '${uid}' already exist`, this.importConfig.context);
+          log.info(`Global field '${uid}' already exists.`, this.importConfig.context);
         }
       } else {
         handleAndLogError(error, { ...this.importConfig.context, uid }, `Global fields '${uid}' failed to import`);
@@ -177,7 +177,7 @@ export default class ImportGlobalFields extends BaseClass {
       concurrencyLimit: this.reqConcurrency,
     });
     
-    log.debug('Global fields seeding process completed', this.importConfig.context);
+    log.debug('Global fields seeding process completed.', this.importConfig.context);
     return result;
   }
 
@@ -200,7 +200,7 @@ export default class ImportGlobalFields extends BaseClass {
   }
 
   async updateGFs(): Promise<any> {
-    log.debug('Starting global fields update process', this.importConfig.context);
+    log.debug('Starting global fields update process...', this.importConfig.context);
     
     const gfsToUpdate = Array.isArray(this.gFs) ? this.gFs.length : Object.keys(this.gFs).length;
     log.debug(`Updating ${gfsToUpdate} global fields`, this.importConfig.context);
@@ -254,7 +254,7 @@ export default class ImportGlobalFields extends BaseClass {
       await removeReferenceFields(globalField.schema, flag, this.stack);
       
       if (flag.supressed) {
-        log.debug(`Global field '${globalField.uid}' has suppressed references, adding to pending`, this.importConfig.context);
+        log.debug(`Global field '${globalField.uid}' has suppressed reference fields.`, this.importConfig.context);
         this.pendingGFs.push(globalField.uid);
         log.info(`Global field '${globalField.uid}' will be updated later`, this.importConfig.context);
         return resolve(true);
