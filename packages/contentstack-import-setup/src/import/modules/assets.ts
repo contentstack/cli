@@ -1,9 +1,9 @@
 import * as chalk from 'chalk';
-import { log, fsUtil } from '../../utils';
+import { fsUtil } from '../../utils';
 import { join } from 'path';
 import { AssetRecord, ImportConfig, ModuleClassParams } from '../../types';
 import { isEmpty, orderBy, values } from 'lodash';
-import { formatError, FsUtility, sanitizePath } from '@contentstack/cli-utilities';
+import { FsUtility, sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 import BaseImportSetup from './base-setup';
 
 export default class AssetImportSetup extends BaseImportSetup {
@@ -20,6 +20,7 @@ export default class AssetImportSetup extends BaseImportSetup {
 
   constructor({ config, stackAPIClient, dependencies }: ModuleClassParams) {
     super({ config, stackAPIClient, dependencies });
+    this.initializeContext('assets');
     this.assetsFolderPath = join(sanitizePath(this.config.contentDir), 'assets');
     this.assetsFilePath = join(sanitizePath(this.config.contentDir), 'assets', 'assets.json');
     this.assetsConfig = config.modules.assets;
@@ -40,10 +41,15 @@ export default class AssetImportSetup extends BaseImportSetup {
   async start() {
     try {
       fsUtil.makeDirectory(this.mapperDirPath);
+      log.debug('Mapper directory created', { mapperDirPath: this.mapperDirPath });
       await this.fetchAndMapAssets();
-      log(this.config, `The required setup files for the asset have been generated successfully.`, 'success');
+      log.debug('Asset mapping completed', { 
+        mappedCount: Object.keys(this.assetUidMapper).length,
+        duplicateCount: Object.keys(this.duplicateAssets).length 
+      });
+      log.success(`The required setup files for the asset have been generated successfully.`);
     } catch (error) {
-      log(this.config, `Error occurred while generating the asset mapper: ${formatError(error)}.`, 'error');
+      handleAndLogError(error, { ...this.config.context }, 'Error occurred while generating the asset mapper');
     }
   }
 
@@ -53,6 +59,7 @@ export default class AssetImportSetup extends BaseImportSetup {
    * @returns {Promise<void>} Promise<void>
    */
   async fetchAndMapAssets(): Promise<void> {
+    log.debug('Starting asset fetch and mapping', { assetsFolderPath: this.assetsFolderPath });
     const processName = 'mapping assets';
     const indexFileName = 'assets.json';
     const basePath = this.assetsFolderPath;
@@ -67,25 +74,24 @@ export default class AssetImportSetup extends BaseImportSetup {
       if (items.length === 1) {
         this.assetUidMapper[uid] = items[0].uid;
         this.assetUrlMapper[url] = items[0].url;
-        log(this.config, `Mapped asset successfully: '${title}'`, 'info');
+        log.info(`Mapped asset successfully: '${title}'`);
       } else if (items.length > 1) {
         this.duplicateAssets[uid] = items.map((asset: any) => {
           return { uid: asset.uid, title: asset.title, url: asset.url };
         });
-        log(this.config, `Multiple assets found with the title '${title}'.`, 'info');
+        log.info(`Multiple assets found with the title '${title}'.`);
       } else {
-        log(this.config, `Asset with title '${title}' not found in the stack!`, 'info');
+        log.info(`Asset with title '${title}' not found in the stack!`);
       }
     };
     const onReject = ({ error, apiData: { title } = undefined }: any) => {
-      log(this.config, `Failed to map the asset '${title}'.`, 'error');
-      log(this.config, formatError(error), 'error');
+      handleAndLogError(error, { ...this.config.context }, `Failed to map the asset '${title}'`);
     };
 
     /* eslint-disable @typescript-eslint/no-unused-vars, guard-for-in */
     for (const index in indexer) {
       const chunk = await fs.readChunkFiles.next().catch((error) => {
-        log(this.config, error, 'error');
+        log.error(String(error), { error });
       });
 
       if (chunk) {
@@ -116,7 +122,7 @@ export default class AssetImportSetup extends BaseImportSetup {
     }
     if (!isEmpty(this.duplicateAssets)) {
       fsUtil.writeFile(this.duplicateAssetPath, this.duplicateAssets);
-      log(this.config, `Duplicate asset files are stored at: ${this.duplicateAssetPath}.`, 'info');
+      log.info(`Duplicate asset files are stored at: ${this.duplicateAssetPath}.`);
     }
   }
 }
