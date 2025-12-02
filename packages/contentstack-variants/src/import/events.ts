@@ -58,7 +58,7 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
 
         for (const event of events) {
           const { key, description, uid } = event;
-          log.debug(`Processing event: ${key} (${uid})`, this.config.context);
+          log.debug(`Processing event: ${key} (${uid})...`, this.config.context);
           
           try {
             log.debug(`Creating event: ${key}`, this.config.context);
@@ -71,7 +71,7 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
         }
 
         fsUtil.writeFile(this.eventsUidMapperPath, this.eventsUidMapper);
-        log.debug(`Saved ${Object.keys(this.eventsUidMapper).length} event mappings to: ${this.eventsUidMapperPath}`, this.config.context);
+        log.debug(`Saved ${Object.keys(this.eventsUidMapper).length} event mappings`, this.config.context);
         log.success('Events imported successfully', this.config.context);
       } catch (error) {
         handleAndLogError(error, this.config.context);
