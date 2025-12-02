@@ -1,5 +1,5 @@
 const { Command } = require('@contentstack/cli-command');
-const { configHandler, flags, isAuthenticated, managementSDKClient, log } = require('@contentstack/cli-utilities');
+const { configHandler, flags, isAuthenticated, managementSDKClient, log, handleAndLogError } = require('@contentstack/cli-utilities');
 const { CloneHandler } = require('../../../lib/util/clone-handler');
 const path = require('path');
 const { rimraf } = require('rimraf');
@@ -153,7 +153,7 @@ class StackCloneCommand extends Command {
         cloneHandler.setClient(managementAPIClient);
         log.debug('Starting clone operation', cloneContext);
         cloneHandler.execute().catch((error) => {
-          log.error('Clone operation failed', { ...cloneContext, error });
+          handleAndLogError(error, cloneContext);
         });
       };
 
