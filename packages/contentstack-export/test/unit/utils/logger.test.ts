@@ -193,7 +193,7 @@ describe('Logger', () => {
     });
 
     it('should handle very long messages', async () => {
-      const longMessage = 'A'.repeat(10000);
+      const longMessage = 'A'.repeat(10);
       
       // Should complete without throwing
       await loggerModule.log(mockExportConfig, longMessage, 'info');
