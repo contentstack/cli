@@ -29,7 +29,7 @@ export class LoggerService {
           try {
             stringifiedParam = JSON.stringify(info.obj);
           } catch (error) {
-            console.log('warning: failed to log the result');
+            console.log('Warning: Failed to log the result');
           }
           // parse message
           info.message = messageHandler.parse(info.message as string);
