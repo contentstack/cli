@@ -105,6 +105,9 @@ abstract class ContentstackCommand extends Command {
   get personalizeUrl() {
     return this.region.personalizeUrl;
   }
+  get composableStudioUrl() {
+    return this.region.composableStudioUrl;
+  }
 }
 
 module.exports = {

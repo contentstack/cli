@@ -174,5 +174,9 @@ export default class ExportCommand extends Command {
     if (this.personalizeUrl) {
       exportConfig.modules.personalize.baseURL[exportConfig.region.name] = this.personalizeUrl;
     }
+
+    if (this.composableStudioUrl) {
+      exportConfig.modules['composable-studio'].apiBaseUrl = this.composableStudioUrl;
+    }
   }
 }
