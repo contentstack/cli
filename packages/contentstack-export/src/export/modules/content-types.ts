@@ -63,7 +63,7 @@ export default class ContentTypesExport extends BaseClass {
 
   async start() {
     try {
-      log.debug('Starting content type export process...', this.exportConfig.context);
+      log.debug('Starting content types export process...', this.exportConfig.context);
       await fsUtil.makeDirectory(this.contentTypesDirPath);
       log.debug(`Created directory at: '${this.contentTypesDirPath}'.`, this.exportConfig.context);
 

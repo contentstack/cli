@@ -51,7 +51,7 @@ export default class ExportAssets extends BaseClass {
     );
 
     log.debug(`Assets root path resolved to: ${this.assetsRootPath}`, this.exportConfig.context);
-    log.debug('Fetching asset and folder count...', this.exportConfig.context);
+    log.debug('Fetching assets and folders count...', this.exportConfig.context);
     // NOTE step 1: Get assets and it's folder count in parallel
     const [assetsCount, assetsFolderCount] = await Promise.all([this.getAssetsCount(), this.getAssetsCount(true)]);
 

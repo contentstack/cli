@@ -31,7 +31,7 @@ export default class ExportPersonalize {
       }
       
       if (this.exportConfig.management_token) {
-        log.debug('Management token detected.', this.exportConfig.context);
+        log.debug('Management token detected, skipping personalize export.', this.exportConfig.context);
         log.info(messageHandler.parse('PERSONALIZE_SKIPPING_WITH_MANAGEMENT_TOKEN'), this.exportConfig.context);
         this.exportConfig.personalizationEnabled = false;
         return;
@@ -41,7 +41,7 @@ export default class ExportPersonalize {
       await new ExportProjects(this.exportConfig).start();
       
       if (this.exportConfig.personalizationEnabled) {
-        log.debug('Personalization is enabled.', this.exportConfig.context);
+        log.debug('Personalization is enabled, processing personalize modules... ' + this.exportConfig.modules.personalize.exportOrder.join(', '), this.exportConfig.context);
         
         const moduleMapper = {
           events: new ExportEvents(this.exportConfig),
@@ -73,7 +73,7 @@ export default class ExportPersonalize {
         
         log.debug('Completed all personalization module exports.', this.exportConfig.context);
       } else {
-        log.debug('Personalization is disabled.', this.exportConfig.context);
+        log.debug('Personalization is disabled, skipping personalize module exports.', this.exportConfig.context);
       }
     } catch (error) {
       if (error === 'Forbidden') {

@@ -63,7 +63,7 @@ export default class ImportCustomRoles extends BaseClass {
       this.customRoles = fsUtil.readFile(join(this.customRolesFolderPath, this.customRolesConfig.fileName),true) as Record<string, unknown>;
       this.customRolesLocales = fsUtil.readFile(join(this.customRolesFolderPath, this.customRolesConfig.customRolesLocalesFileName),true) as Record<string, unknown>;
     } else {
-      log.info(`No custom rules found in: ${this.customRolesFolderPath}`, this.importConfig.context);
+      log.info(`No custom roles found in: ${this.customRolesFolderPath}`, this.importConfig.context);
       return;
     }
 

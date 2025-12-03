@@ -618,7 +618,7 @@ export default class ImportMarketplaceApps {
 
     // NOTE update configurations
     if (updateParam && (!isEmpty(updateParam.configuration) || !isEmpty(updateParam.server_configuration))) {
-      log.debug(`Updating configuration for: ${app.manifest?.name}`, this.importConfig.context);
+      log.debug(`Updating app configuration for: ${app.manifest?.name}`, this.importConfig.context);
       await this.updateAppsConfig(updateParam);
     } else {
       log.debug(`No update needed for configuration: ${app.manifest?.name}`, this.importConfig.context);

@@ -66,7 +66,7 @@ export default class LocaleExport extends BaseClass {
       log.debug('Created locales directory.', this.exportConfig.context);
       
       await this.getLocales();
-      log.debug(`Retrieved ${Object.keys(this.locales).length} locales.`, this.exportConfig.context);
+      log.debug(`Retrieved ${Object.keys(this.locales).length} locales and ${Object.keys(this.masterLocale).length} master locales.`, this.exportConfig.context);
       
       const localesFilePath = path.join(this.localesPath, this.localeConfig.fileName);
       const masterLocaleFilePath = path.join(this.localesPath, this.masterLocaleConfig.fileName);
@@ -137,6 +137,6 @@ export default class LocaleExport extends BaseClass {
       }
     });
     
-    log.debug(`Sanitization complete. Master locales: ${Object.keys(this.masterLocale).length}.`, this.exportConfig.context);
+    log.debug(`Sanitization complete. Master locales: ${Object.keys(this.masterLocale).length}, Regular locales: ${Object.keys(this.locales).length}.`, this.exportConfig.context);
   }
 }

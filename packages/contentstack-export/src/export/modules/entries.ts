@@ -57,7 +57,7 @@ export default class EntriesExport extends BaseClass {
 
   async start() {
     try {
-      log.debug('Starting entry export process...', this.exportConfig.context);
+      log.debug('Starting entries export process...', this.exportConfig.context);
       const locales = fsUtil.readFile(this.localesFilePath) as Array<Record<string, unknown>>;
       if (!Array.isArray(locales) || locales?.length === 0) {
         log.debug(`No locales found in ${this.localesFilePath}`, this.exportConfig.context);

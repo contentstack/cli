@@ -164,7 +164,7 @@ export default class ImportTaxonomies extends BaseClass {
 
     if (error?.status === 409 && error?.statusText === 'Conflict') {
       log.info(
-        `Taxonomy '${taxonomyUID}' already exists.`,
+        `Taxonomy '${taxonomyUID}' already exists ${locale ? ` for locale: ${locale}` : ''}!`,
         this.importConfig.context,
       );
       this.createdTaxonomies[taxonomyUID] = apiData?.taxonomy;
@@ -176,7 +176,7 @@ export default class ImportTaxonomies extends BaseClass {
 
     if (errMsg) {
       log.error(
-        `Failed to import taxonomy '${taxonomyUID}': ${errMsg}`,
+        `Taxonomy '${taxonomyUID}' failed to import${locale ? ` for locale: ${locale}` : ''}! ${errMsg}`,
         this.importConfig.context,
       );
     } else {

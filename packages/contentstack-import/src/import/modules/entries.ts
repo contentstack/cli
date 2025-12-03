@@ -140,7 +140,7 @@ export default class EntriesImport extends BaseClass {
 
       this.locales = values((fsUtil.readFile(this.localesPath) || []) as Record<string, unknown>[]);
       this.locales.unshift(this.importConfig.master_locale); // adds master locale to the list
-      log.debug(`Processing entries for ${values(this.locales)}`, this.importConfig.context);
+      log.debug(`Processing entries for ${values(this.locales).length} locales`, this.importConfig.context);
 
       //Create Entries
       log.info('Starting entry creation process...', this.importConfig.context);

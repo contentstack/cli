@@ -109,7 +109,7 @@ export default class ImportEnvironments extends BaseClass {
       const { name, uid } = apiData;
       log.debug(`Environment '${name}' (${uid}) failed to import`, this.importConfig.context);
       if (err?.errors?.name) {
-        log.debug(`Environment '${name}' already exists`, this.importConfig.context);
+        log.debug(`Environment '${name}' already exists, fetching details`, this.importConfig.context);
         const res = await this.getEnvDetails(name);
         this.envUidMapper[uid] = res?.uid || ' ';
         fsUtil.writeFile(this.envUidMapperPath, this.envUidMapper);

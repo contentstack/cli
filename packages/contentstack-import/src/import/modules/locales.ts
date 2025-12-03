@@ -68,7 +68,7 @@ export default class ImportLocales extends BaseClass {
       log.info('No languages found to import.', this.config.context);
       return;
     }
-    log.debug(`Found ${Object.values(this.languages).length} language entries`, this.config.context);
+    log.debug(`Found ${values(this.languages).length} languages to import`, this.config.context);
 
     log.debug('Loading source master language configuration...', this.config.context);
     this.sourceMasterLanguage = fsUtil.readFile(
@@ -197,7 +197,7 @@ export default class ImportLocales extends BaseClass {
 
     const onReject = ({ error, apiData: { uid, code } = undefined }: any) => {
       if (error?.errorCode === 247) {
-        log.info(`Format error: ${error}`, this.config.context);
+        log.info(formatError(error), this.config.context);
       } else {
         log.error(`Language '${code}' failed to import`, this.config.context);
         handleAndLogError(error, { ...this.config.context, code });
