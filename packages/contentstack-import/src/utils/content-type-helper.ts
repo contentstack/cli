@@ -132,7 +132,7 @@ export const removeReferenceFields = async function (
           } catch (error) {
             // Else warn and modify the schema object.
             isContentTypeError = true;
-            console.log(`Content type ${schema[i].reference_to[j]} does not exist. Removing the field from schema...`);
+            log.warn(`Content type ${schema[i].reference_to[j]} does not exist. Removing the field from schema...`);
           }
         }
 

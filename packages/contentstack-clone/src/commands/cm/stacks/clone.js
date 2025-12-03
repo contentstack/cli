@@ -68,7 +68,7 @@ class StackCloneCommand extends Command {
           config.source_alias = sourceManagementTokenAlias;
           config.source_stack = listOfTokens[sourceManagementTokenAlias].apiKey;
         } else if (sourceManagementTokenAlias) {
-          console.log(`The source token alias '${sourceManagementTokenAlias}' was not found in your configuration file.`);
+          console.log(`The source token alias '${sourceManagementTokenAlias}' was not found in your config.`);
         }
         if (destinationManagementTokenAlias && listOfTokens[destinationManagementTokenAlias]) {
           config.destination_alias = destinationManagementTokenAlias;

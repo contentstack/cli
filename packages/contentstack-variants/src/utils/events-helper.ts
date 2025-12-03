@@ -12,7 +12,7 @@ export const lookUpEvents = (
   eventsUid: Record<string, string>,
 ): CreateExperienceInput => {
   log.debug('Starting event lookup for experience');
-  log.debug(`Available event mappings: ${Object.keys(eventsUid).length}`);
+  log.debug(`Available event mappings: ${Object.keys(eventsUid)?.length}`);
   
   // Update events uid in experience metrics
   if (experience?.metrics?.length) {

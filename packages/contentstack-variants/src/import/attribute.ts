@@ -79,7 +79,7 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
         }
 
         fsUtil.writeFile(this.attributesUidMapperPath, this.attributesUidMapper);
-        log.debug(`Saved ${Object.keys(this.attributesUidMapper).length} attribute mappings`, this.config.context);
+        log.debug(`Saved ${Object.keys(this.attributesUidMapper).length} attribute mappings to: ${this.attributesUidMapperPath}`, this.config.context);
         log.success('Attributes imported successfully', this.config.context);
       } catch (error) {
         handleAndLogError(error, this.config.context);

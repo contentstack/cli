@@ -76,7 +76,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
             if (definition.rules?.length) {
               log.debug(`Processing ${definition.rules.length} definition rules for audience: ${name}`, this.config.context);
               definition.rules = lookUpAttributes(definition.rules, attributesUid);
-              log.debug(`Processed definition rules.`, this.config.context);
+              log.debug(`Processed definition rules, remaining rules: ${definition.rules.length}`, this.config.context);
             } else {
               log.debug(`No definition rules found for audience: ${name}`, this.config.context);
             }
@@ -93,7 +93,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
         }
 
         fsUtil.writeFile(this.audiencesUidMapperPath, this.audiencesUidMapper);
-        log.debug(`Saved ${Object.keys(this.audiencesUidMapper).length} audience mappings`, this.config.context);
+        log.debug(`Saved ${Object.keys(this.audiencesUidMapper).length} audience mappings to: ${this.audiencesUidMapperPath}`, this.config.context);
         log.success('Audiences imported successfully', this.config.context);
       } catch (error) {
         handleAndLogError(error, this.config.context);

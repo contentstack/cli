@@ -36,7 +36,7 @@ export const lookUpAudiences = (
   audiencesUid: Record<string, string>,
 ): CreateExperienceInput => {
   log.debug('Starting audience lookup for experience');
-  log.debug(`Available audience mappings: ${Object.keys(audiencesUid).length}`);
+  log.debug(`Available audience mappings: ${Object.keys(audiencesUid)?.length}`);
   
   // Update experience variations
   if (experience?.variations?.length) {
