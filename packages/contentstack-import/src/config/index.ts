@@ -203,7 +203,8 @@ const config: DefaultConfig = {
     'composable-studio': {
       dirName: 'composable_studio',
       fileName: 'composable_studio.json',
-      apiBaseUrl: 'https://composable-studio-api.contentstack.com/v1',
+      apiBaseUrl: 'https://composable-studio-api.contentstack.com',
+      apiVersion: 'v1',
     },
   },
   languagesCode: [

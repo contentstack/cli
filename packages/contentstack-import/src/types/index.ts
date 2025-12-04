@@ -110,6 +110,7 @@ export interface ComposableStudioConfig {
   dirName: string;
   fileName: string;
   apiBaseUrl: string;
+  apiVersion: string;
 }
 
 export interface ComposableStudioProject {
