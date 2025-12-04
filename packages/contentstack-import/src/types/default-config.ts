@@ -162,6 +162,7 @@ export default interface DefaultConfig {
       dirName: string;
       fileName: string;
       apiBaseUrl: string;
+      apiVersion: string;
     };
   };
   languagesCode: string[];

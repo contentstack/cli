@@ -26,7 +26,7 @@ export default class ExportComposableStudio {
 
     // Initialize HttpClient with Composable Studio API base URL
     this.apiClient = new HttpClient();
-    this.apiClient.baseUrl(this.composableStudioConfig.apiBaseUrl);
+    this.apiClient.baseUrl(`${this.composableStudioConfig.apiBaseUrl}/${this.composableStudioConfig.apiVersion}`);
   }
 
   async start(): Promise<void> {

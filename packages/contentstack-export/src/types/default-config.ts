@@ -166,6 +166,7 @@ export default interface DefaultConfig {
       dirName: string;
       fileName: string;
       apiBaseUrl: string;
+      apiVersion: string;
     };
     masterLocale: {
       dirName: string;
