@@ -164,6 +164,7 @@ export default class ImportCommand extends Command {
       importConfig.region = this.region;
       if (this.developerHubUrl) importConfig.developerHubBaseUrl = this.developerHubUrl;
       if (this.personalizeUrl) importConfig.modules.personalize.baseURL[importConfig.region.name] = this.personalizeUrl;
+      if (this.composableStudioUrl) importConfig.modules['composable-studio'].apiBaseUrl = this.composableStudioUrl;
 
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
 
