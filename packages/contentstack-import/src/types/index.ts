@@ -106,15 +106,7 @@ export interface TaxonomiesConfig {
 }
 
 export interface Context {
-  command: string;
   module: string;
-  userId: string | undefined;
-  email: string | undefined;
-  sessionId: string | undefined;
-  clientId?: string | undefined;
-  apiKey: string;
-  orgId: string;
-  authenticationMethod?: string;
 }
 
 export { default as DefaultConfig } from './default-config';
@@ -128,15 +120,3 @@ export type ExtensionType = {
   scope: Record<string, unknown>;
   title: string;
 };
-
-export interface Context {
-  command: string;
-  module: string;
-  userId: string | undefined;
-  email: string | undefined;
-  sessionId: string | undefined;
-  clientId?: string | undefined;
-  apiKey: string;
-  orgId: string;
-  authenticationMethod?: string;
-}

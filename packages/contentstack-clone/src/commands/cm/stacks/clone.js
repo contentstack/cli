@@ -73,7 +73,12 @@ class StackCloneCommand extends Command {
           sourceManagementTokenAlias,
           destinationManagementTokenAlias,
         );
-        const cloneContext = this.createCloneContext(authenticationMethod);
+        createLogContext(
+          this.context?.info?.command || 'cm:stacks:clone',
+          sourceStackApiKey,
+          authenticationMethod
+        );
+        cloneContext = { module: 'clone' };
         log.debug('Starting clone operation setup', cloneContext);
 
         if (externalConfigPath) {

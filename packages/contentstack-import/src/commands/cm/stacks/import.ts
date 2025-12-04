@@ -11,6 +11,7 @@ import {
   handleAndLogError,
   configHandler,
   getLogPath,
+  createLogContext,
 } from '@contentstack/cli-utilities';
 
 import { Context, ImportConfig } from '../../../types';
@@ -155,8 +156,13 @@ export default class ImportCommand extends Command {
       const { flags } = await this.parse(ImportCommand);
       importConfig = await setupImportConfig(flags);
       // Prepare the context object
-      const context = this.createImportContext(importConfig.apiKey, importConfig.authenticationMethod);
-      importConfig.context = { ...context };
+      createLogContext(
+        this.context?.info?.command || 'cm:stacks:export',
+        importConfig.apiKey,
+        importConfig.authenticationMethod
+      );
+      
+      importConfig.context = { module: '' };
       //log.info(`Using Cli Version: ${this.context?.cliVersion}`, importConfig.context);
 
       // Note setting host to create cma client
@@ -189,19 +195,5 @@ export default class ImportCommand extends Command {
         log.info('No backup directory was created due to early termination');
       }
     }
-  }
-
-  // Create export context object
-  private createImportContext(apiKey: string, authenticationMethod?: string): Context {
-    return {
-      command: this.context?.info?.command || 'cm:stacks:import',
-      module: '',
-      userId: configHandler.get('userUid') || '',
-      email: configHandler.get('email') || '',
-      sessionId: this.context?.sessionId,
-      apiKey: apiKey || '',
-      orgId: configHandler.get('oauthOrgUid') || '',
-      authenticationMethod: authenticationMethod || 'Basic Auth',
-    };
   }
 }
