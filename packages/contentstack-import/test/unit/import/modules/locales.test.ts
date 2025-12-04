@@ -112,6 +112,7 @@ describe('ImportLocales', () => {
           dirName: 'composable-studio',
           fileName: 'composable-studio.json',
           apiBaseUrl: 'https://composable-studio-api.contentstack.com/v1',
+          apiVersion: 'v1',
         },
         personalize: {
           baseURL: {},
