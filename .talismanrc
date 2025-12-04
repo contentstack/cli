@@ -1,8 +1,8 @@
 fileignoreconfig:
 - filename: package-lock.json
-  checksum: 458eb145e0e0ebab5a168f71757895128e253b6893fbddf561b76528523b713f
+  checksum: fa02e2883b15c973134368ce26c78187e247d3761ef14f603afc0d5ea83102a6
 - filename: pnpm-lock.yaml
-  checksum: fe3e9d9f6eba0158d4985b8bdb8ec6e35419b3a9e9768e5610bf74f2f59454d1
+  checksum: d4174feb2ba68c22cc45987afdaf4d89997df084e7e7eb9edc7e309b5a24aca5
 - filename: packages/contentstack-import-setup/test/unit/backup-handler.test.ts
   checksum: 0582d62b88834554cf12951c8690a73ef3ddbb78b82d2804d994cf4148e1ef93
 - filename: packages/contentstack-import-setup/test/config.json
@@ -78,7 +78,7 @@ fileignoreconfig:
 - filename: packages/contentstack-clone/src/commands/cm/stacks/clone.js
   checksum: 433a84a882ea3f12b27127d47d289dfc64dda6b6fc956369f5851daaa57ae493
 - filename: packages/contentstack-clone/src/lib/util/clone-handler.js
-  checksum: 7024f22a6ed3908d7cf074bbd8e7107e2d9f43bbcc42939b28d360c89d44cc29
+  checksum: f901c84eac8545b328952332216de516697da2de098298496ba6ff1e75a0a659
 - filename: packages/contentstack-bulk-publish/src/util/generate-bulk-publish-url.js
   checksum: 5f7c1e2fac3e7fab21e861d609c54ca7191ee09fd076dd0adc66604043bf7a43
 - filename: packages/contentstack-import/src/utils/interactive.ts
@@ -199,6 +199,8 @@ fileignoreconfig:
   checksum: 49dd8e754a0d3635585a74e943ab097593f061089a7cddc22683ec6caddbb3c5
 - filename: packages/contentstack-export/test/unit/export/modules/personalize.test.ts
   checksum: 83cf034fabee00b42b4243a8c0b8ba280ab7c1e68ffd741c49c31aaee8ca0315
+- filename: packages/contentstack-utilities/test/unit/logger.test.ts
+  checksum: 11778d0252202c18a1ca6a38883d6e12fc324ff86ad0fe058bc2505f9cd66ba3
 - filename: packages/contentstack-audit/test/unit/audit-base-command.test.ts
   checksum: 17a16b4457c820494442f335d94d0949961e68e8ca72ca0f1fa9d4d0eeb0c17a
 - filename: packages/contentstack-import/src/import/modules/taxonomies.ts
@@ -209,4 +211,8 @@ fileignoreconfig:
   checksum: 57566af0bbd95a28b454e4436b0396dfec2fe05ddd5b448d46e3a8b68db8b9cb
 - filename: packages/contentstack-export/test/unit/export/modules/entries.test.ts
   checksum: 5950c6f697224e11bec32736e6a967b0ab7ac98e9c8f8bb8eaaf10af60913e40
+- filename: packages/contentstack-import-setup/src/commands/cm/stacks/import-setup.ts
+  checksum: 86b11c2a2dd8c0b14aa558e4e52d6d721cd7707422c26a68e96cc5b55b9fefd8
+- filename: packages/contentstack-import-setup/src/utils/login-handler.ts
+  checksum: 3860c96e31677356963e67049762f944aef7c7b22fabb75a70ff5c64cf1ac274
 version: "1.0"
