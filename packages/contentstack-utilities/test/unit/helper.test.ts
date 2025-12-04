@@ -27,7 +27,7 @@ describe('Testing the Validate function', () => {
 describe('Testing the getBranchFromAlias function', () => {
   describe('When branch alias exists and resolves successfully', () => {
     it('should return the branch UID', async () => {
-      const mockStack = {
+      const mockStack: any = {
         branchAlias: (alias: string) => ({
           fetch: async () => ({ uid: 'main-branch' })
         })
@@ -60,7 +60,7 @@ describe('Testing the getBranchFromAlias function', () => {
     });
 
     it('should throw error for null branchAlias', async () => {
-      const mockStack = {
+      const mockStack: any = {
         branchAlias: (alias: string) => ({
           fetch: async () => ({ uid: 'main-branch' })
         })
@@ -76,7 +76,7 @@ describe('Testing the getBranchFromAlias function', () => {
     });
 
     it('should throw error for undefined branchAlias', async () => {
-      const mockStack = {
+      const mockStack: any = {
         branchAlias: (alias: string) => ({
           fetch: async () => ({ uid: 'main-branch' })
         })
@@ -92,14 +92,14 @@ describe('Testing the getBranchFromAlias function', () => {
     });
 
     it('should throw error for non-string branchAlias', async () => {
-      const mockStack = {
+      const mockStack: any = {
         branchAlias: (alias: string) => ({
           fetch: async () => ({ uid: 'main-branch' })
         })
       };
       
       try {
-        await getBranchFromAlias(mockStack, 123);
+        await getBranchFromAlias(mockStack, 123 as any);
         expect.fail('Expected function to throw an error');
       } catch (error) {
         expect(error).to.be.instanceOf(Error);
@@ -108,7 +108,7 @@ describe('Testing the getBranchFromAlias function', () => {
     });
 
     it('should throw error for empty string branchAlias', async () => {
-      const mockStack = {
+      const mockStack: any = {
         branchAlias: (alias: string) => ({
           fetch: async () => ({ uid: 'main-branch' })
         })
@@ -126,7 +126,7 @@ describe('Testing the getBranchFromAlias function', () => {
 
   describe('When branch alias does not exist', () => {
     it('should throw an error', async () => {
-      const mockStack = {
+      const mockStack: any = {
         branchAlias: (alias: string) => ({
           fetch: async () => {
             throw new Error('Branch alias not found');
@@ -146,7 +146,7 @@ describe('Testing the getBranchFromAlias function', () => {
 
   describe('When response is missing UID', () => {
     it('should throw error for response without uid', async () => {
-      const mockStack = {
+      const mockStack: any = {
         branchAlias: (alias: string) => ({
           fetch: async () => ({ name: 'main-branch' }) // missing uid
         })
@@ -162,7 +162,7 @@ describe('Testing the getBranchFromAlias function', () => {
     });
 
     it('should throw error for response with null uid', async () => {
-      const mockStack = {
+      const mockStack: any = {
         branchAlias: (alias: string) => ({
           fetch: async () => ({ uid: null })
         })
@@ -178,7 +178,7 @@ describe('Testing the getBranchFromAlias function', () => {
     });
 
     it('should throw error for response with undefined uid', async () => {
-      const mockStack = {
+      const mockStack: any = {
         branchAlias: (alias: string) => ({
           fetch: async () => ({ uid: undefined })
         })
@@ -194,7 +194,7 @@ describe('Testing the getBranchFromAlias function', () => {
     });
 
     it('should throw error for response with empty string uid', async () => {
-      const mockStack = {
+      const mockStack: any = {
         branchAlias: (alias: string) => ({
           fetch: async () => ({ uid: '' })
         })
@@ -210,7 +210,7 @@ describe('Testing the getBranchFromAlias function', () => {
     });
 
     it('should throw error for empty response object', async () => {
-      const mockStack = {
+      const mockStack: any = {
         branchAlias: (alias: string) => ({
           fetch: async () => ({})
         })
@@ -229,7 +229,7 @@ describe('Testing the getBranchFromAlias function', () => {
   describe('When network error occurs', () => {
     it('should throw the network error', async () => {
       const networkError = new Error('Network timeout');
-      const mockStack = {
+      const mockStack: any = {
         branchAlias: (alias: string) => ({
           fetch: async () => {
             throw networkError;
