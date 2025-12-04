@@ -27,6 +27,7 @@ export * from './fs-utility';
 export { default as NodeCrypto } from './encrypter';
 export { Args as args, Flags as flags, Command } from './cli-ux';
 export * from './helpers';
+export { createLogContext } from './helpers';
 export * from './interfaces';
 export * from './date-time';
 export * from './add-locale';

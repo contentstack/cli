@@ -12,6 +12,7 @@ import {
   log,
   handleAndLogError,
   configHandler,
+  createLogContext,
 } from '@contentstack/cli-utilities';
 
 import { ImportConfig, Context } from '../../../types';
@@ -71,8 +72,13 @@ export default class ImportSetupCommand extends Command {
       const { flags } = await this.parse(ImportSetupCommand);
       let importSetupConfig = await setupImportConfig(flags);
       // Prepare the context object
-      const context = this.createImportSetupContext(importSetupConfig.apiKey, (importSetupConfig as any).authenticationMethod);
-      importSetupConfig.context = { ...context };
+      createLogContext(
+        this.context?.info?.command || 'cm:stacks:import-setup',
+        importSetupConfig.apiKey,
+        configHandler.get('authenticationMethod')
+      );
+      
+      importSetupConfig.context = { module: '' };
       
       // Note setting host to create cma client
       importSetupConfig.host = this.cmaHost;
@@ -94,17 +100,4 @@ export default class ImportSetupCommand extends Command {
     }
   }
 
-  // Create import setup context object
-  private createImportSetupContext(apiKey: string, authenticationMethod?: string, module?: string): Context {
-    return {
-      command: this.context?.info?.command || 'cm:stacks:import-setup',
-      module: module || '',
-      userId: configHandler.get('userUid') || undefined,
-      email: configHandler.get('email') || undefined,
-      sessionId: this.context?.sessionId,
-      apiKey: apiKey || '',
-      orgId: configHandler.get('oauthOrgUid') || '',
-      authenticationMethod: authenticationMethod || 'Basic Auth',
-    };
-  }
 }
