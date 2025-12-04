@@ -110,7 +110,7 @@ fileignoreconfig:
 - filename: packages/contentstack-audit/src/modules/content-types.ts
   checksum: ddf7b08e6a80af09c6a7019a637c26089fb76572c7c3d079a8af244b02985f16
 - filename: packages/contentstack-import/test/unit/commands/cm/stacks/import.test.ts
-  checksum: b11e57f1b824d405f86438e9e7c59183f8c59b66b42d8d16dbeaf76195a30548
+  checksum: ead3c34bad34f912d8663599273d26a95bb48220e16d9e9e3d33f5c064a487a5
 - filename: packages/contentstack-import/test/unit/utils/asset-helper.test.ts
   checksum: 8e83200ac8028f9289ff1bd3a50d191b35c8e28f1854141c90fa1b0134d6bf8a
 - filename: packages/contentstack-import/test/unit/import/modules/marketplace-apps.test.ts
