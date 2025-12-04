@@ -154,12 +154,5 @@ export type TaxonomyQueryParams = {
 };
 
 export interface Context {
-  command: string;
   module: string;
-  userId: string | undefined;
-  email: string | undefined;
-  sessionId: string | undefined;
-  apiKey: string;
-  orgId: string;
-  authenticationMethod?: string;
 }

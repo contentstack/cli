@@ -3,13 +3,17 @@ import * as semver from 'semver';
 import { IVersionUpgradeCache, IVersionUpgradeWarningFrequency } from '../../interfaces';
 
 const versionUpgradeWarningFrequency: IVersionUpgradeWarningFrequency = {
-  versionSyncDuration: 3 * 24 * 60 * 60 * 1000,
+  versionSyncDuration: 3 * 24 * 60 * 60 * 1000, // 3 days
 };
 export default async function (_opts): Promise<void> {
   const now = Date.now();
   const today = new Date().toISOString().split('T')[0];
   const logger: LoggerService = new LoggerService(process.env.CS_CLI_LOG_PATH || process.cwd(), 'cli-log');
   let cache: IVersionUpgradeCache = { lastChecked: 0, lastWarnedDate: '', latestVersion: '' };
+
+  if(!configHandler.get('CLI_VERSION') || configHandler.get('CLI_VERSION') !== this.config.version) { // if CLI_VERSION is not set or is not the same as the current version, set it
+    configHandler.set('CLI_VERSION', this.config.version); // set current version in configHandler
+  }
 
   if (!configHandler.get('versionUpgradeWarningFrequency')) {
     configHandler.set('versionUpgradeWarningFrequency', versionUpgradeWarningFrequency);

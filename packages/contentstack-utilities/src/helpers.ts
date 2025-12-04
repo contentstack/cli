@@ -245,3 +245,62 @@ const sensitiveKeys = [
   /management[-._]?token/i,
   /delivery[-._]?token/i,
 ];
+
+/**
+ * Get authentication method from config
+ * @returns Authentication method string ('OAuth', 'Basic Auth', or empty string)
+ */
+export function getAuthenticationMethod(): string {
+  const authType = configHandler.get('authorisationType');
+  if (authType === 'OAUTH') {
+    return 'OAuth';
+  } else if (authType === 'BASIC') {
+    return 'Basic Auth';
+  }
+  // Management token detection is command-specific and not stored globally
+  // Return empty string if unknown
+  return '';
+}
+
+/**
+ * Creates a standardized context object for logging
+ * This context contains all session-level metadata that should be in session.json
+ * The apiKey is stored in configHandler so it's available for session.json generation
+ * 
+ * @param commandId - The command ID (e.g., 'cm:stacks:export')
+ * @param apiKey - The API key for the stack (will be stored in configHandler for session.json)
+ * @param authenticationMethod - Optional authentication method
+ * @returns Context object with all session-level metadata
+ */
+export function createLogContext(
+  commandId: string,
+  apiKey: string,
+  authenticationMethod?: string
+): {
+  command: string;
+  module: string;
+  userId: string;
+  email: string;
+  sessionId: string;
+  apiKey: string;
+  orgId: string;
+  authenticationMethod: string;
+} {
+  // Store apiKey in configHandler so it's available for session.json
+  if (apiKey) {
+    configHandler.set('apiKey', apiKey);
+  }
+
+  const authMethod = authenticationMethod || getAuthenticationMethod();
+
+  return {
+    command: commandId,
+    module: '',
+    userId: configHandler.get('clientId') || '',
+    email: configHandler.get('email') || '',
+    sessionId: configHandler.get('sessionId') || '',
+    apiKey: apiKey || '',
+    orgId: configHandler.get('oauthOrgUid') || '',
+    authenticationMethod: authMethod,
+  };
+}

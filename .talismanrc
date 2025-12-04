@@ -212,7 +212,7 @@ fileignoreconfig:
 - filename: packages/contentstack-export/test/unit/export/modules/personalize.test.ts
   checksum: 83cf034fabee00b42b4243a8c0b8ba280ab7c1e68ffd741c49c31aaee8ca0315
 - filename: packages/contentstack-utilities/test/unit/logger.test.ts
-  checksum: 11778d0252202c18a1ca6a38883d6e12fc324ff86ad0fe058bc2505f9cd66ba3
+  checksum: a1939dea16166b1893a248179524a76f2ed20b04b99c83bd1a5a13fcf6f0dadc
 - filename: packages/contentstack-audit/test/unit/audit-base-command.test.ts
   checksum: 17a16b4457c820494442f335d94d0949961e68e8ca72ca0f1fa9d4d0eeb0c17a
 - filename: packages/contentstack-import/src/import/modules/taxonomies.ts
@@ -227,4 +227,8 @@ fileignoreconfig:
   checksum: 86b11c2a2dd8c0b14aa558e4e52d6d721cd7707422c26a68e96cc5b55b9fefd8
 - filename: packages/contentstack-import-setup/src/utils/login-handler.ts
   checksum: 3860c96e31677356963e67049762f944aef7c7b22fabb75a70ff5c64cf1ac274
+- filename: packages/contentstack-utilities/src/helpers.ts
+  checksum: 9d7df9d79cec75f238a0072bf79c4934b4724bf1466451ea6f923adfd5c0b75b
+- filename: packages/contentstack-utilities/src/logger/session-path.ts
+  checksum: 4c66980a857bc12012a45e50790c0eaab06883db5e1476d84fb142a08b70b2e7
 version: "1.0"
