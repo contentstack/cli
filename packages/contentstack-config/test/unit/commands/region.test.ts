@@ -17,6 +17,7 @@ describe('Region command', function () {
     developerHubUrl: 'https://developerhub-api.contentstack.com',
     launchHubUrl: 'https://launch-api.contentstack.com',
     personalizeUrl: 'https://personalization-api.contentstack.com',
+    composableStudioUrl: 'https://composable-studio-api.contentstack.com',
   };
   let cliuxPrintStub: sinon.SinonStub;
   let configGetStub: sinon.SinonStub;
