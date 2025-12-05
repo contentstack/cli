@@ -147,7 +147,7 @@ export default class BootstrapCommand extends Command {
         } else if (appType === 'starterapp') {
           selectedApp = await inquireApp(config.starterApps);
         } else {
-          this.error('Invalid app type provided ' + appType, { exit: 1 });
+          this.error('Invalid app type provided: ' + appType, { exit: 1 });
         }
       }
 

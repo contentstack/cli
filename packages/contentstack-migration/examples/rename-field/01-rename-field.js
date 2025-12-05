@@ -89,7 +89,7 @@ module.exports = ({ migration, stackSDKInstance }) => {
             await entry.update()
           }
         } catch (error) {
-          console.log(error)
+          console.log('Error', error)
         }
       },
     }

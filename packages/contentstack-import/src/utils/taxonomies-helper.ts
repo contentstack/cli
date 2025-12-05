@@ -12,7 +12,7 @@ import { ImportConfig } from '../types';
  * @param {ImportConfig} importConfig
  */
 export const lookUpTaxonomy = function (importConfig: ImportConfig, schema: any, taxonomies: Record<string, unknown>) {
-  log.debug(`Starting taxonomy lookup for schema with ${Object.keys(schema).length} fields`);
+  log.debug(`Starting taxonomy lookup for schema with ${Object.keys(schema).length} fields.`);
   
   for (let i in schema) {
     if (schema[i].data_type === 'taxonomy') {

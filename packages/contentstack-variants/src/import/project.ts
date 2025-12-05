@@ -67,7 +67,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
               error.includes('personalization.PROJECTS.DUPLICATE_NAME') ||
               error.includes('personalize.PROJECTS.DUPLICATE_NAME')
             ) {
-              log.warn(`Project name already exists, generating new name`, this.config.context);
+              log.warn(`Project name already exists, generating new name.`, this.config.context);
               const projectName = await askProjectName('Copy Of ' + (newName || project.name));
               return await createProject(projectName);
             }

@@ -120,24 +120,22 @@ export default class EntriesImport extends BaseClass {
       this.installedExtensions = (
         (fsUtil.readFile(this.marketplaceAppMapperPath) as any) || { extension_uid: {} }
       ).extension_uid;
-      log.debug('Loaded installed extensions for entry processing', this.importConfig.context);
+      log.debug('Loaded installed extensions for entry processing.', this.importConfig.context);
 
       this.assetUidMapper = (fsUtil.readFile(this.assetUidMapperPath) as Record<string, any>) || {};
       this.assetUrlMapper = (fsUtil.readFile(this.assetUrlMapperPath) as Record<string, any>) || {};
       log.debug(
-        `Loaded asset mappings - UIDs: ${Object.keys(this.assetUidMapper).length}, URLs: ${
-          Object.keys(this.assetUrlMapper).length
-        }`,
+        `Loaded asset mappings – UIDs: ${Object.keys(this.assetUidMapper).length}`,
         this.importConfig.context,
       );
 
       this.taxonomies = (fsUtil.readFile(this.taxonomiesPath) || {}) as Record<string, any>;
-      log.debug('Loaded taxonomy data for entry processing', this.importConfig.context);
+      log.debug('Loaded taxonomy data for entry processing.', this.importConfig.context);
 
       fsUtil.makeDirectory(this.entriesMapperPath);
-      log.debug('Created entries mapper directory', this.importConfig.context);
+      log.debug('Created entries mapper directory.', this.importConfig.context);
 
-      log.info('Preparing content types for entry import', this.importConfig.context);
+      log.info('Preparing content types for entry import...', this.importConfig.context);
       await this.disableMandatoryCTReferences();
 
       this.locales = values((fsUtil.readFile(this.localesPath) || []) as Record<string, unknown>[]);
@@ -145,7 +143,7 @@ export default class EntriesImport extends BaseClass {
       log.debug(`Processing entries for ${values(this.locales).length} locales`, this.importConfig.context);
 
       //Create Entries
-      log.info('Starting entry creation process', this.importConfig.context);
+      log.info('Starting entry creation process...', this.importConfig.context);
       const entryRequestOptions = this.populateEntryCreatePayload();
       log.debug(`Generated ${entryRequestOptions.length} entry creation tasks`, this.importConfig.context);
 
@@ -156,7 +154,7 @@ export default class EntriesImport extends BaseClass {
 
       if (this.importConfig.replaceExisting) {
         // Note: Instead of using entryRequestOptions, we can prepare request options for replace, to avoid unnecessary operations
-        log.info('Starting entry replacement process', this.importConfig.context);
+        log.info('Starting entry replacement process...', this.importConfig.context);
         for (let entryRequestOption of entryRequestOptions) {
           await this.replaceEntries(entryRequestOption).catch((error) => {
             handleAndLogError(
@@ -169,13 +167,13 @@ export default class EntriesImport extends BaseClass {
         log.success('Entry replacement process completed', this.importConfig.context);
       }
 
-      log.debug('Writing entry UID mappings to file', this.importConfig.context);
+      log.debug('Writing entry UID mappings to file...', this.importConfig.context);
       await fileHelper.writeLargeFile(path.join(this.entriesMapperPath, 'uid-mapping.json'), this.entriesUidMapper); // TBD: manages mapper in one file, should find an alternative
       fsUtil.writeFile(path.join(this.entriesMapperPath, 'failed-entries.json'), this.failedEntries);
 
       if (this.autoCreatedEntries?.length > 0) {
         log.info(
-          `Removing ${this.autoCreatedEntries.length} entries from master language which got created by default`,
+          `Removing ${this.autoCreatedEntries.length} auto-created entries from the master language...`,
           this.importConfig.context,
         );
         await this.removeAutoCreatedEntries().catch((error) => {
@@ -189,7 +187,7 @@ export default class EntriesImport extends BaseClass {
       }
 
       // Update entries with references
-      log.info('Starting entry references update process', this.importConfig.context);
+      log.info('Starting entry references update process...', this.importConfig.context);
       const entryUpdateRequestOptions = this.populateEntryUpdatePayload();
       log.debug(`Generated ${entryUpdateRequestOptions.length} entry update tasks`, this.importConfig.context);
 
@@ -209,14 +207,14 @@ export default class EntriesImport extends BaseClass {
       fsUtil.writeFile(path.join(this.entriesMapperPath, 'failed-entries.json'), this.failedEntries);
       log.success('Entry references update process completed', this.importConfig.context);
 
-      log.info('Restoring content type changes', this.importConfig.context);
+      log.info('Restoring content type changes...', this.importConfig.context);
       await this.enableMandatoryCTReferences().catch((error) => {
         handleAndLogError(error, { ...this.importConfig.context }, 'Error while updating content type references');
       });
       log.success('Content type references restored successfully', this.importConfig.context);
 
       // Update field rule of content types which are got removed earlier
-      log.info('Updating the field rules of content type', this.importConfig.context);
+      log.info('Updating field rules of content type...', this.importConfig.context);
       await this.updateFieldRules().catch((error) => {
         handleAndLogError(error, { ...this.importConfig.context }, 'Error while updating field rules of content type');
       });
@@ -224,7 +222,7 @@ export default class EntriesImport extends BaseClass {
 
       // Publishing entries
       if (!this.importConfig.skipEntriesPublish) {
-        log.info('Starting entry publishing process', this.importConfig.context);
+        log.info('Starting entry publishing process...', this.importConfig.context);
         this.envs = fileHelper.readFileSync(this.envPath) || {};
         if (Object.keys(this.envs).length === 0) {
           log.warn(
@@ -233,7 +231,7 @@ export default class EntriesImport extends BaseClass {
           );
           return;
         } else {
-          log.debug(`Loaded ${Object.keys(this.envs).length} environments for publishing`, this.importConfig.context);
+          log.debug(`Loaded ${Object.keys(this.envs).length} environments.`, this.importConfig.context);
         }
 
         for (let entryRequestOption of entryRequestOptions) {
@@ -247,10 +245,10 @@ export default class EntriesImport extends BaseClass {
         }
         log.success('All the entries have been published successfully', this.importConfig.context);
       } else {
-        log.info('Skipping entry publishing as per configuration', this.importConfig.context);
+        log.info('Skipping entry publishing as per configuration...', this.importConfig.context);
       }
 
-      log.debug('Creating entry data for variant entries', this.importConfig.context);
+      log.debug('Creating entry data for variant entries...', this.importConfig.context);
       this.createEntryDataForVariantEntry();
     } catch (error) {
       this.createEntryDataForVariantEntry();
@@ -281,7 +279,11 @@ export default class EntriesImport extends BaseClass {
       log.debug(`Successfully processed content type: '${uid}'`, this.importConfig.context);
     };
     const onReject = ({ error, apiData: { uid } }: any) => {
-      handleAndLogError(error, { ...this.importConfig.context, uid }, `'${uid}' content type references removal failed`);
+      handleAndLogError(
+        error,
+        { ...this.importConfig.context, uid },
+        `'${uid}' content type references removal failed`,
+      );
     };
     return await this.makeConcurrentCall({
       processName: 'Update content types (removing mandatory references temporarily)',
@@ -518,6 +520,24 @@ export default class EntriesImport extends BaseClass {
         });
       }
     }
+
+    /**
+     * Why Delay Here ?
+     * ==================
+     * When the file is written to the disk, the file is not yet available to be read by the next operation.
+     * existing entries file is written here and used in the replace entries operation. Sometimes it happens that the file is not completed writing to the disk, so replace operation fails.
+     * Solution:
+     * =========
+     * Add a delay to ensure that the file is completed writing to the disk.
+     * This is a temporary workaround, TODO: find a better way to do this.
+     * When replaceEntries tries to read the file immediately after, the file might still be incomplete because:
+     * completeFile() calls write('}') (line 294) - buffered, not yet on disk
+     * closeFile() calls end() (line 318) - closes stream but doesn't wait for flush
+     * replaceEntries immediately tries to read - file is incomplete!
+     * The completeFile() method in FsUtility needs to wait for the stream to finish flushing before returning. Here's what needs to be changed in the FsUtility
+     * */
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    log.success(`Completed creating entries for content type ${cTUid} in locale ${locale}`, this.importConfig.context);
   }
 
   /**
@@ -999,7 +1019,7 @@ export default class EntriesImport extends BaseClass {
       any
     >[];
     if (!cTsWithFieldRules || cTsWithFieldRules?.length === 0) {
-      log.debug('No content types with field rules found to update', this.importConfig.context);
+      log.debug('No content types with field rules found to update.', this.importConfig.context);
       return;
     }
     log.debug(`Found ${cTsWithFieldRules.length} content types with field rules to update`, this.importConfig.context);
@@ -1025,7 +1045,7 @@ export default class EntriesImport extends BaseClass {
           fieldDatatypeMap[field] = contentType.schema[i].data_type;
         }
         log.debug(
-          `Built field datatype map for ${Object.keys(fieldDatatypeMap).length} fields`,
+          `Built field datatype map for ${Object.keys(fieldDatatypeMap).length} fields.`,
           this.importConfig.context,
         );
 

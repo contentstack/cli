@@ -21,7 +21,7 @@ abstract class ContentstackCommand extends Command {
     if (this._email) return this._email;
     this._email = configHandler.get('email');
     if (this._email) return this._email;
-    throw new CLIError('You are not logged in. Please login with command $ csdx auth:login');
+    throw new CLIError('You are not logged in. Run the command: $ csdx auth:login');
   }
 
   get deliveryAPIClient() {
@@ -104,6 +104,9 @@ abstract class ContentstackCommand extends Command {
 
   get personalizeUrl() {
     return this.region.personalizeUrl;
+  }
+  get composableStudioUrl() {
+    return this.region.composableStudioUrl;
   }
 }
 

@@ -58,7 +58,7 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
 
         for (const event of events) {
           const { key, description, uid } = event;
-          log.debug(`Processing event: ${key} (${uid})`, this.config.context);
+          log.debug(`Processing event: ${key} (${uid})...`, this.config.context);
           
           try {
             log.debug(`Creating event: ${key}`, this.config.context);

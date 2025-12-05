@@ -40,7 +40,7 @@ export default class ImportLabels extends BaseClass {
    * @returns {Promise<void>} Promise<void>
    */
   async start(): Promise<void> {
-    log.debug('Checking for labels folder existence', this.importConfig.context);
+    log.debug('Checking if labels folder exists...', this.importConfig.context);
 
     //Step1 check folder exists or not
     if (fileHelper.fileExistsSync(this.labelsFolderPath)) {
@@ -59,14 +59,14 @@ export default class ImportLabels extends BaseClass {
       const labelCount = Object.keys(this.labels || {}).length;
       log.debug(`Loaded ${labelCount} label items from file`, this.importConfig.context);
     } else {
-      log.info(`No labels found - '${this.labelsFolderPath}'`, this.importConfig.context);
+      log.info(`No labels found: '${this.labelsFolderPath}'`, this.importConfig.context);
       return;
     }
 
     //create labels in mapper directory
-    log.debug('Creating labels mapper directory', this.importConfig.context);
+    log.debug('Creating labels mapper directory...', this.importConfig.context);
     await fsUtil.makeDirectory(this.mapperDirPath);
-    log.debug('Loading existing label UID mappings', this.importConfig.context);
+    log.debug('Loading existing label UID mappings...', this.importConfig.context);
     this.labelUidMapper = fileHelper.fileExistsSync(this.labelUidMapperPath)
       ? (fsUtil.readFile(join(this.labelUidMapperPath), true) as Record<string, unknown>) || {}
       : {};
@@ -75,16 +75,16 @@ export default class ImportLabels extends BaseClass {
       const labelUidCount = Object.keys(this.labelUidMapper || {}).length;
       log.debug(`Loaded existing label UID data: ${labelUidCount} items`, this.importConfig.context);
     } else {
-      log.debug('No existing label UID mappings found', this.importConfig.context);
+      log.debug('No existing label UID mappings found.', this.importConfig.context);
     }
 
-    log.debug('Starting labels import', this.importConfig.context);
+    log.debug('Starting labels import...', this.importConfig.context);
     await this.importLabels();
     //update parent in created label
     log.debug('Starting labels update process', this.importConfig.context);
     await this.updateLabels();
 
-    log.debug('Processing labels import results', this.importConfig.context);
+    log.debug('Processing labels import results...', this.importConfig.context);
     if (this.createdLabel?.length) {
       fsUtil.writeFile(this.createdLabelPath, this.createdLabel);
       log.debug(`Written ${this.createdLabel.length} successful labels to file`, this.importConfig.context);
@@ -100,7 +100,7 @@ export default class ImportLabels extends BaseClass {
 
   async importLabels() {
     if (this.labels === undefined || isEmpty(this.labels)) {
-      log.info('No Labels Found', this.importConfig.context);
+      log.info('No labels found.', this.importConfig.context);
       return;
     }
 
@@ -151,7 +151,7 @@ export default class ImportLabels extends BaseClass {
     log.debug(`Serializing label: ${label.name} (${label.uid})`, this.importConfig.context);
 
     if (this.labelUidMapper.hasOwnProperty(label.uid)) {
-      log.info(`Label '${label.name}' already exists. Skipping it to avoid duplicates!`, this.importConfig.context);
+      log.info(`Label '${label.name}' already exists. Skipping to avoid duplicates.`, this.importConfig.context);
       log.debug(`Skipping label serialization for: ${label.uid}`, this.importConfig.context);
       apiOptions.entity = undefined;
     } else {
@@ -169,7 +169,7 @@ export default class ImportLabels extends BaseClass {
   }
 
   async updateLabels() {
-    log.debug('Starting labels update process', this.importConfig.context);
+    log.debug('Starting labels update process...', this.importConfig.context);
     if (!isEmpty(this.labels)) {
       const apiContent = values(this.labels);
       log.debug(`Updating ${apiContent.length} labels`, this.importConfig.context);
@@ -210,10 +210,10 @@ export default class ImportLabels extends BaseClass {
         false,
       );
     } else {
-      log.debug('No labels to update', this.importConfig.context);
+      log.debug('No labels to update.', this.importConfig.context);
     }
 
-    log.debug('Labels update process completed', this.importConfig.context);
+    log.debug('Labels update process completed.', this.importConfig.context);
   }
 
   /**

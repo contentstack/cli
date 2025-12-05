@@ -25,26 +25,26 @@ export default class ExportLabels extends BaseClass {
   }
 
   async start(): Promise<void> {
-    log.debug('Starting labels export process...', this.exportConfig.context);
+    log.debug('Starting export process for labels...', this.exportConfig.context);
     
     this.labelsFolderPath = pResolve(
       this.exportConfig.data,
       this.exportConfig.branchName || '',
       this.labelConfig.dirName,
     );
-    log.debug(`Labels folder path: ${this.labelsFolderPath}`, this.exportConfig.context);
+    log.debug(`Labels folder path: '${this.labelsFolderPath}'`, this.exportConfig.context);
 
     await fsUtil.makeDirectory(this.labelsFolderPath);
-    log.debug('Created labels directory', this.exportConfig.context);
+    log.debug('Created labels directory.', this.exportConfig.context);
     
     await this.getLabels();
-    log.debug(`Retrieved ${Object.keys(this.labels).length} labels`, this.exportConfig.context);
+    log.debug(`Retrieved ${Object.keys(this.labels).length} labels.`, this.exportConfig.context);
     
     if (this.labels === undefined || isEmpty(this.labels)) {
       log.info(messageHandler.parse('LABELS_NOT_FOUND'), this.exportConfig.context);
     } else {
       const labelsFilePath = pResolve(this.labelsFolderPath, this.labelConfig.fileName);
-      log.debug(`Writing labels to: ${labelsFilePath}`, this.exportConfig.context);
+      log.debug(`Writing labels to: '${labelsFilePath}'.`, this.exportConfig.context);
       fsUtil.writeFile(labelsFilePath, this.labels);
       log.success(
         messageHandler.parse('LABELS_EXPORT_COMPLETE', Object.keys(this.labels).length),
@@ -56,12 +56,12 @@ export default class ExportLabels extends BaseClass {
   async getLabels(skip = 0): Promise<void> {
     if (skip) {
       this.qs.skip = skip;
-      log.debug(`Fetching labels with skip: ${skip}`, this.exportConfig.context);
+      log.debug(`Fetching labels with skip: ${skip}.`, this.exportConfig.context);
     } else {
-      log.debug('Fetching labels with initial query', this.exportConfig.context);
+      log.debug('Fetching labels with initial query...', this.exportConfig.context);
     }
     
-    log.debug(`Query parameters: ${JSON.stringify(this.qs)}`, this.exportConfig.context);
+    log.debug(`Query parameters: ${JSON.stringify(this.qs)}.`, this.exportConfig.context);
     
     await this.stack
       .label()
@@ -69,40 +69,40 @@ export default class ExportLabels extends BaseClass {
       .find()
       .then(async (data: any) => {
         const { items, count } = data;
-        log.debug(`Fetched ${items?.length || 0} labels out of total ${count}`, this.exportConfig.context);
+        log.debug(`Fetched ${items?.length || 0} labels out of ${count}.`, this.exportConfig.context);
         
         if (items?.length) {
-          log.debug(`Processing ${items.length} labels`, this.exportConfig.context);
+          log.debug(`Processing ${items.length} labels...`, this.exportConfig.context);
           this.sanitizeAttribs(items);
           skip += this.labelConfig.limit || 100;
           if (skip >= count) {
-            log.debug('Completed fetching all labels', this.exportConfig.context);
+            log.debug('Completed fetching all labels.', this.exportConfig.context);
             return;
           }
-          log.debug(`Continuing to fetch labels with skip: ${skip}`, this.exportConfig.context);
+          log.debug(`Continuing to fetch labels with skip: ${skip}.`, this.exportConfig.context);
           return await this.getLabels(skip);
         } else {
-          log.debug('No labels found to process', this.exportConfig.context);
+          log.debug('No labels found to process.', this.exportConfig.context);
         }
       })
       .catch((error: any) => {
-        log.debug('Error occurred while fetching labels', this.exportConfig.context);
+        log.debug('An error occurred while fetching labels.', this.exportConfig.context);
         handleAndLogError(error, { ...this.exportConfig.context });
       });
   }
 
   sanitizeAttribs(labels: Record<string, string>[]) {
-    log.debug(`Sanitizing ${labels.length} labels`, this.exportConfig.context);
+    log.debug(`Sanitizing ${labels.length} labels...`, this.exportConfig.context);
     
     for (let index = 0; index < labels?.length; index++) {
       const labelUid = labels[index].uid;
       const labelName = labels[index]?.name;
-      log.debug(`Processing label: ${labelName} (${labelUid})`, this.exportConfig.context);
+      log.debug(`Processing label: '${labelName}' (UID: ${labelUid})...`, this.exportConfig.context);
       
       this.labels[labelUid] = omit(labels[index], this.labelConfig.invalidKeys);
       log.info(messageHandler.parse('LABEL_EXPORT_SUCCESS', labelName), this.exportConfig.context);
     }
     
-    log.debug(`Sanitization complete. Total labels processed: ${Object.keys(this.labels).length}`, this.exportConfig.context);
+    log.debug(`Sanitization complete. Total labels processed: ${Object.keys(this.labels).length}.`, this.exportConfig.context);
   }
 }

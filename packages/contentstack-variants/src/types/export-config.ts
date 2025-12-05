@@ -20,7 +20,8 @@ export type Modules =
   | 'labels'
   | 'marketplace-apps'
   | 'taxonomies'
-  | 'personalize';
+  | 'personalize'
+  | 'composable-studio';
 
 export type branch = {
   uid: string;
@@ -182,6 +183,11 @@ export interface DefaultConfig {
       dirName: string;
       fileName: string;
       dependencies?: Modules[];
+    };
+    'composable-studio': {
+      dirName: string;
+      fileName: string;
+      apiBaseUrl: string;
     };
     masterLocale: {
       dirName: string;

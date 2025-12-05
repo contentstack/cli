@@ -25,7 +25,7 @@ export default class BranchGetCommand extends Command {
         cliux.print(`error: ${messageHandler.parse('CLI_CONFIG_BRANCH_LIST_NO_BRANCHES')}`, { color: 'red' });
       }
     } catch (error) {
-      cliux.error('error', error);
+      cliux.error('Error', error);
     }
   }
 }

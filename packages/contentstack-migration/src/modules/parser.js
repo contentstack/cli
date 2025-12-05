@@ -72,7 +72,7 @@ class Parser {
           base.dispatch(callsite, null, { typeErrors }, 'typeError');
         }
       } else {
-        console.log(error);
+        console.log('Error', error);
         // eslint-disable-next-line
         const [, filename, line] = error.stack.match(/\/([\/\w-_\.]+\.js):(\d*):(\d*)/);
         const callsite = {

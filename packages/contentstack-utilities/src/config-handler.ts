@@ -52,7 +52,7 @@ class Config {
           this.removeOldConfigStoreFile();
         }
       } catch (error) {
-        console.log('No data to be imported from Old config file');
+        console.log('No data to import from old configuration file.');
       }
 
       this.set(OLD_CONFIG_BACKUP_FLAG, true);

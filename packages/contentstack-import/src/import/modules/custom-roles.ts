@@ -54,7 +54,7 @@ export default class ImportCustomRoles extends BaseClass {
    * @returns {Promise<void>} Promise<void>
    */
   async start(): Promise<void> {
-    log.debug('Checking for custom roles folder existence', this.importConfig.context);
+    log.debug('Checking for custom roles folder existence...', this.importConfig.context);
 
     //Step1 check folder exists or not
     if (fileHelper.fileExistsSync(this.customRolesFolderPath)) {
@@ -63,25 +63,25 @@ export default class ImportCustomRoles extends BaseClass {
       this.customRoles = fsUtil.readFile(join(this.customRolesFolderPath, this.customRolesConfig.fileName),true) as Record<string, unknown>;
       this.customRolesLocales = fsUtil.readFile(join(this.customRolesFolderPath, this.customRolesConfig.customRolesLocalesFileName),true) as Record<string, unknown>;
     } else {
-      log.info(`No custom-rules are found - '${this.customRolesFolderPath}'`, this.importConfig.context);
+      log.info(`No custom roles found in: ${this.customRolesFolderPath}`, this.importConfig.context);
       return;
     }
 
     //create webhooks in mapper directory
-    log.debug('Creating custom roles mapper directory', this.importConfig.context);
+    log.debug('Creating custom roles mapper directory...', this.importConfig.context);
     await fsUtil.makeDirectory(this.customRolesMapperPath);
     
-    log.debug('Loading existing custom roles UID data', this.importConfig.context);
+    log.debug('Loading existing custom roles UID data...', this.importConfig.context);
     this.customRolesUidMapper = fileHelper.fileExistsSync(this.customRolesUidMapperPath)
       ? (fsUtil.readFile(join(this.customRolesUidMapperPath), true) as Record<string, unknown>) || {}
       : {};
       
-    log.debug('Loading environments UID data', this.importConfig.context);
+    log.debug('Loading environments UID data...', this.importConfig.context);
     this.environmentsUidMap = fileHelper.fileExistsSync(this.envUidMapperFolderPath)
       ? (fsUtil.readFile(join(this.envUidMapperFolderPath, 'uid-mapping.json'), true) as Record<string, unknown>) || {}
       : {};
       
-    log.debug('Loading entries UID data', this.importConfig.context);
+    log.debug('Loading entries UID data...', this.importConfig.context);
     this.entriesUidMap = fileHelper.fileExistsSync(this.entriesUidMapperFolderPath)
       ? (fsUtil.readFile(join(this.entriesUidMapperFolderPath, 'uid-mapping.json'), true) as Record<string, unknown>) || {}
       : {};
@@ -90,31 +90,31 @@ export default class ImportCustomRoles extends BaseClass {
       const customRolesUidCount = Object.keys(this.customRolesUidMapper || {}).length;
       log.debug(`Loaded existing custom roles UID data: ${customRolesUidCount} items`, this.importConfig.context);
     } else {
-      log.debug('No existing custom roles UID data found', this.importConfig.context);
+      log.debug('No existing custom roles UID data found.', this.importConfig.context);
     }
 
     if (this.environmentsUidMap && Object.keys(this.environmentsUidMap || {})?.length > 0) {
       const envUidCount = Object.keys(this.environmentsUidMap || {}).length;
       log.debug(`Loaded environments UID data: ${envUidCount} items`, this.importConfig.context);
     } else {
-      log.debug('No environments UID data found', this.importConfig.context);
+      log.debug('No environments UID data found.', this.importConfig.context);
     }
 
     if (this.entriesUidMap && Object.keys(this.entriesUidMap || {}).length > 0) {
       const entriesUidCount = Object.keys(this.entriesUidMap || {}).length;
       log.debug(`Loaded entries UID data: ${entriesUidCount} items`, this.importConfig.context);
     } else {
-      log.debug('No entries UID data found', this.importConfig.context);
+      log.debug('No entries UID data found.', this.importConfig.context);
     }
 
     //source and target stack locale map
-    log.debug('Getting locales UID mapping', this.importConfig.context);
+    log.debug('Getting locales UID mapping...', this.importConfig.context);
     await this.getLocalesUidMap();
     
-    log.debug('Starting custom roles import', this.importConfig.context);
+    log.debug('Starting custom roles import...', this.importConfig.context);
     await this.importCustomRoles();
 
-    log.debug('Processing custom roles import results', this.importConfig.context);
+    log.debug('Processing custom roles import results...', this.importConfig.context);
     if (this.createdCustomRoles?.length) {
       fsUtil.writeFile(this.createdCustomRolesPath, this.createdCustomRoles);
       log.debug(`Written ${this.createdCustomRoles.length} successful custom roles to file`, this.importConfig.context);
@@ -129,7 +129,7 @@ export default class ImportCustomRoles extends BaseClass {
   }
 
   async getLocalesUidMap(): Promise<void> {
-    log.debug('Fetching target stack locales', this.importConfig.context);
+    log.debug('Fetching target stack locales...', this.importConfig.context);
     const { items } = await this.stack
       .locale()
       .query()
@@ -139,25 +139,25 @@ export default class ImportCustomRoles extends BaseClass {
         return data;
       })
       .catch((error) => {
-        log.debug('Error fetching target stack locales', this.importConfig.context);
+        log.debug('Error fetching target stack locales!', this.importConfig.context);
         handleAndLogError(error, { ...this.importConfig.context});
       });
       
     this.targetLocalesMap = {};
     this.sourceLocalesMap = {};
 
-    log.debug('Building target locales mapping', this.importConfig.context);
+    log.debug('Building target locales mapping...', this.importConfig.context);
     forEach(items, (locale: any) => {
       this.targetLocalesMap[locale.code] = locale.uid;
     });
 
-    log.debug('Building source locales mapping', this.importConfig.context);
+    log.debug('Building source locales mapping...', this.importConfig.context);
     for (const key in this.customRolesLocales) {
       const sourceLocales = this.customRolesLocales[key] as Record<string, any>;
       this.sourceLocalesMap[sourceLocales.code] = key;
     }
 
-    log.debug('Creating locale UID mapping', this.importConfig.context);
+    log.debug('Creating locale UID mapping...', this.importConfig.context);
     for (const key in this.sourceLocalesMap) {
       const sourceLocaleKey = this.sourceLocalesMap[key] as string;
       this.localesUidMap[sourceLocaleKey] = this.targetLocalesMap[key];
@@ -168,9 +168,9 @@ export default class ImportCustomRoles extends BaseClass {
   }
 
   async importCustomRoles() {
-    log.debug('Starting custom roles import process', this.importConfig.context);
+    log.debug('Starting custom roles import process...', this.importConfig.context);
     if (this.customRoles === undefined || isEmpty(this.customRoles)) {
-      log.info('No custom-roles found', this.importConfig.context);
+      log.info('No custom roles found', this.importConfig.context);
       return;
     }
 
@@ -191,7 +191,7 @@ export default class ImportCustomRoles extends BaseClass {
       log.debug(`Custom role '${name}' import failed`, this.importConfig.context);
 
       if (err?.errors?.name) {
-        log.info(`custom-role '${name}' already exists`, this.importConfig.context);
+        log.info(`Custom role '${name}' already exists.`, this.importConfig.context);
       } else {
         this.failedCustomRoles.push(apiData);
         handleAndLogError(error, { ...this.importConfig.context, name }, `custom-role '${name}' failed to be import`);
@@ -216,7 +216,7 @@ export default class ImportCustomRoles extends BaseClass {
       false,
     );
     
-    log.debug('Custom roles import process completed', this.importConfig.context);
+    log.debug('Custom roles import process completed.', this.importConfig.context);
   }
 
   /**
@@ -272,7 +272,7 @@ export default class ImportCustomRoles extends BaseClass {
         rule.environments = map(rule.environments, (env: any) => this.environmentsUidMap[env]);
         log.debug(`Transformed ${originalEnvs} environment UIDs for rule`, this.importConfig.context);
       } else {
-        log.debug('No environment UID mappings available for transformation', this.importConfig.context);
+        log.debug('No environment UID mappings available for transformation.', this.importConfig.context);
       }
     } else if (rule.module === 'locale') {
       if(!isEmpty(this.localesUidMap)){
@@ -280,7 +280,7 @@ export default class ImportCustomRoles extends BaseClass {
         rule.locales = map(rule.locales, (locale: any) => this.localesUidMap[locale]);
         log.debug(`Transformed ${originalLocales} locale UIDs for rule`, this.importConfig.context);
       } else {
-        log.debug('No locale UID mappings available for transformation', this.importConfig.context);
+        log.debug('No locale UID mappings available for transformation.', this.importConfig.context);
       }
     } else if (rule.module === 'entry') {
       if(!isEmpty(this.entriesUidMap)){
@@ -288,7 +288,7 @@ export default class ImportCustomRoles extends BaseClass {
         rule.entries = map(rule.entries, (entry: any) => this.entriesUidMap[entry]);
         log.debug(`Transformed ${originalEntries} entry UIDs for rule`, this.importConfig.context);
       } else {
-        log.debug('No entry UID mappings available for transformation', this.importConfig.context);
+        log.debug('No entry UID mappings available for transformation.', this.importConfig.context);
       }
     }
     return rule;

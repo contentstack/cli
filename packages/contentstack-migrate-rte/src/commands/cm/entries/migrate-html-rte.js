@@ -56,7 +56,7 @@ class JsonMigrationCommand extends Command {
         }
       }
     } catch (error) {
-      this.error(error.message, { exit: 2 });
+      this.error(`Error: ${error.message}`, { exit: 2 });
     }
   }
 }

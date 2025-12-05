@@ -5,6 +5,7 @@ import { default as Logger } from './logger';
 import { CLIErrorHandler } from './cli-error-handler';
 import { ErrorContext } from '../interfaces';
 import { configHandler } from '..';
+import { getSessionLogPath } from './session-path';
 
 let loggerInstance: Logger | null = null;
 
@@ -105,4 +106,6 @@ function getLogPath(): string {
   return path.join(os.homedir(), 'contentstack', 'logs');
 }
 
+// Re-export getSessionLogPath for external use
+export { getSessionLogPath } from './session-path';
 export { v2Logger, cliErrorHandler, handleAndLogError, getLogPath };

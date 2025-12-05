@@ -38,7 +38,7 @@ export default class ImportEnvironments extends BaseClass {
    * @returns {Promise<void>} Promise<void>
    */
   async start(): Promise<void> {
-    log.debug('Checking for environments folder existence', this.importConfig.context);
+    log.debug('Checking if environments folder exists...', this.importConfig.context);
 
     //Step1 check folder exists or not
     if (fileHelper.fileExistsSync(this.environmentsFolderPath)) {
@@ -50,13 +50,13 @@ export default class ImportEnvironments extends BaseClass {
       const envCount = Object.keys(this.environments || {}).length;
       log.debug(`Loaded ${envCount} environment items from file`, this.importConfig.context);
     } else {
-      log.info(`No Environments Found - '${this.environmentsFolderPath}'`, this.importConfig.context);
+      log.info(`No environments found: '${this.environmentsFolderPath}'`, this.importConfig.context);
       return;
     }
 
-    log.debug('Creating environments mapper directory', this.importConfig.context);
+    log.debug('Creating environments mapper directory...', this.importConfig.context);
     await fsUtil.makeDirectory(this.mapperDirPath);
-    log.debug('Loading existing environment UID mappings', this.importConfig.context);
+    log.debug('Loading existing environment UID mappings...', this.importConfig.context);
     this.envUidMapper = fileHelper.fileExistsSync(this.envUidMapperPath)
       ? (fsUtil.readFile(join(this.envUidMapperPath), true) as Record<string, unknown>)
       : {};
@@ -65,13 +65,13 @@ export default class ImportEnvironments extends BaseClass {
       const envUidCount = Object.keys(this.envUidMapper || {}).length;
       log.debug(`Loaded existing environment UID data: ${envUidCount} items`, this.importConfig.context);
     } else {
-      log.debug('No existing environment UID mappings found', this.importConfig.context);
+      log.debug('No existing environment UID mappings found.', this.importConfig.context);
     }
 
-    log.debug('Starting environment import process', this.importConfig.context);
+    log.debug('Starting environment import process...', this.importConfig.context);
     await this.importEnvironments();
 
-    log.debug('Processing environment import results', this.importConfig.context);
+    log.debug('Processing environment import results...', this.importConfig.context);
     if (this.envSuccess?.length) {
       fsUtil.writeFile(this.envSuccessPath, this.envSuccess);
       log.debug(`Written ${this.envSuccess.length} successful environments to file`, this.importConfig.context);
@@ -86,9 +86,9 @@ export default class ImportEnvironments extends BaseClass {
   }
 
   async importEnvironments() {
-    log.debug('Validating environments data', this.importConfig.context);
+    log.debug('Validating environment data...', this.importConfig.context);
     if (this.environments === undefined || isEmpty(this.environments)) {
-      log.info('No Environment Found', this.importConfig.context);
+      log.info('No environment found.', this.importConfig.context);
       return;
     }
 
@@ -139,7 +139,7 @@ export default class ImportEnvironments extends BaseClass {
       false,
     );
 
-    log.debug('Environments import process completed', this.importConfig.context);
+    log.debug('Environment import process completed.', this.importConfig.context);
   }
 
   /**

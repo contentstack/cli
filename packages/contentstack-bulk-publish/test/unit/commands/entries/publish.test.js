@@ -59,7 +59,7 @@ describe('EntriesPublish Command', () => {
       '--yes',
     ];
 
-    const expectedError = 'Please use `--alias` or `--stack-api-key` to proceed.';
+    const expectedError = 'Use the `--alias` or `--stack-api-key` flag to proceed.';
 
     try {
       await EntriesPublish.run(args);
