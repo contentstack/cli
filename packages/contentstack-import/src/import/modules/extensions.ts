@@ -97,7 +97,7 @@ export default class ImportExtensions extends BaseClass {
   async importExtensions(): Promise<any> {
     log.debug('Starting Create process', this.importConfig.context);
     if (this.extensions === undefined || isEmpty(this.extensions)) {
-      log.info('No Extensions Found', this.importConfig.context);
+      log.info('No extensions found.', this.importConfig.context);
       return;
     }
 

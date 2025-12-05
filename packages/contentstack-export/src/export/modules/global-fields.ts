@@ -74,7 +74,7 @@ export default class GlobalFieldsExport extends BaseClass {
       await this.getGlobalFields();
 
       const globalFieldsFilePath = path.join(this.globalFieldsDirPath, this.globalFieldsConfig.fileName);
-      log.debug(`Writing global fields to: ${globalFieldsFilePath}`, this.exportConfig.context);
+      log.debug(`Writing global fields to: '${globalFieldsFilePath}'`, this.exportConfig.context);
       fsUtil.writeFile(globalFieldsFilePath, this.globalFields);
 
       log.success(
@@ -84,7 +84,7 @@ export default class GlobalFieldsExport extends BaseClass {
 
       this.completeProgress(true);
     } catch (error) {
-      log.debug('Error occurred during global fields export', this.exportConfig.context);
+      log.debug('An error occurred during global fields export.', this.exportConfig.context);
       handleAndLogError(error, { ...this.exportConfig.context });
       this.completeProgress(false, error?.message || 'Global fields export failed');
     }
@@ -93,7 +93,7 @@ export default class GlobalFieldsExport extends BaseClass {
   async getGlobalFields(skip: number = 0): Promise<any> {
     if (skip) {
       this.qs.skip = skip;
-      log.debug(`Fetching global fields with skip: ${skip}`, this.exportConfig.context);
+      log.debug(`Fetching global fields with skip: ${skip}.`, this.exportConfig.context);
     }
     log.debug(`Query parameters: ${JSON.stringify(this.qs)}`, this.exportConfig.context);
 
@@ -107,17 +107,17 @@ export default class GlobalFieldsExport extends BaseClass {
     );
 
     if (Array.isArray(globalFieldsFetchResponse.items) && globalFieldsFetchResponse.items.length > 0) {
-      log.debug(`Processing ${globalFieldsFetchResponse.items.length} global fields`, this.exportConfig.context);
+      log.debug(`Processing ${globalFieldsFetchResponse.items.length} global fields...`, this.exportConfig.context);
       this.sanitizeAttribs(globalFieldsFetchResponse.items);
       skip += this.globalFieldsConfig.limit || 100;
       if (skip >= globalFieldsFetchResponse.count) {
-        log.debug('Completed fetching all global fields', this.exportConfig.context);
+        log.debug('Completed fetching all global fields.', this.exportConfig.context);
         return;
       }
-      log.debug(`Continuing to fetch global fields with skip: ${skip}`, this.exportConfig.context);
+      log.debug(`Continuing to fetch global fields with skip: ${skip}.`, this.exportConfig.context);
       return await this.getGlobalFields(skip);
     } else {
-      log.debug('No global fields found to process', this.exportConfig.context);
+      log.debug('No global fields found to process.', this.exportConfig.context);
     }
   }
 

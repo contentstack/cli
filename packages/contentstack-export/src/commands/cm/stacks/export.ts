@@ -138,8 +138,8 @@ export default class ExportCommand extends Command {
         `The content of the stack ${exportConfig.apiKey} has been exported successfully!`,
         exportConfig.context,
       );
-      log.info(`The exported content has been stored at '${exportDir}'`, exportConfig.context);
-      log.success(`The log has been stored at '${getLogPath()}'`, exportConfig.context);
+      log.info(`The exported content has been stored at '${exportDir}'.`, exportConfig.context);
+      log.success(`The log has been stored at '${getLogPath()}'.`, exportConfig.context);
 
       // Print comprehensive summary at the end
       if (!exportConfig.branches) CLIProgressManager.printGlobalSummary();
@@ -154,7 +154,7 @@ export default class ExportCommand extends Command {
       handleAndLogError(error);
       if (!configHandler.get('log')?.showConsoleLogs) {
         cliux.print(`Error: ${error}`, { color: 'red' });
-        cliux.print(`The log has been stored at '${getLogPath()}'`, { color: 'green' });
+        cliux.print(`The log has been stored at '${getLogPath()}'.`, { color: 'green' });
       }
     }
   }

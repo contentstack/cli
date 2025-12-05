@@ -310,10 +310,10 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
 
     if (PAUSE) {
       if (latestVersionUsed) {
-        log.debug(`Creating new PAUSE version for: ${experience.uid}`, this.config.context);
+        log.debug(`Creating new PAUSED version for: ${experience.uid}`, this.config.context);
         await this.createExperienceVersion(experience.uid, PAUSE);
       } else {
-        log.debug(`Updating experience version to PAUSE for: ${experience.uid}`, this.config.context);
+        log.debug(`Updating experience version to PAUSED for: ${experience.uid}`, this.config.context);
         await this.updateExperienceVersion(experience.uid, experience.latestVersion, PAUSE);
       }
     }
@@ -343,7 +343,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
           this.cmsVariantGroups[expUid] = expRes._cms?.variantGroup ?? {};
           return expUid; // Return the expUid for filtering later
         } else {
-          log.debug(`Variants/variant group not ready for experience: ${expUid}`, this.config.context);
+          log.debug(`Variants or variant group not ready for experience: ${expUid}`, this.config.context);
         }
       });
 
@@ -360,7 +360,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
           );
           return this.validateVariantGroupAndVariantsCreated(retryCount);
         } else {
-          log.error('Personalize job failed to create variants and variant groups', this.config.context);
+          log.error('Personalize job failed to create variants and variant groups.', this.config.context);
           log.error(
             `Failed experiences: ${this.pendingVariantAndVariantGrpForExperience.join(', ')}`,
             this.config.context,
@@ -385,7 +385,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
       // Read the created content types from the file
       this.createdCTs = fsUtil.readFile(this.cTsSuccessPath, true) as any;
       if (!this.createdCTs) {
-        log.debug('No Content types created, skipping following process', this.config.context);
+        log.warn('No content types created.', this.config.context);
         return;
       }
 

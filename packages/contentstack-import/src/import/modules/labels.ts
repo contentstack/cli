@@ -84,7 +84,7 @@ export default class ImportLabels extends BaseClass {
   async importLabels() {
     log.debug('Validating labels data', this.importConfig.context);
     if (this.labels === undefined || isEmpty(this.labels)) {
-      log.info('No Labels Found', this.importConfig.context);
+      log.info('No labels found.', this.importConfig.context);
       return;
     }
 
@@ -150,7 +150,7 @@ export default class ImportLabels extends BaseClass {
     log.debug(`Serializing label: ${label.name} (${label.uid})`, this.importConfig.context);
 
     if (this.labelUidMapper.hasOwnProperty(label.uid)) {
-      log.info(`Label '${label.name}' already exists. Skipping it to avoid duplicates!`, this.importConfig.context);
+      log.info(`Label '${label.name}' already exists. Skipping to avoid duplicates.`, this.importConfig.context);
       log.debug(`Skipping label serialization for: ${label.uid}`, this.importConfig.context);
       this.progressManager?.tick(
         true,
@@ -174,7 +174,7 @@ export default class ImportLabels extends BaseClass {
   }
 
   async updateLabels() {
-    log.debug('Starting labels update process', this.importConfig.context);
+    log.debug('Starting labels update process...', this.importConfig.context);
     if (!isEmpty(this.labels)) {
       const apiContent = values(this.labels);
       log.debug(`Updating ${apiContent.length} labels`, this.importConfig.context);
@@ -219,10 +219,10 @@ export default class ImportLabels extends BaseClass {
         false,
       );
     } else {
-      log.debug('No labels to update', this.importConfig.context);
+      log.debug('No labels to update.', this.importConfig.context);
     }
 
-    log.debug('Labels update process completed', this.importConfig.context);
+    log.debug('Labels update process completed.', this.importConfig.context);
   }
 
   /**

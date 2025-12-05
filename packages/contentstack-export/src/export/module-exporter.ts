@@ -104,7 +104,7 @@ class ModuleExporter {
   }
 
   async exportByModuleByName(moduleName: Modules) {
-    log.info(`Exporting module: ${moduleName}`, this.exportConfig.context);
+    log.info(`Exporting module: '${moduleName}'...`, this.exportConfig.context);
     // export the modules by name
     // calls the module runner which inturn calls the module itself
     await startModuleExport({

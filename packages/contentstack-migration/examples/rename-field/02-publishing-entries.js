@@ -24,7 +24,7 @@ module.exports = async ({migration, stackSDKInstance}) => {
             entry.publish({publishDetails, locale: 'en-us'})
           }
         } catch (error) {
-          console.log(error)
+          console.log('Error', error)
         }
       },
     }

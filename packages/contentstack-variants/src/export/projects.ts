@@ -51,7 +51,7 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
 
       if (!this.projectsData?.length) {
         log.debug('No projects found, disabling personalization', this.exportConfig.context);
-        log.info('No Personalize Project connected with the given stack', this.exportConfig.context);
+        log.info(`No Personalize project connected with the given stack.`, this.exportConfig.context);
         this.exportConfig.personalizationEnabled = false;
         return;
       }
