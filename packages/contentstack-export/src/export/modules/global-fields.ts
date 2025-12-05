@@ -62,13 +62,17 @@ export default class GlobalFieldsExport extends BaseClass {
         return [countResponse.count || 0];
       });
 
-      if (totalCount === 0) {
-        log.info(messageHandler.parse('GLOBAL_FIELDS_NOT_FOUND'), this.exportConfig.context);
-        return;
-      }
-
       // Create simple progress manager for global fields
       const progress = this.createSimpleProgress(this.currentModuleName, totalCount);
+
+      if (totalCount === 0) {
+        log.info(messageHandler.parse('GLOBAL_FIELDS_NOT_FOUND'), this.exportConfig.context);
+        const globalFieldsFilePath = path.join(this.globalFieldsDirPath, this.globalFieldsConfig.fileName);
+        log.debug(`Writing global fields to: ${globalFieldsFilePath}`, this.exportConfig.context);
+        fsUtil.writeFile(globalFieldsFilePath, this.globalFields);
+        this.completeProgress(true);
+        return;
+      }
 
       progress.updateStatus('Fetching global fields...');
       await this.getGlobalFields();

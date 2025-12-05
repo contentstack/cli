@@ -55,12 +55,12 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
     log.debug('LoginCommand run method started', this.contextDetails);
 
     try {
-      log.debug('Initializing management API client', this.contextDetails);
+      log.debug('Initializing the Management API client.', this.contextDetails);
       const managementAPIClient = await managementSDKClient({ host: this.cmaHost, skipTokenValidity: true });
-      log.debug('Management API client initialized successfully', this.contextDetails);
+      log.debug('Management API client initialized successfully.', this.contextDetails);
 
       const { flags: loginFlags } = await this.parse(LoginCommand);
-      log.debug('Token add flags parsed', { ...this.contextDetails, flags: loginFlags });
+      log.debug('Token add flags parsed.', { ...this.contextDetails, flags: loginFlags });
 
       authHandler.client = managementAPIClient;
       log.debug('Auth handler client set', this.contextDetails);
@@ -86,7 +86,7 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
         await this.login(username, password);
       }
     } catch (error) {
-      log.debug('Login command failed', {
+      log.debug('Login failed.', {
         ...this.contextDetails,
         error,
       });
@@ -116,7 +116,7 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
       }
 
       const user: User = await authHandler.login(username, password, tfaToken);
-      log.debug('Auth handler login completed', {
+      log.debug('Auth handler login completed.', {
         ...this.contextDetails,
         hasUser: !!user,
         hasAuthToken: !!user?.authtoken,
@@ -124,18 +124,18 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
       });
 
       if (typeof user !== 'object' || !user.authtoken || !user.email) {
-        log.debug('Login failed - invalid user response', { ...this.contextDetails, user });
-        throw new CLIError('Failed to login - invalid response');
+        log.debug('Login failed: Invalid user response', { ...this.contextDetails, user });
+        throw new CLIError('Login failed: Invalid response.');
       }
 
-      log.debug('Setting config data for basic auth', this.contextDetails);
+      log.debug('Setting configuration data for basic authentication.', this.contextDetails);
       await oauthHandler.setConfigData('basicAuth', user);
-      log.debug('Config data set successfully', this.contextDetails);
+      log.debug('Configuration data set successfully.', this.contextDetails);
 
       log.success(messageHandler.parse('CLI_AUTH_LOGIN_SUCCESS'), this.contextDetails);
-      log.debug('Login process completed successfully', this.contextDetails);
+      log.debug('Login completed successfully.', this.contextDetails);
     } catch (error) {
-      log.debug('Login process failed', { ...this.contextDetails, error });
+      log.debug('Login failed.', { ...this.contextDetails, error });
       throw error;
     }
   }

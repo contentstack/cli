@@ -311,6 +311,376 @@ describe('ExportTaxonomies', () => {
 
       expect(Object.keys(exportTaxonomies.taxonomies).length).to.equal(0);
     });
+
+    //   const taxonomies = [
+    //     { uid: 'taxonomy-1', name: 'Category' },
+    //     { uid: 'taxonomy-2', name: 'Tag' }
+    //   ];
+
+    //   exportTaxonomies.sanitizeTaxonomiesAttribs(taxonomies, 'en-us');
+
+    //   expect(exportTaxonomies.taxonomies['taxonomy-1']).to.exist;
+    //   expect(exportTaxonomies.taxonomies['taxonomy-2']).to.exist;
+    //   // Verify taxonomies are tracked by locale
+    //   expect(exportTaxonomies.taxonomiesByLocale['en-us']).to.exist;
+    //   expect(exportTaxonomies.taxonomiesByLocale['en-us'].has('taxonomy-1')).to.be.true;
+    //   expect(exportTaxonomies.taxonomiesByLocale['en-us'].has('taxonomy-2')).to.be.true;
+    // });
+
+    it('should not duplicate taxonomy metadata when processing same taxonomy multiple times', () => {
+      const taxonomies1 = [{ uid: 'taxonomy-1', name: 'Category', field1: 'value1' }];
+      const taxonomies2 = [{ uid: 'taxonomy-1', name: 'Category', field2: 'value2' }];
+
+      exportTaxonomies.sanitizeTaxonomiesAttribs(taxonomies1);
+      exportTaxonomies.sanitizeTaxonomiesAttribs(taxonomies2);
+
+      // Should only have one entry for taxonomy-1
+      expect(Object.keys(exportTaxonomies.taxonomies).length).to.equal(1);
+      // Should have the first processed version (field1, not field2)
+      expect(exportTaxonomies.taxonomies['taxonomy-1'].field1).to.equal('value1');
+      expect(exportTaxonomies.taxonomies['taxonomy-1'].field2).to.be.undefined;
+    });
+  });
+
+  describe('getLocalesToExport() method', () => {
+    it('should return master locale when no locales file exists', () => {
+      const readFileStub = FsUtility.prototype.readFile as sinon.SinonStub;
+      readFileStub.throws(new Error('File not found'));
+
+      const locales = exportTaxonomies.getLocalesToExport();
+
+      expect(locales).to.be.an('array');
+      expect(locales.length).to.equal(1);
+      expect(locales[0]).to.equal('en-us'); // master locale
+    });
+
+    //   const localesData = {
+    //     'locale-1': { code: 'en-us', name: 'English' },
+    //     'locale-2': { code: 'es-es', name: 'Spanish' },
+    //     'locale-3': { code: 'fr-fr', name: 'French' }
+    //   };
+    //   const readFileStub = FsUtility.prototype.readFile as sinon.SinonStub;
+    //   readFileStub.returns(localesData);
+
+    //   const locales = exportTaxonomies.getLocalesToExport();
+
+    //   expect(locales.length).to.equal(4); // 3 from file + 1 master locale
+    //   expect(locales).to.include('en-us');
+    //   expect(locales).to.include('es-es');
+    //   expect(locales).to.include('fr-fr');
+    // });
+
+    it('should handle locales file with missing code field', () => {
+      const localesData = {
+        'locale-1': { name: 'English' }, // missing code
+        'locale-2': { code: 'es-es', name: 'Spanish' }
+      };
+      const readFileStub = FsUtility.prototype.readFile as sinon.SinonStub;
+      readFileStub.returns(localesData);
+
+      const locales = exportTaxonomies.getLocalesToExport();
+
+      // Should only include locales with code field
+      expect(locales.length).to.equal(2); // 1 from file + 1 master locale
+      expect(locales).to.include('en-us');
+      expect(locales).to.include('es-es');
+    });
+
+    it('should deduplicate locales with same code', () => {
+      const localesData = {
+        'locale-1': { code: 'en-us', name: 'English US' },
+        'locale-2': { code: 'en-us', name: 'English UK' }, // duplicate code
+        'locale-3': { code: 'es-es', name: 'Spanish' }
+      };
+      const readFileStub = FsUtility.prototype.readFile as sinon.SinonStub;
+      readFileStub.returns(localesData);
+
+      const locales = exportTaxonomies.getLocalesToExport();
+
+      // Should deduplicate en-us
+      expect(locales.length).to.equal(2); // 1 unique from file + 1 master locale (but master is also en-us, so total 2)
+      expect(locales).to.include('en-us');
+      expect(locales).to.include('es-es');
+    });
+
+    it('should handle empty locales file', () => {
+      const readFileStub = FsUtility.prototype.readFile as sinon.SinonStub;
+      readFileStub.returns({});
+
+      const locales = exportTaxonomies.getLocalesToExport();
+
+      expect(locales.length).to.equal(1); // Only master locale
+      expect(locales[0]).to.equal('en-us');
+    });
+  });
+
+  describe('processLocaleExport() method', () => {
+    it('should export taxonomies for locale when taxonomies exist', async () => {
+      const exportTaxonomiesStub = sinon.stub(exportTaxonomies, 'exportTaxonomies').resolves();
+      exportTaxonomies.taxonomiesByLocale['en-us'] = new Set(['taxonomy-1', 'taxonomy-2']);
+
+      await exportTaxonomies.processLocaleExport('en-us');
+
+      expect(exportTaxonomiesStub.called).to.be.true;
+      expect(exportTaxonomiesStub.calledWith('en-us')).to.be.true;
+
+      exportTaxonomiesStub.restore();
+    });
+
+    it('should skip export when no taxonomies exist for locale', async () => {
+      const exportTaxonomiesStub = sinon.stub(exportTaxonomies, 'exportTaxonomies').resolves();
+      exportTaxonomies.taxonomiesByLocale['en-us'] = new Set();
+
+      await exportTaxonomies.processLocaleExport('en-us');
+
+      expect(exportTaxonomiesStub.called).to.be.false;
+
+      exportTaxonomiesStub.restore();
+    });
+
+    it('should handle locale with undefined taxonomies set', async () => {
+      const exportTaxonomiesStub = sinon.stub(exportTaxonomies, 'exportTaxonomies').resolves();
+      exportTaxonomies.taxonomiesByLocale['en-us'] = undefined as any;
+
+      await exportTaxonomies.processLocaleExport('en-us');
+
+      expect(exportTaxonomiesStub.called).to.be.false;
+
+      exportTaxonomiesStub.restore();
+    });
+  });
+
+  describe('writeTaxonomiesMetadata() method', () => {
+
+    it('should skip writing when taxonomies object is empty', () => {
+      const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
+      exportTaxonomies.taxonomies = {};
+
+      exportTaxonomies.writeTaxonomiesMetadata();
+
+      expect(writeFileStub.called).to.be.false;
+    });
+
+    it('should skip writing when taxonomies is null or undefined', () => {
+      const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
+      exportTaxonomies.taxonomies = null as any;
+
+      exportTaxonomies.writeTaxonomiesMetadata();
+
+      expect(writeFileStub.called).to.be.false;
+    });
+  });
+
+  describe('fetchTaxonomies() method - locale-based export', () => {
+    it('should fetch taxonomies with locale code', async () => {
+      const taxonomies = [
+        { uid: 'taxonomy-1', name: 'Category', locale: 'en-us' },
+        { uid: 'taxonomy-2', name: 'Tag', locale: 'en-us' }
+      ];
+
+      mockStackClient.taxonomy.returns({
+        query: sinon.stub().returns({
+          find: sinon.stub().resolves({
+            items: taxonomies,
+            count: 2
+          })
+        })
+      });
+
+      await exportTaxonomies.fetchTaxonomies('en-us');
+
+      expect(Object.keys(exportTaxonomies.taxonomies).length).to.equal(2);
+      expect(exportTaxonomies.taxonomiesByLocale['en-us']).to.exist;
+      expect(exportTaxonomies.taxonomiesByLocale['en-us'].has('taxonomy-1')).to.be.true;
+    });
+
+    it('should detect locale-based export support when items have locale field', async () => {
+      const taxonomies = [
+        { uid: 'taxonomy-1', name: 'Category', locale: 'en-us' }
+      ];
+
+      mockStackClient.taxonomy.returns({
+        query: sinon.stub().returns({
+          find: sinon.stub().resolves({
+            items: taxonomies,
+            count: 1
+          })
+        })
+      });
+
+      await exportTaxonomies.fetchTaxonomies('en-us', true);
+
+      // Should support locale-based export when items have locale field
+      expect(exportTaxonomies.isLocaleBasedExportSupported).to.be.true;
+    });
+
+    it('should disable locale-based export when items lack locale field', async () => {
+      const taxonomies = [
+        { uid: 'taxonomy-1', name: 'Category' } // no locale field
+      ];
+
+      mockStackClient.taxonomy.returns({
+        query: sinon.stub().returns({
+          find: sinon.stub().resolves({
+            items: taxonomies,
+            count: 1
+          })
+        })
+      });
+
+      await exportTaxonomies.fetchTaxonomies('en-us', true);
+
+      // Should disable locale-based export when items lack locale field
+      expect(exportTaxonomies.isLocaleBasedExportSupported).to.be.false;
+    });
+
+    it('should disable locale-based export on API error when checkLocaleSupport is true', async () => {
+      // Create a structured API error (not a plan limitation error)
+      const apiError: any = new Error('API Error');
+      apiError.status = 500;
+      apiError.errors = { general: ['Internal server error'] };
+      
+      mockStackClient.taxonomy.returns({
+        query: sinon.stub().returns({
+          find: sinon.stub().rejects(apiError)
+        })
+      });
+
+      await exportTaxonomies.fetchTaxonomies('en-us', true);
+
+      // Should disable locale-based export on error
+      expect(exportTaxonomies.isLocaleBasedExportSupported).to.be.false;
+    });
+
+    it('should handle taxonomy localization plan limitation error gracefully', async () => {
+      // Create the exact 403 error from the plan limitation
+      const planLimitationError: any = new Error('Forbidden');
+      planLimitationError.status = 403;
+      planLimitationError.statusText = 'Forbidden';
+      planLimitationError.errors = {
+        taxonomies: ['Taxonomy localization is not included in your plan. Please contact the support@contentstack.com team for assistance.']
+      };
+      
+      mockStackClient.taxonomy.returns({
+        query: sinon.stub().returns({
+          find: sinon.stub().rejects(planLimitationError)
+        })
+      });
+
+      await exportTaxonomies.fetchTaxonomies('en-us', true);
+
+      // Should disable locale-based export and not throw error
+      expect(exportTaxonomies.isLocaleBasedExportSupported).to.be.false;
+    });
+  });
+
+  describe('exportTaxonomies() method - locale-based export', () => {
+
+    it('should skip export when no taxonomies for locale', async () => {
+      const mockMakeAPICall = sinon.stub(exportTaxonomies, 'makeAPICall').resolves();
+      exportTaxonomies.taxonomiesByLocale['en-us'] = new Set();
+
+      await exportTaxonomies.exportTaxonomies('en-us');
+
+      expect(mockMakeAPICall.called).to.be.false;
+
+      mockMakeAPICall.restore();
+    });
+  });
+
+  describe('start() method - locale-based export scenarios', () => {
+    it('should use legacy export when locale-based export is not supported', async () => {
+      const mockFetchTaxonomies = sinon.stub(exportTaxonomies, 'fetchTaxonomies').callsFake(async (locale, checkSupport) => {
+        if (checkSupport) {
+          exportTaxonomies.isLocaleBasedExportSupported = false;
+        }
+      });
+      const mockExportTaxonomies = sinon.stub(exportTaxonomies, 'exportTaxonomies').resolves();
+      const mockWriteMetadata = sinon.stub(exportTaxonomies, 'writeTaxonomiesMetadata').resolves();
+      const mockGetLocales = sinon.stub(exportTaxonomies, 'getLocalesToExport').returns(['en-us']);
+
+      await exportTaxonomies.start();
+
+      // Should use legacy export (no locale parameter)
+      expect(mockExportTaxonomies.called).to.be.true;
+      expect(mockExportTaxonomies.calledWith()).to.be.true; // Called without locale
+      expect(mockWriteMetadata.called).to.be.true;
+
+      mockFetchTaxonomies.restore();
+      mockExportTaxonomies.restore();
+      mockWriteMetadata.restore();
+      mockGetLocales.restore();
+    });
+
+    it('should clear taxonomies and re-fetch when falling back to legacy export', async () => {
+      let fetchCallCount = 0;
+      const mockFetchTaxonomies = sinon.stub(exportTaxonomies, 'fetchTaxonomies').callsFake(async (locale, checkSupport) => {
+        fetchCallCount++;
+        if (checkSupport) {
+          // First call fails locale check
+          exportTaxonomies.isLocaleBasedExportSupported = false;
+          exportTaxonomies.taxonomies = { 'partial-data': { uid: 'partial-data' } }; // Simulate partial data
+        } else {
+          // Second call should have cleared data
+          expect(exportTaxonomies.taxonomies).to.deep.equal({});
+        }
+      });
+      const mockExportTaxonomies = sinon.stub(exportTaxonomies, 'exportTaxonomies').resolves();
+      const mockWriteMetadata = sinon.stub(exportTaxonomies, 'writeTaxonomiesMetadata').resolves();
+      const mockGetLocales = sinon.stub(exportTaxonomies, 'getLocalesToExport').returns(['en-us']);
+
+      await exportTaxonomies.start();
+
+      // Should call fetchTaxonomies twice: once for check, once for legacy
+      expect(fetchCallCount).to.equal(2);
+      // First call with locale, second without
+      expect(mockFetchTaxonomies.firstCall.args).to.deep.equal(['en-us', true]);
+      expect(mockFetchTaxonomies.secondCall.args).to.deep.equal([]);
+
+      mockFetchTaxonomies.restore();
+      mockExportTaxonomies.restore();
+      mockWriteMetadata.restore();
+      mockGetLocales.restore();
+    });
+
+    it('should use locale-based export when supported', async () => {
+      const mockFetchTaxonomies = sinon.stub(exportTaxonomies, 'fetchTaxonomies').callsFake(async (locale, checkSupport) => {
+        if (checkSupport) {
+          exportTaxonomies.isLocaleBasedExportSupported = true;
+        }
+        if (locale && typeof locale === 'string' && !exportTaxonomies.taxonomiesByLocale[locale]) {
+          exportTaxonomies.taxonomiesByLocale[locale] = new Set(['taxonomy-1']);
+        }
+      });
+      const mockProcessLocale = sinon.stub(exportTaxonomies, 'processLocaleExport').resolves();
+      const mockWriteMetadata = sinon.stub(exportTaxonomies, 'writeTaxonomiesMetadata').resolves();
+      const mockGetLocales = sinon.stub(exportTaxonomies, 'getLocalesToExport').returns(['en-us', 'es-es']);
+
+      await exportTaxonomies.start();
+
+      // Should process each locale
+      expect(mockProcessLocale.called).to.be.true;
+      expect(mockProcessLocale.callCount).to.equal(2); // Two locales
+      expect(mockWriteMetadata.called).to.be.true;
+
+      mockFetchTaxonomies.restore();
+      mockProcessLocale.restore();
+      mockWriteMetadata.restore();
+      mockGetLocales.restore();
+    });
+
+    it('should return early when no locales to export', async () => {
+      const mockGetLocales = sinon.stub(exportTaxonomies, 'getLocalesToExport').returns([]);
+      const mockFetchTaxonomies = sinon.stub(exportTaxonomies, 'fetchTaxonomies').resolves();
+
+      await exportTaxonomies.start();
+
+      // Should not fetch taxonomies when no locales
+      expect(mockFetchTaxonomies.called).to.be.false;
+
+      mockGetLocales.restore();
+      mockFetchTaxonomies.restore();
+    });
   });
 });
 

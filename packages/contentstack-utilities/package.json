@@ -46,7 +46,7 @@
     "inquirer": "8.2.7",
     "inquirer-search-checkbox": "^1.0.0",
     "inquirer-search-list": "^1.2.6",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.1.1",
     "klona": "^2.0.6",
     "lodash": "^4.17.21",
     "mkdirp": "^1.0.4",

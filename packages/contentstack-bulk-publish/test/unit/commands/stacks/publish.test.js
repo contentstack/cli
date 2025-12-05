@@ -59,7 +59,7 @@ describe('StackPublish', () => {
       '--yes',
     ];
 
-    const expectedError = 'Please use `--alias` or `--stack-api-key` to proceed.';
+    const expectedError = 'Use the `--alias` or `--stack-api-key` flag to proceed.';
 
     runStub = sinon.stub(StackPublish.prototype, 'run').callsFake(function () {
       throw new Error(expectedError);

@@ -130,7 +130,7 @@ describe('Export Config Handler', () => {
       const config = await setupConfig(flags);
       
       expect(readFileStub.calledWith('/path/to/config.json')).to.be.true;
-      expect(config.contentVersion).to.equal(3);
+      expect((config as any).contentVersion).to.equal(3);
       expect((config as any).customField).to.equal('customValue');
     });
   });

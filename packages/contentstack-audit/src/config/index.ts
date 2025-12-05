@@ -116,17 +116,17 @@ const config = {
     "Passed",
   ],
   ReportTitleForEntries: {
-    Entries_Select_feild: 'Entries_Select_feild',
-    Entries_Mandatory_feild: 'Entries_Mandatory_feild',
-    Entries_Title_feild: 'Entries_Title_feild',
+    Entries_Select_field: 'Entries_Select_field',
+    Entries_Mandatory_field: 'Entries_Mandatory_field',
+    Entries_Title_field: 'Entries_Title_field',
     Entry_Missing_Locale_and_Env: 'Entry_Missing_Locale_and_Env',
     Entry_Missing_Locale_and_Env_in_Publish_Details: 'Entry_Missing_Locale_and_Env_in_Publish_Details',
     Entry_Multiple_Fields:"Entry_Multiple_Fields"
   },
   feild_level_modules: [
-    'Entries_Title_feild',
-    'Entries_Mandatory_feild',
-    'Entries_Select_feild',
+    'Entries_Title_field',
+    'Entries_Mandatory_field',
+    'Entries_Select_field',
     'Entry_Missing_Locale_and_Env_in_Publish_Details',
     'field-rules',
     'Entry_Multiple_Fields',

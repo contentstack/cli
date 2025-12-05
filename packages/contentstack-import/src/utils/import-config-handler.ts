@@ -34,7 +34,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   );
   const pattern = /[*$%#<>{}!&?]/g;
   if (pattern.test(config.contentDir)) {
-    cliux.print(`\nPlease add a directory path without any of the special characters: (*,&,{,},[,],$,%,<,>,?,!)`, {
+    cliux.print(`\nPlease enter a directory path without any special characters: (*,&,{,},[,],$,%,<,>,?,!)`, {
       color: 'yellow',
     });
     config.contentDir = sanitizePath(await askContentDir());
@@ -140,7 +140,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   
   // Add authentication details to config for context tracking
   config.authenticationMethod = authenticationMethod;
-  log.debug('Import configuration setup completed', { ...config });
+  log.debug('Import configuration setup completed.', { ...config });
 
   return config;
 };

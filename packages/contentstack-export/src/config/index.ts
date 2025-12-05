@@ -39,6 +39,7 @@ const config: DefaultConfig = {
       'entries',
       'labels',
       'marketplace-apps',
+      'composable-studio',
     ],
     locales: {
       dirName: 'locales',
@@ -211,6 +212,12 @@ const config: DefaultConfig = {
     'marketplace-apps': {
       dirName: 'marketplace_apps',
       fileName: 'marketplace_apps.json',
+    },
+    'composable-studio': {
+      dirName: 'composable_studio',
+      fileName: 'composable_studio.json',
+      apiBaseUrl: 'https://composable-studio-api.contentstack.com',
+      apiVersion: 'v1',
     },
     taxonomies: {
       dirName: 'taxonomies',

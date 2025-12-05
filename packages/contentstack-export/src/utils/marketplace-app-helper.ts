@@ -29,9 +29,8 @@ export async function createNodeCryptoInstance(config: ExportConfig): Promise<No
 
   if (config.forceStopMarketplaceAppsPrompt) {
     cryptoArgs['encryptionKey'] = config.marketplaceAppEncryptionKey;
-  } else if (config.marketplaceAppEncryptionKey) {
-    cryptoArgs['encryptionKey'] = config.marketplaceAppEncryptionKey;
   } else {
+    // Always prompt when forceStopMarketplaceAppsPrompt is false, using existing key as default
     cliux.print('');
     cryptoArgs['encryptionKey'] = await askEncryptionKey(config);
     cliux.print('');

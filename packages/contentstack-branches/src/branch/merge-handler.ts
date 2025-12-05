@@ -280,7 +280,7 @@ export default class MergeHandler {
         mergeContent[module].deleted = moduleBranchCompareData.deleted;
         break;
       default:
-        cliux.error(`error: Invalid strategy ${strategy}`);
+        cliux.error(`Error: Invalid strategy '${strategy}'`);
         process.exit(1);
     }
   }

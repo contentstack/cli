@@ -17,6 +17,7 @@ describe('Region command', function () {
     developerHubUrl: 'https://developerhub-api.contentstack.com',
     launchHubUrl: 'https://launch-api.contentstack.com',
     personalizeUrl: 'https://personalization-api.contentstack.com',
+    composableStudioUrl: 'https://composable-studio-api.contentstack.com',
   };
   let cliuxPrintStub: sinon.SinonStub;
   let configGetStub: sinon.SinonStub;
@@ -69,6 +70,7 @@ describe('Region command', function () {
       expect(result.developerHubUrl).to.equal('https://developerhub-api.contentstack.com');
       expect(result.personalizeUrl).to.equal('https://personalize-api.contentstack.com');
       expect(result.launchHubUrl).to.equal('https://launch-api.contentstack.com');
+      expect(result.composableStudioUrl).to.equal('https://composable-studio-api.contentstack.com');
     });
 
     it('should set EU region', function () {
@@ -80,6 +82,7 @@ describe('Region command', function () {
       expect(result.developerHubUrl).to.equal('https://eu-developerhub-api.contentstack.com');
       expect(result.personalizeUrl).to.equal('https://eu-personalize-api.contentstack.com');
       expect(result.launchHubUrl).to.equal('https://eu-launch-api.contentstack.com');
+      expect(result.composableStudioUrl).to.equal('https://eu-composable-studio-api.contentstack.com');
     });
 
     it('should set AU region', function () {
@@ -91,6 +94,7 @@ describe('Region command', function () {
       expect(result.developerHubUrl).to.equal('https://au-developerhub-api.contentstack.com');
       expect(result.personalizeUrl).to.equal('https://au-personalize-api.contentstack.com');
       expect(result.launchHubUrl).to.equal('https://au-launch-api.contentstack.com');
+      expect(result.composableStudioUrl).to.equal('https://au-composable-studio-api.contentstack.com');
     });
 
     it('should set AWS-NA region', function () {
@@ -102,6 +106,7 @@ describe('Region command', function () {
       expect(result.developerHubUrl).to.equal('https://developerhub-api.contentstack.com');
       expect(result.personalizeUrl).to.equal('https://personalize-api.contentstack.com');
       expect(result.launchHubUrl).to.equal('https://launch-api.contentstack.com');
+      expect(result.composableStudioUrl).to.equal('https://composable-studio-api.contentstack.com');
     });
 
     it('should set AWS-EU region', function () {
@@ -113,6 +118,7 @@ describe('Region command', function () {
       expect(result.developerHubUrl).to.equal('https://eu-developerhub-api.contentstack.com');
       expect(result.personalizeUrl).to.equal('https://eu-personalize-api.contentstack.com');
       expect(result.launchHubUrl).to.equal('https://eu-launch-api.contentstack.com');
+      expect(result.composableStudioUrl).to.equal('https://eu-composable-studio-api.contentstack.com');
     });
 
     it('should set AWS-AU region', function () {
@@ -124,6 +130,7 @@ describe('Region command', function () {
       expect(result.developerHubUrl).to.equal('https://au-developerhub-api.contentstack.com');
       expect(result.personalizeUrl).to.equal('https://au-personalize-api.contentstack.com');
       expect(result.launchHubUrl).to.equal('https://au-launch-api.contentstack.com');
+      expect(result.composableStudioUrl).to.equal('https://au-composable-studio-api.contentstack.com');
     });
 
     it('should set AZURE-NA region', function () {
@@ -135,6 +142,7 @@ describe('Region command', function () {
       expect(result.developerHubUrl).to.equal('https://azure-na-developerhub-api.contentstack.com');
       expect(result.personalizeUrl).to.equal('https://azure-na-personalize-api.contentstack.com');
       expect(result.launchHubUrl).to.equal('https://azure-na-launch-api.contentstack.com');
+      expect(result.composableStudioUrl).to.equal('https://azure-na-composable-studio-api.contentstack.com');
     });
 
     it('should set AZURE-EU region', function () {
@@ -146,6 +154,7 @@ describe('Region command', function () {
       expect(result.developerHubUrl).to.equal('https://azure-eu-developerhub-api.contentstack.com');
       expect(result.personalizeUrl).to.equal('https://azure-eu-personalize-api.contentstack.com');
       expect(result.launchHubUrl).to.equal('https://azure-eu-launch-api.contentstack.com');
+      expect(result.composableStudioUrl).to.equal('https://azure-eu-composable-studio-api.contentstack.com');
     });
 
     it('should set GCP-NA region', function () {
@@ -157,6 +166,7 @@ describe('Region command', function () {
       expect(result.developerHubUrl).to.equal('https://gcp-na-developerhub-api.contentstack.com');
       expect(result.personalizeUrl).to.equal('https://gcp-na-personalize-api.contentstack.com');
       expect(result.launchHubUrl).to.equal('https://gcp-na-launch-api.contentstack.com');
+      expect(result.composableStudioUrl).to.equal('https://gcp-na-composable-studio-api.contentstack.com');
     });
 
     it('should set GCP-EU region', function () {
@@ -168,6 +178,7 @@ describe('Region command', function () {
       expect(result.developerHubUrl).to.equal('https://gcp-eu-developerhub-api.contentstack.com');
       expect(result.personalizeUrl).to.equal('https://gcp-eu-personalize-api.contentstack.com');
       expect(result.launchHubUrl).to.equal('https://gcp-eu-launch-api.contentstack.com');
+      expect(result.composableStudioUrl).to.equal('https://gcp-eu-composable-studio-api.contentstack.com');
     });
 
     it('should return undefined for invalid region', function () {
@@ -263,6 +274,18 @@ describe('Region command', function () {
     expect(result.launchHubUrl).to.equal(customRegion.launchHubUrl);
   });
 
+  it('should set a custom region with composable studio URL', function () {
+    const customRegion = {
+      cma: 'https://custom-cma.com',
+      cda: 'https://custom-cda.com',
+      uiHost: 'https://custom-ui.com',
+      name: 'Custom Region',
+      composableStudioUrl: 'https://custom-composable-studio.com',
+    };
+    const result = UserConfig.setCustomRegion(customRegion);
+    expect(result.composableStudioUrl).to.equal(customRegion.composableStudioUrl);
+  });
+
   it('should set a custom region with all optional URLs', function () {
     const customRegion = {
       cma: 'https://custom-cma.com',
@@ -272,6 +295,7 @@ describe('Region command', function () {
       developerHubUrl: 'https://custom-developer-hub.com',
       personalizeUrl: 'https://custom-personalize.com',
       launchHubUrl: 'https://custom-launch.com',
+      composableStudioUrl: 'https://custom-composable-studio.com',
     };
     const result = UserConfig.setCustomRegion(customRegion);
     expect(result).to.deep.equal(customRegion);
@@ -286,6 +310,7 @@ describe('Region command', function () {
       developerHubUrl: 'https://custom-developer-hub.com',
       personalizeUrl: 'https://custom-personalize.com',
       launchHubUrl: 'https://custom-launch.com',
+      composableStudioUrl: 'https://custom-composable-studio.com',
       invalidProperty: 'should be removed',
     };
     const result = UserConfig.setCustomRegion(customRegion);

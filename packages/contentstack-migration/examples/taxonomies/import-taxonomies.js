@@ -68,7 +68,7 @@ module.exports = ({ migration, stackSDKInstance, managementAPIClient, config }) 
       await stack
         .taxonomy()
         .import({ taxonomy: filePath }, queryParam)
-        .then(() => console.log(`Taxonomy ${taxonomyUID} migrated successfully!`))
+        .then(() => console.log(`Taxonomy ${taxonomyUID} migrated successfully.`))
         .catch((err) => {
           handleErrorMsg(err);
         });
@@ -147,6 +147,6 @@ module.exports = ({ migration, stackSDKInstance, managementAPIClient, config }) 
   if (config?.['data-dir']) {
     migration.addTask(createTaxonomyTask());
   } else {
-    console.error('Please provide config using --config data-dir:"<file-path>"');
+    console.error('Provide configuration using --config data-dir:"<file-path>"');
   }
 };

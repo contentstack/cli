@@ -188,6 +188,12 @@ describe('ExportAssets', () => {
           dirName: 'marketplace_apps',
           fileName: 'marketplace_apps.json'
         },
+        'composable-studio': {
+          dirName: 'composable-studio',
+          fileName: 'composable-studio.json',
+          apiBaseUrl: 'https://api.contentstack.io',
+          apiVersion: 'v1'
+        },
         masterLocale: {
           dirName: 'master_locale',
           fileName: 'master_locale.json',
@@ -275,11 +281,31 @@ describe('ExportAssets', () => {
       downloadAssetsStub = sinon.stub(exportAssets, 'downloadAssets');
       getVersionedAssetsStub = sinon.stub(exportAssets, 'getVersionedAssets');
 
-      getAssetsCountStub
-        .withArgs(false)
-        .resolves(10)
-        .withArgs(true)
-        .resolves(5);
+      // Stub getAssetsCount to return different values based on argument
+      getAssetsCountStub.callsFake((isFolder?: boolean) => {
+        return Promise.resolve(isFolder ? 5 : 10);
+      });
+      
+      // Ensure stubs return resolved promises
+      getAssetsFoldersStub.resolves();
+      getAssetsStub.resolves();
+      downloadAssetsStub.resolves();
+      getVersionedAssetsStub.resolves();
+      
+      // Stub progress manager methods to avoid issues
+      sinon.stub(exportAssets as any, 'createNestedProgress').returns({
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({
+          updateStatus: sinon.stub()
+        }),
+        updateStatus: sinon.stub(),
+        completeProcess: sinon.stub(),
+        tick: sinon.stub()
+      } as any);
+      sinon.stub(exportAssets as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(exportAssets as any, 'completeProgress');
     });
 
     afterEach(() => {

@@ -71,13 +71,15 @@ export default class ContentTypesExport extends BaseClass {
         return [countResponse.count || 0];
       });
 
-      if (totalCount === 0) {
-        log.info(messageHandler.parse('CONTENT_TYPE_NO_TYPES'), this.exportConfig.context);
-        return;
-      }
-
       // Create simple progress manager with total count
       const progress = this.createSimpleProgress(this.currentModuleName, totalCount);
+
+      if (totalCount === 0) {
+        log.info(messageHandler.parse('CONTENT_TYPE_NO_TYPES'), this.exportConfig.context);
+        await this.writeContentTypes(this.contentTypes);
+        this.completeProgress(true);
+        return;
+      }
 
       progress.updateStatus('Fetching content types...');
       await this.getContentTypes();
