@@ -167,15 +167,10 @@ export default class ExportStack extends BaseClass {
         log.debug(`Fetched ${items?.length || 0} locales out of ${count}.`, this.exportConfig.context);
 
         if (items?.length) {
-<<<<<<< HEAD
           log.debug(`Processing ${items.length} locales to find master locale`, this.exportConfig.context);
 
           // Track progress for each locale processed
           this.progressManager?.tick(true, 'Fetch locale', null, PROCESS_NAMES.STACK_LOCALE);
-
-=======
-          log.debug(`Processing ${items.length} locales to find the master locale...`, this.exportConfig.context);
->>>>>>> development
           skip += this.stackConfig.limit || 100;
           const masterLocalObj = find(items, (locale: any) => {
             if (locale.fallback_locale === null) {
@@ -253,7 +248,6 @@ export default class ExportStack extends BaseClass {
         return resp;
       })
       .catch((error: any) => {
-<<<<<<< HEAD
         log.debug(`Error occurred while exporting stack: ${this.exportConfig.source_stack}`, this.exportConfig.context);
         this.progressManager?.tick(
           false,
@@ -261,9 +255,6 @@ export default class ExportStack extends BaseClass {
           error?.message || PROCESS_STATUS[PROCESS_NAMES.STACK_DETAILS].FAILED,
           PROCESS_NAMES.STACK_DETAILS,
         );
-=======
-        log.debug(`An error occurred while exporting stack: '${this.exportConfig.source_stack}'.`, this.exportConfig.context);
->>>>>>> development
         handleAndLogError(error, { ...this.exportConfig.context });
       });
   }

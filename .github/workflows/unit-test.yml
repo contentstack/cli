@@ -16,9 +16,15 @@ jobs:
         with:
           node-version: '22.x'
 
+      - name: Install pnpm
+        run: npm install -g pnpm@^7.33.7
+
       - name: Install dependencies for all plugins
         run: |
-          NODE_ENV=PREPACK_MODE npm run setup-repo-old
+          # Remove lock files to ensure fresh install with updated versions
+          rm -f package-lock.json pnpm-lock.yaml
+          # Use pnpm directly to properly handle workspace packages (including local @contentstack/cli-variants)
+          NODE_ENV=PREPACK_MODE pnpm install --no-frozen-lockfile && pnpm package-lock-only && pnpm clean && pnpm install --no-frozen-lockfile && pnpm prepack
 
       - name: Run tests for Contentstack Command
         working-directory: ./packages/contentstack-command

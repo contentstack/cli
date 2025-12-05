@@ -120,6 +120,7 @@ describe('EntriesExport', () => {
 
     // Mock ExportProjects
     mockExportProjects = {
+      init: sandbox.stub().resolves(),
       projects: sandbox.stub().resolves([])
     };
     sandbox.stub(variants, 'ExportProjects').callsFake(() => mockExportProjects as any);
@@ -315,6 +316,7 @@ describe('EntriesExport', () => {
     it('should not enable variant entry export when personalization is enabled but no project is found', async () => {
       mockExportConfig.personalizationEnabled = true;
       entriesExport.exportConfig.personalizationEnabled = true;
+      mockExportProjects.init.resolves();
       mockExportProjects.projects.resolves([]);
 
       const locales = [{ code: 'en-us' }];
@@ -356,6 +358,7 @@ describe('EntriesExport', () => {
       mockExportConfig.personalizationEnabled = true;
       entriesExport.exportConfig.personalizationEnabled = true;
       const projectError = new Error('Project fetch failed');
+      mockExportProjects.init.resolves();
       mockExportProjects.projects.rejects(projectError);
       const handleAndLogErrorSpy = sandbox.spy();
       try {
@@ -1122,7 +1125,22 @@ describe('EntriesExport', () => {
         .returns(contentTypes);
 
       const processingError = new Error('Entry processing failed');
-      sandbox.stub(entriesExport, 'getEntries').rejects(processingError);
+      const getEntriesStub = sandbox.stub(entriesExport, 'getEntries').rejects(processingError);
+      
+      // Stub progress manager to avoid issues
+      sandbox.stub(entriesExport as any, 'createNestedProgress').returns({
+        addProcess: sandbox.stub(),
+        startProcess: sandbox.stub().returns({
+          updateStatus: sandbox.stub()
+        }),
+        updateStatus: sandbox.stub(),
+        completeProcess: sandbox.stub(),
+        tick: sandbox.stub()
+      } as any);
+      sandbox.stub(entriesExport as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sandbox.stub(entriesExport as any, 'completeProgress');
 
       const handleAndLogErrorSpy = sandbox.spy();
       try {
@@ -1135,12 +1153,15 @@ describe('EntriesExport', () => {
 
       await entriesExport.start();
 
-      // Should handle error
+      // Should handle error - the error is thrown in the loop and caught in outer catch
+      // The error is caught in the outer catch block which calls handleAndLogError
       expect(handleAndLogErrorSpy.called).to.be.true;
-      expect(handleAndLogErrorSpy.calledWith(
-        processingError,
-        sinon.match.has('module', 'entries')
-      )).to.be.true;
+      // Verify error was logged with correct context if it was called
+      if (handleAndLogErrorSpy.called) {
+        const callArgs = handleAndLogErrorSpy.getCall(0).args;
+        expect(callArgs[0]).to.equal(processingError);
+        expect(callArgs[1]).to.have.property('module', 'entries');
+      }
     });
   });
 });
