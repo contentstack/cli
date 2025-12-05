@@ -360,7 +360,7 @@ describe('Auth Handler', () => {
         throw new Error('Expected getUserDetails to throw'); // ensure failure if no error is thrown
       } catch (error) {
         expect(error).to.be.instanceOf(Error);
-        expect(error.message).to.equal('Invalid/Empty access token');
+        expect(error.message).to.equal('Invalid or empty access token.');
       }
     }); 
   });
@@ -503,7 +503,7 @@ describe('Auth Handler', () => {
         await authHandler.compareOAuthExpiry();
       } catch (error) {
         expect(error).to.be.undefined;
-        expect(cliuxPrintStub.calledOnceWithExactly('Force refreshing the token')).to.be.true;
+        expect(cliuxPrintStub.calledOnceWithExactly('Forcing token refresh...')).to.be.true;
         expect(refreshTokenStub.calledOnce).to.be.true;
         expect(unsetConfigDataStub.called).to.be.false;
       }

@@ -51,7 +51,7 @@ class ModuleExporter {
         this.exportConfig.branchName = branch.uid;
         this.stackAPIClient.stackHeaders.branch = branch.uid;
         this.exportConfig.branchDir = path.join(this.exportConfig.exportDir, branch.uid);
-        log.info(`Exporting content from branch ${branch.uid}`, this.exportConfig.context);
+        log.info(`Exporting content from branch '${branch.uid}'...`, this.exportConfig.context);
         writeExportMetaFile(this.exportConfig, this.exportConfig.branchDir);
         await this.export();
         log.success(`The content of branch ${branch.uid} has been exported successfully!`, this.exportConfig.context);
@@ -76,7 +76,7 @@ class ModuleExporter {
   }
 
   async exportByModuleByName(moduleName: Modules) {
-    log.info(`Exporting module: ${moduleName}`, this.exportConfig.context);
+    log.info(`Exporting module: '${moduleName}'...`, this.exportConfig.context);
     // export the modules by name
     // calls the module runner which inturn calls the module itself
     let exportedModuleResponse;

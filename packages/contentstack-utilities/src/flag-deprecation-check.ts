@@ -21,19 +21,19 @@ export default function (deprecatedFlags = [], suggestions = [], customMessage?:
     });
 
     if (isCommandHasDeprecationFlag) {
-      let depreactionMessage = '';
+      let deprecationMessage = '';
       if (customMessage) {
-        depreactionMessage = customMessage;
+        deprecationMessage = customMessage;
       } else {
-        depreactionMessage = `WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (${deprecatedFlags.join(
+        deprecationMessage = `WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (${deprecatedFlags.join(
           ', ',
         )}).`;
 
         if (suggestions.length > 0) {
-          depreactionMessage += ` We recommend you to use the updated flags (${suggestions.join(', ')}).`;
+          deprecationMessage += ` We recommend you to use the updated flags (${suggestions.join(', ')}).`;
         }
       }
-      cliux.print(depreactionMessage, { color: 'yellow' });
+      cliux.print(deprecationMessage, { color: 'yellow' });
     }
 
     return input;

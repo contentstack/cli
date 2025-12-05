@@ -126,9 +126,9 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
         customRegion = regionHandler.setCustomRegion(customRegion);
         await authHandler.setConfigData('logout'); //Todo: Handle this logout flow well through logout command call
         cliux.success(`Custom region has been set to ${customRegion.name}`);
-        cliux.success(`CMA HOST: ${customRegion.cma}`);
-        cliux.success(`CDA HOST: ${customRegion.cda}`);
-        cliux.success(`UI HOST: ${customRegion.uiHost}`);
+        cliux.success(`CMA host: ${customRegion.cma}`);
+        cliux.success(`CDA host: ${customRegion.cda}`);
+        cliux.success(`UI host: ${customRegion.uiHost}`);
         cliux.success(`Developer Hub URL: ${customRegion.developerHubUrl}`);
         cliux.success(`Personalize URL: ${customRegion.personalizeUrl}`);
         cliux.success(`Launch URL: ${customRegion.launchHubUrl}`);
@@ -145,15 +145,15 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
       const regionDetails: Region = regionHandler.setRegion(selectedRegion);
       await authHandler.setConfigData('logout'); //Todo: Handle this logout flow well through logout command call
       cliux.success(`Region has been set to ${regionDetails.name}`);
-      cliux.success(`CDA HOST: ${regionDetails.cda}`);
-      cliux.success(`CMA HOST: ${regionDetails.cma}`);
-      cliux.success(`UI HOST: ${regionDetails.uiHost}`);
+      cliux.success(`CDA host: ${regionDetails.cda}`);
+      cliux.success(`CMA host: ${regionDetails.cma}`);
+      cliux.success(`UI host: ${regionDetails.uiHost}`);
       cliux.success(`Developer Hub URL: ${regionDetails.developerHubUrl}`);
       cliux.success(`Personalize URL: ${regionDetails.personalizeUrl}`);
       cliux.success(`Launch URL: ${regionDetails.launchHubUrl}`);
       cliux.success(`Composable Studio URL: ${regionDetails.composableStudioUrl}`);
     } else {
-      cliux.error(`Invalid region is given`);
+      cliux.error(`Invalid region specified.`);
     }
   }
   transformUrl(url: string, replacement: string): string {
