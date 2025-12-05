@@ -30,6 +30,6 @@ export const setupBranchConfig = async (
         log.debug(`Setting default target branch to 'main'`);
       }
     } catch (error) {
-      log.debug('Failed to fetch branches', { error });
+      log.error('Failed to fetch branches', { error });
     }
 };

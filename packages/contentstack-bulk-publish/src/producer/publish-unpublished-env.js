@@ -122,7 +122,7 @@ async function getEntries(stack, contentType, environmentUid, locale, bulkPublis
           }
         }
         if (responseEntries.count === skipCount) {
-          if (!changedFlag) console.log(`No Draft Entries of contentType ${contentType} was found`);
+          if (!changedFlag) console.log(`No draft entries found for content type ${contentType}`);
           bulkPublishSet = [];
           return resolve();
         }

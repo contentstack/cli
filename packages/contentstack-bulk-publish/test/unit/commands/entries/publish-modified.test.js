@@ -53,7 +53,7 @@ describe('EntriesPublishModified Command', () => {
       await EntriesPublishModified.run(args);
     } catch (error) {
       expect(error).to.be.an('error');
-      expect(error.message).to.equal('Please use `--alias` or `--stack-api-key` to proceed.');
+      expect(error.message).to.equal('Use the `--alias` or `--stack-api-key` flag to proceed.');
       expect(runStub.calledOnce).to.be.true;
     }
   });
