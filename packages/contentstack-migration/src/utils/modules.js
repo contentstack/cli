@@ -12,7 +12,7 @@ function checkWritePermissionToDirectory(directory) {
     fs.accessSync(directory, fs.constants.W_OK);
     return true;
   } catch (err) {
-    console.log(`Permission Denied! You do not have the necessary write access for this directory.`);
+    console.log(`Permission denied. You do not have the necessary write access for this directory.`);
     return false;
   }
 }

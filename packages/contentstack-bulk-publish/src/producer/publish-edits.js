@@ -107,7 +107,7 @@ async function getEntries(stack, contentType, environmentUid, locale, bulkPublis
         }
         if (responseEntries.count === skipCount) {
           if (!changedFlag)
-            console.log(`No Edits Were observed on specified Environment for contentType ${contentType}`);
+            console.log(`No edits were detected in the specified environment for content type ${contentType}`);
           bulkPublishSet = [];
           return resolve();
         }

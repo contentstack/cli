@@ -65,7 +65,7 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
         log.info(`Found ${audiences.length} audiences to import`, this.config.context);
         
         const attributesUid = (fsUtil.readFile(this.attributesMapperPath, true) as Record<string, string>) || {};
-        log.debug(`Loaded ${Object.keys(attributesUid).length} attribute mappings for audience processing`, this.config.context);
+        log.debug(`Loaded ${Object.keys(attributesUid).length} attribute mappings`, this.config.context);
 
         for (const audience of audiences) {
           let { name, definition, description, uid } = audience;

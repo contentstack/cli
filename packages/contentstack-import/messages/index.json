@@ -1,1 +1,10 @@
-{}
+{
+  "COMPOSABLE_STUDIO_IMPORT_START": "Starting Composable Studio project import...",
+  "COMPOSABLE_STUDIO_NOT_FOUND": "No Composable Studio project found in exported data",
+  "COMPOSABLE_STUDIO_SKIP_EXISTING": "Skipping Composable Studio import - target stack already has a connected project",
+  "COMPOSABLE_STUDIO_IMPORT_COMPLETE": "Successfully imported Composable Studio project '%s'",
+  "COMPOSABLE_STUDIO_IMPORT_FAILED": "Failed to import Composable Studio project: %s",
+  "COMPOSABLE_STUDIO_NAME_CONFLICT": "Project name '%s' already exists. Please provide a new name:",
+  "COMPOSABLE_STUDIO_SUGGEST_NAME": "Suggested name: %s",
+  "COMPOSABLE_STUDIO_ENV_MAPPING_FAILED": "Warning: Could not map environment '%s', using empty environment"
+}

@@ -5,5 +5,6 @@ export interface Region {
   developerHubUrl: string;
   personalizeUrl: string;
   launchHubUrl: string;
+  composableStudioUrl: string;
   uiHost: string;
 }
