@@ -111,7 +111,7 @@ export default class GitHubClient {
       const response: Record<string, any> = await this.makeHeadApiCall(repo);
       return response.statusCode === 200;
     } catch (error) {
-      console.log(error);
+      console.log('Error', error);
       // do nothing
     }
 

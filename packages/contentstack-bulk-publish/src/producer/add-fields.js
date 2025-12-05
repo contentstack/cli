@@ -256,10 +256,10 @@ async function getEntries(
               });
             }
           } else {
-            console.log(`Update Failed for entryUid ${entries[index].uid} with contentType ${contentType}`);
+            console.log(`Update failed for entry UID '${entries[index].uid}' of content type '${contentType}'.`);
           }
         } else {
-          console.log(`No change Observed for contentType ${contentType} with entry ${entries[index].uid}`);
+          console.log(`No changes detected for content type '${contentType}' and entry UID '${entries[index].uid}'.`);
         }
 
         if (index === entriesResponse.items.length - 1 && bulkPublishSet.length > 0 && bulkPublishSet.length < bulkPublishLimit) {
@@ -342,12 +342,12 @@ async function start(
                 bulkPublishLimit
               );
             } catch (err) {
-              console.log(`Failed to get Entries with contentType ${contentTypes[i]} and locale ${locales[j]}`);
+              console.log(`Failed to retrieve entries for content type '${contentTypes[i]}' and locale '${locales[j]}'.`);
             }
           }
         })
         .catch((err) => {
-          console.log(`Failed to fetch schema${JSON.stringify(err)}`);
+          console.log(`Failed to fetch schema: ${JSON.stringify(err)}`);
         });
     }
   }

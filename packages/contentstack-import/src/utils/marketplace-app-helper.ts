@@ -14,6 +14,7 @@ import {
   handleAndLogError
 } from '@contentstack/cli-utilities';
 
+import { trace } from '../utils/log';
 import { ImportConfig, Installation } from '../types';
 import { formatError } from '../utils';
 import { getAppName, askAppName, selectConfiguration } from '../utils/interactive';
@@ -35,6 +36,7 @@ export const getAllStackSpecificApps = async (
     .fetchAll({ target_uids: config.target_stack, skip })
     .catch((error) => {
       handleAndLogError(error)
+      trace(error, 'error', true);
     });
 
   if (collection) {
@@ -77,7 +79,8 @@ export const getOrgUid = async (config: ImportConfig): Promise<string> => {
     .stack({ api_key: config.target_stack })
     .fetch()
     .catch((error: any) => {
-      throw error;
+      handleAndLogError(error);
+      trace(error, 'error', true);
     });
 
   const orgUid = tempStackData?.org_uid || '';
@@ -119,7 +122,7 @@ export const getConfirmationToCreateApps = async (privateApps: any, config: Impo
           log.info('User confirmed to create private apps');
           return Promise.resolve(true);
         } else {
-          log.warn('User declined to create private apps (second prompt)');
+          log.debug('User declined to create private apps (second prompt).');
           return Promise.resolve(false);
         }
       }
@@ -128,7 +131,7 @@ export const getConfirmationToCreateApps = async (privateApps: any, config: Impo
       return Promise.resolve(true);
     }
   } else {
-    log.info('Force prompt disabled, automatically creating private apps');
+    log.debug('Force prompt disabled, automatically creating private apps');
     return Promise.resolve(true);
   }
 };
@@ -155,12 +158,15 @@ export const makeRedirectUrlCall = async (response: any, appName: string, config
       .then(async ({ response }: any) => {
         if (includes([501, 403], response.status)) {
           log.error(`OAuth API call failed for ${appName}: ${response.statusText}`);
+          trace(response, 'error', true);
           await confirmToCloseProcess(response.data, config);
         } else {
           log.success(`OAuth API call completed successfully for app: ${appName}`);
         }
       })
       .catch((error) => {
+        trace(error, 'error', true);
+
         if (includes([501, 403], error.status)) {
           handleAndLogError(error);
         }

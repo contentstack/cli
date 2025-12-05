@@ -23,7 +23,7 @@ class Messages {
       if (error.code === 'ENOENT') {
         this.messages = {};
       } else {
-        throw new CLIError(error.message);
+        throw new CLIError(`Error: ${error.message}`);
       }
     }
   }
