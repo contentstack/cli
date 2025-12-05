@@ -357,7 +357,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
   }
 
   async getAttributes(): Promise<AttributeStruct[] | void> {
-    log.debug('Fetching attributes from personalization API', this.exportConfig?.context );
+    log.debug('Fetching attributes from Personalize API...', this.exportConfig?.context );
     const data = await this.apiClient.get<AttributeStruct>('/attributes');
     const result = (await this.handleVariantAPIRes(data)) as AttributeStruct[];
     log.info(`Fetched ${result?.length || 0} attributes`, this.exportConfig?.context );

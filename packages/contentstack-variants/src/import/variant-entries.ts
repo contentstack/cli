@@ -603,7 +603,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       }
 
       if (this.environments?.length) {
-        log.info('No environment found! Skipping entry variant publishing...', this.config.context);
+        log.info('No environments found. Skipping entry variant publishing...', this.config.context);
         return;
       }
 
@@ -686,7 +686,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
     if (variantEntry.publish_details && variantEntry.publish_details?.length > 0) {
       log.debug(`Processing ${variantEntry.publish_details.length} publish details`, this.config.context);
     } else {
-      log.debug('No publish details found for variant entry', this.config.context);
+      log.debug('No publish details found for variant entry.', this.config.context);
     }
 
     if (variantEntry.publish_details && variantEntry.publish_details?.length > 0) {

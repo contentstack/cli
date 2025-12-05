@@ -38,7 +38,7 @@ export default class ExportExtensions extends BaseClass {
           this.extensionConfig.dirName,
         );
         await fsUtil.makeDirectory(this.extensionsFolderPath);
-        log.debug(`Extensions folder path: ${this.extensionsFolderPath}`, this.exportConfig.context);
+        log.debug(`Extensions folder path is: ${this.extensionsFolderPath}`, this.exportConfig.context);
 
         // Get count for progress tracking
         const countResponse = await this.stack
@@ -64,7 +64,7 @@ export default class ExportExtensions extends BaseClass {
         log.info(messageHandler.parse('EXTENSION_NOT_FOUND'), this.exportConfig.context);
       } else {
         const extensionsFilePath = pResolve(this.extensionsFolderPath, this.extensionConfig.fileName);
-        log.debug(`Writing extensions to: ${extensionsFilePath}`, this.exportConfig.context);
+        log.debug(`Writing extensions to: ${extensionsFilePath}.`, this.exportConfig.context);
         fsUtil.writeFile(extensionsFilePath, this.extensions);
         log.success(
           messageHandler.parse('EXTENSION_EXPORT_COMPLETE', Object.keys(this.extensions || {}).length),
@@ -81,9 +81,9 @@ export default class ExportExtensions extends BaseClass {
   async getExtensions(skip = 0): Promise<void> {
     if (skip) {
       this.qs.skip = skip;
-      log.debug(`Fetching extensions with skip: ${skip}`, this.exportConfig.context);
+      log.debug(`Fetching extensions with skip value: ${skip}`, this.exportConfig.context);
     } else {
-      log.debug('Fetching extensions with initial query', this.exportConfig.context);
+      log.debug('Fetching extensions with initial query...', this.exportConfig.context);
     }
 
     log.debug(`Query parameters: ${JSON.stringify(this.qs)}`, this.exportConfig.context);
@@ -97,21 +97,21 @@ export default class ExportExtensions extends BaseClass {
         log.debug(`Fetched ${items?.length || 0} extensions out of total ${count}`, this.exportConfig.context);
 
         if (items?.length) {
-          log.debug(`Processing ${items.length} extensions`, this.exportConfig.context);
+          log.debug(`Processing ${items.length} extensions...`, this.exportConfig.context);
           this.sanitizeAttribs(items);
           skip += this.extensionConfig.limit || 100;
           if (skip >= count) {
-            log.debug('Completed fetching all extensions', this.exportConfig.context);
+            log.debug('Completed fetching all extensions.', this.exportConfig.context);
             return;
           }
-          log.debug(`Continuing to fetch extensions with skip: ${skip}`, this.exportConfig.context);
+          log.debug(`Continuing to fetch extensions with skip: ${skip}.`, this.exportConfig.context);
           return await this.getExtensions(skip);
         } else {
-          log.debug('No extensions found to process', this.exportConfig.context);
+          log.debug('No extensions found to process.', this.exportConfig.context);
         }
       })
       .catch((error: any) => {
-        log.debug('Error occurred while fetching extensions', this.exportConfig.context);
+        log.debug('An error occurred while fetching extensions.', this.exportConfig.context);
         handleAndLogError(error, { ...this.exportConfig.context });
       });
   }
@@ -131,7 +131,7 @@ export default class ExportExtensions extends BaseClass {
     }
 
     log.debug(
-      `Sanitization complete. Total extensions processed: ${Object.keys(this.extensions || {}).length}`,
+      `Sanitization complete. Total extensions processed: ${Object.keys(this.extensions || {}).length}.`,
       this.exportConfig.context,
     );
   }

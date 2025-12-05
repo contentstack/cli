@@ -52,7 +52,7 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
 
       if (!this.events?.length) {
         log.debug('No events found, completing export', this.exportConfig.context);
-        log.info('No Events found with the given project!', this.exportConfig.context);
+        log.info('No events found for the given project.', this.exportConfig.context);
         return;
       }
 
