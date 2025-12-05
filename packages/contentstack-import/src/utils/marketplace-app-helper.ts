@@ -14,7 +14,6 @@ import {
   handleAndLogError
 } from '@contentstack/cli-utilities';
 
-import { trace } from '../utils/log';
 import { ImportConfig, Installation } from '../types';
 import { formatError } from '../utils';
 import { getAppName, askAppName, selectConfiguration } from '../utils/interactive';
@@ -35,8 +34,8 @@ export const getAllStackSpecificApps = async (
     .installation()
     .fetchAll({ target_uids: config.target_stack, skip })
     .catch((error) => {
-      handleAndLogError(error)
-      trace(error, 'error', true);
+      handleAndLogError(error);
+      log.error(error, config?.context);
     });
 
   if (collection) {
@@ -80,7 +79,7 @@ export const getOrgUid = async (config: ImportConfig): Promise<string> => {
     .fetch()
     .catch((error: any) => {
       handleAndLogError(error);
-      trace(error, 'error', true);
+      log.error(error, config?.context);
     });
 
   const orgUid = tempStackData?.org_uid || '';
@@ -157,15 +156,14 @@ export const makeRedirectUrlCall = async (response: any, appName: string, config
       .get(response.redirect_url)
       .then(async ({ response }: any) => {
         if (includes([501, 403], response.status)) {
-          log.error(`OAuth API call failed for ${appName}: ${response.statusText}`);
-          trace(response, 'error', true);
+          log.error(`OAuth API call failed for ${appName}: ${response.statusText}`, config?.context);
           await confirmToCloseProcess(response.data, config);
         } else {
           log.success(`OAuth API call completed successfully for app: ${appName}`);
         }
       })
       .catch((error) => {
-        trace(error, 'error', true);
+        log.error(error, config?.context);
 
         if (includes([501, 403], error.status)) {
           handleAndLogError(error);

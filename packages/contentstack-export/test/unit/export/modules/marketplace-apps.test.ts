@@ -59,13 +59,25 @@ describe('ExportMarketplaceApps', () => {
         marketplace_apps: {
           dirName: 'marketplace-apps',
           fileName: 'marketplace-apps.json'
+        },
+        'marketplace-apps': {
+          dirName: 'marketplace-apps',
+          fileName: 'marketplace-apps.json'
+        },
+        'composable-studio': {
+          dirName: 'composable-studio',
+          fileName: 'composable-studio.json',
+          apiBaseUrl: 'https://api.contentstack.io',
+          apiVersion: 'v1'
         }
       },
       query: undefined
     } as any;
 
     exportMarketplaceApps = new ExportMarketplaceApps({
-      exportConfig: mockExportConfig
+      exportConfig: mockExportConfig,
+      stackAPIClient: {} as any,
+      moduleName: 'marketplace-apps' as any
     });
 
     // Mock app SDK
@@ -165,8 +177,14 @@ describe('ExportMarketplaceApps', () => {
         })
       });
 
-      // Mock exportApps to avoid complex setup
+      // getOrgUid and getDeveloperHubUrl are already stubbed in beforeEach, just ensure they resolve correctly
+      (marketplaceAppHelper.getOrgUid as sinon.SinonStub).resolves('test-org-uid');
+      (marketplaceAppHelper.getDeveloperHubUrl as sinon.SinonStub).resolves('https://developer-api.contentstack.io');
+      
+      // Mock exportApps and getAppManifestAndAppConfig to avoid complex setup
       const exportAppsStub = sinon.stub(exportMarketplaceApps, 'exportApps').resolves();
+      const getAppManifestAndAppConfigStub = sinon.stub(exportMarketplaceApps, 'getAppManifestAndAppConfig').resolves();
+      const getAppsCountStub = sinon.stub(exportMarketplaceApps, 'getAppsCount').resolves(1);
 
       await exportMarketplaceApps.start();
 
@@ -178,7 +196,11 @@ describe('ExportMarketplaceApps', () => {
       expect(exportMarketplaceApps.appSdk).to.equal(mockAppSdk);
 
       exportAppsStub.restore();
+      getAppManifestAndAppConfigStub.restore();
+      getAppsCountStub.restore();
       configHandlerGetStub.restore();
+      (marketplaceAppHelper.getOrgUid as sinon.SinonStub).restore();
+      (marketplaceAppHelper.getDeveloperHubUrl as sinon.SinonStub).restore();
     });
 
     it('should set marketplaceAppPath correctly', async () => {
@@ -198,7 +220,9 @@ describe('ExportMarketplaceApps', () => {
     it('should handle branchName in path when provided', async () => {
       mockExportConfig.branchName = 'test-branch';
       exportMarketplaceApps = new ExportMarketplaceApps({
-        exportConfig: mockExportConfig
+        exportConfig: mockExportConfig,
+        stackAPIClient: {} as any,
+        moduleName: 'marketplace-apps' as any
       });
 
       const configHandlerGetStub = sinon.stub(utilities.configHandler, 'get');
@@ -216,7 +240,9 @@ describe('ExportMarketplaceApps', () => {
     it('should use developerHubBaseUrl from config when provided', async () => {
       mockExportConfig.developerHubBaseUrl = 'https://custom-devhub.com';
       exportMarketplaceApps = new ExportMarketplaceApps({
-        exportConfig: mockExportConfig
+        exportConfig: mockExportConfig,
+        stackAPIClient: {} as any,
+        moduleName: 'marketplace-apps' as any
       });
 
       const configHandlerGetStub = sinon.stub(utilities.configHandler, 'get');
@@ -271,7 +297,12 @@ describe('ExportMarketplaceApps', () => {
 
       expect(exportMarketplaceApps.query.app_uids).to.equal('app-1,app-2');
       expect(getStackSpecificAppsStub.called).to.be.true;
-      expect(getAppManifestAndAppConfigStub.called).to.be.true;
+      // Note: getAppManifestAndAppConfig is called from start(), not exportApps()
+      // So it should not be called when testing exportApps() directly
+      expect(getAppManifestAndAppConfigStub.called).to.be.false;
+      
+      getStackSpecificAppsStub.restore();
+      getAppManifestAndAppConfigStub.restore();
 
       getStackSpecificAppsStub.restore();
       getAppManifestAndAppConfigStub.restore();

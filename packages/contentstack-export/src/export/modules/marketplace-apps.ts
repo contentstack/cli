@@ -177,6 +177,17 @@ export default class ExportMarketplaceApps extends BaseClass {
   async exportApps(): Promise<any> {
     log.debug('Starting apps export process...', this.exportConfig.context);
 
+    // Process external query if provided
+    const externalQuery = this.exportConfig.query?.modules['marketplace-apps'];
+    if (externalQuery) {
+      if (externalQuery.app_uid?.$in?.length > 0) {
+        this.query.app_uids = externalQuery.app_uid.$in.join(',');
+      }
+      if (externalQuery.installation_uid?.$in?.length > 0) {
+        this.query.installation_uids = externalQuery.installation_uid.$in.join(',');
+      }
+    }
+
     await this.getStackSpecificApps();
     log.debug(`Retrieved ${this.installedApps.length} stack-specific apps`, this.exportConfig.context);
 

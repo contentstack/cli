@@ -247,6 +247,7 @@ export default class ImportCommand extends Command {
       command: this.context?.info?.command || 'cm:stacks:import',
       module: '',
       userId: configHandler.get('userUid') || '',
+      email: configHandler.get('email') || undefined,
       sessionId: this.context?.sessionId,
       apiKey: apiKey || '',
       orgId: configHandler.get('oauthOrgUid') || '',
