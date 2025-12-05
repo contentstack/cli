@@ -42,13 +42,13 @@ export default class ExportEvents extends PersonalizationAdapter<ExportConfig> {
       await fsUtil.makeDirectory(this.eventsFolderPath);
       log.debug('Events directory created successfully', this.exportConfig.context);
       
-      log.debug('Fetching events from personalization API...', this.exportConfig.context);
+      log.debug('Fetching events from Personalize API...', this.exportConfig.context);
       this.events = (await this.getEvents()) as EventStruct[];
       log.debug(`Fetched ${this.events?.length || 0} events`, this.exportConfig.context);
 
       if (!this.events?.length) {
         log.debug('No events found, completing export', this.exportConfig.context);
-        log.info('No Events found with the given project!', this.exportConfig.context);
+        log.info('No events found for the given project.', this.exportConfig.context);
         return;
       } else {
         log.debug(`Processing ${this.events.length} events`, this.exportConfig.context);

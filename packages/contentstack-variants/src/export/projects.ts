@@ -43,12 +43,12 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
       
       if (!project || project?.length < 1) {
         log.debug('No projects found, disabling personalization', this.exportConfig.context);
-        log.info(`No Personalize Project connected with the given stack`, this.exportConfig.context);
+        log.info(`No Personalize project connected with the given stack.`, this.exportConfig.context);
         this.exportConfig.personalizationEnabled = false;
         return;
       }
       
-      log.debug(`Found ${project.length} projects, enabling personalization`, this.exportConfig.context);
+      log.debug(`Found ${project.length} projects`, this.exportConfig.context);
       this.exportConfig.personalizationEnabled = true;
       this.exportConfig.project_id = project[0]?.uid;
       log.debug(`Set project ID: ${project[0]?.uid}`, this.exportConfig.context);
@@ -62,7 +62,7 @@ export default class ExportProjects extends PersonalizationAdapter<ExportConfig>
     } catch (error) {
       if (error !== 'Forbidden') {
         log.debug(`Error occurred during projects export: ${error}`, this.exportConfig.context);
-        log.error('Failed to export projects!', this.exportConfig.context);
+        log.error('Failed to export projects.', this.exportConfig.context);
       } else {
         log.debug('Projects export forbidden, likely due to permissions', this.exportConfig.context);
       }

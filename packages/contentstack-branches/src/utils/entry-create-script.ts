@@ -599,13 +599,13 @@ export function entryCreateScript(contentType) {
       migration.addTask(createEntryTask());
     } else {
       if (apiKey.length === 0) {
-        console.error('Please provide api key using --stack-api-key flag');
+        console.error('Provide the API key using the --stack-api-key flag.');
       }
       if (!compareBranch) {
-        console.error('Please provide compare branch through --config compare-branch:<value> flag');
+        console.error('Specify the compare branch using the --config compare-branch:<value> flag.');
       }
       if (branch.length === 0) {
-        console.error('Please provide branch name through --branch flag');
+        console.error('Specify the branch name using the --branch flag.');
       }
     }
   };
