@@ -13,12 +13,12 @@ class ConfigureCommand extends Command {
       try {
         this.getToken(configureFlags.alias);
       } catch (error) {
-        this.error(`The configured management token alias ${configureFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${configureFlags.alias}'`, { exit: 2 })
+        this.error(`The configured management token alias '${configureFlags.alias}' has not been added yet. Add it using 'csdx auth:tokens:add -a ${configureFlags.alias}'.`, { exit: 2 })
       }
     } else if (configureFlags['stack-api-key']) {
       configureFlags.stackApiKey = configureFlags['stack-api-key'];
     } else {
-      this.error('Please use `--alias` or `--stack-api-key` to proceed.', { exit: 2 });
+      this.error('Use the `--alias` or `--stack-api-key` flag to proceed.', { exit: 2 });
     }
 
     this.setConfig(configureFlags);

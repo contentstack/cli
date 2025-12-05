@@ -32,7 +32,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
 
   constructor(options: APIConfig) {
     super(options);
-    log.debug('PersonalizationAdapter initialized', this.exportConfig?.context);
+    log.debug('Personalization adapter initialized.', this.exportConfig?.context);
   }
 
   async init(): Promise<void> {
@@ -42,21 +42,21 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     log.debug(`Authentication type: ${authenticationHandler.isOauthEnabled ? 'OAuth' : 'Token'}`, this.exportConfig?.context );
     
     if (authenticationHandler.isOauthEnabled) {
-      log.debug('Setting OAuth authorization header', this.exportConfig?.context );
+      log.debug('Setting OAuth authorization header...', this.exportConfig?.context );
       this.apiClient.headers({ authorization: token });
       if (this.adapterConfig.cmaConfig) {
-        log.debug('Setting OAuth authorization header for CMA client', this.exportConfig?.context );
+        log.debug('Setting OAuth authorization header for CMA client...', this.exportConfig?.context );
         this.cmaAPIClient?.headers({ authorization: token });
       }
     } else {
-      log.debug('Setting authtoken header', this.exportConfig?.context );
+      log.debug('Setting authtoken header...', this.exportConfig?.context );
       this.apiClient.headers({ authtoken: token });
       if (this.adapterConfig.cmaConfig) {
-        log.debug('Setting authtoken header for CMA client', this.exportConfig?.context );
+        log.debug('Setting authtoken header for CMA client...', this.exportConfig?.context );
         this.cmaAPIClient?.headers({ authtoken: token });
       }
     }
-    log.debug('Personalization adapter initialization completed', this.exportConfig?.context );
+    log.debug('Personalization adapter initialization completed.', this.exportConfig?.context );
   }
 
   async projects(options: GetProjectsParams): Promise<ProjectStruct[]> {
@@ -106,7 +106,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
   }
 
   async getExperiences(): Promise<ExperienceStruct[]> {
-    log.debug('Fetching experiences from personalization API', this.exportConfig?.context );
+    log.debug('Fetching experiences from Personalize API...', this.exportConfig?.context );
     const getExperiencesEndPoint = `/experiences`;
     const data = await this.apiClient.get(getExperiencesEndPoint);
     const result = (await this.handleVariantAPIRes(data)) as ExperienceStruct[];
@@ -179,7 +179,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
       log.debug(`Variant group fetched successfully for experience: ${input?.experienceUid}`, this.exportConfig?.context );
       return result;
     } else {
-      log.debug('CMA API client not available for variant group fetch', this.exportConfig?.context );
+      log.debug('CMA API client not available for variant group fetch.', this.exportConfig?.context );
     }
   }
 
@@ -192,12 +192,12 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
       log.debug(`Variant group updated successfully: ${input?.uid}`, this.exportConfig?.context );
       return result;
     } else {
-      log.debug('CMA API client not available for variant group update', this.exportConfig?.context );
+      log.debug('CMA API client not available for variant group update.', this.exportConfig?.context );
     }
   }
 
   async getEvents(): Promise<EventStruct[] | void> {
-    log.debug('Fetching events from personalization API', this.exportConfig?.context );
+    log.debug('Fetching events from Personalize API...', this.exportConfig?.context );
     const data = await this.apiClient.get<EventStruct>('/events');
     const result = (await this.handleVariantAPIRes(data)) as EventStruct[];
     log.debug(`Fetched ${result?.length || 0} events`, this.exportConfig?.context );
@@ -213,7 +213,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
   }
 
   async getAudiences(): Promise<AudienceStruct[] | void> {
-    log.debug('Fetching audiences from personalization API', this.exportConfig?.context );
+    log.debug('Fetching audiences from Personalize API...', this.exportConfig?.context );
     const data = await this.apiClient.get<AudienceStruct>('/audiences');
     const result = (await this.handleVariantAPIRes(data)) as AudienceStruct[];
     log.debug(`Fetched ${result?.length || 0} audiences`, this.exportConfig?.context );
@@ -221,7 +221,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
   }
 
   async getAttributes(): Promise<AttributeStruct[] | void> {
-    log.debug('Fetching attributes from personalization API', this.exportConfig?.context );
+    log.debug('Fetching attributes from Personalize API...', this.exportConfig?.context );
     const data = await this.apiClient.get<AttributeStruct>('/attributes');
     const result = (await this.handleVariantAPIRes(data)) as AttributeStruct[];
     log.info(`Fetched ${result?.length || 0} attributes`, this.exportConfig?.context );
@@ -302,7 +302,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     log.debug(`API response status: ${status}`, this.exportConfig?.context );
 
     if (status >= 200 && status < 300) {
-      log.debug('API request successful', this.exportConfig?.context );
+      log.debug('API request successful.', this.exportConfig?.context );
       return data;
     }
 
