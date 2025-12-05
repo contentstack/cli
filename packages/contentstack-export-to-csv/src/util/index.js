@@ -378,7 +378,7 @@ function getContentTypeCount(stackAPIClient) {
 }
 
 function exitProgram() {
-  debug('Exiting');
+  debug('Exiting...');
   // eslint-disable-next-line no-undef
   process.exit();
 }
