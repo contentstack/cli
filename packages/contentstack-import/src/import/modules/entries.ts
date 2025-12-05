@@ -279,7 +279,11 @@ export default class EntriesImport extends BaseClass {
       log.debug(`Successfully processed content type: '${uid}'`, this.importConfig.context);
     };
     const onReject = ({ error, apiData: { uid } }: any) => {
-      handleAndLogError(error, { ...this.importConfig.context, uid }, `'${uid}' content type references removal failed`);
+      handleAndLogError(
+        error,
+        { ...this.importConfig.context, uid },
+        `'${uid}' content type references removal failed`,
+      );
     };
     return await this.makeConcurrentCall({
       processName: 'Update content types (removing mandatory references temporarily)',
@@ -516,6 +520,24 @@ export default class EntriesImport extends BaseClass {
         });
       }
     }
+
+    /**
+     * Why Delay Here ?
+     * ==================
+     * When the file is written to the disk, the file is not yet available to be read by the next operation.
+     * existing entries file is written here and used in the replace entries operation. Sometimes it happens that the file is not completed writing to the disk, so replace operation fails.
+     * Solution:
+     * =========
+     * Add a delay to ensure that the file is completed writing to the disk.
+     * This is a temporary workaround, TODO: find a better way to do this.
+     * When replaceEntries tries to read the file immediately after, the file might still be incomplete because:
+     * completeFile() calls write('}') (line 294) - buffered, not yet on disk
+     * closeFile() calls end() (line 318) - closes stream but doesn't wait for flush
+     * replaceEntries immediately tries to read - file is incomplete!
+     * The completeFile() method in FsUtility needs to wait for the stream to finish flushing before returning. Here's what needs to be changed in the FsUtility
+     * */
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    log.success(`Completed creating entries for content type ${cTUid} in locale ${locale}`, this.importConfig.context);
   }
 
   /**
