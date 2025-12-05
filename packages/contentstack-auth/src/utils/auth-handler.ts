@@ -10,11 +10,11 @@ class AuthHandler {
   private _client;
   private _host;
   set client(contentStackClient) {
-    log.debug('Setting ContentStack client', { module: 'auth-handler' });
+    log.debug('Setting Contentstack client.', { module: 'auth-handler' });
     this._client = contentStackClient;
   }
   set host(contentStackHost) {
-    log.debug(`Setting ContentStack host: ${contentStackHost}`, { module: 'auth-handler' });
+    log.debug(`Setting Contentstack host: ${contentStackHost}`, { module: 'auth-handler' });
     this._host = contentStackHost;
   }
 
@@ -68,13 +68,13 @@ class AuthHandler {
    * @throws CLIError if SMS request fails
    */
   private async requestSMSOTP(loginPayload: any): Promise<void> {
-    log.debug('Sending SMS OTP request', { module: 'auth-handler' });
+    log.debug('Sending SMS OTP request.', { module: 'auth-handler' });
     try {
       await this._client.axiosInstance.post('/user/request_token_sms', { user: loginPayload });
-      log.debug('SMS OTP request successful', { module: 'auth-handler' });
+      log.debug('SMS OTP request successful.', { module: 'auth-handler' });
       cliux.print('CLI_AUTH_LOGIN_SECURITY_CODE_SEND_SUCCESS');
     } catch (error) {
-      log.debug('SMS OTP request failed', { module: 'auth-handler', error });
+      log.debug('SMS OTP request failed.', { module: 'auth-handler', error });
       throw error;
     }
   }
@@ -98,7 +98,7 @@ class AuthHandler {
         } = { email, password };
         if (tfaToken) {
           loginPayload.tfa_token = tfaToken;
-          log.debug('Adding TFA token to login payload', { module: 'auth-handler' });
+          log.debug('Adding TFA token to login payload.', { module: 'auth-handler' });
         }
 
         log.debug('Making login API call', {
@@ -124,17 +124,17 @@ class AuthHandler {
               try {
                 resolve(await this.login(email, password, tfToken));
               } catch (error) {
-                log.debug('Login with TFA token failed', { module: 'auth-handler', error });
+                log.debug('Login with TFA token failed.', { module: 'auth-handler', error });
                 cliux.print('CLI_AUTH_2FA_FAILED', { color: 'red' });
                 reject(error);
               }
             } else {
-              log.debug('Login failed - no user found', { module: 'auth-handler', result });
+              log.debug('Login failed: no user found.', { module: 'auth-handler', result });
               reject(new Error(messageHandler.parse('CLI_AUTH_LOGIN_NO_USER')));
             }
           })
           .catch((error: any) => {
-            log.debug('Login API call failed', { module: 'auth-handler', error: error?.errorMessage || error });
+            log.debug('Login API call failed.', { module: 'auth-handler', error: error?.errorMessage || error });
             cliux.print('CLI_AUTH_LOGIN_FAILED', { color: 'yellow' });
             handleAndLogError(error, { module: 'auth-handler' });
           });
@@ -158,25 +158,25 @@ class AuthHandler {
    * @returns {Promise} Promise object returns response object from Contentstack
    */
   async logout(authtoken: string): Promise<object> {
-    log.debug('Starting logout process', { module: 'auth-handler', hasAuthToken: !!authtoken });
+    log.debug('Starting logout process.', { module: 'auth-handler', hasAuthToken: !!authtoken });
 
     return new Promise((resolve, reject) => {
       if (authtoken) {
-        log.debug('Making logout API call', { module: 'auth-handler' });
+        log.debug('Making logout API call.', { module: 'auth-handler' });
 
         this._client
           .logout(authtoken)
           .then(function (response: object) {
-            log.debug('Logout API call successful', { module: 'auth-handler', response });
+            log.debug('Logout API call successful.', { module: 'auth-handler', response });
             return resolve(response);
           })
           .catch((error: Error) => {
-            log.debug('Logout API call failed', { module: 'auth-handler', error: error.message });
+            log.debug('Logout API call failed.', { module: 'auth-handler', error: error.message });
             cliux.print('CLI_AUTH_LOGOUT_FAILED', { color: 'yellow' });
             reject(error);
           });
       } else {
-        log.debug('Logout failed - no auth token provided', { module: 'auth-handler' });
+        log.debug('Logout failed: no auth token provided.', { module: 'auth-handler' });
         reject(new Error(messageHandler.parse('CLI_AUTH_LOGOUT_NO_TOKEN')));
       }
     });
@@ -188,25 +188,25 @@ class AuthHandler {
    * @returns {Promise} Promise object returns response object from Contentstack
    */
   async validateAuthtoken(authtoken: string): Promise<object> {
-    log.debug('Starting token validation', { module: 'auth-handler', hasAuthToken: !!authtoken });
+    log.debug('Starting token validation.', { module: 'auth-handler', hasAuthToken: !!authtoken });
 
     return new Promise((resolve, reject) => {
       if (authtoken) {
-        log.debug('Making token validation API call', { module: 'auth-handler' });
+        log.debug('Making token validation API call.', { module: 'auth-handler' });
 
         this._client
           .getUser()
           .then((user: object) => {
-            log.debug('Token validation successful', { module: 'auth-handler', user });
+            log.debug('Token validation successful.', { module: 'auth-handler', user });
             resolve(user);
           })
           .catch((error: Error) => {
-            log.debug('Token validation failed', { module: 'auth-handler', error: error.message });
+            log.debug('Token validation failed.', { module: 'auth-handler', error: error.message });
             cliux.print('CLI_AUTH_TOKEN_VALIDATION_FAILED', { color: 'yellow' });
             handleAndLogError(error, { module: 'auth-handler' });
           });
       } else {
-        log.debug('Token validation failed - no auth token provided', { module: 'auth-handler' });
+        log.debug('Token validation failed: no auth token provided.', { module: 'auth-handler' });
         reject(new Error(messageHandler.parse('CLI_AUTH_TOKEN_VALIDATION_NO_TOKEN')));
       }
     });

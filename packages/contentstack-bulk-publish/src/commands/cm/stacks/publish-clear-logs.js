@@ -37,7 +37,7 @@ class ClearCommand extends Command {
         }
         this.log('Log files have been cleared');
       } else {
-        this.error(`The log directory doesn't exist.`);
+        this.error(`The log directory does not exist.`);
       }
     } catch (e) {
       return;
@@ -50,7 +50,7 @@ class ClearCommand extends Command {
         this.log('Total number of log files - ', files.length);
       });
     } else {
-      this.error(`The log directory doesn't exist.`);
+      this.error(`The log directory does not exist.`);
     }
   }
 }

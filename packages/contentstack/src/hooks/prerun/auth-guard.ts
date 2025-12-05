@@ -15,27 +15,27 @@ export default async function (opts): Promise<void> {
       this.exit();
       return;
     }
-    cliux.print(`\n Currently using ${region.name} region \n`, { color: 'grey' });
+    cliux.print(`Currently using region: ${region.name}`, { color: 'grey' });
   }
   // Auth guard
   if (protectedCommands[opts.Command.id]) {
     if (!isAuthenticated()) {
-      newLogger.error('No auth token found for command', opts.Command.id);
-      cliux.error('Please login to execute the command');
+      newLogger.error('No auth token found for command.', opts.Command.id);
+      cliux.error('Please log in to execute the command');
       this.exit();
     }
     const client = await managementSDKClient({host: region.cma})
     try {
       const result = await client.getUser();
       if (!result) {
-        newLogger.error('error in auth validation');
-        cliux.error('Please login to execute the command');
+        newLogger.error('Error in auth validation');
+        cliux.error('Please log in to execute the command');
         this.exit();
       }
-      newLogger.debug('logged in user', result.data);    
+      newLogger.debug('Logged-in user', result.data);    
     } catch (error) {
-      newLogger.error('error in auth validation', error);
-      cliux.error('Please login to execute the command');
+      newLogger.error('Error in auth validation', error);
+      cliux.error('Please log in to execute the command');
       process.exit();
     }   
   }

@@ -50,7 +50,7 @@ export default class ExportStack extends BaseClass {
       let processCount = 0;
 
       if (stackData?.org_uid) {
-        log.debug(`Found organization UID: ${stackData.org_uid}`, this.exportConfig.context);
+        log.debug(`Found organization UID: '${stackData.org_uid}'.`, this.exportConfig.context);
         this.exportConfig.org_uid = stackData.org_uid;
         this.exportConfig.sourceStackName = stackData.name;
         log.debug(`Set source stack name: ${stackData.name}`, this.exportConfig.context);
@@ -130,20 +130,20 @@ export default class ExportStack extends BaseClass {
   }
 
   async getStack(): Promise<any> {
-    log.debug(`Fetching stack data for stack: ${this.exportConfig.source_stack}`, this.exportConfig.context);
+    log.debug(`Fetching stack data for: '${this.exportConfig.source_stack}'...`, this.exportConfig.context);
 
     const tempAPIClient = await managementSDKClient({ host: this.exportConfig.host });
-    log.debug(`Created management SDK client with host: ${this.exportConfig.host}`, this.exportConfig.context);
+    log.debug(`Created Management SDK client with host: '${this.exportConfig.host}'.`, this.exportConfig.context);
 
     return await tempAPIClient
       .stack({ api_key: this.exportConfig.source_stack })
       .fetch()
       .then((data: any) => {
-        log.debug(`Successfully fetched stack data for: ${this.exportConfig.source_stack}`, this.exportConfig.context);
+        log.debug(`Successfully fetched stack data for: '${this.exportConfig.source_stack}'.`, this.exportConfig.context);
         return data;
       })
       .catch((error: any) => {
-        log.debug(`Failed to fetch stack data for: ${this.exportConfig.source_stack}`, this.exportConfig.context);
+        log.debug(`Failed to fetch stack data for: '${this.exportConfig.source_stack}'.`, this.exportConfig.context);
         return {};
       });
   }
@@ -151,12 +151,12 @@ export default class ExportStack extends BaseClass {
   async getLocales(skip: number = 0) {
     if (skip) {
       this.qs.skip = skip;
-      log.debug(`Fetching locales with skip: ${skip}`, this.exportConfig.context);
+      log.debug(`Fetching locales with skip: ${skip}.`, this.exportConfig.context);
     } else {
-      log.debug('Fetching locales with initial query', this.exportConfig.context);
+      log.debug('Fetching locales with initial query...', this.exportConfig.context);
     }
 
-    log.debug(`Query parameters: ${JSON.stringify(this.qs)}`, this.exportConfig.context);
+    log.debug(`Query parameters: ${JSON.stringify(this.qs)}.`, this.exportConfig.context);
 
     return await this.stack
       .locale()
@@ -164,30 +164,34 @@ export default class ExportStack extends BaseClass {
       .find()
       .then(async (data: any) => {
         const { items, count } = data;
-        log.debug(`Fetched ${items?.length || 0} locales out of total ${count}`, this.exportConfig.context);
+        log.debug(`Fetched ${items?.length || 0} locales out of ${count}.`, this.exportConfig.context);
 
         if (items?.length) {
+<<<<<<< HEAD
           log.debug(`Processing ${items.length} locales to find master locale`, this.exportConfig.context);
 
           // Track progress for each locale processed
           this.progressManager?.tick(true, 'Fetch locale', null, PROCESS_NAMES.STACK_LOCALE);
 
+=======
+          log.debug(`Processing ${items.length} locales to find the master locale...`, this.exportConfig.context);
+>>>>>>> development
           skip += this.stackConfig.limit || 100;
           const masterLocalObj = find(items, (locale: any) => {
             if (locale.fallback_locale === null) {
-              log.debug(`Found master locale: ${locale.name} (${locale.code})`, this.exportConfig.context);
+              log.debug(`Found master locale: '${locale.name}' (code: ${locale.code}).`, this.exportConfig.context);
               return locale;
             }
           });
           if (masterLocalObj) {
-            log.debug(`Returning master locale: ${masterLocalObj.name}`, this.exportConfig.context);
+            log.debug(`Returning master locale: '${masterLocalObj.name}'.`, this.exportConfig.context);
             return masterLocalObj;
           } else if (skip >= count) {
             log.error(
               `Locale locale not found in the stack ${this.exportConfig.source_stack}. Please ensure that the stack has a master locale.`,
               this.exportConfig.context,
             );
-            log.debug('Completed searching all locales without finding master locale', this.exportConfig.context);
+            log.debug('Completed search. Master locale not found.', this.exportConfig.context);
             return;
           } else {
             log.debug(
@@ -197,7 +201,7 @@ export default class ExportStack extends BaseClass {
             return await this.getLocales(skip);
           }
         } else {
-          log.debug('No locales found to process', this.exportConfig.context);
+          log.debug('No locales found to process.', this.exportConfig.context);
         }
       })
       .catch((error: any) => {
@@ -221,16 +225,16 @@ export default class ExportStack extends BaseClass {
   }
 
   async exportStack(): Promise<any> {
-    log.debug(`Starting stack export for: ${this.exportConfig.source_stack}`, this.exportConfig.context);
+    log.debug(`Starting stack export for: '${this.exportConfig.source_stack}'...`, this.exportConfig.context);
 
     await fsUtil.makeDirectory(this.stackFolderPath);
-    log.debug(`Created stack directory at: ${this.stackFolderPath}`, this.exportConfig.context);
+    log.debug(`Created stack directory at: '${this.stackFolderPath}'`, this.exportConfig.context);
 
     return this.stack
       .fetch()
       .then((resp: any) => {
         const stackFilePath = pResolve(this.stackFolderPath, this.stackConfig.fileName);
-        log.debug(`Writing stack data to: ${stackFilePath}`, this.exportConfig.context);
+        log.debug(`Writing stack data to: '${stackFilePath}'`, this.exportConfig.context);
         fsUtil.writeFile(stackFilePath, resp);
 
         // Track progress for stack export completion
@@ -245,10 +249,11 @@ export default class ExportStack extends BaseClass {
           `Stack details exported successfully for stack ${this.exportConfig.source_stack}`,
           this.exportConfig.context,
         );
-        log.debug('Stack export completed successfully', this.exportConfig.context);
+        log.debug('Stack export completed successfully.', this.exportConfig.context);
         return resp;
       })
       .catch((error: any) => {
+<<<<<<< HEAD
         log.debug(`Error occurred while exporting stack: ${this.exportConfig.source_stack}`, this.exportConfig.context);
         this.progressManager?.tick(
           false,
@@ -256,12 +261,15 @@ export default class ExportStack extends BaseClass {
           error?.message || PROCESS_STATUS[PROCESS_NAMES.STACK_DETAILS].FAILED,
           PROCESS_NAMES.STACK_DETAILS,
         );
+=======
+        log.debug(`An error occurred while exporting stack: '${this.exportConfig.source_stack}'.`, this.exportConfig.context);
+>>>>>>> development
         handleAndLogError(error, { ...this.exportConfig.context });
       });
   }
 
   async exportStackSettings(): Promise<any> {
-    log.info('Exporting stack settings', this.exportConfig.context);
+    log.info('Exporting stack settings...', this.exportConfig.context);
     await fsUtil.makeDirectory(this.stackFolderPath);
     return this.stack
       .settings()

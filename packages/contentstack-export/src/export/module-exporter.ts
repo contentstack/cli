@@ -104,7 +104,7 @@ class ModuleExporter {
   }
 
   async exportByModuleByName(moduleName: Modules) {
-    log.info(`Exporting module: ${moduleName}`, this.exportConfig.context);
+    log.info(`Exporting module: '${moduleName}'...`, this.exportConfig.context);
     // export the modules by name
     // calls the module runner which inturn calls the module itself
     await startModuleExport({
@@ -122,9 +122,8 @@ class ModuleExporter {
     }
 
     if (!this.exportConfig.skipDependencies) {
-      const {
-        modules: { [moduleName]: { dependencies = [] } = {} },
-      } = this.exportConfig;
+      const moduleConfig = this.exportConfig.modules[moduleName as keyof typeof this.exportConfig.modules];
+      const dependencies = (moduleConfig as any)?.dependencies || [];
 
       if (dependencies.length > 0) {
         exportModules = exportModules.concat(dependencies);
