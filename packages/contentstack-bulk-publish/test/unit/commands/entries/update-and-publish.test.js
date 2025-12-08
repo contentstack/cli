@@ -51,7 +51,7 @@ describe('EntriesUpdateAndPublish', () => {
   it('Should fail when alias and stack api key flags are not passed', async () => {
     const args = ['--content-types', contentTypes[0], '-e', environments[0], '--locales', locales[0], '--yes'];
     const entriesUpdateAndPublishSpy = sinon.spy(EntriesUpdateAndPublish.prototype, 'run');
-    const expectedError = 'Please use `--alias` or `--stack-api-key` to proceed.';
+    const expectedError = 'Use the `--alias` or `--stack-api-key` flag to proceed.';
     try {
       await EntriesUpdateAndPublish.run(args);
     } catch (error) {

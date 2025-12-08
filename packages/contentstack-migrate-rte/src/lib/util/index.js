@@ -270,7 +270,7 @@ async function updateSingleContentTypeEntries(stack, contentTypeUid, config) {
   if (config.locale && isArray(config.locale) && config.locale.length > 0) {
     const locales = config.locale;
     for (const locale of locales) {
-      console.log(`\nMigrating entries for "${contentTypeUid}" Content-type in "${locale}" locale`);
+      console.log(`\nMigrating entries for "${contentTypeUid}" content type in "${locale}" locale.`);
       await updateEntriesInBatch(contentType, config, 0, 0, locale);
       await delay(config.delay || 1000);
     }
@@ -290,7 +290,7 @@ async function updateSingleContentTypeEntriesWithGlobalField(contentType, config
   if (config.locale && isArray(config.locale) && config.locale.length > 0) {
     const locales = config.locale;
     for (const locale of locales) {
-      console.log(`\nMigrating entries for ${contentType.uid} in locale ${locale}`);
+      console.log(`\nMigrating entries for ${contentType.uid} in locale ${locale}.`);
       await updateEntriesInBatch(contentType, config, 0, 0, locale);
       await delay(config.delay || 1000);
     }

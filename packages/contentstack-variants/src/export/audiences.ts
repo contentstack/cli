@@ -48,7 +48,7 @@ export default class ExportAudiences extends PersonalizationAdapter<ExportConfig
 
       if (!this.audiences?.length) {
         log.debug('No audiences found, completing export', this.exportConfig.context);
-        log.info('No Audiences found with the given project!', this.exportConfig.context);
+        log.info('No audiences found for the given project.', this.exportConfig.context);
         return;
       } else {
         log.debug(`Processing ${this.audiences.length} audiences`, this.exportConfig.context);
