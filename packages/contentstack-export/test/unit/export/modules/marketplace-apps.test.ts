@@ -5,6 +5,7 @@ import * as utilities from '@contentstack/cli-utilities';
 import ExportMarketplaceApps from '../../../../src/export/modules/marketplace-apps';
 import ExportConfig from '../../../../src/types/export-config';
 import * as marketplaceAppHelper from '../../../../src/utils/marketplace-app-helper';
+import * as utils from '../../../../src/utils';
 
 describe('ExportMarketplaceApps', () => {
   let exportMarketplaceApps: any;
@@ -152,6 +153,8 @@ describe('ExportMarketplaceApps', () => {
     });
 
     it('should complete full export flow when authenticated', async () => {
+      // Set forceStopMarketplaceAppsPrompt to skip encryption key prompt
+      mockExportConfig.forceStopMarketplaceAppsPrompt = true;
       // Stub configHandler.get to make isAuthenticated() return true
       const configHandlerGetStub = sinon.stub(utilities.configHandler, 'get');
       configHandlerGetStub.withArgs('authorisationType').returns('BASIC'); // Authenticated
@@ -177,6 +180,7 @@ describe('ExportMarketplaceApps', () => {
         })
       });
 
+      // marketplaceSDKClient is already stubbed in beforeEach, no need to stub again
       // getOrgUid and getDeveloperHubUrl are already stubbed in beforeEach, just ensure they resolve correctly
       (marketplaceAppHelper.getOrgUid as sinon.SinonStub).resolves('test-org-uid');
       (marketplaceAppHelper.getDeveloperHubUrl as sinon.SinonStub).resolves('https://developer-api.contentstack.io');
@@ -199,6 +203,7 @@ describe('ExportMarketplaceApps', () => {
       getAppManifestAndAppConfigStub.restore();
       getAppsCountStub.restore();
       configHandlerGetStub.restore();
+      // marketplaceSDKClient is restored in afterEach, no need to restore here
       (marketplaceAppHelper.getOrgUid as sinon.SinonStub).restore();
       (marketplaceAppHelper.getDeveloperHubUrl as sinon.SinonStub).restore();
     });
