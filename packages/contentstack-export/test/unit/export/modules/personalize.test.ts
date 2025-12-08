@@ -387,14 +387,52 @@ describe('ExportPersonalize', () => {
   });
 
   describe('start() method - Unknown Module Handling', () => {
+    let validateProjectConnectivityStub: sinon.SinonStub;
+    let validatePersonalizeSetupStub: sinon.SinonStub;
+    
     beforeEach(() => {
       // Ensure projects are found so personalizationEnabled is set to true
       mockExportProjects.init.resolves();
       mockExportProjects.projects.resolves([{ uid: 'project-1' }]);
+      // Stub validateProjectConnectivity to return project count > 0
+      validateProjectConnectivityStub = sinon.stub(exportPersonalize, 'validateProjectConnectivity' as any).resolves(1);
+      // Stub validatePersonalizeSetup to return true
+      validatePersonalizeSetupStub = sinon.stub(exportPersonalize, 'validatePersonalizeSetup' as any).returns(true);
+    });
+    
+    afterEach(() => {
+      if (validateProjectConnectivityStub) {
+        validateProjectConnectivityStub.restore();
+      }
+      if (validatePersonalizeSetupStub) {
+        validatePersonalizeSetupStub.restore();
+      }
     });
 
     it('should skip unknown modules in exportOrder but continue with valid ones', async () => {
+      // Ensure ExportProjects is set up correctly
+      mockExportProjects.init.resolves();
+      mockExportProjects.projects.resolves([{ uid: 'project-1' }]);
       mockExportConfig.modules.personalize.exportOrder = ['events', 'unknown-module', 'attributes', 'another-unknown'];
+      // Ensure stubs are set up
+      validateProjectConnectivityStub.resolves(1);
+      validatePersonalizeSetupStub.returns(true);
+      // Stub withLoadingSpinner to execute the function immediately
+      sinon.stub(exportPersonalize, 'withLoadingSpinner' as any).callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      // Stub createNestedProgress to return a mock progress manager
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({
+          updateStatus: sinon.stub()
+        }),
+        updateStatus: sinon.stub(),
+        completeProcess: sinon.stub(),
+        tick: sinon.stub()
+      };
+      sinon.stub(exportPersonalize, 'createNestedProgress' as any).returns(mockProgress);
+      sinon.stub(exportPersonalize, 'completeProgress' as any);
       const executedModules: string[] = [];
 
       mockExportEvents.start.callsFake(async () => {
@@ -423,6 +461,25 @@ describe('ExportPersonalize', () => {
       mockExportProjects.init.resolves();
       mockExportProjects.projects.resolves([{ uid: 'project-1' }]);
       mockExportConfig.modules.personalize.exportOrder = ['unknown-1', 'unknown-2'];
+      // Ensure validateProjectConnectivity returns > 0 (already stubbed in beforeEach)
+      validateProjectConnectivityStub.resolves(1);
+      validatePersonalizeSetupStub.returns(true);
+      // Stub withLoadingSpinner to execute the function immediately
+      sinon.stub(exportPersonalize, 'withLoadingSpinner' as any).callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      // Stub createNestedProgress to return a mock progress manager
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({
+          updateStatus: sinon.stub()
+        }),
+        updateStatus: sinon.stub(),
+        completeProcess: sinon.stub(),
+        tick: sinon.stub()
+      };
+      sinon.stub(exportPersonalize, 'createNestedProgress' as any).returns(mockProgress);
+      sinon.stub(exportPersonalize, 'completeProgress' as any);
 
       // Should complete without throwing errors
       let errorThrown = false;

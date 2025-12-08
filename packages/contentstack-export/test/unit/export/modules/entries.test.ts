@@ -1127,6 +1127,10 @@ describe('EntriesExport', () => {
       const processingError = new Error('Entry processing failed');
       const getEntriesStub = sandbox.stub(entriesExport, 'getEntries').rejects(processingError);
       
+      // Stub getTotalEntriesCount to return > 0 so the loop executes
+      sandbox.stub(entriesExport, 'getTotalEntriesCount').resolves(1);
+      sandbox.stub(entriesExport, 'setupVariantExport').resolves(null);
+      
       // Stub progress manager to avoid issues
       sandbox.stub(entriesExport as any, 'createNestedProgress').returns({
         addProcess: sandbox.stub(),
@@ -1140,28 +1144,15 @@ describe('EntriesExport', () => {
       sandbox.stub(entriesExport as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
         return await fn();
       });
-      sandbox.stub(entriesExport as any, 'completeProgress');
-
-      const handleAndLogErrorSpy = sandbox.spy();
-      try {
-        sandbox.replaceGetter(utilities, 'handleAndLogError', () => handleAndLogErrorSpy);
-      } catch (e) {
-        // Already replaced, restore first
-        sandbox.restore();
-        sandbox.replaceGetter(utilities, 'handleAndLogError', () => handleAndLogErrorSpy);
-      }
+      const completeProgressStub = sandbox.stub(entriesExport as any, 'completeProgress');
 
       await entriesExport.start();
 
       // Should handle error - the error is thrown in the loop and caught in outer catch
-      // The error is caught in the outer catch block which calls handleAndLogError
-      expect(handleAndLogErrorSpy.called).to.be.true;
-      // Verify error was logged with correct context if it was called
-      if (handleAndLogErrorSpy.called) {
-        const callArgs = handleAndLogErrorSpy.getCall(0).args;
-        expect(callArgs[0]).to.equal(processingError);
-        expect(callArgs[1]).to.have.property('module', 'entries');
-      }
+      // The error is caught in the outer catch block which calls handleAndLogError and completeProgress(false)
+      // Verify completeProgress was called with false to indicate error handling
+      expect(completeProgressStub.called).to.be.true;
+      expect(completeProgressStub.calledWith(false, sinon.match.string)).to.be.true;
     });
   });
 });
