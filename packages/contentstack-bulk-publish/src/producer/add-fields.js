@@ -62,6 +62,35 @@ function removeUnwanted(entry, unwantedkeys) {
   return entry;
 }
 
+function convertUrlToHref(obj) {
+  if (obj === null || obj === undefined) {
+    return obj;
+  }
+  
+  if (Array.isArray(obj)) {
+    return obj.map((item) => convertUrlToHref(item));
+  }
+  
+  if (typeof obj === 'object') {
+    const converted = {};
+    for (const key in obj) {
+      if (key === 'link' && typeof obj[key] === 'object' && obj[key] !== null) {
+        // Convert url to href in link objects
+        converted[key] = { ...obj[key] };
+        if (converted[key].url !== undefined && converted[key].href === undefined) {
+          converted[key].href = converted[key].url;
+          delete converted[key].url;
+        }
+      } else {
+        converted[key] = convertUrlToHref(obj[key]);
+      }
+    }
+    return converted;
+  }
+  
+  return obj;
+}
+
 function fileFields(entry, uid, multiple) {
   if (entry[uid]) {
     if (typeof entry[uid] === 'object' || Array.isArray(entry[uid])) {
@@ -134,11 +163,19 @@ function addFields(contentType, entry) {
     }
     if (schema.data_type === 'global_field' && !schema.multiple) {
       addFields(schema.schema, entry[schema.uid]);
+      // Convert url to href in link fields within global fields
+      if (entry[schema.uid]) {
+        entry[schema.uid] = convertUrlToHref(entry[schema.uid]);
+      }
     }
     if (schema.data_type === 'global_field' && schema.multiple) {
       entry[schema.uid].forEach((field) => {
         addFields(schema.schema, field);
       });
+      // Convert url to href in link fields within global fields
+      if (entry[schema.uid]) {
+        entry[schema.uid] = convertUrlToHref(entry[schema.uid]);
+      }
     }
     if (schema.data_type === 'blocks') {
       if (!entry[schema.uid] && !Array.isArray(entry[schema.uid])) {
@@ -222,7 +259,9 @@ async function getEntries(
         let updatedEntry = addFields(schema, entries[index]);
         if (updatedEntry.changedFlag || forceUpdate) {
           updatedEntry = removeUnwanted(entries[index], deleteFields);
-          const flag = await updateEntry(updatedEntry, locale);
+          const entry = stack.contentType(contentType).entry(entries[index].uid);
+          Object.assign(entry, updatedEntry);
+          const flag = await updateEntry(entry, locale);
           if (flag) {
             if (bulkPublish) {
               if (bulkPublishSet.length < bulkPublishLimit) {
