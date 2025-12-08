@@ -102,7 +102,7 @@ describe('CrossPublish', () => {
         'token123',
       ]);
     } catch (error) {
-      expect(error.message).to.include('Please use `--alias` or `--stack-api-key` to proceed.');
+      expect(error.message).to.include('Use the `--alias` or `--stack-api-key` flag to proceed.');
     }
   });
 

@@ -5,7 +5,7 @@
   "author": "Abhinav Gupta @abhinav-from-contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-command": "~1.6.2",
+    "@contentstack/cli-command": "~1.7.0",
     "@contentstack/cli-utilities": "~1.15.0",
     "@oclif/core": "^4.3.0",
     "@oclif/plugin-help": "^6.2.32",

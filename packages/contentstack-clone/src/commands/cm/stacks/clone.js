@@ -167,7 +167,7 @@ class StackCloneCommand extends Command {
           if (isAuthenticated()) {
             handleClone();
           } else {
-            log.error('Please login to execute this command, csdx auth:login', cloneContext);
+            log.error('Log in to execute this command,csdx auth:login', cloneContext);
             this.exit(1);
           }
         } else {
