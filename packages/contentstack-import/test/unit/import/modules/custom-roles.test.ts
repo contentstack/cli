@@ -335,7 +335,7 @@ describe('ImportCustomRoles', () => {
     });
   });
 
-  describe('serializeWebhooks()', () => {
+  describe('serializeCustomRoles()', () => {
     it('should skip role if already exists in mapper', () => {
       importCustomRoles['customRolesUidMapper'] = { role1: 'mapped-role1' };
       const apiOptions = {
@@ -343,7 +343,7 @@ describe('ImportCustomRoles', () => {
         entity: 'create-custom-role',
       };
 
-      const result = importCustomRoles.serializeWebhooks(apiOptions as any);
+      const result = importCustomRoles.serializeCustomRoles(apiOptions as any);
 
       expect(result.entity).to.be.undefined;
     });
@@ -353,7 +353,7 @@ describe('ImportCustomRoles', () => {
         apiData: { uid: 'role1', name: 'Role 1', rules: [] as any },
       };
 
-      const result = importCustomRoles.serializeWebhooks(apiOptions as any);
+      const result = importCustomRoles.serializeCustomRoles(apiOptions as any);
 
       expect(result.apiData.rules).to.have.lengthOf(1);
       expect(result.apiData.rules[0].module).to.equal('branch');
@@ -368,7 +368,7 @@ describe('ImportCustomRoles', () => {
         },
       };
 
-      const result = importCustomRoles.serializeWebhooks(apiOptions as any);
+      const result = importCustomRoles.serializeCustomRoles(apiOptions as any);
 
       expect(result.apiData.rules).to.have.lengthOf(1);
     });
@@ -383,7 +383,7 @@ describe('ImportCustomRoles', () => {
         },
       };
 
-      const result = importCustomRoles.serializeWebhooks(apiOptions as any);
+      const result = importCustomRoles.serializeCustomRoles(apiOptions as any);
 
       expect(result.apiData.rules[0].environments).to.deep.equal(['new-env1', 'new-env2']);
     });
@@ -398,7 +398,7 @@ describe('ImportCustomRoles', () => {
         },
       };
 
-      const result = importCustomRoles.serializeWebhooks(apiOptions as any);
+      const result = importCustomRoles.serializeCustomRoles(apiOptions as any);
 
       expect(result.apiData.rules[0].locales).to.deep.equal(['new-locale1', 'new-locale2']);
     });
@@ -413,7 +413,7 @@ describe('ImportCustomRoles', () => {
         },
       };
 
-      const result = importCustomRoles.serializeWebhooks(apiOptions as any);
+      const result = importCustomRoles.serializeCustomRoles(apiOptions as any);
 
       expect(result.apiData.rules[0].entries).to.deep.equal(['new-entry1', 'new-entry2']);
     });
@@ -672,7 +672,7 @@ describe('ImportCustomRoles', () => {
         reject: sinon.stub(),
       };
 
-      const result = importCustomRoles.serializeWebhooks(apiOptions);
+      const result = importCustomRoles.serializeCustomRoles(apiOptions);
 
       expect(result.entity).to.be.undefined;
     });
@@ -693,7 +693,7 @@ describe('ImportCustomRoles', () => {
         reject: sinon.stub(),
       };
 
-      const result = importCustomRoles.serializeWebhooks(apiOptions);
+      const result = importCustomRoles.serializeCustomRoles(apiOptions);
 
       expect(result.apiData.rules).to.have.length(2);
       expect(result.apiData.rules[1]).to.deep.include({
@@ -722,7 +722,7 @@ describe('ImportCustomRoles', () => {
         reject: sinon.stub(),
       };
 
-      const result = importCustomRoles.serializeWebhooks(apiOptions);
+      const result = importCustomRoles.serializeCustomRoles(apiOptions);
 
       expect(result.apiData.rules).to.have.length(2);
       expect(result.apiData.rules[1].module).to.equal('branch');
@@ -744,7 +744,7 @@ describe('ImportCustomRoles', () => {
         reject: sinon.stub(),
       };
 
-      const result = importCustomRoles.serializeWebhooks(apiOptions);
+      const result = importCustomRoles.serializeCustomRoles(apiOptions);
 
       expect(result.apiData.rules).to.be.an('array');
       expect(result.apiData.rules).to.have.length(1);
@@ -771,7 +771,7 @@ describe('ImportCustomRoles', () => {
         reject: sinon.stub(),
       };
 
-      const result = importCustomRoles.serializeWebhooks(apiOptions);
+      const result = importCustomRoles.serializeCustomRoles(apiOptions);
 
       expect(result.apiData.rules).to.have.length(1);
       expect(result.apiData.rules[0]).to.deep.include({
@@ -797,7 +797,7 @@ describe('ImportCustomRoles', () => {
         reject: sinon.stub(),
       };
 
-      const result = importCustomRoles.serializeWebhooks(apiOptions);
+      const result = importCustomRoles.serializeCustomRoles(apiOptions);
 
       expect(result.apiData.rules).to.be.an('array');
       expect(result.apiData.rules).to.have.length(1);
@@ -828,7 +828,7 @@ describe('ImportCustomRoles', () => {
         reject: sinon.stub(),
       };
 
-      const result = importCustomRoles.serializeWebhooks(apiOptions);
+      const result = importCustomRoles.serializeCustomRoles(apiOptions);
 
       expect(result.apiData.rules).to.have.length(3);
       expect(result.apiData.rules[2].module).to.equal('branch');

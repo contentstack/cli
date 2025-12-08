@@ -37,7 +37,15 @@ const mockUtilsModule = {
   lookupExtension: mockHelperMethods.lookupExtension,
   restoreJsonRteEntryRefs: mockHelperMethods.restoreJsonRteEntryRefs,
   fsUtil: mockFsUtil,
-  fileHelper: mockFileHelper
+  fileHelper: mockFileHelper,
+  MODULE_CONTEXTS: {
+    VARIANT_ENTRIES: 'variant-entries'
+  },
+  MODULE_NAMES: {
+    'variant-entries': 'Variant Entries'
+  },
+  PROCESS_NAMES: {},
+  PROCESS_STATUS: {}
 };
 
 // Mock the require cache
