@@ -62,6 +62,87 @@ function removeUnwanted(entry, unwantedkeys) {
   return entry;
 }
 
+function isLinkObject(obj, keyName) {
+  if (obj === null || typeof obj !== 'object' || Array.isArray(obj)) {
+    return false;
+  }
+  
+  const linkKeyNames = ['link', 'card_link'];
+  if (linkKeyNames.includes(keyName)) {
+    return true;
+  }
+  
+  const hasTitle = 'title' in obj && obj.title !== undefined;
+  const hasUrl = 'url' in obj && obj.url !== undefined;
+  const hasHref = 'href' in obj && obj.href !== undefined;
+  
+  return hasTitle && (hasUrl || hasHref);
+}
+
+function ensureHrefIsString(linkObj) {
+  if (linkObj.href === undefined || linkObj.href === null) {
+    linkObj.href = '';
+  } else if (typeof linkObj.href !== 'string') {
+    linkObj.href = String(linkObj.href);
+  }
+}
+
+function isValidJsonRte(obj) {
+  return obj !== null && 
+         typeof obj === 'object' && 
+         !Array.isArray(obj) &&
+         typeof obj.type === 'string' &&
+         obj.type !== '';
+}
+
+function cleanJsonFields(obj) {
+  if (obj === null || obj === undefined || typeof obj !== 'object') {
+    return obj;
+  }
+  
+  if (Array.isArray(obj)) {
+    return obj.map((item) => cleanJsonFields(item));
+  }
+  
+  const cleaned = {};
+  for (const key in obj) {
+    if (!obj.hasOwnProperty(key)) {
+      continue;
+    }
+    let value = obj[key];
+    const isJsonField = key.endsWith('_rte') || key === 'json_rte';
+    const isAccessibilityField = key.endsWith('_accessibility') || key === 'image_preset_accessibility';
+    
+    if (isJsonField) {
+      if (value === '' || value === null || value === undefined) {
+        continue;
+      }
+      if (typeof value === 'object' && !Array.isArray(value)) {
+        const keyCount = Object.keys(value).length;
+        if (keyCount === 0) {
+          continue;
+        }
+        if (!isValidJsonRte(value)) {
+          continue;
+        }
+        cleaned[key] = value;
+      } else {
+        continue;
+      }
+    } else if (isAccessibilityField && value === '') {
+      cleaned[key] = {};
+    } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      value = cleanJsonFields(value);
+      if (value !== null && typeof value === 'object') {
+        cleaned[key] = value;
+      }
+    } else {
+      cleaned[key] = value;
+    }
+  }
+  return cleaned;
+}
+
 function convertUrlToHref(obj) {
   if (obj === null || obj === undefined) {
     return obj;
@@ -74,15 +155,23 @@ function convertUrlToHref(obj) {
   if (typeof obj === 'object') {
     const converted = {};
     for (const key in obj) {
-      if (key === 'link' && typeof obj[key] === 'object' && obj[key] !== null) {
-        // Convert url to href in link objects
-        converted[key] = { ...obj[key] };
+      const value = obj[key];
+      
+      if (isLinkObject(value, key)) {
+        converted[key] = { ...value };
         if (converted[key].url !== undefined && converted[key].href === undefined) {
-          converted[key].href = converted[key].url;
+          if (typeof converted[key].url === 'string') {
+            converted[key].href = converted[key].url;
+          } else if (converted[key].url === null || converted[key].url === undefined) {
+            converted[key].href = '';
+          } else {
+            converted[key].href = String(converted[key].url);
+          }
           delete converted[key].url;
         }
+        ensureHrefIsString(converted[key]);
       } else {
-        converted[key] = convertUrlToHref(obj[key]);
+        converted[key] = convertUrlToHref(value);
       }
     }
     return converted;
@@ -135,6 +224,11 @@ function addFields(contentType, entry) {
           }
         } else if (schema.enum) {
           entry[schema.uid] = null;
+        } else if (schema.data_type === 'json') {
+          const isJsonRteField = schema.uid && (schema.uid.endsWith('_rte') || schema.uid === 'json_rte');
+          if (!isJsonRteField) {
+            entry[schema.uid] = {};
+          }
         } else if (Object.prototype.hasOwnProperty.call(defaults, schema.data_type)) {
           entry[schema.uid] = defaults[schema.data_type];
         } else {
@@ -155,15 +249,20 @@ function addFields(contentType, entry) {
 
     if (schema.data_type === 'group' && !schema.multiple) {
       addFields(schema.schema, entry[schema.uid]);
+      if (entry[schema.uid]) {
+        entry[schema.uid] = convertUrlToHref(entry[schema.uid]);
+      }
     }
     if (schema.data_type === 'group' && schema.multiple) {
       entry[schema.uid].forEach((field) => {
         addFields(schema.schema, field);
       });
+      if (entry[schema.uid]) {
+        entry[schema.uid] = convertUrlToHref(entry[schema.uid]);
+      }
     }
     if (schema.data_type === 'global_field' && !schema.multiple) {
       addFields(schema.schema, entry[schema.uid]);
-      // Convert url to href in link fields within global fields
       if (entry[schema.uid]) {
         entry[schema.uid] = convertUrlToHref(entry[schema.uid]);
       }
@@ -172,7 +271,6 @@ function addFields(contentType, entry) {
       entry[schema.uid].forEach((field) => {
         addFields(schema.schema, field);
       });
-      // Convert url to href in link fields within global fields
       if (entry[schema.uid]) {
         entry[schema.uid] = convertUrlToHref(entry[schema.uid]);
       }
@@ -193,6 +291,9 @@ function addFields(contentType, entry) {
         if (filterBlockFields.length > 0) {
           filterBlockFields.forEach((bfield) => {
             addFields(block.schema, bfield[block.uid]);
+            if (bfield[block.uid]) {
+              bfield[block.uid] = convertUrlToHref(bfield[block.uid]);
+            }
           });
         } else {
           entry[schema.uid].push({ [block.uid]: {} });
@@ -206,6 +307,9 @@ function addFields(contentType, entry) {
           if (filterBlockFields.length > 0) {
             filterBlockFields.forEach((bfield) => {
               addFields(block.schema, bfield[block.uid]);
+              if (bfield[block.uid]) {
+                bfield[block.uid] = convertUrlToHref(bfield[block.uid]);
+              }
             });
           }
         }
@@ -258,9 +362,13 @@ async function getEntries(
       for (let index = 0; index < entriesResponse.items.length; index++) {
         let updatedEntry = addFields(schema, entries[index]);
         if (updatedEntry.changedFlag || forceUpdate) {
-          updatedEntry = removeUnwanted(entries[index], deleteFields);
+          let entryData = JSON.parse(JSON.stringify(updatedEntry.entry));
+          entryData = removeUnwanted(entryData, deleteFields);
+          entryData = cleanJsonFields(entryData);
+          entryData = convertUrlToHref(entryData);
+          entryData = cleanJsonFields(entryData);
           const entry = stack.contentType(contentType).entry(entries[index].uid);
-          Object.assign(entry, updatedEntry);
+          Object.assign(entry, entryData);
           const flag = await updateEntry(entry, locale);
           if (flag) {
             if (bulkPublish) {
@@ -391,8 +499,6 @@ async function start(
     }
   }
 }
-
-// start()
 
 module.exports = {
   start,
