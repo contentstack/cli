@@ -130,6 +130,10 @@ describe('ImportAssets', () => {
     let importAssetsStub: sinon.SinonStub;
     let publishStub: sinon.SinonStub;
     let existsSyncStub: sinon.SinonStub;
+    let analyzeImportDataStub: sinon.SinonStub;
+    let withLoadingSpinnerStub: sinon.SinonStub;
+    let createNestedProgressStub: sinon.SinonStub;
+    let executeStepStub: sinon.SinonStub;
 
     beforeEach(() => {
       importFoldersStub = sinon.stub(importAssets as any, 'importFolders').resolves();
@@ -137,6 +141,21 @@ describe('ImportAssets', () => {
       publishStub = sinon.stub(importAssets as any, 'publish').resolves();
       existsSyncStub = sinon.stub().returns(true);
       sinon.replace(require('node:fs'), 'existsSync', existsSyncStub);
+      
+      // Stub the new methods used in start()
+      analyzeImportDataStub = sinon.stub(importAssets as any, 'analyzeImportData').resolves([1, 2, 0, 1]);
+      withLoadingSpinnerStub = sinon.stub(importAssets as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      createNestedProgressStub = sinon.stub(importAssets as any, 'createNestedProgress').returns({
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        tick: sinon.stub()
+      });
+      executeStepStub = sinon.stub(importAssets as any, 'executeStep').callsFake(async (progress: any, processName: string, status: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
     });
 
     it('should call importFolders first', async () => {
@@ -148,6 +167,7 @@ describe('ImportAssets', () => {
       const originalValue = importAssets.assetConfig.includeVersionedAssets;
       importAssets.assetConfig.includeVersionedAssets = true;
       existsSyncStub.returns(true);
+      analyzeImportDataStub.resolves([1, 2, 1, 1]); // foldersCount, assetsCount, versionedAssetsCount, publishableAssetsCount
 
       await importAssets.start();
 
@@ -164,6 +184,7 @@ describe('ImportAssets', () => {
     it('should skip versioned assets when directory does not exist', async () => {
       mockImportConfig.modules.assets.includeVersionedAssets = true;
       existsSyncStub.returns(false);
+      analyzeImportDataStub.resolves([1, 2, 0, 1]); // versionedAssetsCount = 0
 
       await importAssets.start();
 
@@ -173,6 +194,7 @@ describe('ImportAssets', () => {
 
     it('should not import versioned assets when includeVersionedAssets is false', async () => {
       mockImportConfig.modules.assets.includeVersionedAssets = false;
+      analyzeImportDataStub.resolves([1, 2, 1, 1]); // versionedAssetsCount = 1, but includeVersionedAssets is false
 
       await importAssets.start();
 
@@ -189,6 +211,7 @@ describe('ImportAssets', () => {
 
     it('should skip publish when skipAssetsPublish is true', async () => {
       mockImportConfig.skipAssetsPublish = true;
+      analyzeImportDataStub.resolves([1, 2, 0, 1]); // publishableAssetsCount = 1, but skipAssetsPublish is true
 
       await importAssets.start();
 
@@ -204,7 +227,7 @@ describe('ImportAssets', () => {
 
     it('should handle errors gracefully', async () => {
       const error = new Error('Import failed');
-      importFoldersStub.rejects(error);
+      analyzeImportDataStub.rejects(error);
 
       await importAssets.start();
 
@@ -868,6 +891,19 @@ describe('ImportAssets', () => {
       const importFoldersStub = sinon.stub(importAssets as any, 'importFolders').resolves();
       const importAssetsStub = sinon.stub(importAssets as any, 'importAssets').resolves();
       const publishStub = sinon.stub(importAssets as any, 'publish').resolves();
+      const analyzeImportDataStub = sinon.stub(importAssets as any, 'analyzeImportData').resolves([1, 2, 0, 1]);
+      sinon.stub(importAssets as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importAssets as any, 'createNestedProgress').returns({
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        tick: sinon.stub()
+      });
+      sinon.stub(importAssets as any, 'executeStep').callsFake(async (progress: any, processName: string, status: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
 
       await importAssets.start();
 

@@ -199,7 +199,7 @@ export default class ImportWorkflows extends BaseClass {
           error?.message || 'Failed to import workflow',
           PROCESS_NAMES.WORKFLOWS_CREATE,
         );
-        if (error.errors['workflow_stages.0.users']) {
+        if (error?.errors && error.errors['workflow_stages.0.users']) {
           log.error(
             "Failed to import Workflows as you've specified certain roles in the Stage transition and access rules section. We currently don't import roles to the stack.",
             this.importConfig.context,

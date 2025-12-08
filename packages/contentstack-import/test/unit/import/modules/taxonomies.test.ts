@@ -240,7 +240,7 @@ describe('ImportTaxonomies', () => {
     });
   });
 
-  describe('serializeTaxonomy', () => {
+  describe('serializeTaxonomiesData', () => {
     it('should serialize taxonomy successfully', () => {
       const mockApiOptions = {
         entity: 'import-taxonomy' as any,
@@ -256,7 +256,7 @@ describe('ImportTaxonomies', () => {
         terms: { 'term_1': { uid: 'term_1', name: 'Term 1' } }
       });
 
-      const result = (importTaxonomies as any).serializeTaxonomy(mockApiOptions);
+      const result = (importTaxonomies as any).serializeTaxonomiesData(mockApiOptions);
 
       expect(result).to.have.property('apiData');
       expect(result.apiData.taxonomy).to.have.property('uid');
@@ -274,7 +274,7 @@ describe('ImportTaxonomies', () => {
 
       (fileHelper.fileExistsSync as any).returns(false);
 
-      const result = (importTaxonomies as any).serializeTaxonomy(mockApiOptions);
+      const result = (importTaxonomies as any).serializeTaxonomiesData(mockApiOptions);
 
       expect(result.apiData).to.be.undefined;
     });
@@ -297,7 +297,7 @@ describe('ImportTaxonomies', () => {
         }
       });
 
-      const result = (importTaxonomies as any).serializeTaxonomy(mockApiOptions);
+      const result = (importTaxonomies as any).serializeTaxonomiesData(mockApiOptions);
 
       expect(result.apiData.terms).to.have.property('term_1');
       expect(result.apiData.terms).to.have.property('term_2');
@@ -318,7 +318,7 @@ describe('ImportTaxonomies', () => {
         terms: {}
       });
 
-      const result = (importTaxonomies as any).serializeTaxonomy(mockApiOptions);
+      const result = (importTaxonomies as any).serializeTaxonomiesData(mockApiOptions);
 
       expect(result.apiData.terms).to.deep.equal({});
     });
@@ -706,7 +706,7 @@ describe('ImportTaxonomies', () => {
 
   describe('Callback Functions Integration', () => {
     it('should execute actual onSuccess callback with lines 93-105', async () => {
-      // Set up file helper to return false so serializeTaxonomy gets proper data
+      // Set up file helper to return false so serializeTaxonomiesData gets proper data
       (fileHelper.fileExistsSync as any).returns(false);
       (fsUtil.readFile as any).returns({});
       (fsUtil.makeDirectory as any).resolves();
@@ -718,7 +718,7 @@ describe('ImportTaxonomies', () => {
       // Mock the actual makeConcurrentCall implementation to call real callbacks
       const originalMakeConcurrentCall = (importTaxonomies as any).makeConcurrentCall.bind(importTaxonomies);
       sandbox.stub(importTaxonomies as any, 'makeConcurrentCall').callsFake(async function(this: any, config: any) {
-        // Create mock apiData that serializeTaxonomy would return
+        // Create mock apiData that serializeTaxonomiesData would return
         const mockApiData = {
           taxonomy: { uid: 'taxonomy_1', name: 'Taxonomy 1' },
           terms: { 'term_1': { uid: 'term_1', name: 'Term 1' } }
@@ -768,8 +768,8 @@ describe('ImportTaxonomies', () => {
         actualOnSuccess = config.apiParams.resolve;
         actualOnReject = config.apiParams.reject;
         
-        // Execute serializeTaxonomy to get proper apiData
-        const serialized = (importTaxonomies as any).serializeTaxonomy({
+        // Execute serializeTaxonomiesData to get proper apiData
+        const serialized = (importTaxonomies as any).serializeTaxonomiesData({
           apiData: config.apiContent[0],
           entity: 'import-taxonomy',
           queryParam: { locale: config.apiParams.queryParam?.locale },
@@ -825,8 +825,8 @@ describe('ImportTaxonomies', () => {
         actualOnSuccess = config.apiParams.resolve;
         actualOnReject = config.apiParams.reject;
         
-        // Execute serializeTaxonomy to get proper apiData
-        const serialized = (importTaxonomies as any).serializeTaxonomy({
+        // Execute serializeTaxonomiesData to get proper apiData
+        const serialized = (importTaxonomies as any).serializeTaxonomiesData({
           apiData: config.apiContent[0],
           entity: 'import-taxonomy',
           queryParam: { locale: config.apiParams.queryParam?.locale },
@@ -1041,7 +1041,7 @@ describe('ImportTaxonomies', () => {
       }
     });
 
-    it('should handle file read errors in serializeTaxonomy', () => {
+    it('should handle file read errors in serializeTaxonomiesData', () => {
       const mockApiOptions = {
         entity: 'import-taxonomy' as any,
         apiData: { uid: 'taxonomy_1', name: 'Test Taxonomy' },
@@ -1053,10 +1053,10 @@ describe('ImportTaxonomies', () => {
       (fileHelper.fileExistsSync as any).returns(true);
       (fsUtil.readFile as any).throws(new Error('File read error'));
 
-      const result = (importTaxonomies as any).serializeTaxonomy(mockApiOptions);
+      const result = (importTaxonomies as any).serializeTaxonomiesData(mockApiOptions);
       
       // When file read fails, loadTaxonomyFile catches the error and returns undefined,
-      // which causes serializeTaxonomy to set apiData to undefined
+      // which causes serializeTaxonomiesData to set apiData to undefined
       expect(result.apiData).to.be.undefined;
     });
   });

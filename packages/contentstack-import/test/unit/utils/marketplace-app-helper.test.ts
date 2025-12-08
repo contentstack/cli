@@ -14,7 +14,7 @@ import { ImportConfig } from '../../../src/types';
 import * as interactive from '../../../src/utils/interactive';
 import * as cliUtilities from '@contentstack/cli-utilities';
 import { HttpClient } from '@contentstack/cli-utilities';
-import * as logUtils from '../../../src/utils/log';
+// Removed import of non-existent log module - using cliUtilities.log instead
 
 describe('Marketplace App Helper', () => {
   let sandbox: sinon.SinonSandbox;
