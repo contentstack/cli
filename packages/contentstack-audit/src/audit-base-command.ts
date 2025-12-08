@@ -59,8 +59,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    */
   async start(command: CommandNames): Promise<boolean> {
     this.currentCommand = command;
-    // Initialize audit context
-    createLogContext(this.context?.info?.command,'', configHandler.get('authenticationMethod'));
+    // Initialize audit context (reused, no need to call again in scanAndFix)
+    createLogContext(this.context?.info?.command, '', configHandler.get('authenticationMethod'));
     this.auditContext = { module: 'audit' };
     log.debug(`Starting audit command: ${command}`, this.auditContext);
     log.info(`Starting audit command: ${command}`, this.auditContext);
@@ -213,7 +213,6 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     log.debug(`Data module wise: ${JSON.stringify(dataModuleWise)}`, this.auditContext);
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       // Update audit context with current module
-      createLogContext(this.context?.info?.command, '', configHandler.get('authenticationMethod'));
       this.auditContext = { module: module };
       log.debug(`Starting audit for module: ${module}`, this.auditContext);
       log.info(`Starting audit for module: ${module}`, this.auditContext);

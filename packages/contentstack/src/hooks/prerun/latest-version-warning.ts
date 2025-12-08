@@ -11,7 +11,8 @@ export default async function (_opts): Promise<void> {
   const logger: LoggerService = new LoggerService(process.env.CS_CLI_LOG_PATH || process.cwd(), 'cli-log');
   let cache: IVersionUpgradeCache = { lastChecked: 0, lastWarnedDate: '', latestVersion: '' };
 
-  if(!configHandler.get('CLI_VERSION') || configHandler.get('CLI_VERSION') !== this.config.version) { // if CLI_VERSION is not set or is not the same as the current version, set it
+  // if CLI_VERSION is not set or is not the same as the current version, set it
+  if (!configHandler.get('CLI_VERSION') || configHandler.get('CLI_VERSION') !== this.config.version) {
     configHandler.set('CLI_VERSION', this.config.version); // set current version in configHandler
   }
 
