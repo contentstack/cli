@@ -1,8 +1,12 @@
 fileignoreconfig:
   - filename: package-lock.json
-    checksum: 648c8b938cf0536e479231c214b493b30dab92da4f2497a96c43fa4f65f5b5aa
+    checksum: 7ab88b768020473414a7322e16c04b5b5a73b0122742b79b57f6e48bf39ae511
   - filename: pnpm-lock.yaml
-    checksum: 96a03383a1814bce7e81bc398630b400d0030a1d8680222000c6c2c1b72ad3d8
+    checksum: 1f9e4ddfd5db6a7677515bb1af1373d75bc83dbc755a99515808394df5d593d5
+  - filename: packages/contentstack-export/src/commands/cm/stacks/export.ts
+    checksum: a6cc98499a304a63f520e713c85ff707ca904044e15f095fa7498a5f602d57c5
+  - filename: packages/contentstack-export/README.md
+    checksum: 8b9f38642faa3b8fb5b2a35a6fe79b74862aeb32c318a1346a117fefea1291cd
   - filename: packages/contentstack/README.md
-    checksum: de405506f162ba7ea116f04092bd51ae98808161768b7754e3ae893a7f0e79cb
+    checksum: b746ebdb433947d6117694d33739b56d679d3fe1e18bc0a177f60b6a1f553ac9
 version: '1.0'
