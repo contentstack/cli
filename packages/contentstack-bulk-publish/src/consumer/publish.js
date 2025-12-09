@@ -35,16 +35,19 @@ function removePublishDetails(elements) {
 function displayEntriesDetails(sanitizedData, action, mapping = []) {
   if (action === 'bulk_publish') {
     sanitizedData.forEach((entry) => {
-      entry?.publish_details.forEach((pd) => {
-        if (Object.keys(mapping).includes(pd.environment)) {
+      if (Array.isArray(entry?.publish_details) && entry.publish_details.length > 0) {
+        const matchingPublishDetails = entry.publish_details.filter((pd) => 
+          Object.keys(mapping).includes(pd.environment)
+        );
+        if (matchingPublishDetails.length > 0) {
+          const pd = matchingPublishDetails[0];
           console.log(
             chalk.green(
               `Entry UID: '${entry.uid}', Content Type: '${entry.content_type}', Locale: '${entry.locale}', Version: '${pd.version}', Environment: '${pd.environment}'`,
             ),
-          )
+          );
         }
-      });
-      if(!Array.isArray(entry.publish_details)){
+      } else if (!Array.isArray(entry.publish_details)) {
         console.log(chalk.green(`Entry UID: '${entry.uid}', Content Type: '${entry.content_type}', Locale: '${entry.locale}'`));
       }
     });
