@@ -32,31 +32,28 @@ export default class ImportComposableStudio {
     this.envUidMapperPath = join(this.importConfig.backupDir, 'mapper', 'environments', 'uid-mapping.json');
     this.envUidMapper = {};
 
-    // Initialize HttpClient with Composable Studio API base URL
+    // Initialize HttpClient with Studio API base URL
     this.apiClient = new HttpClient();
     this.apiClient.baseUrl(`${this.composableStudioConfig.apiBaseUrl}/${this.composableStudioConfig.apiVersion}`);
   }
 
   /**
-   * Entry point for Composable Studio import
+   * Entry point for Studio import
    */
   async start(): Promise<void> {
     if (this.importConfig.management_token) {
-      log.warn('Skipping Composable Studio project import when using management token', this.importConfig.context);
+      log.warn('Skipping Studio project import when using management token', this.importConfig.context);
       return;
     }
 
-    log.debug('Starting Composable Studio project import process...', this.importConfig.context);
+    log.debug('Starting Studio project import process...', this.importConfig.context);
     cliux.print(messageHandler.parse('COMPOSABLE_STUDIO_IMPORT_START'), { color: 'blue' });
 
     try {
       // Initialize authentication
       const authInitialized = await this.addAuthHeaders();
       if (!authInitialized) {
-        log.warn(
-          'Skipping Composable Studio project import when using OAuth authentication',
-          this.importConfig.context,
-        );
+        log.warn('Skipping Studio project import when using OAuth authentication', this.importConfig.context);
         return;
       }
 
@@ -98,7 +95,7 @@ export default class ImportComposableStudio {
    * Initialize authentication headers for API calls
    */
   async addAuthHeaders(): Promise<boolean> {
-    log.debug('Initializing Composable Studio API authentication...', this.importConfig.context);
+    log.debug('Initializing Studio API authentication...', this.importConfig.context);
 
     // Get authentication details - following personalization-api-adapter pattern
     await authenticationHandler.getAuthDetails();
@@ -128,7 +125,7 @@ export default class ImportComposableStudio {
       Accept: 'application/json',
     });
 
-    log.debug('Composable Studio API authentication initialized', this.importConfig.context);
+    log.debug('Studio API authentication initialized', this.importConfig.context);
     return true;
   }
 
@@ -156,14 +153,14 @@ export default class ImportComposableStudio {
     log.debug(`Reading exported project from: ${this.composableStudioFilePath}`, this.importConfig.context);
 
     if (!fileHelper.fileExistsSync(this.composableStudioFilePath)) {
-      log.debug('Composable Studio project file does not exist', this.importConfig.context);
+      log.debug('Studio project file does not exist', this.importConfig.context);
       return null;
     }
 
     const projectData = fileHelper.readFileSync(this.composableStudioFilePath) as ComposableStudioProject;
 
     if (!projectData || isEmpty(projectData)) {
-      log.debug('Composable Studio project file is empty', this.importConfig.context);
+      log.debug('Studio project file is empty', this.importConfig.context);
       return null;
     }
 
