@@ -138,7 +138,7 @@ export const setupEnvironments = async (
           cliux.print(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_ENV_FILE_FOR_ENV', environment.name));
         }
       } else {
-        cliux.print('No environments name found for the environment');
+        cliux.print('No environment name found for the selected environment.');
       }
     }
   } else {
