@@ -90,7 +90,7 @@ describe('AssetsUnpublish Command', () => {
     try {
       await UnpublishCommand.run(['--environment', 'env', '--locale', 'en-us', '--yes']);
     } catch (error) {
-      expect(error.message).to.equal('Please use `--alias` or `--stack-api-key` to proceed.');
+      expect(error.message).to.equal('Use the `--alias` or `--stack-api-key` flag to proceed.');
       expect(runStub.called).to.be.false;
     }
   });

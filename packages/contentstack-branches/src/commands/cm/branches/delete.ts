@@ -47,7 +47,7 @@ export default class BranchDeleteCommand extends Command {
     if (!branchDeleteFlags.yes) {
       const confirmBranch = await interactive.askBranchNameConfirmation();
       if (confirmBranch !== branchDeleteFlags.uid) {
-        cliux.error(`error: To delete the branch, enter a valid branch name '${branchDeleteFlags.uid}'`);
+        cliux.error(`Error: To delete the branch, enter a valid branch name '${branchDeleteFlags.uid}'`);
         process.exit(1);
       }
     }

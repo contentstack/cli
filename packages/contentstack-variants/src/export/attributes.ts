@@ -47,7 +47,7 @@ export default class ExportAttributes extends PersonalizationAdapter<ExportConfi
 
       if (!this.attributes?.length) {
         log.debug('No attributes found, completing export', this.exportConfig.context);
-        log.info('No Attributes found with the given project!', this.exportConfig.context);
+        log.info('No attributes found for the given project.', this.exportConfig.context);
       } else {
         log.debug(`Processing ${this.attributes.length} attributes`, this.exportConfig.context);
         this.sanitizeAttribs();

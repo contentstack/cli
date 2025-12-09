@@ -122,7 +122,7 @@ export const getConfirmationToCreateApps = async (privateApps: any, config: Impo
           log.info('User confirmed to create private apps');
           return Promise.resolve(true);
         } else {
-          log.debug('User declined to create private apps (second prompt)');
+          log.debug('User declined to create private apps (second prompt).');
           return Promise.resolve(false);
         }
       }
