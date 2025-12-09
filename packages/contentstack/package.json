@@ -28,7 +28,7 @@
     "@contentstack/cli-auth": "~1.6.2",
     "@contentstack/cli-cm-bootstrap": "~1.17.1",
     "@contentstack/cli-cm-branches": "~1.6.1",
-    "@contentstack/cli-cm-bulk-publish": "~1.10.4",
+    "@contentstack/cli-cm-bulk-publish": "~1.10.3",
     "@contentstack/cli-cm-clone": "~1.18.0",
     "@contentstack/cli-cm-export-to-csv": "~1.10.1",
     "@contentstack/cli-cm-import-setup": "~1.7.1",
