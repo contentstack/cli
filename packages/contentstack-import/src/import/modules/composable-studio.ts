@@ -47,7 +47,6 @@ export default class ImportComposableStudio {
     }
 
     log.debug('Starting Studio project import process...', this.importConfig.context);
-    cliux.print(messageHandler.parse('COMPOSABLE_STUDIO_IMPORT_START'), { color: 'blue' });
 
     try {
       // Initialize authentication
@@ -63,8 +62,7 @@ export default class ImportComposableStudio {
       // Read exported project data
       const exportedProject = await this.readExportedProject();
       if (!exportedProject) {
-        log.info(messageHandler.parse('COMPOSABLE_STUDIO_NOT_FOUND'), this.importConfig.context);
-        cliux.print(messageHandler.parse('COMPOSABLE_STUDIO_NOT_FOUND'), { color: 'yellow' });
+        log.warn(messageHandler.parse('COMPOSABLE_STUDIO_NOT_FOUND'), this.importConfig.context);
         return;
       }
 
@@ -74,14 +72,12 @@ export default class ImportComposableStudio {
       const existingProject = await this.getExistingProject();
       if (existingProject) {
         log.warn(messageHandler.parse('COMPOSABLE_STUDIO_SKIP_EXISTING'), this.importConfig.context);
-        cliux.print(messageHandler.parse('COMPOSABLE_STUDIO_SKIP_EXISTING'), { color: 'yellow' });
         return;
       }
 
       // Import the project with name conflict handling
       await this.importProject(exportedProject);
 
-      cliux.print(messageHandler.parse('COMPOSABLE_STUDIO_IMPORT_COMPLETE', exportedProject.name), { color: 'green' });
       log.success(
         messageHandler.parse('COMPOSABLE_STUDIO_IMPORT_COMPLETE', exportedProject.name),
         this.importConfig.context,
@@ -287,8 +283,8 @@ export default class ImportComposableStudio {
   async promptForNewProjectName(currentName: string): Promise<string> {
     const suggestedName = `Copy of ${currentName}`;
 
-    cliux.print(messageHandler.parse('COMPOSABLE_STUDIO_NAME_CONFLICT', currentName), { color: 'yellow' });
-    cliux.print(messageHandler.parse('COMPOSABLE_STUDIO_SUGGEST_NAME', suggestedName), { color: 'cyan' });
+    log.warn(messageHandler.parse('COMPOSABLE_STUDIO_NAME_CONFLICT', currentName), this.importConfig.context);
+    log.info(messageHandler.parse('COMPOSABLE_STUDIO_SUGGEST_NAME', suggestedName), this.importConfig.context);
 
     const response: any = await cliux.inquire({
       type: 'input',
