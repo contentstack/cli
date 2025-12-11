@@ -48,8 +48,8 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     launch: _flags.string({
       description: 'Custom host to set for Launch API',
     }),
-    'composable-studio': _flags.string({
-      description: 'Custom host to set for Composable Studio API',
+    studio: _flags.string({
+      description: 'Custom host to set for Studio API',
     }),
   };
   static examples = [
@@ -65,8 +65,8 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url>',
     '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --personalize <custom_personalize_url>',
     '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --launch <custom_launch_url>',
-    '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --composable-studio <custom_composable_studio_url>',
-    '$ csdx config:set:region --cda <custom_cda_host_url> --cma <custom_cma_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url> --launch <custom_launch_url> --personalize <custom_personalize_url> --composable-studio <custom_composable_studio_url>',
+    '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --studio <custom_studio_url>',
+    '$ csdx config:set:region --cda <custom_cda_host_url> --cma <custom_cma_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url> --launch <custom_launch_url> --personalize <custom_personalize_url> --studio <custom_studio_url>',
   ];
 
   static args: ArgInput = {
@@ -82,7 +82,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     let developerHubUrl = regionSetFlags['developer-hub'];
     let personalizeUrl = regionSetFlags['personalize'];
     let launchHubUrl = regionSetFlags['launch'];
-    let composableStudioUrl = regionSetFlags['composable-studio'];
+    let composableStudioUrl = regionSetFlags['studio'];
     let selectedRegion = args.region;
     if (!(cda && cma && uiHost && name) && !selectedRegion) {
       selectedRegion = await interactive.askRegions();
@@ -132,7 +132,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
         cliux.success(`Developer Hub URL: ${customRegion.developerHubUrl}`);
         cliux.success(`Personalize URL: ${customRegion.personalizeUrl}`);
         cliux.success(`Launch URL: ${customRegion.launchHubUrl}`);
-        cliux.success(`Composable Studio URL: ${customRegion.composableStudioUrl}`);
+        cliux.success(`Studio URL: ${customRegion.composableStudioUrl}`);
       } catch (error) {
         this.logger.error('failed to set the region', error);
         cliux.error(`Failed to set region due to: ${error.message}`);
@@ -151,7 +151,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
       cliux.success(`Developer Hub URL: ${regionDetails.developerHubUrl}`);
       cliux.success(`Personalize URL: ${regionDetails.personalizeUrl}`);
       cliux.success(`Launch URL: ${regionDetails.launchHubUrl}`);
-      cliux.success(`Composable Studio URL: ${regionDetails.composableStudioUrl}`);
+      cliux.success(`Studio URL: ${regionDetails.composableStudioUrl}`);
     } else {
       cliux.error(`Invalid region specified.`);
     }
