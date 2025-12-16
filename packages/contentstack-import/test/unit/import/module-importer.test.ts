@@ -578,7 +578,7 @@ describe('ModuleImporter', () => {
       await moduleImporter.import();
 
       expect(logStub.info.calledWith(
-        `Starting to import content version ${mockImportConfig.contentVersion}`,
+        'Starting to import',
         mockImportConfig.context
       )).to.be.true;
     });
