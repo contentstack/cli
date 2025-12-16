@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
 import cloneDeep from 'lodash/cloneDeep';
-import { cliux, sanitizePath, TableFlags, TableHeader, log, configHandler } from '@contentstack/cli-utilities';
+import { cliux, sanitizePath, TableFlags, TableHeader, log, configHandler, createLogContext } from '@contentstack/cli-utilities';
 import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'fs';
 import config from './config';
 import { print } from './util/log';
@@ -50,18 +50,6 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     };
   }
 
-  /**
-   * Create audit context object similar to export command
-   */
-  private createAuditContext(moduleName?: string): AuditContext {
-    return {
-      command: this.context?.info?.command || 'cm:stacks:audit',
-      module: moduleName || 'audit',
-      email: configHandler.get('email') || '',
-      sessionId: this.context?.sessionId || '',
-      authenticationMethod: configHandler.get('authenticationMethod') || '',
-    };
-  }
 
   /**
    * The `start` function performs an audit on content types, global fields, entries, and workflows and displays
@@ -71,8 +59,9 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    */
   async start(command: CommandNames): Promise<boolean> {
     this.currentCommand = command;
-    // Initialize audit context
-    this.auditContext = this.createAuditContext();
+    // Initialize audit context (reused, no need to call again in scanAndFix)
+    createLogContext(this.context?.info?.command, '', configHandler.get('authenticationMethod'));
+    this.auditContext = { module: 'audit' };
     log.debug(`Starting audit command: ${command}`, this.auditContext);
     log.info(`Starting audit command: ${command}`, this.auditContext);
 
@@ -224,7 +213,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     log.debug(`Data module wise: ${JSON.stringify(dataModuleWise)}`, this.auditContext);
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       // Update audit context with current module
-      this.auditContext = this.createAuditContext(module);
+      this.auditContext = { module: module };
       log.debug(`Starting audit for module: ${module}`, this.auditContext);
       log.info(`Starting audit for module: ${module}`, this.auditContext);
 
