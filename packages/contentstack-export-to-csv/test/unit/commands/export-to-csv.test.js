@@ -15,22 +15,23 @@ let sandbox;
 
 // Set up nock at the top level to intercept all HTTP requests in PREPACK_MODE
 // This must be done before any command modules are loaded
-if (process.env.NODE_ENV === 'PREPACK_MODE') {
+// Check for PREPACK_MODE - GitHub workflows set NODE_ENV=PREPACK_MODE during setup
+const isPrepackMode = process.env.NODE_ENV === 'PREPACK_MODE';
+
+if (isPrepackMode) {
   if (!nock.isActive()) {
     nock.activate();
   }
-  
-  // Disable all real HTTP requests - only allow our mocked requests
-  nock.disableNetConnect();
-  nock.enableNetConnect('localhost');
-  nock.enableNetConnect('127.0.0.1');
   
   // Set up persistent mocks for all possible API requests at the top level
   // These will be active for all tests and catch requests made when runCommand loads the module
   const mockDataTopLevel = require('../../mock-data/common.mock.json');
   
+  // IMPORTANT: Set up comprehensive mocks BEFORE disabling net connect
+  // The SDK uses axios which nock can intercept, but we need to match all URL formats
+  
   // Mock stack queries - this is the first request made by getStackDetails
-  // Use multiple patterns to catch all URL variations (with/without port, with/without protocol)
+  // Match exact URL patterns first, then use regex as fallback
   nock('https://api.contentstack.io')
     .persist()
     .get(/\/v3\/stacks/)
@@ -43,14 +44,15 @@ if (process.env.NODE_ENV === 'PREPACK_MODE') {
     .query(true)
     .reply(200, () => ({ stacks: mockDataTopLevel.stacks }));
   
-  // Use regex pattern as fallback
+  // Use regex pattern as fallback for any URL variation
   nock(/^https:\/\/api\.contentstack\.io/)
     .persist()
     .get(/\/v3\/stacks/)
     .query(true)
     .reply(200, () => ({ stacks: mockDataTopLevel.stacks }));
   
-  // Catch-all for any other v3 GET endpoints
+  // Catch-all for any other v3 GET endpoints - must be after specific mocks
+  // This ensures any request to /v3/* is intercepted
   nock('https://api.contentstack.io')
     .persist()
     .get(/\/v3\/.*/)
@@ -76,6 +78,20 @@ if (process.env.NODE_ENV === 'PREPACK_MODE') {
     .persist()
     .post(/\/v3\/.*/)
     .reply(200, () => ({}));
+  
+  nock(/^https:\/\/api\.contentstack\.io/)
+    .persist()
+    .post(/\/v3\/.*/)
+    .reply(200, () => ({}));
+  
+  // Disable all real HTTP requests - only allow our mocked requests
+  // This must be done AFTER mocks are set up
+  nock.disableNetConnect();
+  nock.enableNetConnect('localhost');
+  nock.enableNetConnect('127.0.0.1');
+  
+  // Log when nock intercepts requests (for debugging)
+  // Uncomment if needed: nock.emitter.on('no match', (req) => console.log('Nock no match:', req.path));
 }
 
 describe('Export to CSV functionality', () => {
@@ -106,15 +122,17 @@ describe('Export to CSV functionality', () => {
 
   describe('Export taxonomies', () => {
     it('CSV file should be created with taxonomy uid and locale parameters', async function() {
-      // In PREPACK_MODE, runCommand loads the module before nock mocks can intercept HTTP requests
-      // The code fix (configHandler.get('tokens') || {}) prevents the original error
-      // Skip this test in PREPACK_MODE to avoid hanging - the code fix is still validated
-      if (process.env.NODE_ENV === 'PREPACK_MODE') {
+      // In PREPACK_MODE (CI environment), runCommand loads the command module dynamically
+      // which causes managementSDKClient to make HTTP requests before nock can intercept them
+      // The code fix (configHandler.get('tokens') || {}) prevents the original TypeError
+      // Skip this test in PREPACK_MODE to avoid hanging - the code fix is validated
+      if (isPrepackMode) {
         this.skip();
         return;
       }
       
       // Additional nock mocks for this specific test
+      // The top-level mocks in PREPACK_MODE handle the initial stack query
       const baseUrlRegex = /^https:\/\/api\.contentstack\.io/;
       
       nock(baseUrlRegex)
@@ -123,6 +141,18 @@ describe('Export to CSV functionality', () => {
         .reply(200, { taxonomy: mockData.taxonomiesResp.taxonomies[0] });
       
       nock(baseUrlRegex)
+        .persist()
+        .get(new RegExp(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}/export`))
+        .query(true)
+        .reply(200, mockData.taxonomyCSVData);
+      
+      // Also mock with port 443
+      nock('https://api.contentstack.io:443')
+        .persist()
+        .get(new RegExp(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}$`))
+        .reply(200, { taxonomy: mockData.taxonomiesResp.taxonomies[0] });
+      
+      nock('https://api.contentstack.io:443')
         .persist()
         .get(new RegExp(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}/export`))
         .query(true)
@@ -148,7 +178,7 @@ describe('Export to CSV functionality', () => {
     });
 
     it('CSV file should be created without taxonomy uid and with locale parameters', async function() {
-      if (process.env.NODE_ENV === 'PREPACK_MODE') {
+      if (isPrepackMode) {
         this.skip();
         return;
       }
@@ -187,7 +217,7 @@ describe('Export to CSV functionality', () => {
 
   describe('Export entries', () => {
     it('Entries CSV file should be created with flags', async function() {
-      if (process.env.NODE_ENV === 'PREPACK_MODE') {
+      if (isPrepackMode) {
         this.skip();
         return;
       }
@@ -227,7 +257,7 @@ describe('Export to CSV functionality', () => {
     });
 
     it('Entries CSV file should be created with prompt', async function() {
-      if (process.env.NODE_ENV === 'PREPACK_MODE') {
+      if (isPrepackMode) {
         this.skip();
         return;
       }
@@ -285,7 +315,7 @@ describe('Export to CSV functionality', () => {
           .reply(200, { users: mockData.users });
       });
       it('Users CSV file should be successfully created', async function() {
-        if (process.env.NODE_ENV === 'PREPACK_MODE') {
+        if (isPrepackMode) {
           this.skip();
           return;
         }
@@ -303,7 +333,7 @@ describe('Export to CSV functionality', () => {
 
     describe('Export users CSV file with prompt', () => {
       it('Users CSV file should be successfully created', async function() {
-        if (process.env.NODE_ENV === 'PREPACK_MODE') {
+        if (isPrepackMode) {
           this.skip();
           return;
         }
@@ -355,7 +385,7 @@ describe('Testing teams support in CLI export-to-csv', () => {
 
   describe('Testing Teams Command with org and team flags', () => {
     it('CSV file should be created', async function() {
-      if (process.env.NODE_ENV === 'PREPACK_MODE') {
+      if (isPrepackMode) {
         this.skip();
         return;
       }
@@ -383,7 +413,7 @@ describe('Testing teams support in CLI export-to-csv', () => {
 
   describe('Testing Teams Command with no teams', () => {
     it('CSV file should be created', async function() {
-      if (process.env.NODE_ENV === 'PREPACK_MODE') {
+      if (isPrepackMode) {
         this.skip();
         return;
       }
@@ -420,7 +450,7 @@ describe('Testing teams support in CLI export-to-csv', () => {
         .reply(200, { roles: mockData.roless.roles });
     });
     it('CSV file should be created', async function() {
-      if (process.env.NODE_ENV === 'PREPACK_MODE') {
+      if (isPrepackMode) {
         this.skip();
         return;
       }
@@ -432,7 +462,7 @@ describe('Testing teams support in CLI export-to-csv', () => {
 
   describe('Testing Teams Command with prompt', () => {
     it('CSV file should be created', async function() {
-      if (process.env.NODE_ENV === 'PREPACK_MODE') {
+      if (isPrepackMode) {
         this.skip();
         return;
       }
@@ -463,7 +493,7 @@ describe('Testing teams support in CLI export-to-csv', () => {
 
   describe('Testing Teams Command with prompt and no stack role data', () => {
     it('CSV file should be created', async function() {
-      if (process.env.NODE_ENV === 'PREPACK_MODE') {
+      if (isPrepackMode) {
         this.skip();
         return;
       }
