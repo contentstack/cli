@@ -60,7 +60,7 @@
     "format": "eslint src/**/*.ts --fix",
     "test:integration": "mocha --forbid-only \"test/run.test.js\" --integration-test --timeout 60000",
     "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\"",
-    "test:unit": "mocha --forbid-only \"test/**/*.test.ts\""
+    "test:unit": "mocha --forbid-only \"test/**/*.test.ts\" --exit"
   },
   "engines": {
     "node": ">=14.0.0"

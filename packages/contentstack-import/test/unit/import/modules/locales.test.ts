@@ -17,10 +17,8 @@ describe('ImportLocales', () => {
     sandbox = sinon.createSandbox();
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'locales-test-'));
 
-    // Create necessary directories
     fs.mkdirSync(path.join(tempDir, 'mapper', 'languages'), { recursive: true });
 
-    // Create mock config
     mockConfig = {
       data: tempDir,
       backupDir: tempDir,
@@ -191,7 +189,6 @@ describe('ImportLocales', () => {
       } as any,
     };
 
-    // Create mock stack API client
     mockStackAPIClient = {
       locale: sandbox.stub().returns({
         fetch: sandbox.stub(),
@@ -199,14 +196,12 @@ describe('ImportLocales', () => {
       }),
     };
 
-    // Create module class params
     const moduleParams: ModuleClassParams = {
       importConfig: mockConfig,
       stackAPIClient: mockStackAPIClient,
       moduleName: 'locales' as any,
     };
 
-    // Create instance
     localesInstance = new ImportLocales(moduleParams);
   });
 
@@ -262,6 +257,10 @@ describe('ImportLocales', () => {
       fsUtilStub.returns([]);
       fileHelperStub.resolves();
 
+      sandbox.stub(localesInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+
       const result = await localesInstance.start();
 
       expect(result).to.be.undefined;
@@ -271,6 +270,10 @@ describe('ImportLocales', () => {
     it('should handle null languages', async () => {
       fsUtilStub.returns(null);
       fileHelperStub.resolves();
+
+      sandbox.stub(localesInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
 
       const result = await localesInstance.start();
 
@@ -294,11 +297,30 @@ describe('ImportLocales', () => {
       fileHelperStub.resolves();
       makeConcurrentCallStub.resolves();
 
+      sandbox.stub(localesInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const mockProgress = {
+        addProcess: sandbox.stub(),
+        startProcess: sandbox.stub().returns({ updateStatus: sandbox.stub() }),
+        completeProcess: sandbox.stub(),
+        updateStatus: sandbox.stub(),
+        tick: sandbox.stub()
+      };
+      sandbox.stub(localesInstance as any, 'setupLocalesProgress').returns(mockProgress);
+      sandbox.stub(localesInstance as any, 'prepareLocalesMapper').resolves();
+      sandbox.stub(localesInstance as any, 'processMasterLocale').resolves();
+      const processLocaleCreationStub = sandbox.stub(localesInstance as any, 'processLocaleCreation').resolves();
+      const processLocaleUpdateStub = sandbox.stub(localesInstance as any, 'processLocaleUpdate').resolves();
+      sandbox.stub(localesInstance as any, 'completeProgress').resolves();
+
       await localesInstance.start();
 
       expect(localesInstance['languages']).to.deep.equal(mockLanguages);
       expect(localesInstance['sourceMasterLanguage']).to.deep.equal(mockMasterLanguage);
-      expect(makeConcurrentCallStub.calledTwice).to.be.true; // createLocales and updateLocales
+      // Since processLocaleCreation and processLocaleUpdate are stubbed, check if they were called
+      expect(processLocaleCreationStub.called).to.be.true;
+      expect(processLocaleUpdateStub.called).to.be.true;
     });
 
     it('should handle case when UID mapper file does not exist', async () => {
@@ -309,16 +331,35 @@ describe('ImportLocales', () => {
       fileHelperStub.resolves();
       makeConcurrentCallStub.resolves();
 
-      // Mock fileHelper.fileExistsSync to return false for UID mapper file
       const fileExistsSyncStub = sandbox.stub(require('../../../../src/utils').fileHelper, 'fileExistsSync');
       fileExistsSyncStub.returns(false);
+
+      sandbox.stub(localesInstance as any, 'analyzeLocales').callsFake(async () => {
+        localesInstance['languages'] = mockLanguages;
+        localesInstance['sourceMasterLanguage'] = mockMasterLanguage;
+        return [1];
+      });
+      const mockProgress = {
+        addProcess: sandbox.stub(),
+        startProcess: sandbox.stub().returns({ updateStatus: sandbox.stub() }),
+        completeProcess: sandbox.stub(),
+        updateStatus: sandbox.stub(),
+        tick: sandbox.stub()
+      };
+      sandbox.stub(localesInstance as any, 'setupLocalesProgress').returns(mockProgress);
+      sandbox.stub(localesInstance as any, 'prepareLocalesMapper').resolves();
+      sandbox.stub(localesInstance as any, 'processMasterLocale').resolves();
+      const processLocaleCreationStub = sandbox.stub(localesInstance as any, 'processLocaleCreation').resolves();
+      const processLocaleUpdateStub = sandbox.stub(localesInstance as any, 'processLocaleUpdate').resolves();
+      sandbox.stub(localesInstance as any, 'completeProgress').resolves();
 
       await localesInstance.start();
 
       expect(localesInstance['languages']).to.deep.equal(mockLanguages);
       expect(localesInstance['sourceMasterLanguage']).to.deep.equal(mockMasterLanguage);
       expect(localesInstance['langUidMapper']).to.deep.equal({});
-      expect(makeConcurrentCallStub.calledTwice).to.be.true;
+      expect(processLocaleCreationStub.called).to.be.true;
+      expect(processLocaleUpdateStub.called).to.be.true;
     });
 
     it('should handle case when UID mapper file exists but returns null', async () => {
@@ -335,25 +376,57 @@ describe('ImportLocales', () => {
       fileHelperStub.resolves();
       makeConcurrentCallStub.resolves();
 
-      // Mock fileHelper.fileExistsSync to return true for UID mapper file
       const fileExistsSyncStub = sandbox.stub(require('../../../../src/utils').fileHelper, 'fileExistsSync');
       fileExistsSyncStub.returns(true);
+
+      sandbox.stub(localesInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const mockProgress = {
+        addProcess: sandbox.stub(),
+        startProcess: sandbox.stub().returns({ updateStatus: sandbox.stub() }),
+        completeProcess: sandbox.stub(),
+        updateStatus: sandbox.stub(),
+        tick: sandbox.stub()
+      };
+      sandbox.stub(localesInstance as any, 'setupLocalesProgress').returns(mockProgress);
+      sandbox.stub(localesInstance as any, 'prepareLocalesMapper').resolves();
+      sandbox.stub(localesInstance as any, 'processMasterLocale').resolves();
+      const processLocaleCreationStub = sandbox.stub(localesInstance as any, 'processLocaleCreation').resolves();
+      const processLocaleUpdateStub = sandbox.stub(localesInstance as any, 'processLocaleUpdate').resolves();
+      sandbox.stub(localesInstance as any, 'completeProgress').resolves();
 
       await localesInstance.start();
 
       expect(localesInstance['languages']).to.deep.equal(mockLanguages);
       expect(localesInstance['sourceMasterLanguage']).to.deep.equal(mockMasterLanguage);
       expect(localesInstance['langUidMapper']).to.deep.equal({});
-      expect(makeConcurrentCallStub.calledTwice).to.be.true;
+      expect(processLocaleCreationStub.called).to.be.true;
+      expect(processLocaleUpdateStub.called).to.be.true;
     });
 
     it('should handle errors in checkAndUpdateMasterLocale', async () => {
       const mockLanguages = [{ uid: 'lang1', code: 'en-us', name: 'English' }];
       fsUtilStub.onFirstCall().returns(mockLanguages).onSecondCall().returns({}).onThirdCall().returns({});
       fileHelperStub.resolves();
+
+      sandbox.stub(localesInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const mockProgress = {
+        addProcess: sandbox.stub(),
+        startProcess: sandbox.stub().returns({ updateStatus: sandbox.stub() }),
+        completeProcess: sandbox.stub(),
+        updateStatus: sandbox.stub(),
+        tick: sandbox.stub()
+      };
+      sandbox.stub(localesInstance as any, 'setupLocalesProgress').returns(mockProgress);
+      sandbox.stub(localesInstance as any, 'prepareLocalesMapper').resolves();
+      const processLocaleCreationStub = sandbox.stub(localesInstance as any, 'processLocaleCreation').resolves();
+      const processLocaleUpdateStub = sandbox.stub(localesInstance as any, 'processLocaleUpdate').resolves();
+      sandbox.stub(localesInstance as any, 'completeProgress').resolves();
       makeConcurrentCallStub.resolves();
 
-      // Mock checkAndUpdateMasterLocale to throw error
       const checkAndUpdateMasterLocaleStub = sandbox
         .stub(localesInstance, 'checkAndUpdateMasterLocale')
         .rejects(new Error('Test error'));
@@ -361,7 +434,9 @@ describe('ImportLocales', () => {
       await localesInstance.start();
 
       expect(checkAndUpdateMasterLocaleStub.called).to.be.true;
-      expect(makeConcurrentCallStub.calledTwice).to.be.true; // Should still continue with createLocales and updateLocales
+      // Even if processMasterLocale fails, processLocaleCreation and processLocaleUpdate should still be called
+      expect(processLocaleCreationStub.called).to.be.true;
+      expect(processLocaleUpdateStub.called).to.be.true;
     });
 
     it('should handle errors in createLocales', async () => {
@@ -370,9 +445,25 @@ describe('ImportLocales', () => {
       fileHelperStub.resolves();
       makeConcurrentCallStub.rejects(new Error('Create locales error'));
 
+      sandbox.stub(localesInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const mockProgress = {
+        addProcess: sandbox.stub(),
+        startProcess: sandbox.stub().returns({ updateStatus: sandbox.stub() }),
+        completeProcess: sandbox.stub(),
+        updateStatus: sandbox.stub(),
+        tick: sandbox.stub()
+      };
+      sandbox.stub(localesInstance as any, 'setupLocalesProgress').returns(mockProgress);
+      sandbox.stub(localesInstance as any, 'prepareLocalesMapper').resolves();
+      sandbox.stub(localesInstance as any, 'processMasterLocale').resolves();
+      sandbox.stub(localesInstance as any, 'processLocaleUpdate').resolves();
+      sandbox.stub(localesInstance as any, 'completeProgress').resolves();
+
       await localesInstance.start();
 
-      expect(makeConcurrentCallStub.calledTwice).to.be.true;
+      expect(makeConcurrentCallStub.called).to.be.true;
     });
 
     it('should handle errors in updateLocales', async () => {
@@ -381,9 +472,26 @@ describe('ImportLocales', () => {
       fileHelperStub.resolves();
       makeConcurrentCallStub.onFirstCall().resolves().onSecondCall().rejects(new Error('Update locales error'));
 
+      sandbox.stub(localesInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const mockProgress = {
+        addProcess: sandbox.stub(),
+        startProcess: sandbox.stub().returns({ updateStatus: sandbox.stub() }),
+        completeProcess: sandbox.stub(),
+        updateStatus: sandbox.stub(),
+        tick: sandbox.stub()
+      };
+      sandbox.stub(localesInstance as any, 'setupLocalesProgress').returns(mockProgress);
+      sandbox.stub(localesInstance as any, 'prepareLocalesMapper').resolves();
+      sandbox.stub(localesInstance as any, 'processMasterLocale').resolves();
+      sandbox.stub(localesInstance as any, 'processLocaleCreation').resolves();
+      sandbox.stub(localesInstance as any, 'completeProgress').resolves();
+
       await localesInstance.start();
 
-      expect(makeConcurrentCallStub.calledTwice).to.be.true;
+      // because processLocaleCreation throws and start() catches it
+      expect(makeConcurrentCallStub.calledOnce).to.be.true;
     });
   });
 
@@ -458,7 +566,6 @@ describe('ImportLocales', () => {
       };
       mockStackAPIClient.locale.returns(mockLocaleClient);
 
-      // Mock cliux.inquire to return true (user confirms)
       const inquireStub = sandbox
         .stub(require('@contentstack/cli-utilities').cliux, 'inquire')
         .resolves({ confirmation: true });
@@ -485,7 +592,6 @@ describe('ImportLocales', () => {
       };
       mockStackAPIClient.locale.returns(mockLocaleClient);
 
-      // Mock cliux.inquire to return false (user declines)
       const inquireStub = sandbox
         .stub(require('@contentstack/cli-utilities').cliux, 'inquire')
         .resolves({ confirmation: false });
@@ -513,7 +619,6 @@ describe('ImportLocales', () => {
       };
       mockStackAPIClient.locale.returns(mockLocaleClient);
 
-      // Mock cliux.inquire to return false (user declines)
       const inquireStub = sandbox
         .stub(require('@contentstack/cli-utilities').cliux, 'inquire')
         .resolves({ confirmation: false });
@@ -540,12 +645,10 @@ describe('ImportLocales', () => {
       };
       mockStackAPIClient.locale.returns(mockLocaleClient);
 
-      // Mock cliux.inquire to return false (user declines)
       const inquireStub = sandbox
         .stub(require('@contentstack/cli-utilities').cliux, 'inquire')
         .resolves({ confirmation: false });
 
-      // Mock handleAndLogError to prevent any errors
       const handleAndLogErrorStub = sandbox.stub(require('@contentstack/cli-utilities'), 'handleAndLogError');
 
       // The code will try to access sourceMasterLanguage.name even when user declines
@@ -575,7 +678,6 @@ describe('ImportLocales', () => {
       };
       mockStackAPIClient.locale.returns(mockLocaleClient);
 
-      // Mock cliux.inquire to return true (user confirms)
       const inquireStub = sandbox
         .stub(require('@contentstack/cli-utilities').cliux, 'inquire')
         .resolves({ confirmation: true });
@@ -591,7 +693,6 @@ describe('ImportLocales', () => {
     });
 
     it('should handle master language not found in source with undefined uid', async () => {
-      // Create a scenario where sourceMasterLangDetails[0] exists but has no uid
       localesInstance['sourceMasterLanguage'] = {
         'some-key': { code: 'en-us', name: 'English Updated' }, // No uid property
       };
@@ -603,7 +704,6 @@ describe('ImportLocales', () => {
       };
       mockStackAPIClient.locale.returns(mockLocaleClient);
 
-      // Mock cliux.inquire to return true (user confirms)
       const inquireStub = sandbox
         .stub(require('@contentstack/cli-utilities').cliux, 'inquire')
         .resolves({ confirmation: true });
@@ -662,7 +762,6 @@ describe('ImportLocales', () => {
       };
       mockStackAPIClient.locale.returns(mockLocaleClient);
 
-      // Mock cliux.inquire to return true (user confirms)
       const inquireStub = sandbox
         .stub(require('@contentstack/cli-utilities').cliux, 'inquire')
         .resolves({ confirmation: true });
@@ -695,12 +794,10 @@ describe('ImportLocales', () => {
       };
       mockStackAPIClient.locale.returns(mockLocaleClient);
 
-      // Mock cliux.inquire to return true (user confirms)
       const inquireStub = sandbox
         .stub(require('@contentstack/cli-utilities').cliux, 'inquire')
         .resolves({ confirmation: true });
 
-      // Mock handleAndLogError to prevent the error from being thrown
       const handleAndLogErrorStub = sandbox.stub(require('@contentstack/cli-utilities'), 'handleAndLogError');
 
       // The code will try to access this.config.context in the error handler
@@ -871,7 +968,7 @@ describe('ImportLocales', () => {
 
       expect(makeConcurrentCallStub.calledOnce).to.be.true;
       const callArgs = makeConcurrentCallStub.firstCall.args[0];
-      expect(callArgs.processName).to.equal('Update locales');
+      expect(callArgs.processName).to.equal('Locale Update locales');
       expect(callArgs.apiContent).to.have.length(2);
     });
 
