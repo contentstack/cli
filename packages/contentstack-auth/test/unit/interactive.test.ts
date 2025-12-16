@@ -2,8 +2,10 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { interactive } from '../../src/utils';
 import { cliux } from '@contentstack/cli-utilities';
-//@ts-ignore
-import * as config from '../config.json'
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
+const config = JSON.parse(readFileSync(join(__dirname, '../config.json'), "utf-8"));
 
 describe('Interactive', () => {
   let inquireStub: sinon.SinonStub;

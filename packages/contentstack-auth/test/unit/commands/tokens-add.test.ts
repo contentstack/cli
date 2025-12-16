@@ -6,8 +6,10 @@ import { tokenValidation } from '../../../src/utils';
 import { stub, assert } from 'sinon';
 import { config as dotenvConfig } from 'dotenv';
 import nock from 'nock';
-// @ts-ignore
-import * as conf from '../../config.json';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
+const conf = JSON.parse(readFileSync(join(__dirname, '../../config.json'), "utf-8"));
 
 dotenvConfig();
 
