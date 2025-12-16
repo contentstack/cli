@@ -1,8 +1,8 @@
 fileignoreconfig:
   - filename: package-lock.json
-    checksum: bfb6604685378147fb5aa8533f328ce0981cd23703442a8eea0482ca2573a903
+    checksum: 8cb8f731c811c721e741725fd0aab39cbef0e047392ccee0d0e61c679e7d0998
   - filename: pnpm-lock.yaml
-    checksum: c2ba78077fa3dd8100d2697b0e87b29f9c8c64d7c258be654c3843dbd07de750
+    checksum: cbc8b8c0dc444eaf2895bdf8c46812cf4dbadfa7c63be4e9dc619018022899b5
   - filename: packages/contentstack-import-setup/test/unit/backup-handler.test.ts
     checksum: 0582d62b88834554cf12951c8690a73ef3ddbb78b82d2804d994cf4148e1ef93
   - filename: packages/contentstack-import-setup/test/config.json
@@ -32,7 +32,7 @@ fileignoreconfig:
   - filename: packages/contentstack-import-setup/test/unit/login-handler.test.ts
     checksum: e549f9ca3a9aae0d93b7284f7e771d55c0610725ddcb4333612df2f215e92769
   - filename: packages/contentstack/README.md
-    checksum: 10f580c697d0b70b813428954b946e60609f41c42e78ca95ca3232443e725615
+    checksum: 27e772e9b93e7841a36349827d604c9cfa21cbdfd53b340fda24d6d65fd9b679
   - filename: packages/contentstack-import-setup/test/unit/modules/assets.test.ts
     checksum: 449a5e3383631a6f78d1291aa3c28c91681879289398f0a933158fba5c5d5acf
   - filename: packages/contentstack-auth/env.example
@@ -267,4 +267,6 @@ fileignoreconfig:
     checksum: e0380352bb945cc694c7988574d3a3682e7ed71b5d3aa07e01007f6fe0137ce0
   - filename: packages/contentstack-import/src/import/modules/composable-studio.ts
     checksum: 9b83875b8d82086f13e0b7ab44ff7fe95486fced95b0c22d5c73fa69fbe35d4a
+  - filename: packages/contentstack-bulk-publish/src/producer/add-fields.js
+    checksum: 3e70b11978fc5f29a6a6c90b725c28c9df8d15bcc6fd74e2253fca23a3630160
 version: '1.0'

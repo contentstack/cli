@@ -274,7 +274,7 @@ describe('Region command', function () {
     expect(result.launchHubUrl).to.equal(customRegion.launchHubUrl);
   });
 
-  it('should set a custom region with composable studio URL', function () {
+  it('should set a custom region with studio URL', function () {
     const customRegion = {
       cma: 'https://custom-cma.com',
       cda: 'https://custom-cda.com',
