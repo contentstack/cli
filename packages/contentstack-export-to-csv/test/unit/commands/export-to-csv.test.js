@@ -94,7 +94,15 @@ if (isPrepackMode) {
   // Uncomment if needed: nock.emitter.on('no match', (req) => console.log('Nock no match:', req.path));
 }
 
-describe('Export to CSV functionality', () => {
+describe('Export to CSV functionality', function() {
+  // Skip all tests that use runCommand in PREPACK_MODE at the describe level
+  // This ensures the skip happens before any test code runs
+  if (isPrepackMode) {
+    before(function() {
+      this.skip();
+    });
+  }
+  
   beforeEach(() => {
     // Ensure authorisationType is set for isAuthenticated() to work in PREPACK_MODE
     // isAuthenticated() checks for 'OAUTH' or 'BASIC' (authorisationTypeAUTHValue = 'BASIC')
@@ -121,16 +129,8 @@ describe('Export to CSV functionality', () => {
   });
 
   describe('Export taxonomies', () => {
-    it('CSV file should be created with taxonomy uid and locale parameters', async function() {
-      // In PREPACK_MODE (CI environment), runCommand loads the command module dynamically
-      // which causes managementSDKClient to make HTTP requests before nock can intercept them
-      // The code fix (configHandler.get('tokens') || {}) prevents the original TypeError
-      // Skip this test in PREPACK_MODE to avoid hanging - the code fix is validated
-      if (isPrepackMode) {
-        this.skip();
-        return;
-      }
-      
+    it('CSV file should be created with taxonomy uid and locale parameters', async () => {
+      // In PREPACK_MODE, all tests in this describe block are skipped at the describe level
       // Additional nock mocks for this specific test
       // The top-level mocks in PREPACK_MODE handle the initial stack query
       const baseUrlRegex = /^https:\/\/api\.contentstack\.io/;
@@ -177,11 +177,7 @@ describe('Export to CSV functionality', () => {
       expect(stdout).to.include('Writing taxonomies to file:');
     });
 
-    it('CSV file should be created without taxonomy uid and with locale parameters', async function() {
-      if (isPrepackMode) {
-        this.skip();
-        return;
-      }
+    it('CSV file should be created without taxonomy uid and with locale parameters', async () => {
       
       nock(cma)
         .get(
@@ -216,11 +212,7 @@ describe('Export to CSV functionality', () => {
   });
 
   describe('Export entries', () => {
-    it('Entries CSV file should be created with flags', async function() {
-      if (isPrepackMode) {
-        this.skip();
-        return;
-      }
+    it('Entries CSV file should be created with flags', async () => {
       
       nock(cma)
         .get(`/v3/environments`)
@@ -256,11 +248,7 @@ describe('Export to CSV functionality', () => {
       expect(result.stdout).to.include('Writing entries to file:');
     });
 
-    it('Entries CSV file should be created with prompt', async function() {
-      if (isPrepackMode) {
-        this.skip();
-        return;
-      }
+    it('Entries CSV file should be created with prompt', async () => {
       
       sandbox.stub(inquirer, 'registerPrompt').returns(undefined);
       sandbox.stub(inquirer, 'prompt').returns(
@@ -314,11 +302,7 @@ describe('Export to CSV functionality', () => {
           .get(`/v3/organizations/${mockData.organizations[0].uid}/share?skip=0&page=1&limit=100`)
           .reply(200, { users: mockData.users });
       });
-      it('Users CSV file should be successfully created', async function() {
-        if (isPrepackMode) {
-          this.skip();
-          return;
-        }
+      it('Users CSV file should be successfully created', async () => {
         
         const { stdout } = await runCommand([
           'cm:export-to-csv',
@@ -332,11 +316,7 @@ describe('Export to CSV functionality', () => {
     });
 
     describe('Export users CSV file with prompt', () => {
-      it('Users CSV file should be successfully created', async function() {
-        if (isPrepackMode) {
-          this.skip();
-          return;
-        }
+      it('Users CSV file should be successfully created', async () => {
         
         sandbox.stub(process, 'chdir').returns(undefined);
         sandbox.stub(inquirer, 'registerPrompt').returns(undefined);
@@ -364,7 +344,14 @@ describe('Export to CSV functionality', () => {
   });
 });
 
-describe('Testing teams support in CLI export-to-csv', () => {
+describe('Testing teams support in CLI export-to-csv', function() {
+  // Skip all tests that use runCommand in PREPACK_MODE at the describe level
+  if (isPrepackMode) {
+    before(function() {
+      this.skip();
+    });
+  }
+  
   beforeEach(() => {
     // Ensure authorisationType is set for isAuthenticated() to work in PREPACK_MODE
     configHandler.set('authorisationType', 'BASIC');
@@ -384,11 +371,7 @@ describe('Testing teams support in CLI export-to-csv', () => {
   });
 
   describe('Testing Teams Command with org and team flags', () => {
-    it('CSV file should be created', async function() {
-      if (isPrepackMode) {
-        this.skip();
-        return;
-      }
+    it('CSV file should be created', async () => {
       
       nock(cma)
         .get(`/v3/organizations/org_uid_1_teams/teams?skip=0&limit=100&includeUserDetails=true`)
@@ -412,11 +395,7 @@ describe('Testing teams support in CLI export-to-csv', () => {
   });
 
   describe('Testing Teams Command with no teams', () => {
-    it('CSV file should be created', async function() {
-      if (isPrepackMode) {
-        this.skip();
-        return;
-      }
+    it('CSV file should be created', async () => {
       
       nock(cma)
         .get(`/v3/organizations/org_uid_1_teams/teams?skip=0&limit=100&includeUserDetails=true`)
@@ -449,11 +428,7 @@ describe('Testing teams support in CLI export-to-csv', () => {
         .get(`/v3/roles`)
         .reply(200, { roles: mockData.roless.roles });
     });
-    it('CSV file should be created', async function() {
-      if (isPrepackMode) {
-        this.skip();
-        return;
-      }
+    it('CSV file should be created', async () => {
       
       const { stdout } = await runCommand(['cm:export-to-csv', '--action', 'teams', '--org', 'org_uid_1_teams']);
       expect(stdout).to.include('Exporting the teams of Organisation org_uid_1_teams');
@@ -461,11 +436,7 @@ describe('Testing teams support in CLI export-to-csv', () => {
   });
 
   describe('Testing Teams Command with prompt', () => {
-    it('CSV file should be created', async function() {
-      if (isPrepackMode) {
-        this.skip();
-        return;
-      }
+    it('CSV file should be created', async () => {
       
       sandbox.stub(process, 'chdir').returns(undefined);
       sandbox.stub(inquirer, 'registerPrompt').returns(undefined);
@@ -492,11 +463,7 @@ describe('Testing teams support in CLI export-to-csv', () => {
   });
 
   describe('Testing Teams Command with prompt and no stack role data', () => {
-    it('CSV file should be created', async function() {
-      if (isPrepackMode) {
-        this.skip();
-        return;
-      }
+    it('CSV file should be created', async () => {
       
       sandbox.stub(process, 'chdir').returns(undefined);
       sandbox.stub(inquirer, 'registerPrompt').returns(undefined);
