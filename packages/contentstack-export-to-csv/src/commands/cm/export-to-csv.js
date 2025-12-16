@@ -374,7 +374,7 @@ class ExportToCsvCommand extends Command {
    */
   async getAliasDetails(managementTokenAlias, stackName) {
     let apiClient, stackDetails;
-    const listOfTokens = configHandler.get('tokens');
+    const listOfTokens = configHandler.get('tokens') || {};
     if (managementTokenAlias && listOfTokens[managementTokenAlias]) {
       const checkManagementTokenValidity = await isManagementTokenValid(
         listOfTokens[managementTokenAlias].apiKey,
