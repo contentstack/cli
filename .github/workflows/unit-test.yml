@@ -38,7 +38,7 @@ jobs:
 
       - name: Run tests for Contentstack Config
         working-directory: ./packages/contentstack-config
-        run: npm run test
+        run: npm run test:unit
 
       - name: Run tests for Contentstack Migration
         working-directory: ./packages/contentstack-migration
