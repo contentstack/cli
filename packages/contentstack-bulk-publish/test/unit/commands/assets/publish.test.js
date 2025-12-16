@@ -2,6 +2,7 @@ const { describe, it } = require('mocha');
 const sinon = require('sinon');
 const { expect } = require('chai');
 const { config } = require('dotenv');
+const { configHandler } = require('@contentstack/cli-utilities');
 
 const AssetsPublish = require('../../../../src/commands/cm/assets/publish');
 
@@ -12,13 +13,32 @@ const locales = ['en-us', 'fr-fr'];
 
 describe('AssetsPublish', () => {
   let assetPublishSpy;
+  let configHandlerGetStub;
 
   beforeEach(() => {
     assetPublishSpy = sinon.spy(AssetsPublish.prototype, 'run');
+    // Stub configHandler.get to configure region
+    // Region is required for cmaHost property in Command base class
+    configHandlerGetStub = sinon.stub(configHandler, 'get').callsFake((key) => {
+      if (key === 'region') {
+        return {
+          cma: 'api.contentstack.io',
+          cda: 'cdn.contentstack.io',
+          uiHost: 'app.contentstack.com',
+          developerHubUrl: 'developer.contentstack.com',
+          launchHubUrl: 'launch.contentstack.com',
+          personalizeUrl: 'personalize.contentstack.com',
+        };
+      }
+      return undefined;
+    });
   });
 
   afterEach(() => {
     assetPublishSpy.restore();
+    if (configHandlerGetStub) {
+      configHandlerGetStub.restore();
+    }
   });
   it('should throw error when management token alias is not configured', async () => {
     const args = ['--environments', environments[0], '--locales', locales[0], '--alias', 'm_alias', '--yes'];
