@@ -242,6 +242,16 @@ class Field extends Base {
   }
 
   /**
+   * The 'taxonomies' property should contain at least one taxonomy object
+   * @param {string | string[]} value list of taxonomies.
+   * @returns {Field} current instance of field object to chain further methods.
+   */
+  taxonomies(value) {
+    this.buildSchema(taxonomies, this.field, value);
+    return this;
+  }
+  
+  /**
    *
    * @param {boolean} value set true if field is multiple
    * @returns {Field} current instance of field object to chain further methods.
