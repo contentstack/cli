@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { fancy } from 'fancy-test';
 import sinon from 'sinon';
-import { managementSDKClient, configHandler, log, handleAndLogError, getLogPath } from '@contentstack/cli-utilities';
+import { managementSDKClient, configHandler, log, handleAndLogError, getLogPath, createLogContext } from '@contentstack/cli-utilities';
 import ImportCommand from '../../../../../src/commands/cm/stacks/import';
 import { ModuleImporter } from '../../../../../src/import';
 import { ImportConfig } from '../../../../../src/types';
@@ -201,18 +201,27 @@ describe('ImportCommand', () => {
     });
   });
 
-  describe('createImportContext', () => {
+  describe('createLogContext', () => {
     let configHandlerStub: sinon.SinonStub;
+    let configHandlerSetStub: sinon.SinonStub;
 
     beforeEach(() => {
       configHandlerStub = sinon.stub(configHandler, 'get');
-      configHandlerStub.withArgs('userUid').returns('user-123');
+      configHandlerSetStub = sinon.stub(configHandler, 'set');
+      configHandlerStub.withArgs('clientId').returns('user-123');
       configHandlerStub.withArgs('email').returns('test@example.com');
+      configHandlerStub.withArgs('sessionId').returns('test-session-123');
       configHandlerStub.withArgs('oauthOrgUid').returns('org-123');
+      configHandlerStub.withArgs('authorisationType').returns('BASIC');
+    });
+
+    afterEach(() => {
+      configHandlerStub.restore();
+      configHandlerSetStub.restore();
     });
 
     it('should create context with all required properties', () => {
-      const context = command['createImportContext']('test', 'Basic Auth');
+      const context = createLogContext('cm:stacks:import', 'test', 'Basic Auth');
       
       expect(context).to.have.property('command', 'cm:stacks:import');
       expect(context).to.have.property('module', '');
@@ -222,10 +231,11 @@ describe('ImportCommand', () => {
       expect(context).to.have.property('apiKey', 'test');
       expect(context).to.have.property('orgId', 'org-123');
       expect(context).to.have.property('authenticationMethod', 'Basic Auth');
+      expect(configHandlerSetStub.calledWith('apiKey', 'test')).to.be.true;
     });
 
     it('should use default authentication method when not provided', () => {
-      const context = command['createImportContext']('test');
+      const context = createLogContext('cm:stacks:import', 'test');
       
       expect(context.authenticationMethod).to.equal('Basic Auth');
     });
@@ -234,7 +244,7 @@ describe('ImportCommand', () => {
       configHandlerStub.reset();
       configHandlerStub.returns(undefined);
       
-      const context = command['createImportContext']('test', 'Management Token');
+      const context = createLogContext('cm:stacks:import', 'test', 'Management Token');
       
       expect(context.userId).to.equal('');
       expect(context.email).to.equal('');
@@ -242,14 +252,14 @@ describe('ImportCommand', () => {
       expect(context.authenticationMethod).to.equal('Management Token');
     });
 
-    it('should use context command when available', () => {
-      const context = command['createImportContext']('test');
+    it('should use provided command', () => {
+      const context = createLogContext('cm:stacks:import', 'test');
       
       expect(context.command).to.equal('cm:stacks:import');
     });
 
     it('should handle empty apiKey', () => {
-      const context = command['createImportContext']('');
+      const context = createLogContext('cm:stacks:import', '');
       
       expect(context.apiKey).to.equal('');
     });
@@ -503,35 +513,43 @@ describe('ImportCommand', () => {
       configHandlerStub = sinon.stub(configHandler, 'get');
     });
 
-    it('should handle undefined context', () => {
-      (command as any).context = undefined;
-      
-      const context = command['createImportContext']('test');
-      
-      expect(context.command).to.equal('cm:stacks:import');
+    afterEach(() => {
+      configHandlerStub.restore();
     });
 
-    it('should handle context without info', () => {
-      (command as any).context = { sessionId: 'test-session' };
-      
-      const context = command['createImportContext']('test');
-      
-      expect(context.command).to.equal('cm:stacks:import');
-    });
-
-    it('should handle context without sessionId', () => {
-      (command as any).context = { info: { command: 'test' } };
-      
-      const context = command['createImportContext']('test');
-      
-      expect(context.sessionId).to.be.undefined;
-    });
-
-    it('should handle configHandler throwing errors', () => {
-      configHandlerStub.reset();
+    it('should handle command string directly', () => {
       configHandlerStub.returns(undefined);
       
-      const context = command['createImportContext']('test');
+      const context = createLogContext('cm:stacks:import', 'test');
+      
+      expect(context.command).to.equal('cm:stacks:import');
+    });
+
+    it('should use command string when provided', () => {
+      configHandlerStub.withArgs('clientId').returns('user-123');
+      configHandlerStub.withArgs('email').returns('test@example.com');
+      configHandlerStub.withArgs('sessionId').returns('test-session');
+      configHandlerStub.withArgs('oauthOrgUid').returns('org-123');
+      configHandlerStub.withArgs('authorisationType').returns('BASIC');
+      
+      const context = createLogContext('cm:stacks:import', 'test');
+      
+      expect(context.command).to.equal('cm:stacks:import');
+      expect(context.sessionId).to.equal('test-session');
+    });
+
+    it('should handle missing sessionId from configHandler', () => {
+      configHandlerStub.returns(undefined);
+      
+      const context = createLogContext('cm:stacks:import', 'test');
+      
+      expect(context.sessionId).to.equal('');
+    });
+
+    it('should handle configHandler returning undefined values', () => {
+      configHandlerStub.returns(undefined);
+      
+      const context = createLogContext('cm:stacks:import', 'test');
       
       expect(context.userId).to.equal('');
       expect(context.email).to.equal('');
