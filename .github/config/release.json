@@ -9,7 +9,6 @@
     "import": false,
     "clone": false,
     "export-to-csv": false,
-    "migrate-rte": false,
     "migration": false,
     "seed": false,
     "bootstrap": false,
