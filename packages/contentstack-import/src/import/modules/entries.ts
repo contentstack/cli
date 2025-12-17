@@ -57,6 +57,8 @@ export default class EntriesImport extends BaseClass {
   public rteCTs: any;
   public rteCTsWithRef: any;
   public entriesForVariant: Array<{ content_type: string; locale: string; entry_uid: string }> = [];
+  private composableStudioSuccessPath: string;
+  private composableStudioExportPath: string;
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -92,6 +94,18 @@ export default class EntriesImport extends BaseClass {
       sanitizePath(importConfig.modules.locales.dirName),
       sanitizePath(importConfig.modules.locales.fileName),
     );
+    this.composableStudioSuccessPath = path.join(
+      sanitizePath(this.importConfig.data),
+      'mapper',
+      this.importConfig.modules['composable-studio'].dirName,
+      this.importConfig.modules['composable-studio'].fileName,
+    );
+
+    this.composableStudioExportPath = path.join(
+      sanitizePath(this.importConfig.data),
+      this.importConfig.modules['composable-studio'].dirName,
+      this.importConfig.modules['composable-studio'].fileName,
+    );
     this.importConcurrency = this.entriesConfig.importConcurrency || importConfig.importConcurrency;
     this.entriesUidMapper = {};
     this.modifiedCTs = [];
@@ -116,6 +130,37 @@ export default class EntriesImport extends BaseClass {
         return;
       }
       log.debug(`Found ${this.cTs.length} content types for entry import`, this.importConfig.context);
+      // If success file doesn't exist but export file does, skip the composition entries
+      if (
+        !fileHelper.fileExistsSync(this.composableStudioSuccessPath) &&
+        fileHelper.fileExistsSync(this.composableStudioExportPath)
+      ) {
+        const exportedProject = fileHelper.readFileSync(this.composableStudioExportPath) as {
+          contentTypeUid: string;
+        };
+
+        if (exportedProject?.contentTypeUid) {
+          const originalCount = this.cTs.length;
+          this.cTs = this.cTs.filter((ct: Record<string, unknown>) => {
+            const shouldSkip = ct.uid === exportedProject.contentTypeUid;
+            if (shouldSkip) {
+              log.info(
+                `Skipping entries for content type '${ct.uid}' as Composable Studio project was not created successfully`,
+                this.importConfig.context,
+              );
+            }
+            return !shouldSkip;
+          });
+
+          const skippedCount = originalCount - this.cTs.length;
+          if (skippedCount > 0) {
+            log.debug(
+              `Filtered out ${skippedCount} composition content type(s) from entry import`,
+              this.importConfig.context,
+            );
+          }
+        }
+      }
 
       this.installedExtensions = (
         (fsUtil.readFile(this.marketplaceAppMapperPath) as any) || { extension_uid: {} }
@@ -124,10 +169,7 @@ export default class EntriesImport extends BaseClass {
 
       this.assetUidMapper = (fsUtil.readFile(this.assetUidMapperPath) as Record<string, any>) || {};
       this.assetUrlMapper = (fsUtil.readFile(this.assetUrlMapperPath) as Record<string, any>) || {};
-      log.debug(
-        `Loaded asset mappings – UIDs: ${Object.keys(this.assetUidMapper).length}`,
-        this.importConfig.context,
-      );
+      log.debug(`Loaded asset mappings – UIDs: ${Object.keys(this.assetUidMapper).length}`, this.importConfig.context);
 
       this.taxonomies = (fsUtil.readFile(this.taxonomiesPath) || {}) as Record<string, any>;
       log.debug('Loaded taxonomy data for entry processing.', this.importConfig.context);
