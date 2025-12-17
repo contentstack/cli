@@ -177,6 +177,7 @@ Chained function takes boolean value for force while deleting content type
     * [.unique(value)](#Field+unique) ⇒ [<code>Field</code>](#Field)
     * [.reference_to(value)](#Field+reference_to) ⇒ [<code>Field</code>](#Field)
     * [.ref_multiple(value)](#Field+ref_multiple) ⇒ [<code>Field</code>](#Field)
+    * [.taxonomies(value)](#Field+taxonomies) ⇒ [<code>Field</code>](#Field)
     * [.multiple(value)](#Field+multiple) ⇒ [<code>Field</code>](#Field)
     * [.ref_multipleContentType(value)](#Field+ref_multipleContentType) ⇒ [<code>Field</code>](#Field)
     * [.getTaskDefinition()](#Field+getTaskDefinition) ⇒ [<code>Task</code>](#Task)
@@ -369,6 +370,18 @@ module.exports = ({migration}) => {
 | Param | Type | Description |
 | --- | --- | --- |
 | value | <code>string</code> | set true if accepts multiple entries as reference |
+
+<a name="Field+taxonomies"></a>
+
+### field.taxonomies(value) ⇒ [<code>Field</code>](#Field)
+The 'taxonomies' property should contain at least one taxonomy object
+
+**Kind**: instance method of [<code>Field</code>](#Field)  
+**Returns**: [<code>Field</code>](#Field) - current instance of field object to chain further methods.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| value | <code>string</code> \| <code>Array.&lt;string&gt;</code> | list of taxonomies. |
 
 <a name="Field+multiple"></a>
 

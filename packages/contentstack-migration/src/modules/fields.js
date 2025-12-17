@@ -16,6 +16,7 @@ const {
   field_metadata,
   reference_to,
   actions: _actions,
+  taxonomies,
   multiple,
 } = constants;
 
@@ -250,7 +251,7 @@ class Field extends Base {
     this.buildSchema(taxonomies, this.field, value);
     return this;
   }
-  
+
   /**
    *
    * @param {boolean} value set true if field is multiple
