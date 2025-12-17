@@ -211,6 +211,18 @@ module.exports =({ migration })=> {
 };
 
 ```
+Create a taxonomy field
+
+ module.exports =({ migration })=> {
+ const blog = migration.editContentType('blog');
+
+ blog.createField('taxonomies')
+  .display_name('Taxonomy1')
+  .data_type('taxonomy')
+  .taxonomies([{ "taxonomy_uid": "test_taxonomy1", "max_terms": 2, "mandatory": false}])
+  .multiple(true)
+  .mandatory(false);
+};
 <a name="Field+editField"></a>
 
 ### field.editField(field, opts) ⇒ [<code>Field</code>](#Field)
