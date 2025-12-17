@@ -95,8 +95,6 @@ fileignoreconfig:
     checksum: bbe1130f5f5ebf2fa452daef743fe4d40ae9f8fc05c7f8c59c82a3d3d1ed69e8
   - filename: packages/contentstack-audit/src/modules/extensions.ts
     checksum: 32af019f0df8288448d11559fe9f7ef61d3e43c3791d45eeec25fd0937c6baad
-  - filename: packages/contentstack-audit/src/modules/modulesData.ts
-    checksum: bac8f1971ac2e39bc04d9297b81951fe34ed265dfc985137135f9bbe775cd63c
   - filename: packages/contentstack-audit/src/modules/assets.ts
     checksum: 5a007804c75976dd192ed2284b7b7edbc5b5fc269fc0e883908b52e4d4f206a8
   - filename: packages/contentstack-audit/src/modules/workflows.ts
@@ -273,4 +271,8 @@ fileignoreconfig:
     checksum: 9d7df9d79cec75f238a0072bf79c4934b4724bf1466451ea6f923adfd5c0b75b
   - filename: packages/contentstack-utilities/test/unit/logger.test.ts
     checksum: a1939dea16166b1893a248179524a76f2ed20b04b99c83bd1a5a13fcf6f0dadc
+  - filename: packages/contentstack-audit/src/modules/modulesData.ts
+    checksum: 1e6c1fba1172512401038d5454c8d218201ec62262449c5c878609592e0124c4
+  - filename: packages/contentstack-audit/src/modules/composable-studio.ts
+    checksum: e2f67d6b383415fe503ca22514fea38f53cc99647a9a73551772ab1082572cfa
 version: '1.0'
