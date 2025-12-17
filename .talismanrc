@@ -66,7 +66,7 @@ fileignoreconfig:
   - filename: packages/contentstack-bulk-publish/src/producer/publish-unpublished-env.js
     checksum: 96fd15e027f38b156c69f10943ea1d5a70e580fa8a5efeb3286cd7132145c72d
   - filename: packages/contentstack-import/src/import/modules/entries.ts
-    checksum: 2fd4e8ecf75e077632a6408d09997f0921d2a3508f9f2cb8f47fe79a28592300
+    checksum: 290730774c61220645ec211b85b9e218cdbd8addc2d8fd8f061dfa5ede5b5c75
   - filename: packages/contentstack-utilities/src/logger/logger.ts
     checksum: 76429bc87e279624b386f00e7eb3f4ec25621ace7056289f812b9a076d6e184e
   - filename: packages/contentstack-bootstrap/src/bootstrap/utils.ts
