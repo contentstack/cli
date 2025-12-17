@@ -213,6 +213,12 @@ describe('ExportAssets', () => {
           dirName: 'attributes',
           fileName: 'attributes.json',
           invalidKeys: []
+        },
+        'composable-studio': {
+          dirName: 'composable_studio',
+          fileName: 'composable_studio.json',
+          apiBaseUrl: 'https://api.contentstack.io',
+          apiVersion: 'v3'
         }
       }
     } as ExportConfig;
