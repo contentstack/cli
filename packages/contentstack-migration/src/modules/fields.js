@@ -16,7 +16,6 @@ const {
   field_metadata,
   reference_to,
   actions: _actions,
-  taxonomies,
   multiple,
 } = constants;
 
@@ -239,16 +238,6 @@ class Field extends Base {
    */
   ref_multiple(value) {
     this.buildSchema(field_metadata, this.field, { ref_multiple: value, ref_multiple_content_types: true });
-    return this;
-  }
-
-  /**
-   * The 'taxonomies' property should contain at least one taxonomy object
-   * @param {string | string[]} value list of taxonomies.
-   * @returns {Field} current instance of field object to chain further methods.
-   */
-  taxonomies(value) {
-    this.buildSchema(taxonomies, this.field, value);
     return this;
   }
 
