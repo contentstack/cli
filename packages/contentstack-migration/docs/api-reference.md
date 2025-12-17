@@ -210,7 +210,6 @@ module.exports =({ migration })=> {
   .mandatory(false);
 };
 
-```
 Create a taxonomy field
 
  module.exports =({ migration })=> {
@@ -223,6 +222,7 @@ Create a taxonomy field
   .multiple(true)
   .mandatory(false);
 };
+```
 <a name="Field+editField"></a>
 
 ### field.editField(field, opts) ⇒ [<code>Field</code>](#Field)
