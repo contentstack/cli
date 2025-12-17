@@ -7,7 +7,6 @@ import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { sanitizePath, cliux, log } from '@contentstack/cli-utilities';
 
 import {
-  ConfigType,
   ModularBlockType,
   ContentTypeStruct,
   GroupFieldDataType,
@@ -25,14 +24,14 @@ import {
 import auditConfig from '../config';
 import { $t, auditFixMsg, auditMsg, commonMsg } from '../messages';
 import { MarketplaceAppsInstallationData } from '../types/extension';
+import BaseClass from './base-class';
 
 /* The `ContentType` class is responsible for scanning content types, looking for references, and
 generating a report in JSON and CSV formats. */
-export default class ContentType {
+export default class ContentType extends BaseClass {
 
   protected fix: boolean;
   public fileName: string;
-  public config: ConfigType;
   public folderPath: string;
   public currentUid!: string;
   public currentTitle!: string;
@@ -44,7 +43,7 @@ export default class ContentType {
   protected missingRefs: Record<string, any> = {};
   public moduleName: keyof typeof auditConfig.moduleConfig;
   constructor({  fix, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
-    this.config = config;
+    super({ config });
     this.fix = fix ?? false;
     this.ctSchema = ctSchema;
     this.gfSchema = gfSchema;
@@ -76,61 +75,84 @@ export default class ContentType {
   /**
    * The `run` function checks if a folder path exists, sets the schema based on the module name,
    * iterates over the schema and looks for references, and returns a list of missing references.
+   * @param returnFixSchema - If true, returns the fixed schema instead of missing references
+   * @param totalCount - Total number of items to process (for progress tracking)
    * @returns the `missingRefs` object.
    */
-  async run(returnFixSchema = false) {
-    this.inMemoryFix = returnFixSchema;
+  async run(returnFixSchema = false, totalCount?: number) {
+    try {
+      this.inMemoryFix = returnFixSchema;
 
-    if (!existsSync(this.folderPath)) {
-      log.warn(`Skipping ${this.moduleName} audit`, this.config.auditContext);
-      cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
-      return returnFixSchema ? [] : {};
-    }
-
-    this.schema = this.moduleName === 'content-types' ? this.ctSchema : this.gfSchema;
-    log.debug(`Found ${this.schema?.length || 0} ${this.moduleName} schemas to audit`, this.config.auditContext);
-
-    await this.prerequisiteData();
-
-    for (const schema of this.schema ?? []) {
-      this.currentUid = schema.uid;
-      this.currentTitle = schema.title;
-      this.missingRefs[this.currentUid] = [];
-      const { uid, title } = schema;
-      log.debug(`Auditing ${this.moduleName}: ${title} (${uid})`, this.config.auditContext);
-      await this.lookForReference([{ uid, name: title }], schema);
-      log.debug(
-        $t(auditMsg.SCAN_CT_SUCCESS_MSG, { title, module: this.config.moduleConfig[this.moduleName].name }),
-        this.config.auditContext,
-      );
-    }
-
-    if (returnFixSchema) {
-      log.debug(`Returning fixed schema with ${this.schema?.length || 0} items`, this.config.auditContext);
-      return this.schema;
-    }
-
-    if (this.fix) {
-      log.debug('Writing fix content to files', this.config.auditContext);
-      await this.writeFixContent();
-    }
-
-    log.debug('Cleaning up empty missing references', this.config.auditContext);
-    log.debug(`Total missing reference properties: ${Object.keys(this.missingRefs).length}`, this.config.auditContext);
-    
-    for (let propName in this.missingRefs) {
-      const refCount = this.missingRefs[propName].length;
-      log.debug(`Property ${propName}: ${refCount} missing references`, this.config.auditContext);
-      
-      if (!refCount) {
-        log.debug(`Removing empty property: ${propName}`, this.config.auditContext);
-        delete this.missingRefs[propName];
+      if (!existsSync(this.folderPath)) {
+        log.warn(`Skipping ${this.moduleName} audit`, this.config.auditContext);
+        cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
+        return returnFixSchema ? [] : {};
       }
-    }
 
-    const totalIssues = Object.keys(this.missingRefs).length;
-    log.debug(`${this.moduleName} audit completed. Found ${totalIssues} schemas with issues`, this.config.auditContext);
-    return this.missingRefs;
+      this.schema = this.moduleName === 'content-types' ? this.ctSchema : this.gfSchema;
+      log.debug(`Found ${this.schema?.length || 0} ${this.moduleName} schemas to audit`, this.config.auditContext);
+
+      // Load prerequisite data with loading spinner
+      await this.withLoadingSpinner(`${this.moduleName.toUpperCase()}: Loading prerequisite data...`, async () => {
+        await this.prerequisiteData();
+      });
+
+      // Create progress manager if we have a total count
+      if (totalCount && totalCount > 0) {
+        const progress = this.createSimpleProgress(this.moduleName, totalCount);
+        progress.updateStatus('Validating references...');
+      }
+
+      for (const schema of this.schema ?? []) {
+        this.currentUid = schema.uid;
+        this.currentTitle = schema.title;
+        this.missingRefs[this.currentUid] = [];
+        const { uid, title } = schema;
+        log.debug(`Auditing ${this.moduleName}: ${title} (${uid})`, this.config.auditContext);
+        await this.lookForReference([{ uid, name: title }], schema);
+        log.debug(
+          $t(auditMsg.SCAN_CT_SUCCESS_MSG, { title, module: this.config.moduleConfig[this.moduleName].name }),
+          this.config.auditContext,
+        );
+        
+        // Track progress for each schema processed
+        if (this.progressManager) {
+          this.progressManager.tick(true, `${this.moduleName}: ${title}`, null);
+        }
+      }
+
+      if (returnFixSchema) {
+        log.debug(`Returning fixed schema with ${this.schema?.length || 0} items`, this.config.auditContext);
+        return this.schema;
+      }
+
+      if (this.fix) {
+        log.debug('Writing fix content to files', this.config.auditContext);
+        await this.writeFixContent();
+      }
+
+      log.debug('Cleaning up empty missing references', this.config.auditContext);
+      log.debug(`Total missing reference properties: ${Object.keys(this.missingRefs).length}`, this.config.auditContext);
+      
+      for (let propName in this.missingRefs) {
+        const refCount = this.missingRefs[propName].length;
+        log.debug(`Property ${propName}: ${refCount} missing references`, this.config.auditContext);
+        
+        if (!refCount) {
+          log.debug(`Removing empty property: ${propName}`, this.config.auditContext);
+          delete this.missingRefs[propName];
+        }
+      }
+
+      const totalIssues = Object.keys(this.missingRefs).length;
+      log.debug(`${this.moduleName} audit completed. Found ${totalIssues} schemas with issues`, this.config.auditContext);
+      
+      this.completeProgress(true);
+      return this.missingRefs;
+    } catch (error: any) {
+      this.completeProgress(false, error?.message || `${this.moduleName} audit failed`);
+      throw error;
+    }
   }
 
   /**
