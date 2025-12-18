@@ -8,7 +8,7 @@ import { ImportConfig } from '../types';
 let logger: Logger;
 
 export function isImportConfig(config: ImportConfig | MessageType): config is ImportConfig {
-  return (config as ImportConfig).data !== undefined && (config as ImportConfig)?.contentVersion !== undefined;
+  return (config as ImportConfig).data !== undefined;
 }
 
 export function log(entry: LogEntry): void;

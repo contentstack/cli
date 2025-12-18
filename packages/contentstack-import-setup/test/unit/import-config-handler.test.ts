@@ -123,16 +123,6 @@ describe('Import Config Handler', () => {
     expect(config.branchName).to.equal('development');
   });
 
-  it('should set default content version to 1', async () => {
-    const flags = {
-      'data-dir': contentDir,
-    };
-
-    const config = await setupConfig(flags);
-
-    expect(config.contentVersion).to.equal(1);
-  });
-
   it('should ask for modules when none are provided', async () => {
     const flags = {
       'data-dir': contentDir,
