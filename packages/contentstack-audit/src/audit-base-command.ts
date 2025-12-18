@@ -240,6 +240,11 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
     let dataModuleWise: Record<string, any> = await new ModuleDataReader(cloneDeep(constructorParam)).run();
     log.debug(`Data module wise: ${JSON.stringify(dataModuleWise)}`, this.auditContext);
+    
+    // Extract logConfig and showConsoleLogs once before the loop to reuse throughout
+    const logConfig = configHandler.get('log') || {};
+    const showConsoleLogs = logConfig.showConsoleLogs ?? true;
+    
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       // Update audit context with current module
       this.auditContext = this.createAuditContext(module);
@@ -247,9 +252,6 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       log.info(`Starting audit for module: ${module}`, this.auditContext);
 
       // Only show spinner message if console logs are enabled (compatible with line-by-line logs)
-      // If progress bars are shown, skip this spinner message to avoid jumbled output
-      const logConfig = configHandler.get('log') || {};
-      const showConsoleLogs = logConfig.showConsoleLogs ?? true;
       if (showConsoleLogs) {
         print([
           {
