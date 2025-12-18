@@ -21,12 +21,12 @@ importers:
       '@contentstack/cli-cm-export': ~2.0.0-beta.2
       '@contentstack/cli-cm-export-to-csv': ~1.10.0
       '@contentstack/cli-cm-import': ~2.0.0-beta.2
-      '@contentstack/cli-cm-import-setup': 1.7.0
+      '@contentstack/cli-cm-import-setup': ~2.0.0-beta
       '@contentstack/cli-cm-seed': ~2.0.0-beta.2
       '@contentstack/cli-command': ~1.6.2
       '@contentstack/cli-config': ~1.15.3
       '@contentstack/cli-launch': ^1.9.2
-      '@contentstack/cli-migration': ~1.8.2
+      '@contentstack/cli-migration': ~2.0.0-beta
       '@contentstack/cli-utilities': ~1.15.0
       '@contentstack/cli-variants': ~2.0.0-beta.2
       '@contentstack/management': ~1.22.0
@@ -80,12 +80,12 @@ importers:
       '@contentstack/cli-cm-export': link:../contentstack-export
       '@contentstack/cli-cm-export-to-csv': link:../contentstack-export-to-csv
       '@contentstack/cli-cm-import': 2.0.0-beta.2
-      '@contentstack/cli-cm-import-setup': 1.7.0_debug@4.4.3
+      '@contentstack/cli-cm-import-setup': link:../contentstack-import-setup
       '@contentstack/cli-cm-seed': link:../contentstack-seed
       '@contentstack/cli-command': 1.6.2_debug@4.4.3
       '@contentstack/cli-config': 1.15.3_debug@4.4.3
       '@contentstack/cli-launch': 1.9.3_tanrtkdzllst73ozorstzho2ki
-      '@contentstack/cli-migration': 1.8.2_debug@4.4.3
+      '@contentstack/cli-migration': link:../contentstack-migration
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/cli-variants': link:../contentstack-variants
       '@contentstack/management': 1.22.0_debug@4.4.3
@@ -2049,13 +2049,13 @@ packages:
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
     engines: {node: '>=0.1.90'}
 
-  /@contentstack/cli-audit/1.16.0_debug@4.4.3:
-    resolution: {integrity: sha512-ZVPacM2o0fSOtENHueJYRzIXuPbH8AbFbrOa0zz2MJJffu3nIOBiyjeQDHqXxVIZUes6wVKQPqSUWq2xJagvrw==}
+  /@contentstack/cli-audit/1.16.1_debug@4.4.3:
+    resolution: {integrity: sha512-CRe92i7op3RlD5JQu+PY+KelITaTAb3lX22M//Cz7GzW356HyDTNtWydO5MOkPCTt6OkLNz0I9zYY2SPNCRAsw==}
     engines: {node: '>=16'}
     hasBin: true
     dependencies:
-      '@contentstack/cli-command': 1.6.2_debug@4.4.3
-      '@contentstack/cli-utilities': 1.14.4_debug@4.4.3
+      '@contentstack/cli-command': 1.7.0_debug@4.4.3
+      '@contentstack/cli-utilities': 1.15.0_debug@4.4.3
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.36
       '@oclif/plugin-plugins': 5.4.54
@@ -2070,29 +2070,11 @@ packages:
       - supports-color
     dev: false
 
-  /@contentstack/cli-cm-import-setup/1.7.0_debug@4.4.3:
-    resolution: {integrity: sha512-O1aasMJ/l8K4yMiX3kXkM/ZDE1YB/Bvt9ZOa9V4e6S63aJvX7MqMm7v/LZuHlBdv7TyUJgiX6z0UK39mZHgNKQ==}
-    engines: {node: '>=14.0.0'}
-    dependencies:
-      '@contentstack/cli-command': 1.6.2_debug@4.4.3
-      '@contentstack/cli-utilities': 1.14.4_debug@4.4.3
-      '@oclif/core': 4.8.0
-      big-json: 3.2.0
-      chalk: 4.1.2
-      fs-extra: 11.3.2
-      lodash: 4.17.21
-      merge: 2.1.1
-      mkdirp: 1.0.4
-      winston: 3.18.3
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
   /@contentstack/cli-cm-import/2.0.0-beta.2:
     resolution: {integrity: sha512-jvj4whlEtqnSyMSxrILWl7uMsQDyRdJqqd7ykhGVVn44vAIbNNU391lT6wBWQKsDD1w4l0nsEEces3HhkrD32Q==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      '@contentstack/cli-audit': 1.16.0_debug@4.4.3
+      '@contentstack/cli-audit': 1.16.1_debug@4.4.3
       '@contentstack/cli-command': 1.6.2_debug@4.4.3
       '@contentstack/cli-utilities': 1.15.0_debug@4.4.3
       '@contentstack/cli-variants': 2.0.0-beta.2_debug@4.4.3
@@ -2127,6 +2109,18 @@ packages:
 
   /@contentstack/cli-command/1.6.2_debug@4.4.3:
     resolution: {integrity: sha512-h4I484kSYuelqZnwFhKL9IkaYlHbcZzMv3mhpKZBzIgbATMuI0Li+1haJNo+Ao7JqQmzT+a00QNtTHqpNDjngA==}
+    engines: {node: '>=14.0.0'}
+    dependencies:
+      '@contentstack/cli-utilities': 1.15.0_debug@4.4.3
+      '@oclif/core': 4.8.0
+      '@oclif/plugin-help': 6.2.36
+      contentstack: 3.26.2
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
+  /@contentstack/cli-command/1.7.0_debug@4.4.3:
+    resolution: {integrity: sha512-hhsGGa6wFcvHwkapu0vXB1yvOaOmJ1LaV2imyjUREVxvHYC5O4JS2H5VeXLq137Q/dOk5q6o9MjVS+9W4Ri4sw==}
     engines: {node: '>=14.0.0'}
     dependencies:
       '@contentstack/cli-utilities': 1.15.0_debug@4.4.3
@@ -2202,63 +2196,6 @@ packages:
       - supports-color
       - tslib
       - typescript
-    dev: false
-
-  /@contentstack/cli-migration/1.8.2_debug@4.4.3:
-    resolution: {integrity: sha512-hUXB/rgYdtEirnYg9v0qqLBI1wwzhUeNh8NIMyB+P4cLXlBRSaqR7YJ6zMgnJCDrQXrtXyFT5le1AVr2Gnq8EA==}
-    engines: {node: '>=8.3.0'}
-    dependencies:
-      '@contentstack/cli-command': 1.6.2_debug@4.4.3
-      '@contentstack/cli-utilities': 1.15.0_debug@4.4.3
-      '@oclif/core': 4.8.0
-      '@oclif/plugin-help': 6.2.36
-      async: 3.2.6
-      callsites: 3.1.0
-      cardinal: 2.1.1
-      chalk: 4.1.2
-      concat-stream: 2.0.0
-      listr: 0.14.3
-      winston: 3.18.3
-    transitivePeerDependencies:
-      - debug
-      - zen-observable
-      - zenObservable
-    dev: false
-
-  /@contentstack/cli-utilities/1.14.4_debug@4.4.3:
-    resolution: {integrity: sha512-Pg124tYh/p688aerqVgk8lEsCF8F5Ky35yes3KO23Wzt44Hvzps7X27psOTHs/aD4jhZkw3aB+jTItQlL84b8g==}
-    dependencies:
-      '@contentstack/management': 1.25.1_debug@4.4.3
-      '@contentstack/marketplace-sdk': 1.4.0_debug@4.4.3
-      '@oclif/core': 4.8.0
-      axios: 1.13.2_debug@4.4.3
-      chalk: 4.1.2
-      cli-cursor: 3.1.0
-      cli-progress: 3.12.0
-      cli-table: 0.3.11
-      conf: 10.2.0
-      dotenv: 16.6.1
-      figures: 3.2.0
-      inquirer: 8.2.6
-      inquirer-search-checkbox: 1.0.0
-      inquirer-search-list: 1.2.6
-      js-yaml: 4.1.1
-      klona: 2.0.6
-      lodash: 4.17.21
-      mkdirp: 1.0.4
-      open: 8.4.2
-      ora: 5.4.1
-      papaparse: 5.5.3
-      recheck: 4.4.5
-      rxjs: 6.6.7
-      traverse: 0.6.11
-      tty-table: 4.2.3
-      unique-string: 2.0.0
-      uuid: 9.0.1
-      winston: 3.18.3
-      xdg-basedir: 4.0.0
-    transitivePeerDependencies:
-      - debug
     dev: false
 
   /@contentstack/cli-utilities/1.15.0:
@@ -2382,23 +2319,6 @@ packages:
     dependencies:
       assert: 2.1.0
       axios: 1.13.2
-      buffer: 6.0.3
-      form-data: 4.0.5
-      husky: 9.1.7
-      lodash: 4.17.21
-      otplib: 12.0.1
-      qs: 6.14.0
-      stream-browserify: 3.0.0
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
-  /@contentstack/management/1.25.1_debug@4.4.3:
-    resolution: {integrity: sha512-454V3zGw4nrxnlYxXm82Z+yNjuechiN+TRE7SXWyHFUsexYVpKNyGyKZCvG6b4JymRTVUZpy/KnFixo01GP9Sg==}
-    engines: {node: '>=8.0.0'}
-    dependencies:
-      assert: 2.1.0
-      axios: 1.13.2_debug@4.4.3
       buffer: 6.0.3
       form-data: 4.0.5
       husky: 9.1.7

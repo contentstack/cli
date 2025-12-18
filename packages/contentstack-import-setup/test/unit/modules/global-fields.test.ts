@@ -20,7 +20,6 @@ describe('GlobalFieldsImportSetup', () => {
     branchName: '',
     selectedModules: ['global-fields'],
     backupDir: '',
-    contentVersion: 1,
     region: 'us',
     fetchConcurrency: 2,
     writeConcurrency: 1,
