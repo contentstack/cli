@@ -54,7 +54,7 @@ jobs:
 
       - name: Run tests for Contentstack Auth
         working-directory: ./packages/contentstack-auth
-        run: npm run test
+        run: NODE_ENV=PREPACK_MODE npm run test
 
       # - name: Run tests for Contentstack Import Setup
       #   working-directory: ./packages/contentstack-import-setup
