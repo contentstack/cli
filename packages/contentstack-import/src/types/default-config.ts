@@ -158,6 +158,12 @@ export default interface DefaultConfig {
         locale: string;
       } & AnyProperty;
     } & AnyProperty;
+    'composable-studio': {
+      dirName: string;
+      fileName: string;
+      apiBaseUrl: string;
+      apiVersion: string;
+    };
   };
   languagesCode: string[];
   apis: {
@@ -199,5 +205,5 @@ export default interface DefaultConfig {
   globalModules: string[];
   skipAssetsPublish?: boolean;
   skipEntriesPublish?: boolean;
-  entriesPublish: boolean,
+  entriesPublish: boolean;
 }

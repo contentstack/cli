@@ -29,26 +29,26 @@ export default class ExportCustomRoles extends BaseClass {
   }
 
   async start(): Promise<void> {
-    log.debug('Starting custom roles export process...', this.exportConfig.context);
+    log.debug('Starting export process for custom roles...', this.exportConfig.context);
 
     this.rolesFolderPath = pResolve(
       this.exportConfig.data,
       this.exportConfig.branchName || '',
       this.customRolesConfig.dirName,
     );
-    log.debug(`Custom roles folder path: ${this.rolesFolderPath}`, this.exportConfig.context);
+    log.debug(`Custom roles folder path is: ${this.rolesFolderPath}`, this.exportConfig.context);
     
     await fsUtil.makeDirectory(this.rolesFolderPath);
-    log.debug('Created custom roles directory', this.exportConfig.context);
+    log.debug('Custom roles directory created.', this.exportConfig.context);
     
     this.customRolesLocalesFilepath = pResolve(this.rolesFolderPath, this.customRolesConfig.customRolesLocalesFileName);
-    log.debug(`Custom roles locales file path: ${this.customRolesLocalesFilepath}`, this.exportConfig.context);
+    log.debug(`Custom roles locales file path is: ${this.customRolesLocalesFilepath}`, this.exportConfig.context);
     
     await this.getCustomRoles();
     await this.getLocales();
     await this.getCustomRolesLocales();
     
-    log.debug(`Custom roles export completed. Total custom roles: ${Object.keys(this.customRoles)?.length}`, this.exportConfig.context);
+    log.debug(`Custom roles export completed. Total custom roles: ${Object.keys(this.customRoles).length}`, this.exportConfig.context);
   }
 
   async getCustomRoles(): Promise<void> {
@@ -58,16 +58,16 @@ export default class ExportCustomRoles extends BaseClass {
       .role()
       .fetchAll({ include_rules: true, include_permissions: true })
       .then((data: any) => {
-        log.debug(`Fetched ${data.items?.length || 0} total roles`, this.exportConfig.context);
+        log.debug(`Fetched ${data.items?.length || 0} roles from the stack.`, this.exportConfig.context);
         return data;
       })
       .catch((err: any) => {
-        log.debug('Error occurred while fetching roles', this.exportConfig.context);
+        log.debug('An error occurred while fetching roles.', this.exportConfig.context);
         return handleAndLogError(err, { ...this.exportConfig.context });
       });
     
     const customRoles = roles.items.filter((role: any) => !this.existingRoles[role.name]);
-    log.debug(`Found ${customRoles.length} custom roles out of ${roles.items?.length || 0} total roles`, this.exportConfig.context);
+    log.debug(`Found ${customRoles.length} custom roles from ${roles.items?.length || 0} total roles.`, this.exportConfig.context);
 
     if (!customRoles.length) {
       log.info(messageHandler.parse('ROLES_NO_CUSTOM_ROLES'), this.exportConfig.context);
@@ -81,7 +81,7 @@ export default class ExportCustomRoles extends BaseClass {
     });
     
     const customRolesFilePath = pResolve(this.rolesFolderPath, this.customRolesConfig.fileName);
-    log.debug(`Writing custom roles to: ${customRolesFilePath}`, this.exportConfig.context);
+    log.debug(`Writing custom roles to: ${customRolesFilePath}.`, this.exportConfig.context);
     fsUtil.writeFile(customRolesFilePath, this.customRoles);
   }
 
@@ -93,11 +93,11 @@ export default class ExportCustomRoles extends BaseClass {
       .query({})
       .find()
       .then((data: any) => {
-        log.debug(`Fetched ${data?.items?.length || 0} locales`, this.exportConfig.context);
+        log.debug(`Fetched ${data?.items?.length || 0} locales.`, this.exportConfig.context);
         return data;
       })
       .catch((err: any) => {
-        log.debug('Error occurred while fetching locales', this.exportConfig.context);
+        log.debug('An error occurred while fetching locales.', this.exportConfig.context);
         return handleAndLogError(err, { ...this.exportConfig.context });
       });
     
@@ -106,7 +106,7 @@ export default class ExportCustomRoles extends BaseClass {
       this.sourceLocalesMap[locale.uid] = locale;
     }
     
-    log.debug(`Mapped ${Object.keys(this.sourceLocalesMap)?.length} locales`, this.exportConfig.context);
+    log.debug(`Mapped ${Object.keys(this.sourceLocalesMap).length} source locales.`, this.exportConfig.context);
   }
 
   async getCustomRolesLocales() {
@@ -118,16 +118,16 @@ export default class ExportCustomRoles extends BaseClass {
       
       const rulesLocales = find(customRole.rules, (rule: any) => rule.module === 'locale');
       if (rulesLocales?.locales?.length) {
-        log.debug(`Found ${rulesLocales.locales.length} locales for role: ${customRole?.name}`, this.exportConfig.context);
+        log.debug(`Found ${rulesLocales.locales.length} locales for the role: ${customRole?.name}.`, this.exportConfig.context);
         forEach(rulesLocales.locales, (locale: any) => {
-          log.debug(`Adding locale ${locale} to custom roles mapping`, this.exportConfig.context);
+          log.debug(`Adding locale ${locale} to the custom roles mapping.`, this.exportConfig.context);
           this.localesMap[locale] = 1;
         });
       }
     }
 
     if (keys(this.localesMap)?.length) {
-      log.debug(`Processing ${keys(this.localesMap)?.length} custom role locales`, this.exportConfig.context);
+      log.debug(`Processing ${Object.keys(this.localesMap).length} mapped locales.`, this.exportConfig.context);
       
       for (const locale in this.localesMap) {
         if (this.sourceLocalesMap[locale] !== undefined) {
@@ -138,10 +138,10 @@ export default class ExportCustomRoles extends BaseClass {
         this.localesMap[locale] = this.sourceLocalesMap[locale];
       }
       
-      log.debug(`Writing custom roles locales to: ${this.customRolesLocalesFilepath}`, this.exportConfig.context);
+      log.debug(`Writing custom roles locales to: ${this.customRolesLocalesFilepath}.`, this.exportConfig.context);
       fsUtil.writeFile(this.customRolesLocalesFilepath, this.localesMap);
     } else {
-      log.debug('No custom role locales found to process', this.exportConfig.context);
+      log.debug('No custom role locales found to process.', this.exportConfig.context);
     }
   }
 }
