@@ -152,3 +152,7 @@ export type TaxonomyQueryParams = {
   depth?: number;
   locale?: string;
 };
+
+export interface Context {
+  module: string;
+}

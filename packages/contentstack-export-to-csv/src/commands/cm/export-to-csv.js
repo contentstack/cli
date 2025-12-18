@@ -395,7 +395,7 @@ class ExportToCsvCommand extends Command {
         token: listOfTokens[managementTokenAlias].token,
       };
     } else if (managementTokenAlias) {
-      this.error('Provided management token alias not found in your config.!');
+      this.error('The provided management token alias was not found in your config.');
     }
     return {
       apiClient,
