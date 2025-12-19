@@ -39,7 +39,6 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   authtoken?: string;
   destinationStackName?: string;
   org_uid?: string;
-  contentVersion: number;
   stackName?: string;
   branchName: string;
   selectedModules: Modules[];

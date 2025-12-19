@@ -21,12 +21,12 @@ importers:
       '@contentstack/cli-cm-export': ~2.0.0-beta.2
       '@contentstack/cli-cm-export-to-csv': ~1.10.0
       '@contentstack/cli-cm-import': ~2.0.0-beta.2
-      '@contentstack/cli-cm-import-setup': 1.7.0
+      '@contentstack/cli-cm-import-setup': ~2.0.0-beta
       '@contentstack/cli-cm-seed': ~2.0.0-beta.2
       '@contentstack/cli-command': ~1.6.2
       '@contentstack/cli-config': ~1.15.3
       '@contentstack/cli-launch': ^1.9.2
-      '@contentstack/cli-migration': ~1.8.2
+      '@contentstack/cli-migration': ~2.0.0-beta
       '@contentstack/cli-utilities': ~1.15.0
       '@contentstack/cli-variants': ~2.0.0-beta.2
       '@contentstack/management': ~1.22.0
@@ -71,14 +71,14 @@ importers:
       uuid: ^9.0.1
       winston: ^3.17.0
     dependencies:
-      '@contentstack/cli-audit': link:../contentstack-audit
+      '@contentstack/cli-audit': 1.16.1_debug@4.4.3
       '@contentstack/cli-auth': link:../contentstack-auth
       '@contentstack/cli-cm-bootstrap': link:../contentstack-bootstrap
       '@contentstack/cli-cm-branches': link:../contentstack-branches
       '@contentstack/cli-cm-bulk-publish': 1.10.2_debug@4.4.3
       '@contentstack/cli-cm-clone': link:../contentstack-clone
       '@contentstack/cli-cm-export': link:../contentstack-export
-      '@contentstack/cli-cm-export-to-csv': link:../contentstack-export-to-csv
+      '@contentstack/cli-cm-export-to-csv': 1.10.1_lxq42tdpoxpye5tb7w3htdbbdq
       '@contentstack/cli-cm-import': link:../contentstack-import
       '@contentstack/cli-cm-import-setup': link:../contentstack-import-setup
       '@contentstack/cli-cm-seed': link:../contentstack-seed
@@ -698,7 +698,7 @@ importers:
       uuid: ^9.0.1
       winston: ^3.17.0
     dependencies:
-      '@contentstack/cli-audit': link:../contentstack-audit
+      '@contentstack/cli-audit': 1.16.1_debug@4.4.3
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/cli-variants': link:../contentstack-variants
@@ -2056,6 +2056,27 @@ packages:
     engines: {node: '>=0.1.90'}
     dev: false
 
+  /@contentstack/cli-audit/1.16.1_debug@4.4.3:
+    resolution: {integrity: sha512-CRe92i7op3RlD5JQu+PY+KelITaTAb3lX22M//Cz7GzW356HyDTNtWydO5MOkPCTt6OkLNz0I9zYY2SPNCRAsw==}
+    engines: {node: '>=16'}
+    hasBin: true
+    dependencies:
+      '@contentstack/cli-command': 1.7.0_debug@4.4.3
+      '@contentstack/cli-utilities': 1.15.0_debug@4.4.3
+      '@oclif/core': 4.8.0
+      '@oclif/plugin-help': 6.2.36
+      '@oclif/plugin-plugins': 5.4.54
+      chalk: 4.1.2
+      fast-csv: 4.3.6
+      fs-extra: 11.3.2
+      lodash: 4.17.21
+      uuid: 9.0.1
+      winston: 3.18.3
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+    dev: false
+
   /@contentstack/cli-cm-bulk-publish/1.10.2_debug@4.4.3:
     resolution: {integrity: sha512-b0SVF7SMOey5TDvT2BAL+UucqAKXBUdb2m7Q3bjJZHXJ2cR7BRAiaZRSlnKl8rd5pphbkUC64vDSjm3LedejvA==}
     engines: {node: '>=14.0.0'}
@@ -2074,8 +2095,37 @@ packages:
       - debug
     dev: false
 
+  /@contentstack/cli-cm-export-to-csv/1.10.1_lxq42tdpoxpye5tb7w3htdbbdq:
+    resolution: {integrity: sha512-V6bc0NG8brP7tFHgMjW8zTZqkg7oUoJ4AWqqkUpqdTztqR45lxJYirPy4MyqtigLST9KCLL8TpU/n2luftLo3w==}
+    engines: {node: '>=14.0.0'}
+    dependencies:
+      '@contentstack/cli-command': 1.7.0_debug@4.4.3
+      '@contentstack/cli-utilities': 1.15.0_debug@4.4.3
+      '@oclif/core': 4.8.0
+      '@oclif/plugin-help': 6.2.36
+      fast-csv: 4.3.6
+      inquirer: 8.2.7_@types+node@14.18.63
+      inquirer-checkbox-plus-prompt: 1.4.2_inquirer@8.2.7
+      mkdirp: 3.0.1
+    transitivePeerDependencies:
+      - '@types/node'
+      - debug
+    dev: false
+
   /@contentstack/cli-command/1.6.2_debug@4.4.3:
     resolution: {integrity: sha512-h4I484kSYuelqZnwFhKL9IkaYlHbcZzMv3mhpKZBzIgbATMuI0Li+1haJNo+Ao7JqQmzT+a00QNtTHqpNDjngA==}
+    engines: {node: '>=14.0.0'}
+    dependencies:
+      '@contentstack/cli-utilities': 1.15.0_debug@4.4.3
+      '@oclif/core': 4.8.0
+      '@oclif/plugin-help': 6.2.36
+      contentstack: 3.26.2
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
+  /@contentstack/cli-command/1.7.0_debug@4.4.3:
+    resolution: {integrity: sha512-hhsGGa6wFcvHwkapu0vXB1yvOaOmJ1LaV2imyjUREVxvHYC5O4JS2H5VeXLq137Q/dOk5q6o9MjVS+9W4Ri4sw==}
     engines: {node: '>=14.0.0'}
     dependencies:
       '@contentstack/cli-utilities': 1.15.0_debug@4.4.3
