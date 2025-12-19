@@ -5,6 +5,7 @@ import { AssetRecord, ImportConfig, ModuleClassParams } from '../../types';
 import { isEmpty, orderBy, values } from 'lodash';
 import { formatError, FsUtility, sanitizePath } from '@contentstack/cli-utilities';
 import BaseImportSetup from './base-setup';
+import { MODULE_NAMES, MODULE_CONTEXTS, PROCESS_NAMES, PROCESS_STATUS } from '../../utils';
 
 export default class AssetImportSetup extends BaseImportSetup {
   private assetsFilePath: string;
@@ -20,6 +21,7 @@ export default class AssetImportSetup extends BaseImportSetup {
 
   constructor({ config, stackAPIClient, dependencies }: ModuleClassParams) {
     super({ config, stackAPIClient, dependencies });
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.ASSETS];
     this.assetsFolderPath = join(sanitizePath(this.config.contentDir), 'assets');
     this.assetsFilePath = join(sanitizePath(this.config.contentDir), 'assets', 'assets.json');
     this.assetsConfig = config.modules.assets;
@@ -39,10 +41,51 @@ export default class AssetImportSetup extends BaseImportSetup {
    */
   async start() {
     try {
+      const progress = this.createNestedProgress(this.currentModuleName);
+      
+      // Analyze to get chunk count
+      const indexerCount = await this.withLoadingSpinner('ASSETS: Analyzing import data...', async () => {
+        const basePath = this.assetsFolderPath;
+        const fs = new FsUtility({ basePath, indexFileName: 'assets.json' });
+        const indexer = fs.indexFileContent;
+        return values(indexer).length;
+      });
+
+      if (indexerCount === 0) {
+        log(this.config, 'No assets found in the content folder.', 'info');
+        return;
+      }
+
+      // Add processes - use a large number for total assets since we don't know exact count
+      // The progress will update as we process each asset
+      progress.addProcess(PROCESS_NAMES.ASSETS_MAPPER_GENERATION, 1);
+      progress.addProcess(PROCESS_NAMES.ASSETS_FETCH_AND_MAP, indexerCount * 10); // Estimate: ~10 assets per chunk
+
+      // Create mapper directory
+      progress
+        .startProcess(PROCESS_NAMES.ASSETS_MAPPER_GENERATION)
+        .updateStatus(
+          PROCESS_STATUS.ASSETS_MAPPER_GENERATION.GENERATING,
+          PROCESS_NAMES.ASSETS_MAPPER_GENERATION,
+        );
       fsUtil.makeDirectory(this.mapperDirPath);
+      this.progressManager?.tick(true, 'mapper directory created', null, PROCESS_NAMES.ASSETS_MAPPER_GENERATION);
+      progress.completeProcess(PROCESS_NAMES.ASSETS_MAPPER_GENERATION, true);
+
+      // Fetch and map assets
+      progress
+        .startProcess(PROCESS_NAMES.ASSETS_FETCH_AND_MAP)
+        .updateStatus(
+          PROCESS_STATUS.ASSETS_FETCH_AND_MAP.FETCHING,
+          PROCESS_NAMES.ASSETS_FETCH_AND_MAP,
+        );
       await this.fetchAndMapAssets();
+      progress.completeProcess(PROCESS_NAMES.ASSETS_FETCH_AND_MAP, true);
+
+      this.completeProgress(true);
       log(this.config, `The required setup files for the asset have been generated successfully.`, 'success');
     } catch (error) {
+      this.completeProgress(false, error?.message || 'Assets mapper generation failed');
       log(this.config, `Error occurred while generating the asset mapper: ${formatError(error)}.`, 'error');
     }
   }
@@ -67,17 +110,21 @@ export default class AssetImportSetup extends BaseImportSetup {
       if (items.length === 1) {
         this.assetUidMapper[uid] = items[0].uid;
         this.assetUrlMapper[url] = items[0].url;
+        this.progressManager?.tick(true, `asset: ${title}`, null, PROCESS_NAMES.ASSETS_FETCH_AND_MAP);
         log(this.config, `Mapped asset successfully: '${title}'`, 'info');
       } else if (items.length > 1) {
         this.duplicateAssets[uid] = items.map((asset: any) => {
           return { uid: asset.uid, title: asset.title, url: asset.url };
         });
+        this.progressManager?.tick(true, `asset: ${title} (duplicate)`, null, PROCESS_NAMES.ASSETS_FETCH_AND_MAP);
         log(this.config, `Multiple assets found with the title '${title}'.`, 'info');
       } else {
+        this.progressManager?.tick(false, `asset: ${title}`, 'Not found in stack', PROCESS_NAMES.ASSETS_FETCH_AND_MAP);
         log(this.config, `Asset with title '${title}' not found in the stack!`, 'info');
       }
     };
     const onReject = ({ error, apiData: { title } = undefined }: any) => {
+      this.progressManager?.tick(false, `asset: ${title}`, formatError(error), PROCESS_NAMES.ASSETS_FETCH_AND_MAP);
       log(this.config, `Failed to map the asset '${title}'.`, 'error');
       log(this.config, formatError(error), 'error');
     };
