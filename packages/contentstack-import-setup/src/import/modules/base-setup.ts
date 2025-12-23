@@ -1,11 +1,14 @@
 import { log, fsUtil } from '../../utils';
 import { ApiOptions, CustomPromiseHandler, EnvType, ImportConfig, ModuleClassParams } from '../../types';
 import { chunk, entries, isEmpty, isEqual, last } from 'lodash';
+import { CLIProgressManager, configHandler } from '@contentstack/cli-utilities';
 
 export default class BaseImportSetup {
   public config: ImportConfig;
   public stackAPIClient: ModuleClassParams['stackAPIClient'];
   public dependencies: ModuleClassParams['dependencies'];
+  protected progressManager: CLIProgressManager | null = null;
+  protected currentModuleName: string = '';
 
   constructor({ config, stackAPIClient, dependencies }: ModuleClassParams) {
     this.config = config;
@@ -204,5 +207,49 @@ export default class BaseImportSetup {
       default:
         return Promise.resolve();
     }
+  }
+
+  /**
+   * Create simple progress manager
+   */
+  protected createSimpleProgress(moduleName: string, total?: number): CLIProgressManager {
+    this.currentModuleName = moduleName;
+    const logConfig = configHandler.get('log') || {};
+    const showConsoleLogs = logConfig.showConsoleLogs ?? false;
+    this.progressManager = CLIProgressManager.createSimple(moduleName, total, showConsoleLogs);
+    return this.progressManager;
+  }
+
+  /**
+   * Create nested progress manager
+   */
+  protected createNestedProgress(moduleName: string): CLIProgressManager {
+    this.currentModuleName = moduleName;
+    const logConfig = configHandler.get('log') || {};
+    const showConsoleLogs = logConfig.showConsoleLogs ?? false;
+    this.progressManager = CLIProgressManager.createNested(moduleName, showConsoleLogs);
+    return this.progressManager;
+  }
+
+  /**
+   * Complete progress manager
+   */
+  protected completeProgress(success: boolean = true, error?: string): void {
+    this.progressManager?.complete(success, error);
+    this.progressManager = null;
+  }
+
+  /**
+   * Show a loading spinner before initializing progress
+   */
+  protected async withLoadingSpinner<T>(message: string, action: () => Promise<T>): Promise<T> {
+    const logConfig = configHandler.get('log') || {};
+    const showConsoleLogs = logConfig.showConsoleLogs ?? false;
+
+    if (showConsoleLogs) {
+      // If console logs are enabled, don't show spinner, just execute the action
+      return await action();
+    }
+    return await CLIProgressManager.withLoadingSpinner(message, action);
   }
 }

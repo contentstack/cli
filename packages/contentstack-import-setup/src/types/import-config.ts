@@ -10,6 +10,18 @@ export interface ExternalConfig {
   password?: string;
 }
 
+export interface Context {
+  command: string;
+  module: string;
+  userId: string | undefined;
+  email?: string | undefined;
+  sessionId: string | undefined;
+  clientId?: string | undefined;
+  apiKey: string;
+  orgId: string;
+  authenticationMethod?: string;
+}
+
 export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   cliLogsPath?: string;
   contentDir: string;
@@ -46,6 +58,8 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   backupDir: string;
   createBackupDir?: string;
   region: any;
+  authenticationMethod?: string;
+  context?: Context;
 }
 
 type branch = {
