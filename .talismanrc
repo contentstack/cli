@@ -202,5 +202,9 @@ fileignoreconfig:
   - filename: packages/contentstack-import/test/unit/utils/logger.test.ts
     checksum: 794e06e657a7337c8f094d6042fb04c779683f97b860efae14e075098d2af024
   - filename: packages/contentstack-import-setup/src/import/modules/taxonomies.ts
-    checksum: 49dd8e754a0d3635585a74e943ab097593f061089a7cddc22683ec6caddbb3c5
+    checksum: c1bccc885b3f41f187f150c739b4bbd1608b01f09b0d9be0ad9214127cac071d
+  - filename: packages/contentstack-import-setup/src/commands/cm/stacks/import-setup.ts
+    checksum: 06035980b36802260f190af6e63632efe167f5b336693163f59268f3e788fba1
+  - filename: packages/contentstack-import-setup/src/utils/constants.ts
+    checksum: fcfabb4c53ee822e05903db77595413842d656b55e2869bae97bb6c0e0e209c3
 version: '1.0'
