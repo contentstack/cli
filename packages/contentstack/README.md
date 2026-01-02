@@ -2136,7 +2136,7 @@ FLAGS
   -m, --module=<value>            [optional] Specific module name. If not specified, the export command will export all
                                   the modules to the stack. The available modules are assets, content-types, entries,
                                   environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                  workflows, custom-roles, and taxonomies.
+                                  workflows, custom-roles, taxonomies, and studio.
   -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
                                   of multiple content types, specify the IDs separated by spaces.
   -y, --yes                       [optional] Force override all Marketplace prompts.
@@ -2725,7 +2725,7 @@ FLAGS
   -m, --module=<value>            [optional] Specific module name. If not specified, the export command will export all
                                   the modules to the stack. The available modules are assets, content-types, entries,
                                   environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                  workflows, custom-roles, and taxonomies.
+                                  workflows, custom-roles, taxonomies, and studio.
   -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
                                   of multiple content types, specify the IDs separated by spaces.
   -y, --yes                       [optional] Force override all Marketplace prompts.
@@ -3624,33 +3624,33 @@ USAGE
     React App)|CSR (Client-Side Rendered)|Angular|Nuxt|VueJs|Remix|Other] [--org <value>] [-n <value>] [-e <value>]
     [--branch <value>] [--build-command <value>] [--out-dir <value>] [--server-command <value>] [--variable-type Import
     variables from a stack|Manually add custom variables to the list|Import variables from the .env.local file|Skip
-    adding environment variables] [-a <value>] [--env-variables <value>] [--redeploy-latest] [--redeploy-last-upload]
+    adding environment variables...] [-a <value>] [--env-variables <value>] [--redeploy-latest] [--redeploy-last-upload]
 
 FLAGS
-  -a, --alias=<value>           [optional] Alias (name) for the delivery token.
-  -c, --config=<value>          Path to the local '.cs-launch.json' file
-  -d, --data-dir=<value>        Current working directory
-  -e, --environment=<value>     [optional] Environment name for the Launch project.
-  -n, --name=<value>            [optional] Name of the project.
-      --branch=<value>          [optional] GitHub branch name.
-      --build-command=<value>   [optional] Build Command.
-      --env-variables=<value>   [optional] Provide the environment variables in the key:value format, separated by
-                                comma. For example: APP_ENV:prod, TEST_ENV:testVal.
-      --framework=<option>      [optional] Type of framework. <options: Gatsby|NextJS|Other>
-                                <options: Gatsby|NextJs|CRA (Create React App)|CSR (Client-Side
-                                Rendered)|Angular|Nuxt|VueJs|Remix|Other>
-      --org=<value>             [optional] Provide the organization UID to create a new project or deployment.
-      --out-dir=<value>         [optional] Output Directory.
-      --redeploy-last-upload    [optional] Redeploy with last file upload
-      --redeploy-latest         [optional] Redeploy latest commit/code
-      --server-command=<value>  [optional] Server Command.
-      --type=<option>           [optional] Type of adapters. <options: GitHub|FileUpload>
-                                <options: GitHub|FileUpload>
-      --variable-type=<option>  [optional] Provide a variable type. <options: Import variables from a stack|Manually add
-                                custom variables to the list|Import variables from the .env.local file|Skip adding
-                                environment variables>
-                                <options: Import variables from a stack|Manually add custom variables to the list|Import
-                                variables from the .env.local file|Skip adding environment variables>
+  -a, --alias=<value>              [optional] Alias (name) for the delivery token.
+  -c, --config=<value>             Path to the local '.cs-launch.json' file
+  -d, --data-dir=<value>           Current working directory
+  -e, --environment=<value>        [optional] Environment name for the Launch project.
+  -n, --name=<value>               [optional] Name of the project.
+      --branch=<value>             [optional] GitHub branch name.
+      --build-command=<value>      [optional] Build Command.
+      --env-variables=<value>      [optional] Provide the environment variables in the key:value format, separated by
+                                   comma. For example: APP_ENV:prod, TEST_ENV:testVal.
+      --framework=<option>         [optional] Type of framework. <options: Gatsby|NextJS|Other>
+                                   <options: Gatsby|NextJs|CRA (Create React App)|CSR (Client-Side
+                                   Rendered)|Angular|Nuxt|VueJs|Remix|Other>
+      --org=<value>                [optional] Provide the organization UID to create a new project or deployment.
+      --out-dir=<value>            [optional] Output Directory.
+      --redeploy-last-upload       [optional] Redeploy with last file upload
+      --redeploy-latest            [optional] Redeploy latest commit/code
+      --server-command=<value>     [optional] Server Command.
+      --type=<option>              [optional] Type of adapters. <options: GitHub|FileUpload>
+                                   <options: GitHub|FileUpload>
+      --variable-type=<option>...  [optional] Provide a variable type (can specify multiple times). <options: Import
+                                   variables from a stack|Manually add custom variables to the list|Import variables
+                                   from the .env.local file|Skip adding environment variables>
+                                   <options: Import variables from a stack|Manually add custom variables to the
+                                   list|Import variables from the .env.local file|Skip adding environment variables>
 
 DESCRIPTION
   Launch related operations
@@ -3681,6 +3681,8 @@ EXAMPLES
   $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --variable-type="Import variables from a stack" --alias=<value>
 
   $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --variable-type="Manually add custom variables to the list" --env-variables="APP_ENV:prod, TEST_ENV:testVal"
+
+  $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --variable-type="Import variables from a stack" --variable-type="Manually add custom variables to the list" --alias=<value>
 ```
 
 _See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/index.ts)_
