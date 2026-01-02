@@ -79,7 +79,11 @@ export default class ExportTaxonomies extends BaseClass {
     await this.fetchTaxonomies(masterLocale, true);
 
     if (!this.isLocaleBasedExportSupported) {
-      log.debug('Localization disabled, falling back to legacy export method', this.exportConfig.context);
+      this.taxonomies = {};
+      this.taxonomiesByLocale = {};
+
+      // Fetch taxonomies without locale parameter
+      await this.fetchTaxonomies();
       await this.exportTaxonomies();
       await this.writeTaxonomiesMetadata();
     } else {
@@ -180,15 +184,26 @@ export default class ExportTaxonomies extends BaseClass {
           log.debug(`Completed fetching all taxonomies ${localeInfo}`, this.exportConfig.context);
           break;
         }
-      } catch (error) {
+      } catch (error: any) {
         log.debug(`Error fetching taxonomies ${localeInfo}`, this.exportConfig.context);
-        handleAndLogError(error, {
-          ...this.exportConfig.context,
-          ...(localeCode && { locale: localeCode }),
-        });
-        if (checkLocaleSupport) {
+
+        if (checkLocaleSupport && this.isLocalePlanLimitationError(error)) {
+          log.debug(
+            'Taxonomy localization is not included in your plan. Falling back to non-localized export.',
+            this.exportConfig.context,
+          );
           this.isLocaleBasedExportSupported = false;
+        } else if (checkLocaleSupport) {
+          log.debug('Locale-based taxonomy export not supported, will use legacy method', this.exportConfig.context);
+          this.isLocaleBasedExportSupported = false;
+        } else {
+          // Log actual errors during normal fetch (not locale check)
+          handleAndLogError(error, {
+            ...this.exportConfig.context,
+            ...(localeCode && { locale: localeCode }),
+          });
         }
+
         // Break to avoid infinite retry loop on errors
         break;
       }
@@ -317,5 +332,16 @@ export default class ExportTaxonomies extends BaseClass {
     log.debug(`Total unique locales to export: ${localesToExport.length}`, this.exportConfig.context);
 
     return localesToExport;
+  }
+
+  private isLocalePlanLimitationError(error: any): boolean {
+    return (
+      error?.status === 403 &&
+      error?.errors?.taxonomies?.some(
+        (msg: string) =>
+          msg.toLowerCase().includes('taxonomy localization') &&
+          msg.toLowerCase().includes('not included in your plan'),
+      )
+    );
   }
 }
