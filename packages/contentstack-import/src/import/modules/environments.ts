@@ -64,9 +64,9 @@ export default class ImportEnvironments extends BaseClass {
   }
 
   async importEnvironments() {
-    log.debug('Validating environments data', this.importConfig.context);
+    log.debug('Validating environment data...', this.importConfig.context);
     if (this.environments === undefined || isEmpty(this.environments)) {
-      log.info('No Environment Found', this.importConfig.context);
+      log.info('No environment found.', this.importConfig.context);
       return;
     }
 
@@ -132,7 +132,7 @@ export default class ImportEnvironments extends BaseClass {
       false,
     );
 
-    log.debug('Environments import process completed', this.importConfig.context);
+    log.debug('Environment import process completed.', this.importConfig.context);
   }
 
   /**

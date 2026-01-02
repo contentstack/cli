@@ -105,7 +105,7 @@ export default class LocaleExport extends BaseClass {
   async getLocales(skip: number = 0): Promise<any> {
     if (skip) {
       this.qs.skip = skip;
-      log.debug(`Fetching locales with skip: ${skip}`, this.exportConfig.context);
+      log.debug(`Fetching locales with skip: ${skip}.`, this.exportConfig.context);
     }
     log.debug(`Query parameters: ${JSON.stringify(this.qs)}`, this.exportConfig.context);
 
@@ -117,18 +117,18 @@ export default class LocaleExport extends BaseClass {
     );
 
     if (Array.isArray(localesFetchResponse.items) && localesFetchResponse.items.length > 0) {
-      log.debug(`Processing ${localesFetchResponse.items.length} locales`, this.exportConfig.context);
+      log.debug(`Processing ${localesFetchResponse.items.length} locales...`, this.exportConfig.context);
       this.sanitizeAttribs(localesFetchResponse.items);
 
       skip += this.localeConfig.limit || 100;
       if (skip > localesFetchResponse.count) {
-        log.debug('Completed fetching all locales', this.exportConfig.context);
+        log.debug('Completed fetching all locales.', this.exportConfig.context);
         return;
       }
-      log.debug(`Continuing to fetch locales with skip: ${skip}`, this.exportConfig.context);
+      log.debug(`Continuing to fetch locales with skip: ${skip}.`, this.exportConfig.context);
       return await this.getLocales(skip);
     } else {
-      log.debug('No locales found to process', this.exportConfig.context);
+      log.debug('No locales found to process.', this.exportConfig.context);
     }
   }
 

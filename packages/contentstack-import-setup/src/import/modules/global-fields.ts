@@ -1,5 +1,5 @@
 import * as chalk from 'chalk';
-import { log, fsUtil } from '../../utils';
+import { fsUtil } from '../../utils';
 import { join } from 'path';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import BaseImportSetup from './base-setup';

@@ -81,9 +81,9 @@ export default class ExportExtensions extends BaseClass {
   async getExtensions(skip = 0): Promise<void> {
     if (skip) {
       this.qs.skip = skip;
-      log.debug(`Fetching extensions with skip: ${skip}`, this.exportConfig.context);
+      log.debug(`Fetching extensions with skip value: ${skip}`, this.exportConfig.context);
     } else {
-      log.debug('Fetching extensions with initial query', this.exportConfig.context);
+      log.debug('Fetching extensions with initial query...', this.exportConfig.context);
     }
 
     log.debug(`Query parameters: ${JSON.stringify(this.qs)}`, this.exportConfig.context);
@@ -97,21 +97,21 @@ export default class ExportExtensions extends BaseClass {
         log.debug(`Fetched ${items?.length || 0} extensions out of total ${count}`, this.exportConfig.context);
 
         if (items?.length) {
-          log.debug(`Processing ${items.length} extensions`, this.exportConfig.context);
+          log.debug(`Processing ${items.length} extensions...`, this.exportConfig.context);
           this.sanitizeAttribs(items);
           skip += this.extensionConfig.limit || 100;
           if (skip >= count) {
-            log.debug('Completed fetching all extensions', this.exportConfig.context);
+            log.debug('Completed fetching all extensions.', this.exportConfig.context);
             return;
           }
-          log.debug(`Continuing to fetch extensions with skip: ${skip}`, this.exportConfig.context);
+          log.debug(`Continuing to fetch extensions with skip: ${skip}.`, this.exportConfig.context);
           return await this.getExtensions(skip);
         } else {
-          log.debug('No extensions found to process', this.exportConfig.context);
+          log.debug('No extensions found to process.', this.exportConfig.context);
         }
       })
       .catch((error: any) => {
-        log.debug('Error occurred while fetching extensions', this.exportConfig.context);
+        log.debug('An error occurred while fetching extensions.', this.exportConfig.context);
         handleAndLogError(error, { ...this.exportConfig.context });
       });
   }

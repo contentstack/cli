@@ -1,4 +1,4 @@
-import { log, fsUtil } from '../../utils';
+import { fsUtil, fileHelper } from '../../utils';
 import { join } from 'path';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import { get, isEmpty } from 'lodash';
@@ -10,6 +10,8 @@ import {
   NodeCrypto,
   createDeveloperHubUrl,
   sanitizePath,
+  log,
+  handleAndLogError,
 } from '@contentstack/cli-utilities';
 import BaseImportSetup from './base-setup';
 import { MODULE_NAMES, MODULE_CONTEXTS, PROCESS_NAMES, PROCESS_STATUS } from '../../utils';
@@ -93,7 +95,7 @@ export default class marketplaceAppImportSetup extends BaseImportSetup {
 
         log(this.config, `The required setup files for Marketplace apps have been generated successfully.`, 'success');
       } else {
-        log(this.config, 'No Marketplace apps found in the content folder.', 'info');
+        log.info('No Marketplace apps found in the content folder.');
       }
     } catch (error) {
       this.completeProgress(false, error?.message || 'Marketplace apps mapper generation failed');

@@ -1,4 +1,4 @@
-import { Modules } from '.';
+import { Modules, Context } from '.';
 import DefaultConfig from './default-config';
 
 export interface ExternalConfig {
@@ -23,6 +23,7 @@ export interface Context {
 }
 
 export default interface ImportConfig extends DefaultConfig, ExternalConfig {
+  context?: Context;
   cliLogsPath?: string;
   contentDir: string;
   data: string;

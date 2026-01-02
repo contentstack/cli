@@ -35,22 +35,25 @@ function removePublishDetails(elements) {
 function displayEntriesDetails(sanitizedData, action, mapping = []) {
   if (action === 'bulk_publish') {
     sanitizedData.forEach((entry) => {
-      entry?.publish_details.forEach((pd) => {
-        if (Object.keys(mapping).includes(pd.environment)) {
+      if (Array.isArray(entry?.publish_details) && entry.publish_details.length > 0) {
+        const matchingPublishDetails = entry.publish_details.filter((pd) => 
+          Object.keys(mapping).includes(pd.environment)
+        );
+        if (matchingPublishDetails.length > 0) {
+          const pd = matchingPublishDetails[0];
           console.log(
             chalk.green(
-              `Entry UID '${entry.uid}' of CT '${entry.content_type}' in locale '${entry.locale}' version '${pd.version}' in environment '${pd.environment}'`,
+              `Entry UID: '${entry.uid}', Content Type: '${entry.content_type}', Locale: '${entry.locale}', Version: '${pd.version}', Environment: '${pd.environment}'`,
             ),
-          )
+          );
         }
-      });
-      if(!Array.isArray(entry.publish_details)){
-        console.log(chalk.green(`Entry UID '${entry.uid}' of CT '${entry.content_type}' in locale '${entry.locale}'`));
+      } else if (!Array.isArray(entry.publish_details)) {
+        console.log(chalk.green(`Entry UID: '${entry.uid}', Content Type: '${entry.content_type}', Locale: '${entry.locale}'`));
       }
     });
   } else if (action === 'bulk_unpublish') {
     sanitizedData.forEach((entry) => {
-      console.log(chalk.green(`Entry UID '${entry.uid}' of CT '${entry.content_type}' in locale '${entry.locale}'`));
+      console.log(chalk.green(`Entry UID: '${entry.uid}', Content Type: '${entry.content_type}', Locale: '${entry.locale}'`));
     });
   }
 }
@@ -62,9 +65,9 @@ function displayAssetsDetails(sanitizedData, action, mapping) {
         if (Object.keys(mapping).includes(pd.environment)) {
         console.log(
           chalk.green(
-            `Asset UID '${asset.uid}' ${pd.version ? `and version '${pd.version}'` : ''} ${
-              asset.locale ? `in locale '${asset.locale}'` : ''
-            } in environment ${pd.environment}`,
+            `Asset UID: '${asset.uid}'${pd.version ? `, Version: '${pd.version}'` : ''}${
+              asset.locale ? `, Locale: '${asset.locale}'` : ''
+            }, Environment: ${pd.environment}`,
           ),
         );
       }
@@ -74,8 +77,8 @@ function displayAssetsDetails(sanitizedData, action, mapping) {
     sanitizedData.forEach((asset) => {
       console.log(
         chalk.green(
-          `Asset UID '${asset.uid}' ${asset.version ? `and version '${asset.version}'` : ''} ${
-            asset.locale ? `in locale '${asset.locale}'` : ''
+          `Asset UID: '${asset.uid}'${asset.version ? `, Version: '${asset.version}'` : ''}${
+            asset.locale ? `, Locale: '${asset.locale}'` : ''
           }`,
         ),
       );
@@ -98,7 +101,7 @@ async function publishEntry(data, _config, queue) {
       if (!publishEntryResponse.error_message) {
         console.log(
           chalk.green(
-            `entry published with ContentType uid=${entryObj.content_type} Entry uid=${entryObj.entryUid} locale=${entryObj.locale}`,
+            `Entry published. Content Type UID: ${entryObj.content_type}, Entry UID: ${entryObj.entryUid}, Locale: ${entryObj.locale}`,
           ),
         );
         delete entryObj.stack;
@@ -119,9 +122,9 @@ async function publishEntry(data, _config, queue) {
         delete entryObj.stack;
         console.log(
           chalk.red(
-            `entry could not be published with ContentType uid=${entryObj.content_type} entry uid=${
+            `Entry could not be published. Content Type UID: ${entryObj.content_type}, Entry UID: ${
               entryObj.entryUid
-            } locale=${entryObj.locale} error=${formatError(error)}`,
+            }, Locale: ${entryObj.locale}, Error: ${formatError(error)}`,
           ),
         );
         addLogs(
@@ -147,7 +150,7 @@ async function publishAsset(data, _config, queue) {
     .publish({ publishDetails: { environments: assetobj.environments, locales: [assetobj.locale || 'en-us'] } })
     .then((publishAssetResponse) => {
       if (!publishAssetResponse.error_message) {
-        console.log(chalk.green(`asset published with Asset uid=${assetobj.assetUid}, locale=${assetobj.locale}`));
+        console.log(chalk.green(`Asset published. Asset UID: ${assetobj.assetUid}, Locale: ${assetobj.locale}`));
         delete assetobj.stack;
         addLogs(
           logger,
@@ -164,7 +167,7 @@ async function publishAsset(data, _config, queue) {
         queue.Enqueue(data);
       } else {
         delete assetobj.stack;
-        console.log(chalk.red(`Could not publish because of Error=${formatError(error)}`));
+        console.log(chalk.red(`Could not publish. Error: ${formatError(error)}`));
         addLogs(
           logger,
           {
@@ -193,7 +196,7 @@ async function UnpublishEntry(data, _config, queue) {
         delete entryObj.stack;
         console.log(
           chalk.green(
-            `Entry unpublished with ContentType uid=${entryObj.content_type} Entry uid=${entryObj.entryUid} locale=${entryObj.locale}`,
+            `Entry unpublished. Content Type UID: ${entryObj.content_type}, Entry UID: ${entryObj.entryUid}, Locale: ${entryObj.locale}`,
           ),
         );
         addLogs(
@@ -213,9 +216,9 @@ async function UnpublishEntry(data, _config, queue) {
         delete entryObj.stack;
         console.log(
           chalk.red(
-            `Entry could not be unpublished with ContentType uid=${entryObj.content_type} Entry uid=${
+            `Entry could not be unpublished. Content Type UID: ${entryObj.content_type}, Entry UID: ${
               entryObj.entryUid
-            } locale=${entryObj.locale} error=${formatError(error)}`,
+            }, Locale: ${entryObj.locale}, Error: ${formatError(error)}`,
           ),
         );
         addLogs(
@@ -237,7 +240,7 @@ async function UnpublishAsset(data, _config, queue) {
     .then((unpublishAssetResponse) => {
       if (!unpublishAssetResponse.error_message) {
         delete assetobj.stack;
-        console.log(`Asset unpublished with Asset uid=${assetobj.assetUid}`);
+        console.log(`The asset with UID '${assetobj.assetUid}' has been unpublished.`);
         addLogs(
           logger,
           { options: assetobj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host },
@@ -253,7 +256,7 @@ async function UnpublishAsset(data, _config, queue) {
         queue.Enqueue(data);
       } else {
         delete assetobj.stack;
-        console.log(chalk.red(`Could not Unpublish because of error=${formatError(error)}`));
+        console.log(chalk.red(`Could not unpublish. Error: ${formatError(error)}`));
         addLogs(
           logger,
           { options: assetobj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host },
@@ -330,7 +333,7 @@ async function performBulkPublish(data, _config, queue) {
             queue.Enqueue(data);
           } else {
             delete bulkPublishObj.stack;
-            console.log(chalk.red(`Bulk entries failed to publish with error ${formatError(error)}`));
+            console.log(chalk.red(`Bulk entries failed to publish. Error: ${formatError(error)}`));
             displayEntriesDetails(bulkPublishObj.entries, 'bulk_publish', mapping);
             addLogs(
               logger,
@@ -385,7 +388,7 @@ async function performBulkPublish(data, _config, queue) {
             queue.Enqueue(data);
           } else {
             delete bulkPublishObj.stack;
-            console.log(chalk.red(`Bulk assets failed to publish with error ${formatError(error)}`));
+            console.log(chalk.red(`Bulk assets failed to publish. Error: ${formatError(error)}`));
 
             displayAssetsDetails(sanitizedData, 'bulk_publish', mapping);
             addLogs(
@@ -397,7 +400,7 @@ async function performBulkPublish(data, _config, queue) {
         });
       break;
     default:
-      console.log('No such type');
+      console.log('No such type found. If it is for a content type, use "No such content type found."');
   }
 }
 
@@ -455,7 +458,7 @@ async function performBulkUnPublish(data, _config, queue) {
             queue.Enqueue(data);
           } else {
             delete bulkUnPublishObj.stack;
-            console.log(chalk.red(`Bulk entries failed to Unpublish with error ${formatError(error)}`));
+            console.log(chalk.red(`Bulk entries failed to unpublish. Error: ${formatError(error)}`));
             displayEntriesDetails(bulkUnPublishObj.entries, 'bulk_unpublish');
             addLogs(
               logger,
@@ -510,7 +513,7 @@ async function performBulkUnPublish(data, _config, queue) {
             queue.Enqueue(data);
           } else {
             delete bulkUnPublishObj.stack;
-            console.log(chalk.red(`Bulk assets failed to Unpublish with error ${formatError(error)}`));
+            console.log(chalk.red(`Bulk assets failed to unpublish. Error: ${formatError(error)}`));
             displayAssetsDetails(bulkUnPublishObj.assets, 'bulk_unpublish');
             addLogs(
               logger,
@@ -643,7 +646,7 @@ async function publishUsingVersion(data, _config, queue) {
                 }
               }
 
-              console.log(chalk.red(`Entry=${entry.uid} failed to publish with error ${formatError(error)}`));
+              console.log(chalk.red(`Entry '${entry.uid}' failed to publish. Error: ${formatError(error)}`));
             }
           });
       });
