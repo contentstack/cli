@@ -130,6 +130,31 @@ csdx cm:stacks:migration -k b*******9ca0 --file-path "../contentstack-migration/
 
 **Migration Action:** use the import/export commands instead.
 
+### 5. 🔌 HTML RTE to JSON RTE Migration (Separate Plugin)
+
+**What Changed:**
+- HTML RTE to JSON RTE migration has been extracted into a separate plugin
+- Now requires separate installation as `@contentstack/cli-cm-migrate-rte`
+
+**Installation:**
+
+```bash
+npm install -g @contentstack/cli-cm-migrate-rte
+```
+
+**Commands:**
+
+```bash
+# Migrate HTML RTE to JSON RTE
+csdx cm:entries:migrate-html-rte --config-path path/to/config.json
+
+# Or using alias
+csdx cm:migrate-rte --config-path path/to/config.json
+```
+
+**Migration Action:**
+- Install `@contentstack/cli-cm-migrate-rte` separately if you use RTE migration
+
 ## Troubleshooting
 
 ### Common Issues
