@@ -1,7 +1,12 @@
 import { expect } from 'chai';
 import { fancy } from 'fancy-test';
 import sinon from 'sinon';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
 import Logger from '../../src/logger/logger';
+import { getSessionLogPath } from '../../src/logger/session-path';
+import configHandler from '../../src/config-handler';
 
 describe('Logger', () => {
   let logger: Logger;
@@ -32,10 +37,10 @@ describe('Logger', () => {
       other: 'safe',
     };
 
-    const redacted = logger['redact'](testMeta);
-    expect(redacted.password).to.equal('[REDACTED]');
+    // Test file mode redaction (consoleMode = false)
+    const redacted = logger['redact'](testMeta, false);
+    // In file mode, only token and secret are redacted (not password or email)
     expect(redacted.token).to.equal('[REDACTED]');
-    expect(redacted.email).to.equal('[REDACTED]');
     expect(redacted.other).to.equal('safe');
   });
 
@@ -69,6 +74,7 @@ describe('Logger', () => {
   fancy.it('should log error messages using error method', () => {
     const errorLogger = logger['loggers'].error;
     const spy = sinon.spy();
+    const originalError = errorLogger.error.bind(errorLogger);
     errorLogger.error = spy;
 
     logger.error('error message', { some: 'meta' });
@@ -87,11 +93,18 @@ describe('Logger', () => {
   fancy.it('logSuccess should call success info logger', () => {
     const successLogger = logger['loggers'].success;
     const spy = sinon.spy();
-    successLogger.info = spy;
+    const originalLog = successLogger.log.bind(successLogger);
+    successLogger.log = spy;
 
     logger.logSuccess({ type: 'test', message: 'Success message' });
     expect(spy.calledOnce).to.be.true;
-    expect(spy.args[0][0].message).to.equal('Success message');
+    // logSuccess creates a logPayload object with level, message, timestamp, and meta
+    const logPayload = spy.args[0][0];
+    expect(logPayload.message).to.equal('Success message');
+    expect(logPayload.meta.type).to.equal('test');
+    
+    // Restore original
+    successLogger.log = originalLog;
   });
 
   fancy.it('shouldLog should handle file target level filtering', () => {
@@ -99,13 +112,19 @@ describe('Logger', () => {
     expect(result).to.equal(false);
   });
 
-  fancy.it('success logger should include success type in meta', () => {
+  fancy.it('success logger should call log method', () => {
+    const successLogger = logger['loggers'].success;
     const spy = sinon.spy();
-    logger['loggers'].success.info = spy;
+    const originalLog = successLogger.log.bind(successLogger);
+    successLogger.log = spy;
 
     logger.success('It worked!', { extra: 'meta' });
     expect(spy.calledOnce).to.be.true;
-    expect(spy.args[0][1].type).to.equal('success');
+    // success() calls log('success', message, meta)
+    expect(spy.calledWith('success', 'It worked!', { extra: 'meta' })).to.be.true;
+    
+    // Restore original
+    successLogger.log = originalLog;
   });
 
   fancy.it('logError with hidden true logs to debug logger', () => {
@@ -135,9 +154,16 @@ describe('Logger', () => {
       token: 'abc',
       [Symbol.for('splat')]: [{ password: '1234' }],
     };
-    const result = logger['redact'](obj);
+    // Test file mode (consoleMode = false) - token is redacted, password is not
+    const result = logger['redact'](obj, false);
     expect(result.token).to.equal('[REDACTED]');
-    expect(result[Symbol.for('splat')][0].password).to.equal('[REDACTED]');
+    // In file mode, password is not redacted
+    expect(result[Symbol.for('splat')][0].password).to.equal('1234');
+    
+    // Test console mode (consoleMode = true) - both token and password are redacted
+    const consoleResult = logger['redact'](obj, true);
+    expect(consoleResult.token).to.equal('[REDACTED]');
+    expect(consoleResult[Symbol.for('splat')][0].password).to.equal('[REDACTED]');
   });
 
   fancy.it('redact should return original if klona fails', () => {
