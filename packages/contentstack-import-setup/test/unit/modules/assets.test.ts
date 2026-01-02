@@ -81,14 +81,25 @@ describe('AssetImportSetup', () => {
   //   });
 
   it('should log success message after setup', async () => {
+    // Stub withLoadingSpinner to return a non-zero indexerCount to avoid early return
+    stub(assetSetup as any, 'withLoadingSpinner').resolves(1);
     // Stub fetchAndMapAssets to avoid actual implementation
     stub(assetSetup as any, 'fetchAndMapAssets').resolves();
+    // Stub createNestedProgress and completeProgress to avoid progress manager issues
+    stub(assetSetup as any, 'createNestedProgress').returns({
+      addProcess: stub().returnsThis(),
+      startProcess: stub().returnsThis(),
+      updateStatus: stub().returnsThis(),
+      completeProcess: stub().returnsThis(),
+    });
+    stub(assetSetup as any, 'completeProgress');
 
     await assetSetup.start();
 
-    expect(logStub.calledOnce).to.be.true;
-    expect(logStub.firstCall.args[1]).to.include('successfully');
-    expect(logStub.firstCall.args[2]).to.equal('success');
+    expect(logStub.called).to.be.true;
+    const successCall = logStub.getCalls().find((call) => call.args[1]?.includes('successfully'));
+    expect(successCall).to.exist;
+    expect(successCall?.args[2]).to.equal('success');
   });
 
   it('should handle errors during start process', async () => {
