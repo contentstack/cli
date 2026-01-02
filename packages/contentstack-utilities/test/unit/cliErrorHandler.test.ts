@@ -36,7 +36,7 @@ describe('CLIErrorHandler', () => {
     expect(hidden).to.equal(true);
   });
 
-  fancy.it('should extract debug payload correctly', () => {
+  fancy.it('should extract error payload correctly', () => {
     const error = new Error('API error');
     (error as any).status = 500;
     (error as any).statusText = 'Internal Server Error';
@@ -52,6 +52,7 @@ describe('CLIErrorHandler', () => {
       data: { error: 'fail' },
       headers: { 'content-type': 'application/json' },
     };
+    (error as any).status = 500; // Also set status on error directly
 
     const debugPayload = errorHandler['extractErrorPayload'](error);
     expect(debugPayload.request.method).to.equal('GET');
