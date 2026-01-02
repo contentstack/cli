@@ -16,10 +16,10 @@ describe('ImportLocales', () => {
   beforeEach(() => {
     sandbox = sinon.createSandbox();
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'locales-test-'));
-
+    
     // Create necessary directories
     fs.mkdirSync(path.join(tempDir, 'mapper', 'languages'), { recursive: true });
-
+    
     // Create mock config
     mockConfig = {
       data: tempDir,
@@ -33,87 +33,51 @@ describe('ImportLocales', () => {
         locales: {
           dirName: 'locales',
           fileName: 'locales.json',
-          requiredKeys: ['uid', 'code', 'name'],
+          requiredKeys: ['uid', 'code', 'name']
         },
         masterLocale: {
           dirName: 'locales',
           fileName: 'master_locale.json',
-          requiredKeys: ['uid', 'code', 'name'],
+          requiredKeys: ['uid', 'code', 'name']
         },
-        customRoles: {
-          dirName: 'custom_roles',
-          fileName: 'custom_roles.json',
-          customRolesLocalesFileName: 'custom_roles_locales.json',
-        },
+        customRoles: { dirName: 'custom_roles', fileName: 'custom_roles.json', customRolesLocalesFileName: 'custom_roles_locales.json' },
         environments: { dirName: 'environments', fileName: 'environments.json' },
         labels: { dirName: 'labels', fileName: 'labels.json' },
         extensions: { dirName: 'extensions', fileName: 'extensions.json', validKeys: ['uid', 'title'] },
         webhooks: { dirName: 'webhooks', fileName: 'webhooks.json' },
         releases: { dirName: 'releases', fileName: 'releases.json', invalidKeys: ['uid'] },
         workflows: { dirName: 'workflows', fileName: 'workflows.json', invalidKeys: ['uid'] },
-        assets: {
-          dirName: 'assets',
-          assetBatchLimit: 10,
-          fileName: 'assets.json',
-          importSameStructure: false,
-          uploadAssetsConcurrency: 1,
-          displayExecutionTime: false,
-          importFoldersConcurrency: 1,
-          includeVersionedAssets: false,
-          host: 'https://api.contentstack.io',
-          folderValidKeys: ['uid', 'name'],
-          validKeys: ['uid', 'title'],
+        assets: { 
+          dirName: 'assets', 
+          assetBatchLimit: 10, 
+          fileName: 'assets.json', 
+          importSameStructure: false, 
+          uploadAssetsConcurrency: 1, 
+          displayExecutionTime: false, 
+          importFoldersConcurrency: 1, 
+          includeVersionedAssets: false, 
+          host: 'https://api.contentstack.io', 
+          folderValidKeys: ['uid', 'name'], 
+          validKeys: ['uid', 'title'] 
         },
-        'assets-old': {
-          dirName: 'assets',
-          fileName: 'assets.json',
-          limit: 100,
-          host: 'https://api.contentstack.io',
-          validKeys: ['uid', 'title'],
-          assetBatchLimit: 10,
-          uploadAssetsConcurrency: 1,
-          importFoldersConcurrency: 1,
+        'assets-old': { 
+          dirName: 'assets', 
+          fileName: 'assets.json', 
+          limit: 100, 
+          host: 'https://api.contentstack.io', 
+          validKeys: ['uid', 'title'], 
+          assetBatchLimit: 10, 
+          uploadAssetsConcurrency: 1, 
+          importFoldersConcurrency: 1 
         },
-        content_types: {
-          dirName: 'content_types',
-          fileName: 'content_types.json',
-          validKeys: ['uid', 'title'],
-          limit: 100,
-        },
-        'content-types': {
-          dirName: 'content_types',
-          fileName: 'content_types.json',
-          validKeys: ['uid', 'title'],
-          limit: 100,
-        },
-        entries: {
-          dirName: 'entries',
-          fileName: 'entries.json',
-          invalidKeys: ['uid'],
-          limit: 100,
-          assetBatchLimit: 10,
-        },
-        globalfields: {
-          dirName: 'globalfields',
-          fileName: 'globalfields.json',
-          validKeys: ['uid', 'title'],
-          limit: 100,
-        },
-        'global-fields': {
-          dirName: 'globalfields',
-          fileName: 'globalfields.json',
-          validKeys: ['uid', 'title'],
-          limit: 100,
-        },
+        content_types: { dirName: 'content_types', fileName: 'content_types.json', validKeys: ['uid', 'title'], limit: 100 },
+        'content-types': { dirName: 'content_types', fileName: 'content_types.json', validKeys: ['uid', 'title'], limit: 100 },
+        entries: { dirName: 'entries', fileName: 'entries.json', invalidKeys: ['uid'], limit: 100, assetBatchLimit: 10 },
+        globalfields: { dirName: 'globalfields', fileName: 'globalfields.json', validKeys: ['uid', 'title'], limit: 100 },
+        'global-fields': { dirName: 'globalfields', fileName: 'globalfields.json', validKeys: ['uid', 'title'], limit: 100 },
         stack: { dirName: 'stack', fileName: 'stack.json' },
         marketplace_apps: { dirName: 'marketplace_apps', fileName: 'marketplace_apps.json' },
         taxonomies: { dirName: 'taxonomies', fileName: 'taxonomies.json' },
-        'composable-studio': {
-          dirName: 'composable-studio',
-          fileName: 'composable-studio.json',
-          apiBaseUrl: 'https://composable-studio-api.contentstack.com/v1',
-          apiVersion: 'v1',
-        },
         personalize: {
           baseURL: {},
           dirName: 'personalize',
@@ -123,19 +87,9 @@ describe('ImportLocales', () => {
           attributes: { dirName: 'attributes', fileName: 'attributes.json' },
           audiences: { dirName: 'audiences', fileName: 'audiences.json' },
           events: { dirName: 'events', fileName: 'events.json' },
-          experiences: {
-            dirName: 'experiences',
-            fileName: 'experiences.json',
-            thresholdTimer: 1000,
-            checkIntervalDuration: 100,
-          },
+          experiences: { dirName: 'experiences', fileName: 'experiences.json', thresholdTimer: 1000, checkIntervalDuration: 100 }
         },
-        variantEntry: {
-          dirName: 'variant_entries',
-          fileName: 'variant_entries.json',
-          apiConcurrency: 1,
-          query: { locale: 'en-us' },
-        },
+        variantEntry: { dirName: 'variant_entries', fileName: 'variant_entries.json', apiConcurrency: 1, query: { locale: 'en-us' } }
       },
       branches: [{ uid: 'main', source: 'main' }],
       isAuthenticated: true,
@@ -157,7 +111,7 @@ describe('ImportLocales', () => {
         globalfields: '/v3/globalfields',
         folders: '/v3/folders',
         stacks: '/v3/stacks',
-        labels: '/v3/labels',
+        labels: '/v3/labels'
       },
       rateLimit: 5,
       preserveStackVersion: false,
@@ -181,29 +135,29 @@ describe('ImportLocales', () => {
       contentVersion: 1,
       region: 'us' as any,
       'exclude-global-modules': false,
-      context: {
+      context: { 
         module: 'locales',
         command: 'import',
         userId: 'test-user',
         email: 'test@example.com',
         sessionId: 'test-session',
-        stack: 'test-stack',
-      } as any,
+        stack: 'test-stack'
+      } as any
     };
 
     // Create mock stack API client
     mockStackAPIClient = {
       locale: sandbox.stub().returns({
         fetch: sandbox.stub(),
-        update: sandbox.stub(),
-      }),
+        update: sandbox.stub()
+      })
     };
 
     // Create module class params
     const moduleParams: ModuleClassParams = {
       importConfig: mockConfig,
       stackAPIClient: mockStackAPIClient,
-      moduleName: 'locales' as any,
+      moduleName: 'locales' as any
     };
 
     // Create instance
@@ -280,17 +234,14 @@ describe('ImportLocales', () => {
     it('should process languages successfully', async () => {
       const mockLanguages = [
         { uid: 'lang1', code: 'en-us', name: 'English' },
-        { uid: 'lang2', code: 'es-es', name: 'Spanish' },
+        { uid: 'lang2', code: 'es-es', name: 'Spanish' }
       ];
       const mockMasterLanguage = { uid: 'master', code: 'en-us', name: 'English' };
 
       fsUtilStub
-        .onFirstCall()
-        .returns(mockLanguages)
-        .onSecondCall()
-        .returns(mockMasterLanguage)
-        .onThirdCall()
-        .returns({});
+        .onFirstCall().returns(mockLanguages)
+        .onSecondCall().returns(mockMasterLanguage)
+        .onThirdCall().returns({});
       fileHelperStub.resolves();
       makeConcurrentCallStub.resolves();
 
@@ -302,10 +253,14 @@ describe('ImportLocales', () => {
     });
 
     it('should handle case when UID mapper file does not exist', async () => {
-      const mockLanguages = [{ uid: 'lang1', code: 'en-us', name: 'English' }];
+      const mockLanguages = [
+        { uid: 'lang1', code: 'en-us', name: 'English' }
+      ];
       const mockMasterLanguage = { uid: 'master', code: 'en-us', name: 'English' };
 
-      fsUtilStub.onFirstCall().returns(mockLanguages).onSecondCall().returns(mockMasterLanguage);
+      fsUtilStub
+        .onFirstCall().returns(mockLanguages)
+        .onSecondCall().returns(mockMasterLanguage);
       fileHelperStub.resolves();
       makeConcurrentCallStub.resolves();
 
@@ -322,16 +277,15 @@ describe('ImportLocales', () => {
     });
 
     it('should handle case when UID mapper file exists but returns null', async () => {
-      const mockLanguages = [{ uid: 'lang1', code: 'en-us', name: 'English' }];
+      const mockLanguages = [
+        { uid: 'lang1', code: 'en-us', name: 'English' }
+      ];
       const mockMasterLanguage = { uid: 'master', code: 'en-us', name: 'English' };
 
       fsUtilStub
-        .onFirstCall()
-        .returns(mockLanguages)
-        .onSecondCall()
-        .returns(mockMasterLanguage)
-        .onThirdCall()
-        .returns(null); // UID mapper file returns null
+        .onFirstCall().returns(mockLanguages)
+        .onSecondCall().returns(mockMasterLanguage)
+        .onThirdCall().returns(null); // UID mapper file returns null
       fileHelperStub.resolves();
       makeConcurrentCallStub.resolves();
 
@@ -349,14 +303,15 @@ describe('ImportLocales', () => {
 
     it('should handle errors in checkAndUpdateMasterLocale', async () => {
       const mockLanguages = [{ uid: 'lang1', code: 'en-us', name: 'English' }];
-      fsUtilStub.onFirstCall().returns(mockLanguages).onSecondCall().returns({}).onThirdCall().returns({});
+      fsUtilStub
+        .onFirstCall().returns(mockLanguages)
+        .onSecondCall().returns({})
+        .onThirdCall().returns({});
       fileHelperStub.resolves();
       makeConcurrentCallStub.resolves();
 
       // Mock checkAndUpdateMasterLocale to throw error
-      const checkAndUpdateMasterLocaleStub = sandbox
-        .stub(localesInstance, 'checkAndUpdateMasterLocale')
-        .rejects(new Error('Test error'));
+      const checkAndUpdateMasterLocaleStub = sandbox.stub(localesInstance, 'checkAndUpdateMasterLocale').rejects(new Error('Test error'));
 
       await localesInstance.start();
 
@@ -366,7 +321,10 @@ describe('ImportLocales', () => {
 
     it('should handle errors in createLocales', async () => {
       const mockLanguages = [{ uid: 'lang1', code: 'en-us', name: 'English' }];
-      fsUtilStub.onFirstCall().returns(mockLanguages).onSecondCall().returns({}).onThirdCall().returns({});
+      fsUtilStub
+        .onFirstCall().returns(mockLanguages)
+        .onSecondCall().returns({})
+        .onThirdCall().returns({});
       fileHelperStub.resolves();
       makeConcurrentCallStub.rejects(new Error('Create locales error'));
 
@@ -377,9 +335,14 @@ describe('ImportLocales', () => {
 
     it('should handle errors in updateLocales', async () => {
       const mockLanguages = [{ uid: 'lang1', code: 'en-us', name: 'English' }];
-      fsUtilStub.onFirstCall().returns(mockLanguages).onSecondCall().returns({}).onThirdCall().returns({});
+      fsUtilStub
+        .onFirstCall().returns(mockLanguages)
+        .onSecondCall().returns({})
+        .onThirdCall().returns({});
       fileHelperStub.resolves();
-      makeConcurrentCallStub.onFirstCall().resolves().onSecondCall().rejects(new Error('Update locales error'));
+      makeConcurrentCallStub
+        .onFirstCall().resolves()
+        .onSecondCall().rejects(new Error('Update locales error'));
 
       await localesInstance.start();
 
@@ -416,7 +379,7 @@ describe('ImportLocales', () => {
 
     it('should handle master language code mismatch', async () => {
       localesInstance['sourceMasterLanguage'] = {
-        lang1: { uid: 'lang1', code: 'es-es', name: 'Spanish' },
+        'lang1': { uid: 'lang1', code: 'es-es', name: 'Spanish' }
       };
       localesInstance['masterLanguage'] = { code: 'en-us' };
 
@@ -428,13 +391,13 @@ describe('ImportLocales', () => {
     it('should handle master language code match with same names', async () => {
       const mockMasterLang = { uid: 'master', code: 'en-us', name: 'English' };
       localesInstance['sourceMasterLanguage'] = {
-        master: mockMasterLang,
+        'master': mockMasterLang
       };
       localesInstance['masterLanguage'] = { code: 'en-us' };
 
       const mockLocaleClient = {
         fetch: sandbox.stub().resolves({ name: 'English' }),
-        update: sandbox.stub().resolves(),
+        update: sandbox.stub().resolves()
       };
       mockStackAPIClient.locale.returns(mockLocaleClient);
 
@@ -448,20 +411,18 @@ describe('ImportLocales', () => {
     it('should handle master language code match with different names - user confirms update', async () => {
       const mockMasterLang = { uid: 'master', code: 'en-us', name: 'English Updated' };
       localesInstance['sourceMasterLanguage'] = {
-        master: mockMasterLang,
+        'master': mockMasterLang
       };
       localesInstance['masterLanguage'] = { code: 'en-us' };
 
       const mockLocaleClient = {
         fetch: sandbox.stub().resolves({ name: 'English' }),
-        update: sandbox.stub().resolves(),
+        update: sandbox.stub().resolves()
       };
       mockStackAPIClient.locale.returns(mockLocaleClient);
 
       // Mock cliux.inquire to return true (user confirms)
-      const inquireStub = sandbox
-        .stub(require('@contentstack/cli-utilities').cliux, 'inquire')
-        .resolves({ confirmation: true });
+      const inquireStub = sandbox.stub(require('@contentstack/cli-utilities').cliux, 'inquire').resolves({ confirmation: true });
 
       await localesInstance.checkAndUpdateMasterLocale();
 
@@ -475,20 +436,18 @@ describe('ImportLocales', () => {
     it('should handle master language code match with different names - user declines update', async () => {
       const mockMasterLang = { uid: 'master', code: 'en-us', name: 'English Updated' };
       localesInstance['sourceMasterLanguage'] = {
-        master: mockMasterLang,
+        'master': mockMasterLang
       };
       localesInstance['masterLanguage'] = { code: 'en-us' };
 
       const mockLocaleClient = {
         fetch: sandbox.stub().resolves({ name: 'English' }),
-        update: sandbox.stub().resolves(),
+        update: sandbox.stub().resolves()
       };
       mockStackAPIClient.locale.returns(mockLocaleClient);
 
       // Mock cliux.inquire to return false (user declines)
-      const inquireStub = sandbox
-        .stub(require('@contentstack/cli-utilities').cliux, 'inquire')
-        .resolves({ confirmation: false });
+      const inquireStub = sandbox.stub(require('@contentstack/cli-utilities').cliux, 'inquire').resolves({ confirmation: false });
 
       await localesInstance.checkAndUpdateMasterLocale();
 
@@ -503,20 +462,18 @@ describe('ImportLocales', () => {
     it('should handle master language code match with different names - user declines update (proper flow)', async () => {
       const mockMasterLang = { uid: 'master', code: 'en-us', name: 'English Updated' };
       localesInstance['sourceMasterLanguage'] = {
-        master: mockMasterLang,
+        'master': mockMasterLang
       };
       localesInstance['masterLanguage'] = { code: 'en-us' };
 
       const mockLocaleClient = {
         fetch: sandbox.stub().resolves({ name: 'English' }),
-        update: sandbox.stub().resolves(),
+        update: sandbox.stub().resolves()
       };
       mockStackAPIClient.locale.returns(mockLocaleClient);
 
       // Mock cliux.inquire to return false (user declines)
-      const inquireStub = sandbox
-        .stub(require('@contentstack/cli-utilities').cliux, 'inquire')
-        .resolves({ confirmation: false });
+      const inquireStub = sandbox.stub(require('@contentstack/cli-utilities').cliux, 'inquire').resolves({ confirmation: false });
 
       await localesInstance.checkAndUpdateMasterLocale();
 
@@ -527,23 +484,22 @@ describe('ImportLocales', () => {
       // Verify line 172 is covered - user declined update
     });
 
+
     it('should handle user declining update with proper error handling', async () => {
       const mockMasterLang = { uid: 'master', code: 'en-us', name: 'English Updated' };
       localesInstance['sourceMasterLanguage'] = {
-        master: mockMasterLang,
+        'master': mockMasterLang
       };
       localesInstance['masterLanguage'] = { code: 'en-us' };
 
       const mockLocaleClient = {
         fetch: sandbox.stub().resolves({ name: 'English' }),
-        update: sandbox.stub().resolves(),
+        update: sandbox.stub().resolves()
       };
       mockStackAPIClient.locale.returns(mockLocaleClient);
 
       // Mock cliux.inquire to return false (user declines)
-      const inquireStub = sandbox
-        .stub(require('@contentstack/cli-utilities').cliux, 'inquire')
-        .resolves({ confirmation: false });
+      const inquireStub = sandbox.stub(require('@contentstack/cli-utilities').cliux, 'inquire').resolves({ confirmation: false });
 
       // Mock handleAndLogError to prevent any errors
       const handleAndLogErrorStub = sandbox.stub(require('@contentstack/cli-utilities'), 'handleAndLogError');
@@ -565,20 +521,18 @@ describe('ImportLocales', () => {
     it('should handle master language not found in source', async () => {
       const mockMasterLang = { uid: 'master', code: 'en-us', name: 'English Updated' };
       localesInstance['sourceMasterLanguage'] = {
-        master: mockMasterLang, // Use 'master' key to match the uid
+        'master': mockMasterLang  // Use 'master' key to match the uid
       };
       localesInstance['masterLanguage'] = { code: 'en-us' };
 
       const mockLocaleClient = {
         fetch: sandbox.stub().resolves({ name: 'English' }),
-        update: sandbox.stub().resolves(),
+        update: sandbox.stub().resolves()
       };
       mockStackAPIClient.locale.returns(mockLocaleClient);
 
       // Mock cliux.inquire to return true (user confirms)
-      const inquireStub = sandbox
-        .stub(require('@contentstack/cli-utilities').cliux, 'inquire')
-        .resolves({ confirmation: true });
+      const inquireStub = sandbox.stub(require('@contentstack/cli-utilities').cliux, 'inquire').resolves({ confirmation: true });
 
       await localesInstance.checkAndUpdateMasterLocale();
 
@@ -590,23 +544,23 @@ describe('ImportLocales', () => {
       expect(mockLocaleClient.update.called).to.be.true;
     });
 
+
+
     it('should handle master language not found in source with undefined uid', async () => {
       // Create a scenario where sourceMasterLangDetails[0] exists but has no uid
       localesInstance['sourceMasterLanguage'] = {
-        'some-key': { code: 'en-us', name: 'English Updated' }, // No uid property
+        'some-key': { code: 'en-us', name: 'English Updated' } // No uid property
       };
       localesInstance['masterLanguage'] = { code: 'en-us' };
 
       const mockLocaleClient = {
         fetch: sandbox.stub().resolves({ name: 'English' }),
-        update: sandbox.stub().resolves(),
+        update: sandbox.stub().resolves()
       };
       mockStackAPIClient.locale.returns(mockLocaleClient);
 
       // Mock cliux.inquire to return true (user confirms)
-      const inquireStub = sandbox
-        .stub(require('@contentstack/cli-utilities').cliux, 'inquire')
-        .resolves({ confirmation: true });
+      const inquireStub = sandbox.stub(require('@contentstack/cli-utilities').cliux, 'inquire').resolves({ confirmation: true });
 
       // The code will try to access sourceMasterLanguage.name when sourceMasterLanguage is undefined
       // So we need to handle this gracefully
@@ -625,13 +579,13 @@ describe('ImportLocales', () => {
     it('should handle fetch error', async () => {
       const mockMasterLang = { uid: 'master', code: 'en-us', name: 'English Updated' };
       localesInstance['sourceMasterLanguage'] = {
-        master: mockMasterLang,
+        'master': mockMasterLang
       };
       localesInstance['masterLanguage'] = { code: 'en-us' };
 
       const mockLocaleClient = {
         fetch: sandbox.stub().rejects(new Error('Fetch error')),
-        update: sandbox.stub().resolves(),
+        update: sandbox.stub().resolves()
       };
       mockStackAPIClient.locale.returns(mockLocaleClient);
 
@@ -652,20 +606,18 @@ describe('ImportLocales', () => {
     it('should handle update error', async () => {
       const mockMasterLang = { uid: 'master', code: 'en-us', name: 'English Updated' };
       localesInstance['sourceMasterLanguage'] = {
-        master: mockMasterLang,
+        'master': mockMasterLang
       };
       localesInstance['masterLanguage'] = { code: 'en-us' };
 
       const mockLocaleClient = {
         fetch: sandbox.stub().resolves({ name: 'English' }),
-        update: sandbox.stub().rejects(new Error('Update error')),
+        update: sandbox.stub().rejects(new Error('Update error'))
       };
       mockStackAPIClient.locale.returns(mockLocaleClient);
 
       // Mock cliux.inquire to return true (user confirms)
-      const inquireStub = sandbox
-        .stub(require('@contentstack/cli-utilities').cliux, 'inquire')
-        .resolves({ confirmation: true });
+      const inquireStub = sandbox.stub(require('@contentstack/cli-utilities').cliux, 'inquire').resolves({ confirmation: true });
 
       // The code will try to access this.config.context in the error handler
       // So we need to handle this gracefully
@@ -685,20 +637,18 @@ describe('ImportLocales', () => {
     it('should handle update error with proper error handling', async () => {
       const mockMasterLang = { uid: 'master', code: 'en-us', name: 'English Updated' };
       localesInstance['sourceMasterLanguage'] = {
-        master: mockMasterLang,
+        'master': mockMasterLang
       };
       localesInstance['masterLanguage'] = { code: 'en-us' };
 
       const mockLocaleClient = {
         fetch: sandbox.stub().resolves({ name: 'English' }),
-        update: sandbox.stub().rejects(new Error('Update error')),
+        update: sandbox.stub().rejects(new Error('Update error'))
       };
       mockStackAPIClient.locale.returns(mockLocaleClient);
 
       // Mock cliux.inquire to return true (user confirms)
-      const inquireStub = sandbox
-        .stub(require('@contentstack/cli-utilities').cliux, 'inquire')
-        .resolves({ confirmation: true });
+      const inquireStub = sandbox.stub(require('@contentstack/cli-utilities').cliux, 'inquire').resolves({ confirmation: true });
 
       // Mock handleAndLogError to prevent the error from being thrown
       const handleAndLogErrorStub = sandbox.stub(require('@contentstack/cli-utilities'), 'handleAndLogError');
@@ -718,19 +668,16 @@ describe('ImportLocales', () => {
       expect(mockLocaleClient.update.called).to.be.true;
     });
 
+
     it('should handle writeConcurrency fallback (line 52)', () => {
       // Test the branch: this.localeConfig.writeConcurrency || this.config.writeConcurrency
       const tempConfig = JSON.parse(JSON.stringify(mockConfig));
       tempConfig.modules.locales = { ...tempConfig.modules.locales, writeConcurrency: undefined };
       tempConfig.writeConcurrency = 5;
-
-      const moduleClassParams = {
-        importConfig: tempConfig,
-        stackAPIClient: mockStackAPIClient,
-        moduleName: 'locales' as any,
-      };
+      
+      const moduleClassParams = { importConfig: tempConfig, stackAPIClient: mockStackAPIClient, moduleName: 'locales' as any };
       const testInstance = new ImportLocales(moduleClassParams);
-
+      
       expect(testInstance['reqConcurrency']).to.equal(5);
     });
 
@@ -738,16 +685,13 @@ describe('ImportLocales', () => {
       const tempConfig = JSON.parse(JSON.stringify(mockConfig));
       tempConfig.modules.locales = { ...tempConfig.modules.locales, writeConcurrency: 10 };
       tempConfig.writeConcurrency = 5;
-
-      const moduleClassParams = {
-        importConfig: tempConfig,
-        stackAPIClient: mockStackAPIClient,
-        moduleName: 'locales' as any,
-      };
+      
+      const moduleClassParams = { importConfig: tempConfig, stackAPIClient: mockStackAPIClient, moduleName: 'locales' as any };
       const testInstance = new ImportLocales(moduleClassParams);
-
+      
       expect(testInstance['reqConcurrency']).to.equal(10);
     });
+
   });
 
   describe('createLocales', () => {
@@ -763,7 +707,7 @@ describe('ImportLocales', () => {
       const mockLanguages = [
         { uid: 'lang1', code: 'en-us', name: 'English' },
         { uid: 'lang2', code: 'es-es', name: 'Spanish' },
-        { uid: 'lang3', code: 'fr-fr', name: 'French' },
+        { uid: 'lang3', code: 'fr-fr', name: 'French' }
       ];
       localesInstance['languages'] = mockLanguages;
       localesInstance['masterLanguage'] = { code: 'en-us' };
@@ -794,7 +738,9 @@ describe('ImportLocales', () => {
     });
 
     it('should handle onSuccess callback', async () => {
-      const mockLanguages = [{ uid: 'lang1', code: 'es-es', name: 'Spanish' }];
+      const mockLanguages = [
+        { uid: 'lang1', code: 'es-es', name: 'Spanish' }
+      ];
       localesInstance['languages'] = mockLanguages;
       localesInstance['masterLanguage'] = { code: 'en-us' };
 
@@ -813,7 +759,9 @@ describe('ImportLocales', () => {
     });
 
     it('should handle onReject callback with error code 247', async () => {
-      const mockLanguages = [{ uid: 'lang1', code: 'es-es', name: 'Spanish' }];
+      const mockLanguages = [
+        { uid: 'lang1', code: 'es-es', name: 'Spanish' }
+      ];
       localesInstance['languages'] = mockLanguages;
       localesInstance['masterLanguage'] = { code: 'en-us' };
 
@@ -831,7 +779,9 @@ describe('ImportLocales', () => {
     });
 
     it('should handle onReject callback with other error', async () => {
-      const mockLanguages = [{ uid: 'lang1', code: 'es-es', name: 'Spanish' }];
+      const mockLanguages = [
+        { uid: 'lang1', code: 'es-es', name: 'Spanish' }
+      ];
       localesInstance['languages'] = mockLanguages;
       localesInstance['masterLanguage'] = { code: 'en-us' };
 
@@ -861,7 +811,7 @@ describe('ImportLocales', () => {
     it('should update all locales', async () => {
       const mockLanguages = [
         { uid: 'lang1', code: 'en-us', name: 'English' },
-        { uid: 'lang2', code: 'es-es', name: 'Spanish' },
+        { uid: 'lang2', code: 'es-es', name: 'Spanish' }
       ];
       localesInstance['languages'] = mockLanguages;
 
@@ -876,7 +826,9 @@ describe('ImportLocales', () => {
     });
 
     it('should handle onSuccess callback', async () => {
-      const mockLanguages = [{ uid: 'lang1', code: 'en-us', name: 'English' }];
+      const mockLanguages = [
+        { uid: 'lang1', code: 'en-us', name: 'English' }
+      ];
       localesInstance['languages'] = mockLanguages;
 
       makeConcurrentCallStub.callsFake(async (args: any) => {
@@ -892,7 +844,9 @@ describe('ImportLocales', () => {
     });
 
     it('should handle onReject callback', async () => {
-      const mockLanguages = [{ uid: 'lang1', code: 'en-us', name: 'English' }];
+      const mockLanguages = [
+        { uid: 'lang1', code: 'en-us', name: 'English' }
+      ];
       localesInstance['languages'] = mockLanguages;
 
       makeConcurrentCallStub.callsFake(async (args: any) => {
@@ -911,7 +865,9 @@ describe('ImportLocales', () => {
   describe('Edge Cases', () => {
     it('should handle undefined apiData in callbacks', async () => {
       const makeConcurrentCallStub = sandbox.stub(localesInstance, 'makeConcurrentCall');
-      const mockLanguages = [{ uid: 'lang1', code: 'es-es', name: 'Spanish' }];
+      const mockLanguages = [
+        { uid: 'lang1', code: 'es-es', name: 'Spanish' }
+      ];
       localesInstance['languages'] = mockLanguages;
       localesInstance['masterLanguage'] = { code: 'en-us' };
 
@@ -925,7 +881,9 @@ describe('ImportLocales', () => {
 
     it('should handle undefined response in callbacks', async () => {
       const makeConcurrentCallStub = sandbox.stub(localesInstance, 'makeConcurrentCall');
-      const mockLanguages = [{ uid: 'lang1', code: 'es-es', name: 'Spanish' }];
+      const mockLanguages = [
+        { uid: 'lang1', code: 'es-es', name: 'Spanish' }
+      ];
       localesInstance['languages'] = mockLanguages;
       localesInstance['masterLanguage'] = { code: 'en-us' };
 
@@ -936,4 +894,5 @@ describe('ImportLocales', () => {
       expect(makeConcurrentCallStub.calledOnce).to.be.true;
     });
   });
+
 });

@@ -153,30 +153,30 @@ export default class ImportMarketplaceApps extends BaseClass {
    * validates app installation, and generates a UID mapper.
    */
   async importMarketplaceApps(): Promise<void> {
-    log.debug('Setting up security configuration for Marketplace Apps...', this.importConfig.context);
+    log.debug('Setting up security configuration for marketplace apps', this.importConfig.context);
     // NOTE set default encryptionKey
     const cryptoArgs = { encryptionKey: this.importConfig.marketplaceAppEncryptionKey };
 
     if (this.importConfig.forceStopMarketplaceAppsPrompt) {
-      log.debug('Using forced security configuration without validation.', this.importConfig.context);
+      log.debug('Using forced security configuration without validation', this.importConfig.context);
       this.nodeCrypto = new NodeCrypto(cryptoArgs);
     }
     // NOTE getting all apps to validate if it's already installed in the stack to manage conflict
-    log.debug('Getting all stack-specific apps for validation...', this.importConfig.context);
+    log.debug('Getting all stack-specific apps for validation', this.importConfig.context);
     this.installedApps = await getAllStackSpecificApps(this.importConfig);
     log.debug(`Found ${this.installedApps?.length || 0} already installed apps`, this.importConfig.context);
 
-    log.info('Starting Marketplace App installation...', this.importConfig.context);
+    log.info('Starting marketplace app installation', this.importConfig.context);
 
     for (let app of this.marketplaceApps) {
       log.debug(`Processing app: ${app.manifest?.name || app.manifest?.uid}`, this.importConfig.context);
       await this.installApps(app);
     }
 
-    log.debug('Generating UID mapper...', this.importConfig.context);
+    log.debug('Generating UID mapper', this.importConfig.context);
     const uidMapper = await this.generateUidMapper();
 
-    log.debug('Writing UID mappings to file...', this.importConfig.context);
+    log.debug('Writing UID mappings to file', this.importConfig.context);
     fsUtil.writeFile(this.marketPlaceUidMapperPath, {
       app_uid: this.appUidMapping,
       extension_uid: uidMapper || {},
@@ -197,24 +197,24 @@ export default class ImportMarketplaceApps extends BaseClass {
    * unknown>`.
    */
   async generateUidMapper(): Promise<Record<string, unknown>> {
-    log.debug('Generating UID mapper for extensions...', this.importConfig.context);
+    log.debug('Generating UID mapper for extensions', this.importConfig.context);
     const listOfNewMeta = [];
     const listOfOldMeta = [];
     const extensionUidMap: Record<string, unknown> = {};
 
     // NOTE After installation getting all apps to create mapper.
-    log.debug('Fetching updated list of installed apps...', this.importConfig.context);
+    log.debug('Fetching updated list of installed apps', this.importConfig.context);
     this.installedApps = (await getAllStackSpecificApps(this.importConfig)) || [];
     log.debug(`Found ${this.installedApps?.length || 0} installed apps after installation`, this.importConfig.context);
 
-    log.debug('Processing old metadata from Marketplace Apps...', this.importConfig.context);
+    log.debug('Processing old metadata from marketplace apps', this.importConfig.context);
     for (const app of this.marketplaceApps) {
       const appMeta = map(app?.ui_location?.locations, 'meta').flat();
       listOfOldMeta.push(...appMeta);
       log.debug(`Added ${appMeta.length} meta entries from app: ${app.manifest?.name}`, this.importConfig.context);
     }
 
-    log.debug('Processing new metadata from installed apps...', this.importConfig.context);
+    log.debug('Processing new metadata from installed apps', this.importConfig.context);
     for (const app of this.installedApps) {
       const appMeta = map(app?.ui_location?.locations, 'meta').flat();
       listOfNewMeta.push(...appMeta);
@@ -263,7 +263,7 @@ export default class ImportMarketplaceApps extends BaseClass {
     );
 
     if (!appConfig) {
-      log.debug('No app configuration found requiring encryption.', this.importConfig.context);
+      log.debug('No app configuration found requiring encryption', this.importConfig.context);
       return defaultValue;
     }
 
@@ -273,11 +273,11 @@ export default class ImportMarketplaceApps extends BaseClass {
 
     try {
       appConfig = !isEmpty(appConfig.configuration) ? appConfig.configuration : appConfig.server_configuration;
-      log.debug('Creating NodeCrypto instance with security configuration...', this.importConfig.context);
+      log.debug('Creating NodeCrypto instance with security configuration', this.importConfig.context);
       this.nodeCrypto = new NodeCrypto({ encryptionKey });
-      log.debug('Testing security configuration with app data...', this.importConfig.context);
+      log.debug('Testing security configuration with app data', this.importConfig.context);
       this.nodeCrypto.decrypt(appConfig);
-      log.debug('Security configuration validation successful.', this.importConfig.context);
+      log.debug('Security configuration validation successful', this.importConfig.context);
     } catch (error) {
       log.debug(`Security configuration validation failed: ${error.message}`, this.importConfig.context);
       if (retry < this.importConfig.getEncryptionKeyMaxRetry && error.code === 'ERR_OSSL_EVP_BAD_DECRYPT') {
@@ -296,7 +296,7 @@ export default class ImportMarketplaceApps extends BaseClass {
           `Maximum retry limit exceeded. Closing the process, please try again.! attempt(${retry}/${this.importConfig.getEncryptionKeyMaxRetry})`,
           { color: 'red' },
         );
-        log.debug('Maximum retry limit exceeded for encryption validation.', this.importConfig.context);
+        log.debug('Maximum retry limit exceeded for encryption validation', this.importConfig.context);
         process.exit(1);
       }
     }
@@ -311,7 +311,7 @@ export default class ImportMarketplaceApps extends BaseClass {
    * @returns a Promise that resolves to void.
    */
   async handleAllPrivateAppsCreationProcess(): Promise<void> {
-    log.debug('Filtering private apps from Marketplace Apps...', this.importConfig.context);
+    log.debug('Filtering private apps from marketplace apps', this.importConfig.context);
     const privateApps = filter(this.marketplaceApps, { manifest: { visibility: 'private' } });
     log.debug(`Found ${privateApps.length} private apps to process`, this.importConfig.context);
 
@@ -326,7 +326,7 @@ export default class ImportMarketplaceApps extends BaseClass {
     this.importConfig.canCreatePrivateApp = canCreatePrivateApp;
 
     if (canCreatePrivateApp) {
-      log.info('Starting Developer Hub private apps re-creation...', this.importConfig.context);
+      log.info('Starting developer hub private apps re-creation', this.importConfig.context);
       log.debug(`Processing ${privateApps.length} private apps for creation`, this.importConfig.context);
 
       for (let app of privateApps) {
@@ -391,12 +391,12 @@ export default class ImportMarketplaceApps extends BaseClass {
       .installation(app.uid)
       .fetch()
       .catch((): void => {
-        log.debug(`App ${app.manifest?.name} not found in Developer Hub.`, this.importConfig.context);
+        log.debug(`App ${app.manifest?.name} not found in developer hub`, this.importConfig.context);
         return undefined;
       }); // NOTE Keeping this to avoid Unhandled exception
 
     const exists = !isEmpty(installation);
-    log.debug(`Private app ${app.manifest?.name} exists in Developer Hub: ${exists}`, this.importConfig.context);
+    log.debug(`Private app ${app.manifest?.name} exists in developer hub: ${exists}`, this.importConfig.context);
     return exists;
   }
 
@@ -419,7 +419,7 @@ export default class ImportMarketplaceApps extends BaseClass {
     );
 
     if (updateUiLocation && !isEmpty(app?.ui_location?.locations)) {
-      log.debug(`Updating UI locations for app: ${app.name}...`, this.importConfig.context);
+      log.debug(`Updating UI locations for app: ${app.name}`, this.importConfig.context);
       app.ui_location.locations = this.updateManifestUILocations(app?.ui_location?.locations, appSuffix);
     }
 
@@ -526,7 +526,7 @@ export default class ImportMarketplaceApps extends BaseClass {
    */
   async appCreationCallback(app: any, response: any, appSuffix: number): Promise<any> {
     const { statusText, message } = response || {};
-    log.debug(`Processing app creation callback for: ${app.name} (suffix: ${appSuffix})...`, this.importConfig.context);
+    log.debug(`Processing app creation callback for: ${app.name} (suffix: ${appSuffix})`, this.importConfig.context);
 
     if (message) {
       log.debug(`App creation response has message: ${message}`, this.importConfig.context);
@@ -551,10 +551,10 @@ export default class ImportMarketplaceApps extends BaseClass {
             ),
           )
         ) {
-          log.debug('User chose to proceed despite error.', this.importConfig.context);
+          log.debug('User chose to proceed despite error', this.importConfig.context);
           Promise.resolve();
         } else {
-          log.debug('User chose to exit due to error.', this.importConfig.context);
+          log.debug('User chose to exit due to error', this.importConfig.context);
           process.exit();
         }
       }
@@ -688,10 +688,10 @@ export default class ImportMarketplaceApps extends BaseClass {
   async updateAppsConfig(app: Installation): Promise<void> {
     const { installation_uid, configuration, server_configuration } = app;
     const appName = app.manifest.name || app.manifest.uid;
-    log.debug(`Updating configuration for: ${appName} (${installation_uid})`, this.importConfig.context);
+    log.debug(`Updating app configuration for: ${appName} (${installation_uid})`, this.importConfig.context);
 
     if (!isEmpty(configuration)) {
-      log.debug(`Updating configuration for: ${appName}`, this.importConfig.context);
+      log.debug(`Updating app configuration for: ${appName}`, this.importConfig.context);
       await this.appSdk
         .marketplace(this.importConfig.org_uid)
         .installation(installation_uid)
@@ -702,18 +702,18 @@ export default class ImportMarketplaceApps extends BaseClass {
             log.info(formatError(data.message), this.importConfig.context);
           } else {
             log.success(`${appName} app config updated successfully.!`, this.importConfig.context);
-            log.debug(`Configuration update was successful for: ${appName}`, this.importConfig.context);
+            log.debug(`Configuration update successful for: ${appName}`, this.importConfig.context);
           }
         })
         .catch((error: any) => {
           log.debug(error, this.importConfig.context);
           log.error(formatError(error), this.importConfig.context);
-          log.debug(`Configuration update failed for: ${appName}.`, this.importConfig.context);
+          log.debug(`Configuration update failed for: ${appName}`, this.importConfig.context);
         });
     }
 
     if (!isEmpty(server_configuration)) {
-      log.debug(`Updating server configuration for: ${appName}...`, this.importConfig.context);
+      log.debug(`Updating server configuration for: ${appName}`, this.importConfig.context);
       await this.appSdk
         .marketplace(this.importConfig.org_uid)
         .installation(installation_uid)
@@ -724,13 +724,13 @@ export default class ImportMarketplaceApps extends BaseClass {
             log.error(formatError(data.message), this.importConfig.context);
           } else {
             log.success(`${appName} app server config updated successfully.!`, this.importConfig.context);
-            log.debug(`Server configuration update was successful for: ${appName}.`, this.importConfig.context);
+            log.debug(`Server configuration update successful for: ${appName}`, this.importConfig.context);
           }
         })
         .catch((error: any) => {
           log.debug(error, this.importConfig.context);
           log.error(formatError(error), this.importConfig.context);
-          log.debug(`Server configuration update failed for: ${appName}.`, this.importConfig.context);
+          log.debug(`Server configuration update failed for: ${appName}`, this.importConfig.context);
         });
     }
   }

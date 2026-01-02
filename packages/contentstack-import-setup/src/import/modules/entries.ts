@@ -1,3 +1,4 @@
+import { log } from '../../utils';
 import { ModuleClassParams } from '../../types';
 import BaseImportSetup from './base-setup';
 import { MODULE_NAMES, MODULE_CONTEXTS, PROCESS_NAMES, PROCESS_STATUS } from '../../utils';

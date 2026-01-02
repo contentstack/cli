@@ -132,7 +132,7 @@ export const removeReferenceFields = async function (
           } catch (error) {
             // Else warn and modify the schema object.
             isContentTypeError = true;
-            log.warn(`Content type ${schema[i].reference_to[j]} does not exist. Removing the field from schema...`);
+            log.warn(`Content-type ${schema[i].reference_to[j]} does not exist. Removing the field from schema`);
           }
         }
 
@@ -209,7 +209,7 @@ export const updateFieldRules = function (contentType: any) {
     fieldDataTypeMap[field.uid] = field.data_type;
   }
 
-  log.debug(`Created field data type mapping for ${Object.keys(fieldDataTypeMap).length} fields.`);
+  log.debug(`Created field data type mapping for ${Object.keys(fieldDataTypeMap).length} fields`);
 
   const fieldRules = [...contentType.field_rules];
   let len = fieldRules.length;

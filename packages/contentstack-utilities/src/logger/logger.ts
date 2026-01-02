@@ -5,6 +5,7 @@ import * as winston from 'winston';
 import { levelColors, logLevels, PROGRESS_SUPPORTED_MODULES } from '../constants/logging';
 import { LoggerConfig, LogLevel, LogType } from '../interfaces/index';
 import { getSessionLogPath } from './session-path';
+import { configHandler } from '..';
 
 export default class Logger {
   private loggers: Record<string, winston.Logger>;

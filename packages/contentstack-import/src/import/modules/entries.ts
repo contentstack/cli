@@ -1170,7 +1170,7 @@ export default class EntriesImport extends BaseClass {
       any
     >[];
     if (!cTsWithFieldRules || cTsWithFieldRules?.length === 0) {
-      log.debug('No content types with field rules found to update.', this.importConfig.context);
+      log.debug('No content types with field rules found to update', this.importConfig.context);
       return;
     }
 

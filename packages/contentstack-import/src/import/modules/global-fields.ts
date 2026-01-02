@@ -178,7 +178,7 @@ export default class ImportGlobalFields extends BaseClass {
           );
         }
         if (!this.importConfig.skipExisting) {
-          log.info(`Global field '${uid}' already exists.`, this.importConfig.context);
+          log.info(`Global fields '${uid}' already exist`, this.importConfig.context);
         }
       } else {
         this.progressManager?.tick(

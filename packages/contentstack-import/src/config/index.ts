@@ -44,7 +44,6 @@ const config: DefaultConfig = {
       'variant-entries',
       'labels',
       'webhooks',
-      'composable-studio',
     ],
     locales: {
       dirName: 'locales',
@@ -199,12 +198,6 @@ const config: DefaultConfig = {
       query: {
         locale: 'en-us',
       },
-    },
-    'composable-studio': {
-      dirName: 'composable_studio',
-      fileName: 'composable_studio.json',
-      apiBaseUrl: 'https://composable-studio-api.contentstack.com',
-      apiVersion: 'v1',
     },
   },
   languagesCode: [

@@ -48,7 +48,7 @@
   "repository": "contentstack/cli",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
-    "generate-api-ref-md-doc": "nyc jsdoc2md ./src/modules/* > ./docs/api-reference.md",
+    "generate-api-ref-md-doc": "jsdoc2md ./src/modules/* > ./docs/api-reference.md",
     "prepack": "oclif manifest && oclif readme && pnpm generate-api-ref-md-doc",
     "test": "nyc mocha --timeout 3000 \"test/**/*.test.js\"",
     "version": "oclif readme && git add README.md",

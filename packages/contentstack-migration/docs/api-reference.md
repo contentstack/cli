@@ -470,8 +470,3 @@ migration.addTask(task)
 | failMessage | <code>string</code> | message to be printed when task fails |
 | successMessage | <code>string</code> | message to be printed when task succeeds |
 
-----------|---------|----------|---------|---------|-------------------
-File      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
-----------|---------|----------|---------|---------|-------------------
-All files |       0 |        0 |       0 |       0 |                   
-----------|---------|----------|---------|---------|-------------------
