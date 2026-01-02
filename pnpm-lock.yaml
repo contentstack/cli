@@ -133,7 +133,7 @@ importers:
 
   packages/contentstack-audit:
     specifiers:
-      '@contentstack/cli-command': ~1.7.0
+      '@contentstack/cli-command': ~1.6.1
       '@contentstack/cli-utilities': ~1.15.0
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
@@ -162,7 +162,7 @@ importers:
       uuid: ^9.0.1
       winston: ^3.17.0
     dependencies:
-      '@contentstack/cli-command': link:../contentstack-command
+      '@contentstack/cli-command': 1.6.2
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.36
