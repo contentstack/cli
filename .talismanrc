@@ -1,8 +1,8 @@
 fileignoreconfig:
   - filename: package-lock.json
-    checksum: 8cb8f731c811c721e741725fd0aab39cbef0e047392ccee0d0e61c679e7d0998
+    checksum: 7757ee76f550c561f7a05d13f0e36dd3d7b80a0cab2eed6f7cb7684f9fbfd585
   - filename: pnpm-lock.yaml
-    checksum: cbc8b8c0dc444eaf2895bdf8c46812cf4dbadfa7c63be4e9dc619018022899b5
+    checksum: 33b423311946df0b7873cc125d8d1d52769e4b1cf4070fb2a6ce5d5b247d7dbf
   - filename: packages/contentstack-import-setup/test/unit/backup-handler.test.ts
     checksum: 0582d62b88834554cf12951c8690a73ef3ddbb78b82d2804d994cf4148e1ef93
   - filename: packages/contentstack-import-setup/test/config.json
@@ -269,4 +269,8 @@ fileignoreconfig:
     checksum: 9b83875b8d82086f13e0b7ab44ff7fe95486fced95b0c22d5c73fa69fbe35d4a
   - filename: packages/contentstack-bulk-publish/src/producer/add-fields.js
     checksum: 3e70b11978fc5f29a6a6c90b725c28c9df8d15bcc6fd74e2253fca23a3630160
+  - filename: packages/contentstack-export/src/export/modules-js/environments.js
+    checksum: e8714ef41940f3a9be782dfaa43a15df57bd1eb4c3f0e4d5f305e68681c1bd93
+  - filename: packages/contentstack-import/src/import/modules-js/environments.js
+    checksum: d484342c25462a7052c8aae6cad0baed9a01e1eaa67d6a09f175981c53092301
 version: '1.0'
