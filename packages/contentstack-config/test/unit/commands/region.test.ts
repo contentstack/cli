@@ -53,9 +53,9 @@ describe('Region command', function () {
     try {
       await GetRegionCommand.run([]);
     } catch (error) {
-      result = error;
+      result = error as Error;
     }
-    expect(result.message).to.include('CLI_CONFIG_GET_REGION_NOT_FOUND EEXIT: 1');
+    expect((result as Error).message).to.include('CLI_CONFIG_GET_REGION_NOT_FOUND EEXIT: 1');
   });
 
   // Test cases for predefined regions
