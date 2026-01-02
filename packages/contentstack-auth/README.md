@@ -145,7 +145,7 @@ FLAGS
   -e, --environment=<value>    Environment name for delivery token
   -k, --stack-api-key=<value>  Stack API Key
   -m, --management             Set this flag to save management token
-  -t, --token=<value>          Add the token name
+  -t, --token=<value>          [env: TOKEN] Add the token name
   -y, --yes                    Use this flag to skip confirmation
 
 DESCRIPTION

@@ -53,10 +53,10 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
       this.exportConfig?.context,
     );
     if (authenticationHandler.isOauthEnabled) {
-      log.debug('Setting OAuth authorization header', this.exportConfig?.context);
+      log.debug('Setting OAuth authorization header...', this.exportConfig?.context);
       this.apiClient.headers({ authorization: token });
     } else {
-      log.debug('Setting authtoken header', this.exportConfig?.context);
+      log.debug('Setting authtoken header...', this.exportConfig?.context);
       this.apiClient.headers({ authtoken: token });
     }
   }
@@ -109,7 +109,7 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
     );
 
     if (variantConfig.serveMockData && callback) {
-      log.debug('Using mock data for variant entries', this.exportConfig?.context);
+      log.debug('Using mock data for variant entries...', this.exportConfig?.context);
       let data = [] as Record<string, any>[];
 
       if (existsSync(variantConfig.mockDataPath)) {
@@ -174,10 +174,10 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
     }
 
     if (callback) {
-      log.debug('Executing callback with variant entries', this.exportConfig?.context);
+      log.debug('Executing callback with variant entries...', this.exportConfig?.context);
       callback(response.entries);
     } else {
-      log.debug('Adding variant entries to collection', this.exportConfig?.context);
+      log.debug('Adding variant entries to collection...', this.exportConfig?.context);
       entries = entries.concat(response.entries);
     }
 
@@ -200,7 +200,7 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
     }
 
     if (returnResult) {
-      log.debug('Returning variant entries result', this.exportConfig?.context );
+      log.debug('Returning variant entries result...', this.exportConfig?.context );
       return { entries };
     }
   }
@@ -329,7 +329,7 @@ export class VariantHttpClient<C> extends AdapterHelper<C, HttpClient> implement
     log.debug(`API response status: ${status}`, this.exportConfig?.context);
 
     if (status >= 200 && status < 300) {
-      log.debug('API request successful', this.exportConfig?.context);
+      log.debug('API request successful.', this.exportConfig?.context);
       return data;
     }
 
@@ -406,17 +406,17 @@ export class VariantAdapter<T> {
     log.debug('Initializing VariantAdapter...', this.exportConfig?.context);
 
     if (config.httpClient) {
-      log.debug('Using HTTP client variant instance', this.exportConfig?.context);
+      log.debug('Using HTTP client variant instance.', this.exportConfig?.context);
       const { httpClient, Adapter, ...restConfig } = config;
       this.variantInstance = new Adapter(restConfig, options);
     } else {
-      log.debug('Using SDK variant instance', this.exportConfig?.context);
+      log.debug('Using SDK variant instance.', this.exportConfig?.context);
       const { Adapter, ...restConfig } = config;
       this.variantInstance = new Adapter(restConfig);
     }
 
     this.messages = messages;
-    log.debug('VariantAdapter initialized successfully', this.exportConfig?.context);
+    log.debug('VariantAdapter initialized successfully.', this.exportConfig?.context);
   }
 
   /**

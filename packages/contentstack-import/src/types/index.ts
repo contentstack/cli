@@ -50,7 +50,8 @@ export type Modules =
   | 'marketplace-apps'
   | 'taxonomies'
   | 'personalize'
-  | 'variant-entries';
+  | 'variant-entries'
+  | 'composable-studio';
 
 export type ModuleClassParams = {
   stackAPIClient: ReturnType<ContentstackClient['stack']>;

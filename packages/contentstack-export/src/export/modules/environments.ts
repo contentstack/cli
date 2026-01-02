@@ -80,9 +80,9 @@ export default class ExportEnvironments extends BaseClass {
   async getEnvironments(skip = 0): Promise<void> {
     if (skip) {
       this.qs.skip = skip;
-      log.debug(`Fetching environments with skip: ${skip}`, this.exportConfig.context);
+      log.debug(`Fetching environments with skip value: ${skip}`, this.exportConfig.context);
     } else {
-      log.debug('Fetching environments with initial query', this.exportConfig.context);
+      log.debug('Fetching environments with initial query...', this.exportConfig.context);
     }
 
     log.debug(`Query parameters: ${JSON.stringify(this.qs)}`, this.exportConfig.context);
@@ -96,21 +96,21 @@ export default class ExportEnvironments extends BaseClass {
         log.debug(`Fetched ${items?.length || 0} environments out of total ${count}`, this.exportConfig.context);
 
         if (items?.length) {
-          log.debug(`Processing ${items.length} environments`, this.exportConfig.context);
+          log.debug(`Processing ${items.length} environments.`, this.exportConfig.context);
           this.sanitizeAttribs(items);
           skip += this.environmentConfig.limit || 100;
           if (skip >= count) {
-            log.debug('Completed fetching all environments', this.exportConfig.context);
+            log.debug('Completed fetching all environments.', this.exportConfig.context);
             return;
           }
-          log.debug(`Continuing to fetch environments with skip: ${skip}`, this.exportConfig.context);
+          log.debug(`Continuing environment fetch with skip value: ${skip}`, this.exportConfig.context);
           return await this.getEnvironments(skip);
         } else {
-          log.debug('No environments found to process', this.exportConfig.context);
+          log.debug('No environments found to process.', this.exportConfig.context);
         }
       })
       .catch((error: any) => {
-        log.debug('Error occurred while fetching environments', this.exportConfig.context);
+        log.debug('An error occurred while fetching environments.', this.exportConfig.context);
         handleAndLogError(error, { ...this.exportConfig.context });
       });
   }

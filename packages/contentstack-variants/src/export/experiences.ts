@@ -61,7 +61,7 @@ export default class ExportExperiences extends PersonalizationAdapter<ExportConf
 
       if (!experiences || experiences?.length < 1) {
         log.debug('No experiences found, completing export', this.exportConfig.context);
-        log.info('No Experiences found with the given project!', this.exportConfig.context);
+        log.info('No experiences found for the given project.', this.exportConfig.context);
         return;
       }
 

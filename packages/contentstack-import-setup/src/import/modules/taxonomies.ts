@@ -2,7 +2,7 @@ import { join } from 'path';
 import omit from 'lodash/omit';
 import isEmpty from 'lodash/isEmpty';
 
-import { log, fsUtil, fileHelper } from '../../utils';
+import { fsUtil, fileHelper } from '../../utils';
 import { ImportConfig, ModuleClassParams, TaxonomyQueryParams } from '../../types';
 import { sanitizePath } from '@contentstack/cli-utilities';
 import BaseImportSetup from './base-setup';
@@ -111,7 +111,7 @@ export default class TaxonomiesImportSetup extends BaseImportSetup {
         this.completeProgress(true);
         log(this.config, `The required setup files for taxonomies have been generated successfully.`, 'success');
       } else {
-        log(this.config, 'No taxonomies found in the content folder.', 'info');
+        log.info('No taxonomies found in the content folder.');
       }
     } catch (error) {
       this.completeProgress(false, error?.message || 'Taxonomies mapper generation failed');
@@ -159,7 +159,7 @@ export default class TaxonomiesImportSetup extends BaseImportSetup {
     const locales = this.loadAvailableLocales();
 
     for (const localeCode of Object.keys(locales)) {
-      log(this.config, `Processing taxonomies for locale: ${localeCode}`, 'info');
+      log.info(`Processing taxonomies for locale: ${localeCode}`);
 
       for (const taxonomy of Object.values(taxonomies) as any) {
         try {
@@ -213,11 +213,11 @@ export default class TaxonomiesImportSetup extends BaseImportSetup {
 
     // Check if master locale folder exists (indicates new locale-based structure)
     if (!fileHelper.fileExistsSync(masterLocaleFolder)) {
-      log(this.config, 'No locale-based folder structure detected', 'info');
+      log.info('No locale-based folder structure detected');
       return false;
     }
 
-    log(this.config, 'Locale-based folder structure detected', 'info');
+    log.info('Locale-based folder structure detected');
     return true;
   }
 
@@ -237,17 +237,17 @@ export default class TaxonomiesImportSetup extends BaseImportSetup {
         // The file contains an object with UID as key, extract the code
         const firstLocale = Object.values(masterLocaleData)[0];
         if (firstLocale?.code) {
-          log(this.config, `Master locale loaded from file: ${firstLocale.code}`, 'info');
+          log.info(`Master locale loaded from file: ${firstLocale.code}`);
           return firstLocale.code;
         }
       } catch (error) {
-        log(this.config, 'Error reading master-locale.json, using fallback', 'warn');
+        log.warn('Error reading master-locale.json, using fallback', { error });
       }
     }
 
     // Fallback to config or default
     const fallbackCode = this.config.master_locale?.code || 'en-us';
-    log(this.config, `Using fallback master locale: ${fallbackCode}`, 'info');
+    log.info(`Using fallback master locale: ${fallbackCode}`);
     return fallbackCode;
   }
 
@@ -264,7 +264,7 @@ export default class TaxonomiesImportSetup extends BaseImportSetup {
 
     // Then load additional locales from locales.json if it exists
     if (!fileHelper.fileExistsSync(this.localesFilePath)) {
-      log(this.config, 'No locales file found, using only master locale', 'info');
+      log.info('No locales file found, using only master locale');
       return locales;
     }
 
@@ -277,14 +277,10 @@ export default class TaxonomiesImportSetup extends BaseImportSetup {
         }
       }
 
-      log(
-        this.config,
-        `Loaded ${Object.keys(locales).length} locales (1 master + ${Object.keys(locales).length - 1} additional)`,
-        'info',
-      );
+      log.info(`Loaded ${Object.keys(locales).length} locales (1 master + ${Object.keys(locales).length - 1} additional)`);
       return locales;
     } catch (error) {
-      log(this.config, 'Error loading locales file, using only master locale', 'error');
+      log.error('Error loading locales file, using only master locale', { error });
       return locales;
     }
   }
@@ -374,10 +370,9 @@ export default class TaxonomiesImportSetup extends BaseImportSetup {
 
     if (err?.errorMessage || err?.message) {
       const errorMsg = err?.errorMessage || err?.errors?.taxonomy || err?.errors?.term || err?.message;
-      log(this.config, `${errorMsg}${taxInfo}`, 'error');
+      log.error(`${errorMsg}${taxInfo}`, { error: err, taxonomyUid, locale });
     } else {
-      log(this.config, `Error fetching taxonomy data${taxInfo}!`, 'error');
-      log(this.config, err, 'error');
+      log.error(`Error fetching taxonomy data${taxInfo}!`, { error: err, taxonomyUid, locale });
     }
   }
 }

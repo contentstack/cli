@@ -1,9 +1,9 @@
 import * as chalk from 'chalk';
-import { log, fsUtil } from '../../utils';
+import { fsUtil } from '../../utils';
 import { join } from 'path';
 import { AssetRecord, ImportConfig, ModuleClassParams } from '../../types';
 import { isEmpty, orderBy, values } from 'lodash';
-import { formatError, FsUtility, sanitizePath } from '@contentstack/cli-utilities';
+import { FsUtility, sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 import BaseImportSetup from './base-setup';
 import { MODULE_NAMES, MODULE_CONTEXTS, PROCESS_NAMES, PROCESS_STATUS } from '../../utils';
 
@@ -96,6 +96,7 @@ export default class AssetImportSetup extends BaseImportSetup {
    * @returns {Promise<void>} Promise<void>
    */
   async fetchAndMapAssets(): Promise<void> {
+    log.debug('Starting asset fetch and mapping', { assetsFolderPath: this.assetsFolderPath });
     const processName = 'mapping assets';
     const indexFileName = 'assets.json';
     const basePath = this.assetsFolderPath;
@@ -132,7 +133,7 @@ export default class AssetImportSetup extends BaseImportSetup {
     /* eslint-disable @typescript-eslint/no-unused-vars, guard-for-in */
     for (const index in indexer) {
       const chunk = await fs.readChunkFiles.next().catch((error) => {
-        log(this.config, error, 'error');
+        log.error(String(error), { error });
       });
 
       if (chunk) {
@@ -163,7 +164,7 @@ export default class AssetImportSetup extends BaseImportSetup {
     }
     if (!isEmpty(this.duplicateAssets)) {
       fsUtil.writeFile(this.duplicateAssetPath, this.duplicateAssets);
-      log(this.config, `Duplicate asset files are stored at: ${this.duplicateAssetPath}.`, 'info');
+      log.info(`Duplicate asset files are stored at: ${this.duplicateAssetPath}.`);
     }
   }
 }

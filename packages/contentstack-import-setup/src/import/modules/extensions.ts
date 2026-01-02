@@ -1,5 +1,5 @@
 import * as chalk from 'chalk';
-import { log, fsUtil } from '../../utils';
+import { fsUtil, fileHelper } from '../../utils';
 import { join } from 'path';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import { isEmpty } from 'lodash';
@@ -71,9 +71,9 @@ export default class ExtensionImportSetup extends BaseImportSetup {
         progress.completeProcess(PROCESS_NAMES.EXTENSIONS_MAPPER_GENERATION, true);
         this.completeProgress(true);
 
-        log(this.config, `The required setup files for extensions have been generated successfully.`, 'success');
+        log.success(`The required setup files for extensions have been generated successfully.`);
       } else {
-        log(this.config, 'No extensions found in the content folder.', 'info');
+        log.info('No extensions found in the content folder.');
       }
     } catch (error) {
       this.completeProgress(false, error?.message || 'Extensions mapper generation failed');

@@ -151,7 +151,7 @@ export default class ContentTypesImport extends BaseClass {
         PROCESS_NAMES.CONTENT_TYPES_CREATE,
       );
       if (error.errorCode === 115 && (error.errors.uid || error.errors.title)) {
-        log.info(`${uid} content type already exist`, this.importConfig.context);
+        log.info(`${uid} content type already exists.`, this.importConfig.context);
         log.debug(`Skipping existing content type: ${uid}`, this.importConfig.context);
       } else {
         handleAndLogError(error, { ...this.importConfig.context, uid }, `Failed to seed content type ${uid}`);
@@ -351,7 +351,7 @@ export default class ContentTypesImport extends BaseClass {
 
     if (!apiContent || apiContent?.length === 0) {
       log.info(`No extensions found to be updated.`, this.importConfig.context);
-      log.debug('Skipping extensions update - no pending extensions', this.importConfig.context);
+      log.debug('Skipping extensions update – no pending extensions.', this.importConfig.context);
       return;
     }
 
@@ -387,7 +387,7 @@ export default class ContentTypesImport extends BaseClass {
       }
     };
 
-    log.debug('Starting extensions update process', this.importConfig.context);
+    log.debug('Starting extensions update process...', this.importConfig.context);
     return await this.makeConcurrentCall(
       {
         apiContent,

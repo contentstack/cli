@@ -1,5 +1,5 @@
-import { log, fsUtil } from '../../utils';
-import { ApiOptions, CustomPromiseHandler, EnvType, ImportConfig, ModuleClassParams } from '../../types';
+import { fsUtil } from '../../utils';
+import { ApiOptions, CustomPromiseHandler, EnvType, ImportConfig, ModuleClassParams, Modules } from '../../types';
 import { chunk, entries, isEmpty, isEqual, last } from 'lodash';
 import { CLIProgressManager, configHandler } from '@contentstack/cli-utilities';
 
@@ -16,9 +16,22 @@ export default class BaseImportSetup {
     this.dependencies = dependencies;
   }
 
+  /**
+   * Set the module name in context directly
+   * @param module - Module name to set
+   * @returns {void}
+   */
+  protected initializeContext(module?: Modules): void {
+    if (this.config.context && module) {
+      this.config.context.module = module;
+    }
+  }
+
   async setupDependencies() {
+    log.debug('Setting up dependencies', { dependencies: this.dependencies });
     for (const moduleName of this.dependencies) {
       try {
+        log.debug(`Importing dependency module: ${moduleName}`);
         const modulePath = `./${moduleName}`;
         const { default: ModuleClass } = await import(modulePath);
 
@@ -29,8 +42,9 @@ export default class BaseImportSetup {
 
         const moduleInstance = new ModuleClass(modulePayload);
         await moduleInstance.start();
+        log.debug(`Dependency module ${moduleName} imported successfully`);
       } catch (error) {
-        log(this.config, `Error importing '${moduleName}': ${error.message}`, 'error');
+        handleAndLogError(error, { ...this.config.context }, `Error importing '${moduleName}'`);
       }
     }
   }
@@ -143,7 +157,7 @@ export default class BaseImportSetup {
       // info: Batch No. 20 of import assets is complete
       if (currentIndexer) batchMsg += `Current chunk processing is (${currentIndexer}/${indexerCount})`;
 
-      log(this.config, `Batch No. (${batchNo}/${totelBatches}) of ${processName} is complete`, 'success');
+      log.success(`Batch No. (${batchNo}/${totelBatches}) of ${processName} is complete`);
     }
 
     // if (this.config.modules.assets.displayExecutionTime) {
