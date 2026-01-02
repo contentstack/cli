@@ -22,7 +22,7 @@
     "prepack": "pnpm compile && oclif manifest && oclif readme"
   },
   "dependencies": {
-    "@contentstack/cli-audit": "~1.16.0",
+    "@contentstack/cli-audit": "~2.0.0-beta.0",
     "@contentstack/cli-auth": "~1.6.2",
     "@contentstack/cli-cm-bootstrap": "~2.0.0-beta.2",
     "@contentstack/cli-cm-branches": "~1.6.1",

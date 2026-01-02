@@ -16,4 +16,4 @@ export const levelColors = {
   debug: 'blue',
 };
 
-export const PROGRESS_SUPPORTED_MODULES = ['export', 'import','import-setup'] as const;
+export const PROGRESS_SUPPORTED_MODULES = ['export', 'import', 'audit', 'import-setup'] as const;

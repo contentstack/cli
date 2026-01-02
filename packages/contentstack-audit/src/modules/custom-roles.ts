@@ -1,17 +1,17 @@
 import { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { cloneDeep } from 'lodash';
-import { ConfigType, CtConstructorParam, ModuleConstructorParam, CustomRole, Rule } from '../types';
+import { CtConstructorParam, ModuleConstructorParam, CustomRole, Rule } from '../types';
 import { cliux, sanitizePath, log } from '@contentstack/cli-utilities';
 
 import auditConfig from '../config';
 import { $t, auditMsg, commonMsg } from '../messages';
 import { values } from 'lodash';
+import BaseClass from './base-class';
 
-export default class CustomRoles {
+export default class CustomRoles extends BaseClass {
   protected fix: boolean;
   public fileName: any;
-  public config: ConfigType;
   public folderPath: string;
   public customRoleSchema: CustomRole[];
   public moduleName: keyof typeof auditConfig.moduleConfig;
@@ -20,7 +20,7 @@ export default class CustomRoles {
   public isBranchFixDone: boolean;
 
   constructor({ fix, config, moduleName }: ModuleConstructorParam & Pick<CtConstructorParam, 'ctSchema'>) {
-    this.config = config;
+    super({ config });
     log.debug(`Initializing Custom Roles module`, this.config.auditContext);
     this.fix = fix ?? false;
     this.customRoleSchema = [];
@@ -61,25 +61,34 @@ export default class CustomRoles {
    * From the ctSchema add all the content type UID into ctUidSet to check whether the content-type is present or not
    * @returns Array of object containing the custom role name, uid and content_types that are missing
    */
-  async run() {
-   
-    if (!existsSync(this.folderPath)) {
-      log.debug(`Skipping ${this.moduleName} audit - path does not exist`, this.config.auditContext);
-      log.warn(`Skipping ${this.moduleName} audit`, this.config.auditContext);
-      cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
-      return {};
-    }
+  async run(totalCount?: number) {
+    try {
+      if (!existsSync(this.folderPath)) {
+        log.debug(`Skipping ${this.moduleName} audit - path does not exist`, this.config.auditContext);
+        log.warn(`Skipping ${this.moduleName} audit`, this.config.auditContext);
+        cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
+        return {};
+      }
 
-    this.customRolePath = join(this.folderPath, this.fileName);
-    log.debug(`Custom roles file path: ${this.customRolePath}`, this.config.auditContext);
-    
-    this.customRoleSchema = existsSync(this.customRolePath)
-      ? values(JSON.parse(readFileSync(this.customRolePath, 'utf8')) as CustomRole[])
-      : [];
-    
-    log.debug(`Found ${this.customRoleSchema.length} custom roles to audit`, this.config.auditContext);
+      this.customRolePath = join(this.folderPath, this.fileName);
+      log.debug(`Custom roles file path: ${this.customRolePath}`, this.config.auditContext);
+      
+      // Load custom roles schema with loading spinner
+      await this.withLoadingSpinner('CUSTOM-ROLES: Loading custom roles schema...', async () => {
+        this.customRoleSchema = existsSync(this.customRolePath)
+          ? values(JSON.parse(readFileSync(this.customRolePath, 'utf8')) as CustomRole[])
+          : [];
+      });
+      
+      log.debug(`Found ${this.customRoleSchema.length} custom roles to audit`, this.config.auditContext);
 
-    for (let index = 0; index < this.customRoleSchema?.length; index++) {
+      // Create progress manager if we have a total count
+      if (totalCount && totalCount > 0) {
+        const progress = this.createSimpleProgress(this.moduleName, totalCount);
+        progress.updateStatus('Validating custom roles...');
+      }
+
+      for (let index = 0; index < this.customRoleSchema?.length; index++) {
       const customRole = this.customRoleSchema[index];
       log.debug(`Processing custom role: ${customRole.name} (${customRole.uid})`, this.config.auditContext);
       
@@ -126,6 +135,11 @@ export default class CustomRoles {
         }),
         this.config.auditContext
       );
+      
+      // Track progress for each custom role processed
+      if (this.progressManager) {
+        this.progressManager.tick(true, `custom-role: ${customRole.name}`, null);
+      }
     }
 
     log.debug(`Found ${this.missingFieldsInCustomRoles.length} custom roles with issues`, this.config.auditContext);
@@ -141,7 +155,12 @@ export default class CustomRoles {
     }
 
     log.debug(`${this.moduleName} audit completed. Found ${this.missingFieldsInCustomRoles.length} custom roles with issues`, this.config.auditContext);
-    return this.missingFieldsInCustomRoles;
+      this.completeProgress(true);
+      return this.missingFieldsInCustomRoles;
+    } catch (error: any) {
+      this.completeProgress(false, error?.message || 'Custom roles audit failed');
+      throw error;
+    }
   }
 
   async fixCustomRoleSchema() {
