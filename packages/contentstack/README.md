@@ -3755,7 +3755,8 @@ USAGE
   $ csdx launch:functions [-p <value>] [-d <value>]
 
 FLAGS
-  -d, --data-dir=<value>  [default: /Users/aman.kumar/Documents/cli-repos/beta-release/cli/packages/contentstack]
+  -d, --data-dir=<value>  [default:
+                          /Users/harshitha.d/Documents/Contentstack/cli-cm-migrate-rte/cli/packages/contentstack]
                           Current working directory
   -p, --port=<value>      [default: 3000] Port number
 

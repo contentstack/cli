@@ -26,7 +26,7 @@ export function resolveLogPath(logPath: string): string {
 export function getEffectiveLogConfig(currentConfig: any = {}) {
   const logLevel = currentConfig?.level || LOG_CONFIG_DEFAULTS.LEVEL;
   const logPath = resolveLogPath(currentConfig?.path || LOG_CONFIG_DEFAULTS.PATH);
-  const showConsoleLogs = currentConfig?.['showConsoleLogs'] ?? LOG_CONFIG_DEFAULTS.SHOW_CONSOLE_LOGS;
+  const showConsoleLogs = currentConfig?.['show-console-logs'] ?? LOG_CONFIG_DEFAULTS.SHOW_CONSOLE_LOGS;
 
   return {
     level: logLevel,
