@@ -5,7 +5,7 @@ import { resolve } from 'path';
 import { fancy } from 'fancy-test';
 import { PassThrough } from 'stream';
 import { expect } from 'chai';
-import { ux, cliux } from '@contentstack/cli-utilities';
+import { ux, cliux, CLIProgressManager, configHandler, clearProgressModuleSetting } from '@contentstack/cli-utilities';
 
 import { AuditBaseCommand } from '../../src/audit-base-command';
 import {
