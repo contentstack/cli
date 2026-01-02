@@ -23,7 +23,6 @@ describe('Common Helper Utilities', () => {
     branchName: '',
     selectedModules: ['entries'],
     backupDir: '',
-    contentVersion: 1,
     region: 'us',
   };
 
