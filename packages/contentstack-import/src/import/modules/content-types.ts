@@ -87,18 +87,25 @@ export default class ContentTypesImport extends BaseClass {
       ['.DS_Store', 'true'],
     ]);
 
-    this.composableStudioSuccessPath = path.join(
-      sanitizePath(this.importConfig.data),
-      'mapper',
-      this.importConfig.modules['composable-studio'].dirName,
-      this.importConfig.modules['composable-studio'].fileName,
-    );
+    // Initialize composable studio paths if config exists
+    if (this.importConfig.modules['composable-studio']) {
+      this.composableStudioSuccessPath = path.join(
+        sanitizePath(this.importConfig.data),
+        'mapper',
+        this.importConfig.modules['composable-studio'].dirName,
+        this.importConfig.modules['composable-studio'].fileName,
+      );
 
-    this.composableStudioExportPath = path.join(
-      sanitizePath(this.importConfig.data),
-      this.importConfig.modules['composable-studio'].dirName,
-      this.importConfig.modules['composable-studio'].fileName,
-    );
+      this.composableStudioExportPath = path.join(
+        sanitizePath(this.importConfig.data),
+        this.importConfig.modules['composable-studio'].dirName,
+        this.importConfig.modules['composable-studio'].fileName,
+      );
+    } else {
+      this.composableStudioSuccessPath = '';
+      this.composableStudioExportPath = '';
+    }
+
     this.cTs = [];
     this.createdCTs = [];
     this.titleToUIdMap = new Map();
@@ -126,7 +133,10 @@ export default class ContentTypesImport extends BaseClass {
     log.debug(`Found ${this.cTs.length} content types to import`, this.importConfig.context);
 
     // If success file doesn't exist but export file does, skip the composition content type
+    // Only check if composable studio paths are configured
     if (
+      this.composableStudioSuccessPath &&
+      this.composableStudioExportPath &&
       !fileHelper.fileExistsSync(this.composableStudioSuccessPath) &&
       fileHelper.fileExistsSync(this.composableStudioExportPath)
     ) {
