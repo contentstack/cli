@@ -1,5 +1,5 @@
 const { Command } = require('@contentstack/cli-command');
-const { configHandler, flags, isAuthenticated, managementSDKClient, log, handleAndLogError } = require('@contentstack/cli-utilities');
+const { configHandler, flags, isAuthenticated, managementSDKClient, log, handleAndLogError, createLogContext } = require('@contentstack/cli-utilities');
 const { CloneHandler } = require('../../../lib/util/clone-handler');
 const path = require('path');
 const { rimraf } = require('rimraf');
@@ -78,7 +78,7 @@ class StackCloneCommand extends Command {
           sourceStackApiKey,
           authenticationMethod
         );
-        cloneContext = { module: 'clone' };
+        let cloneContext = { module: 'clone' };
         log.debug('Starting clone operation setup', cloneContext);
 
         if (externalConfigPath) {
