@@ -30,7 +30,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   }
 
   config.contentDir = sanitizePath(
-    importCmdFlags['data'] || importCmdFlags['data-dir'] || config.data || (await askContentDir()),
+    importCmdFlags['data-dir'] || config.data || (await askContentDir()),
   );
   const pattern = /[*$%#<>{}!&?]/g;
   if (pattern.test(config.contentDir)) {
@@ -44,7 +44,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   //Note to support the old key
   config.data = config.contentDir;
 
-  const managementTokenAlias = importCmdFlags['management-token-alias'] || importCmdFlags['alias'];
+  const managementTokenAlias = importCmdFlags['alias'];
 
   if (managementTokenAlias) {
     const { token, apiKey } = configHandler.get(`tokens.${managementTokenAlias}`) ?? {};
@@ -80,7 +80,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
         log.debug('User authenticated via auth token');
       }
       config.apiKey =
-        importCmdFlags['stack-uid'] || importCmdFlags['stack-api-key'] || config.target_stack || (await askAPIKey());
+        importCmdFlags['stack-api-key'] || config.target_stack || (await askAPIKey());
       if (typeof config.apiKey !== 'string') {
         throw new Error('Invalid API key received');
       }
@@ -96,24 +96,13 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   config.skipAudit = importCmdFlags['skip-audit'];
   config.forceStopMarketplaceAppsPrompt = importCmdFlags.yes;
   config.importWebhookStatus = importCmdFlags['import-webhook-status'];
-  config.skipPrivateAppRecreationIfExist = !importCmdFlags['skip-app-recreation'];
+  // skip-app-recreation flag has been removed, default to recreating apps (skipPrivateAppRecreationIfExist = false)
+  config.skipPrivateAppRecreationIfExist = false;
 
   if (importCmdFlags['branch-alias']) {
     config.branchAlias = importCmdFlags['branch-alias'];
   }
 
-  if (importCmdFlags['branch']) {
-    config.branchName = importCmdFlags['branch'];
-    config.branchDir = config.contentDir;
-  }
-  if (importCmdFlags['module']) {
-    config.moduleName = importCmdFlags['module'];
-    config.singleModuleImport = true;
-  }
-
-  if (importCmdFlags['backup-dir']) {
-    config.useBackedupDir = importCmdFlags['backup-dir'];
-  }
 
   if (importCmdFlags['skip-assets-publish']) {
     config.skipAssetsPublish = importCmdFlags['skip-assets-publish'];

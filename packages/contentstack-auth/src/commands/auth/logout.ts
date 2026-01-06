@@ -1,7 +1,6 @@
 import {
   cliux,
   configHandler,
-  printFlagDeprecation,
   flags,
   authHandler as oauthHandler,
   managementSDKClient,
@@ -25,14 +24,6 @@ export default class LogoutCommand extends BaseCommand<typeof LogoutCommand> {
       required: false,
       default: false,
     }),
-    force: flags.boolean({
-      char: 'f',
-      description: 'Force log out by skipping the confirmation.',
-      required: false,
-      hidden: true,
-      default: false,
-      parse: printFlagDeprecation(['-f', '--force'], ['-y', '--yes']),
-    }),
   };
 
   static aliases = ['logout'];
@@ -43,10 +34,9 @@ export default class LogoutCommand extends BaseCommand<typeof LogoutCommand> {
     const { flags: logoutFlags } = await this.parse(LogoutCommand);
     log.debug('Token add flags parsed', {...this.contextDetails, flags: logoutFlags });
 
-    let confirm = logoutFlags.force === true || logoutFlags.yes === true;
+    let confirm = logoutFlags.yes === true;
     log.debug(`Initial confirmation status: ${confirm}`, {
       ...this.contextDetails,
-      force: logoutFlags.force,
       yes: logoutFlags.yes,
     });
 

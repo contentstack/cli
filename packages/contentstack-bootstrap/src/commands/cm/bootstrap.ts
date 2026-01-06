@@ -9,7 +9,6 @@ import {
   inquireRunDevServer,
 } from '../../bootstrap/interactive';
 import {
-  printFlagDeprecation,
   managementSDKClient,
   flags,
   isAuthenticated,
@@ -83,33 +82,6 @@ export default class BootstrapCommand extends Command {
       required: false,
       default: false,
     }),
-
-    // To be deprecated
-    appName: flags.string({
-      char: 'a',
-      description: 'App name, kickstart-next, kickstart-next-ssr, kickstart-next-ssg, kickstart-next-graphql, kickstart-next-middleware, kickstart-nuxt, kickstart-nuxt-ssr',
-      multiple: false,
-      required: false,
-      hidden: true,
-      parse: printFlagDeprecation(['-a', '--appName'], ['--app-name']),
-    }),
-    directory: flags.string({
-      char: 'd',
-      description:
-        'Directory to set up the project. If directory name has a space then provide the path as a string or escape the space using backslash eg: "../../test space" or ../../test\\ space',
-      multiple: false,
-      required: false,
-      hidden: true,
-      parse: printFlagDeprecation(['-d', '--directory'], ['--project-dir']),
-    }),
-    appType: flags.string({
-      char: 's',
-      description: 'Sample or Starter app',
-      multiple: false,
-      required: false,
-      hidden: true,
-      parse: printFlagDeprecation(['-s', '--appType'], ['--app-type']),
-    }),
     alias: flags.string({
       char: 'a',
       description: 'Alias of the management token',
@@ -132,14 +104,12 @@ export default class BootstrapCommand extends Command {
       });
 
       // inquire user inputs
-      let appType =
-        (bootstrapCommandFlags.appType as string) || (bootstrapCommandFlags['app-type'] as string) || 'starterapp';
+      let appType = (bootstrapCommandFlags['app-type'] as string) || 'starterapp';
       if (!appType) {
         appType = await inquireAppType();
       }
 
-      const selectedAppName =
-        (bootstrapCommandFlags.appName as string) || (bootstrapCommandFlags['app-name'] as string);
+      const selectedAppName = bootstrapCommandFlags['app-name'] as string;
       let selectedApp;
       if (!selectedAppName) {
         if (appType === 'sampleapp') {
@@ -162,8 +132,7 @@ export default class BootstrapCommand extends Command {
       const appConfig: AppConfig = getAppLevelConfigByName(selectedAppName || selectedApp.configKey);
       const master_locale = appConfig.master_locale || DEFAULT_MASTER_LOCALE;
 
-      let cloneDirectory =
-        (bootstrapCommandFlags.directory as string) || (bootstrapCommandFlags['project-dir'] as string);
+      let cloneDirectory = bootstrapCommandFlags['project-dir'] as string;
       if (!cloneDirectory) {
         cloneDirectory = await inquireCloneDirectory();
       }

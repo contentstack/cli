@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable node/no-extraneous-require */
 const { Command } = require('@contentstack/cli-command');
-const { printFlagDeprecation, cliux, flags } = require('@contentstack/cli-utilities');
+const { cliux, flags } = require('@contentstack/cli-utilities');
 const { start } = require('../../../producer/unpublish');
 const store = require('../../../util/store.js');
 const configKey = 'Unpublish';
@@ -12,12 +12,12 @@ let config;
 class UnpublishCommand extends Command {
   async run() {
     const { flags: unpublishFlags } = await this.parse(UnpublishCommand);
-    unpublishFlags.retryFailed = unpublishFlags['retry-failed'] || unpublishFlags.retryFailed;
-    unpublishFlags.bulkUnpublish = unpublishFlags['bulk-unpublish'] || unpublishFlags.bulkUnpublish;
-    unpublishFlags.contentType = unpublishFlags['content-type'] || unpublishFlags.contentType;
-    unpublishFlags.deliveryToken = unpublishFlags['delivery-token'] || unpublishFlags.deliveryToken;
-    unpublishFlags.onlyAssets = unpublishFlags['only-assets'] || unpublishFlags.onlyAssets;
-    unpublishFlags.onlyEntries = unpublishFlags['only-entries'] || unpublishFlags.onlyEntries;
+    unpublishFlags.retryFailed = unpublishFlags['retry-failed'];
+    unpublishFlags.bulkUnpublish = unpublishFlags['bulk-unpublish'];
+    unpublishFlags.contentType = unpublishFlags['content-type'];
+    unpublishFlags.deliveryToken = unpublishFlags['delivery-token'];
+    unpublishFlags.onlyAssets = unpublishFlags['only-assets'];
+    unpublishFlags.onlyEntries = unpublishFlags['only-entries'];
     unpublishFlags.apiVersion = unpublishFlags['api-version'] || '3';
     delete unpublishFlags['api-version'];
     delete unpublishFlags['retry-failed'];
@@ -185,15 +185,11 @@ UnpublishCommand.flags = {
     description: 'Agree to process the command with the current configuration',
   }),
   locale: flags.string({
-    char: 'l',
     description: 'Locale filter',
-    parse: printFlagDeprecation(['-l'], ['--locale']),
   }),
   branch: flags.string({
-    char: 'B',
     default: 'main',
     description: 'Specify the branch to fetch the content from (default is main branch)',
-    parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
   'retry-failed': flags.string({
     description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags)',
@@ -221,46 +217,6 @@ UnpublishCommand.flags = {
     description: 'Unpublish only entries',
     default: false,
     hidden: true,
-  }),
-
-  // To be deprecated
-  retryFailed: flags.string({
-    char: 'r',
-    description: 'Retry publishing failed entries from the logfile',
-    hidden: true,
-    parse: printFlagDeprecation(['-r', '--retryFailed'], ['--retry-failed']),
-  }),
-  bulkUnpublish: flags.string({
-    char: 'b',
-    description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
-    default: 'true',
-    hidden: true,
-    parse: printFlagDeprecation(['-b', '--bulkUnpublish'], ['--bulk-unpublish']),
-  }),
-  contentType: flags.string({
-    char: 't',
-    description: 'Content Type filter',
-    hidden: true,
-    parse: printFlagDeprecation(['-t', '--contentType'], ['--content-type']),
-  }),
-  deliveryToken: flags.string({
-    char: 'x',
-    description: 'Delivery Token for source environment',
-    hidden: true,
-    parse: printFlagDeprecation(['-x', '--deliveryToken'], ['--delivery-token']),
-  }),
-  onlyAssets: flags.boolean({
-    description: 'Unpublish only assets',
-    default: false,
-    hidden: true,
-    parse: printFlagDeprecation(['--onlyAssets'], ['--only-assets']),
-  }),
-  onlyEntries: flags.boolean({
-    description: 'Unpublish only entries',
-    default: false,
-    hidden: true,
-    parse: printFlagDeprecation(['--onlyEntries'], ['--only-entries']),
   }),
 };
 

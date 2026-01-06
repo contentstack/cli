@@ -10,25 +10,21 @@ To import content to your stack, you can choose from the following two sources:
 <!-- usagestop -->
 ## Commands
 <!-- commands -->
-* [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value---locale-value)
-* [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value---locale-value)
+* [`csdx cm:stacks:seed [-k <value>] [-n <value>] [-y <value>] [--locale <value>]`](#csdx-cmstacksseed--k-value--n-value--y-value---locale-value)
+* [`csdx cm:stacks:seed [-k <value>] [-n <value>] [-y <value>] [--locale <value>]`](#csdx-cmstacksseed--k-value--n-value--y-value---locale-value)
 
-## `csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]`
+## `csdx cm:stacks:seed [-k <value>] [-n <value>] [-y <value>] [--locale <value>]`
 
 Create a stack from existing content types, entries, assets, etc
 
 ```
 USAGE
-  $ csdx cm:seed cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s
-    <value>] [--locale <value>]
+  $ csdx cm:seed cm:stacks:seed [-k <value>] [-n <value>] [-y <value>] [--locale <value>]
 
 FLAGS
   -a, --alias=<value>          Alias of the management token
   -k, --stack-api-key=<value>  Provide stack API key to seed content to
   -n, --stack-name=<value>     Name of a new stack that needs to be created.
-  -o, --org=<value>            Provide Organization UID to create a new stack
-  -r, --repo=<value>           GitHub organization name or GitHub user name/repository name.
-  -s, --stack=<value>          Provide the stack UID to seed content.
   -y, --yes=<value>            [Optional] Skip the stack confirmation.
 
 DESCRIPTION
@@ -40,31 +36,23 @@ ALIASES
 EXAMPLES
   $ csdx cm:stacks:seed
 
-  $ csdx cm:stacks:seed --repo "account"
+  $ csdx cm:stacks:seed --stack-api-key "stack-api-key" //seed content into specific stack
 
-  $ csdx cm:stacks:seed --repo "account/repository"
-
-  $ csdx cm:stacks:seed --repo "account/repository" --stack-api-key "stack-api-key" //seed content into specific stack
-
-  $ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack in given org uid
+  $ csdx cm:stacks:seed --stack-name "stack-name" //create a new stack in given org uid
 ```
 
-## `csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]`
+## `csdx cm:stacks:seed [-k <value>] [-n <value>] [-y <value>] [--locale <value>]`
 
 Create a stack from existing content types, entries, assets, etc
 
 ```
 USAGE
-  $ csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]
-    [--locale <value>]
+  $ csdx cm:stacks:seed [-k <value>] [-n <value>] [-y <value>] [--locale <value>]
 
 FLAGS
   -a, --alias=<value>          Alias of the management token
   -k, --stack-api-key=<value>  Provide stack API key to seed content to
   -n, --stack-name=<value>     Name of a new stack that needs to be created.
-  -o, --org=<value>            Provide Organization UID to create a new stack
-  -r, --repo=<value>           GitHub organization name or GitHub user name/repository name.
-  -s, --stack=<value>          Provide the stack UID to seed content.
   -y, --yes=<value>            [Optional] Skip the stack confirmation.
 
 DESCRIPTION
@@ -76,13 +64,9 @@ ALIASES
 EXAMPLES
   $ csdx cm:stacks:seed
 
-  $ csdx cm:stacks:seed --repo "account"
+  $ csdx cm:stacks:seed --stack-api-key "stack-api-key" //seed content into specific stack
 
-  $ csdx cm:stacks:seed --repo "account/repository"
-
-  $ csdx cm:stacks:seed --repo "account/repository" --stack-api-key "stack-api-key" //seed content into specific stack
-
-  $ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack in given org uid
+  $ csdx cm:stacks:seed --stack-name "stack-name" //create a new stack in given org uid
 ```
 
 _See code: [src/commands/cm/stacks/seed.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-seed/src/commands/cm/stacks/seed.ts)_

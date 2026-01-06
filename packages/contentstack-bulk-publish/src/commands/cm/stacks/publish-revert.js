@@ -1,5 +1,5 @@
 const { Command } = require('@contentstack/cli-command');
-const { cliux, printFlagDeprecation, flags } = require('@contentstack/cli-utilities');
+const { cliux, flags } = require('@contentstack/cli-utilities');
 
 const store = require('../../../util/store.js');
 const { start } = require('../../../producer/revert');
@@ -11,8 +11,8 @@ const configKey = 'revert';
 class RevertCommand extends Command {
   async run() {
     const { flags: revertFlags } = await this.parse(RevertCommand);
-    revertFlags.retryFailed = revertFlags['retry-failed'] || revertFlags.retryFailed;
-    revertFlags.logFile = revertFlags['log-file'] || revertFlags.logFile;
+    revertFlags.retryFailed = revertFlags['retry-failed'];
+    revertFlags.logFile = revertFlags['log-file'];
     delete revertFlags['retry-failed'];
     delete revertFlags['log-file'];
 
@@ -76,21 +76,6 @@ RevertCommand.flags = {
       '(optional)  Use this option to retry publishing the failed entries from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags.',
   }),
   'log-file': flags.string({ description: 'Path of the success logfile of a particular publish action.' }),
-
-  //To be deprecated
-  retryFailed: flags.string({
-    char: 'r',
-    description:
-      '(optional)  Use this option to retry publishing the failed entries from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags.',
-    hidden: true,
-    parse: printFlagDeprecation(['-r', '--retryFailed'], ['--retry-failed']),
-  }),
-  logFile: flags.string({
-    char: 'l',
-    description: 'Path of the success logfile of a particular publish action.',
-    hidden: true,
-    parse: printFlagDeprecation(['-l', '--logFile'], ['--log-file']),
-  }),
 };
 
 RevertCommand.examples = [

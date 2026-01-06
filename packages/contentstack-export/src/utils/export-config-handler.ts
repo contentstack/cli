@@ -23,7 +23,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
     config = merge.recursive(config, externalConfig);
   }
   config.exportDir = sanitizePath(
-    exportCmdFlags['data'] || exportCmdFlags['data-dir'] || config.data || (await askExportDir()),
+    exportCmdFlags['data-dir'] || config.data || (await askExportDir()),
   );
 
   const pattern = /[*$%#<>{}!&?]/g;
@@ -39,7 +39,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
   //Note to support the old key
   config.data = config.exportDir;
 
-  const managementTokenAlias = exportCmdFlags['management-token-alias'] || exportCmdFlags['alias'];
+  const managementTokenAlias = exportCmdFlags['alias'];
 
   if (managementTokenAlias) {
     log.debug('Using management token alias', { alias: managementTokenAlias });
@@ -80,7 +80,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
       }
 
       config.apiKey =
-        exportCmdFlags['stack-uid'] || exportCmdFlags['stack-api-key'] || config.source_stack || (await askAPIKey());
+        exportCmdFlags['stack-api-key'] || config.source_stack || (await askAPIKey());
       if (typeof config.apiKey !== 'string') {
         log.debug('Invalid API key received!', { apiKey: config.apiKey });
         throw new Error('Invalid API key received');
@@ -97,19 +97,9 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
 
   if (exportCmdFlags['branch-alias']) {
     config.branchAlias = exportCmdFlags['branch-alias'];
-  } 
-  if (exportCmdFlags['branch']) {
-    config.branchName = exportCmdFlags['branch'];
-  }
-  if (exportCmdFlags['module']) {
-    config.moduleName = exportCmdFlags['module'];
-    config.singleModuleExport = true;
   }
   if (exportCmdFlags['secured-assets']) {
     config.securedAssets = true;
-  }
-  if (Array.isArray(exportCmdFlags['content-types']) && exportCmdFlags['content-types'].length > 0) {
-    config.contentTypes = exportCmdFlags['content-types'];
   }
 
   if (Array.isArray(config.filteredModules) && config.filteredModules.length > 0) {

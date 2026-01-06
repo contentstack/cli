@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { Command } = require('@contentstack/cli-command');
-const { cliux, printFlagDeprecation, flags } = require('@contentstack/cli-utilities');
+const { cliux, flags } = require('@contentstack/cli-utilities');
 
 const { getLogsDirPath } = require('../../../util/logger.js');
 
@@ -8,7 +8,7 @@ class ClearCommand extends Command {
   async run() {
     const { flags: clearFlags } = await this.parse(ClearCommand);
     let dirPath = getLogsDirPath();
-    if (clearFlags['log-files-count'] || clearFlags.list) {
+    if (clearFlags['log-files-count']) {
       this.listFiles(dirPath);
     } else if (clearFlags.yes) {
       this.rmDir(dirPath, false);
@@ -60,14 +60,6 @@ ClearCommand.description = `Clear the log folder`;
 ClearCommand.flags = {
   'log-files-count': flags.boolean({ description: 'List number of log files' }),
   yes: flags.boolean({ char: 'y', description: 'Delete all files without asking for confirmation' }),
-
-  //To be depreacted
-  list: flags.boolean({
-    description: 'List number of log files',
-    char: 'l',
-    hidden: true,
-    parse: printFlagDeprecation(['-l', '--list'], ['--log-files-count']),
-  }),
 };
 
 ClearCommand.examples = [

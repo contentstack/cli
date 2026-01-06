@@ -5,20 +5,20 @@ const { cliux } = require('@contentstack/cli-utilities');
 const configKey = 'nonlocalized_field_changes';
 const { prettyPrint, formatError } = require('../../../util');
 const { getStack } = require('../../../util/client.js');
-const { printFlagDeprecation, flags } = require('@contentstack/cli-utilities');
+const { flags } = require('@contentstack/cli-utilities');
 let config;
 
 class NonlocalizedFieldChangesCommand extends Command {
   async run() {
     const { flags: nonlocalizedFieldChangesFlags } = await this.parse(NonlocalizedFieldChangesCommand);
     nonlocalizedFieldChangesFlags.retryFailed =
-      nonlocalizedFieldChangesFlags['retry-failed'] || nonlocalizedFieldChangesFlags.retryFailed || false;
+      nonlocalizedFieldChangesFlags['retry-failed'] || false;
     nonlocalizedFieldChangesFlags.bulkPublish =
-      nonlocalizedFieldChangesFlags['bulk-publish'] || nonlocalizedFieldChangesFlags.bulkPublish;
+      nonlocalizedFieldChangesFlags['bulk-publish'];
     nonlocalizedFieldChangesFlags.sourceEnv =
-      nonlocalizedFieldChangesFlags['source-env'] || nonlocalizedFieldChangesFlags.sourceEnv;
+      nonlocalizedFieldChangesFlags['source-env'];
     nonlocalizedFieldChangesFlags.contentTypes =
-      nonlocalizedFieldChangesFlags['content-types'] || nonlocalizedFieldChangesFlags.contentTypes;
+      nonlocalizedFieldChangesFlags['content-types'];
     nonlocalizedFieldChangesFlags.apiVersion = nonlocalizedFieldChangesFlags['api-version'] || '3';
 
     delete nonlocalizedFieldChangesFlags['api-version'];
@@ -170,43 +170,13 @@ NonlocalizedFieldChangesCommand.flags = {
     description: 'Set it to true to process the command with the current configuration.',
   }),
   branch: flags.string({
-    char: 'B',
     default: 'main',
     description:
-      'The name of the branch where you want to perform the bulk publish operation. If you don’t mention the branch name, then by default the content from the main branch will be published.',
-    parse: printFlagDeprecation(['-B'], ['--branch']),
+      "The name of the branch where you want to perform the bulk publish operation. If you don't mention the branch name, then by default the content from the main branch will be published.",
   }),
 
-  // To be deprecated
-  retryFailed: flags.string({
-    char: 'r',
-    description: 'Retry publishing failed entries from the logfile.',
-    hidden: true,
-    parse: printFlagDeprecation(['-r', '--retryFailed'], ['--retry-failed']),
-  }),
-  bulkPublish: flags.string({
-    char: 'b',
-    description:
-      "This flag is set to true by default. It indicates that Contentstack's bulk publish API will be used to publish the entries.",
-    default: 'true',
-    hidden: true,
-    parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
-  }),
   'api-version': flags.string({
     description: 'API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].',
-  }),
-  sourceEnv: flags.string({
-    char: 's',
-    description: 'Source Environment',
-    hidden: true,
-    parse: printFlagDeprecation(['-s', '--sourceEnv'], ['--source-env']),
-  }),
-  contentTypes: flags.string({
-    char: 't',
-    description: 'The content types from which entries will be published.',
-    multiple: true,
-    hidden: true,
-    parse: printFlagDeprecation(['-t', '--contentTypes'], ['--content-types']),
   }),
 };
 

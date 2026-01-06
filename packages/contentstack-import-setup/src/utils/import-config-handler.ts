@@ -76,10 +76,6 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   // config.importWebhookStatus = importCmdFlags['import-webhook-status'];
   // config.skipPrivateAppRecreationIfExist = importCmdFlags['skip-app-recreation'];
 
-  if (importCmdFlags['branch']) {
-    config.branchName = importCmdFlags['branch'];
-  }
-
   if (importCmdFlags['branch-alias']) {
     config.branchAlias = importCmdFlags['branch-alias'];
   }

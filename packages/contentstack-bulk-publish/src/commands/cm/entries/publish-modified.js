@@ -1,5 +1,5 @@
 const { Command } = require('@contentstack/cli-command');
-const { printFlagDeprecation, flags } = require('@contentstack/cli-utilities');
+const { flags } = require('@contentstack/cli-utilities');
 const { start } = require('../../../producer/publish-edits');
 const store = require('../../../util/store.js');
 // eslint-disable-next-line node/no-extraneous-require
@@ -12,10 +12,10 @@ let config;
 class PublishModifiedCommand extends Command {
   async run() {
     const { flags: entryEditsFlags } = await this.parse(PublishModifiedCommand);
-    entryEditsFlags.retryFailed = entryEditsFlags['retry-failed'] || entryEditsFlags.retryFailed || false;
-    entryEditsFlags.contentTypes = entryEditsFlags['content-types'] || entryEditsFlags.contentTypes;
-    entryEditsFlags.bulkPublish = entryEditsFlags['bulk-publish'] || entryEditsFlags.bulkPublish;
-    entryEditsFlags.sourceEnv = entryEditsFlags['source-env'] || entryEditsFlags.sourceEnv;
+    entryEditsFlags.retryFailed = entryEditsFlags['retry-failed'] || false;
+    entryEditsFlags.contentTypes = entryEditsFlags['content-types'];
+    entryEditsFlags.bulkPublish = entryEditsFlags['bulk-publish'];
+    entryEditsFlags.sourceEnv = entryEditsFlags['source-env'];
     entryEditsFlags.apiVersion = entryEditsFlags['api-version'] || '3';
     delete entryEditsFlags['api-version'];
     delete entryEditsFlags['retry-failed'];
@@ -136,22 +136,9 @@ PublishModifiedCommand.flags = {
     description: 'API key of the source stack. You must use either the --stack-api-key flag or the --alias flag.',
     required: false,
   }),
-  retryFailed: flags.string({
-    char: 'r',
-    description:
-      '(optional) Use this option to retry publishing the failed entries/assets from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags',
-    hidden: true,
-    parse: printFlagDeprecation(['-r', '--retryFailed'], ['--retry-failed']),
-  }),
   'retry-failed': flags.string({
     description:
       '(optional) Use this option to retry publishing the failed entries/assets from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags',
-  }),
-  bulkPublish: flags.string({
-    char: 'b',
-    description: "Set this flag to use Contentstack\'s Bulk Publish APIs. It is true, by default.",
-    hidden: true,
-    parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
   'bulk-publish': flags.string({
     description: "Set this flag to use Contentstack\'s Bulk Publish APIs. It is true, by default.",
@@ -160,22 +147,8 @@ PublishModifiedCommand.flags = {
   'api-version': flags.string({
     description: 'API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].',
   }),
-  sourceEnv: flags.string({
-    char: 's',
-    description: 'The name of the source environment where the entries were initially published.',
-    hidden: true,
-    parse: printFlagDeprecation(['-s', '--sourceEnv'], ['--source-env']),
-  }),
   'source-env': flags.string({
     description: 'The name of the source environment where the entries were initially published.',
-  }),
-  contentTypes: flags.string({
-    char: 't',
-    description:
-      'The UID of the content type(s) whose edited entries you want to publish in bulk. In case of multiple content types, specify the IDs separated by spaces.',
-    multiple: true,
-    parse: printFlagDeprecation(['-t', '--contentTypes'], ['--content-types']),
-    hidden: true,
   }),
   'content-types': flags.string({
     description:
@@ -183,11 +156,9 @@ PublishModifiedCommand.flags = {
     multiple: true,
   }),
   locales: flags.string({
-    char: 'l',
     description:
       'Locales in which entries will be published, e.g., en-us. In the case of multiple locales, specify the codes separated by spaces.',
     multiple: true,
-    parse: printFlagDeprecation(['-l'], ['--locales']),
   }),
   environments: flags.string({
     char: 'e',
@@ -205,11 +176,9 @@ PublishModifiedCommand.flags = {
     description: 'Set it to true to process the command with the current configuration.',
   }),
   branch: flags.string({
-    char: 'B',
     default: 'main',
     description:
       "The name of the branch where you want to perform the bulk publish operation. If you don't mention the branch name, then by default the entries from main branch will be published.",
-    parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
 };
 
