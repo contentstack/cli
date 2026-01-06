@@ -85,6 +85,10 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
         log.debug('Invalid API key received!', { apiKey: config.apiKey });
         throw new Error('Invalid API key received');
       }
+      if (!config.apiKey || !config.apiKey.trim()) {
+        log.debug('Empty API key received!', { apiKey: config.apiKey });
+        throw new Error('Stack API key cannot be empty. Please provide a valid stack API key.');
+      }
     }
   }
 

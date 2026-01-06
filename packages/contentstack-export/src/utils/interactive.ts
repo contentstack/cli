@@ -64,5 +64,11 @@ export const askAPIKey = async (): Promise<string> => {
     type: 'input',
     message: 'Enter the stack api key',
     name: 'apiKey',
+    validate: (input: string) => {
+      if (!input || !input.trim()) {
+        return 'Stack API key cannot be empty. Please enter a valid stack API key.';
+      }
+      return true;
+    },
   });
 };
