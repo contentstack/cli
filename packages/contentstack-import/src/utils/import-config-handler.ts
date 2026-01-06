@@ -84,6 +84,10 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
       if (typeof config.apiKey !== 'string') {
         throw new Error('Invalid API key received');
       }
+      if (!config.apiKey || !config.apiKey.trim()) {
+        log.debug('Empty API key received!', { apiKey: config.apiKey });
+        throw new Error('Stack API key cannot be empty. Please provide a valid stack API key.');
+      }
     }
   }
 
