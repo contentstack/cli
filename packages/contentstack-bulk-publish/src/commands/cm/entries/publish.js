@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable node/no-extraneous-require */
 const { Command } = require('@contentstack/cli-command');
-const { printFlagDeprecation, flags } = require('@contentstack/cli-utilities');
+const { flags } = require('@contentstack/cli-utilities');
 const { start: startPublish } = require('../../../producer/publish-entries');
 const { start: startCrossPublish } = require('../../../producer/cross-publish');
 const store = require('../../../util/store.js');
@@ -15,11 +15,10 @@ let config;
 class PublishEntriesCommand extends Command {
   async run() {
     const { flags: entriesFlags } = await this.parse(PublishEntriesCommand);
-    entriesFlags.retryFailed = entriesFlags['retry-failed'] || entriesFlags.retryFailed || false;
-    entriesFlags.contentTypes = entriesFlags['content-types'] || entriesFlags.contentTypes;
-    entriesFlags.bulkPublish = entriesFlags['bulk-publish'] || entriesFlags.bulkPublish;
-    entriesFlags.publishAllContentTypes =
-      entriesFlags['publish-all-content-types'] || entriesFlags.publishAllContentTypes || false;
+    entriesFlags.retryFailed = entriesFlags['retry-failed'] || false;
+    entriesFlags.contentTypes = entriesFlags['content-types'];
+    entriesFlags.bulkPublish = entriesFlags['bulk-publish'];
+    entriesFlags.publishAllContentTypes = entriesFlags['publish-all-content-types'] || false;
     entriesFlags.apiVersion = entriesFlags['api-version'] || '3';
     entriesFlags.includeVariants = entriesFlags['include-variants'] || entriesFlags.includeVariants || false;
     entriesFlags.entryUid = entriesFlags['entry-uid'] || entriesFlags.entryUid;
@@ -192,22 +191,9 @@ PublishEntriesCommand.flags = {
     char: 'k',
     description: 'API key of the source stack. You must use either the --stack-api-key flag or the --alias flag.',
   }),
-  retryFailed: flags.string({
-    char: 'r',
-    description:
-      '(optional) Use this option to retry publishing the failed entries/ assets from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags.',
-    hidden: true,
-    parse: printFlagDeprecation(['-r', '--retryFailed'], ['--retry-failed']),
-  }),
   'retry-failed': flags.string({
     description:
       '(optional) Use this option to retry publishing the failed entries/ assets from the logfile. Specify the name of the logfile that lists failed publish calls. If this option is used, it will override all other flags.',
-  }),
-  bulkPublish: flags.string({
-    char: 'b',
-    description: `Set this flag to use Contentstack\'s Bulk Publish APIs. This flag is set to true, by default.`,
-    hidden: true,
-    parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
   'bulk-publish': flags.string({
     description: `Set this flag to use Contentstack\'s Bulk Publish APIs. This flag is set to true, by default.`,
@@ -220,32 +206,15 @@ PublishEntriesCommand.flags = {
     description:
       '(optional) Set it to true to bulk publish entries from all content types. If the --content-types option is already used, then you cannot use this option.',
   }),
-  publishAllContentTypes: flags.boolean({
-    char: 'o',
-    description:
-      '(optional) Set it to true to bulk publish entries from all content types. If the --content-types option is already used, then you cannot use this option.',
-    hidden: true,
-    parse: printFlagDeprecation(['-o', '--publishAllContentTypes'], ['--publish-all-content-types']),
-  }),
   'content-types': flags.string({
     description:
       'The UID of the content type(s) whose entries you want to publish in bulk. In case of multiple content types, specify the IDs separated by spaces.',
     multiple: true,
   }),
-  contentTypes: flags.string({
-    char: 't',
-    description:
-      'The UID of the content type(s) whose entries you want to publish in bulk. In case of multiple content types, specify the IDs separated by spaces.',
-    multiple: true,
-    parse: printFlagDeprecation(['-t', '--contentTypes'], ['--content-types']),
-    hidden: true,
-  }),
   locales: flags.string({
-    char: 'l',
     description:
       ' Locales in which entries will be published, e.g., en-us. In the case of multiple locales, specify the codes separated by spaces.',
     multiple: true,
-    parse: printFlagDeprecation(['-l'], ['--locales']),
   }),
   environments: flags.string({
     char: 'e',
@@ -263,11 +232,9 @@ PublishEntriesCommand.flags = {
     description: 'Set it to true to process the command with the current configuration.',
   }),
   branch: flags.string({
-    char: 'B',
     default: 'main',
     description:
-      'The name of the branch where you want to perform the bulk publish operation. If you don’t mention the branch name, then by default the content from main branch will be published.',
-    parse: printFlagDeprecation(['-B'], ['--branch']),
+      "The name of the branch where you want to perform the bulk publish operation. If you don't mention the branch name, then by default the content from main branch will be published.",
   }),
   'delivery-token': flags.string({ description: 'The delivery token of the source environment.' }),
   'source-env': flags.string({ description: 'Source environment' }),

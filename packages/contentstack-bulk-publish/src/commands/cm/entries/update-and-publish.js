@@ -1,5 +1,5 @@
 const { Command } = require('@contentstack/cli-command');
-const { printFlagDeprecation, cliux, flags } = require('@contentstack/cli-utilities');
+const { cliux, flags } = require('@contentstack/cli-utilities');
 
 const store = require('../../../util/store.js');
 const { getStack } = require('../../../util/client.js');
@@ -12,9 +12,9 @@ const configKey = 'addFields';
 class UpdateAndPublishCommand extends Command {
   async run() {
     const { flags: addFieldsFlags } = await this.parse(UpdateAndPublishCommand);
-    addFieldsFlags.retryFailed = addFieldsFlags['retry-failed'] || addFieldsFlags.retryFailed || false;
-    addFieldsFlags.contentTypes = addFieldsFlags['content-types'] || addFieldsFlags.contentTypes;
-    addFieldsFlags.bulkPublish = addFieldsFlags['bulk-publish'] || addFieldsFlags.bulkPublish;
+    addFieldsFlags.retryFailed = addFieldsFlags['retry-failed'] || false;
+    addFieldsFlags.contentTypes = addFieldsFlags['content-types'];
+    addFieldsFlags.bulkPublish = addFieldsFlags['bulk-publish'];
     addFieldsFlags.apiVersion = addFieldsFlags['api-version'] || '3';
     delete addFieldsFlags['api-version'];
     delete addFieldsFlags['retry-failed'];
@@ -159,43 +159,18 @@ UpdateAndPublishCommand.flags = {
     description: 'Set it to true to process the command with the current configuration.',
   }),
   locales: flags.string({
-    char: 'l',
     description:
       'Locales in which entries will be published, e.g., en-us. In the case of multiple locales, specify the codes separated by spaces.',
     multiple: true,
-    parse: printFlagDeprecation(['-l'], ['--locales']),
   }),
   branch: flags.string({
-    char: 'B',
     default: 'main',
     description:
-      'The name of the branch where you want to perform the bulk publish operation. If you don’t mention the branch name, then by default the content from the main branch will be published.',
-    parse: printFlagDeprecation(['-B'], ['--branch']),
+      "The name of the branch where you want to perform the bulk publish operation. If you don't mention the branch name, then by default the content from the main branch will be published.",
   }),
   force: flags.boolean({
     default: false,
     description: 'Update and publish all entries even if no fields have been added.',
-  }),
-
-  // To be deprecated
-  retryFailed: flags.string({
-    char: 'r',
-    description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags).',
-    hidden: true,
-    parse: printFlagDeprecation(['-r', '--retryFailed'], ['--retry-failed']),
-  }),
-  bulkPublish: flags.string({
-    char: 'b',
-    description:
-      "This flag is set to true by default. It indicates that contentstack's bulk publish API will be used to publish the entries.",
-    hidden: true,
-    parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
-  }),
-  contentTypes: flags.string({
-    char: 't',
-    description: 'The Contenttypes from which entries will be published.',
-    multiple: true,
-    parse: printFlagDeprecation(['-t', '--contentTypes'], ['--content-types']),
   }),
 };
 
@@ -221,6 +196,6 @@ UpdateAndPublishCommand.examples = [
 UpdateAndPublishCommand.aliases = ['cm:bulk-publish:add-fields'];
 
 UpdateAndPublishCommand.usage =
-  'cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]';
+  'cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]';
 
 module.exports = UpdateAndPublishCommand;

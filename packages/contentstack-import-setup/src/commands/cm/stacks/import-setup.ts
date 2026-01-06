@@ -2,7 +2,6 @@ import path from 'node:path';
 import { Command } from '@contentstack/cli-command';
 import {
   messageHandler,
-  printFlagDeprecation,
   managementSDKClient,
   flags,
   FlagInput,
@@ -26,7 +25,6 @@ export default class ImportSetupCommand extends Command {
   static examples: string[] = [
     `csdx cm:stacks:import-setup --stack-api-key <target_stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>`,
     `csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name>`,
-    `csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name> -b <branch_name>`,
   ];
 
   static flags: FlagInput = {
@@ -48,17 +46,9 @@ export default class ImportSetupCommand extends Command {
         '[optional] Specify the modules/module to import into the target stack. currently options are global-fields, content-types, entries',
       multiple: true,
     }),
-    branch: flags.string({
-      char: 'B',
-      description:
-        "The name of the branch where you want to import your content. If you don't mention the branch name, then by default the content will be imported to the main branch.",
-      parse: printFlagDeprecation(['-B'], ['--branch']),
-      exclusive: ['branch-alias']
-    }),
     'branch-alias': flags.string({
       description:
         "Specify the branch alias where you want to import your content. If not specified, the content is imported into the main branch by default.",
-      exclusive: ['branch'],
     }),
   };
 

@@ -1,5 +1,5 @@
 const { Command } = require('@contentstack/cli-command');
-const { printFlagDeprecation, flags, isAuthenticated } = require('@contentstack/cli-utilities');
+const { flags, isAuthenticated } = require('@contentstack/cli-utilities');
 const { start: startPublish } = require('../../../producer/publish-assets');
 const { start: startCrossPublish } = require('../../../producer/cross-publish');
 const store = require('../../../util/store.js');
@@ -11,9 +11,9 @@ let config;
 class AssetsPublishCommand extends Command {
   async run() {
     const { flags: assetsFlags } = await this.parse(AssetsPublishCommand);
-    assetsFlags.retryFailed = assetsFlags['retry-failed'] || assetsFlags.retryFailed || false;
-    assetsFlags.folderUid = assetsFlags['folder-uid'] || assetsFlags.folderUid;
-    assetsFlags.bulkPublish = assetsFlags['bulk-publish'] || assetsFlags.bulkPublish;
+    assetsFlags.retryFailed = assetsFlags['retry-failed'] || false;
+    assetsFlags.folderUid = assetsFlags['folder-uid'];
+    assetsFlags.bulkPublish = assetsFlags['bulk-publish'];
     assetsFlags.apiVersion = assetsFlags['api-version'] || '3'; // setting default value for apiVersion
     delete assetsFlags['api-version'];
     delete assetsFlags['retry-failed'];
@@ -195,42 +195,17 @@ AssetsPublishCommand.flags = {
     description: 'Set it to true to process the command with the current configuration.',
   }),
   locales: flags.string({
-    char: 'l',
     description:
       'Locales in which assets will be published, e.g., en-us. In the case of multiple locales, specify the codes separated by spaces.',
     multiple: true,
-    parse: printFlagDeprecation(['-l'], ['--locales']),
   }),
   branch: flags.string({
-    char: 'B',
     default: 'main',
     description:
-      'The name of the branch where you want to perform the bulk publish operation. If you don’t mention the branch name, then by default the assets from the main branch will be published.',
-    parse: printFlagDeprecation(['-B'], ['--branch']),
+      "The name of the branch where you want to perform the bulk publish operation. If you don't mention the branch name, then by default the assets from the main branch will be published.",
   }),
 
   // To be deprecated
-  retryFailed: flags.string({
-    char: 'r',
-    description: 'Retry publishing failed assets from the logfile (optional, will override all other flags).',
-    hidden: true,
-    parse: printFlagDeprecation(['-r', '--retryFailed'], ['--retry-failed']),
-  }),
-  folderUid: flags.string({
-    char: 'u',
-    description: '(default: cs_root) Folder-uid from where the assets will be published.',
-    hidden: true,
-    parse: printFlagDeprecation(['-u', '--folderUid'], ['--folder-uid']),
-    exclusive: ['source-env'],
-  }),
-  bulkPublish: flags.string({
-    char: 'b',
-    description:
-      "By default this flag is set as true. It indicates that Contentstack's bulk publish API will be used to publish the entries.",
-    default: 'true',
-    hidden: true,
-    parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
-  }),
   'api-version': flags.string({
     description: 'API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].',
   }),

@@ -1,6 +1,6 @@
 /* eslint-disable node/no-extraneous-require */
 const { Command } = require('@contentstack/cli-command');
-const { cliux, printFlagDeprecation, flags, isAuthenticated } = require('@contentstack/cli-utilities');
+const { cliux, flags, isAuthenticated } = require('@contentstack/cli-utilities');
 const { start } = require('../../../producer/cross-publish');
 const store = require('../../../util/store.js');
 const configKey = 'cross_env_publish';
@@ -178,21 +178,8 @@ CrossPublishCommand.flags = {
     description: 'Stack API key to be used',
     required: false,
   }),
-  retryFailed: flags.string({
-    char: 'r',
-    description: '(optional) Retry publishing failed entries from the logfile (this flag overrides all other flags)',
-    hidden: true,
-    parse: printFlagDeprecation(['--retryFailed', '-r'], ['--retry-failed']),
-  }),
   'retry-failed': flags.string({
     description: '(optional) Retry publishing failed entries from the logfile (this flag overrides all other flags)',
-  }),
-  bulkPublish: flags.string({
-    char: 'b',
-    hidden: true,
-    description: 'Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by default.',
-    default: 'true',
-    parse: printFlagDeprecation(['--bulkPublish', '-b'], ['--bulk-publish']),
   }),
   'bulk-publish': flags.string({
     description: 'Set this flag to use Contentstack’s Bulk Publish APIs. It is true, by default.',
@@ -201,51 +188,19 @@ CrossPublishCommand.flags = {
   'api-version': flags.string({
     description: 'API version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].',
   }),
-  contentType: flags.string({
-    char: 't',
-    description: 'The Content-Types from which entries need to be published',
-    multiple: true,
-    hidden: true,
-    parse: printFlagDeprecation(['--contentType', '-t'], ['--content-type']),
-  }),
   'content-type': flags.string({
     description: 'The Contenttypes from which entries will be published',
     multiple: true,
   }),
-  locale: flags.string({
-    hidden: true,
-    char: 'l',
-    description: 'Source locale',
-    parse: printFlagDeprecation(['-l'], ['--locales']),
-  }),
   locales: flags.string({
     description: 'Source locale',
-  }),
-  environment: flags.string({
-    char: 'e',
-    description: 'Source Environment',
-    hidden: true,
-    parse: printFlagDeprecation(['--environment', '-e'], ['--source-env']),
   }),
   'source-env': flags.string({
     description: 'Source Env',
   }),
-  destEnv: flags.string({
-    char: 'd',
-    description: 'Destination Environments',
-    multiple: true,
-    hidden: true,
-    parse: printFlagDeprecation(['--destEnv'], ['--environments']),
-  }),
   environments: flags.string({
     description: 'Destination Environments',
     multiple: true,
-  }),
-  deliveryToken: flags.string({
-    char: 'x',
-    description: 'The delivery token of the source environment.',
-    hidden: true,
-    parse: printFlagDeprecation(['--deliveryToken', '-x'], ['--delivery-token']),
   }),
   'delivery-token': flags.string({
     description: 'The delivery token of the source environment.',
@@ -253,10 +208,8 @@ CrossPublishCommand.flags = {
   config: flags.string({ char: 'c', description: 'Path to the config file' }),
   yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
   branch: flags.string({
-    char: 'B',
     default: 'main',
     description: 'Specify the branch to fetch the content (by default the main branch is selected)',
-    parse: printFlagDeprecation(['-B']),
   }),
   onlyAssets: flags.boolean({ description: 'Unpublish only assets', default: false }),
   onlyEntries: flags.boolean({ description: 'Unpublish only entries', default: false }),

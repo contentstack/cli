@@ -47,7 +47,7 @@ $ npm install -g @contentstack/cli-cm-import-setup
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-import-setup/1.7.1 darwin-arm64 node-v22.13.1
+@contentstack/cli-cm-import-setup/1.7.1 darwin-arm64 node-v21.7.3
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -70,8 +70,6 @@ USAGE
   $ csdx cm:import-setup cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]
 
 FLAGS
-  -B, --branch=<value>         The name of the branch where you want to import your content. If you don't mention the
-                               branch name, then by default the content will be imported to the main branch.
   -a, --alias=<value>          The management token of the destination stack where you will import the content.
   -d, --data-dir=<value>       The path or the location in your file system where the content, you intend to import, is
                                stored. For example, -d "C:\Users\Name\Desktop\cli\content". If the export folder has
@@ -94,8 +92,6 @@ EXAMPLES
   $ csdx cm:stacks:import-setup --stack-api-key <target_stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>
 
   $ csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name>
-
-  $ csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name> -b <branch_name>
 ```
 
 ## `csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`
@@ -107,8 +103,6 @@ USAGE
   $ csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]
 
 FLAGS
-  -B, --branch=<value>         The name of the branch where you want to import your content. If you don't mention the
-                               branch name, then by default the content will be imported to the main branch.
   -a, --alias=<value>          The management token of the destination stack where you will import the content.
   -d, --data-dir=<value>       The path or the location in your file system where the content, you intend to import, is
                                stored. For example, -d "C:\Users\Name\Desktop\cli\content". If the export folder has
@@ -131,8 +125,6 @@ EXAMPLES
   $ csdx cm:stacks:import-setup --stack-api-key <target_stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>
 
   $ csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name>
-
-  $ csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name> -b <branch_name>
 ```
 
 _See code: [src/commands/cm/stacks/import-setup.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-import-setup/src/commands/cm/stacks/import-setup.ts)_
