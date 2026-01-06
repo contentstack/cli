@@ -10,7 +10,7 @@ It is Contentstack’s CLI plugin to perform authentication-related activities. 
 * [Commands](#commands)
 <!-- tocstop -->
 
-# Usage
+# Usage Notes
 
 <!-- usage -->
 ```sh-session
