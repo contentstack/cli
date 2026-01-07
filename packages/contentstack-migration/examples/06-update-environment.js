@@ -16,7 +16,7 @@ module.exports = async ({ migration, config }) => {
           fs.accessSync(directory, fs.constants.W_OK);
           return true;
         } catch (err) {
-          console.log(`Permission Denied! You do not have the necessary write access for this directory.`);
+          console.log(`Permission denied. You do not have the necessary write access for this directory.`);
           return false;
         }
       }
@@ -33,7 +33,7 @@ module.exports = async ({ migration, config }) => {
           if (!source || !destination) {
             throw new Error(`The Source or Destination Directory Path are not valid`);
           } else {
-            console.log(`You have permission to write to directory`);
+            console.log(`You have permission to write to the directory.`);
           }
         } catch (err) {
           console.log(
@@ -63,7 +63,7 @@ module.exports = async ({ migration, config }) => {
             if (sourceUid && destUid) {
               envMapper[sourceUid] = destUid;
             } else {
-              console.log(`No Mapper Provided for the environment ${sourceName} or ${destName}`);
+              console.log(`No mapper provided for environment ${sourceName} or ${destName}`);
             }
           }
         } catch (err) {
@@ -145,7 +145,7 @@ module.exports = async ({ migration, config }) => {
                   );
                 });
               } else {
-                console.log(`No Entries Exist for Content-type ${ct} in loclae ${locale}`);
+                console.log(`No entries exist for content type ${ct} in locale ${locale}`);
               }
             }
           }

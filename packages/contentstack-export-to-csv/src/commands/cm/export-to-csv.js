@@ -374,7 +374,7 @@ class ExportToCsvCommand extends Command {
    */
   async getAliasDetails(managementTokenAlias, stackName) {
     let apiClient, stackDetails;
-    const listOfTokens = configHandler.get('tokens');
+    const listOfTokens = configHandler.get('tokens') || {};
     if (managementTokenAlias && listOfTokens[managementTokenAlias]) {
       const checkManagementTokenValidity = await isManagementTokenValid(
         listOfTokens[managementTokenAlias].apiKey,
@@ -395,7 +395,7 @@ class ExportToCsvCommand extends Command {
         token: listOfTokens[managementTokenAlias].token,
       };
     } else if (managementTokenAlias) {
-      this.error('Provided management token alias not found in your config.!');
+      this.error('The provided management token alias was not found in your config.');
     }
     return {
       apiClient,
