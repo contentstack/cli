@@ -9,9 +9,9 @@ import { existsSync, readFileSync, writeFileSync } from 'fs';
 import auditConfig from '../config';
 import ContentType from './content-types';
 import { $t, auditFixMsg, auditMsg, commonMsg } from '../messages';
+import BaseClass from './base-class';
 import {
   Locale,
-  ConfigType,
   EntryStruct,
   EntryFieldType,
   ModularBlockType,
@@ -40,11 +40,10 @@ import GlobalField from './global-fields';
 import { MarketplaceAppsInstallationData } from '../types/extension';
 import { keys } from 'lodash';
 
-export default class Entries {
+export default class Entries extends BaseClass {
   protected fix: boolean;
   public fileName: string;
   public locales!: Locale[];
-  public config: ConfigType;
   public folderPath: string;
   public currentUid!: string;
   public currentTitle!: string;
@@ -63,8 +62,7 @@ export default class Entries {
   public moduleName: keyof typeof auditConfig.moduleConfig = 'entries';
 
   constructor({ fix, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
-
-    this.config = config;
+    super({ config });
     log.debug(`Initializing Entries module`, this.config.auditContext);
     this.fix = fix ?? false;
     this.ctSchema = ctSchema;
@@ -96,27 +94,38 @@ export default class Entries {
   /**
    * The `run` function checks if a folder path exists, sets the schema based on the module name,
    * iterates over the schema and looks for references, and returns a list of missing references.
+   * @param totalCount - Total number of entries to process (for progress tracking)
    * @returns the `missingRefs` object.
    */
-  async run() {
-    
-    if (!existsSync(this.folderPath)) {
-      log.debug(`Skipping ${this.moduleName} audit - path does not exist`, this.config.auditContext);
-      log.warn(`Skipping ${this.moduleName} audit`, this.config.auditContext);
-      cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
-      return {};
-    }
+  async run(totalCount?: number) {
+    try {
+      if (!existsSync(this.folderPath)) {
+        log.debug(`Skipping ${this.moduleName} audit - path does not exist`, this.config.auditContext);
+        log.warn(`Skipping ${this.moduleName} audit`, this.config.auditContext);
+        cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
+        return {};
+      }
 
-    log.debug(`Found ${this.ctSchema?.length || 0} content types to audit`, this.config.auditContext);
-    log.debug(`Found ${this.locales?.length || 0} locales to process`, this.config.auditContext);
+      log.debug(`Found ${this.ctSchema?.length || 0} content types to audit`, this.config.auditContext);
+      log.debug(`Found ${this.locales?.length || 0} locales to process`, this.config.auditContext);
 
-    log.debug('Preparing entry metadata', this.config.auditContext);
-    await this.prepareEntryMetaData();
-    log.debug(`Entry metadata prepared: ${this.entryMetaData.length} entries found`, this.config.auditContext);
+      // Prepare entry metadata with loading spinner
+      await this.withLoadingSpinner('ENTRIES: Preparing entry metadata...', async () => {
+        await this.prepareEntryMetaData();
+      });
+      log.debug(`Entry metadata prepared: ${this.entryMetaData.length} entries found`, this.config.auditContext);
 
-    log.debug('Fixing prerequisite data', this.config.auditContext);
-    await this.fixPrerequisiteData();
-    log.debug('Prerequisite data fix completed', this.config.auditContext);
+      // Fix prerequisite data with loading spinner
+      await this.withLoadingSpinner('ENTRIES: Fixing prerequisite data...', async () => {
+        await this.fixPrerequisiteData();
+      });
+      log.debug('Prerequisite data fix completed', this.config.auditContext);
+
+      // Create progress manager if we have a total count
+      if (totalCount && totalCount > 0) {
+        const progress = this.createSimpleProgress(this.moduleName, totalCount);
+        progress.updateStatus('Validating entries...');
+      }
 
     log.debug(`Processing ${this.locales.length} locales and ${this.ctSchema.length} content types`, this.config.auditContext);
     for (const { code } of this.locales) {
@@ -282,6 +291,11 @@ export default class Entries {
             });
             log.debug(message, this.config.auditContext);
             log.info(message, this.config.auditContext);
+            
+            // Track progress for each entry processed
+            if (this.progressManager) {
+              this.progressManager.tick(true, `entry: ${title || uid}`, null);
+            }
           }
 
           if (this.fix) {
@@ -305,15 +319,20 @@ export default class Entries {
       missingMultipleFields: this.missingMultipleField,
     };
     
-    log.debug(`Entries audit completed. Found issues:`, this.config.auditContext);
-    log.debug(`- Missing references: ${Object.keys(this.missingRefs).length}`, this.config.auditContext);
-    log.debug(`- Missing select fields: ${Object.keys(this.missingSelectFeild).length}`, this.config.auditContext);
-    log.debug(`- Missing mandatory fields: ${Object.keys(this.missingMandatoryFields).length}`, this.config.auditContext);
-    log.debug(`- Missing title fields: ${Object.keys(this.missingTitleFields).length}`, this.config.auditContext);
-    log.debug(`- Missing environment/locale: ${Object.keys(this.missingEnvLocale).length}`, this.config.auditContext);
-    log.debug(`- Missing multiple fields: ${Object.keys(this.missingMultipleField).length}`, this.config.auditContext);
-    
-    return result;
+      log.debug(`Entries audit completed. Found issues:`, this.config.auditContext);
+      log.debug(`- Missing references: ${Object.keys(this.missingRefs).length}`, this.config.auditContext);
+      log.debug(`- Missing select fields: ${Object.keys(this.missingSelectFeild).length}`, this.config.auditContext);
+      log.debug(`- Missing mandatory fields: ${Object.keys(this.missingMandatoryFields).length}`, this.config.auditContext);
+      log.debug(`- Missing title fields: ${Object.keys(this.missingTitleFields).length}`, this.config.auditContext);
+      log.debug(`- Missing environment/locale: ${Object.keys(this.missingEnvLocale).length}`, this.config.auditContext);
+      log.debug(`- Missing multiple fields: ${Object.keys(this.missingMultipleField).length}`, this.config.auditContext);
+      
+      this.completeProgress(true);
+      return result;
+    } catch (error: any) {
+      this.completeProgress(false, error?.message || 'Entries audit failed');
+      throw error;
+    }
   }
 
   /**
