@@ -1,8 +1,9 @@
-const { describe, it, afterEach } = require('mocha');
+const { describe, it, afterEach, beforeEach } = require('mocha');
 const inquirer = require('inquirer');
 const sinon = require('sinon');
 const { expect } = require('chai');
 const { config } = require('dotenv');
+const { configHandler } = require('@contentstack/cli-utilities');
 const StackPublish = require('../../../../src/commands/cm/stacks/publish');
 
 config();
@@ -12,7 +13,7 @@ const locales = ['en-us', 'fr-fr'];
 const contentTypes = ['ct1', 'ct2'];
 
 describe('StackPublish', () => {
-  let runStub, stackDetails, promptStub;
+  let runStub, stackDetails, promptStub, configHandlerGetStub;
 
   beforeEach(() => {
     stackDetails = {
@@ -22,6 +23,21 @@ describe('StackPublish', () => {
       management_token: 'asdf',
       alias: 'm_alias',
     };
+    // Stub configHandler.get to configure region
+    // Region is required for cmaHost property in Command base class
+    configHandlerGetStub = sinon.stub(configHandler, 'get').callsFake((key) => {
+      if (key === 'region') {
+        return {
+          cma: 'api.contentstack.io',
+          cda: 'cdn.contentstack.io',
+          uiHost: 'app.contentstack.com',
+          developerHubUrl: 'developer.contentstack.com',
+          launchHubUrl: 'launch.contentstack.com',
+          personalizeUrl: 'personalize.contentstack.com',
+        };
+      }
+      return undefined;
+    });
   });
   afterEach(() => {
     sinon.restore(); // Restores all stubs
@@ -59,7 +75,7 @@ describe('StackPublish', () => {
       '--yes',
     ];
 
-    const expectedError = 'Please use `--alias` or `--stack-api-key` to proceed.';
+    const expectedError = 'Use the `--alias` or `--stack-api-key` flag to proceed.';
 
     runStub = sinon.stub(StackPublish.prototype, 'run').callsFake(function () {
       throw new Error(expectedError);

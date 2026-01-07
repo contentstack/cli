@@ -95,7 +95,7 @@ module.exports = (errors, filePath) => {
     }
     if (isEmpty(messages) && errors !== undefined && isEmpty(errorsByFile)) {
       logger.log('error', { errors: errors });
-      console.log(chalk`{bold.red Migration unsuccessful}`);
+      console.log(chalk`{bold.red migration unsuccessful}`);
     } else {
       logger.log('error', { error: messages.join('\n') });
     }

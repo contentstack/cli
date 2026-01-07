@@ -2,7 +2,7 @@ const chalk = require('chalk');
 const fs = require('fs');
 
 function prettyPrint(data) {
-  console.log(chalk.yellow('Configuration to be used for executing this command:'));
+  console.log(chalk.yellow('Configuration to use for executing this command:'));
   Object.keys(data).forEach((key, _index) => {
     console.log(chalk.grey(`${key}: ${data[key]}`));
   });

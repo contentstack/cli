@@ -5,6 +5,7 @@ import * as winston from 'winston';
 import { levelColors, logLevels, PROGRESS_SUPPORTED_MODULES } from '../constants/logging';
 import { LoggerConfig, LogLevel, LogType } from '../interfaces/index';
 import { configHandler } from '..';
+import { getSessionLogPath } from './session-path';
 
 export default class Logger {
   private loggers: Record<string, winston.Logger>;
@@ -37,7 +38,9 @@ export default class Logger {
   }
 
   getLoggerInstance(level: 'error' | 'info' | 'warn' | 'debug' | 'hidden' = 'info'): winston.Logger {
-    const filePath = normalize(process.env.CS_CLI_LOG_PATH || this.config.basePath).replace(/^(\.\.(\/|\\|$))+/, '');
+    // Use session-based path for date-organized logging
+    const sessionPath = getSessionLogPath();
+    const filePath = normalize(sessionPath).replace(/^(\.\.(\/|\\|$))+/, '');
     return this.createLogger(level === 'hidden' ? 'error' : level, filePath);
   }
 
@@ -56,19 +59,18 @@ export default class Logger {
         ...this.loggerOptions,
         filename: `${filePath}/${level}.log`,
         format: winston.format.combine(
-            winston.format.timestamp(),
-            winston.format.printf((info) => {
-              // Apply minimal redaction for files (debugging info preserved)
-              const redactedInfo = this.redact(info, false);
-              return JSON.stringify(redactedInfo);
-            }),
-          ),
+          winston.format.timestamp(),
+          winston.format.printf((info) => {
+            // Apply minimal redaction for files (debugging info preserved)
+            const redactedInfo = this.redact(info, false);
+            return JSON.stringify(redactedInfo);
+          }),
+        ),
       }),
     ];
 
     // Determine console logging based on configuration
     let showConsoleLogs = true;
-
     if (configHandler && typeof configHandler.get === 'function') {
       const logConfig = configHandler.get('log') || {};
       const currentModule = logConfig.progressSupportedModule;

@@ -47,7 +47,7 @@ module.exports.addLogs = (logger, data, Type) => {
       logger.info(data);
       break;
     default:
-      console.log('Unknown logging level');
+      console.log('Unknown log level.');
   }
 };
 

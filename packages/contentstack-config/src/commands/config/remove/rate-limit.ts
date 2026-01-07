@@ -21,7 +21,7 @@ export default class RateLimitRemoveCommand extends Command {
       const rateLimit = configHandler.get('rateLimit') || {};
 
       if (!rateLimit[org]) {
-        cliux.print(`No rate limit found for the organization UID: ${org}`, { color: 'red' });
+        cliux.print(`No rate limit found for organization UID ${org}`, { color: 'red' });
         return;
       }
       configHandler.delete(`rateLimit.${org}`);

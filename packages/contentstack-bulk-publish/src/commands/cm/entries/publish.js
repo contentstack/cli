@@ -64,7 +64,7 @@ class PublishEntriesCommand extends Command {
         } else if (updatedFlags['stack-api-key']) {
           config.stackApiKey = updatedFlags['stack-api-key'];
         } else {
-          this.error('Please use `--alias` or `--stack-api-key` to proceed.', { exit: 2 });
+          this.error('Use the `--alias` or `--stack-api-key` flag to proceed.', { exit: 2 });
         }
         updatedFlags.bulkPublish = updatedFlags.bulkPublish !== 'false';
         stack = await getStack(config);
@@ -131,7 +131,7 @@ class PublishEntriesCommand extends Command {
     }
 
     if (sourceEnv && !deliveryToken) {
-      this.error('Specify source environment delivery token. Please check --help for more details', { exit: 2 });
+      this.error('Specify the source environment delivery token. Run --help for more details.', { exit: 2 });
     }
 
     if (publishAllContentTypes && contentTypes && contentTypes.length > 0) {
