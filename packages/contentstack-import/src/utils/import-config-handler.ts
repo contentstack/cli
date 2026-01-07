@@ -15,6 +15,10 @@ import login from './login-handler';
 import { ImportConfig } from '../types';
 
 const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
+  // Set progress supported module FIRST, before any log calls
+  // This ensures the logger respects the showConsoleLogs setting correctly
+  configHandler.set('log.progressSupportedModule', 'import');
+  
   let config: ImportConfig = merge({}, defaultConfig);
   // Track authentication method
   let authenticationMethod = 'unknown';
@@ -135,9 +139,6 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
     config['exclude-global-modules'] = importCmdFlags['exclude-global-modules'];
   }
 
-  // Set progress supported module to check and display console logs
-  configHandler.set('log.progressSupportedModule', 'import');
-  
   // Add authentication details to config for context tracking
   config.authenticationMethod = authenticationMethod;
   log.debug('Import configuration setup completed', { ...config });
