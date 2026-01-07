@@ -339,7 +339,7 @@ describe('Export Config Handler', () => {
         await setupConfig(flags);
         expect.fail('Should have thrown an error');
       } catch (error: any) {
-        expect(error.message).to.include('Invalid API key received');
+        expect(error.message).to.include('Invalid or empty API key received. Please provide a valid stack API key.');
       }
     });
   });
