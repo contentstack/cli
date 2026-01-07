@@ -47,7 +47,7 @@ $ npm install -g @contentstack/cli-cm-import-setup
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-import-setup/1.7.0 darwin-arm64 node-v22.13.1
+@contentstack/cli-cm-import-setup/2.0.0-beta.1 darwin-arm64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -78,8 +78,6 @@ FLAGS
                                branches involved, then the path should point till the particular branch. For example,
                                “-d "C:\Users\Name\Desktop\cli\content\branch_name"
   -k, --stack-api-key=<value>  API key of the target stack
-      --branch-alias=<value>   Specify the branch alias where you want to import your content. If not specified, the
-                               content is imported into the main branch by default.
       --branch-alias=<value>   Specify the branch alias where you want to import your content. If not specified, the
                                content is imported into the main branch by default.
       --module=<option>...     [optional] Specify the modules/module to import into the target stack. currently options
@@ -117,8 +115,6 @@ FLAGS
                                branches involved, then the path should point till the particular branch. For example,
                                “-d "C:\Users\Name\Desktop\cli\content\branch_name"
   -k, --stack-api-key=<value>  API key of the target stack
-      --branch-alias=<value>   Specify the branch alias where you want to import your content. If not specified, the
-                               content is imported into the main branch by default.
       --branch-alias=<value>   Specify the branch alias where you want to import your content. If not specified, the
                                content is imported into the main branch by default.
       --module=<option>...     [optional] Specify the modules/module to import into the target stack. currently options

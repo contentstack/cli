@@ -18,7 +18,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
 
   // setup the config
   if (exportCmdFlags['config']) {
-    log.debug('Loading external configuration file', { configFile: exportCmdFlags['config'] });
+    log.debug('Loading external configuration file...', { configFile: exportCmdFlags['config'] });
     const externalConfig = await readFile(exportCmdFlags['config']);
     config = merge.recursive(config, externalConfig);
   }
@@ -28,7 +28,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
 
   const pattern = /[*$%#<>{}!&?]/g;
   if (pattern.test(config.exportDir)) {
-    cliux.print(`\nPlease add a directory path without any of the special characters: (*,&,{,},[,],$,%,<,>,?,!)`, {
+    cliux.print(`\nPlease enter a directory path without any special characters: (*,&,{,},[,],$,%,<,>,?,!)`, {
       color: 'yellow',
     });
     config.exportDir = sanitizePath(await askExportDir());
@@ -48,7 +48,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
     config.apiKey = apiKey;
     authenticationMethod = 'Management Token';
     if (!config.management_token) {
-      log.debug('Management token not found for alias', { alias: managementTokenAlias });
+      log.debug('Management token not found for alias!', { alias: managementTokenAlias });
       throw new Error(`No management token found on given alias ${managementTokenAlias}`);
     }
 
@@ -82,7 +82,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
       config.apiKey =
         exportCmdFlags['stack-uid'] || exportCmdFlags['stack-api-key'] || config.source_stack || (await askAPIKey());
       if (typeof config.apiKey !== 'string') {
-        log.debug('Invalid API key received', { apiKey: config.apiKey });
+        log.debug('Invalid API key received!', { apiKey: config.apiKey });
         throw new Error('Invalid API key received');
       }
     }
@@ -136,7 +136,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
   configHandler.set('log.progressSupportedModule', 'export');
   // Add authentication details to config for context tracking
   config.authenticationMethod = authenticationMethod;
-  log.debug('Export configuration setup completed', { ...config });
+  log.debug('Export configuration setup completed.', { ...config });
 
   return config;
 };
