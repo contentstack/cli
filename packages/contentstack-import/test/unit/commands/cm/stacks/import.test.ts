@@ -31,9 +31,7 @@ describe('ImportCommand', () => {
       'stack-api-key': 'test',
       'data-dir': '/test/data',
       'alias': 'test-alias',
-      'module': 'entries',
-      'backup-dir': '/test/backup',
-      'branch': 'main',
+      'branch-alias': 'main',
       'import-webhook-status': 'disable',
       'yes': false,
       'skip-audit': false,
@@ -149,9 +147,7 @@ describe('ImportCommand', () => {
       expect(flags).to.have.property('data-dir');
       expect(flags).to.have.property('alias');
       expect(flags).to.have.property('config');
-      expect(flags).to.have.property('module');
-      expect(flags).to.have.property('backup-dir');
-      expect(flags).to.have.property('branch');
+      expect(flags).to.have.property('branch-alias');
       expect(flags).to.have.property('import-webhook-status');
       expect(flags).to.have.property('yes');
       expect(flags).to.have.property('skip-audit');
@@ -167,9 +163,6 @@ describe('ImportCommand', () => {
       expect(flags['data-dir']).to.have.property('char', 'd');
       expect(flags['alias']).to.have.property('char', 'a');
       expect(flags['config']).to.have.property('char', 'c');
-      expect(flags['module']).to.have.property('char', 'm');
-      expect(flags['backup-dir']).to.have.property('char', 'b');
-      expect(flags['branch']).to.have.property('char', 'B');
       expect(flags['yes']).to.have.property('char', 'y');
     });
 
@@ -186,10 +179,8 @@ describe('ImportCommand', () => {
     it('should have correct exclusive flags', () => {
       const flags = ImportCommand.flags;
       
-      expect(flags['branch']).to.have.property('exclusive');
-      expect(flags['branch-alias']).to.have.property('exclusive');
-      expect(flags['branch'].exclusive).to.include('branch-alias');
-      expect(flags['branch-alias'].exclusive).to.include('branch');
+      // branch-alias no longer has exclusive since branch flag was removed
+      expect(flags['branch-alias']).to.not.have.property('exclusive');
     });
 
     it('should have correct webhook status options', () => {
@@ -465,24 +456,13 @@ describe('ImportCommand', () => {
   });
 
   describe('Flag Validation and Parsing', () => {
-    it('should handle deprecated flags correctly', () => {
-      const flags = ImportCommand.flags;
-      
-      expect(flags['stack-uid']).to.have.property('hidden', true);
-      expect(flags['data']).to.have.property('hidden', true);
-      expect(flags['management-token-alias']).to.have.property('hidden', true);
-      expect(flags['auth-token']).to.have.property('hidden', true);
-      expect(flags['skip-app-recreation']).to.have.property('parse');
-    });
-
     it('should have correct flag descriptions', () => {
       const flags = ImportCommand.flags;
       
       expect(flags['stack-api-key'].description).to.include('API Key of the target stack');
       expect(flags['data-dir'].description).to.include('path or the location');
       expect(flags['alias'].description).to.include('management token');
-      expect(flags['module'].description).to.include('Specify the module to import');
-      expect(flags['branch'].description).to.include('name of the branch');
+      expect(flags['branch-alias'].description).to.include('branch alias');
     });
 
     it('should have correct required flags', () => {
@@ -491,7 +471,6 @@ describe('ImportCommand', () => {
       expect(flags['stack-api-key'].required).to.be.undefined; // Not explicitly required
       expect(flags['data-dir'].required).to.be.undefined;
       expect(flags['alias'].required).to.be.undefined;
-      expect(flags['module'].required).to.be.false;
       expect(flags['yes'].required).to.be.false;
     });
   });

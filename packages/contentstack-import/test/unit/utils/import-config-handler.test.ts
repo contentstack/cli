@@ -114,21 +114,6 @@ describe('Import Config Handler', () => {
   });
 
   describe('Content Directory Resolution', () => {
-    it('should use data flag for contentDir', async () => {
-      const importCmdFlags = {
-        'data': '/test/content',
-      };
-      configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
-      configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
-      askAPIKeyStub.resolves('test-api-key');
-
-      const result = await setupConfig(importCmdFlags);
-
-      expect(result.contentDir).to.equal(path.resolve('/test/content'));
-      expect(result.data).to.equal(path.resolve('/test/content'));
-      expect(askContentDirStub.called).to.be.false;
-    });
-
     it('should use data-dir flag for contentDir', async () => {
       const importCmdFlags = {
         'data-dir': '/test/data-dir',
@@ -202,7 +187,7 @@ describe('Import Config Handler', () => {
 
     it('should validate and reprompt when contentDir contains special characters', async () => {
       const importCmdFlags = {
-        'data': '/test/content*',
+        'data-dir': '/test/content*',
       };
       const validPath = '/test/valid-content';
 
@@ -221,10 +206,10 @@ describe('Import Config Handler', () => {
   });
 
   describe('Management Token Authentication', () => {
-    it('should use management token from alias when management-token-alias is provided', async () => {
+    it('should use management token from alias when alias is provided', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
-        'management-token-alias': 'my-token',
+        'data-dir': '/test/content',
+        'alias': 'my-token',
       };
       const tokenData = {
         token: 'test-management-token',
@@ -244,7 +229,7 @@ describe('Import Config Handler', () => {
 
     it('should use management token from alias when alias flag is provided', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
+        'data-dir': '/test/content',
         'alias': 'my-alias',
       };
       const tokenData = {
@@ -262,8 +247,8 @@ describe('Import Config Handler', () => {
 
     it('should throw error when management token alias not found', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
-        'management-token-alias': 'non-existent',
+        'data-dir': '/test/content',
+        'alias': 'non-existent',
       };
 
       configHandlerGetStub.withArgs('tokens.non-existent').returns({});
@@ -349,40 +334,6 @@ describe('Import Config Handler', () => {
       expect(result.branchAlias).to.equal('my-branch');
     });
 
-    it('should set branchName and branchDir from branch flag', async () => {
-      const importCmdFlags = {
-        'data': '/test/content',
-        'branch': 'my-branch',
-      };
-
-      const result = await setupConfig(importCmdFlags);
-
-      expect(result.branchName).to.equal('my-branch');
-      expect(result.branchDir).to.equal(path.resolve('/test/content'));
-    });
-
-    it('should set moduleName and singleModuleImport from module flag', async () => {
-      const importCmdFlags = {
-        'data': '/test/content',
-        'module': 'assets',
-      };
-
-      const result = await setupConfig(importCmdFlags);
-
-      expect(result.moduleName).to.equal('assets');
-      expect(result.singleModuleImport).to.be.true;
-    });
-
-    it('should set useBackedupDir from backup-dir flag', async () => {
-      const importCmdFlags = {
-        'data': '/test/content',
-        'backup-dir': '/backup/path',
-      };
-
-      const result = await setupConfig(importCmdFlags);
-
-      expect(result.useBackedupDir).to.equal('/backup/path');
-    });
 
     it('should set skipAssetsPublish from skip-assets-publish flag', async () => {
       const importCmdFlags = {
