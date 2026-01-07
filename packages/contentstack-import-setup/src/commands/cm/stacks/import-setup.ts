@@ -8,6 +8,8 @@ import {
   ContentstackClient,
   pathValidator,
   formatError,
+  CLIProgressManager,
+  configHandler,
 } from '@contentstack/cli-utilities';
 
 import { ImportConfig } from '../../../types';
@@ -66,9 +68,27 @@ export default class ImportSetupCommand extends Command {
       importSetupConfig.host = this.cmaHost;
       importSetupConfig.region = this.region;
       importSetupConfig.developerHubBaseUrl = this.developerHubUrl;
+      
+      // Prepare the context object
+      const context = this.createImportContext(importSetupConfig.apiKey, importSetupConfig.authenticationMethod);
+      importSetupConfig.context = { ...context };
+
+      if (flags.branch) {
+        CLIProgressManager.initializeGlobalSummary(
+          `IMPORT-SETUP-${flags.branch}`,
+          flags.branch,
+          `Setting up import for "${flags.branch}" branch...`,
+        );
+      } else {
+        CLIProgressManager.initializeGlobalSummary(`IMPORT-SETUP`, flags.branch, 'Setting up import...');
+      }
+
       const managementAPIClient: ContentstackClient = await managementSDKClient(importSetupConfig);
       const importSetup = new ImportSetup(importSetupConfig, managementAPIClient);
       await importSetup.start();
+      
+      CLIProgressManager.printGlobalSummary();
+      
       log(
         importSetupConfig,
         `Backup folder and mapper files have been successfully created for the stack using the API key ${importSetupConfig.apiKey}.`,
@@ -80,11 +100,24 @@ export default class ImportSetupCommand extends Command {
         'success',
       );
     } catch (error) {
+      CLIProgressManager.printGlobalSummary();
       log(
         { data: '' } as ImportConfig,
         `Failed to create the backup folder and mapper files: ${formatError(error)}`,
         'error',
       );
     }
+  }
+
+  private createImportContext(apiKey: string, authenticationMethod?: string): any {
+    return {
+      command: this.context?.info?.command || 'cm:stacks:import-setup',
+      module: '',
+      userId: configHandler.get('userUid') || '',
+      sessionId: this.context?.sessionId,
+      apiKey: apiKey || '',
+      orgId: configHandler.get('oauthOrgUid') || '',
+      authenticationMethod: authenticationMethod || 'Basic Auth',
+    };
   }
 }

@@ -1,17 +1,17 @@
 import path, { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { cloneDeep } from 'lodash';
-import { ConfigType, ContentTypeStruct, CtConstructorParam, ModuleConstructorParam, Extension } from '../types';
+import { ContentTypeStruct, CtConstructorParam, ModuleConstructorParam, Extension } from '../types';
 import { sanitizePath, cliux, log } from '@contentstack/cli-utilities';
 
 import auditConfig from '../config';
 import { $t, auditMsg, commonMsg } from '../messages';
 import { values } from 'lodash';
+import BaseClass from './base-class';
 
-export default class Extensions {
+export default class Extensions extends BaseClass {
   protected fix: boolean;
   public fileName: any;
-  public config: ConfigType;
   public folderPath: string;
   public extensionsSchema: Extension[];
   public ctSchema: ContentTypeStruct[];
@@ -27,7 +27,7 @@ export default class Extensions {
     moduleName,
     ctSchema,
   }: ModuleConstructorParam & Pick<CtConstructorParam, 'ctSchema'>) {
-    this.config = config;
+    super({ config });
     this.fix = fix ?? false;
     this.ctSchema = ctSchema;
     this.extensionsSchema = [];
@@ -70,33 +70,42 @@ export default class Extensions {
     return 'extensions';
   }
 
-  async run() {
-    log.debug(`Starting ${this.moduleName} audit process`, this.config.auditContext);
-    log.debug(`Extensions folder path: ${this.folderPath}`, this.config.auditContext);
-    log.debug(`Fix mode: ${this.fix}`, this.config.auditContext);
-    
-    if (!existsSync(this.folderPath)) {
-      log.debug(`Skipping ${this.moduleName} audit - path does not exist`, this.config.auditContext);
-      log.warn(`Skipping ${this.moduleName} audit`, this.config.auditContext);
-      cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
-      return {};
-    }
+  async run(totalCount?: number) {
+    try {
+      log.debug(`Starting ${this.moduleName} audit process`, this.config.auditContext);
+      log.debug(`Extensions folder path: ${this.folderPath}`, this.config.auditContext);
+      log.debug(`Fix mode: ${this.fix}`, this.config.auditContext);
+      
+      if (!existsSync(this.folderPath)) {
+        log.debug(`Skipping ${this.moduleName} audit - path does not exist`, this.config.auditContext);
+        log.warn(`Skipping ${this.moduleName} audit`, this.config.auditContext);
+        cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
+        return {};
+      }
 
-    this.extensionsPath = path.join(this.folderPath, this.fileName);
-    log.debug(`Extensions file path: ${this.extensionsPath}`, this.config.auditContext);
+      this.extensionsPath = path.join(this.folderPath, this.fileName);
+      log.debug(`Extensions file path: ${this.extensionsPath}`, this.config.auditContext);
 
-    log.debug(`Loading extensions schema from file`, this.config.auditContext);
-    this.extensionsSchema = existsSync(this.extensionsPath)
-      ? values(JSON.parse(readFileSync(this.extensionsPath, 'utf-8')) as Extension[])
-      : [];
-    log.debug(`Loaded ${this.extensionsSchema.length} extensions`, this.config.auditContext);
+      // Load extensions schema with loading spinner
+      await this.withLoadingSpinner('EXTENSIONS: Loading extensions schema...', async () => {
+        this.extensionsSchema = existsSync(this.extensionsPath)
+          ? values(JSON.parse(readFileSync(this.extensionsPath, 'utf-8')) as Extension[])
+          : [];
+      });
+      log.debug(`Loaded ${this.extensionsSchema.length} extensions`, this.config.auditContext);
 
-    log.debug(`Building content type UID set from ${this.ctSchema.length} content types`, this.config.auditContext);
-    this.ctSchema.map((ct) => this.ctUidSet.add(ct.uid));
-    log.debug(`Content type UID set contains: ${Array.from(this.ctUidSet).join(', ')}`, this.config.auditContext);
+      log.debug(`Building content type UID set from ${this.ctSchema.length} content types`, this.config.auditContext);
+      this.ctSchema.map((ct) => this.ctUidSet.add(ct.uid));
+      log.debug(`Content type UID set contains: ${Array.from(this.ctUidSet).join(', ')}`, this.config.auditContext);
 
-    log.debug(`Processing ${this.extensionsSchema.length} extensions`, this.config.auditContext);
-    for (const ext of this.extensionsSchema) {
+      // Create progress manager if we have a total count
+      if (totalCount && totalCount > 0) {
+        const progress = this.createSimpleProgress(this.moduleName, totalCount);
+        progress.updateStatus('Validating extensions...');
+      }
+
+      log.debug(`Processing ${this.extensionsSchema.length} extensions`, this.config.auditContext);
+      for (const ext of this.extensionsSchema) {
       const { title, uid, scope } = ext;
       log.debug(`Processing extension: ${title} (${uid})`, this.config.auditContext);
       log.debug(`Extension scope content types: ${scope?.content_types?.join(', ') || 'none'}`, this.config.auditContext);
@@ -124,24 +133,35 @@ export default class Extensions {
         }),
         this.config.auditContext
       );
+      
+      // Track progress for each extension processed
+      if (this.progressManager) {
+        this.progressManager.tick(true, `extension: ${title}`, null);
+      }
     }
 
-    log.debug(`Extensions audit completed. Found ${this.missingCtInExtensions.length} extensions with missing content types`, this.config.auditContext);
-    log.debug(`Total missing content types: ${this.missingCts.size}`, this.config.auditContext);
+      log.debug(`Extensions audit completed. Found ${this.missingCtInExtensions.length} extensions with missing content types`, this.config.auditContext);
+      log.debug(`Total missing content types: ${this.missingCts.size}`, this.config.auditContext);
 
-    if (this.fix && this.missingCtInExtensions.length) {
-      log.debug(`Fix mode enabled, fixing ${this.missingCtInExtensions.length} extensions`, this.config.auditContext);
-      await this.fixExtensionsScope(cloneDeep(this.missingCtInExtensions));
-      this.missingCtInExtensions.forEach((ext) => {
-        log.debug(`Marking extension ${ext.title} as fixed`, this.config.auditContext);
-        ext.fixStatus = 'Fixed';
-      });
-      log.debug(`Extensions fix completed`, this.config.auditContext);
+      if (this.fix && this.missingCtInExtensions.length) {
+        log.debug(`Fix mode enabled, fixing ${this.missingCtInExtensions.length} extensions`, this.config.auditContext);
+        await this.fixExtensionsScope(cloneDeep(this.missingCtInExtensions));
+        this.missingCtInExtensions.forEach((ext) => {
+          log.debug(`Marking extension ${ext.title} as fixed`, this.config.auditContext);
+          ext.fixStatus = 'Fixed';
+        });
+        log.debug(`Extensions fix completed`, this.config.auditContext);
+        this.completeProgress(true);
+        return this.missingCtInExtensions;
+      }
+      
+      log.debug(`Extensions audit completed without fixes`, this.config.auditContext);
+      this.completeProgress(true);
       return this.missingCtInExtensions;
+    } catch (error: any) {
+      this.completeProgress(false, error?.message || 'Extensions audit failed');
+      throw error;
     }
-    
-    log.debug(`Extensions audit completed without fixes`, this.config.auditContext);
-    return this.missingCtInExtensions;
   }
 
   async fixExtensionsScope(missingCtInExtensions: Extension[]) {
