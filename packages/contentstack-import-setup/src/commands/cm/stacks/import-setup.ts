@@ -9,6 +9,7 @@ import {
   ContentstackClient,
   pathValidator,
   formatError,
+  CLIProgressManager,
   log,
   handleAndLogError,
   configHandler,
@@ -78,9 +79,23 @@ export default class ImportSetupCommand extends Command {
       importSetupConfig.host = this.cmaHost;
       importSetupConfig.region = this.region;
       importSetupConfig.developerHubBaseUrl = this.developerHubUrl;
+
+      if (flags.branch) {
+        CLIProgressManager.initializeGlobalSummary(
+          `IMPORT-SETUP-${flags.branch}`,
+          flags.branch,
+          `Setting up import for "${flags.branch}" branch...`,
+        );
+      } else {
+        CLIProgressManager.initializeGlobalSummary(`IMPORT-SETUP`, flags.branch, 'Setting up import...');
+      }
+
       const managementAPIClient: ContentstackClient = await managementSDKClient(importSetupConfig);
       const importSetup = new ImportSetup(importSetupConfig, managementAPIClient);
       await importSetup.start();
+      
+      CLIProgressManager.printGlobalSummary();
+      
       log.success(
         `Backup folder and mapper files have been successfully created for the stack using the API key ${importSetupConfig.apiKey}.`,
         importSetupConfig.context,
@@ -90,6 +105,7 @@ export default class ImportSetupCommand extends Command {
         importSetupConfig.context,
       );
     } catch (error) {
+      CLIProgressManager.printGlobalSummary();
       handleAndLogError(error);
     }
   }

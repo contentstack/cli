@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
 import cloneDeep from 'lodash/cloneDeep';
-import { cliux, sanitizePath, TableFlags, TableHeader, log, configHandler } from '@contentstack/cli-utilities';
+import { cliux, sanitizePath, TableFlags, TableHeader, log, configHandler, CLIProgressManager, clearProgressModuleSetting } from '@contentstack/cli-utilities';
 import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'fs';
 import config from './config';
 import { print } from './util/log';
@@ -71,11 +71,23 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    */
   async start(command: CommandNames): Promise<boolean> {
     this.currentCommand = command;
+    
+    // Set progress supported module and console logs setting BEFORE any log calls
+    // This ensures the logger respects the setting when it's initialized
+    const logConfig = configHandler.get('log') || {};
+    // Default to false so progress bars are shown instead of console logs
+    if (logConfig.showConsoleLogs === undefined) {
+      configHandler.set('log.showConsoleLogs', false);
+    }
+    configHandler.set('log.progressSupportedModule', 'audit');
+    
     // Initialize audit context
     this.auditContext = this.createAuditContext();
     log.debug(`Starting audit command: ${command}`, this.auditContext);
     log.info(`Starting audit command: ${command}`, this.auditContext);
-
+    
+    // Initialize global summary for progress tracking
+    CLIProgressManager.initializeGlobalSummary('AUDIT', '', 'Auditing content...');
     
     await this.promptQueue();
     await this.createBackUp();
@@ -163,6 +175,12 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       }
     }
 
+    // Print comprehensive summary at the end
+    CLIProgressManager.printGlobalSummary();
+    
+    // Clear progress module setting now that audit is complete
+    clearProgressModuleSetting();
+
     return (
       !isEmpty(missingCtRefs) ||
       !isEmpty(missingGfRefs) ||
@@ -222,47 +240,59 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
     let dataModuleWise: Record<string, any> = await new ModuleDataReader(cloneDeep(constructorParam)).run();
     log.debug(`Data module wise: ${JSON.stringify(dataModuleWise)}`, this.auditContext);
+    
+    // Extract logConfig and showConsoleLogs once before the loop to reuse throughout
+    const logConfig = configHandler.get('log') || {};
+    const showConsoleLogs = logConfig.showConsoleLogs ?? true;
+    
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       // Update audit context with current module
       this.auditContext = this.createAuditContext(module);
       log.debug(`Starting audit for module: ${module}`, this.auditContext);
       log.info(`Starting audit for module: ${module}`, this.auditContext);
 
-      print([
-        {
-          bold: true,
-          color: 'whiteBright',
-          message: this.$t(this.messages.AUDIT_START_SPINNER, { module }),
-        },
-      ]);
+      // Only show spinner message if console logs are enabled (compatible with line-by-line logs)
+      if (showConsoleLogs) {
+        print([
+          {
+            bold: true,
+            color: 'whiteBright',
+            message: this.$t(this.messages.AUDIT_START_SPINNER, { module }),
+          },
+        ]);
+      }
 
       constructorParam['moduleName'] = module;
 
       switch (module) {
         case 'assets':
           log.info('Executing assets audit', this.auditContext);
-          missingEnvLocalesInAssets = await new Assets(cloneDeep(constructorParam)).run();
+          const assetsTotalCount = dataModuleWise['assets']?.Total || 0;
+          missingEnvLocalesInAssets = await new Assets(cloneDeep(constructorParam)).run(false, assetsTotalCount);
           await this.prepareReport(module, missingEnvLocalesInAssets);
           this.getAffectedData('assets', dataModuleWise['assets'], missingEnvLocalesInAssets);
           log.success(`Assets audit completed. Found ${Object.keys(missingEnvLocalesInAssets || {}).length} issues`, this.auditContext);
           break;
         case 'content-types':
           log.info('Executing content-types audit', this.auditContext);
-          missingCtRefs = await new ContentType(cloneDeep(constructorParam)).run();
+          const contentTypesTotalCount = dataModuleWise['content-types']?.Total || 0;
+          missingCtRefs = await new ContentType(cloneDeep(constructorParam)).run(false, contentTypesTotalCount);
           await this.prepareReport(module, missingCtRefs);
           this.getAffectedData('content-types', dataModuleWise['content-types'], missingCtRefs);
           log.success(`Content-types audit completed. Found ${Object.keys(missingCtRefs || {}).length} issues`, this.auditContext);
           break;
         case 'global-fields':
           log.info('Executing global-fields audit', this.auditContext);
-          missingGfRefs = await new GlobalField(cloneDeep(constructorParam)).run();
+          const globalFieldsTotalCount = dataModuleWise['global-fields']?.Total || 0;
+          missingGfRefs = await new GlobalField(cloneDeep(constructorParam)).run(false, globalFieldsTotalCount);
           await this.prepareReport(module, missingGfRefs);
           this.getAffectedData('global-fields', dataModuleWise['global-fields'], missingGfRefs);
           log.success(`Global-fields audit completed. Found ${Object.keys(missingGfRefs || {}).length} issues`, this.auditContext);
           break;
         case 'entries':
           log.info('Executing entries audit', this.auditContext);
-          missingEntry = await new Entries(cloneDeep(constructorParam)).run();
+          const entriesTotalCount = dataModuleWise['entries']?.Total || 0;
+          missingEntry = await new Entries(cloneDeep(constructorParam)).run(entriesTotalCount);
           missingEntryRefs = missingEntry.missingEntryRefs ?? {};
           missingSelectFeild = missingEntry.missingSelectFeild ?? {};
           missingMandatoryFields = missingEntry.missingMandatoryFields ?? {};
@@ -286,12 +316,13 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           break;
         case 'workflows':
           log.info('Executing workflows audit', this.auditContext);
+          const workflowsTotalCount = dataModuleWise['workflows']?.Total || 0;
           missingCtRefsInWorkflow = await new Workflows({
             ctSchema,
             moduleName: module,
             config: this.sharedConfig,
             fix: this.currentCommand === 'cm:stacks:audit:fix',
-          }).run();
+          }).run(workflowsTotalCount);
           await this.prepareReport(module, missingCtRefsInWorkflow);
           this.getAffectedData('workflows', dataModuleWise['workflows'], missingCtRefsInWorkflow);
           log.success(`Workflows audit completed. Found ${Object.keys(missingCtRefsInWorkflow || {}).length} issues`, this.auditContext);
@@ -299,14 +330,16 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           break;
         case 'extensions':
           log.info('Executing extensions audit', this.auditContext);
-          missingCtRefsInExtensions = await new Extensions(cloneDeep(constructorParam)).run();
+          const extensionsTotalCount = dataModuleWise['extensions']?.Total || 0;
+          missingCtRefsInExtensions = await new Extensions(cloneDeep(constructorParam)).run(extensionsTotalCount);
           await this.prepareReport(module, missingCtRefsInExtensions);
           this.getAffectedData('extensions', dataModuleWise['extensions'], missingCtRefsInExtensions);
           log.success(`Extensions audit completed. Found ${Object.keys(missingCtRefsInExtensions || {}).length} issues`, this.auditContext);
           break;
         case 'custom-roles':
           log.info('Executing custom-roles audit', this.auditContext);
-          missingRefInCustomRoles = await new CustomRoles(cloneDeep(constructorParam)).run();
+          const customRolesTotalCount = dataModuleWise['custom-roles']?.Total || 0;
+          missingRefInCustomRoles = await new CustomRoles(cloneDeep(constructorParam)).run(customRolesTotalCount);
           await this.prepareReport(module, missingRefInCustomRoles);
           this.getAffectedData('custom-roles', dataModuleWise['custom-roles'], missingRefInCustomRoles);
           log.success(`Custom-roles audit completed. Found ${Object.keys(missingRefInCustomRoles || {}).length} issues`, this.auditContext);
@@ -318,25 +351,29 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           const data =  this.getCtAndGfSchema();
           constructorParam.ctSchema = data.ctSchema;
           constructorParam.gfSchema = data.gfSchema;
-          missingFieldRules = await new FieldRule(cloneDeep(constructorParam)).run();
+          const fieldRulesTotalCount = dataModuleWise['content-types']?.Total || 0;
+          missingFieldRules = await new FieldRule(cloneDeep(constructorParam)).run(fieldRulesTotalCount);
           await this.prepareReport(module, missingFieldRules);
           this.getAffectedData('field-rules', dataModuleWise['content-types'], missingFieldRules);
           log.success(`Field-rules audit completed. Found ${Object.keys(missingFieldRules || {}).length} issues`, this.auditContext);
           break;
       }
 
-      print([
-        {
-          bold: true,
-          color: 'whiteBright',
-          message: this.$t(this.messages.AUDIT_START_SPINNER, { module }),
-        },
-        {
-          bold: true,
-          message: ' done',
-          color: 'whiteBright',
-        },
-      ]);
+      // Only show completion message if console logs are enabled
+      if (showConsoleLogs) {
+        print([
+          {
+            bold: true,
+            color: 'whiteBright',
+            message: this.$t(this.messages.AUDIT_START_SPINNER, { module }),
+          },
+          {
+            bold: true,
+            message: ' done',
+            color: 'whiteBright',
+          },
+        ]);
+      }
     }
 
     log.debug('Scan and fix process completed', this.auditContext);

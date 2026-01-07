@@ -2,16 +2,15 @@ import { join } from 'path';
 import omit from 'lodash/omit';
 import isEmpty from 'lodash/isEmpty';
 
-import { fsUtil, fileHelper } from '../../utils';
+import { log, fsUtil, fileHelper } from '../../utils';
 import { ImportConfig, ModuleClassParams, TaxonomyQueryParams } from '../../types';
-import { sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
+import { sanitizePath } from '@contentstack/cli-utilities';
+import BaseImportSetup from './base-setup';
+import { MODULE_NAMES, MODULE_CONTEXTS, PROCESS_NAMES, PROCESS_STATUS } from '../../utils';
 
-export default class TaxonomiesImportSetup {
-  private config: ImportConfig;
+export default class TaxonomiesImportSetup extends BaseImportSetup {
   private taxonomiesFilePath: string;
   private taxonomiesFolderPath: string;
-  private stackAPIClient: ModuleClassParams['stackAPIClient'];
-  private dependencies: ModuleClassParams['dependencies'];
   private taxonomiesConfig: ImportConfig['modules']['taxonomies'];
   private termsSuccessPath: string;
   private taxSuccessPath: string;
@@ -23,12 +22,9 @@ export default class TaxonomiesImportSetup {
   public termsMapper: Record<string, unknown> = {};
   public masterLocaleFilePath: string;
 
-  constructor({ config, stackAPIClient, dependencies }: ModuleClassParams) {
-    this.config = config;
-    if (this.config.context) {
-      this.config.context.module = 'taxonomies';
-    }
-    this.stackAPIClient = stackAPIClient;
+  constructor({ config, stackAPIClient }: ModuleClassParams) {
+    super({ config, stackAPIClient, dependencies: [] });
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.TAXONOMIES];
     this.taxonomiesFolderPath = join(sanitizePath(this.config.contentDir), 'taxonomies');
     this.taxonomiesFilePath = join(this.taxonomiesFolderPath, 'taxonomies.json');
     this.taxonomiesConfig = config.modules.taxonomies;
@@ -58,22 +54,52 @@ export default class TaxonomiesImportSetup {
    */
   async start(): Promise<void> {
     try {
-      const taxonomies: any = fsUtil.readFile(this.taxonomiesFilePath);
+      const taxonomies: any = await this.withLoadingSpinner('TAXONOMIES: Analyzing import data...', async () => {
+        return fsUtil.readFile(this.taxonomiesFilePath);
+      });
+
       if (!isEmpty(taxonomies)) {
-        // 1. Detect locale-based structure
+        const taxonomiesArray = Object.values(taxonomies) as any[];
+        const progress = this.createNestedProgress(this.currentModuleName);
+        
+        // Detect locale-based structure
         this.isLocaleBasedStructure = this.detectLocaleBasedStructure();
 
-        // 2. Create mapper directory
+        // Add processes
+        progress.addProcess(PROCESS_NAMES.TAXONOMIES_MAPPER_GENERATION, 1);
+        progress.addProcess(PROCESS_NAMES.TAXONOMIES_FETCH, taxonomiesArray.length);
+        progress.addProcess(PROCESS_NAMES.TAXONOMIES_TERMS_FETCH, taxonomiesArray.length);
+
+        // Create mapper directory
+        progress
+          .startProcess(PROCESS_NAMES.TAXONOMIES_MAPPER_GENERATION)
+          .updateStatus(
+            PROCESS_STATUS.TAXONOMIES_MAPPER_GENERATION.GENERATING,
+            PROCESS_NAMES.TAXONOMIES_MAPPER_GENERATION,
+          );
         fsUtil.makeDirectory(this.taxonomiesMapperDirPath);
         fsUtil.makeDirectory(this.termsMapperDirPath);
+        this.progressManager?.tick(true, 'mapper directories created', null, PROCESS_NAMES.TAXONOMIES_MAPPER_GENERATION);
+        progress.completeProcess(PROCESS_NAMES.TAXONOMIES_MAPPER_GENERATION, true);
+
+        // Fetch taxonomies
+        progress
+          .startProcess(PROCESS_NAMES.TAXONOMIES_FETCH)
+          .updateStatus(
+            PROCESS_STATUS.TAXONOMIES_FETCH.FETCHING,
+            PROCESS_NAMES.TAXONOMIES_FETCH,
+          );
 
         if (this.isLocaleBasedStructure) {
-          log.info('Detected locale-based folder structure for taxonomies');
-          await this.setupTaxonomiesByLocale(taxonomies);
+          log(this.config, 'Detected locale-based folder structure for taxonomies', 'info');
+          await this.setupTaxonomiesByLocale(taxonomies, progress);
         } else {
-          log.info('Using legacy folder structure for taxonomies');
-          await this.setupTaxonomiesLegacy(taxonomies);
+          log(this.config, 'Using legacy folder structure for taxonomies', 'info');
+          await this.setupTaxonomiesLegacy(taxonomies, progress);
         }
+
+        progress.completeProcess(PROCESS_NAMES.TAXONOMIES_FETCH, true);
+        progress.completeProcess(PROCESS_NAMES.TAXONOMIES_TERMS_FETCH, true);
 
         if (this.taxonomiesMapper !== undefined && !isEmpty(this.taxonomiesMapper)) {
           fsUtil.writeFile(this.taxSuccessPath, this.taxonomiesMapper);
@@ -82,34 +108,45 @@ export default class TaxonomiesImportSetup {
           fsUtil.writeFile(this.termsSuccessPath, this.termsMapper);
         }
 
-        log.success(`The required setup files for taxonomies have been generated successfully.`);
+        this.completeProgress(true);
+        log(this.config, `The required setup files for taxonomies have been generated successfully.`, 'success');
       } else {
-        log.info('No taxonomies found in the content folder.');
+        log(this.config, 'No taxonomies found in the content folder.', 'info');
       }
     } catch (error) {
-      handleAndLogError(error, { ...this.config.context }, 'Error generating taxonomies mapper');
+      this.completeProgress(false, error?.message || 'Taxonomies mapper generation failed');
+      log(this.config, `Error generating taxonomies mapper: ${error.message}`, 'error');
     }
   }
 
   /**
    * Setup taxonomies using legacy format (root-level taxonomy files)
    */
-  async setupTaxonomiesLegacy(taxonomies: any): Promise<void> {
+  async setupTaxonomiesLegacy(taxonomies: any, progress: any): Promise<void> {
     for (const taxonomy of Object.values(taxonomies) as any) {
-      let targetTaxonomy: any = await this.getTaxonomies(taxonomy);
-      if (!targetTaxonomy) {
-        log.info(`Taxonomies with uid '${taxonomy.uid}' not found in the stack!`);
-        continue;
-      }
-      targetTaxonomy = this.sanitizeTaxonomyAttribs(targetTaxonomy);
-      this.taxonomiesMapper[taxonomy.uid] = targetTaxonomy;
-      const terms = await this.getAllTermsOfTaxonomy(targetTaxonomy);
-      if (Array.isArray(terms) && terms.length > 0) {
-        log.info(`Terms found for taxonomy '${taxonomy.uid}', processing...`);
-        const sanitizedTerms = this.sanitizeTermsAttribs(terms);
-        this.termsMapper[taxonomy.uid] = sanitizedTerms;
-      } else {
-        log.info(`No terms found for taxonomy '${taxonomy.uid}', skipping...`);
+      try {
+        let targetTaxonomy: any = await this.getTaxonomies(taxonomy);
+        if (!targetTaxonomy) {
+          this.progressManager?.tick(false, `taxonomy: ${taxonomy.uid}`, 'Not found in stack', PROCESS_NAMES.TAXONOMIES_FETCH);
+          log(this.config, `Taxonomies with uid '${taxonomy.uid}' not found in the stack!`, 'info');
+          continue;
+        }
+        targetTaxonomy = this.sanitizeTaxonomyAttribs(targetTaxonomy);
+        this.taxonomiesMapper[taxonomy.uid] = targetTaxonomy;
+        this.progressManager?.tick(true, `taxonomy: ${taxonomy.uid}`, null, PROCESS_NAMES.TAXONOMIES_FETCH);
+        
+        const terms = await this.getAllTermsOfTaxonomy(targetTaxonomy);
+        if (Array.isArray(terms) && terms.length > 0) {
+          log(this.config, `Terms found for taxonomy '${taxonomy.uid}', processing...`, 'info');
+          const sanitizedTerms = this.sanitizeTermsAttribs(terms);
+          this.termsMapper[taxonomy.uid] = sanitizedTerms;
+          this.progressManager?.tick(true, `terms: ${taxonomy.uid} (${terms.length})`, null, PROCESS_NAMES.TAXONOMIES_TERMS_FETCH);
+        } else {
+          log(this.config, `No terms found for taxonomy '${taxonomy.uid}', skipping...`, 'info');
+          this.progressManager?.tick(true, `terms: ${taxonomy.uid} (none)`, null, PROCESS_NAMES.TAXONOMIES_TERMS_FETCH);
+        }
+      } catch (error) {
+        this.progressManager?.tick(false, `taxonomy: ${taxonomy.uid}`, error?.message || 'Failed to fetch', PROCESS_NAMES.TAXONOMIES_FETCH);
       }
     }
   }
@@ -118,32 +155,49 @@ export default class TaxonomiesImportSetup {
    * Setup taxonomies using locale-based format (taxonomies organized by locale)
    * For locale-based structure, we query the target stack for each taxonomy+locale combination
    */
-  async setupTaxonomiesByLocale(taxonomies: any): Promise<void> {
+  async setupTaxonomiesByLocale(taxonomies: any, progress: any): Promise<void> {
     const locales = this.loadAvailableLocales();
 
     for (const localeCode of Object.keys(locales)) {
-      log.info(`Processing taxonomies for locale: ${localeCode}`);
+      log(this.config, `Processing taxonomies for locale: ${localeCode}`, 'info');
 
       for (const taxonomy of Object.values(taxonomies) as any) {
-        // Query target stack for this taxonomy in this locale
-        let targetTaxonomy: any = await this.getTaxonomies(taxonomy, localeCode);
-        if (!targetTaxonomy) {
-          log.info(`Taxonomy '${taxonomy.uid}' not found in target stack for locale: ${localeCode}`);
-          continue;
-        }
+        try {
+          // Query target stack for this taxonomy in this locale
+          let targetTaxonomy: any = await this.getTaxonomies(taxonomy, localeCode);
+          if (!targetTaxonomy) {
+            this.progressManager?.tick(false, `taxonomy: ${taxonomy.uid} (${localeCode})`, 'Not found in stack', PROCESS_NAMES.TAXONOMIES_FETCH);
+            log(this.config, `Taxonomy '${taxonomy.uid}' not found in target stack for locale: ${localeCode}`, 'info');
+            continue;
+          }
 
-        targetTaxonomy = this.sanitizeTaxonomyAttribs(targetTaxonomy);
+          targetTaxonomy = this.sanitizeTaxonomyAttribs(targetTaxonomy);
 
-        // Store with composite key: taxonomyUID_locale
-        // const mapperKey = `${taxonomy.uid}_${localeCode}`; // TODO: Unsure about this required or not
-        this.taxonomiesMapper[taxonomy.uid] = targetTaxonomy;
-        const terms = await this.getAllTermsOfTaxonomy(targetTaxonomy, localeCode);
-        if (Array.isArray(terms) && terms.length > 0) {
-          log.info(`Terms found for taxonomy '${taxonomy.uid} for locale: ${localeCode}', processing...`);
-          const sanitizedTerms = this.sanitizeTermsAttribs(terms);
-          this.termsMapper[taxonomy.uid] = sanitizedTerms;
-        } else {
-          log.info(`No terms found for taxonomy '${taxonomy.uid} for locale: ${localeCode}', skipping...`);
+          // Store with composite key: taxonomyUID_locale
+          // const mapperKey = `${taxonomy.uid}_${localeCode}`; // TODO: Unsure about this required or not
+          this.taxonomiesMapper[taxonomy.uid] = targetTaxonomy;
+          this.progressManager?.tick(true, `taxonomy: ${taxonomy.uid} (${localeCode})`, null, PROCESS_NAMES.TAXONOMIES_FETCH);
+          
+          const terms = await this.getAllTermsOfTaxonomy(targetTaxonomy, localeCode);
+          if (Array.isArray(terms) && terms.length > 0) {
+            log(
+              this.config,
+              `Terms found for taxonomy '${taxonomy.uid} for locale: ${localeCode}', processing...`,
+              'info',
+            );
+            const sanitizedTerms = this.sanitizeTermsAttribs(terms);
+            this.termsMapper[taxonomy.uid] = sanitizedTerms;
+            this.progressManager?.tick(true, `terms: ${taxonomy.uid} (${localeCode}, ${terms.length})`, null, PROCESS_NAMES.TAXONOMIES_TERMS_FETCH);
+          } else {
+            log(
+              this.config,
+              `No terms found for taxonomy '${taxonomy.uid} for locale: ${localeCode}', skipping...`,
+              'info',
+            );
+            this.progressManager?.tick(true, `terms: ${taxonomy.uid} (${localeCode}, none)`, null, PROCESS_NAMES.TAXONOMIES_TERMS_FETCH);
+          }
+        } catch (error) {
+          this.progressManager?.tick(false, `taxonomy: ${taxonomy.uid} (${localeCode})`, error?.message || 'Failed to fetch', PROCESS_NAMES.TAXONOMIES_FETCH);
         }
       }
     }
@@ -159,11 +213,11 @@ export default class TaxonomiesImportSetup {
 
     // Check if master locale folder exists (indicates new locale-based structure)
     if (!fileHelper.fileExistsSync(masterLocaleFolder)) {
-      log.info('No locale-based folder structure detected');
+      log(this.config, 'No locale-based folder structure detected', 'info');
       return false;
     }
 
-    log.info('Locale-based folder structure detected');
+    log(this.config, 'Locale-based folder structure detected', 'info');
     return true;
   }
 
@@ -183,17 +237,17 @@ export default class TaxonomiesImportSetup {
         // The file contains an object with UID as key, extract the code
         const firstLocale = Object.values(masterLocaleData)[0];
         if (firstLocale?.code) {
-          log.info(`Master locale loaded from file: ${firstLocale.code}`);
+          log(this.config, `Master locale loaded from file: ${firstLocale.code}`, 'info');
           return firstLocale.code;
         }
       } catch (error) {
-        log.warn('Error reading master-locale.json, using fallback', { error });
+        log(this.config, 'Error reading master-locale.json, using fallback', 'warn');
       }
     }
 
     // Fallback to config or default
     const fallbackCode = this.config.master_locale?.code || 'en-us';
-    log.info(`Using fallback master locale: ${fallbackCode}`);
+    log(this.config, `Using fallback master locale: ${fallbackCode}`, 'info');
     return fallbackCode;
   }
 
@@ -210,7 +264,7 @@ export default class TaxonomiesImportSetup {
 
     // Then load additional locales from locales.json if it exists
     if (!fileHelper.fileExistsSync(this.localesFilePath)) {
-      log.info('No locales file found, using only master locale');
+      log(this.config, 'No locales file found, using only master locale', 'info');
       return locales;
     }
 
@@ -223,10 +277,14 @@ export default class TaxonomiesImportSetup {
         }
       }
 
-      log.info(`Loaded ${Object.keys(locales).length} locales (1 master + ${Object.keys(locales).length - 1} additional)`);
+      log(
+        this.config,
+        `Loaded ${Object.keys(locales).length} locales (1 master + ${Object.keys(locales).length - 1} additional)`,
+        'info',
+      );
       return locales;
     } catch (error) {
-      log.error('Error loading locales file, using only master locale', { error });
+      log(this.config, 'Error loading locales file, using only master locale', 'error');
       return locales;
     }
   }
@@ -316,9 +374,10 @@ export default class TaxonomiesImportSetup {
 
     if (err?.errorMessage || err?.message) {
       const errorMsg = err?.errorMessage || err?.errors?.taxonomy || err?.errors?.term || err?.message;
-      log.error(`${errorMsg}${taxInfo}`, { error: err, taxonomyUid, locale });
+      log(this.config, `${errorMsg}${taxInfo}`, 'error');
     } else {
-      log.error(`Error fetching taxonomy data${taxInfo}!`, { error: err, taxonomyUid, locale });
+      log(this.config, `Error fetching taxonomy data${taxInfo}!`, 'error');
+      log(this.config, err, 'error');
     }
   }
 }

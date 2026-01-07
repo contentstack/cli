@@ -47,6 +47,7 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   backupDir: string;
   createBackupDir?: string;
   region: any;
+  authenticationMethod?: string;
 }
 
 type branch = {
