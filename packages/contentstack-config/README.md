@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-config/1.16.2 darwin-arm64 node-v22.14.0
+@contentstack/cli-config/1.17.0 darwin-arm64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -33,16 +33,19 @@ USAGE
 * [`csdx config:get:ea-header`](#csdx-configgetea-header)
 * [`csdx config:get:early-access-header`](#csdx-configgetearly-access-header)
 * [`csdx config:get:log`](#csdx-configgetlog)
+* [`csdx config:get:proxy`](#csdx-configgetproxy)
 * [`csdx config:get:rate-limit`](#csdx-configgetrate-limit)
 * [`csdx config:get:region`](#csdx-configgetregion)
 * [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
 * [`csdx config:remove:ea-header`](#csdx-configremoveea-header)
 * [`csdx config:remove:early-access-header`](#csdx-configremoveearly-access-header)
+* [`csdx config:remove:proxy`](#csdx-configremoveproxy)
 * [`csdx config:remove:rate-limit`](#csdx-configremoverate-limit)
 * [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
 * [`csdx config:set:ea-header`](#csdx-configsetea-header)
 * [`csdx config:set:early-access-header`](#csdx-configsetearly-access-header)
 * [`csdx config:set:log`](#csdx-configsetlog)
+* [`csdx config:set:proxy`](#csdx-configsetproxy)
 * [`csdx config:set:rate-limit`](#csdx-configsetrate-limit)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 
@@ -117,6 +120,23 @@ EXAMPLES
 ```
 
 _See code: [src/commands/config/get/log.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/log.ts)_
+
+## `csdx config:get:proxy`
+
+Get proxy configuration for CLI
+
+```
+USAGE
+  $ csdx config:get:proxy
+
+DESCRIPTION
+  Get proxy configuration for CLI
+
+EXAMPLES
+  $ csdx config:get:proxy
+```
+
+_See code: [src/commands/config/get/proxy.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/proxy.ts)_
 
 ## `csdx config:get:rate-limit`
 
@@ -226,6 +246,23 @@ EXAMPLES
 ```
 
 _See code: [src/commands/config/remove/early-access-header.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/early-access-header.ts)_
+
+## `csdx config:remove:proxy`
+
+Remove proxy configuration from global config
+
+```
+USAGE
+  $ csdx config:remove:proxy
+
+DESCRIPTION
+  Remove proxy configuration from global config
+
+EXAMPLES
+  $ csdx config:remove:proxy
+```
+
+_See code: [src/commands/config/remove/proxy.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/proxy.ts)_
 
 ## `csdx config:remove:rate-limit`
 
@@ -357,6 +394,34 @@ EXAMPLES
 ```
 
 _See code: [src/commands/config/set/log.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/log.ts)_
+
+## `csdx config:set:proxy`
+
+Set proxy configuration for CLI
+
+```
+USAGE
+  $ csdx config:set:proxy [--host <value>] [--port <value>] [--protocol http|https] [--username <value>]
+
+FLAGS
+  --host=<value>       Proxy host address
+  --port=<value>       Proxy port number
+  --protocol=<option>  [default: http] Proxy protocol (http or https)
+                       <options: http|https>
+  --username=<value>   Proxy username (optional)
+
+DESCRIPTION
+  Set proxy configuration for CLI
+
+EXAMPLES
+  $ csdx config:set:proxy --host 127.0.0.1 --port 3128
+
+  $ csdx config:set:proxy --host proxy.example.com --port 8080 --protocol https
+
+  $ csdx config:set:proxy --host proxy.example.com --port 8080 --username user
+```
+
+_See code: [src/commands/config/set/proxy.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/proxy.ts)_
 
 ## `csdx config:set:rate-limit`
 
