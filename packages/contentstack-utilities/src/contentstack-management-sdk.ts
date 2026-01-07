@@ -2,6 +2,10 @@ import { client, ContentstackClient, ContentstackConfig } from '@contentstack/ma
 import authHandler from './auth-handler';
 import { Agent } from 'node:https';
 import configHandler, { default as configStore } from './config-handler';
+import { getProxyConfig } from './proxy-helper';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 class ManagementSDKInitiator {
   private analyticsInfo: string;
@@ -13,43 +17,8 @@ class ManagementSDKInitiator {
   }
 
   async createAPIClient(config): Promise<ContentstackClient> {
-    // Get proxy configuration with priority: config.proxy > configStore.proxy > HTTPS_PROXY > HTTP_PROXY
-    let proxyConfig = config.proxy;
-    
-    // Check global config store if not provided in config
-    if (!proxyConfig) {
-      proxyConfig = configStore.get('proxy');
-    }
-    
-    // Check environment variables if still not found
-    if (!proxyConfig) {
-      const proxyUrl = process.env.HTTPS_PROXY || process.env.HTTP_PROXY;
-      if (proxyUrl) {
-        // Parse URL string into proxy object format (SDK expects object with host, port, protocol)
-        try {
-          const url = new URL(proxyUrl);
-          const parsedProxy: any = {
-            protocol: url.protocol.replace(':', '') as 'http' | 'https',
-            host: url.hostname,
-            port: Number.parseInt(url.port) || (url.protocol === 'https:' ? 443 : 80),
-          };
-          // Include auth if present in URL
-          if (url.username || url.password) {
-            parsedProxy.auth = {
-              username: url.username,
-              password: url.password,
-            };
-          }
-          proxyConfig = parsedProxy;
-        } catch (error) {
-          // If URL parsing fails, ignore proxy config
-          if (process.env.DEBUG_PROXY === 'true') {
-            console.log('[PROXY] Failed to parse proxy URL:', error instanceof Error ? error.message : String(error));
-          }
-          proxyConfig = undefined;
-        }
-      }
-    }
+    // Get proxy configuration with priority: Environment variables > Global config
+    const proxyConfig = getProxyConfig();
 
     const option: ContentstackConfig = {
       host: config.host,
@@ -57,7 +26,6 @@ class ManagementSDKInitiator {
       maxBodyLength: config.maxBodyLength || 1000000000,
       maxRequests: 10,
       retryLimit: 3,
-      // Reduce timeout when proxy is configured to fail faster on invalid proxy
       timeout: proxyConfig ? 10000 : 60000, // 10s timeout with proxy, 60s without
       delayMs: config.delayMs,
       httpsAgent: new Agent({
@@ -71,6 +39,31 @@ class ManagementSDKInitiator {
       retryDelay: Math.floor(Math.random() * (8000 - 3000 + 1) + 3000),
       logHandler: (level, data) => {},
       retryCondition: (error: any): boolean => {
+        // Don't retry proxy connection errors - fail fast
+        // Check if proxy is configured and this is a connection error
+        if (proxyConfig) {
+          const errorCode = error.code || error.errno || error.syscall;
+          const errorMessage = error.message || String(error);
+          
+          // Detect proxy connection failures - don't retry these
+          if (
+            errorCode === 'ECONNREFUSED' ||
+            errorCode === 'ETIMEDOUT' ||
+            errorCode === 'ENOTFOUND' ||
+            errorCode === 'ERR_BAD_RESPONSE' ||
+            errorMessage?.includes('ECONNREFUSED') ||
+            errorMessage?.includes('connect ECONNREFUSED') ||
+            errorMessage?.includes('ERR_BAD_RESPONSE') ||
+            errorMessage?.includes('Bad response') ||
+            errorMessage?.includes('proxy') ||
+            (errorCode === 'ETIMEDOUT' && proxyConfig) // Timeout with proxy likely means proxy issue
+          ) {
+            // Don't retry - return false to fail immediately
+            // The error will be thrown and handled by error formatter
+            return false;
+          }
+        }
+        
         // LINK ***REMOVED***vascript/blob/72fee8ad75ba7d1d5bab8489ebbbbbbaefb1c880/src/core/stack.js#L49
         if (error.response && error.response.status) {
           switch (error.response.status) {
@@ -84,6 +77,7 @@ class ManagementSDKInitiator {
               return false;
           }
         }
+        return false;
       },
       retryDelayOptions: {
         base: 1000,
@@ -115,46 +109,8 @@ class ManagementSDKInitiator {
       },
     };
 
-    // Set proxy configuration if found
     if (proxyConfig) {
-      if (typeof proxyConfig === 'object') {
-        option.proxy = proxyConfig;
-        // Log proxy configuration for debugging (enable with DEBUG_PROXY=true)
-        if (process.env.DEBUG_PROXY === 'true') {
-          // Only log non-sensitive proxy information
-          const safeProxyConfig: any = {
-            protocol: proxyConfig.protocol,
-            port: proxyConfig.port,
-            // Host is redacted as it may contain sensitive internal network information
-            host: proxyConfig.host ? 'REDACTED' : undefined,
-            // Auth information is always redacted
-            auth: proxyConfig.auth ? {
-              username: proxyConfig.auth.username ? 'REDACTED' : undefined,
-              password: proxyConfig.auth.password ? 'REDACTED' : undefined,
-            } : undefined,
-          };
-          console.log('[PROXY] Using proxy:', JSON.stringify(safeProxyConfig));
-        }
-      } else if (typeof proxyConfig === 'string') {
-        // If proxy is provided as string URL, parse it to object format
-        try {
-          const url = new URL(proxyConfig);
-          const parsedProxy: any = {
-            protocol: url.protocol.replace(':', '') as 'http' | 'https',
-            host: url.hostname,
-            port: Number.parseInt(url.port) || (url.protocol === 'https:' ? 443 : 80),
-          };
-          if (url.username || url.password) {
-            parsedProxy.auth = {
-              username: url.username,
-              password: url.password,
-            };
-          }
-          option.proxy = parsedProxy;
-        } catch {
-          // If URL parsing fails, ignore proxy config
-        }
-      }
+      option.proxy = proxyConfig;
     }
     if (config.endpoint) {
       option.endpoint = config.endpoint;
