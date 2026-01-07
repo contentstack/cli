@@ -83,7 +83,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
         importCmdFlags['stack-uid'] || importCmdFlags['stack-api-key'] || config.target_stack || (await askAPIKey());
       if (typeof config.apiKey !== 'string' || !config.apiKey || !config.apiKey.trim()) {
         log.debug('Invalid or empty API key received!', { apiKey: config.apiKey });
-        throw new Error('Stack API key cannot be empty. Please provide a valid stack API key.');
+        throw new Error('Invalid or empty API key received. Please provide a valid stack API key.');
       }
     }
   }
