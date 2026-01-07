@@ -81,12 +81,8 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
 
       config.apiKey =
         exportCmdFlags['stack-uid'] || exportCmdFlags['stack-api-key'] || config.source_stack || (await askAPIKey());
-      if (typeof config.apiKey !== 'string') {
-        log.debug('Invalid API key received!', { apiKey: config.apiKey });
-        throw new Error('Invalid API key received');
-      }
-      if (!config.apiKey || !config.apiKey.trim()) {
-        log.debug('Empty API key received!', { apiKey: config.apiKey });
+      if (typeof config.apiKey !== 'string' || !config.apiKey || !config.apiKey.trim()) {
+        log.debug('Invalid or empty API key received!', { apiKey: config.apiKey });
         throw new Error('Stack API key cannot be empty. Please provide a valid stack API key.');
       }
     }
