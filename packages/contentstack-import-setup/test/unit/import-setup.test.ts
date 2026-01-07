@@ -29,7 +29,6 @@ describe('ImportSetup', () => {
     branchName: '',
     selectedModules: ['entries'],
     backupDir: '',
-    contentVersion: 1,
     region: 'us',
     modules: {
       extensions: {
