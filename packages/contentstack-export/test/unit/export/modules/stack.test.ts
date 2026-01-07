@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { FsUtility } from '@contentstack/cli-utilities';
+import { FsUtility, isAuthenticated, managementSDKClient, handleAndLogError } from '@contentstack/cli-utilities';
+import * as utilities from '@contentstack/cli-utilities';
 import ExportStack from '../../../../src/export/modules/stack';
 import ExportConfig from '../../../../src/types/export-config';
 
@@ -265,11 +266,6 @@ describe('ExportStack', () => {
     });
   });
 
-  describe('getStack() method', () => {
- 
-
-  });
-
   describe('getLocales() method', () => {
     it('should fetch and return master locale', async () => {
       const locale = await exportStack.getLocales();
@@ -342,6 +338,78 @@ describe('ExportStack', () => {
       expect(locale).to.be.undefined;
     });
 
+    it('should handle master locale not found after searching all pages', async () => {
+      let callCount = 0;
+      const limit = (exportStack as any).stackConfig.limit || 100;
+      const localeStub = {
+        query: sinon.stub().returns({
+          find: sinon.stub().callsFake(() => {
+            callCount++;
+            // Return batches without master locale until all pages are exhausted
+            // First call: 100 items, count 100, skip will be 100, which equals count, so it stops
+            return Promise.resolve({
+              items: Array(limit).fill({ uid: `locale-${callCount}`, code: 'en', fallback_locale: 'en-us' }),
+              count: limit // Only limit items, so skip will equal count and stop
+            });
+          })
+        })
+      };
+      
+      mockStackClient.locale.returns(localeStub);
+      const locale = await exportStack.getLocales();
+      
+      // Should return undefined when master locale not found after all pages
+      expect(locale).to.be.undefined;
+      // Should have searched through available pages
+      expect(callCount).to.be.greaterThan(0);
+    });
+
+    it('should handle getLocales with skip parameter', async () => {
+      const localeStub = {
+        query: sinon.stub().returns({
+          find: sinon.stub().resolves({
+            items: [{ uid: 'locale-master', code: 'en-us', fallback_locale: null, name: 'English' }],
+            count: 1
+          })
+        })
+      };
+      
+      mockStackClient.locale.returns(localeStub);
+      const locale = await exportStack.getLocales(100);
+      
+      // Should find master locale even when starting with skip
+      expect(locale).to.exist;
+      expect(locale.code).to.equal('en-us');
+      // Verify skip was set in query
+      expect((exportStack as any).qs.skip).to.equal(100);
+    });
+
+    it('should handle error and propagate it when fetching locales fails', async () => {
+      const localeError = new Error('Locale fetch failed');
+      const localeStub = {
+        query: sinon.stub().returns({
+          find: sinon.stub().rejects(localeError)
+        })
+      };
+      
+      mockStackClient.locale.returns(localeStub);
+      const handleAndLogErrorSpy = sinon.spy();
+      sinon.replaceGetter(utilities, 'handleAndLogError', () => handleAndLogErrorSpy);
+      
+      try {
+        await exportStack.getLocales();
+        expect.fail('Should have thrown error');
+      } catch (error) {
+        expect(error).to.equal(localeError);
+        // Should handle and log error
+        expect(handleAndLogErrorSpy.called).to.be.true;
+        expect(handleAndLogErrorSpy.calledWith(
+          localeError,
+          sinon.match.has('module', 'stack')
+        )).to.be.true;
+      }
+    });
+
     it('should find master locale in first batch when present', async () => {
       const localeStub = {
         query: sinon.stub().returns({
@@ -366,19 +434,52 @@ describe('ExportStack', () => {
     it('should export stack successfully and write to file', async () => {
       const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
       const makeDirectoryStub = FsUtility.prototype.makeDirectory as sinon.SinonStub;
+      const stackData = { name: 'Test Stack', uid: 'stack-uid', org_uid: 'org-123' };
+      mockStackClient.fetch = sinon.stub().resolves(stackData);
       
-      await exportStack.exportStack();
+      const result = await exportStack.exportStack();
       
       expect(writeFileStub.called).to.be.true;
       expect(makeDirectoryStub.called).to.be.true;
+      // Should return the stack data
+      expect(result).to.deep.equal(stackData);
+      // Verify file was written with correct path
+      const writeCall = writeFileStub.getCall(0);
+      expect(writeCall.args[0]).to.include('stack.json');
+      expect(writeCall.args[1]).to.deep.equal(stackData);
     });
 
     it('should handle errors when exporting stack without throwing', async () => {
-      mockStackClient.fetch = sinon.stub().rejects(new Error('Stack fetch failed'));
+      const stackError = new Error('Stack fetch failed');
+      mockStackClient.fetch = sinon.stub().rejects(stackError);
+      const handleAndLogErrorSpy = sinon.spy();
+      sinon.replaceGetter(utilities, 'handleAndLogError', () => handleAndLogErrorSpy);
       
       // Should complete without throwing despite error
-      // The assertion is that await doesn't throw
+      const result = await exportStack.exportStack();
+      
+      // Should return undefined on error
+      expect(result).to.be.undefined;
+      // Should handle and log error
+      expect(handleAndLogErrorSpy.called).to.be.true;
+      expect(handleAndLogErrorSpy.calledWith(
+        stackError,
+        sinon.match.has('module', 'stack')
+      )).to.be.true;
+    });
+
+    it('should create directory before writing stack file', async () => {
+      const makeDirectoryStub = FsUtility.prototype.makeDirectory as sinon.SinonStub;
+      const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
+      mockStackClient.fetch = sinon.stub().resolves({ name: 'Test Stack' });
+      
       await exportStack.exportStack();
+      
+      // Directory should be created before file write
+      expect(makeDirectoryStub.called).to.be.true;
+      expect(writeFileStub.called).to.be.true;
+      // Verify directory creation happens before file write
+      expect(makeDirectoryStub.calledBefore(writeFileStub)).to.be.true;
     });
   });
 
@@ -386,19 +487,56 @@ describe('ExportStack', () => {
     it('should export stack settings successfully and write to file', async () => {
       const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
       const makeDirectoryStub = FsUtility.prototype.makeDirectory as sinon.SinonStub;
+      const settingsData = { 
+        name: 'Stack Settings', 
+        description: 'Settings description',
+        settings: { global: { example: 'value' } }
+      };
+      mockStackClient.settings = sinon.stub().resolves(settingsData);
       
-      await exportStack.exportStackSettings();
+      const result = await exportStack.exportStackSettings();
       
       expect(writeFileStub.called).to.be.true;
       expect(makeDirectoryStub.called).to.be.true;
+      // Should return the settings data
+      expect(result).to.deep.equal(settingsData);
+      // Verify file was written with correct path
+      const writeCall = writeFileStub.getCall(0);
+      expect(writeCall.args[0]).to.include('settings.json');
+      expect(writeCall.args[1]).to.deep.equal(settingsData);
     });
 
     it('should handle errors when exporting settings without throwing', async () => {
-      mockStackClient.settings = sinon.stub().rejects(new Error('Settings fetch failed'));
+      const settingsError = new Error('Settings fetch failed');
+      mockStackClient.settings = sinon.stub().rejects(settingsError);
+      const handleAndLogErrorSpy = sinon.spy();
+      sinon.replaceGetter(utilities, 'handleAndLogError', () => handleAndLogErrorSpy);
 
       // Should complete without throwing despite error
-      // The assertion is that await doesn't throw
+      const result = await exportStack.exportStackSettings();
+      
+      // Should return undefined on error
+      expect(result).to.be.undefined;
+      // Should handle and log error
+      expect(handleAndLogErrorSpy.called).to.be.true;
+      expect(handleAndLogErrorSpy.calledWith(
+        settingsError,
+        sinon.match.has('module', 'stack')
+      )).to.be.true;
+    });
+
+    it('should create directory before writing settings file', async () => {
+      const makeDirectoryStub = FsUtility.prototype.makeDirectory as sinon.SinonStub;
+      const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
+      mockStackClient.settings = sinon.stub().resolves({ name: 'Settings' });
+      
       await exportStack.exportStackSettings();
+      
+      // Directory should be created before file write
+      expect(makeDirectoryStub.called).to.be.true;
+      expect(writeFileStub.called).to.be.true;
+      // Verify directory creation happens before file write
+      expect(makeDirectoryStub.calledBefore(writeFileStub)).to.be.true;
     });
   });
 

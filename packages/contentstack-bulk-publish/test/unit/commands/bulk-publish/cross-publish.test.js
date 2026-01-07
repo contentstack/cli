@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
-const { cliux } = require('@contentstack/cli-utilities');
+const { cliux, configHandler } = require('@contentstack/cli-utilities');
 const CrossPublish = require('../../../../src/commands/cm/bulk-publish/cross-publish');
 const AddTokenCommand = require('@contentstack/cli-auth/lib/commands/auth/tokens/add').default;
 const helper = require('../../../helpers/helper');
@@ -8,9 +8,26 @@ const helper = require('../../../helpers/helper');
 describe('CrossPublish', () => {
   let sandbox;
   let stackDetails;
+  let configHandlerGetStub;
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
+    
+    // Stub configHandler.get to configure region
+    // Region is required for cmaHost property in Command base class
+    configHandlerGetStub = sandbox.stub(configHandler, 'get').callsFake((key) => {
+      if (key === 'region') {
+        return {
+          cma: 'api.contentstack.io',
+          cda: 'cdn.contentstack.io',
+          uiHost: 'app.contentstack.com',
+          developerHubUrl: 'developer.contentstack.com',
+          launchHubUrl: 'launch.contentstack.com',
+          personalizeUrl: 'personalize.contentstack.com',
+        };
+      }
+      return undefined;
+    });
 
     stackDetails = {
       api_key: 'asdf',
@@ -102,7 +119,7 @@ describe('CrossPublish', () => {
         'token123',
       ]);
     } catch (error) {
-      expect(error.message).to.include('Please use `--alias` or `--stack-api-key` to proceed.');
+      expect(error.message).to.include('Use the `--alias` or `--stack-api-key` flag to proceed.');
     }
   });
 

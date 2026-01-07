@@ -60,7 +60,7 @@ export default class ImportStack extends BaseClass {
     log.debug('Processing stack settings for import', this.importConfig.context);
 
     // Update environment UID mapping if live preview is configured
-    if (this.stackSettings?.live_preview && this.stackSettings?.live_preview['default-env']) {
+    if (this.stackSettings?.live_preview && this.stackSettings?.live_preview['default-env'] !== undefined) {
       const oldEnvUid = this.stackSettings.live_preview['default-env'];
       const mappedEnvUid = this.envUidMapper[oldEnvUid];
 

@@ -141,8 +141,29 @@ export const updateImportConfigWithResolvedPath = async (
 
   importConfig.data = resolvedPath;
 
+  // Check if export-info.json exists to determine contentVersion
+  const exportInfoPath = path.join(resolvedPath, 'export-info.json');
+  if (fileExistsSync(exportInfoPath)) {
+    try {
+      const exportInfo = await readFile(exportInfoPath);
+      // If export-info.json exists, set contentVersion to 2 (or use value from file if present)
+      if (exportInfo && exportInfo.contentVersion) {
+        importConfig.contentVersion = exportInfo.contentVersion;
+      } else {
+        // If export-info.json exists but contentVersion is missing, default to 2
+        importConfig.contentVersion = 2;
+      }
+    } catch (error) {
+      // If export-info.json exists but is null or can't be read, default to 2
+      importConfig.contentVersion = 2;
+    }
+  } else {
+    // If export-info.json doesn't exist, default to 1 (legacy format)
+    importConfig.contentVersion = 1;
+  }
+
   log.debug(
-    `Import config updated - contentDir: ${importConfig.contentDir}, branchDir: ${importConfig.branchDir}, data: ${importConfig.data},`,
+    `Import config updated - contentDir: ${importConfig.contentDir}, branchDir: ${importConfig.branchDir}, data: ${importConfig.data}, contentVersion: ${importConfig.contentVersion}`,
   );
 };
 

@@ -7,7 +7,7 @@ describe('CLIErrorHandler', () => {
   let errorHandler: CLIErrorHandler;
 
   beforeEach(() => {
-    errorHandler = new CLIErrorHandler(); 
+    errorHandler = new CLIErrorHandler();
   });
 
   fancy.it('should normalize string error to Error object', () => {
@@ -36,10 +36,8 @@ describe('CLIErrorHandler', () => {
     expect(hidden).to.equal(true);
   });
 
-  fancy.it('should extract debug payload correctly', () => {
+  fancy.it('should extract error payload correctly', () => {
     const error = new Error('API error');
-    (error as any).status = 500;
-    (error as any).statusText = 'Internal Server Error';
     (error as any).request = {
       method: 'GET',
       url: 'http://api.test/resource',
@@ -50,13 +48,15 @@ describe('CLIErrorHandler', () => {
       status: 500,
       statusText: 'Internal Server Error',
       data: { error: 'fail' },
-      headers: { 'content-type': 'application/json' },
     };
+    (error as any).status = 500; // Also set status on error directly
 
-    const debugPayload = errorHandler['extractErrorPayload'](error);
-    expect(debugPayload.request.method).to.equal('GET');
-    expect(debugPayload.response.status).to.equal(500);
-    expect(debugPayload.status).to.equal(500);
+    const errorPayload = errorHandler['extractErrorPayload'](error);
+    expect(errorPayload.request.method).to.equal('GET');
+    expect(errorPayload.response.status).to.equal(500);
+    expect(errorPayload.status).to.equal(500);
+    expect(errorPayload.name).to.equal('Error');
+    expect(errorPayload.message).to.equal('API error');
   });
 
   fancy.it('should return full classified error with context', () => {
@@ -68,7 +68,7 @@ describe('CLIErrorHandler', () => {
     });
 
     expect(classified.type).to.equal(ERROR_TYPES.SERVER_ERROR);
-    expect(classified.message).to.equal('Test error (HTTP 502)');
+    expect(classified.message).to.equal('Test error');
     expect(classified.meta?.operation).to.equal('testOp');
     expect(classified.meta?.component).to.equal('testComponent');
     expect(classified.meta?.email).to.be.undefined;
@@ -87,16 +87,15 @@ describe('CLIErrorHandler', () => {
       sessionId: 's1',
       userId: 'u1',
       orgId: 'o1',
-      operation: 'test',
-      component: 'testComponent',
-    });
+    }, 'API_ERROR');
+    // extractMeta only extracts specific fields: operation, component, userId, sessionId, orgId, email
+    // apiKey is not extracted by extractMeta
     expect(meta).to.deep.equal({
       email: 'a@b.com',
       sessionId: 's1',
       userId: 'u1',
       orgId: 'o1',
-      operation: 'test',
-      component: 'testComponent',
+      errorType: 'API_ERROR',
     });
   });
 
@@ -109,6 +108,6 @@ describe('CLIErrorHandler', () => {
 
     const result = errorHandler.classifyError(invalidError);
     expect(result.type).to.equal(ERROR_TYPES.NORMALIZATION);
-    expect(result.message).to.include('Failed to process error');
+    expect(result.message).to.equal('Failed to process error');
   });
 });

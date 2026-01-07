@@ -368,24 +368,33 @@ describe('ExportGlobalFields', () => {
 
     it('should process multiple batches of global fields', async () => {
       let callCount = 0;
-      mockStackClient.globalField.returns({
+      const globalFieldMock = {
         query: sinon.stub().returns({
           find: sinon.stub().callsFake(() => {
             callCount++;
+            // First call is in withLoadingSpinner with limit: 1 to get count
             if (callCount === 1) {
               return Promise.resolve({
-                items: new Array(100).fill({ uid: 'gf-' + callCount, title: 'Test', validKey: 'value' }),
+                items: [],
+                count: 150
+              });
+            } else if (callCount === 2) {
+              // Second call fetches first batch
+              return Promise.resolve({
+                items: new Array(100).fill(null).map((_, i) => ({ uid: `gf-${i + 1}`, title: 'Test', validKey: 'value' })),
                 count: 150
               });
             } else {
+              // Third call fetches remaining batch
               return Promise.resolve({
-                items: new Array(50).fill({ uid: 'gf-' + callCount, title: 'Test', validKey: 'value' }),
+                items: new Array(50).fill(null).map((_, i) => ({ uid: `gf-${i + 101}`, title: 'Test', validKey: 'value' })),
                 count: 150
               });
             }
           })
         })
-      });
+      };
+      mockStackClient.globalField.returns(globalFieldMock);
 
       await exportGlobalFields.start();
 
