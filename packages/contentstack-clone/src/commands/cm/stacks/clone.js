@@ -141,6 +141,11 @@ class StackCloneCommand extends Command {
           config.importWebhookStatus = importWebhookStatus;
         }
 
+        //Set host and auth BEFORE SDK initialization to ensure correct regional endpoints
+        config.host = this.cmaHost;
+        config.cdn = this.cdaHost;
+        config.auth_token = configHandler.get('authtoken');
+
         const managementAPIClient = await managementSDKClient(config);
         log.debug('Management API client initialized successfully', cloneContext);
 
@@ -148,9 +153,6 @@ class StackCloneCommand extends Command {
         await this.removeContentDirIfNotEmptyBeforeClone(pathdir, cloneContext); // NOTE remove if folder not empty before clone
         this.registerCleanupOnInterrupt(pathdir, cloneContext);
 
-        config.auth_token = configHandler.get('authtoken');
-        config.host = this.cmaHost;
-        config.cdn = this.cdaHost;
         config.pathDir = pathdir;
         config.cloneContext = cloneContext;
         log.debug('Clone configuration finalized', cloneContext);
