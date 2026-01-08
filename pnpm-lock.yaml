@@ -17,7 +17,7 @@ importers:
       '@contentstack/cli-cm-bootstrap': ~1.17.2
       '@contentstack/cli-cm-branches': ~1.6.2
       '@contentstack/cli-cm-bulk-publish': ~1.10.4
-      '@contentstack/cli-cm-clone': ~1.18.1
+      '@contentstack/cli-cm-clone': ~1.18.2
       '@contentstack/cli-cm-export': ~1.22.2
       '@contentstack/cli-cm-export-to-csv': ~1.10.2
       '@contentstack/cli-cm-import': ~1.30.2
