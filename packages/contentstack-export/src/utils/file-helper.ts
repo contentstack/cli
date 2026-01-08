@@ -47,7 +47,7 @@ export const readLargeFile = function (filePath: string, options: { type?: strin
         resolve(data);
       });
       parseStream.on('error', (error: Error) => {
-        console.log('error', error);
+        console.log('Error', error);
         reject(error);
       });
       readStream.pipe(parseStream);

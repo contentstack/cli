@@ -62,11 +62,11 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
     'auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]';
 
   async run(): Promise<any> {
-    log.debug('TokensAddCommand run method started', this.contextDetails);
+    log.debug('TokensAddCommand run method started.', this.contextDetails);
     this.contextDetails.module = 'tokens-add';
 
     const { flags: addTokenFlags } = await this.parse(TokensAddCommand);
-    log.debug('Token add flags parsed', { ...this.contextDetails, flags: addTokenFlags });
+    log.debug('Token add flags parsed.', { ...this.contextDetails, flags: addTokenFlags });
 
     let isAliasExist = false;
     const skipAliasReplaceConfirmation = addTokenFlags.force || addTokenFlags.yes;
@@ -121,7 +121,7 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
 
         if (!shouldAliasReplace) {
           log.debug('User declined alias replacement, exiting', this.contextDetails);
-          log.info('Exiting from the process of replacing the token', this.contextDetails);
+          log.info('Exiting the token replacement process.', this.contextDetails);
           cliux.print('CLI_AUTH_EXIT_PROCESS');
           return;
         }
@@ -130,13 +130,13 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
       if (!apiKey) {
         log.debug('No API key provided, requesting user input', this.contextDetails);
         apiKey = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_API_KEY', name: 'apiKey' });
-        log.debug('API key obtained', { ...this.contextDetails, hasApiKey: !!apiKey });
+        log.debug('API key obtained.', { ...this.contextDetails, hasApiKey: !!apiKey });
       }
 
       if (!token) {
         log.debug('No token provided, requesting user input', this.contextDetails);
         token = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_TOKEN', name: 'token' });
-        log.debug('Token obtained', { ...this.contextDetails, hasToken: !!token });
+        log.debug('Token obtained.', { ...this.contextDetails, hasToken: !!token });
       }
 
       if (isDelivery && !environment) {
@@ -163,12 +163,12 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
         // FIXME - Once the SDK refresh token issue is resolved, need to revert this back to SDK call
         const httpClient = new HttpClient({ headers: { api_key: apiKey, authorization: token } });
 
-        log.debug('Making management token validation API call', this.contextDetails);
+        log.debug('Making management token validation API call.', this.contextDetails);
         const response = (await httpClient.get(`https://${this.cmaHost}/v3/environments?limit=1`)).data;
-        log.debug('Management token validation response received', { ...this.contextDetails, response });
+        log.debug('Management token validation response received.', { ...this.contextDetails, response });
 
         if (response?.error_code === 105) {
-          log.debug('Management token validation failed - invalid token', this.contextDetails);
+          log.debug('Management token validation failed: invalid token.', this.contextDetails);
           throw new Error(messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN'));
         } else if (response?.error_message) {
           log.debug('Management token validation failed with error message', {
@@ -177,7 +177,7 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
           });
           throw new Error(response.error_message);
         }
-        log.debug('Management token validation successful', this.contextDetails);
+        log.debug('Management token validation successful.', this.contextDetails);
       }
 
       log.debug('Saving token to configuration', {
@@ -188,23 +188,23 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
       });
       if (isManagement) {
         configHandler.set(`${configKeyTokens}.${alias}`, { token, apiKey, type });
-        log.debug('Management token saved to configuration', this.contextDetails);
+        log.debug('Management token saved to configuration.', this.contextDetails);
       } else {
         configHandler.set(`${configKeyTokens}.${alias}`, { token, apiKey, environment, type });
-        log.debug('Delivery token saved to configuration', this.contextDetails);
+        log.debug('Delivery token saved to configuration.', this.contextDetails);
       }
 
       if (isAliasExist) {
-        log.debug('Token replaced successfully', this.contextDetails);
+        log.debug('Token replaced successfully.', this.contextDetails);
         cliux.success('CLI_AUTH_TOKENS_ADD_REPLACE_SUCCESS');
       } else {
-        log.debug('Token added successfully', this.contextDetails);
+        log.debug('Token added successfully.', this.contextDetails);
         cliux.success('CLI_AUTH_TOKENS_ADD_SUCCESS');
       }
 
-      log.debug('Token add process completed successfully', this.contextDetails);
+      log.debug('Token addition process completed successfully.', this.contextDetails);
     } catch (error) {
-      log.debug('Token add process failed', { ...this.contextDetails, error });
+      log.debug('Token addition process failed.', { ...this.contextDetails, error });
       cliux.print('CLI_AUTH_TOKENS_ADD_FAILED', { color: 'yellow' });
       handleAndLogError(error, { ...this.contextDetails });
     }
