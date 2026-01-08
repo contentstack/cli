@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-auth/2.0.0-beta.1 darwin-arm64 node-v24.11.1
+@contentstack/cli-auth/2.0.0-beta.1 darwin-arm64 node-v24.12.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -143,8 +143,6 @@ FLAGS
   -a, --alias=<value>          Alias (name) you want to assign to the token
   -e, --environment=<value>    Environment name for delivery token
   -k, --stack-api-key=<value>  Stack API Key
-  -m, --management             Set this flag to save management token
-  -t, --token=<value>          [env: TOKEN] Add the token name
   -y, --yes                    Use this flag to skip confirmation
       --delivery               Set this flag to save delivery token
       --management             Set this flag to save management token

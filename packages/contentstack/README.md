@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/2.0.0-beta.3 darwin-arm64 node-v24.11.1
+@contentstack/cli/2.0.0-beta.3 darwin-arm64 node-v24.12.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -2109,56 +2109,6 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/entries/update-and-publish.js)_
 
-## `csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`
-
-Export content from a stack
-
-```
-USAGE
-  $ csdx cm:export cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>]
-    [--content-types <value>] [--branch <value>] [--secured-assets]
-
-FLAGS
-  -B, --branch=<value>            [optional] The name of the branch where you want to export your content. If you don't
-                                  mention the branch name, then by default the content will be exported from all the
-                                  branches of your stack.
-  -a, --alias=<value>             The management token alias of the source stack from which you will export content.
-  -c, --config=<value>            [optional] Path of the config
-  -d, --data-dir=<value>          The path or the location in your file system to store the exported content. For e.g.,
-                                  ./content
-  -k, --stack-api-key=<value>     API Key of the source stack
-  -m, --module=<value>            [optional] Specific module name. If not specified, the export command will export all
-                                  the modules to the stack. The available modules are assets, content-types, entries,
-                                  environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                  workflows, custom-roles, taxonomies, and composable-studio.
-  -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
-                                  of multiple content types, specify the IDs separated by spaces.
-  -y, --yes                       [optional] Force override all Marketplace prompts.
-      --branch-alias=<value>      (Optional) The alias of the branch from which you want to export content.
-      --secured-assets            [optional] Use this flag for assets that are secured.
-
-DESCRIPTION
-  Export content from a stack
-
-ALIASES
-  $ csdx cm:export
-
-EXAMPLES
-  $ csdx cm:stacks:export --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>
-
-  $ csdx cm:stacks:export --config <path/to/config/dir>
-
-  $ csdx cm:stacks:export --alias <management_token_alias>
-
-  $ csdx cm:stacks:export --alias <management_token_alias> --data-dir <path/to/export/destination/dir>
-
-  $ csdx cm:stacks:export --alias <management_token_alias> --config <path/to/config/file>
-
-  $ csdx cm:stacks:export --module <single module name>
-
-  $ csdx cm:stacks:export --branch [optional] branch name
-```
-
 ## `csdx cm:export-to-csv`
 
 Export entries, taxonomies, terms or organization users to csv using this command
@@ -2482,10 +2432,6 @@ FLAGS
                                   the modules to the stack. The available modules are assets, content-types, entries,
                                   environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks,
                                   workflows, custom-roles, taxonomies, and composable-studio.
-  -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
-                                  of multiple content types, specify the IDs separated by spaces.
-  -y, --yes                       [optional] Force override all Marketplace prompts.
-      --branch-alias=<value>      (Optional) The alias of the branch from which you want to export content.
       --secured-assets            [optional] Use this flag for assets that are secured.
 
 DESCRIPTION
@@ -2519,38 +2465,65 @@ USAGE
     [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]
 
 FLAGS
-  -a, --alias=<value>                     The management token of the destination stack where you will import the
-                                          content.
-  -c, --config=<value>                    [optional] The path of the configuration JSON file containing all the options
-                                          for a single run.
-  -d, --data-dir=<value>                  The path or the location in your file system where the content, you intend to
-                                          import, is stored. For example, -d "C:\Users\Name\Desktop\cli\content". If the
-                                          export folder has branches involved, then the path should point till the
-                                          particular branch. For example, “-d
-                                          "C:\Users\Name\Desktop\cli\content\branch_name"
-  -k, --stack-api-key=<value>             API Key of the target stack
-  -y, --yes                               [optional] Force override all Marketplace prompts.
-      --backup-dir=<value>                [optional] Backup directory name when using specific module.
-      --branch=<value>                    The name of the branch where you want to import your content. If you don't
-                                          mention the branch name, then by default the content will be imported to the
-                                          main branch.
-      --branch-alias=<value>              Specify the branch alias where you want to import your content. If not
-                                          specified, the content is imported into the main branch by default.
-      --exclude-global-modules            Excludes the branch-independent module from the import operation.
-      --import-webhook-status=<option>    [default: disable] [default: disable] (optional) This webhook state keeps the
-                                          same state of webhooks as the source stack. <options: disable|current>
-                                          <options: disable|current>
-      --module=<value>                    [optional] Specify the module to import into the target stack. If not
-                                          specified, the import command will import all the modules into the stack. The
-                                          available modules are assets, content-types, entries, environments,
-                                          extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                          workflows, custom-roles, personalize projects, and taxonomies.
-      --personalize-project-name=<value>  (optional) Provide a unique name for the Personalize project.
-      --replace-existing                  Replaces the existing module in the target stack.
-      --skip-assets-publish               Skips asset publishing during the import process.
-      --skip-audit                        Skips the audit fix that occurs during an import operation.
-      --skip-entries-publish              Skips entry publishing during the import process
-      --skip-existing                     Skips the module exists warning messages.
+  -a, --alias=<value>
+      The management token of the destination stack where you will import the content.
+
+  -c, --config=<value>
+      [optional] The path of the configuration JSON file containing all the options for a single run.
+
+  -d, --data-dir=<value>
+      The path or the location in your file system where the content, you intend to import, is stored. For example, -d
+      "C:\Users\Name\Desktop\cli\content". If the export folder has branches involved, then the path should point till the
+      particular branch. For example, “-d "C:\Users\Name\Desktop\cli\content\branch_name"
+
+  -k, --stack-api-key=<value>
+      API Key of the target stack
+
+  -y, --yes
+      [optional] Force override all Marketplace prompts.
+
+  --backup-dir=<value>
+      [optional] Backup directory name when using specific module.
+
+  --branch=<value>
+      The name of the branch where you want to import your content. If you don't mention the branch name, then by default
+      the content will be imported to the main branch.
+
+  --branch-alias=<value>
+      Specify the branch alias where you want to import your content. If not specified, the content is imported into the
+      main branch by default.
+
+  --exclude-global-modules
+      Excludes the branch-independent module from the import operation.
+
+  --import-webhook-status=<option>
+      [default: disable] [default: disable] (optional) This webhook state keeps the same state of webhooks as the source
+      stack. <options: disable|current>
+      <options: disable|current>
+
+  --module=<value>
+      [optional] Specify the module to import into the target stack. If not specified, the import command will import all
+      the modules into the stack. The available modules are assets, content-types, entries, environments, extensions,
+      marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, personalize projects,
+      taxonomies, and composable-studio.
+
+  --personalize-project-name=<value>
+      (optional) Provide a unique name for the Personalize project.
+
+  --replace-existing
+      Replaces the existing module in the target stack.
+
+  --skip-assets-publish
+      Skips asset publishing during the import process.
+
+  --skip-audit
+      Skips the audit fix that occurs during an import operation.
+
+  --skip-entries-publish
+      Skips entry publishing during the import process
+
+  --skip-existing
+      Skips the module exists warning messages.
 
 DESCRIPTION
   Import content from a stack
@@ -2642,7 +2615,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
 
   $ csdx cm:migration --alias <management-token-alias> --file-path <migration/script/file/path>
 ```
@@ -3278,18 +3251,18 @@ Set region for CLI
 
 ```
 USAGE
-  $ csdx config:set:region [REGION] [--cda <value> --cma <value> --ui-host <value> -n <value>] [--developer-hub
-    <value>] [--personalize <value>] [--launch <value>]
+  $ csdx config:set:region [REGION] [-d <value> -m <value> --ui-host <value> -n <value>] [--developer-hub <value>]
+    [--personalize <value>] [--launch <value>]
 
 ARGUMENTS
   [REGION]  Name for the region
 
 FLAGS
-  -n, --name=<value>           Name for the region, if this flag is added then cda, cma and ui-host flags are required
-      --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and
+  -d, --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and
                                name flags are required
-      --cma=<value>            Custom host to set for content management API, , if this flag is added then cda, ui-host
+  -m, --cma=<value>            Custom host to set for content management API, , if this flag is added then cda, ui-host
                                and name flags are required
+  -n, --name=<value>           Name for the region, if this flag is added then cda, cma and ui-host flags are required
       --developer-hub=<value>  Custom host to set for Developer hub API
       --launch=<value>         Custom host to set for Launch API
       --personalize=<value>    Custom host to set for Personalize API
@@ -3488,7 +3461,8 @@ USAGE
   $ csdx launch:functions [-p <value>] [-d <value>]
 
 FLAGS
-  -d, --data-dir=<value>  [default: /Users/sunil.lakshman/Documents/cli/packages/contentstack] Current working directory
+  -d, --data-dir=<value>  [default: /Users/netraj.patel/projects/contentstack/cli/packages/contentstack] Current working
+                          directory
   -p, --port=<value>      [default: 3000] Port number
 
 DESCRIPTION

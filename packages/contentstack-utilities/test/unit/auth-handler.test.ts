@@ -354,7 +354,7 @@ describe('Auth Handler', () => {
       const data = {
         access_token: '',
       };
-    
+
       try {
         await authHandler.getUserDetails(data);
         throw new Error('Expected getUserDetails to throw'); // ensure failure if no error is thrown
@@ -362,7 +362,7 @@ describe('Auth Handler', () => {
         expect(error).to.be.instanceOf(Error);
         expect(error.message).to.equal('Invalid or empty access token.');
       }
-    }); 
+    });
   });
 
   describe('isAuthenticated', () => {
@@ -462,10 +462,10 @@ describe('Auth Handler', () => {
 
     beforeEach(() => {
       sandbox = createSandbox();
-      configHandlerGetStub = sandbox.stub();
-      cliuxPrintStub = sandbox.stub();
-      refreshTokenStub = sandbox.stub();
-      unsetConfigDataStub = sandbox.stub();
+      configHandlerGetStub = sandbox.stub(configHandler, 'get');
+      cliuxPrintStub = sandbox.stub(cliux, 'print');
+      refreshTokenStub = sandbox.stub(authHandler, 'refreshToken').resolves();
+      unsetConfigDataStub = sandbox.stub(authHandler, 'unsetConfigData');
     });
 
     afterEach(() => {
