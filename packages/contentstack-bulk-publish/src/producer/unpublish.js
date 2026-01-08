@@ -229,7 +229,7 @@ async function getSyncEntries(
         await bulkAction(stack, entriesResponse.items, bulkUnpublish, environment, locale, apiVersion, bulkPublishLimit, false);
       }
       if (entriesResponse.items.length === 0 && !entriesResponse.pagination_token) {
-        if (!changedFlag) console.log('No Entries/Assets Found published on specified environment');
+        if (!changedFlag) console.log('No entries or assets found published in the specified environment.');
         return resolve();
       }
 

@@ -1,7 +1,8 @@
-const { describe, it } = require('mocha');
+const { describe, it, beforeEach, afterEach } = require('mocha');
 const sinon = require('sinon');
 const { expect } = require('chai');
 const { config } = require('dotenv');
+const { configHandler } = require('@contentstack/cli-utilities');
 
 const EntriesPublishNonLocalizedFields = require('../../../../src/commands/cm/entries/publish-non-localized-fields');
 
@@ -12,6 +13,7 @@ const contentTypes = ['ct1', 'ct2'];
 
 describe('EntriesPublishNonLocalizedFields', () => {
   let runStub;
+  let configHandlerGetStub;
   let stackDetails = {
     api_key: 'asdf',
     environment: 'env',
@@ -19,8 +21,28 @@ describe('EntriesPublishNonLocalizedFields', () => {
     management_token: 'asdf',
     alias: 'm_alias',
   };
+
+  beforeEach(() => {
+    // Stub configHandler.get to configure region
+    // Region is required for cmaHost property in Command base class
+    configHandlerGetStub = sinon.stub(configHandler, 'get').callsFake((key) => {
+      if (key === 'region') {
+        return {
+          cma: 'api.contentstack.io',
+          cda: 'cdn.contentstack.io',
+          uiHost: 'app.contentstack.com',
+          developerHubUrl: 'developer.contentstack.com',
+          launchHubUrl: 'launch.contentstack.com',
+          personalizeUrl: 'personalize.contentstack.com',
+        };
+      }
+      return undefined;
+    });
+  });
+
   afterEach(() => {
     if (runStub && runStub.restore) runStub.restore();
+    if (configHandlerGetStub && configHandlerGetStub.restore) configHandlerGetStub.restore();
   });
 
   it('Should run the command when all the flags are passed', async () => {
@@ -50,7 +72,7 @@ describe('EntriesPublishNonLocalizedFields', () => {
       environments[1],
       '--yes',
     ];
-    const expectedError = 'Please use `--alias` or `--stack-api-key` to proceed.';
+    const expectedError = 'Use the `--alias` or `--stack-api-key` flag to proceed.';
 
     try {
       await EntriesPublishNonLocalizedFields.run(args);

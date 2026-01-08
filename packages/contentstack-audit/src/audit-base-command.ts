@@ -301,11 +301,11 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           missingMultipleFields = missingEntry.missingMultipleFields ?? {};
           await this.prepareReport(module, missingEntryRefs);
 
-          await this.prepareReport(`Entries_Select_feild`, missingSelectFeild);
+          await this.prepareReport(`Entries_Select_field`, missingSelectFeild);
 
-          await this.prepareReport('Entries_Mandatory_feild', missingMandatoryFields);
+          await this.prepareReport('Entries_Mandatory_field', missingMandatoryFields);
 
-          await this.prepareReport('Entries_Title_feild', missingTitleFields);
+          await this.prepareReport('Entries_Title_field', missingTitleFields);
 
           await this.prepareReport('Entry_Missing_Locale_and_Env_in_Publish_Details', missingEnvLocalesInEntries);
 

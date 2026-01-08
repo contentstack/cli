@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import mkdirp from 'mkdirp';
 import * as bigJSON from 'big-json';
-import { FsUtility, sanitizePath } from '@contentstack/cli-utilities';
+import { FsUtility, sanitizePath, log } from '@contentstack/cli-utilities';
 
 export const readFileSync = function (filePath: string, parse = true): any {
   let data;
@@ -53,7 +53,7 @@ export const readLargeFile = function (filePath: string, opts?: any): Promise<an
         resolve(data);
       });
       parseStream.on('error', function (error: Error) {
-        console.log('error', error);
+        log.error(`Error reading large file: ${error.message}`, { error, filePath });
         reject(error);
       });
       readStream.pipe(parseStream as any);

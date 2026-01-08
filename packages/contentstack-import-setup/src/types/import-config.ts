@@ -1,4 +1,4 @@
-import { Modules } from '.';
+import { Modules, Context } from '.';
 import DefaultConfig from './default-config';
 
 export interface ExternalConfig {
@@ -10,19 +10,8 @@ export interface ExternalConfig {
   password?: string;
 }
 
-export interface Context {
-  command: string;
-  module: string;
-  userId: string | undefined;
-  email?: string | undefined;
-  sessionId: string | undefined;
-  clientId?: string | undefined;
-  apiKey: string;
-  orgId: string;
-  authenticationMethod?: string;
-}
-
 export default interface ImportConfig extends DefaultConfig, ExternalConfig {
+  context?: Context;
   cliLogsPath?: string;
   contentDir: string;
   data: string;
@@ -59,7 +48,6 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   createBackupDir?: string;
   region: any;
   authenticationMethod?: string;
-  context?: Context;
 }
 
 type branch = {

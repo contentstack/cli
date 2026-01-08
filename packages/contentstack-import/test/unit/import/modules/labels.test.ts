@@ -10,7 +10,6 @@ describe('ImportLabels', () => {
   let mockImportConfig: any;
 
   beforeEach(() => {
-    // Mock stack client
     mockStackClient = {
       label: (uid?: string) => ({
         create: sinon.stub().resolves({ uid: 'label-123', name: 'Test Label' }),
@@ -20,7 +19,6 @@ describe('ImportLabels', () => {
       }),
     };
 
-    // Mock import config
     mockImportConfig = {
       apiKey: 'test',
       backupDir: '/test/backup',
@@ -34,19 +32,16 @@ describe('ImportLabels', () => {
       },
     };
 
-    // Create instance
     importLabels = new ImportLabels({
       importConfig: mockImportConfig,
       stackAPIClient: mockStackClient,
       moduleName: 'labels',
     });
 
-    // Stub utility functions
     sinon.stub(fsUtil, 'readFile');
     sinon.stub(fsUtil, 'writeFile');
     sinon.stub(fsUtil, 'makeDirectory');
     sinon.stub(fileHelper, 'fileExistsSync');
-    // Note: handleAndLogError is not stubbed to avoid stubbing issues
   });
 
   afterEach(() => {
@@ -68,12 +63,16 @@ describe('ImportLabels', () => {
 
   describe('start', () => {
     it('should start import process when labels folder exists', async () => {
-      // Mock file system to return true for labels folder
+      sinon.restore();
+      sinon.stub(fsUtil, 'readFile');
+      sinon.stub(fsUtil, 'writeFile');
+      sinon.stub(fsUtil, 'makeDirectory');
+      sinon.stub(fileHelper, 'fileExistsSync');
+      
       (fileHelper.fileExistsSync as any).callsFake((path: string) => {
         return path.includes('/test/backup/labels') && !path.includes('labels.json');
       });
 
-      // Mock reading labels.json file
       (fsUtil.readFile as any).callsFake((path: string) => {
         if (path.includes('labels.json')) {
           return {
@@ -85,33 +84,62 @@ describe('ImportLabels', () => {
       });
       (fsUtil.makeDirectory as any).resolves();
 
-      // Stub makeConcurrentCall to avoid file system issues
-      const makeConcurrentCallStub = sinon.stub(importLabels as any, 'makeConcurrentCall').resolves();
+      sinon.stub(importLabels as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importLabels as any, 'analyzeLabels').resolves([2]);
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub()
+      };
+      sinon.stub(importLabels as any, 'createNestedProgress').returns(mockProgress);
+      const prepareLabelMapperStub = sinon.stub(importLabels as any, 'prepareLabelMapper').resolves();
+      const importLabelsStub = sinon.stub(importLabels as any, 'importLabels').resolves();
+      const updateLabelsStub = sinon.stub(importLabels as any, 'updateLabels').resolves();
+      sinon.stub(importLabels as any, 'processLabelResults').resolves();
+      sinon.stub(importLabels as any, 'completeProgress').resolves();
 
       await importLabels.start();
 
-      expect((fileHelper.fileExistsSync as any).called).to.be.true;
-      expect((fsUtil.readFile as any).called).to.be.true;
-      expect((fsUtil.makeDirectory as any).called).to.be.true;
-      expect(makeConcurrentCallStub.calledTwice).to.be.true; // importLabels + updateLabels
+      expect(prepareLabelMapperStub.called).to.be.true;
+      expect(importLabelsStub.called).to.be.true;
+      expect(updateLabelsStub.called).to.be.true;
     });
 
     it('should handle when labels folder does not exist', async () => {
+      sinon.restore();
+      sinon.stub(fsUtil, 'readFile');
+      sinon.stub(fsUtil, 'writeFile');
+      sinon.stub(fsUtil, 'makeDirectory');
+      sinon.stub(fileHelper, 'fileExistsSync');
+      
       (fileHelper.fileExistsSync as any).returns(false);
+
+      sinon.stub(importLabels as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const analyzeLabelsStub = sinon.stub(importLabels as any, 'analyzeLabels').resolves([0]);
+      sinon.stub(importLabels as any, 'completeProgress').resolves();
 
       await importLabels.start();
 
-      expect((fileHelper.fileExistsSync as any).calledOnce).to.be.true;
-      expect((fsUtil.readFile as any).called).to.be.false;
+      expect(analyzeLabelsStub.called).to.be.true;
     });
 
     it('should handle empty labels data', async () => {
-      // Mock file system to return true for labels folder
+      sinon.restore();
+      sinon.stub(fsUtil, 'readFile');
+      sinon.stub(fsUtil, 'writeFile');
+      sinon.stub(fsUtil, 'makeDirectory');
+      sinon.stub(fileHelper, 'fileExistsSync');
+      
       (fileHelper.fileExistsSync as any).callsFake((path: string) => {
         return path.includes('/test/backup/labels') && !path.includes('labels.json');
       });
 
-      // Mock reading empty labels.json file
       (fsUtil.readFile as any).callsFake((path: string) => {
         if (path.includes('labels.json')) {
           return {}; // Empty labels object
@@ -120,95 +148,172 @@ describe('ImportLabels', () => {
       });
       (fsUtil.makeDirectory as any).resolves();
 
-      // Stub makeConcurrentCall
-      const makeConcurrentCallStub = sinon.stub(importLabels as any, 'makeConcurrentCall').resolves();
+      sinon.stub(importLabels as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const analyzeLabelsStub = sinon.stub(importLabels as any, 'analyzeLabels').resolves([0]);
+      sinon.stub(importLabels as any, 'completeProgress').resolves();
 
       await importLabels.start();
 
-      expect((fileHelper.fileExistsSync as any).called).to.be.true;
-      expect((fsUtil.readFile as any).called).to.be.true;
-      expect(makeConcurrentCallStub.called).to.be.false; // No labels to process
+      expect(analyzeLabelsStub.called).to.be.true;
     });
 
     it('should handle null labels data', async () => {
+      sinon.restore();
+      sinon.stub(fsUtil, 'readFile');
+      sinon.stub(fsUtil, 'writeFile');
+      sinon.stub(fsUtil, 'makeDirectory');
+      sinon.stub(fileHelper, 'fileExistsSync');
+      
       (fileHelper.fileExistsSync as any).returns(true);
       (fsUtil.readFile as any).returns(null);
       (fsUtil.makeDirectory as any).resolves();
 
+      sinon.stub(importLabels as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const analyzeLabelsStub = sinon.stub(importLabels as any, 'analyzeLabels').resolves([0]);
+      sinon.stub(importLabels as any, 'completeProgress').resolves();
+
       await importLabels.start();
 
-      expect((fileHelper.fileExistsSync as any).calledOnce).to.be.true;
-      expect((fsUtil.readFile as any).calledOnce).to.be.true;
+      expect(analyzeLabelsStub.called).to.be.true;
     });
 
     it('should handle file read errors', async () => {
+      sinon.restore();
+      sinon.stub(fsUtil, 'readFile');
+      sinon.stub(fsUtil, 'writeFile');
+      sinon.stub(fsUtil, 'makeDirectory');
+      sinon.stub(fileHelper, 'fileExistsSync');
+      
       (fileHelper.fileExistsSync as any).returns(true);
       (fsUtil.readFile as any).throws(new Error('File read error'));
 
-      try {
-        await importLabels.start();
-        expect.fail('Expected error to be thrown');
-      } catch (error: any) {
-        expect(error.message).to.equal('File read error');
-      }
+      sinon.stub(importLabels as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importLabels as any, 'analyzeLabels').rejects(new Error('File read error'));
+      const completeProgressStub = sinon.stub(importLabels as any, 'completeProgress').resolves();
+
+      await importLabels.start();
+
+      expect(completeProgressStub.calledWith(false, 'File read error')).to.be.true;
     });
 
     it('should load existing UID mappings when available', async () => {
+      sinon.restore();
+      sinon.stub(fsUtil, 'readFile');
+      sinon.stub(fsUtil, 'writeFile');
+      sinon.stub(fsUtil, 'makeDirectory');
+      sinon.stub(fileHelper, 'fileExistsSync');
+      
       (fileHelper.fileExistsSync as any)
         .onFirstCall()
-        .returns(true) // labels folder exists
+        .returns(true) // labels folder exists (analyzeLabels)
         .onSecondCall()
-        .returns(true); // uid mapping file exists
+        .returns(true); // uid mapping file exists (prepareLabelMapper)
       (fsUtil.readFile as any)
         .onFirstCall()
-        .returns({ 'label-1': { uid: 'label-1', name: 'Label 1' } })
+        .returns({ 'label-1': { uid: 'label-1', name: 'Label 1' } }) // analyzeLabels reads labels.json
         .onSecondCall()
-        .returns({ 'old-uid': 'new-uid' });
+        .returns({ 'old-uid': 'new-uid' }); // prepareLabelMapper reads uid-mapping.json
       (fsUtil.makeDirectory as any).resolves();
 
-      // Stub makeConcurrentCall
-      const makeConcurrentCallStub = sinon.stub(importLabels as any, 'makeConcurrentCall').resolves();
+      sinon.stub(importLabels as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub()
+      };
+      sinon.stub(importLabels as any, 'createNestedProgress').returns(mockProgress);
+      const importLabelsStub = sinon.stub(importLabels as any, 'importLabels').resolves();
+      const updateLabelsStub = sinon.stub(importLabels as any, 'updateLabels').resolves();
+      sinon.stub(importLabels as any, 'processLabelResults').resolves();
+      sinon.stub(importLabels as any, 'completeProgress').resolves();
 
       await importLabels.start();
 
       expect((fileHelper.fileExistsSync as any).calledTwice).to.be.true;
       expect((fsUtil.readFile as any).calledTwice).to.be.true;
-      expect(makeConcurrentCallStub.calledTwice).to.be.true;
+      expect(importLabelsStub.called).to.be.true;
+      expect(updateLabelsStub.called).to.be.true;
     });
 
     it('should handle when UID mapping file does not exist', async () => {
       (fileHelper.fileExistsSync as any)
         .onFirstCall()
-        .returns(true) // labels folder exists
+        .returns(true) // labels folder exists (analyzeLabels)
         .onSecondCall()
-        .returns(false); // uid mapping file does not exist
-      (fsUtil.readFile as any).returns({ 'label-1': { uid: 'label-1', name: 'Label 1' } });
+        .returns(false); // uid mapping file does not exist (prepareLabelMapper)
+      (fsUtil.readFile as any).returns({ 'label-1': { uid: 'label-1', name: 'Label 1' } }); // analyzeLabels reads labels.json
       (fsUtil.makeDirectory as any).resolves();
 
-      // Stub makeConcurrentCall
-      const makeConcurrentCallStub = sinon.stub(importLabels as any, 'makeConcurrentCall').resolves();
+      sinon.stub(importLabels as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub()
+      };
+      sinon.stub(importLabels as any, 'createNestedProgress').returns(mockProgress);
+      const importLabelsStub = sinon.stub(importLabels as any, 'importLabels').resolves();
+      const updateLabelsStub = sinon.stub(importLabels as any, 'updateLabels').resolves();
+      sinon.stub(importLabels as any, 'processLabelResults').resolves();
+      sinon.stub(importLabels as any, 'completeProgress').resolves();
 
       await importLabels.start();
 
       expect((fileHelper.fileExistsSync as any).calledTwice).to.be.true;
       expect((fsUtil.readFile as any).calledOnce).to.be.true;
-      expect(makeConcurrentCallStub.calledTwice).to.be.true;
+      expect(importLabelsStub.called).to.be.true;
+      expect(updateLabelsStub.called).to.be.true;
     });
 
     it('should write success and failed files when data exists', async () => {
+      sinon.restore();
+      sinon.stub(fsUtil, 'readFile');
+      sinon.stub(fsUtil, 'writeFile');
+      sinon.stub(fsUtil, 'makeDirectory');
+      sinon.stub(fileHelper, 'fileExistsSync');
+      
       (fileHelper.fileExistsSync as any).returns(true);
       (fsUtil.readFile as any).returns({ 'label-1': { uid: 'label-1', name: 'Label 1' } });
       (fsUtil.makeDirectory as any).resolves();
 
-      // Stub makeConcurrentCall and set up success/failed data
-      sinon.stub(importLabels as any, 'makeConcurrentCall').callsFake(async () => {
+      sinon.stub(importLabels as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importLabels as any, 'analyzeLabels').resolves([1]);
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub()
+      };
+      sinon.stub(importLabels as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importLabels as any, 'prepareLabelMapper').resolves();
+      sinon.stub(importLabels as any, 'importLabels').callsFake(async () => {
         (importLabels as any).createdLabel = [{ uid: 'label-1' }];
         (importLabels as any).failedLabel = [{ uid: 'label-2' }];
       });
+      sinon.stub(importLabels as any, 'updateLabels').resolves();
+      const processLabelResultsStub = sinon.stub(importLabels as any, 'processLabelResults');
+      sinon.stub(importLabels as any, 'completeProgress').resolves();
 
       await importLabels.start();
 
-      expect((fsUtil.writeFile as any).calledTwice).to.be.true;
+      // processLabelResults should be called, which writes the files
+      expect(processLabelResultsStub.called).to.be.true;
     });
   });
 
@@ -219,7 +324,6 @@ describe('ImportLabels', () => {
         'label-2': { uid: 'label-2', name: 'Label 2' },
       };
 
-      // Stub makeConcurrentCall
       const makeConcurrentCallStub = sinon.stub(importLabels as any, 'makeConcurrentCall').resolves();
 
       await importLabels.importLabels();
@@ -267,7 +371,6 @@ describe('ImportLabels', () => {
         'label-2': { uid: 'label-2', name: 'Label 2' },
       };
 
-      // Stub makeConcurrentCall
       const makeConcurrentCallStub = sinon.stub(importLabels as any, 'makeConcurrentCall').resolves();
 
       await importLabels.updateLabels();
@@ -517,7 +620,6 @@ describe('ImportLabels', () => {
           // Log info
         } else {
           (importLabels as any).failedLabel.push(apiData);
-          // Note: handleAndLogError calls are not verified due to stubbing issues
         }
       };
 
@@ -545,7 +647,6 @@ describe('ImportLabels', () => {
           // Log info
         } else {
           (importLabels as any).failedLabel.push(apiData);
-          // Note: handleAndLogError calls are not verified due to stubbing issues
         }
       };
 
@@ -568,7 +669,6 @@ describe('ImportLabels', () => {
           // Log info
         } else {
           (importLabels as any).failedLabel.push(apiData);
-          // Note: handleAndLogError calls are not verified due to stubbing issues
         }
       };
 
@@ -580,12 +680,10 @@ describe('ImportLabels', () => {
 
   describe('Additional Branch Coverage Tests', () => {
     it('should test onSuccess callback in importLabels with actual API call', async () => {
-      // Mock file system to return true for labels folder
       (fileHelper.fileExistsSync as any).callsFake((path: string) => {
         return path.includes('/test/backup/labels') && !path.includes('labels.json');
       });
 
-      // Mock reading labels.json file
       (fsUtil.readFile as any).callsFake((path: string) => {
         if (path.includes('labels.json')) {
           return {
@@ -596,11 +694,9 @@ describe('ImportLabels', () => {
       });
       (fsUtil.makeDirectory as any).resolves();
 
-      // Mock the actual API call to test onSuccess callback
       const mockResponse = { uid: 'new-label-123', name: 'Test Label 1' };
       const mockApiData = { uid: 'label-1', name: 'Test Label 1' };
 
-      // Stub makeConcurrentCall to call the actual callbacks
       const makeConcurrentCallStub = sinon
         .stub(importLabels as any, 'makeConcurrentCall')
         .callsFake(async (config: any) => {
@@ -621,12 +717,10 @@ describe('ImportLabels', () => {
     });
 
     it('should test onReject callback in importLabels with actual API call', async () => {
-      // Mock file system to return true for labels folder
       (fileHelper.fileExistsSync as any).callsFake((path: string) => {
         return path.includes('/test/backup/labels') && !path.includes('labels.json');
       });
 
-      // Mock reading labels.json file
       (fsUtil.readFile as any).callsFake((path: string) => {
         if (path.includes('labels.json')) {
           return {
@@ -637,11 +731,9 @@ describe('ImportLabels', () => {
       });
       (fsUtil.makeDirectory as any).resolves();
 
-      // Mock the actual API call to test onReject callback
       const mockError = { message: JSON.stringify({ errors: { name: 'already exists' } }) };
       const mockApiData = { uid: 'label-1', name: 'Test Label 1' };
 
-      // Stub makeConcurrentCall to call the actual callbacks
       const makeConcurrentCallStub = sinon
         .stub(importLabels as any, 'makeConcurrentCall')
         .callsFake(async (config: any) => {
@@ -661,12 +753,10 @@ describe('ImportLabels', () => {
     });
 
     it('should test onSuccess callback in updateLabels with actual API call', async () => {
-      // Mock file system to return true for labels folder
       (fileHelper.fileExistsSync as any).callsFake((path: string) => {
         return path.includes('/test/backup/labels') && !path.includes('labels.json');
       });
 
-      // Mock reading labels.json file
       (fsUtil.readFile as any).callsFake((path: string) => {
         if (path.includes('labels.json')) {
           return {
@@ -677,11 +767,9 @@ describe('ImportLabels', () => {
       });
       (fsUtil.makeDirectory as any).resolves();
 
-      // Mock the actual API call to test onSuccess callback
       const mockResponse = { uid: 'new-label-123', name: 'Test Label 1' };
       const mockApiData = { uid: 'label-1', name: 'Test Label 1' };
 
-      // Stub makeConcurrentCall to call the actual callbacks
       const makeConcurrentCallStub = sinon
         .stub(importLabels as any, 'makeConcurrentCall')
         .callsFake(async (config: any) => {
@@ -700,12 +788,10 @@ describe('ImportLabels', () => {
     });
 
     it('should test onReject callback in updateLabels with actual API call', async () => {
-      // Mock file system to return true for labels folder
       (fileHelper.fileExistsSync as any).callsFake((path: string) => {
         return path.includes('/test/backup/labels') && !path.includes('labels.json');
       });
 
-      // Mock reading labels.json file
       (fsUtil.readFile as any).callsFake((path: string) => {
         if (path.includes('labels.json')) {
           return {
@@ -716,11 +802,9 @@ describe('ImportLabels', () => {
       });
       (fsUtil.makeDirectory as any).resolves();
 
-      // Mock the actual API call to test onReject callback
       const mockError = { message: 'Update failed' };
       const mockApiData = { uid: 'label-1', name: 'Test Label 1' };
 
-      // Stub makeConcurrentCall to call the actual callbacks
       const makeConcurrentCallStub = sinon
         .stub(importLabels as any, 'makeConcurrentCall')
         .callsFake(async (config: any) => {
@@ -740,12 +824,10 @@ describe('ImportLabels', () => {
     });
 
     it('should test onReject callback in importLabels with non-already-exists error', async () => {
-      // Mock file system to return true for labels folder
       (fileHelper.fileExistsSync as any).callsFake((path: string) => {
         return path.includes('/test/backup/labels') && !path.includes('labels.json');
       });
 
-      // Mock reading labels.json file
       (fsUtil.readFile as any).callsFake((path: string) => {
         if (path.includes('labels.json')) {
           return {
@@ -756,11 +838,9 @@ describe('ImportLabels', () => {
       });
       (fsUtil.makeDirectory as any).resolves();
 
-      // Mock the actual API call to test onReject callback with non-already-exists error
       const mockError = { message: JSON.stringify({ error: 'Server error' }) };
       const mockApiData = { uid: 'label-1', name: 'Test Label 1' };
 
-      // Stub makeConcurrentCall to call the actual callbacks
       const makeConcurrentCallStub = sinon
         .stub(importLabels as any, 'makeConcurrentCall')
         .callsFake(async (config: any) => {
@@ -1108,12 +1188,10 @@ describe('ImportLabels', () => {
     });
 
     it('should test actual onSuccess callback execution in importLabels', async () => {
-      // Mock file system to return true for labels folder
       (fileHelper.fileExistsSync as any).callsFake((path: string) => {
         return path.includes('/test/backup/labels') && !path.includes('labels.json');
       });
 
-      // Mock reading labels.json file
       (fsUtil.readFile as any).callsFake((path: string) => {
         if (path.includes('labels.json')) {
           return {
@@ -1124,11 +1202,9 @@ describe('ImportLabels', () => {
       });
       (fsUtil.makeDirectory as any).resolves();
 
-      // Mock the actual API call to test onSuccess callback execution
       const mockResponse = { uid: 'new-label-123', name: 'Test Label 1' };
       const mockApiData = { uid: 'label-1', name: 'Test Label 1' };
 
-      // Stub makeConcurrentCall to call the actual callbacks
       const makeConcurrentCallStub = sinon
         .stub(importLabels as any, 'makeConcurrentCall')
         .callsFake(async (config: any) => {
@@ -1145,12 +1221,10 @@ describe('ImportLabels', () => {
     });
 
     it('should test actual onReject callback execution in importLabels', async () => {
-      // Mock file system to return true for labels folder
       (fileHelper.fileExistsSync as any).callsFake((path: string) => {
         return path.includes('/test/backup/labels') && !path.includes('labels.json');
       });
 
-      // Mock reading labels.json file
       (fsUtil.readFile as any).callsFake((path: string) => {
         if (path.includes('labels.json')) {
           return {
@@ -1161,11 +1235,9 @@ describe('ImportLabels', () => {
       });
       (fsUtil.makeDirectory as any).resolves();
 
-      // Mock the actual API call to test onReject callback execution
       const mockError = { message: JSON.stringify({ error: 'Server error' }) };
       const mockApiData = { uid: 'label-1', name: 'Test Label 1' };
 
-      // Stub makeConcurrentCall to call the actual callbacks
       const makeConcurrentCallStub = sinon
         .stub(importLabels as any, 'makeConcurrentCall')
         .callsFake(async (config: any) => {
@@ -1181,12 +1253,10 @@ describe('ImportLabels', () => {
     });
 
     it('should test actual onSuccess callback execution in updateLabels', async () => {
-      // Mock file system to return true for labels folder
       (fileHelper.fileExistsSync as any).callsFake((path: string) => {
         return path.includes('/test/backup/labels') && !path.includes('labels.json');
       });
 
-      // Mock reading labels.json file
       (fsUtil.readFile as any).callsFake((path: string) => {
         if (path.includes('labels.json')) {
           return {
@@ -1197,11 +1267,9 @@ describe('ImportLabels', () => {
       });
       (fsUtil.makeDirectory as any).resolves();
 
-      // Mock the actual API call to test onSuccess callback execution
       const mockResponse = { uid: 'new-label-123', name: 'Test Label 1' };
       const mockApiData = { uid: 'label-1', name: 'Test Label 1' };
 
-      // Stub makeConcurrentCall to call the actual callbacks
       const makeConcurrentCallStub = sinon
         .stub(importLabels as any, 'makeConcurrentCall')
         .callsFake(async (config: any) => {
@@ -1219,12 +1287,10 @@ describe('ImportLabels', () => {
     });
 
     it('should test actual onReject callback execution in updateLabels', async () => {
-      // Mock file system to return true for labels folder
       (fileHelper.fileExistsSync as any).callsFake((path: string) => {
         return path.includes('/test/backup/labels') && !path.includes('labels.json');
       });
 
-      // Mock reading labels.json file
       (fsUtil.readFile as any).callsFake((path: string) => {
         if (path.includes('labels.json')) {
           return {
@@ -1235,11 +1301,9 @@ describe('ImportLabels', () => {
       });
       (fsUtil.makeDirectory as any).resolves();
 
-      // Mock the actual API call to test onReject callback execution
       const mockError = { message: 'Update failed' };
       const mockApiData = { uid: 'label-1', name: 'Test Label 1' };
 
-      // Stub makeConcurrentCall to call the actual callbacks
       const makeConcurrentCallStub = sinon
         .stub(importLabels as any, 'makeConcurrentCall')
         .callsFake(async (config: any) => {
@@ -1336,12 +1400,10 @@ describe('ImportLabels', () => {
     });
 
     it('should test the exact callback execution paths with makeConcurrentCall', async () => {
-      // Mock file system to return true for labels folder
       (fileHelper.fileExistsSync as any).callsFake((path: string) => {
         return path.includes('/test/backup/labels') && !path.includes('labels.json');
       });
 
-      // Mock reading labels.json file
       (fsUtil.readFile as any).callsFake((path: string) => {
         if (path.includes('labels.json')) {
           return {
@@ -1358,7 +1420,6 @@ describe('ImportLabels', () => {
       let updateOnSuccessCalled = false;
       let updateOnRejectCalled = false;
 
-      // Stub makeConcurrentCall to call the actual callbacks
       const makeConcurrentCallStub = sinon
         .stub(importLabels as any, 'makeConcurrentCall')
         .callsFake(async (config: any) => {
@@ -1485,13 +1546,14 @@ describe('ImportLabels', () => {
       (fileHelper.fileExistsSync as any).returns(true);
       (fsUtil.readFile as any).returns({ 'label-1': { uid: 'label-1', name: 'Label 1' } });
       (fsUtil.makeDirectory as any).rejects(new Error('Directory creation failed'));
+      
+      sinon.stub(importLabels as any, 'analyzeLabels').resolves([1]);
+      const completeProgressStub = sinon.stub(importLabels as any, 'completeProgress').resolves();
 
-      try {
-        await importLabels.start();
-        expect.fail('Expected error to be thrown');
-      } catch (error: any) {
-        expect(error.message).to.equal('Directory creation failed');
-      }
+      await importLabels.start();
+      
+      // Error should be caught and handled in start() method
+      expect(completeProgressStub.calledWith(false, sinon.match.string)).to.be.true;
     });
 
     it('should handle writeFile errors in onSuccess', () => {

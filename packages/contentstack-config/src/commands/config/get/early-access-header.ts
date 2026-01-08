@@ -24,7 +24,7 @@ export default class GetEarlyAccessHeaderCommand extends Command {
         ];
         cliux.table(tableHeaders, tableData);
       } else {
-        cliux.print(`No Early Access header found!`, { color: 'red' });
+        cliux.print(`Early Access header not found.`, { color: 'red' });
       }
     } catch (error) {
       this.log('Unable to retrieve the Early Access header config', error instanceof Error ? error.message : error);

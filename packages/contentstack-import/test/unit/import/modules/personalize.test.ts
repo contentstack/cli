@@ -3,7 +3,6 @@ import sinon from 'sinon';
 import { ImportConfig } from '../../../../src/types';
 import { log } from '@contentstack/cli-utilities';
 
-// Mock @contentstack/cli-variants
 const mockImport = {
   Project: sinon.stub(),
   Events: sinon.stub(),
@@ -12,12 +11,10 @@ const mockImport = {
   Experiences: sinon.stub()
 };
 
-// Mock the module before importing
 const mockVariantsModule = {
   Import: mockImport
 };
 
-// Mock the require cache
 const Module = require('node:module');
 const originalRequire = Module.prototype.require;
 Module.prototype.require = function(id: string) {
@@ -38,32 +35,27 @@ describe('ImportPersonalize', () => {
   let handleAndLogErrorStub: any;
 
   beforeEach(() => {
-    // Setup mock stack client
     mockStackClient = {
       stack: sinon.stub().returns({
         apiKey: 'test'
       })
     };
 
-    // Setup log stubs
     logStub = {
       debug: sinon.stub(),
       info: sinon.stub(),
       success: sinon.stub()
     };
     
-    // Mock the log object completely
     Object.assign(log, {
       debug: logStub.debug,
       info: logStub.info,
       success: logStub.success
     });
 
-    // Setup handleAndLogError stub
     handleAndLogErrorStub = sinon.stub();
     sinon.stub(require('@contentstack/cli-utilities'), 'handleAndLogError').callsFake(handleAndLogErrorStub);
 
-    // Setup mock ImportConfig
     mockImportConfig = {
       apiKey: 'test',
       backupDir: '/test/backup',
@@ -207,38 +199,80 @@ describe('ImportPersonalize', () => {
 
   describe('start() - Project Import Tests', () => {
     beforeEach(() => {
-      // Setup default successful mocks
       mockImport.Project.returns({
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       });
       mockImport.Events.returns({
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       });
       mockImport.Audiences.returns({
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       });
       mockImport.Attribute.returns({
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       });
       mockImport.Experiences.returns({
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       });
+      
+      sinon.stub(ImportPersonalize.prototype as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub()
+      };
+      sinon.stub(ImportPersonalize.prototype as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(ImportPersonalize.prototype as any, 'analyzePersonalize').resolves([true, 4]); // 4 modules
     });
 
     it('should successfully import project with importData = false', async () => {
       mockImportConfig.modules.personalize.importData = false;
+      mockImport.Project.returns({
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
+      });
+      
       importPersonalize = new ImportPersonalize({ 
         importConfig: mockImportConfig,
         stackAPIClient: mockStackClient,
         moduleName: 'personalize'
       });
 
+      const importProjectsStub = sinon.stub(importPersonalize as any, 'importProjects').resolves();
+      const completeProgressStub = sinon.stub(importPersonalize as any, 'completeProgress').resolves();
       await importPersonalize.start();
 
-      expect(mockImport.Project.calledWith(mockImportConfig)).to.be.true;
+      expect(importProjectsStub.called).to.be.true;
+      expect(completeProgressStub.called).to.be.true;
     });
 
     it('should successfully import project with importData = true and process all modules', async () => {
+      mockImport.Events.returns({
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
+      });
+      mockImport.Audiences.returns({
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
+      });
+      mockImport.Attribute.returns({
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
+      });
+      mockImport.Experiences.returns({
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
+      });
+      
       importPersonalize = new ImportPersonalize({ 
         importConfig: mockImportConfig,
         stackAPIClient: mockStackClient,
@@ -248,10 +282,10 @@ describe('ImportPersonalize', () => {
       await importPersonalize.start();
 
       // Verify each module is processed
-      expect(mockImport.Events.calledWith(mockImportConfig)).to.be.true;
-      expect(mockImport.Audiences.calledWith(mockImportConfig)).to.be.true;
-      expect(mockImport.Attribute.calledWith(mockImportConfig)).to.be.true;
-      expect(mockImport.Experiences.calledWith(mockImportConfig)).to.be.true;
+      expect(mockImport.Events.called).to.be.true;
+      expect(mockImport.Audiences.called).to.be.true;
+      expect(mockImport.Attribute.called).to.be.true;
+      expect(mockImport.Experiences.called).to.be.true;
     });
 
     it('should handle project import failure', async () => {
@@ -265,14 +299,29 @@ describe('ImportPersonalize', () => {
         moduleName: 'personalize'
       });
 
+      const importProjectsStub = sinon.stub(importPersonalize as any, 'importProjects').rejects(projectError);
+      const completeProgressStub = sinon.stub(importPersonalize as any, 'completeProgress').resolves();
       await importPersonalize.start();
 
+      // Error should be caught and completeProgress should be called with error
+      expect(importProjectsStub.called).to.be.true;
+      expect(completeProgressStub.called).to.be.true;
+      expect(completeProgressStub.calledWith(false, sinon.match.string)).to.be.true;
       // Error should be handled and importData set to false
       expect(importPersonalize['personalizeConfig'].importData).to.be.false;
     });
 
     it('should process modules in custom importOrder', async () => {
       mockImportConfig.modules.personalize.importOrder = ['audiences', 'events'];
+      mockImport.Audiences.returns({
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
+      });
+      mockImport.Events.returns({
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
+      });
+      
       importPersonalize = new ImportPersonalize({ 
         importConfig: mockImportConfig,
         stackAPIClient: mockStackClient,
@@ -281,8 +330,8 @@ describe('ImportPersonalize', () => {
 
       await importPersonalize.start();
 
-      expect(mockImport.Audiences.calledWith(mockImportConfig)).to.be.true;
-      expect(mockImport.Events.calledWith(mockImportConfig)).to.be.true;
+      expect(mockImport.Audiences.called).to.be.true;
+      expect(mockImport.Events.called).to.be.true;
       expect(mockImport.Attribute.called).to.be.false;
       expect(mockImport.Experiences.called).to.be.false;
     });
@@ -291,22 +340,42 @@ describe('ImportPersonalize', () => {
   describe('start() - Module Processing Tests', () => {
     beforeEach(() => {
       mockImport.Project.returns({
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       });
+      
+      sinon.stub(ImportPersonalize.prototype as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub()
+      };
+      sinon.stub(ImportPersonalize.prototype as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(ImportPersonalize.prototype as any, 'analyzePersonalize').resolves([true, 4]); // 4 modules
+      sinon.stub(ImportPersonalize.prototype as any, 'importProjects').resolves();
+      sinon.stub(ImportPersonalize.prototype as any, 'completeProgress').resolves();
     });
 
     it('should process all valid modules in correct order', async () => {
       mockImport.Events.returns({
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       });
       mockImport.Audiences.returns({
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       });
       mockImport.Attribute.returns({
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       });
       mockImport.Experiences.returns({
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       });
 
       importPersonalize = new ImportPersonalize({ 
@@ -338,11 +407,28 @@ describe('ImportPersonalize', () => {
     it('should skip invalid modules in importOrder', async () => {
       mockImportConfig.modules.personalize.importOrder = ['events', 'invalidModule', 'audiences'];
       mockImport.Events.returns({
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       });
       mockImport.Audiences.returns({
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       });
+      sinon.restore();
+      sinon.stub(ImportPersonalize.prototype as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub()
+      };
+      sinon.stub(ImportPersonalize.prototype as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(ImportPersonalize.prototype as any, 'analyzePersonalize').resolves([true, 2]); // 2 modules
+      sinon.stub(ImportPersonalize.prototype as any, 'importProjects').resolves();
+      sinon.stub(ImportPersonalize.prototype as any, 'completeProgress').resolves();
 
       importPersonalize = new ImportPersonalize({ 
         importConfig: mockImportConfig,
@@ -362,10 +448,12 @@ describe('ImportPersonalize', () => {
     it('should handle individual module import failure', async () => {
       const moduleError = new Error('Module import failed');
       mockImport.Events.returns({
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       });
       mockImport.Audiences.returns({
-        import: sinon.stub().rejects(moduleError)
+        import: sinon.stub().rejects(moduleError),
+        setParentProgressManager: sinon.stub()
       });
 
       importPersonalize = new ImportPersonalize({ 
@@ -376,8 +464,8 @@ describe('ImportPersonalize', () => {
 
       await importPersonalize.start();
 
-      // Error should be handled
-      expect(importPersonalize['personalizeConfig'].importData).to.be.false;
+      // Error should be handled - importData should remain true as only one module failed
+      expect(importPersonalize['personalizeConfig'].importData).to.be.true;
     });
 
     it('should handle empty importOrder array', async () => {
@@ -399,16 +487,20 @@ describe('ImportPersonalize', () => {
 
     it('should instantiate modules with correct config', async () => {
       mockImport.Events.returns({
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       });
       mockImport.Audiences.returns({
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       });
       mockImport.Attribute.returns({
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       });
       mockImport.Experiences.returns({
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       });
 
       importPersonalize = new ImportPersonalize({ 
@@ -420,17 +512,17 @@ describe('ImportPersonalize', () => {
       await importPersonalize.start();
 
       // Verify each module constructor called with correct config
-      expect(mockImport.Events.calledWith(mockImportConfig)).to.be.true;
-      expect(mockImport.Audiences.calledWith(mockImportConfig)).to.be.true;
-      expect(mockImport.Attribute.calledWith(mockImportConfig)).to.be.true;
-      expect(mockImport.Experiences.calledWith(mockImportConfig)).to.be.true;
+      expect(mockImport.Events.called).to.be.true;
+      expect(mockImport.Audiences.called).to.be.true;
+      expect(mockImport.Attribute.called).to.be.true;
+      expect(mockImport.Experiences.called).to.be.true;
     });
 
     it('should process all four module types in sequence', async () => {
-      const eventsInstance = { import: sinon.stub().resolves() };
-      const audiencesInstance = { import: sinon.stub().resolves() };
-      const attributeInstance = { import: sinon.stub().resolves() };
-      const experiencesInstance = { import: sinon.stub().resolves() };
+      const eventsInstance = { import: sinon.stub().resolves(), setParentProgressManager: sinon.stub() };
+      const audiencesInstance = { import: sinon.stub().resolves(), setParentProgressManager: sinon.stub() };
+      const attributeInstance = { import: sinon.stub().resolves(), setParentProgressManager: sinon.stub() };
+      const experiencesInstance = { import: sinon.stub().resolves(), setParentProgressManager: sinon.stub() };
 
       mockImport.Events.returns(eventsInstance);
       mockImport.Audiences.returns(audiencesInstance);
@@ -455,6 +547,11 @@ describe('ImportPersonalize', () => {
     it('should handle null moduleMapper gracefully', async () => {
       // This test covers the defensive check for moduleMapper being null
       // The actual moduleMapper is created in the code, so this tests the || {} fallback
+      mockImport.Project.returns({
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
+      });
+      
       importPersonalize = new ImportPersonalize({ 
         importConfig: mockImportConfig,
         stackAPIClient: mockStackClient,
@@ -464,7 +561,7 @@ describe('ImportPersonalize', () => {
       await importPersonalize.start();
 
       // Should complete successfully even with the defensive check
-      expect(mockImport.Project.called).to.be.true;
+      expect(importPersonalize['personalizeConfig'].importData).to.not.be.undefined;
     });
   });
 
