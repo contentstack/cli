@@ -16,15 +16,15 @@ importers:
       '@contentstack/cli-auth': ~1.6.2
       '@contentstack/cli-cm-bootstrap': ~2.0.0-beta.2
       '@contentstack/cli-cm-branches': ~1.6.1
-      '@contentstack/cli-cm-bulk-publish': ~1.10.1
+      '@contentstack/cli-cm-bulk-publish': ~1.10.3
       '@contentstack/cli-cm-clone': ~2.0.0-beta.2
       '@contentstack/cli-cm-export': ~2.0.0-beta.2
-      '@contentstack/cli-cm-export-to-csv': ~1.10.0
+      '@contentstack/cli-cm-export-to-csv': ~1.10.1
       '@contentstack/cli-cm-import': ~2.0.0-beta.2
       '@contentstack/cli-cm-import-setup': ~2.0.0-beta.1
       '@contentstack/cli-cm-seed': ~2.0.0-beta.2
-      '@contentstack/cli-command': ~1.6.2
-      '@contentstack/cli-config': ~1.15.3
+      '@contentstack/cli-command': ~1.7.0
+      '@contentstack/cli-config': ~1.16.1
       '@contentstack/cli-launch': ^1.9.2
       '@contentstack/cli-migration': ~2.0.0-beta
       '@contentstack/cli-utilities': ~1.15.0
@@ -82,8 +82,8 @@ importers:
       '@contentstack/cli-cm-import': 2.0.0-beta.2
       '@contentstack/cli-cm-import-setup': link:../contentstack-import-setup
       '@contentstack/cli-cm-seed': link:../contentstack-seed
-      '@contentstack/cli-command': 1.6.2_debug@4.4.3
-      '@contentstack/cli-config': 1.15.3_debug@4.4.3
+      '@contentstack/cli-command': link:../contentstack-command
+      '@contentstack/cli-config': link:../contentstack-config
       '@contentstack/cli-launch': 1.9.3_tanrtkdzllst73ozorstzho2ki
       '@contentstack/cli-migration': link:../contentstack-migration
       '@contentstack/cli-utilities': link:../contentstack-utilities
@@ -2064,7 +2064,7 @@ packages:
       fs-extra: 11.3.2
       lodash: 4.17.21
       uuid: 9.0.1
-      winston: 3.18.3
+      winston: 3.19.0
     transitivePeerDependencies:
       - debug
       - supports-color
@@ -2091,7 +2091,7 @@ packages:
       mkdirp: 1.0.4
       promise-limit: 2.7.0
       uuid: 9.0.1
-      winston: 3.18.3
+      winston: 3.19.0
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -2114,7 +2114,7 @@ packages:
       '@contentstack/cli-utilities': 1.15.0_debug@4.4.3
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.36
-      contentstack: 3.26.2
+      contentstack: 3.26.3
     transitivePeerDependencies:
       - debug
     dev: false
@@ -2143,26 +2143,13 @@ packages:
     transitivePeerDependencies:
       - debug
 
-  /@contentstack/cli-config/1.15.3_debug@4.4.3:
-    resolution: {integrity: sha512-sZlJt2C28ReIZpFcBNkXy41QDZvMhDzpLfD3EjGLZYGD82/qqT/7mhdsOScigu5PXUmhHI1z+5yx/DaAEAkBnQ==}
-    engines: {node: '>=14.0.0'}
-    dependencies:
-      '@contentstack/cli-command': 1.6.2_debug@4.4.3
-      '@contentstack/cli-utilities': 1.15.0_debug@4.4.3
-      '@oclif/core': 4.8.0
-      '@oclif/plugin-help': 6.2.36
-      lodash: 4.17.21
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
   /@contentstack/cli-launch/1.9.3_tanrtkdzllst73ozorstzho2ki:
     resolution: {integrity: sha512-sSaZnxHDiFZjbzEFhFDIT9dvW/6rAXSKS8RO4TsoJk/ed2noUN4gVarAmAZt2B7qy7ICoPoXREIVOqi6FbaZqQ==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
       '@apollo/client': 3.14.0_graphql@16.12.0
-      '@contentstack/cli-command': 1.6.2_debug@4.4.3
+      '@contentstack/cli-command': 1.7.0_debug@4.4.3
       '@contentstack/cli-utilities': 1.15.0_debug@4.4.3
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.36
@@ -2277,7 +2264,7 @@ packages:
       '@oclif/plugin-help': 6.2.36
       lodash: 4.17.21
       mkdirp: 1.0.4
-      winston: 3.18.3
+      winston: 3.19.0
     transitivePeerDependencies:
       - debug
     dev: false
