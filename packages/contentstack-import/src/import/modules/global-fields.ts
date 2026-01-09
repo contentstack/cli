@@ -1,7 +1,7 @@
 /* eslint-disable no-prototype-builtins */
 /*!
  * Contentstack Import
- * Copyright (c) 2024 Contentstack LLC
+ * Copyright (c) 2026 Contentstack LLC
  * MIT Licensed
  */
 
