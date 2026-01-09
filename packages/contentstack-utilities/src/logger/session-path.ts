@@ -1,7 +1,64 @@
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
-import { configHandler, formatDate, formatTime } from '..';
+import { configHandler, formatDate, formatTime, createLogContext } from '..';
 import { getLogPath } from './log';
+
+/**
+ * Extract module name from command ID
+ * Example: "cm:stacks:audit" -> "audit"
+ */
+function extractModule(commandId: string): string {
+  if (!commandId || commandId === 'unknown') {
+    return '';
+  }
+  // Split by colon and get the last part
+  const parts = commandId.split(':');
+  return parts[parts.length - 1] || '';
+}
+
+/**
+ * Generate session metadata object for session.json
+ * Uses createLogContext() to get base context, then adds session-specific metadata
+ */
+function generateSessionMetadata(
+  commandId: string,
+  sessionId: string,
+  startTimestamp: Date,
+): Record<string, any> {
+  const originalCommandId = configHandler.get('currentCommandId') || commandId;
+  const module = extractModule(originalCommandId);
+  const apiKey = configHandler.get('apiKey') || '';
+  
+  const baseContext = createLogContext(originalCommandId, apiKey);
+
+  return {
+    ...baseContext,
+    module: module,
+    sessionId: sessionId,
+    startTimestamp: startTimestamp.toISOString(),
+    MachineEnvironment: {
+      nodeVersion: process.version,
+      os: os.platform(),
+      hostname: os.hostname(),
+      CLI_VERSION: configHandler.get('CLI_VERSION') || '',
+    },
+  };
+}
+
+/**
+ * Create session.json metadata file in the session directory
+ */
+function createSessionMetadataFile(sessionPath: string, metadata: Record<string, any>): void {
+  const metadataPath = path.join(sessionPath, 'session.json');
+  try {
+    fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2), 'utf8');
+  } catch (error) {
+    // Silently fail if metadata file cannot be created
+    // Logging here would cause circular dependency
+    // The session folder and logs will still be created
+  }
+}
 
 /**
  * Get the session-based log path for date-organized logging
@@ -42,8 +99,20 @@ export function getSessionLogPath(): string {
   const sessionPath = path.join(basePath, dateStr, sessionFolderName);
 
   // Ensure directory exists
-  if (!fs.existsSync(sessionPath)) {
+  const isNewSession = !fs.existsSync(sessionPath);
+  if (isNewSession) {
     fs.mkdirSync(sessionPath, { recursive: true });
+  }
+
+  // Create session.json metadata file for new sessions
+  // This ensures metadata is created before any logs are written
+  if (isNewSession) {
+    const metadata = generateSessionMetadata(
+      configHandler.get('currentCommandId') || commandId,
+      sessionId,
+      now,
+    );
+    createSessionMetadataFile(sessionPath, metadata);
   }
 
   return sessionPath;
