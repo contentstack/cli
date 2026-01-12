@@ -13,10 +13,11 @@ import {
   log,
   handleAndLogError,
   getLogPath,
+  createLogContext,
 } from '@contentstack/cli-utilities';
 
 import { ModuleExporter } from '../../../export';
-import { Context, ExportConfig } from '../../../types';
+import { ExportConfig } from '../../../types';
 import { setupExportConfig, writeExportMetaFile } from '../../../utils';
 
 export default class ExportCommand extends Command {
@@ -120,9 +121,16 @@ export default class ExportCommand extends Command {
     try {
       const { flags } = await this.parse(ExportCommand);
       const exportConfig = await setupExportConfig(flags);
-      // Prepare the context object
-      const context = this.createExportContext(exportConfig.apiKey, exportConfig.authenticationMethod);
-      exportConfig.context = { ...context };
+      
+      // Store apiKey in configHandler for session.json (return value not needed)
+      createLogContext(
+        this.context?.info?.command || 'cm:stacks:export',
+        exportConfig.apiKey,
+        exportConfig.authenticationMethod
+      );
+      
+      // For log entries, only pass module (other fields are in session.json)
+      exportConfig.context = { module: '' };
       //log.info(`Using Cli Version: ${this.context?.cliVersion}`, exportConfig.context);
 
       // Assign exportConfig variables
@@ -137,7 +145,6 @@ export default class ExportCommand extends Command {
       }
       log.success(
         `The content of the stack ${exportConfig.apiKey} has been exported successfully!`,
-        exportConfig.context,
       );
       log.info(`The exported content has been stored at '${exportDir}'.`, exportConfig.context);
       log.success(`The log has been stored at '${getLogPath()}'.`, exportConfig.context);
@@ -147,19 +154,6 @@ export default class ExportCommand extends Command {
     }
   }
 
-  // Create export context object
-  private createExportContext(apiKey: string, authenticationMethod?: string): Context {
-    return {
-      command: this.context?.info?.command || 'cm:stacks:export',
-      module: '',
-      userId: configHandler.get('userUid') || '',
-      email: configHandler.get('email') || '',
-      sessionId: this.context?.sessionId || '',
-      apiKey: apiKey || '',
-      orgId: configHandler.get('oauthOrgUid') || '',
-      authenticationMethod: authenticationMethod || 'Basic Auth',
-    };
-  }
 
   // Assign values to exportConfig
   private assignExportConfig(exportConfig: ExportConfig): void {
