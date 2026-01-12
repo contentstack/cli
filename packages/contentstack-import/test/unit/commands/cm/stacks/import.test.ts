@@ -131,8 +131,8 @@ describe('ImportCommand', () => {
     });
 
     it('should have correct aliases', () => {
-      expect(ImportCommand.aliases).to.be.an('array');
-      expect(ImportCommand.aliases).to.include('cm:import');
+      // Aliases removed as part of deprecation cleanup
+      expect(ImportCommand.aliases).to.be.an('array').that.is.empty;
     });
 
     it('should have correct usage', () => {
@@ -167,10 +167,8 @@ describe('ImportCommand', () => {
       expect(flags['data-dir']).to.have.property('char', 'd');
       expect(flags['alias']).to.have.property('char', 'a');
       expect(flags['config']).to.have.property('char', 'c');
-      expect(flags['module']).to.have.property('char', 'm');
-      expect(flags['backup-dir']).to.have.property('char', 'b');
-      expect(flags['branch']).to.have.property('char', 'B');
       expect(flags['yes']).to.have.property('char', 'y');
+      // Note: 'module', 'backup-dir', and 'branch' no longer have char shortcuts
     });
 
     it('should have correct default values', () => {
@@ -468,10 +466,11 @@ describe('ImportCommand', () => {
     it('should handle deprecated flags correctly', () => {
       const flags = ImportCommand.flags;
 
-      expect(flags['stack-uid']).to.have.property('hidden', true);
-      expect(flags['data']).to.have.property('hidden', true);
-      expect(flags['management-token-alias']).to.have.property('hidden', true);
-      expect(flags['auth-token']).to.have.property('hidden', true);
+      // Deprecated flags have been removed as part of deprecation cleanup
+      expect(flags['stack-uid']).to.be.undefined;
+      expect(flags['data']).to.be.undefined;
+      expect(flags['management-token-alias']).to.be.undefined;
+      expect(flags['auth-token']).to.be.undefined;
     });
 
     it('should have correct flag descriptions', () => {

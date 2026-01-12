@@ -1,19 +1,22 @@
 import { expect } from 'chai';
 import { stub, restore, SinonStub } from 'sinon';
-import ImportSetup from '../../src/import/import-setup';
 import * as backupHandlerModule from '../../src/utils/backup-handler';
-import * as loggerModule from '../../src/utils/logger';
 import * as setupBranchModule from '../../src/utils/setup-branch';
 import { ImportConfig, Modules } from '../../src/types';
+
+const proxyquire = require('proxyquire');
 
 describe('ImportSetup', () => {
   let mockStackAPIClient: any;
   let mockManagementAPIClient: any;
   let backupHandlerStub: SinonStub;
   let setupBranchConfigStub: SinonStub;
-  let importSetup: ImportSetup;
+  let ImportSetup: any;
+  let importSetup: any;
   let fetchStub: SinonStub;
   let branchQueryStub: SinonStub;
+  let logDebugStub: SinonStub;
+  let handleAndLogErrorStub: SinonStub;
 
   const baseConfig: ImportConfig = {
     host: 'https://api.contentstack.io',
@@ -110,11 +113,37 @@ describe('ImportSetup', () => {
       stack: stub().returns(mockStackAPIClient),
     };
 
-    backupHandlerStub = stub(backupHandlerModule, 'default').resolves('/backup/path');
-    // Stub log to prevent console output during tests
-    stub(loggerModule, 'log');
-    setupBranchConfigStub = stub(setupBranchModule, 'setupBranchConfig').resolves();
-
+    // Create stubs for utilities
+    backupHandlerStub = stub().resolves('/backup/path');
+    setupBranchConfigStub = stub().resolves();
+    
+    // Create stubs for log and handleAndLogError
+    logDebugStub = stub();
+    handleAndLogErrorStub = stub();
+    
+    // Load ImportSetup with mocked dependencies
+    const importSetupPath = require.resolve('../../lib/import/import-setup.js');
+    if (require.cache[importSetupPath]) {
+      delete require.cache[importSetupPath];
+    }
+    
+    const importSetupModule = proxyquire(importSetupPath, {
+      '@contentstack/cli-utilities': {
+        log: {
+          debug: logDebugStub,
+          error: stub(),
+          warn: stub(),
+          info: stub(),
+        },
+        handleAndLogError: handleAndLogErrorStub,
+      },
+      '../utils': {
+        backupHandler: backupHandlerStub,
+        setupBranchConfig: setupBranchConfigStub,
+      },
+    });
+    
+    ImportSetup = importSetupModule.default || importSetupModule;
     importSetup = new ImportSetup(baseConfig, mockManagementAPIClient);
   });
 

@@ -166,25 +166,19 @@ describe('Auth Handler', () => {
         refresh_token: refreshToken,
       };
 
-      try {
-        const expectedPayload = {
-          grant_type: 'authorization_code',
-          client_id: authHandler.OAuthClientId,
-          code_verifier: authHandler.codeVerifier,
-          redirect_uri: authHandler.OAuthRedirectURL,
-          code,
-        };
+      const oauthHandlerStub = {
+        exchangeCodeForToken: sandbox.stub().resolves(userData),
+      };
 
-        const httpClientStub = sandbox.stub(HttpClient.prototype, 'post').resolves({ data: userData });
-        const getUserDetailsStub = sandbox.stub(authHandler, 'getUserDetails').resolves(userData);
-        const setConfigDataStub = sandbox.stub(authHandler, 'setConfigData').resolves();
+      sandbox.stub(authHandler, 'oauthHandler').value(oauthHandlerStub);
+      const getUserDetailsStub = sandbox.stub(authHandler, 'getUserDetails').resolves(userData);
+      const setConfigDataStub = sandbox.stub(authHandler, 'setConfigData').resolves();
 
-        await authHandler.getAccessToken(code);
+      await authHandler.getAccessToken(code);
 
-        assert.calledWith(httpClientStub, `${authHandler.OAuthBaseURL}/apps-api/apps/token`, expectedPayload);
-        assert.calledWith(getUserDetailsStub, userData);
-        assert.calledWith(setConfigDataStub, 'oauth', userData);
-      } catch (error) {}
+      assert.calledWith(oauthHandlerStub.exchangeCodeForToken, code);
+      assert.calledWith(getUserDetailsStub, userData);
+      assert.calledWith(setConfigDataStub, 'oauth', userData);
     });
   });
 

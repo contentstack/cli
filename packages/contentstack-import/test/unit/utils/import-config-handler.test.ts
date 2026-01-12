@@ -16,6 +16,7 @@ describe('Import Config Handler', () => {
   let askAPIKeyStub: sinon.SinonStub;
   let loginStub: sinon.SinonStub;
   let configHandlerGetStub: sinon.SinonStub;
+  let configHandlerSetStub: sinon.SinonStub;
   let cliuxPrintStub: sinon.SinonStub;
   let logStub: any;
 
@@ -36,6 +37,7 @@ describe('Import Config Handler', () => {
     const cliUtilitiesModule = require('@contentstack/cli-utilities');
     const configHandler = require('@contentstack/cli-utilities').configHandler;
     configHandlerGetStub = sandbox.stub(configHandler, 'get');
+    configHandlerSetStub = sandbox.stub(configHandler, 'set');
     // isAuthenticated() internally uses configHandler.get('authorisationType')
     // Returns true when 'OAUTH' or 'AUTH', false when undefined/null
     cliuxPrintStub = sandbox.stub(cliUtilitiesModule.cliux, 'print');

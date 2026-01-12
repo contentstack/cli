@@ -20,7 +20,11 @@ describe('Tokens Remove Command', () => {
   beforeEach(function () {
     resetConfig();
     // Use correct token structure: { token, apiKey, type }
-    config.set(`${configKeyTokens}.${token1Alias}`, { token: 'test-token-1', apiKey: 'test-api-key-1', type: 'management' });
+    config.set(`${configKeyTokens}.${token1Alias}`, {
+      token: 'test-token-1',
+      apiKey: 'test-api-key-1',
+      type: 'management',
+    });
   });
 
   afterEach(() => {
@@ -51,12 +55,21 @@ describe('Tokens Remove Command', () => {
       return;
     }
     // Use correct token structure: { token, apiKey, type }
-    config.set(`${configKeyTokens}.${token1Alias}`, { token: 'test-token-1', apiKey: 'test-api-key-1', type: 'management' });
-    config.set(`${configKeyTokens}.${token1Alias}2`, { token: 'test-token-2', apiKey: 'test-api-key-2', type: 'management' });
+    config.set(`${configKeyTokens}.${token1Alias}`, {
+      token: 'test-token-1',
+      apiKey: 'test-api-key-1',
+      type: 'management',
+    });
+    config.set(`${configKeyTokens}.${token1Alias}2`, {
+      token: 'test-token-2',
+      apiKey: 'test-api-key-2',
+      type: 'management',
+    });
 
-    // The inquire stub should return the full token option string format: "alias: token : apiKey : type"
-    const tokenOption1 = `${token1Alias}: test-token-1 : test-api-key-1 : management`;
-    const tokenOption2 = `${token1Alias}2: test-token-2 : test-api-key-2 : management`;
+    // The inquire stub should return the full token option string format: "alias: token : apiKey: type"
+    // Note: no space before the colon before type when there's no environment
+    const tokenOption1 = `${token1Alias}: test-token-1 : test-api-key-1: management`;
+    const tokenOption2 = `${token1Alias}2: test-token-2 : test-api-key-2: management`;
     const inquireStub = sinon.stub(cliux, 'inquire').resolves([tokenOption1, tokenOption2]);
     await TokensRemoveCommand.run([]);
     expect(inquireStub.called).to.be.true;
