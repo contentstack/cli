@@ -1,6 +1,6 @@
 fileignoreconfig:
-  - filename: packages/contentstack-config/test/unit/commands/remove-base-branch.test.ts
-    checksum: 3e73b079b749120221f357d66ac7351ddb300d283f28410d5e6f3b0309ab3962
-  - filename: packages/contentstack-auth/test/unit/commands/tokens-remove.test.ts
-    checksum: 7e256db86c516b40c47eab78b3881b7ece525607281ebcd0b8711c089bdac056
+  - filename: pnpm-lock.yaml
+    checksum: 6f278bce220f922eef8cd7d2a5c74e978892621e66049b927df6ed01964a76c8
+  - filename: package-lock.json
+    checksum: a941cc7bc51380f5df7d1117bcd6cac754749c462565e2ad59f77e54ea719514
 version: '1.0'

@@ -74,16 +74,16 @@ importers:
       '@contentstack/cli-audit': link:../contentstack-audit
       '@contentstack/cli-auth': link:../contentstack-auth
       '@contentstack/cli-cm-bootstrap': link:../contentstack-bootstrap
-      '@contentstack/cli-cm-branches': link:../contentstack-branches
-      '@contentstack/cli-cm-bulk-publish': link:../contentstack-bulk-publish
+      '@contentstack/cli-cm-branches': 1.6.2_lxq42tdpoxpye5tb7w3htdbbdq
+      '@contentstack/cli-cm-bulk-publish': 1.10.4_lxq42tdpoxpye5tb7w3htdbbdq
       '@contentstack/cli-cm-clone': link:../contentstack-clone
       '@contentstack/cli-cm-export': link:../contentstack-export
-      '@contentstack/cli-cm-export-to-csv': link:../contentstack-export-to-csv
+      '@contentstack/cli-cm-export-to-csv': 1.10.2_lxq42tdpoxpye5tb7w3htdbbdq
       '@contentstack/cli-cm-import': link:../contentstack-import
       '@contentstack/cli-cm-import-setup': link:../contentstack-import-setup
       '@contentstack/cli-cm-seed': link:../contentstack-seed
       '@contentstack/cli-command': link:../contentstack-command
-      '@contentstack/cli-config': link:../contentstack-config
+      '@contentstack/cli-config': 1.16.2_lxq42tdpoxpye5tb7w3htdbbdq
       '@contentstack/cli-launch': 1.9.3_tanrtkdzllst73ozorstzho2ki
       '@contentstack/cli-migration': link:../contentstack-migration
       '@contentstack/cli-utilities': link:../contentstack-utilities
@@ -629,6 +629,7 @@ importers:
       mocha: ^10.8.2
       nyc: ^15.1.0
       oclif: ^4.17.46
+      sinon: ^19.0.5
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
@@ -649,6 +650,7 @@ importers:
       mocha: 10.8.2
       nyc: 15.1.0
       oclif: 4.22.63
+      sinon: 19.0.5
 
   packages/contentstack-import:
     specifiers:
@@ -741,8 +743,8 @@ importers:
       '@types/mkdirp': ^1.0.2
       '@types/mocha': ^8.2.3
       '@types/node': ^14.18.63
-      '@types/proxyquire': ^1.3.31
       '@types/rewire': ^2.5.30
+      '@types/sinon': ^10.0.20
       '@types/tar': ^6.1.13
       '@types/uuid': ^9.0.8
       '@typescript-eslint/eslint-plugin': ^5.62.0
@@ -758,8 +760,8 @@ importers:
       mocha: ^10.8.2
       nyc: ^15.1.0
       oclif: ^4.17.46
-      proxyquire: ^2.1.3
       rewire: ^9.0.1
+      sinon: ^19.0.5
       ts-node: ^10.9.2
       tsx: ^4.20.3
       typescript: ^4.9.5
@@ -783,8 +785,8 @@ importers:
       '@types/mkdirp': 1.0.2
       '@types/mocha': 8.2.3
       '@types/node': 14.18.63
-      '@types/proxyquire': 1.3.31
       '@types/rewire': 2.5.30
+      '@types/sinon': 10.0.20
       '@types/tar': 6.1.13
       '@types/uuid': 9.0.8
       '@typescript-eslint/eslint-plugin': 5.62.0_avq3eyf5kaj6ssrwo7fvkrwnji
@@ -794,8 +796,8 @@ importers:
       mocha: 10.8.2
       nyc: 15.1.0
       oclif: 4.22.63_@types+node@14.18.63
-      proxyquire: 2.1.3
       rewire: 9.0.1
+      sinon: 19.0.5
       ts-node: 10.9.2_ogreqof3k35xezedraj6pnd45y
       tsx: 4.21.0
       typescript: 4.9.5
@@ -2079,6 +2081,58 @@ packages:
       - debug
     dev: true
 
+  /@contentstack/cli-cm-branches/1.6.2_lxq42tdpoxpye5tb7w3htdbbdq:
+    resolution: {integrity: sha512-cI6dbVMBJRJJKFgNNBjFdvx21i8PKwmpiRStB6SncVP1wVQIiMSX4p7Fee487YrLG2dm/3Fl7NfOPGqp/vlpXg==}
+    engines: {node: '>=14.0.0'}
+    dependencies:
+      '@contentstack/cli-command': 1.7.1_lxq42tdpoxpye5tb7w3htdbbdq
+      '@contentstack/cli-utilities': 1.16.0_lxq42tdpoxpye5tb7w3htdbbdq
+      '@oclif/core': 4.8.0
+      '@oclif/plugin-help': 6.2.36
+      chalk: 4.1.2
+      just-diff: 6.0.2
+      lodash: 4.17.21
+    transitivePeerDependencies:
+      - '@types/node'
+      - debug
+    dev: false
+
+  /@contentstack/cli-cm-bulk-publish/1.10.4_lxq42tdpoxpye5tb7w3htdbbdq:
+    resolution: {integrity: sha512-aatQnm/XBMTqa4fOFyHOuF8/IAadCm9MWi855x3xtGYxCwzTUnvcjvAZ2TLZH/v8qjv6JYa5Gzh4xouVofM6UQ==}
+    engines: {node: '>=14.0.0'}
+    dependencies:
+      '@contentstack/cli-command': 1.7.1_lxq42tdpoxpye5tb7w3htdbbdq
+      '@contentstack/cli-config': 1.16.2_lxq42tdpoxpye5tb7w3htdbbdq
+      '@contentstack/cli-utilities': 1.16.0_lxq42tdpoxpye5tb7w3htdbbdq
+      '@oclif/core': 4.8.0
+      '@oclif/plugin-help': 6.2.36
+      chalk: 4.1.2
+      dotenv: 16.6.1
+      inquirer: 8.2.7_@types+node@14.18.63
+      lodash: 4.17.21
+      winston: 3.19.0
+    transitivePeerDependencies:
+      - '@types/node'
+      - debug
+    dev: false
+
+  /@contentstack/cli-cm-export-to-csv/1.10.2_lxq42tdpoxpye5tb7w3htdbbdq:
+    resolution: {integrity: sha512-oe8+TzH0fo+A540uWz0rmu92T+I8fnKxYYe9F6AD+eQi9tPt+4HzvSYYwQqb+fBnHvkVfcxOBQ3x5hZ9Kp3STA==}
+    engines: {node: '>=14.0.0'}
+    dependencies:
+      '@contentstack/cli-command': 1.7.1_lxq42tdpoxpye5tb7w3htdbbdq
+      '@contentstack/cli-utilities': 1.16.0_lxq42tdpoxpye5tb7w3htdbbdq
+      '@oclif/core': 4.8.0
+      '@oclif/plugin-help': 6.2.36
+      fast-csv: 4.3.6
+      inquirer: 8.2.7_@types+node@14.18.63
+      inquirer-checkbox-plus-prompt: 1.4.2_inquirer@8.2.7
+      mkdirp: 3.0.1
+    transitivePeerDependencies:
+      - '@types/node'
+      - debug
+    dev: false
+
   /@contentstack/cli-command/1.6.2:
     resolution: {integrity: sha512-h4I484kSYuelqZnwFhKL9IkaYlHbcZzMv3mhpKZBzIgbATMuI0Li+1haJNo+Ao7JqQmzT+a00QNtTHqpNDjngA==}
     engines: {node: '>=14.0.0'}
@@ -2102,6 +2156,19 @@ packages:
       - debug
     dev: false
 
+  /@contentstack/cli-command/1.7.1_lxq42tdpoxpye5tb7w3htdbbdq:
+    resolution: {integrity: sha512-VS+f+hwStXNShyVs9m/xV5l+KVZZ81k9lhJu+XjO5zXV/ZS3BNzW96xS6oAOUvSURVUPmZvELzjXFIvwbdBnGQ==}
+    engines: {node: '>=14.0.0'}
+    dependencies:
+      '@contentstack/cli-utilities': 1.16.0_lxq42tdpoxpye5tb7w3htdbbdq
+      '@oclif/core': 4.8.0
+      '@oclif/plugin-help': 6.2.36
+      contentstack: 3.26.3
+    transitivePeerDependencies:
+      - '@types/node'
+      - debug
+    dev: false
+
   /@contentstack/cli-config/1.15.3:
     resolution: {integrity: sha512-sZlJt2C28ReIZpFcBNkXy41QDZvMhDzpLfD3EjGLZYGD82/qqT/7mhdsOScigu5PXUmhHI1z+5yx/DaAEAkBnQ==}
     engines: {node: '>=14.0.0'}
@@ -2113,6 +2180,20 @@ packages:
       lodash: 4.17.21
     transitivePeerDependencies:
       - debug
+
+  /@contentstack/cli-config/1.16.2_lxq42tdpoxpye5tb7w3htdbbdq:
+    resolution: {integrity: sha512-rDOT14AS6bWntj7BIOAFmkWYBMq3VpPtjGmzL6Oes00TGjq9TKx7kSMG0pnHax9CGU7sW4cdjSWY9PzT1gPFGw==}
+    engines: {node: '>=14.0.0'}
+    dependencies:
+      '@contentstack/cli-command': 1.7.1_lxq42tdpoxpye5tb7w3htdbbdq
+      '@contentstack/cli-utilities': 1.16.0_lxq42tdpoxpye5tb7w3htdbbdq
+      '@oclif/core': 4.8.0
+      '@oclif/plugin-help': 6.2.36
+      lodash: 4.17.21
+    transitivePeerDependencies:
+      - '@types/node'
+      - debug
+    dev: false
 
   /@contentstack/cli-launch/1.9.3_tanrtkdzllst73ozorstzho2ki:
     resolution: {integrity: sha512-sSaZnxHDiFZjbzEFhFDIT9dvW/6rAXSKS8RO4TsoJk/ed2noUN4gVarAmAZt2B7qy7ICoPoXREIVOqi6FbaZqQ==}
@@ -2227,6 +2308,43 @@ packages:
       - debug
     dev: false
 
+  /@contentstack/cli-utilities/1.16.0_lxq42tdpoxpye5tb7w3htdbbdq:
+    resolution: {integrity: sha512-2SlKE9bJH3bd+ESNq1c9FWRCYzIjuWxRtXp+83eX7qDzHA7Lgu2EsRjfq+TcYVtBdCd0BzVATRIU2t/vNUl5Zw==}
+    dependencies:
+      '@contentstack/management': 1.25.1_debug@4.4.3
+      '@contentstack/marketplace-sdk': 1.4.1_debug@4.4.3
+      '@oclif/core': 4.8.0
+      axios: 1.13.2_debug@4.4.3
+      chalk: 4.1.2
+      cli-cursor: 3.1.0
+      cli-progress: 3.12.0
+      cli-table: 0.3.11
+      conf: 10.2.0
+      dotenv: 16.6.1
+      figures: 3.2.0
+      inquirer: 8.2.7_@types+node@14.18.63
+      inquirer-search-checkbox: 1.0.0
+      inquirer-search-list: 1.2.6
+      js-yaml: 4.1.1
+      klona: 2.0.6
+      lodash: 4.17.21
+      mkdirp: 1.0.4
+      open: 8.4.2
+      ora: 5.4.1
+      papaparse: 5.5.3
+      recheck: 4.4.5
+      rxjs: 6.6.7
+      traverse: 0.6.11
+      tty-table: 4.2.3
+      unique-string: 2.0.0
+      uuid: 9.0.1
+      winston: 3.19.0
+      xdg-basedir: 4.0.0
+    transitivePeerDependencies:
+      - '@types/node'
+      - debug
+    dev: false
+
   /@contentstack/management/1.22.0:
     resolution: {integrity: sha512-TmwCKhdZnmGpcTuXn5JWbvMqbu0PqEn8Z/oEUlCelAxpo9vSC2qS4aejJtLTqC3Gii/7cJwjqF1BoFpwSO5J9A==}
     engines: {node: '>=8.0.0'}
@@ -2264,6 +2382,23 @@ packages:
     dependencies:
       assert: 2.1.0
       axios: 1.13.2
+      buffer: 6.0.3
+      form-data: 4.0.5
+      husky: 9.1.7
+      lodash: 4.17.21
+      otplib: 12.0.1
+      qs: 6.14.1
+      stream-browserify: 3.0.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
+  /@contentstack/management/1.25.1_debug@4.4.3:
+    resolution: {integrity: sha512-454V3zGw4nrxnlYxXm82Z+yNjuechiN+TRE7SXWyHFUsexYVpKNyGyKZCvG6b4JymRTVUZpy/KnFixo01GP9Sg==}
+    engines: {node: '>=8.0.0'}
+    dependencies:
+      assert: 2.1.0
+      axios: 1.13.2_debug@4.4.3
       buffer: 6.0.3
       form-data: 4.0.5
       husky: 9.1.7
@@ -5296,10 +5431,6 @@ packages:
     resolution: {integrity: sha512-5YNriuEZkHlFHHepLIaxzq3atGeav1qCTGzB74HKWpo66qjfostF+rHc785YYYHeBytve8ZG3ejg42jEIfXNiQ==}
     dependencies:
       '@types/node': 20.19.27
-    dev: true
-
-  /@types/proxyquire/1.3.31:
-    resolution: {integrity: sha512-uALowNG2TSM1HNPMMOR0AJwv4aPYPhqB0xlEhkeRTMuto5hjoSPZkvgu1nbPUkz3gEPAHv4sy4DmKsurZiEfRQ==}
     dev: true
 
   /@types/qs/6.14.0:
@@ -9768,14 +9899,6 @@ packages:
     dependencies:
       minimatch: 5.1.6
 
-  /fill-keys/1.0.2:
-    resolution: {integrity: sha512-tcgI872xXjwFF4xgQmLxi76GnwJG3g/3isB1l4/G5Z4zrbddGpBjqZCO9oEAcB5wX0Hj/5iQB3toxfO7in1hHA==}
-    engines: {node: '>=0.10.0'}
-    dependencies:
-      is-object: 1.0.2
-      merge-descriptors: 1.0.3
-    dev: true
-
   /fill-range/7.1.1:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
     engines: {node: '>=8'}
@@ -10829,10 +10952,6 @@ packages:
   /is-obj/2.0.0:
     resolution: {integrity: sha512-drqDG3cbczxxEJRoOXcOjtdp1J/lyp1mNn0xaznRs8+muBhgQcrnbspox5X5fOw0HnMnbfDzvnEMEtqDEJEo8w==}
     engines: {node: '>=8'}
-
-  /is-object/1.0.2:
-    resolution: {integrity: sha512-2rRIahhZr2UWb45fIOuvZGpFtz0TyOZLf32KxBbSoUCeZR495zCKlWUKKUByk3geS2eAs7ZAABt0Y/Rx0GiQGA==}
-    dev: true
 
   /is-observable/1.1.0:
     resolution: {integrity: sha512-NqCa4Sa2d+u7BWc6CukaObG3Fh+CU9bvixbpcXYhy2VvYS7vVGIdAgnIS5Ks3A/cqk4rebLJ9s8zBstT2aKnIA==}
@@ -12080,6 +12199,7 @@ packages:
 
   /merge-descriptors/1.0.3:
     resolution: {integrity: sha512-gaNvAS7TZ897/rVaZ0nMtAyxNyi/pdbjbAwUpFQpN70GqnVfOiXpeUUMKRBmzXaSQ8DdTX4/0ms62r2K+hE6mQ==}
+    dev: false
 
   /merge-stream/2.0.0:
     resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
@@ -12267,10 +12387,6 @@ packages:
 
   /mock-stdin/1.0.0:
     resolution: {integrity: sha512-tukRdb9Beu27t6dN+XztSRHq9J0B/CoAOySGzHfn8UTfmqipA5yNT/sDUEyYdAV3Hpka6Wx6kOMxuObdOex60Q==}
-
-  /module-not-found-error/1.0.1:
-    resolution: {integrity: sha512-pEk4ECWQXV6z2zjhRZUongnLJNUeGQJ3w6OQ5ctGwD+i5o93qjRQUk2Rt6VdNeu3sEP0AB4LcfvdebpxBRVr4g==}
-    dev: true
 
   /ms/2.0.0:
     resolution: {integrity: sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==}
@@ -13215,14 +13331,6 @@ packages:
 
   /proxy-from-env/1.1.0:
     resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
-
-  /proxyquire/2.1.3:
-    resolution: {integrity: sha512-BQWfCqYM+QINd+yawJz23tbBM40VIGXOdDw3X344KcclI/gtBbdWF6SlQ4nK/bYhF9d27KYug9WzljHC6B9Ysg==}
-    dependencies:
-      fill-keys: 1.0.2
-      module-not-found-error: 1.0.1
-      resolve: 1.22.11
-    dev: true
 
   /pump/3.0.3:
     resolution: {integrity: sha512-todwxLMY7/heScKmntwQG8CXVkWUOdYxIvY2s0VWAAMh/nd8SoYiRaKjlr7+iCs984f2P8zvrfWcDDYVb73NfA==}

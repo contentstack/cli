@@ -1,22 +1,19 @@
 import { expect } from 'chai';
 import { stub, restore, SinonStub } from 'sinon';
-import * as backupHandlerModule from '../../src/utils/backup-handler';
-import * as setupBranchModule from '../../src/utils/setup-branch';
+import ImportSetup, { ImportSetupDeps } from '../../src/import/import-setup';
 import { ImportConfig, Modules } from '../../src/types';
-
-const proxyquire = require('proxyquire');
 
 describe('ImportSetup', () => {
   let mockStackAPIClient: any;
   let mockManagementAPIClient: any;
   let backupHandlerStub: SinonStub;
   let setupBranchConfigStub: SinonStub;
-  let ImportSetup: any;
-  let importSetup: any;
+  let importSetup: ImportSetup;
   let fetchStub: SinonStub;
   let branchQueryStub: SinonStub;
   let logDebugStub: SinonStub;
   let handleAndLogErrorStub: SinonStub;
+  let deps: ImportSetupDeps;
 
   const baseConfig: ImportConfig = {
     host: 'https://api.contentstack.io',
@@ -116,35 +113,25 @@ describe('ImportSetup', () => {
     // Create stubs for utilities
     backupHandlerStub = stub().resolves('/backup/path');
     setupBranchConfigStub = stub().resolves();
-    
+
     // Create stubs for log and handleAndLogError
     logDebugStub = stub();
     handleAndLogErrorStub = stub();
-    
-    // Load ImportSetup with mocked dependencies
-    const importSetupPath = require.resolve('../../lib/import/import-setup.js');
-    if (require.cache[importSetupPath]) {
-      delete require.cache[importSetupPath];
-    }
-    
-    const importSetupModule = proxyquire(importSetupPath, {
-      '@contentstack/cli-utilities': {
-        log: {
-          debug: logDebugStub,
-          error: stub(),
-          warn: stub(),
-          info: stub(),
-        },
-        handleAndLogError: handleAndLogErrorStub,
-      },
-      '../utils': {
-        backupHandler: backupHandlerStub,
-        setupBranchConfig: setupBranchConfigStub,
-      },
-    });
-    
-    ImportSetup = importSetupModule.default || importSetupModule;
-    importSetup = new ImportSetup(baseConfig, mockManagementAPIClient);
+
+    // Create the deps object for injection
+    deps = {
+      backupHandler: backupHandlerStub as any,
+      setupBranchConfig: setupBranchConfigStub as any,
+      log: {
+        debug: logDebugStub,
+        error: stub(),
+        warn: stub(),
+        info: stub(),
+      } as any,
+      handleAndLogError: handleAndLogErrorStub as any,
+    };
+
+    importSetup = new ImportSetup(baseConfig, mockManagementAPIClient, deps);
   });
 
   afterEach(() => {
@@ -165,7 +152,7 @@ describe('ImportSetup', () => {
 
   it('should not fetch stack details when management token is provided', async () => {
     const configWithToken = { ...baseConfig, management_token: 'test-token' };
-    importSetup = new ImportSetup(configWithToken, mockManagementAPIClient);
+    importSetup = new ImportSetup(configWithToken, mockManagementAPIClient, deps);
 
     await importSetup.start();
     expect(fetchStub.called).to.be.false;
@@ -199,32 +186,27 @@ describe('ImportSetup', () => {
       ...baseConfig,
       selectedModules: ['entries', 'content-types'] as Modules[],
     };
-    importSetup = new ImportSetup(configWithMultipleModules, mockManagementAPIClient);
+    importSetup = new ImportSetup(configWithMultipleModules, mockManagementAPIClient, deps);
     await (importSetup as any).generateDependencyTree();
 
     const dependencyTree = importSetup.dependencyTree;
     expect(dependencyTree).to.have.property('entries');
     expect(dependencyTree).to.have.property('content-types');
-    // entries should have content-types, assets, and global-fields
     expect(dependencyTree.entries).to.include('content-types');
     expect(dependencyTree.entries).to.include('assets');
     expect(dependencyTree.entries).to.include('global-fields');
-    // content-types should have empty dependencies since global-fields was already assigned to entries
-    // This is the expected behavior - dependencies are not duplicated across modules
     expect(dependencyTree['content-types']).to.be.an('array');
   });
 
   it('should handle visited modules to prevent infinite loops', async () => {
-    // Test that the visited set prevents processing the same module twice
     const configWithRepeatedDeps: ImportConfig = {
       ...baseConfig,
       selectedModules: ['entries', 'content-types'] as Modules[],
     };
-    importSetup = new ImportSetup(configWithRepeatedDeps, mockManagementAPIClient);
+    importSetup = new ImportSetup(configWithRepeatedDeps, mockManagementAPIClient, deps);
 
     await (importSetup as any).generateDependencyTree();
     const dependencyTree = importSetup.dependencyTree;
-    // Both modules should be in the tree
     expect(dependencyTree).to.have.property('entries');
     expect(dependencyTree).to.have.property('content-types');
   });
@@ -234,7 +216,6 @@ describe('ImportSetup', () => {
 
     await importSetup.start();
 
-    // Verify runModuleImports was called after dependency tree generation
     expect(runModuleImportsSpy.calledOnce).to.be.true;
     expect(importSetup.dependencyTree).to.not.be.empty;
   });
@@ -248,7 +229,6 @@ describe('ImportSetup', () => {
       expect.fail('Should have thrown an error');
     } catch (error: any) {
       expect(error.message).to.include('Module import failed');
-      // Error should be propagated from start method
     }
   });
 
@@ -268,11 +248,9 @@ describe('ImportSetup', () => {
 
     await importSetup.start();
     expect(backupHandlerStub.calledOnce).to.be.true;
-    // backupDir should remain unchanged if backupHandler returns undefined
   });
 
   it('should complete full start process successfully', async () => {
-    // This test verifies the entire flow works together
     await importSetup.start();
 
     expect(fetchStub.calledOnce).to.be.true;
@@ -286,7 +264,7 @@ describe('ImportSetup', () => {
       ...baseConfig,
       selectedModules: [] as Modules[],
     };
-    importSetup = new ImportSetup(configWithEmptyModules, mockManagementAPIClient);
+    importSetup = new ImportSetup(configWithEmptyModules, mockManagementAPIClient, deps);
 
     await (importSetup as any).generateDependencyTree();
     expect(Object.keys(importSetup.dependencyTree)).to.have.length(0);
@@ -297,7 +275,7 @@ describe('ImportSetup', () => {
       ...baseConfig,
       selectedModules: ['assets'] as Modules[],
     };
-    importSetup = new ImportSetup(configWithNoDeps, mockManagementAPIClient);
+    importSetup = new ImportSetup(configWithNoDeps, mockManagementAPIClient, deps);
 
     await (importSetup as any).generateDependencyTree();
     const dependencyTree = importSetup.dependencyTree;
@@ -310,7 +288,7 @@ describe('ImportSetup', () => {
       ...baseConfig,
       branchName: 'development',
     };
-    importSetup = new ImportSetup(configWithBranch, mockManagementAPIClient);
+    importSetup = new ImportSetup(configWithBranch, mockManagementAPIClient, deps);
 
     await importSetup.start();
 
@@ -323,7 +301,7 @@ describe('ImportSetup', () => {
       ...baseConfig,
       branchAlias: 'dev-alias',
     };
-    importSetup = new ImportSetup(configWithBranchAlias, mockManagementAPIClient);
+    importSetup = new ImportSetup(configWithBranchAlias, mockManagementAPIClient, deps);
 
     await importSetup.start();
 
