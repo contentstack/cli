@@ -19,6 +19,11 @@ Please refer to the Contentstack Command-line Interface release notes [here](htt
 #### Date: January-12-2026
 ##### Fix:
  - Fixed error handling when empty Stack API key is provided. Now shows a clear error message instead of SDK-related errors
+## @contentstack/cli-cm-clone
+### Version: 1.8.2
+#### Date:  June-30-2025
+##### Fix:
+ - resolve stack-clone auth failure for non-NA regions
 
 ## @contentstack/cli-config
 ### Version: 1.13.1
