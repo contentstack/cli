@@ -1,6 +1,6 @@
 fileignoreconfig:
-  - filename: package-lock.json
-    checksum: 20ea877448be828d5aff2951db7d39506e9ac4b7864ab53892d856769ab5aaa4
-  - filename: packages/contentstack-bulk-publish/src/producer/add-fields.js
-    checksum: 3e70b11978fc5f29a6a6c90b725c28c9df8d15bcc6fd74e2253fca23a3630160
+  - filename: packages/contentstack-config/test/unit/commands/remove-base-branch.test.ts
+    checksum: 3e73b079b749120221f357d66ac7351ddb300d283f28410d5e6f3b0309ab3962
+  - filename: packages/contentstack-auth/test/unit/commands/tokens-remove.test.ts
+    checksum: 7e256db86c516b40c47eab78b3881b7ece525607281ebcd0b8711c089bdac056
 version: '1.0'

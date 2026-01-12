@@ -2,15 +2,16 @@ import { expect } from 'chai';
 import { stub, restore, SinonStub, match } from 'sinon';
 import { cliux } from '@contentstack/cli-utilities';
 import { askAPIKey } from '../../src/utils/interactive';
-import { validateBranch } from '../../src/utils/common-helper';
 import { ImportConfig } from '../../src/types';
-import * as utils from '../../src/utils';
+
+const proxyquire = require('proxyquire');
 
 describe('Common Helper Utilities', () => {
   let cliuxInquireStub: SinonStub;
   let mockStackApiClient: any;
   let mockFetchStub: SinonStub;
-  let logStub: SinonStub;
+  let logErrorStub: SinonStub;
+  let validateBranch: any;
 
   // Base mock config that satisfies ImportConfig type
   const baseConfig: Partial<ImportConfig> = {
@@ -28,7 +29,23 @@ describe('Common Helper Utilities', () => {
 
   beforeEach(() => {
     restore();
-    logStub = stub(utils, 'log');
+    logErrorStub = stub();
+    
+    // Load common-helper with mocked log
+    const commonHelperPath = require.resolve('../../lib/utils/common-helper.js');
+    if (require.cache[commonHelperPath]) {
+      delete require.cache[commonHelperPath];
+    }
+    
+    const commonHelperModule = proxyquire(commonHelperPath, {
+      '@contentstack/cli-utilities': {
+        log: {
+          error: logErrorStub,
+        },
+      },
+    });
+    
+    validateBranch = commonHelperModule.validateBranch;
   });
 
   afterEach(() => {
@@ -158,7 +175,7 @@ describe('Common Helper Utilities', () => {
         expect.fail('Should have thrown an error');
       } catch (error: any) {
         expect(error.message).to.include('No branch found with the name');
-        expect(logStub.called).to.be.false;
+        expect(logErrorStub.called).to.be.false;
       }
     });
   });

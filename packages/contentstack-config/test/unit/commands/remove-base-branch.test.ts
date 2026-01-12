@@ -55,7 +55,7 @@ describe('Delete config', () => {
     await RemoveBranchConfigCommand.run(['--stack-api-key', testApiKey]);
 
     expect(errorStub.calledOnce).to.be.true;
-    expect(errorStub.getCalls()[0].args[0]).to.include(`No config set for stack-api-key : ${testApiKey}`);
+    expect(errorStub.getCalls()[0].args[0]).to.include(`No configuration found for stack API key: ${testApiKey}`);
   });
 
   it('Should ask for confirmation to remove config if the config exists', async () => {
