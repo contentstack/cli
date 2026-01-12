@@ -7,10 +7,27 @@
  * MIT Licensed
  */
 
-import { managementSDKClient, isAuthenticated, log } from '@contentstack/cli-utilities';
+import {
+  managementSDKClient as defaultManagementSDKClient,
+  isAuthenticated as defaultIsAuthenticated,
+  log as defaultLog,
+} from '@contentstack/cli-utilities';
 import { ImportConfig } from '../types';
 
-const login = async (config: ImportConfig): Promise<any> => {
+/**
+ * Dependencies for login handler - can be injected for testing
+ */
+export interface LoginHandlerDeps {
+  managementSDKClient?: typeof defaultManagementSDKClient;
+  isAuthenticated?: typeof defaultIsAuthenticated;
+  log?: typeof defaultLog;
+}
+
+const login = async (config: ImportConfig, deps: LoginHandlerDeps = {}): Promise<any> => {
+  const managementSDKClient = deps.managementSDKClient ?? defaultManagementSDKClient;
+  const isAuthenticated = deps.isAuthenticated ?? defaultIsAuthenticated;
+  const log = deps.log ?? defaultLog;
+
   const client = await managementSDKClient(config);
   if (config.email && config.password) {
     const { user: { authtoken = null } = {} } = await client.login({ email: config.email, password: config.password });
