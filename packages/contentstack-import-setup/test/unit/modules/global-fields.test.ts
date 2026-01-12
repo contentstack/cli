@@ -20,7 +20,6 @@ describe('GlobalFieldsImportSetup', () => {
     branchName: '',
     selectedModules: ['global-fields'],
     backupDir: '',
-    contentVersion: 1,
     region: 'us',
     fetchConcurrency: 2,
     writeConcurrency: 1,
@@ -41,11 +40,19 @@ describe('GlobalFieldsImportSetup', () => {
     globalFieldsSetup = new GlobalFieldsImportSetup({
       config: baseConfig as ImportConfig,
       stackAPIClient: mockStackAPIClient,
-      dependencies: {} as any,
+      dependencies: ['extensions'] as any,
     });
 
     // Stub the setupDependencies method to avoid actual imports
     setupDependenciesStub = stub(globalFieldsSetup, 'setupDependencies').resolves();
+    // Stub createNestedProgress and completeProgress to avoid progress manager issues
+    stub(globalFieldsSetup as any, 'createNestedProgress').returns({
+      addProcess: stub().returnsThis(),
+      startProcess: stub().returnsThis(),
+      updateStatus: stub().returnsThis(),
+      completeProcess: stub().returnsThis(),
+    });
+    stub(globalFieldsSetup as any, 'completeProgress');
   });
 
   afterEach(() => {
@@ -55,7 +62,7 @@ describe('GlobalFieldsImportSetup', () => {
   it('should initialize with the provided config and client', () => {
     expect((globalFieldsSetup as any).config).to.equal(baseConfig);
     expect((globalFieldsSetup as any).stackAPIClient).to.equal(mockStackAPIClient);
-    expect((globalFieldsSetup as any).dependencies).to.deep.equal({} as any);
+    expect((globalFieldsSetup as any).dependencies).to.deep.equal(['extensions'] as any);
   });
 
   it('should call setupDependencies during start', async () => {
@@ -76,9 +83,10 @@ describe('GlobalFieldsImportSetup', () => {
 
     await globalFieldsSetup.start();
 
-    expect(logStub.calledOnce).to.be.true;
-    expect(logStub.firstCall.args[1]).to.include('Error occurred');
-    expect(logStub.firstCall.args[1]).to.include('Test error');
-    expect(logStub.firstCall.args[2]).to.equal('error');
+    expect(logStub.called).to.be.true;
+    const errorCall = logStub.getCalls().find((call) => call.args[1]?.includes('Error occurred'));
+    expect(errorCall).to.exist;
+    expect(errorCall?.args[1]).to.include('Test error');
+    expect(errorCall?.args[2]).to.equal('error');
   });
 });

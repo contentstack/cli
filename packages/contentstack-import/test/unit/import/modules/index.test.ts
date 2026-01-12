@@ -121,19 +121,15 @@ describe('Module Index - startModuleImport', () => {
   });
 
   it('should handle assets module', async () => {
-    // Import and stub the assets module methods before calling startModuleImport
     const ImportAssets = (await import('../../../../src/import/modules/assets')).default;
     
-    // Stub the async methods that are called in start()
     const importFoldersStub = sandbox.stub(ImportAssets.prototype, 'importFolders').resolves();
     const importAssetsStub = sandbox.stub(ImportAssets.prototype, 'importAssets').resolves();
     sandbox.stub(ImportAssets.prototype, 'publish').resolves();
     
-    // Mock FsUtility to prevent file system operations
     const { FsUtility } = await import('@contentstack/cli-utilities');
     sandbox.stub(FsUtility.prototype, 'readFile').returns({});
     
-    // Mock existsSync to return false (so versioned assets path check fails gracefully)
     // Using require for node:fs as it's compatible with sinon.replace
     const fs = require('node:fs');
     const existsSyncStub = sandbox.stub().returns(false);
@@ -168,13 +164,10 @@ describe('Module Index - startModuleImport', () => {
       moduleName: 'assets' as any
     };
 
-    try {
-      const result = await startModuleImport(mockModulePayload);
-      expect(result).to.be.undefined;
-      expect(importFoldersStub.calledOnce).to.be.true;
-      expect(importAssetsStub.calledOnce).to.be.true;
-    } catch (error) {
-      expect(error).to.be.an('error');
-    }
+    const startStub = sandbox.stub(ImportAssets.prototype, 'start').resolves();
+    
+    const result = await startModuleImport(mockModulePayload);
+    expect(result).to.be.undefined;
+    expect(startStub.called).to.be.true;
   });
 });

@@ -102,8 +102,8 @@ describe('ModuleImporter', () => {
     const modulesIndex = require('../../../src/import/modules');
     startModuleImportStub = sandbox.stub(modulesIndex, 'default').resolves();
 
-    const modulesJSIndex = require('../../../src/import/modules-js');
-    startJSModuleImportStub = sandbox.stub(modulesJSIndex, 'default').resolves();
+    // startJSModuleImport is now the same as startModuleImport, so we stub the same module
+    startJSModuleImportStub = startModuleImportStub;
 
     // Mock @contentstack/cli-utilities
     // TODO: Fix addLocale mocking - currently skipping tests that need it
@@ -578,7 +578,7 @@ describe('ModuleImporter', () => {
       await moduleImporter.import();
 
       expect(logStub.info.calledWith(
-        `Starting to import content version ${mockImportConfig.contentVersion}`,
+        'Starting to import',
         mockImportConfig.context
       )).to.be.true;
     });
@@ -633,15 +633,15 @@ describe('ModuleImporter', () => {
     });
 
     describe('Content Version 1', () => {
-      it('should call startJSModuleImport when contentVersion !== 2 and module is NOT in onlyTSModules', async () => {
+      it('should call startModuleImport when contentVersion !== 2 and module is NOT in onlyTSModules', async () => {
         mockImportConfig.contentVersion = 1;
         mockImportConfig.onlyTSModules = ['personalize'];
         const importer = new ModuleImporter(mockManagementClient as any, mockImportConfig);
         
         await importer.importByModuleByName('entries');
 
-        expect(startJSModuleImportStub.calledOnce).to.be.true;
-        expect(startJSModuleImportStub.firstCall.args[0]).to.deep.equal({
+        expect(startModuleImportStub.calledOnce).to.be.true;
+        expect(startModuleImportStub.firstCall.args[0]).to.deep.equal({
           stackAPIClient: mockStackClient,
           importConfig: mockImportConfig,
           moduleName: 'entries'
@@ -655,7 +655,7 @@ describe('ModuleImporter', () => {
         
         const result = await importer.importByModuleByName('entries');
 
-        expect(startJSModuleImportStub.called).to.be.false;
+        expect(startModuleImportStub.called).to.be.false;
         expect(result).to.be.undefined;
       });
 
@@ -673,7 +673,7 @@ describe('ModuleImporter', () => {
         expect(result2).to.be.undefined;
         expect(result3).to.be.undefined;
         expect(result4).to.be.undefined; // webhooks would call startJSModuleImport
-        expect(startJSModuleImportStub.calledOnce).to.be.true;
+        expect(startModuleImportStub.calledOnce).to.be.true;
         expect(startJSModuleImportStub.firstCall.args[0].moduleName).to.equal('webhooks');
       });
 
@@ -684,7 +684,7 @@ describe('ModuleImporter', () => {
         
         await importer.importByModuleByName('entries');
 
-        expect(startJSModuleImportStub.calledOnce).to.be.true;
+        expect(startModuleImportStub.calledOnce).to.be.true;
       });
     });
   });

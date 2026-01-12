@@ -5,7 +5,6 @@ import { log } from '@contentstack/cli-utilities';
 import BaseClass from '../../../../src/import/modules/base-class';
 import { ImportConfig } from '../../../../src/types';
 
-// Create a concrete implementation of BaseClass for testing
 class TestBaseClass extends BaseClass {
   constructor(params: any) {
     super(params);
@@ -1098,7 +1097,6 @@ describe('BaseClass', () => {
       );
       const end = Date.now();
 
-      // Allow some tolerance for timing (at least 940ms to account for execution time variance)
       expect(end - start).to.be.at.least(940);
     });
 
@@ -1131,7 +1129,6 @@ describe('BaseClass', () => {
       // Should not throw error
       expect(true).to.be.true;
 
-      // Restore context
       testClass.importConfig.context = originalContext;
     });
   });

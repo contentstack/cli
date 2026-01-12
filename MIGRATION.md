@@ -112,6 +112,24 @@ csdx config:set:log --no-show-console-logs
 [2025-08-22 16:12:25] SUCCESS: Exported stack settings successfully!
 ```
 
+### 4. 🏷️ Taxonomy Migration Deprecation
+
+**What Changed:**
+- Taxonomy migration functionality has been deprecated in 2.x.x
+- The taxonomy migration script examples have been removed
+
+**Before (1.x.x):**
+```bash
+csdx cm:stacks:migration -k b*******9ca0 --file-path "../contentstack-migration/examples/taxonomies/import-taxonomies.js" --config data-dir:'./data/Taxonomy Stack_taxonomies.csv'
+```
+- Taxonomy migration supports only in version 1.x.x
+
+**After (2.x.x-beta):**
+- Taxonomy migration is no longer supported through the migration plugin
+- Use the standard import/export commands for taxonomy data migration
+
+**Migration Action:** use the import/export commands instead.
+
 ## Troubleshooting
 
 ### Common Issues

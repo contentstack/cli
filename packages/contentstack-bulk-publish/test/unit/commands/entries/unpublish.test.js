@@ -4,14 +4,31 @@ const { describe, it, beforeEach, afterEach } = require('mocha');
 const EntriesUnpublish = require('../../../../src/commands/cm/entries/unpublish');
 const AddTokenCommand = require('@contentstack/cli-auth/lib/commands/auth/tokens/add').default;
 const helper = require('../../../helpers/helper');
-const { cliux } = require('@contentstack/cli-utilities');
+const { cliux, configHandler } = require('@contentstack/cli-utilities');
 
 describe('EntriesUnpublish Command', () => {
   let sandbox;
   let stackDetails;
+  let configHandlerGetStub;
 
   beforeEach(async () => {
     sandbox = sinon.createSandbox();
+    
+    // Stub configHandler.get to configure region
+    // Region is required for cmaHost property in Command base class
+    configHandlerGetStub = sandbox.stub(configHandler, 'get').callsFake((key) => {
+      if (key === 'region') {
+        return {
+          cma: 'api.contentstack.io',
+          cda: 'cdn.contentstack.io',
+          uiHost: 'app.contentstack.com',
+          developerHubUrl: 'developer.contentstack.com',
+          launchHubUrl: 'launch.contentstack.com',
+          personalizeUrl: 'personalize.contentstack.com',
+        };
+      }
+      return undefined;
+    });
 
     stackDetails = {
       api_key: 'asdf',
@@ -90,7 +107,7 @@ describe('EntriesUnpublish Command', () => {
     try {
       await EntriesUnpublish.run(['--environment', 'env', '--locale', 'en-us', '--yes']);
     } catch (error) {
-      expect(error.message).to.equal('Please use `--alias` or `--stack-api-key` to proceed.');
+      expect(error.message).to.equal('Use the `--alias` or `--stack-api-key` flag to proceed.');
       expect(runStub.called).to.be.false;
     }
   });

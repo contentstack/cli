@@ -322,7 +322,7 @@ export default class EntriesExport extends BaseClass {
         log.debug('Initialized FsUtility for writing entries', this.exportConfig.context);
       }
 
-      log.debug(`Writing ${entriesSearchResponse.items.length} entries to file`, this.exportConfig.context);
+      log.debug(`Writing ${entriesSearchResponse.items.length} entries to file...`, this.exportConfig.context);
       this.entriesFileHelper.writeIntoFile(entriesSearchResponse.items, { mapKeyVal: true });
 
       // Track progress for individual entries
@@ -331,14 +331,14 @@ export default class EntriesExport extends BaseClass {
       });
 
       if (this.entriesConfig.exportVersions) {
-        log.debug('Exporting entry versions is enabled', this.exportConfig.context);
+        log.debug('Exporting entry versions is enabled.', this.exportConfig.context);
         let versionedEntryPath = path.join(
           sanitizePath(this.entriesDirPath),
           sanitizePath(options.contentType),
           sanitizePath(options.locale),
           'versions',
         );
-        log.debug(`Creating versioned entries directory at: ${versionedEntryPath}`, this.exportConfig.context);
+        log.debug(`Creating versioned entries directory at: ${versionedEntryPath}.`, this.exportConfig.context);
         fsUtil.makeDirectory(versionedEntryPath);
         await this.fetchEntriesVersions(entriesSearchResponse.items, {
           locale: options.locale,
@@ -393,7 +393,7 @@ export default class EntriesExport extends BaseClass {
     entries: any,
     options: { locale: string; contentType: string; versionedEntryPath: string },
   ): Promise<void> {
-    log.debug(`Fetching versions for ${entries.length} entries`, this.exportConfig.context);
+    log.debug(`Fetching versions for ${entries.length} entries...`, this.exportConfig.context);
 
     const onSuccess = ({ response, apiData: entry }: any) => {
       const versionFilePath = path.join(sanitizePath(options.versionedEntryPath), sanitizePath(`${entry.uid}.json`));
@@ -459,7 +459,7 @@ export default class EntriesExport extends BaseClass {
     return new Promise(async (resolve, reject) => {
       return await this.getEntryByVersion(apiParams.queryParam, entry)
         .then((response) => {
-          log.debug(`Successfully fetched versions for entry: ${entry.uid}`, this.exportConfig.context);
+          log.debug(`Successfully fetched versions for entry UID: ${entry.uid}`, this.exportConfig.context);
           apiParams.resolve({
             response,
             apiData: entry,
@@ -467,7 +467,7 @@ export default class EntriesExport extends BaseClass {
           resolve(true);
         })
         .catch((error) => {
-          log.debug(`Failed to fetch versions for entry: ${entry.uid}`, this.exportConfig.context);
+          log.debug(`Failed to fetch versions for entry UID: ${entry.uid}`, this.exportConfig.context);
           apiParams.reject({
             error,
             apiData: entry,
@@ -490,7 +490,7 @@ export default class EntriesExport extends BaseClass {
       version: entry._version,
     };
 
-    log.debug(`Fetching entry version ${entry._version} for uid: ${entry.uid}`, this.exportConfig.context);
+    log.debug(`Fetching entry version ${entry._version} for entry UID: '${entry.uid}'.`, this.exportConfig.context);
 
     const entryResponse = await this.stackAPIClient
       .contentType(options.contentType)

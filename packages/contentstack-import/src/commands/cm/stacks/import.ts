@@ -76,7 +76,7 @@ export default class ImportCommand extends Command {
       required: false,
       char: 'm',
       description:
-        '[optional] Specify the module to import into the target stack. If not specified, the import command will import all the modules into the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, personalize projects, and taxonomies.',
+        '[optional] Specify the module to import into the target stack. If not specified, the import command will import all the modules into the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, personalize projects, taxonomies, and composable-studio.',
       parse: printFlagDeprecation(['-m'], ['--module']),
     }),
     'backup-dir': flags.string({
@@ -93,7 +93,7 @@ export default class ImportCommand extends Command {
     }),
     'branch-alias': flags.string({
       description:
-        "Specify the branch alias where you want to import your content. If not specified, the content is imported into the main branch by default.",
+        'Specify the branch alias where you want to import your content. If not specified, the content is imported into the main branch by default.',
       exclusive: ['branch'],
     }),
     'import-webhook-status': flags.string({
@@ -159,13 +159,14 @@ export default class ImportCommand extends Command {
       // Prepare the context object
       const context = this.createImportContext(importConfig.apiKey, importConfig.authenticationMethod);
       importConfig.context = { ...context };
-      //log.info(`Using Cli Version: ${this.context?.cliVersion}`, importConfig.context);
+      // log.info(`Using CLI version: ${this.context?.cliVersion}`, importConfig.context);
 
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;
       importConfig.region = this.region;
       if (this.developerHubUrl) importConfig.developerHubBaseUrl = this.developerHubUrl;
       if (this.personalizeUrl) importConfig.modules.personalize.baseURL[importConfig.region.name] = this.personalizeUrl;
+      if (this.composableStudioUrl) importConfig.modules['composable-studio'].apiBaseUrl = this.composableStudioUrl;
 
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
 
@@ -246,6 +247,7 @@ export default class ImportCommand extends Command {
       command: this.context?.info?.command || 'cm:stacks:import',
       module: '',
       userId: configHandler.get('userUid') || '',
+      email: configHandler.get('email') || '',
       sessionId: this.context?.sessionId,
       apiKey: apiKey || '',
       orgId: configHandler.get('oauthOrgUid') || '',

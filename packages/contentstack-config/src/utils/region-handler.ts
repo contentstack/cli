@@ -25,6 +25,7 @@ const regions = {
     developerHubUrl: 'https://developerhub-api.contentstack.com',
     launchHubUrl: 'https://launch-api.contentstack.com',
     personalizeUrl: 'https://personalize-api.contentstack.com',
+    composableStudioUrl: 'https://composable-studio-api.contentstack.com',
   },
   'AWS-NA': {
     name: 'AWS-NA',
@@ -34,6 +35,7 @@ const regions = {
     developerHubUrl: 'https://developerhub-api.contentstack.com',
     launchHubUrl: 'https://launch-api.contentstack.com',
     personalizeUrl: 'https://personalize-api.contentstack.com',
+    composableStudioUrl: 'https://composable-studio-api.contentstack.com',
   },
   EU: {
     name: 'EU',
@@ -43,6 +45,7 @@ const regions = {
     developerHubUrl: 'https://eu-developerhub-api.contentstack.com',
     launchHubUrl: 'https://eu-launch-api.contentstack.com',
     personalizeUrl: 'https://eu-personalize-api.contentstack.com',
+    composableStudioUrl: 'https://eu-composable-studio-api.contentstack.com',
   },
   'AWS-EU': {
     name: 'AWS-EU',
@@ -52,6 +55,7 @@ const regions = {
     developerHubUrl: 'https://eu-developerhub-api.contentstack.com',
     launchHubUrl: 'https://eu-launch-api.contentstack.com',
     personalizeUrl: 'https://eu-personalize-api.contentstack.com',
+    composableStudioUrl: 'https://eu-composable-studio-api.contentstack.com',
   },
   AU: {
     name: 'AU',
@@ -61,6 +65,7 @@ const regions = {
     developerHubUrl: 'https://au-developerhub-api.contentstack.com',
     launchHubUrl: 'https://au-launch-api.contentstack.com',
     personalizeUrl: 'https://au-personalize-api.contentstack.com',
+    composableStudioUrl: 'https://au-composable-studio-api.contentstack.com',
   },
   'AWS-AU': {
     name: 'AWS-AU',
@@ -70,6 +75,7 @@ const regions = {
     developerHubUrl: 'https://au-developerhub-api.contentstack.com',
     launchHubUrl: 'https://au-launch-api.contentstack.com',
     personalizeUrl: 'https://au-personalize-api.contentstack.com',
+    composableStudioUrl: 'https://au-composable-studio-api.contentstack.com',
   },
   'AZURE-NA': {
     name: 'AZURE-NA',
@@ -79,6 +85,7 @@ const regions = {
     developerHubUrl: 'https://azure-na-developerhub-api.contentstack.com',
     launchHubUrl: 'https://azure-na-launch-api.contentstack.com',
     personalizeUrl: 'https://azure-na-personalize-api.contentstack.com',
+    composableStudioUrl: 'https://azure-na-composable-studio-api.contentstack.com',
   },
   'AZURE-EU': {
     name: 'AZURE-EU',
@@ -88,6 +95,7 @@ const regions = {
     developerHubUrl: 'https://azure-eu-developerhub-api.contentstack.com',
     launchHubUrl: 'https://azure-eu-launch-api.contentstack.com',
     personalizeUrl: 'https://azure-eu-personalize-api.contentstack.com',
+    composableStudioUrl: 'https://azure-eu-composable-studio-api.contentstack.com',
   },
   'GCP-NA': {
     name: 'GCP-NA',
@@ -97,6 +105,7 @@ const regions = {
     developerHubUrl: 'https://gcp-na-developerhub-api.contentstack.com',
     launchHubUrl: 'https://gcp-na-launch-api.contentstack.com',
     personalizeUrl: 'https://gcp-na-personalize-api.contentstack.com',
+    composableStudioUrl: 'https://gcp-na-composable-studio-api.contentstack.com',
   },
   'GCP-EU': {
     name: 'GCP-EU',
@@ -106,6 +115,7 @@ const regions = {
     developerHubUrl: 'https://gcp-eu-developerhub-api.contentstack.com',
     launchHubUrl: 'https://gcp-eu-launch-api.contentstack.com',
     personalizeUrl: 'https://gcp-eu-personalize-api.contentstack.com',
+    composableStudioUrl: 'https://gcp-eu-composable-studio-api.contentstack.com',
   },
 };
 
@@ -195,6 +205,7 @@ class UserConfig {
       developerHubUrl: regionObject['developerHubUrl'],
       personalizeUrl: regionObject['personalizeUrl'],
       launchHubUrl: regionObject['launchHubUrl'],
+      composableStudioUrl: regionObject['composableStudioUrl'],
     };
 
     return sanitizedRegion;
