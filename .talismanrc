@@ -1,6 +1,6 @@
 fileignoreconfig:
   - filename: package-lock.json
-    checksum: 6620ee3246617a534609c92b66dd982860a8f4ebb69a0c7e89570c6d92014259
+    checksum: b4804bf30ab4f8e15b9c64b29b949fdf9fe454f52e116eb8d6c91a161f125728
   - filename: pnpm-lock.yaml
     checksum: 457cb87e68a8bcbf490116e05d39272a5da442e3f06d9f23b47b646b924ffe9a
   - filename: packages/contentstack-bulk-publish/src/producer/add-fields.js
@@ -77,10 +77,6 @@ fileignoreconfig:
     checksum: c435ceaa709a7504da303a6ea674e07a89030d8ad4152e7917cd17e7f3e58052
   - filename: packages/contentstack-bootstrap/src/config.ts
     checksum: cc3270acd9d37479b24792f45a108e0f1c99265f92d59c35c0ec3ee2d1cc390d
-  - filename: packages/contentstack-clone/src/commands/cm/stacks/clone.js
-    checksum: 433a84a882ea3f12b27127d47d289dfc64dda6b6fc956369f5851daaa57ae493
-  - filename: packages/contentstack-clone/src/lib/util/clone-handler.js
-    checksum: 7024f22a6ed3908d7cf074bbd8e7107e2d9f43bbcc42939b28d360c89d44cc29
   - filename: packages/contentstack-bulk-publish/src/util/generate-bulk-publish-url.js
     checksum: 5f7c1e2fac3e7fab21e861d609c54ca7191ee09fd076dd0adc66604043bf7a43
   - filename: packages/contentstack-import/src/utils/interactive.ts
@@ -209,4 +205,26 @@ fileignoreconfig:
     checksum: 06035980b36802260f190af6e63632efe167f5b336693163f59268f3e788fba1
   - filename: packages/contentstack-import-setup/src/utils/constants.ts
     checksum: fcfabb4c53ee822e05903db77595413842d656b55e2869bae97bb6c0e0e209c3
+  - filename: packages/contentstack-clone/test/lib/util/clone-handler.branch.test.ts
+    checksum: aba6b2056e787c6ae1d0a2575cf380af9e635dddab867734e76e6335ca786339
+  - filename: packages/contentstack-clone/package.json
+    checksum: 0a8a91c28d4ae2e4112aa4811165b687955d3a14cf01a7fe5efa92f8852fe125
+  - filename: packages/contentstack-clone/test/commands/stack-clone.test.ts
+    checksum: 6958c0d9417d2dbf3417c96e26eb1a4f83c2585c70edf36f5774eeca17f6f96d
+  - filename: packages/contentstack-clone/src/types/clone-config.ts
+    checksum: c22f8b8a592e7b4da967715e595e79a680ab970ca85b65528d5ac318032e1857
+  - filename: packages/contentstack-clone/test/lib/util/clone-handler.stack-creation.test.ts
+    checksum: fb2a0672627ff23905df5152226b0eac453b0b04790b2bb20cc68c6c78017fef
+  - filename: packages/contentstack-clone/test/commands/cm/stacks/clone.test.ts
+    checksum: 2fff57e03a0d58174ef96a25df69abd36ae3fe7e26319a45ff6283af11c0b5d8
+  - filename: packages/contentstack-clone/test/lib/util/clone-handler.execution.test.ts
+    checksum: 3d634fb3dde72f408da4b49649c93cc94ea45f2cda2a5d85e41781cbfdee6599
+  - filename: packages/contentstack-clone/test/lib/util/clone-handler.stack.test.ts
+    checksum: c9fc18c7a82984c21c1e969596916d3588ae6ce9d352b71797e5b74f4efdbdf9
+  - filename: packages/contentstack-clone/src/lib/util/clone-handler.ts
+    checksum: fed7085af7d392fb08b1240674626e6c158c0cae69219f93fe3fd3fa398bac2e
+  - filename: packages/contentstack-clone/test/lib/util/clone-handler.helpers.test.ts
+    checksum: f39a0208ae88c0210de4d3971e94b39aef11a6e2e281edda1acf5d99c481f1b5
+  - filename: packages/contentstack-clone/test/lib/helpers/command-helpers.test.ts
+    checksum: 52d39bfb9b093632bdcbbf5db14e42eb4bda0adf4b5561a112c9c25892e1efe6
 version: '1.0'

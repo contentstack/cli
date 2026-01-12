@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli-cm-clone
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-clone/2.0.0-beta.2 darwin-arm64 node-v22.14.0
+@contentstack/cli-cm-clone/2.0.0-beta.4 darwin-arm64 node-v22.21.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -150,5 +150,5 @@ EXAMPLES
   $ csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias> --type <value a or b>
 ```
 
-_See code: [src/commands/cm/stacks/clone.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-clone/src/commands/cm/stacks/clone.js)_
+_See code: [src/commands/cm/stacks/clone.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-clone/src/commands/cm/stacks/clone.ts)_
 <!-- commandsstop -->
