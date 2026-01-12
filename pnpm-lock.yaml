@@ -12,23 +12,23 @@ importers:
 
   packages/contentstack:
     specifiers:
-      '@contentstack/cli-audit': ~2.0.0-beta.0
+      '@contentstack/cli-audit': ~2.0.0-beta.1
       '@contentstack/cli-auth': ~2.0.0-beta.1
       '@contentstack/cli-cm-bootstrap': ~2.0.0-beta.2
       '@contentstack/cli-cm-branches': ~1.6.1
-      '@contentstack/cli-cm-bulk-publish': ~1.10.1
+      '@contentstack/cli-cm-bulk-publish': ~1.10.3
       '@contentstack/cli-cm-clone': ~2.0.0-beta.3
       '@contentstack/cli-cm-export': ~2.0.0-beta.3
-      '@contentstack/cli-cm-export-to-csv': ~1.10.0
+      '@contentstack/cli-cm-export-to-csv': ~1.10.1
       '@contentstack/cli-cm-import': ~2.0.0-beta.3
       '@contentstack/cli-cm-import-setup': ~2.0.0-beta.1
       '@contentstack/cli-cm-seed': ~2.0.0-beta.2
-      '@contentstack/cli-command': ~1.6.2
-      '@contentstack/cli-config': ~1.15.3
+      '@contentstack/cli-command': ~1.7.0
+      '@contentstack/cli-config': ~1.16.1
       '@contentstack/cli-launch': 1.9.3
       '@contentstack/cli-migration': ~2.0.0-beta.1
       '@contentstack/cli-utilities': ~1.15.0
-      '@contentstack/cli-variants': ~2.0.0-beta.2
+      '@contentstack/cli-variants': ~2.0.0-beta.3
       '@contentstack/management': ~1.22.0
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
@@ -82,8 +82,8 @@ importers:
       '@contentstack/cli-cm-import': link:../contentstack-import
       '@contentstack/cli-cm-import-setup': link:../contentstack-import-setup
       '@contentstack/cli-cm-seed': link:../contentstack-seed
-      '@contentstack/cli-command': 1.6.2_debug@4.4.3
-      '@contentstack/cli-config': 1.15.3_debug@4.4.3
+      '@contentstack/cli-command': link:../contentstack-command
+      '@contentstack/cli-config': link:../contentstack-config
       '@contentstack/cli-launch': 1.9.3_tanrtkdzllst73ozorstzho2ki
       '@contentstack/cli-migration': link:../contentstack-migration
       '@contentstack/cli-utilities': link:../contentstack-utilities
@@ -243,7 +243,7 @@ importers:
 
   packages/contentstack-bootstrap:
     specifiers:
-      '@contentstack/cli-cm-seed': ~2.0.0-beta.2
+      '@contentstack/cli-cm-seed': ~2.0.0-beta.3
       '@contentstack/cli-command': ~1.7.0
       '@contentstack/cli-utilities': ~1.15.0
       '@oclif/core': ^4.3.0
@@ -537,7 +537,7 @@ importers:
       '@contentstack/cli-config': ~1.15.3
       '@contentstack/cli-dev-dependencies': ~1.3.1
       '@contentstack/cli-utilities': ~1.15.0
-      '@contentstack/cli-variants': ~2.0.0-beta
+      '@contentstack/cli-variants': ~2.0.0-beta.3
       '@oclif/core': ^4.3.3
       '@oclif/plugin-help': ^6.2.28
       '@oclif/test': ^4.1.13
@@ -652,10 +652,10 @@ importers:
 
   packages/contentstack-import:
     specifiers:
-      '@contentstack/cli-audit': ~1.16.1
+      '@contentstack/cli-audit': ~2.0.0-beta.1
       '@contentstack/cli-command': ~1.7.0
       '@contentstack/cli-utilities': ~1.15.0
-      '@contentstack/cli-variants': ~2.0.0-beta.2
+      '@contentstack/cli-variants': ~2.0.0-beta.3
       '@contentstack/management': ~1.22.0
       '@oclif/core': ^4.3.0
       '@oclif/test': ^4.1.13
@@ -690,7 +690,7 @@ importers:
       uuid: ^9.0.1
       winston: ^3.17.0
     dependencies:
-      '@contentstack/cli-audit': 1.16.1_debug@4.4.3
+      '@contentstack/cli-audit': link:../contentstack-audit
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/cli-variants': link:../contentstack-variants
@@ -2066,27 +2066,6 @@ packages:
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
     engines: {node: '>=0.1.90'}
 
-  /@contentstack/cli-audit/1.16.1_debug@4.4.3:
-    resolution: {integrity: sha512-CRe92i7op3RlD5JQu+PY+KelITaTAb3lX22M//Cz7GzW356HyDTNtWydO5MOkPCTt6OkLNz0I9zYY2SPNCRAsw==}
-    engines: {node: '>=16'}
-    hasBin: true
-    dependencies:
-      '@contentstack/cli-command': 1.7.0_debug@4.4.3
-      '@contentstack/cli-utilities': 1.15.0_debug@4.4.3
-      '@oclif/core': 4.8.0
-      '@oclif/plugin-help': 6.2.36
-      '@oclif/plugin-plugins': 5.4.54
-      chalk: 4.1.2
-      fast-csv: 4.3.6
-      fs-extra: 11.3.3
-      lodash: 4.17.21
-      uuid: 9.0.1
-      winston: 3.19.0
-    transitivePeerDependencies:
-      - debug
-      - supports-color
-    dev: false
-
   /@contentstack/cli-auth/1.6.2:
     resolution: {integrity: sha512-iPqEwgXBI7qWYA7beEBZm5LTbYplTw5VfSBzBLXTdkM6NMshpVCG4ybQJgddfKwQSaLmq86TbxHyTOLaWAcmjw==}
     engines: {node: '>=14.0.0'}
@@ -2110,18 +2089,6 @@ packages:
       contentstack: 3.26.3
     transitivePeerDependencies:
       - debug
-
-  /@contentstack/cli-command/1.6.2_debug@4.4.3:
-    resolution: {integrity: sha512-h4I484kSYuelqZnwFhKL9IkaYlHbcZzMv3mhpKZBzIgbATMuI0Li+1haJNo+Ao7JqQmzT+a00QNtTHqpNDjngA==}
-    engines: {node: '>=14.0.0'}
-    dependencies:
-      '@contentstack/cli-utilities': 1.15.0_debug@4.4.3
-      '@oclif/core': 4.8.0
-      '@oclif/plugin-help': 6.2.36
-      contentstack: 3.26.3
-    transitivePeerDependencies:
-      - debug
-    dev: false
 
   /@contentstack/cli-command/1.7.0_debug@4.4.3:
     resolution: {integrity: sha512-hhsGGa6wFcvHwkapu0vXB1yvOaOmJ1LaV2imyjUREVxvHYC5O4JS2H5VeXLq137Q/dOk5q6o9MjVS+9W4Ri4sw==}
@@ -2147,26 +2114,13 @@ packages:
     transitivePeerDependencies:
       - debug
 
-  /@contentstack/cli-config/1.15.3_debug@4.4.3:
-    resolution: {integrity: sha512-sZlJt2C28ReIZpFcBNkXy41QDZvMhDzpLfD3EjGLZYGD82/qqT/7mhdsOScigu5PXUmhHI1z+5yx/DaAEAkBnQ==}
-    engines: {node: '>=14.0.0'}
-    dependencies:
-      '@contentstack/cli-command': 1.6.2_debug@4.4.3
-      '@contentstack/cli-utilities': 1.15.0_debug@4.4.3
-      '@oclif/core': 4.8.0
-      '@oclif/plugin-help': 6.2.36
-      lodash: 4.17.21
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
   /@contentstack/cli-launch/1.9.3_tanrtkdzllst73ozorstzho2ki:
     resolution: {integrity: sha512-sSaZnxHDiFZjbzEFhFDIT9dvW/6rAXSKS8RO4TsoJk/ed2noUN4gVarAmAZt2B7qy7ICoPoXREIVOqi6FbaZqQ==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
       '@apollo/client': 3.14.0_graphql@16.12.0
-      '@contentstack/cli-command': 1.6.2_debug@4.4.3
+      '@contentstack/cli-command': 1.7.0_debug@4.4.3
       '@contentstack/cli-utilities': 1.15.0_debug@4.4.3
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.36
