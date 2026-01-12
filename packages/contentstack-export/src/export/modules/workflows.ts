@@ -172,10 +172,10 @@ export default class ExportWorkFlows extends BaseClass {
         log.debug(`Successfully fetched role data for UID: ${roleUid}`, this.exportConfig.context);
         return data;
       })
-      .catch((err: any) => {
+      .catch((err: any): any => {
         log.debug(`Failed to fetch role data for UID: ${roleUid}`, this.exportConfig.context);
         handleAndLogError(err, { ...this.exportConfig.context });
-        throw err;
+        return undefined; // Return undefined instead of throwing to handle gracefully
       });
   }
 }

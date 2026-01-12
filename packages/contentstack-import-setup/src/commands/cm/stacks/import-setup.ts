@@ -9,10 +9,14 @@ import {
   ContentstackClient,
   pathValidator,
   formatError,
+  CLIProgressManager,
+  log,
+  handleAndLogError,
+  configHandler,
 } from '@contentstack/cli-utilities';
 
-import { ImportConfig } from '../../../types';
-import { setupImportConfig, log } from '../../../utils';
+import { ImportConfig, Context } from '../../../types';
+import { setupImportConfig } from '../../../utils';
 import { ImportSetup } from '../../../import';
 
 export default class ImportSetupCommand extends Command {
@@ -67,29 +71,56 @@ export default class ImportSetupCommand extends Command {
     try {
       const { flags } = await this.parse(ImportSetupCommand);
       let importSetupConfig = await setupImportConfig(flags);
+      // Prepare the context object
+      const context = this.createImportSetupContext(importSetupConfig.apiKey, (importSetupConfig as any).authenticationMethod);
+      importSetupConfig.context = { ...context };
+      
       // Note setting host to create cma client
       importSetupConfig.host = this.cmaHost;
       importSetupConfig.region = this.region;
       importSetupConfig.developerHubBaseUrl = this.developerHubUrl;
+
+      if (flags.branch) {
+        CLIProgressManager.initializeGlobalSummary(
+          `IMPORT-SETUP-${flags.branch}`,
+          flags.branch,
+          `Setting up import for "${flags.branch}" branch...`,
+        );
+      } else {
+        CLIProgressManager.initializeGlobalSummary(`IMPORT-SETUP`, flags.branch, 'Setting up import...');
+      }
+
       const managementAPIClient: ContentstackClient = await managementSDKClient(importSetupConfig);
       const importSetup = new ImportSetup(importSetupConfig, managementAPIClient);
       await importSetup.start();
-      log(
-        importSetupConfig,
+      
+      CLIProgressManager.printGlobalSummary();
+      
+      log.success(
         `Backup folder and mapper files have been successfully created for the stack using the API key ${importSetupConfig.apiKey}.`,
-        'success',
+        importSetupConfig.context,
       );
-      log(
-        importSetupConfig,
+      log.success(
         `The backup folder has been created at '${pathValidator(path.join(importSetupConfig.backupDir))}'.`,
-        'success',
+        importSetupConfig.context,
       );
     } catch (error) {
-      log(
-        { data: '' } as ImportConfig,
-        `Failed to create the backup folder and mapper files: ${formatError(error)}`,
-        'error',
-      );
+      CLIProgressManager.printGlobalSummary();
+      handleAndLogError(error);
     }
+  }
+
+  // Create import setup context object
+  private createImportSetupContext(apiKey: string, authenticationMethod?: string, module?: string): Context {
+    return {
+      command: this.context?.info?.command || 'cm:stacks:import-setup',
+      module: module || '',
+      userId: configHandler.get('userUid') || undefined,
+      email: configHandler.get('email') || undefined,
+      sessionId: this.context?.sessionId,
+      apiKey: apiKey || '',
+      orgId: configHandler.get('oauthOrgUid') || '',
+      authenticationMethod: authenticationMethod || 'Basic Auth',
+    };
   }
 }

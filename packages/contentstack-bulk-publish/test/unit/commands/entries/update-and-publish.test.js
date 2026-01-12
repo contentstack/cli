@@ -2,6 +2,7 @@ const { describe, it } = require('mocha');
 const sinon = require('sinon');
 const { expect } = require('chai');
 const { config } = require('dotenv');
+const { configHandler } = require('@contentstack/cli-utilities');
 
 const EntriesUpdateAndPublish = require('../../../../src/commands/cm/entries/update-and-publish');
 
@@ -14,9 +15,26 @@ const contentTypes = ['ct1', 'ct2'];
 describe('EntriesUpdateAndPublish', () => {
   let sandbox;
   let stackDetails;
+  let configHandlerGetStub;
 
   beforeEach(async () => {
     sandbox = sinon.createSandbox();
+    
+    // Stub configHandler.get to configure region
+    // Region is required for cmaHost property in Command base class
+    configHandlerGetStub = sandbox.stub(configHandler, 'get').callsFake((key) => {
+      if (key === 'region') {
+        return {
+          cma: 'api.contentstack.io',
+          cda: 'cdn.contentstack.io',
+          uiHost: 'app.contentstack.com',
+          developerHubUrl: 'developer.contentstack.com',
+          launchHubUrl: 'launch.contentstack.com',
+          personalizeUrl: 'personalize.contentstack.com',
+        };
+      }
+      return undefined;
+    });
 
     stackDetails = {
       api_key: 'asdf',
@@ -51,7 +69,7 @@ describe('EntriesUpdateAndPublish', () => {
   it('Should fail when alias and stack api key flags are not passed', async () => {
     const args = ['--content-types', contentTypes[0], '-e', environments[0], '--locales', locales[0], '--yes'];
     const entriesUpdateAndPublishSpy = sinon.spy(EntriesUpdateAndPublish.prototype, 'run');
-    const expectedError = 'Please use `--alias` or `--stack-api-key` to proceed.';
+    const expectedError = 'Use the `--alias` or `--stack-api-key` flag to proceed.';
     try {
       await EntriesUpdateAndPublish.run(args);
     } catch (error) {

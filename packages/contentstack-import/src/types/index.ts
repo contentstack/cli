@@ -50,7 +50,8 @@ export type Modules =
   | 'marketplace-apps'
   | 'taxonomies'
   | 'personalize'
-  | 'variant-entries';
+  | 'variant-entries'
+  | 'composable-studio';
 
 export type ModuleClassParams = {
   stackAPIClient: ReturnType<ContentstackClient['stack']>;
@@ -105,6 +106,47 @@ export interface TaxonomiesConfig {
   dependencies?: Modules[];
 }
 
+export interface ComposableStudioConfig {
+  dirName: string;
+  fileName: string;
+  apiBaseUrl: string;
+  apiVersion: string;
+}
+
+export interface ComposableStudioProject {
+  name: string;
+  description: string;
+  canvasUrl: string;
+  connectedStackApiKey: string;
+  contentTypeUid: string;
+  organizationUid: string;
+  settings: {
+    configuration: {
+      environment: string;
+      locale: string;
+    };
+  };
+  // Response fields (read-only)
+  uid?: string;
+  createdBy?: string;
+  updatedBy?: string;
+  deletedAt?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Context {
+  command: string;
+  module: string;
+  userId: string | undefined;
+  email: string | undefined;
+  sessionId: string | undefined;
+  clientId?: string | undefined;
+  apiKey: string;
+  orgId: string;
+  authenticationMethod?: string;
+}
+
 export { default as DefaultConfig } from './default-config';
 export { default as ImportConfig } from './import-config';
 
@@ -116,15 +158,3 @@ export type ExtensionType = {
   scope: Record<string, unknown>;
   title: string;
 };
-
-export interface Context {
-  command: string;
-  module: string;
-  userId: string | undefined;
-  email?: string | undefined;
-  sessionId: string | undefined;
-  clientId?: string | undefined;
-  apiKey: string;
-  orgId: string;
-  authenticationMethod?: string;
-}

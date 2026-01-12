@@ -13,7 +13,6 @@ describe('ImportAssets', () => {
   let makeConcurrentCallStub: sinon.SinonStub;
 
   beforeEach(() => {
-    // Mock FsUtility to prevent directory creation
     sinon.stub(FsUtility.prototype, 'createFolderIfNotExist').callsFake(() => {
       return Promise.resolve();
     });
@@ -130,6 +129,10 @@ describe('ImportAssets', () => {
     let importAssetsStub: sinon.SinonStub;
     let publishStub: sinon.SinonStub;
     let existsSyncStub: sinon.SinonStub;
+    let analyzeImportDataStub: sinon.SinonStub;
+    let withLoadingSpinnerStub: sinon.SinonStub;
+    let createNestedProgressStub: sinon.SinonStub;
+    let executeStepStub: sinon.SinonStub;
 
     beforeEach(() => {
       importFoldersStub = sinon.stub(importAssets as any, 'importFolders').resolves();
@@ -137,6 +140,25 @@ describe('ImportAssets', () => {
       publishStub = sinon.stub(importAssets as any, 'publish').resolves();
       existsSyncStub = sinon.stub().returns(true);
       sinon.replace(require('node:fs'), 'existsSync', existsSyncStub);
+      
+      analyzeImportDataStub = sinon.stub(importAssets as any, 'analyzeImportData').resolves([1, 2, 0, 1]);
+      withLoadingSpinnerStub = sinon.stub(importAssets as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      createNestedProgressStub = sinon.stub(importAssets as any, 'createNestedProgress').returns({
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        tick: sinon.stub()
+      });
+      sinon.stub(importAssets as any, 'initializeProgress').resolves();
+      sinon.stub(importAssets as any, 'completeProgress').resolves();
+      executeStepStub = sinon.stub(importAssets as any, 'executeStep').callsFake(async (progress: any, processName: string, status: string, fn: () => Promise<any>) => {
+        // Call the function to ensure the actual methods are invoked
+        if (fn) {
+          return await fn();
+        }
+      });
     });
 
     it('should call importFolders first', async () => {
@@ -148,6 +170,7 @@ describe('ImportAssets', () => {
       const originalValue = importAssets.assetConfig.includeVersionedAssets;
       importAssets.assetConfig.includeVersionedAssets = true;
       existsSyncStub.returns(true);
+      analyzeImportDataStub.resolves([1, 2, 1, 1]); // foldersCount, assetsCount, versionedAssetsCount, publishableAssetsCount
 
       await importAssets.start();
 
@@ -157,13 +180,13 @@ describe('ImportAssets', () => {
       expect(importAssetsStub.secondCall.calledWith()).to.be.true;
       expect(publishStub.calledOnce).to.be.true;
 
-      // Restore original value
       importAssets.assetConfig.includeVersionedAssets = originalValue;
     });
 
     it('should skip versioned assets when directory does not exist', async () => {
       mockImportConfig.modules.assets.includeVersionedAssets = true;
       existsSyncStub.returns(false);
+      analyzeImportDataStub.resolves([1, 2, 0, 1]); // versionedAssetsCount = 0
 
       await importAssets.start();
 
@@ -173,6 +196,7 @@ describe('ImportAssets', () => {
 
     it('should not import versioned assets when includeVersionedAssets is false', async () => {
       mockImportConfig.modules.assets.includeVersionedAssets = false;
+      analyzeImportDataStub.resolves([1, 2, 1, 1]); // versionedAssetsCount = 1, but includeVersionedAssets is false
 
       await importAssets.start();
 
@@ -189,6 +213,7 @@ describe('ImportAssets', () => {
 
     it('should skip publish when skipAssetsPublish is true', async () => {
       mockImportConfig.skipAssetsPublish = true;
+      analyzeImportDataStub.resolves([1, 2, 0, 1]); // publishableAssetsCount = 1, but skipAssetsPublish is true
 
       await importAssets.start();
 
@@ -204,11 +229,18 @@ describe('ImportAssets', () => {
 
     it('should handle errors gracefully', async () => {
       const error = new Error('Import failed');
-      importFoldersStub.rejects(error);
+      analyzeImportDataStub.rejects(error);
+      // completeProgress is already stubbed in beforeEach, restore it first
+      (importAssets as any).completeProgress.restore();
+      const completeProgressStub = sinon.stub(importAssets as any, 'completeProgress').resolves();
 
       await importAssets.start();
 
-      expect(importFoldersStub.calledOnce).to.be.true;
+      // When analyzeImportData fails, importFolders is never called
+      // Instead, completeProgress should be called with error
+      expect(importFoldersStub.called).to.be.false;
+      expect(completeProgressStub.called).to.be.true;
+      expect(completeProgressStub.calledWith(false, 'Import failed')).to.be.true;
     });
   });
 
@@ -463,7 +495,6 @@ describe('ImportAssets', () => {
 
   describe('serializeAssets() method', () => {
     it('should skip existing asset when not importing same structure', () => {
-      // Create a fresh instance for this test to avoid side effects
       const testImportAssets = new ImportAssets({
         importConfig: mockImportConfig as any,
         stackAPIClient: mockStackClient,
@@ -539,7 +570,6 @@ describe('ImportAssets', () => {
       expect(result.entity).to.equal('replace-assets');
       expect(result.uid).to.equal('existing-asset-1');
 
-      // Restore original value
       importAssets.assetConfig.importSameStructure = originalValue;
     });
 
@@ -567,7 +597,6 @@ describe('ImportAssets', () => {
       importAssets['assetsUidMap'] = { 'asset-1': 'new-asset-1' };
       importAssets['environments'] = { 'env-1': { name: 'production' } };
       
-      // Mock FsUtility for publish method
       Object.defineProperty(FsUtility.prototype, 'indexFileContent', {
         get: sinon.stub().returns({ '0': 'chunk-0' }),
         configurable: true
@@ -868,6 +897,21 @@ describe('ImportAssets', () => {
       const importFoldersStub = sinon.stub(importAssets as any, 'importFolders').resolves();
       const importAssetsStub = sinon.stub(importAssets as any, 'importAssets').resolves();
       const publishStub = sinon.stub(importAssets as any, 'publish').resolves();
+      const analyzeImportDataStub = sinon.stub(importAssets as any, 'analyzeImportData').resolves([1, 2, 0, 1]);
+      sinon.stub(importAssets as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importAssets as any, 'createNestedProgress').returns({
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        tick: sinon.stub()
+      });
+      sinon.stub(importAssets as any, 'initializeProgress').resolves();
+      sinon.stub(importAssets as any, 'completeProgress').resolves();
+      sinon.stub(importAssets as any, 'executeStep').callsFake(async (progress: any, processName: string, status: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
 
       await importAssets.start();
 
@@ -884,6 +928,24 @@ describe('ImportAssets', () => {
       const testExistsSyncStub = sinon.stub().returns(true);
       sinon.replace(require('node:fs'), 'existsSync', testExistsSyncStub);
 
+      sinon.stub(importAssets as any, 'analyzeImportData').resolves([1, 2, 1, 1]);
+      sinon.stub(importAssets as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importAssets as any, 'createNestedProgress').returns({
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        tick: sinon.stub()
+      });
+      sinon.stub(importAssets as any, 'initializeProgress').resolves();
+      sinon.stub(importAssets as any, 'completeProgress').resolves();
+      sinon.stub(importAssets as any, 'executeStep').callsFake(async (progress: any, processName: string, status: string, fn: () => Promise<any>) => {
+        if (fn) {
+          return await fn();
+        }
+      });
+
       const testImportFoldersStub = sinon.stub(importAssets as any, 'importFolders').resolves();
       const testImportAssetsStub = sinon.stub(importAssets as any, 'importAssets').resolves();
       const testPublishStub = sinon.stub(importAssets as any, 'publish').resolves();
@@ -894,12 +956,29 @@ describe('ImportAssets', () => {
       expect(testImportAssetsStub.calledTwice).to.be.true;
       expect(testPublishStub.calledOnce).to.be.true;
 
-      // Restore original value
       importAssets.assetConfig.includeVersionedAssets = originalValue;
     });
 
     it('should skip publish when skipAssetsPublish is true', async () => {
       mockImportConfig.skipAssetsPublish = true;
+
+      sinon.stub(importAssets as any, 'analyzeImportData').resolves([1, 2, 0, 1]);
+      sinon.stub(importAssets as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importAssets as any, 'createNestedProgress').returns({
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        tick: sinon.stub()
+      });
+      sinon.stub(importAssets as any, 'initializeProgress').resolves();
+      sinon.stub(importAssets as any, 'completeProgress').resolves();
+      sinon.stub(importAssets as any, 'executeStep').callsFake(async (progress: any, processName: string, status: string, fn: () => Promise<any>) => {
+        if (fn) {
+          return await fn();
+        }
+      });
 
       const importFoldersStub = sinon.stub(importAssets as any, 'importFolders').resolves();
       const importAssetsStub = sinon.stub(importAssets as any, 'importAssets').resolves();

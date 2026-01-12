@@ -1,4 +1,4 @@
-import { Modules } from '.';
+import { Modules, Context } from '.';
 import DefaultConfig from './default-config';
 
 export interface ExternalConfig {
@@ -11,6 +11,7 @@ export interface ExternalConfig {
 }
 
 export default interface ImportConfig extends DefaultConfig, ExternalConfig {
+  context?: Context;
   cliLogsPath?: string;
   contentDir: string;
   data: string;
@@ -39,7 +40,6 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   authtoken?: string;
   destinationStackName?: string;
   org_uid?: string;
-  contentVersion: number;
   stackName?: string;
   branchName: string;
   selectedModules: Modules[];
@@ -47,6 +47,7 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   backupDir: string;
   createBackupDir?: string;
   region: any;
+  authenticationMethod?: string;
 }
 
 type branch = {
