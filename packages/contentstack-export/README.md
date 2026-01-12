@@ -86,7 +86,7 @@ FLAGS
       --module=<value>            [optional] Specific module name. If not specified, the export command will export all
                                   the modules to the stack. The available modules are assets, content-types, entries,
                                   environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                  workflows, custom-roles, taxonomies, and composable-studio.
+                                  workflows, custom-roles, taxonomies, and studio.
       --secured-assets            [optional] Use this flag for assets that are secured.
 
 DESCRIPTION

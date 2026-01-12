@@ -2431,7 +2431,7 @@ FLAGS
       --module=<value>            [optional] Specific module name. If not specified, the export command will export all
                                   the modules to the stack. The available modules are assets, content-types, entries,
                                   environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                  workflows, custom-roles, taxonomies, and composable-studio.
+                                  workflows, custom-roles, taxonomies, and studio.
       --secured-assets            [optional] Use this flag for assets that are secured.
 
 DESCRIPTION
@@ -3251,21 +3251,22 @@ Set region for CLI
 
 ```
 USAGE
-  $ csdx config:set:region [REGION] [-d <value> -m <value> --ui-host <value> -n <value>] [--developer-hub <value>]
-    [--personalize <value>] [--launch <value>]
+  $ csdx config:set:region [REGION] [--cda <value> --cma <value> --ui-host <value> -n <value>] [--developer-hub
+    <value>] [--personalize <value>] [--launch <value>] [--studio <value>]
 
 ARGUMENTS
   [REGION]  Name for the region
 
 FLAGS
-  -d, --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and
-                               name flags are required
-  -m, --cma=<value>            Custom host to set for content management API, , if this flag is added then cda, ui-host
-                               and name flags are required
   -n, --name=<value>           Name for the region, if this flag is added then cda, cma and ui-host flags are required
+      --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and
+                               name flags are required
+      --cma=<value>            Custom host to set for content management API, , if this flag is added then cda, ui-host
+                               and name flags are required
       --developer-hub=<value>  Custom host to set for Developer hub API
       --launch=<value>         Custom host to set for Launch API
       --personalize=<value>    Custom host to set for Personalize API
+      --studio=<value>         Custom host to set for Studio API
       --ui-host=<value>        Custom UI host to set for CLI, if this flag is added then cda, cma and name flags are
                                required
 
@@ -3297,7 +3298,9 @@ EXAMPLES
 
   $ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --launch <custom_launch_url>
 
-  $ csdx config:set:region --cda <custom_cda_host_url> --cma <custom_cma_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url> --launch <custom_launch_url> --personalize <custom_personalize_url>
+  $ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --studio <custom_studio_url>
+
+  $ csdx config:set:region --cda <custom_cda_host_url> --cma <custom_cma_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url> --launch <custom_launch_url> --personalize <custom_personalize_url> --studio <custom_studio_url>
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/region.ts)_

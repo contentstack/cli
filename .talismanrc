@@ -1,8 +1,6 @@
 fileignoreconfig:
   - filename: package-lock.json
-    checksum: fb4e871eeda25a0fc5bc6bbedfe73908d6c607bbe3313980ecad197fb0f26a0c
-  - filename: pnpm-lock.yaml
-    checksum: 82f17c88937261e7db874a7f861decdf4e1b627ba9d6737ecc676a6486cb2cfd
-  - filename: packages/contentstack-utilities/test/unit/contentstack-marketplace-sdk.test.ts
-    checksum: ccf521d7eafe03d5c4b597c8b30c4cceac00e75d597685fbfb411da4603fbd29
+    checksum: 20ea877448be828d5aff2951db7d39506e9ac4b7864ab53892d856769ab5aaa4
+  - filename: packages/contentstack-bulk-publish/src/producer/add-fields.js
+    checksum: 3e70b11978fc5f29a6a6c90b725c28c9df8d15bcc6fd74e2253fca23a3630160
 version: '1.0'
