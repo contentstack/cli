@@ -1,7 +1,7 @@
 import { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { ConfigType, ContentTypeStruct, CtConstructorParam, ModuleConstructorParam } from '../types';
-import { sanitizePath, cliux, log } from '@contentstack/cli-utilities';
+import { sanitizePath, cliux, log, handleAndLogError } from '@contentstack/cli-utilities';
 
 import auditConfig from '../config';
 import { $t, auditMsg, commonMsg } from '../messages';
@@ -91,7 +91,7 @@ export default class ComposableStudio {
           this.config.auditContext,
         );
       } catch (error) {
-        log.debug(`Failed to load environments: ${error}`, this.config.auditContext);
+        handleAndLogError(error, this.config.auditContext, 'Failed to load environments');
       }
     } else {
       log.debug(`Environments file not found at: ${environmentsPath}`, this.config.auditContext);
@@ -119,7 +119,7 @@ export default class ComposableStudio {
         });
         log.debug(`Loaded ${this.localeCodeSet.size} master locales`, this.config.auditContext);
       } catch (error) {
-        log.debug(`Failed to load master locales: ${error}`, this.config.auditContext);
+        handleAndLogError(error, this.config.auditContext, 'Failed to load master locales');
       }
     } else {
       log.debug(`Master locale file not found at: ${masterLocalePath}`, this.config.auditContext);
@@ -141,7 +141,7 @@ export default class ComposableStudio {
           this.config.auditContext,
         );
       } catch (error) {
-        log.debug(`Failed to load additional locales: ${error}`, this.config.auditContext);
+        handleAndLogError(error, this.config.auditContext, 'Failed to load additional locales');
       }
     } else {
       log.debug(`Locales file not found at: ${localesPath}`, this.config.auditContext);
@@ -179,8 +179,7 @@ export default class ComposableStudio {
           this.config.auditContext,
         );
       } catch (error) {
-        log.debug(`Failed to load composable studio projects: ${error}`, this.config.auditContext);
-        cliux.print(`Failed to parse composable studio file: ${error}`, { color: 'red' });
+        handleAndLogError(error, this.config.auditContext, 'Failed to load composable studio projects');
         return {};
       }
     } else {
