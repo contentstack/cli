@@ -175,6 +175,7 @@ enum OutputColumn {
   "Non-Fixable"="Non-Fixable",
   "Fixed" = "Fixed",
   "Not-Fixed" = "Not-Fixed",
+  "Issues" = "issues",
 }
 
 export {
