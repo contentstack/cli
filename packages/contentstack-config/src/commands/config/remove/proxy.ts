@@ -1,5 +1,5 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, configHandler } from '@contentstack/cli-utilities';
+import { configHandler, log } from '@contentstack/cli-utilities';
 
 export default class ProxyRemoveCommand extends Command {
   static description = 'Remove proxy configuration from global config';
@@ -8,19 +8,18 @@ export default class ProxyRemoveCommand extends Command {
 
   async run() {
     try {
+      log.debug('Starting proxy configuration removal');
       const currentProxy = configHandler.get('proxy');
       if (!currentProxy) {
-        cliux.print('No proxy configuration found in global config.', { color: 'yellow' });
+        log.debug('No proxy configuration found in global config');
         return;
       }
 
+      log.debug('Removing proxy configuration from global config');
       configHandler.delete('proxy');
-      cliux.success('Proxy configuration removed from global config successfully.');
-      cliux.print('\nNote: This only removes the global config. Proxy settings from environment variables (HTTPS_PROXY, HTTP_PROXY) will still be used if present.', {
-        color: 'dim',
-      });
+      log.success('Proxy configuration removed from global config successfully');
     } catch (error) {
-      cliux.error('Failed to remove proxy configuration', error);
+      log.error('Failed to remove proxy configuration');
     }
   }
 }

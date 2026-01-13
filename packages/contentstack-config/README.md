@@ -401,12 +401,12 @@ Set proxy configuration for CLI
 
 ```
 USAGE
-  $ csdx config:set:proxy [--host <value>] [--port <value>] [--protocol http|https] [--username <value>]
+  $ csdx config:set:proxy --host <value> --port <value> --protocol http|https [--username <value>]
 
 FLAGS
-  --host=<value>       Proxy host address
-  --port=<value>       Proxy port number
-  --protocol=<option>  [default: http] Proxy protocol (http or https)
+  --host=<value>       (required) Proxy host address
+  --port=<value>       (required) Proxy port number
+  --protocol=<option>  (required) [default: http] Proxy protocol (http or https)
                        <options: http|https>
   --username=<value>   Proxy username (optional)
 
