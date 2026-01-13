@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-cm-clone",
   "description": "Contentstack stack clone plugin",
-  "version": "1.18.1",
+  "version": "1.19.0",
   "author": "Contentstack",
   "bugs": "https://github.com/rohitmishra209/cli-cm-clone/issues",
   "dependencies": {
@@ -61,12 +61,13 @@
   },
   "repository": "https://github.com/contentstack/cli",
   "scripts": {
+    "build": "npm run clean && npm run compile",
+    "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
+    "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
-    "prepack": "oclif manifest && oclif readme",
+    "prepack": "pnpm compile && oclif manifest && oclif readme",
     "test": "nyc --reporter=html mocha --forbid-only \"test/**/*.test.js\"",
-    "posttest": "eslint .",
-    "version": "oclif readme && git add README.md",
-    "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
+    "posttest": "eslint ."
   },
   "csdxConfig": {
     "expiredCommands": {
