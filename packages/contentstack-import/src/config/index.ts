@@ -44,6 +44,7 @@ const config: DefaultConfig = {
       'variant-entries',
       'labels',
       'webhooks',
+      'composable-studio',
     ],
     locales: {
       dirName: 'locales',
@@ -198,6 +199,12 @@ const config: DefaultConfig = {
       query: {
         locale: 'en-us',
       },
+    },
+    'composable-studio': {
+      dirName: 'composable_studio',
+      fileName: 'composable_studio.json',
+      apiBaseUrl: 'https://composable-studio-api.contentstack.com',
+      apiVersion: 'v1',
     },
   },
   languagesCode: [
@@ -436,7 +443,7 @@ const config: DefaultConfig = {
   getEncryptionKeyMaxRetry: 3,
   // useBackedupDir: '',
   // backupConcurrency: 10,
-  onlyTSModules: ['taxonomies', 'personalize', 'variant-entries'],
+  onlyTSModules: ['taxonomies', 'personalize', 'variant-entries', 'stack'],
   auditConfig: {
     noLog: false, // Skip logs printing on terminal
     skipConfirm: true, // Skip confirmation if any

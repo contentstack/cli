@@ -1,5 +1,5 @@
 const { Command } = require('@contentstack/cli-command');
-const { configHandler, flags, isAuthenticated, managementSDKClient } = require('@contentstack/cli-utilities');
+const { configHandler, flags, isAuthenticated, managementSDKClient, log, handleAndLogError, createLogContext } = require('@contentstack/cli-utilities');
 const { CloneHandler } = require('../../../lib/util/clone-handler');
 const path = require('path');
 const { rimraf } = require('rimraf');
@@ -9,6 +9,44 @@ const { readdirSync, readFileSync } = require('fs');
 let config = {};
 
 class StackCloneCommand extends Command {
+  /**
+   * Determine authentication method based on user preference
+   */
+  determineAuthenticationMethod(sourceManagementTokenAlias, destinationManagementTokenAlias) {
+    // Track authentication method
+    let authenticationMethod = 'unknown';
+
+    // Determine authentication method based on user preference
+    if (sourceManagementTokenAlias || destinationManagementTokenAlias) {
+      authenticationMethod = 'Management Token';
+    } else if (isAuthenticated()) {
+      // Check if user is authenticated via OAuth
+      const isOAuthUser = configHandler.get('authorisationType') === 'OAUTH' || false;
+      if (isOAuthUser) {
+        authenticationMethod = 'OAuth';
+      } else {
+        authenticationMethod = 'Basic Auth';
+      }
+    } else {
+      authenticationMethod = 'Basic Auth';
+    }
+
+    return authenticationMethod;
+  }
+
+  /**
+   * Create clone context object for logging
+   */
+  createCloneContext(authenticationMethod) {
+    return {
+      command: this.context?.info?.command || 'cm:stacks:clone',
+      module: 'clone',
+      email: configHandler.get('email') || '',
+      sessionId: this.context?.sessionId || '',
+      authenticationMethod: authenticationMethod || 'Basic Auth',
+    };
+  }
+
   async run() {
     try {
       let self = this;
@@ -18,7 +56,9 @@ class StackCloneCommand extends Command {
         type: cloneType,
         'stack-name': stackName,
         'source-branch': sourceStackBranch,
+        'source-branch-alias': sourceStackBranchAlias,
         'target-branch': targetStackBranch,
+        'target-branch-alias': targetStackBranchAlias,
         'source-stack-api-key': sourceStackApiKey,
         'destination-stack-api-key': destinationStackApiKey,
         'source-management-token-alias': sourceManagementTokenAlias,
@@ -29,14 +69,32 @@ class StackCloneCommand extends Command {
 
       const handleClone = async () => {
         const listOfTokens = configHandler.get('tokens');
+        const authenticationMethod = this.determineAuthenticationMethod(
+          sourceManagementTokenAlias,
+          destinationManagementTokenAlias,
+        );
+        createLogContext(
+          this.context?.info?.command || 'cm:stacks:clone',
+          sourceStackApiKey,
+          authenticationMethod
+        );
+        let cloneContext = { module: 'clone' };
+        log.debug('Starting clone operation setup', cloneContext);
 
         if (externalConfigPath) {
+          log.debug(`Loading external configuration from: ${externalConfigPath}`, cloneContext);
           let externalConfig = readFileSync(externalConfigPath, 'utf-8');
           externalConfig = JSON.parse(externalConfig);
           config = merge.recursive(config, externalConfig);
         }
         config.forceStopMarketplaceAppsPrompt = yes;
         config.skipAudit = cloneCommandFlags['skip-audit'];
+        log.debug('Clone configuration prepared', { 
+          ...cloneContext,
+          cloneType: config.cloneType, 
+          skipAudit: config.skipAudit,
+          forceStopMarketplaceAppsPrompt: config.forceStopMarketplaceAppsPrompt 
+        });
 
         if (cloneType) {
           config.cloneType = cloneType;
@@ -47,8 +105,14 @@ class StackCloneCommand extends Command {
         if (sourceStackBranch) {
           config.sourceStackBranch = sourceStackBranch;
         }
+        if (sourceStackBranchAlias) {
+          config.sourceStackBranchAlias = sourceStackBranchAlias;
+        }
         if (targetStackBranch) {
           config.targetStackBranch = targetStackBranch;
+        }
+         if (targetStackBranchAlias) {
+          config.targetStackBranchAlias = targetStackBranchAlias;
         }
         if (sourceStackApiKey) {
           config.source_stack = sourceStackApiKey;
@@ -59,33 +123,44 @@ class StackCloneCommand extends Command {
         if (sourceManagementTokenAlias && listOfTokens[sourceManagementTokenAlias]) {
           config.source_alias = sourceManagementTokenAlias;
           config.source_stack = listOfTokens[sourceManagementTokenAlias].apiKey;
+          log.debug(`Using source token alias: ${sourceManagementTokenAlias}`, cloneContext);
         } else if (sourceManagementTokenAlias) {
-          console.log(`Provided source token alias (${sourceManagementTokenAlias}) not found in your config.!`);
+          log.warn(`Provided source token alias (${sourceManagementTokenAlias}) not found in your config.!`, cloneContext);
         }
         if (destinationManagementTokenAlias && listOfTokens[destinationManagementTokenAlias]) {
           config.destination_alias = destinationManagementTokenAlias;
           config.target_stack = listOfTokens[destinationManagementTokenAlias].apiKey;
+          log.debug(`Using destination token alias: ${destinationManagementTokenAlias}`, cloneContext);
         } else if (destinationManagementTokenAlias) {
-          console.log(
+          log.warn(
             `Provided destination token alias (${destinationManagementTokenAlias}) not found in your config.!`,
+            cloneContext,
           );
         }
         if (importWebhookStatus) {
           config.importWebhookStatus = importWebhookStatus;
         }
 
-        await this.removeContentDirIfNotEmptyBeforeClone(pathdir); // NOTE remove if folder not empty before clone
-        this.registerCleanupOnInterrupt(pathdir);
-
-        config.auth_token = configHandler.get('authtoken');
+        //Set host and auth BEFORE SDK initialization to ensure correct regional endpoints
         config.host = this.cmaHost;
         config.cdn = this.cdaHost;
-        config.pathDir = pathdir;
-        const cloneHandler = new CloneHandler(config);
+        config.auth_token = configHandler.get('authtoken');
+
         const managementAPIClient = await managementSDKClient(config);
+        log.debug('Management API client initialized successfully', cloneContext);
+
+        log.debug(`Content directory path: ${pathdir}`, cloneContext);
+        await this.removeContentDirIfNotEmptyBeforeClone(pathdir, cloneContext); // NOTE remove if folder not empty before clone
+        this.registerCleanupOnInterrupt(pathdir, cloneContext);
+
+        config.pathDir = pathdir;
+        config.cloneContext = cloneContext;
+        log.debug('Clone configuration finalized', cloneContext);
+        const cloneHandler = new CloneHandler(config);
         cloneHandler.setClient(managementAPIClient);
+        log.debug('Starting clone operation', cloneContext);
         cloneHandler.execute().catch((error) => {
-          console.log(error);
+          handleAndLogError(error, cloneContext);
         });
       };
 
@@ -94,7 +169,7 @@ class StackCloneCommand extends Command {
           if (isAuthenticated()) {
             handleClone();
           } else {
-            console.log('Please login to execute this command, csdx auth:login');
+            log.error('Log in to execute this command,csdx auth:login', cloneContext);
             this.exit(1);
           }
         } else {
@@ -103,74 +178,76 @@ class StackCloneCommand extends Command {
       } else if (isAuthenticated()) {
         handleClone();
       } else {
-        console.log('Please login to execute this command, csdx auth:login');
+        log.error('Please login to execute this command, csdx auth:login', cloneContext);
         this.exit(1);
       }
     } catch (error) {
       if (error) {
-        await this.cleanUp(pathdir);
-        // eslint-disable-next-line no-console
-        console.log(error.message || error);
+        await this.cleanUp(pathdir, null, cloneContext);
+        log.error('Stack clone command failed', { ...cloneContext, error: error?.message || error });
       }
     }
   }
 
-  async removeContentDirIfNotEmptyBeforeClone(dir) {
+
+
+  async removeContentDirIfNotEmptyBeforeClone(dir, cloneContext) {
     try {
+      log.debug('Checking if content directory is empty', { ...cloneContext, dir });
       const dirNotEmpty = readdirSync(dir).length;
 
       if (dirNotEmpty) {
-        await this.cleanUp(dir);
+        log.debug('Content directory is not empty, cleaning up', { ...cloneContext, dir });
+        await this.cleanUp(dir, null, cloneContext);
       }
     } catch (error) {
       const omit = ['ENOENT']; // NOTE add emittable error codes in the array
 
       if (!omit.includes(error.code)) {
-        console.log(error.message);
+        log.error('Error checking content directory', { ...cloneContext, error: error?.message, code: error.code });
       }
     }
   }
 
-  async cleanUp(pathDir, message) {
+  async cleanUp(pathDir, message, cloneContext) {
     try {
+      log.debug('Starting cleanup', { ...cloneContext, pathDir });
       await rimraf(pathDir);
       if (message) {
-        // eslint-disable-next-line no-console
-        console.log(message);
+        log.info(message, cloneContext);
       }
+      log.debug('Cleanup completed', { ...cloneContext, pathDir });
     } catch (err) {
       if (err) {
-        console.log('\nCleaning up');
+        log.debug('Cleaning up', cloneContext);
         const skipCodeArr = ['ENOENT', 'EBUSY', 'EPERM', 'EMFILE', 'ENOTEMPTY'];
 
         if (skipCodeArr.includes(err.code)) {
+          log.debug('Cleanup error code is in skip list, exiting', { ...cloneContext, code: err?.code });
           process.exit();
         }
       }
     }
   }
 
-  registerCleanupOnInterrupt(pathDir) {
+  registerCleanupOnInterrupt(pathDir, cloneContext) {
     const interrupt = ['SIGINT', 'SIGQUIT', 'SIGTERM'];
     const exceptions = ['unhandledRejection', 'uncaughtException'];
 
     const cleanUp = async (exitOrError) => {
       if (exitOrError) {
-        // eslint-disable-next-line no-console
-        console.log('\nCleaning up');
-        await this.cleanUp(pathDir);
-        // eslint-disable-next-line no-console
-        console.log('done');
-        // eslint-disable-next-line no-process-exit
+        log.debug('Cleaning up on interrupt', cloneContext);
+        await this.cleanUp(pathDir, null, cloneContext);
+        log.info('Cleanup done', cloneContext);
 
         if (exitOrError instanceof Promise) {
           exitOrError.catch((error) => {
-            console.log((error && error.message) || '');
+            log.error('Error during cleanup', { ...cloneContext, error: (error && error?.message) || '' });
           });
         } else if (exitOrError.message) {
-          console.log(exitOrError.message);
+          log.error('Cleanup error', { ...cloneContext, error: exitOrError?.message });
         } else if (exitOrError.errorMessage) {
-          console.log(exitOrError.message);
+          log.error('Cleanup error', { ...cloneContext, error: exitOrError?.errorMessage });
         }
 
         if (exitOrError === true) process.exit();
@@ -202,11 +279,25 @@ StackCloneCommand.flags = {
     required: false,
     multiple: false,
     description: 'Branch of the source stack.',
+    exclusive: ['source-branch-alias']
+  }),
+  'source-branch-alias': flags.string({
+    required: false,
+    multiple: false,
+    description: 'Alias of Branch of the source stack.',
+    exclusive: ['source-branch']
   }),
   'target-branch': flags.string({
     required: false,
     multiple: false,
     description: 'Branch of the target stack.',
+    exclusive: ['target-branch-alias']
+  }),
+  'target-branch-alias': flags.string({
+    required: false,
+    multiple: false,
+    description: 'Alias of Branch of the target stack.',
+    exclusive: ['target-branch']
   }),
   'source-management-token-alias': flags.string({
     required: false,
@@ -229,8 +320,8 @@ StackCloneCommand.flags = {
     multiple: false,
     options: ['a', 'b'],
     description: ` Type of data to clone. You can select option a or b.
-a) Structure (all modules except entries & assets).
-b) Structure with content (all modules including entries & assets).
+      a) Structure (all modules except entries & assets).
+      b) Structure with content (all modules including entries & assets).
     `,
   }),
   'source-stack-api-key': flags.string({

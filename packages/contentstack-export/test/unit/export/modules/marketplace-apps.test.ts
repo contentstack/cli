@@ -1,346 +1,803 @@
-import { expect } from '@oclif/test';
-import { App, FsUtility, cliux, marketplaceSDKClient } from '@contentstack/cli-utilities';
-import { fancy } from '@contentstack/cli-dev-dependencies';
-
-import defaultConfig from '../../../../src/config';
-import * as logUtil from '../../../../src/utils/logger';
+import { expect } from 'chai';
+import sinon from 'sinon';
+import { FsUtility, cliux, isAuthenticated, marketplaceSDKClient, NodeCrypto } from '@contentstack/cli-utilities';
 import * as utilities from '@contentstack/cli-utilities';
-import ExportConfig from '../../../../lib/types/export-config';
-import * as appUtility from '../../../../src/utils/marketplace-app-helper';
 import ExportMarketplaceApps from '../../../../src/export/modules/marketplace-apps';
-import { Installation, MarketplaceAppsConfig } from '../../../../src/types';
+import ExportConfig from '../../../../src/types/export-config';
+import * as marketplaceAppHelper from '../../../../src/utils/marketplace-app-helper';
 
-describe('ExportMarketplaceApps class', () => {
-  const exportConfig: ExportConfig = Object.assign(defaultConfig, {
-    data: './',
-    exportDir: './',
-    apiKey: 'TST-API-KEY',
-    master_locale: { code: 'en-us' },
-    forceStopMarketplaceAppsPrompt: false,
-    developerHubBaseUrl: 'https://test-apps.io', // NOTE dummy url
-  }) as ExportConfig;
-  const host = 'test-app.io';
+describe('ExportMarketplaceApps', () => {
+  let exportMarketplaceApps: any;
+  let mockExportConfig: ExportConfig;
+  let mockAppSdk: any;
+  let mockNodeCrypto: any;
 
-  describe('start method', () => {
-    fancy
-      .stub(utilities, 'isAuthenticated', () => false)
-      .stub(cliux, 'print', () => {})
-      .spy(utilities, 'isAuthenticated')
-      .spy(cliux, 'print')
-      .spy(ExportMarketplaceApps.prototype, 'exportApps')
-      .it('should skip marketplace app export process if not authenticated', async ({ spy }) => {
-        const marketplaceApps = new ExportMarketplaceApps({ exportConfig });
-        await marketplaceApps.start();
-
-        expect(spy.print.callCount).to.be.equals(1);
-        expect(spy.isAuthenticated.callCount).to.be.equals(1);
-      });
-
-    fancy
-      .stub(utilities, 'isAuthenticated', () => true)
-      .stub(utilities, 'log', () => {})
-      .stub(FsUtility.prototype, 'makeDirectory', () => {})
-      .stub(appUtility, 'getOrgUid', () => 'ORG-UID')
-      .stub(ExportMarketplaceApps.prototype, 'exportApps', () => {})
-      .spy(appUtility, 'getOrgUid')
-      .spy(ExportMarketplaceApps.prototype, 'exportApps')
-      .it('should trigger start method', async ({ spy }) => {
-        const marketplaceApps = new ExportMarketplaceApps({ exportConfig });
-        await marketplaceApps.start();
-
-        expect(spy.getOrgUid.callCount).to.be.equals(1);
-        expect(spy.exportApps.callCount).to.be.equals(1);
-      });
-  });
-
-  describe('exportApps method', () => {
-    fancy
-      .stub(ExportMarketplaceApps.prototype, 'getStackSpecificApps', () => {})
-      .stub(ExportMarketplaceApps.prototype, 'getAppManifestAndAppConfig', () => {})
-      .stub(appUtility, 'createNodeCryptoInstance', () => ({ encrypt: (val: any) => val }))
-      .spy(ExportMarketplaceApps.prototype, 'getStackSpecificApps')
-      .spy(ExportMarketplaceApps.prototype, 'getAppManifestAndAppConfig')
-      .it('should get call get all stack specif installation and manifest and configuration', async ({ spy }) => {
-        class MPApps extends ExportMarketplaceApps {
-          public installedApps = [
-            { uid: 'UID', name: 'TEST-APP', configuration: { id: 'test' }, manifest: { visibility: 'private' } },
-          ] as unknown as Installation[];
+  beforeEach(() => {
+    mockExportConfig = {
+      contentVersion: 1,
+      versioning: false,
+      host: 'https://api.contentstack.io',
+      developerHubUrls: {},
+      apiKey: 'test-api-key',
+      exportDir: '/test/export',
+      data: '/test/data',
+      branchName: '',
+      source_stack: 'test-stack-uid',
+      org_uid: 'test-org-uid',
+      context: {
+        command: 'cm:stacks:export',
+        module: 'marketplace-apps',
+        userId: 'user-123',
+        email: 'test@example.com',
+        sessionId: 'session-123',
+        apiKey: 'test-api-key',
+        orgId: 'org-123',
+        authenticationMethod: 'Basic Auth'
+      },
+      cliLogsPath: '/test/logs',
+      forceStopMarketplaceAppsPrompt: false,
+      master_locale: { code: 'en-us' },
+      region: {
+        name: 'us',
+        cma: 'https://api.contentstack.io',
+        cda: 'https://cdn.contentstack.io',
+        uiHost: 'https://app.contentstack.com'
+      },
+      skipStackSettings: false,
+      skipDependencies: false,
+      languagesCode: ['en'],
+      apis: {},
+      preserveStackVersion: false,
+      personalizationEnabled: false,
+      fetchConcurrency: 5,
+      writeConcurrency: 5,
+      developerHubBaseUrl: 'https://developer-api.contentstack.io',
+      marketplaceAppEncryptionKey: 'test-encryption-key',
+      onlyTSModules: [],
+      modules: {
+        types: ['marketplace-apps'],
+        marketplace_apps: {
+          dirName: 'marketplace-apps',
+          fileName: 'marketplace-apps.json'
         }
-        const marketplaceApps = new MPApps({ exportConfig });
-        await marketplaceApps.exportApps();
+      },
+      query: undefined
+    } as any;
 
-        expect(spy.getStackSpecificApps.callCount).to.be.equals(1);
-        expect(spy.getAppManifestAndAppConfig.callCount).to.be.equals(1);
-        expect(marketplaceApps.installedApps).to.be.string;
-      });
+    exportMarketplaceApps = new ExportMarketplaceApps({
+      exportConfig: mockExportConfig
+    });
+
+    // Mock app SDK
+    mockAppSdk = {
+      marketplace: sinon.stub().returns({
+        installation: sinon.stub().returns({
+          fetchAll: sinon.stub().resolves({
+            items: [],
+            count: 0
+          })
+        }),
+        app: sinon.stub().returns({
+          fetch: sinon.stub().resolves({})
+        })
+      })
+    };
+
+    // Mock NodeCrypto
+    mockNodeCrypto = {
+      encrypt: sinon.stub().returns('encrypted-data')
+    };
+
+    // Stub utility functions
+    sinon.stub(FsUtility.prototype, 'writeFile').resolves();
+    sinon.stub(FsUtility.prototype, 'makeDirectory').resolves();
+    // Note: isAuthenticated is non-configurable, so we'll stub it per test when needed using sinon.replace
+    sinon.stub(utilities, 'marketplaceSDKClient').resolves(mockAppSdk);
+    sinon.stub(marketplaceAppHelper, 'getOrgUid').resolves('test-org-uid');
+    sinon.stub(marketplaceAppHelper, 'getDeveloperHubUrl').resolves('https://developer-api.contentstack.io');
+    sinon.stub(marketplaceAppHelper, 'createNodeCryptoInstance').resolves(mockNodeCrypto);
   });
 
-  describe('getAppManifestAndAppConfig method', () => {
-    fancy
-      .stub(logUtil, 'log', () => {})
-      .spy(logUtil, 'log')
-      .it(
-        "if no apps is exported from stack, It should log message that 'No marketplace apps found'",
-        async ({ spy }) => {
-          class MPApps extends ExportMarketplaceApps {
-            public installedApps = [] as unknown as Installation[];
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  describe('Constructor', () => {
+    it('should initialize with correct parameters', () => {
+      expect(exportMarketplaceApps).to.be.instanceOf(ExportMarketplaceApps);
+    });
+
+    it('should set context module to marketplace-apps', () => {
+      expect(exportMarketplaceApps.exportConfig.context.module).to.equal('marketplace-apps');
+    });
+
+    it('should initialize marketplaceAppConfig from exportConfig', () => {
+      expect(exportMarketplaceApps.marketplaceAppConfig).to.exist;
+      expect(exportMarketplaceApps.marketplaceAppConfig.dirName).to.equal('marketplace-apps');
+      expect(exportMarketplaceApps.marketplaceAppConfig.fileName).to.equal('marketplace-apps.json');
+    });
+
+    it('should initialize installedApps as empty array', () => {
+      expect(exportMarketplaceApps.installedApps).to.be.an('array');
+      expect(exportMarketplaceApps.installedApps.length).to.equal(0);
+    });
+  });
+
+  describe('start() method', () => {
+    it('should return early if user is not authenticated', async () => {
+      // Stub configHandler.get to control isAuthenticated() behavior
+      // isAuthenticated() returns true when authorisationType is 'OAUTH' or 'BASIC', false otherwise
+      const configHandlerGetStub = sinon.stub(utilities.configHandler, 'get');
+      configHandlerGetStub.withArgs('authorisationType').returns(undefined); // Not authenticated
+      const printStub = sinon.stub(cliux, 'print');
+
+      await exportMarketplaceApps.start();
+
+      expect(printStub.called).to.be.true;
+      expect(printStub.firstCall.args[0]).to.include('WARNING');
+      printStub.restore();
+      configHandlerGetStub.restore();
+    });
+
+    it('should complete full export flow when authenticated', async () => {
+      // Stub configHandler.get to make isAuthenticated() return true
+      const configHandlerGetStub = sinon.stub(utilities.configHandler, 'get');
+      configHandlerGetStub.withArgs('authorisationType').returns('BASIC'); // Authenticated
+      const makeDirectoryStub = FsUtility.prototype.makeDirectory as sinon.SinonStub;
+      const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
+
+      // Setup mock app SDK to return apps
+      mockAppSdk.marketplace.returns({
+        installation: sinon.stub().returns({
+          fetchAll: sinon.stub().resolves({
+            items: [
+              {
+                uid: 'installation-1',
+                manifest: { uid: 'app-1', name: 'Test App', visibility: 'public' },
+                configuration: {} as any
+              }
+            ],
+            count: 1
+          })
+        }),
+        app: sinon.stub().returns({
+          fetch: sinon.stub().resolves({})
+        })
+      });
+
+      // Mock exportApps to avoid complex setup
+      const exportAppsStub = sinon.stub(exportMarketplaceApps, 'exportApps').resolves();
+
+      await exportMarketplaceApps.start();
+
+      expect(makeDirectoryStub.called).to.be.true;
+      expect(exportMarketplaceApps.marketplaceAppPath).to.exist;
+      expect(exportMarketplaceApps.developerHubBaseUrl).to.equal('https://developer-api.contentstack.io');
+      expect(exportMarketplaceApps.exportConfig.org_uid).to.equal('test-org-uid');
+      expect(exportMarketplaceApps.query).to.deep.equal({ target_uids: 'test-stack-uid' });
+      expect(exportMarketplaceApps.appSdk).to.equal(mockAppSdk);
+
+      exportAppsStub.restore();
+      configHandlerGetStub.restore();
+    });
+
+    it('should set marketplaceAppPath correctly', async () => {
+      const configHandlerGetStub = sinon.stub(utilities.configHandler, 'get');
+      configHandlerGetStub.withArgs('authorisationType').returns('BASIC');
+      const exportAppsStub = sinon.stub(exportMarketplaceApps, 'exportApps').resolves();
+
+      await exportMarketplaceApps.start();
+
+      expect(exportMarketplaceApps.marketplaceAppPath).to.include('marketplace-apps');
+      expect(exportMarketplaceApps.marketplaceAppPath).to.include('/test/data');
+
+      exportAppsStub.restore();
+      configHandlerGetStub.restore();
+    });
+
+    it('should handle branchName in path when provided', async () => {
+      mockExportConfig.branchName = 'test-branch';
+      exportMarketplaceApps = new ExportMarketplaceApps({
+        exportConfig: mockExportConfig
+      });
+
+      const configHandlerGetStub = sinon.stub(utilities.configHandler, 'get');
+      configHandlerGetStub.withArgs('authorisationType').returns('BASIC');
+      const exportAppsStub = sinon.stub(exportMarketplaceApps, 'exportApps').resolves();
+
+      await exportMarketplaceApps.start();
+
+      expect(exportMarketplaceApps.marketplaceAppPath).to.include('test-branch');
+
+      exportAppsStub.restore();
+      configHandlerGetStub.restore();
+    });
+
+    it('should use developerHubBaseUrl from config when provided', async () => {
+      mockExportConfig.developerHubBaseUrl = 'https://custom-devhub.com';
+      exportMarketplaceApps = new ExportMarketplaceApps({
+        exportConfig: mockExportConfig
+      });
+
+      const configHandlerGetStub = sinon.stub(utilities.configHandler, 'get');
+      configHandlerGetStub.withArgs('authorisationType').returns('BASIC');
+      const exportAppsStub = sinon.stub(exportMarketplaceApps, 'exportApps').resolves();
+
+      await exportMarketplaceApps.start();
+
+      expect(exportMarketplaceApps.developerHubBaseUrl).to.equal('https://custom-devhub.com');
+
+      exportAppsStub.restore();
+      configHandlerGetStub.restore();
+    });
+
+    it('should initialize marketplace SDK with correct host', async () => {
+      const configHandlerGetStub = sinon.stub(utilities.configHandler, 'get');
+      configHandlerGetStub.withArgs('authorisationType').returns('BASIC');
+      const exportAppsStub = sinon.stub(exportMarketplaceApps, 'exportApps').resolves();
+
+      await exportMarketplaceApps.start();
+
+      expect((utilities.marketplaceSDKClient as sinon.SinonStub).called).to.be.true;
+      const sdkArgs = (utilities.marketplaceSDKClient as sinon.SinonStub).firstCall.args[0];
+      expect(sdkArgs.host).to.equal('developer-api.contentstack.io');
+
+      exportAppsStub.restore();
+      configHandlerGetStub.restore();
+    });
+  });
+
+  describe('exportApps() method', () => {
+    beforeEach(() => {
+      exportMarketplaceApps.appSdk = mockAppSdk;
+      exportMarketplaceApps.query = { target_uids: 'test-stack-uid' };
+      exportMarketplaceApps.exportConfig.org_uid = 'test-org-uid';
+    });
+
+    it('should process external query with app_uids', async () => {
+      mockExportConfig.query = {
+        modules: {
+          'marketplace-apps': {
+            app_uid: { $in: ['app-1', 'app-2'] }
           }
-          const marketplaceApps = new MPApps({ exportConfig });
-          await marketplaceApps.getAppManifestAndAppConfig();
+        }
+      };
+      exportMarketplaceApps.exportConfig = mockExportConfig;
 
-          expect(spy.log.callCount).to.be.equals(1);
-          expect(spy.log.calledWith(marketplaceApps.exportConfig, 'No marketplace apps found', 'info')).to.be.true;
+      const getStackSpecificAppsStub = sinon.stub(exportMarketplaceApps, 'getStackSpecificApps').resolves();
+      const getAppManifestAndAppConfigStub = sinon.stub(exportMarketplaceApps, 'getAppManifestAndAppConfig').resolves();
+
+      await exportMarketplaceApps.exportApps();
+
+      expect(exportMarketplaceApps.query.app_uids).to.equal('app-1,app-2');
+      expect(getStackSpecificAppsStub.called).to.be.true;
+      expect(getAppManifestAndAppConfigStub.called).to.be.true;
+
+      getStackSpecificAppsStub.restore();
+      getAppManifestAndAppConfigStub.restore();
+    });
+
+    it('should process external query with installation_uids', async () => {
+      mockExportConfig.query = {
+        modules: {
+          'marketplace-apps': {
+            installation_uid: { $in: ['inst-1', 'inst-2'] }
+          }
+        }
+      };
+      exportMarketplaceApps.exportConfig = mockExportConfig;
+
+      const getStackSpecificAppsStub = sinon.stub(exportMarketplaceApps, 'getStackSpecificApps').resolves();
+      const getAppManifestAndAppConfigStub = sinon.stub(exportMarketplaceApps, 'getAppManifestAndAppConfig').resolves();
+
+      await exportMarketplaceApps.exportApps();
+
+      expect(exportMarketplaceApps.query.installation_uids).to.equal('inst-1,inst-2');
+
+      getStackSpecificAppsStub.restore();
+      getAppManifestAndAppConfigStub.restore();
+    });
+
+    it('should encrypt app configurations when present', async () => {
+      exportMarketplaceApps.installedApps = [
+        {
+          uid: 'inst-1',
+          manifest: { uid: 'app-1', name: 'Test App' },
+          configuration: { key: 'value' }
+        }
+      ];
+
+      const getStackSpecificAppsStub = sinon.stub(exportMarketplaceApps, 'getStackSpecificApps').resolves();
+      const getAppManifestAndAppConfigStub = sinon.stub(exportMarketplaceApps, 'getAppManifestAndAppConfig').resolves();
+
+      await exportMarketplaceApps.exportApps();
+
+      expect(exportMarketplaceApps.nodeCrypto).to.exist;
+      expect(mockNodeCrypto.encrypt.called).to.be.true;
+      expect(exportMarketplaceApps.installedApps[0].configuration).to.equal('encrypted-data');
+
+      getStackSpecificAppsStub.restore();
+      getAppManifestAndAppConfigStub.restore();
+    });
+
+    it('should not initialize NodeCrypto when no configurations exist', async () => {
+      exportMarketplaceApps.installedApps = [
+        {
+          uid: 'inst-1',
+          manifest: { uid: 'app-1', name: 'Test App' }
+          // No configuration property at all
+        }
+      ];
+
+      const getStackSpecificAppsStub = sinon.stub(exportMarketplaceApps, 'getStackSpecificApps').resolves();
+      const getAppManifestAndAppConfigStub = sinon.stub(exportMarketplaceApps, 'getAppManifestAndAppConfig').resolves();
+
+      await exportMarketplaceApps.exportApps();
+
+      // NodeCrypto should not be initialized if no configurations
+      expect((marketplaceAppHelper.createNodeCryptoInstance as sinon.SinonStub).called).to.be.false;
+
+      getStackSpecificAppsStub.restore();
+      getAppManifestAndAppConfigStub.restore();
+    });
+  });
+
+  describe('getStackSpecificApps() method', () => {
+    beforeEach(() => {
+      exportMarketplaceApps.appSdk = mockAppSdk;
+      exportMarketplaceApps.exportConfig.org_uid = 'test-org-uid';
+      exportMarketplaceApps.query = { target_uids: 'test-stack-uid' };
+    });
+
+    it('should fetch and process stack-specific apps', async () => {
+      const apps = [
+        {
+          uid: 'installation-1',
+          manifest: { uid: 'app-1', name: 'Test App 1' },
+          someFunction: () => {}
         },
-      );
-
-    fancy
-      .stub(logUtil, 'log', () => {})
-      .stub(FsUtility.prototype, 'writeFile', () => {})
-      .stub(ExportMarketplaceApps.prototype, 'getAppConfigurations', () => {})
-      .stub(ExportMarketplaceApps.prototype, 'getPrivateAppsManifest', () => {})
-      .spy(logUtil, 'log')
-      .spy(FsUtility.prototype, 'writeFile')
-      .spy(ExportMarketplaceApps.prototype, 'getAppConfigurations')
-      .spy(ExportMarketplaceApps.prototype, 'getPrivateAppsManifest')
-      .it('should get all private apps manifest and all apps configurations', async ({ spy }) => {
-        class MPApps extends ExportMarketplaceApps {
-          public installedApps = [
-            {
-              uid: 'UID',
-              name: 'TEST-APP',
-              manifest: { uid: 'UID', visibility: 'private' },
-            },
-          ] as unknown as Installation[];
-          public marketplaceAppConfig: MarketplaceAppsConfig;
+        {
+          uid: 'installation-2',
+          manifest: { uid: 'app-2', name: 'Test App 2' },
+          someFunction: () => {}
         }
-        const marketplaceApps = new MPApps({ exportConfig });
-        marketplaceApps.marketplaceAppPath = './';
-        marketplaceApps.marketplaceAppConfig.fileName = 'mp-apps.json';
-        await marketplaceApps.getAppManifestAndAppConfig();
+      ];
 
-        expect(spy.log.callCount).to.be.equals(1);
-        expect(spy.writeFile.callCount).to.be.equals(1);
-        expect(spy.getPrivateAppsManifest.callCount).to.be.equals(1);
-        expect(spy.getAppConfigurations.callCount).to.be.equals(1);
-        expect(
-          spy.log.calledWith(
-            marketplaceApps.exportConfig,
-            'All the marketplace apps have been exported successfully',
-            'info',
-          ),
-        ).to.be.true;
+      mockAppSdk.marketplace.returns({
+        installation: sinon.stub().returns({
+          fetchAll: sinon.stub().resolves({
+            items: apps,
+            count: 2
+          })
+        })
       });
+
+      await exportMarketplaceApps.getStackSpecificApps();
+
+      expect(exportMarketplaceApps.installedApps.length).to.equal(2);
+      expect(exportMarketplaceApps.installedApps[0].uid).to.equal('installation-1');
+      expect(exportMarketplaceApps.installedApps[0].someFunction).to.be.undefined; // Functions should be removed
+    });
+
+    it('should call recursively when more apps exist', async () => {
+      let callCount = 0;
+      mockAppSdk.marketplace.returns({
+        installation: sinon.stub().returns({
+          fetchAll: sinon.stub().callsFake(() => {
+            callCount++;
+            if (callCount === 1) {
+              return Promise.resolve({
+                items: Array(50).fill({ uid: 'app', manifest: {} }),
+                count: 100
+              });
+            } else {
+              return Promise.resolve({
+                items: Array(50).fill({ uid: 'app2', manifest: {} }),
+                count: 100
+              });
+            }
+          })
+        })
+      });
+
+      await exportMarketplaceApps.getStackSpecificApps();
+
+      expect(callCount).to.be.greaterThan(1);
+      expect(exportMarketplaceApps.installedApps.length).to.equal(100);
+    });
+
+    it('should stop recursion when all apps are fetched', async () => {
+      let callCount = 0;
+      mockAppSdk.marketplace.returns({
+        installation: sinon.stub().returns({
+          fetchAll: sinon.stub().callsFake(() => {
+            callCount++;
+            return Promise.resolve({
+              items: Array(30).fill({ uid: 'app', manifest: {} }),
+              count: 30
+            });
+          })
+        })
+      });
+
+      await exportMarketplaceApps.getStackSpecificApps();
+
+      // Should only be called once since count (30) - (skip + 50) = -20, which is not > 0
+      expect(callCount).to.equal(1);
+    });
+
+    it('should handle API errors gracefully', async () => {
+      mockAppSdk.marketplace.returns({
+        installation: sinon.stub().returns({
+          fetchAll: sinon.stub().rejects(new Error('API Error'))
+        })
+      });
+
+      await exportMarketplaceApps.getStackSpecificApps();
+
+      // Should complete without throwing
+      expect(exportMarketplaceApps.installedApps).to.exist;
+    });
+
+    it('should handle empty apps response', async () => {
+      mockAppSdk.marketplace.returns({
+        installation: sinon.stub().returns({
+          fetchAll: sinon.stub().resolves({
+            items: [],
+            count: 0
+          })
+        })
+      });
+
+      const initialLength = exportMarketplaceApps.installedApps.length;
+      await exportMarketplaceApps.getStackSpecificApps();
+
+      expect(exportMarketplaceApps.installedApps.length).to.equal(initialLength);
+    });
+
+    it('should remove function properties from apps', async () => {
+      const appWithFunction = {
+        uid: 'inst-1',
+        manifest: { uid: 'app-1' },
+        regularProperty: 'value',
+        functionProperty: () => {},
+        anotherFunction: function() {}
+      };
+
+      mockAppSdk.marketplace.returns({
+        installation: sinon.stub().returns({
+          fetchAll: sinon.stub().resolves({
+            items: [appWithFunction],
+            count: 1
+          })
+        })
+      });
+
+      await exportMarketplaceApps.getStackSpecificApps();
+
+      expect(exportMarketplaceApps.installedApps[0].regularProperty).to.equal('value');
+      expect(exportMarketplaceApps.installedApps[0].functionProperty).to.be.undefined;
+      expect(exportMarketplaceApps.installedApps[0].anotherFunction).to.be.undefined;
+    });
   });
 
-  describe('getStackSpecificApps method', () => {
-    fancy
-      .nock(`https://${host}`, (api) =>
-        api.get(`/installations?target_uids=STACK-UID&skip=0`).reply(200, {
-          count: 51,
-          data: [
-            {
-              uid: 'UID',
-              name: 'TEST-APP',
-              configuration: () => {},
-              fetch: () => {},
-              manifest: { visibility: 'private' },
-            },
-          ],
-        }),
-      )
-      .nock(`https://${host}`, (api) =>
-        api.get(`/installations?target_uids=STACK-UID&skip=50`).reply(200, {
-          count: 51,
-          data: [
-            {
-              uid: 'UID',
-              name: 'TEST-APP-2',
-              configuration: () => {},
-              fetch: () => {},
-              manifest: { visibility: 'private' },
-            },
-          ],
-        }),
-      )
-      .it('should paginate and get all the apps', async () => {
-        class MPApps extends ExportMarketplaceApps {
-          public installedApps: Installation[] = [];
+  describe('getAppManifestAndAppConfig() method', () => {
+    beforeEach(() => {
+      exportMarketplaceApps.appSdk = mockAppSdk;
+      exportMarketplaceApps.exportConfig.org_uid = 'test-org-uid';
+      exportMarketplaceApps.marketplaceAppPath = '/test/path';
+    });
+
+    it('should log NOT_FOUND when no apps exist', async () => {
+      exportMarketplaceApps.installedApps = [];
+
+      await exportMarketplaceApps.getAppManifestAndAppConfig();
+
+      const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
+      expect(writeFileStub.called).to.be.false;
+    });
+
+    it('should process private app manifests', async () => {
+      exportMarketplaceApps.installedApps = [
+        {
+          uid: 'inst-1',
+          manifest: {
+            uid: 'app-1',
+            name: 'Private App',
+            visibility: 'private'
+          }
         }
-        const marketplaceApps = new MPApps({ exportConfig });
-        marketplaceApps.exportConfig.org_uid = 'ORG-UID';
-        marketplaceApps.exportConfig.source_stack = 'STACK-UID';
-        marketplaceApps.appSdk = await marketplaceSDKClient({ host });
-        await marketplaceApps.getStackSpecificApps();
+      ];
 
-        expect(marketplaceApps.installedApps.length).to.be.equals(2);
-      });
+      const getPrivateAppsManifestStub = sinon.stub(exportMarketplaceApps, 'getPrivateAppsManifest').resolves();
+      const getAppConfigurationsStub = sinon.stub(exportMarketplaceApps, 'getAppConfigurations').resolves();
+      const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
 
-    fancy
-      .stub(logUtil, 'log', () => {})
-      .spy(logUtil, 'log')
-      .nock(`https://${host}`, (api) => api.get(`/installations?target_uids=STACK-UID&skip=0`).reply(400))
-      .it('should catch and log api error', async ({ spy }) => {
-        class MPApps extends ExportMarketplaceApps {
-          public installedApps: Installation[] = [];
+      await exportMarketplaceApps.getAppManifestAndAppConfig();
+
+      expect(getPrivateAppsManifestStub.called).to.be.true;
+      expect(getAppConfigurationsStub.called).to.be.true;
+      expect(writeFileStub.called).to.be.true;
+
+      getPrivateAppsManifestStub.restore();
+      getAppConfigurationsStub.restore();
+    });
+
+    it('should skip private app manifest processing for public apps', async () => {
+      exportMarketplaceApps.installedApps = [
+        {
+          uid: 'inst-1',
+          manifest: {
+            uid: 'app-1',
+            name: 'Public App',
+            visibility: 'public'
+          }
         }
-        const marketplaceApps = new MPApps({ exportConfig });
-        marketplaceApps.exportConfig.org_uid = 'ORG-UID';
-        marketplaceApps.exportConfig.source_stack = 'STACK-UID';
-        marketplaceApps.appSdk = await marketplaceSDKClient({ host });
-        await marketplaceApps.getStackSpecificApps();
+      ];
 
-        expect(spy.log.callCount).to.be.equals(2);
-      });
+      const getPrivateAppsManifestStub = sinon.stub(exportMarketplaceApps, 'getPrivateAppsManifest').resolves();
+      const getAppConfigurationsStub = sinon.stub(exportMarketplaceApps, 'getAppConfigurations').resolves();
+
+      await exportMarketplaceApps.getAppManifestAndAppConfig();
+
+      // Should not be called for public apps
+      expect(getPrivateAppsManifestStub.called).to.be.false;
+      expect(getAppConfigurationsStub.called).to.be.true;
+
+      getPrivateAppsManifestStub.restore();
+      getAppConfigurationsStub.restore();
+    });
+
+    it('should write file with correct path and data', async () => {
+      exportMarketplaceApps.installedApps = [
+        {
+          uid: 'inst-1',
+          manifest: { uid: 'app-1', name: 'Test App', visibility: 'public' }
+        }
+      ];
+
+      const getAppConfigurationsStub = sinon.stub(exportMarketplaceApps, 'getAppConfigurations').resolves();
+      const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
+
+      await exportMarketplaceApps.getAppManifestAndAppConfig();
+
+      expect(writeFileStub.called).to.be.true;
+      const writeFileArgs = writeFileStub.firstCall.args;
+      expect(writeFileArgs[0]).to.include('marketplace-apps.json');
+      expect(writeFileArgs[1]).to.equal(exportMarketplaceApps.installedApps);
+
+      getAppConfigurationsStub.restore();
+    });
   });
 
-  describe('getPrivateAppsManifest method', () => {
-    fancy
-      .nock(`https://${host}`, (api) =>
-        api
-          .get(`/manifests/UID?include_oauth=true`)
-          .reply(200, { data: { uid: 'UID', visibility: 'private', config: 'test' } }),
-      )
-      .it("should log info 'No marketplace apps found'", async () => {
-        class MPApps extends ExportMarketplaceApps {
-          public installedApps = [
-            {
-              uid: 'UID',
-              name: 'TEST-APP',
-              configuration: { id: 'test' },
-              manifest: { uid: 'UID', visibility: 'private' },
-            },
-          ] as unknown as Installation[];
+  describe('getPrivateAppsManifest() method', () => {
+    beforeEach(() => {
+      exportMarketplaceApps.appSdk = mockAppSdk;
+      exportMarketplaceApps.exportConfig.org_uid = 'test-org-uid';
+      exportMarketplaceApps.installedApps = [
+        {
+          uid: 'inst-1',
+          manifest: {
+            uid: 'app-1',
+            name: 'Private App',
+            visibility: 'private'
+          }
         }
-        const marketplaceApps = new MPApps({ exportConfig });
-        marketplaceApps.exportConfig.org_uid = 'ORG-UID';
-        marketplaceApps.appSdk = await marketplaceSDKClient({ host });
-        await marketplaceApps.getPrivateAppsManifest(0, { manifest: { uid: 'UID' } } as unknown as Installation);
+      ];
+    });
 
-        expect(marketplaceApps.installedApps[0].manifest.config).to.be.include('test');
+    it('should fetch and update private app manifest', async () => {
+      const fetchedManifest = {
+        uid: 'app-1',
+        name: 'Private App Updated',
+        visibility: 'private',
+        oauth: { client_id: 'test-client-id' }
+      };
+
+      mockAppSdk.marketplace.returns({
+        app: sinon.stub().returns({
+          fetch: sinon.stub().resolves(fetchedManifest)
+        })
       });
 
-    fancy
-      .stub(logUtil, 'log', () => {})
-      .spy(logUtil, 'log')
-      .nock(`https://${host}`, (api) => api.get(`/manifests/UID?include_oauth=true`).reply(400))
-      .it('should handle API/SDK errors and log them', async ({ spy }) => {
-        class MPApps extends ExportMarketplaceApps {
-          public installedApps = [
-            {
-              uid: 'UID',
-              name: 'TEST-APP',
-              configuration: { id: 'test' },
-              manifest: { uid: 'UID', visibility: 'private' },
-            },
-          ] as unknown as Installation[];
-        }
-        const marketplaceApps = new MPApps({ exportConfig });
-        marketplaceApps.exportConfig.org_uid = 'ORG-UID';
-        marketplaceApps.appSdk = await marketplaceSDKClient({ host });
-        await marketplaceApps.getPrivateAppsManifest(0, { manifest: { uid: 'UID' } } as unknown as Installation);
+      await exportMarketplaceApps.getPrivateAppsManifest(0, exportMarketplaceApps.installedApps[0]);
 
-        expect(spy.log.callCount).to.be.equals(1);
+      expect(exportMarketplaceApps.installedApps[0].manifest).to.deep.equal(fetchedManifest);
+    });
+
+    it('should handle API errors gracefully', async () => {
+      mockAppSdk.marketplace.returns({
+        app: sinon.stub().returns({
+          fetch: sinon.stub().rejects(new Error('API Error'))
+        })
       });
+
+      const originalManifest = exportMarketplaceApps.installedApps[0].manifest;
+
+      await exportMarketplaceApps.getPrivateAppsManifest(0, exportMarketplaceApps.installedApps[0]);
+
+      // Manifest should remain unchanged on error
+      expect(exportMarketplaceApps.installedApps[0].manifest).to.equal(originalManifest);
+    });
+
+    it('should fetch manifest with include_oauth option', async () => {
+      const fetchStub = sinon.stub().resolves({ uid: 'app-1', name: 'Private App' });
+      mockAppSdk.marketplace.returns({
+        app: sinon.stub().returns({
+          fetch: fetchStub
+        })
+      });
+
+      await exportMarketplaceApps.getPrivateAppsManifest(0, exportMarketplaceApps.installedApps[0]);
+
+      expect(fetchStub.called).to.be.true;
+      expect(fetchStub.firstCall.args[0]).to.deep.equal({ include_oauth: true });
+    });
   });
 
-  describe('getAppConfigurations method', () => {
-    fancy
-      .stub(logUtil, 'log', () => {})
-      .stub(appUtility, 'createNodeCryptoInstance', () => ({ encrypt: (val: any) => val }))
-      .nock(`https://${host}`, (api) =>
-        api
-          .get(`/installations/UID/installationData`)
-          .reply(200, { data: { uid: 'UID', visibility: 'private', server_configuration: 'test-config' } }),
-      )
-      .it('should get all apps installationData', async () => {
-        class MPApps extends ExportMarketplaceApps {
-          public installedApps = [
-            {
-              uid: 'UID',
-              name: 'TEST-APP',
-              configuration: { id: 'test' },
-              manifest: { uid: 'UID', visibility: 'private' },
-            },
-          ] as unknown as Installation[];
+  describe('getAppConfigurations() method', () => {
+    beforeEach(() => {
+      exportMarketplaceApps.appSdk = mockAppSdk;
+      exportMarketplaceApps.exportConfig.org_uid = 'test-org-uid';
+      exportMarketplaceApps.nodeCrypto = mockNodeCrypto;
+      exportMarketplaceApps.installedApps = [
+        {
+          uid: 'inst-1',
+          manifest: {
+            uid: 'app-1',
+            name: 'Test App'
+          }
         }
-        const marketplaceApps = new MPApps({ exportConfig });
-        marketplaceApps.exportConfig.org_uid = 'ORG-UID';
-        marketplaceApps.appSdk = await marketplaceSDKClient({ host });
-        await marketplaceApps.getAppConfigurations(0, { uid: 'UID', manifest: { name: 'TEST-APP' } } as unknown as App);
+      ];
+    });
 
-        expect(marketplaceApps.installedApps[0].server_configuration).to.be.include('test-config');
-      });
-
-    fancy
-      .stub(logUtil, 'log', () => {})
-      .stub(appUtility, 'createNodeCryptoInstance', () => ({ encrypt: (val: any) => val }))
-      .spy(logUtil, 'log')
-      .nock(`https://${host}`, (api) =>
-        api
-          .get(`/installations/UID/installationData`)
-          .reply(200, { data: { uid: 'UID', visibility: 'private', server_configuration: '' } }),
-      )
-      .it('should skip encryption and log success message if server_config is empty', async ({ spy }) => {
-        class MPApps extends ExportMarketplaceApps {
-          public installedApps = [
-            {
-              uid: 'UID',
-              name: 'TEST-APP',
-              configuration: { id: 'test' },
-              manifest: { name: 'TEST-APP', uid: 'UID', visibility: 'private' },
-            },
-          ] as unknown as Installation[];
+    it('should fetch and encrypt app configuration', async () => {
+      const installationData = {
+        data: {
+          configuration: { key: 'value' }
         }
-        const marketplaceApps = new MPApps({ exportConfig });
-        marketplaceApps.exportConfig.org_uid = 'ORG-UID';
-        marketplaceApps.appSdk = await marketplaceSDKClient({ host });
-        await marketplaceApps.getAppConfigurations(0, { uid: 'UID', manifest: { name: 'TEST-APP' } } as unknown as App);
+      };
 
-        expect(spy.log.calledWith(marketplaceApps.exportConfig, 'Exported TEST-APP app', 'success')).to.be.true;
+      mockAppSdk.marketplace.returns({
+        installation: sinon.stub().returns({
+          installationData: sinon.stub().resolves(installationData)
+        })
       });
 
-    fancy
-      .stub(logUtil, 'log', () => {})
-      .spy(logUtil, 'log')
-      .nock(`https://${host}`, (api) =>
-        api.get(`/installations/UID/installationData`).reply(200, { error: 'API is broken' }),
-      )
-      .it('should log error message if no config received from API/SDK', async ({ spy }) => {
-        class MPApps extends ExportMarketplaceApps {
-          public installedApps = [
-            {
-              uid: 'UID',
-              name: 'TEST-APP',
-              configuration: { id: 'test' },
-              manifest: { uid: 'UID', visibility: 'private' },
-            },
-          ] as unknown as Installation[];
+      await exportMarketplaceApps.getAppConfigurations(0, exportMarketplaceApps.installedApps[0]);
+
+      expect(exportMarketplaceApps.installedApps[0].configuration).to.equal('encrypted-data');
+      expect(mockNodeCrypto.encrypt.called).to.be.true;
+    });
+
+    it('should fetch and encrypt server configuration', async () => {
+      const installationData = {
+        data: {
+          server_configuration: { secret: 'value' }
         }
-        const marketplaceApps = new MPApps({ exportConfig });
-        marketplaceApps.exportConfig.org_uid = 'ORG-UID';
-        marketplaceApps.appSdk = await marketplaceSDKClient({ host });
-        await marketplaceApps.getAppConfigurations(0, { uid: 'UID', manifest: { name: 'TEST-APP' } } as unknown as App);
+      };
 
-        expect(spy.log.calledWith(marketplaceApps.exportConfig, 'API is broken', 'error')).to.be.true;
+      mockAppSdk.marketplace.returns({
+        installation: sinon.stub().returns({
+          installationData: sinon.stub().resolves(installationData)
+        })
       });
 
-    fancy
-      .stub(logUtil, 'log', () => {})
-      .spy(logUtil, 'log')
-      .nock(`https://${host}`, (api) =>
-        api.get(`/installations/UID/installationData`).reply(500, { error: 'API is broken' }),
-      )
-      .it('should catch API/SDK error and log', async ({ spy }) => {
-        const marketplaceApps = new ExportMarketplaceApps({ exportConfig });
-        marketplaceApps.exportConfig.org_uid = 'ORG-UID';
-        marketplaceApps.appSdk = await marketplaceSDKClient({ host });
-        await marketplaceApps.getAppConfigurations(0, {
-          uid: 'UID',
-          manifest: { name: 'TEST-APP' },
-        } as unknown as Installation);
+      await exportMarketplaceApps.getAppConfigurations(0, exportMarketplaceApps.installedApps[0]);
 
-        const [, errorObj]: any = spy.log.args[spy.log.args.length - 1];
-        expect(errorObj.error).to.be.include('API is broken');
+      expect(exportMarketplaceApps.installedApps[0].server_configuration).to.equal('encrypted-data');
+      expect(mockNodeCrypto.encrypt.called).to.be.true;
+    });
+
+    it('should initialize NodeCrypto if not already initialized', async () => {
+      exportMarketplaceApps.nodeCrypto = undefined;
+      const installationData = {
+        data: {
+          configuration: { key: 'value' }
+        }
+      };
+
+      mockAppSdk.marketplace.returns({
+        installation: sinon.stub().returns({
+          installationData: sinon.stub().resolves(installationData)
+        })
       });
+
+      await exportMarketplaceApps.getAppConfigurations(0, exportMarketplaceApps.installedApps[0]);
+
+      expect((marketplaceAppHelper.createNodeCryptoInstance as sinon.SinonStub).called).to.be.true;
+      expect(exportMarketplaceApps.nodeCrypto).to.exist;
+    });
+
+    it('should handle empty configuration gracefully', async () => {
+      const installationData = {
+        data: {
+          configuration: null
+        } as any
+      };
+
+      mockAppSdk.marketplace.returns({
+        installation: sinon.stub().returns({
+          installationData: sinon.stub().resolves(installationData)
+        })
+      });
+
+      await exportMarketplaceApps.getAppConfigurations(0, exportMarketplaceApps.installedApps[0]);
+
+      expect(mockNodeCrypto.encrypt.called).to.be.false;
+    });
+
+    it('should handle API errors gracefully', async () => {
+      mockAppSdk.marketplace.returns({
+        installation: sinon.stub().returns({
+          installationData: sinon.stub().rejects(new Error('API Error'))
+        })
+      });
+
+      await exportMarketplaceApps.getAppConfigurations(0, exportMarketplaceApps.installedApps[0]);
+
+      // Should complete without throwing
+      expect(exportMarketplaceApps.installedApps[0]).to.exist;
+    });
+
+    it('should handle error in installation data response', async () => {
+      const installationData = {
+        data: null,
+        error: { message: 'Error fetching data' }
+      } as any;
+
+      mockAppSdk.marketplace.returns({
+        installation: sinon.stub().returns({
+          installationData: sinon.stub().resolves(installationData)
+        })
+      });
+
+      await exportMarketplaceApps.getAppConfigurations(0, exportMarketplaceApps.installedApps[0]);
+
+      // Should handle error gracefully
+      expect(exportMarketplaceApps.installedApps[0]).to.exist;
+    });
+
+    it('should use app name when available, otherwise use uid', async () => {
+      exportMarketplaceApps.installedApps[0].manifest.name = 'Test App Name';
+      const installationData = {
+        data: {
+          configuration: { key: 'value' }
+        }
+      };
+
+      mockAppSdk.marketplace.returns({
+        installation: sinon.stub().returns({
+          installationData: sinon.stub().resolves(installationData)
+        })
+      });
+
+      await exportMarketplaceApps.getAppConfigurations(0, exportMarketplaceApps.installedApps[0]);
+
+      // Should process successfully with app name
+      expect(exportMarketplaceApps.installedApps[0].configuration).to.exist;
+    });
+
+    it('should use app uid when name is not available', async () => {
+      exportMarketplaceApps.installedApps[0].manifest.name = undefined;
+      exportMarketplaceApps.installedApps[0].manifest.uid = 'app-uid-123';
+      const installationData = {
+        data: {
+          configuration: { key: 'value' }
+        }
+      };
+
+      mockAppSdk.marketplace.returns({
+        installation: sinon.stub().returns({
+          installationData: sinon.stub().resolves(installationData)
+        })
+      });
+
+      await exportMarketplaceApps.getAppConfigurations(0, exportMarketplaceApps.installedApps[0]);
+
+      // Should process successfully with app uid
+      expect(exportMarketplaceApps.installedApps[0].configuration).to.exist;
+    });
   });
 });
+

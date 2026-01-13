@@ -150,4 +150,9 @@ export type TaxonomyQueryParams = {
   limit: number;
   skip: number;
   depth?: number;
+  locale?: string;
 };
+
+export interface Context {
+  module: string;
+}

@@ -1,6 +1,6 @@
 import config from '../config';
 import { AnyProperty } from './common';
-import { ConfigType, LogFn } from './utils';
+import { ConfigType } from './utils';
 
 type ContentTypeSchemaType =
   | ReferenceFieldDataType
@@ -23,7 +23,6 @@ type ContentTypeStruct = {
 };
 
 type ModuleConstructorParam = {
-  log: LogFn;
   fix?: boolean;
   config: ConfigType;
   moduleName?: keyof typeof config.moduleConfig;

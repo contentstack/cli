@@ -35,6 +35,7 @@ class UpdateAndPublishCommand extends Command {
           host: this.cmaHost,
           cda: this.cdaHost,
           branch: addFieldsFlags.branch,
+          delayMs: updatedFlags.delayMs,
         };
         if (updatedFlags.alias) {
           try {
@@ -49,7 +50,7 @@ class UpdateAndPublishCommand extends Command {
         } else if (updatedFlags['stack-api-key']) {
           config.stackApiKey = updatedFlags['stack-api-key'];
         } else {
-          this.error('Please use `--alias` or `--stack-api-key` to proceed.', { exit: 2 });
+          this.error('Use the `--alias` or `--stack-api-key` flag to proceed.', { exit: 2 });
         }
         updatedFlags.bulkPublish = updatedFlags.bulkPublish === 'false' ? false : true;
 

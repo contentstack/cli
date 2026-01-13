@@ -23,13 +23,23 @@ const cwd = process.env.CS_CLI_CONFIG_PATH;
 
 class Config {
   private config: Conf;
+  private inMemoryStore: Map<string, any> = new Map();
+  private isPrepackMode: boolean;
 
   constructor() {
+    this.isPrepackMode = process.env.NODE_ENV === 'PREPACK_MODE';
     this.init();
-    this.importOldConfig();
+    if (!this.isPrepackMode) {
+      this.importOldConfig();
+    }
   }
 
   init() {
+    // Skip file-based config during prepack to prevent race conditions
+    if (this.isPrepackMode) {
+      // Initialize with empty in-memory store for prepack
+      return;
+    }
     return ENCRYPT_CONF === true ? this.getEncryptedConfig() : this.getDecryptedConfig();
   }
 
@@ -42,7 +52,7 @@ class Config {
           this.removeOldConfigStoreFile();
         }
       } catch (error) {
-        console.log('No data to be imported from Old config file');
+        console.log('No data to import from old configuration file.');
       }
 
       this.set(OLD_CONFIG_BACKUP_FLAG, true);
@@ -204,20 +214,35 @@ class Config {
   }
 
   get(key): string | any {
+    if (this.isPrepackMode) {
+      return this.inMemoryStore.get(key);
+    }
     return this.config?.get(key);
   }
 
   set(key, value) {
+    if (this.isPrepackMode) {
+      this.inMemoryStore.set(key, value);
+      return this;
+    }
     this.config?.set(key, value);
     return this.config;
   }
 
   delete(key) {
+    if (this.isPrepackMode) {
+      this.inMemoryStore.delete(key);
+      return this;
+    }
     this.config?.delete(key);
     return this.config;
   }
 
   clear() {
+    if (this.isPrepackMode) {
+      this.inMemoryStore.clear();
+      return;
+    }
     this.config?.clear();
   }
 }

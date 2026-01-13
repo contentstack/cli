@@ -4,14 +4,14 @@ import { normalize } from 'path';
 import * as winston from 'winston';
 import { levelColors, logLevels } from '../constants/logging';
 import { LoggerConfig, LogLevel, LogType } from '../interfaces/index';
+import { getSessionLogPath } from './session-path';
 
 export default class Logger {
   private loggers: Record<string, winston.Logger>;
   private config: LoggerConfig;
 
-  private sensitiveKeys = [
+  private consoleSensitiveKeys = [
     /authtoken/i,
-    /^email$/i,
     /^password$/i,
     /secret/i,
     /token/i,
@@ -21,6 +21,8 @@ export default class Logger {
     /orgid/i,
     /stack/i,
   ];
+
+  private logSensitiveKeys = [/authtoken/i, /secret/i, /token/i, /management[-._]?token/i, /delivery[-._]?token/i];
 
   constructor(config: LoggerConfig) {
     this.config = config;
@@ -35,16 +37,18 @@ export default class Logger {
   }
 
   getLoggerInstance(level: 'error' | 'info' | 'warn' | 'debug' | 'hidden' = 'info'): winston.Logger {
-    const filePath = normalize(process.env.CS_CLI_LOG_PATH || this.config.basePath).replace(/^(\.\.(\/|\\|$))+/, '');
+    // Use session-based path for date-organized logging
+    const sessionPath = getSessionLogPath();
+    const filePath = normalize(sessionPath).replace(/^(\.\.(\/|\\|$))+/, '');
     return this.createLogger(level === 'hidden' ? 'error' : level, filePath);
   }
 
   private get loggerOptions(): winston.transports.FileTransportOptions {
     return {
       filename: '',
-      maxFiles: 20,
+      maxFiles: 50,
       tailable: true,
-      maxsize: 1000000,
+      maxsize: 5000000, // 5MB
     };
   }
 
@@ -56,13 +60,21 @@ export default class Logger {
         new winston.transports.File({
           ...this.loggerOptions,
           filename: `${filePath}/${level}.log`,
-          format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.printf((info) => {
+              // Apply minimal redaction for files (debugging info preserved)
+              const redactedInfo = this.redact(info, false);
+              return JSON.stringify(redactedInfo);
+            }),
+          ),
         }),
         new winston.transports.Console({
           format: winston.format.combine(
             winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
             winston.format.printf((info) => {
-              const redactedInfo = this.redact(info);
+              // Apply full redaction for console (user-facing)
+              const redactedInfo = this.redact(info, true);
               const colorizer = winston.format.colorize();
               const levelText = redactedInfo.level.toUpperCase();
               const { timestamp, message } = redactedInfo;
@@ -74,25 +86,31 @@ export default class Logger {
     });
   }
 
-  private isSensitiveKey(keyStr: string): boolean {
-    return typeof keyStr === 'string' ? this.sensitiveKeys.some((regex) => regex.test(keyStr)) : false;
+  private isSensitiveKey(keyStr: string, consoleMode: boolean = false): boolean {
+    if (keyStr && typeof keyStr === 'string') {
+      const keysToCheck = consoleMode ? this.consoleSensitiveKeys : this.logSensitiveKeys;
+      return keysToCheck.some((regex) => regex.test(keyStr));
+    }
+    return false;
   }
 
-  private redactObject(obj: any): void {
+  private redactObject(obj: any, consoleMode: boolean = false) {
     const self = this;
     traverse(obj).forEach(function redactor() {
-      if (this.key && self.isSensitiveKey(this.key)) {
+      if (this.key && self.isSensitiveKey(this.key, consoleMode)) {
         this.update('[REDACTED]');
       }
     });
+
+    return obj;
   }
 
-  private redact(info: any): any {
+  private redact(info: any, consoleMode: boolean = false): any {
     try {
       const copy = klona(info);
-      this.redactObject(copy);
+      this.redactObject(copy, consoleMode);
       const splat = copy[Symbol.for('splat')];
-      if (splat) this.redactObject(splat);
+      if (splat) this.redactObject(splat, consoleMode);
       return copy;
     } catch {
       return info;
@@ -100,6 +118,11 @@ export default class Logger {
   }
 
   private shouldLog(level: LogType, target: 'console' | 'file'): boolean {
+    // If console logging is disabled, don't log to console
+    if (target === 'console' && this.config.consoleLoggingEnabled === false) {
+      return false;
+    }
+
     const configLevel = target === 'console' ? this.config.consoleLogLevel : this.config.logLevel;
     const minLevel = configLevel ? logLevels[configLevel] : 2;
     return logLevels[level] <= minLevel;
@@ -162,7 +185,7 @@ export default class Logger {
     if (this.shouldLog('error', 'file')) {
       this.loggers.error.error(logPayload);
     }
-    
+
     // For console, use debug level if hidden, otherwise error level
     const consoleLevel: LogType = params.hidden ? 'debug' : 'error';
     if (this.shouldLog(consoleLevel, 'console')) {

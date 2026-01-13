@@ -1,0 +1,191 @@
+{
+  "mockMarketplaceApps": [
+    {
+      "uid": "app-1",
+      "status": "active",
+      "manifest": {
+        "uid": "manifest-1",
+        "name": "Test App 1",
+        "description": "Test Description",
+        "organization_uid": "org-1",
+        "target_type": "stack",
+        "visibility": "public",
+        "ui_location": {
+          "signed": false,
+          "base_url": "https://test.com",
+          "locations": []
+        }
+      },
+      "configuration": {},
+      "server_configuration": {},
+      "target": { "type": "stack", "uid": "stack-1" },
+      "ui_location": {
+        "signed": false,
+        "base_url": "https://test.com",
+        "locations": []
+      }
+    }
+  ],
+  "mockPrivateApps": [
+    {
+      "uid": "private-app-1",
+      "status": "active",
+      "manifest": {
+        "uid": "manifest-1",
+        "name": "Private App 1",
+        "description": "Test Description",
+        "organization_uid": "org-1",
+        "target_type": "stack",
+        "visibility": "private",
+        "ui_location": {
+          "signed": false,
+          "base_url": "https://test.com",
+          "locations": []
+        }
+      },
+      "configuration": {},
+      "server_configuration": {},
+      "target": { "type": "stack", "uid": "stack-1" },
+      "ui_location": {
+        "signed": false,
+        "base_url": "https://test.com",
+        "locations": []
+      }
+    }
+  ],
+  "mockInstalledApps": [
+    {
+      "uid": "installed-app-1",
+      "status": "active",
+      "manifest": {
+        "uid": "manifest-1",
+        "name": "Installed App 1",
+        "description": "Test Description",
+        "organization_uid": "org-1",
+        "target_type": "stack",
+        "visibility": "public",
+        "ui_location": {
+          "signed": false,
+          "base_url": "https://test.com",
+          "locations": [
+            {
+              "type": "cs.cm.stack.sidebar",
+              "meta": [
+                {
+                  "uid": "meta-1",
+                  "name": "Test Extension",
+                  "extension_uid": "new-extension-uid",
+                  "signed": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "configuration": {},
+      "server_configuration": {},
+      "target": { "type": "stack", "uid": "stack-1" },
+      "ui_location": {
+        "signed": false,
+        "base_url": "https://test.com",
+        "locations": [
+          {
+            "type": "cs.cm.stack.sidebar",
+            "meta": [
+              {
+                "uid": "meta-1",
+                "name": "Test Extension",
+                "extension_uid": "new-extension-uid",
+                "signed": false
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "mockManifest": {
+    "uid": "manifest-1",
+    "name": "Test App",
+    "description": "Test Description",
+    "organization_uid": "org-1",
+    "target_type": "stack",
+    "visibility": "private",
+    "ui_location": {
+      "signed": false,
+      "base_url": "https://test.com",
+      "locations": []
+    }
+  },
+  "mockAppWithConfig": {
+    "uid": "app-1",
+    "status": "active",
+    "manifest": {
+      "uid": "manifest-1",
+      "name": "Test App",
+      "description": "Test Description",
+      "organization_uid": "org-1",
+      "target_type": "stack",
+      "visibility": "public",
+      "ui_location": {
+        "signed": false,
+        "base_url": "https://test.com",
+        "locations": []
+      }
+    },
+    "configuration": { "encrypted": "data" },
+    "server_configuration": { "encrypted": "server-data" },
+    "target": { "type": "stack", "uid": "stack-1" },
+    "ui_location": {
+      "signed": false,
+      "base_url": "https://test.com",
+      "locations": []
+    },
+    "installation_uid": "installation-1"
+  },
+  "mockFolderPaths": {
+    "marketplaceAppsFolder": "/test/unit/import/modules/mock-data/dummy-backup/marketplace_apps",
+    "marketplaceAppsFile": "/test/unit/import/modules/mock-data/dummy-backup/marketplace_apps/marketplace_apps.json",
+    "mapperDirPath": "/test/unit/import/modules/mock-data/dummy-backup/mapper/marketplace_apps"
+  },
+  "mockConfig": {
+    "developerHubBaseUrl": "https://test-dev-hub.com",
+    "org_uid": "test-org-uid",
+    "authorisationType": "OAUTH",
+    "authenticationMethod": "OAUTH"
+  },
+  "mockSDKResponse": {
+    "marketplaceSDKClient": {
+      "host": "test-dev-hub.com",
+      "authenticated": true
+    },
+    "appSdk": {
+      "marketplace": {
+        "app": {
+          "create": "mock-create-function",
+          "install": "mock-install-function"
+        },
+        "installation": {
+          "fetch": "mock-fetch-function"
+        }
+      }
+    }
+  },
+  "mockMarketplaceSDK": {
+    "marketplace": {
+      "app": {
+        "create": "mock-create-function",
+        "install": "mock-install-function"
+      },
+      "installation": {
+        "fetch": "mock-fetch-function"
+      }
+    }
+  },
+  "mockFileSystem": {
+    "fileExists": true,
+    "readFile": "mock-file-content",
+    "makeDirectory": "mock-directory-created",
+    "writeFile": "mock-file-written"
+  }
+}

@@ -48,7 +48,7 @@ $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-export/1.18.0 darwin-arm64 node-v22.13.1
+@contentstack/cli-cm-export/1.22.2 darwin-arm64 node-v22.13.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -83,10 +83,11 @@ FLAGS
   -m, --module=<value>            [optional] Specific module name. If not specified, the export command will export all
                                   the modules to the stack. The available modules are assets, content-types, entries,
                                   environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                  workflows, custom-roles, and taxonomies.
+                                  workflows, custom-roles, taxonomies, and studio.
   -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
                                   of multiple content types, specify the IDs separated by spaces.
   -y, --yes                       [optional] Force override all Marketplace prompts.
+      --branch-alias=<value>      (Optional) The alias of the branch from which you want to export content.
       --secured-assets            [optional] Use this flag for assets that are secured.
 
 DESCRIPTION
@@ -132,10 +133,11 @@ FLAGS
   -m, --module=<value>            [optional] Specific module name. If not specified, the export command will export all
                                   the modules to the stack. The available modules are assets, content-types, entries,
                                   environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                  workflows, custom-roles, and taxonomies.
+                                  workflows, custom-roles, taxonomies, and studio.
   -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
                                   of multiple content types, specify the IDs separated by spaces.
   -y, --yes                       [optional] Force override all Marketplace prompts.
+      --branch-alias=<value>      (Optional) The alias of the branch from which you want to export content.
       --secured-assets            [optional] Use this flag for assets that are secured.
 
 DESCRIPTION

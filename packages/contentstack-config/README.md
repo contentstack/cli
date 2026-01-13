@@ -5,50 +5,46 @@ The config namespace contains all the commands that you will need to configure t
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
-
-- [@contentstack/cli-config](#contentstackcli-config)
-- [Usage](#usage)
-- [Commands](#commands)
+* [@contentstack/cli-config](#contentstackcli-config)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-config/1.15.0 darwin-arm64 node-v22.14.0
+@contentstack/cli-config/1.16.2 darwin-arm64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
-- [`csdx config:get:ea-header`](#csdx-configgetea-header)
-- [`csdx config:get:early-access-header`](#csdx-configgetearly-access-header)
-- [`csdx config:get:log`](#csdx-configgetlog)
-- [`csdx config:get:rate-limit`](#csdx-configgetrate-limit)
-- [`csdx config:get:region`](#csdx-configgetregion)
-- [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
-- [`csdx config:remove:ea-header`](#csdx-configremoveea-header)
-- [`csdx config:remove:early-access-header`](#csdx-configremoveearly-access-header)
-- [`csdx config:remove:rate-limit`](#csdx-configremoverate-limit)
-- [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
-- [`csdx config:set:ea-header`](#csdx-configsetea-header)
-- [`csdx config:set:early-access-header`](#csdx-configsetearly-access-header)
-- [`csdx config:set:log`](#csdx-configsetlog)
-- [`csdx config:set:rate-limit`](#csdx-configsetrate-limit)
-- [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
+* [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
+* [`csdx config:get:ea-header`](#csdx-configgetea-header)
+* [`csdx config:get:early-access-header`](#csdx-configgetearly-access-header)
+* [`csdx config:get:log`](#csdx-configgetlog)
+* [`csdx config:get:rate-limit`](#csdx-configgetrate-limit)
+* [`csdx config:get:region`](#csdx-configgetregion)
+* [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
+* [`csdx config:remove:ea-header`](#csdx-configremoveea-header)
+* [`csdx config:remove:early-access-header`](#csdx-configremoveearly-access-header)
+* [`csdx config:remove:rate-limit`](#csdx-configremoverate-limit)
+* [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
+* [`csdx config:set:ea-header`](#csdx-configsetea-header)
+* [`csdx config:set:early-access-header`](#csdx-configsetearly-access-header)
+* [`csdx config:set:log`](#csdx-configsetlog)
+* [`csdx config:set:rate-limit`](#csdx-configsetrate-limit)
+* [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 
 ## `csdx config:get:base-branch`
 
@@ -333,9 +329,10 @@ USAGE
   $ csdx config:set:log [--level debug|info|warn|error] [--path <value>] [--show-console-logs]
 
 FLAGS
-  --level=<option>          Set the log level for the CLI.
+  --level=<option>          Set the log level for the CLI. Defaults to "info" if not specified.
                             <options: debug|info|warn|error>
-  --path=<value>            Specify the file path where logs should be saved.
+  --path=<value>            Specify the directory path where logs should be saved. Supports both relative and absolute
+                            paths. Defaults to ~/.contentstack/logs if not specified.
   --[no-]show-console-logs  Enable console logging.
 
 DESCRIPTION
@@ -344,9 +341,19 @@ DESCRIPTION
 EXAMPLES
   $ csdx config:set:log
 
-  $ csdx config:set:log --level debug --path ./logs/app.log --show-console-logs
+  $ csdx config:set:log --level debug
+
+  $ csdx config:set:log --path ./logs
+
+  $ csdx config:set:log --level debug --path ./logs --show-console-logs
 
   $ csdx config:set:log --no-show-console-logs
+
+  $ csdx config:set:log --level warn --show-console-logs
+
+  $ csdx config:set:log --path ~/custom/logs
+
+  $ csdx config:set:log --path /var/log/contentstack
 ```
 
 _See code: [src/commands/config/set/log.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/log.ts)_
@@ -385,10 +392,10 @@ Set region for CLI
 ```
 USAGE
   $ csdx config:set:region [REGION] [-d <value> -m <value> --ui-host <value> -n <value>] [--developer-hub <value>]
-    [--personalize <value>] [--launch <value>]
+    [--personalize <value>] [--launch <value>] [--studio <value>]
 
 ARGUMENTS
-  REGION  Name for the region
+  [REGION]  Name for the region
 
 FLAGS
   -d, --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and
@@ -399,6 +406,7 @@ FLAGS
       --developer-hub=<value>  Custom host to set for Developer hub API
       --launch=<value>         Custom host to set for Launch API
       --personalize=<value>    Custom host to set for Personalize API
+      --studio=<value>         Custom host to set for Studio API
       --ui-host=<value>        Custom UI host to set for CLI, if this flag is added then cda, cma and name flags are
                                required
 
@@ -430,9 +438,10 @@ EXAMPLES
 
   $ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --launch <custom_launch_url>
 
-  $ csdx config:set:region --cda <custom_cda_host_url> --cma <custom_cma_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url> --launch <custom_launch_url> --personalize <custom_personalize_url>
+  $ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --studio <custom_studio_url>
+
+  $ csdx config:set:region --cda <custom_cda_host_url> --cma <custom_cma_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url> --launch <custom_launch_url> --personalize <custom_personalize_url> --studio <custom_studio_url>
 ```
 
 _See code: [src/commands/config/set/region.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/region.ts)_
-
 <!-- commandsstop -->

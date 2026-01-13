@@ -1,5 +1,11 @@
 import * as path from 'path';
-import { ContentstackClient, handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
+import {
+  ContentstackClient,
+  handleAndLogError,
+  messageHandler,
+  log,
+  getBranchFromAlias,
+} from '@contentstack/cli-utilities';
 import { setupBranches, setupExportDir, writeExportMetaFile } from '../utils';
 import startModuleExport from './modules';
 import startJSModuleExport from './modules-js';
@@ -21,14 +27,21 @@ class ModuleExporter {
 
   async start(): Promise<any> {
     // setup the branches
-    await setupBranches(this.exportConfig, this.stackAPIClient);
-    await setupExportDir(this.exportConfig);
-    // if branches available run it export by branches
-    if (this.exportConfig.branches) {
-      this.exportConfig.branchEnabled = true;
-      return this.exportByBranches();
+    try {
+      if (!this.exportConfig.branchName && this.exportConfig.branchAlias) {
+        this.exportConfig.branchName = await getBranchFromAlias(this.stackAPIClient, this.exportConfig.branchAlias);
+      }
+      await setupBranches(this.exportConfig, this.stackAPIClient);
+      await setupExportDir(this.exportConfig);
+      // if branches available run it export by branches
+      if (this.exportConfig.branches) {
+        this.exportConfig.branchEnabled = true;
+        return this.exportByBranches();
+      }
+      return this.export();
+    } catch (error) {
+      throw error;
     }
-    return this.export();
   }
 
   async exportByBranches(): Promise<void> {
@@ -38,7 +51,7 @@ class ModuleExporter {
         this.exportConfig.branchName = branch.uid;
         this.stackAPIClient.stackHeaders.branch = branch.uid;
         this.exportConfig.branchDir = path.join(this.exportConfig.exportDir, branch.uid);
-        log.info(`Exporting content from branch ${branch.uid}`, this.exportConfig.context);
+        log.info(`Exporting content from branch '${branch.uid}'...`, this.exportConfig.context);
         writeExportMetaFile(this.exportConfig, this.exportConfig.branchDir);
         await this.export();
         log.success(`The content of branch ${branch.uid} has been exported successfully!`, this.exportConfig.context);
@@ -63,7 +76,7 @@ class ModuleExporter {
   }
 
   async exportByModuleByName(moduleName: Modules) {
-    log.info(`Exporting module: ${moduleName}`, this.exportConfig.context);
+    log.info(`Exporting module: '${moduleName}'...`, this.exportConfig.context);
     // export the modules by name
     // calls the module runner which inturn calls the module itself
     let exportedModuleResponse;
@@ -98,9 +111,8 @@ class ModuleExporter {
     }
 
     if (!this.exportConfig.skipDependencies) {
-      const {
-        modules: { [moduleName]: { dependencies = [] } = {} },
-      } = this.exportConfig;
+      const moduleConfig = this.exportConfig.modules[moduleName as keyof typeof this.exportConfig.modules];
+      const dependencies = (moduleConfig as any)?.dependencies || [];
 
       if (dependencies.length > 0) {
         exportModules = exportModules.concat(dependencies);

@@ -1,7 +1,7 @@
 /* eslint-disable no-prototype-builtins */
 /*!
  * Contentstack Import
- * Copyright (c) 2024 Contentstack LLC
+ * Copyright (c) 2026 Contentstack LLC
  * MIT Licensed
  */
 import * as path from 'path';
@@ -106,90 +106,115 @@ export default class EntriesImport extends BaseClass {
   }
 
   async start(): Promise<any> {
-    try {      
-      this.cTs = fsUtil.readFile(path.join(this.cTsPath, 'schema.json')) as Record<string, unknown>[];
+    try {
+      this.cTs = (fsUtil.readFile(path.join(this.cTsPath, 'schema.json')) || []) as Record<string, unknown>[];
       if (!this.cTs || isEmpty(this.cTs)) {
-        log.info('No content type found', this.importConfig.context);
+        log.warn(
+          `No content types file found at ${path.join(this.cTsPath, 'schema.json')}. Skipping entries import.`,
+          this.importConfig.context,
+        );
         return;
       }
       log.debug(`Found ${this.cTs.length} content types for entry import`, this.importConfig.context);
-      
+
       this.installedExtensions = (
-        ((await fsUtil.readFile(this.marketplaceAppMapperPath)) as any) || { extension_uid: {} }
+        (fsUtil.readFile(this.marketplaceAppMapperPath) as any) || { extension_uid: {} }
       ).extension_uid;
-      log.debug('Loaded installed extensions for entry processing', this.importConfig.context);
+      log.debug('Loaded installed extensions for entry processing.', this.importConfig.context);
 
       this.assetUidMapper = (fsUtil.readFile(this.assetUidMapperPath) as Record<string, any>) || {};
       this.assetUrlMapper = (fsUtil.readFile(this.assetUrlMapperPath) as Record<string, any>) || {};
-      log.debug(`Loaded asset mappings - UIDs: ${Object.keys(this.assetUidMapper).length}, URLs: ${Object.keys(this.assetUrlMapper).length}`, this.importConfig.context);
+      log.debug(
+        `Loaded asset mappings – UIDs: ${Object.keys(this.assetUidMapper).length}`,
+        this.importConfig.context,
+      );
 
-      this.taxonomies = fsUtil.readFile(this.taxonomiesPath) as Record<string, any>;
-      log.debug('Loaded taxonomy data for entry processing', this.importConfig.context);
+      this.taxonomies = (fsUtil.readFile(this.taxonomiesPath) || {}) as Record<string, any>;
+      log.debug('Loaded taxonomy data for entry processing.', this.importConfig.context);
 
       fsUtil.makeDirectory(this.entriesMapperPath);
-      log.debug('Created entries mapper directory', this.importConfig.context);
-      
-      log.info('Preparing content types for entry import', this.importConfig.context);
+      log.debug('Created entries mapper directory.', this.importConfig.context);
+
+      log.info('Preparing content types for entry import...', this.importConfig.context);
       await this.disableMandatoryCTReferences();
-      
-      this.locales = values(fsUtil.readFile(this.localesPath) as Record<string, unknown>[]);
+
+      this.locales = values((fsUtil.readFile(this.localesPath) || []) as Record<string, unknown>[]);
       this.locales.unshift(this.importConfig.master_locale); // adds master locale to the list
       log.debug(`Processing entries for ${values(this.locales).length} locales`, this.importConfig.context);
 
       //Create Entries
-      log.info('Starting entry creation process', this.importConfig.context);
+      log.info('Starting entry creation process...', this.importConfig.context);
       const entryRequestOptions = this.populateEntryCreatePayload();
       log.debug(`Generated ${entryRequestOptions.length} entry creation tasks`, this.importConfig.context);
-      
+
       for (let entryRequestOption of entryRequestOptions) {
         await this.createEntries(entryRequestOption);
       }
       log.success('Entry creation process completed', this.importConfig.context);
-      
+
       if (this.importConfig.replaceExisting) {
         // Note: Instead of using entryRequestOptions, we can prepare request options for replace, to avoid unnecessary operations
-        log.info('Starting entry replacement process', this.importConfig.context);
+        log.info('Starting entry replacement process...', this.importConfig.context);
         for (let entryRequestOption of entryRequestOptions) {
           await this.replaceEntries(entryRequestOption).catch((error) => {
-            handleAndLogError(error, { ...this.importConfig.context, cTUid: entryRequestOption.cTUid, locale: entryRequestOption.locale }, 'Error while replacing existing entries');
+            handleAndLogError(
+              error,
+              { ...this.importConfig.context, cTUid: entryRequestOption.cTUid, locale: entryRequestOption.locale },
+              'Error while replacing existing entries',
+            );
           });
         }
         log.success('Entry replacement process completed', this.importConfig.context);
       }
 
-      log.debug('Writing entry UID mappings to file', this.importConfig.context);
+      log.debug('Writing entry UID mappings to file...', this.importConfig.context);
       await fileHelper.writeLargeFile(path.join(this.entriesMapperPath, 'uid-mapping.json'), this.entriesUidMapper); // TBD: manages mapper in one file, should find an alternative
       fsUtil.writeFile(path.join(this.entriesMapperPath, 'failed-entries.json'), this.failedEntries);
 
       if (this.autoCreatedEntries?.length > 0) {
-        log.info(`Removing ${this.autoCreatedEntries.length} entries from master language which got created by default`, this.importConfig.context);
+        log.info(
+          `Removing ${this.autoCreatedEntries.length} auto-created entries from the master language...`,
+          this.importConfig.context,
+        );
         await this.removeAutoCreatedEntries().catch((error) => {
-          handleAndLogError(error, { ...this.importConfig.context }, 'Error while removing auto created entries in master locale');
+          handleAndLogError(
+            error,
+            { ...this.importConfig.context },
+            'Error while removing auto created entries in master locale',
+          );
         });
         log.success('Auto-created entries cleanup completed', this.importConfig.context);
       }
 
       // Update entries with references
-      log.info('Starting entry references update process', this.importConfig.context);
+      log.info('Starting entry references update process...', this.importConfig.context);
       const entryUpdateRequestOptions = this.populateEntryUpdatePayload();
       log.debug(`Generated ${entryUpdateRequestOptions.length} entry update tasks`, this.importConfig.context);
-      
+
       for (let entryUpdateRequestOption of entryUpdateRequestOptions) {
         await this.updateEntriesWithReferences(entryUpdateRequestOption).catch((error) => {
-          handleAndLogError(error, { ...this.importConfig.context, cTUid: entryUpdateRequestOption.cTUid, locale: entryUpdateRequestOption.locale }, `Error while updating entries references of ${entryUpdateRequestOption.cTUid} in locale ${entryUpdateRequestOption.locale}`);
+          handleAndLogError(
+            error,
+            {
+              ...this.importConfig.context,
+              cTUid: entryUpdateRequestOption.cTUid,
+              locale: entryUpdateRequestOption.locale,
+            },
+            `Error while updating entries references of ${entryUpdateRequestOption.cTUid} in locale ${entryUpdateRequestOption.locale}`,
+          );
         });
       }
       fsUtil.writeFile(path.join(this.entriesMapperPath, 'failed-entries.json'), this.failedEntries);
       log.success('Entry references update process completed', this.importConfig.context);
 
-      log.info('Restoring content type changes', this.importConfig.context);
+      log.info('Restoring content type changes...', this.importConfig.context);
       await this.enableMandatoryCTReferences().catch((error) => {
         handleAndLogError(error, { ...this.importConfig.context }, 'Error while updating content type references');
       });
       log.success('Content type references restored successfully', this.importConfig.context);
 
       // Update field rule of content types which are got removed earlier
-      log.info('Updating the field rules of content type', this.importConfig.context);
+      log.info('Updating field rules of content type...', this.importConfig.context);
       await this.updateFieldRules().catch((error) => {
         handleAndLogError(error, { ...this.importConfig.context }, 'Error while updating field rules of content type');
       });
@@ -197,26 +222,37 @@ export default class EntriesImport extends BaseClass {
 
       // Publishing entries
       if (!this.importConfig.skipEntriesPublish) {
-        log.info('Starting entry publishing process', this.importConfig.context);
-        this.envs = fileHelper.readFileSync(this.envPath);
-        log.debug(`Loaded ${Object.keys(this.envs).length} environments for publishing`, this.importConfig.context);
-        
+        log.info('Starting entry publishing process...', this.importConfig.context);
+        this.envs = fileHelper.readFileSync(this.envPath) || {};
+        if (Object.keys(this.envs).length === 0) {
+          log.warn(
+            `No environments file found at ${this.envPath}. Entries will not be published.`,
+            this.importConfig.context,
+          );
+          return;
+        } else {
+          log.debug(`Loaded ${Object.keys(this.envs).length} environments.`, this.importConfig.context);
+        }
+
         for (let entryRequestOption of entryRequestOptions) {
           await this.publishEntries(entryRequestOption).catch((error) => {
-            handleAndLogError(error, { ...this.importConfig.context, cTUid: entryRequestOption.cTUid, locale: entryRequestOption.locale }, `Error in publishing entries of ${entryRequestOption.cTUid} in locale ${entryRequestOption.locale}`);
+            handleAndLogError(
+              error,
+              { ...this.importConfig.context, cTUid: entryRequestOption.cTUid, locale: entryRequestOption.locale },
+              `Error in publishing entries of ${entryRequestOption.cTUid} in locale ${entryRequestOption.locale}`,
+            );
           });
         }
         log.success('All the entries have been published successfully', this.importConfig.context);
       } else {
-        log.info('Skipping entry publishing as per configuration', this.importConfig.context);
+        log.info('Skipping entry publishing as per configuration...', this.importConfig.context);
       }
 
-      log.debug('Creating entry data for variant entries', this.importConfig.context);
+      log.debug('Creating entry data for variant entries...', this.importConfig.context);
       this.createEntryDataForVariantEntry();
     } catch (error) {
       this.createEntryDataForVariantEntry();
       handleAndLogError(error, { ...this.importConfig.context });
-      throw new Error('Error while importing entries');
     }
   }
 
@@ -233,15 +269,21 @@ export default class EntriesImport extends BaseClass {
   }
 
   async disableMandatoryCTReferences() {
-    log.debug(`Starting to disable mandatory CT references for ${this.cTs.length} content types`, this.importConfig.context);
-    
+    log.debug(
+      `Starting to disable mandatory CT references for ${this.cTs.length} content types`,
+      this.importConfig.context,
+    );
+
     const onSuccess = ({ response: contentType, apiData: { uid } }: any) => {
-      log.success(`${uid} content type references removed temporarily`, this.importConfig.context);
-      log.debug(`Successfully processed content type: ${uid}`, this.importConfig.context);
+      log.success(`'${uid}' content type references removed temporarily`, this.importConfig.context);
+      log.debug(`Successfully processed content type: '${uid}'`, this.importConfig.context);
     };
     const onReject = ({ error, apiData: { uid } }: any) => {
-      handleAndLogError(error, { ...this.importConfig.context, uid });
-      throw new Error(`${uid} content type references removal failed`);
+      handleAndLogError(
+        error,
+        { ...this.importConfig.context, uid },
+        `'${uid}' content type references removal failed`,
+      );
     };
     return await this.makeConcurrentCall({
       processName: 'Update content types (removing mandatory references temporarily)',
@@ -351,11 +393,14 @@ export default class EntriesImport extends BaseClass {
       log.debug(`No entries found for content type ${cTUid} in locale ${locale}`, this.importConfig.context);
       return Promise.resolve();
     }
-    log.debug(`Starting to create entries for ${cTUid} in locale ${locale} - ${indexerCount} chunks to process`, this.importConfig.context);
-    
+    log.debug(
+      `Starting to create entries for ${cTUid} in locale ${locale} - ${indexerCount} chunks to process`,
+      this.importConfig.context,
+    );
+
     const isMasterLocale = locale === this.importConfig?.master_locale?.code;
     log.debug(`Processing ${isMasterLocale ? 'master' : 'non-master'} locale: ${locale}`, this.importConfig.context);
-    
+
     // Write created entries
     const entriesCreateFileHelper = new FsUtility({
       moduleName: 'entries',
@@ -383,14 +428,20 @@ export default class EntriesImport extends BaseClass {
       if (additionalInfo[entry.uid]?.isLocalized) {
         let oldUid = additionalInfo[entry.uid].entryOldUid;
         this.entriesForVariant.push({ content_type: cTUid, entry_uid: oldUid, locale });
-        log.info(`Localized entry: '${entry.title}' of content type ${cTUid} in locale ${locale}`, this.importConfig.context);
+        log.info(
+          `Localized entry: '${entry.title}' of content type ${cTUid} in locale ${locale}`,
+          this.importConfig.context,
+        );
         log.debug(`Mapped localized entry UID: ${entry.uid} → ${oldUid}`, this.importConfig.context);
         entry.uid = oldUid;
         entry.entryOldUid = oldUid;
         entry.sourceEntryFilePath = path.join(sanitizePath(basePath), sanitizePath(additionalInfo.entryFileName)); // stores source file path temporarily
         entriesCreateFileHelper.writeIntoFile({ [oldUid]: entry } as any, { mapKeyVal: true });
       } else {
-        log.info(`Created entry: '${entry.title}' of content type ${cTUid} in locale ${locale}`, this.importConfig.context);
+        log.info(
+          `Created entry: '${entry.title}' of content type ${cTUid} in locale ${locale}`,
+          this.importConfig.context,
+        );
         log.debug(`Created entry UID mapping: ${entry.uid} → ${response.uid}`, this.importConfig.context);
         this.entriesForVariant.push({ content_type: cTUid, entry_uid: entry.uid, locale });
         // This is for creating localized entries that do not have a counterpart in master locale.
@@ -414,7 +465,7 @@ export default class EntriesImport extends BaseClass {
         (item) => !(item.locale === locale && item.entry_uid === uid),
       );
       log.debug(`Removed failed entry from variant list: ${uid}`, this.importConfig.context);
-      
+
       // NOTE: write existing entries into files to handler later
       if (error.errorCode === 119) {
         if (error?.errors?.title || error?.errors?.uid) {
@@ -439,7 +490,7 @@ export default class EntriesImport extends BaseClass {
 
     for (const index in indexer) {
       log.debug(`Processing chunk ${index} of ${indexerCount} for ${cTUid} in ${locale}`, this.importConfig.context);
-      
+
       const chunk = await fs.readChunkFiles.next().catch((error) => {
         handleAndLogError(error, { ...this.importConfig.context, cTUid: cTUid, locale });
       });
@@ -447,7 +498,7 @@ export default class EntriesImport extends BaseClass {
       if (chunk) {
         let apiContent = values(chunk as Record<string, any>[]);
         log.debug(`Processing ${apiContent.length} entries in chunk ${index}`, this.importConfig.context);
-        
+
         await this.makeConcurrentCall({
           apiContent,
           processName,
@@ -469,6 +520,24 @@ export default class EntriesImport extends BaseClass {
         });
       }
     }
+
+    /**
+     * Why Delay Here ?
+     * ==================
+     * When the file is written to the disk, the file is not yet available to be read by the next operation.
+     * existing entries file is written here and used in the replace entries operation. Sometimes it happens that the file is not completed writing to the disk, so replace operation fails.
+     * Solution:
+     * =========
+     * Add a delay to ensure that the file is completed writing to the disk.
+     * This is a temporary workaround, TODO: find a better way to do this.
+     * When replaceEntries tries to read the file immediately after, the file might still be incomplete because:
+     * completeFile() calls write('}') (line 294) - buffered, not yet on disk
+     * closeFile() calls end() (line 318) - closes stream but doesn't wait for flush
+     * replaceEntries immediately tries to read - file is incomplete!
+     * The completeFile() method in FsUtility needs to wait for the stream to finish flushing before returning. Here's what needs to be changed in the FsUtility
+     * */
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    log.success(`Completed creating entries for content type ${cTUid} in locale ${locale}`, this.importConfig.context);
   }
 
   /**
@@ -483,8 +552,11 @@ export default class EntriesImport extends BaseClass {
     } = apiOptions;
 
     try {
-      log.debug(`Serializing entry: ${entry.title} (${entry.uid}) for ${cTUid} in ${locale}`, this.importConfig.context);
-      
+      log.debug(
+        `Serializing entry: ${entry.title} (${entry.uid}) for ${cTUid} in ${locale}`,
+        this.importConfig.context,
+      );
+
       if (this.jsonRteCTs.indexOf(cTUid) > -1) {
         entry = removeUidsFromJsonRteFields(entry, contentType.schema);
         log.debug(`Removed UIDs from JSON RTE fields for entry: ${entry.uid}`, this.importConfig.context);
@@ -501,7 +573,7 @@ export default class EntriesImport extends BaseClass {
       //will remove term if term doesn't exists in taxonomy
       lookUpTerms(contentType?.schema, entry, this.taxonomies, this.importConfig);
       log.debug(`Processed taxonomy terms for entry: ${entry.uid}`, this.importConfig.context);
-      
+
       // will replace all old asset uid/urls with new ones
       entry = lookupAssets(
         {
@@ -514,7 +586,7 @@ export default class EntriesImport extends BaseClass {
         this.installedExtensions,
       );
       log.debug(`Processed asset lookups for entry: ${entry.uid}`, this.importConfig.context);
-      
+
       delete entry.publish_details;
       // checking the entry is a localized one or not
       if (!isMasterLocale && this.entriesUidMapper.hasOwnProperty(entry.uid)) {
@@ -525,7 +597,10 @@ export default class EntriesImport extends BaseClass {
           isLocalized: true,
           entryOldUid: entry.uid,
         };
-        log.debug(`Prepared localized entry: ${entry.uid} → ${this.entriesUidMapper[entry.uid]}`, this.importConfig.context);
+        log.debug(
+          `Prepared localized entry: ${entry.uid} → ${this.entriesUidMapper[entry.uid]}`,
+          this.importConfig.context,
+        );
         return apiOptions;
       }
       apiOptions.apiData = entry;
@@ -549,7 +624,10 @@ export default class EntriesImport extends BaseClass {
       log.debug(`No existing entries found for replacement in ${cTUid} - ${locale}`, this.importConfig.context);
       return Promise.resolve();
     }
-    log.debug(`Starting to replace entries for ${cTUid} in locale ${locale} - ${indexerCount} chunks to process`, this.importConfig.context);
+    log.debug(
+      `Starting to replace entries for ${cTUid} in locale ${locale} - ${indexerCount} chunks to process`,
+      this.importConfig.context,
+    );
 
     // Write updated entries
     const entriesReplaceFileHelper = new FsUtility({
@@ -566,7 +644,10 @@ export default class EntriesImport extends BaseClass {
     log.debug(`Found content type schema for replacement: ${cTUid}`, this.importConfig.context);
 
     const onSuccess = ({ response, apiData: entry, additionalInfo }: any) => {
-      log.info(`Replaced entry: '${entry.title}' of content type ${cTUid} in locale ${locale}`, this.importConfig.context);
+      log.info(
+        `Replaced entry: '${entry.title}' of content type ${cTUid} in locale ${locale}`,
+        this.importConfig.context,
+      );
       log.debug(`Replaced entry UID mapping: ${entry.uid} → ${response.uid}`, this.importConfig.context);
       this.entriesUidMapper[entry.uid] = response.uid;
       entriesReplaceFileHelper.writeIntoFile({ [entry.uid]: entry } as any, { mapKeyVal: true });
@@ -588,16 +669,22 @@ export default class EntriesImport extends BaseClass {
     };
 
     for (const index in indexer) {
-      log.debug(`Processing replacement chunk ${index} of ${indexerCount} for ${cTUid} in ${locale}`, this.importConfig.context);
-      
+      log.debug(
+        `Processing replacement chunk ${index} of ${indexerCount} for ${cTUid} in ${locale}`,
+        this.importConfig.context,
+      );
+
       const chunk = await fs.readChunkFiles.next().catch((error) => {
         handleAndLogError(error, { ...this.importConfig.context, cTUid, locale });
       });
 
       if (chunk) {
         let apiContent = values(chunk as Record<string, any>[]);
-        log.debug(`Processing ${apiContent.length} entries for replacement in chunk ${index}`, this.importConfig.context);
-        
+        log.debug(
+          `Processing ${apiContent.length} entries for replacement in chunk ${index}`,
+          this.importConfig.context,
+        );
+
         await this.makeConcurrentCall(
           {
             apiContent,
@@ -702,7 +789,10 @@ export default class EntriesImport extends BaseClass {
       log.debug(`No entries found for reference updates in ${cTUid} - ${locale}`, this.importConfig.context);
       return Promise.resolve();
     }
-    log.debug(`Starting to update entries with references for ${cTUid} in locale ${locale} - ${indexerCount} chunks to process`, this.importConfig.context);
+    log.debug(
+      `Starting to update entries with references for ${cTUid} in locale ${locale} - ${indexerCount} chunks to process`,
+      this.importConfig.context,
+    );
 
     const contentType = find(this.cTs, { uid: cTUid });
     log.debug(`Found content type schema for reference updates: ${cTUid}`, this.importConfig.context);
@@ -728,16 +818,26 @@ export default class EntriesImport extends BaseClass {
     };
 
     for (const index in indexer) {
-      log.debug(`Processing reference update chunk ${index} of ${indexerCount} for ${cTUid} in ${locale}`, this.importConfig.context);
-      
+      log.debug(
+        `Processing reference update chunk ${index} of ${indexerCount} for ${cTUid} in ${locale}`,
+        this.importConfig.context,
+      );
+
       const chunk = await fs.readChunkFiles.next().catch((error) => {
-        handleAndLogError(error, { ...this.importConfig.context, cTUid, locale }, 'Error');
+        handleAndLogError(
+          error,
+          { ...this.importConfig.context, cTUid, locale },
+          'Failed to load data chunks due to a read error. Ensure the files are accessible and not corrupted.',
+        );
       });
 
       if (chunk) {
         let apiContent = values(chunk as Record<string, any>[]);
-        log.debug(`Processing ${apiContent.length} entries for reference updates in chunk ${index}`, this.importConfig.context);
-        
+        log.debug(
+          `Processing ${apiContent.length} entries for reference updates in chunk ${index}`,
+          this.importConfig.context,
+        );
+
         await this.makeConcurrentCall({
           apiContent,
           processName,
@@ -770,18 +870,21 @@ export default class EntriesImport extends BaseClass {
       additionalInfo: { cTUid, locale, contentType },
     } = apiOptions;
     try {
-      log.debug(`Serializing entry update: ${entry.title} (${entry.uid}) for ${cTUid} in ${locale}`, this.importConfig.context);
-      
+      log.debug(
+        `Serializing entry update: ${entry.title} (${entry.uid}) for ${cTUid} in ${locale}`,
+        this.importConfig.context,
+      );
+
       const sourceEntryFilePath = entry.sourceEntryFilePath;
       const sourceEntry = ((fsUtil.readFile(sourceEntryFilePath) || {}) as Record<any, any>)[entry.entryOldUid];
       const newUid = this.entriesUidMapper[entry.entryOldUid];
-      
+
       log.debug(`Updating entry references: ${entry.entryOldUid} → ${newUid}`, this.importConfig.context);
-      
+
       // Removing temp values
       delete entry.sourceEntryFilePath;
       delete entry.entryOldUid;
-      
+
       if (this.jsonRteCTs.indexOf(cTUid) > -1 || this.rteCTs.indexOf(cTUid) > -1) {
         // the entries stored in eSuccessFilePath, have the same uids as the entries from source data
         entry = restoreJsonRteEntryRefs(entry, sourceEntry, contentType.schema, {
@@ -791,7 +894,7 @@ export default class EntriesImport extends BaseClass {
         });
         log.debug(`Restored JSON RTE entry references for: ${newUid}`, this.importConfig.context);
       }
-      
+
       entry = lookupAssets(
         {
           content_type: contentType,
@@ -803,7 +906,7 @@ export default class EntriesImport extends BaseClass {
         this.installedExtensions,
       );
       log.debug(`Processed asset lookups for entry update: ${newUid}`, this.importConfig.context);
-      
+
       entry = lookupEntries(
         {
           content_type: contentType,
@@ -831,7 +934,11 @@ export default class EntriesImport extends BaseClass {
       log.success(`${uid} content type references updated`, this.importConfig.context);
     };
     const onReject = ({ error, apiData: { uid } }: any) => {
-      handleAndLogError(error, { ...this.importConfig.context, uid }, 'Error');
+      handleAndLogError(
+        error,
+        { ...this.importConfig.context, uid },
+        `Failed to update references of content type '${uid}'`,
+      );
       throw new Error(`Failed to update references of content type ${uid}`);
     };
     return await this.makeConcurrentCall({
@@ -886,7 +993,11 @@ export default class EntriesImport extends BaseClass {
         (item) => !(item.entry_uid === entryUid && item.locale === this.importConfig?.master_locale?.code),
       );
 
-      handleAndLogError(error, { ...this.importConfig.context }, `Failed to remove auto created entry in master locale - entry uid ${entryUid}`);
+      handleAndLogError(
+        error,
+        { ...this.importConfig.context },
+        `Failed to remove auto created entry in master locale - entry uid ${entryUid}`,
+      );
     };
     return await this.makeConcurrentCall({
       processName: 'Remove auto created entry in master locale',
@@ -903,35 +1014,44 @@ export default class EntriesImport extends BaseClass {
   }
 
   async updateFieldRules(): Promise<void> {
-    let cTsWithFieldRules = fsUtil.readFile(path.join(this.cTsPath + '/field_rules_uid.json')) as Record<string, any>[];
+    let cTsWithFieldRules = (fsUtil.readFile(path.join(this.cTsPath + '/field_rules_uid.json')) || []) as Record<
+      string,
+      any
+    >[];
     if (!cTsWithFieldRules || cTsWithFieldRules?.length === 0) {
-      log.debug('No content types with field rules found to update', this.importConfig.context);
+      log.debug('No content types with field rules found to update.', this.importConfig.context);
       return;
     }
     log.debug(`Found ${cTsWithFieldRules.length} content types with field rules to update`, this.importConfig.context);
-    
+
     for (let cTUid of cTsWithFieldRules) {
       log.debug(`Processing field rules for content type: ${cTUid}`, this.importConfig.context);
-      
-      const cTs: Record<string, any>[] = fsUtil.readFile(path.join(this.cTsPath, 'schema.json')) as Record<
+
+      const cTs: Record<string, any>[] = (fsUtil.readFile(path.join(this.cTsPath, 'schema.json')) || []) as Record<
         string,
         unknown
       >[];
       const contentType: any = find(cTs, { uid: cTUid });
-      
+
       if (contentType.field_rules) {
-        log.debug(`Found ${contentType.field_rules.length} field rules for content type: ${cTUid}`, this.importConfig.context);
-        
+        log.debug(
+          `Found ${contentType.field_rules.length} field rules for content type: ${cTUid}`,
+          this.importConfig.context,
+        );
+
         const fieldDatatypeMap: { [key: string]: string } = {};
         for (let i = 0; i < contentType.schema?.length; i++) {
           const field = contentType.schema[i].uid;
           fieldDatatypeMap[field] = contentType.schema[i].data_type;
         }
-        log.debug(`Built field datatype map for ${Object.keys(fieldDatatypeMap).length} fields`, this.importConfig.context);
-        
+        log.debug(
+          `Built field datatype map for ${Object.keys(fieldDatatypeMap).length} fields.`,
+          this.importConfig.context,
+        );
+
         let fieldRuleLength = contentType.field_rules?.length;
         let updatedRulesCount = 0;
-        
+
         for (let k = 0; k < fieldRuleLength; k++) {
           let fieldRuleConditionLength = contentType.field_rules[k].conditions?.length;
           for (let i = 0; i < fieldRuleConditionLength; i++) {
@@ -939,12 +1059,15 @@ export default class EntriesImport extends BaseClass {
               let fieldRulesValue = contentType.field_rules[k].conditions[i].value;
               let fieldRulesArray = fieldRulesValue.split('.');
               let updatedValue = [];
-              
+
               for (const element of fieldRulesArray) {
                 let splittedFieldRulesValue = element;
                 if (this.entriesUidMapper.hasOwnProperty(splittedFieldRulesValue)) {
                   updatedValue.push(this.entriesUidMapper[splittedFieldRulesValue]);
-                  log.debug(`Updated field rule reference: ${splittedFieldRulesValue} → ${this.entriesUidMapper[splittedFieldRulesValue]}`, this.importConfig.context);
+                  log.debug(
+                    `Updated field rule reference: ${splittedFieldRulesValue} → ${this.entriesUidMapper[splittedFieldRulesValue]}`,
+                    this.importConfig.context,
+                  );
                 } else {
                   updatedValue.push(element);
                 }
@@ -954,9 +1077,12 @@ export default class EntriesImport extends BaseClass {
             }
           }
         }
-        
-        log.debug(`Updated ${updatedRulesCount} field rule references for content type: ${cTUid}`, this.importConfig.context);
-        
+
+        log.debug(
+          `Updated ${updatedRulesCount} field rule references for content type: ${cTUid}`,
+          this.importConfig.context,
+        );
+
         const contentTypeResponse: any = await this.stack
           .contentType(contentType.uid)
           .fetch()
@@ -967,7 +1093,7 @@ export default class EntriesImport extends BaseClass {
           log.debug(`Skipping field rules update for ${cTUid} - content type not found`, this.importConfig.context);
           continue;
         }
-        
+
         contentTypeResponse.field_rules = contentType.field_rules;
         await contentTypeResponse.update().catch((error: Error) => {
           handleAndLogError(error, { ...this.importConfig.context, cTUid });
@@ -992,23 +1118,41 @@ export default class EntriesImport extends BaseClass {
       log.debug(`No entries found for publishing in ${cTUid} - ${locale}`, this.importConfig.context);
       return Promise.resolve();
     }
-    log.debug(`Starting to publish entries for ${cTUid} in locale ${locale} - ${indexerCount} chunks to process`, this.importConfig.context);
+    log.debug(
+      `Starting to publish entries for ${cTUid} in locale ${locale} - ${indexerCount} chunks to process`,
+      this.importConfig.context,
+    );
 
     const onSuccess = ({ response, apiData: { environments, entryUid, locales }, additionalInfo }: any) => {
-      log.success(`Published the entry: '${entryUid}' of Content Type '${cTUid}' and Locale '${locale}' in Environments '${environments?.join(
-        ',')}' and Locales '${locales?.join(',')}'`, this.importConfig.context);
-      log.debug(`Published entry ${entryUid} to ${environments?.length || 0} environments and ${locales?.length || 0} locales`, this.importConfig.context);
+      log.success(
+        `Published the entry: '${entryUid}' of Content Type '${cTUid}' and Locale '${locale}' in Environments '${environments?.join(
+          ',',
+        )}' and Locales '${locales?.join(',')}'`,
+        this.importConfig.context,
+      );
+      log.debug(
+        `Published entry ${entryUid} to ${environments?.length || 0} environments and ${locales?.length || 0} locales`,
+        this.importConfig.context,
+      );
     };
     const onReject = ({ error, apiData: { environments, entryUid, locales }, additionalInfo }: any) => {
-      handleAndLogError(error, { ...this.importConfig.context, cTUid, locale }, `Failed to publish: '${entryUid}' entry of Content Type '${cTUid}' and Locale '${locale}' in Environments '${environments?.join(
-        ',')}' and Locales '${locales?.join(',')}'`);
+      handleAndLogError(
+        error,
+        { ...this.importConfig.context, cTUid, locale },
+        `Failed to publish: '${entryUid}' entry of Content Type '${cTUid}' and Locale '${locale}' in Environments '${environments?.join(
+          ',',
+        )}' and Locales '${locales?.join(',')}'`,
+      );
     };
 
     for (const index in indexer) {
-      log.debug(`Processing publish chunk ${index} of ${indexerCount} for ${cTUid} in ${locale}`, this.importConfig.context);
-      
+      log.debug(
+        `Processing publish chunk ${index} of ${indexerCount} for ${cTUid} in ${locale}`,
+        this.importConfig.context,
+      );
+
       const chunk = await fs.readChunkFiles.next().catch((error) => {
-        handleAndLogError(error, { ...this.importConfig.context, cTUid, locale }, );
+        handleAndLogError(error, { ...this.importConfig.context, cTUid, locale });
       });
 
       if (chunk) {
@@ -1025,9 +1169,9 @@ export default class EntriesImport extends BaseClass {
           return []; // Return an empty array if publish_details is empty
         });
         apiContent = apiContentDuplicate;
-        
+
         log.debug(`Processing ${apiContent.length} publishable entries in chunk ${index}`, this.importConfig.context);
-        
+
         if (apiContent?.length === 0) {
           log.debug(`No publishable entries found in chunk ${index}`, this.importConfig.context);
           continue;

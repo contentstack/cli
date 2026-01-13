@@ -5,13 +5,20 @@ import { default as Logger } from './logger';
 import { CLIErrorHandler } from './cli-error-handler';
 import { ErrorContext } from '../interfaces';
 import { configHandler } from '..';
+import { getSessionLogPath } from './session-path';
 
 let loggerInstance: Logger | null = null;
 
 function createLoggerInstance(): Logger {
+  const logConfig = configHandler.get('log');
+  const logLevel = logConfig?.level || 'info';
+  const showConsoleLogs = logConfig?.['show-console-logs'] ?? false;
+
   const config = {
     basePath: getLogPath(),
-    logLevel: configHandler.get('log.level') || 'info',
+    logLevel: logLevel,
+    consoleLoggingEnabled: showConsoleLogs,
+    consoleLogLevel: logLevel,
   };
   return new Logger(config);
 }
@@ -99,4 +106,6 @@ function getLogPath(): string {
   return path.join(os.homedir(), 'contentstack', 'logs');
 }
 
+// Re-export getSessionLogPath for external use
+export { getSessionLogPath } from './session-path';
 export { v2Logger, cliErrorHandler, handleAndLogError, getLogPath };

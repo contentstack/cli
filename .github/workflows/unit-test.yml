@@ -18,10 +18,18 @@ jobs:
 
       - name: Install dependencies for all plugins
         run: |
-          npm run setup-repo-old
+          NODE_ENV=PREPACK_MODE npm run setup-repo-old
 
       - name: Run tests for Contentstack Command
         working-directory: ./packages/contentstack-command
+        run: npm run test:unit
+
+      - name: Run tests for Contentstack Import Plugin
+        working-directory: ./packages/contentstack-import
+        run: npm run test:unit
+
+      - name: Run tests for Contentstack Export Plugin
+        working-directory: ./packages/contentstack-export
         run: npm run test:unit
 
       - name: Run tests for Audit plugin
@@ -50,12 +58,11 @@ jobs:
 
       - name: Run tests for Contentstack Auth
         working-directory: ./packages/contentstack-auth
-        run: npm run test
+        run: npm run test:unit
 
       - name: Run tests for Contentstack Import Setup
         working-directory: ./packages/contentstack-import-setup
         run: npm run test:unit
-
 
       - name: Run tests for Contentstack Bulk Publish
         working-directory: ./packages/contentstack-bulk-publish

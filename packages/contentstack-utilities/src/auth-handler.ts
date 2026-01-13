@@ -37,9 +37,12 @@ class AuthHandler {
   private oauthHandler: any;
   private managementAPIClient: ContentstackClient;
   private isRefreshingToken: boolean = false; // Flag to track if a refresh operation is in progress
+  private cmaHost: string;
 
   set host(contentStackHost) {
     this._host = contentStackHost;
+    // Update cmaHost when host is set
+    this.cmaHost = this.getCmaHost();
   }
 
   constructor() {
@@ -76,6 +79,24 @@ class AuthHandler {
         this.authorisationTypeKeyName,
       ],
     };
+    this.cmaHost = this.getCmaHost();
+  }
+
+  private getCmaHost(): string {
+    if (this._host) {
+      return this._host;
+    }
+    
+    const cma = configHandler.get('region')?.cma;
+    if (cma && cma.startsWith('http')) {
+      try {
+        const u = new URL(cma);
+        if (u.host) return u.host;
+      } catch (error) {
+        // If URL parsing fails, return the original cma value
+      }
+    }
+    return cma;
   }
   initLog() {
     this.logger = new LoggerService(process.cwd(), 'cli-log');
@@ -91,7 +112,9 @@ class AuthHandler {
   }
 
   async initSDK() {
-    this.managementAPIClient = await managementSDKClient({ host: this._host });
+    // Ensure we have a valid host for the SDK initialization
+    const host = this._host || this.getCmaHost();
+    this.managementAPIClient = await managementSDKClient({ host });
     this.oauthHandler = this.managementAPIClient.oauth({
       appId: this.OAuthAppId,
       clientId: this.OAuthClientId,
@@ -114,7 +137,7 @@ class AuthHandler {
       await this.createHTTPServer();
       await this.openOAuthURL();
     } catch (error) {
-      this.logger.error('OAuth login failed', error.message);
+      this.logger.error('OAuth login failed!', error.message);
       throw error;
     }
   }
@@ -125,7 +148,7 @@ class AuthHandler {
         const queryObject = url.parse(req.url, true).query;
 
         if (!queryObject.code) {
-          cliux.error('Error occoured while login with OAuth, please login with command - csdx auth:login --oauth');
+          cliux.error('Error occurred while logging in with OAuth!');
           return sendErrorResponse(res);
         }
 
@@ -135,7 +158,7 @@ class AuthHandler {
           await this.getAccessToken(queryObject.code as string);
           await this.setOAuthBaseURL();
 
-          cliux.print('Access token fetched using auth code successfully.');
+          cliux.print('Access token successfully fetched using auth code.');
           cliux.print(
             `You can review the access permissions on the page - ${this.OAuthBaseURL}/#!/marketplace/authorized-apps`,
           );
@@ -143,7 +166,7 @@ class AuthHandler {
           sendSuccessResponse(res);
           stopServer();
         } catch (error) {
-          cliux.error('Error occoured while login with OAuth, please login with command - csdx auth:login --oauth');
+          cliux.error('Error occurred while logging in with OAuth!');
           cliux.error(error);
           sendErrorResponse(res);
           stopServer();
@@ -317,8 +340,8 @@ class AuthHandler {
         throw error;
       }
     } else {
-      cliux.error('Invalid/Empty access token.');
-      throw new Error('Invalid/Empty access token');
+      cliux.error('Invalid or empty access token.');
+      throw new Error('Invalid or empty access token.');
     }
   }
 
@@ -371,7 +394,7 @@ class AuthHandler {
       const oauthValidUpto = new Date();
       oauthValidUpto.setTime(oauthDate.getTime() + 59 * 60 * 1000);
       if (force) {
-        cliux.print('Force refreshing the token');
+        cliux.print('Forcing token refresh...');
         return this.refreshToken();
       } else {
         if (oauthValidUpto > now) {
@@ -395,7 +418,7 @@ class AuthHandler {
         }
       }
     } else {
-      cliux.print('No OAuth set');
+      cliux.print('No OAuth configuration set.');
       this.unsetConfigData();
     }
   }
