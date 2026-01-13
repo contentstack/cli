@@ -1,0 +1,21 @@
+{
+  "name": "Test Project 1",
+  "description": "Test project with valid references",
+  "canvasUrl": "/",
+  "connectedStackApiKey": "blt_test_key_1",
+  "contentTypeUid": "page_1",
+  "organizationUid": "blt_org_1",
+  "settings": {
+    "configuration": {
+      "environment": "blt_env_dev",
+      "locale": "en-us"
+    }
+  },
+  "createdBy": "blt_user_1",
+  "updatedBy": "blt_user_1",
+  "deletedAt": false,
+  "createdAt": "2025-01-01T10:00:00.000Z",
+  "updatedAt": "2025-01-01T10:00:00.000Z",
+  "uid": "test_project_uid_1"
+}
+
