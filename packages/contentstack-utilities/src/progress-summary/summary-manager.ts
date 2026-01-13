@@ -13,7 +13,7 @@ export default class SummaryManager {
     this.operationName = operationName;
     this.context = context;
     this.operationStartTime = Date.now();
-    this.branchName = context.branchName || '';
+    this.branchName = context?.branchName || '';
   }
 
   getModules() {
@@ -98,6 +98,7 @@ export default class SummaryManager {
     const totalFailures = Array.from(this.modules.values()).reduce((sum, m) => sum + m.failureCount, 0);
 
     console.log('\n' + chalk.bold('='.repeat(80)));
+    console.log(chalk.bold(`${this.operationName} SUMMARY`));
     console.log('\n' + chalk.bold('Overall Statistics:'));
     console.log(`  Total ${this.operationName} Time: ${chalk.cyan(this.formatDuration(totalDuration))}`);
     console.log(`  Modules Processed: ${chalk.cyan(completedModules)}/${chalk.cyan(totalModules)}`);

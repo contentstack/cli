@@ -24,7 +24,8 @@
     "eslint-config-oclif": "^6.0.15",
     "mocha": "^10.8.2",
     "nyc": "^15.1.0",
-    "oclif": "^4.17.46"
+    "oclif": "^4.17.46",
+    "sinon": "^19.0.5"
   },
   "engines": {
     "node": ">=14.0.0"

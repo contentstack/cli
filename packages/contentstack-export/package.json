@@ -89,12 +89,8 @@
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-export/<%- commandPath %>"
   },
   "csdxConfig": {
-    "expiredCommands": {
-      "cm:export": "csdx cm:stacks:export"
-    },
     "shortCommandName": {
-      "cm:stacks:export": "EXPRT",
-      "cm:export": "O-EXPRT"
+      "cm:stacks:export": "EXPRT"
     }
   },
   "repository": "https://github.com/contentstack/cli"
