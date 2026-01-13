@@ -5,7 +5,8 @@ import forEach from 'lodash/forEach.js';
 import isEmpty from 'lodash/isEmpty.js';
 import isArray from 'lodash/isArray.js';
 import includes from 'lodash/includes.js';
-import config from './config.json';
+// @ts-ignore
+import config from "./config.json" with { type: "json" };
 
 const { IS_TS, UNIT_EXECUTION_ORDER, INTEGRATION_EXECUTION_ORDER } = config;
 

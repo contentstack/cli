@@ -9,9 +9,7 @@
     "target": "es2017",
     "sourceMap": false,
     "allowJs": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true
+    "skipLibCheck": true
   },
   "include": [
     "src/**/*"

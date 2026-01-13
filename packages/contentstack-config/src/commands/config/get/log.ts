@@ -35,7 +35,6 @@ export default class LogGetCommand extends Command {
       });
     } catch (error) {
       handleAndLogError(error, { module: 'config-get-log' });
-      cliux.error('Error', error);
     }
   }
 }

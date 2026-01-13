@@ -1,5 +1,5 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, configHandler, messageHandler, TableHeader } from '@contentstack/cli-utilities';
+import { cliux, configHandler, messageHandler, TableHeader, handleAndLogError } from '@contentstack/cli-utilities';
 
 export default class BranchGetCommand extends Command {
   static description = 'Get current branch set for CLI';
@@ -25,7 +25,7 @@ export default class BranchGetCommand extends Command {
         cliux.print(`error: ${messageHandler.parse('CLI_CONFIG_BRANCH_LIST_NO_BRANCHES')}`, { color: 'red' });
       }
     } catch (error) {
-      cliux.error('Error', error);
+      handleAndLogError(error, { module: 'config-get-base-branch' });
     }
   }
 }
