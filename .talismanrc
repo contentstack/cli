@@ -267,4 +267,10 @@ fileignoreconfig:
     checksum: e8714ef41940f3a9be782dfaa43a15df57bd1eb4c3f0e4d5f305e68681c1bd93
   - filename: packages/contentstack-import/src/import/modules-js/environments.js
     checksum: d484342c25462a7052c8aae6cad0baed9a01e1eaa67d6a09f175981c53092301
+  - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/environments/environments.json
+    checksum: 0402604e5919a7e38ecb5ff0916d6ae5ab7d98fe78ff6ac9eba8a9b8130af34d
+  - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/composable_studio.json
+    checksum: 6912e5ea32b4456ad04d1645750c72bbb29ab1895368c3a242ab39e9350ec531
+  - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/invalid_composable_studio.json
+    checksum: e6465aa0011d1565a2de848d9cca74395d11419e6ac840e7dfb52e1d255b1c4f
 version: '1.0'
