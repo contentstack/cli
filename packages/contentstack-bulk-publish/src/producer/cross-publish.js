@@ -3,7 +3,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable complexity */
 /* eslint-disable max-params */
-const { configHandler } = require('@contentstack/cli-utilities');
+const { configHandler, cliux } = require('@contentstack/cli-utilities');
 const { getQueue } = require('../util/queue');
 const { performBulkPublish, publishEntry, publishAsset, initializeLogger } = require('../consumer/publish');
 const retryFailedLogs = require('../util/retryfailed');
@@ -15,6 +15,7 @@ const { Command } = require('@contentstack/cli-command');
 const command = new Command();
 const { isEmpty } = require('../util');
 const { fetchBulkPublishLimit } = require('../util/common-utility');
+const { generateBulkPublishStatusUrl } = require('../util/generate-bulk-publish-url');
 const VARIANTS_PUBLISH_API_VERSION = '3.2';
 
 let bulkPublishSet = [];
@@ -199,17 +200,15 @@ async function getSyncEntries(
       if (queryParamsObj.locale) {
         syncData['locale'] = queryParamsObj.locale;
       }
+      if (filter?.content_type_uid) {
+        syncData['content_type_uid'] = filter.content_type_uid;
+      }
       if (queryParamsObj.type) {
         syncData['type'] = queryParamsObj.type;
       }
+      let entriesResponse;
+      entriesResponse = await Stack.sync(syncData);
 
-      const entriesResponse = await Stack.sync(syncData);
-
-      if (filter?.content_type_uid?.length) {
-        entriesResponse.items = entriesResponse.items.filter((entry) =>
-          filter?.content_type_uid.includes(entry.content_type_uid),
-        );
-      }
 
       if (variantsFlag) {
         for (let index = 0; index < entriesResponse?.items?.length; index++) {
@@ -226,7 +225,7 @@ async function getSyncEntries(
         await bulkAction(stack, entriesResponse.items, bulkPublish, filter, destEnv, apiVersion, bulkPublishLimit, variantsFlag);
       }
       if (!entriesResponse.pagination_token) {
-        if (!changedFlag) console.log('No Entries/Assets Found published on specified environment');
+        if (!changedFlag) console.log('No entries or assets found published in the specified environment.');
         return resolve();
       }
       setTimeout(async () => {
@@ -240,6 +239,7 @@ async function getSyncEntries(
           destEnv,
           apiVersion,
           bulkPublishLimit,
+          variantsFlag,
           entriesResponse.pagination_token,
         );
       }, 3000);
@@ -313,7 +313,7 @@ async function start(
     retryFailed,
     bulkPublish,
     deliveryToken,
-    contentTypes,
+    contentType,
     environment,
     locale,
     onlyAssets,
@@ -334,6 +334,18 @@ async function start(
     } else if (!isSuccessLogEmpty) {
       console.log(`The success log for this session is stored at ${filePath}.success`);
     }
+    
+    // Generate and display the bulk publish status link
+    if (bulkPublish && stack && config) {
+      const statusUrl = generateBulkPublishStatusUrl(stack, config);
+      if (statusUrl) {
+        process.stdout.write('\n');
+        process.stdout.write('\x1b[37mHere is the link to check the bulk publish status: \x1b[0m');
+        process.stdout.write('\x1b[34m' + statusUrl + '\x1b[0m');
+        process.stdout.write('\n');
+      }
+    }
+    
     process.exit(0);
   });
 
@@ -359,8 +371,8 @@ async function start(
     };
     if (f_types) filter.type = f_types;
     // filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
-    if (contentTypes) {
-      filter.content_type_uid = contentTypes;
+    if (contentType) {
+      filter.content_type_uid = contentType;
       filter.type = 'entry_published';
     }
     if (onlyAssets) {

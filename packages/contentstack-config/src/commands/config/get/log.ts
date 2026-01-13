@@ -1,5 +1,6 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, configHandler, messageHandler, TableHeader } from '@contentstack/cli-utilities';
+import { cliux, configHandler, TableHeader } from '@contentstack/cli-utilities';
+import { getEffectiveLogConfig } from '../../../utils/log-config-defaults';
 
 export default class LogGetCommand extends Command {
   static description = 'Get logging configuration for CLI';
@@ -9,28 +10,31 @@ export default class LogGetCommand extends Command {
   async run() {
     try {
       const currentLoggingConfig = configHandler.get('log') || {};
-      const logLevel = currentLoggingConfig?.level;
-      const logPath = currentLoggingConfig?.path;
+      const effectiveConfig = getEffectiveLogConfig(currentLoggingConfig);
 
-      if (logLevel || logPath) {
-        const logConfigList = [
-          {
-            'Log Level': logLevel || 'Not set',
-            'Log Path': logPath || 'Not set',
-          },
-        ];
+      const logConfigList = [
+        {
+          Setting: 'Log Level',
+          Value: effectiveConfig.level,
+        },
+        {
+          Setting: 'Log Path',
+          Value: effectiveConfig.path,
+        },
+        {
+          Setting: 'Show Console Logs',
+          Value: effectiveConfig.showConsoleLogs.toString(),
+        },
+      ];
 
-        const headers: TableHeader[] = [
-          { value: 'Log Level' },
-          { value: 'Log Path' },
-        ];
+      const headers: TableHeader[] = [{ value: 'Setting' }, { value: 'Value' }];
 
-        cliux.table(headers, logConfigList);
-      } else {
-        cliux.print(`error: ${messageHandler.parse('CLI_CONFIG_LOG_NO_CONFIG')}`, { color: 'red' });
-      }
+      cliux.table(headers, logConfigList);
+      cliux.print('\nNote: Absolute paths are displayed. Relative paths are resolved from current working directory.', {
+        color: 'dim',
+      });
     } catch (error) {
-      cliux.error('error', error);
+      cliux.error('Error', error);
     }
   }
 }

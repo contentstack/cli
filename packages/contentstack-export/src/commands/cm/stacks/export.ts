@@ -13,10 +13,11 @@ import {
   log,
   handleAndLogError,
   getLogPath,
+  createLogContext,
 } from '@contentstack/cli-utilities';
 
 import { ModuleExporter } from '../../../export';
-import { Context, ExportConfig } from '../../../types';
+import { ExportConfig } from '../../../types';
 import { setupExportConfig, writeExportMetaFile } from '../../../utils';
 
 export default class ExportCommand extends Command {
@@ -77,7 +78,7 @@ export default class ExportCommand extends Command {
     module: flags.string({
       char: 'm',
       description:
-        '[optional] Specific module name. If not specified, the export command will export all the modules to the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, and taxonomies.',
+        '[optional] Specific module name. If not specified, the export command will export all the modules to the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, taxonomies, and studio.',
       parse: printFlagDeprecation(['-m'], ['--module']),
     }),
     'content-types': flags.string({
@@ -93,6 +94,11 @@ export default class ExportCommand extends Command {
       description:
         "[optional] The name of the branch where you want to export your content. If you don't mention the branch name, then by default the content will be exported from all the branches of your stack.",
       parse: printFlagDeprecation(['-B'], ['--branch']),
+      exclusive: ['branch-alias'],
+    }),
+    'branch-alias': flags.string({
+      description: '(Optional) The alias of the branch from which you want to export content.',
+      exclusive: ['branch'],
     }),
     'secured-assets': flags.boolean({
       description: '[optional] Use this flag for assets that are secured.',
@@ -115,9 +121,16 @@ export default class ExportCommand extends Command {
     try {
       const { flags } = await this.parse(ExportCommand);
       const exportConfig = await setupExportConfig(flags);
-      // Prepare the context object
-      const context = this.createExportContext(exportConfig.apiKey, exportConfig.authenticationMethod);
-      exportConfig.context = { ...context };
+      
+      // Store apiKey in configHandler for session.json (return value not needed)
+      createLogContext(
+        this.context?.info?.command || 'cm:stacks:export',
+        exportConfig.apiKey,
+        exportConfig.authenticationMethod
+      );
+      
+      // For log entries, only pass module (other fields are in session.json)
+      exportConfig.context = { module: '' };
       //log.info(`Using Cli Version: ${this.context?.cliVersion}`, exportConfig.context);
 
       // Assign exportConfig variables
@@ -132,29 +145,15 @@ export default class ExportCommand extends Command {
       }
       log.success(
         `The content of the stack ${exportConfig.apiKey} has been exported successfully!`,
-        exportConfig.context,
       );
-      log.info(`The exported content has been stored at '${exportDir}'`, exportConfig.context);
-      log.success(`The log has been stored at '${getLogPath()}'`, exportConfig.context);
+      log.info(`The exported content has been stored at '${exportDir}'.`, exportConfig.context);
+      log.success(`The log has been stored at '${getLogPath()}'.`, exportConfig.context);
     } catch (error) {
       handleAndLogError(error);
-      log.info(`The log has been stored at '${getLogPath()}'`)
+      log.info(`The log has been stored at '${getLogPath()}'.`);
     }
   }
 
-  // Create export context object
-  private createExportContext(apiKey: string, authenticationMethod?: string): Context {
-    return {
-      command: this.context?.info?.command || 'cm:stacks:export',
-      module: '',
-      userId: configHandler.get('userUid') || '',
-      email: configHandler.get('email') || '',
-      sessionId: this.context?.sessionId || '',
-      apiKey: apiKey || '',
-      orgId: configHandler.get('oauthOrgUid') || '',
-      authenticationMethod: authenticationMethod || 'Basic Auth',
-    };
-  }
 
   // Assign values to exportConfig
   private assignExportConfig(exportConfig: ExportConfig): void {
@@ -168,6 +167,10 @@ export default class ExportCommand extends Command {
 
     if (this.personalizeUrl) {
       exportConfig.modules.personalize.baseURL[exportConfig.region.name] = this.personalizeUrl;
+    }
+
+    if (this.composableStudioUrl) {
+      exportConfig.modules['composable-studio'].apiBaseUrl = this.composableStudioUrl;
     }
   }
 }

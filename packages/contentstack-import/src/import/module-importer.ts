@@ -1,12 +1,18 @@
 import { resolve } from 'path';
 import { AuditFix } from '@contentstack/cli-audit';
 import messages, { $t } from '@contentstack/cli-audit/lib/messages';
-import { addLocale, cliux, ContentstackClient, Logger } from '@contentstack/cli-utilities';
+import { addLocale, cliux, ContentstackClient, log } from '@contentstack/cli-utilities';
 
 import startModuleImport from './modules';
 import startJSModuleImport from './modules-js';
 import { ImportConfig, Modules } from '../types';
-import { backupHandler, log, validateBranch, masterLocalDetails, sanitizeStack, initLogger, trace } from '../utils';
+import {
+  backupHandler,
+  masterLocalDetails,
+  sanitizeStack,
+  setupBranchConfig,
+  executeImportPathLogic,
+} from '../utils';
 
 class ModuleImporter {
   private managementAPIClient: ContentstackClient;
@@ -23,13 +29,22 @@ class ModuleImporter {
   }
 
   async start(): Promise<any> {
+
     if (!this.importConfig.management_token) {
       const stackDetails: Record<string, unknown> = await this.stackAPIClient.fetch();
       this.importConfig.stackName = stackDetails.name as string;
       this.importConfig.org_uid = stackDetails.org_uid as string;
     }
-    if (this.importConfig.branchName) {
-      await validateBranch(this.stackAPIClient, this.importConfig, this.importConfig.branchName);
+    
+    await this.resolveImportPath();
+    
+    await setupBranchConfig(this.importConfig, this.stackAPIClient);
+    if (this.importConfig.branchAlias && this.importConfig.branchName) {
+      this.stackAPIClient = this.managementAPIClient.stack({
+        api_key: this.importConfig.apiKey,
+        management_token: this.importConfig.management_token,
+        branch_uid: this.importConfig.branchName,
+      });
     }
 
     if (this.importConfig.management_token) {
@@ -43,24 +58,15 @@ class ModuleImporter {
       this.importConfig.data = backupDir;
     }
 
-    // NOTE init log
-    const logger = initLogger(this.importConfig);
-
     // NOTE audit and fix the import content.
     if (
       !this.importConfig.skipAudit &&
       (!this.importConfig.moduleName ||
-        [
-          'content-types',
-          'global-fields',
-          'entries',
-          'extensions',
-          'workflows',
-          'custom-roles',
-          'assets'
-        ].includes(this.importConfig.moduleName))
+        ['content-types', 'global-fields', 'entries', 'extensions', 'workflows', 'custom-roles', 'assets'].includes(
+          this.importConfig.moduleName,
+        ))
     ) {
-      if (!(await this.auditImportData(logger))) {
+      if (!(await this.auditImportData())) {
         return { noSuccessMsg: true };
       }
     }
@@ -77,7 +83,7 @@ class ModuleImporter {
   }
 
   async import() {
-    log(this.importConfig, `Starting to import content version ${this.importConfig.contentVersion}`, 'info');
+    log.info(`Starting to import content version ${this.importConfig.contentVersion}`, this.importConfig.context);
 
     // checks for single module or all modules
     if (this.importConfig.singleModuleImport) {
@@ -87,7 +93,7 @@ class ModuleImporter {
   }
 
   async importByModuleByName(moduleName: Modules) {
-    log(this.importConfig, `Starting import of ${moduleName} module`, 'info');
+    log.info(`Starting import of ${moduleName} module`, this.importConfig.context);
     // import the modules by name
     // calls the module runner which inturn calls the module itself
     // NOTE: Implement a mechanism to determine whether module is new or old
@@ -113,14 +119,27 @@ class ModuleImporter {
     // use the algorithm to determine the parallel and sequential execution of modules
     for (let moduleName of this.importConfig.modules.types) {
       if (this.importConfig.globalModules.includes(moduleName) && this.importConfig['exclude-global-modules']) {
-        log(
-          this.importConfig,
+        log.warn(
           `Skipping the import of the global module '${moduleName}', as it already exists in the stack.`,
-          'warn',
+          this.importConfig.context,
         );
         continue;
       }
       await this.importByModuleByName(moduleName);
+    }
+  }
+
+  /**
+   * Resolves the import path based on directory structure and user configuration
+   * @returns Promise<void>
+   */
+  private async resolveImportPath(): Promise<void> {
+    try {
+      const resolvedPath = await executeImportPathLogic(this.importConfig, this.stackAPIClient);
+      log.debug(`Import path resolved to: ${resolvedPath}`);
+    } catch (error) {
+      log.error(`Failed to resolve import path: ${error}`);
+      // Continue with original path if resolution fails
     }
   }
 
@@ -130,7 +149,7 @@ class ModuleImporter {
    * @returns The function `auditImportData()` returns a boolean value. It returns `true` if there is a
    * fix available and the user confirms to proceed with the fix, otherwise it returns `false`.
    */
-  async auditImportData(logger: Logger) {
+  async auditImportData() {
     const basePath = resolve(this.importConfig.cliLogsPath || this.importConfig.backupDir, 'logs', 'audit');
     const auditConfig = this.importConfig.auditConfig;
     auditConfig.config.basePath = basePath;
@@ -150,30 +169,24 @@ class ModuleImporter {
       } else if (this.importConfig.modules.types.length) {
         this.importConfig.modules.types
           .filter((val) =>
-            [
-              'content-types',
-              'global-fields',
-              'entries',
-              'extensions',
-              'workflows',
-              'custom-roles',
-              'assets'
-            ].includes(val),
+            ['content-types', 'global-fields', 'entries', 'extensions', 'workflows', 'custom-roles', 'assets'].includes(
+              val,
+            ),
           )
           .forEach((val) => {
             args.push('--modules', val);
           });
       }
       args.push('--modules', 'field-rules');
-      log(this.importConfig, 'Starting audit process', 'info');
+      log.info('Starting audit process', this.importConfig.context);
       const result = await AuditFix.run(args);
-      log(this.importConfig, 'Audit process completed', 'info');
+      log.info('Audit process completed', this.importConfig.context);
 
       if (result) {
         const { hasFix, config } = result;
 
         if (hasFix) {
-          logger.log($t(messages.FINAL_REPORT_PATH, { path: config.reportPath }), 'warn');
+          log.warn($t(messages.FINAL_REPORT_PATH, { path: config.reportPath }), this.importConfig.context);
 
           if (
             this.importConfig.forceStopMarketplaceAppsPrompt ||
@@ -193,7 +206,7 @@ class ModuleImporter {
 
       return true;
     } catch (error) {
-      log(this.importConfig, `Audit failed with following error. ${error}`, 'error');
+      log.error(`Audit failed with following error. ${error}`, this.importConfig.context);
     }
   }
 }

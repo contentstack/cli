@@ -16,8 +16,7 @@ import { LabelData } from '@contentstack/management/types/stack/label';
 import { WebhookData } from '@contentstack/management/types/stack/webhook';
 import { WorkflowData } from '@contentstack/management/types/stack/workflow';
 import { RoleData } from '@contentstack/management/types/stack/role';
-
-import { log } from '../../utils';
+import { log } from '@contentstack/cli-utilities';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -57,6 +56,7 @@ export type ApiOptions = {
   url?: string;
   entity: ApiModuleType;
   apiData?: Record<any, any> | any;
+  queryParam?: Record<any, any>;
   resolve: (value: any) => Promise<void> | void;
   reject: (error: any) => Promise<void> | void;
   additionalInfo?: Record<any, any>;
@@ -209,7 +209,7 @@ export default abstract class BaseClass {
       // info: Batch No. 20 of import assets is complete
       if (currentIndexer) batchMsg += `Current chunk processing is (${currentIndexer}/${indexerCount})`;
 
-      log(this.importConfig, `Batch No. (${batchNo}/${totelBatches}) of ${processName} is complete`, 'success');
+      log.debug(`Batch No. (${batchNo}/${totelBatches}) of ${processName} is complete`, this.importConfig?.context);
     }
 
     if (this.importConfig.modules.assets.displayExecutionTime) {
@@ -325,20 +325,20 @@ export default abstract class BaseClass {
         return this.stack.globalField({ api_version: '3.2' }).create(apiData).then(onSuccess).catch(onReject);
       case 'update-gfs':
         let globalFieldUid = apiData.uid ?? apiData.global_field?.uid;
-          return this.stack
-            .globalField(globalFieldUid, { api_version: '3.2' })
-            .fetch()
-            .then(async (gf) => {
-              const { uid, ...updatePayload } = cloneDeep(apiData);
-              Object.assign(gf, updatePayload);
-              try {
-                const response = await gf.update();
-                return onSuccess(response);
-              } catch (error) {
-                return onReject(error);
-              }
-            })
-            .catch(onReject);
+        return this.stack
+          .globalField(globalFieldUid, { api_version: '3.2' })
+          .fetch()
+          .then(async (gf) => {
+            const { uid, ...updatePayload } = cloneDeep(apiData);
+            Object.assign(gf, updatePayload);
+            try {
+              const response = await gf.update();
+              return onSuccess(response);
+            } catch (error) {
+              return onReject(error);
+            }
+          })
+          .catch(onReject);
       case 'create-environments':
         return this.stack
           .environment()
@@ -420,7 +420,9 @@ export default abstract class BaseClass {
         if (!apiData || !apiData.filePath) {
           return Promise.resolve();
         }
-        return this.stack.taxonomy(uid).import({ taxonomy: apiData.filePath }).then(onSuccess).catch(onReject);
+        const importParams = { taxonomy: apiData.filePath };
+        const importQueryParam = apiOptions.queryParam || {};
+        return this.stack.taxonomy(uid).import(importParams, importQueryParam).then(onSuccess).catch(onReject);
       default:
         return Promise.resolve();
     }

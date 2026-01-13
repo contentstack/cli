@@ -2,6 +2,12 @@
 
 Please refer to the Contentstack Command-line Interface release notes [here](https://www.contentstack.com/docs/developers/cli/cli-changelog).
 
+## @contentstack/cli-cm-clone
+### Version: 1.8.2
+#### Date:  June-30-2025
+##### Fix:
+ - resolve stack-clone auth failure for non-NA regions
+
 ## @contentstack/cli-config
 ### Version: 1.13.1
 #### Date:  July-21-2025

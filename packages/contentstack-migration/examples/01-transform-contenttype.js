@@ -109,7 +109,7 @@ module.exports = async ({migration, stackSDKInstance}) => {
           entries.push(entryObj)
         }
       } catch (error) {
-        console.log(error)
+        console.log('Error', error)
       }
     },
   }

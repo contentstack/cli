@@ -1,7 +1,6 @@
 import { ImportConfig, Modules } from '../types';
-import { backupHandler, log } from '../utils';
-import { ContentstackClient } from '@contentstack/cli-utilities';
-import { validateBranch } from '../utils';
+import { backupHandler, setupBranchConfig, validateBranch } from '../utils';
+import { ContentstackClient, log, handleAndLogError } from '@contentstack/cli-utilities';
 
 export default class ImportSetup {
   protected config: ImportConfig;
@@ -64,8 +63,10 @@ export default class ImportSetup {
    * @returns {Promise<void>}
    */
   protected async runModuleImports() {
+    log.debug('Starting module imports', { modules: Object.keys(this.dependencyTree) });
     for (const moduleName in this.dependencyTree) {
       try {
+        log.debug(`Importing module: ${moduleName}`, { moduleName, dependencies: this.dependencyTree[moduleName] });
         const modulePath = `./modules/${moduleName}`;
         const { default: ModuleClass } = await import(modulePath);
 
@@ -77,11 +78,13 @@ export default class ImportSetup {
 
         const moduleInstance = new ModuleClass(modulePayload);
         await moduleInstance.start();
+        log.debug(`Module ${moduleName} imported successfully`);
       } catch (error) {
-        log(this.config, `Error occurred while importing '${moduleName}'`, 'error');
+        handleAndLogError(error, { ...this.config.context, moduleName }, `Error occurred while importing '${moduleName}'`);
         throw error;
       }
     }
+    log.debug('All module imports completed');
   }
 
   /**
@@ -98,18 +101,22 @@ export default class ImportSetup {
         this.config.org_uid = stackDetails.org_uid as string;
       }
 
+      log.debug('Creating backup directory');
       const backupDir = await backupHandler(this.config);
       if (backupDir) {
         this.config.backupDir = backupDir;
+        log.debug('Backup directory created', { backupDir });
       }
-      if (this.config.branchName) {
-        await validateBranch(this.stackAPIClient, this.config, this.config.branchName);
-      }
+      
+      log.debug('Setting up branch configuration');
+      await setupBranchConfig(this.config, this.stackAPIClient);
+      log.debug('Branch configuration completed', { branchName: this.config.branchName });
 
       await this.generateDependencyTree();
       await this.runModuleImports();
+      log.debug('Import setup process completed successfully');
     } catch (error) {
-      console.log(error);
+      handleAndLogError(error, { ...this.config.context }, 'Import setup failed');
       throw error;
     }
   }

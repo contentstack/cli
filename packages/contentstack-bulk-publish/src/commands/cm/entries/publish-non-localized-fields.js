@@ -45,6 +45,7 @@ class NonlocalizedFieldChangesCommand extends Command {
           host: this.cmaHost,
           cda: this.cdaHost,
           branch: nonlocalizedFieldChangesFlags.branch,
+          delayMs: updatedFlags.delayMs,
         };
         if (updatedFlags.alias) {
           try {
@@ -59,7 +60,7 @@ class NonlocalizedFieldChangesCommand extends Command {
         } else if (updatedFlags['stack-api-key']) {
           config.stackApiKey = updatedFlags['stack-api-key'];
         } else {
-          this.error('Please use `--alias` or `--stack-api-key` to proceed.', { exit: 2 });
+          this.error('Use the `--alias` or `--stack-api-key` flag to proceed.', { exit: 2 });
         }
         stack = await getStack(config);
       }

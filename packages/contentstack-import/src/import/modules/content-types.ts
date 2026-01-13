@@ -1,7 +1,7 @@
 /* eslint-disable no-prototype-builtins */
 /*!
  * Contentstack Import
- * Copyright (c) 2024 Contentstack LLC
+ * Copyright (c) 2026 Contentstack LLC
  * MIT Licensed
  */
 
@@ -105,16 +105,16 @@ export default class ContentTypesImport extends BaseClass {
      */
     this.cTs = fsUtil.readFile(path.join(this.cTsFolderPath, 'schema.json')) as Record<string, unknown>[];
     if (!this.cTs || isEmpty(this.cTs)) {
-      log.info('No content type found to import', this.importConfig.context);
+      log.info('No content type found to import.', this.importConfig.context);
       return;
     }
     log.debug(`Found ${this.cTs.length} content types to import`, this.importConfig.context);
 
     await fsUtil.makeDirectory(this.cTsMapperPath);
-    log.debug('Created content types mapper directory', this.importConfig.context);
+    log.debug('Created content types mapper directory.', this.importConfig.context);
 
     this.installedExtensions = (
-      ((await fsUtil.readFile(this.marketplaceAppMapperPath)) as any) || { extension_uid: {} }
+      (fsUtil.readFile(this.marketplaceAppMapperPath) as any) || { extension_uid: {} }
     ).extension_uid;
     log.debug(
       `Loaded ${Object.keys(this.installedExtensions)?.length} installed extensions`,
@@ -125,7 +125,7 @@ export default class ContentTypesImport extends BaseClass {
     const taxonomyCount = Object.keys(this.taxonomies || {}).length;
     log.debug(`Loaded ${taxonomyCount} taxonomy definitions`, this.importConfig.context);
 
-    log.info('Starting content types seeding process', this.importConfig.context);
+    log.info('Starting content types seeding process...', this.importConfig.context);
     await this.seedCTs();
     if (this.createdCTs?.length) {
       fsUtil.writeFile(this.cTsSuccessPath, this.createdCTs);
@@ -133,7 +133,7 @@ export default class ContentTypesImport extends BaseClass {
     }
     log.success('Created content types', this.importConfig.context);
 
-    log.info('Starting content types update process', this.importConfig.context);
+    log.info('Starting content types update process...', this.importConfig.context);
     await this.updateCTs();
     log.success('Updated content types with references', this.importConfig.context);
 
@@ -148,10 +148,10 @@ export default class ContentTypesImport extends BaseClass {
       log.success('Successfully updated the extensions.', this.importConfig.context);
     }
 
-    log.info('Starting pending global fields update', this.importConfig.context);
+    log.info('Starting pending global fields update...', this.importConfig.context);
     this.pendingGFs = fsUtil.readFile(this.gFsPendingPath) as any;
     if (!this.pendingGFs || isEmpty(this.pendingGFs)) {
-      log.info('No pending global fields found to update', this.importConfig.context);
+      log.info('No pending global fields found to update.', this.importConfig.context);
       return;
     }
     await this.updatePendingGFs().catch((error) => {
@@ -169,7 +169,7 @@ export default class ContentTypesImport extends BaseClass {
     };
     const onReject = ({ error, apiData: { content_type: { uid = null } = {} } = {} }: any) => {
       if (error.errorCode === 115 && (error.errors.uid || error.errors.title)) {
-        log.info(`${uid} content type already exist`, this.importConfig.context);
+        log.info(`${uid} content type already exists.`, this.importConfig.context);
         log.debug(`Skipping existing content type: ${uid}`, this.importConfig.context);
       } else {
         handleAndLogError(error, { ...this.importConfig.context, uid }, `Failed to seed content type ${uid}`);
@@ -352,7 +352,7 @@ export default class ContentTypesImport extends BaseClass {
 
     if (!apiContent || apiContent?.length === 0) {
       log.info(`No extensions found to be updated.`, this.importConfig.context);
-      log.debug('Skipping extensions update - no pending extensions', this.importConfig.context);
+      log.debug('Skipping extensions update – no pending extensions.', this.importConfig.context);
       return;
     }
 
@@ -376,7 +376,7 @@ export default class ContentTypesImport extends BaseClass {
       }
     };
 
-    log.debug('Starting extensions update process', this.importConfig.context);
+    log.debug('Starting extensions update process...', this.importConfig.context);
     return await this.makeConcurrentCall(
       {
         apiContent,

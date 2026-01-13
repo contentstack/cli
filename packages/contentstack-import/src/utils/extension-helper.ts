@@ -4,7 +4,7 @@
 
 /*!
  * Contentstack Import
- * Copyright (c) 2024 Contentstack LLC
+ * Copyright (c) 2026 Contentstack LLC
  * MIT Licensed
  */
 import { join } from 'node:path';
@@ -76,7 +76,7 @@ export const lookupExtension = function (
         log.debug(`Mapping global field reference: ${global_fields_key_value} -> ${mappedValue}`);
         schema[i].reference_to = global_fields_data[global_fields_key_value];
       } else {
-        log.warn(`No mapping found for global field: ${global_fields_key_value}`);
+        log.debug(`No mapping found for global field: ${global_fields_key_value}`);
       }
     } else if (schema[i].hasOwnProperty('extension_uid')) {
       log.debug(`Processing field with extension UID: ${schema[i].uid}`);
@@ -93,7 +93,7 @@ export const lookupExtension = function (
           log.debug(`Using installed extension mapping: ${schema[i].extension_uid}`);
           schema[i].extension_uid = installedExtensions[schema[i].extension_uid];
         } else {
-          log.warn(`No mapping found for extension: ${extension_key_value}`);
+          log.debug(`No mapping found for extension: ${extension_key_value}`);
         }
       }
     } else if (schema[i].data_type === 'json' && schema[i].hasOwnProperty('plugins') && schema[i].plugins.length > 0) {
@@ -116,7 +116,7 @@ export const lookupExtension = function (
           log.debug(`Mapping marketplace app extension: ${extension_key_value} -> ${mappedMarketplaceExt}`);
           newPluginUidsArray.push(marketPlaceAppsData.extension_uid[extension_key_value]);
         } else {
-          log.warn(`No mapping found for plugin extension: ${extension_key_value}`);
+          log.debug(`No mapping found for plugin extension: ${extension_key_value}`);
         }
       });
 

@@ -49,7 +49,8 @@ export type Modules =
   | 'labels'
   | 'marketplace-apps'
   | 'taxonomies'
-  | 'personalize';
+  | 'personalize'
+  | 'composable-studio';
 
 export type ModuleClassParams = {
   stackAPIClient: ReturnType<ContentstackClient['stack']>;
@@ -129,16 +130,36 @@ export interface StackConfig {
   dependencies?: Modules[];
   limit?: number;
 }
+
+export interface ComposableStudioConfig {
+  dirName: string;
+  fileName: string;
+  apiBaseUrl: string;
+  apiVersion: string;
+}
+
+export interface ComposableStudioProject {
+  name: string;
+  description: string;
+  canvasUrl: string;
+  connectedStackApiKey: string;
+  contentTypeUid: string;
+  organizationUid: string;
+  settings: {
+    configuration: {
+      environment: string;
+      locale: string;
+    };
+  };
+  createdBy: string;
+  updatedBy: string;
+  deletedAt: boolean;
+  createdAt: string;
+  updatedAt: string;
+  uid: string;
+}
 export interface Context {
-  command: string;
   module: string;
-  userId: string | undefined;
-  email: string | undefined;
-  sessionId: string | undefined;
-  clientId?: string | undefined;
-  apiKey: string;
-  orgId: string;
-  authenticationMethod?: string;
 }
 
 export { default as DefaultConfig } from './default-config';

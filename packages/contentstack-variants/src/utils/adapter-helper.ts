@@ -28,8 +28,25 @@ export class AdapterHelper<C, ApiClient> implements AdapterHelperInterface<C, Ap
       'responseType',
     ];
     this.apiClient = new HttpClient(pick(adapterConfig, pickConfig), options) as ApiClient;
+    
     if (adapterConfig.cmaConfig) {
       this.cmaAPIClient = new HttpClient(pick(adapterConfig.cmaConfig, pickConfig), options) as ApiClient;
+    }
+    
+    if (adapterConfig.delayMs) {
+      if (this.apiClient) {
+        (this.apiClient as any).interceptors?.request?.use(async (requestConfig: any) => {
+          await this.delay(adapterConfig.delayMs!);
+          return requestConfig;
+        });
+      }
+      
+      if (this.cmaAPIClient) {
+        (this.cmaAPIClient as any).interceptors?.request?.use(async (requestConfig: any) => {
+          await this.delay(adapterConfig.delayMs!);
+          return requestConfig;
+        });
+      }
     }
   }
 

@@ -1,7 +1,7 @@
 import { checkSync } from 'recheck';
 import traverse from 'traverse';
 import authHandler from './auth-handler';
-import { HttpClient, cliux, configHandler } from '.';
+import { ContentstackClient, HttpClient, cliux, configHandler } from '.';
 
 export const isAuthenticated = () => authHandler.isAuthenticated();
 export const doesBranchExist = async (stack, branchName) => {
@@ -11,6 +11,21 @@ export const doesBranchExist = async (stack, branchName) => {
     .catch((error) => {
       return error;
     });
+};
+
+export const getBranchFromAlias = async (stack: ReturnType<ContentstackClient['stack']>, branchAlias: string) => {
+  if (!stack || !branchAlias || typeof branchAlias !== 'string') {
+    throw new Error('Invalid input. Both stack and branch alias are required.');
+  }
+  try {
+    const response = await stack.branchAlias(branchAlias).fetch();
+    if (!response?.uid) {
+      throw new Error(`Invalid Branch Alias. No Branch found for the branch alias: ${branchAlias}`);
+    }
+    return response.uid;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const isManagementTokenValid = async (stackAPIKey, managementToken) => {
@@ -93,6 +108,29 @@ export const formatError = function (error: any) {
     parsedError = error;
   }
 
+  // Helper function to append error details
+  const appendErrorDetails = (message: string, errorObj: any): string => {
+    if (errorObj.errors && typeof errorObj.errors === 'object' && Object.keys(errorObj.errors).length > 0) {
+      const entityNames: { [key: string]: string } = {
+        authorization: 'Authentication',
+        api_key: 'Stack API key',
+        uid: 'Content Type',
+        access_token: 'Delivery Token',
+      };
+
+      const errorList = Object.entries(errorObj.errors)
+        .map(([field, errors]) => {
+          const errorArray = Array.isArray(errors) ? errors : [errors];
+          const fieldName = entityNames[field] || field;
+          return `  • ${fieldName}: ${errorArray.join(', ')}`;
+        })
+        .join('\n');
+
+      return `${message}\n\nError Details:\n${errorList}\n`;
+    }
+    return message;
+  };
+
   if (parsedError && typeof parsedError === 'object' && Object.keys(parsedError).length === 0) {
     if (
       !parsedError.message &&
@@ -106,25 +144,25 @@ export const formatError = function (error: any) {
   }
 
   if (parsedError?.response?.data?.errorMessage) {
-    return parsedError.response.data.errorMessage;
+    return appendErrorDetails(parsedError.response.data.errorMessage, parsedError?.response?.data || parsedError);
   }
 
   if (parsedError?.errorMessage) {
-    return parsedError.errorMessage;
+    return appendErrorDetails(parsedError.errorMessage, parsedError);
   }
 
   const status = parsedError?.status || parsedError?.response?.status;
   const errorCode = parsedError?.errorCode || parsedError?.response?.data?.errorCode;
   if (status === 422 && errorCode === 104) {
-    return 'Invalid email or password. Please check your credentials and try again.';
+    return appendErrorDetails('Invalid email or password. Please check your credentials and try again.', parsedError);
   }
 
   if (status === 401) {
-    return 'Authentication failed. Please check your credentials.';
+    return appendErrorDetails('Authentication failed. Please check your credentials.', parsedError);
   }
 
   if (status === 403) {
-    return 'Access denied. Please check your permissions.';
+    return appendErrorDetails('Access denied. Please check your permissions.', parsedError);
   }
 
   // Check for specific SSL error
@@ -159,24 +197,8 @@ export const formatError = function (error: any) {
     // message is not in JSON format, no need to parse
   }
 
-  // Append detailed error information if available
-  if (parsedError.errors && Object.keys(parsedError.errors).length > 0) {
-    const entityNames: { [key: string]: string } = {
-      authorization: 'Authentication',
-      api_key: 'Stack API key',
-      uid: 'Content Type',
-      // deepcode ignore HardcodedNonCryptoSecret: The hardcoded value 'access_token' is used as a key in an error message mapping object and does not represent a sensitive secret or cryptographic key.
-      access_token: 'Delivery Token',
-    };
-
-    message +=
-      ' ' +
-      Object.entries(parsedError.errors)
-        .map(([key, value]) => `${entityNames[key] || key} ${value}`)
-        .join(' ');
-  }
-
-  return message;
+  // Always append error details at the end
+  return appendErrorDetails(message, parsedError);
 };
 
 /**
@@ -223,3 +245,62 @@ const sensitiveKeys = [
   /management[-._]?token/i,
   /delivery[-._]?token/i,
 ];
+
+/**
+ * Get authentication method from config
+ * @returns Authentication method string ('OAuth', 'Basic Auth', or empty string)
+ */
+export function getAuthenticationMethod(): string {
+  const authType = configHandler.get('authorisationType');
+  if (authType === 'OAUTH') {
+    return 'OAuth';
+  } else if (authType === 'BASIC') {
+    return 'Basic Auth';
+  }
+  // Management token detection is command-specific and not stored globally
+  // Return empty string if unknown
+  return '';
+}
+
+/**
+ * Creates a standardized context object for logging
+ * This context contains all session-level metadata that should be in session.json
+ * The apiKey is stored in configHandler so it's available for session.json generation
+ * 
+ * @param commandId - The command ID (e.g., 'cm:stacks:export')
+ * @param apiKey - The API key for the stack (will be stored in configHandler for session.json)
+ * @param authenticationMethod - Optional authentication method
+ * @returns Context object with all session-level metadata
+ */
+export function createLogContext(
+  commandId: string,
+  apiKey: string,
+  authenticationMethod?: string
+): {
+  command: string;
+  module: string;
+  userId: string;
+  email: string;
+  sessionId: string;
+  apiKey: string;
+  orgId: string;
+  authenticationMethod: string;
+} {
+  // Store apiKey in configHandler so it's available for session.json
+  if (apiKey) {
+    configHandler.set('apiKey', apiKey);
+  }
+
+  const authMethod = authenticationMethod || getAuthenticationMethod();
+
+  return {
+    command: commandId,
+    module: '',
+    userId: configHandler.get('clientId') || '',
+    email: configHandler.get('email') || '',
+    sessionId: configHandler.get('sessionId') || '',
+    apiKey: apiKey || '',
+    orgId: configHandler.get('oauthOrgUid') || '',
+    authenticationMethod: authMethod,
+  };
+}

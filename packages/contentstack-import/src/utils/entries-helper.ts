@@ -21,7 +21,7 @@ export const lookupEntries = function (
   uidMapperPath: string,
 ) {
   log.debug(`Starting entry lookup for entry: ${data.entry?.uid}, content type: ${data.content_type?.uid}`);
-  
+
   let parent: string[] = [];
   let uids: string[] = [];
   let unmapped: string[] = [];
@@ -162,7 +162,7 @@ export const lookupEntries = function (
 
   function findEntryIdsFromJsonRte(entry: any, ctSchema: any = []) {
     log.debug('Processing JSON RTE fields for entry references');
-    
+
     for (const element of ctSchema) {
       switch (element.data_type) {
         case 'blocks': {
@@ -211,9 +211,9 @@ export const lookupEntries = function (
     log.debug('Processing new reference field format');
     findUidsInNewRefFields(data.entry, uids);
   }
-  
+
   uids = _.flattenDeep(uids);
-  
+
   // if no references are found, return
   if (uids.length === 0) {
     log.debug('No entry references found');
@@ -222,9 +222,9 @@ export const lookupEntries = function (
 
   uids = _.uniq(uids);
   log.debug(`Found ${uids.length} unique entry references`);
-  
+
   let entry = JSON.stringify(data.entry);
-  
+
   uids?.forEach(function (uid: any) {
     if (mappedUids.hasOwnProperty(uid)) {
       const sanitizedUid = escapeRegExp(uid);
@@ -243,7 +243,7 @@ export const lookupEntries = function (
   });
 
   if (unmapped.length > 0) {
-    log.warn(`Found ${unmapped.length} unmapped entry references`);
+    log.debug(`Found ${unmapped.length} unmapped entry references`);
     let unmappedUids = fileHelper.readFileSync(path.join(uidMapperPath, 'unmapped-uids.json'));
     unmappedUids = unmappedUids || {};
     if (unmappedUids.hasOwnProperty(data.content_type.uid)) {
@@ -299,7 +299,7 @@ export const removeUidsFromJsonRteFields = (
   ctSchema: Record<string, any>[] = [],
 ): Record<string, any> => {
   log.debug('Removing UIDs from JSON RTE fields');
-  
+
   for (const element of ctSchema) {
     switch (element.data_type) {
       case 'blocks': {
@@ -332,7 +332,7 @@ export const removeUidsFromJsonRteFields = (
       case 'json': {
         if (entry[element.uid] && element?.field_metadata?.rich_text_type) {
           log.debug(`Processing JSON RTE field for UID removal: ${element.uid}`);
-          
+
           if (element.multiple) {
             entry[element.uid] = entry[element.uid].map((jsonRteData: any) => {
               delete jsonRteData.uid; // remove uid
@@ -363,7 +363,7 @@ export const removeUidsFromJsonRteFields = (
       }
     }
   }
-  
+
   log.debug('Completed removing UIDs from JSON RTE fields');
   return entry;
 };

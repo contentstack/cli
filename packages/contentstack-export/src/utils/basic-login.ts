@@ -3,7 +3,7 @@
 /* eslint-disable no-empty */
 /*!
  * Contentstack Import
- * Copyright (c) 2024 Contentstack LLC
+ * Copyright (c) 2026 Contentstack LLC
  * MIT Licensed
  */
 
@@ -25,7 +25,7 @@ const login = async (config: ExternalConfig): Promise<any> => {
       log.success(`Contentstack account authenticated successfully!`, config.context);
       return config;
     } else {
-      log.error(`Failed to login, Invalid credentials`, config.context);
+      log.error(`Failed to log in!`, config.context);
       process.exit(1);
     }
   } else if (!config.email && !config.password && config.source_stack && config.access_token) {

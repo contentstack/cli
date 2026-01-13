@@ -3,7 +3,7 @@
 /* eslint-disable no-empty */
 /*!
  * Contentstack Import
- * Copyright (c) 2024 Contentstack LLC
+ * Copyright (c) 2026 Contentstack LLC
  * MIT Licensed
  */
 
@@ -49,7 +49,7 @@ const login = async (config: ImportConfig): Promise<any> => {
 
       if (errorstack_key) {
         const keyError = errorstack_key[0];
-        log.error(`Invalid stack API token: ${keyError} Please enter valid stack API token.`);
+        log.error(`Invalid stack API token: ${keyError}. Please enter a valid stack API token.`);
         throw error;
       }
 

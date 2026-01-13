@@ -22,8 +22,7 @@ export const askAPIKey = async (): Promise<string> => {
   });
 };
 
-
-export const askEncryptionKey = async(defaultValue: unknown): Promise<string> => {
+export const askEncryptionKey = async (defaultValue: unknown): Promise<string> => {
   return await cliux.inquire({
     type: 'input',
     name: 'name',
@@ -35,9 +34,9 @@ export const askEncryptionKey = async(defaultValue: unknown): Promise<string> =>
     },
     message: 'Enter Marketplace app configurations encryption key',
   });
-}
+};
 
-export const askAppName = async(app: any, appSuffix: number):Promise<string> =>{
+export const askAppName = async (app: any, appSuffix: number): Promise<string> => {
   return await cliux.inquire({
     type: 'input',
     name: 'name',
@@ -45,15 +44,15 @@ export const askAppName = async(app: any, appSuffix: number):Promise<string> =>{
     default: getAppName(app.name, appSuffix),
     message: `${app.name} app already exist. Enter a new name to create an app.?`,
   });
-}
+};
 
-export const getAppName= (name: string, appSuffix = 1) => {
+export const getAppName = (name: string, appSuffix = 1) => {
   if (name.length >= 19) name = name.slice(0, 18);
   name = `${first(split(name, '◈'))}◈${appSuffix}`;
   return name;
-}
+};
 
-export const getLocationName= (name: string, appSuffix = 1, existingNames: Set<string>) => {
+export const getLocationName = (name: string, appSuffix = 1, existingNames: Set<string>) => {
   const maxLength = 50;
   const suffixLength = appSuffix.toString().length + 1; // +1 for the '◈' character
 
@@ -74,17 +73,17 @@ export const getLocationName= (name: string, appSuffix = 1, existingNames: Set<s
   existingNames.add(newName);
 
   return newName;
-}
+};
 
-const validateAppName =(name: string ) =>{
+const validateAppName = (name: string) => {
   if (name.length < 3 || name.length > 20) {
     return 'The app name should be within 3-20 characters long.';
   }
 
   return true;
-}
+};
 
-export const selectConfiguration = async():Promise<string> =>{
+export const selectConfiguration = async (): Promise<string> => {
   return await cliux.inquire({
     choices: [
       'Update it with the new configuration.',
@@ -95,4 +94,13 @@ export const selectConfiguration = async():Promise<string> =>{
     name: 'value',
     message: 'Choose the option to proceed',
   });
-}
+};
+
+export const askBranchSelection = async (branchNames: string[]): Promise<string> => {
+  return await cliux.inquire({
+    type: 'list',
+    name: 'branch',
+    message: 'Found multiple branches in your export path. Please select one to import:',
+    choices: branchNames,
+  });
+};

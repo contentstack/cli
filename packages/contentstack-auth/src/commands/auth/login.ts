@@ -10,7 +10,7 @@ import {
   messageHandler,
 } from '@contentstack/cli-utilities';
 import { User } from '../../interfaces';
-import { authHandler, interactive } from '../../utils';
+import { authHandler, interactive, mfaHandler } from '../../utils';
 import { BaseCommand } from '../../base-command';
 
 export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
@@ -40,6 +40,7 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
       required: false,
       exclusive: ['oauth'],
     }),
+
     oauth: flags.boolean({
       description: 'Enables single sign-on (SSO) in Contentstack CLI.',
       required: false,
@@ -54,12 +55,12 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
     log.debug('LoginCommand run method started', this.contextDetails);
 
     try {
-      log.debug('Initializing management API client', this.contextDetails);
+      log.debug('Initializing the Management API client.', this.contextDetails);
       const managementAPIClient = await managementSDKClient({ host: this.cmaHost, skipTokenValidity: true });
-      log.debug('Management API client initialized successfully', this.contextDetails);
-      
+      log.debug('Management API client initialized successfully.', this.contextDetails);
+
       const { flags: loginFlags } = await this.parse(LoginCommand);
-      log.debug('Token add flags parsed', {...this.contextDetails, flags: loginFlags});
+      log.debug('Token add flags parsed.', { ...this.contextDetails, flags: loginFlags });
 
       authHandler.client = managementAPIClient;
       log.debug('Auth handler client set', this.contextDetails);
@@ -76,12 +77,22 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
         log.debug('Starting basic authentication flow', this.contextDetails);
         const username = loginFlags?.username || (await interactive.askUsername());
         const password = loginFlags?.password || (await interactive.askPassword());
-        log.debug('Credentials obtained', { ...this.contextDetails, hasUsername: !!username, hasPassword: !!password });
+        log.debug('Credentials obtained', {
+          ...this.contextDetails,
+          hasUsername: !!username,
+          hasPassword: !!password,
+        });
+
         await this.login(username, password);
       }
     } catch (error) {
-      log.debug('Login command failed', { ...this.contextDetails, error });
-      cliux.error('CLI_AUTH_LOGIN_FAILED');
+      log.debug('Login failed.', {
+        ...this.contextDetails,
+        error,
+      });
+      if ((error?.message && error?.message.includes('2FA')) || error?.message.includes('MFA')) {
+        error.message = `${error.message}\nFor more information about MFA, visit: https://www.contentstack.com/docs/developers/security/multi-factor-authentication`;
+      }
       handleAndLogError(error, { ...this.contextDetails });
       process.exit();
     }
@@ -92,8 +103,20 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
 
     try {
       log.debug('Calling auth handler login', this.contextDetails);
-      const user: User = await authHandler.login(username, password);
-      log.debug('Auth handler login completed', {
+      let tfaToken: string | undefined;
+
+      try {
+        tfaToken = await mfaHandler.getMFACode();
+        if (tfaToken) {
+          log.debug('MFA token generated from stored configuration', this.contextDetails);
+        }
+      } catch (error) {
+        log.debug('Failed to generate MFA token from config', { ...this.contextDetails, error });
+        tfaToken = undefined;
+      }
+
+      const user: User = await authHandler.login(username, password, tfaToken);
+      log.debug('Auth handler login completed.', {
         ...this.contextDetails,
         hasUser: !!user,
         hasAuthToken: !!user?.authtoken,
@@ -101,18 +124,18 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
       });
 
       if (typeof user !== 'object' || !user.authtoken || !user.email) {
-        log.debug('Login failed - invalid user response', { ...this.contextDetails, user });
-        throw new CLIError('Failed to login - invalid response');
+        log.debug('Login failed: Invalid user response', { ...this.contextDetails, user });
+        throw new CLIError('Login failed: Invalid response.');
       }
 
-      log.debug('Setting config data for basic auth', this.contextDetails);
+      log.debug('Setting configuration data for basic authentication.', this.contextDetails);
       await oauthHandler.setConfigData('basicAuth', user);
-      log.debug('Config data set successfully', this.contextDetails);
+      log.debug('Configuration data set successfully.', this.contextDetails);
 
       log.success(messageHandler.parse('CLI_AUTH_LOGIN_SUCCESS'), this.contextDetails);
-      log.debug('Login process completed successfully', this.contextDetails);
+      log.debug('Login completed successfully.', this.contextDetails);
     } catch (error) {
-      log.debug('Login process failed', { ...this.contextDetails, error });
+      log.debug('Login failed.', { ...this.contextDetails, error });
       throw error;
     }
   }

@@ -37,6 +37,7 @@ class UnpublishCommand extends Command {
           host: this.cmaHost,
           cda: this.cdaHost,
           branch: unpublishFlags.branch,
+          delayMs: updatedFlags.delayMs,
         };
         if (updatedFlags.alias) {
           // Validate management token alias.
@@ -52,7 +53,7 @@ class UnpublishCommand extends Command {
         } else if (updatedFlags['stack-api-key']) {
           config.stackApiKey = updatedFlags['stack-api-key'];
         } else {
-          this.error('Please use `--alias` or `--stack-api-key` to proceed.', { exit: 2 });
+          this.error('Use the `--alias` or `--stack-api-key` flag to proceed.', { exit: 2 });
         }
         if (!updatedFlags.deliveryToken) {
           updatedFlags.deliveryToken = await cliux.prompt('Enter delivery token of your source environment');
@@ -61,7 +62,7 @@ class UnpublishCommand extends Command {
         stack = await getStack(config);
       }
       if (!updatedFlags.deliveryToken && updatedFlags.deliveryToken.length === 0) {
-        this.error('Delivery Token is required for executing this command', { exit: 2 });
+        this.error('A delivery token is required to execute this command.', { exit: 2 });
       }
 
       if (await this.confirmFlags(updatedFlags)) {

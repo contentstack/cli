@@ -1,6 +1,6 @@
 /*!
  * Contentstack Import
- * Copyright (c) 2024 Contentstack LLC
+ * Copyright (c) 2026 Contentstack LLC
  * MIT Licensed
  */
 
@@ -1155,7 +1155,7 @@ module.exports = class ImportEntries {
                     addlogs(this.config, `Entries published successfully in '${ctUid}' content type`, 'info');
                   })
                   .catch((error) => {
-                    console.log(error);
+                    console.log('Error', error);
                     addlogs(
                       this.config,
                       `failed to publish entry in content type '${ctUid}' ${formatError(error)}`,

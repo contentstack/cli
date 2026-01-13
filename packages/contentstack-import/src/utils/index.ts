@@ -1,3 +1,10 @@
+export { setupBranchConfig } from './setup-branch';
+export { 
+  selectBranchFromDirectory,
+  resolveImportPath,
+  updateImportConfigWithResolvedPath,
+  executeImportPathLogic
+} from './import-path-resolver';
 export * as interactive from './interactive';
 export { default as setupImportConfig } from './import-config-handler';
 export * as fileHelper from './file-helper';
