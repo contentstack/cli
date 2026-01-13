@@ -6,8 +6,6 @@ import { AuditBaseCommand } from '../../../../audit-base-command';
 import { tableFlags } from '../../../../util';
 
 export default class Audit extends AuditBaseCommand {
-  static aliases: string[] = ['audit', 'cm:stacks:audit'];
-
   static description = auditMsg.AUDIT_CMD_DESCRIPTION;
 
   static examples = [
