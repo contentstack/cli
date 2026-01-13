@@ -1,6 +1,6 @@
 /*!
  * Contentstack Export
- * Copyright (c) 2024 Contentstack LLC
+ * Copyright (c) 2026 Contentstack LLC
  * MIT Licensed
  */
 const _ = require('lodash');
