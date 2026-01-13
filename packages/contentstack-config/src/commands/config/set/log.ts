@@ -72,7 +72,6 @@ export default class LogSetCommand extends Command {
       }
     } catch (error) {
       handleAndLogError(error, { module: 'config-set-log' });
-      cliux.error('error', error);
     }
   }
 }

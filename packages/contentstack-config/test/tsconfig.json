@@ -1,15 +1,12 @@
 {
   "declaration": false,
-  "extends": "../tsconfig.json",
+  "extends": "../tsconfig",
   "compilerOptions": {
     "sourceMap": true,
     "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "rootDir": "..",
-    "outDir": "../lib"
+    "esModuleInterop": true
   },
   "include": [
-    "../src/**/*",
-    "./**/*"
+    "../src/**/*"
   ]
 }

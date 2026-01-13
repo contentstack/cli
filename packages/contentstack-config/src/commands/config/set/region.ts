@@ -136,7 +136,6 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
         cliux.success(`Studio URL: ${customRegion.composableStudioUrl}`);
       } catch (error) {
         handleAndLogError(error, { ...this.contextDetails, module: 'config-set-region' });
-        cliux.error(`Failed to set region due to: ${error.message}`);
       }
     } else if (
       ['NA', 'EU', 'AU', 'AWS-NA', 'AWS-EU', 'AWS-AU', 'AZURE-NA', 'AZURE-EU', 'GCP-NA', 'GCP-EU'].includes(
