@@ -1,5 +1,5 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, flags, configHandler, FlagInput, messageHandler } from '@contentstack/cli-utilities';
+import { cliux, flags, configHandler, FlagInput, messageHandler, handleAndLogError } from '@contentstack/cli-utilities';
 import { resolveLogPath } from '../../../utils/log-config-defaults';
 import * as path from 'path';
 
@@ -48,7 +48,7 @@ export default class LogSetCommand extends Command {
         if (pathExt && pathExt.length > 0) {
           resolvedPath = path.dirname(resolvedPath);
         }
-        
+
         currentLoggingConfig.path = resolvedPath;
       }
 
@@ -71,6 +71,7 @@ export default class LogSetCommand extends Command {
         );
       }
     } catch (error) {
+      handleAndLogError(error, { module: 'config-set-log' });
       cliux.error('error', error);
     }
   }

@@ -1,15 +1,24 @@
 import { Command } from '@contentstack/cli-command';
-import { ArgInput, FlagInput, Flags, Interfaces, LoggerService } from '@contentstack/cli-utilities';
+import { ArgInput, FlagInput, Flags, Interfaces, configHandler, createLogContext } from '@contentstack/cli-utilities';
 
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
 export type Flags<T extends typeof Command> = Interfaces.InferredFlags<(typeof BaseCommand)['baseFlags'] & T['flags']>;
 
 export abstract class BaseCommand<T extends typeof Command> extends Command {
-  public logger!: LoggerService;
+  public contextDetails!: {
+    command: string;
+    module: string;
+    userId: string;
+    email: string;
+    sessionId: string;
+    apiKey: string;
+    orgId: string;
+    authenticationMethod: string;
+  };
   protected args!: Args<T>;
   protected flags!: Flags<T>;
 
-  static args: ArgInput<{ [arg: string]: any; }>;
+  static args: ArgInput<{ [arg: string]: any }>;
   /**
    * The `init` function initializes the command by parsing arguments and flags, registering search
    * plugins, registering the configuration, and initializing the logger.
@@ -17,8 +26,10 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   public async init(): Promise<void> {
     await super.init();
 
-    // Init logger
-    this.logger = new LoggerService(process.cwd(), 'cli-log');
+    // Init logger context
+    this.contextDetails = {
+      ...createLogContext(this.context?.info?.command || 'config', '', configHandler.get('authenticationMethod')),
+    };
   }
 
   /**
