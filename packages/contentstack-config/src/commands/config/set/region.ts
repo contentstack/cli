@@ -7,6 +7,7 @@ import {
   FlagInput,
   ArgInput,
   args,
+  handleAndLogError,
 } from '@contentstack/cli-utilities';
 import { Region } from '../../../interfaces';
 import { regionHandler, interactive } from '../../../utils';
@@ -134,7 +135,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
         cliux.success(`Launch URL: ${customRegion.launchHubUrl}`);
         cliux.success(`Studio URL: ${customRegion.composableStudioUrl}`);
       } catch (error) {
-        this.logger.error('failed to set the region', error);
+        handleAndLogError(error, { ...this.contextDetails, module: 'config-set-region' });
         cliux.error(`Failed to set region due to: ${error.message}`);
       }
     } else if (
