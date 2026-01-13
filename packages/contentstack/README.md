@@ -29,8 +29,6 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`csdx audit`](#csdx-audit)
-* [`csdx audit:fix`](#csdx-auditfix)
 * [`csdx auth:login`](#csdx-authlogin)
 * [`csdx auth:logout`](#csdx-authlogout)
 * [`csdx auth:tokens`](#csdx-authtokens)
@@ -114,113 +112,6 @@ USAGE
 * [`csdx plugins:update`](#csdx-pluginsupdate)
 * [`csdx tokens`](#csdx-tokens)
 * [`csdx whoami`](#csdx-whoami)
-
-## `csdx audit`
-
-Perform audits and find possible errors in the exported Contentstack data
-
-```
-USAGE
-  $ csdx audit [-c <value>] [-d <value>] [--show-console-output] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules...] [--columns <value>]
-    [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
-
-FLAGS
-  --modules=<option>...  Provide the list of modules to be audited
-                         <options:
-                         content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules>
-  --report-path=<value>  Path to store the audit reports
-
-COMMON FLAGS
-  -c, --config=<value>       Path of the external config
-  -d, --data-dir=<value>     Path where the data is stored
-      --show-console-output  Display the audit and audit fix result for individual modules
-
-TABLE FLAGS
-  --columns=<value>  Specify columns to display, comma-separated.
-  --csv              Output results in CSV format.
-  --filter=<value>   Filter rows by a column value (e.g., name=foo).
-  --no-header        Hide table headers in output.
-  --no-truncate      Prevent truncation of long text in columns.
-  --output=<option>  Specify output format: csv, json, or yaml.
-                     <options: csv|json|yaml>
-  --sort=<value>     Sort the table by a column. Use "-" for descending.
-
-DESCRIPTION
-  Perform audits and find possible errors in the exported Contentstack data
-
-ALIASES
-  $ csdx audit
-  $ csdx cm:stacks:audit
-
-EXAMPLES
-  $ csdx audit
-
-  $ csdx audit --report-path=<path>
-
-  $ csdx audit --report-path=<path> --csv
-
-  $ csdx audit --report-path=<path> --filter="name=<filter-value>"
-
-  $ csdx audit --report-path=<path> --modules=content-types --filter="name="<filter-value>"
-```
-
-## `csdx audit:fix`
-
-Perform audits and fix possible errors in the exported Contentstack data.
-
-```
-USAGE
-  $ csdx audit:fix [-c <value>] [-d <value>] [--show-console-output] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules...] [--copy-path <value>
-    --copy-dir] [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns
-    <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
-
-FLAGS
-  --copy-dir              Create backup from the original data.
-  --copy-path=<value>     Provide the path to backup the copied data
-  --fix-only=<option>...  Provide the list of fix options
-                          <options: reference|global_field|json:rte|json:extension|blocks|group|content_types>
-  --modules=<option>...   Provide the list of modules to be audited
-                          <options:
-                          content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules>
-  --report-path=<value>   Path to store the audit reports
-
-COMMON FLAGS
-  -c, --config=<value>       Path of the external config
-  -d, --data-dir=<value>     Path where the data is stored
-      --show-console-output  Display the audit and audit fix result for individual modules
-
-TABLE FLAGS
-  --columns=<value>  Specify columns to display, comma-separated.
-  --csv              Output results in CSV format.
-  --filter=<value>   Filter rows by a column value (e.g., name=foo).
-  --no-header        Hide table headers in output.
-  --no-truncate      Prevent truncation of long text in columns.
-  --output=<option>  Specify output format: csv, json, or yaml.
-                     <options: csv|json|yaml>
-  --sort=<value>     Sort the table by a column. Use "-" for descending.
-
-DESCRIPTION
-  Perform audits and fix possible errors in the exported Contentstack data.
-
-ALIASES
-  $ csdx audit:fix
-  $ csdx cm:stacks:audit:fix
-
-EXAMPLES
-  $ csdx audit:fix --copy-dir
-
-  $ csdx audit:fix --report-path=<path> --copy-dir
-
-  $ csdx audit:fix --report-path=<path> --copy-dir --csv
-
-  $ csdx audit:fix --fix-only=reference,global_field --copy-dir
-
-  $ csdx audit:fix --report-path=<path> --filter="name=<filter-value>"
-
-  $ csdx audit:fix --report-path=<path> --modules=content-types --filter="name="<filter-value>" --copy-dir --copy-path=<path>
-```
 
 ## `csdx auth:login`
 
@@ -2275,10 +2166,6 @@ TABLE FLAGS
 DESCRIPTION
   Perform audits and find possible errors in the exported Contentstack data
 
-ALIASES
-  $ csdx audit
-  $ csdx cm:stacks:audit
-
 EXAMPLES
   $ csdx cm:stacks:audit
 
@@ -2331,10 +2218,6 @@ TABLE FLAGS
 
 DESCRIPTION
   Perform audits and fix possible errors in the exported Contentstack data.
-
-ALIASES
-  $ csdx audit:fix
-  $ csdx cm:stacks:audit:fix
 
 EXAMPLES
   $ csdx cm:stacks:audit:fix --copy-dir
@@ -3251,18 +3134,18 @@ Set region for CLI
 
 ```
 USAGE
-  $ csdx config:set:region [REGION] [--cda <value> --cma <value> --ui-host <value> -n <value>] [--developer-hub
-    <value>] [--personalize <value>] [--launch <value>] [--studio <value>]
+  $ csdx config:set:region [REGION] [-d <value> -m <value> --ui-host <value> -n <value>] [--developer-hub <value>]
+    [--personalize <value>] [--launch <value>] [--studio <value>]
 
 ARGUMENTS
   [REGION]  Name for the region
 
 FLAGS
-  -n, --name=<value>           Name for the region, if this flag is added then cda, cma and ui-host flags are required
-      --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and
+  -d, --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and
                                name flags are required
-      --cma=<value>            Custom host to set for content management API, , if this flag is added then cda, ui-host
+  -m, --cma=<value>            Custom host to set for content management API, , if this flag is added then cda, ui-host
                                and name flags are required
+  -n, --name=<value>           Name for the region, if this flag is added then cda, cma and ui-host flags are required
       --developer-hub=<value>  Custom host to set for Developer hub API
       --launch=<value>         Custom host to set for Launch API
       --personalize=<value>    Custom host to set for Personalize API

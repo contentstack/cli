@@ -9,8 +9,6 @@ import { getJsonInputFlags, tableFlags } from '../../../../util';
 const jsonFlag = getJsonInputFlags({ hidden: true });
 
 export default class AuditFix extends AuditBaseCommand {
-  static aliases: string[] = ['audit:fix', 'cm:stacks:audit:fix'];
-
   static description = auditFixMsg.AUDIT_FIX_CMD_DESCRIPTION;
 
   static examples = [
