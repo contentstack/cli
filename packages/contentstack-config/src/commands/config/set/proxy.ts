@@ -1,5 +1,5 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, flags, configHandler, FlagInput } from '@contentstack/cli-utilities';
+import { flags, configHandler, FlagInput, log } from '@contentstack/cli-utilities';
 import { askProxyPassword } from '../../../utils/interactive';
 
 export default class ProxySetCommand extends Command {
@@ -8,14 +8,17 @@ export default class ProxySetCommand extends Command {
   static flags: FlagInput = {
     host: flags.string({
       description: 'Proxy host address',
+      required: true,
     }),
     port: flags.string({
       description: 'Proxy port number',
+      required: true,
     }),
     protocol: flags.string({
       description: 'Proxy protocol (http or https)',
       options: ['http', 'https'],
       default: 'http',
+      required: true,
     }),
     username: flags.string({
       description: 'Proxy username (optional)',
@@ -30,17 +33,14 @@ export default class ProxySetCommand extends Command {
 
   async run() {
     try {
+      log.debug('Starting proxy configuration setup');
       const { flags } = await this.parse(ProxySetCommand);
 
-      // Validate required flags when setting proxy
-      if (!flags.host || !flags.port) {
-        cliux.error('Both --host and --port are required when setting proxy configuration. Use "csdx config:remove:proxy" to remove proxy config.');
-        return;
-      }
-      
+      log.debug('Parsed proxy configuration flags');
+
       const port = Number.parseInt(flags.port, 10);
       if (Number.isNaN(port) || port < 1 || port > 65535) {
-        cliux.error('Invalid port number. Port must be between 1 and 65535.');
+        log.error('Invalid port number provided');
         return;
       }
 
@@ -51,26 +51,22 @@ export default class ProxySetCommand extends Command {
       };
 
       if (flags.username) {
+        log.debug('Username provided, prompting for password');
         // Prompt for password when username is provided
         const password = await askProxyPassword();
         proxyConfig.auth = {
           username: flags.username,
           password: password || '',
         };
+        log.debug('Proxy authentication configured');
       }
 
+      log.debug('Saving proxy configuration to global config');
       configHandler.set('proxy', proxyConfig);
 
-      cliux.success(`Proxy configuration set successfully:`);
-      cliux.success(`  Host: ${proxyConfig.host}`);
-      cliux.success(`  Port: ${proxyConfig.port}`);
-      cliux.success(`  Protocol: ${proxyConfig.protocol}`);
-      if (proxyConfig.auth) {
-        cliux.success(`  Username: ${proxyConfig.auth.username ? '***' : 'Not set'}`);
-        cliux.success(`  Password: ${proxyConfig.auth.password ? '***' : 'Not set'}`);
-      }
+      log.success('Proxy configuration set successfully');
     } catch (error) {
-      cliux.error('Failed to set proxy configuration', error);
+      log.error('Failed to set proxy configuration');
     }
   }
 }

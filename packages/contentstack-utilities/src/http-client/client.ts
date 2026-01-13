@@ -3,7 +3,7 @@ import { IHttpClient } from './client-interface';
 import { HttpResponse } from './http-response';
 import configStore from '../config-handler';
 import authHandler from '../auth-handler';
-import { hasProxy, getProxyUrl } from '../proxy-helper';
+import { hasProxy, getProxyUrl, getProxyConfig } from '../proxy-helper';
 
 export type HttpClientOptions = {
   disableEarlyAccessHeaders?: boolean;
@@ -363,8 +363,9 @@ export class HttpClient implements IHttpClient {
       
       // Don't retry proxy connection errors - fail fast
       const proxyErrorCodes = ['ECONNREFUSED', 'ETIMEDOUT', 'ENOTFOUND', 'ERR_BAD_RESPONSE'];
+      const isProxyConfigured = this.request.proxy || hasProxy();
       
-      if ((this.request.proxy || hasProxy()) && (proxyErrorCodes.includes(code) || message?.includes('ERR_BAD_RESPONSE'))) {
+      if (isProxyConfigured && (proxyErrorCodes.includes(code) || message?.includes('ERR_BAD_RESPONSE'))) {
         const proxyUrl = this.request.proxy && typeof this.request.proxy === 'object'
           ? `${this.request.proxy.protocol}://${this.request.proxy.host}:${this.request.proxy.port}`
           : getProxyUrl();
@@ -382,18 +383,6 @@ export class HttpClient implements IHttpClient {
           ...this.request,
           data: this.prepareRequestPayload(),
         });
-      }
-      // Don't retry proxy connection errors - fail fast
-      const isProxyError = hasProxy && (
-        code === 'ECONNREFUSED' || 
-        code === 'ETIMEDOUT' ||
-        message?.includes('proxy') ||
-        message?.includes('ECONNREFUSED') ||
-        (code === 'ENOTFOUND' && hasProxy) // ENOTFOUND on proxy host
-      );
-      
-      if (isProxyError) {
-        return Promise.reject(error);
       }
       
       if (
@@ -419,6 +408,14 @@ export class HttpClient implements IHttpClient {
       const earlyAccessHeaders = configStore.get(`earlyAccessHeaders`);
       if (earlyAccessHeaders && Object.keys(earlyAccessHeaders).length > 0) {
         this.headers({ 'x-header-ea': Object.values(earlyAccessHeaders).join(',') });
+      }
+    }
+
+    // Configure proxy if available (priority: request.proxy > getProxyConfig())
+    if (!this.request.proxy) {
+      const proxyConfig = getProxyConfig();
+      if (proxyConfig) {
+        this.request.proxy = proxyConfig;
       }
     }
 

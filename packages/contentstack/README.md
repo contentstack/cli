@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.53.1 darwin-arm64 node-v22.14.0
+@contentstack/cli/1.54.0 darwin-arm64 node-v22.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -3737,12 +3737,12 @@ Set proxy configuration for CLI
 
 ```
 USAGE
-  $ csdx config:set:proxy [--host <value>] [--port <value>] [--protocol http|https] [--username <value>]
+  $ csdx config:set:proxy --host <value> --port <value> --protocol http|https [--username <value>]
 
 FLAGS
-  --host=<value>       Proxy host address
-  --port=<value>       Proxy port number
-  --protocol=<option>  [default: http] Proxy protocol (http or https)
+  --host=<value>       (required) Proxy host address
+  --port=<value>       (required) Proxy port number
+  --protocol=<option>  (required) [default: http] Proxy protocol (http or https)
                        <options: http|https>
   --username=<value>   Proxy username (optional)
 
