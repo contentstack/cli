@@ -1,21 +1,47 @@
 import { ImportConfig, Modules } from '../types';
-import { backupHandler, setupBranchConfig, validateBranch } from '../utils';
-import { ContentstackClient, log, handleAndLogError } from '@contentstack/cli-utilities';
+import { backupHandler as defaultBackupHandler, setupBranchConfig as defaultSetupBranchConfig } from '../utils';
+import {
+  ContentstackClient,
+  log as defaultLog,
+  handleAndLogError as defaultHandleAndLogError,
+} from '@contentstack/cli-utilities';
+
+/**
+ * Dependencies for ImportSetup - can be injected for testing
+ */
+export interface ImportSetupDeps {
+  backupHandler?: typeof defaultBackupHandler;
+  setupBranchConfig?: typeof defaultSetupBranchConfig;
+  log?: typeof defaultLog;
+  handleAndLogError?: typeof defaultHandleAndLogError;
+}
 
 export default class ImportSetup {
   protected config: ImportConfig;
-  private managementAPIClient: ContentstackClient;
-  private importConfig: ImportConfig;
-  private stackAPIClient: any;
+  private readonly managementAPIClient: ContentstackClient;
+  private readonly importConfig: ImportConfig;
+  private readonly stackAPIClient: any;
   public dependencyTree: { [key: string]: string[] } = {};
 
-  constructor(config: ImportConfig, managementAPIClient: ContentstackClient) {
+  // Injected dependencies
+  private readonly backupHandler: typeof defaultBackupHandler;
+  private readonly setupBranchConfig: typeof defaultSetupBranchConfig;
+  private readonly log: typeof defaultLog;
+  private readonly handleAndLogError: typeof defaultHandleAndLogError;
+
+  constructor(config: ImportConfig, managementAPIClient: ContentstackClient, deps: ImportSetupDeps = {}) {
     this.config = config;
     this.managementAPIClient = managementAPIClient;
     this.stackAPIClient = this.managementAPIClient.stack({
       api_key: this.config.apiKey,
       management_token: this.config.management_token,
     });
+
+    // Use injected dependencies or defaults
+    this.backupHandler = deps.backupHandler ?? defaultBackupHandler;
+    this.setupBranchConfig = deps.setupBranchConfig ?? defaultSetupBranchConfig;
+    this.log = deps.log ?? defaultLog;
+    this.handleAndLogError = deps.handleAndLogError ?? defaultHandleAndLogError;
   }
 
   /**
@@ -34,7 +60,7 @@ export default class ImportSetup {
       visited.add(module);
       const dependencies: Modules[] = this.config.modules[module]?.dependencies || [];
 
-      let allDeps: Modules[] = [...dependencies];
+      const allDeps: Modules[] = [...dependencies];
 
       for (const dependency of dependencies) {
         allDeps.push(...getAllDependencies(dependency as ModulesKey));
@@ -52,7 +78,9 @@ export default class ImportSetup {
       this.dependencyTree[module] = allDependencies;
 
       // Mark these dependencies as assigned so they won't be included in later modules
-      allDependencies.forEach((dep) => assignedDependencies.add(dep));
+      for (const dep of allDependencies) {
+        assignedDependencies.add(dep);
+      }
     }
   }
 
@@ -63,10 +91,13 @@ export default class ImportSetup {
    * @returns {Promise<void>}
    */
   protected async runModuleImports() {
-    log.debug('Starting module imports', { modules: Object.keys(this.dependencyTree) });
+    this.log.debug('Starting module imports', { modules: Object.keys(this.dependencyTree) });
     for (const moduleName in this.dependencyTree) {
       try {
-        log.debug(`Importing module: ${moduleName}`, { moduleName, dependencies: this.dependencyTree[moduleName] });
+        this.log.debug(`Importing module: ${moduleName}`, {
+          moduleName,
+          dependencies: this.dependencyTree[moduleName],
+        });
         const modulePath = `./modules/${moduleName}`;
         const { default: ModuleClass } = await import(modulePath);
 
@@ -78,13 +109,17 @@ export default class ImportSetup {
 
         const moduleInstance = new ModuleClass(modulePayload);
         await moduleInstance.start();
-        log.debug(`Module ${moduleName} imported successfully`);
+        this.log.debug(`Module ${moduleName} imported successfully`);
       } catch (error) {
-        handleAndLogError(error, { ...this.config.context, moduleName }, `Error occurred while importing '${moduleName}'`);
+        this.handleAndLogError(
+          error,
+          { ...this.config.context, moduleName },
+          `Error occurred while importing '${moduleName}'`,
+        );
         throw error;
       }
     }
-    log.debug('All module imports completed');
+    this.log.debug('All module imports completed');
   }
 
   /**
@@ -101,22 +136,22 @@ export default class ImportSetup {
         this.config.org_uid = stackDetails.org_uid as string;
       }
 
-      log.debug('Creating backup directory');
-      const backupDir = await backupHandler(this.config);
+      this.log.debug('Creating backup directory');
+      const backupDir = await this.backupHandler(this.config);
       if (backupDir) {
         this.config.backupDir = backupDir;
-        log.debug('Backup directory created', { backupDir });
+        this.log.debug('Backup directory created', { backupDir });
       }
-      
-      log.debug('Setting up branch configuration');
-      await setupBranchConfig(this.config, this.stackAPIClient);
-      log.debug('Branch configuration completed', { branchName: this.config.branchName });
+
+      this.log.debug('Setting up branch configuration');
+      await this.setupBranchConfig(this.config, this.stackAPIClient);
+      this.log.debug('Branch configuration completed', { branchName: this.config.branchName });
 
       await this.generateDependencyTree();
       await this.runModuleImports();
-      log.debug('Import setup process completed successfully');
+      this.log.debug('Import setup process completed successfully');
     } catch (error) {
-      handleAndLogError(error, { ...this.config.context }, 'Import setup failed');
+      this.handleAndLogError(error, { ...this.config.context }, 'Import setup failed');
       throw error;
     }
   }

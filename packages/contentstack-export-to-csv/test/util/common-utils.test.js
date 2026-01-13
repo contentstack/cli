@@ -13,6 +13,11 @@ describe('common utils', () => {
   let sandbox;
 
   beforeEach(async () => {
+    // Activate nock
+    if (!nock.isActive()) {
+      nock.activate();
+    }
+    
     managementSdk = await managementSDKClient({
       host: cma.replace('https://', ''),
     });
@@ -22,6 +27,9 @@ describe('common utils', () => {
   afterEach(() => {
     sandbox.restore();
     nock.cleanAll();
+    if (nock.isActive()) {
+      nock.restore();
+    }
   });
 
   describe('getStacks', () => {

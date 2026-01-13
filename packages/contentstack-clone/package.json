@@ -60,12 +60,8 @@
     "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
   },
   "csdxConfig": {
-    "expiredCommands": {
-      "cm:stack-clone": "csdx cm:stacks:clone"
-    },
     "shortCommandName": {
-      "cm:stacks:clone": "CLN",
-      "cm:stack-clone": "O-CLN"
+      "cm:stacks:clone": "CLN"
     }
   }
 }
