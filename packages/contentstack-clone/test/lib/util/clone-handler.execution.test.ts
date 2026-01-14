@@ -166,4 +166,134 @@ describe('CloneHandler - Execution', () => {
       expect(executeBranchDestinationPromptStub.calledOnce).to.be.true;
     });
   });
+
+  describe('executeStackPrompt', () => {
+    let handler: CloneHandler;
+    let sandbox: sinon.SinonSandbox;
+
+    beforeEach(() => {
+      sandbox = sinon.createSandbox();
+      const config: CloneConfig = {
+        cloneContext: {
+          command: 'test',
+          module: 'clone',
+          email: 'test@example.com',
+        },
+      };
+      handler = new CloneHandler(config);
+      (handler as any).cloneCommand = {
+        execute: sandbox.stub(),
+      };
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('should update stackNamePrompt default with sourceStack.stack (covers line 360)', async () => {
+      (handler as any).config.source_stack = 'test-key';
+      (handler as any).cloneCommand.execute.onFirstCall().resolves({ stack: 'TestStack' });
+      const executeBranchPromptStub = sandbox.stub(handler, 'executeBranchPrompt').resolves();
+
+      await handler.executeStackPrompt({ org: { Organization: 'TestOrg' } });
+
+      expect((handler as any).stackNamePrompt.default).to.equal('Copy of TestStack');
+      expect(executeBranchPromptStub.calledOnce).to.be.true;
+    });
+
+    it('should update stackNamePrompt default with source_alias fallback (covers line 360)', async () => {
+      (handler as any).config.source_stack = 'test-key';
+      (handler as any).config.source_alias = 'source-alias';
+      (handler as any).cloneCommand.execute.onFirstCall().resolves({});
+      const executeBranchPromptStub = sandbox.stub(handler, 'executeBranchPrompt').resolves();
+
+      await handler.executeStackPrompt({ org: { Organization: 'TestOrg' } });
+
+      expect((handler as any).stackNamePrompt.default).to.equal('Copy of source-alias');
+      expect(executeBranchPromptStub.calledOnce).to.be.true;
+    });
+
+    it('should update stackNamePrompt default with ABC fallback (covers line 360)', async () => {
+      (handler as any).config.source_stack = 'test-key';
+      (handler as any).cloneCommand.execute.onFirstCall().resolves({});
+      const executeBranchPromptStub = sandbox.stub(handler, 'executeBranchPrompt').resolves();
+
+      await handler.executeStackPrompt({ org: { Organization: 'TestOrg' } });
+
+      expect((handler as any).stackNamePrompt.default).to.equal('Copy of ABC');
+      expect(executeBranchPromptStub.calledOnce).to.be.true;
+    });
+
+    it('should use config.stackName if provided (covers line 360)', async () => {
+      (handler as any).config.source_stack = 'test-key';
+      (handler as any).config.stackName = 'CustomStackName';
+      (handler as any).cloneCommand.execute.onFirstCall().resolves({ stack: 'TestStack' });
+      const executeBranchPromptStub = sandbox.stub(handler, 'executeBranchPrompt').resolves();
+
+      await handler.executeStackPrompt({ org: { Organization: 'TestOrg' } });
+
+      expect((handler as any).stackNamePrompt.default).to.equal('CustomStackName');
+      expect(executeBranchPromptStub.calledOnce).to.be.true;
+    });
+  });
+
+  describe('executeStackDestinationPrompt', () => {
+    let handler: CloneHandler;
+    let sandbox: sinon.SinonSandbox;
+
+    beforeEach(() => {
+      sandbox = sinon.createSandbox();
+      const config: CloneConfig = {
+        cloneContext: {
+          command: 'test',
+          module: 'clone',
+          email: 'test@example.com',
+        },
+      };
+      handler = new CloneHandler(config);
+      (handler as any).cloneCommand = {
+        execute: sandbox.stub(),
+      };
+      (handler as any).orgUidList = { 'TestOrg': 'test-org-uid' };
+      const mockClient = {
+        stack: sandbox.stub().returns({
+          create: sandbox.stub(),
+        }),
+      };
+      handler.setClient(mockClient);
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('should create new stack when canCreateStack.stackCreate is true (covers lines 530-543)', async () => {
+      (handler as any).executingCommand = 1;
+      (handler as any).cloneCommand.execute.onFirstCall().resolves('success');
+      (handler as any).cloneCommand.execute.onSecondCall().resolves('success');
+      const removeBackKeyPressHandlerStub = sandbox.stub(handler, 'removeBackKeyPressHandler');
+
+      await handler.executeStackDestinationPrompt({
+        org: { Organization: 'TestOrg' },
+        canCreateStack: { stackCreate: true },
+      });
+
+      expect((handler as any).cloneCommand.execute.calledTwice).to.be.true;
+      expect(removeBackKeyPressHandlerStub.calledOnce).to.be.true;
+    });
+
+    it('should handle existing stack when canCreateStack.stackCreate is false (covers lines 530-543)', async () => {
+      (handler as any).executingCommand = 1;
+      (handler as any).cloneCommand.execute.onFirstCall().resolves('success');
+      const executeBranchDestinationPromptStub = sandbox.stub(handler, 'executeBranchDestinationPrompt').resolves();
+
+      await handler.executeStackDestinationPrompt({
+        org: { Organization: 'TestOrg' },
+        canCreateStack: { stackCreate: false },
+      });
+
+      expect((handler as any).cloneCommand.execute.calledOnce).to.be.true;
+      expect(executeBranchDestinationPromptStub.calledOnce).to.be.true;
+    });
+  });
 });

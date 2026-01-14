@@ -83,6 +83,23 @@ describe('CloneHandler - Organization', () => {
       expect(result.choices).to.have.length(1);
       expect(result.choices[0]).to.equal('SingleOrg');
     });
+
+    it('should fetch organization by configOrgUid when oauthOrgUid is set (covers lines 91-92)', async () => {
+      // Set configOrgUid
+      configHandlerGetStub.withArgs('oauthOrgUid').returns('test-org-uid');
+      
+      const mockOrg = { name: 'ConfigOrg', uid: 'test-org-uid' };
+      // Mock SDK call: client.organization(uid).fetch()
+      const orgMock = mockClient.organization('test-org-uid');
+      orgMock.fetch.resolves(mockOrg);
+
+      const result = await handler.getOrganizationChoices();
+
+      expect(result.choices).to.have.length(1);
+      expect(result.choices[0]).to.equal('ConfigOrg');
+      expect((handler as any).orgUidList['ConfigOrg']).to.equal('test-org-uid');
+      expect(orgMock.fetch.calledOnce).to.be.true;
+    });
   });
 
   describe('handleOrgSelection', () => {

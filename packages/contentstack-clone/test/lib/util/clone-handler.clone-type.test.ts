@@ -59,5 +59,19 @@ describe('CloneHandler - Clone Type', () => {
       expect(result).to.equal('Stack clone completed with structure and content');
       expect(cmdImportStub.calledOnce).to.be.true;
     });
+
+    it('should handle error in catch block (covers line 825)', async () => {
+      (handler as any).config.cloneType = 'a';
+      const cmdImportError = new Error('Import failed');
+      const cmdImportStub = sandbox.stub(handler, 'cmdImport').rejects(cmdImportError);
+
+      try {
+        await handler.cloneTypeSelection();
+        expect.fail('Should have rejected');
+      } catch (error) {
+        expect(error).to.equal(cmdImportError);
+      }
+      expect(cmdImportStub.calledOnce).to.be.true;
+    });
   });
 });
