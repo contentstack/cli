@@ -276,6 +276,6 @@ fileignoreconfig:
   - filename: packages/contentstack-clone/test/lib/util/clone-handler.execution.test.ts
     checksum: 7ed8fa62d9aba7135a142134c36535e3722471cabc81d2ea3437cd67b2e87d58
   - filename: packages/contentstack-clone/test/lib/util/clone-handler.commands.test.ts
-    checksum: dd907cb807c9220e2aa8e80b568b97e172a24267739e261514aad8539259c94a
+    checksum: d0427ddfa6d338e6b5c4e6f8d94f32332e3e9858626356d07e5690471e062f49
 version: '1.0'
 

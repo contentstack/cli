@@ -111,6 +111,32 @@ describe('CloneHandler - Commands', () => {
       const cmdArgs = exportCmdStub.run.firstCall.args[0];
       expect(cmdArgs).to.include('-y');
     });
+
+    it('should execute export command with source_alias (covers lines 582-583)', async () => {
+      const config: CloneConfig = {
+        cloneContext: {
+          command: 'test',
+          module: 'clone',
+          email: 'test@example.com',
+        },
+        source_stack: 'test-key',
+        cloneType: 'a',
+        source_alias: 'source-alias',
+      };
+      handler = new CloneHandler(config);
+      const exportCmdStub = {
+        run: sandbox.stub().returns(Promise.resolve()),
+      };
+      sandbox.stub(require('@contentstack/cli-cm-export'), 'default').value(exportCmdStub);
+
+      const result = await handler.cmdExport();
+
+      expect(result).to.be.true;
+      expect(exportCmdStub.run.calledOnce).to.be.true;
+      const cmdArgs = exportCmdStub.run.firstCall.args[0];
+      expect(cmdArgs).to.include('-a');
+      expect(cmdArgs).to.include('source-alias');
+    });
   });
 
   describe('cmdImport', () => {
@@ -362,7 +388,7 @@ describe('CloneHandler - Commands', () => {
     });
   });
 
-  describe.skip('createNewStack', () => {
+  describe('createNewStack', () => {
     let handler: CloneHandler;
     let sandbox: sinon.SinonSandbox;
     let configHandlerGetStub: sinon.SinonStub;
@@ -378,9 +404,19 @@ describe('CloneHandler - Commands', () => {
         updateBottomBar: sandbox.stub(),
       } as any);
       
-      // Stub ora spinner to prevent hanging
-      // ora is imported as: import { default as ora } from 'ora'
-      // We'll stub it per test as needed since it's complex to stub globally
+      // Stub ora spinner - following import plugin pattern
+      const oraModule = require('ora');
+      const mockSpinner = {
+        start: sandbox.stub().returnsThis(),
+        succeed: sandbox.stub().returnsThis(),
+        fail: sandbox.stub().returnsThis(),
+      };
+      // Replace the default export
+      Object.defineProperty(oraModule, 'default', {
+        value: () => mockSpinner,
+        writable: true,
+        configurable: true,
+      });
       
       const config: CloneConfig = {
         cloneContext: {
@@ -403,19 +439,17 @@ describe('CloneHandler - Commands', () => {
       sandbox.restore();
     });
 
-    it.skip('should create new stack with stackName provided (covers lines 743-745)', async () => {
-      // Skipped due to ora spinner stubbing issues
+    it('should create new stack with stackName provided (covers lines 743-745, 751-766)', async () => {
       (handler as any).config.stackName = 'test-stack-name';
       (handler as any).executingCommand = 1;
       (handler as any).master_locale = 'en-us';
-      const createStub = sandbox.stub().resolves({ api_key: 'new-key', name: 'test-stack-name' });
-      ((handler as any).client.stack().create as sinon.SinonStub).returns(createStub);
+      const createPromise = Promise.resolve({ api_key: 'new-key', name: 'test-stack-name' });
+      ((handler as any).client.stack().create as sinon.SinonStub).returns(createPromise);
       const displayBackOptionMessageStub = sandbox.stub(handler, 'displayBackOptionMessage');
 
       const result = await handler.createNewStack({ orgUid: 'test-org' });
 
       expect(result).to.have.property('api_key', 'new-key');
-      expect(createStub.calledOnce).to.be.true;
       expect(displayBackOptionMessageStub.calledOnce).to.be.true;
       expect((handler as any).config.target_stack).to.equal('new-key');
       expect((handler as any).config.destinationStackName).to.equal('test-stack-name');
@@ -437,14 +471,10 @@ describe('CloneHandler - Commands', () => {
       expect(displayBackOptionMessageStub.calledOnce).to.be.true;
     });
 
-    it.skip('should reject when inputvalue is undefined (covers line 746)', async () => {
-      // Skipped due to prompt module stubbing issues
-      (handler as any).config.stackName = undefined;
-      (handler as any).executingCommand = 1;
-      const promptModule = require('prompt');
-      const originalGet = promptModule.get;
-      promptModule.get = sandbox.stub().callsArgWith(1, null, { name: '' });
-      promptModule.stopped = true;
+    it('should reject when executingCommand is 0 (covers lines 746-748)', async () => {
+      (handler as any).config.stackName = 'test-stack-name';
+      (handler as any).executingCommand = 0;
+      const displayBackOptionMessageStub = sandbox.stub(handler, 'displayBackOptionMessage');
 
       try {
         await handler.createNewStack({ orgUid: 'test-org' });
@@ -452,8 +482,80 @@ describe('CloneHandler - Commands', () => {
       } catch (error) {
         expect(error).to.be.undefined;
       }
-      
-      promptModule.get = originalGet;
+      expect(displayBackOptionMessageStub.calledOnce).to.be.true;
+    });
+
+    it('should reject when inputvalue is undefined (covers line 746)', async () => {
+      (handler as any).config.stackName = undefined;
+      (handler as any).executingCommand = 1;
+      const promptModule = require('prompt');
+      sandbox.stub(promptModule, 'start');
+      promptModule.stopped = true;
+      promptModule.get = sandbox.stub().callsArgWith(1, null, { name: '' });
+      const displayBackOptionMessageStub = sandbox.stub(handler, 'displayBackOptionMessage');
+      const setCreateNewStackPromptStub = sandbox.stub(handler, 'setCreateNewStackPrompt');
+
+      try {
+        await handler.createNewStack({ orgUid: 'test-org' });
+        expect.fail('Should have rejected');
+      } catch (error) {
+        expect(error).to.be.undefined;
+      }
+      expect(displayBackOptionMessageStub.calledOnce).to.be.true;
+      expect(setCreateNewStackPromptStub.calledTwice).to.be.true;
+    });
+
+    it('should handle create stack error (covers lines 768-771)', async () => {
+      (handler as any).config.stackName = 'test-stack-name';
+      (handler as any).executingCommand = 1;
+      (handler as any).master_locale = 'en-us';
+      const createError = { errorMessage: 'Access denied' };
+      const createPromise = Promise.reject(createError);
+      ((handler as any).client.stack().create as sinon.SinonStub).returns(createPromise);
+      const displayBackOptionMessageStub = sandbox.stub(handler, 'displayBackOptionMessage');
+
+      try {
+        await handler.createNewStack({ orgUid: 'test-org' });
+        expect.fail('Should have rejected');
+      } catch (error: any) {
+        expect(error).to.equal('Access denied Contact the Organization owner for Stack Creation access.');
+      }
+      expect(displayBackOptionMessageStub.calledOnce).to.be.true;
+    });
+
+    it('should handle error in createNewStack catch block (covers line 773)', async () => {
+      (handler as any).config.stackName = 'test-stack-name';
+      (handler as any).executingCommand = 1;
+      const testError = new Error('Test error');
+      const displayBackOptionMessageStub = sandbox.stub(handler, 'displayBackOptionMessage').throws(testError);
+
+      try {
+        await handler.createNewStack({ orgUid: 'test-org' });
+        expect.fail('Should have rejected');
+      } catch (error) {
+        expect(error).to.equal(testError);
+      }
+    });
+
+    it('should prompt for stack name when not provided (covers lines 736-742, 708-727)', async () => {
+      (handler as any).config.stackName = undefined;
+      (handler as any).executingCommand = 1;
+      (handler as any).master_locale = 'en-us';
+      (handler as any).stackNamePrompt = { message: 'Enter stack name:', default: 'DefaultStack' };
+      const promptModule = require('prompt');
+      promptModule.stopped = false;
+      promptModule.get = sandbox.stub().callsArgWith(1, null, { name: 'prompted-stack-name' });
+      sandbox.stub(promptModule, 'start');
+      const setCreateNewStackPromptStub = sandbox.stub(handler, 'setCreateNewStackPrompt');
+      const displayBackOptionMessageStub = sandbox.stub(handler, 'displayBackOptionMessage');
+      const createPromise = Promise.resolve({ api_key: 'new-key', name: 'prompted-stack-name' });
+      ((handler as any).client.stack().create as sinon.SinonStub).returns(createPromise);
+
+      const result = await handler.createNewStack({ orgUid: 'test-org' });
+
+      expect(result).to.have.property('api_key', 'new-key');
+      expect(setCreateNewStackPromptStub.calledTwice).to.be.true;
+      expect(displayBackOptionMessageStub.calledOnce).to.be.true;
     });
   });
 });
