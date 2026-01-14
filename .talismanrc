@@ -1,8 +1,8 @@
 fileignoreconfig:
   - filename: package-lock.json
-    checksum: 0cac869eb2f174e45751388de3eb46d48fbc8f5dbc56faf06000dbad7b5e8466
+    checksum: 26be769c9d3bcc7095237527dd0004c3981be0dc7bf5c01f650b05a0ea09ecb6
   - filename: pnpm-lock.yaml
-    checksum: cf7ddbd499ceb5d26ceb94381db0ecd576745b96b4deedd7442d3c8aa820ba92
+    checksum: 44d84111971dd7c108417a3e6e35bb3c61347d3eff4ea113a636429085d8502b
   - filename: packages/contentstack-import-setup/test/unit/backup-handler.test.ts
     checksum: 0582d62b88834554cf12951c8690a73ef3ddbb78b82d2804d994cf4148e1ef93
   - filename: packages/contentstack-import-setup/test/config.json
@@ -273,4 +273,8 @@ fileignoreconfig:
     checksum: 6912e5ea32b4456ad04d1645750c72bbb29ab1895368c3a242ab39e9350ec531
   - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/invalid_composable_studio.json
     checksum: e6465aa0011d1565a2de848d9cca74395d11419e6ac840e7dfb52e1d255b1c4f
+  - filename: packages/contentstack-audit/src/modules/modulesData.ts
+    checksum: 1e6c1fba1172512401038d5454c8d218201ec62262449c5c878609592e0124c4
+  - filename: packages/contentstack-audit/src/modules/composable-studio.ts
+    checksum: 4fc97ff582d6dff9a54b3a50dfa3cbb5febd38a55aeb8737034b97188ad543ba
 version: '1.0'
