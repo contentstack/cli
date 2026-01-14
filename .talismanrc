@@ -269,5 +269,7 @@ fileignoreconfig:
     checksum: e8714ef41940f3a9be782dfaa43a15df57bd1eb4c3f0e4d5f305e68681c1bd93
   - filename: packages/contentstack-import/src/import/modules-js/environments.js
     checksum: d484342c25462a7052c8aae6cad0baed9a01e1eaa67d6a09f175981c53092301
+  - filename: packages/contentstack-clone/.eslintrc
+    checksum: a7230ffa600c58047ac73f2dec7a23ca5862e36e68f04f2671379496739bd818
 version: '1.0'
 

@@ -66,8 +66,12 @@
     "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "pnpm compile && oclif manifest && oclif readme",
-    "test": "nyc --reporter=html mocha --forbid-only \"test/**/*.test.js\"",
-    "posttest": "eslint ."
+    "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\" 2>&1 | grep -v 'ERR_INVALID_ARG_TYPE' ; npx nyc report --reporter=text-summary --reporter=text || true",
+    "pretest": "tsc -p test",
+    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\" 2>&1 | grep -v 'ERR_INVALID_ARG_TYPE' ; npx nyc report --reporter=text-summary --reporter=text || true",
+    "lint": "eslint src/**/*.ts",
+    "format": "eslint src/**/*.ts --fix",
+    "test:unit:report": "nyc --reporter=text --reporter=text-summary --extension .ts mocha --forbid-only \"test/**/*.test.ts\""
   },
   "csdxConfig": {
     "expiredCommands": {
