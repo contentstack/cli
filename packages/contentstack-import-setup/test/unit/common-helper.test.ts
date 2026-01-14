@@ -1,16 +1,16 @@
 import { expect } from 'chai';
-import { stub, restore, SinonStub, match } from 'sinon';
+import { stub, restore, SinonStub } from 'sinon';
 import { cliux } from '@contentstack/cli-utilities';
 import { askAPIKey } from '../../src/utils/interactive';
-import { validateBranch } from '../../src/utils/common-helper';
+import { validateBranch, ValidateBranchDeps } from '../../src/utils/common-helper';
 import { ImportConfig } from '../../src/types';
-import * as utils from '../../src/utils';
 
 describe('Common Helper Utilities', () => {
   let cliuxInquireStub: SinonStub;
   let mockStackApiClient: any;
   let mockFetchStub: SinonStub;
-  let logStub: SinonStub;
+  let logErrorStub: SinonStub;
+  let deps: ValidateBranchDeps;
 
   // Base mock config that satisfies ImportConfig type
   const baseConfig: Partial<ImportConfig> = {
@@ -28,7 +28,14 @@ describe('Common Helper Utilities', () => {
 
   beforeEach(() => {
     restore();
-    logStub = stub(utils, 'log');
+    logErrorStub = stub();
+
+    // Create the deps object for injection
+    deps = {
+      log: {
+        error: logErrorStub,
+      } as any,
+    };
   });
 
   afterEach(() => {
@@ -108,7 +115,7 @@ describe('Common Helper Utilities', () => {
 
       mockFetchStub.resolves(mockBranchData);
 
-      const result = await validateBranch(mockStackApiClient, baseConfig as ImportConfig, branchName);
+      const result = await validateBranch(mockStackApiClient, baseConfig as ImportConfig, branchName, deps);
 
       expect(result).to.equal(mockBranchData);
       expect(mockStackApiClient.branch.calledWith(branchName)).to.be.true;
@@ -125,7 +132,7 @@ describe('Common Helper Utilities', () => {
       mockFetchStub.resolves(mockErrorResponse);
 
       try {
-        await validateBranch(mockStackApiClient, baseConfig as ImportConfig, branchName);
+        await validateBranch(mockStackApiClient, baseConfig as ImportConfig, branchName, deps);
         expect.fail('Should have thrown an error');
       } catch (error: any) {
         expect(error.message).to.include('No branch found with the name');
@@ -140,7 +147,7 @@ describe('Common Helper Utilities', () => {
       mockFetchStub.rejects(mockError);
 
       try {
-        await validateBranch(mockStackApiClient, baseConfig as ImportConfig, branchName);
+        await validateBranch(mockStackApiClient, baseConfig as ImportConfig, branchName, deps);
         expect.fail('Should have thrown an error');
       } catch (error: any) {
         expect(error.message).to.include('No branch found with the name');
@@ -154,11 +161,11 @@ describe('Common Helper Utilities', () => {
       mockFetchStub.resolves('not-an-object');
 
       try {
-        await validateBranch(mockStackApiClient, baseConfig as ImportConfig, branchName);
+        await validateBranch(mockStackApiClient, baseConfig as ImportConfig, branchName, deps);
         expect.fail('Should have thrown an error');
       } catch (error: any) {
         expect(error.message).to.include('No branch found with the name');
-        expect(logStub.called).to.be.false;
+        expect(logErrorStub.called).to.be.false;
       }
     });
   });

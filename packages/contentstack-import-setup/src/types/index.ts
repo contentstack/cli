@@ -62,7 +62,7 @@ export interface InquirePayload {
   name: string;
   message: string;
   choices?: Array<any>;
-  transformer?: Function;
+  transformer?: (...args: any[]) => any;
 }
 
 export interface User {

@@ -2,7 +2,6 @@ import { Command } from '@contentstack/cli-command';
 import {
   cliux,
   messageHandler,
-  printFlagDeprecation,
   managementSDKClient,
   flags,
   ContentstackClient,
@@ -35,27 +34,16 @@ export default class ExportCommand extends Command {
   ];
 
   static usage: string =
-    'cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]';
+    'cm:stacks:export [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]';
 
   static flags: FlagInput = {
     config: flags.string({
       char: 'c',
       description: '[optional] Path of the config',
     }),
-    'stack-uid': flags.string({
-      char: 's',
-      description: 'API key of the source stack',
-      hidden: true,
-      parse: printFlagDeprecation(['-s', '--stack-uid'], ['-k', '--stack-api-key']),
-    }),
     'stack-api-key': flags.string({
       char: 'k',
       description: 'API Key of the source stack',
-    }),
-    data: flags.string({
-      description: 'path or location to store the data',
-      hidden: true,
-      parse: printFlagDeprecation(['--data'], ['--data-dir']),
     }),
     'data-dir': flags.string({
       char: 'd',
@@ -65,36 +53,19 @@ export default class ExportCommand extends Command {
       char: 'a',
       description: 'The management token alias of the source stack from which you will export content.',
     }),
-    'management-token-alias': flags.string({
-      description: 'alias of the management token',
-      hidden: true,
-      parse: printFlagDeprecation(['--management-token-alias'], ['-a', '--alias']),
-    }),
-    'auth-token': flags.boolean({
-      char: 'A',
-      description: 'to use auth token',
-      hidden: true,
-      parse: printFlagDeprecation(['-A', '--auth-token']),
-    }),
     module: flags.string({
-      char: 'm',
       description:
         '[optional] Specific module name. If not specified, the export command will export all the modules to the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, taxonomies, and studio.',
-      parse: printFlagDeprecation(['-m'], ['--module']),
     }),
     'content-types': flags.string({
-      char: 't',
       description:
         '[optional]  The UID of the content type(s) whose content you want to export. In case of multiple content types, specify the IDs separated by spaces.',
       multiple: true,
-      parse: printFlagDeprecation(['-t'], ['--content-types']),
     }),
     branch: flags.string({
-      char: 'B',
       // default: 'main',
       description:
         "[optional] The name of the branch where you want to export your content. If you don't mention the branch name, then by default the content will be exported from all the branches of your stack.",
-      parse: printFlagDeprecation(['-B'], ['--branch']),
       exclusive: ['branch-alias'],
     }),
     'branch-alias': flags.string({
@@ -115,8 +86,6 @@ export default class ExportCommand extends Command {
     }),
   };
 
-  static aliases: string[] = ['cm:export'];
-
   async run(): Promise<void> {
     let exportDir: string = pathValidator('logs');
     try {
@@ -125,7 +94,6 @@ export default class ExportCommand extends Command {
       // Prepare the context object
       const context = this.createExportContext(exportConfig.apiKey, exportConfig.authenticationMethod);
       exportConfig.context = { ...context };
-      //log.info(`Using Cli Version: ${this.context?.cliVersion}`, exportConfig.context);
 
       // Assign exportConfig variables
       this.assignExportConfig(exportConfig);

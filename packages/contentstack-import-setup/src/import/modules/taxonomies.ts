@@ -17,7 +17,7 @@ export default class TaxonomiesImportSetup extends BaseImportSetup {
   private taxonomiesMapperDirPath: string;
   private termsMapperDirPath: string;
   private localesFilePath: string;
-  private isLocaleBasedStructure: boolean = false;
+  private isLocaleBasedStructure = false;
   public taxonomiesMapper: Record<string, unknown> = {};
   public termsMapper: Record<string, unknown> = {};
   public masterLocaleFilePath: string;
