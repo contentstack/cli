@@ -77,8 +77,8 @@ export default class Logger {
       const hasProgressSupport = currentModule && PROGRESS_SUPPORTED_MODULES.includes(currentModule);
       
       if (hasProgressSupport) {
-        // Plugin has progress bars - respect user's showConsoleLogs setting
-        showConsoleLogs = logConfig.showConsoleLogs ?? true;
+        // Plugin has progress bars - respect user's explicit setting, or default to false (show progress bars)
+        showConsoleLogs = logConfig.showConsoleLogs ?? false;
       } else {
         // Plugin doesn't have progress support - always show console logs
         showConsoleLogs = true;
