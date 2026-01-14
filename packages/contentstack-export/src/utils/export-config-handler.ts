@@ -9,6 +9,10 @@ import { filter, includes } from 'lodash';
 import { ExportConfig } from '../types';
 
 const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
+  // Set progress supported module FIRST, before any log calls
+  // This ensures the logger respects the showConsoleLogs setting correctly
+  configHandler.set('log.progressSupportedModule', 'export');
+  
   let config = merge({}, defaultConfig);
 
   // Track authentication method
@@ -132,8 +136,6 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
       throw new Error(`Invalid query format: ${error.message}`);
     }
   }
-  // Set progress supported module to check and display console logs
-  configHandler.set('log.progressSupportedModule', 'export');
   // Add authentication details to config for context tracking
   config.authenticationMethod = authenticationMethod;
   log.debug('Export configuration setup completed.', { ...config });

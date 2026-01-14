@@ -7,7 +7,11 @@ import login from './login-handler';
 import { ImportConfig } from '../types';
 
 const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
-  const config: ImportConfig = merge({}, defaultConfig);
+  // Set progress supported module FIRST, before any log calls
+  // This ensures the logger respects the showConsoleLogs setting correctly
+  configHandler.set('log.progressSupportedModule', 'import-setup');
+
+  let config: ImportConfig = merge({}, defaultConfig);
   // setup the config
   // if (importCmdFlags['config']) {
   //   let externalConfig = await readFile(importCmdFlags['config']);
@@ -18,7 +22,9 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   //   config = merge.recursive(config, externalConfig);
   // }
 
-  config.contentDir = sanitizePath(importCmdFlags['data'] || importCmdFlags['data-dir'] || config.data || (await askContentDir()));
+  config.contentDir = sanitizePath(
+    importCmdFlags['data'] || importCmdFlags['data-dir'] || config.data || (await askContentDir()),
+  );
   const pattern = /[*$%#<>{}!&?]/g;
   if (pattern.test(config.contentDir)) {
     cliux.print(`\nPlease enter a directory path without special characters: (*,&,{,},[,],$,%,<,>,?,!)`, {

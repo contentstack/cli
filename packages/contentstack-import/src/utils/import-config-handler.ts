@@ -9,6 +9,10 @@ import login from './login-handler';
 import { ImportConfig } from '../types';
 
 const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
+  // Set progress supported module FIRST, before any log calls
+  // This ensures the logger respects the showConsoleLogs setting correctly
+  configHandler.set('log.progressSupportedModule', 'import');
+
   let config: ImportConfig = merge({}, defaultConfig);
   // Track authentication method
   let authenticationMethod = 'unknown';
