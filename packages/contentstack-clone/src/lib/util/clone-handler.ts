@@ -634,7 +634,7 @@ export class CloneHandler {
         cmd.push('-a', importConfig.destination_alias);
         log.debug(`Using destination alias: ${importConfig.destination_alias}`, this.config.cloneContext);
       }
-      if (!importConfig.data && importConfig.sourceStackBranch) {
+      if (!importConfig.data && importConfig.sourceStackBranch && importConfig.pathDir) {
         const dataPath = path.join(importConfig.pathDir, importConfig.sourceStackBranch);
         cmd.push('-d', dataPath);
         log.debug(`Import data path: ${dataPath}`, this.config.cloneContext);
@@ -665,7 +665,7 @@ export class CloneHandler {
         cmd: cmd.join(' '),
         targetStack: importConfig.target_stack,
         targetBranch: importConfig.targetStackBranch,
-        dataPath: importConfig.data || path.join(importConfig.pathDir, importConfig.sourceStackBranch)
+        dataPath: importConfig.data || (importConfig.pathDir && importConfig.sourceStackBranch ? path.join(importConfig.pathDir, importConfig.sourceStackBranch) : undefined)
       });
       log.debug('Running import command', { ...this.config.cloneContext, cmd });
       const importData = importCmd.run(cmd);

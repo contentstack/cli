@@ -1,18 +1,8 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "..",
-    "declaration": false,
-    "module": "commonjs",
-    "target": "es2017",
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "noImplicitAny": false,
-    "lib": [
-      "ES2019",
-      "es2020.promise"
-    ],
-    "strictPropertyInitialization": false,
-    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "rootDir": "..",
     "types": ["mocha", "node", "@types/chai", "@types/sinon"]
   },
   "include": [
@@ -20,6 +10,7 @@
     "../src/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "../lib"
   ]
 }
