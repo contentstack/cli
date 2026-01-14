@@ -60,7 +60,7 @@ describe('CloneHandler - Clone Type', () => {
       expect(cmdImportStub.calledOnce).to.be.true;
     });
 
-    it('should handle error in catch block (covers line 825)', async () => {
+    it('should handle error in cloneTypeSelection catch block (covers line 825)', async () => {
       (handler as any).config.cloneType = 'a';
       const cmdImportError = new Error('Import failed');
       const cmdImportStub = sandbox.stub(handler, 'cmdImport').rejects(cmdImportError);
