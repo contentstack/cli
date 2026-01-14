@@ -1,8 +1,8 @@
 fileignoreconfig:
   - filename: package-lock.json
-    checksum: e526299185ff95e3cc1dbf1b35d852eb06b2e118e9324cc7b53f4e9bf274038f
+    checksum: 732118725964b623c44dd9e64d6b92eed5cddd2c96282938ba122bdf3855fc1c
   - filename: pnpm-lock.yaml
-    checksum: 2b8621db776d516f2b5cdb8fb6a0b8b88b194a64b01f3609efd95a87eadf4bef
+    checksum: 1791262a8fd93fa162219b876ba955d29039c04970b77907a092c37ab52b0d27
   - filename: packages/contentstack-import-setup/test/unit/backup-handler.test.ts
     checksum: 0582d62b88834554cf12951c8690a73ef3ddbb78b82d2804d994cf4148e1ef93
   - filename: packages/contentstack-import-setup/test/config.json
@@ -66,7 +66,7 @@ fileignoreconfig:
   - filename: packages/contentstack-bulk-publish/src/producer/publish-unpublished-env.js
     checksum: 44dbc966df086f835fdca11cb305d0a5f448ca0be811c14b894e0024f9491385
   - filename: packages/contentstack-import/src/import/modules/entries.ts
-    checksum: 0fa92065747da2ea3b02c666da5a0c6d3e74552c804a15578d9da0bfeb082615
+    checksum: bdf26bd2b71c1b7a0d5540ba98c53bf917d8d7d3813447073a89439fb789970b
   - filename: packages/contentstack-utilities/src/logger/logger.ts
     checksum: 76429bc87e279624b386f00e7eb3f4ec25621ace7056289f812b9a076d6e184e
   - filename: packages/contentstack-bootstrap/src/bootstrap/utils.ts
@@ -91,8 +91,6 @@ fileignoreconfig:
     checksum: bbe1130f5f5ebf2fa452daef743fe4d40ae9f8fc05c7f8c59c82a3d3d1ed69e8
   - filename: packages/contentstack-audit/src/modules/extensions.ts
     checksum: 32af019f0df8288448d11559fe9f7ef61d3e43c3791d45eeec25fd0937c6baad
-  - filename: packages/contentstack-audit/src/modules/modulesData.ts
-    checksum: bac8f1971ac2e39bc04d9297b81951fe34ed265dfc985137135f9bbe775cd63c
   - filename: packages/contentstack-audit/src/modules/assets.ts
     checksum: 5a007804c75976dd192ed2284b7b7edbc5b5fc269fc0e883908b52e4d4f206a8
   - filename: packages/contentstack-audit/src/modules/workflows.ts
@@ -105,8 +103,6 @@ fileignoreconfig:
     checksum: b0fa8088fcbb17510fa275bd0dde3f6f4246f2525741c30426f07dd62fe497b0
   - filename: packages/contentstack-audit/src/modules/content-types.ts
     checksum: ddf7b08e6a80af09c6a7019a637c26089fb76572c7c3d079a8af244b02985f16
-  - filename: packages/contentstack-import/test/unit/commands/cm/stacks/import.test.ts
-    checksum: b11e57f1b824d405f86438e9e7c59183f8c59b66b42d8d16dbeaf76195a30548
   - filename: packages/contentstack-import/test/unit/utils/asset-helper.test.ts
     checksum: 8e83200ac8028f9289ff1bd3a50d191b35c8e28f1854141c90fa1b0134d6bf8a
   - filename: packages/contentstack-import/test/unit/import/modules/marketplace-apps.test.ts
@@ -116,7 +112,7 @@ fileignoreconfig:
   - filename: packages/contentstack-import/test/unit/import/modules/mock-data/entries/environments.json
     checksum: 17f94f500dcb265575b60f8d2cb7464372a234e452527b3bdec6052c606cee28
   - filename: packages/contentstack-import/test/unit/import/modules/entries.test.ts
-    checksum: 7b984d292a534f9d075d801de2aeff802b2832bc5e2efadf8613a7059f4317fc
+    checksum: d8e4f6ad185b36b6f84b38dce169144e7d5a195668aac11f914eed5e1e4b5478
   - filename: packages/contentstack-import/test/unit/import/modules/labels.test.ts
     checksum: 46fe0d1602ab386f7eaee9839bc376b98ab8d4262f823784eda9cfa2bf893758
   - filename: packages/contentstack-export/test/unit/export/modules/assets.test.ts
@@ -195,8 +191,6 @@ fileignoreconfig:
     checksum: 49dd8e754a0d3635585a74e943ab097593f061089a7cddc22683ec6caddbb3c5
   - filename: packages/contentstack-export/test/unit/export/modules/personalize.test.ts
     checksum: 83cf034fabee00b42b4243a8c0b8ba280ab7c1e68ffd741c49c31aaee8ca0315
-  - filename: packages/contentstack-utilities/test/unit/logger.test.ts
-    checksum: 11778d0252202c18a1ca6a38883d6e12fc324ff86ad0fe058bc2505f9cd66ba3
   - filename: packages/contentstack-audit/test/unit/audit-base-command.test.ts
     checksum: 17a16b4457c820494442f335d94d0949961e68e8ca72ca0f1fa9d4d0eeb0c17a
   - filename: packages/contentstack-import/src/import/modules/taxonomies.ts
@@ -277,5 +271,15 @@ fileignoreconfig:
     checksum: 7ed8fa62d9aba7135a142134c36535e3722471cabc81d2ea3437cd67b2e87d58
   - filename: packages/contentstack-clone/test/lib/util/clone-handler.commands.test.ts
     checksum: d0427ddfa6d338e6b5c4e6f8d94f32332e3e9858626356d07e5690471e062f49
+  - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/environments/environments.json
+    checksum: 0402604e5919a7e38ecb5ff0916d6ae5ab7d98fe78ff6ac9eba8a9b8130af34d
+  - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/composable_studio.json
+    checksum: 6912e5ea32b4456ad04d1645750c72bbb29ab1895368c3a242ab39e9350ec531
+  - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/invalid_composable_studio.json
+    checksum: e6465aa0011d1565a2de848d9cca74395d11419e6ac840e7dfb52e1d255b1c4f
+  - filename: packages/contentstack-audit/src/modules/modulesData.ts
+    checksum: 1e6c1fba1172512401038d5454c8d218201ec62262449c5c878609592e0124c4
+  - filename: packages/contentstack-audit/src/modules/composable-studio.ts
+    checksum: 4fc97ff582d6dff9a54b3a50dfa3cbb5febd38a55aeb8737034b97188ad543ba
 version: '1.0'
 

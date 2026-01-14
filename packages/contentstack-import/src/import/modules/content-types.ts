@@ -8,7 +8,7 @@
 import * as path from 'path';
 import { isEmpty, find, cloneDeep, map } from 'lodash';
 import { sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
-import { fsUtil, schemaTemplate, lookupExtension, lookUpTaxonomy } from '../../utils';
+import { fsUtil, schemaTemplate, lookupExtension, lookUpTaxonomy, fileHelper } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
 import { updateFieldRules } from '../../utils/content-type-helper';
@@ -54,6 +54,8 @@ export default class ContentTypesImport extends BaseClass {
   public taxonomies: Record<string, unknown>;
   private extPendingPath: string;
   private isExtensionsUpdate = false;
+  private composableStudioSuccessPath: string;
+  private composableStudioExportPath: string;
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -84,6 +86,26 @@ export default class ContentTypesImport extends BaseClass {
       ['schema.json', 'true'],
       ['.DS_Store', 'true'],
     ]);
+
+    // Initialize composable studio paths if config exists
+    if (this.importConfig.modules['composable-studio']) {
+      this.composableStudioSuccessPath = path.join(
+        sanitizePath(this.importConfig.data),
+        'mapper',
+        this.importConfig.modules['composable-studio'].dirName,
+        this.importConfig.modules['composable-studio'].fileName,
+      );
+
+      this.composableStudioExportPath = path.join(
+        sanitizePath(this.importConfig.data),
+        this.importConfig.modules['composable-studio'].dirName,
+        this.importConfig.modules['composable-studio'].fileName,
+      );
+    } else {
+      this.composableStudioSuccessPath = '';
+      this.composableStudioExportPath = '';
+    }
+
     this.cTs = [];
     this.createdCTs = [];
     this.titleToUIdMap = new Map();
@@ -109,6 +131,38 @@ export default class ContentTypesImport extends BaseClass {
       return;
     }
     log.debug(`Found ${this.cTs.length} content types to import`, this.importConfig.context);
+
+    // If success file doesn't exist but export file does, skip the composition content type
+    // Only check if composable studio paths are configured
+    if (
+      this.composableStudioSuccessPath &&
+      this.composableStudioExportPath &&
+      !fileHelper.fileExistsSync(this.composableStudioSuccessPath) &&
+      fileHelper.fileExistsSync(this.composableStudioExportPath)
+    ) {
+      const exportedProject = fileHelper.readFileSync(this.composableStudioExportPath) as {
+        contentTypeUid: string;
+      };
+
+      if (exportedProject?.contentTypeUid) {
+        const originalCount = this.cTs.length;
+        this.cTs = this.cTs.filter((ct: Record<string, unknown>) => {
+          const shouldSkip = ct.uid === exportedProject.contentTypeUid;
+          if (shouldSkip) {
+            log.info(
+              `Skipping content type '${ct.uid}' as Composable Studio project was not created successfully`,
+              this.importConfig.context,
+            );
+          }
+          return !shouldSkip;
+        });
+
+        const skippedCount = originalCount - this.cTs.length;
+        if (skippedCount > 0) {
+          log.debug(`Filtered out ${skippedCount} composition content type(s) from import`, this.importConfig.context);
+        }
+      }
+    }
 
     await fsUtil.makeDirectory(this.cTsMapperPath);
     log.debug('Created content types mapper directory.', this.importConfig.context);
