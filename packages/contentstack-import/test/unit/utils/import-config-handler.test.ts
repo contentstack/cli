@@ -16,6 +16,7 @@ describe('Import Config Handler', () => {
   let askAPIKeyStub: sinon.SinonStub;
   let loginStub: sinon.SinonStub;
   let configHandlerGetStub: sinon.SinonStub;
+  let configHandlerSetStub: sinon.SinonStub;
   let cliuxPrintStub: sinon.SinonStub;
   let logStub: any;
 
@@ -36,6 +37,7 @@ describe('Import Config Handler', () => {
     const cliUtilitiesModule = require('@contentstack/cli-utilities');
     const configHandler = require('@contentstack/cli-utilities').configHandler;
     configHandlerGetStub = sandbox.stub(configHandler, 'get');
+    configHandlerSetStub = sandbox.stub(configHandler, 'set');
     // isAuthenticated() internally uses configHandler.get('authorisationType')
     // Returns true when 'OAUTH' or 'AUTH', false when undefined/null
     cliuxPrintStub = sandbox.stub(cliUtilitiesModule.cliux, 'print');
@@ -56,7 +58,7 @@ describe('Import Config Handler', () => {
   describe('External Config File', () => {
     it('should merge external config file with default config', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
+        data: '/test/content',
       };
 
       // Set up authentication since no management token is provided
@@ -71,8 +73,8 @@ describe('Import Config Handler', () => {
 
     it('should load and merge external config file when config flag is provided', async () => {
       const importCmdFlags = {
-        'config': '/path/to/config.json',
-        'data': '/test/content',
+        config: '/path/to/config.json',
+        data: '/test/content',
       };
       const externalConfig = {
         versioning: true,
@@ -88,13 +90,13 @@ describe('Import Config Handler', () => {
 
       expect(readFileStub.calledWith('/path/to/config.json')).to.be.true;
       expect(result.host).to.equal(externalConfig.host);
-                           expect(result.versioning).to.equal(externalConfig.versioning);
+      expect(result.versioning).to.equal(externalConfig.versioning);
     });
 
     it('should filter module types when external config has modules array', async () => {
       const importCmdFlags = {
-        'config': '/path/to/config.json',
-        'data': '/test/content',
+        config: '/path/to/config.json',
+        data: '/test/content',
       };
       const externalConfig = {
         modules: ['assets', 'content-types'],
@@ -116,7 +118,7 @@ describe('Import Config Handler', () => {
   describe('Content Directory Resolution', () => {
     it('should use data flag for contentDir', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
+        data: '/test/content',
       };
       configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
       configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
@@ -146,7 +148,7 @@ describe('Import Config Handler', () => {
     it('should use config.data when no flags provided', async () => {
       const importCmdFlags = {};
       const configData = '/default/data/path';
-      
+
       readFileStub.resolves({ data: configData });
       configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
       configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
@@ -188,7 +190,7 @@ describe('Import Config Handler', () => {
 
     it('should remove quotes from contentDir', async () => {
       const importCmdFlags = {
-        'data': "'/test/content'",
+        data: "'/test/content'",
       };
       configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
       configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
@@ -202,7 +204,7 @@ describe('Import Config Handler', () => {
 
     it('should validate and reprompt when contentDir contains special characters', async () => {
       const importCmdFlags = {
-        'data': '/test/content*',
+        data: '/test/content*',
       };
       const validPath = '/test/valid-content';
 
@@ -223,7 +225,7 @@ describe('Import Config Handler', () => {
   describe('Management Token Authentication', () => {
     it('should use management token from alias when management-token-alias is provided', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
+        data: '/test/content',
         'management-token-alias': 'my-token',
       };
       const tokenData = {
@@ -232,7 +234,7 @@ describe('Import Config Handler', () => {
       };
 
       configHandlerGetStub.withArgs('tokens.my-token').returns(tokenData);
-      
+
       const result = await setupConfig(importCmdFlags);
 
       expect(result.management_token).to.equal('test-management-token');
@@ -244,8 +246,8 @@ describe('Import Config Handler', () => {
 
     it('should use management token from alias when alias flag is provided', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
-        'alias': 'my-alias',
+        data: '/test/content',
+        alias: 'my-alias',
       };
       const tokenData = {
         token: 'test-management-token',
@@ -262,7 +264,7 @@ describe('Import Config Handler', () => {
 
     it('should throw error when management token alias not found', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
+        data: '/test/content',
         'management-token-alias': 'non-existent',
       };
 
@@ -276,8 +278,6 @@ describe('Import Config Handler', () => {
       }
     });
   });
-
-
 
   describe('Flag Handling', () => {
     beforeEach(() => {
@@ -296,7 +296,7 @@ describe('Import Config Handler', () => {
 
     it('should set skipAudit from skip-audit flag', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
+        data: '/test/content',
         'skip-audit': true,
       };
 
@@ -307,7 +307,7 @@ describe('Import Config Handler', () => {
 
     it('should set forceStopMarketplaceAppsPrompt from yes flag', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
+        data: '/test/content',
         yes: true,
       };
 
@@ -318,7 +318,7 @@ describe('Import Config Handler', () => {
 
     it('should set importWebhookStatus from import-webhook-status flag', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
+        data: '/test/content',
         'import-webhook-status': 'active',
       };
 
@@ -327,20 +327,9 @@ describe('Import Config Handler', () => {
       expect(result.importWebhookStatus).to.equal('active');
     });
 
-    it('should set skipPrivateAppRecreationIfExist from skip-app-recreation flag', async () => {
-      const importCmdFlags = {
-        'data': '/test/content',
-        'skip-app-recreation': true,
-      };
-
-      const result = await setupConfig(importCmdFlags);
-
-      expect(result.skipPrivateAppRecreationIfExist).to.be.false; // Note: it's negated
-    });
-
     it('should set branchAlias from branch-alias flag', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
+        data: '/test/content',
         'branch-alias': 'my-branch',
       };
 
@@ -351,8 +340,8 @@ describe('Import Config Handler', () => {
 
     it('should set branchName and branchDir from branch flag', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
-        'branch': 'my-branch',
+        data: '/test/content',
+        branch: 'my-branch',
       };
 
       const result = await setupConfig(importCmdFlags);
@@ -363,8 +352,8 @@ describe('Import Config Handler', () => {
 
     it('should set moduleName and singleModuleImport from module flag', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
-        'module': 'assets',
+        data: '/test/content',
+        module: 'assets',
       };
 
       const result = await setupConfig(importCmdFlags);
@@ -375,7 +364,7 @@ describe('Import Config Handler', () => {
 
     it('should set useBackedupDir from backup-dir flag', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
+        data: '/test/content',
         'backup-dir': '/backup/path',
       };
 
@@ -386,7 +375,7 @@ describe('Import Config Handler', () => {
 
     it('should set skipAssetsPublish from skip-assets-publish flag', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
+        data: '/test/content',
         'skip-assets-publish': true,
       };
 
@@ -397,7 +386,7 @@ describe('Import Config Handler', () => {
 
     it('should set skipEntriesPublish from skip-entries-publish flag', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
+        data: '/test/content',
         'skip-entries-publish': true,
       };
 
@@ -408,7 +397,7 @@ describe('Import Config Handler', () => {
 
     it('should set replaceExisting from replace-existing flag', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
+        data: '/test/content',
         'replace-existing': true,
       };
 
@@ -419,7 +408,7 @@ describe('Import Config Handler', () => {
 
     it('should set skipExisting from skip-existing flag', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
+        data: '/test/content',
         'skip-existing': true,
       };
 
@@ -430,7 +419,7 @@ describe('Import Config Handler', () => {
 
     it('should set personalizeProjectName from personalize-project-name flag', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
+        data: '/test/content',
         'personalize-project-name': 'my-project',
       };
 
@@ -441,7 +430,7 @@ describe('Import Config Handler', () => {
 
     it('should set exclude-global-modules from exclude-global-modules flag', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
+        data: '/test/content',
         'exclude-global-modules': true,
       };
 
@@ -465,7 +454,7 @@ describe('Import Config Handler', () => {
 
     it('should set source_stack to apiKey', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
+        data: '/test/content',
         'stack-api-key': 'test-api-key',
       };
 
@@ -476,7 +465,7 @@ describe('Import Config Handler', () => {
 
     it('should set target_stack to apiKey', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
+        data: '/test/content',
         'stack-api-key': 'test-api-key',
       };
 
@@ -487,7 +476,7 @@ describe('Import Config Handler', () => {
 
     it('should set isAuthenticated flag', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
+        data: '/test/content',
       };
 
       configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
@@ -499,7 +488,7 @@ describe('Import Config Handler', () => {
 
     it('should set auth_token from configHandler', async () => {
       const importCmdFlags = {
-        'data': '/test/content',
+        data: '/test/content',
       };
 
       configHandlerGetStub.withArgs('authtoken').returns('custom-auth-token');
@@ -510,4 +499,3 @@ describe('Import Config Handler', () => {
     });
   });
 });
-

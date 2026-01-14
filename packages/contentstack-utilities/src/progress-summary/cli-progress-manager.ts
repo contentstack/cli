@@ -323,7 +323,7 @@ export default class CLIProgressManager {
    * Add a new process to track (for nested progress)
    */
   addProcess(processName: string, total: number): this {
-    if (!this.enableNestedProgress || !this.multiBar) return this;
+    if (!this.enableNestedProgress) return this;
 
     const process: ProcessProgress = {
       name: processName,
@@ -335,7 +335,7 @@ export default class CLIProgressManager {
       failures: [],
     };
 
-    if (!this.showConsoleLogs) {
+    if (!this.showConsoleLogs && this.multiBar) {
       const displayName = this.formatProcessName(processName);
       const indentedLabel = `  ├─ ${displayName}`.padEnd(25);
       process.progressBar = this.multiBar.create(total, 0, {
@@ -557,17 +557,19 @@ export default class CLIProgressManager {
    * Stop all progress indicators
    */
   stop(): void {
-    // Only stop progress bars if they were initialized (console logs disabled)
-    if (!this.showConsoleLogs) {
-      if (this.multiBar) {
-        this.multiBar.stop();
-      }
-      if (this.progressBar) {
-        this.progressBar.stop();
-      }
-      if (this.spinner) {
-        this.spinner.stop();
-      }
+    // Stop progress bars if they were initialized
+    if (this.multiBar) {
+      this.multiBar.stop();
+    }
+    if (this.progressBar) {
+      this.progressBar.stop();
+    }
+    if (this.spinner) {
+      this.spinner.stop();
+    }
+
+    // Print summary when console logs are enabled
+    if (this.showConsoleLogs) {
       this.printSummary();
     }
   }

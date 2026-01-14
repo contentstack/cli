@@ -1,13 +1,7 @@
 import merge from 'merge';
 import * as path from 'path';
 import { omit, filter, includes, isArray } from 'lodash';
-import {
-  configHandler,
-  isAuthenticated,
-  cliux,
-  sanitizePath,
-  log,
-} from '@contentstack/cli-utilities';
+import { configHandler, isAuthenticated, cliux, sanitizePath, log } from '@contentstack/cli-utilities';
 import defaultConfig from '../config';
 import { readFile, fileExistsSync } from './file-helper';
 import { askContentDir, askAPIKey } from './interactive';
@@ -18,7 +12,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   // Set progress supported module FIRST, before any log calls
   // This ensures the logger respects the showConsoleLogs setting correctly
   configHandler.set('log.progressSupportedModule', 'import');
-  
+
   let config: ImportConfig = merge({}, defaultConfig);
   // Track authentication method
   let authenticationMethod = 'unknown';
@@ -100,7 +94,6 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   config.skipAudit = importCmdFlags['skip-audit'];
   config.forceStopMarketplaceAppsPrompt = importCmdFlags.yes;
   config.importWebhookStatus = importCmdFlags['import-webhook-status'];
-  config.skipPrivateAppRecreationIfExist = !importCmdFlags['skip-app-recreation'];
 
   if (importCmdFlags['branch-alias']) {
     config.branchAlias = importCmdFlags['branch-alias'];
@@ -138,6 +131,9 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   if (importCmdFlags['exclude-global-modules']) {
     config['exclude-global-modules'] = importCmdFlags['exclude-global-modules'];
   }
+
+  // Set progress supported module to check and display console logs
+  configHandler.set('log.progressSupportedModule', 'import');
 
   // Add authentication details to config for context tracking
   config.authenticationMethod = authenticationMethod;
