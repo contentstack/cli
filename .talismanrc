@@ -271,5 +271,7 @@ fileignoreconfig:
     checksum: d484342c25462a7052c8aae6cad0baed9a01e1eaa67d6a09f175981c53092301
   - filename: packages/contentstack-clone/.eslintrc
     checksum: a7230ffa600c58047ac73f2dec7a23ca5862e36e68f04f2671379496739bd818
+  - filename: packages/contentstack-clone/test/commands/cm/stacks/clone.test.ts
+    checksum: b30adfbbd25aa76fe41b0ffebdb3bc61eb4981063c3a38b890c3cb3a6660ecca
 version: '1.0'
 
