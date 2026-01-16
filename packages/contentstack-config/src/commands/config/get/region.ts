@@ -1,5 +1,5 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux } from '@contentstack/cli-utilities';
+import { cliux, log } from '@contentstack/cli-utilities';
 
 import { Region } from '../../../interfaces';
 import { BaseCommand } from '../../../base-command';
@@ -10,7 +10,7 @@ export default class RegionGetCommand extends BaseCommand<typeof RegionGetComman
   async run() {
     let currentRegion: Region = this.region;
     if (!currentRegion) {
-      this.logger.error('No region is set.');
+      log.error('No region is set.', this.contextDetails);
       cliux.error('CLI_CONFIG_GET_REGION_NOT_FOUND');
       this.exit();
     }
@@ -21,6 +21,6 @@ export default class RegionGetCommand extends BaseCommand<typeof RegionGetComman
     cliux.print(`Developer Hub URL: ${currentRegion.developerHubUrl}`);
     cliux.print(`Launch URL: ${currentRegion.launchHubUrl}`);
     cliux.print(`Personalize URL: ${currentRegion.personalizeUrl}`);
-    this.logger.error(`Currently using ${currentRegion.name} region`);
+    log.info(`Currently using ${currentRegion.name} region`, this.contextDetails);
   }
 }

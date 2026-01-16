@@ -1,4 +1,11 @@
-import { flags, isAuthenticated, FlagInput, managementSDKClient, cliux } from '@contentstack/cli-utilities';
+import {
+  flags,
+  isAuthenticated,
+  FlagInput,
+  managementSDKClient,
+  cliux,
+  handleAndLogError,
+} from '@contentstack/cli-utilities';
 import { RateLimitHandler } from '../../../utils/rate-limit-handler';
 import { BaseCommand } from '../../../base-command';
 import { askOrgID } from '../../../utils/interactive';
@@ -82,6 +89,7 @@ export default class SetRateLimitCommand extends BaseCommand<typeof SetRateLimit
     try {
       await limitHandler.setRateLimit(config);
     } catch (error) {
+      handleAndLogError(error, { ...this.contextDetails, module: 'config-set-rate-limit' });
       if (error?.message) {
         cliux.error(error.message);
       } else {
