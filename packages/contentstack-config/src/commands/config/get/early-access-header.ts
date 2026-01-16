@@ -1,4 +1,4 @@
-import { cliux, configHandler } from '@contentstack/cli-utilities';
+import { cliux, configHandler, handleAndLogError } from '@contentstack/cli-utilities';
 import { Command } from '@contentstack/cli-command';
 
 export default class GetEarlyAccessHeaderCommand extends Command {
@@ -27,7 +27,7 @@ export default class GetEarlyAccessHeaderCommand extends Command {
         cliux.print(`Early Access header not found.`, { color: 'red' });
       }
     } catch (error) {
-      this.log('Unable to retrieve the Early Access header config', error instanceof Error ? error.message : error);
+      handleAndLogError(error, { module: 'config-get-early-access-header' });
     }
   }
 }

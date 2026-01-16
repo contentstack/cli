@@ -133,13 +133,14 @@ Perform audits and find possible errors in the exported Contentstack data
 ```
 USAGE
   $ csdx audit [-c <value>] [-d <value>] [--show-console-output] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules...] [--columns <value>]
-    [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules|composable-studio...]
+    [--columns <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output
+    csv|json|yaml]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
-                         <options:
-                         content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules>
+                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-ru
+                         les|composable-studio>
   --report-path=<value>  Path to store the audit reports
 
 COMMON FLAGS
@@ -183,9 +184,10 @@ Perform audits and fix possible errors in the exported Contentstack data.
 ```
 USAGE
   $ csdx audit:fix [-c <value>] [-d <value>] [--show-console-output] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules...] [--copy-path <value>
-    --copy-dir] [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns
-    <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules|composable-studio...]
+    [--copy-path <value> --copy-dir] [--fix-only
+    reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value>] [--sort <value>]
+    [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --copy-dir              Create backup from the original data.
@@ -193,8 +195,8 @@ FLAGS
   --fix-only=<option>...  Provide the list of fix options
                           <options: reference|global_field|json:rte|json:extension|blocks|group|content_types>
   --modules=<option>...   Provide the list of modules to be audited
-                          <options:
-                          content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules>
+                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-r
+                          ules|composable-studio>
   --report-path=<value>   Path to store the audit reports
 
 COMMON FLAGS
@@ -2701,13 +2703,14 @@ Perform audits and find possible errors in the exported Contentstack data
 ```
 USAGE
   $ csdx cm:stacks:audit [-c <value>] [-d <value>] [--show-console-output] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules...] [--columns <value>]
-    [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules|composable-studio...]
+    [--columns <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output
+    csv|json|yaml]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
-                         <options:
-                         content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules>
+                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-ru
+                         les|composable-studio>
   --report-path=<value>  Path to store the audit reports
 
 COMMON FLAGS
@@ -2753,9 +2756,10 @@ Perform audits and fix possible errors in the exported Contentstack data.
 ```
 USAGE
   $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>] [--show-console-output] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules...] [--copy-path <value>
-    --copy-dir] [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns
-    <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules|composable-studio...]
+    [--copy-path <value> --copy-dir] [--fix-only
+    reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value>] [--sort <value>]
+    [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --copy-dir              Create backup from the original data.
@@ -2763,8 +2767,8 @@ FLAGS
   --fix-only=<option>...  Provide the list of fix options
                           <options: reference|global_field|json:rte|json:extension|blocks|group|content_types>
   --modules=<option>...   Provide the list of modules to be audited
-                          <options:
-                          content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules>
+                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-r
+                          ules|composable-studio>
   --report-path=<value>   Path to store the audit reports
 
 COMMON FLAGS

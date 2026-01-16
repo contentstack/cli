@@ -1,4 +1,4 @@
-import { cliux, configHandler, FlagInput, flags } from '@contentstack/cli-utilities';
+import { cliux, configHandler, FlagInput, flags, handleAndLogError } from '@contentstack/cli-utilities';
 import { Command } from '@contentstack/cli-command';
 import { askOrgID } from '../../../utils/interactive';
 
@@ -27,7 +27,7 @@ export default class RateLimitRemoveCommand extends Command {
       configHandler.delete(`rateLimit.${org}`);
       cliux.print(`Rate limit entry for organization UID ${org} has been removed.`, { color: 'green' });
     } catch (error) {
-      this.log('Unable to remove the rate limit entry', error instanceof Error ? error.message : error);
+      handleAndLogError(error, { module: 'config-remove-rate-limit' });
     }
   }
 }
