@@ -1,18 +1,18 @@
-import { Command } from '@contentstack/cli-command';
-import { cliux, configHandler, TableHeader, log } from '@contentstack/cli-utilities';
+import { cliux, configHandler, TableHeader, log, handleAndLogError } from '@contentstack/cli-utilities';
+import { BaseCommand } from '../../../base-command';
 
-export default class ProxyGetCommand extends Command {
+export default class ProxyGetCommand extends BaseCommand<typeof ProxyGetCommand> {
   static description = 'Get proxy configuration for CLI';
 
   static examples = ['csdx config:get:proxy'];
 
   async run() {
     try {
-      log.debug('Starting proxy configuration retrieval');
+      log.debug('Starting proxy configuration retrieval', this.contextDetails);
       const globalProxyConfig = configHandler.get('proxy');
 
       if (globalProxyConfig) {
-        log.debug('Proxy configuration found in global config');
+        log.debug('Proxy configuration found in global config', this.contextDetails);
         let usernameValue = 'Not set';
         if (globalProxyConfig.auth?.username) {
           usernameValue = globalProxyConfig.auth.username;
@@ -44,12 +44,12 @@ export default class ProxyGetCommand extends Command {
         const headers: TableHeader[] = [{ value: 'Setting' }, { value: 'Value' }];
 
         cliux.table(headers, proxyConfigList);
-        log.info('Proxy configuration displayed successfully');
+        log.info('Proxy configuration displayed successfully', this.contextDetails);
       } else {
-        log.debug('No proxy configuration found in global config');
+        log.debug('No proxy configuration found in global config', this.contextDetails);
       }
     } catch (error) {
-      log.error('Error retrieving proxy configuration');
+      handleAndLogError(error, { ...this.contextDetails, module: 'config-get-proxy' });
     }
   }
 }

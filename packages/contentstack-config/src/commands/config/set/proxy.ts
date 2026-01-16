@@ -1,8 +1,8 @@
-import { Command } from '@contentstack/cli-command';
-import { flags, configHandler, FlagInput, log } from '@contentstack/cli-utilities';
+import { flags, configHandler, FlagInput, log, handleAndLogError } from '@contentstack/cli-utilities';
 import { askProxyPassword } from '../../../utils/interactive';
+import { BaseCommand } from '../../../base-command';
 
-export default class ProxySetCommand extends Command {
+export default class ProxySetCommand extends BaseCommand<typeof ProxySetCommand> {
   static description = 'Set proxy configuration for CLI';
 
   static flags: FlagInput = {
@@ -33,14 +33,14 @@ export default class ProxySetCommand extends Command {
 
   async run() {
     try {
-      log.debug('Starting proxy configuration setup');
+      log.debug('Starting proxy configuration setup', this.contextDetails);
       const { flags } = await this.parse(ProxySetCommand);
 
-      log.debug('Parsed proxy configuration flags');
+      log.debug('Parsed proxy configuration flags', this.contextDetails);
 
       const port = Number.parseInt(flags.port, 10);
       if (Number.isNaN(port) || port < 1 || port > 65535) {
-        log.error('Invalid port number provided');
+        log.error('Invalid port number provided', this.contextDetails);
         return;
       }
 
@@ -51,22 +51,22 @@ export default class ProxySetCommand extends Command {
       };
 
       if (flags.username) {
-        log.debug('Username provided, prompting for password');
+        log.debug('Username provided, prompting for password', this.contextDetails);
         // Prompt for password when username is provided
         const password = await askProxyPassword();
         proxyConfig.auth = {
           username: flags.username,
           password: password || '',
         };
-        log.debug('Proxy authentication configured');
+        log.debug('Proxy authentication configured', this.contextDetails);
       }
 
-      log.debug('Saving proxy configuration to global config');
+      log.debug('Saving proxy configuration to global config', this.contextDetails);
       configHandler.set('proxy', proxyConfig);
 
-      log.success('Proxy configuration set successfully');
+      log.success('Proxy configuration set successfully', this.contextDetails);
     } catch (error) {
-      log.error('Failed to set proxy configuration');
+      handleAndLogError(error, { ...this.contextDetails, module: 'config-set-proxy' });
     }
   }
 }
