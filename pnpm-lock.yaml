@@ -18,7 +18,7 @@ importers:
       '@contentstack/cli-cm-branches': ~1.6.2
       '@contentstack/cli-cm-bulk-publish': ~1.10.5
       '@contentstack/cli-cm-clone': ~1.19.0
-      '@contentstack/cli-cm-export': ~1.22.2
+      '@contentstack/cli-cm-export': ~1.23.0
       '@contentstack/cli-cm-export-to-csv': ~1.10.2
       '@contentstack/cli-cm-import': ~1.31.0
       '@contentstack/cli-cm-import-setup': ~1.7.2
@@ -86,7 +86,7 @@ importers:
       '@contentstack/cli-config': link:../contentstack-config
       '@contentstack/cli-launch': 1.9.4_ye7kx5d2fkdihvpgkysaadv2ca
       '@contentstack/cli-migration': link:../contentstack-migration
-      '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/cli-utilities': 1.16.0_lxq42tdpoxpye5tb7w3htdbbdq
       '@contentstack/cli-variants': link:../contentstack-variants
       '@contentstack/management': 1.22.0_debug@4.4.3
       '@oclif/core': 4.8.0
@@ -161,7 +161,7 @@ importers:
       winston: ^3.17.0
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
-      '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/cli-utilities': 1.16.0_@types+node@20.19.29
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.36
       '@oclif/plugin-plugins': 5.4.54
@@ -217,7 +217,7 @@ importers:
       typescript: ^4.9.5
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
-      '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/cli-utilities': 1.16.0_@types+node@14.18.63
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.36
       otplib: 12.0.1
@@ -269,7 +269,7 @@ importers:
     dependencies:
       '@contentstack/cli-cm-seed': link:../contentstack-seed
       '@contentstack/cli-command': link:../contentstack-command
-      '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/cli-utilities': 1.16.0_@types+node@14.18.63
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.36
       inquirer: 8.2.7_@types+node@14.18.63
@@ -316,7 +316,7 @@ importers:
       typescript: ^4.9.5
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
-      '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/cli-utilities': 1.16.0
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.36
       chalk: 4.1.2
@@ -359,7 +359,7 @@ importers:
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-config': link:../contentstack-config
-      '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/cli-utilities': 1.16.0
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.36
       chalk: 4.1.2
@@ -379,7 +379,7 @@ importers:
   packages/contentstack-clone:
     specifiers:
       '@colors/colors': ^1.6.0
-      '@contentstack/cli-cm-export': ~1.22.2
+      '@contentstack/cli-cm-export': ~1.23.0
       '@contentstack/cli-cm-import': ~1.31.0
       '@contentstack/cli-command': ~1.7.1
       '@contentstack/cli-utilities': ~1.16.0
@@ -405,7 +405,7 @@ importers:
       '@contentstack/cli-cm-export': link:../contentstack-export
       '@contentstack/cli-cm-import': link:../contentstack-import
       '@contentstack/cli-command': link:../contentstack-command
-      '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/cli-utilities': 1.16.0
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.36
       chalk: 4.1.2
@@ -443,7 +443,7 @@ importers:
       ts-node: ^8.10.2
       typescript: ^4.9.5
     dependencies:
-      '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/cli-utilities': 1.16.0_@types+node@14.18.63
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.36
       contentstack: 3.26.3
@@ -484,7 +484,7 @@ importers:
       typescript: ^4.9.5
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
-      '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/cli-utilities': 1.16.0_@types+node@14.18.63
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.36
       lodash: 4.17.21
@@ -571,7 +571,7 @@ importers:
       winston: ^3.17.0
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
-      '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/cli-utilities': 1.16.0
       '@contentstack/cli-variants': link:../contentstack-variants
       '@oclif/core': 4.8.0
       async: 3.2.6
@@ -631,7 +631,7 @@ importers:
       oclif: ^4.17.46
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
-      '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/cli-utilities': 1.16.0_debug@4.4.3
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.36
       fast-csv: 4.3.6
@@ -692,7 +692,7 @@ importers:
     dependencies:
       '@contentstack/cli-audit': link:../contentstack-audit
       '@contentstack/cli-command': link:../contentstack-command
-      '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/cli-utilities': 1.16.0_lxq42tdpoxpye5tb7w3htdbbdq
       '@contentstack/cli-variants': link:../contentstack-variants
       '@contentstack/management': 1.22.0_debug@4.4.3
       '@oclif/core': 4.8.0
@@ -764,7 +764,7 @@ importers:
       winston: ^3.17.0
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
-      '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/cli-utilities': 1.16.0_@types+node@14.18.63
       '@oclif/core': 4.8.0
       big-json: 3.2.0
       chalk: 4.1.2
@@ -820,7 +820,7 @@ importers:
       sinon: ^19.0.5
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
-      '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/cli-utilities': 1.16.0
       '@contentstack/json-rte-serializer': 2.1.0
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.36
@@ -864,7 +864,7 @@ importers:
       winston: ^3.17.0
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
-      '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/cli-utilities': 1.16.0
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.36
       async: 3.2.6
@@ -912,7 +912,7 @@ importers:
     dependencies:
       '@contentstack/cli-cm-import': link:../contentstack-import
       '@contentstack/cli-command': link:../contentstack-command
-      '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/cli-utilities': 1.16.0_@types+node@14.18.63
       '@contentstack/management': 1.22.0
       inquirer: 8.2.7_@types+node@14.18.63
       mkdirp: 1.0.4
@@ -1048,7 +1048,7 @@ importers:
       typescript: ^5.8.3
       winston: ^3.17.0
     dependencies:
-      '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/cli-utilities': 1.16.0_@types+node@20.19.29
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.36
       lodash: 4.17.21
@@ -2158,6 +2158,154 @@ packages:
       - typescript
     dev: false
 
+  /@contentstack/cli-utilities/1.16.0:
+    resolution: {integrity: sha512-2SlKE9bJH3bd+ESNq1c9FWRCYzIjuWxRtXp+83eX7qDzHA7Lgu2EsRjfq+TcYVtBdCd0BzVATRIU2t/vNUl5Zw==}
+    dependencies:
+      '@contentstack/management': 1.25.1
+      '@contentstack/marketplace-sdk': 1.4.1
+      '@oclif/core': 4.8.0
+      axios: 1.13.2
+      chalk: 4.1.2
+      cli-cursor: 3.1.0
+      cli-progress: 3.12.0
+      cli-table: 0.3.11
+      conf: 10.2.0
+      dotenv: 16.6.1
+      figures: 3.2.0
+      inquirer: 8.2.7
+      inquirer-search-checkbox: 1.0.0
+      inquirer-search-list: 1.2.6
+      js-yaml: 4.1.1
+      klona: 2.0.6
+      lodash: 4.17.21
+      mkdirp: 1.0.4
+      open: 8.4.2
+      ora: 5.4.1
+      papaparse: 5.5.3
+      recheck: 4.4.5
+      rxjs: 6.6.7
+      traverse: 0.6.11
+      tty-table: 4.2.3
+      unique-string: 2.0.0
+      uuid: 9.0.1
+      winston: 3.19.0
+      xdg-basedir: 4.0.0
+    transitivePeerDependencies:
+      - '@types/node'
+      - debug
+    dev: false
+
+  /@contentstack/cli-utilities/1.16.0_@types+node@14.18.63:
+    resolution: {integrity: sha512-2SlKE9bJH3bd+ESNq1c9FWRCYzIjuWxRtXp+83eX7qDzHA7Lgu2EsRjfq+TcYVtBdCd0BzVATRIU2t/vNUl5Zw==}
+    dependencies:
+      '@contentstack/management': 1.25.1
+      '@contentstack/marketplace-sdk': 1.4.1
+      '@oclif/core': 4.8.0
+      axios: 1.13.2
+      chalk: 4.1.2
+      cli-cursor: 3.1.0
+      cli-progress: 3.12.0
+      cli-table: 0.3.11
+      conf: 10.2.0
+      dotenv: 16.6.1
+      figures: 3.2.0
+      inquirer: 8.2.7_@types+node@14.18.63
+      inquirer-search-checkbox: 1.0.0
+      inquirer-search-list: 1.2.6
+      js-yaml: 4.1.1
+      klona: 2.0.6
+      lodash: 4.17.21
+      mkdirp: 1.0.4
+      open: 8.4.2
+      ora: 5.4.1
+      papaparse: 5.5.3
+      recheck: 4.4.5
+      rxjs: 6.6.7
+      traverse: 0.6.11
+      tty-table: 4.2.3
+      unique-string: 2.0.0
+      uuid: 9.0.1
+      winston: 3.19.0
+      xdg-basedir: 4.0.0
+    transitivePeerDependencies:
+      - '@types/node'
+      - debug
+    dev: false
+
+  /@contentstack/cli-utilities/1.16.0_@types+node@20.19.29:
+    resolution: {integrity: sha512-2SlKE9bJH3bd+ESNq1c9FWRCYzIjuWxRtXp+83eX7qDzHA7Lgu2EsRjfq+TcYVtBdCd0BzVATRIU2t/vNUl5Zw==}
+    dependencies:
+      '@contentstack/management': 1.25.1
+      '@contentstack/marketplace-sdk': 1.4.1
+      '@oclif/core': 4.8.0
+      axios: 1.13.2
+      chalk: 4.1.2
+      cli-cursor: 3.1.0
+      cli-progress: 3.12.0
+      cli-table: 0.3.11
+      conf: 10.2.0
+      dotenv: 16.6.1
+      figures: 3.2.0
+      inquirer: 8.2.7_@types+node@20.19.29
+      inquirer-search-checkbox: 1.0.0
+      inquirer-search-list: 1.2.6
+      js-yaml: 4.1.1
+      klona: 2.0.6
+      lodash: 4.17.21
+      mkdirp: 1.0.4
+      open: 8.4.2
+      ora: 5.4.1
+      papaparse: 5.5.3
+      recheck: 4.4.5
+      rxjs: 6.6.7
+      traverse: 0.6.11
+      tty-table: 4.2.3
+      unique-string: 2.0.0
+      uuid: 9.0.1
+      winston: 3.19.0
+      xdg-basedir: 4.0.0
+    transitivePeerDependencies:
+      - '@types/node'
+      - debug
+    dev: false
+
+  /@contentstack/cli-utilities/1.16.0_debug@4.4.3:
+    resolution: {integrity: sha512-2SlKE9bJH3bd+ESNq1c9FWRCYzIjuWxRtXp+83eX7qDzHA7Lgu2EsRjfq+TcYVtBdCd0BzVATRIU2t/vNUl5Zw==}
+    dependencies:
+      '@contentstack/management': 1.25.1_debug@4.4.3
+      '@contentstack/marketplace-sdk': 1.4.1_debug@4.4.3
+      '@oclif/core': 4.8.0
+      axios: 1.13.2_debug@4.4.3
+      chalk: 4.1.2
+      cli-cursor: 3.1.0
+      cli-progress: 3.12.0
+      cli-table: 0.3.11
+      conf: 10.2.0
+      dotenv: 16.6.1
+      figures: 3.2.0
+      inquirer: 8.2.7
+      inquirer-search-checkbox: 1.0.0
+      inquirer-search-list: 1.2.6
+      js-yaml: 4.1.1
+      klona: 2.0.6
+      lodash: 4.17.21
+      mkdirp: 1.0.4
+      open: 8.4.2
+      ora: 5.4.1
+      papaparse: 5.5.3
+      recheck: 4.4.5
+      rxjs: 6.6.7
+      traverse: 0.6.11
+      tty-table: 4.2.3
+      unique-string: 2.0.0
+      uuid: 9.0.1
+      winston: 3.19.0
+      xdg-basedir: 4.0.0
+    transitivePeerDependencies:
+      - '@types/node'
+      - debug
+    dev: false
+
   /@contentstack/cli-utilities/1.16.0_lxq42tdpoxpye5tb7w3htdbbdq:
     resolution: {integrity: sha512-2SlKE9bJH3bd+ESNq1c9FWRCYzIjuWxRtXp+83eX7qDzHA7Lgu2EsRjfq+TcYVtBdCd0BzVATRIU2t/vNUl5Zw==}
     dependencies:
@@ -3190,7 +3338,6 @@ packages:
       '@types/node': 20.19.29
       chardet: 2.1.1
       iconv-lite: 0.7.2
-    dev: true
 
   /@inquirer/figures/1.0.15:
     resolution: {integrity: sha512-t2IEY+unGHOzAaVM5Xx6DEWKeXlDDcNPeDyUpsRc6CUhBfU3VQOEl+Vssh7VNp1dR8MdUJBWhuObjXCsVpjN5g==}
@@ -10755,6 +10902,29 @@ packages:
     engines: {node: '>=12.0.0'}
     dependencies:
       '@inquirer/external-editor': 1.0.3_@types+node@14.18.63
+      ansi-escapes: 4.3.2
+      chalk: 4.1.2
+      cli-cursor: 3.1.0
+      cli-width: 3.0.0
+      figures: 3.2.0
+      lodash: 4.17.21
+      mute-stream: 0.0.8
+      ora: 5.4.1
+      run-async: 2.4.1
+      rxjs: 7.8.2
+      string-width: 4.2.3
+      strip-ansi: 6.0.1
+      through: 2.3.8
+      wrap-ansi: 6.2.0
+    transitivePeerDependencies:
+      - '@types/node'
+    dev: false
+
+  /inquirer/8.2.7_@types+node@20.19.29:
+    resolution: {integrity: sha512-UjOaSel/iddGZJ5xP/Eixh6dY1XghiBw4XK13rCCIJcJfyhhoul/7KhLLUGtebEj6GDYM6Vnx/mVsjx2L/mFIA==}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      '@inquirer/external-editor': 1.0.3_@types+node@20.19.29
       ansi-escapes: 4.3.2
       chalk: 4.1.2
       cli-cursor: 3.1.0
