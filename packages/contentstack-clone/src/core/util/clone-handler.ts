@@ -592,8 +592,8 @@ export class CloneHandler {
         log.debug('Force stop marketplace apps prompt enabled', this.config.cloneContext);
       }
 
-      // Resolve path to dummyConfig.json - always in src/lib/util
-      const configFilePath = path.join(packageRoot, 'src', 'lib', 'util', 'dummyConfig.json');
+      // Resolve path to dummyConfig.json - always in src/core/util
+      const configFilePath = path.join(packageRoot, 'src', 'core', 'util', 'dummyConfig.json');
       cmd.push('-c');
       cmd.push(configFilePath);
       log.debug(`Writing export config to: ${configFilePath}`, this.config.cloneContext);
@@ -625,9 +625,9 @@ export class CloneHandler {
       delete importConfig.import;
       delete importConfig.export;
 
-      // Resolve path to dummyConfig.json - always in src/lib/util
+      // Resolve path to dummyConfig.json - always in src/core/util
       const importPackageRoot = __dirname.includes('/src/') ? __dirname.split('/src/')[0] : __dirname.split('/lib/lib/')[0] || __dirname.split('/lib/')[0];
-      const configFilePath = path.join(importPackageRoot, 'src', 'lib', 'util', 'dummyConfig.json');
+      const configFilePath = path.join(importPackageRoot, 'src', 'core', 'util', 'dummyConfig.json');
       const cmd: string[] = ['-c', configFilePath];
 
       if (importConfig.destination_alias) {

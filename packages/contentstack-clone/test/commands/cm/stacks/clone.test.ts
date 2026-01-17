@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import StackCloneCommand from '../../../../src/commands/cm/stacks/clone';
-import { CloneHandler } from '../../../../src/lib/util/clone-handler';
+import { CloneHandler } from '../../../../src/core/util/clone-handler';
 import { CloneContext } from '../../../../src/types/clone-context';
 import * as cliUtilities from '@contentstack/cli-utilities';
 import { rimraf } from 'rimraf';

@@ -10,7 +10,7 @@ import {
   CreateNewStackCommand,
   CloneTypeSelectionCommand,
   Clone,
-} from '../../../src/lib/helpers/command-helpers';
+} from '../../../src/core/helpers/command-helpers';
 import { ICommand } from '../../../src/types/command-types';
 
 describe('Command Helpers', () => {
