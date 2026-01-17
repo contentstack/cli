@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { CustomAbortController, CustomAbortSignal } from '../../../src/lib/util/abort-controller';
+import { CustomAbortController, CustomAbortSignal } from '../../../src/core/util/abort-controller';
 
 describe('CustomAbortController', () => {
   describe('CustomAbortSignal', () => {

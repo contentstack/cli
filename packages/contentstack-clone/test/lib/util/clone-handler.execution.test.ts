@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { CloneHandler } from '../../../src/lib/util/clone-handler';
+import { CloneHandler } from '../../../src/core/util/clone-handler';
 import { CloneConfig } from '../../../src/types/clone-config';
 import sinon from 'sinon';
 import inquirer from 'inquirer';

@@ -7,7 +7,7 @@ import {
   log,
   handleAndLogError,
 } from '@contentstack/cli-utilities';
-import { CloneHandler } from '../../../lib/util/clone-handler';
+import { CloneHandler } from '../../../core/util/clone-handler';
 import * as path from 'path';
 import { rimraf } from 'rimraf';
 import merge from 'merge';
