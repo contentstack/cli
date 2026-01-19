@@ -86,17 +86,7 @@ class ModuleImporter {
 
   async importByModuleByName(moduleName: Modules) {
     log.info(`Starting import of ${moduleName} module`, this.importConfig.context);
-    
-    // Check if module should be skipped for legacy contentVersion
-    if (this.importConfig.contentVersion !== 2) {
-      const onlyTSModules = this.importConfig.onlyTSModules || [];
-      if (onlyTSModules.includes(moduleName)) {
-        // Module is in onlyTSModules list, skip import for legacy contentVersion
-        return undefined;
-      }
-    }
-    
-    // Use module import (same for both contentVersion 1 and 2)
+
     return startModuleImport({
       stackAPIClient: this.stackAPIClient,
       importConfig: this.importConfig,

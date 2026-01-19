@@ -15,14 +15,13 @@ describe('ExportAssets', () => {
       asset: sinon.stub().returns({
         query: sinon.stub().returns({
           find: sinon.stub().resolves({ items: mockData.findData.items }),
-          count: sinon.stub().resolves(mockData.countData)
+          count: sinon.stub().resolves(mockData.countData),
         }),
-        download: sinon.stub().resolves({ data: 'stream-data' })
-      })
+        download: sinon.stub().resolves({ data: 'stream-data' }),
+      }),
     };
 
     mockExportConfig = {
-      contentVersion: 1,
       versioning: false,
       host: 'https://api.contentstack.io',
       developerHubUrls: {},
@@ -37,7 +36,7 @@ describe('ExportAssets', () => {
         sessionId: 'session-123',
         apiKey: 'test-api-key',
         orgId: 'org-123',
-        authenticationMethod: 'Basic Auth'
+        authenticationMethod: 'Basic Auth',
       },
       cliLogsPath: '/test/logs',
       forceStopMarketplaceAppsPrompt: false,
@@ -46,7 +45,7 @@ describe('ExportAssets', () => {
         name: 'us',
         cma: 'https://api.contentstack.io',
         cda: 'https://cdn.contentstack.io',
-        uiHost: 'https://app.contentstack.com'
+        uiHost: 'https://app.contentstack.com',
       },
       skipStackSettings: false,
       skipDependencies: false,
@@ -63,7 +62,7 @@ describe('ExportAssets', () => {
         users: '',
         extension: '',
         webhooks: '',
-        stacks: ''
+        stacks: '',
       },
       preserveStackVersion: false,
       personalizationEnabled: false,
@@ -71,57 +70,56 @@ describe('ExportAssets', () => {
       writeConcurrency: 5,
       developerHubBaseUrl: '',
       marketplaceAppEncryptionKey: '',
-      onlyTSModules: [],
       modules: {
         types: ['assets'],
         locales: {
           dirName: 'locales',
           fileName: 'locales.json',
-          requiredKeys: ['code']
+          requiredKeys: ['code'],
         },
         customRoles: {
           dirName: 'custom_roles',
           fileName: 'custom_roles.json',
-          customRolesLocalesFileName: ''
+          customRolesLocalesFileName: '',
         },
         'custom-roles': {
           dirName: 'custom_roles',
           fileName: 'custom_roles.json',
-          customRolesLocalesFileName: ''
+          customRolesLocalesFileName: '',
         },
         environments: {
           dirName: 'environments',
-          fileName: 'environments.json'
+          fileName: 'environments.json',
         },
         labels: {
           dirName: 'labels',
           fileName: 'labels.json',
-          invalidKeys: []
+          invalidKeys: [],
         },
         webhooks: {
           dirName: 'webhooks',
-          fileName: 'webhooks.json'
+          fileName: 'webhooks.json',
         },
         releases: {
           dirName: 'releases',
           fileName: 'releases.json',
           releasesList: 'releases_list.json',
-          invalidKeys: []
+          invalidKeys: [],
         },
         workflows: {
           dirName: 'workflows',
           fileName: 'workflows.json',
-          invalidKeys: []
+          invalidKeys: [],
         },
         globalfields: {
           dirName: 'global_fields',
           fileName: 'globalfields.json',
-          validKeys: ['title', 'uid']
+          validKeys: ['title', 'uid'],
         },
         'global-fields': {
           dirName: 'global_fields',
           fileName: 'globalfields.json',
-          validKeys: ['title', 'uid']
+          validKeys: ['title', 'uid'],
         },
         assets: {
           dirName: 'assets',
@@ -136,19 +134,19 @@ describe('ExportAssets', () => {
           securedAssets: false,
           displayExecutionTime: false,
           enableDownloadStatus: false,
-          includeVersionedAssets: false
+          includeVersionedAssets: false,
         },
         content_types: {
           dirName: 'content_types',
           fileName: 'content_types.json',
           validKeys: ['title', 'uid'],
-          limit: 100
+          limit: 100,
         },
         'content-types': {
           dirName: 'content_types',
           fileName: 'content_types.json',
           validKeys: ['title', 'uid'],
-          limit: 100
+          limit: 100,
         },
         entries: {
           dirName: 'entries',
@@ -157,76 +155,76 @@ describe('ExportAssets', () => {
           batchLimit: 100,
           downloadLimit: 5,
           limit: 100,
-          exportVersions: false
+          exportVersions: false,
         },
         personalize: {
           dirName: 'personalize',
-          baseURL: {}
+          baseURL: {},
         },
         variantEntry: {
           dirName: 'variant_entries',
           fileName: 'variant_entries.json',
           chunkFileSize: 5,
-          query: { skip: 0, limit: 100, include_variant: true, include_count: false, include_publish_details: true }
+          query: { skip: 0, limit: 100, include_variant: true, include_count: false, include_publish_details: true },
         },
         extensions: {
           dirName: 'extensions',
-          fileName: 'extensions.json'
+          fileName: 'extensions.json',
         },
         stack: {
           dirName: 'stack',
-          fileName: 'stack.json'
+          fileName: 'stack.json',
         },
         dependency: {
-          entries: []
+          entries: [],
         },
         marketplace_apps: {
           dirName: 'marketplace_apps',
-          fileName: 'marketplace_apps.json'
+          fileName: 'marketplace_apps.json',
         },
         'marketplace-apps': {
           dirName: 'marketplace_apps',
-          fileName: 'marketplace_apps.json'
+          fileName: 'marketplace_apps.json',
         },
         'composable-studio': {
           dirName: 'composable-studio',
           fileName: 'composable-studio.json',
           apiBaseUrl: 'https://api.contentstack.io',
-          apiVersion: 'v1'
+          apiVersion: 'v1',
         },
         masterLocale: {
           dirName: 'master_locale',
           fileName: 'master_locale.json',
-          requiredKeys: ['code']
+          requiredKeys: ['code'],
         },
         taxonomies: {
           dirName: 'taxonomies',
           fileName: 'taxonomies.json',
           invalidKeys: [],
-          limit: 100
+          limit: 100,
         },
         events: {
           dirName: 'events',
           fileName: 'events.json',
-          invalidKeys: []
+          invalidKeys: [],
         },
         audiences: {
           dirName: 'audiences',
           fileName: 'audiences.json',
-          invalidKeys: []
+          invalidKeys: [],
         },
         attributes: {
           dirName: 'attributes',
           fileName: 'attributes.json',
-          invalidKeys: []
-        }
-      }
+          invalidKeys: [],
+        },
+      },
     } as ExportConfig;
 
     exportAssets = new ExportAssets({
       exportConfig: mockExportConfig,
       stackAPIClient: mockStackClient,
-      moduleName: 'assets'
+      moduleName: 'assets',
     });
   });
 
@@ -285,22 +283,22 @@ describe('ExportAssets', () => {
       getAssetsCountStub.callsFake((isFolder?: boolean) => {
         return Promise.resolve(isFolder ? 5 : 10);
       });
-      
+
       // Ensure stubs return resolved promises
       getAssetsFoldersStub.resolves();
       getAssetsStub.resolves();
       downloadAssetsStub.resolves();
       getVersionedAssetsStub.resolves();
-      
+
       // Stub progress manager methods to avoid issues
       sinon.stub(exportAssets as any, 'createNestedProgress').returns({
         addProcess: sinon.stub(),
         startProcess: sinon.stub().returns({
-          updateStatus: sinon.stub()
+          updateStatus: sinon.stub(),
         }),
         updateStatus: sinon.stub(),
         completeProcess: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       } as any);
       sinon.stub(exportAssets as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
         return await fn();
@@ -330,7 +328,7 @@ describe('ExportAssets', () => {
     it('should export versioned assets when enabled', async () => {
       mockExportConfig.modules.assets.includeVersionedAssets = true;
       exportAssets.versionedAssets = [{ 'asset-1': 2 }];
-      
+
       // Just verify the flow completes
       await exportAssets.start();
 
@@ -365,8 +363,8 @@ describe('ExportAssets', () => {
     it('should handle errors gracefully', async () => {
       mockStackClient.asset = sinon.stub().returns({
         query: sinon.stub().returns({
-          count: sinon.stub().rejects(new Error('API Error'))
-        })
+          count: sinon.stub().rejects(new Error('API Error')),
+        }),
       });
 
       const count = await exportAssets.getAssetsCount(false);
@@ -507,7 +505,7 @@ describe('ExportAssets', () => {
 
     it('should handle onReject callback for versioned assets errors', async () => {
       exportAssets.versionedAssets = [{ 'asset-1': 2 }];
-      
+
       makeConcurrentCallStub.callsFake(async (options: any) => {
         const onReject = options.apiParams.reject;
         const error = new Error('Versioned asset query failed');
@@ -518,7 +516,6 @@ describe('ExportAssets', () => {
       await exportAssets.getVersionedAssets();
       expect(makeConcurrentCallStub.called).to.be.true;
     });
-
   });
 
   describe('downloadAssets() method', () => {
@@ -558,7 +555,7 @@ describe('ExportAssets', () => {
 
     it('should include versioned assets when enabled', async () => {
       mockExportConfig.modules.assets.includeVersionedAssets = true;
-      
+
       await exportAssets.downloadAssets();
 
       // Should complete without error
@@ -567,7 +564,7 @@ describe('ExportAssets', () => {
 
     it('should handle download with secured assets', async () => {
       mockExportConfig.modules.assets.securedAssets = true;
-      
+
       await exportAssets.downloadAssets();
 
       expect(makeConcurrentCallStub.called).to.be.true;
@@ -575,7 +572,7 @@ describe('ExportAssets', () => {
 
     it('should handle download with enabled status', async () => {
       mockExportConfig.modules.assets.enableDownloadStatus = true;
-      
+
       makeConcurrentCallStub.callsFake(async (options: any, handler: any) => {
         expect(options.totalCount).to.be.greaterThan(0);
       });
@@ -608,7 +605,7 @@ describe('ExportAssets', () => {
 
     it('should handle versioned assets with version 1 only', async () => {
       exportAssets.versionedAssets = [];
-      
+
       const result = await exportAssets.getVersionedAssets();
       // Should complete without errors
       expect(result).to.be.undefined;
@@ -639,14 +636,14 @@ describe('ExportAssets', () => {
       const assetsWithDuplicates = {
         'file-1': [
           { uid: '1', url: 'same-url', filename: 'test.jpg' },
-          { uid: '2', url: 'same-url', filename: 'test.jpg' }
-        ]
+          { uid: '2', url: 'same-url', filename: 'test.jpg' },
+        ],
       };
       sinon.stub(FsUtility.prototype, 'getPlainMeta').returns(assetsWithDuplicates);
       const makeConcurrentCallStub = sinon.stub(exportAssets as any, 'makeConcurrentCall').resolves();
 
       await exportAssets.downloadAssets();
-      
+
       // Should only download unique assets
       sinon.restore();
     });
@@ -654,26 +651,26 @@ describe('ExportAssets', () => {
     it('should handle download assets with versioned metadata', async () => {
       mockExportConfig.modules.assets.includeVersionedAssets = true;
       (exportAssets as any).assetsRootPath = '/test/data/assets';
-      
+
       const mainAssets = { 'file-1': [{ uid: '1', url: 'url1', filename: 'test.jpg' }] };
       const versionedAssets = { 'file-2': [{ uid: '2', url: 'url2', filename: 'version.jpg' }] };
-      
+
       const getPlainMetaStub = sinon.stub(FsUtility.prototype, 'getPlainMeta');
       getPlainMetaStub.onFirstCall().returns(mainAssets);
       getPlainMetaStub.onSecondCall().returns(versionedAssets);
-      
+
       // Mock getDirectories to return empty array to avoid fs operations
       sinon.stub(exportAssets as any, 'assetsRootPath').get(() => '/test/data/assets');
       const makeConcurrentCallStub = sinon.stub(exportAssets as any, 'makeConcurrentCall').resolves();
-      
+
       // Create a simple mock for getDirectories behavior
       const fsInstance: any = {
         getPlainMeta: getPlainMetaStub,
-        createFolderIfNotExist: () => {}
+        createFolderIfNotExist: () => {},
       };
-      
+
       await exportAssets.downloadAssets();
-      
+
       expect(makeConcurrentCallStub.called).to.be.true;
       sinon.restore();
     });
@@ -695,11 +692,11 @@ describe('ExportAssets', () => {
 
     it('should handle assets with no items response', async () => {
       (exportAssets as any).assetsRootPath = '/test/data/assets';
-      
+
       // Stub FsUtility methods
       sinon.stub(FsUtility.prototype, 'writeIntoFile').resolves();
       sinon.stub(FsUtility.prototype, 'completeFile').resolves();
-      
+
       makeConcurrentCallStub.callsFake(async (options: any) => {
         const onSuccess = options.apiParams.resolve;
         onSuccess({ response: { items: [] } });
@@ -712,22 +709,22 @@ describe('ExportAssets', () => {
     it('should handle assets with versioned assets enabled', async () => {
       (exportAssets as any).assetsRootPath = '/test/data/assets';
       mockExportConfig.modules.assets.includeVersionedAssets = true;
-      
+
       // Stub FsUtility methods to prevent fs operations
       sinon.stub(FsUtility.prototype, 'writeIntoFile').resolves();
       sinon.stub(FsUtility.prototype, 'completeFile').resolves();
       sinon.stub(FsUtility.prototype, 'createFolderIfNotExist').resolves();
-      
+
       makeConcurrentCallStub.callsFake(async (options: any) => {
         const onSuccess = options.apiParams.resolve;
         // Mock versioned assets
-        onSuccess({ 
-          response: { 
+        onSuccess({
+          response: {
             items: [
               { uid: '1', _version: 2, url: 'url1', filename: 'test.jpg' },
-              { uid: '2', _version: 1, url: 'url2', filename: 'test2.jpg' }
-            ] 
-          } 
+              { uid: '2', _version: 1, url: 'url2', filename: 'test2.jpg' },
+            ],
+          },
         });
       });
 
@@ -738,12 +735,12 @@ describe('ExportAssets', () => {
     it('should apply query filters when configured', async () => {
       (exportAssets as any).assetsRootPath = '/test/data/assets';
       mockExportConfig.modules.assets.invalidKeys = ['SYS_ACL'];
-      
+
       // Stub FsUtility methods to prevent fs operations
       sinon.stub(FsUtility.prototype, 'writeIntoFile').resolves();
       sinon.stub(FsUtility.prototype, 'completeFile').resolves();
       sinon.stub(FsUtility.prototype, 'createFolderIfNotExist').resolves();
-      
+
       makeConcurrentCallStub.callsFake(async (options: any) => {
         const onSuccess = options.apiParams.resolve;
         onSuccess({ response: { items: [{ uid: '1', url: 'url1', filename: 'test.jpg' }] } });
@@ -758,7 +755,7 @@ describe('ExportAssets', () => {
     it('should handle folders with empty items response', async () => {
       (exportAssets as any).assetsRootPath = '/test/data/assets';
       const makeConcurrentCallStub = sinon.stub(exportAssets as any, 'makeConcurrentCall').resolves();
-      
+
       makeConcurrentCallStub.callsFake(async (options: any) => {
         const onSuccess = options.apiParams.resolve;
         onSuccess({ response: { items: [] } });
@@ -766,19 +763,19 @@ describe('ExportAssets', () => {
 
       await exportAssets.getAssetsFolders(10);
       expect(makeConcurrentCallStub.called).to.be.true;
-      
+
       makeConcurrentCallStub.restore();
     });
 
     it('should add folders to assetsFolder array', async () => {
       (exportAssets as any).assetsRootPath = '/test/data/assets';
-      
+
       const makeConcurrentCallStub = sinon.stub(exportAssets as any, 'makeConcurrentCall').resolves();
-      
+
       // Stub FsUtility methods to prevent file system operations
       sinon.stub(FsUtility.prototype, 'writeFile').resolves();
       sinon.stub(FsUtility.prototype, 'createFolderIfNotExist').resolves();
-      
+
       makeConcurrentCallStub.callsFake(async (options: any) => {
         const onSuccess = options.apiParams.resolve;
         // Simulate adding folders to the array
@@ -787,11 +784,11 @@ describe('ExportAssets', () => {
       });
 
       await exportAssets.getAssetsFolders(10);
-      
+
       expect(makeConcurrentCallStub.called).to.be.true;
       // Verify folders were added
       expect((exportAssets as any).assetsFolder.length).to.be.greaterThan(0);
-      
+
       makeConcurrentCallStub.restore();
     });
   });
@@ -800,14 +797,14 @@ describe('ExportAssets', () => {
     it('should handle download with secured assets', async () => {
       mockExportConfig.modules.assets.securedAssets = true;
       (exportAssets as any).assetsRootPath = '/test/data/assets';
-      
+
       const getPlainMetaStub = sinon.stub(FsUtility.prototype, 'getPlainMeta').returns({
-        'file-1': [{ uid: '1', url: 'url1', filename: 'test.jpg' }]
+        'file-1': [{ uid: '1', url: 'url1', filename: 'test.jpg' }],
       });
       const makeConcurrentCallStub = sinon.stub(exportAssets as any, 'makeConcurrentCall').resolves();
-      
+
       await exportAssets.downloadAssets();
-      
+
       expect(makeConcurrentCallStub.called).to.be.true;
       getPlainMetaStub.restore();
       makeConcurrentCallStub.restore();
@@ -816,14 +813,14 @@ describe('ExportAssets', () => {
     it('should handle download with enableDownloadStatus', async () => {
       mockExportConfig.modules.assets.enableDownloadStatus = true;
       (exportAssets as any).assetsRootPath = '/test/data/assets';
-      
+
       const getPlainMetaStub = sinon.stub(FsUtility.prototype, 'getPlainMeta').returns({
-        'file-1': [{ uid: '1', url: 'url1', filename: 'test.jpg' }]
+        'file-1': [{ uid: '1', url: 'url1', filename: 'test.jpg' }],
       });
       const makeConcurrentCallStub = sinon.stub(exportAssets as any, 'makeConcurrentCall').resolves();
-      
+
       await exportAssets.downloadAssets();
-      
+
       expect(makeConcurrentCallStub.called).to.be.true;
       getPlainMetaStub.restore();
       makeConcurrentCallStub.restore();
@@ -831,18 +828,17 @@ describe('ExportAssets', () => {
 
     it('should handle download with concurrent call structure', async () => {
       (exportAssets as any).assetsRootPath = '/test/data/assets';
-      
+
       const getPlainMetaStub = sinon.stub(FsUtility.prototype, 'getPlainMeta').returns({
-        'file-1': [{ uid: '1', url: 'url1', filename: 'test.jpg' }]
+        'file-1': [{ uid: '1', url: 'url1', filename: 'test.jpg' }],
       });
       const makeConcurrentCallStub = sinon.stub(exportAssets as any, 'makeConcurrentCall').resolves();
-      
+
       await exportAssets.downloadAssets();
-      
+
       expect(makeConcurrentCallStub.called).to.be.true;
       getPlainMetaStub.restore();
       makeConcurrentCallStub.restore();
     });
   });
 });
-

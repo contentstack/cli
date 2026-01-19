@@ -167,7 +167,6 @@ describe('ImportLocales', () => {
       marketplaceAppEncryptionKey: 'test-key',
       getEncryptionKeyMaxRetry: 3,
       overwriteSupportedModules: [],
-      onlyTSModules: [],
       globalModules: [],
       entriesPublish: false,
       cliLogsPath: '/test/logs',
@@ -176,7 +175,6 @@ describe('ImportLocales', () => {
       skipPrivateAppRecreationIfExist: false,
       master_locale: { code: 'en-us' },
       masterLocale: { code: 'en-us' },
-      contentVersion: 1,
       region: 'us' as any,
       'exclude-global-modules': false,
       context: {
@@ -257,9 +255,11 @@ describe('ImportLocales', () => {
       fsUtilStub.returns([]);
       fileHelperStub.resolves();
 
-      sandbox.stub(localesInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+      sandbox
+        .stub(localesInstance as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
 
       const result = await localesInstance.start();
 
@@ -271,9 +271,11 @@ describe('ImportLocales', () => {
       fsUtilStub.returns(null);
       fileHelperStub.resolves();
 
-      sandbox.stub(localesInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+      sandbox
+        .stub(localesInstance as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
 
       const result = await localesInstance.start();
 
@@ -297,15 +299,17 @@ describe('ImportLocales', () => {
       fileHelperStub.resolves();
       makeConcurrentCallStub.resolves();
 
-      sandbox.stub(localesInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+      sandbox
+        .stub(localesInstance as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       const mockProgress = {
         addProcess: sandbox.stub(),
         startProcess: sandbox.stub().returns({ updateStatus: sandbox.stub() }),
         completeProcess: sandbox.stub(),
         updateStatus: sandbox.stub(),
-        tick: sandbox.stub()
+        tick: sandbox.stub(),
       };
       sandbox.stub(localesInstance as any, 'setupLocalesProgress').returns(mockProgress);
       sandbox.stub(localesInstance as any, 'prepareLocalesMapper').resolves();
@@ -344,7 +348,7 @@ describe('ImportLocales', () => {
         startProcess: sandbox.stub().returns({ updateStatus: sandbox.stub() }),
         completeProcess: sandbox.stub(),
         updateStatus: sandbox.stub(),
-        tick: sandbox.stub()
+        tick: sandbox.stub(),
       };
       sandbox.stub(localesInstance as any, 'setupLocalesProgress').returns(mockProgress);
       sandbox.stub(localesInstance as any, 'prepareLocalesMapper').resolves();
@@ -379,15 +383,17 @@ describe('ImportLocales', () => {
       const fileExistsSyncStub = sandbox.stub(require('../../../../src/utils').fileHelper, 'fileExistsSync');
       fileExistsSyncStub.returns(true);
 
-      sandbox.stub(localesInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+      sandbox
+        .stub(localesInstance as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       const mockProgress = {
         addProcess: sandbox.stub(),
         startProcess: sandbox.stub().returns({ updateStatus: sandbox.stub() }),
         completeProcess: sandbox.stub(),
         updateStatus: sandbox.stub(),
-        tick: sandbox.stub()
+        tick: sandbox.stub(),
       };
       sandbox.stub(localesInstance as any, 'setupLocalesProgress').returns(mockProgress);
       sandbox.stub(localesInstance as any, 'prepareLocalesMapper').resolves();
@@ -410,15 +416,17 @@ describe('ImportLocales', () => {
       fsUtilStub.onFirstCall().returns(mockLanguages).onSecondCall().returns({}).onThirdCall().returns({});
       fileHelperStub.resolves();
 
-      sandbox.stub(localesInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+      sandbox
+        .stub(localesInstance as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       const mockProgress = {
         addProcess: sandbox.stub(),
         startProcess: sandbox.stub().returns({ updateStatus: sandbox.stub() }),
         completeProcess: sandbox.stub(),
         updateStatus: sandbox.stub(),
-        tick: sandbox.stub()
+        tick: sandbox.stub(),
       };
       sandbox.stub(localesInstance as any, 'setupLocalesProgress').returns(mockProgress);
       sandbox.stub(localesInstance as any, 'prepareLocalesMapper').resolves();
@@ -445,15 +453,17 @@ describe('ImportLocales', () => {
       fileHelperStub.resolves();
       makeConcurrentCallStub.rejects(new Error('Create locales error'));
 
-      sandbox.stub(localesInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+      sandbox
+        .stub(localesInstance as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       const mockProgress = {
         addProcess: sandbox.stub(),
         startProcess: sandbox.stub().returns({ updateStatus: sandbox.stub() }),
         completeProcess: sandbox.stub(),
         updateStatus: sandbox.stub(),
-        tick: sandbox.stub()
+        tick: sandbox.stub(),
       };
       sandbox.stub(localesInstance as any, 'setupLocalesProgress').returns(mockProgress);
       sandbox.stub(localesInstance as any, 'prepareLocalesMapper').resolves();
@@ -472,15 +482,17 @@ describe('ImportLocales', () => {
       fileHelperStub.resolves();
       makeConcurrentCallStub.onFirstCall().resolves().onSecondCall().rejects(new Error('Update locales error'));
 
-      sandbox.stub(localesInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+      sandbox
+        .stub(localesInstance as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       const mockProgress = {
         addProcess: sandbox.stub(),
         startProcess: sandbox.stub().returns({ updateStatus: sandbox.stub() }),
         completeProcess: sandbox.stub(),
         updateStatus: sandbox.stub(),
-        tick: sandbox.stub()
+        tick: sandbox.stub(),
       };
       sandbox.stub(localesInstance as any, 'setupLocalesProgress').returns(mockProgress);
       sandbox.stub(localesInstance as any, 'prepareLocalesMapper').resolves();

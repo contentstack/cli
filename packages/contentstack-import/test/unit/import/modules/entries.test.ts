@@ -6,7 +6,6 @@ import { FsUtility } from '@contentstack/cli-utilities';
 import { fsUtil, fileHelper, MODULE_CONTEXTS } from '../../../../src/utils';
 import * as path from 'path';
 
-
 const mockData = require('./mock-data/entries/content-types.json');
 const mockEntries = require('./mock-data/entries/entries.json');
 const mockLocales = require('./mock-data/entries/locales.json');
@@ -49,19 +48,18 @@ describe('EntriesImport', () => {
           delete: sinon.stub().resolves({ uid: 'deleted-entry-uid' }),
           publish: sinon.stub().resolves({ uid: 'published-entry-uid' }),
           query: sinon.stub().returns({
-            findOne: sinon.stub().resolves({ items: [{ uid: 'existing-entry-uid', title: 'Existing Entry' }] })
-          })
+            findOne: sinon.stub().resolves({ items: [{ uid: 'existing-entry-uid', title: 'Existing Entry' }] }),
+          }),
         }),
         fetch: sinon.stub().resolves({ uid: 'ct-uid', schema: [] }),
-        update: sinon.stub().resolves({ uid: 'updated-ct-uid' })
-      })
+        update: sinon.stub().resolves({ uid: 'updated-ct-uid' }),
+      }),
     };
 
     mockImportConfig = {
       apiKey: 'test',
       contentDir: '/test/content',
       data: '/test/content',
-      contentVersion: 1,
       region: 'us',
       master_locale: { code: 'en-us' },
       masterLocale: { code: 'en-us' },
@@ -73,23 +71,23 @@ describe('EntriesImport', () => {
         sessionId: 'session-123',
         apiKey: 'test',
         orgId: 'org-123',
-        authenticationMethod: 'Basic Auth'
+        authenticationMethod: 'Basic Auth',
       },
       modules: {
         types: ['entries'],
-        entries: { 
+        entries: {
           dirName: 'entries',
           chunkFileSize: 100,
           invalidKeys: ['_version', 'created_at', 'updated_at'],
-          importConcurrency: 5
+          importConcurrency: 5,
         },
         'content-types': {
-          dirName: 'content_types'
+          dirName: 'content_types',
         },
         locales: {
           dirName: 'locales',
-          fileName: 'locales.json'
-        }
+          fileName: 'locales.json',
+        },
       },
       backupDir: '/test/backup',
       cliLogsPath: '/test/logs',
@@ -103,13 +101,13 @@ describe('EntriesImport', () => {
       skipEntriesPublish: false,
       'exclude-global-modules': false,
       replaceExisting: false,
-      importConcurrency: 5
+      importConcurrency: 5,
     } as any;
 
     entriesImport = new EntriesImport({
       importConfig: mockImportConfig as any,
       stackAPIClient: mockStackClient,
-      moduleName: 'entries'
+      moduleName: 'entries',
     });
 
     makeConcurrentCallStub = sinon.stub(entriesImport as any, 'makeConcurrentCall').resolves();
@@ -171,16 +169,16 @@ describe('EntriesImport', () => {
           entries: {
             dirName: 'entries',
             chunkFileSize: 100,
-            invalidKeys: ['_version', 'created_at', 'updated_at']
+            invalidKeys: ['_version', 'created_at', 'updated_at'],
             // No importConcurrency
-          }
-        }
+          },
+        },
       };
 
       const entriesImportFallback = new EntriesImport({
         importConfig: configWithoutEntriesConcurrency as any,
         stackAPIClient: mockStackClient,
-        moduleName: 'entries'
+        moduleName: 'entries',
       });
 
       expect(entriesImportFallback['importConcurrency']).to.equal(5);
@@ -193,7 +191,7 @@ describe('EntriesImport', () => {
         mockData.simpleContentType,
         mockData.contentTypeWithReferences,
         mockData.contentTypeWithJsonRte,
-        mockData.contentTypeWithAssets
+        mockData.contentTypeWithAssets,
       ];
       entriesImport['installedExtensions'] = mockMappers.installedExtensions;
     });
@@ -204,7 +202,7 @@ describe('EntriesImport', () => {
           const onSuccess = options.apiParams.resolve;
           onSuccess({
             response: { uid: 'ct-uid' },
-            apiData: { uid: 'ct-uid' }
+            apiData: { uid: 'ct-uid' },
           });
         });
 
@@ -219,7 +217,7 @@ describe('EntriesImport', () => {
           const onReject = options.apiParams.reject;
           onReject({
             error: new Error('Content type processing failed'),
-            apiData: { uid: 'ct-uid' }
+            apiData: { uid: 'ct-uid' },
           });
         });
 
@@ -239,16 +237,16 @@ describe('EntriesImport', () => {
               uid: 'mandatory_field',
               data_type: 'text',
               display_name: 'Mandatory Field',
-              mandatory: true
-            }
-          ]
+              mandatory: true,
+            },
+          ],
         };
 
         const apiOptions = {
           apiData: contentTypeWithReferences,
           entity: 'update-cts' as const,
           resolve: sinon.stub(),
-          reject: sinon.stub()
+          reject: sinon.stub(),
         };
 
         const result = entriesImport['serializeUpdateCTs'](apiOptions);
@@ -267,16 +265,16 @@ describe('EntriesImport', () => {
               uid: 'mandatory_field',
               data_type: 'text',
               display_name: 'Mandatory Field',
-              mandatory: true
-            }
-          ]
+              mandatory: true,
+            },
+          ],
         };
 
         const apiOptions = {
           apiData: contentTypeWithJsonRte,
           entity: 'update-cts' as const,
           resolve: sinon.stub(),
-          reject: sinon.stub()
+          reject: sinon.stub(),
         };
 
         const result = entriesImport['serializeUpdateCTs'](apiOptions);
@@ -297,7 +295,7 @@ describe('EntriesImport', () => {
               data_type: 'text',
               display_name: 'Title',
               mandatory: true,
-              unique: true
+              unique: true,
             },
             {
               uid: 'rte_field',
@@ -305,24 +303,24 @@ describe('EntriesImport', () => {
               display_name: 'RTE Field',
               field_metadata: {
                 rich_text_type: true,
-                embed_entry: true
+                embed_entry: true,
               },
-              reference_to: ['simple_ct']
+              reference_to: ['simple_ct'],
             },
             {
               uid: 'mandatory_field',
               data_type: 'text',
               display_name: 'Mandatory Field',
-              mandatory: true
-            }
-          ]
+              mandatory: true,
+            },
+          ],
         };
 
         const apiOptions = {
           apiData: contentTypeWithRte,
           entity: 'update-cts' as const,
           resolve: sinon.stub(),
-          reject: sinon.stub()
+          reject: sinon.stub(),
         };
 
         const result = entriesImport['serializeUpdateCTs'](apiOptions);
@@ -338,7 +336,7 @@ describe('EntriesImport', () => {
           apiData: mockData.simpleContentType,
           entity: 'update-cts' as const,
           resolve: sinon.stub(),
-          reject: sinon.stub()
+          reject: sinon.stub(),
         };
 
         const result = entriesImport['serializeUpdateCTs'](apiOptions);
@@ -356,22 +354,22 @@ describe('EntriesImport', () => {
               uid: 'mandatory_field',
               data_type: 'text',
               display_name: 'Mandatory Field',
-              mandatory: true
-            }
+              mandatory: true,
+            },
           ],
           field_rules: [
             {
               conditions: [{ operand_field: 'title', operator: 'equals', value: 'test' }],
-              actions: [{ operand_field: 'description', action: 'show' }]
-            }
-          ]
+              actions: [{ operand_field: 'description', action: 'show' }],
+            },
+          ],
         };
 
         const apiOptions = {
           apiData: contentTypeWithFieldRules,
           entity: 'update-cts' as const,
           resolve: sinon.stub(),
-          reject: sinon.stub()
+          reject: sinon.stub(),
         };
 
         const result = entriesImport['serializeUpdateCTs'](apiOptions);
@@ -389,22 +387,22 @@ describe('EntriesImport', () => {
               data_type: 'text',
               display_name: 'Title',
               mandatory: true,
-              unique: true
+              unique: true,
             },
             {
               uid: 'mandatory_field',
               data_type: 'text',
               display_name: 'Mandatory Field',
-              mandatory: true
-            }
-          ]
+              mandatory: true,
+            },
+          ],
         };
 
         const apiOptions = {
           apiData: contentTypeWithMandatory,
           entity: 'update-cts' as const,
           resolve: sinon.stub(),
-          reject: sinon.stub()
+          reject: sinon.stub(),
         };
 
         entriesImport['serializeUpdateCTs'](apiOptions);
@@ -424,7 +422,7 @@ describe('EntriesImport', () => {
           const onSuccess = options.apiParams.resolve;
           onSuccess({
             response: { uid: 'ct-uid' },
-            apiData: { uid: 'ct-uid' }
+            apiData: { uid: 'ct-uid' },
           });
         });
 
@@ -438,7 +436,7 @@ describe('EntriesImport', () => {
           const onReject = options.apiParams.reject;
           onReject({
             error: new Error('Content type update failed'),
-            apiData: { uid: 'ct-uid' }
+            apiData: { uid: 'ct-uid' },
           });
         });
 
@@ -458,7 +456,7 @@ describe('EntriesImport', () => {
           apiData: mockData.contentTypeWithReferences,
           entity: 'update-cts' as const,
           resolve: sinon.stub(),
-          reject: sinon.stub()
+          reject: sinon.stub(),
         };
 
         const result = entriesImport['serializeUpdateCTsWithRef'](apiOptions);
@@ -473,16 +471,16 @@ describe('EntriesImport', () => {
           field_rules: [
             {
               conditions: [{ operand_field: 'title', operator: 'equals', value: 'test' }],
-              actions: [{ operand_field: 'description', action: 'show' }]
-            }
-          ]
+              actions: [{ operand_field: 'description', action: 'show' }],
+            },
+          ],
         };
 
         const apiOptions = {
           apiData: contentTypeWithFieldRules,
           entity: 'update-cts' as const,
           resolve: sinon.stub(),
-          reject: sinon.stub()
+          reject: sinon.stub(),
         };
 
         const result = entriesImport['serializeUpdateCTsWithRef'](apiOptions);
@@ -495,8 +493,8 @@ describe('EntriesImport', () => {
       beforeEach(() => {
         entriesImport['cTs'] = [mockData.contentTypeWithFieldRules];
         entriesImport['entriesUidMapper'] = {
-          'entry_uid_1': 'new_entry_uid_1',
-          'entry_uid_2': 'new_entry_uid_2'
+          entry_uid_1: 'new_entry_uid_1',
+          entry_uid_2: 'new_entry_uid_2',
         };
         fsUtilityReadFileStub.callsFake((path) => {
           if (path.includes('field_rules_uid.json')) {
@@ -513,11 +511,11 @@ describe('EntriesImport', () => {
         const mockContentTypeResponse = {
           uid: 'field_rules_ct',
           field_rules: mockData.contentTypeWithFieldRules.field_rules,
-          update: sinon.stub().resolves({ uid: 'updated-ct' })
+          update: sinon.stub().resolves({ uid: 'updated-ct' }),
         };
 
         mockStackClient.contentType.returns({
-          fetch: sinon.stub().resolves(mockContentTypeResponse)
+          fetch: sinon.stub().resolves(mockContentTypeResponse),
         });
 
         await entriesImport['updateFieldRules']();
@@ -542,7 +540,7 @@ describe('EntriesImport', () => {
 
       it('should handle content type not found', async () => {
         mockStackClient.contentType.returns({
-          fetch: sinon.stub().resolves(null)
+          fetch: sinon.stub().resolves(null),
         });
 
         await entriesImport['updateFieldRules']();
@@ -553,7 +551,7 @@ describe('EntriesImport', () => {
       it('should handle content type without field rules', async () => {
         const contentTypeWithoutFieldRules = {
           ...mockData.contentTypeWithFieldRules,
-          field_rules: undefined
+          field_rules: undefined,
         };
 
         fsUtilityReadFileStub.callsFake((path) => {
@@ -582,11 +580,11 @@ describe('EntriesImport', () => {
         mockData.contentTypeWithRte,
         mockData.contentTypeWithAssets,
         mockData.contentTypeWithTaxonomy,
-        mockData.contentTypeWithGroups
+        mockData.contentTypeWithGroups,
       ];
       entriesImport['locales'] = [
         { code: 'en-us', name: 'English (United States)' },
-        { code: 'fr-fr', name: 'French (France)' }
+        { code: 'fr-fr', name: 'French (France)' },
       ];
       entriesImport['installedExtensions'] = mockMappers.installedExtensions;
       entriesImport['assetUidMapper'] = mockMappers.assetUidMapper;
@@ -602,7 +600,7 @@ describe('EntriesImport', () => {
         expect(result).to.have.lengthOf(14); // 7 content types × 2 locales
 
         // Check that all content types are included
-        const contentTypes = result.map(option => option.cTUid);
+        const contentTypes = result.map((option) => option.cTUid);
         expect(contentTypes).to.include('simple_ct');
         expect(contentTypes).to.include('ref_ct');
         expect(contentTypes).to.include('json_rte_ct');
@@ -612,12 +610,12 @@ describe('EntriesImport', () => {
         expect(contentTypes).to.include('group_ct');
 
         // Check that all locales are included
-        const locales = result.map(option => option.locale);
+        const locales = result.map((option) => option.locale);
         expect(locales).to.include('en-us');
         expect(locales).to.include('fr-fr');
 
         // Check structure of each option
-        result.forEach(option => {
+        result.forEach((option) => {
           expect(option).to.have.property('cTUid');
           expect(option).to.have.property('locale');
           expect(option.cTUid).to.be.a('string');
@@ -645,7 +643,7 @@ describe('EntriesImport', () => {
     describe('createEntries()', () => {
       it('should handle empty chunks', async () => {
         const mockFsUtility = {
-          indexFileContent: {}
+          indexFileContent: {},
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
 
@@ -657,16 +655,16 @@ describe('EntriesImport', () => {
       it('should process entries successfully in master locale', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1', 'entry2']
-          }
+            'chunk1.json': ['entry1', 'entry2'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
-            'entry1': mockEntries.simpleEntry,
-            'entry2': mockEntries.entryWithReferences
-          })
+            entry1: mockEntries.simpleEntry,
+            entry2: mockEntries.entryWithReferences,
+          }),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -686,8 +684,8 @@ describe('EntriesImport', () => {
               locale: 'en-us',
               cTUid: 'simple_ct',
               entryFileName: 'chunk1.json',
-              isMasterLocale: true
-            }
+              isMasterLocale: true,
+            },
           });
         });
 
@@ -700,30 +698,30 @@ describe('EntriesImport', () => {
         expect(mockReadChunkFiles.next.called).to.be.true;
         expect(mockWriteIntoFile.called).to.be.true;
         expect(mockCompleteFile.called).to.be.true;
-        
+
         // Check that UID mapping was created
         expect(entriesImport['entriesUidMapper']['simple_entry_1']).to.equal('new_simple_entry_1');
-        
+
         // Check that entry was added to variant list
         expect(entriesImport['entriesForVariant']).to.deep.include({
           content_type: 'simple_ct',
           entry_uid: 'simple_entry_1',
-          locale: 'en-us'
+          locale: 'en-us',
         });
       });
 
       it('should process entries successfully in non-master locale', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1']
-          }
+            'chunk1.json': ['entry1'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
-            'entry1': mockEntries.simpleEntry
-          })
+            entry1: mockEntries.simpleEntry,
+          }),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -742,8 +740,8 @@ describe('EntriesImport', () => {
               locale: 'fr-fr',
               cTUid: 'simple_ct',
               entryFileName: 'chunk1.json',
-              isMasterLocale: false
-            }
+              isMasterLocale: false,
+            },
           });
         });
 
@@ -753,27 +751,27 @@ describe('EntriesImport', () => {
         await entriesImport['createEntries']({ cTUid: 'simple_ct', locale: 'fr-fr' });
 
         expect(makeConcurrentCallStub.called).to.be.true;
-        
+
         // Check that entry was added to auto-created entries for cleanup
         expect(entriesImport['autoCreatedEntries']).to.deep.include({
           cTUid: 'simple_ct',
           locale: 'fr-fr',
-          entryUid: 'new_simple_entry_1'
+          entryUid: 'new_simple_entry_1',
         });
       });
 
       it('should handle localized entries correctly', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1']
-          }
+            'chunk1.json': ['entry1'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
-            'entry1': mockEntries.localizedEntry
-          })
+            entry1: mockEntries.localizedEntry,
+          }),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -795,42 +793,42 @@ describe('EntriesImport', () => {
               isMasterLocale: false,
               [mockEntries.localizedEntry.uid]: {
                 isLocalized: true,
-                entryOldUid: 'old_localized_entry_1'
-              }
-            }
+                entryOldUid: 'old_localized_entry_1',
+              },
+            },
           });
         });
 
         await entriesImport['createEntries']({ cTUid: 'simple_ct', locale: 'fr-fr' });
 
         expect(makeConcurrentCallStub.called).to.be.true;
-        
+
         // Check that localized entry was added to variant list with old UID
         expect(entriesImport['entriesForVariant']).to.deep.include({
           content_type: 'simple_ct',
           entry_uid: 'old_localized_entry_1',
-          locale: 'fr-fr'
+          locale: 'fr-fr',
         });
       });
 
       it('should handle chunk read errors', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1']
-          }
+            'chunk1.json': ['entry1'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const originalCompleteFile = FsUtility.prototype.completeFile;
         FsUtility.prototype.completeFile = sinon.stub().resolves();
-        
+
         const mockReadChunkFiles = {
-          next: sinon.stub().rejects(new Error('Chunk read failed'))
+          next: sinon.stub().rejects(new Error('Chunk read failed')),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
         try {
-        await entriesImport['createEntries']({ cTUid: 'simple_ct', locale: 'en-us' });
+          await entriesImport['createEntries']({ cTUid: 'simple_ct', locale: 'en-us' });
         } catch (error) {
           // Expected to throw error
         } finally {
@@ -844,15 +842,15 @@ describe('EntriesImport', () => {
       it('should handle error code 119 with replaceExisting true', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1']
-          }
+            'chunk1.json': ['entry1'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
-            'entry1': mockEntries.existingEntry
-          })
+            entry1: mockEntries.existingEntry,
+          }),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -864,9 +862,9 @@ describe('EntriesImport', () => {
         makeConcurrentCallStub.callsFake(async (options) => {
           const onReject = options.apiParams.reject;
           onReject({
-            error: { 
-              errorCode: 119, 
-              errors: { title: 'already exists' } 
+            error: {
+              errorCode: 119,
+              errors: { title: 'already exists' },
             },
             apiData: mockEntries.existingEntry,
             additionalInfo: {
@@ -874,8 +872,8 @@ describe('EntriesImport', () => {
               locale: 'en-us',
               cTUid: 'simple_ct',
               entryFileName: 'chunk1.json',
-              isMasterLocale: true
-            }
+              isMasterLocale: true,
+            },
           });
         });
 
@@ -892,15 +890,15 @@ describe('EntriesImport', () => {
       it('should handle error code 119 with skipExisting true', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1']
-          }
+            'chunk1.json': ['entry1'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
-            'entry1': mockEntries.existingEntry
-          })
+            entry1: mockEntries.existingEntry,
+          }),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -912,9 +910,9 @@ describe('EntriesImport', () => {
         makeConcurrentCallStub.callsFake(async (options) => {
           const onReject = options.apiParams.reject;
           onReject({
-            error: { 
-              errorCode: 119, 
-              errors: { title: 'already exists' } 
+            error: {
+              errorCode: 119,
+              errors: { title: 'already exists' },
             },
             apiData: mockEntries.existingEntry,
             additionalInfo: {
@@ -922,8 +920,8 @@ describe('EntriesImport', () => {
               locale: 'en-us',
               cTUid: 'simple_ct',
               entryFileName: 'chunk1.json',
-              isMasterLocale: true
-            }
+              isMasterLocale: true,
+            },
           });
         });
 
@@ -938,15 +936,15 @@ describe('EntriesImport', () => {
       it('should handle error code 119 without title/uid errors', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1']
-          }
+            'chunk1.json': ['entry1'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
-            'entry1': mockEntries.existingEntry
-          })
+            entry1: mockEntries.existingEntry,
+          }),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -958,9 +956,9 @@ describe('EntriesImport', () => {
         makeConcurrentCallStub.callsFake(async (options) => {
           const onReject = options.apiParams.reject;
           onReject({
-            error: { 
-              errorCode: 119, 
-              errors: { other: 'some error' } 
+            error: {
+              errorCode: 119,
+              errors: { other: 'some error' },
             },
             apiData: mockEntries.existingEntry,
             additionalInfo: {
@@ -968,8 +966,8 @@ describe('EntriesImport', () => {
               locale: 'en-us',
               cTUid: 'simple_ct',
               entryFileName: 'chunk1.json',
-              isMasterLocale: true
-            }
+              isMasterLocale: true,
+            },
           });
         });
 
@@ -980,22 +978,22 @@ describe('EntriesImport', () => {
         expect(entriesImport['failedEntries']).to.deep.include({
           content_type: 'simple_ct',
           locale: 'en-us',
-          entry: { uid: 'existing_entry_1', title: 'Existing Entry' }
+          entry: { uid: 'existing_entry_1', title: 'Existing Entry' },
         });
       });
 
       it('should handle other error codes', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1']
-          }
+            'chunk1.json': ['entry1'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
-            'entry1': mockEntries.simpleEntry
-          })
+            entry1: mockEntries.simpleEntry,
+          }),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -1007,9 +1005,9 @@ describe('EntriesImport', () => {
         makeConcurrentCallStub.callsFake(async (options) => {
           const onReject = options.apiParams.reject;
           onReject({
-            error: { 
-              errorCode: 500, 
-              message: 'Server error' 
+            error: {
+              errorCode: 500,
+              message: 'Server error',
             },
             apiData: mockEntries.simpleEntry,
             additionalInfo: {
@@ -1017,8 +1015,8 @@ describe('EntriesImport', () => {
               locale: 'en-us',
               cTUid: 'simple_ct',
               entryFileName: 'chunk1.json',
-              isMasterLocale: true
-            }
+              isMasterLocale: true,
+            },
           });
         });
 
@@ -1029,22 +1027,22 @@ describe('EntriesImport', () => {
         expect(entriesImport['failedEntries']).to.deep.include({
           content_type: 'simple_ct',
           locale: 'en-us',
-          entry: { uid: 'simple_entry_1', title: 'Simple Entry 1' }
+          entry: { uid: 'simple_entry_1', title: 'Simple Entry 1' },
         });
       });
 
       it('should remove failed entries from variant list', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1']
-          }
+            'chunk1.json': ['entry1'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
-            'entry1': mockEntries.simpleEntry
-          })
+            entry1: mockEntries.simpleEntry,
+          }),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -1055,15 +1053,15 @@ describe('EntriesImport', () => {
 
         // Pre-populate variant list
         entriesImport['entriesForVariant'] = [
-          { content_type: 'simple_ct', entry_uid: 'simple_entry_1', locale: 'en-us' }
+          { content_type: 'simple_ct', entry_uid: 'simple_entry_1', locale: 'en-us' },
         ];
 
         makeConcurrentCallStub.callsFake(async (options) => {
           const onReject = options.apiParams.reject;
           onReject({
-            error: { 
-              errorCode: 500, 
-              message: 'Server error' 
+            error: {
+              errorCode: 500,
+              message: 'Server error',
             },
             apiData: mockEntries.simpleEntry,
             additionalInfo: {
@@ -1071,8 +1069,8 @@ describe('EntriesImport', () => {
               locale: 'en-us',
               cTUid: 'simple_ct',
               entryFileName: 'chunk1.json',
-              isMasterLocale: true
-            }
+              isMasterLocale: true,
+            },
           });
         });
 
@@ -1082,7 +1080,7 @@ describe('EntriesImport', () => {
         expect(entriesImport['entriesForVariant']).to.not.deep.include({
           content_type: 'simple_ct',
           entry_uid: 'simple_entry_1',
-          locale: 'en-us'
+          locale: 'en-us',
         });
       });
 
@@ -1090,21 +1088,21 @@ describe('EntriesImport', () => {
         const mockFsUtility = {
           indexFileContent: {
             'chunk1.json': ['entry1'],
-            'chunk2.json': ['entry2']
-          }
+            'chunk2.json': ['entry2'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         let chunkCallCount = 0;
         const mockReadChunkFiles = {
           next: sinon.stub().callsFake(() => {
             chunkCallCount++;
             if (chunkCallCount === 1) {
-              return Promise.resolve({ 'entry1': mockEntries.simpleEntry });
+              return Promise.resolve({ entry1: mockEntries.simpleEntry });
             } else {
-              return Promise.resolve({ 'entry2': mockEntries.entryWithReferences });
+              return Promise.resolve({ entry2: mockEntries.entryWithReferences });
             }
-          })
+          }),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -1123,8 +1121,8 @@ describe('EntriesImport', () => {
               locale: 'en-us',
               cTUid: 'simple_ct',
               entryFileName: 'chunk1.json',
-              isMasterLocale: true
-            }
+              isMasterLocale: true,
+            },
           });
         });
 
@@ -1146,8 +1144,8 @@ describe('EntriesImport', () => {
             cTUid: 'simple_ct',
             locale: 'en-us',
             contentType: mockData.simpleContentType,
-            isMasterLocale: true
-          }
+            isMasterLocale: true,
+          },
         };
 
         const result = entriesImport['serializeEntries'](apiOptions);
@@ -1167,8 +1165,8 @@ describe('EntriesImport', () => {
             cTUid: 'json_rte_ct',
             locale: 'en-us',
             contentType: mockData.contentTypeWithJsonRte,
-            isMasterLocale: true
-          }
+            isMasterLocale: true,
+          },
         };
 
         entriesImport['jsonRteCTs'] = ['json_rte_ct'];
@@ -1190,8 +1188,8 @@ describe('EntriesImport', () => {
             cTUid: 'rte_ct',
             locale: 'en-us',
             contentType: mockData.contentTypeWithRte,
-            isMasterLocale: true
-          }
+            isMasterLocale: true,
+          },
         };
 
         entriesImport['rteCTsWithRef'] = ['rte_ct'];
@@ -1212,8 +1210,8 @@ describe('EntriesImport', () => {
             cTUid: 'taxonomy_ct',
             locale: 'en-us',
             contentType: mockData.contentTypeWithTaxonomy,
-            isMasterLocale: true
-          }
+            isMasterLocale: true,
+          },
         };
 
         const result = entriesImport['serializeEntries'](apiOptions);
@@ -1232,11 +1230,11 @@ describe('EntriesImport', () => {
             cTUid: 'simple_ct',
             locale: 'fr-fr',
             contentType: mockData.simpleContentType,
-            isMasterLocale: false
-          }
+            isMasterLocale: false,
+          },
         };
 
-        entriesImport['entriesUidMapper'] = { 'old_localized_entry_1': 'new_localized_entry_1' };
+        entriesImport['entriesUidMapper'] = { old_localized_entry_1: 'new_localized_entry_1' };
 
         const originalLookupAssets = require('../../../../src/utils').lookupAssets;
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
@@ -1247,17 +1245,17 @@ describe('EntriesImport', () => {
             // Return the modified entry
             return entryData.entry;
           },
-          configurable: true
+          configurable: true,
         });
 
         const mockEntryResponse = { uid: 'new_localized_entry_1' };
         const mockEntry = {
-          uid: sinon.stub().returns(mockEntryResponse)
+          uid: sinon.stub().returns(mockEntryResponse),
         };
         mockStackClient.contentType = sinon.stub().returns({
-          entry: sinon.stub().returns(mockEntry)
+          entry: sinon.stub().returns(mockEntry),
         });
-        
+
         sinon.stub(entriesImport, 'stack').value(mockStackClient);
 
         const result = entriesImport['serializeEntries'](apiOptions);
@@ -1266,12 +1264,12 @@ describe('EntriesImport', () => {
         expect(result.apiData.uid).to.equal('new_localized_entry_1'); // UID is mapped for localized entries
         expect(result.additionalInfo['new_localized_entry_1']).to.deep.include({
           isLocalized: true,
-          entryOldUid: 'old_localized_entry_1'
+          entryOldUid: 'old_localized_entry_1',
         });
 
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           value: originalLookupAssets,
-          configurable: true
+          configurable: true,
         });
       });
 
@@ -1285,30 +1283,30 @@ describe('EntriesImport', () => {
             cTUid: 'simple_ct',
             locale: 'en-us',
             contentType: mockData.simpleContentType,
-            isMasterLocale: true
-          }
+            isMasterLocale: true,
+          },
         };
 
         const invalidEntry = {
           uid: 'invalid_entry',
           title: 'Invalid Entry',
           // This will cause an error in lookupAssets due to missing required properties
-          invalid_field: 'test'
+          invalid_field: 'test',
         };
 
         const invalidApiOptions = {
           ...apiOptions,
-          apiData: invalidEntry
+          apiData: invalidEntry,
         };
 
         const lookupAssetsStub = sinon.stub().throws(new Error('Asset lookup failed'));
         const utils = require('../../../../src/utils');
-        
+
         // Use Object.defineProperty to override the getter
         Object.defineProperty(utils, 'lookupAssets', {
           value: lookupAssetsStub,
           writable: true,
-          configurable: true
+          configurable: true,
         });
 
         const result = entriesImport['serializeEntries'](invalidApiOptions);
@@ -1319,7 +1317,7 @@ describe('EntriesImport', () => {
         expect(entriesImport['failedEntries'][0]).to.deep.include({
           content_type: 'simple_ct',
           locale: 'en-us',
-          entry: { uid: 'invalid_entry', title: 'Invalid Entry' }
+          entry: { uid: 'invalid_entry', title: 'Invalid Entry' },
         });
       });
     });
@@ -1328,7 +1326,7 @@ describe('EntriesImport', () => {
       it('should create variant entry data file', () => {
         entriesImport['entriesForVariant'] = [
           { content_type: 'simple_ct', entry_uid: 'entry_1', locale: 'fr-fr' },
-          { content_type: 'ref_ct', entry_uid: 'entry_2', locale: 'en-us' }
+          { content_type: 'ref_ct', entry_uid: 'entry_2', locale: 'en-us' },
         ];
 
         const originalWriteFileSync = require('fs').writeFileSync;
@@ -1368,11 +1366,11 @@ describe('EntriesImport', () => {
         mockData.simpleContentType,
         mockData.contentTypeWithReferences,
         mockData.contentTypeWithJsonRte,
-        mockData.contentTypeWithRte
+        mockData.contentTypeWithRte,
       ];
       entriesImport['locales'] = [
         { code: 'en-us', name: 'English (United States)' },
-        { code: 'fr-fr', name: 'French (France)' }
+        { code: 'fr-fr', name: 'French (France)' },
       ];
       entriesImport['refCTs'] = ['ref_ct', 'json_rte_ct', 'rte_ct'];
       entriesImport['jsonRteCTs'] = ['json_rte_ct'];
@@ -1382,10 +1380,10 @@ describe('EntriesImport', () => {
       entriesImport['assetUrlMapper'] = mockMappers.assetUrlMapper;
       entriesImport['taxonomies'] = mockMappers.taxonomies;
       entriesImport['entriesUidMapper'] = {
-        'simple_entry_1': 'new_simple_entry_1',
-        'ref_entry_1': 'new_ref_entry_1',
-        'json_rte_entry_1': 'new_json_rte_entry_1',
-        'rte_entry_1': 'new_rte_entry_1'
+        simple_entry_1: 'new_simple_entry_1',
+        ref_entry_1: 'new_ref_entry_1',
+        json_rte_entry_1: 'new_json_rte_entry_1',
+        rte_entry_1: 'new_rte_entry_1',
       };
     });
 
@@ -1397,13 +1395,13 @@ describe('EntriesImport', () => {
         expect(result).to.have.lengthOf(6); // 3 ref content types × 2 locales
 
         // Check that all reference content types are included
-        const contentTypes = result.map(option => option.cTUid);
+        const contentTypes = result.map((option) => option.cTUid);
         expect(contentTypes).to.include('ref_ct');
         expect(contentTypes).to.include('json_rte_ct');
         expect(contentTypes).to.include('rte_ct');
 
         // Check that all locales are included
-        const locales = result.map(option => option.locale);
+        const locales = result.map((option) => option.locale);
         expect(locales).to.include('en-us');
         expect(locales).to.include('fr-fr');
       });
@@ -1428,7 +1426,7 @@ describe('EntriesImport', () => {
     describe('updateEntriesWithReferences()', () => {
       it('should handle empty chunks', async () => {
         const mockFsUtility = {
-          indexFileContent: {}
+          indexFileContent: {},
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
 
@@ -1440,16 +1438,16 @@ describe('EntriesImport', () => {
       it('should process entries with references successfully', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1', 'entry2']
-          }
+            'chunk1.json': ['entry1', 'entry2'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
-            'entry1': mockEntries.entryWithReferences,
-            'entry2': mockEntries.simpleEntry
-          })
+            entry1: mockEntries.entryWithReferences,
+            entry2: mockEntries.simpleEntry,
+          }),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -1457,7 +1455,7 @@ describe('EntriesImport', () => {
           const onSuccess = options.apiParams.resolve;
           onSuccess({
             response: { uid: 'updated-entry-uid' },
-            apiData: { uid: 'ref_entry_1', url: '/ref-entry-1', title: 'Entry with References' }
+            apiData: { uid: 'ref_entry_1', url: '/ref-entry-1', title: 'Entry with References' },
           });
         });
 
@@ -1470,13 +1468,13 @@ describe('EntriesImport', () => {
       it('should handle chunk read errors', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1']
-          }
+            'chunk1.json': ['entry1'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const mockReadChunkFiles = {
-          next: sinon.stub().rejects(new Error('Chunk read failed'))
+          next: sinon.stub().rejects(new Error('Chunk read failed')),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -1489,15 +1487,15 @@ describe('EntriesImport', () => {
       it('should handle API errors in onReject', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1']
-          }
+            'chunk1.json': ['entry1'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
-            'entry1': mockEntries.entryWithReferences
-          })
+            entry1: mockEntries.entryWithReferences,
+          }),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -1505,7 +1503,7 @@ describe('EntriesImport', () => {
           const onReject = options.apiParams.reject;
           onReject({
             error: { status: 500, message: 'Update failed' },
-            apiData: { uid: 'ref_entry_1', title: 'Entry with References' }
+            apiData: { uid: 'ref_entry_1', title: 'Entry with References' },
           });
         });
 
@@ -1516,7 +1514,7 @@ describe('EntriesImport', () => {
           content_type: 'ref_ct',
           locale: 'en-us',
           entry: { uid: 'new_ref_entry_1', title: 'Entry with References' },
-          entryId: 'ref_entry_1'
+          entryId: 'ref_entry_1',
         });
       });
     });
@@ -1528,7 +1526,7 @@ describe('EntriesImport', () => {
             uid: 'ref_entry_1',
             title: 'Entry with References',
             sourceEntryFilePath: '/path/to/source.json',
-            entryOldUid: 'ref_entry_1'
+            entryOldUid: 'ref_entry_1',
           },
           entity: 'update-entries' as const,
           resolve: sinon.stub(),
@@ -1536,21 +1534,21 @@ describe('EntriesImport', () => {
           additionalInfo: {
             cTUid: 'ref_ct',
             locale: 'en-us',
-            contentType: mockData.contentTypeWithReferences
-          }
+            contentType: mockData.contentTypeWithReferences,
+          },
         };
 
         fsUtilityReadFileStub.callsFake((path) => {
           if (path.includes('source.json')) {
             return {
-              'ref_entry_1': {
+              ref_entry_1: {
                 uid: 'ref_entry_1',
                 title: 'Source Entry',
                 single_reference: {
                   uid: 'simple_entry_1',
-                  _content_type_uid: 'simple_ct'
-                }
-              }
+                  _content_type_uid: 'simple_ct',
+                },
+              },
             };
           }
           return {};
@@ -1559,7 +1557,7 @@ describe('EntriesImport', () => {
         const originalLookupAssets = require('../../../../src/utils').lookupAssets;
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           get: () => (entryData: any) => entryData.entry,
-          configurable: true
+          configurable: true,
         });
 
         const result = entriesImport['serializeUpdateEntries'](apiOptions);
@@ -1570,7 +1568,7 @@ describe('EntriesImport', () => {
 
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           get: () => originalLookupAssets,
-          configurable: true
+          configurable: true,
         });
       });
 
@@ -1580,7 +1578,7 @@ describe('EntriesImport', () => {
             uid: 'json_rte_entry_1',
             title: 'Entry with JSON RTE',
             sourceEntryFilePath: '/path/to/source.json',
-            entryOldUid: 'json_rte_entry_1'
+            entryOldUid: 'json_rte_entry_1',
           },
           entity: 'update-entries' as const,
           resolve: sinon.stub(),
@@ -1588,14 +1586,14 @@ describe('EntriesImport', () => {
           additionalInfo: {
             cTUid: 'json_rte_ct',
             locale: 'en-us',
-            contentType: mockData.contentTypeWithJsonRte
-          }
+            contentType: mockData.contentTypeWithJsonRte,
+          },
         };
 
         fsUtilityReadFileStub.callsFake((path) => {
           if (path.includes('source.json')) {
             return {
-              'json_rte_entry_1': {
+              json_rte_entry_1: {
                 uid: 'json_rte_entry_1',
                 title: 'Source Entry',
                 json_rte_field: {
@@ -1608,14 +1606,14 @@ describe('EntriesImport', () => {
                           type: 'reference',
                           attrs: {
                             type: 'entry',
-                            'entry-uid': 'simple_entry_1'
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                }
-              }
+                            'entry-uid': 'simple_entry_1',
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
             };
           }
           return {};
@@ -1624,7 +1622,7 @@ describe('EntriesImport', () => {
         const originalLookupAssets = require('../../../../src/utils').lookupAssets;
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           get: () => (entryData: any) => entryData.entry,
-          configurable: true
+          configurable: true,
         });
 
         const result = entriesImport['serializeUpdateEntries'](apiOptions);
@@ -1634,7 +1632,7 @@ describe('EntriesImport', () => {
 
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           get: () => originalLookupAssets,
-          configurable: true
+          configurable: true,
         });
       });
 
@@ -1644,7 +1642,7 @@ describe('EntriesImport', () => {
             uid: 'rte_entry_1',
             title: 'Entry with RTE',
             sourceEntryFilePath: '/path/to/source.json',
-            entryOldUid: 'rte_entry_1'
+            entryOldUid: 'rte_entry_1',
           },
           entity: 'update-entries' as const,
           resolve: sinon.stub(),
@@ -1652,18 +1650,18 @@ describe('EntriesImport', () => {
           additionalInfo: {
             cTUid: 'rte_ct',
             locale: 'en-us',
-            contentType: mockData.contentTypeWithRte
-          }
+            contentType: mockData.contentTypeWithRte,
+          },
         };
 
         fsUtilityReadFileStub.callsFake((path) => {
           if (path.includes('source.json')) {
             return {
-              'rte_entry_1': {
+              rte_entry_1: {
                 uid: 'rte_entry_1',
                 title: 'Source Entry',
-                rte_field: '<p>RTE content with <a href="entry://simple_entry_1">entry link</a></p>'
-              }
+                rte_field: '<p>RTE content with <a href="entry://simple_entry_1">entry link</a></p>',
+              },
             };
           }
           return {};
@@ -1672,7 +1670,7 @@ describe('EntriesImport', () => {
         const originalLookupAssets = require('../../../../src/utils').lookupAssets;
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           get: () => (entryData: any) => entryData.entry,
-          configurable: true
+          configurable: true,
         });
 
         const result = entriesImport['serializeUpdateEntries'](apiOptions);
@@ -1682,7 +1680,7 @@ describe('EntriesImport', () => {
 
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           get: () => originalLookupAssets,
-          configurable: true
+          configurable: true,
         });
       });
 
@@ -1692,7 +1690,7 @@ describe('EntriesImport', () => {
             uid: 'invalid_entry',
             title: 'Invalid Entry',
             sourceEntryFilePath: '/path/to/source.json',
-            entryOldUid: 'invalid_entry'
+            entryOldUid: 'invalid_entry',
           },
           entity: 'update-entries' as const,
           resolve: sinon.stub(),
@@ -1700,8 +1698,8 @@ describe('EntriesImport', () => {
           additionalInfo: {
             cTUid: 'ref_ct',
             locale: 'en-us',
-            contentType: mockData.contentTypeWithReferences
-          }
+            contentType: mockData.contentTypeWithReferences,
+          },
         };
 
         fsUtilityReadFileStub.callsFake(() => {
@@ -1717,7 +1715,7 @@ describe('EntriesImport', () => {
     describe('replaceEntries()', () => {
       it('should handle empty chunks', async () => {
         const mockFsUtility = {
-          indexFileContent: {}
+          indexFileContent: {},
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
 
@@ -1729,22 +1727,22 @@ describe('EntriesImport', () => {
       it('should process existing entries for replacement', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1']
-          }
+            'chunk1.json': ['entry1'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
-            'entry1': mockEntries.existingEntry
-          })
+            entry1: mockEntries.existingEntry,
+          }),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
         sinon.stub(FsUtility.prototype, 'writeIntoFile').callsFake(() => {
           return Promise.resolve();
         });
-        
+
         const originalWriteFileSync = require('fs').writeFileSync;
         const writeFileSyncStub = sinon.stub(require('fs'), 'writeFileSync').callsFake(() => {});
 
@@ -1753,7 +1751,7 @@ describe('EntriesImport', () => {
           onSuccess({
             response: { uid: 'replaced-entry-uid' },
             apiData: mockEntries.existingEntry,
-            additionalInfo: {}
+            additionalInfo: {},
           });
         });
 
@@ -1766,13 +1764,13 @@ describe('EntriesImport', () => {
       it('should handle chunk read errors', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1']
-          }
+            'chunk1.json': ['entry1'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const mockReadChunkFiles = {
-          next: sinon.stub().rejects(new Error('Chunk read failed'))
+          next: sinon.stub().rejects(new Error('Chunk read failed')),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -1785,15 +1783,15 @@ describe('EntriesImport', () => {
       it('should handle API errors in onReject', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1']
-          }
+            'chunk1.json': ['entry1'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
-            'entry1': mockEntries.existingEntry
-          })
+            entry1: mockEntries.existingEntry,
+          }),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -1803,7 +1801,7 @@ describe('EntriesImport', () => {
           const onReject = options.apiParams.reject;
           onReject({
             error: { status: 500, message: 'Replacement failed' },
-            apiData: { uid: 'existing_entry_1', title: 'Existing Entry' }
+            apiData: { uid: 'existing_entry_1', title: 'Existing Entry' },
           });
         });
 
@@ -1814,7 +1812,7 @@ describe('EntriesImport', () => {
           content_type: 'ref_ct',
           locale: 'en-us',
           entry: { uid: undefined, title: 'Existing Entry' },
-          entryId: 'existing_entry_1'
+          entryId: 'existing_entry_1',
         });
       });
     });
@@ -1823,7 +1821,7 @@ describe('EntriesImport', () => {
       it('should find and update existing entry', async () => {
         const mockEntry = {
           title: 'Existing Entry',
-          uid: 'existing_entry_1'
+          uid: 'existing_entry_1',
         };
 
         const apiParams = {
@@ -1832,58 +1830,62 @@ describe('EntriesImport', () => {
           reject: sinon.stub(),
           additionalInfo: {
             cTUid: 'ref_ct',
-            locale: 'en-us'
-          }
+            locale: 'en-us',
+          },
         };
 
         const mockQuery = {
           findOne: sinon.stub().resolves({
-            items: [{
-              uid: 'stack_entry_uid',
-              title: 'Existing Entry',
-              urlPath: '/existing-entry',
-              stackHeaders: {},
-              _version: 1
-            }]
-          })
+            items: [
+              {
+                uid: 'stack_entry_uid',
+                title: 'Existing Entry',
+                urlPath: '/existing-entry',
+                stackHeaders: {},
+                _version: 1,
+              },
+            ],
+          }),
         };
 
         const mockEntryPayload = {
-          update: sinon.stub().resolves({ uid: 'updated_entry_uid' })
+          update: sinon.stub().resolves({ uid: 'updated_entry_uid' }),
         };
 
         const mockQueryChain = {
           query: sinon.stub().returns({
             findOne: sinon.stub().resolves({
-              items: [{
-                uid: 'stack_entry_uid',
-                title: 'Existing Entry',
-                urlPath: '/existing-entry',
-                stackHeaders: {},
-                _version: 1
-              }]
-            })
-          })
+              items: [
+                {
+                  uid: 'stack_entry_uid',
+                  title: 'Existing Entry',
+                  urlPath: '/existing-entry',
+                  stackHeaders: {},
+                  _version: 1,
+                },
+              ],
+            }),
+          }),
         };
 
         const mockEntryChain = {
-          update: sinon.stub().resolves({ uid: 'updated_entry_uid' })
+          update: sinon.stub().resolves({ uid: 'updated_entry_uid' }),
         };
 
         const contentTypeStub = sinon.stub();
         contentTypeStub.onFirstCall().returns({
-          entry: sinon.stub().returns(mockQueryChain)
+          entry: sinon.stub().returns(mockQueryChain),
         });
         contentTypeStub.onSecondCall().returns({
-          entry: sinon.stub().returns(mockEntryChain)
+          entry: sinon.stub().returns(mockEntryChain),
         });
-        
+
         mockStackClient.contentType = contentTypeStub;
 
         const result = await entriesImport['replaceEntriesHandler']({
           apiParams,
           element: mockEntry,
-          isLastRequest: false
+          isLastRequest: false,
         });
 
         expect(result).to.be.true;
@@ -1895,7 +1897,7 @@ describe('EntriesImport', () => {
       it('should handle entry not found in stack', async () => {
         const mockEntry = {
           title: 'Non-existent Entry',
-          uid: 'non_existent_entry_1'
+          uid: 'non_existent_entry_1',
         };
 
         const apiParams = {
@@ -1904,30 +1906,30 @@ describe('EntriesImport', () => {
           reject: sinon.stub(),
           additionalInfo: {
             cTUid: 'ref_ct',
-            locale: 'en-us'
-          }
+            locale: 'en-us',
+          },
         };
 
         const mockQueryChain = {
           query: sinon.stub().returns({
             findOne: sinon.stub().resolves({
-              items: []
-            })
-          })
+              items: [],
+            }),
+          }),
         };
 
         const contentTypeStub = sinon.stub();
         contentTypeStub.returns({
-          entry: sinon.stub().returns(mockQueryChain)
+          entry: sinon.stub().returns(mockQueryChain),
         });
-        
+
         mockStackClient.contentType = contentTypeStub;
 
         try {
           const result = await entriesImport['replaceEntriesHandler']({
             apiParams,
             element: mockEntry,
-            isLastRequest: false
+            isLastRequest: false,
           });
           expect.fail('Expected method to reject');
         } catch (error) {
@@ -1940,7 +1942,7 @@ describe('EntriesImport', () => {
       it('should handle query errors', async () => {
         const mockEntry = {
           title: 'Error Entry',
-          uid: 'error_entry_1'
+          uid: 'error_entry_1',
         };
 
         const apiParams = {
@@ -1949,28 +1951,28 @@ describe('EntriesImport', () => {
           reject: sinon.stub(),
           additionalInfo: {
             cTUid: 'ref_ct',
-            locale: 'en-us'
-          }
+            locale: 'en-us',
+          },
         };
 
         const mockQueryChain = {
           query: sinon.stub().returns({
-            findOne: sinon.stub().rejects(new Error('Query failed'))
-          })
+            findOne: sinon.stub().rejects(new Error('Query failed')),
+          }),
         };
 
         const contentTypeStub = sinon.stub();
         contentTypeStub.returns({
-          entry: sinon.stub().returns(mockQueryChain)
+          entry: sinon.stub().returns(mockQueryChain),
         });
-        
+
         mockStackClient.contentType = contentTypeStub;
 
         try {
           const result = await entriesImport['replaceEntriesHandler']({
             apiParams,
             element: mockEntry,
-            isLastRequest: false
+            isLastRequest: false,
           });
           expect.fail('Expected method to reject');
         } catch (error) {
@@ -1982,7 +1984,7 @@ describe('EntriesImport', () => {
       it('should handle update errors', async () => {
         const mockEntry = {
           title: 'Update Error Entry',
-          uid: 'update_error_entry_1'
+          uid: 'update_error_entry_1',
         };
 
         const apiParams = {
@@ -1991,43 +1993,45 @@ describe('EntriesImport', () => {
           reject: sinon.stub(),
           additionalInfo: {
             cTUid: 'ref_ct',
-            locale: 'en-us'
-          }
+            locale: 'en-us',
+          },
         };
 
         const mockQueryChain = {
           query: sinon.stub().returns({
             findOne: sinon.stub().resolves({
-              items: [{
-                uid: 'stack_entry_uid',
-                title: 'Update Error Entry',
-                urlPath: '/update-error-entry',
-                stackHeaders: {},
-                _version: 1
-              }]
-            })
-          })
+              items: [
+                {
+                  uid: 'stack_entry_uid',
+                  title: 'Update Error Entry',
+                  urlPath: '/update-error-entry',
+                  stackHeaders: {},
+                  _version: 1,
+                },
+              ],
+            }),
+          }),
         };
 
         const mockEntryChain = {
-          update: sinon.stub().rejects(new Error('Update failed'))
+          update: sinon.stub().rejects(new Error('Update failed')),
         };
 
         const contentTypeStub = sinon.stub();
         contentTypeStub.onFirstCall().returns({
-          entry: sinon.stub().returns(mockQueryChain)
+          entry: sinon.stub().returns(mockQueryChain),
         });
         contentTypeStub.onSecondCall().returns({
-          entry: sinon.stub().returns(mockEntryChain)
+          entry: sinon.stub().returns(mockEntryChain),
         });
-        
+
         mockStackClient.contentType = contentTypeStub;
 
         try {
           const result = await entriesImport['replaceEntriesHandler']({
             apiParams,
             element: mockEntry,
-            isLastRequest: false
+            isLastRequest: false,
           });
           expect.fail('Expected method to reject');
         } catch (error) {
@@ -2043,23 +2047,23 @@ describe('EntriesImport', () => {
       entriesImport['cTs'] = [
         mockData.simpleContentType,
         mockData.contentTypeWithReferences,
-        mockData.contentTypeWithJsonRte
+        mockData.contentTypeWithJsonRte,
       ];
       entriesImport['envs'] = {
-        'env_1': { name: 'production', uid: 'env_1' },
-        'env_2': { name: 'staging', uid: 'env_2' }
+        env_1: { name: 'production', uid: 'env_1' },
+        env_2: { name: 'staging', uid: 'env_2' },
       };
       entriesImport['entriesUidMapper'] = {
-        'simple_entry_1': 'new_simple_entry_1',
-        'publish_entry_1': 'new_publish_entry_1',
-        'json_rte_entry_1': 'new_json_rte_entry_1'
+        simple_entry_1: 'new_simple_entry_1',
+        publish_entry_1: 'new_publish_entry_1',
+        json_rte_entry_1: 'new_json_rte_entry_1',
       };
     });
 
     describe('publishEntries()', () => {
       it('should handle empty chunks', async () => {
         const mockFsUtility = {
-          indexFileContent: {}
+          indexFileContent: {},
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
 
@@ -2071,16 +2075,16 @@ describe('EntriesImport', () => {
       it('should process entries with publish details successfully', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1', 'entry2']
-          }
+            'chunk1.json': ['entry1', 'entry2'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
-            'entry1': mockEntries.simpleEntry,
-            'entry2': mockEntries.entryWithPublishDetails
-          })
+            entry1: mockEntries.simpleEntry,
+            entry2: mockEntries.entryWithPublishDetails,
+          }),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -2088,11 +2092,11 @@ describe('EntriesImport', () => {
           const onSuccess = options.apiParams.resolve;
           onSuccess({
             response: { uid: 'published-entry-uid' },
-            apiData: { 
-              environments: ['production', 'staging'], 
-              entryUid: 'new_simple_entry_1', 
-              locales: ['en-us'] 
-            }
+            apiData: {
+              environments: ['production', 'staging'],
+              entryUid: 'new_simple_entry_1',
+              locales: ['en-us'],
+            },
           });
         });
 
@@ -2105,15 +2109,15 @@ describe('EntriesImport', () => {
       it('should handle entries with multiple publish details', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1']
-          }
+            'chunk1.json': ['entry1'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
-            'entry1': mockEntries.entryWithPublishDetails
-          })
+            entry1: mockEntries.entryWithPublishDetails,
+          }),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -2121,11 +2125,11 @@ describe('EntriesImport', () => {
           const onSuccess = options.apiParams.resolve;
           onSuccess({
             response: { uid: 'published-entry-uid' },
-            apiData: { 
-              environments: ['production', 'staging'], 
-              entryUid: 'new_publish_entry_1', 
-              locales: ['en-us', 'fr-fr'] 
-            }
+            apiData: {
+              environments: ['production', 'staging'],
+              entryUid: 'new_publish_entry_1',
+              locales: ['en-us', 'fr-fr'],
+            },
           });
         });
 
@@ -2139,22 +2143,22 @@ describe('EntriesImport', () => {
       it('should handle entries without publish details', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1']
-          }
+            'chunk1.json': ['entry1'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const entryWithoutPublishDetails = {
           uid: 'no_publish_entry_1',
           title: 'Entry without Publish Details',
-          description: 'This entry has no publish details'
+          description: 'This entry has no publish details',
           // No publish_details property
         };
-        
+
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
-            'entry1': entryWithoutPublishDetails
-          })
+            entry1: entryWithoutPublishDetails,
+          }),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -2167,22 +2171,22 @@ describe('EntriesImport', () => {
       it('should handle entries with empty publish details', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1']
-          }
+            'chunk1.json': ['entry1'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const entryWithEmptyPublishDetails = {
           uid: 'empty_publish_entry_1',
           title: 'Entry with Empty Publish Details',
           description: 'This entry has empty publish details',
-          publish_details: [] as any[]
+          publish_details: [] as any[],
         };
-        
+
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
-            'entry1': entryWithEmptyPublishDetails
-          })
+            entry1: entryWithEmptyPublishDetails,
+          }),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -2195,13 +2199,13 @@ describe('EntriesImport', () => {
       it('should handle chunk read errors', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1']
-          }
+            'chunk1.json': ['entry1'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const mockReadChunkFiles = {
-          next: sinon.stub().rejects(new Error('Chunk read failed'))
+          next: sinon.stub().rejects(new Error('Chunk read failed')),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -2214,15 +2218,15 @@ describe('EntriesImport', () => {
       it('should handle API errors in onReject', async () => {
         const mockFsUtility = {
           indexFileContent: {
-            'chunk1.json': ['entry1']
-          }
+            'chunk1.json': ['entry1'],
+          },
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
-        
+
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
-            'entry1': mockEntries.simpleEntry
-          })
+            entry1: mockEntries.simpleEntry,
+          }),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -2230,11 +2234,11 @@ describe('EntriesImport', () => {
           const onReject = options.apiParams.reject;
           onReject({
             error: { status: 500, message: 'Publish failed' },
-            apiData: { 
-              environments: ['production'], 
-              entryUid: 'new_simple_entry_1', 
-              locales: ['en-us'] 
-            }
+            apiData: {
+              environments: ['production'],
+              entryUid: 'new_simple_entry_1',
+              locales: ['en-us'],
+            },
           });
         });
 
@@ -2253,13 +2257,13 @@ describe('EntriesImport', () => {
             publish_details: [
               {
                 environment: 'env_1',
-                locale: 'en-us'
+                locale: 'en-us',
               },
               {
                 environment: 'env_2',
-                locale: 'fr-fr'
-              }
-            ]
+                locale: 'fr-fr',
+              },
+            ],
           },
           entity: 'publish-entries' as const,
           resolve: sinon.stub(),
@@ -2267,8 +2271,8 @@ describe('EntriesImport', () => {
           additionalInfo: {
             cTUid: 'simple_ct',
             locale: 'en-us',
-            contentType: mockData.simpleContentType
-          }
+            contentType: mockData.simpleContentType,
+          },
         };
 
         const result = entriesImport['serializePublishEntries'](apiOptions);
@@ -2277,7 +2281,7 @@ describe('EntriesImport', () => {
         expect(result.apiData).to.deep.include({
           environments: ['production', 'staging'],
           locales: ['en-us', 'fr-fr'],
-          entryUid: 'new_simple_entry_1'
+          entryUid: 'new_simple_entry_1',
         });
       });
 
@@ -2285,7 +2289,7 @@ describe('EntriesImport', () => {
         const apiOptions = {
           apiData: {
             uid: 'simple_entry_1',
-            title: 'Simple Entry'
+            title: 'Simple Entry',
             // No publish_details
           },
           entity: 'publish-entries' as const,
@@ -2294,8 +2298,8 @@ describe('EntriesImport', () => {
           additionalInfo: {
             cTUid: 'simple_ct',
             locale: 'en-us',
-            contentType: mockData.simpleContentType
-          }
+            contentType: mockData.simpleContentType,
+          },
         };
 
         const result = entriesImport['serializePublishEntries'](apiOptions);
@@ -2308,7 +2312,7 @@ describe('EntriesImport', () => {
           apiData: {
             uid: 'simple_entry_1',
             title: 'Simple Entry',
-            publish_details: [] as any[]
+            publish_details: [] as any[],
           },
           entity: 'publish-entries' as const,
           resolve: sinon.stub(),
@@ -2316,8 +2320,8 @@ describe('EntriesImport', () => {
           additionalInfo: {
             cTUid: 'simple_ct',
             locale: 'en-us',
-            contentType: mockData.simpleContentType
-          }
+            contentType: mockData.simpleContentType,
+          },
         };
 
         const result = entriesImport['serializePublishEntries'](apiOptions);
@@ -2333,9 +2337,9 @@ describe('EntriesImport', () => {
             publish_details: [
               {
                 environment: 'invalid_env',
-                locale: 'en-us'
-              }
-            ]
+                locale: 'en-us',
+              },
+            ],
           },
           entity: 'publish-entries' as const,
           resolve: sinon.stub(),
@@ -2343,8 +2347,8 @@ describe('EntriesImport', () => {
           additionalInfo: {
             cTUid: 'simple_ct',
             locale: 'en-us',
-            contentType: mockData.simpleContentType
-          }
+            contentType: mockData.simpleContentType,
+          },
         };
 
         const result = entriesImport['serializePublishEntries'](apiOptions);
@@ -2359,10 +2363,10 @@ describe('EntriesImport', () => {
             title: 'Simple Entry',
             publish_details: [
               {
-                environment: 'env_1'
+                environment: 'env_1',
                 // No locale
-              }
-            ]
+              },
+            ],
           },
           entity: 'publish-entries' as const,
           resolve: sinon.stub(),
@@ -2370,8 +2374,8 @@ describe('EntriesImport', () => {
           additionalInfo: {
             cTUid: 'simple_ct',
             locale: 'en-us',
-            contentType: mockData.simpleContentType
-          }
+            contentType: mockData.simpleContentType,
+          },
         };
 
         const result = entriesImport['serializePublishEntries'](apiOptions);
@@ -2387,17 +2391,17 @@ describe('EntriesImport', () => {
             publish_details: [
               {
                 environment: 'env_1',
-                locale: 'en-us'
+                locale: 'en-us',
               },
               {
                 environment: 'env_1', // Duplicate environment
-                locale: 'en-us' // Duplicate locale
+                locale: 'en-us', // Duplicate locale
               },
               {
                 environment: 'env_2',
-                locale: 'fr-fr'
-              }
-            ]
+                locale: 'fr-fr',
+              },
+            ],
           },
           entity: 'publish-entries' as const,
           resolve: sinon.stub(),
@@ -2405,8 +2409,8 @@ describe('EntriesImport', () => {
           additionalInfo: {
             cTUid: 'simple_ct',
             locale: 'en-us',
-            contentType: mockData.simpleContentType
-          }
+            contentType: mockData.simpleContentType,
+          },
         };
 
         const result = entriesImport['serializePublishEntries'](apiOptions);
@@ -2426,9 +2430,9 @@ describe('EntriesImport', () => {
             publish_details: [
               {
                 environment: 'env_1',
-                locale: 'en-us'
-              }
-            ]
+                locale: 'en-us',
+              },
+            ],
           },
           entity: 'publish-entries' as const,
           resolve: sinon.stub(),
@@ -2436,8 +2440,8 @@ describe('EntriesImport', () => {
           additionalInfo: {
             cTUid: 'simple_ct',
             locale: 'en-us',
-            contentType: mockData.simpleContentType
-          }
+            contentType: mockData.simpleContentType,
+          },
         };
 
         const result = entriesImport['serializePublishEntries'](apiOptions);
@@ -2454,17 +2458,17 @@ describe('EntriesImport', () => {
             publish_details: [
               {
                 environment: 'env_1',
-                locale: 'en-us'
+                locale: 'en-us',
               },
               {
                 environment: 'invalid_env',
-                locale: 'fr-fr'
+                locale: 'fr-fr',
               },
               {
                 environment: 'env_2',
-                locale: 'de-de'
-              }
-            ]
+                locale: 'de-de',
+              },
+            ],
           },
           entity: 'publish-entries' as const,
           resolve: sinon.stub(),
@@ -2472,8 +2476,8 @@ describe('EntriesImport', () => {
           additionalInfo: {
             cTUid: 'simple_ct',
             locale: 'en-us',
-            contentType: mockData.simpleContentType
-          }
+            contentType: mockData.simpleContentType,
+          },
         };
 
         const result = entriesImport['serializePublishEntries'](apiOptions);
@@ -2489,35 +2493,37 @@ describe('EntriesImport', () => {
     beforeEach(() => {
       // Reset all stubs before each test
       sinon.restore();
-      
+
       sinon.stub(FsUtility.prototype, 'createFolderIfNotExist').callsFake(() => {
         return Promise.resolve();
       });
-      
+
       // Recreate entriesImport instance after restore
       entriesImport = new EntriesImport({
         importConfig: mockImportConfig as any,
         stackAPIClient: mockStackClient,
-        moduleName: 'entries'
+        moduleName: 'entries',
       });
-      
+
       entriesImport['cTs'] = [mockData.simpleContentType, mockData.contentTypeWithReferences];
       entriesImport['locales'] = [
         { code: 'en-us', name: 'English' },
-        { code: 'fr-fr', name: 'French' }
+        { code: 'fr-fr', name: 'French' },
       ];
       entriesImport['envs'] = {
-        'env_1': { name: 'production', uid: 'env_1' },
-        'env_2': { name: 'staging', uid: 'env_2' }
+        env_1: { name: 'production', uid: 'env_1' },
+        env_2: { name: 'staging', uid: 'env_2' },
       };
       entriesImport['entriesUidMapper'] = {};
       entriesImport['failedEntries'] = [];
       entriesImport['autoCreatedEntries'] = [];
       entriesImport['entriesForVariant'] = [];
-      
-      sinon.stub(entriesImport as any, 'withLoadingSpinner').callsFake(async (message: string, action: () => Promise<any>) => {
-        return await action();
-      });
+
+      sinon
+        .stub(entriesImport as any, 'withLoadingSpinner')
+        .callsFake(async (message: string, action: () => Promise<any>) => {
+          return await action();
+        });
     });
 
     it('should complete full start process successfully', async () => {
@@ -2526,13 +2532,13 @@ describe('EntriesImport', () => {
         startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
         completeProcess: sinon.stub(),
         updateStatus: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       };
       sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]); // contentTypesCount, localesCount, totalEntryChunks, totalActualEntries, totalEntriesForPublishing
       sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
       sinon.stub(entriesImport as any, 'initializeProgress').callsFake(() => {}); // Not async
       sinon.stub(entriesImport as any, 'completeProgress').callsFake(() => {});
-      
+
       const disableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
       sinon.stub(entriesImport as any, 'processEntryCreation').resolves();
       sinon.stub(entriesImport as any, 'processEntryReplacement').resolves();
@@ -2581,7 +2587,7 @@ describe('EntriesImport', () => {
         startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
         completeProcess: sinon.stub(),
         updateStatus: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       };
       sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]);
       sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
@@ -2589,15 +2595,22 @@ describe('EntriesImport', () => {
       sinon.stub(entriesImport as any, 'completeProgress').callsFake(() => {});
 
       const mockFsUtil = {
-        readFile: sinon.stub()
-          .onCall(0).resolves([mockData.simpleContentType])
-          .onCall(1).resolves({ extension_uid: {} })
-          .onCall(2).resolves({})
-          .onCall(3).resolves({})
-          .onCall(4).resolves({})
-          .onCall(5).resolves([{ code: 'en-us' }]),
+        readFile: sinon
+          .stub()
+          .onCall(0)
+          .resolves([mockData.simpleContentType])
+          .onCall(1)
+          .resolves({ extension_uid: {} })
+          .onCall(2)
+          .resolves({})
+          .onCall(3)
+          .resolves({})
+          .onCall(4)
+          .resolves({})
+          .onCall(5)
+          .resolves([{ code: 'en-us' }]),
         makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub().resolves()
+        writeFile: sinon.stub().resolves(),
       };
       sinon.stub(require('../../../../src/utils'), 'fsUtil').value(mockFsUtil);
 
@@ -2606,7 +2619,7 @@ describe('EntriesImport', () => {
 
       const mockFileHelper = {
         readFileSync: sinon.stub().returns({}),
-        writeLargeFile: sinon.stub().resolves()
+        writeLargeFile: sinon.stub().resolves(),
       };
       sinon.stub(require('../../../../src/utils'), 'fileHelper').value(mockFileHelper);
 
@@ -2627,16 +2640,14 @@ describe('EntriesImport', () => {
 
     it('should handle autoCreatedEntries cleanup', async () => {
       // Set up autoCreatedEntries
-      entriesImport['autoCreatedEntries'] = [
-        { cTUid: 'simple_ct', locale: 'en-us', entryUid: 'entry_1' }
-      ];
+      entriesImport['autoCreatedEntries'] = [{ cTUid: 'simple_ct', locale: 'en-us', entryUid: 'entry_1' }];
 
       const mockProgress = {
         addProcess: sinon.stub(),
         startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
         completeProcess: sinon.stub(),
         updateStatus: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       };
       sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]);
       sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
@@ -2667,7 +2678,7 @@ describe('EntriesImport', () => {
         startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
         completeProcess: sinon.stub(),
         updateStatus: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       };
       sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]);
       sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
@@ -2698,7 +2709,7 @@ describe('EntriesImport', () => {
         startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
         completeProcess: sinon.stub(),
         updateStatus: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       };
       sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]);
       sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
@@ -2729,7 +2740,7 @@ describe('EntriesImport', () => {
         startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
         completeProcess: sinon.stub(),
         updateStatus: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       };
       sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]);
       sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
@@ -2755,16 +2766,14 @@ describe('EntriesImport', () => {
 
     it('should handle errors in removeAutoCreatedEntries', async () => {
       // Set up autoCreatedEntries
-      entriesImport['autoCreatedEntries'] = [
-        { cTUid: 'simple_ct', locale: 'en-us', entryUid: 'entry_1' }
-      ];
+      entriesImport['autoCreatedEntries'] = [{ cTUid: 'simple_ct', locale: 'en-us', entryUid: 'entry_1' }];
 
       const mockProgress = {
         addProcess: sinon.stub(),
         startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
         completeProcess: sinon.stub(),
         updateStatus: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       };
       sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]);
       sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
@@ -2794,7 +2803,7 @@ describe('EntriesImport', () => {
         startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
         completeProcess: sinon.stub(),
         updateStatus: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       };
       sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]);
       sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
@@ -2824,7 +2833,7 @@ describe('EntriesImport', () => {
         startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
         completeProcess: sinon.stub(),
         updateStatus: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       };
       sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]);
       sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
@@ -2835,7 +2844,9 @@ describe('EntriesImport', () => {
       sinon.stub(entriesImport as any, 'processEntryCreation').resolves();
       sinon.stub(entriesImport as any, 'processEntryReplacement').resolves();
       sinon.stub(entriesImport as any, 'processEntryReferenceUpdates').resolves();
-      const enableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'enableMandatoryCTReferences').rejects(new Error('Enable failed'));
+      const enableMandatoryCTReferencesStub = sinon
+        .stub(entriesImport, 'enableMandatoryCTReferences')
+        .rejects(new Error('Enable failed'));
       sinon.stub(entriesImport, 'updateFieldRules').resolves();
       sinon.stub(entriesImport as any, 'processEntryPublishing').resolves();
       sinon.stub(entriesImport as any, 'processCleanup').resolves();
@@ -2850,15 +2861,22 @@ describe('EntriesImport', () => {
 
     it('should handle errors in updateFieldRules', async () => {
       const mockFsUtil = {
-        readFile: sinon.stub()
-          .onCall(0).resolves([mockData.simpleContentType])
-          .onCall(1).resolves({ extension_uid: {} })
-          .onCall(2).resolves({})
-          .onCall(3).resolves({})
-          .onCall(4).resolves({})
-          .onCall(5).resolves([{ code: 'en-us' }]),
+        readFile: sinon
+          .stub()
+          .onCall(0)
+          .resolves([mockData.simpleContentType])
+          .onCall(1)
+          .resolves({ extension_uid: {} })
+          .onCall(2)
+          .resolves({})
+          .onCall(3)
+          .resolves({})
+          .onCall(4)
+          .resolves({})
+          .onCall(5)
+          .resolves([{ code: 'en-us' }]),
         makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub().resolves()
+        writeFile: sinon.stub().resolves(),
       };
       sinon.stub(require('../../../../src/utils'), 'fsUtil').value(mockFsUtil);
 
@@ -2867,7 +2885,7 @@ describe('EntriesImport', () => {
 
       const mockFileHelper = {
         readFileSync: sinon.stub().returns({}),
-        writeLargeFile: sinon.stub().resolves()
+        writeLargeFile: sinon.stub().resolves(),
       };
       sinon.stub(require('../../../../src/utils'), 'fileHelper').value(mockFileHelper);
 
@@ -2876,7 +2894,7 @@ describe('EntriesImport', () => {
         startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
         completeProcess: sinon.stub(),
         updateStatus: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       };
       sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]);
       sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
@@ -2897,7 +2915,9 @@ describe('EntriesImport', () => {
       sinon.stub(entriesImport as any, 'processEntryPublishing').resolves();
       sinon.stub(entriesImport as any, 'processCleanup').resolves();
       sinon.stub(entriesImport as any, 'removeAutoCreatedEntries').resolves();
-      const updateFieldRulesStub = sinon.stub(entriesImport, 'updateFieldRules').rejects(new Error('Field rules failed'));
+      const updateFieldRulesStub = sinon
+        .stub(entriesImport, 'updateFieldRules')
+        .rejects(new Error('Field rules failed'));
       const createEntryDataForVariantEntryStub = sinon.stub(entriesImport, 'createEntryDataForVariantEntry').returns();
 
       await entriesImport.start();
@@ -2912,7 +2932,7 @@ describe('EntriesImport', () => {
         startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
         completeProcess: sinon.stub(),
         updateStatus: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       };
       sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]);
       sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
@@ -2941,7 +2961,7 @@ describe('EntriesImport', () => {
       const completeProgressStub = sinon.stub(entriesImport as any, 'completeProgress');
       const createEntryDataForVariantEntryStub = sinon.stub(entriesImport, 'createEntryDataForVariantEntry').returns();
 
-        await entriesImport.start();
+      await entriesImport.start();
 
       // Verify createEntryDataForVariantEntry was called in catch block
       expect(createEntryDataForVariantEntryStub.called).to.be.true;
@@ -2966,12 +2986,12 @@ describe('EntriesImport', () => {
       it('should successfully remove auto-created entries', async () => {
         entriesImport['autoCreatedEntries'] = [
           { entryUid: 'auto_entry_1', title: 'Auto Entry 1' },
-          { entryUid: 'auto_entry_2', title: 'Auto Entry 2' }
+          { entryUid: 'auto_entry_2', title: 'Auto Entry 2' },
         ];
         entriesImport['entriesForVariant'] = [
           { entry_uid: 'auto_entry_1', locale: 'en-us', content_type: 'simple_ct' },
           { entry_uid: 'auto_entry_2', locale: 'en-us', content_type: 'ref_ct' },
-          { entry_uid: 'other_entry', locale: 'fr-fr', content_type: 'simple_ct' }
+          { entry_uid: 'other_entry', locale: 'fr-fr', content_type: 'simple_ct' },
         ];
 
         // Use the existing makeConcurrentCall stub to simulate successful removal
@@ -2979,12 +2999,12 @@ describe('EntriesImport', () => {
           // Simulate onSuccess callback for first entry
           await options.apiParams.resolve({
             response: { uid: 'auto_entry_1' },
-            apiData: { entryUid: 'auto_entry_1' }
+            apiData: { entryUid: 'auto_entry_1' },
           });
           // Simulate onSuccess callback for second entry
           await options.apiParams.resolve({
             response: { uid: 'auto_entry_2' },
-            apiData: { entryUid: 'auto_entry_2' }
+            apiData: { entryUid: 'auto_entry_2' },
           });
         });
 
@@ -3004,12 +3024,10 @@ describe('EntriesImport', () => {
       });
 
       it('should handle errors when removing auto-created entries', async () => {
-        entriesImport['autoCreatedEntries'] = [
-          { entryUid: 'auto_entry_1', title: 'Auto Entry 1' }
-        ];
+        entriesImport['autoCreatedEntries'] = [{ entryUid: 'auto_entry_1', title: 'Auto Entry 1' }];
         entriesImport['entriesForVariant'] = [
           { entry_uid: 'auto_entry_1', locale: 'en-us', content_type: 'simple_ct' },
-          { entry_uid: 'other_entry', locale: 'fr-fr', content_type: 'simple_ct' }
+          { entry_uid: 'other_entry', locale: 'fr-fr', content_type: 'simple_ct' },
         ];
 
         // Use the existing makeConcurrentCall stub to simulate error
@@ -3017,7 +3035,7 @@ describe('EntriesImport', () => {
           // Simulate onReject callback
           await options.apiParams.reject({
             error: new Error('Delete failed'),
-            apiData: { entryUid: 'auto_entry_1' }
+            apiData: { entryUid: 'auto_entry_1' },
           });
         });
 
@@ -3033,9 +3051,7 @@ describe('EntriesImport', () => {
 
       it('should handle empty auto-created entries array', async () => {
         entriesImport['autoCreatedEntries'] = [];
-        entriesImport['entriesForVariant'] = [
-          { entry_uid: 'other_entry', locale: 'fr-fr', content_type: 'simple_ct' }
-        ];
+        entriesImport['entriesForVariant'] = [{ entry_uid: 'other_entry', locale: 'fr-fr', content_type: 'simple_ct' }];
 
         // Use the existing makeConcurrentCall stub
         makeConcurrentCallStub.resolves();
@@ -3052,7 +3068,7 @@ describe('EntriesImport', () => {
       it('should write file when entriesForVariant is not empty', () => {
         entriesImport['entriesForVariant'] = [
           { entry_uid: 'entry_1', locale: 'en-us', content_type: 'simple_ct' },
-          { entry_uid: 'entry_2', locale: 'fr-fr', content_type: 'ref_ct' }
+          { entry_uid: 'entry_2', locale: 'fr-fr', content_type: 'ref_ct' },
         ];
 
         const writeFileSyncStub = sinon.stub(require('fs'), 'writeFileSync');
@@ -3082,7 +3098,7 @@ describe('EntriesImport', () => {
     describe('updateFieldRules() Method Error Handling', () => {
       it('should handle content type fetch error', async () => {
         const mockContentTypes = [mockData.simpleContentType, mockData.contentTypeWithReferences];
-        
+
         fsUtilityReadFileStub.callsFake((filePath) => {
           console.log('fsUtil.readFile called with path:', filePath);
           if (filePath.includes('field_rules_uid.json')) {
@@ -3098,19 +3114,18 @@ describe('EntriesImport', () => {
         });
 
         const mockContentType = {
-          fetch: sinon.stub().rejects(new Error('Fetch failed'))
+          fetch: sinon.stub().rejects(new Error('Fetch failed')),
         };
         const mockStackClient = {
-          contentType: sinon.stub().returns(mockContentType)
+          contentType: sinon.stub().returns(mockContentType),
         };
         sinon.stub(entriesImport, 'stack').value(mockStackClient);
-        
 
         await entriesImport.updateFieldRules();
 
         // Verify fsUtil.readFile was called
         expect(fsUtilityReadFileStub.callCount).to.be.greaterThan(0);
-        
+
         // Verify stack client was called
         expect(mockStackClient.contentType.called).to.be.true;
         expect(mockContentType.fetch.called).to.be.true;
@@ -3118,7 +3133,7 @@ describe('EntriesImport', () => {
 
       it('should handle content type update error', async () => {
         const mockContentTypes = [mockData.simpleContentType, mockData.contentTypeWithReferences];
-        
+
         fsUtilityReadFileStub.callsFake((path) => {
           if (path.includes('field_rules_uid.json')) {
             return ['simple_ct']; // array of strings
@@ -3131,23 +3146,22 @@ describe('EntriesImport', () => {
 
         const mockUpdate = sinon.stub().rejects(new Error('Update failed'));
         const mockContentType = {
-          fetch: sinon.stub().resolves({ 
-            uid: 'simple_ct', 
+          fetch: sinon.stub().resolves({
+            uid: 'simple_ct',
             field_rules: [],
-            update: mockUpdate
-          })
+            update: mockUpdate,
+          }),
         };
         const mockStackClient = {
-          contentType: sinon.stub().returns(mockContentType)
+          contentType: sinon.stub().returns(mockContentType),
         };
         sinon.stub(entriesImport, 'stack').value(mockStackClient);
-        
 
         await entriesImport.updateFieldRules();
 
         // Verify fsUtil.readFile was called
         expect(fsUtilityReadFileStub.callCount).to.be.greaterThan(0);
-        
+
         // Verify stack client was called
         expect(mockStackClient.contentType.called).to.be.true;
         expect(mockContentType.fetch.called).to.be.true;
@@ -3156,7 +3170,7 @@ describe('EntriesImport', () => {
 
       it('should skip when content type not found', async () => {
         const mockContentTypes = [mockData.simpleContentType, mockData.contentTypeWithReferences];
-        
+
         fsUtilityReadFileStub.callsFake((path) => {
           if (path.includes('field_rules_uid.json')) {
             return ['simple_ct']; // array of strings
@@ -3168,10 +3182,10 @@ describe('EntriesImport', () => {
         });
 
         const mockContentType = {
-          fetch: sinon.stub().resolves(null)
+          fetch: sinon.stub().resolves(null),
         };
         const mockStackClient = {
-          contentType: sinon.stub().returns(mockContentType)
+          contentType: sinon.stub().returns(mockContentType),
         };
         sinon.stub(entriesImport, 'stack').value(mockStackClient);
 
@@ -3180,7 +3194,7 @@ describe('EntriesImport', () => {
           info: sinon.stub(),
           success: sinon.stub(),
           warn: sinon.stub(),
-          error: sinon.stub()
+          error: sinon.stub(),
         };
         sinon.stub(require('@contentstack/cli-utilities'), 'log').value(mockLog);
 
@@ -3188,9 +3202,9 @@ describe('EntriesImport', () => {
 
         // Verify debug log was called for skipping
         expect(mockLog.debug.called).to.be.true;
-        const skipCall = mockLog.debug.getCalls().find((call: any) => 
-          call.args[0] && call.args[0].includes('Skipping field rules update')
-        );
+        const skipCall = mockLog.debug
+          .getCalls()
+          .find((call: any) => call.args[0] && call.args[0].includes('Skipping field rules update'));
         expect(skipCall).to.exist;
       });
 
@@ -3198,7 +3212,7 @@ describe('EntriesImport', () => {
         const contentTypeWithoutRules = { ...mockData.simpleContentType };
         delete contentTypeWithoutRules.field_rules;
         const mockContentTypes = [contentTypeWithoutRules];
-        
+
         fsUtilityReadFileStub.callsFake((path) => {
           if (path.includes('field_rules_uid.json')) {
             return ['simple_ct']; // array of strings
@@ -3214,7 +3228,7 @@ describe('EntriesImport', () => {
           info: sinon.stub(),
           success: sinon.stub(),
           warn: sinon.stub(),
-          error: sinon.stub()
+          error: sinon.stub(),
         };
         sinon.stub(require('@contentstack/cli-utilities'), 'log').value(mockLog);
 
@@ -3222,9 +3236,9 @@ describe('EntriesImport', () => {
 
         // Verify info log was called for no field rules
         expect(mockLog.info.called).to.be.true;
-        const noRulesCall = mockLog.info.getCalls().find((call: any) => 
-          call.args[0] && call.args[0].includes('No field rules found')
-        );
+        const noRulesCall = mockLog.info
+          .getCalls()
+          .find((call: any) => call.args[0] && call.args[0].includes('No field rules found'));
         expect(noRulesCall).to.exist;
       });
     });
@@ -3234,15 +3248,15 @@ describe('EntriesImport', () => {
         const entry = {
           uid: 'localized_entry_1',
           title: 'Localized Entry',
-          description: 'A localized entry'
+          description: 'A localized entry',
         };
         const contentType = mockData.simpleContentType;
         const isMasterLocale = false;
 
         entriesImport['entriesUidMapper'] = {
-          'localized_entry_1': 'new_localized_entry_1'
+          localized_entry_1: 'new_localized_entry_1',
         };
-        
+
         entriesImport['assetUidMapper'] = {};
         entriesImport['assetUrlMapper'] = {};
         entriesImport['installedExtensions'] = [];
@@ -3250,19 +3264,19 @@ describe('EntriesImport', () => {
         const originalLookupAssets = require('../../../../src/utils').lookupAssets;
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           get: () => (entryData: any) => entryData.entry,
-          configurable: true
+          configurable: true,
         });
 
         const mockEntryResponse = {
           uid: 'new_localized_entry_1',
           title: 'Localized Entry',
-          description: 'A localized entry'
+          description: 'A localized entry',
         };
         const mockContentType = {
-          entry: sinon.stub().returns(mockEntryResponse)
+          entry: sinon.stub().returns(mockEntryResponse),
         };
         const mockStackClient = {
-          contentType: sinon.stub().returns(mockContentType)
+          contentType: sinon.stub().returns(mockContentType),
         };
         sinon.stub(entriesImport, 'stack').value(mockStackClient);
 
@@ -3271,7 +3285,7 @@ describe('EntriesImport', () => {
           apiData: entry,
           resolve: sinon.stub(),
           reject: sinon.stub(),
-          additionalInfo: { cTUid: 'simple_ct', locale: 'fr-fr', contentType, isMasterLocale }
+          additionalInfo: { cTUid: 'simple_ct', locale: 'fr-fr', contentType, isMasterLocale },
         };
 
         const result = entriesImport.serializeEntries(apiOptions);
@@ -3282,12 +3296,12 @@ describe('EntriesImport', () => {
         expect(result.apiData.title).to.equal('Localized Entry');
         expect(result.additionalInfo['new_localized_entry_1']).to.deep.equal({
           isLocalized: true,
-          entryOldUid: 'localized_entry_1'
+          entryOldUid: 'localized_entry_1',
         });
 
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           value: originalLookupAssets,
-          configurable: true
+          configurable: true,
         });
       });
 
@@ -3295,13 +3309,13 @@ describe('EntriesImport', () => {
         const entry = {
           uid: 'localized_entry_1',
           title: 'Localized Entry',
-          description: 'A localized entry'
+          description: 'A localized entry',
         };
         const contentType = mockData.simpleContentType;
         const isMasterLocale = false;
 
         entriesImport['entriesUidMapper'] = {};
-        
+
         entriesImport['assetUidMapper'] = {};
         entriesImport['assetUrlMapper'] = {};
         entriesImport['installedExtensions'] = [];
@@ -3309,7 +3323,7 @@ describe('EntriesImport', () => {
         const originalLookupAssets = require('../../../../src/utils').lookupAssets;
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           get: () => (entryData: any) => entryData.entry,
-          configurable: true
+          configurable: true,
         });
 
         const apiOptions = {
@@ -3317,7 +3331,7 @@ describe('EntriesImport', () => {
           apiData: entry,
           resolve: sinon.stub(),
           reject: sinon.stub(),
-          additionalInfo: { cTUid: 'simple_ct', locale: 'fr-fr', contentType, isMasterLocale }
+          additionalInfo: { cTUid: 'simple_ct', locale: 'fr-fr', contentType, isMasterLocale },
         };
 
         const result = entriesImport.serializeEntries(apiOptions);
@@ -3330,7 +3344,7 @@ describe('EntriesImport', () => {
 
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           value: originalLookupAssets,
-          configurable: true
+          configurable: true,
         });
       });
     });
@@ -3340,7 +3354,7 @@ describe('EntriesImport', () => {
         entriesImport['entriesForVariant'] = [
           { entry_uid: 'entry_1', locale: 'en-us', content_type: 'simple_ct' },
           { entry_uid: 'entry_2', locale: 'fr-fr', content_type: 'ref_ct' },
-          { entry_uid: 'entry_3', locale: 'en-us', content_type: 'simple_ct' }
+          { entry_uid: 'entry_3', locale: 'en-us', content_type: 'simple_ct' },
         ];
 
         // Use the existing makeConcurrentCall stub to trigger onReject
@@ -3348,19 +3362,19 @@ describe('EntriesImport', () => {
           // Simulate onReject callback - uid should match entry_uid in entriesForVariant
           await options.apiParams.reject({
             error: new Error('Update failed'),
-            apiData: { uid: 'entry_1', title: 'Entry 1' }
+            apiData: { uid: 'entry_1', title: 'Entry 1' },
           });
         });
 
         const handleAndLogErrorStub = sinon.stub(require('@contentstack/cli-utilities'), 'handleAndLogError');
 
-        const mockIndexFileContent = { 'chunk1': true };
+        const mockIndexFileContent = { chunk1: true };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockIndexFileContent);
 
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
-            'entry1': { uid: 'entry_1', title: 'Entry 1' }
-          })
+            entry1: { uid: 'entry_1', title: 'Entry 1' },
+          }),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
@@ -3370,11 +3384,10 @@ describe('EntriesImport', () => {
 
         // Verify entriesForVariant was filtered correctly
         expect(entriesImport['entriesForVariant']).to.have.length(2);
-        expect(entriesImport['entriesForVariant'].find(e => e.entry_uid === 'entry_1')).to.be.undefined;
-        expect(entriesImport['entriesForVariant'].find(e => e.entry_uid === 'entry_2')).to.exist;
-        expect(entriesImport['entriesForVariant'].find(e => e.entry_uid === 'entry_3')).to.exist;
+        expect(entriesImport['entriesForVariant'].find((e) => e.entry_uid === 'entry_1')).to.be.undefined;
+        expect(entriesImport['entriesForVariant'].find((e) => e.entry_uid === 'entry_2')).to.exist;
+        expect(entriesImport['entriesForVariant'].find((e) => e.entry_uid === 'entry_3')).to.exist;
       });
-
     });
   });
 
@@ -3388,26 +3401,26 @@ describe('EntriesImport', () => {
 
     beforeEach(() => {
       sinon.restore();
-      
+
       sinon.stub(FsUtility.prototype, 'createFolderIfNotExist').callsFake(() => {
         return Promise.resolve();
       });
-      
+
       // Recreate entriesImport instance after restore
       progressEntriesImport = new EntriesImport({
         importConfig: mockImportConfig as any,
         stackAPIClient: mockStackClient,
-        moduleName: 'entries'
+        moduleName: 'entries',
       });
-      
+
       // Initialize required properties (will be set by analyzeEntryData from mocks)
-      
+
       mockProgress = {
         addProcess: sinon.stub(),
         startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
         completeProcess: sinon.stub(),
         updateStatus: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       };
     });
 
@@ -3429,18 +3442,20 @@ describe('EntriesImport', () => {
       it('should return zeros when no content types found', async () => {
         const fsUtilReadFileStub = sinon.stub(fsUtil, 'readFile').resolves([]);
         const fsUtilMakeDirectoryStub = sinon.stub(fsUtil, 'makeDirectory').resolves();
-        
+
         const isEmptyStub = sinon.stub().returns(true);
         sinon.stub(require('lodash'), 'isEmpty').value(isEmptyStub);
 
-        sinon.stub(progressEntriesImport as any, 'withLoadingSpinner').callsFake(async (message: string, action: () => Promise<any>) => {
-          return await action();
-        });
+        sinon
+          .stub(progressEntriesImport as any, 'withLoadingSpinner')
+          .callsFake(async (message: string, action: () => Promise<any>) => {
+            return await action();
+          });
 
         const result = await progressEntriesImport['analyzeEntryData']();
 
         expect(result).to.deep.equal([0, 0, 0, 0, 0]);
-        
+
         fsUtilReadFileStub.restore();
         fsUtilMakeDirectoryStub.restore();
       });
@@ -3453,7 +3468,7 @@ describe('EntriesImport', () => {
           localesCount: 2,
           totalEntryChunks: 5,
           totalActualEntries: 10,
-          totalEntriesForPublishing: 5
+          totalEntriesForPublishing: 5,
         };
 
         progressEntriesImport['importConfig'].replaceExisting = false;
@@ -3471,7 +3486,7 @@ describe('EntriesImport', () => {
           localesCount: 2,
           totalEntryChunks: 5,
           totalActualEntries: 10,
-          totalEntriesForPublishing: 5
+          totalEntriesForPublishing: 5,
         };
 
         progressEntriesImport['importConfig'].replaceExisting = true;
@@ -3488,7 +3503,7 @@ describe('EntriesImport', () => {
           localesCount: 2,
           totalEntryChunks: 5,
           totalActualEntries: 10,
-          totalEntriesForPublishing: 5
+          totalEntriesForPublishing: 5,
         };
 
         progressEntriesImport['importConfig'].replaceExisting = false;
@@ -3504,10 +3519,10 @@ describe('EntriesImport', () => {
       it('should process entry creation successfully', async () => {
         const writeFileStub = sinon.stub(fsUtil, 'writeFile').resolves();
         const writeLargeFileStub = sinon.stub(fileHelper, 'writeLargeFile').resolves();
-        
-        const populateStub = sinon.stub(progressEntriesImport, 'populateEntryCreatePayload').returns([
-          { cTUid: 'simple_ct', locale: 'en-us' }
-        ]);
+
+        const populateStub = sinon
+          .stub(progressEntriesImport, 'populateEntryCreatePayload')
+          .returns([{ cTUid: 'simple_ct', locale: 'en-us' }]);
         const createEntriesStub = sinon.stub(progressEntriesImport, 'createEntries').resolves();
 
         await progressEntriesImport['processEntryCreation']();
@@ -3521,9 +3536,9 @@ describe('EntriesImport', () => {
 
     describe('processEntryReplacement()', () => {
       it('should process entry replacement successfully', async () => {
-        const populateStub = sinon.stub(progressEntriesImport, 'populateEntryCreatePayload').returns([
-          { cTUid: 'simple_ct', locale: 'en-us' }
-        ]);
+        const populateStub = sinon
+          .stub(progressEntriesImport, 'populateEntryCreatePayload')
+          .returns([{ cTUid: 'simple_ct', locale: 'en-us' }]);
         const replaceEntriesStub = sinon.stub(progressEntriesImport, 'replaceEntries').resolves();
 
         await progressEntriesImport['processEntryReplacement']();
@@ -3533,10 +3548,12 @@ describe('EntriesImport', () => {
       });
 
       it('should handle errors in replaceEntries gracefully', async () => {
-        const populateStub = sinon.stub(progressEntriesImport, 'populateEntryCreatePayload').returns([
-          { cTUid: 'simple_ct', locale: 'en-us' }
-        ]);
-        const replaceEntriesStub = sinon.stub(progressEntriesImport, 'replaceEntries').rejects(new Error('Replace failed'));
+        const populateStub = sinon
+          .stub(progressEntriesImport, 'populateEntryCreatePayload')
+          .returns([{ cTUid: 'simple_ct', locale: 'en-us' }]);
+        const replaceEntriesStub = sinon
+          .stub(progressEntriesImport, 'replaceEntries')
+          .rejects(new Error('Replace failed'));
         const handleErrorStub = sinon.stub(require('@contentstack/cli-utilities'), 'handleAndLogError');
 
         await progressEntriesImport['processEntryReplacement']();
@@ -3552,9 +3569,9 @@ describe('EntriesImport', () => {
       });
 
       it('should process entry reference updates successfully', async () => {
-        const populateStub = sinon.stub(progressEntriesImport, 'populateEntryUpdatePayload').returns([
-          { cTUid: 'simple_ct', locale: 'en-us' }
-        ]);
+        const populateStub = sinon
+          .stub(progressEntriesImport, 'populateEntryUpdatePayload')
+          .returns([{ cTUid: 'simple_ct', locale: 'en-us' }]);
         const updateStub = sinon.stub(progressEntriesImport, 'updateEntriesWithReferences').resolves();
 
         await progressEntriesImport['processEntryReferenceUpdates']();
@@ -3565,10 +3582,12 @@ describe('EntriesImport', () => {
       });
 
       it('should handle errors in updateEntriesWithReferences gracefully', async () => {
-        const populateStub = sinon.stub(progressEntriesImport, 'populateEntryUpdatePayload').returns([
-          { cTUid: 'simple_ct', locale: 'en-us' }
-        ]);
-        const updateStub = sinon.stub(progressEntriesImport, 'updateEntriesWithReferences').rejects(new Error('Update failed'));
+        const populateStub = sinon
+          .stub(progressEntriesImport, 'populateEntryUpdatePayload')
+          .returns([{ cTUid: 'simple_ct', locale: 'en-us' }]);
+        const updateStub = sinon
+          .stub(progressEntriesImport, 'updateEntriesWithReferences')
+          .rejects(new Error('Update failed'));
         const handleErrorStub = sinon.stub(require('@contentstack/cli-utilities'), 'handleAndLogError');
 
         try {
@@ -3585,15 +3604,15 @@ describe('EntriesImport', () => {
     describe('processEntryPublishing()', () => {
       beforeEach(() => {
         progressEntriesImport['envs'] = {
-          'env_1': { name: 'production', uid: 'env_1' }
+          env_1: { name: 'production', uid: 'env_1' },
         };
         sinon.stub(fileHelper, 'readFileSync').returns(progressEntriesImport['envs']);
       });
 
       it('should process entry publishing successfully', async () => {
-        const populateStub = sinon.stub(progressEntriesImport, 'populateEntryCreatePayload').returns([
-          { cTUid: 'simple_ct', locale: 'en-us' }
-        ]);
+        const populateStub = sinon
+          .stub(progressEntriesImport, 'populateEntryCreatePayload')
+          .returns([{ cTUid: 'simple_ct', locale: 'en-us' }]);
         const publishStub = sinon.stub(progressEntriesImport, 'publishEntries').resolves();
 
         await progressEntriesImport['processEntryPublishing']();
@@ -3605,9 +3624,9 @@ describe('EntriesImport', () => {
 
       it('should handle errors in publishEntries gracefully', async () => {
         const handleErrorStub = sinon.stub(require('@contentstack/cli-utilities'), 'handleAndLogError');
-        const populateStub = sinon.stub(progressEntriesImport, 'populateEntryCreatePayload').returns([
-          { cTUid: 'simple_ct', locale: 'en-us' }
-        ]);
+        const populateStub = sinon
+          .stub(progressEntriesImport, 'populateEntryCreatePayload')
+          .returns([{ cTUid: 'simple_ct', locale: 'en-us' }]);
         const publishStub = sinon.stub(progressEntriesImport, 'publishEntries').rejects(new Error('Publish failed'));
 
         await progressEntriesImport['processEntryPublishing']();
@@ -3620,9 +3639,7 @@ describe('EntriesImport', () => {
 
     describe('processCleanup()', () => {
       it('should process cleanup successfully when autoCreatedEntries exist', async () => {
-        progressEntriesImport['autoCreatedEntries'] = [
-          { cTUid: 'simple_ct', locale: 'en-us', entryUid: 'entry_1' }
-        ];
+        progressEntriesImport['autoCreatedEntries'] = [{ cTUid: 'simple_ct', locale: 'en-us', entryUid: 'entry_1' }];
         progressEntriesImport['progressManager'] = mockProgress;
         const removeStub = sinon.stub(progressEntriesImport, 'removeAutoCreatedEntries').resolves();
         const createVariantStub = sinon.stub(progressEntriesImport, 'createEntryDataForVariantEntry').returns();
@@ -3644,10 +3661,10 @@ describe('EntriesImport', () => {
       });
 
       it('should handle errors in removeAutoCreatedEntries gracefully', async () => {
-        progressEntriesImport['autoCreatedEntries'] = [
-          { cTUid: 'simple_ct', locale: 'en-us', entryUid: 'entry_1' }
-        ];
-        const removeStub = sinon.stub(progressEntriesImport, 'removeAutoCreatedEntries').rejects(new Error('Remove failed'));
+        progressEntriesImport['autoCreatedEntries'] = [{ cTUid: 'simple_ct', locale: 'en-us', entryUid: 'entry_1' }];
+        const removeStub = sinon
+          .stub(progressEntriesImport, 'removeAutoCreatedEntries')
+          .rejects(new Error('Remove failed'));
         const handleErrorStub = sinon.stub(require('@contentstack/cli-utilities'), 'handleAndLogError');
         const createVariantStub = sinon.stub(progressEntriesImport, 'createEntryDataForVariantEntry').returns();
 

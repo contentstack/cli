@@ -57,4 +57,34 @@ fileignoreconfig:
     checksum: 77bc27f5217c6d69c21bac51afc94d677ad67374c1b39b0575646300eb0decd3
   - filename: packages/contentstack-seed/test/seed/contentstack/client.test.ts
     checksum: f1bc369c9c3c4a84ddd590864c0f3e8b13be956b8fb8891b6324f44cdcc7d568
+  - filename: packages/contentstack-export/test/unit/export/modules/environments.test.ts
+    checksum: 3f219e9ecb060cd590bdd4815cf31f2db81396be49d357eadc8d972e7e0d49a2
+  - filename: packages/contentstack-import/test/unit/utils/backup-handler.test.ts
+    checksum: 2743a1d7370a9c1a255549a0c1ad8615618bbe4d30645e18224dcfe813411fa0
+  - filename: packages/contentstack-export/test/unit/export/modules/global-fields.test.ts
+    checksum: 9f3577388677fa0fa36bf8b280c2137ec6255392cca784d650080d174444cf99
+  - filename: packages/contentstack-export/test/unit/export/modules/content-types.test.ts
+    checksum: 90edb36569d165e88f09c49f1989fc499081d61b8da4a56536e55f8a392ba748
+  - filename: packages/contentstack-import/test/unit/import/module-importer.test.ts
+    checksum: 383bd60e12028617e450e291c3d84f87b1990e9f14c0898f77b7f63fb3bd0957
+  - filename: packages/contentstack-export/test/unit/export/modules/base-class.test.ts
+    checksum: 8755d3c8a6b4f82780a24d1fa4804f90c6c10796b1fe6a0193ac612d14f8f6bb
+  - filename: packages/contentstack-export/test/unit/export/modules/assets.test.ts
+    checksum: 12d899d85de5852337a8df36830bb43829be335fb982629134027ede679357a5
+  - filename: packages/contentstack-export/test/unit/export/modules/marketplace-apps.test.ts
+    checksum: 886823929388a5b5e8f7e7e747380c81a6582957fe495563fbc313d9992182bc
+  - filename: packages/contentstack-export/test/unit/export/modules/locales.test.ts
+    checksum: cc1f1cebbfffb1c03f5f98268aec55656e60f5251154592e6234b7ce08b6918e
+  - filename: packages/contentstack-export/test/unit/export/modules/entries.test.ts
+    checksum: 12de03aa82ba2c7a58f3b6d39cdcadffc5108b6268d599f14c2c50a38ce1091a
+  - filename: packages/contentstack-export/test/unit/export/modules/stack.test.ts
+    checksum: dc28ecf8c9f7e9f4f20af1211d789924ee00e5ae33f0ce05c9caa80768b1a734
+  - filename: packages/contentstack-export/test/unit/export/modules/taxonomies.test.ts
+    checksum: f6175a8e89fb9dde4b0ff269d65a9e42c4374ef7efb1b828e54e2ebd7c4379fa
+  - filename: packages/contentstack-export/test/unit/export/modules/workflows.test.ts
+    checksum: 9da983731811064de04e60a7ddd05ea558661dd17ac4e0c7da5be6cca8b2749d
+  - filename: packages/contentstack-export/test/unit/utils/export-config-handler.test.ts
+    checksum: 0a4588401231be884781043314ad59e42c8896cb0a8cc288b1e10f6e4d79506a
+  - filename: packages/contentstack-import/test/unit/import/modules/entries.test.ts
+    checksum: 544e11881bc55ea7a1afc05e067d7b29fb2d165783ccd0ce3ff741ef7106b134
 version: '1.0'

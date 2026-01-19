@@ -12,7 +12,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
   // Set progress supported module FIRST, before any log calls
   // This ensures the logger respects the showConsoleLogs setting correctly
   configHandler.set('log.progressSupportedModule', 'export');
-  
+
   let config = merge({}, defaultConfig);
 
   // Track authentication method
@@ -24,6 +24,19 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
   if (exportCmdFlags['config']) {
     log.debug('Loading external configuration file...', { configFile: exportCmdFlags['config'] });
     const externalConfig = await readFile(exportCmdFlags['config']);
+
+    // Validate for deprecated JS compatibility properties
+    const deprecatedProps = ['contentVersion'];
+    const foundDeprecated = deprecatedProps.filter((prop) => externalConfig[prop] !== undefined);
+
+    if (foundDeprecated.length > 0) {
+      throw new Error(
+        `Unsupported configuration properties detected: ${foundDeprecated.join(', ')}. ` +
+          `These properties are no longer supported in the beta version. ` +
+          `TypeScript modules are now the default and only supported format.`,
+      );
+    }
+
     config = merge.recursive(config, externalConfig);
   }
   config.exportDir = sanitizePath(
@@ -101,7 +114,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
 
   if (exportCmdFlags['branch-alias']) {
     config.branchAlias = exportCmdFlags['branch-alias'];
-  } 
+  }
   if (exportCmdFlags['branch']) {
     config.branchName = exportCmdFlags['branch'];
   }
