@@ -38,7 +38,7 @@ describe('Common Helper', () => {
       get: sandbox.stub(),
       put: sandbox.stub(),
     };
-    
+
     const originalHttpClient = cliUtilities.HttpClient;
     const createStub = sandbox.stub().returns(httpClientStub);
     // Replace the create method on HttpClient
@@ -53,7 +53,7 @@ describe('Common Helper', () => {
       // If replaceGetter fails, fall back to regular stub
       managementSDKClientStub = sandbox.stub(cliUtilities, 'managementSDKClient');
     }
-    
+
     // Stub fileHelper functions as they are external dependencies
     fileHelperStubs = {
       readFileSync: sandbox.stub(require('../../../src/utils/file-helper'), 'readFileSync'),
@@ -61,7 +61,7 @@ describe('Common Helper', () => {
       readdirSync: sandbox.stub(require('../../../src/utils/file-helper'), 'readdirSync'),
       fileExistsSync: sandbox.stub(require('../../../src/utils/file-helper'), 'fileExistsSync'),
     };
-    
+
     // Don't stub isAuthenticated - let it execute naturally or use a workaround
     // Instead, we'll test scenarios that don't depend on isAuthenticated being stubbed
   });
@@ -69,7 +69,7 @@ describe('Common Helper', () => {
   afterEach(() => {
     // Restore all stubs and mocks
     sandbox.restore();
-    
+
     // Clean up temp directory
     // Critical for CI - must clean up temp files to avoid disk space issues
     try {
@@ -100,7 +100,6 @@ describe('Common Helper', () => {
         apiKey: 'test-api-key',
         target_stack: 'test-api-key',
         data: '/test/data',
-        contentVersion: 1,
         masterLocale: { code: 'en-us' },
         backupDir: '/test/backup',
         region: 'us',
@@ -121,7 +120,6 @@ describe('Common Helper', () => {
         email: 'test@example.com',
         password: 'password',
         data: '/test/data',
-        contentVersion: 1,
         masterLocale: { code: 'en-us' },
         backupDir: '/test/backup',
         region: 'us',
@@ -184,7 +182,7 @@ describe('Common Helper', () => {
       // The result depends on isAuthenticated() - if false, returns 'error' (lines 41-42), otherwise undefined
       // Either path is valid, but we ensure the condition is evaluated
       expect(result === 'error' || result === undefined).to.be.true;
-      
+
       // To specifically cover lines 41-42, we'd need isAuthenticated() to return false
       // But since we can't stub it, this test at least ensures the condition is evaluated
       // and will cover those lines if isAuthenticated() happens to return false in test environment
@@ -360,7 +358,7 @@ describe('Common Helper', () => {
           version: '2017-10-14',
         },
       };
-      
+
       // Write actual file for reference, but stub will be used
       fs.writeFileSync(stackFile, JSON.stringify(oldStackData));
 
@@ -397,7 +395,7 @@ describe('Common Helper', () => {
 
       // Stub readFileSync to return the old stack data (line 87 uses readFileSync)
       fileHelperStubs.readFileSync.returns(oldStackData);
-      
+
       httpClientStub.get.resolves(newStackData);
       httpClientStub.put.resolves(putResponse);
 
@@ -444,7 +442,7 @@ describe('Common Helper', () => {
       };
 
       httpClientStub.get.resolves(newStackData);
-      
+
       // Stub readFileSync to return oldStackData (line 87 uses readFileSync with default parse=true)
       // readFileSync returns parsed JSON, so we return the object directly
       fileHelperStubs.readFileSync.returns(oldStackData);
@@ -461,9 +459,9 @@ describe('Common Helper', () => {
         const errorMsg = error?.message || String(error);
         // Accept either the Migration Error or the settings access error (both indicate the error path)
         expect(
-          errorMsg.includes('Migration Error') || 
-          errorMsg.includes('Cannot read properties of undefined') ||
-          errorMsg.includes('invalid')
+          errorMsg.includes('Migration Error') ||
+            errorMsg.includes('Cannot read properties of undefined') ||
+            errorMsg.includes('invalid'),
         ).to.be.true;
       }
     });
@@ -537,7 +535,7 @@ describe('Common Helper', () => {
 
       // Stub console.log to verify line 120 is executed
       const consoleLogStub = sandbox.stub(console, 'log');
-      
+
       // Make HttpClient.create throw to trigger catch block
       const originalCreate = cliUtilities.HttpClient.create;
       (cliUtilities.HttpClient as any).create = () => {
@@ -548,7 +546,7 @@ describe('Common Helper', () => {
 
       // Line 120 should execute - console.log in catch block
       expect(consoleLogStub.called).to.be.true;
-      
+
       // Restore HttpClient.create
       (cliUtilities.HttpClient as any).create = originalCreate;
     });
@@ -666,19 +664,19 @@ describe('Common Helper', () => {
   });
 
   describe('field_rules_update()', () => {
-    it('should successfully update field rules', async function() {
+    it('should successfully update field rules', async function () {
       // Increase timeout for this test since it involves async operations
       this.timeout(10000);
-      
+
       const ctPath = path.join(tempDir, 'content-types');
       fs.mkdirSync(ctPath, { recursive: true });
-      
+
       const fieldRulesData = ['content_type_1'];
       // readFile with default json type returns parsed JSON, but code does JSON.parse(data) again
       // So we need to write a JSON string that when parsed once gives a JSON string, which when parsed again gives the array
       // i.e., double-stringified JSON
       fs.writeFileSync(path.join(ctPath, 'field_rules_uid.json'), JSON.stringify(JSON.stringify(fieldRulesData)));
-      
+
       const schemaContent = {
         uid: 'content_type_1',
         field_rules: [
@@ -707,7 +705,6 @@ describe('Common Helper', () => {
         target_stack: 'test-api-key',
         management_token: 'mgmt-token',
         data: tempDir,
-        contentVersion: 1,
         masterLocale: { code: 'en-us' },
         backupDir: '/test/backup',
         region: 'us',
@@ -729,7 +726,7 @@ describe('Common Helper', () => {
         }
         return Promise.reject(new Error('File not found'));
       });
-      
+
       fileHelperStubs.readdirSync.returns(['content_type_1.json', 'field_rules_uid.json']);
       // readFileSync is called on line 172 for uid-mapping.json inside the loops
       fileHelperStubs.readFileSync.returns(entryUidMapping);
@@ -737,12 +734,14 @@ describe('Common Helper', () => {
       // Mock require to return the schema - require() will be called with resolved path
       const Module = require('module');
       const originalRequire = Module.prototype.require;
-      Module.prototype.require = function(id: string) {
+      Module.prototype.require = function (id: string) {
         const resolvedPath = path.resolve(id);
         // Check if this is our content type file
-        if (resolvedPath === path.resolve(ctPath, 'content_type_1') || 
-            resolvedPath === path.join(ctPath, 'content_type_1') ||
-            resolvedPath.includes('content_type_1')) {
+        if (
+          resolvedPath === path.resolve(ctPath, 'content_type_1') ||
+          resolvedPath === path.join(ctPath, 'content_type_1') ||
+          resolvedPath.includes('content_type_1')
+        ) {
           return schemaContent;
         }
         return originalRequire.apply(this, arguments as any);
@@ -776,7 +775,7 @@ describe('Common Helper', () => {
         console.log('[TEST DEBUG] After test - mockUpdateStub.called:', mockUpdateStub.called);
         console.log('[TEST DEBUG] After test - stackStub.called:', stackStub.called);
         console.log('[TEST DEBUG] After test - contentTypeStub.called:', contentTypeStub.called);
-        
+
         // Verify the update stub was actually called
         // This covers lines 260-268: originalUpdate preservation, update() call, and promise setup
         // And lines 277-278: the resolve('') path when update() resolves
@@ -790,18 +789,18 @@ describe('Common Helper', () => {
       }
     });
 
-    it('should preserve update method through schema assignment - covers lines 242, 260-261', async function() {
+    it('should preserve update method through schema assignment - covers lines 242, 260-261', async function () {
       // Skipped due to timeout - same SDK mocking issue as other field_rules_update tests
       // Lines 242, 260-261 are covered by the main "should successfully update field rules" test
       // This test ensures the update method preservation logic works (lines 242, 260-261)
       this.timeout(10000);
-      
+
       const ctPath = path.join(tempDir, 'content-types-preserve');
       fs.mkdirSync(ctPath, { recursive: true });
-      
+
       const fieldRulesData = ['content_type_1'];
       fs.writeFileSync(path.join(ctPath, 'field_rules_uid.json'), JSON.stringify(JSON.stringify(fieldRulesData)));
-      
+
       // Create schema that intentionally doesn't have 'update' key to test preservation
       const schemaContent = {
         uid: 'content_type_1',
@@ -831,7 +830,6 @@ describe('Common Helper', () => {
         target_stack: 'test-api-key',
         management_token: 'mgmt-token',
         data: tempDir,
-        contentVersion: 1,
         masterLocale: { code: 'en-us' },
         backupDir: '/test/backup',
         region: 'us',
@@ -848,16 +846,15 @@ describe('Common Helper', () => {
         }
         return Promise.reject(new Error('File not found'));
       });
-      
+
       fileHelperStubs.readdirSync.returns(['content_type_1.json', 'field_rules_uid.json']);
       fileHelperStubs.readFileSync.returns(entryUidMapping);
 
       const Module = require('module');
       const originalRequire = Module.prototype.require;
-      Module.prototype.require = function(id: string) {
+      Module.prototype.require = function (id: string) {
         const resolvedPath = path.resolve(id);
-        if (resolvedPath === path.resolve(ctPath, 'content_type_1') || 
-            resolvedPath.includes('content_type_1')) {
+        if (resolvedPath === path.resolve(ctPath, 'content_type_1') || resolvedPath.includes('content_type_1')) {
           return schemaContent;
         }
         return originalRequire.apply(this, arguments as any);
@@ -889,27 +886,30 @@ describe('Common Helper', () => {
       }
     });
 
-    it('should handle field rules with unmapped UIDs - covers lines 178-179', async function() {
+    it('should handle field rules with unmapped UIDs - covers lines 178-179', async function () {
       // Increase timeout for this test
       this.timeout(10000);
       const ctPath = path.join(tempDir, 'content-types-unmapped');
       fs.mkdirSync(ctPath, { recursive: true });
-      
+
       const fieldRulesData = ['content_type_1'];
       fs.writeFileSync(path.join(ctPath, 'field_rules_uid.json'), JSON.stringify(JSON.stringify(fieldRulesData)));
-      fs.writeFileSync(path.join(ctPath, 'content_type_1.json'), JSON.stringify({
-        uid: 'content_type_1',
-        field_rules: [
-          {
-            conditions: [
-              {
-                operand_field: 'reference',
-                value: 'unmapped_entry1.unmapped_entry2',
-              },
-            ],
-          },
-        ],
-      }));
+      fs.writeFileSync(
+        path.join(ctPath, 'content_type_1.json'),
+        JSON.stringify({
+          uid: 'content_type_1',
+          field_rules: [
+            {
+              conditions: [
+                {
+                  operand_field: 'reference',
+                  value: 'unmapped_entry1.unmapped_entry2',
+                },
+              ],
+            },
+          ],
+        }),
+      );
 
       const mapperDir = path.join(tempDir, 'mapper', 'entries');
       fs.mkdirSync(mapperDir, { recursive: true });
@@ -938,7 +938,6 @@ describe('Common Helper', () => {
         target_stack: 'test-api-key',
         management_token: 'mgmt-token',
         data: tempDir,
-        contentVersion: 1,
         masterLocale: { code: 'en-us' },
         backupDir: '/test/backup',
         region: 'us',
@@ -949,7 +948,7 @@ describe('Common Helper', () => {
 
       initialization(config);
 
-      // Stub fileHelper functions  
+      // Stub fileHelper functions
       fileHelperStubs.readFile.callsFake((filePath: string) => {
         if (filePath && filePath.includes('field_rules_uid.json')) {
           return Promise.resolve(JSON.stringify(fieldRulesData));
@@ -962,10 +961,9 @@ describe('Common Helper', () => {
       // Mock require to return the schema
       const Module = require('module');
       const originalRequire = Module.prototype.require;
-      Module.prototype.require = function(id: string) {
+      Module.prototype.require = function (id: string) {
         const resolvedPath = path.resolve(id);
-        if (resolvedPath === path.resolve(ctPath, 'content_type_1') || 
-            resolvedPath.includes('content_type_1')) {
+        if (resolvedPath === path.resolve(ctPath, 'content_type_1') || resolvedPath.includes('content_type_1')) {
           return schemaContent;
         }
         return originalRequire.apply(this, arguments as any);
@@ -997,27 +995,30 @@ describe('Common Helper', () => {
       }
     });
 
-    it('should handle field rules update success - covers lines 201-202', async function() {
+    it('should handle field rules update success - covers lines 201-202', async function () {
       // Increase timeout for this test
       this.timeout(10000);
       const ctPath = path.join(tempDir, 'content-types-success');
       fs.mkdirSync(ctPath, { recursive: true });
-      
+
       const fieldRulesData = ['content_type_1'];
       fs.writeFileSync(path.join(ctPath, 'field_rules_uid.json'), JSON.stringify(JSON.stringify(fieldRulesData)));
-      fs.writeFileSync(path.join(ctPath, 'content_type_1.json'), JSON.stringify({
-        uid: 'content_type_1',
-        field_rules: [
-          {
-            conditions: [
-              {
-                operand_field: 'reference',
-                value: 'entry1',
-              },
-            ],
-          },
-        ],
-      }));
+      fs.writeFileSync(
+        path.join(ctPath, 'content_type_1.json'),
+        JSON.stringify({
+          uid: 'content_type_1',
+          field_rules: [
+            {
+              conditions: [
+                {
+                  operand_field: 'reference',
+                  value: 'entry1',
+                },
+              ],
+            },
+          ],
+        }),
+      );
 
       const mapperDir = path.join(tempDir, 'mapper', 'entries');
       fs.mkdirSync(mapperDir, { recursive: true });
@@ -1045,7 +1046,6 @@ describe('Common Helper', () => {
         target_stack: 'test-api-key',
         management_token: 'mgmt-token',
         data: tempDir,
-        contentVersion: 1,
         masterLocale: { code: 'en-us' },
         backupDir: '/test/backup',
         region: 'us',
@@ -1056,7 +1056,7 @@ describe('Common Helper', () => {
 
       initialization(config);
 
-      // Stub fileHelper functions  
+      // Stub fileHelper functions
       fileHelperStubs.readFile.callsFake((filePath: string) => {
         if (filePath && filePath.includes('field_rules_uid.json')) {
           return Promise.resolve(JSON.stringify(fieldRulesData));
@@ -1069,10 +1069,9 @@ describe('Common Helper', () => {
       // Mock require to return the schema
       const Module = require('module');
       const originalRequire = Module.prototype.require;
-      Module.prototype.require = function(id: string) {
+      Module.prototype.require = function (id: string) {
         const resolvedPath = path.resolve(id);
-        if (resolvedPath === path.resolve(ctPath, 'content_type_1') || 
-            resolvedPath.includes('content_type_1')) {
+        if (resolvedPath === path.resolve(ctPath, 'content_type_1') || resolvedPath.includes('content_type_1')) {
           return schemaContent;
         }
         return originalRequire.apply(this, arguments as any);
@@ -1104,16 +1103,16 @@ describe('Common Helper', () => {
       }
     });
 
-    it('should handle field rules update failure - covers lines 204-206', async function() {
+    it('should handle field rules update failure - covers lines 204-206', async function () {
       // Increase timeout for this test since it involves async operations
       this.timeout(10000);
-      
+
       const ctPath = path.join(tempDir, 'content-types-failure');
       fs.mkdirSync(ctPath, { recursive: true });
-      
+
       const fieldRulesData = ['content_type_1'];
       fs.writeFileSync(path.join(ctPath, 'field_rules_uid.json'), JSON.stringify(JSON.stringify(fieldRulesData)));
-      
+
       // Write the schema file that will be required
       const schemaContent = {
         uid: 'content_type_1',
@@ -1142,7 +1141,6 @@ describe('Common Helper', () => {
         target_stack: 'test-api-key',
         management_token: 'mgmt-token',
         data: tempDir,
-        contentVersion: 1,
         masterLocale: { code: 'en-us' },
         backupDir: '/test/backup',
         region: 'us',
@@ -1153,7 +1151,7 @@ describe('Common Helper', () => {
 
       initialization(config);
 
-      // Stub fileHelper functions  
+      // Stub fileHelper functions
       fileHelperStubs.readFile.callsFake((filePath: string) => {
         if (filePath && filePath.includes('field_rules_uid.json')) {
           return Promise.resolve(JSON.stringify(fieldRulesData));
@@ -1185,10 +1183,9 @@ describe('Common Helper', () => {
       // Mock require to return the schema
       const Module = require('module');
       const originalRequire = Module.prototype.require;
-      Module.prototype.require = function(id: string) {
+      Module.prototype.require = function (id: string) {
         const resolvedPath = path.resolve(id);
-        if (resolvedPath === path.resolve(ctPath, 'content_type_1') || 
-            resolvedPath.includes('content_type_1')) {
+        if (resolvedPath === path.resolve(ctPath, 'content_type_1') || resolvedPath.includes('content_type_1')) {
           return schemaContent;
         }
         return originalRequire.apply(this, arguments as any);
@@ -1210,7 +1207,6 @@ describe('Common Helper', () => {
         apiKey: 'test-api-key',
         target_stack: 'test-api-key',
         data: tempDir,
-        contentVersion: 1,
         masterLocale: { code: 'en-us' },
         backupDir: '/test/backup',
         region: 'us',
@@ -1225,7 +1221,7 @@ describe('Common Helper', () => {
 
       // Stub readFile to reject with error to test error path
       fileHelperStubs.readFile.rejects(new Error('File read error'));
-      
+
       managementSDKClientStub.resolves({});
 
       try {

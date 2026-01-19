@@ -3,7 +3,7 @@ import * as path from 'path';
 import { omit, filter, includes, isArray } from 'lodash';
 import { configHandler, isAuthenticated, cliux, sanitizePath, log } from '@contentstack/cli-utilities';
 import defaultConfig from '../config';
-import { readFile, fileExistsSync } from './file-helper';
+import { readFile } from './file-helper';
 import { askContentDir, askAPIKey } from './interactive';
 import login from './login-handler';
 import { ImportConfig } from '../types';
@@ -20,6 +20,19 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   // setup the config
   if (importCmdFlags['config']) {
     let externalConfig = await readFile(importCmdFlags['config']);
+
+    // Validate for deprecated JS compatibility properties
+    const deprecatedProps = ['contentVersion', 'onlyTSModules'];
+    const foundDeprecated = deprecatedProps.filter((prop) => externalConfig[prop] !== undefined);
+
+    if (foundDeprecated.length > 0) {
+      throw new Error(
+        `Unsupported configuration properties detected: ${foundDeprecated.join(', ')}. ` +
+          `These properties are no longer supported in the beta version. ` +
+          `TypeScript modules are now the default and only supported format.`,
+      );
+    }
+
     if (isArray(externalConfig['modules'])) {
       config.modules.types = filter(config.modules.types, (module) => includes(externalConfig['modules'], module));
       externalConfig = omit(externalConfig, ['modules']);
