@@ -1,0 +1,13 @@
+[
+  {
+    "code": "fr-fr",
+    "name": "French - France",
+    "fallback_locale": "en-us"
+  },
+  {
+    "code": "de-de",
+    "name": "German - Germany",
+    "fallback_locale": "en-us"
+  }
+]
+
