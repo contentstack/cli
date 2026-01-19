@@ -66,7 +66,7 @@ describe('contentstack-auth plugin test', () => {
 
   describe('Check auth:login command with --username, --password flags and wrong credentials', function() {
 
-    it.skip'Login should fail due to wrong credentials (flags)', async () => {
+    it.skip('Login should fail due to wrong credentials (flags)', async () => {
       sandbox.stub(authHandler, 'login').rejects(new Error('Invalid credentials'));
       
       try {
