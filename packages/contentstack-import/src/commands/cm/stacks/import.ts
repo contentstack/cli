@@ -148,7 +148,14 @@ export default class ImportCommand extends Command {
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       const result = await moduleImporter.start();
       backupDir = importConfig.backupDir;
-      //Note: Final summary is now handled by summary manager
+
+      if (!result?.noSuccessMsg) {
+        const successMessage = importConfig.stackName
+          ? `Successfully imported the content to the stack named ${importConfig.stackName} with the API key ${importConfig.apiKey} .`
+          : `The content has been imported to the stack ${importConfig.apiKey} successfully!`;
+        log.success(successMessage, importConfig.context);
+      }
+
       CLIProgressManager.printGlobalSummary();
       this.logSuccessAndBackupMessages(backupDir, importConfig);
       // Clear progress module setting now that import is complete

@@ -109,16 +109,6 @@ export default class CLIProgressManager {
   }
 
   /**
-   * Check if there are any failures in the global summary
-   */
-  static hasFailures(): boolean {
-    if (!CLIProgressManager.globalSummary) {
-      return false;
-    }
-    return CLIProgressManager.globalSummary.hasFailures();
-  }
-
-  /**
    * Apply strategy-based corrections to module data
    */
   private static applyStrategyCorrections(): void {
