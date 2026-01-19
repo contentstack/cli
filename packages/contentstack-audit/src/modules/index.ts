@@ -7,5 +7,6 @@ import CustomRoles from './custom-roles';
 import Assets from './assets';
 import FieldRule from './field_rules';
 import ModuleDataReader from './modulesData';
+import ComposableStudio from './composable-studio';
 
-export { Entries, GlobalField, ContentType, Workflows, Extensions, Assets, CustomRoles, FieldRule, ModuleDataReader };
+export { Entries, GlobalField, ContentType, Workflows, Extensions, Assets, CustomRoles, FieldRule, ModuleDataReader, ComposableStudio };

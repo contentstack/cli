@@ -1,4 +1,4 @@
-import { cliux, flags, configHandler, FlagInput } from '@contentstack/cli-utilities';
+import { cliux, flags, configHandler, FlagInput, handleAndLogError } from '@contentstack/cli-utilities';
 import { interactive } from '../../../utils';
 import { Command } from '@contentstack/cli-command';
 
@@ -26,11 +26,9 @@ export default class SetEarlyAccessHeaderCommand extends Command {
         earlyAccessHeader = (await interactive.askEarlyAccessHeaderValue())?.trim();
       }
       configHandler.set(`earlyAccessHeaders.${earlyAccessHeaderAlias}`, earlyAccessHeader);
-      cliux.success(
-        `Early Access header has been successfully set`,
-      );
+      cliux.success(`Early Access header has been successfully set`);
     } catch (error) {
-      this.log('Unable to set the Early Access header config', error instanceof Error ? error.message : error);
+      handleAndLogError(error, { module: 'config-set-early-access-header' });
     }
   }
 }
