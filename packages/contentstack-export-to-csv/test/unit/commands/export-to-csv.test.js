@@ -104,6 +104,11 @@ describe('Export to CSV functionality', function() {
   }
   
   beforeEach(() => {
+    // Activate nock if not in PREPACK_MODE
+    if (!isPrepackMode && !nock.isActive()) {
+      nock.activate();
+    }
+    
     // Ensure authorisationType is set for isAuthenticated() to work in PREPACK_MODE
     // isAuthenticated() checks for 'OAUTH' or 'BASIC' (authorisationTypeAUTHValue = 'BASIC')
     configHandler.set('authorisationType', 'BASIC');
@@ -111,6 +116,13 @@ describe('Export to CSV functionality', function() {
     
     sandbox = sinon.createSandbox();
     sandbox.stub(fs, 'createWriteStream').returns(new PassThrough());
+    
+    // Set up base nock mocks for stack queries
+    nock('https://api.contentstack.io')
+      .persist()
+      .get(/\/v3\/stacks/)
+      .query(true)
+      .reply(200, { stacks: mockData.stacks });
     
     // Additional nock mocks in beforeEach for test-specific endpoints
     // The top-level mocks handle the initial stack query
@@ -122,9 +134,10 @@ describe('Export to CSV functionality', function() {
       configHandler.delete('authorisationType');
     }
     sandbox.restore();
-    // Don't clean nock in PREPACK_MODE - the persistent mocks need to stay active
-    if (process.env.NODE_ENV !== 'PREPACK_MODE') {
-      nock.cleanAll();
+    // Clean nock after each test
+    nock.cleanAll();
+    if (!isPrepackMode && nock.isActive()) {
+      nock.restore();
     }
   });
 
@@ -353,11 +366,23 @@ describe('Testing teams support in CLI export-to-csv', function() {
   }
   
   beforeEach(() => {
+    // Activate nock if not in PREPACK_MODE
+    if (!isPrepackMode && !nock.isActive()) {
+      nock.activate();
+    }
+    
     // Ensure authorisationType is set for isAuthenticated() to work in PREPACK_MODE
     configHandler.set('authorisationType', 'BASIC');
     configHandler.set('delete', true);
     
     sandbox = sinon.createSandbox();
+    
+    // Set up base nock mocks for stack queries
+    nock('https://api.contentstack.io')
+      .persist()
+      .get(/\/v3\/stacks/)
+      .query(true)
+      .reply(200, { stacks: mockData.stacks });
   });
   afterEach(() => {
     if (configHandler.get('delete')) {
@@ -365,8 +390,10 @@ describe('Testing teams support in CLI export-to-csv', function() {
       configHandler.delete('authorisationType');
     }
     sandbox.restore();
-    if (process.env.NODE_ENV !== 'PREPACK_MODE') {
-      nock.cleanAll();
+    // Clean nock after each test
+    nock.cleanAll();
+    if (!isPrepackMode && nock.isActive()) {
+      nock.restore();
     }
   });
 
