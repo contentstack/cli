@@ -13,7 +13,7 @@ importers:
   packages/contentstack:
     specifiers:
       '@contentstack/cli-audit': ~1.17.0
-      '@contentstack/cli-auth': ~1.6.3
+      '@contentstack/cli-auth': ~1.7.0
       '@contentstack/cli-cm-bootstrap': ~1.18.0
       '@contentstack/cli-cm-branches': ~1.6.2
       '@contentstack/cli-cm-bulk-publish': ~1.10.5
@@ -71,7 +71,7 @@ importers:
       winston: ^3.17.0
     dependencies:
       '@contentstack/cli-audit': link:../contentstack-audit
-      '@contentstack/cli-auth': 1.6.3_lxq42tdpoxpye5tb7w3htdbbdq
+      '@contentstack/cli-auth': link:../contentstack-auth
       '@contentstack/cli-cm-bootstrap': link:../contentstack-bootstrap
       '@contentstack/cli-cm-branches': link:../contentstack-branches
       '@contentstack/cli-cm-bulk-publish': link:../contentstack-bulk-publish
@@ -2100,20 +2100,6 @@ packages:
   /@colors/colors/1.6.0:
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
     engines: {node: '>=0.1.90'}
-    dev: false
-
-  /@contentstack/cli-auth/1.6.3_lxq42tdpoxpye5tb7w3htdbbdq:
-    resolution: {integrity: sha512-ist/K3hv6ov3Ldd26YyoFGt2Hatzqty4MR88dRb98W1PnYPfk4jiZO4tvUiCWgQytwpI461BgGTkiT3yVaD5wg==}
-    engines: {node: '>=14.0.0'}
-    dependencies:
-      '@contentstack/cli-command': 1.7.1_lxq42tdpoxpye5tb7w3htdbbdq
-      '@contentstack/cli-utilities': 1.16.0_lxq42tdpoxpye5tb7w3htdbbdq
-      '@oclif/core': 4.8.0
-      '@oclif/plugin-help': 6.2.36
-      otplib: 12.0.1
-    transitivePeerDependencies:
-      - '@types/node'
-      - debug
     dev: false
 
   /@contentstack/cli-command/1.7.1_lxq42tdpoxpye5tb7w3htdbbdq:
@@ -8691,7 +8677,7 @@ packages:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.4.3
       eslint: 8.57.1
-      eslint-plugin-import: 2.32.0_ar3c7zjwtto324sxhascv2p7uq
+      eslint-plugin-import: 2.32.0_aksosxtone4o5zz7qyqktlzmn4
       get-tsconfig: 4.13.0
       is-bun-module: 2.0.0
       stable-hash: 0.0.5
