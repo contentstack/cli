@@ -1,49 +1,77 @@
 import { expect } from 'chai';
-import sinon from 'sinon';
-import loginHandler from '../../src/utils/login-handler';
-import * as logger from '../../src/utils/logger';
+import { stub, restore, SinonStub } from 'sinon';
+import { cliux } from '@contentstack/cli-utilities';
+import loginHandler, { LoginHandlerDeps } from '../../src/utils/login-handler';
 import { ImportConfig } from '../../src/types';
 
 describe('Login Handler', () => {
-  let sandbox: sinon.SinonSandbox;
-  let managementSDKClientStub: sinon.SinonStub;
-  let configHandlerGetStub: sinon.SinonStub;
-  let logStub: sinon.SinonStub;
+  let managementSDKClientStub: SinonStub;
+  let clientLoginStub: SinonStub;
+  let stackStub: SinonStub;
+  let fetchStub: SinonStub;
+  let logSuccessStub: SinonStub;
+  let logErrorStub: SinonStub;
+  let isAuthenticatedStub: SinonStub;
+  let mockStack: any;
   let mockClient: any;
   let mockStackAPIClient: any;
+  let deps: LoginHandlerDeps;
+
+  // Base mock config that satisfies ImportConfig type
+  const baseConfig: Partial<ImportConfig> = {
+    contentDir: '/content/path',
+    data: '/content/path',
+    apiKey: 'test-api-key',
+    forceStopMarketplaceAppsPrompt: false,
+    master_locale: { code: 'en-us' },
+    masterLocale: { code: 'en-us' },
+    branchName: '',
+    selectedModules: ['entries'],
+    backupDir: '',
+    region: 'us',
+  };
 
   beforeEach(() => {
-    sandbox = sinon.createSandbox();
+    restore();
 
-    // Mock stack API client
-    mockStackAPIClient = {
-      fetch: sandbox.stub(),
+    // Setup stubs for client methods
+    clientLoginStub = stub();
+    fetchStub = stub();
+    logSuccessStub = stub();
+    logErrorStub = stub();
+
+    mockStack = {
+      fetch: fetchStub,
     };
 
-    // Mock management SDK client
+    // Alias mockStackAPIClient to mockStack for consistency
+    mockStackAPIClient = mockStack;
+
+    stackStub = stub().returns(mockStack);
+
+    // Create a mock client that will be returned by managementSDKClient
     mockClient = {
-      login: sandbox.stub(),
-      stack: sandbox.stub().returns(mockStackAPIClient),
+      login: clientLoginStub,
+      stack: stackStub,
     };
 
-    // Stub managementSDKClient using .value() pattern - ensure it returns the mock client
-    const cliUtilitiesModule = require('@contentstack/cli-utilities');
-    sandbox.stub(cliUtilitiesModule, 'managementSDKClient').value(() => Promise.resolve(mockClient));
-    
-    // Stub configHandler.get to control isAuthenticated() behavior
-    // isAuthenticated() internally checks configHandler.get('authorisationType')
-    // Returns 'OAUTH' or 'AUTH' for authenticated, undefined for not authenticated
-    const configHandler = require('@contentstack/cli-utilities').configHandler;
-    configHandlerGetStub = sandbox.stub(configHandler, 'get');
-    // Default to undefined (not authenticated) - tests can override as needed
-    configHandlerGetStub.returns(undefined);
+    // Create stubs for injected dependencies
+    managementSDKClientStub = stub().resolves(mockClient);
+    isAuthenticatedStub = stub().returns(false);
 
-    // Stub logger
-    logStub = sandbox.stub(logger, 'log');
+    // Create the deps object for injection
+    deps = {
+      managementSDKClient: managementSDKClientStub as any,
+      isAuthenticated: isAuthenticatedStub as any,
+      log: {
+        success: logSuccessStub,
+        error: logErrorStub,
+      } as any,
+    };
   });
 
   afterEach(() => {
-    sandbox.restore();
+    restore();
   });
 
   describe('Email/Password Authentication', () => {
@@ -67,7 +95,7 @@ describe('Login Handler', () => {
         },
       });
 
-      const result = await loginHandler(config);
+      const result = await loginHandler(config, deps);
 
       expect(result).to.equal(config);
       expect(config.headers).to.exist;
@@ -77,7 +105,7 @@ describe('Login Handler', () => {
       expect(config.headers!['X-User-Agent']).to.equal('contentstack-export/v');
       expect(mockClient.login.calledOnce).to.be.true;
       expect(mockClient.login.calledWith({ email: 'test@example.com', password: 'testpassword' })).to.be.true;
-      expect(logStub.calledWith(config, 'Contentstack account authenticated successfully!', 'success')).to.be.true;
+      expect(logSuccessStub.calledWith('Contentstack account authenticated successfully!')).to.be.true;
     });
 
     it('should throw error when authtoken is missing after login', async () => {
@@ -96,7 +124,7 @@ describe('Login Handler', () => {
       });
 
       try {
-        await loginHandler(config);
+        await loginHandler(config, deps);
         expect.fail('Should have thrown an error');
       } catch (error: any) {
         expect(error.message).to.equal('Invalid auth token received after login');
@@ -119,7 +147,7 @@ describe('Login Handler', () => {
       });
 
       try {
-        await loginHandler(config);
+        await loginHandler(config, deps);
         expect.fail('Should have thrown an error');
       } catch (error: any) {
         expect(error.message).to.equal('Invalid auth token received after login');
@@ -138,7 +166,7 @@ describe('Login Handler', () => {
       mockClient.login.resolves({});
 
       try {
-        await loginHandler(config);
+        await loginHandler(config, deps);
         expect.fail('Should have thrown an error');
       } catch (error: any) {
         expect(error.message).to.equal('Invalid auth token received after login');
@@ -158,7 +186,7 @@ describe('Login Handler', () => {
       mockClient.login.rejects(loginError);
 
       try {
-        await loginHandler(config);
+        await loginHandler(config, deps);
         expect.fail('Should have thrown an error');
       } catch (error: any) {
         expect(error).to.equal(loginError);
@@ -179,7 +207,7 @@ describe('Login Handler', () => {
         password: undefined,
       } as ImportConfig;
 
-      const result = await loginHandler(config);
+      const result = await loginHandler(config, deps);
 
       expect(result).to.equal(config);
       expect(mockClient.login.called).to.be.false;
@@ -196,7 +224,7 @@ describe('Login Handler', () => {
         password: undefined,
       } as ImportConfig;
 
-      const result = await loginHandler(config);
+      const result = await loginHandler(config, deps);
 
       // Management token path is used when email/password are not provided
       expect(result).to.equal(config);
@@ -216,37 +244,31 @@ describe('Login Handler', () => {
         password: undefined,
       } as ImportConfig;
 
-      // Reset stub completely to clear any previous behavior
-      configHandlerGetStub.reset();
-      
-      // Make isAuthenticated() return true by returning 'OAUTH' for authorisationType
-      configHandlerGetStub.callsFake((key: string) => {
-        if (key === 'authorisationType') {
-          return 'OAUTH'; // This makes isAuthenticated() return true
-        }
-        return undefined;
-      });
-      
+      // Make isAuthenticated() return true for this test
+      isAuthenticatedStub.returns(true);
+
       // Reset fetch stub and mock stack response
       mockStackAPIClient.fetch.reset();
       mockStackAPIClient.fetch.resolves({
         name: 'Test Stack Name',
       });
-      
+
       // Ensure client.stack returns the mock stack client
       mockClient.stack.reset();
       mockClient.stack.returns(mockStackAPIClient);
 
-      const result = await loginHandler(config);
+      const result = await loginHandler(config, deps);
 
       expect(result).to.equal(config);
       expect(config.destinationStackName).to.equal('Test Stack Name');
-      // Verify stub was called - if stack was called, then isAuthenticated() returned true, which means the stub was called
+      // Verify stub was called - if stack was called, then isAuthenticated() returned true
       expect(mockClient.stack.calledOnce).to.be.true;
-      expect(mockClient.stack.calledWith({
-        api_key: 'test-api-key',
-        management_token: undefined, // This is what gets passed when management_token is not set
-      })).to.be.true;
+      expect(
+        mockClient.stack.calledWith({
+          api_key: 'test-api-key',
+          management_token: undefined,
+        }),
+      ).to.be.true;
       expect(mockStackAPIClient.fetch.calledOnce).to.be.true;
     });
 
@@ -254,7 +276,7 @@ describe('Login Handler', () => {
       const config: ImportConfig = {
         apiKey: 'test-api-key',
         target_stack: 'test-api-key',
-        management_token: undefined, // NOT set - so it will check isAuthenticated()
+        management_token: undefined,
         contentDir: '/test/content',
         data: '/test/content',
         email: undefined,
@@ -267,26 +289,19 @@ describe('Login Handler', () => {
         },
       };
 
-      // Setup configHandler to return values that isAuthenticated() needs
-      configHandlerGetStub.callsFake((key: string) => {
-        if (key === 'authorisationType') {
-          return 'OAUTH'; // This makes isAuthenticated() return true
-        }
-        // Return undefined for other keys
-        return undefined;
-      });
+      isAuthenticatedStub.returns(true);
       mockStackAPIClient.fetch.reset();
       mockClient.stack.reset();
       mockClient.stack.returns(mockStackAPIClient);
       mockStackAPIClient.fetch.rejects(apiKeyError);
 
       try {
-        await loginHandler(config);
+        await loginHandler(config, deps);
         expect.fail('Should have thrown an error');
       } catch (error: any) {
         expect(error).to.exist;
         expect(error.errors).to.deep.equal(apiKeyError.errors);
-        expect(logStub.called).to.be.true;
+        expect(logErrorStub.called).to.be.true;
       }
 
       expect(mockStackAPIClient.fetch.calledOnce).to.be.true;
@@ -296,7 +311,7 @@ describe('Login Handler', () => {
       const config: ImportConfig = {
         apiKey: 'test-api-key',
         target_stack: 'test-api-key',
-        management_token: undefined, // NOT set - so it will check isAuthenticated()
+        management_token: undefined,
         contentDir: '/test/content',
         data: '/test/content',
         email: undefined,
@@ -307,27 +322,19 @@ describe('Login Handler', () => {
         errorMessage: 'Stack not found',
       };
 
-      // Reset stubs
-      configHandlerGetStub.reset();
+      isAuthenticatedStub.returns(true);
       mockStackAPIClient.fetch.reset();
       mockClient.stack.reset();
-      
-      configHandlerGetStub.callsFake((key: string) => {
-        if (key === 'authorisationType') {
-          return 'OAUTH'; // This makes isAuthenticated() return true
-        }
-        return undefined;
-      });
       mockClient.stack.returns(mockStackAPIClient);
       mockStackAPIClient.fetch.rejects(fetchError);
 
       try {
-        await loginHandler(config);
+        await loginHandler(config, deps);
         expect.fail('Should have thrown an error');
       } catch (error: any) {
         expect(error).to.exist;
         expect(error.errorMessage).to.equal(fetchError.errorMessage);
-        expect(logStub.calledWith(config, 'Stack not found', 'error')).to.be.true;
+        expect(logErrorStub.called).to.be.true;
       }
 
       expect(mockStackAPIClient.fetch.calledOnce).to.be.true;
@@ -337,7 +344,7 @@ describe('Login Handler', () => {
       const config: ImportConfig = {
         apiKey: 'test-api-key',
         target_stack: 'test-api-key',
-        management_token: undefined, // NOT set - so it will check isAuthenticated()
+        management_token: undefined,
         contentDir: '/test/content',
         data: '/test/content',
         email: undefined,
@@ -345,23 +352,15 @@ describe('Login Handler', () => {
       } as ImportConfig;
 
       const genericError = new Error('Network error');
-      
-      // Reset stubs
-      configHandlerGetStub.reset();
+
+      isAuthenticatedStub.returns(true);
       mockStackAPIClient.fetch.reset();
-      
-      configHandlerGetStub.callsFake((key: string) => {
-        if (key === 'authorisationType') {
-          return 'OAUTH'; // This makes isAuthenticated() return true
-        }
-        return undefined;
-      });
       mockClient.stack.reset();
       mockClient.stack.returns(mockStackAPIClient);
       mockStackAPIClient.fetch.rejects(genericError);
 
       try {
-        await loginHandler(config);
+        await loginHandler(config, deps);
         expect.fail('Should have thrown an error');
       } catch (error: any) {
         expect(error).to.exist;
@@ -375,7 +374,7 @@ describe('Login Handler', () => {
       const config: ImportConfig = {
         apiKey: 'test-api-key',
         target_stack: 'test-api-key',
-        management_token: undefined, // NOT set - so it will check isAuthenticated()
+        management_token: undefined,
         contentDir: '/test/content',
         data: '/test/content',
         email: undefined,
@@ -389,22 +388,14 @@ describe('Login Handler', () => {
         errorMessage: 'Stack fetch failed',
       };
 
-      // Reset stubs
-      configHandlerGetStub.reset();
+      isAuthenticatedStub.returns(true);
       mockStackAPIClient.fetch.reset();
       mockClient.stack.reset();
-      
-      configHandlerGetStub.callsFake((key: string) => {
-        if (key === 'authorisationType') {
-          return 'OAUTH'; // This makes isAuthenticated() return true
-        }
-        return undefined;
-      });
       mockClient.stack.returns(mockStackAPIClient);
       mockStackAPIClient.fetch.rejects(errorWithEmptyKey);
 
       try {
-        await loginHandler(config);
+        await loginHandler(config, deps);
         expect.fail('Should have thrown an error');
       } catch (error: any) {
         expect(error).to.exist;
@@ -428,16 +419,8 @@ describe('Login Handler', () => {
         management_token: undefined,
       } as ImportConfig;
 
-      // Reset configHandler stub for this test
-      configHandlerGetStub.reset();
-      configHandlerGetStub.callsFake((key: string) => {
-        if (key === 'authorisationType') {
-          return 'OAUTH'; // This makes isAuthenticated() return true
-        }
-        return undefined;
-      });
-      
-      // Reset and setup login mock
+      isAuthenticatedStub.returns(false);
+
       mockClient.login.reset();
       mockClient.login.resolves({
         user: {
@@ -445,7 +428,7 @@ describe('Login Handler', () => {
         },
       });
 
-      const result = await loginHandler(config);
+      const result = await loginHandler(config, deps);
 
       expect(result).to.equal(config);
       expect(mockClient.login.calledOnce).to.be.true;
@@ -453,15 +436,9 @@ describe('Login Handler', () => {
     });
 
     it('should prioritize management_token over email/password', async () => {
-      // Reset stubs
-      configHandlerGetStub.reset();
       mockClient.login.reset();
       mockStackAPIClient.fetch.reset();
-      
-      // Note: Based on the code logic, email/password is checked FIRST, then management_token
-      // So when both are present, email/password takes priority
-      // This test verifies that when management_token is provided without email/password,
-      // it uses management_token (not email/password auth)
+
       const configForManagementToken: ImportConfig = {
         management_token: 'test-management-token',
         email: undefined,
@@ -471,7 +448,7 @@ describe('Login Handler', () => {
         data: '/test/content',
       } as ImportConfig;
 
-      const result = await loginHandler(configForManagementToken);
+      const result = await loginHandler(configForManagementToken, deps);
 
       expect(result).to.equal(configForManagementToken);
       expect(mockClient.login.called).to.be.false;
@@ -488,33 +465,22 @@ describe('Login Handler', () => {
         data: '/test/content',
       } as ImportConfig;
 
-      // Reset stub completely to clear any previous behavior
-      configHandlerGetStub.reset();
-      
-      configHandlerGetStub.callsFake((key: string) => {
-        if (key === 'authorisationType') {
-          return 'OAUTH'; // This makes isAuthenticated() return true
-        }
-        return undefined;
-      });
-      
+      isAuthenticatedStub.returns(true);
+
       mockStackAPIClient.fetch.reset();
       mockStackAPIClient.fetch.resolves({
         name: 'Test Stack',
       });
-      
-      // Ensure mockClient.stack is set up (from beforeEach, but ensure it's correct)
+
       mockClient.stack.reset();
       mockClient.stack.returns(mockStackAPIClient);
       mockClient.login.reset();
 
-      const result = await loginHandler(config);
+      const result = await loginHandler(config, deps);
 
       expect(result).to.equal(config);
-      // Verify stub was called - if stack was called, then isAuthenticated() returned true, which means the stub was called
       expect(mockClient.login.called).to.be.false;
     });
-
   });
 
   describe('Edge Cases', () => {
@@ -522,32 +488,23 @@ describe('Login Handler', () => {
       const config: ImportConfig = {
         apiKey: 'test-api-key',
         target_stack: 'test-api-key',
-        management_token: undefined, // NOT set - so it will check isAuthenticated()
+        management_token: undefined,
         contentDir: '/test/content',
         data: '/test/content',
         email: undefined,
         password: undefined,
       } as ImportConfig;
 
-      // Reset stubs
-      configHandlerGetStub.reset();
+      isAuthenticatedStub.returns(true);
       mockStackAPIClient.fetch.reset();
-      
-      configHandlerGetStub.callsFake((key: string) => {
-        if (key === 'authorisationType') {
-          return 'OAUTH'; // This makes isAuthenticated() return true
-        }
-        return undefined;
-      });
       mockClient.stack.reset();
       mockClient.stack.returns(mockStackAPIClient);
       mockStackAPIClient.fetch.rejects(null);
 
       try {
-        await loginHandler(config);
+        await loginHandler(config, deps);
         expect.fail('Should have thrown an error');
       } catch (error: any) {
-        // When error is null, it will still throw but we just verify it was thrown
         expect(error).to.exist;
       }
     });
