@@ -131,12 +131,10 @@ export default class SummaryManager {
 
     // Final Status
     console.log('\n' + chalk.bold('Final Status:'));
-    if (!this.hasFailures() && failedModules === 0) {
-      console.log(chalk.bold.green(`✅ ${this.operationName} completed successfully!`));
-    } else if (this.hasFailures() || failedModules > 0) {
-      console.log(
-        chalk.bold.yellow(`⚠️ ${this.operationName} completed with failures, see the logs for more details.`),
-      );
+    if (failedModules === 0) {
+      console.log(chalk.bold.green(`🎉 ${this.operationName} completed successfully!`));
+    } else if (completedModules > 0) {
+      console.log(chalk.bold.yellow(`⚠️  ${this.operationName} completed with ${failedModules} failed modules`));
     } else {
       console.log(chalk.bold.red(`❌ ${this.operationName} failed`));
     }
@@ -146,13 +144,6 @@ export default class SummaryManager {
 
     // Simple failure summary with log reference
     this.printFailureSummaryWithLogReference();
-  }
-
-  /**
-   * Check if there are any failures across all modules
-   */
-  hasFailures(): boolean {
-    return Array.from(this.modules.values()).some((m) => m.failures.length > 0 || m.failureCount > 0);
   }
 
   private printFailureSummaryWithLogReference(): void {
