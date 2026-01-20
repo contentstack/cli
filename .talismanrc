@@ -276,5 +276,23 @@ fileignoreconfig:
   - filename: packages/contentstack-audit/src/modules/modulesData.ts
     checksum: 1e6c1fba1172512401038d5454c8d218201ec62262449c5c878609592e0124c4
   - filename: packages/contentstack-audit/src/modules/composable-studio.ts
-    checksum: 4fc97ff582d6dff9a54b3a50dfa3cbb5febd38a55aeb8737034b97188ad543ba
+    checksum: 
+  - filename: packages/contentstack-migration/src/config/api-config.ts
+    checksum: 6795f9b0d614830b703263ec78d9a5e497e31bf331cd86e751a1209366e9c97f
+  - filename: packages/contentstack-migration/src/modules/parser.ts
+    checksum: ffa59137d4dd48569c67bb77301470c34e925cbd2c775b1e164998eab662f497
+  - filename: packages/contentstack-migration/src/commands/cm/stacks/migration.ts
+    checksum: d773b3fb199e6abb4c4a8e9c5a423b00d9a2dddc30cf3f4e286fa2baa65ae260
+  - filename: packages/contentstack-migration/src/modules/fields.ts
+    checksum: 7c5fad517a8733681c38a0ffbc5ac0e6f3198e09e9bff8e97a48692a2bfcd768
+  - filename: packages/contentstack-migration/src/validators/base-validator.ts
+    checksum: c3796b9de0f745fef2cfcc2ba138e18f37ab94a9778650e7d776e8e42799c1ff
+  - filename: packages/contentstack-migration/src/validators/create-content-type-validator.ts
+    checksum: e545bdbc562fb97b05450b096f468b095ac3ee4ef3b85174cfa7d45413520f20
+  - filename: packages/contentstack-migration/src/validators/edit-content-type-validator.ts
+    checksum: 299495b31b125c0940f7d1c1e478d86f32e619cd7c138321680aad7f00bfd2db
+  - filename: packages/contentstack-migration/src/utils/group-by.ts
+    checksum: 9ef96342102d27d5734d3ac46143c2adb8ba1e23dc70816935310321b69ee1ce
+  - filename: packages/contentstack-migration/src/utils/constants.ts
+    checksum: 1e647efebd553a249ef306e1bbb9b3553feea1c353e9e2787751c3c47d1137f6
 version: '1.0'
