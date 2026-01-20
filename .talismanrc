@@ -72,7 +72,7 @@ fileignoreconfig:
   - filename: packages/contentstack-export/test/unit/export/modules/assets.test.ts
     checksum: 12d899d85de5852337a8df36830bb43829be335fb982629134027ede679357a5
   - filename: packages/contentstack-export/test/unit/export/modules/marketplace-apps.test.ts
-    checksum: 886823929388a5b5e8f7e7e747380c81a6582957fe495563fbc313d9992182bc
+    checksum: 2dfcd63eaf8c1692f37ace4f6d300834d752998e56fed13f8aac750c572197ff
   - filename: packages/contentstack-export/test/unit/export/modules/locales.test.ts
     checksum: cc1f1cebbfffb1c03f5f98268aec55656e60f5251154592e6234b7ce08b6918e
   - filename: packages/contentstack-export/test/unit/export/modules/entries.test.ts
@@ -109,4 +109,10 @@ fileignoreconfig:
     checksum: d777e56768b53ecd9e5b0a27f4a59950e0791a5487dbcf4d2666510195e20767
   - filename: packages/contentstack-import/test/unit/utils/import-config-handler.test.ts
     checksum: 5c0add2367ef71367709a6668f4814f80fedda4cafba1f2149f8ceb136128c18
+  - filename: packages/contentstack-export/test/unit/utils/marketplace-app-helper.test.ts
+    checksum: 7378a63f935c67af0b4fe40175d24f5f1c91e2b3dbaeda503e2d060700eadb20
+  - filename: packages/contentstack-import/test/unit/utils/marketplace-app-helper.test.ts
+    checksum: 24c05dc08fe6fd2c0f19754a6dea61505f2cb124c7697750f9c27f11084fd4f0
+  - filename: packages/contentstack-import/test/unit/utils/common-helper.test.ts
+    checksum: 533043fcc944d91d1bfa084a6ba6e87409986c2931197d145237862f55143374
 version: '1.0'

@@ -127,7 +127,6 @@ describe('Import Config Handler', () => {
       const result = await setupConfig(importCmdFlags);
 
       expect(result.contentDir).to.equal(path.resolve('/test/content'));
-      expect(result.data).to.equal(path.resolve('/test/content'));
       expect(askContentDirStub.called).to.be.false;
     });
 
@@ -146,7 +145,7 @@ describe('Import Config Handler', () => {
     });
 
     it('should use config.contentDir when no flags provided', async () => {
-      const importCmdFlags = {};
+      const importCmdFlags = { config: '/path/to/config.json' };
       const configContentDir = '/default/content/path';
 
       readFileStub.resolves({ contentDir: configContentDir });
@@ -168,14 +167,16 @@ describe('Import Config Handler', () => {
       configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
       askAPIKeyStub.resolves('test-api-key');
 
-      // Remove data from defaultConfig for this test
-      const originalData = (defaultConfig as any).data;
-      delete (defaultConfig as any).data;
+      // Ensure defaultConfig doesn't have contentDir set
+      const originalContentDir = (defaultConfig as any).contentDir;
+      delete (defaultConfig as any).contentDir;
 
       const result = await setupConfig(importCmdFlags);
 
       // Restore
-      (defaultConfig as any).data = originalData;
+      if (originalContentDir !== undefined) {
+        (defaultConfig as any).contentDir = originalContentDir;
+      }
 
       expect(askContentDirStub.called).to.be.true;
       expect(result.contentDir).to.equal(path.resolve(promptedPath));

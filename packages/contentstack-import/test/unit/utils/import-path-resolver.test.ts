@@ -188,9 +188,8 @@ describe('Import Path Resolver', () => {
       }
     });
 
-    it('should use contentDir from importConfig.data when contentDir is not set', async () => {
-      delete (mockConfig as any).contentDir;
-      (mockConfig as any).data = '/test/data';
+    it('should use contentDir from importConfig when set', async () => {
+      mockConfig.contentDir = '/test/data';
       fileExistsSyncStub.withArgs('/test/data').returns(true);
 
       // Mock module types check
@@ -292,7 +291,6 @@ describe('Import Path Resolver', () => {
     beforeEach(() => {
       mockConfig = {
         contentDir: '/test/content',
-        data: '/test/data',
         apiKey: 'test',
       } as ImportConfig;
     });
@@ -305,7 +303,6 @@ describe('Import Path Resolver', () => {
 
       expect(mockConfig.branchDir).to.be.undefined;
       expect(mockConfig.contentDir).to.equal('/test/content');
-      expect(mockConfig.data).to.equal('/test/data');
     });
 
     it('should update config with resolved path', async () => {
@@ -317,7 +314,6 @@ describe('Import Path Resolver', () => {
 
       expect(mockConfig.branchDir).to.equal(resolvedPath);
       expect(mockConfig.contentDir).to.equal(resolvedPath);
-      expect(mockConfig.data).to.equal(resolvedPath);
     });
   });
 
@@ -355,7 +351,6 @@ describe('Import Path Resolver', () => {
       expect(result).to.equal(resolvedPath);
       expect(mockConfig.branchDir).to.equal(resolvedPath);
       expect(mockConfig.contentDir).to.equal(resolvedPath);
-      expect(mockConfig.data).to.equal(resolvedPath);
     });
   });
 });

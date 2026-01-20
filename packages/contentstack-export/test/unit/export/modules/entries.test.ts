@@ -163,18 +163,18 @@ describe('EntriesExport', () => {
 
     it('should set up correct directory paths based on exportConfig', () => {
       const expectedEntriesPath = path.resolve(
-        mockExportConfig.data,
+        mockExportConfig.exportDir,
         mockExportConfig.branchName || '',
         mockExportConfig.modules.entries.dirName,
       );
       const expectedLocalesPath = path.resolve(
-        mockExportConfig.data,
+        mockExportConfig.exportDir,
         mockExportConfig.branchName || '',
         mockExportConfig.modules.locales.dirName,
         mockExportConfig.modules.locales.fileName,
       );
       const expectedSchemaPath = path.resolve(
-        mockExportConfig.data,
+        mockExportConfig.exportDir,
         mockExportConfig.branchName || '',
         mockExportConfig.modules.content_types.dirName,
         'schema.json',
