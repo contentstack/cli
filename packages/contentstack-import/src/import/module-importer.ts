@@ -46,8 +46,6 @@ class ModuleImporter {
     const backupDir = await backupHandler(this.importConfig);
     if (backupDir) {
       this.importConfig.backupDir = backupDir;
-      // To support the old config
-      this.importConfig.data = backupDir;
     }
 
     // NOTE audit and fix the import content.

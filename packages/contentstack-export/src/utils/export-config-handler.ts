@@ -25,22 +25,11 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
     log.debug('Loading external configuration file...', { configFile: exportCmdFlags['config'] });
     const externalConfig = await readFile(exportCmdFlags['config']);
 
-    // Validate for deprecated JS compatibility properties
-    const deprecatedProps = ['contentVersion'];
-    const foundDeprecated = deprecatedProps.filter((prop) => externalConfig[prop] !== undefined);
-
-    if (foundDeprecated.length > 0) {
-      throw new Error(
-        `Unsupported configuration properties detected: ${foundDeprecated.join(', ')}. ` +
-          `These properties are no longer supported in the beta version. ` +
-          `TypeScript modules are now the default and only supported format.`,
-      );
-    }
 
     config = merge.recursive(config, externalConfig);
   }
   config.exportDir = sanitizePath(
-    exportCmdFlags['data'] || exportCmdFlags['data-dir'] || config.data || (await askExportDir()),
+    exportCmdFlags['data'] || exportCmdFlags['data-dir'] || config.exportDir || (await askExportDir()),
   );
 
   const pattern = /[*$%#<>{}!&?]/g;
@@ -52,9 +41,6 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
   }
   config.exportDir = config.exportDir.replace(/['"]/g, '');
   config.exportDir = path.resolve(config.exportDir);
-
-  //Note to support the old key
-  config.data = config.exportDir;
 
   const managementTokenAlias = exportCmdFlags['management-token-alias'] || exportCmdFlags['alias'];
 
@@ -97,16 +83,13 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
       }
 
       config.apiKey =
-        exportCmdFlags['stack-uid'] || exportCmdFlags['stack-api-key'] || config.source_stack || (await askAPIKey());
+        exportCmdFlags['stack-uid'] || exportCmdFlags['stack-api-key'] || config.apiKey || (await askAPIKey());
       if (typeof config.apiKey !== 'string') {
         log.debug('Invalid API key received!', { apiKey: config.apiKey });
         throw new Error('Invalid API key received');
       }
     }
   }
-
-  // Note support old config
-  config.source_stack = config.apiKey;
 
   config.forceStopMarketplaceAppsPrompt = exportCmdFlags.yes;
   config.auth_token = configHandler.get('authtoken'); // TBD handle auth token in httpClient & sdk

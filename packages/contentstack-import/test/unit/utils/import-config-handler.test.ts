@@ -142,31 +142,24 @@ describe('Import Config Handler', () => {
       const result = await setupConfig(importCmdFlags);
 
       expect(result.contentDir).to.equal(path.resolve('/test/data-dir'));
-      expect(result.data).to.equal(path.resolve('/test/data-dir'));
+      expect(result.contentDir).to.equal(path.resolve('/test/data-dir'));
     });
 
-    it('should use config.data when no flags provided', async () => {
+    it('should use config.contentDir when no flags provided', async () => {
       const importCmdFlags = {};
-      const configData = '/default/data/path';
+      const configContentDir = '/default/content/path';
 
-      readFileStub.resolves({ data: configData });
+      readFileStub.resolves({ contentDir: configContentDir });
       configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
       configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
       askAPIKeyStub.resolves('test-api-key');
 
-      // Need to mock defaultConfig.data for this test
-      const originalData = (defaultConfig as any).data;
-      (defaultConfig as any).data = configData;
-
       const result = await setupConfig(importCmdFlags);
 
-      // Restore
-      (defaultConfig as any).data = originalData;
-
-      expect(result.contentDir).to.equal(path.resolve(configData));
+      expect(result.contentDir).to.equal(path.resolve(configContentDir));
     });
 
-    it('should prompt for contentDir when no flags or config.data provided', async () => {
+    it('should prompt for contentDir when no flags or config.contentDir provided', async () => {
       const importCmdFlags = {};
       const promptedPath = '/prompted/path';
 
@@ -285,13 +278,13 @@ describe('Import Config Handler', () => {
       configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
       configHandlerGetStub.withArgs('authtoken').returns('test-auth-token');
       // Set default apiKey to avoid prompting
-      const originalTargetStack = (defaultConfig as any).target_stack;
-      (defaultConfig as any).target_stack = 'default-api-key';
+      const originalApiKey = (defaultConfig as any).apiKey;
+      (defaultConfig as any).apiKey = 'default-api-key';
     });
 
     afterEach(() => {
-      const originalTargetStack = (defaultConfig as any).target_stack;
-      delete (defaultConfig as any).target_stack;
+      const originalApiKey = (defaultConfig as any).apiKey;
+      delete (defaultConfig as any).apiKey;
     });
 
     it('should set skipAudit from skip-audit flag', async () => {
@@ -445,34 +438,13 @@ describe('Import Config Handler', () => {
       configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
       configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
       configHandlerGetStub.withArgs('authtoken').returns('test-auth-token');
-      (defaultConfig as any).target_stack = 'default-api-key';
+      (defaultConfig as any).apiKey = 'default-api-key';
     });
 
     afterEach(() => {
-      delete (defaultConfig as any).target_stack;
+      delete (defaultConfig as any).apiKey;
     });
 
-    it('should set source_stack to apiKey', async () => {
-      const importCmdFlags = {
-        data: '/test/content',
-        'stack-api-key': 'test-api-key',
-      };
-
-      const result = await setupConfig(importCmdFlags);
-
-      expect(result.source_stack).to.equal('test-api-key');
-    });
-
-    it('should set target_stack to apiKey', async () => {
-      const importCmdFlags = {
-        data: '/test/content',
-        'stack-api-key': 'test-api-key',
-      };
-
-      const result = await setupConfig(importCmdFlags);
-
-      expect(result.target_stack).to.equal('test-api-key');
-    });
 
     it('should set isAuthenticated flag', async () => {
       const importCmdFlags = {

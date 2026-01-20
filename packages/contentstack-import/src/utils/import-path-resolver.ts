@@ -70,7 +70,7 @@ export const selectBranchFromDirectory = async (contentDir: string): Promise<{ b
 export const resolveImportPath = async (importConfig: ImportConfig, stackAPIClient: any): Promise<string> => {
   log.debug('Resolving import path based on directory structure');
 
-  const contentDir = importConfig.contentDir || importConfig.data;
+  const contentDir = importConfig.contentDir;
   log.debug(`Content directory: ${contentDir}`);
 
   if (!fileExistsSync(contentDir)) {
@@ -133,10 +133,8 @@ export const updateImportConfigWithResolvedPath = async (
 
   importConfig.contentDir = resolvedPath;
 
-  importConfig.data = resolvedPath;
-
   log.debug(
-    `Import config updated - contentDir: ${importConfig.contentDir}, branchDir: ${importConfig.branchDir}, data: ${importConfig.data}`,
+    `Import config updated - contentDir: ${importConfig.contentDir}, branchDir: ${importConfig.branchDir}`,
   );
 };
 

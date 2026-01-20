@@ -41,18 +41,18 @@ export default class EntriesExport extends BaseClass {
     this.exportConfig = exportConfig;
     this.entriesConfig = exportConfig.modules.entries;
     this.entriesDirPath = path.resolve(
-      sanitizePath(exportConfig.data),
+      sanitizePath(exportConfig.exportDir),
       sanitizePath(exportConfig.branchName || ''),
       sanitizePath(this.entriesConfig.dirName),
     );
     this.localesFilePath = path.resolve(
-      sanitizePath(exportConfig.data),
+      sanitizePath(exportConfig.exportDir),
       sanitizePath(exportConfig.branchName || ''),
       sanitizePath(exportConfig.modules.locales.dirName),
       sanitizePath(exportConfig.modules.locales.fileName),
     );
     this.schemaFilePath = path.resolve(
-      sanitizePath(exportConfig.data),
+      sanitizePath(exportConfig.exportDir),
       sanitizePath(exportConfig.branchName || ''),
       sanitizePath(exportConfig.modules.content_types.dirName),
       'schema.json',

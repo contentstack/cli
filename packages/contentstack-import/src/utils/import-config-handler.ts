@@ -21,17 +21,6 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   if (importCmdFlags['config']) {
     let externalConfig = await readFile(importCmdFlags['config']);
 
-    // Validate for deprecated JS compatibility properties
-    const deprecatedProps = ['contentVersion', 'onlyTSModules'];
-    const foundDeprecated = deprecatedProps.filter((prop) => externalConfig[prop] !== undefined);
-
-    if (foundDeprecated.length > 0) {
-      throw new Error(
-        `Unsupported configuration properties detected: ${foundDeprecated.join(', ')}. ` +
-          `These properties are no longer supported in the beta version. ` +
-          `TypeScript modules are now the default and only supported format.`,
-      );
-    }
 
     if (isArray(externalConfig['modules'])) {
       config.modules.types = filter(config.modules.types, (module) => includes(externalConfig['modules'], module));
@@ -41,7 +30,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   }
 
   config.contentDir = sanitizePath(
-    importCmdFlags['data'] || importCmdFlags['data-dir'] || config.data || (await askContentDir()),
+    importCmdFlags['data'] || importCmdFlags['data-dir'] || config.contentDir || (await askContentDir()),
   );
   const pattern = /[*$%#<>{}!&?]/g;
   if (pattern.test(config.contentDir)) {
@@ -52,8 +41,6 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   }
   config.contentDir = config.contentDir.replace(/['"]/g, '');
   config.contentDir = path.resolve(config.contentDir);
-  //Note to support the old key
-  config.data = config.contentDir;
 
   const managementTokenAlias = importCmdFlags['management-token-alias'] || importCmdFlags['alias'];
 
@@ -91,7 +78,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
         log.debug('User authenticated via auth token');
       }
       config.apiKey =
-        importCmdFlags['stack-uid'] || importCmdFlags['stack-api-key'] || config.target_stack || (await askAPIKey());
+        importCmdFlags['stack-uid'] || importCmdFlags['stack-api-key'] || config.apiKey || (await askAPIKey());
       if (typeof config.apiKey !== 'string') {
         throw new Error('Invalid API key received');
       }
@@ -100,9 +87,6 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
 
   config.isAuthenticated = isAuthenticated();
   config.auth_token = configHandler.get('authtoken'); // TBD handle auth token in httpClient & sdk
-
-  //Note to support the old key
-  config.source_stack = config.apiKey;
 
   config.skipAudit = importCmdFlags['skip-audit'];
   config.forceStopMarketplaceAppsPrompt = importCmdFlags.yes;
@@ -132,9 +116,6 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   if (importCmdFlags['skip-entries-publish']) {
     config.skipEntriesPublish = importCmdFlags['skip-entries-publish'];
   }
-
-  // Note to support old modules
-  config.target_stack = config.apiKey;
 
   config.replaceExisting = importCmdFlags['replace-existing'];
   config.skipExisting = importCmdFlags['skip-existing'];

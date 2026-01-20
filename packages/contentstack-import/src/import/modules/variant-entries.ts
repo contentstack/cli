@@ -29,7 +29,7 @@ export default class ImportVariantEntries extends BaseClass {
     this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.VARIANT_ENTRIES];
     this.personalize = importConfig.modules.personalize;
     this.projectMapperFilePath = path.resolve(
-      sanitizePath(this.config.data),
+      sanitizePath(this.config.contentDir),
       'mapper',
       sanitizePath(this.personalize.dirName),
       'projects',
@@ -133,7 +133,7 @@ export default class ImportVariantEntries extends BaseClass {
 
       // Basic validation - check if data file exists
       const dataFilePath = path.resolve(
-        sanitizePath(this.config.data),
+        sanitizePath(this.config.contentDir),
         'mapper',
         'entries',
         'data-for-variant-entry.json',
