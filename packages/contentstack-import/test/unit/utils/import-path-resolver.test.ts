@@ -192,7 +192,6 @@ describe('Import Path Resolver', () => {
       delete (mockConfig as any).contentDir;
       (mockConfig as any).data = '/test/data';
       fileExistsSyncStub.withArgs('/test/data').returns(true);
-      fileExistsSyncStub.withArgs(path.join('/test/data', 'export-info.json')).returns(false);
 
       // Mock module types check
       defaultConfig.modules.types.forEach((moduleType) => {
@@ -238,11 +237,9 @@ describe('Import Path Resolver', () => {
     });
 
     it('should return contentDir when module folders exist', async () => {
-      const exportInfoPath = path.join('/test/content', 'export-info.json');
       const modulePath = path.join('/test/content', defaultConfig.modules.types[0]);
 
       fileExistsSyncStub.withArgs('/test/content').returns(true);
-      fileExistsSyncStub.withArgs(exportInfoPath).returns(false);
       fileExistsSyncStub.withArgs(modulePath).returns(true);
 
       const result = await resolveImportPath(mockConfig, mockStackAPIClient);
@@ -338,15 +335,9 @@ describe('Import Path Resolver', () => {
 
     it('should execute complete path resolution logic', async () => {
       const resolvedPath = path.join('/test/content', 'branch1');
-      const exportInfoPath = path.join(resolvedPath, 'export-info.json');
 
       fileExistsSyncStub.withArgs('/test/content').returns(true);
       fileExistsSyncStub.withArgs(resolvedPath).returns(true);
-      fileExistsSyncStub.withArgs(exportInfoPath).returns(false);
-
-      // Mock export-info.json not found at contentDir
-      const contentDirExportInfoPath = path.join('/test/content', 'export-info.json');
-      fileExistsSyncStub.withArgs(contentDirExportInfoPath).returns(false);
 
       // Mock module types check
       defaultConfig.modules.types.forEach((moduleType) => {
