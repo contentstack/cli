@@ -32,7 +32,7 @@ export default class ExportLabels extends BaseClass {
       // Setup with loading spinner
       const [totalCount] = await this.withLoadingSpinner('LABELS: Analyzing labels...', async () => {
         this.labelsFolderPath = pResolve(
-          this.exportConfig.data,
+          this.exportConfig.exportDir,
           this.exportConfig.branchName || '',
           this.labelConfig.dirName,
         );

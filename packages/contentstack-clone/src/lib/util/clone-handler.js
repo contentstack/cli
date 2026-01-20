@@ -76,7 +76,6 @@ class CloneHandler {
     cloneCommand = new Clone();
     this.pathDir = opt.pathDir;
     process.stdin.setMaxListeners(50);
-    log.debug('Initializing CloneHandler', config.cloneContext, { pathDir: opt.pathDir, cloneType: opt.cloneType });
   }
   setClient(managementSDKClient) {
     client = managementSDKClient;
@@ -706,9 +705,14 @@ class CloneHandler {
       delete exportConfig.import;
       delete exportConfig.export;
 
+      // Map source_stack to apiKey for export config
+      if (exportConfig.source_stack) {
+        exportConfig.apiKey = exportConfig.source_stack;
+      }
+
       const exportDir = __dirname.split('src')[0] + 'contents';
       log.debug(`Export directory: ${exportDir}`, config.cloneContext);
-      const cmd = ['-k', exportConfig.source_stack, '-d', exportDir];
+      const cmd = ['-k', exportConfig.apiKey || exportConfig.source_stack, '-d', exportDir];
       
       if (exportConfig.cloneType === 'a') {
         exportConfig.filteredModules = ['stack'].concat(structureList);
@@ -738,7 +742,7 @@ class CloneHandler {
       log.debug('Export command prepared', config.cloneContext, { 
         cmd: cmd.join(' '),
         exportDir,
-        sourceStack: exportConfig.source_stack,
+        sourceStack: exportConfig.apiKey || exportConfig.source_stack,
         branch: exportConfig.sourceStackBranch 
       });
       log.debug('Running export command', config.cloneContext, { cmd });
@@ -760,6 +764,14 @@ class CloneHandler {
       delete importConfig.import;
       delete importConfig.export;
 
+      // Map target_stack to apiKey and data to contentDir for import config
+      if (importConfig.target_stack) {
+        importConfig.apiKey = importConfig.target_stack;
+      }
+      if (importConfig.data) {
+        importConfig.contentDir = importConfig.data;
+      }
+
       const configFilePath = path.join(__dirname, 'dummyConfig.json');
       const cmd = ['-c', configFilePath];
 
@@ -767,7 +779,7 @@ class CloneHandler {
         cmd.push('-a', importConfig.destination_alias);
         log.debug(`Using destination alias: ${importConfig.destination_alias}`, config.cloneContext);
       }
-      if (!importConfig.data && importConfig.sourceStackBranch) {
+      if (!importConfig.contentDir && !importConfig.data && importConfig.sourceStackBranch) {
         const dataPath = path.join(importConfig.pathDir, importConfig.sourceStackBranch);
         cmd.push('-d', dataPath);
         log.debug(`Import data path: ${dataPath}`, config.cloneContext);
@@ -795,9 +807,9 @@ class CloneHandler {
       fs.writeFileSync(configFilePath, JSON.stringify(importConfig));
       log.debug('Import command prepared', config.cloneContext, { 
         cmd: cmd.join(' '),
-        targetStack: importConfig.target_stack,
+        targetStack: importConfig.apiKey || importConfig.target_stack,
         targetBranch: importConfig.targetStackBranch,
-        dataPath: importConfig.data || path.join(importConfig.pathDir, importConfig.sourceStackBranch)
+        dataPath: importConfig.contentDir || importConfig.data || path.join(importConfig.pathDir, importConfig.sourceStackBranch)
       });
       log.debug('Running import command', config.cloneContext, { cmd });
       await importCmd.run(cmd);

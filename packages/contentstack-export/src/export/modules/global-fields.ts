@@ -38,7 +38,7 @@ export default class GlobalFieldsExport extends BaseClass {
       include_global_field_schema: true,
     };
     this.globalFieldsDirPath = path.resolve(
-      sanitizePath(exportConfig.data),
+      sanitizePath(exportConfig.exportDir),
       sanitizePath(exportConfig.branchName || ''),
       sanitizePath(this.globalFieldsConfig.dirName),
     );

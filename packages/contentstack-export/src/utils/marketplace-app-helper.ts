@@ -15,7 +15,7 @@ export const getDeveloperHubUrl = async (exportConfig: ExportConfig) => {
 export async function getOrgUid(config: ExportConfig): Promise<string> {
   const tempAPIClient = await managementSDKClient({ host: config.host });
   const tempStackData = await tempAPIClient
-    .stack({ api_key: config.source_stack })
+    .stack({ api_key: config.apiKey })
     .fetch()
     .catch((error: any) => {
       handleAndLogError(error, { ...config.context });

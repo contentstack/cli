@@ -48,7 +48,6 @@ describe('Export Config Handler', () => {
       const config = await setupConfig(flags);
 
       expect(config.exportDir).to.equal(path.resolve('/test/data/path'));
-      expect(config.data).to.equal(path.resolve('/test/data/path'));
       expect(askExportDirStub.called).to.be.false;
     });
 
@@ -169,7 +168,6 @@ describe('Export Config Handler', () => {
       expect(config.management_token).to.equal('test-management-token');
       expect(config.apiKey).to.equal('test-api-key');
       expect(config.authenticationMethod).to.equal('Management Token');
-      expect(config.source_stack).to.equal('test-api-key');
     });
 
     it('should throw error when management token not found for alias', async () => {
@@ -294,7 +292,6 @@ describe('Export Config Handler', () => {
       const config = await setupConfig(flags);
 
       expect(config.apiKey).to.equal('stack-uid-value');
-      expect(config.source_stack).to.equal('stack-uid-value');
       expect(askAPIKeyStub.called).to.be.false;
     });
 
@@ -313,20 +310,20 @@ describe('Export Config Handler', () => {
       expect(askAPIKeyStub.called).to.be.false;
     });
 
-    it('should use source_stack from config when available', async () => {
+    it('should use apiKey from config when available', async () => {
       // Set authenticated: isAuthenticated() checks configHandler.get('authorisationType')
       // Returns 'OAUTH' or 'BASIC' for authenticated, undefined for not authenticated
       configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
-      // Provide source_stack via external config file
-      readFileStub.resolves({ source_stack: 'config-source-stack' });
+      // Provide apiKey via external config file
+      readFileStub.resolves({ apiKey: 'config-api-key' });
 
       const flags = {
         data: '/test/data',
-        config: '/path/to/config.json', // This triggers readFileStub with source_stack
+        config: '/path/to/config.json', // This triggers readFileStub with apiKey
       };
       const config = await setupConfig(flags);
 
-      expect(config.apiKey).to.equal('config-source-stack');
+      expect(config.apiKey).to.equal('config-api-key');
       expect(askAPIKeyStub.called).to.be.false;
     });
 
@@ -589,19 +586,5 @@ describe('Export Config Handler', () => {
       expect((utilities.configHandler.get as sinon.SinonStub).called).to.be.true;
     });
 
-    it('should set source_stack equal to apiKey', async () => {
-      // Set authenticated: isAuthenticated() checks configHandler.get('authorisationType')
-      // Returns 'OAUTH' or 'AUTH' for authenticated, undefined for not authenticated
-      configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
-
-      const flags = {
-        data: '/test/data',
-        'stack-api-key': 'test-api-key',
-      };
-      const config = await setupConfig(flags);
-
-      expect(config.source_stack).to.equal(config.apiKey);
-      expect(config.source_stack).to.equal('test-api-key');
-    });
   });
 });

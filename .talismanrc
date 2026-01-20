@@ -84,7 +84,29 @@ fileignoreconfig:
   - filename: packages/contentstack-export/test/unit/export/modules/workflows.test.ts
     checksum: 9da983731811064de04e60a7ddd05ea558661dd17ac4e0c7da5be6cca8b2749d
   - filename: packages/contentstack-export/test/unit/utils/export-config-handler.test.ts
-    checksum: 0a4588401231be884781043314ad59e42c8896cb0a8cc288b1e10f6e4d79506a
+    checksum: 18600d1aab9507e3f8ee3caed3e6bd79ee05aff9444a2461fcb2f4d7fe6f27a6
   - filename: packages/contentstack-import/test/unit/import/modules/entries.test.ts
     checksum: 544e11881bc55ea7a1afc05e067d7b29fb2d165783ccd0ce3ff741ef7106b134
+  - filename: packages/contentstack-export/src/export/modules/environments.ts
+    checksum: 9c6e2cd260fba0ffd4deaf38835924642ab5ec2a4140185b3fe7eaec13305acb
+  - filename: packages/contentstack-import/src/utils/common-helper.ts
+    checksum: 68b605f9e952b05cbf1e9be04214e48f7409bce1eb5a3440183cea13b8cce49a
+  - filename: packages/contentstack-export/src/utils/marketplace-app-helper.ts
+    checksum: f5783ace09260150f63edc65e2d91b40310db60b57f9f56675e49b791bac84c8
+  - filename: packages/contentstack-import/src/utils/asset-helper.ts
+    checksum: e34bb0522ca8317408f905ee864e25d43acf52c595acaf397d1f35fcc49cbf4a
+  - filename: packages/contentstack-import/src/utils/login-handler.ts
+    checksum: 8bcefa5db69f894f3db49d8bca662dcc30f9247a3c4bf278c0d84d24a42481f6
+  - filename: packages/contentstack-import/src/utils/marketplace-app-helper.ts
+    checksum: caba03ffade8217dc8f82217a7f767fa6562fba63421d48f0aa8412b8463e21a
+  - filename: packages/contentstack-clone/src/lib/util/clone-handler.js
+    checksum: 3cf5eec54f0940eb269e3576298f1170268105073210af4a842b38fd7e969f43
+  - filename: packages/contentstack-import/src/import/modules/marketplace-apps.ts
+    checksum: b232e1c5a2b9dec7d6f01e671fd04eaa09351904ef0d20a8ab10f8ca60a2c365
+  - filename: packages/contentstack-export/src/export/modules/stack.ts
+    checksum: c2f1e06199bf55fd6d2ebd493edf9e746eabc00fd7c3b8da2785b024a35c9e7c
+  - filename: packages/contentstack-export/src/utils/basic-login.ts
+    checksum: d777e56768b53ecd9e5b0a27f4a59950e0791a5487dbcf4d2666510195e20767
+  - filename: packages/contentstack-import/test/unit/utils/import-config-handler.test.ts
+    checksum: 5c0add2367ef71367709a6668f4814f80fedda4cafba1f2149f8ceb136128c18
 version: '1.0'
