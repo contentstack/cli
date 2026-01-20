@@ -18,11 +18,10 @@ describe('ExportMarketplaceApps', () => {
       versioning: false,
       host: 'https://api.contentstack.io',
       developerHubUrls: {},
-      apiKey: 'test-api-key',
+      apiKey: 'test-stack-uid',
       exportDir: '/test/export',
       data: '/test/data',
       branchName: '',
-      source_stack: 'test-stack-uid',
       org_uid: 'test-org-uid',
       context: {
         command: 'cm:stacks:export',
@@ -214,7 +213,7 @@ describe('ExportMarketplaceApps', () => {
       await exportMarketplaceApps.start();
 
       expect(exportMarketplaceApps.marketplaceAppPath).to.include('marketplace-apps');
-      expect(exportMarketplaceApps.marketplaceAppPath).to.include('/test/data');
+      expect(exportMarketplaceApps.marketplaceAppPath).to.include('/test/export');
 
       exportAppsStub.restore();
       configHandlerGetStub.restore();

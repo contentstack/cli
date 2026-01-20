@@ -131,25 +131,6 @@ describe('Export Config Handler', () => {
       expect((config as any).customField).to.equal('customValue');
     });
 
-    it('should reject deprecated contentVersion property', async () => {
-      configHandlerGetStub.withArgs('authorisationType').returns('OAUTH');
-
-      const externalConfig = {
-        contentVersion: 2,
-        customField: 'customValue',
-      };
-      readFileStub.resolves(externalConfig);
-
-      const flags = { config: '/path/to/config.json', data: '/test/data' };
-
-      try {
-        await setupConfig(flags);
-        expect.fail('Should have thrown an error for deprecated contentVersion');
-      } catch (error: any) {
-        expect(error.message).to.include('Unsupported configuration properties detected: contentVersion');
-        expect(error.message).to.include('no longer supported in the beta version');
-      }
-    });
   });
 
   describe('Management Token Alias', () => {

@@ -15,11 +15,10 @@ describe('Marketplace App Helper Utils', () => {
       versioning: false,
       host: 'https://api.contentstack.io',
       developerHubUrls: {},
-      apiKey: 'test-api-key',
+      apiKey: 'test-stack-uid',
       exportDir: '/test/export',
       data: '/test/data',
       branchName: '',
-      source_stack: 'test-stack-uid',
       context: {
         command: 'cm:stacks:export',
         module: 'marketplace-apps',
@@ -122,8 +121,8 @@ describe('Marketplace App Helper Utils', () => {
       expect(result).to.equal('test-org-uid-123');
     });
 
-    it('should use source_stack from config as api_key', async () => {
-      mockExportConfig.source_stack = 'custom-stack-key';
+    it('should use apiKey from config as api_key', async () => {
+      mockExportConfig.apiKey = 'custom-stack-key';
       const mockStackData = { org_uid: 'org-123' };
 
       const mockFetch = sandbox.stub().resolves(mockStackData);
