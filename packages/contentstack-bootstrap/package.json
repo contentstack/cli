@@ -23,7 +23,7 @@
     "@oclif/plugin-help": "^6.2.28",
     "inquirer": "8.2.7",
     "mkdirp": "^1.0.4",
-    "tar": "^6.2.1 "
+    "tar": "^7.5.4"
   },
   "devDependencies": {
     "@oclif/test": "^4.1.13",
