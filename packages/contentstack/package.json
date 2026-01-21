@@ -154,7 +154,6 @@
     ],
     "hooks": {
       "prerun": [
-        "./lib/hooks/prerun/command-deprecation-check",
         "./lib/hooks/prerun/default-rate-limit-check",
         "./lib/hooks/prerun/latest-version-warning"
       ],
