@@ -408,8 +408,18 @@ export default class CLIProgressManager {
     const process = this.processes.get(processName);
     if (process) {
       process.status = success ? 'completed' : 'failed';
+      
+      // If process completed without ticks, update current to reflect completion
+      if (process.current === 0 && process.total > 0) {
+        process.current = process.total;
+        if (process.status === 'completed') {
+          process.successCount = process.total;
+        }
+      }
+      
       if (!this.showConsoleLogs && process.progressBar) {
-        const percentage = Math.round((process.current / process.total) * 100);
+        const totalProcessed = process.current;
+        const percentage = Math.round((totalProcessed / process.total) * 100);
         const formattedPercentage = this.formatPercentage(percentage);
         const statusText = success
           ? chalk.green(`✓ Complete (${process.successCount}/${process.current})`)
