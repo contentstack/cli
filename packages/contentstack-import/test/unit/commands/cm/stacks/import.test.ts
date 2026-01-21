@@ -131,7 +131,6 @@ describe('ImportCommand', () => {
     });
 
     it('should have correct aliases', () => {
-      // Aliases removed as part of deprecation cleanup
       expect(ImportCommand.aliases).to.be.an('array').that.is.empty;
     });
 
@@ -463,16 +462,6 @@ describe('ImportCommand', () => {
   });
 
   describe('Flag Validation and Parsing', () => {
-    it('should handle deprecated flags correctly', () => {
-      const flags = ImportCommand.flags;
-
-      // Deprecated flags have been removed as part of deprecation cleanup
-      expect(flags['stack-uid']).to.be.undefined;
-      expect(flags['data']).to.be.undefined;
-      expect(flags['management-token-alias']).to.be.undefined;
-      expect(flags['auth-token']).to.be.undefined;
-    });
-
     it('should have correct flag descriptions', () => {
       const flags = ImportCommand.flags;
 
