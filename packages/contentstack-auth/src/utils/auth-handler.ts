@@ -125,8 +125,8 @@ class AuthHandler {
           })
           .catch(async (error: any) => {
             if (error.errorCode === 294) {
-              const tfToken = await this.handleOTPFlow(tfaToken, loginPayload);
               try {
+                const tfToken = await this.handleOTPFlow(tfaToken, loginPayload);
                 resolve(await this.login(email, password, tfToken));
               } catch (error) {
                 log.debug('Login with TFA token failed.', { module: 'auth-handler', error });
