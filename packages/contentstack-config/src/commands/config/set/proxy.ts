@@ -1,4 +1,4 @@
-import { flags, configHandler, FlagInput, log, handleAndLogError } from '@contentstack/cli-utilities';
+import { flags, configHandler, FlagInput, log, handleAndLogError, cliux } from '@contentstack/cli-utilities';
 import { askProxyPassword } from '../../../utils/interactive';
 import { BaseCommand } from '../../../base-command';
 
@@ -38,15 +38,23 @@ export default class ProxySetCommand extends BaseCommand<typeof ProxySetCommand>
 
       log.debug('Parsed proxy configuration flags', this.contextDetails);
 
+      // Validate host - must not be empty or whitespace-only
+      if (!flags.host || flags.host.trim() === '') {
+        log.error('Invalid host provided - host cannot be empty or whitespace-only', this.contextDetails);
+        cliux.error('Invalid host address. Host cannot be empty or contain only whitespace.');
+        return;
+      }
+
       const port = Number.parseInt(flags.port, 10);
       if (Number.isNaN(port) || port < 1 || port > 65535) {
         log.error('Invalid port number provided', this.contextDetails);
+        cliux.error('Invalid port number. Port must be between 1 and 65535.');
         return;
       }
 
       const proxyConfig: any = {
         protocol: flags.protocol || 'http',
-        host: flags.host,
+        host: flags.host.trim(),
         port: port,
       };
 
