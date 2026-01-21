@@ -294,8 +294,7 @@ describe('SummaryManager', () => {
 
       // Should show mixed results
       const mixedCall = logCalls.find(call =>
-        call.args[0] && call.args[0].includes('completed with') &&
-        call.args[0].includes('failed modules')
+        call.args[0] && call.args[0].includes('completed with failures')
       );
       expect(mixedCall).to.not.be.undefined;
     });
