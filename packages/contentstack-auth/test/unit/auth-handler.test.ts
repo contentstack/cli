@@ -32,7 +32,9 @@ describe('Auth Handler', function () {
               return Promise.reject(new Error('Invalid 2FA code'));
             }
           } else {
-            return Promise.resolve({ error_code: 294 });
+            const error: any = new Error('2FA required');
+            error.errorCode = 294;
+            return Promise.reject(error);
           }
         }
         return Promise.resolve({ user });
@@ -115,13 +117,23 @@ describe('Auth Handler', function () {
     it('Login with 2FA enabled invalid otp, failed to login', async function () {
       this.timeout(10000);
       TFAEnabled = true;
-      let result;
+      askOTPStub.restore();
+      askOTPStub = sinon.stub(interactive, 'askOTP').callsFake(function () {
+        return Promise.resolve(InvalidTFATestToken);
+      });
       try {
-        result = await authHandler.login(credentials.email, credentials.password);
+        await authHandler.login(credentials.email, credentials.password);
+        expect.fail('Should have thrown an error');
       } catch (error) {
-        result = error;
+        expect(error).to.be.instanceOf(Error);
+        expect((error as Error).message).to.include('Invalid 2FA code');
+      } finally {
+        TFAEnabled = false;
+        askOTPStub.restore();
+        askOTPStub = sinon.stub(interactive, 'askOTP').callsFake(function () {
+          return Promise.resolve(TFATestToken);
+        });
       }
-      TFAEnabled = false;
     });
 
     it('Login with 2FA enabled with sms channel, should be logged in successfully', async function () {
