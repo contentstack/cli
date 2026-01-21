@@ -16,7 +16,6 @@ importers:
       '@contentstack/cli-auth': ~2.0.0-beta.1
       '@contentstack/cli-cm-bootstrap': ~2.0.0-beta.3
       '@contentstack/cli-cm-branches': ~1.6.1
-      '@contentstack/cli-cm-bulk-publish': ~1.10.3
       '@contentstack/cli-cm-clone': ~2.0.0-beta.4
       '@contentstack/cli-cm-export': ~2.0.0-beta.4
       '@contentstack/cli-cm-export-to-csv': ~1.10.1
@@ -75,7 +74,6 @@ importers:
       '@contentstack/cli-auth': link:../contentstack-auth
       '@contentstack/cli-cm-bootstrap': link:../contentstack-bootstrap
       '@contentstack/cli-cm-branches': 1.6.2_lxq42tdpoxpye5tb7w3htdbbdq
-      '@contentstack/cli-cm-bulk-publish': 1.10.4_lxq42tdpoxpye5tb7w3htdbbdq
       '@contentstack/cli-cm-clone': link:../contentstack-clone
       '@contentstack/cli-cm-export': link:../contentstack-export
       '@contentstack/cli-cm-export-to-csv': 1.10.2_lxq42tdpoxpye5tb7w3htdbbdq
@@ -336,45 +334,6 @@ importers:
       sinon: 19.0.5
       ts-node: 10.9.2_typescript@4.9.5
       typescript: 4.9.5
-
-  packages/contentstack-bulk-publish:
-    specifiers:
-      '@contentstack/cli-command': ~1.7.0
-      '@contentstack/cli-config': ~1.15.3
-      '@contentstack/cli-utilities': ~1.15.0
-      '@oclif/core': ^4.3.0
-      '@oclif/plugin-help': ^6.2.28
-      '@oclif/test': ^4.1.13
-      chai: ^4.5.0
-      chalk: ^4.1.2
-      dotenv: ^16.5.0
-      eslint: ^8.57.1
-      eslint-config-oclif: ^6.0.62
-      inquirer: 8.2.7
-      lodash: ^4.17.21
-      mocha: ^10.8.2
-      nyc: ^15.1.0
-      oclif: ^4.17.46
-      winston: ^3.17.0
-    dependencies:
-      '@contentstack/cli-command': 1.7.1
-      '@contentstack/cli-config': 1.15.3
-      '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@oclif/core': 4.8.0
-      '@oclif/plugin-help': 6.2.36
-      chalk: 4.1.2
-      dotenv: 16.6.1
-      inquirer: 8.2.7
-      lodash: 4.17.21
-      winston: 3.19.0
-    devDependencies:
-      '@oclif/test': 4.1.15_@oclif+core@4.8.0
-      chai: 4.5.0
-      eslint: 8.57.1
-      eslint-config-oclif: 6.0.132_eslint@8.57.1
-      mocha: 10.8.2
-      nyc: 15.1.0
-      oclif: 4.22.67
 
   packages/contentstack-clone:
     specifiers:
@@ -2098,25 +2057,6 @@ packages:
       - debug
     dev: false
 
-  /@contentstack/cli-cm-bulk-publish/1.10.4_lxq42tdpoxpye5tb7w3htdbbdq:
-    resolution: {integrity: sha512-aatQnm/XBMTqa4fOFyHOuF8/IAadCm9MWi855x3xtGYxCwzTUnvcjvAZ2TLZH/v8qjv6JYa5Gzh4xouVofM6UQ==}
-    engines: {node: '>=14.0.0'}
-    dependencies:
-      '@contentstack/cli-command': 1.7.1_lxq42tdpoxpye5tb7w3htdbbdq
-      '@contentstack/cli-config': 1.16.2_lxq42tdpoxpye5tb7w3htdbbdq
-      '@contentstack/cli-utilities': 1.16.0_lxq42tdpoxpye5tb7w3htdbbdq
-      '@oclif/core': 4.8.0
-      '@oclif/plugin-help': 6.2.36
-      chalk: 4.1.2
-      dotenv: 16.6.1
-      inquirer: 8.2.7_@types+node@14.18.63
-      lodash: 4.17.21
-      winston: 3.19.0
-    transitivePeerDependencies:
-      - '@types/node'
-      - debug
-    dev: false
-
   /@contentstack/cli-cm-export-to-csv/1.10.2_lxq42tdpoxpye5tb7w3htdbbdq:
     resolution: {integrity: sha512-oe8+TzH0fo+A540uWz0rmu92T+I8fnKxYYe9F6AD+eQi9tPt+4HzvSYYwQqb+fBnHvkVfcxOBQ3x5hZ9Kp3STA==}
     engines: {node: '>=14.0.0'}
@@ -2207,6 +2147,7 @@ packages:
       lodash: 4.17.21
     transitivePeerDependencies:
       - debug
+    dev: true
 
   /@contentstack/cli-config/1.16.2_lxq42tdpoxpye5tb7w3htdbbdq:
     resolution: {integrity: sha512-rDOT14AS6bWntj7BIOAFmkWYBMq3VpPtjGmzL6Oes00TGjq9TKx7kSMG0pnHax9CGU7sW4cdjSWY9PzT1gPFGw==}
