@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@contentstack/cli-audit": "~1.17.0",
-    "@contentstack/cli-cm-export": "~1.23.1",
+    "@contentstack/cli-cm-export": "~1.23.0",
     "@contentstack/cli-cm-import": "~1.31.1",
     "@contentstack/cli-auth": "~1.7.1",
     "@contentstack/cli-cm-bootstrap": "~1.18.1",
