@@ -131,11 +131,9 @@ class AuthHandler {
                 reject(error);
               }
             } else {
-              log.debug('Login failed: no user found.', { module: 'auth-handler', error });
-              reject(new Error(messageHandler.parse('CLI_AUTH_LOGIN_NO_USER')));
               log.debug('Login API call failed.', { module: 'auth-handler', error: error?.errorMessage || error });
               cliux.print('CLI_AUTH_LOGIN_FAILED', { color: 'yellow' });
-              handleAndLogError(error, { module: 'auth-handler' });
+              reject(error)
             }
           });
       } else {
@@ -203,7 +201,7 @@ class AuthHandler {
           .catch((error: Error) => {
             log.debug('Token validation failed.', { module: 'auth-handler', error: error.message });
             cliux.print('CLI_AUTH_TOKEN_VALIDATION_FAILED', { color: 'yellow' });
-            handleAndLogError(error, { module: 'auth-handler' });
+            reject(error);
           });
       } else {
         log.debug('Token validation failed: no auth token provided.', { module: 'auth-handler' });
