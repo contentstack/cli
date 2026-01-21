@@ -118,6 +118,9 @@ class AuthHandler {
             if (result.user) {
               log.debug('Login successful, user found', { module: 'auth-handler', userEmail: result.user.email });
               resolve(result.user as User);
+            } else {
+              log.debug('Login failed: no user found.', { module: 'auth-handler', result });
+              reject(new Error(messageHandler.parse('CLI_AUTH_LOGIN_NO_USER')));
             }
           })
           .catch(async (error: any) => {
@@ -133,7 +136,7 @@ class AuthHandler {
             } else {
               log.debug('Login API call failed.', { module: 'auth-handler', error: error?.errorMessage || error });
               cliux.print('CLI_AUTH_LOGIN_FAILED', { color: 'yellow' });
-              reject(error)
+              reject(error);
             }
           });
       } else {
