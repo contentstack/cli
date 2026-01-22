@@ -243,7 +243,6 @@ Use this plugin to automate the process of cloning a stack in few steps.
           config.importWebhookStatus = importWebhookStatus;
         }
 
-        const managementAPIClient = await managementSDKClient(config);
         log.debug('Management API client initialized successfully', cloneContext);
 
         log.debug(`Content directory path: ${pathdir}`, cloneContext);
@@ -257,6 +256,7 @@ Use this plugin to automate the process of cloning a stack in few steps.
         config.cloneContext = cloneContext;
         log.debug('Clone configuration finalized', cloneContext);
         const cloneHandler = new CloneHandler(config);
+        const managementAPIClient = await managementSDKClient(config);
         cloneHandler.setClient(managementAPIClient);
         log.debug('Starting clone operation', cloneContext);
         cloneHandler.execute().catch((error: any) => {
