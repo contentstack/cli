@@ -107,7 +107,8 @@ export default class ExportCustomRoles extends BaseClass {
         `Custom roles export completed. Total custom roles: ${Object.keys(this.customRoles || {}).length}`,
         this.exportConfig.context,
       );
-      this.completeProgress(true);
+      this.completeProgressWithMessage();
+
     } catch (error) {
       handleAndLogError(error, { ...this.exportConfig.context });
       this.completeProgress(false, error?.message || 'Custom roles export failed');

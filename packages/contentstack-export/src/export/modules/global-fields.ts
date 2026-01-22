@@ -81,12 +81,10 @@ export default class GlobalFieldsExport extends BaseClass {
       log.debug(`Writing global fields to: ${globalFieldsFilePath}`, this.exportConfig.context);
       fsUtil.writeFile(globalFieldsFilePath, this.globalFields);
 
-      log.success(
-        messageHandler.parse('GLOBAL_FIELDS_EXPORT_COMPLETE', this.globalFields.length),
-        this.exportConfig.context,
-      );
+    
 
-      this.completeProgress(true);
+      this.completeProgressWithMessage();
+
     } catch (error) {
       log.debug('Error occurred during global fields export', this.exportConfig.context);
       handleAndLogError(error, { ...this.exportConfig.context });

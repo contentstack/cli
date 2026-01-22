@@ -66,13 +66,9 @@ export default class ExportWorkFlows extends BaseClass {
         const workflowsFilePath = pResolve(this.webhooksFolderPath, this.workflowConfig.fileName);
         log.debug(`Writing workflows to: ${workflowsFilePath}`, this.exportConfig.context);
         fsUtil.writeFile(workflowsFilePath, this.workflows);
-        log.success(
-          messageHandler.parse('WORKFLOW_EXPORT_COMPLETE', Object.keys(this.workflows || {}).length),
-          this.exportConfig.context,
-        );
       }
 
-      this.completeProgress(true);
+      this.completeProgressWithMessage();
     } catch (error) {
       handleAndLogError(error, { ...this.exportConfig.context });
       this.completeProgress(false, error?.message || 'Workflows export failed');

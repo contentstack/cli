@@ -54,8 +54,8 @@ export default class ImportPersonalize extends BaseClass {
         log.debug('No personalize modules configured for processing', this.config.context);
       }
 
-      this.completeProgress(true);
-      log.success('Personalize import completed successfully', this.config.context);
+      this.completeProgressWithMessage();
+
     } catch (error) {
       this.personalizeConfig.importData = false; // Stop personalize import if project creation fails
       this.completeProgress(false, (error as any)?.message || 'Personalize import failed');

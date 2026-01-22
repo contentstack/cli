@@ -119,8 +119,8 @@ export default class ExportStack extends BaseClass {
         log.debug('Locale locale already set, skipping locale fetch', this.exportConfig.context);
       }
 
-      this.completeProgress(true);
-      log.success('Stack export completed successfully', this.exportConfig.context);
+      this.completeProgressWithMessage();
+
     } catch (error) {
       log.debug('Error occurred during stack export', this.exportConfig.context);
       handleAndLogError(error, { ...this.exportConfig.context });

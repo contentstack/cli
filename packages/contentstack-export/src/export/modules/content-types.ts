@@ -86,8 +86,8 @@ export default class ContentTypesExport extends BaseClass {
 
       await this.writeContentTypes(this.contentTypes);
 
-      log.success(messageHandler.parse('CONTENT_TYPE_EXPORT_COMPLETE'), this.exportConfig.context);
-      this.completeProgress(true);
+      this.completeProgressWithMessage();
+
     } catch (error) {
       handleAndLogError(error, { ...this.exportConfig.context });
       this.completeProgress(false, error?.message || 'Content types export failed');

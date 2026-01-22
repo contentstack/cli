@@ -58,8 +58,8 @@ export default class ImportWebhooks extends BaseClass {
 
       this.processWebhookResults();
 
-      this.completeProgress(true);
-      log.success('Webhooks have been imported successfully!', this.importConfig.context);
+      this.completeProgressWithMessage();
+
     } catch (error) {
       this.completeProgress(false, error?.message || 'Webhooks import failed');
       handleAndLogError(error, { ...this.importConfig.context });

@@ -110,8 +110,8 @@ export default class ExportMarketplaceApps extends BaseClass {
         progress.completeProcess(PROCESS_NAMES.FETCH_CONFIG_MANIFEST, true);
       }
 
-      this.completeProgress(true);
-      log.success('Marketplace apps export completed successfully', this.exportConfig.context);
+      this.completeProgressWithMessage();
+
     } catch (error) {
       log.debug('Error occurred during marketplace apps export', this.exportConfig.context);
       handleAndLogError(error, { ...this.exportConfig.context });

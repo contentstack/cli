@@ -73,8 +73,8 @@ export default class ImportLabels extends BaseClass {
 
       this.processLabelResults();
 
-      this.completeProgress(true);
-      log.success('Labels have been imported successfully!', this.importConfig.context);
+      this.completeProgressWithMessage();
+
     } catch (error) {
       this.completeProgress(false, error?.message || 'Labels import failed');
       handleAndLogError(error, { ...this.importConfig.context });

@@ -140,8 +140,8 @@ export default class ImportMarketplaceApps extends BaseClass {
       await this.importMarketplaceApps();
       progress.completeProcess(PROCESS_NAMES.INSTALL_APPS, true);
 
-      this.completeProgress(true);
-      log.success('Marketplace apps have been imported successfully!', this.importConfig.context);
+      this.completeProgressWithMessage();
+
     } catch (error) {
       this.completeProgress(false, error?.message || 'Marketplace apps import failed');
       handleAndLogError(error, { ...this.importConfig.context });

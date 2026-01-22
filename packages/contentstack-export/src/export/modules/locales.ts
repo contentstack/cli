@@ -86,15 +86,9 @@ export default class LocaleExport extends BaseClass {
       fsUtil.writeFile(localesFilePath, this.locales);
       log.debug(`Writing master locale to: ${masterLocaleFilePath}`, this.exportConfig.context);
       fsUtil.writeFile(masterLocaleFilePath, this.masterLocale);
-      log.success(
-        messageHandler.parse(
-          'LOCALES_EXPORT_COMPLETE',
-          Object.keys(this.locales || {}).length,
-          Object.keys(this.masterLocale || {}).length,
-        ),
-        this.exportConfig.context,
-      );
-      this.completeProgress(true);
+
+      this.completeProgressWithMessage();
+
     } catch (error) {
       handleAndLogError(error, { ...this.exportConfig.context });
       this.completeProgress(false, error?.message || 'Locales export failed');

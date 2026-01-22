@@ -66,12 +66,10 @@ export default class ExportExtensions extends BaseClass {
         const extensionsFilePath = pResolve(this.extensionsFolderPath, this.extensionConfig.fileName);
         log.debug(`Writing extensions to: ${extensionsFilePath}`, this.exportConfig.context);
         fsUtil.writeFile(extensionsFilePath, this.extensions);
-        log.success(
-          messageHandler.parse('EXTENSION_EXPORT_COMPLETE', Object.keys(this.extensions || {}).length),
-          this.exportConfig.context,
-        );
+    
       }
-      this.completeProgress(true);
+      this.completeProgressWithMessage();
+
     } catch (error) {
       handleAndLogError(error, { ...this.exportConfig.context });
       this.completeProgress(false, error?.message || 'Extensions export failed');

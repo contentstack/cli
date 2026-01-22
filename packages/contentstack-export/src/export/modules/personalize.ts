@@ -96,8 +96,9 @@ export default class ExportPersonalize extends BaseClass {
           log.debug('No personalize modules configured for processing', this.exportConfig.context);
         }
 
-        this.completeProgress(true);
-        log.success('Personalize export completed successfully', this.exportConfig.context);
+        this.completeProgressWithMessage();
+
+
       } catch (moduleError) {
         if (moduleError === 'Forbidden') {
           log.debug('Personalize access forbidden, personalization not enabled', this.exportConfig.context);

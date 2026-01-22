@@ -48,8 +48,8 @@ export default class ImportStack extends BaseClass {
       log.info('Starting stack settings import process', this.importConfig.context);
       await this.importStackSettings();
 
-      this.completeProgress(true);
-      log.success('Stack settings imported successfully!', this.importConfig.context);
+      this.completeProgressWithMessage();
+
     } catch (error) {
       this.completeProgress(false, 'Stack settings import failed');
       handleAndLogError(error, { ...this.importConfig.context });
