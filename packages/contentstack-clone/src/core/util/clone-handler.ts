@@ -3,6 +3,7 @@ import * as path from 'path';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import * as fs from 'fs';
+import { rimraf } from 'rimraf';
 import { CustomAbortController } from './abort-controller';
 import exportCmd from '@contentstack/cli-cm-export';
 import importCmd from '@contentstack/cli-cm-import';
@@ -567,8 +568,8 @@ export class CloneHandler {
       delete exportConfig.import;
       delete exportConfig.export;
 
-      // Resolve path to package root (works in both src and lib contexts)
-      const packageRoot = __dirname.includes('/src/') ? __dirname.split('/src/')[0] : __dirname.split('/lib/lib/')[0] || __dirname.split('/lib/')[0];
+      // Resolve path to package root - go up 3 levels from __dirname (core/util -> package root)
+      const packageRoot = path.resolve(__dirname, '../../..');
       const exportDir = path.join(packageRoot, 'contents');
       log.debug(`Export directory: ${exportDir}`, this.config.cloneContext);
       const cmd: string[] = ['-k', exportConfig.source_stack, '-d', exportDir];
@@ -592,8 +593,8 @@ export class CloneHandler {
         log.debug('Force stop marketplace apps prompt enabled', this.config.cloneContext);
       }
 
-      // Resolve path to dummyConfig.json - always in src/core/util
-      const configFilePath = path.join(packageRoot, 'src', 'core', 'util', 'dummyConfig.json');
+      // dummyConfig.json is in the same directory as this file
+      const configFilePath = path.join(__dirname, 'dummyConfig.json');
       cmd.push('-c');
       cmd.push(configFilePath);
       log.debug(`Writing export config to: ${configFilePath}`, this.config.cloneContext);
@@ -625,9 +626,8 @@ export class CloneHandler {
       delete importConfig.import;
       delete importConfig.export;
 
-      // Resolve path to dummyConfig.json - always in src/core/util
-      const importPackageRoot = __dirname.includes('/src/') ? __dirname.split('/src/')[0] : __dirname.split('/lib/lib/')[0] || __dirname.split('/lib/')[0];
-      const configFilePath = path.join(importPackageRoot, 'src', 'core', 'util', 'dummyConfig.json');
+      // dummyConfig.json is in the same directory as this file
+      const configFilePath = path.join(__dirname,'dummyConfig.json');
       const cmd: string[] = ['-c', configFilePath];
 
       if (importConfig.destination_alias) {
@@ -794,8 +794,8 @@ export class CloneHandler {
         ];
         let successMsg: string;
         let selectedValue: any = {};
-        // Resolve path to package root (works in both src and lib contexts)
-        const cloneTypePackageRoot = __dirname.includes('/src/') ? __dirname.split('/src/')[0] : __dirname.split('/lib/lib/')[0] || __dirname.split('/lib/')[0];
+        // Resolve path to package root - go up 3 levels from __dirname (core/util -> package root)
+        const cloneTypePackageRoot = path.resolve(__dirname, '../../..');
         this.config.data = path.join(cloneTypePackageRoot, 'contents', this.config.sourceStackBranch || '');
         log.debug(`Clone data directory: ${this.config.data}`, this.config.cloneContext);
 
@@ -816,8 +816,38 @@ export class CloneHandler {
         }
 
         this.cmdImport()
-          .then(() => {
+          .then(async () => {
             log.debug('Clone type selection and import completed successfully', this.config.cloneContext);
+            
+            // Clean up contents directory after import completes
+            if (this.config.pathDir) {
+              const resolvedPath = path.resolve(this.config.pathDir);
+              log.debug('Cleaning up contents directory after import', { 
+                ...this.config.cloneContext, 
+                pathDir: this.config.pathDir,
+                resolvedPath
+              });
+              try {
+                await rimraf(resolvedPath);
+                log.debug('Contents directory cleaned up successfully', { 
+                  ...this.config.cloneContext, 
+                  pathDir: this.config.pathDir,
+                  resolvedPath
+                });
+              } catch (cleanupError: any) {
+                log.debug('Cleanup error (non-fatal)', { 
+                  ...this.config.cloneContext, 
+                  pathDir: this.config.pathDir,
+                  resolvedPath,
+                  error: cleanupError?.message,
+                  code: cleanupError?.code
+                });
+                // Don't fail the clone if cleanup fails
+              }
+            } else {
+              log.debug('No pathDir configured, skipping cleanup', this.config.cloneContext);
+            }
+            
             resolve(successMsg);
           })
           .catch(reject);

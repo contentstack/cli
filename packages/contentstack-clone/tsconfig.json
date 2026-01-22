@@ -18,11 +18,13 @@
         "es2020.promise"
       ],
       "strictPropertyInitialization": false,
-      "forceConsistentCasingInFileNames": true
+      "forceConsistentCasingInFileNames": true,
+      "resolveJsonModule": true
     },
     "include": [
       "src/**/*",
-      "types/*"
+      "types/*",
+      "src/**/**/*.json"
     ],
     "exclude": [
       "node_modules",
