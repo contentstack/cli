@@ -1,8 +1,8 @@
 fileignoreconfig:
   - filename: package-lock.json
-    checksum: 732118725964b623c44dd9e64d6b92eed5cddd2c96282938ba122bdf3855fc1c
+    checksum: e548106b45789387d74c77500706242b9b5ccd378f57fe8b14a42d5d4c55109c
   - filename: pnpm-lock.yaml
-    checksum: 1791262a8fd93fa162219b876ba955d29039c04970b77907a092c37ab52b0d27
+    checksum: 6c44d657aff5fad97f8370bba29c191b3002fa785f942e4f2eb8de5af8284e99
   - filename: packages/contentstack-import-setup/test/unit/backup-handler.test.ts
     checksum: 0582d62b88834554cf12951c8690a73ef3ddbb78b82d2804d994cf4148e1ef93
   - filename: packages/contentstack-import-setup/test/config.json
@@ -281,5 +281,13 @@ fileignoreconfig:
     checksum: 1e6c1fba1172512401038d5454c8d218201ec62262449c5c878609592e0124c4
   - filename: packages/contentstack-audit/src/modules/composable-studio.ts
     checksum: 4fc97ff582d6dff9a54b3a50dfa3cbb5febd38a55aeb8737034b97188ad543ba
+  - filename: packages/contentstack-config/src/utils/interactive.ts
+    checksum: 09ebc9918e5161e423238df8879b782daf673e52a5ca97e000a9618517a40b96
+  - filename: packages/contentstack-config/src/commands/config/set/proxy.ts
+    checksum: 058c98f96a2de7e75a65536933e5fcd88f0fb7e8a487d9c172f4daacd0d05bea
+  - filename: packages/contentstack-utilities/src/proxy-helper.ts
+    checksum: 2a8379d7a34acb3c14093599fb4ba7307c94b0f280ea70d6d862ecb2448fe924
+  - filename: packages/contentstack-config/src/commands/config/get/proxy.ts
+    checksum: 9c49c2e6246ecdc5a4141c7e5f413d34f1fc799e25b3bbf60b61372c7a9a6f36
 version: '1.0'
 
