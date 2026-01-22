@@ -63,13 +63,9 @@ export default class ExportWebhooks extends BaseClass {
         const webhooksFilePath = pResolve(this.webhooksFolderPath, this.webhookConfig.fileName);
         log.debug(`Writing webhooks to: ${webhooksFilePath}`, this.exportConfig.context);
         fsUtil.writeFile(webhooksFilePath, this.webhooks);
-        log.success(
-          messageHandler.parse('WEBHOOK_EXPORT_COMPLETE', Object.keys(this.webhooks || {}).length),
-          this.exportConfig.context,
-        );
       }
 
-      this.completeProgress(true);
+      this.completeProgressWithMessage();
     } catch (error) {
       handleAndLogError(error, { ...this.exportConfig.context });
       this.completeProgress(false, error?.message || 'Webhooks export failed');

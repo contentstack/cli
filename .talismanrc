@@ -3,4 +3,8 @@ fileignoreconfig:
     checksum: 41bc1d60449ab0682d9267172e54a5802c837869a1728b0560eea8052336c2fe
   - filename: package-lock.json
     checksum: 0514f96f07a6c2c5be811d8973a0b1197943303cfcf224c0b01745342699f545
+  - filename: packages/contentstack-export/src/export/modules/environments.ts
+    checksum: 5077c6d8418163d538b28252b62ce7679247c795af2387fd0d9535af974106e8
+  - filename: packages/contentstack-import/src/import/modules/environments.ts
+    checksum: d1d83112db63ed7e45de89f68b2e6873ef08c9035d9f7313c950fb8036f93761
 version: "1.0"

@@ -86,8 +86,7 @@ export default class ImportExtensions extends BaseClass {
 
       await this.processExtensionResults();
 
-      this.completeProgress(true);
-      log.success('Extensions have been imported successfully!', this.importConfig.context);
+      this.completeProgressWithMessage();
     } catch (error) {
       this.completeProgress(false, error?.message || 'Create failed');
       handleAndLogError(error, { ...this.importConfig.context });
