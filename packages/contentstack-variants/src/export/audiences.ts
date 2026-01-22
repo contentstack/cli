@@ -22,7 +22,7 @@ export default class ExportAudiences extends PersonalizationAdapter<ExportConfig
     this.personalizeConfig = exportConfig.modules.personalize;
     this.audiencesConfig = exportConfig.modules.audiences;
     this.audiencesFolderPath = pResolve(
-      sanitizePath(exportConfig.data),
+      sanitizePath(exportConfig.exportDir),
       sanitizePath(exportConfig.branchName || ''),
       sanitizePath(this.personalizeConfig.dirName),
       sanitizePath(this.audiencesConfig.dirName),

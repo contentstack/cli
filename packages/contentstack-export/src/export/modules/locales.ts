@@ -42,7 +42,7 @@ export default class LocaleExport extends BaseClass {
       },
     };
     this.localesPath = path.resolve(
-      sanitizePath(exportConfig.data),
+      sanitizePath(exportConfig.exportDir),
       sanitizePath(exportConfig.branchName || ''),
       sanitizePath(this.localeConfig.dirName),
     );

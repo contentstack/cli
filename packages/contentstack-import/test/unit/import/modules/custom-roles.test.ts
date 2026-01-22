@@ -44,7 +44,6 @@ describe('ImportCustomRoles', () => {
       apiKey: 'test',
       backupDir: '/test/backup',
       data: '/test/content',
-      contentVersion: 1,
       region: 'us',
       fetchConcurrency: 2,
       context: {
@@ -74,12 +73,14 @@ describe('ImportCustomRoles', () => {
       moduleName: 'custom-roles',
     });
 
-    sinon.stub(importCustomRoles as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-      return await fn();
-    });
+    sinon
+      .stub(importCustomRoles as any, 'withLoadingSpinner')
+      .callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
     sinon.stub(importCustomRoles as any, 'analyzeCustomRoles').resolves([1]);
     const mockProgress = {
-      updateStatus: sinon.stub()
+      updateStatus: sinon.stub(),
     };
     sinon.stub(importCustomRoles as any, 'createSimpleProgress').returns(mockProgress);
     sinon.stub(importCustomRoles as any, 'prepareForImport').resolves();
@@ -133,26 +134,28 @@ describe('ImportCustomRoles', () => {
 
     it('should process custom roles when folder exists', async () => {
       sinon.restore();
-      
+
       sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
       sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
       sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
       sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
-      
-      sinon.stub(importCustomRoles as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+
+      sinon
+        .stub(importCustomRoles as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       sinon.stub(importCustomRoles as any, 'getLocalesUidMap').resolves();
       sinon.stub(importCustomRoles as any, 'completeProgress').resolves();
       const mockProgress = { updateStatus: sinon.stub() };
       sinon.stub(importCustomRoles as any, 'createSimpleProgress').returns(mockProgress);
-      
+
       const mockRoles = { role1: { uid: 'role1', name: 'Role 1', rules: [] as any } };
       fileHelperStub.fileExistsSync.withArgs(sinon.match(/roles$/)).returns(true);
       fileHelperStub.fileExistsSync.withArgs(sinon.match(/uid-mapping\.json/)).returns(false);
       fsUtilStub.readFile.withArgs(sinon.match(/roles\.json/)).returns(mockRoles);
       fsUtilStub.readFile.withArgs(sinon.match(/roles-locales\.json/)).returns({});
-      
+
       makeConcurrentCallStub = sinon.stub(importCustomRoles as any, 'makeConcurrentCall').resolves();
 
       await importCustomRoles.start();
@@ -163,21 +166,23 @@ describe('ImportCustomRoles', () => {
 
     it('should load existing UID mapper when file exists', async () => {
       sinon.restore();
-      
+
       sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
       sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
       sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
       sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
-      
-      sinon.stub(importCustomRoles as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+
+      sinon
+        .stub(importCustomRoles as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       sinon.stub(importCustomRoles as any, 'getLocalesUidMap').resolves();
       sinon.stub(importCustomRoles as any, 'completeProgress').resolves();
       const mockProgress = { updateStatus: sinon.stub() };
       sinon.stub(importCustomRoles as any, 'createSimpleProgress').returns(mockProgress);
       makeConcurrentCallStub = sinon.stub(importCustomRoles as any, 'makeConcurrentCall').resolves();
-      
+
       const mockRoles = { role1: { uid: 'role1', name: 'Role 1', rules: [] as any } };
       const mockUidMapper = { role1: 'mapped-role1' };
 
@@ -196,21 +201,23 @@ describe('ImportCustomRoles', () => {
 
     it('should load environments UID map when available', async () => {
       sinon.restore();
-      
+
       sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
       sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
       sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
       sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
-      
-      sinon.stub(importCustomRoles as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+
+      sinon
+        .stub(importCustomRoles as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       sinon.stub(importCustomRoles as any, 'getLocalesUidMap').resolves();
       sinon.stub(importCustomRoles as any, 'completeProgress').resolves();
       const mockProgress = { updateStatus: sinon.stub() };
       sinon.stub(importCustomRoles as any, 'createSimpleProgress').returns(mockProgress);
       makeConcurrentCallStub = sinon.stub(importCustomRoles as any, 'makeConcurrentCall').resolves();
-      
+
       const mockRoles = { role1: { uid: 'role1', name: 'Role 1', rules: [] as any } };
       const mockEnvMap = { env1: 'mapped-env1' };
 
@@ -229,21 +236,23 @@ describe('ImportCustomRoles', () => {
 
     it('should load entries UID map when available', async () => {
       sinon.restore();
-      
+
       sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
       sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
       sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
       sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
-      
-      sinon.stub(importCustomRoles as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+
+      sinon
+        .stub(importCustomRoles as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       sinon.stub(importCustomRoles as any, 'getLocalesUidMap').resolves();
       sinon.stub(importCustomRoles as any, 'completeProgress').resolves();
       const mockProgress = { updateStatus: sinon.stub() };
       sinon.stub(importCustomRoles as any, 'createSimpleProgress').returns(mockProgress);
       makeConcurrentCallStub = sinon.stub(importCustomRoles as any, 'makeConcurrentCall').resolves();
-      
+
       const mockRoles = { role1: { uid: 'role1', name: 'Role 1', rules: [] as any } };
       const mockEntriesMap = { entry1: 'mapped-entry1' };
 
@@ -262,21 +271,23 @@ describe('ImportCustomRoles', () => {
 
     it('should write success file when custom roles created', async () => {
       sinon.restore();
-      
+
       sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
       sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
       sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
       sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
-      
-      sinon.stub(importCustomRoles as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+
+      sinon
+        .stub(importCustomRoles as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       sinon.stub(importCustomRoles as any, 'getLocalesUidMap').resolves();
       sinon.stub(importCustomRoles as any, 'completeProgress').resolves();
       const mockProgress = { updateStatus: sinon.stub() };
       sinon.stub(importCustomRoles as any, 'createSimpleProgress').returns(mockProgress);
       makeConcurrentCallStub = sinon.stub(importCustomRoles as any, 'makeConcurrentCall').resolves();
-      
+
       const mockRoles = { role1: { uid: 'role1', name: 'Role 1', rules: [] as any } };
 
       fileHelperStub.fileExistsSync.withArgs(sinon.match(/roles$/)).returns(true);
@@ -293,21 +304,23 @@ describe('ImportCustomRoles', () => {
 
     it('should write fails file when custom roles failed', async () => {
       sinon.restore();
-      
+
       sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
       sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
       sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
       sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
-      
-      sinon.stub(importCustomRoles as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+
+      sinon
+        .stub(importCustomRoles as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       sinon.stub(importCustomRoles as any, 'getLocalesUidMap').resolves();
       sinon.stub(importCustomRoles as any, 'completeProgress').resolves();
       const mockProgress = { updateStatus: sinon.stub() };
       sinon.stub(importCustomRoles as any, 'createSimpleProgress').returns(mockProgress);
       makeConcurrentCallStub = sinon.stub(importCustomRoles as any, 'makeConcurrentCall').resolves();
-      
+
       const mockRoles = { role1: { uid: 'role1', name: 'Role 1', rules: [] as any } };
 
       fileHelperStub.fileExistsSync.withArgs(sinon.match(/roles$/)).returns(true);
@@ -330,7 +343,7 @@ describe('ImportCustomRoles', () => {
       sinon.stub(fsUtil, 'writeFile');
       sinon.stub(fsUtil, 'makeDirectory');
       sinon.stub(fileHelper, 'fileExistsSync');
-      
+
       const mockLocales = [
         { code: 'en-us', uid: 'locale1' },
         { code: 'fr-fr', uid: 'locale2' },
@@ -362,7 +375,7 @@ describe('ImportCustomRoles', () => {
       sinon.stub(fsUtil, 'writeFile');
       sinon.stub(fsUtil, 'makeDirectory');
       sinon.stub(fileHelper, 'fileExistsSync');
-      
+
       const findStub = sinon.stub().resolves({ items: [] });
       const localeQueryStub = sinon.stub().returns({
         find: findStub,
@@ -653,21 +666,23 @@ describe('ImportCustomRoles', () => {
   describe('Additional Branch Coverage Tests', () => {
     it('should log when customRolesUidMapper has items', async () => {
       sinon.restore();
-      
+
       sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
       sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
       sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
       sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
-      
-      sinon.stub(importCustomRoles as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+
+      sinon
+        .stub(importCustomRoles as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       sinon.stub(importCustomRoles as any, 'getLocalesUidMap').resolves();
       sinon.stub(importCustomRoles as any, 'completeProgress').resolves();
       const mockProgress = { updateStatus: sinon.stub() };
       sinon.stub(importCustomRoles as any, 'createSimpleProgress').returns(mockProgress);
       makeConcurrentCallStub = sinon.stub(importCustomRoles as any, 'makeConcurrentCall').resolves();
-      
+
       const mockRoles = { role1: { uid: 'role1', name: 'Role 1', rules: [] as any } };
       const mockUidMapper = { existingRole: 'existing-uid' };
 
@@ -686,21 +701,23 @@ describe('ImportCustomRoles', () => {
 
     it('should log when environmentsUidMap has items', async () => {
       sinon.restore();
-      
+
       sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
       sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
       sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
       sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
-      
-      sinon.stub(importCustomRoles as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+
+      sinon
+        .stub(importCustomRoles as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       sinon.stub(importCustomRoles as any, 'getLocalesUidMap').resolves();
       sinon.stub(importCustomRoles as any, 'completeProgress').resolves();
       const mockProgress = { updateStatus: sinon.stub() };
       sinon.stub(importCustomRoles as any, 'createSimpleProgress').returns(mockProgress);
       makeConcurrentCallStub = sinon.stub(importCustomRoles as any, 'makeConcurrentCall').resolves();
-      
+
       const mockRoles = { role1: { uid: 'role1', name: 'Role 1', rules: [] as any } };
       const mockEnvMapper = { env1: 'env-uid-1', env2: 'env-uid-2' };
 
@@ -719,21 +736,23 @@ describe('ImportCustomRoles', () => {
 
     it('should log when entriesUidMap has items', async () => {
       sinon.restore();
-      
+
       sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
       sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
       sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
       sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
-      
-      sinon.stub(importCustomRoles as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+
+      sinon
+        .stub(importCustomRoles as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       sinon.stub(importCustomRoles as any, 'getLocalesUidMap').resolves();
       sinon.stub(importCustomRoles as any, 'completeProgress').resolves();
       const mockProgress = { updateStatus: sinon.stub() };
       sinon.stub(importCustomRoles as any, 'createSimpleProgress').returns(mockProgress);
       makeConcurrentCallStub = sinon.stub(importCustomRoles as any, 'makeConcurrentCall').resolves();
-      
+
       const mockRoles = { role1: { uid: 'role1', name: 'Role 1', rules: [] as any } };
       const mockEntriesMapper = { entry1: 'entry-uid-1', entry2: 'entry-uid-2' };
 
@@ -1010,7 +1029,7 @@ describe('ImportCustomRoles', () => {
   describe('Integration Tests', () => {
     it('should complete full custom roles import flow', async () => {
       sinon.restore();
-      
+
       fsUtilStub = {
         readFile: sinon.stub(),
         writeFile: sinon.stub(),
@@ -1024,7 +1043,7 @@ describe('ImportCustomRoles', () => {
         fileExistsSync: sinon.stub(),
       };
       sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
-      
+
       const mockRoles = {
         role1: { uid: 'role1', name: 'Role 1', rules: [] as any },
         role2: { uid: 'role2', name: 'Role 2', rules: [] as any },
@@ -1035,19 +1054,21 @@ describe('ImportCustomRoles', () => {
       fsUtilStub.readFile.withArgs(sinon.match(/roles\.json/)).returns(mockRoles);
       fsUtilStub.readFile.withArgs(sinon.match(/roles-locales\.json/)).returns({ locale1: { code: 'en-us' } });
 
-      sinon.stub(importCustomRoles as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+      sinon
+        .stub(importCustomRoles as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       sinon.stub(importCustomRoles as any, 'analyzeCustomRoles').callsFake(async () => {
         importCustomRoles['customRoles'] = mockRoles;
         return [2];
       });
       sinon.stub(importCustomRoles as any, 'createSimpleProgress').returns({
-        updateStatus: sinon.stub()
+        updateStatus: sinon.stub(),
       });
       sinon.stub(importCustomRoles as any, 'getLocalesUidMap').resolves();
       sinon.stub(importCustomRoles as any, 'completeProgress').resolves();
-      
+
       makeConcurrentCallStub = sinon.stub(importCustomRoles as any, 'makeConcurrentCall').resolves();
 
       importCustomRoles['createdCustomRoles'] = [];
@@ -1055,7 +1076,7 @@ describe('ImportCustomRoles', () => {
       const prepareForImportStub = sinon.stub(importCustomRoles as any, 'prepareForImport').resolves();
       const importCustomRolesStub = sinon.stub(importCustomRoles as any, 'importCustomRoles').resolves();
       const handleImportResultsStub = sinon.stub(importCustomRoles as any, 'handleImportResults').resolves();
-      
+
       await importCustomRoles.start();
 
       expect(prepareForImportStub.called).to.be.true;

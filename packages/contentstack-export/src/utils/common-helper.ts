@@ -15,13 +15,13 @@ export const validateConfig = function (config: ExternalConfig) {
     throw new Error('Host/CDN end point is missing from config');
   }
 
-  if (config.email && config.password && !config.access_token && !config.source_stack) {
+  if (config.email && config.password && !config.access_token && !config.apiKey) {
     throw new Error('Kindly provide access_token or api_token');
   } else if (
     !config.email &&
     !config.password &&
     !config.management_token &&
-    config.source_stack &&
+    config.apiKey &&
     !config.access_token &&
     !isAuthenticated()
   ) {
@@ -30,7 +30,7 @@ export const validateConfig = function (config: ExternalConfig) {
     config.email &&
     config.password &&
     !config.access_token &&
-    config.source_stack &&
+    config.apiKey &&
     !config.management_token &&
     !isAuthenticated()
   ) {
