@@ -43,7 +43,7 @@ export default class ExportCustomRoles extends BaseClass {
         'CUSTOM-ROLES: Analyzing roles and locales...',
         async () => {
           this.rolesFolderPath = pResolve(
-            this.exportConfig.data,
+            this.exportConfig.exportDir,
             this.exportConfig.branchName || '',
             this.customRolesConfig.dirName,
           );

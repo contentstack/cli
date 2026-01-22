@@ -66,34 +66,34 @@ export default class EntriesImport extends BaseClass {
     super({ importConfig, stackAPIClient });
     this.importConfig.context.module = MODULE_CONTEXTS.ENTRIES;
     this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.ENTRIES];
-    this.assetUidMapperPath = path.resolve(sanitizePath(importConfig.data), 'mapper', 'assets', 'uid-mapping.json');
-    this.assetUrlMapperPath = path.resolve(sanitizePath(importConfig.data), 'mapper', 'assets', 'url-mapping.json');
-    this.entriesMapperPath = path.resolve(sanitizePath(importConfig.data), 'mapper', 'entries');
-    this.envPath = path.resolve(sanitizePath(importConfig.data), 'environments', 'environments.json');
+    this.assetUidMapperPath = path.resolve(sanitizePath(importConfig.contentDir), 'mapper', 'assets', 'uid-mapping.json');
+    this.assetUrlMapperPath = path.resolve(sanitizePath(importConfig.contentDir), 'mapper', 'assets', 'url-mapping.json');
+    this.entriesMapperPath = path.resolve(sanitizePath(importConfig.contentDir), 'mapper', 'entries');
+    this.envPath = path.resolve(sanitizePath(importConfig.contentDir), 'environments', 'environments.json');
     this.entriesUIDMapperPath = path.join(sanitizePath(this.entriesMapperPath), 'uid-mapping.json');
     this.uniqueUidMapperPath = path.join(sanitizePath(this.entriesMapperPath), 'unique-mapping.json');
     this.modifiedCTsPath = path.join(sanitizePath(this.entriesMapperPath), 'modified-schemas.json');
     this.marketplaceAppMapperPath = path.join(
-      sanitizePath(this.importConfig.data),
+      sanitizePath(this.importConfig.contentDir),
       'mapper',
       'marketplace_apps',
       'uid-mapping.json',
     );
     this.taxonomiesPath = path.join(
-      sanitizePath(this.importConfig.data),
+      sanitizePath(this.importConfig.contentDir),
       'mapper',
       'taxonomies',
       'terms',
       'success.json',
     );
     this.entriesConfig = importConfig.modules.entries;
-    this.entriesPath = path.resolve(sanitizePath(importConfig.data), sanitizePath(this.entriesConfig.dirName));
+    this.entriesPath = path.resolve(sanitizePath(importConfig.contentDir), sanitizePath(this.entriesConfig.dirName));
     this.cTsPath = path.resolve(
-      sanitizePath(importConfig.data),
+      sanitizePath(importConfig.contentDir),
       sanitizePath(importConfig.modules['content-types'].dirName),
     );
     this.localesPath = path.resolve(
-      sanitizePath(importConfig.data),
+      sanitizePath(importConfig.contentDir),
       sanitizePath(importConfig.modules.locales.dirName),
       sanitizePath(importConfig.modules.locales.fileName),
     );

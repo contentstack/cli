@@ -25,7 +25,7 @@ export default class ExportStack extends BaseClass {
     this.stackConfig = exportConfig.modules.stack;
     this.qs = { include_count: true };
     this.stackFolderPath = pResolve(
-      this.exportConfig.data,
+      this.exportConfig.exportDir,
       this.exportConfig.branchName || '',
       this.stackConfig.dirName,
     );
@@ -130,20 +130,20 @@ export default class ExportStack extends BaseClass {
   }
 
   async getStack(): Promise<any> {
-    log.debug(`Fetching stack data for: '${this.exportConfig.source_stack}'...`, this.exportConfig.context);
+    log.debug(`Fetching stack data for: '${this.exportConfig.apiKey}'...`, this.exportConfig.context);
 
     const tempAPIClient = await managementSDKClient({ host: this.exportConfig.host });
     log.debug(`Created Management SDK client with host: '${this.exportConfig.host}'.`, this.exportConfig.context);
 
     return await tempAPIClient
-      .stack({ api_key: this.exportConfig.source_stack })
+      .stack({ api_key: this.exportConfig.apiKey })
       .fetch()
       .then((data: any) => {
-        log.debug(`Successfully fetched stack data for: '${this.exportConfig.source_stack}'.`, this.exportConfig.context);
+        log.debug(`Successfully fetched stack data for: '${this.exportConfig.apiKey}'.`, this.exportConfig.context);
         return data;
       })
       .catch((error: any) => {
-        log.debug(`Failed to fetch stack data for: '${this.exportConfig.source_stack}'.`, this.exportConfig.context);
+        log.debug(`Failed to fetch stack data for: '${this.exportConfig.apiKey}'.`, this.exportConfig.context);
         return {};
       });
   }
@@ -183,7 +183,7 @@ export default class ExportStack extends BaseClass {
             return masterLocalObj;
           } else if (skip >= count) {
             log.error(
-              `Locale locale not found in the stack ${this.exportConfig.source_stack}. Please ensure that the stack has a master locale.`,
+              `Locale locale not found in the stack ${this.exportConfig.apiKey}. Please ensure that the stack has a master locale.`,
               this.exportConfig.context,
             );
             log.debug('Completed search. Master locale not found.', this.exportConfig.context);
@@ -201,7 +201,7 @@ export default class ExportStack extends BaseClass {
       })
       .catch((error: any) => {
         log.debug(
-          `Error occurred while fetching locales for stack: ${this.exportConfig.source_stack}`,
+          `Error occurred while fetching locales for stack: ${this.exportConfig.apiKey}`,
           this.exportConfig.context,
         );
         this.progressManager?.tick(
@@ -213,14 +213,14 @@ export default class ExportStack extends BaseClass {
         handleAndLogError(
           error,
           { ...this.exportConfig.context },
-          `Failed to fetch locales for stack ${this.exportConfig.source_stack}`,
+          `Failed to fetch locales for stack ${this.exportConfig.apiKey}`,
         );
         throw error;
       });
   }
 
   async exportStack(): Promise<any> {
-    log.debug(`Starting stack export for: '${this.exportConfig.source_stack}'...`, this.exportConfig.context);
+    log.debug(`Starting stack export for: '${this.exportConfig.apiKey}'...`, this.exportConfig.context);
 
     await fsUtil.makeDirectory(this.stackFolderPath);
     log.debug(`Created stack directory at: '${this.stackFolderPath}'`, this.exportConfig.context);
@@ -235,20 +235,20 @@ export default class ExportStack extends BaseClass {
         // Track progress for stack export completion
         this.progressManager?.tick(
           true,
-          `stack: ${this.exportConfig.source_stack}`,
+          `stack: ${this.exportConfig.apiKey}`,
           null,
           PROCESS_NAMES.STACK_DETAILS,
         );
 
         log.success(
-          `Stack details exported successfully for stack ${this.exportConfig.source_stack}`,
+          `Stack details exported successfully for stack ${this.exportConfig.apiKey}`,
           this.exportConfig.context,
         );
         log.debug('Stack export completed successfully.', this.exportConfig.context);
         return resp;
       })
       .catch((error: any) => {
-        log.debug(`Error occurred while exporting stack: ${this.exportConfig.source_stack}`, this.exportConfig.context);
+        log.debug(`Error occurred while exporting stack: ${this.exportConfig.apiKey}`, this.exportConfig.context);
         this.progressManager?.tick(
           false,
           'stack export',

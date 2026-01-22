@@ -16,16 +16,15 @@ describe('ExportGlobalFields', () => {
           find: sinon.stub().resolves({
             items: [
               { uid: 'gf-1', title: 'Global Field 1', validKey: 'value1' },
-              { uid: 'gf-2', title: 'Global Field 2', validKey: 'value2', invalidKey: 'remove' }
+              { uid: 'gf-2', title: 'Global Field 2', validKey: 'value2', invalidKey: 'remove' },
             ],
-            count: 2
-          })
-        })
-      })
+            count: 2,
+          }),
+        }),
+      }),
     };
 
     mockExportConfig = {
-      contentVersion: 1,
       versioning: false,
       host: 'https://api.contentstack.io',
       developerHubUrls: {},
@@ -41,7 +40,7 @@ describe('ExportGlobalFields', () => {
         sessionId: 'session-123',
         apiKey: 'test-api-key',
         orgId: 'org-123',
-        authenticationMethod: 'Basic Auth'
+        authenticationMethod: 'Basic Auth',
       },
       cliLogsPath: '/test/logs',
       forceStopMarketplaceAppsPrompt: false,
@@ -50,7 +49,7 @@ describe('ExportGlobalFields', () => {
         name: 'us',
         cma: 'https://api.contentstack.io',
         cda: 'https://cdn.contentstack.io',
-        uiHost: 'https://app.contentstack.com'
+        uiHost: 'https://app.contentstack.com',
       },
       skipStackSettings: false,
       skipDependencies: false,
@@ -62,7 +61,6 @@ describe('ExportGlobalFields', () => {
       writeConcurrency: 5,
       developerHubBaseUrl: '',
       marketplaceAppEncryptionKey: '',
-      onlyTSModules: [],
       modules: {
         types: ['global-fields'],
         'global-fields': {
@@ -71,15 +69,15 @@ describe('ExportGlobalFields', () => {
           validKeys: ['uid', 'title', 'validKey'],
           fetchConcurrency: 5,
           writeConcurrency: 5,
-          limit: 100
-        }
-      }
+          limit: 100,
+        },
+      },
     } as any;
 
     exportGlobalFields = new ExportGlobalFields({
       exportConfig: mockExportConfig,
       stackAPIClient: mockStackClient,
-      moduleName: 'global-fields'
+      moduleName: 'global-fields',
     });
 
     // Stub FsUtility methods
@@ -110,7 +108,7 @@ describe('ExportGlobalFields', () => {
       expect(exportGlobalFields.qs).to.deep.include({
         include_count: true,
         asc: 'updated_at',
-        include_global_field_schema: true
+        include_global_field_schema: true,
       });
     });
 
@@ -128,16 +126,16 @@ describe('ExportGlobalFields', () => {
     it('should fetch and process global fields correctly', async () => {
       const globalFields = [
         { uid: 'gf-1', title: 'Field 1', validKey: 'value1', invalidKey: 'remove' },
-        { uid: 'gf-2', title: 'Field 2', validKey: 'value2', invalidKey: 'remove' }
+        { uid: 'gf-2', title: 'Field 2', validKey: 'value2', invalidKey: 'remove' },
       ];
 
       mockStackClient.globalField.returns({
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: globalFields,
-            count: 2
-          })
-        })
+            count: 2,
+          }),
+        }),
       });
 
       await exportGlobalFields.getGlobalFields();
@@ -159,16 +157,16 @@ describe('ExportGlobalFields', () => {
             if (callCount === 1) {
               return Promise.resolve({
                 items: new Array(100).fill({ uid: 'test', title: 'Test', validKey: 'value' }),
-                count: 150
+                count: 150,
               });
             } else {
               return Promise.resolve({
                 items: new Array(50).fill({ uid: 'test2', title: 'Test2', validKey: 'value' }),
-                count: 150
+                count: 150,
               });
             }
-          })
-        })
+          }),
+        }),
       });
 
       await exportGlobalFields.getGlobalFields();
@@ -181,8 +179,8 @@ describe('ExportGlobalFields', () => {
     it('should handle API errors gracefully', async () => {
       mockStackClient.globalField.returns({
         query: sinon.stub().returns({
-          find: sinon.stub().rejects(new Error('API Error'))
-        })
+          find: sinon.stub().rejects(new Error('API Error')),
+        }),
       });
 
       try {
@@ -198,9 +196,9 @@ describe('ExportGlobalFields', () => {
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: [],
-            count: 0
-          })
-        })
+            count: 0,
+          }),
+        }),
       });
 
       const initialCount = exportGlobalFields.globalFields.length;
@@ -215,9 +213,9 @@ describe('ExportGlobalFields', () => {
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: null,
-            count: 0
-          })
-        })
+            count: 0,
+          }),
+        }),
       });
 
       const initialCount = exportGlobalFields.globalFields.length;
@@ -232,11 +230,11 @@ describe('ExportGlobalFields', () => {
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: [{ uid: 'gf-1', title: 'Test', validKey: 'value' }],
-            count: 1
-          })
-        })
+            count: 1,
+          }),
+        }),
       });
-      
+
       await exportGlobalFields.getGlobalFields(50);
 
       // Verify skip was set in query
@@ -248,7 +246,7 @@ describe('ExportGlobalFields', () => {
     it('should sanitize global field attributes and remove invalid keys', () => {
       const globalFields = [
         { uid: 'gf-1', title: 'Field 1', validKey: 'value1', invalidKey: 'remove' },
-        { uid: 'gf-2', title: 'Field 2', validKey: 'value2', invalidKey: 'remove' }
+        { uid: 'gf-2', title: 'Field 2', validKey: 'value2', invalidKey: 'remove' },
       ];
 
       exportGlobalFields.sanitizeAttribs(globalFields);
@@ -261,9 +259,7 @@ describe('ExportGlobalFields', () => {
     });
 
     it('should handle global fields without required keys', () => {
-      const globalFields = [
-        { uid: 'gf-1', invalidKey: 'remove' }
-      ];
+      const globalFields = [{ uid: 'gf-1', invalidKey: 'remove' }];
 
       exportGlobalFields.sanitizeAttribs(globalFields);
 
@@ -281,20 +277,20 @@ describe('ExportGlobalFields', () => {
 
     it('should keep only valid keys from validKeys config', () => {
       const globalFields = [
-        { 
-          uid: 'gf-1', 
-          title: 'Field 1', 
+        {
+          uid: 'gf-1',
+          title: 'Field 1',
           validKey: 'value1',
           keyToRemove1: 'remove',
           keyToRemove2: 'remove',
-          keyToRemove3: 'remove'
-        }
+          keyToRemove3: 'remove',
+        },
       ];
 
       exportGlobalFields.sanitizeAttribs(globalFields);
 
       const processedField = exportGlobalFields.globalFields[0];
-      
+
       // Should only keep uid, title, validKey
       expect(processedField.keyToRemove1).to.be.undefined;
       expect(processedField.keyToRemove2).to.be.undefined;
@@ -312,16 +308,16 @@ describe('ExportGlobalFields', () => {
 
       const globalFields = [
         { uid: 'gf-1', title: 'Field 1', validKey: 'value1' },
-        { uid: 'gf-2', title: 'Field 2', validKey: 'value2' }
+        { uid: 'gf-2', title: 'Field 2', validKey: 'value2' },
       ];
 
       mockStackClient.globalField.returns({
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: globalFields,
-            count: 2
-          })
-        })
+            count: 2,
+          }),
+        }),
       });
 
       await exportGlobalFields.start();
@@ -342,9 +338,9 @@ describe('ExportGlobalFields', () => {
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: [],
-            count: 0
-          })
-        })
+            count: 0,
+          }),
+        }),
       });
 
       exportGlobalFields.globalFields = [];
@@ -358,8 +354,8 @@ describe('ExportGlobalFields', () => {
     it('should handle errors during export without throwing', async () => {
       mockStackClient.globalField.returns({
         query: sinon.stub().returns({
-          find: sinon.stub().rejects(new Error('Export failed'))
-        })
+          find: sinon.stub().rejects(new Error('Export failed')),
+        }),
       });
 
       // Should complete without throwing
@@ -376,23 +372,27 @@ describe('ExportGlobalFields', () => {
             if (callCount === 1) {
               return Promise.resolve({
                 items: [],
-                count: 150
+                count: 150,
               });
             } else if (callCount === 2) {
               // Second call fetches first batch
               return Promise.resolve({
-                items: new Array(100).fill(null).map((_, i) => ({ uid: `gf-${i + 1}`, title: 'Test', validKey: 'value' })),
-                count: 150
+                items: new Array(100)
+                  .fill(null)
+                  .map((_, i) => ({ uid: `gf-${i + 1}`, title: 'Test', validKey: 'value' })),
+                count: 150,
               });
             } else {
               // Third call fetches remaining batch
               return Promise.resolve({
-                items: new Array(50).fill(null).map((_, i) => ({ uid: `gf-${i + 101}`, title: 'Test', validKey: 'value' })),
-                count: 150
+                items: new Array(50)
+                  .fill(null)
+                  .map((_, i) => ({ uid: `gf-${i + 101}`, title: 'Test', validKey: 'value' })),
+                count: 150,
               });
             }
-          })
-        })
+          }),
+        }),
       };
       mockStackClient.globalField.returns(globalFieldMock);
 
@@ -411,9 +411,9 @@ describe('ExportGlobalFields', () => {
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: [{ uid: 'gf-1', title: 'Test', validKey: 'value' }],
-            count: 1
-          })
-        })
+            count: 1,
+          }),
+        }),
       });
 
       await exportGlobalFields.start();
@@ -424,4 +424,3 @@ describe('ExportGlobalFields', () => {
     });
   });
 });
-

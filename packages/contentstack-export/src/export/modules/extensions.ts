@@ -33,7 +33,7 @@ export default class ExportExtensions extends BaseClass {
       // Setup with loading spinner
       const [totalCount] = await this.withLoadingSpinner('EXTENSIONS: Analyzing extensions...', async () => {
         this.extensionsFolderPath = pResolve(
-          this.exportConfig.data,
+          this.exportConfig.exportDir,
           this.exportConfig.branchName || '',
           this.extensionConfig.dirName,
         );
