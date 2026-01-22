@@ -89,16 +89,19 @@ USAGE
 * [`csdx config:get:ea-header`](#csdx-configgetea-header)
 * [`csdx config:get:early-access-header`](#csdx-configgetearly-access-header)
 * [`csdx config:get:log`](#csdx-configgetlog)
+* [`csdx config:get:proxy`](#csdx-configgetproxy)
 * [`csdx config:get:rate-limit`](#csdx-configgetrate-limit)
 * [`csdx config:get:region`](#csdx-configgetregion)
 * [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
 * [`csdx config:remove:ea-header`](#csdx-configremoveea-header)
 * [`csdx config:remove:early-access-header`](#csdx-configremoveearly-access-header)
+* [`csdx config:remove:proxy`](#csdx-configremoveproxy)
 * [`csdx config:remove:rate-limit`](#csdx-configremoverate-limit)
 * [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
 * [`csdx config:set:ea-header`](#csdx-configsetea-header)
 * [`csdx config:set:early-access-header`](#csdx-configsetearly-access-header)
 * [`csdx config:set:log`](#csdx-configsetlog)
+* [`csdx config:set:proxy`](#csdx-configsetproxy)
 * [`csdx config:set:rate-limit`](#csdx-configsetrate-limit)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMAND]`](#csdx-help-command)
@@ -130,13 +133,14 @@ Perform audits and find possible errors in the exported Contentstack data
 ```
 USAGE
   $ csdx audit [-c <value>] [-d <value>] [--show-console-output] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules...] [--columns <value>]
-    [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules|composable-studio...]
+    [--columns <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output
+    csv|json|yaml]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
-                         <options:
-                         content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules>
+                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-ru
+                         les|composable-studio>
   --report-path=<value>  Path to store the audit reports
 
 COMMON FLAGS
@@ -180,9 +184,10 @@ Perform audits and fix possible errors in the exported Contentstack data.
 ```
 USAGE
   $ csdx audit:fix [-c <value>] [-d <value>] [--show-console-output] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules...] [--copy-path <value>
-    --copy-dir] [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns
-    <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules|composable-studio...]
+    [--copy-path <value> --copy-dir] [--fix-only
+    reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value>] [--sort <value>]
+    [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --copy-dir              Create backup from the original data.
@@ -190,8 +195,8 @@ FLAGS
   --fix-only=<option>...  Provide the list of fix options
                           <options: reference|global_field|json:rte|json:extension|blocks|group|content_types>
   --modules=<option>...   Provide the list of modules to be audited
-                          <options:
-                          content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules>
+                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-r
+                          ules|composable-studio>
   --report-path=<value>   Path to store the audit reports
 
 COMMON FLAGS
@@ -2698,13 +2703,14 @@ Perform audits and find possible errors in the exported Contentstack data
 ```
 USAGE
   $ csdx cm:stacks:audit [-c <value>] [-d <value>] [--show-console-output] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules...] [--columns <value>]
-    [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules|composable-studio...]
+    [--columns <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output
+    csv|json|yaml]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
-                         <options:
-                         content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules>
+                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-ru
+                         les|composable-studio>
   --report-path=<value>  Path to store the audit reports
 
 COMMON FLAGS
@@ -2750,9 +2756,10 @@ Perform audits and fix possible errors in the exported Contentstack data.
 ```
 USAGE
   $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>] [--show-console-output] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules...] [--copy-path <value>
-    --copy-dir] [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns
-    <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules|composable-studio...]
+    [--copy-path <value> --copy-dir] [--fix-only
+    reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value>] [--sort <value>]
+    [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --copy-dir              Create backup from the original data.
@@ -2760,8 +2767,8 @@ FLAGS
   --fix-only=<option>...  Provide the list of fix options
                           <options: reference|global_field|json:rte|json:extension|blocks|group|content_types>
   --modules=<option>...   Provide the list of modules to be audited
-                          <options:
-                          content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules>
+                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-r
+                          ules|composable-studio>
   --report-path=<value>   Path to store the audit reports
 
 COMMON FLAGS
@@ -3454,6 +3461,23 @@ EXAMPLES
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/log.ts)_
 
+## `csdx config:get:proxy`
+
+Get proxy configuration for CLI
+
+```
+USAGE
+  $ csdx config:get:proxy
+
+DESCRIPTION
+  Get proxy configuration for CLI
+
+EXAMPLES
+  $ csdx config:get:proxy
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/proxy.ts)_
+
 ## `csdx config:get:rate-limit`
 
 Get rate-limit of organizations
@@ -3562,6 +3586,23 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/early-access-header.ts)_
+
+## `csdx config:remove:proxy`
+
+Remove proxy configuration from global config
+
+```
+USAGE
+  $ csdx config:remove:proxy
+
+DESCRIPTION
+  Remove proxy configuration from global config
+
+EXAMPLES
+  $ csdx config:remove:proxy
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/proxy.ts)_
 
 ## `csdx config:remove:rate-limit`
 
@@ -3693,6 +3734,34 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/log.ts)_
+
+## `csdx config:set:proxy`
+
+Set proxy configuration for CLI
+
+```
+USAGE
+  $ csdx config:set:proxy --host <value> --port <value> --protocol http|https [--username <value>]
+
+FLAGS
+  --host=<value>       (required) Proxy host address
+  --port=<value>       (required) Proxy port number
+  --protocol=<option>  (required) [default: http] Proxy protocol (http or https)
+                       <options: http|https>
+  --username=<value>   Proxy username (optional)
+
+DESCRIPTION
+  Set proxy configuration for CLI
+
+EXAMPLES
+  $ csdx config:set:proxy --host 127.0.0.1 --port 3128
+
+  $ csdx config:set:proxy --host proxy.example.com --port 8080 --protocol https
+
+  $ csdx config:set:proxy --host proxy.example.com --port 8080 --username user
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/proxy.ts)_
 
 ## `csdx config:set:rate-limit`
 
@@ -3942,7 +4011,7 @@ USAGE
   $ csdx launch:functions [-p <value>] [-d <value>]
 
 FLAGS
-  -d, --data-dir=<value>  [default: /Users/naman.dembla/Documents/cli/packages/contentstack] Current working directory
+  -d, --data-dir=<value>  [default: /cli/packages/contentstack] Current working directory
   -p, --port=<value>      [default: 3000] Port number
 
 DESCRIPTION

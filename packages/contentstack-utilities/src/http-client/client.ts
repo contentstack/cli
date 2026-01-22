@@ -3,6 +3,7 @@ import { IHttpClient } from './client-interface';
 import { HttpResponse } from './http-response';
 import configStore from '../config-handler';
 import authHandler from '../auth-handler';
+import { hasProxy, getProxyUrl, getProxyConfig } from '../proxy-helper';
 
 export type HttpClientOptions = {
   disableEarlyAccessHeaders?: boolean;
@@ -358,7 +359,20 @@ export class HttpClient implements IHttpClient {
   async createAndSendRequest(method: HttpMethod, url: string): Promise<AxiosResponse> {
     let counter = 0;
     this.axiosInstance.interceptors.response.use(null, async (error) => {
-      const { message, response } = error;
+      const { message, response, code } = error;
+      
+      // Don't retry proxy connection errors - fail fast
+      const proxyErrorCodes = ['ECONNREFUSED', 'ETIMEDOUT', 'ENOTFOUND', 'ERR_BAD_RESPONSE'];
+      const isProxyConfigured = this.request.proxy || hasProxy();
+      
+      if (isProxyConfigured && (proxyErrorCodes.includes(code) || message?.includes('ERR_BAD_RESPONSE'))) {
+        const proxyUrl = this.request.proxy && typeof this.request.proxy === 'object'
+          ? `${this.request.proxy.protocol}://${this.request.proxy.host}:${this.request.proxy.port}`
+          : getProxyUrl();
+        
+        return Promise.reject(new Error(`Proxy error: Unable to connect to proxy server at ${proxyUrl}. Please verify your proxy configuration.`));
+      }
+      
       if (response?.data?.error_message?.includes('access token is invalid or expired')) {
         const token = await this.refreshToken();
         this.headers({ ...this.request.headers, authorization: token.authorization });
@@ -370,7 +384,7 @@ export class HttpClient implements IHttpClient {
           data: this.prepareRequestPayload(),
         });
       }
-      // Retry while Network timeout or Network Error
+      
       if (
         !(message.includes('timeout') || message.includes('Network Error') || message.includes('getaddrinfo ENOTFOUND'))
       ) {
@@ -394,6 +408,14 @@ export class HttpClient implements IHttpClient {
       const earlyAccessHeaders = configStore.get(`earlyAccessHeaders`);
       if (earlyAccessHeaders && Object.keys(earlyAccessHeaders).length > 0) {
         this.headers({ 'x-header-ea': Object.values(earlyAccessHeaders).join(',') });
+      }
+    }
+
+    // Configure proxy if available (priority: request.proxy > getProxyConfig())
+    if (!this.request.proxy) {
+      const proxyConfig = getProxyConfig();
+      if (proxyConfig) {
+        this.request.proxy = proxyConfig;
       }
     }
 

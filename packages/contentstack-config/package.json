@@ -21,8 +21,8 @@
     "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
   },
   "dependencies": {
-    "@contentstack/cli-command": "~1.7.1",
-    "@contentstack/cli-utilities": "~1.16.1",
+    "@contentstack/cli-command": "~1.7.2",
+    "@contentstack/cli-utilities": "~1.17.0",
     "@oclif/core": "^4.3.0",
     "@oclif/plugin-help": "^6.2.28",
     "lodash": "^4.17.21"
