@@ -7,7 +7,7 @@
   "dependencies": {
     "@contentstack/cli-command": "~1.7.1",
     "@contentstack/cli-config": "~1.17.0",
-    "@contentstack/cli-utilities": "~1.16.0",
+    "@contentstack/cli-utilities": "~1.16.1",
     "@oclif/core": "^4.3.0",
     "@oclif/plugin-help": "^6.2.28",
     "chalk": "^4.1.2",
