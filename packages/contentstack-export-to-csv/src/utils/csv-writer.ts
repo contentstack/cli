@@ -5,7 +5,7 @@
 
 import * as os from 'os';
 import * as fs from 'fs';
-import { mkdirpSync } from 'mkdirp';
+import mkdirp from 'mkdirp';
 import * as fastcsv from 'fast-csv';
 import { cliux } from '@contentstack/cli-utilities';
 
@@ -37,7 +37,7 @@ export function write(
 ): void {
   // Create data directory if it doesn't exist
   if (process.cwd().split(delimiter).pop() !== 'data' && !fs.existsSync(directory)) {
-    mkdirpSync(directory);
+    mkdirp.sync(directory);
   }
 
   // Change to data directory if not already there
