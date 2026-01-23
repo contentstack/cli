@@ -1,8 +1,8 @@
 fileignoreconfig:
   - filename: package-lock.json
-    checksum: b031fa3df1ca49f1c0c207e8849cdfe81665f726a1ea690cba83a7c85009199e
+    checksum: 48479bae69c08b32d71c6f749328e14d903a578061271d67edcb96617b8b0e3b
   - filename: pnpm-lock.yaml
-    checksum: 3a10f0695152204e2e5d3738793e66a4bf86855d442356056dcb961414219059
+    checksum: d0d9f53b699a4def858a869f2237b73543e3e4d3085e6a05266b882a4027ec5b
   - filename: packages/contentstack-import-setup/test/unit/backup-handler.test.ts
     checksum: 0582d62b88834554cf12951c8690a73ef3ddbb78b82d2804d994cf4148e1ef93
   - filename: packages/contentstack-import-setup/test/config.json
@@ -66,7 +66,7 @@ fileignoreconfig:
   - filename: packages/contentstack-bulk-publish/src/producer/publish-unpublished-env.js
     checksum: 44dbc966df086f835fdca11cb305d0a5f448ca0be811c14b894e0024f9491385
   - filename: packages/contentstack-import/src/import/modules/entries.ts
-    checksum: 290730774c61220645ec211b85b9e218cdbd8addc2d8fd8f061dfa5ede5b5c75
+    checksum: bdf26bd2b71c1b7a0d5540ba98c53bf917d8d7d3813447073a89439fb789970b
   - filename: packages/contentstack-utilities/src/logger/logger.ts
     checksum: 76429bc87e279624b386f00e7eb3f4ec25621ace7056289f812b9a076d6e184e
   - filename: packages/contentstack-bootstrap/src/bootstrap/utils.ts
@@ -75,10 +75,6 @@ fileignoreconfig:
     checksum: c435ceaa709a7504da303a6ea674e07a89030d8ad4152e7917cd17e7f3e58052
   - filename: packages/contentstack-bootstrap/src/config.ts
     checksum: cc3270acd9d37479b24792f45a108e0f1c99265f92d59c35c0ec3ee2d1cc390d
-  - filename: packages/contentstack-clone/src/commands/cm/stacks/clone.js
-    checksum: 433a84a882ea3f12b27127d47d289dfc64dda6b6fc956369f5851daaa57ae493
-  - filename: packages/contentstack-clone/src/lib/util/clone-handler.js
-    checksum: f901c84eac8545b328952332216de516697da2de098298496ba6ff1e75a0a659
   - filename: packages/contentstack-bulk-publish/src/util/generate-bulk-publish-url.js
     checksum: 5f7c1e2fac3e7fab21e861d609c54ca7191ee09fd076dd0adc66604043bf7a43
   - filename: packages/contentstack-import/src/utils/interactive.ts
@@ -267,6 +263,14 @@ fileignoreconfig:
     checksum: e8714ef41940f3a9be782dfaa43a15df57bd1eb4c3f0e4d5f305e68681c1bd93
   - filename: packages/contentstack-import/src/import/modules-js/environments.js
     checksum: d484342c25462a7052c8aae6cad0baed9a01e1eaa67d6a09f175981c53092301
+  - filename: packages/contentstack-clone/.eslintrc
+    checksum: a7230ffa600c58047ac73f2dec7a23ca5862e36e68f04f2671379496739bd818
+  - filename: packages/contentstack-clone/test/commands/cm/stacks/clone.test.ts
+    checksum: b30adfbbd25aa76fe41b0ffebdb3bc61eb4981063c3a38b890c3cb3a6660ecca
+  - filename: packages/contentstack-clone/test/lib/util/clone-handler.execution.test.ts
+    checksum: 7ed8fa62d9aba7135a142134c36535e3722471cabc81d2ea3437cd67b2e87d58
+  - filename: packages/contentstack-clone/test/lib/util/clone-handler.commands.test.ts
+    checksum: d0427ddfa6d338e6b5c4e6f8d94f32332e3e9858626356d07e5690471e062f49
   - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/environments/environments.json
     checksum: 0402604e5919a7e38ecb5ff0916d6ae5ab7d98fe78ff6ac9eba8a9b8130af34d
   - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/composable_studio.json
@@ -277,4 +281,13 @@ fileignoreconfig:
     checksum: 1e6c1fba1172512401038d5454c8d218201ec62262449c5c878609592e0124c4
   - filename: packages/contentstack-audit/src/modules/composable-studio.ts
     checksum: 4fc97ff582d6dff9a54b3a50dfa3cbb5febd38a55aeb8737034b97188ad543ba
+  - filename: packages/contentstack-config/src/utils/interactive.ts
+    checksum: 09ebc9918e5161e423238df8879b782daf673e52a5ca97e000a9618517a40b96
+  - filename: packages/contentstack-config/src/commands/config/set/proxy.ts
+    checksum: 058c98f96a2de7e75a65536933e5fcd88f0fb7e8a487d9c172f4daacd0d05bea
+  - filename: packages/contentstack-utilities/src/proxy-helper.ts
+    checksum: 2a8379d7a34acb3c14093599fb4ba7307c94b0f280ea70d6d862ecb2448fe924
+  - filename: packages/contentstack-config/src/commands/config/get/proxy.ts
+    checksum: 9c49c2e6246ecdc5a4141c7e5f413d34f1fc799e25b3bbf60b61372c7a9a6f36
 version: '1.0'
+
