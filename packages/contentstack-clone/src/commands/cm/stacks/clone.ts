@@ -11,7 +11,7 @@ import { CloneHandler } from '../../../core/util/clone-handler';
 import * as path from 'path';
 import { rimraf } from 'rimraf';
 import merge from 'merge';
-import { readdirSync, readFileSync } from 'fs';
+import { readFileSync, promises as fsPromises } from 'fs';
 import { CloneConfig } from '../../../types/clone-config';
 import { CloneContext } from '../../../types/clone-context';
 
@@ -222,14 +222,14 @@ Use this plugin to automate the process of cloning a stack in few steps.
         if (destinationStackApiKey) {
           config.target_stack = destinationStackApiKey;
         }
-        if (sourceManagementTokenAlias && listOfTokens && listOfTokens[sourceManagementTokenAlias]) {
+        if (sourceManagementTokenAlias && listOfTokens?.[sourceManagementTokenAlias]) {
           config.source_alias = sourceManagementTokenAlias;
           config.source_stack = listOfTokens[sourceManagementTokenAlias].apiKey;
           log.debug(`Using source token alias: ${sourceManagementTokenAlias}`, cloneContext);
         } else if (sourceManagementTokenAlias) {
           log.warn(`Provided source token alias (${sourceManagementTokenAlias}) not found in your config.!`, cloneContext);
         }
-        if (destinationManagementTokenAlias && listOfTokens && listOfTokens[destinationManagementTokenAlias]) {
+        if (destinationManagementTokenAlias && listOfTokens?.[destinationManagementTokenAlias]) {
           config.destination_alias = destinationManagementTokenAlias;
           config.target_stack = listOfTokens[destinationManagementTokenAlias].apiKey;
           log.debug(`Using destination token alias: ${destinationManagementTokenAlias}`, cloneContext);
@@ -292,9 +292,9 @@ Use this plugin to automate the process of cloning a stack in few steps.
   async removeContentDirIfNotEmptyBeforeClone(dir: string, cloneContext: CloneContext): Promise<void> {
     try {
       log.debug('Checking if content directory is empty', { ...cloneContext, dir });
-      const dirNotEmpty = readdirSync(dir).length;
+      const files = await fsPromises.readdir(dir);
 
-      if (dirNotEmpty) {
+      if (files.length) {
         log.debug('Content directory is not empty, cleaning up', { ...cloneContext, dir });
         await this.cleanUp(dir, null, cloneContext);
       }

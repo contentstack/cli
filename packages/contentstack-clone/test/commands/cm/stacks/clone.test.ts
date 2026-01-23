@@ -5,7 +5,7 @@ import { CloneHandler } from '../../../../src/core/util/clone-handler';
 import { CloneContext } from '../../../../src/types/clone-context';
 import * as cliUtilities from '@contentstack/cli-utilities';
 import { rimraf } from 'rimraf';
-import { readdirSync } from 'fs';
+import * as fs from 'fs';
 
 describe('StackCloneCommand', () => {
   let command: StackCloneCommand;
@@ -108,7 +108,7 @@ describe('StackCloneCommand', () => {
 
   describe('removeContentDirIfNotEmptyBeforeClone', () => {
     it('should remove directory when it exists and is not empty', async () => {
-      const readdirSyncStub = sandbox.stub(require('fs'), 'readdirSync').returns(['file1', 'file2']);
+      const readdirStub = sandbox.stub(fs.promises, 'readdir' as any).resolves(['file1', 'file2'] as any);
       const cleanUpStub = sandbox.stub(command, 'cleanUp').resolves();
       const cloneContext: CloneContext = {
         command: 'test',
@@ -122,7 +122,7 @@ describe('StackCloneCommand', () => {
     });
 
     it('should not remove directory when it is empty', async () => {
-      const readdirSyncStub = sandbox.stub(require('fs'), 'readdirSync').returns([]);
+      const readdirStub = sandbox.stub(fs.promises, 'readdir' as any).resolves([] as any);
       const cleanUpStub = sandbox.stub(command, 'cleanUp').resolves();
       const cloneContext: CloneContext = {
         command: 'test',
@@ -138,7 +138,7 @@ describe('StackCloneCommand', () => {
     it('should handle directory not existing', async () => {
       const error = new Error('ENOENT') as any;
       error.code = 'ENOENT';
-      const readdirSyncStub = sandbox.stub(require('fs'), 'readdirSync').throws(error);
+      const readdirStub = sandbox.stub(fs.promises, 'readdir' as any).rejects(error);
       const cleanUpStub = sandbox.stub(command, 'cleanUp').resolves();
       const cloneContext: CloneContext = {
         command: 'test',
@@ -154,7 +154,7 @@ describe('StackCloneCommand', () => {
     it('should log error for non-ENOENT error codes (covers line 305)', async () => {
       const error = new Error('Permission denied') as any;
       error.code = 'EACCES';
-      const readdirSyncStub = sandbox.stub(require('fs'), 'readdirSync').throws(error);
+      const readdirStub = sandbox.stub(fs.promises, 'readdir' as any).rejects(error);
       const logStub = {
         error: sandbox.stub(),
         warn: sandbox.stub(),
@@ -469,7 +469,7 @@ describe('StackCloneCommand', () => {
       configHandlerStub.withArgs('email').returns('test@example.com');
       configHandlerStub.withArgs('authtoken').returns('test-token');
       const managementSDKClientStub = sandbox.stub(cliUtilities, 'managementSDKClient').resolves({} as any);
-      const readdirSyncStub = sandbox.stub(require('fs'), 'readdirSync').returns([]);
+      const readdirStub = sandbox.stub(fs.promises, 'readdir' as any).resolves([] as any);
       const onStub = sandbox.stub(process, 'on').returns(process);
       const cloneHandlerExecuteStub = sandbox.stub(CloneHandler.prototype, 'execute').resolves();
 
@@ -494,7 +494,7 @@ describe('StackCloneCommand', () => {
       configHandlerStub.withArgs('authtoken').returns('test-token');
       const readFileSyncStub = sandbox.stub(require('fs'), 'readFileSync').returns('{"cloneType": "a"}');
       const managementSDKClientStub = sandbox.stub(cliUtilities, 'managementSDKClient').resolves({} as any);
-      const readdirSyncStub = sandbox.stub(require('fs'), 'readdirSync').returns([]);
+      const readdirStub = sandbox.stub(fs.promises, 'readdir' as any).resolves([] as any);
       const onStub = sandbox.stub(process, 'on').returns(process);
       const cloneHandlerExecuteStub = sandbox.stub(CloneHandler.prototype, 'execute').resolves();
 
@@ -526,7 +526,7 @@ describe('StackCloneCommand', () => {
       configHandlerStub.withArgs('email').returns('test@example.com');
       configHandlerStub.withArgs('authtoken').returns('test-token');
       const managementSDKClientStub = sandbox.stub(cliUtilities, 'managementSDKClient').resolves({} as any);
-      const readdirSyncStub = sandbox.stub(require('fs'), 'readdirSync').returns([]);
+      const readdirStub = sandbox.stub(fs.promises, 'readdir' as any).resolves([] as any);
       const onStub = sandbox.stub(process, 'on').returns(process);
       const cloneHandlerExecuteStub = sandbox.stub(CloneHandler.prototype, 'execute').resolves();
 
@@ -626,7 +626,7 @@ describe('StackCloneCommand', () => {
       };
       sandbox.stub(cliUtilities, 'log').value(logStub);
       const managementSDKClientStub = sandbox.stub(cliUtilities, 'managementSDKClient').resolves({} as any);
-      const readdirSyncStub = sandbox.stub(require('fs'), 'readdirSync').returns([]);
+      const readdirStub = sandbox.stub(fs.promises, 'readdir' as any).resolves([] as any);
       const onStub = sandbox.stub(process, 'on').returns(process);
       const cloneHandlerExecuteStub = sandbox.stub(CloneHandler.prototype, 'execute').resolves();
 
@@ -657,7 +657,7 @@ describe('StackCloneCommand', () => {
       };
       sandbox.stub(cliUtilities, 'log').value(logStub);
       const managementSDKClientStub = sandbox.stub(cliUtilities, 'managementSDKClient').resolves({} as any);
-      const readdirSyncStub = sandbox.stub(require('fs'), 'readdirSync').returns([]);
+      const readdirStub = sandbox.stub(fs.promises, 'readdir' as any).resolves([] as any);
       const onStub = sandbox.stub(process, 'on').returns(process);
       const cloneHandlerExecuteStub = sandbox.stub(CloneHandler.prototype, 'execute').resolves();
 
@@ -691,7 +691,7 @@ describe('StackCloneCommand', () => {
       };
       sandbox.stub(cliUtilities, 'log').value(logStub);
       const managementSDKClientStub = sandbox.stub(cliUtilities, 'managementSDKClient').resolves({} as any);
-      const readdirSyncStub = sandbox.stub(require('fs'), 'readdirSync').returns([]);
+      const readdirStub = sandbox.stub(fs.promises, 'readdir' as any).resolves([] as any);
       const removeContentDirStub = sandbox.stub(command, 'removeContentDirIfNotEmptyBeforeClone').resolves();
       const onStub = sandbox.stub(process, 'on').returns(process);
       const cloneHandlerExecuteStub = sandbox.stub(CloneHandler.prototype, 'execute').resolves();
@@ -733,7 +733,7 @@ describe('StackCloneCommand', () => {
       };
       sandbox.stub(cliUtilities, 'log').value(logStub);
       const managementSDKClientStub = sandbox.stub(cliUtilities, 'managementSDKClient').resolves({} as any);
-      const readdirSyncStub = sandbox.stub(require('fs'), 'readdirSync').returns([]);
+      const readdirStub = sandbox.stub(fs.promises, 'readdir' as any).resolves([] as any);
       const removeContentDirStub = sandbox.stub(command, 'removeContentDirIfNotEmptyBeforeClone').resolves();
       const onStub = sandbox.stub(process, 'on').returns(process);
       const cloneHandlerExecuteStub = sandbox.stub(CloneHandler.prototype, 'execute').resolves();
@@ -759,7 +759,7 @@ describe('StackCloneCommand', () => {
       configHandlerStub.withArgs('authtoken').returns('test-token');
       configHandlerStub.withArgs('authorisationType').returns('OAUTH');
       const managementSDKClientStub = sandbox.stub(cliUtilities, 'managementSDKClient').resolves({} as any);
-      const readdirSyncStub = sandbox.stub(require('fs'), 'readdirSync').returns([]);
+      const readdirStub = sandbox.stub(fs.promises, 'readdir' as any).resolves([] as any);
       const removeContentDirStub = sandbox.stub(command, 'removeContentDirIfNotEmptyBeforeClone').resolves();
       const onStub = sandbox.stub(process, 'on').returns(process);
       const cloneHandlerExecuteStub = sandbox.stub(CloneHandler.prototype, 'execute').resolves();
@@ -822,7 +822,7 @@ describe('StackCloneCommand', () => {
       };
       sandbox.stub(cliUtilities, 'log').value(logStub);
       const managementSDKClientStub = sandbox.stub(cliUtilities, 'managementSDKClient').resolves({} as any);
-      const readdirSyncStub = sandbox.stub(require('fs'), 'readdirSync').returns([]);
+      const readdirStub = sandbox.stub(fs.promises, 'readdir' as any).resolves([] as any);
       const removeContentDirStub = sandbox.stub(command, 'removeContentDirIfNotEmptyBeforeClone').resolves();
       const onStub = sandbox.stub(process, 'on').returns(process);
       const cloneHandlerExecuteStub = sandbox.stub(CloneHandler.prototype, 'execute').resolves();
@@ -867,7 +867,7 @@ describe('StackCloneCommand', () => {
       sandbox.stub(cliUtilities, 'log').value(logStub);
       const handleAndLogErrorStub = sandbox.stub(cliUtilities, 'handleAndLogError');
       const managementSDKClientStub = sandbox.stub(cliUtilities, 'managementSDKClient').resolves({} as any);
-      const readdirSyncStub = sandbox.stub(require('fs'), 'readdirSync').returns([]);
+      const readdirStub = sandbox.stub(fs.promises, 'readdir' as any).resolves([] as any);
       const removeContentDirStub = sandbox.stub(command, 'removeContentDirIfNotEmptyBeforeClone').resolves();
       const onStub = sandbox.stub(process, 'on').returns(process);
       const cloneHandlerExecuteStub = sandbox.stub(CloneHandler.prototype, 'execute').rejects(new Error('Execute error'));
