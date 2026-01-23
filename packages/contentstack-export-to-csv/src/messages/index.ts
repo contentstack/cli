@@ -11,7 +11,7 @@ export const messages = {
   FLAG_ALIAS: 'Alias of the management token',
   FLAG_ORG: 'Provide organization UID to clone org users',
   FLAG_STACK_NAME: 'Name of the stack that needs to be created as CSV filename',
-  FLAG_STACK_API_KEY: 'API Key of the source stack',
+  FLAG_STACK_API_KEY: 'Provide the stack API key of the source stack',
   FLAG_ORG_NAME: 'Name of the organization that needs to be created as CSV filename',
   FLAG_LOCALE: 'Locale of entries that will be exported',
   FLAG_CONTENT_TYPE: 'Content type of entries that will be exported',
@@ -43,7 +43,8 @@ export const messages = {
   INFO_EXPORTING_TEAM: 'Exporting the team with uid {teamUid} in Organisation {orgName}',
   INFO_EXPORTING_TEAM_USERS: 'Exporting the teams user data for {target}',
   INFO_EXPORTING_STACK_ROLES: 'Exporting the stack role details for {target}',
-  INFO_NO_TEAMS: 'The organization {orgName} does not have any teams associated with it. Please verify and provide the correct organization name.',
+  INFO_NO_TEAMS:
+    'The organization {orgName} does not have any teams associated with it. Please verify and provide the correct organization name.',
 
   // Warning messages
   WARNING_STACK_ACCESS_DENIED:
@@ -56,7 +57,8 @@ export const messages = {
   PROMPT_CHOOSE_BRANCH: 'Choose a Branch',
   PROMPT_CHOOSE_CONTENT_TYPE: 'Choose Content Type (Press Space to select the content types)',
   PROMPT_CHOOSE_LANGUAGE: 'Choose Language',
-  PROMPT_CONTINUE_EXPORT: 'Access denied: Please confirm if you still want to continue exporting the data without the { Stack Name, Stack Uid, Role Name } fields.',
+  PROMPT_CONTINUE_EXPORT:
+    'Access denied: Please confirm if you still want to continue exporting the data without the { Stack Name, Stack Uid, Role Name } fields.',
 } as const;
 
 /**
