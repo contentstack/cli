@@ -1,88 +1,40 @@
-# @contentstack/cli-cm-export-to-csv
+@contentstack/cli-cm-export-to-csv
+=============
 
-Export entries, taxonomies, terms, or organization users to CSV files.
+The cm:export-to-csv command allows you to export the following data into a CSV file:
+* Multiple stack’s content and structure (schema)
+* [Organization users’ details](https://www.contentstack.com/docs/owners-and-admins/organization-users/)
 
-> **Note**: This is a TypeScript rewrite of the original `contentstack-export-to-csv` package.
+To be able to export the content of a stack, you need to have access to it. Likewise, to export an organization’s user data, you need to be the  “[owner](https://www.contentstack.com/docs/owners-and-admins/organization-roles/#organization-owner)” or an “[admin](https://www.contentstack.com/docs/owners-and-admins/organization-roles/#organization-admin)” user of that organization.
 
-## Installation
+Refer to the [Export Content to .CSV](https://www.contentstack.com/docs/developers/cli/export-content-to-csv-file/) file guide to learn more.
 
+[![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
+
+* [Usage](#usage)
+* [Commands](#commands)
+# Usage
 ```sh-session
 $ npm install -g @contentstack/cli-cm-export-to-csv
+$ csdx COMMAND
+running command...
+$ csdx (-v|--version|version)
+@contentstack/cli-cm-export-to-csv/0.1.0-beta linux-x64 node-v12.18.4
+$ csdx --help [COMMAND]
+USAGE
+  $ csdx COMMAND
+...
 ```
-
-## Usage
-
-```sh-session
-$ csdx cm:export-to-csv [OPTIONS]
-```
-
-## Commands
+# Commands
+* [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
 
 ### `csdx cm:export-to-csv`
 
-Export entries, taxonomies, terms, or organization users to CSV.
+Export entries or organization users to csv using this command
 
 ```
 USAGE
-  $ csdx cm:export-to-csv [--action <entries|users|teams|taxonomies>] [--alias <alias>]
-    [--org <org-uid>] [--stack-api-key <api-key>] [--locale <locale>]
-    [--content-type <uid>] [--branch <branch>] [--delimiter <char>]
-
-FLAGS
-  -a, --alias=<value>          Alias of the management token
-  -k, --stack-api-key=<value>  API Key of the source stack
-  -n, --stack-name=<value>     Name of the stack for CSV filename
-  --action=<option>            Export action [options: entries, users, teams, taxonomies]
-  --branch=<value>             Branch from which entries will be exported
-  --content-type=<value>       Content type of entries to export
-  --delimiter=<value>          [default: ,] CSV delimiter character
-  --fallback-locale=<value>    Fallback locale for taxonomy export
-  --include-fallback           Include fallback locale data for taxonomies
-  --locale=<value>             Locale of entries to export
-  --org=<value>                Organization UID
-  --org-name=<value>           Organization name for CSV filename
-  --taxonomy-uid=<value>       Taxonomy UID for specific taxonomy export
-  --team-uid=<value>           Team UID for specific team export
-
-EXAMPLES
   $ csdx cm:export-to-csv
-
-  $ csdx cm:export-to-csv --action entries --locale en-us --alias my-token --content-type blog_post
-
-  $ csdx cm:export-to-csv --action users --org blt123456789
-
-  $ csdx cm:export-to-csv --action teams --org blt123456789
-
-  $ csdx cm:export-to-csv --action taxonomies --alias my-token --taxonomy-uid categories
 ```
 
-## Output
-
-CSV files are written to a `./data/` directory in the current working directory.
-
-| Action | Output File Pattern |
-|--------|---------------------|
-| entries | `{stackName}_{contentType}_{locale}_entries_export.csv` |
-| users | `{orgName}_users_export.csv` |
-| teams | `{orgName}_teams_export.csv` |
-| taxonomies | `{stackName}_taxonomies.csv` |
-
-## Development
-
-```sh-session
-# Install dependencies
-$ pnpm install
-
-# Build
-$ pnpm build
-
-# Run tests
-$ pnpm test
-
-# Lint
-$ pnpm lint
-```
-
-## License
-
-MIT
+_See code: [src/commands/cm/export-to-csv.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-export-to-csv/src/commands/cm/export-to-csv.js)_

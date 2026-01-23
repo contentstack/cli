@@ -4,7 +4,7 @@
  */
 
 import { cliux, messageHandler, log } from '@contentstack/cli-utilities';
-import type { ApiError } from '../types';
+import type { ApiError, ErrorWithMessage, TaxonomyError } from '../types';
 
 /**
  * Format an error into a user-friendly message.
@@ -61,14 +61,6 @@ export function formatError(error: unknown): string {
 }
 
 /**
- * API error with optional errorMessage and message properties.
- */
-interface ErrorWithMessage {
-  errorMessage?: string;
-  message?: string;
-}
-
-/**
  * Handle and print error messages.
  * Uses the CLI utilities handleAndLogError for consistent error handling.
  * Exits the process with code 1.
@@ -81,18 +73,6 @@ export function handleErrorMsg(err: ErrorWithMessage | Error | unknown, context?
   cliux.print(`Error: ${errorMessage}`, { color: 'red' });
 
   process.exit(1);
-}
-
-/**
- * Taxonomy-specific error with errors object.
- */
-interface TaxonomyError {
-  errorMessage?: string;
-  message?: string;
-  errors?: {
-    taxonomy?: string;
-    term?: string;
-  };
 }
 
 /**

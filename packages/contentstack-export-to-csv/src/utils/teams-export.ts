@@ -24,6 +24,7 @@ import type {
   StackRoleMapping,
   StackRoleMappingCsvRow,
   StackRole,
+  StackRoleMap,
 } from '../types';
 
 /**
@@ -220,13 +221,6 @@ export async function exportRoleMappings(
 
   log.info(`Writing ${stackRoleWithTeamData.length} role mappings to ${fileName}`, logContext);
   write(null, stackRoleWithTeamData, fileName, 'Team Stack Role details', delimiter);
-}
-
-/**
- * Stack role map with stack details.
- */
-interface StackRoleMap {
-  [key: string]: string | { name: string; uid: string };
 }
 
 /**

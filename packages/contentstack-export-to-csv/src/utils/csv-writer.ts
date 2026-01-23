@@ -8,13 +8,10 @@ import * as fs from 'fs';
 import * as fastcsv from 'fast-csv';
 import { cliux } from '@contentstack/cli-utilities';
 
+import type { CsvRow } from '../types';
+
 const directory = './data';
 const delimiter = os.platform() === 'win32' ? '\\' : '/';
-
-/**
- * CSV row data type - can be any record with string keys or string array.
- */
-type CsvRow = Record<string, unknown> | string[];
 
 /**
  * Write data to a CSV file.

@@ -1,28 +1,6 @@
 fileignoreconfig:
-  - filename: pnpm-lock.yaml
-    checksum: 61df9c5119a68d5058fcf232905ed8a76d6cc58406c13207788c7e6a49bf456a
+  - filename: packages/contentstack-export-to-csv/src/types/index.ts
+    checksum: 28c19efb0c13969d40df964f86fa6de444316e320801f19dee7392df7a36851d
   - filename: package-lock.json
-    checksum: e8fd31693cede1935a30511076c1c442e7a50c246f8d58dcb88ffd3ce04d3cb3
-  - filename: packages/contentstack-clone/test/commands/stack-clone.test.ts
-    checksum: 889b9d64434261910a50c14e039e6256fd6157727076308f39bba87b854d459a
-  - filename: packages/contentstack-clone/.eslintrc
-    checksum: a7230ffa600c58047ac73f2dec7a23ca5862e36e68f04f2671379496739bd818
-  - filename: packages/contentstack-clone/src/types/clone-config.ts
-    checksum: c22f8b8a592e7b4da967715e595e79a680ab970ca85b65528d5ac318032e1857
-  - filename: packages/contentstack-clone/test/lib/helpers/command-helpers.test.ts
-    checksum: 2702c3cedd9def635fa48408a3a4bbab6728ec8a2700af4f8d5ed6bbe2da4faa
-  - filename: packages/contentstack-clone/test/lib/util/clone-handler.helpers.test.ts
-    checksum: efd55d08a7b5263e9ba0d871208552c5df941274bc035bac6101ed26b6ba2da4
-  - filename: packages/contentstack-clone/test/lib/util/clone-handler.branch.test.ts
-    checksum: 0f1fccb38c89b4baa9fa2b145905b626b5ce9633ae30021676a924fa88aa570c
-  - filename: packages/contentstack-clone/package.json
-    checksum: a81ef3f125ddb91a4e13e77745d9c7927f02e3ff17978374560de6f4825db1c9
-  - filename: packages/contentstack-clone/test/lib/util/clone-handler.commands.test.ts
-    checksum: e3c5be3312013df0c20faca3ff280130f9ce187a4187c5045b016b0c7b489b46
-  - filename: packages/contentstack-clone/test/lib/util/clone-handler.execution.test.ts
-    checksum: d63e7253b2c8eb4da3238fdf78b66dfbad8e6340fb6ff0b4bcb6ae5cafba1328
-  - filename: packages/contentstack-clone/test/commands/cm/stacks/clone.test.ts
-    checksum: 577aa1cba4e06b3c864c568853692eeaf6eee276b6eb3e040df112259118f4c4
-  - filename: packages/contentstack-clone/src/core/util/clone-handler.ts
-    checksum: b34987603f2e53c4b5d3753a4b5f4370fcb6d3cc9181b953de13fcc7214648a1
+    checksum: faa364dac78a89d142916b71b5ceba7fdc80acbf8dc71f15dfb38d622c9dc664
 version: '1.0'

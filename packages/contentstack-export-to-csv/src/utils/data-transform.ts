@@ -23,6 +23,7 @@ import type {
   TermCsvRow,
   EnvironmentMap,
   OrganizationChoice,
+  OrgRoleMap,
 } from '../types';
 
 // ============================================================================
@@ -233,15 +234,6 @@ export function cleanOrgUsers(
 // ============================================================================
 // Team Transformation Functions
 // ============================================================================
-
-/**
- * Organization role map structure.
- */
-interface OrgRoleMap {
-  member?: string;
-  admin?: string;
-  [key: string]: string | undefined;
-}
 
 /**
  * Removes unnecessary fields from team data and assigns org level roles.

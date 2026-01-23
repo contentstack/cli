@@ -58,6 +58,21 @@ export interface ExportToCsvFlags {
   delimiter?: string;
 }
 
+/**
+ * Token configuration from config handler.
+ */
+export interface TokenConfig {
+  apiKey: string;
+  token: string;
+}
+
+/**
+ * Tokens map from config handler.
+ */
+export interface TokensMap {
+  [alias: string]: TokenConfig;
+}
+
 // ============================================================================
 // Stack & Branch Types
 // ============================================================================
@@ -88,6 +103,54 @@ export interface StackInitOptions {
   api_key: string;
   branch_uid?: string;
   management_token?: string;
+}
+
+/**
+ * Branch existence check result.
+ */
+export interface BranchExistsResult {
+  errorCode?: string;
+  errorMessage?: string;
+}
+
+/**
+ * Stack item structure from API.
+ */
+export interface StackItem {
+  name: string;
+  api_key: string;
+}
+
+// ============================================================================
+// Organization Types
+// ============================================================================
+
+/**
+ * Organization item structure from API.
+ */
+export interface OrganizationItem {
+  uid: string;
+  name: string;
+  items?: OrganizationItem[];
+}
+
+/**
+ * Organization with roles structure from getUser API.
+ */
+export interface OrgWithRoles {
+  uid: string;
+  name: string;
+  is_owner?: boolean;
+  org_roles?: Array<{ admin?: boolean }>;
+}
+
+/**
+ * Organization role map structure.
+ */
+export interface OrgRoleMap {
+  member?: string;
+  admin?: string;
+  [key: string]: string | undefined;
 }
 
 // ============================================================================
@@ -160,6 +223,30 @@ export interface ContentTypeCountResponse {
 }
 
 /**
+ * Content type item from API.
+ */
+export interface ContentTypeItem {
+  uid: string;
+  title?: string;
+}
+
+/**
+ * Language/locale item structure from API.
+ */
+export interface LanguageItem {
+  name: string;
+  code: string;
+}
+
+/**
+ * Environment item structure from API.
+ */
+export interface EnvironmentItem {
+  uid: string;
+  name: string;
+}
+
+/**
  * Entry publish details.
  */
 export interface PublishDetails {
@@ -224,6 +311,13 @@ export interface LanguageChoice {
 // ============================================================================
 // Team Types
 // ============================================================================
+
+/**
+ * Stack role map with stack details.
+ */
+export interface StackRoleMap {
+  [key: string]: string | { name: string; uid: string };
+}
 
 /**
  * Team user data.
@@ -586,6 +680,39 @@ export interface FallbackOptions {
   includeFallback: boolean;
   fallbackLocale: string | null;
 }
+
+// ============================================================================
+// Error Types
+// ============================================================================
+
+/**
+ * API error with optional errorMessage and message properties.
+ */
+export interface ErrorWithMessage {
+  errorMessage?: string;
+  message?: string;
+}
+
+/**
+ * Taxonomy-specific error with errors object.
+ */
+export interface TaxonomyError {
+  errorMessage?: string;
+  message?: string;
+  errors?: {
+    taxonomy?: string;
+    term?: string;
+  };
+}
+
+// ============================================================================
+// CSV Types
+// ============================================================================
+
+/**
+ * CSV row data type - can be any record with string keys or string array.
+ */
+export type CsvRow = Record<string, unknown> | string[];
 
 // ============================================================================
 // CSV Import Result Types

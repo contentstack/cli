@@ -25,6 +25,13 @@ export const messages = {
   FLAG_DELIMITER:
     "[Optional] Provide a delimiter to separate individual data fields within the CSV file. For example: cm:export-to-csv --delimiter '|'",
 
+  // Action choices for interactive prompts
+  ACTION_EXPORT_ENTRIES: 'Export entries to a .CSV file',
+  ACTION_EXPORT_USERS: "Export organization users' data to a .CSV file",
+  ACTION_EXPORT_TEAMS: "Export organization teams' data to a .CSV file",
+  ACTION_EXPORT_TAXONOMIES: 'Export taxonomies to a .CSV file',
+  ACTION_CANCEL: 'Cancel and Exit',
+
   // Error messages
   ERROR_NOT_LOGGED_IN: 'You need to either login or provide a management token to execute this command',
   ERROR_LOGIN_REQUIRED: 'You need to login to execute this command. See: auth:login --help',
@@ -35,6 +42,7 @@ export const messages = {
   ERROR_ORG_NOT_FOUND: 'Org UID not found',
   ERROR_MANAGEMENT_TOKEN_NOT_FOUND: 'The provided management token alias was not found in your config',
   ERROR_MANAGEMENT_TOKEN_INVALID: 'Management token or stack API key is invalid',
+  ERROR_ADMIN_ACCESS_DENIED: "Unable to export data. Make sure you're an admin or owner of this organization",
 
   // Info messages
   INFO_NO_TAXONOMIES: 'No taxonomies found!',

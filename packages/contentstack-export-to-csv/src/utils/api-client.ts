@@ -7,6 +7,7 @@ import find from 'lodash/find';
 import { configHandler } from '@contentstack/cli-utilities';
 
 import config from '../config';
+import { messages } from '../messages';
 import { wait, handleErrorMsg, handleTaxonomyErrorMsg } from './error-handler';
 import type {
   ManagementClient,
@@ -33,6 +34,12 @@ import type {
   EntriesResponse,
   UserResponse,
   ImportableCsvResult,
+  OrganizationItem,
+  OrgWithRoles,
+  StackItem,
+  ContentTypeItem,
+  LanguageItem,
+  EnvironmentItem,
 } from '../types';
 
 // ============================================================================
@@ -48,15 +55,6 @@ export async function getOrganizations(managementAPIClient: ManagementClient): P
   } catch (error) {
     throw error;
   }
-}
-
-/**
- * Organization item structure from API.
- */
-interface OrganizationItem {
-  uid: string;
-  name: string;
-  items?: OrganizationItem[];
 }
 
 /**
@@ -91,16 +89,6 @@ async function getOrganizationList(
     await wait(200);
     return getOrganizationList(managementAPIClient, params, result);
   }
-}
-
-/**
- * Organization with roles structure from getUser API.
- */
-interface OrgWithRoles {
-  uid: string;
-  name: string;
-  is_owner?: boolean;
-  org_roles?: Array<{ admin?: boolean }>;
 }
 
 /**
@@ -161,7 +149,7 @@ export function getOrgUsers(managementAPIClient: ManagementClient, orgUid: strin
         }
 
         if (!organization.getInvitations && !find(organization.org_roles, 'admin')) {
-          return reject(new Error(config.adminError));
+          return reject(new Error(messages.ERROR_ADMIN_ACCESS_DENIED));
         }
 
         try {
@@ -227,7 +215,7 @@ export function getOrgRoles(managementAPIClient: ManagementClient, orgUid: strin
         }
 
         if (!organization.roles && !find(organization.org_roles, 'admin')) {
-          return reject(new Error(config.adminError));
+          return reject(new Error(messages.ERROR_ADMIN_ACCESS_DENIED));
         }
 
         managementAPIClient
@@ -245,14 +233,6 @@ export function getOrgRoles(managementAPIClient: ManagementClient, orgUid: strin
 // ============================================================================
 // Stack APIs
 // ============================================================================
-
-/**
- * Stack item structure from API.
- */
-interface StackItem {
-  name: string;
-  api_key: string;
-}
 
 /**
  * Get all stacks in an organization.
@@ -300,14 +280,6 @@ export function getContentTypeCount(stackAPIClient: StackClient): Promise<number
 }
 
 /**
- * Content type item structure from API.
- */
-interface ContentTypeItem {
-  uid: string;
-  title: string;
-}
-
-/**
  * Get content types with pagination.
  */
 export function getContentTypes(stackAPIClient: StackClient, skip: number): Promise<ContentTypeMap> {
@@ -321,7 +293,9 @@ export function getContentTypes(stackAPIClient: StackClient, skip: number): Prom
       .then((contentTypes: unknown) => {
         const response = contentTypes as { items: ContentTypeItem[] };
         response.items.forEach((contentType) => {
-          result[contentType.title] = contentType.uid;
+          if (contentType.title) {
+            result[contentType.title] = contentType.uid;
+          }
         });
         resolve(result);
       })
@@ -334,14 +308,6 @@ export function getContentTypes(stackAPIClient: StackClient, skip: number): Prom
 // ============================================================================
 // Language/Locale APIs
 // ============================================================================
-
-/**
- * Language item structure from API.
- */
-interface LanguageItem {
-  name: string;
-  code: string;
-}
 
 /**
  * Get all languages/locales for a stack.
@@ -420,14 +386,6 @@ export function getEntries(
 // ============================================================================
 // Environment APIs
 // ============================================================================
-
-/**
- * Environment item structure from API.
- */
-interface EnvironmentItem {
-  uid: string;
-  name: string;
-}
 
 /**
  * Get all environments for a stack.
