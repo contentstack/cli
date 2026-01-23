@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import ExportToCsv from '../../../dist/commands/cm/export-to-csv';
+import ExportToCsv from '../../../src/commands/cm/export-to-csv';
 
 describe('cm:export-to-csv', () => {
   describe('command scaffolding', () => {

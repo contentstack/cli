@@ -1,15 +1,15 @@
 import { expect } from 'chai';
-import { csvParse } from '../../../dist/utils/csv-writer';
+import { csvParse } from '../../../src/utils/csv-writer';
 
 describe('csv-writer', () => {
   describe('module exports', () => {
     it('should export write function', async () => {
-      const csvWriter = await import('../../../dist/utils/csv-writer');
+      const csvWriter = await import('../../../src/utils/csv-writer');
       expect(csvWriter.write).to.be.a('function');
     });
 
     it('should export csvParse function', async () => {
-      const csvWriter = await import('../../../dist/utils/csv-writer');
+      const csvWriter = await import('../../../src/utils/csv-writer');
       expect(csvWriter.csvParse).to.be.a('function');
     });
   });
