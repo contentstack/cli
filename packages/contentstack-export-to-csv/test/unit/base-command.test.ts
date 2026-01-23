@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { BaseCommand } from '../../dist/base-command';
+import { BaseCommand } from '../../src/base-command';
 
 describe('BaseCommand', () => {
   describe('class definition', () => {

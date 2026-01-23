@@ -13,7 +13,7 @@ import {
   kebabize,
   getFormattedDate,
   getDateTime,
-} from '../../../dist/utils/data-transform';
+} from '../../../src/utils/data-transform';
 
 describe('data-transform', () => {
   describe('flatten', () => {

@@ -3,7 +3,7 @@ import sinon from 'sinon';
 import {
   formatError,
   wait,
-} from '../../../dist/utils/error-handler';
+} from '../../../src/utils/error-handler';
 
 describe('error-handler', () => {
   describe('formatError', () => {
