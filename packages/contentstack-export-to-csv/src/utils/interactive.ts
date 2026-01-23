@@ -8,7 +8,7 @@ import inquirer, { Answers } from 'inquirer';
 import checkboxPlus from 'inquirer-checkbox-plus-prompt';
 import { cliux } from '@contentstack/cli-utilities';
 
-import config from '../config';
+import { messages } from '../messages';
 import { exitProgram } from './error-handler';
 import { getOrganizations, getOrganizationsWhereUserIsAdmin, getStacks, getLanguages } from './api-client';
 import type {
@@ -41,7 +41,7 @@ export function startupQuestions(): Promise<string> {
         type: 'list',
         name: 'action',
         message: 'Choose Action',
-        choices: [config.exportEntries, config.exportUsers, config.exportTeams, config.exportTaxonomies, 'Exit'],
+        choices: [messages.ACTION_EXPORT_ENTRIES, messages.ACTION_EXPORT_USERS, messages.ACTION_EXPORT_TEAMS, messages.ACTION_EXPORT_TAXONOMIES, 'Exit'],
       },
     ];
 
@@ -70,14 +70,14 @@ export function chooseOrganization(
     try {
       let organizations: OrgMap;
 
-      if (action === config.exportUsers || action === config.exportTeams || action === 'teams') {
+      if (action === messages.ACTION_EXPORT_USERS || action === messages.ACTION_EXPORT_TEAMS || action === 'teams') {
         organizations = await getOrganizationsWhereUserIsAdmin(managementAPIClient);
       } else {
         organizations = await getOrganizations(managementAPIClient);
       }
 
       const orgList = Object.keys(organizations);
-      orgList.push(config.cancelString);
+      orgList.push(messages.ACTION_CANCEL);
 
       const _chooseOrganization = [
         {
@@ -93,7 +93,7 @@ export function chooseOrganization(
         .prompt(_chooseOrganization)
         .then((answers: Answers) => {
           const chosenOrg = answers.chosenOrg as string;
-          if (chosenOrg === config.cancelString) exitProgram();
+          if (chosenOrg === messages.ACTION_CANCEL) exitProgram();
           resolve({ name: chosenOrg, uid: organizations[chosenOrg] });
         })
         .catch(reject);
@@ -131,7 +131,7 @@ export function chooseStack(
       }
 
       const stackList = Object.keys(stacks);
-      stackList.push(config.cancelString);
+      stackList.push(messages.ACTION_CANCEL);
 
       const _chooseStack = [
         {
@@ -146,7 +146,7 @@ export function chooseStack(
         .prompt(_chooseStack)
         .then((answers: Answers) => {
           const chosenStack = answers.chosenStack as string;
-          if (chosenStack === config.cancelString) exitProgram();
+          if (chosenStack === messages.ACTION_CANCEL) exitProgram();
           resolve({ name: chosenStack, apiKey: stacks[chosenStack] });
         })
         .catch(reject);
@@ -283,7 +283,7 @@ export function chooseLanguage(stackAPIClient: StackClient): Promise<LanguageCho
   return new Promise(async (resolve, reject) => {
     const languages: LanguageMap = await getLanguages(stackAPIClient);
     const languagesList = Object.keys(languages);
-    languagesList.push(config.cancelString);
+    languagesList.push(messages.ACTION_CANCEL);
 
     const _chooseLanguage = [
       {
@@ -298,7 +298,7 @@ export function chooseLanguage(stackAPIClient: StackClient): Promise<LanguageCho
       .prompt(_chooseLanguage)
       .then((answers: Answers) => {
         const chosenLanguage = answers.chosenLanguage as string;
-        if (chosenLanguage === config.cancelString) exitProgram();
+        if (chosenLanguage === messages.ACTION_CANCEL) exitProgram();
         resolve({ name: chosenLanguage, code: languages[chosenLanguage] });
       })
       .catch(reject);

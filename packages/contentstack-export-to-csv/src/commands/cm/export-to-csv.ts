@@ -18,6 +18,7 @@ import {
 } from '@contentstack/cli-utilities';
 
 import config from '../../config';
+import { messages } from '../../messages';
 import { BaseCommand } from '../../base-command';
 import {
   startupQuestions,
@@ -59,37 +60,10 @@ import type {
   TaxonomyPayload,
   TaxonomyLocaleOptions,
   EnvironmentMap,
+  TokensMap,
+  BranchExistsResult,
+  ContentTypeItem,
 } from '../../types';
-
-/**
- * Token configuration from config handler.
- */
-interface TokenConfig {
-  apiKey: string;
-  token: string;
-}
-
-/**
- * Tokens map from config handler.
- */
-interface TokensMap {
-  [alias: string]: TokenConfig;
-}
-
-/**
- * Branch existence check result.
- */
-interface BranchExistsResult {
-  errorCode?: string;
-  errorMessage?: string;
-}
-
-/**
- * Content type item from API.
- */
-interface ContentTypeItem {
-  uid: string;
-}
 
 export default class ExportToCsvCommand extends BaseCommand {
   static readonly description = 'Export entries, taxonomies, terms or organization users to csv using this command';
@@ -229,7 +203,7 @@ export default class ExportToCsvCommand extends BaseCommand {
 
         if (!isAuthenticated()) {
           log.debug('User not authenticated', this.commandContext);
-          this.error(config.CLI_EXPORT_CSV_ENTRIES_ERROR, {
+          this.error(messages.ERROR_NOT_LOGGED_IN, {
             exit: 2,
             suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
           });
@@ -245,7 +219,7 @@ export default class ExportToCsvCommand extends BaseCommand {
       }
 
       switch (action) {
-        case config.exportEntries:
+        case messages.ACTION_EXPORT_ENTRIES:
         case 'entries': {
           await this.exportEntries({
             managementAPIClient: managementAPIClient!,
@@ -261,7 +235,7 @@ export default class ExportToCsvCommand extends BaseCommand {
           break;
         }
 
-        case config.exportUsers:
+        case messages.ACTION_EXPORT_USERS:
         case 'users': {
           await this.exportUsers({
             managementAPIClient: managementAPIClient!,
@@ -273,7 +247,7 @@ export default class ExportToCsvCommand extends BaseCommand {
           break;
         }
 
-        case config.exportTeams:
+        case messages.ACTION_EXPORT_TEAMS:
         case 'teams': {
           await this.exportTeamsData({
             managementAPIClient: managementAPIClient!,
@@ -286,7 +260,7 @@ export default class ExportToCsvCommand extends BaseCommand {
           break;
         }
 
-        case config.exportTaxonomies:
+        case messages.ACTION_EXPORT_TAXONOMIES:
         case 'taxonomies': {
           await this.exportTaxonomiesData({
             managementAPIClient: managementAPIClient!,
@@ -742,7 +716,7 @@ export default class ExportToCsvCommand extends BaseCommand {
 
     if (!isAuthenticated()) {
       log.debug('User not authenticated', this.commandContext);
-      this.error(config.CLI_EXPORT_CSV_ENTRIES_ERROR, {
+      this.error(messages.ERROR_NOT_LOGGED_IN, {
         exit: 2,
         suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
       });
