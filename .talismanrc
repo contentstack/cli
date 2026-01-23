@@ -1,4 +1,6 @@
 fileignoreconfig:
   - filename: package-lock.json
-    checksum: 972862738541f747e4f29b535b30e88d748093704b32964b9612fd786b466b52
+    checksum: d187fcbd7f67bb7122328451322d86b823d376877eec8bbcab42970a0435afa3
+  - filename: pnpm-lock.yaml
+    checksum: a37d46befd024a9640006e1459b411dd85df434807332cc55c2af81bfd5cae44
 version: '1.0'
