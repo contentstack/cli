@@ -5,8 +5,6 @@
  * Defines package-specific types for API responses, CSV structures, and CLI flags.
  */
 
-import { ContentstackClient } from '@contentstack/management';
-
 // Re-export shared types from cli-utilities
 export type {
   Organization,
@@ -15,16 +13,15 @@ export type {
   Locale,
   PrintOptions,
   InquirePayload,
+  ContentstackClient as ManagementClient,
 } from '@contentstack/cli-utilities';
+
+// Import ContentstackClient from cli-utilities (which re-exports from @contentstack/management)
+import { ContentstackClient } from '@contentstack/cli-utilities';
 
 // ============================================================================
 // Management SDK Types
 // ============================================================================
-
-/**
- * Management API Client type from @contentstack/management SDK.
- */
-export type ManagementClient = ContentstackClient;
 
 /**
  * Stack API Client - returned by managementClient.stack()
