@@ -17,7 +17,7 @@
     "lodash": "^4.17.21",
     "nock": "^13.5.6",
     "omit-deep-lodash": "^1.1.7",
-    "sinon": "^19.0.5"
+    "sinon": "^21.0.1"
   },
   "devDependencies": {
     "@oclif/test": "^4.1.13",
