@@ -1,4 +1,23 @@
 import { expect } from 'chai';
+import {
+  getOrganizations,
+  getOrganizationsWhereUserIsAdmin,
+  getOrgUsers,
+  getOrgRoles,
+  getStacks,
+  getContentTypeCount,
+  getContentTypes,
+  getLanguages,
+  getEntriesCount,
+  getEntries,
+  getEnvironments,
+  getAllTeams,
+  exportOrgTeams,
+  getAllTaxonomies,
+  getAllTermsOfTaxonomy,
+  getTaxonomy,
+  createImportableCSV,
+} from '../../../src/utils/api-client';
 
 // API client functions are tightly coupled to the Contentstack SDK
 // These tests verify the function signatures and basic structure
@@ -6,27 +25,24 @@ import { expect } from 'chai';
 
 describe('api-client', () => {
   describe('module exports', () => {
-    it('should export all expected functions', async () => {
-      // Import from the barrel export with explicit index.js
-      const utils = await import('../../../dist/utils/index.js');
-
-      expect(utils.getOrganizations).to.be.a('function');
-      expect(utils.getOrganizationsWhereUserIsAdmin).to.be.a('function');
-      expect(utils.getOrgUsers).to.be.a('function');
-      expect(utils.getOrgRoles).to.be.a('function');
-      expect(utils.getStacks).to.be.a('function');
-      expect(utils.getContentTypeCount).to.be.a('function');
-      expect(utils.getContentTypes).to.be.a('function');
-      expect(utils.getLanguages).to.be.a('function');
-      expect(utils.getEntriesCount).to.be.a('function');
-      expect(utils.getEntries).to.be.a('function');
-      expect(utils.getEnvironments).to.be.a('function');
-      expect(utils.getAllTeams).to.be.a('function');
-      expect(utils.exportOrgTeams).to.be.a('function');
-      expect(utils.getAllTaxonomies).to.be.a('function');
-      expect(utils.getAllTermsOfTaxonomy).to.be.a('function');
-      expect(utils.getTaxonomy).to.be.a('function');
-      expect(utils.createImportableCSV).to.be.a('function');
+    it('should export all expected functions', () => {
+      expect(getOrganizations).to.be.a('function');
+      expect(getOrganizationsWhereUserIsAdmin).to.be.a('function');
+      expect(getOrgUsers).to.be.a('function');
+      expect(getOrgRoles).to.be.a('function');
+      expect(getStacks).to.be.a('function');
+      expect(getContentTypeCount).to.be.a('function');
+      expect(getContentTypes).to.be.a('function');
+      expect(getLanguages).to.be.a('function');
+      expect(getEntriesCount).to.be.a('function');
+      expect(getEntries).to.be.a('function');
+      expect(getEnvironments).to.be.a('function');
+      expect(getAllTeams).to.be.a('function');
+      expect(exportOrgTeams).to.be.a('function');
+      expect(getAllTaxonomies).to.be.a('function');
+      expect(getAllTermsOfTaxonomy).to.be.a('function');
+      expect(getTaxonomy).to.be.a('function');
+      expect(createImportableCSV).to.be.a('function');
     });
   });
 

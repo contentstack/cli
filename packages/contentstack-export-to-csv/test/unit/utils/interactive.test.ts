@@ -1,20 +1,28 @@
 import { expect } from 'chai';
+import {
+  startupQuestions,
+  chooseOrganization,
+  chooseStack,
+  chooseBranch,
+  chooseContentType,
+  chooseInMemContentTypes,
+  chooseLanguage,
+  chooseFallbackOptions,
+  promptContinueExport,
+} from '../../../src/utils/interactive';
 
 describe('interactive', () => {
   describe('module exports', () => {
-    it('should export all interactive functions', async () => {
-      // Import from barrel export with explicit index.js
-      const utils = await import('../../../dist/utils/index.js');
-
-      expect(utils.startupQuestions).to.be.a('function');
-      expect(utils.chooseOrganization).to.be.a('function');
-      expect(utils.chooseStack).to.be.a('function');
-      expect(utils.chooseBranch).to.be.a('function');
-      expect(utils.chooseContentType).to.be.a('function');
-      expect(utils.chooseInMemContentTypes).to.be.a('function');
-      expect(utils.chooseLanguage).to.be.a('function');
-      expect(utils.chooseFallbackOptions).to.be.a('function');
-      expect(utils.promptContinueExport).to.be.a('function');
+    it('should export all interactive functions', () => {
+      expect(startupQuestions).to.be.a('function');
+      expect(chooseOrganization).to.be.a('function');
+      expect(chooseStack).to.be.a('function');
+      expect(chooseBranch).to.be.a('function');
+      expect(chooseContentType).to.be.a('function');
+      expect(chooseInMemContentTypes).to.be.a('function');
+      expect(chooseLanguage).to.be.a('function');
+      expect(chooseFallbackOptions).to.be.a('function');
+      expect(promptContinueExport).to.be.a('function');
     });
   });
 
