@@ -1,0 +1,33 @@
+{
+    "compilerOptions": {
+      "baseUrl": ".",
+      "declaration": true,
+      "importHelpers": true,
+      "module": "commonjs",
+      "rootDir": "src",
+      "outDir": "lib",
+      "strict": false,
+      "target": "es2017",
+      "allowJs": true,
+      "skipLibCheck": true,
+      "sourceMap": false,
+      "esModuleInterop": true,
+      "noImplicitAny": true,
+      "lib": [
+        "ES2019",
+        "es2020.promise"
+      ],
+      "strictPropertyInitialization": false,
+      "forceConsistentCasingInFileNames": true,
+      "resolveJsonModule": true
+    },
+    "include": [
+      "src/**/*",
+      "types/*",
+      "src/**/**/*.json"
+    ],
+    "exclude": [
+      "node_modules",
+      "lib"
+    ]
+  }
