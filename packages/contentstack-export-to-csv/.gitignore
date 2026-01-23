@@ -1,10 +1,31 @@
-*-debug.log
-*-error.log
-/.nyc_output
+# Build output
 /dist
-/tmp
-/yarn.lock
-coverage
-node_modules
-data
-logs
+/lib
+
+# Dependencies
+/node_modules
+
+# TypeScript
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# oclif
+/oclif.manifest.json
+
+# Coverage
+/.nyc_output
+/coverage
+
+# OS files
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test output
+/test-results
