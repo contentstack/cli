@@ -7,7 +7,7 @@
   "dependencies": {
     "@contentstack/cli-command": "~1.7.1",
     "@contentstack/cli-utilities": "~1.15.0",
-    "@contentstack/cli-variants": "~2.0.0-beta.3",
+    "@contentstack/cli-variants": "~2.0.0-beta.4",
     "@oclif/core": "^4.8.0",
     "async": "^3.2.6",
     "big-json": "^3.2.0",
