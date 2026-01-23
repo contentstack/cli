@@ -7,7 +7,7 @@
   "dependencies": {
     "@contentstack/cli-command": "~1.7.2",
     "@contentstack/cli-utilities": "~1.17.0",
-    "@oclif/core": "^4.3.0",
+    "@oclif/core": "^4.8.0",
     "@oclif/plugin-help": "^6.2.32",
     "fast-csv": "^4.3.6",
     "inquirer": "8.2.7",
