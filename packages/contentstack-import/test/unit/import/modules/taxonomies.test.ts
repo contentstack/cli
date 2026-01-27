@@ -15,6 +15,7 @@ describe('ImportTaxonomies', () => {
   beforeEach(() => {
     sandbox = sinon.createSandbox();
     
+    // Mock stack client
     mockStackClient = {
       taxonomy: (uid?: string) => ({
         create: sandbox.stub().resolves({ 
@@ -33,6 +34,7 @@ describe('ImportTaxonomies', () => {
       })
     };
 
+    // Mock import config
     mockImportConfig = {
       apiKey: 'test',
       backupDir: testBackupDir,
@@ -52,28 +54,18 @@ describe('ImportTaxonomies', () => {
       }
     };
 
+    // Create instance
     importTaxonomies = new ImportTaxonomies({
       importConfig: mockImportConfig,
       stackAPIClient: mockStackClient,
       moduleName: 'taxonomies'
     });
 
+    // Stub utility functions
     sandbox.stub(fsUtil, 'readFile');
     sandbox.stub(fsUtil, 'writeFile');
     sandbox.stub(fsUtil, 'makeDirectory');
     sandbox.stub(fileHelper, 'fileExistsSync');
-    
-    sandbox.stub(importTaxonomies as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-      return await fn();
-    });
-    sandbox.stub(importTaxonomies as any, 'analyzeTaxonomies').resolves([1]);
-    const mockProgress = {
-      updateStatus: sandbox.stub()
-    };
-    sandbox.stub(importTaxonomies as any, 'createSimpleProgress').returns(mockProgress);
-    sandbox.stub(importTaxonomies as any, 'prepareMapperDirectories').resolves();
-    sandbox.stub(importTaxonomies as any, 'createSuccessAndFailedFile').resolves();
-    sandbox.stub(importTaxonomies as any, 'completeProgress').resolves();
   });
 
   afterEach(() => {
@@ -109,14 +101,10 @@ describe('ImportTaxonomies', () => {
 
   describe('start', () => {
     it('should start import process when taxonomies folder exists', async () => {
-      sandbox.restore();
-      sandbox.stub(fsUtil, 'readFile');
-      sandbox.stub(fsUtil, 'writeFile');
-      sandbox.stub(fsUtil, 'makeDirectory');
-      sandbox.stub(fileHelper, 'fileExistsSync');
-      
+      // Mock file system to return true for taxonomies folder
       (fileHelper.fileExistsSync as any).returns(true);
       
+      // Mock reading taxonomies.json file
       (fsUtil.readFile as any).callsFake((path: string) => {
         if (path.includes('taxonomies.json')) {
           return {
@@ -128,36 +116,18 @@ describe('ImportTaxonomies', () => {
       });
       (fsUtil.makeDirectory as any).resolves();
 
-      sandbox.stub(importTaxonomies as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
-      sandbox.stub(importTaxonomies as any, 'createSimpleProgress').returns({
-        updateStatus: sinon.stub()
-      });
-      const prepareMapperDirectoriesStub = sandbox.stub(importTaxonomies as any, 'prepareMapperDirectories').resolves();
-      const importTaxonomiesStub = sandbox.stub(importTaxonomies as any, 'importTaxonomies').resolves();
-      sandbox.stub(importTaxonomies as any, 'createSuccessAndFailedFile').resolves();
-      sandbox.stub(importTaxonomies as any, 'completeProgress').resolves();
-      
+      // Stub makeConcurrentCall to avoid file system issues
+      sandbox.stub(importTaxonomies as any, 'makeConcurrentCall').resolves();
+
       await importTaxonomies.start();
 
-      expect(prepareMapperDirectoriesStub.called).to.be.true;
-      expect(importTaxonomiesStub.called).to.be.true;
+      expect((fileHelper.fileExistsSync as any).called).to.be.true;
+      expect((fsUtil.readFile as any).called).to.be.true;
+      expect((fsUtil.makeDirectory as any).called).to.be.true;
     });
 
     it('should handle when taxonomies folder does not exist', async () => {
-      sandbox.restore();
-      sandbox.stub(fsUtil, 'readFile');
-      sandbox.stub(fsUtil, 'writeFile');
-      sandbox.stub(fsUtil, 'makeDirectory');
-      sandbox.stub(fileHelper, 'fileExistsSync');
-      
       (fileHelper.fileExistsSync as any).returns(false);
-
-      sandbox.stub(importTaxonomies as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
-      sandbox.stub(importTaxonomies as any, 'completeProgress').resolves();
 
       await importTaxonomies.start();
 
@@ -166,14 +136,10 @@ describe('ImportTaxonomies', () => {
     });
 
     it('should handle empty taxonomies data', async () => {
-      sandbox.restore();
-      sandbox.stub(fsUtil, 'readFile');
-      sandbox.stub(fsUtil, 'writeFile');
-      sandbox.stub(fsUtil, 'makeDirectory');
-      sandbox.stub(fileHelper, 'fileExistsSync');
-      
+      // Mock file system to return true for taxonomies folder
       (fileHelper.fileExistsSync as any).returns(true);
       
+      // Mock reading empty taxonomies.json file
       (fsUtil.readFile as any).callsFake((path: string) => {
         if (path.includes('taxonomies.json')) {
           return {}; // Empty taxonomies object
@@ -182,39 +148,23 @@ describe('ImportTaxonomies', () => {
       });
       (fsUtil.makeDirectory as any).resolves();
 
-      sandbox.stub(importTaxonomies as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
-      const analyzeTaxonomiesStub = sandbox.stub(importTaxonomies as any, 'analyzeTaxonomies').resolves([0]);
-      sandbox.stub(importTaxonomies as any, 'completeProgress').resolves();
-      
+      // Stub makeConcurrentCall
+      sandbox.stub(importTaxonomies as any, 'makeConcurrentCall').resolves();
+
       await importTaxonomies.start();
 
-      expect(analyzeTaxonomiesStub.called).to.be.true;
+      expect((fileHelper.fileExistsSync as any).called).to.be.true;
+      expect((fsUtil.readFile as any).called).to.be.true;
+      expect((fsUtil.makeDirectory as any).called).to.be.true;
     });
 
     it('should handle null taxonomies data', async () => {
-      sandbox.restore();
-      sandbox.stub(fsUtil, 'readFile');
-      sandbox.stub(fsUtil, 'writeFile');
-      sandbox.stub(fsUtil, 'makeDirectory');
-      sandbox.stub(fileHelper, 'fileExistsSync');
-      
       (fileHelper.fileExistsSync as any).returns(true);
       (fsUtil.readFile as any).returns(null);
       (fsUtil.makeDirectory as any).resolves();
       
-      sandbox.stub(importTaxonomies as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
-      sandbox.stub(importTaxonomies as any, 'analyzeTaxonomies').resolves([0]); // 0 taxonomies
-      sandbox.stub(importTaxonomies as any, 'createSimpleProgress').returns({
-        updateStatus: sinon.stub()
-      });
-      sandbox.stub(importTaxonomies as any, 'prepareMapperDirectories').resolves();
-      sandbox.stub(importTaxonomies as any, 'importTaxonomies').resolves();
-      sandbox.stub(importTaxonomies as any, 'createSuccessAndFailedFile').resolves();
-      sandbox.stub(importTaxonomies as any, 'completeProgress').resolves();
+      // Stub makeConcurrentCall to avoid errors when processing null taxonomies
+      sandbox.stub(importTaxonomies as any, 'makeConcurrentCall').resolves();
 
       // Should complete without errors when taxonomies data is null
       // The method should handle null gracefully and not throw
@@ -224,36 +174,21 @@ describe('ImportTaxonomies', () => {
     });
 
     it('should write success and failed files when data exists', async () => {
-      sandbox.restore();
-      sandbox.stub(fsUtil, 'readFile');
-      sandbox.stub(fsUtil, 'writeFile');
-      sandbox.stub(fsUtil, 'makeDirectory');
-      sandbox.stub(fileHelper, 'fileExistsSync');
-      
       (fileHelper.fileExistsSync as any).returns(true);
       (fsUtil.readFile as any).returns({ 'taxonomy_1': { uid: 'taxonomy_1', name: 'Taxonomy 1' } });
       (fsUtil.makeDirectory as any).resolves();
 
-      sandbox.stub(importTaxonomies as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
-      sandbox.stub(importTaxonomies as any, 'analyzeTaxonomies').resolves([1]); // 1 taxonomy
-      sandbox.stub(importTaxonomies as any, 'createSimpleProgress').returns({
-        updateStatus: sinon.stub()
-      });
-      sandbox.stub(importTaxonomies as any, 'prepareMapperDirectories').resolves();
-      sandbox.stub(importTaxonomies as any, 'importTaxonomies').callsFake(async () => {
+      // Stub makeConcurrentCall and set up success/failed data
+      sandbox.stub(importTaxonomies as any, 'makeConcurrentCall').callsFake(async () => {
         (importTaxonomies as any).createdTaxonomies = { 'taxonomy_1': { uid: 'taxonomy_1' } };
         (importTaxonomies as any).failedTaxonomies = { 'taxonomy_2': { uid: 'taxonomy_2' } };
         (importTaxonomies as any).createdTerms = { 'taxonomy_1': { 'term_1': { uid: 'term_1' } } };
         (importTaxonomies as any).failedTerms = { 'taxonomy_2': { 'term_2': { uid: 'term_2' } } };
       });
-      const createSuccessAndFailedFileStub = sandbox.stub(importTaxonomies as any, 'createSuccessAndFailedFile');
-      sandbox.stub(importTaxonomies as any, 'completeProgress').resolves();
 
       await importTaxonomies.start();
 
-      expect(createSuccessAndFailedFileStub.called).to.be.true;
+      expect((fsUtil.writeFile as any).called).to.be.true;
     });
   });
 
@@ -264,6 +199,7 @@ describe('ImportTaxonomies', () => {
         'taxonomy_2': { uid: 'taxonomy_2', name: 'Taxonomy 2' }
       };
 
+      // Stub makeConcurrentCall
       const makeConcurrentCallStub = sandbox.stub(importTaxonomies as any, 'makeConcurrentCall').resolves();
 
       await (importTaxonomies as any).importTaxonomies({ apiContent: values((importTaxonomies as any).taxonomies) });
@@ -275,20 +211,18 @@ describe('ImportTaxonomies', () => {
       (importTaxonomies as any).taxonomies = {};
       const makeConcurrentCallStub = sandbox.stub(importTaxonomies as any, 'makeConcurrentCall').resolves();
 
-      await (importTaxonomies as any).importTaxonomies();
+      await (importTaxonomies as any).importTaxonomies({ apiContent: [] });
 
-      // When taxonomies is empty, makeConcurrentCall should not be called
-      expect(makeConcurrentCallStub.called).to.be.false;
+      expect(makeConcurrentCallStub.calledOnce).to.be.true;
     });
 
     it('should handle undefined taxonomies', async () => {
       (importTaxonomies as any).taxonomies = undefined;
       const makeConcurrentCallStub = sandbox.stub(importTaxonomies as any, 'makeConcurrentCall').resolves();
 
-      await (importTaxonomies as any).importTaxonomies();
+      await (importTaxonomies as any).importTaxonomies({ apiContent: [] });
 
-      // When taxonomies is undefined, makeConcurrentCall should not be called
-      expect(makeConcurrentCallStub.called).to.be.false;
+      expect(makeConcurrentCallStub.calledOnce).to.be.true;
     });
 
     it('should process taxonomies with concurrency limit', async () => {
@@ -306,7 +240,7 @@ describe('ImportTaxonomies', () => {
     });
   });
 
-  describe('serializeTaxonomiesData', () => {
+  describe('serializeTaxonomy', () => {
     it('should serialize taxonomy successfully', () => {
       const mockApiOptions = {
         entity: 'import-taxonomy' as any,
@@ -322,7 +256,7 @@ describe('ImportTaxonomies', () => {
         terms: { 'term_1': { uid: 'term_1', name: 'Term 1' } }
       });
 
-      const result = (importTaxonomies as any).serializeTaxonomiesData(mockApiOptions);
+      const result = (importTaxonomies as any).serializeTaxonomy(mockApiOptions);
 
       expect(result).to.have.property('apiData');
       expect(result.apiData.taxonomy).to.have.property('uid');
@@ -340,7 +274,7 @@ describe('ImportTaxonomies', () => {
 
       (fileHelper.fileExistsSync as any).returns(false);
 
-      const result = (importTaxonomies as any).serializeTaxonomiesData(mockApiOptions);
+      const result = (importTaxonomies as any).serializeTaxonomy(mockApiOptions);
 
       expect(result.apiData).to.be.undefined;
     });
@@ -363,7 +297,7 @@ describe('ImportTaxonomies', () => {
         }
       });
 
-      const result = (importTaxonomies as any).serializeTaxonomiesData(mockApiOptions);
+      const result = (importTaxonomies as any).serializeTaxonomy(mockApiOptions);
 
       expect(result.apiData.terms).to.have.property('term_1');
       expect(result.apiData.terms).to.have.property('term_2');
@@ -384,7 +318,7 @@ describe('ImportTaxonomies', () => {
         terms: {}
       });
 
-      const result = (importTaxonomies as any).serializeTaxonomiesData(mockApiOptions);
+      const result = (importTaxonomies as any).serializeTaxonomy(mockApiOptions);
 
       expect(result.apiData.terms).to.deep.equal({});
     });
@@ -392,8 +326,6 @@ describe('ImportTaxonomies', () => {
 
   describe('createSuccessAndFailedFile', () => {
     it('should write all four files when data exists', () => {
-      (importTaxonomies as any).createSuccessAndFailedFile.restore();
-      
       (importTaxonomies as any).createdTaxonomies = { 'taxonomy_1': { uid: 'taxonomy_1' } };
       (importTaxonomies as any).failedTaxonomies = { 'taxonomy_2': { uid: 'taxonomy_2' } };
       (importTaxonomies as any).createdTerms = { 'taxonomy_1': { 'term_1': {} } };
@@ -406,8 +338,6 @@ describe('ImportTaxonomies', () => {
     });
 
     it('should write only success files', () => {
-      (importTaxonomies as any).createSuccessAndFailedFile.restore();
-      
       (importTaxonomies as any).createdTaxonomies = { 'taxonomy_1': { uid: 'taxonomy_1' } };
       (importTaxonomies as any).failedTaxonomies = {};
       (importTaxonomies as any).createdTerms = { 'taxonomy_1': { 'term_1': {} } };
@@ -419,8 +349,6 @@ describe('ImportTaxonomies', () => {
     });
 
     it('should write only failed files', () => {
-      (importTaxonomies as any).createSuccessAndFailedFile.restore();
-      
       (importTaxonomies as any).createdTaxonomies = {};
       (importTaxonomies as any).failedTaxonomies = { 'taxonomy_2': { uid: 'taxonomy_2' } };
       (importTaxonomies as any).createdTerms = {};
@@ -443,8 +371,6 @@ describe('ImportTaxonomies', () => {
     });
 
     it('should write files and trigger debug logging with counts', () => {
-      (importTaxonomies as any).createSuccessAndFailedFile.restore();
-      
       (importTaxonomies as any).createdTaxonomies = { 'tax_1': { uid: 'tax_1' }, 'tax_2': { uid: 'tax_2' } };
       (importTaxonomies as any).failedTaxonomies = { 'tax_3': { uid: 'tax_3' } };
       (importTaxonomies as any).createdTerms = { 'tax_1': { 'term_1': {} }, 'tax_2': { 'term_2': {} } };
@@ -780,7 +706,7 @@ describe('ImportTaxonomies', () => {
 
   describe('Callback Functions Integration', () => {
     it('should execute actual onSuccess callback with lines 93-105', async () => {
-      // Set up file helper to return false so serializeTaxonomiesData gets proper data
+      // Set up file helper to return false so serializeTaxonomy gets proper data
       (fileHelper.fileExistsSync as any).returns(false);
       (fsUtil.readFile as any).returns({});
       (fsUtil.makeDirectory as any).resolves();
@@ -789,8 +715,10 @@ describe('ImportTaxonomies', () => {
         'taxonomy_1': { uid: 'taxonomy_1', name: 'Taxonomy 1' }
       };
 
+      // Mock the actual makeConcurrentCall implementation to call real callbacks
       const originalMakeConcurrentCall = (importTaxonomies as any).makeConcurrentCall.bind(importTaxonomies);
       sandbox.stub(importTaxonomies as any, 'makeConcurrentCall').callsFake(async function(this: any, config: any) {
+        // Create mock apiData that serializeTaxonomy would return
         const mockApiData = {
           taxonomy: { uid: 'taxonomy_1', name: 'Taxonomy 1' },
           terms: { 'term_1': { uid: 'term_1', name: 'Term 1' } }
@@ -832,6 +760,7 @@ describe('ImportTaxonomies', () => {
         'taxonomy_1': { uid: 'taxonomy_1', name: 'Taxonomy 1' }
       };
 
+      // Mock makeConcurrentCall to invoke the actual onReject callback
       let actualOnSuccess: any = null;
       let actualOnReject: any = null;
       
@@ -839,8 +768,8 @@ describe('ImportTaxonomies', () => {
         actualOnSuccess = config.apiParams.resolve;
         actualOnReject = config.apiParams.reject;
         
-        // Execute serializeTaxonomiesData to get proper apiData
-        const serialized = (importTaxonomies as any).serializeTaxonomiesData({
+        // Execute serializeTaxonomy to get proper apiData
+        const serialized = (importTaxonomies as any).serializeTaxonomy({
           apiData: config.apiContent[0],
           entity: 'import-taxonomy',
           queryParam: { locale: config.apiParams.queryParam?.locale },
@@ -888,6 +817,7 @@ describe('ImportTaxonomies', () => {
         'taxonomy_1': { uid: 'taxonomy_1', name: 'Taxonomy 1' }
       };
 
+      // Mock makeConcurrentCall to invoke the actual onReject callback
       let actualOnSuccess: any = null;
       let actualOnReject: any = null;
       
@@ -895,8 +825,8 @@ describe('ImportTaxonomies', () => {
         actualOnSuccess = config.apiParams.resolve;
         actualOnReject = config.apiParams.reject;
         
-        // Execute serializeTaxonomiesData to get proper apiData
-        const serialized = (importTaxonomies as any).serializeTaxonomiesData({
+        // Execute serializeTaxonomy to get proper apiData
+        const serialized = (importTaxonomies as any).serializeTaxonomy({
           apiData: config.apiContent[0],
           entity: 'import-taxonomy',
           queryParam: { locale: config.apiParams.queryParam?.locale },
@@ -1099,40 +1029,19 @@ describe('ImportTaxonomies', () => {
 
   describe('Edge Cases and Error Handling', () => {
     it('should handle makeDirectory errors', async () => {
-      sandbox.restore();
-      sandbox = sinon.createSandbox();
-      
-      sandbox.stub(fsUtil, 'readFile');
-      sandbox.stub(fsUtil, 'writeFile');
-      sandbox.stub(fsUtil, 'makeDirectory');
-      sandbox.stub(fileHelper, 'fileExistsSync');
-      
       (fileHelper.fileExistsSync as any).returns(true);
       (fsUtil.readFile as any).returns({ 'taxonomy_1': { uid: 'taxonomy_1', name: 'Taxonomy 1' } });
-      
-      sandbox.stub(importTaxonomies as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
-      sandbox.stub(importTaxonomies as any, 'analyzeTaxonomies').resolves([1]);
-      sandbox.stub(importTaxonomies as any, 'createSimpleProgress').returns({
-        updateStatus: sinon.stub()
-      });
-      
-      // Make prepareMapperDirectories reject with the error
-      sandbox.stub(importTaxonomies as any, 'prepareMapperDirectories').rejects(new Error('Directory creation failed'));
-      const completeProgressStub = sandbox.stub(importTaxonomies as any, 'completeProgress').resolves();
+      (fsUtil.makeDirectory as any).rejects(new Error('Directory creation failed'));
 
       try {
         await importTaxonomies.start();
-        // If we get here, the error was caught and handled
-        expect(completeProgressStub.calledWith(false, sinon.match.string)).to.be.true;
+        expect.fail('Expected error to be thrown');
       } catch (error: any) {
-        // Error might be thrown or caught, either is fine
         expect(error.message).to.equal('Directory creation failed');
       }
     });
 
-    it('should handle file read errors in serializeTaxonomiesData', () => {
+    it('should handle file read errors in serializeTaxonomy', () => {
       const mockApiOptions = {
         entity: 'import-taxonomy' as any,
         apiData: { uid: 'taxonomy_1', name: 'Test Taxonomy' },
@@ -1144,15 +1053,11 @@ describe('ImportTaxonomies', () => {
       (fileHelper.fileExistsSync as any).returns(true);
       (fsUtil.readFile as any).throws(new Error('File read error'));
 
-      // The error will be thrown since serializeTaxonomiesData doesn't catch it
-      try {
-        const result = (importTaxonomies as any).serializeTaxonomiesData(mockApiOptions);
-        // If we get here, the error wasn't thrown (unexpected)
-        expect.fail('Expected error to be thrown');
-      } catch (error: any) {
-        // Error should be thrown
-        expect(error.message).to.equal('File read error');
-      }
+      const result = (importTaxonomies as any).serializeTaxonomy(mockApiOptions);
+      
+      // When file read fails, loadTaxonomyFile catches the error and returns undefined,
+      // which causes serializeTaxonomy to set apiData to undefined
+      expect(result.apiData).to.be.undefined;
     });
   });
 });
