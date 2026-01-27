@@ -33,6 +33,7 @@ const config: DefaultConfig = {
       'stack',
       'assets',
       'taxonomies',
+      'composable-studio',
       'extensions',
       'marketplace-apps',
       'global-fields',
@@ -44,7 +45,6 @@ const config: DefaultConfig = {
       'variant-entries',
       'labels',
       'webhooks',
-      'composable-studio',
     ],
     locales: {
       dirName: 'locales',
