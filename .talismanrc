@@ -3,4 +3,22 @@ fileignoreconfig:
     checksum: 41bc1d60449ab0682d9267172e54a5802c837869a1728b0560eea8052336c2fe
   - filename: package-lock.json
     checksum: 134104853f260380025e0d7e2b49ec32f15a1832b20756676819ce0bc4277c44
+  - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/environments/environments.json
+    checksum: 0402604e5919a7e38ecb5ff0916d6ae5ab7d98fe78ff6ac9eba8a9b8130af34d
+  - filename: packages/contentstack-utilities/src/helpers.ts
+    checksum: 6a741bb972f59c56d2c0f3a9f96e2963392361db2e401948c9c1796829478e13
+  - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/composable_studio.json
+    checksum: 6912e5ea32b4456ad04d1645750c72bbb29ab1895368c3a242ab39e9350ec531
+  - filename: packages/contentstack-utilities/src/logger/session-path.ts
+    checksum: 4c66980a857bc12012a45e50790c0eaab06883db5e1476d84fb142a08b70b2e7
+  - filename: packages/contentstack-import/test/unit/commands/cm/stacks/import.test.ts
+    checksum: a9e24596e7ae54b71cc28a41cf9d65bbdbf6754446e08958288e90a579cc351d
+  - filename: packages/contentstack-audit/src/modules/modulesData.ts
+    checksum: 1e6c1fba1172512401038d5454c8d218201ec62262449c5c878609592e0124c4
+  - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/invalid_composable_studio.json
+    checksum: e6465aa0011d1565a2de848d9cca74395d11419e6ac840e7dfb52e1d255b1c4f
+  - filename: packages/contentstack-audit/src/modules/composable-studio.ts
+    checksum: 4fc97ff582d6dff9a54b3a50dfa3cbb5febd38a55aeb8737034b97188ad543ba
+  - filename: packages/contentstack-utilities/test/unit/logger.test.ts
+    checksum: a1939dea16166b1893a248179524a76f2ed20b04b99c83bd1a5a13fcf6f0dadc
 version: "1.0"

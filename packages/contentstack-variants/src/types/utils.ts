@@ -8,7 +8,6 @@ export interface LogType {
 }
 
 export interface Context {
-  command: string;
   module: string;
   userId: string | undefined;
   email?: string | undefined;

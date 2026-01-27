@@ -159,7 +159,6 @@ export interface ComposableStudioProject {
   uid: string;
 }
 export interface Context {
-  command: string;
   module: string;
   userId: string | undefined;
   email?: string | undefined;

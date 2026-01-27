@@ -204,12 +204,6 @@ describe('BaseClass', () => {
           dirName: 'marketplace_apps',
           fileName: 'marketplace_apps.json',
         },
-        'composable-studio': {
-          dirName: 'composable-studio',
-          fileName: 'composable-studio.json',
-          apiBaseUrl: 'https://api.contentstack.io',
-          apiVersion: 'v1',
-        },
         masterLocale: {
           dirName: 'master_locale',
           fileName: 'master_locale.json',
@@ -235,6 +229,12 @@ describe('BaseClass', () => {
           dirName: 'attributes',
           fileName: 'attributes.json',
           invalidKeys: [],
+        },
+        'composable-studio': {
+          dirName: 'composable_studio',
+          fileName: 'composable_studio.json',
+          apiBaseUrl: 'https://api.contentstack.io',
+          apiVersion: 'v3'
         },
       },
     } as ExportConfig;
