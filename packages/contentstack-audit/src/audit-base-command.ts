@@ -69,11 +69,6 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     }
     configHandler.set('log.progressSupportedModule', 'audit');
     
-    // Initialize audit context
-    this.auditContext = this.createAuditContext();
-    log.debug(`Starting audit command: ${command}`, this.auditContext);
-    log.info(`Starting audit command: ${command}`, this.auditContext);
-    
     // Initialize global summary for progress tracking
     CLIProgressManager.initializeGlobalSummary('AUDIT', '', 'Auditing content...');
     
