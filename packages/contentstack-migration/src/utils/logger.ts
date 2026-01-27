@@ -22,7 +22,7 @@ const customFormat = format.printf(({ level, message }: any) => {
   return `${level}: ${message}`;
 });
 
-function init(logFileName: string): any {
+export function init(logFileName: string): any {
   const logsDir = resolve(process.env.CS_CLI_LOG_PATH ?? process.cwd(), 'logs');
   // Create dir if does not exist
   makeDir(logsDir);

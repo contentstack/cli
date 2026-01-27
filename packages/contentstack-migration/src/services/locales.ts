@@ -25,9 +25,16 @@ export default class LocaleService {
       let i = 0;
       let noEventTookPlace = 0; // counter which tracks if the list is sorted by fallback language
       let len = locales.length;
+      const maxIterations = len * len * 2; // Prevent infinite loops
+      let iterations = 0;
 
       // Circular loop (Time complexity => Order of n^2, complexity of splice op is ignored)
       do {
+        iterations++;
+        if (iterations > maxIterations) {
+          // Break out to prevent infinite loop in case of circular references
+          break;
+        }
         i = (i % len) + 1;
         noEventTookPlace++;
 

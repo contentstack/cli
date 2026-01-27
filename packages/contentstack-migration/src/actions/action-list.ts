@@ -17,8 +17,12 @@ export default class ActionList {
   validate(): any[] {
     const { validators, actionList } = this;
 
+    if (!actionList) {
+      return [];
+    }
+
     let errors: any[] = [];
-    for (const action of actionList || []) {
+    for (const action of actionList) {
       for (const validator of validators) {
         if (validator.isApplicable(action)) {
           errors = validator.validate(action);

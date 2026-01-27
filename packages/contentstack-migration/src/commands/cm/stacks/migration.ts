@@ -24,7 +24,7 @@ import {
 import { ApiError, SchemaValidator, MigrationError, FieldValidator } from '../../../validators';
 
 // Utils
-import { map as _map, constants, safePromise, errorHelper, installModules } from '../../../utils';
+import { map as _map, constants, safePromise, errorHelper, installModules } from '../../../utils/index';
 // Properties
 const { get, set, getMapInstance, resetMapInstance } = _map;
 const {

@@ -130,6 +130,10 @@ export default class ContentTypeService {
     const { id, action } = this;
 
     const contentType = get(id as string, _mapInstance);
+    
+    if (!contentType || !contentType[action as string]) {
+      throw { message: 'Content type not found in map' };
+    }
 
     let contentTypeSchema = contentType[action as string].content_type.schema;
     contentTypeSchema = contentTypeSchema || [];
@@ -199,6 +203,7 @@ export default class ContentTypeService {
     let i = 0;
     // eslint-disable-next-line
     while (true) {
+      if (!schema[i]) break;
       if (schema[i].uid === fieldToMove) {
         let tempObj = schema[i];
         schema.splice(i, 1);
@@ -206,7 +211,6 @@ export default class ContentTypeService {
         break;
       }
       i++;
-      if (!schema[i]) break; // Error handling required
     }
     return schema;
   }
@@ -217,6 +221,7 @@ export default class ContentTypeService {
     let i = 0;
     // eslint-disable-next-line
     while (true) {
+      if (!schema[i]) break;
       if (schema[i].uid === fieldToMove) {
         let tempObj = schema[i];
         schema.splice(i, 1);
@@ -224,7 +229,6 @@ export default class ContentTypeService {
         break;
       }
       i++;
-      if (!schema[i]) break;
     }
     return schema;
   }
@@ -237,6 +241,7 @@ export default class ContentTypeService {
     let found = 0;
     // eslint-disable-next-line
     while (true) {
+      if (!schema[i]) break;
       if (schema[i].uid === against) {
         indexToMove = i;
         found++;
@@ -248,7 +253,6 @@ export default class ContentTypeService {
       }
       i++;
       if (found === 2) break;
-      if (!schema[i]) break;
     }
     // TODO: Handle error
     found === 2 && schema.splice(indexToMove + 1, null, tempObj);
@@ -264,6 +268,7 @@ export default class ContentTypeService {
     let found = 0;
     // eslint-disable-next-line
     while (true) {
+      if (!schema[i]) break;
       if (schema[i].uid === against) {
         indexToMove = i;
         found++;
@@ -275,7 +280,6 @@ export default class ContentTypeService {
       }
       i++;
       if (found === 2) break;
-      if (!schema[i]) break;
     }
     found === 2 && schema.splice(indexToMove, null, tempObj);
     return schema;
@@ -289,8 +293,18 @@ export default class ContentTypeService {
 
     const { fieldToMove, against } = actionObj;
     const uids: string[] = [];
+    
+    // Handle empty schema case
+    if (!schema || schema.length === 0) {
+      return {
+        isValid: false,
+        missingField: fieldToMove,
+      };
+    }
+    
     // eslint-disable-next-line
     while (true) {
+      if (!schema[i]) break;
       uids.push(schema[i].uid);
 
       if (schema[i].uid === fieldToMove) {
@@ -300,7 +314,6 @@ export default class ContentTypeService {
         found++;
       }
       i++;
-      if (!schema[i]) break;
     }
     // TODO: Need a better way to handle this
     missingField = uids.includes(fieldToMove) ? null : fieldToMove;
