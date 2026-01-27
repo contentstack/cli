@@ -17,7 +17,6 @@ describe('ExportPersonalize', () => {
 
   beforeEach(() => {
     mockExportConfig = {
-      contentVersion: 1,
       versioning: false,
       host: 'https://api.contentstack.io',
       developerHubUrls: {},
@@ -33,7 +32,7 @@ describe('ExportPersonalize', () => {
         sessionId: 'session-123',
         apiKey: 'test-api-key',
         orgId: 'org-123',
-        authenticationMethod: 'Basic Auth'
+        authenticationMethod: 'Basic Auth',
       },
       cliLogsPath: '/test/logs',
       forceStopMarketplaceAppsPrompt: false,
@@ -42,7 +41,7 @@ describe('ExportPersonalize', () => {
         name: 'us',
         cma: 'https://api.contentstack.io',
         cda: 'https://cdn.contentstack.io',
-        uiHost: 'https://app.contentstack.com'
+        uiHost: 'https://app.contentstack.com',
       },
       skipStackSettings: false,
       skipDependencies: false,
@@ -54,7 +53,6 @@ describe('ExportPersonalize', () => {
       writeConcurrency: 5,
       developerHubBaseUrl: '',
       marketplaceAppEncryptionKey: '',
-      onlyTSModules: [],
       modules: {
         types: ['personalize'],
         personalize: {
@@ -67,34 +65,34 @@ describe('ExportPersonalize', () => {
             'AZURE-EU': 'https://azure-eu-personalize-api.contentstack.com',
             'GCP-NA': 'https://gcp-na-personalize-api.contentstack.com',
             'GCP-EU': 'https://gcp-eu-personalize-api.contentstack.com',
-            'us': 'https://personalize-api.contentstack.com'
+            us: 'https://personalize-api.contentstack.com',
           },
           exportOrder: ['events', 'attributes', 'audiences', 'experiences'],
           projects: {
             dirName: 'projects',
-            fileName: 'projects.json'
+            fileName: 'projects.json',
           },
           attributes: {
             dirName: 'attributes',
-            fileName: 'attributes.json'
+            fileName: 'attributes.json',
           },
           audiences: {
             dirName: 'audiences',
-            fileName: 'audiences.json'
+            fileName: 'audiences.json',
           },
           events: {
             dirName: 'events',
-            fileName: 'events.json'
+            fileName: 'events.json',
           },
           experiences: {
             dirName: 'experiences',
             fileName: 'experiences.json',
             thresholdTimer: 60000,
-            checkIntervalDuration: 10000
-          }
-        }
+            checkIntervalDuration: 10000,
+          },
+        },
       },
-      management_token: undefined
+      management_token: undefined,
     } as any;
 
     // Mock ExportProjects - this can modify personalizationEnabled
@@ -106,36 +104,46 @@ describe('ExportPersonalize', () => {
       }),
       init: sinon.stub().resolves(),
       projects: sinon.stub().resolves([{ uid: 'project-1' }]), // Return array with at least one project
-      setParentProgressManager: sinon.stub()
+      setParentProgressManager: sinon.stub(),
     };
 
     // Mock ExportEvents
     mockExportEvents = {
-      start: sinon.stub().resolves()
+      start: sinon.stub().resolves(),
     };
 
     // Mock ExportAttributes
     mockExportAttributes = {
-      start: sinon.stub().resolves()
+      start: sinon.stub().resolves(),
     };
 
     // Mock ExportAudiences
     mockExportAudiences = {
-      start: sinon.stub().resolves()
+      start: sinon.stub().resolves(),
     };
 
     // Mock ExportExperiences
     mockExportExperiences = {
-      start: sinon.stub().resolves()
+      start: sinon.stub().resolves(),
     };
 
     // Stub the variant class constructors - these need to return the mock instances
-    sinon.stub(variants, 'ExportProjects').value(function() { return mockExportProjects; } as any);
-    sinon.stub(variants, 'ExportEvents').value(function() { return mockExportEvents; } as any);
-    sinon.stub(variants, 'ExportAttributes').value(function() { return mockExportAttributes; } as any);
-    sinon.stub(variants, 'ExportAudiences').value(function() { return mockExportAudiences; } as any);
-    sinon.stub(variants, 'ExportExperiences').value(function() { return mockExportExperiences; } as any);
-    
+    sinon.stub(variants, 'ExportProjects').value(function () {
+      return mockExportProjects;
+    } as any);
+    sinon.stub(variants, 'ExportEvents').value(function () {
+      return mockExportEvents;
+    } as any);
+    sinon.stub(variants, 'ExportAttributes').value(function () {
+      return mockExportAttributes;
+    } as any);
+    sinon.stub(variants, 'ExportAudiences').value(function () {
+      return mockExportAudiences;
+    } as any);
+    sinon.stub(variants, 'ExportExperiences').value(function () {
+      return mockExportExperiences;
+    } as any);
+
     // Ensure all mock modules have setParentProgressManager
     mockExportEvents.setParentProgressManager = sinon.stub();
     mockExportAttributes.setParentProgressManager = sinon.stub();
@@ -145,7 +153,7 @@ describe('ExportPersonalize', () => {
     exportPersonalize = new ExportPersonalize({
       exportConfig: mockExportConfig,
       stackAPIClient: {} as any,
-      moduleName: 'personalize'
+      moduleName: 'personalize',
     });
   });
 
@@ -164,7 +172,12 @@ describe('ExportPersonalize', () => {
       expect(exportPersonalize.personalizeConfig).to.exist;
       expect(exportPersonalize.personalizeConfig.dirName).to.equal('personalize');
       expect(exportPersonalize.personalizeConfig.baseURL).to.deep.equal(mockExportConfig.modules.personalize.baseURL);
-      expect(exportPersonalize.personalizeConfig.exportOrder).to.deep.equal(['events', 'attributes', 'audiences', 'experiences']);
+      expect(exportPersonalize.personalizeConfig.exportOrder).to.deep.equal([
+        'events',
+        'attributes',
+        'audiences',
+        'experiences',
+      ]);
     });
   });
 
@@ -175,7 +188,7 @@ describe('ExportPersonalize', () => {
       exportPersonalize = new ExportPersonalize({
         exportConfig: mockExportConfig,
         stackAPIClient: {} as any,
-        moduleName: 'personalize'
+        moduleName: 'personalize',
       });
 
       await exportPersonalize.start();
@@ -207,7 +220,7 @@ describe('ExportPersonalize', () => {
       exportPersonalize = new ExportPersonalize({
         exportConfig: mockExportConfig,
         stackAPIClient: {} as any,
-        moduleName: 'personalize'
+        moduleName: 'personalize',
       });
 
       await exportPersonalize.start();
@@ -283,7 +296,10 @@ describe('ExportPersonalize', () => {
       mockExportProjects.init.resolves();
       mockExportProjects.projects.resolves([{ uid: 'project-1' }]);
       // Ensure exportOrder is set
-      if (!mockExportConfig.modules.personalize.exportOrder || mockExportConfig.modules.personalize.exportOrder.length === 0) {
+      if (
+        !mockExportConfig.modules.personalize.exportOrder ||
+        mockExportConfig.modules.personalize.exportOrder.length === 0
+      ) {
         mockExportConfig.modules.personalize.exportOrder = ['events', 'attributes', 'audiences', 'experiences'];
       }
     });
@@ -318,28 +334,28 @@ describe('ExportPersonalize', () => {
         expect(currentModule).to.be.null;
         currentModule = 'events';
         moduleStartTimes.events = Date.now();
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
         currentModule = null;
       });
       mockExportAttributes.start.callsFake(async () => {
         expect(currentModule).to.be.null;
         currentModule = 'attributes';
         moduleStartTimes.attributes = Date.now();
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
         currentModule = null;
       });
       mockExportAudiences.start.callsFake(async () => {
         expect(currentModule).to.be.null;
         currentModule = 'audiences';
         moduleStartTimes.audiences = Date.now();
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
         currentModule = null;
       });
       mockExportExperiences.start.callsFake(async () => {
         expect(currentModule).to.be.null;
         currentModule = 'experiences';
         moduleStartTimes.experiences = Date.now();
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
         currentModule = null;
       });
 
@@ -389,7 +405,7 @@ describe('ExportPersonalize', () => {
   describe('start() method - Unknown Module Handling', () => {
     let validateProjectConnectivityStub: sinon.SinonStub;
     let validatePersonalizeSetupStub: sinon.SinonStub;
-    
+
     beforeEach(() => {
       // Ensure projects are found so personalizationEnabled is set to true
       mockExportProjects.init.resolves();
@@ -399,7 +415,7 @@ describe('ExportPersonalize', () => {
       // Stub validatePersonalizeSetup to return true
       validatePersonalizeSetupStub = sinon.stub(exportPersonalize, 'validatePersonalizeSetup' as any).returns(true);
     });
-    
+
     afterEach(() => {
       if (validateProjectConnectivityStub) {
         validateProjectConnectivityStub.restore();
@@ -418,18 +434,20 @@ describe('ExportPersonalize', () => {
       validateProjectConnectivityStub.resolves(1);
       validatePersonalizeSetupStub.returns(true);
       // Stub withLoadingSpinner to execute the function immediately
-      sinon.stub(exportPersonalize, 'withLoadingSpinner' as any).callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+      sinon
+        .stub(exportPersonalize, 'withLoadingSpinner' as any)
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       // Stub createNestedProgress to return a mock progress manager
       const mockProgress = {
         addProcess: sinon.stub(),
         startProcess: sinon.stub().returns({
-          updateStatus: sinon.stub()
+          updateStatus: sinon.stub(),
         }),
         updateStatus: sinon.stub(),
         completeProcess: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       };
       sinon.stub(exportPersonalize, 'createNestedProgress' as any).returns(mockProgress);
       sinon.stub(exportPersonalize, 'completeProgress' as any);
@@ -465,18 +483,20 @@ describe('ExportPersonalize', () => {
       validateProjectConnectivityStub.resolves(1);
       validatePersonalizeSetupStub.returns(true);
       // Stub withLoadingSpinner to execute the function immediately
-      sinon.stub(exportPersonalize, 'withLoadingSpinner' as any).callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+      sinon
+        .stub(exportPersonalize, 'withLoadingSpinner' as any)
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       // Stub createNestedProgress to return a mock progress manager
       const mockProgress = {
         addProcess: sinon.stub(),
         startProcess: sinon.stub().returns({
-          updateStatus: sinon.stub()
+          updateStatus: sinon.stub(),
         }),
         updateStatus: sinon.stub(),
         completeProcess: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       };
       sinon.stub(exportPersonalize, 'createNestedProgress' as any).returns(mockProgress);
       sinon.stub(exportPersonalize, 'completeProgress' as any);
@@ -569,13 +589,13 @@ describe('ExportPersonalize', () => {
   describe('start() method - Region Configuration', () => {
     it('should work with all supported region names', async () => {
       const supportedRegions = ['AWS-NA', 'AWS-EU', 'AWS-AU', 'AZURE-NA', 'AZURE-EU', 'GCP-NA', 'GCP-EU', 'us'];
-      
+
       for (const regionName of supportedRegions) {
         mockExportConfig.region.name = regionName;
         exportPersonalize = new ExportPersonalize({
           exportConfig: mockExportConfig,
           stackAPIClient: {} as any,
-          moduleName: 'personalize'
+          moduleName: 'personalize',
         });
 
         mockExportProjects.init.resolves();
@@ -595,7 +615,7 @@ describe('ExportPersonalize', () => {
       // Ensure projects are found so personalizationEnabled is set to true
       mockExportProjects.init.resolves();
       mockExportProjects.projects.resolves([{ uid: 'project-1' }]);
-      
+
       // Track execution order to verify sequential processing
       const executionOrder: string[] = [];
       mockExportEvents.start.callsFake(async () => {
@@ -632,11 +652,11 @@ describe('ExportPersonalize', () => {
       // Setup: ExportProjects enables personalization, first module succeeds, second fails
       mockExportProjects.init.resolves();
       mockExportProjects.projects.resolves([{ uid: 'project-1' }]);
-      
+
       const attributesError = new Error('Attributes export failed');
       mockExportEvents.start.resolves();
       mockExportAttributes.start.rejects(attributesError);
-      
+
       const handleAndLogErrorSpy = sinon.spy();
       sinon.replaceGetter(utilities, 'handleAndLogError', () => handleAndLogErrorSpy);
 

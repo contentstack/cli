@@ -28,14 +28,14 @@ export const initialization = (configData: ImportConfig) => {
 export const validateConfig = (importConfig: ImportConfig) => {
   log.debug('Validating import configuration');
 
-  if (importConfig.email && importConfig.password && !importConfig.target_stack) {
+  if (importConfig.email && importConfig.password && !importConfig.apiKey) {
     log.debug('Target stack API token is required when using email/password authentication');
     return 'error';
   } else if (
     !importConfig.email &&
     !importConfig.password &&
     !importConfig.management_token &&
-    importConfig.target_stack &&
+    importConfig.apiKey &&
     !isAuthenticated()
   ) {
     log.debug('Authentication credentials missing - either management token or email/password required');
@@ -78,7 +78,7 @@ export const sanitizeStack = (importConfig: ImportConfig) => {
         log.debug(`New stack version: ${newStackVersion} (${newStackDate})`);
 
         const stackFilePath = path.join(
-          sanitizePath(importConfig.data),
+          sanitizePath(importConfig.contentDir),
           sanitizePath(importConfig.modules.stack.dirName),
           sanitizePath(importConfig.modules.stack.fileName),
         );
@@ -161,7 +161,7 @@ export const field_rules_update = (importConfig: ImportConfig, ctPath: string) =
                   if (schema.field_rules[k].conditions[i].operand_field === 'reference') {
                     log.debug(`Processing reference field rule condition`);
 
-                    let entryMapperPath = path.resolve(importConfig.data, 'mapper', 'entries');
+                    let entryMapperPath = path.resolve(importConfig.contentDir, 'mapper', 'entries');
                     let entryUidMapperPath = path.join(entryMapperPath, 'uid-mapping.json');
                     let fieldRulesValue = schema.field_rules[k].conditions[i].value;
                     let fieldRulesArray = fieldRulesValue.split('.');
@@ -184,7 +184,7 @@ export const field_rules_update = (importConfig: ImportConfig, ctPath: string) =
                 }
 
                 const stackAPIClient = client.stack({
-                  api_key: importConfig.target_stack,
+                  api_key: importConfig.apiKey,
                   management_token: importConfig.management_token,
                 });
                 let ctObj = stackAPIClient.contentType(schema.uid);

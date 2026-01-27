@@ -164,7 +164,7 @@ export default class ImportPersonalize extends BaseClass {
       const personalize = this.config.modules.personalize;
       const { dirName, fileName } = personalize.projects;
       const projectPath = join(
-        sanitizePath(this.config.data),
+        sanitizePath(this.config.contentDir),
         sanitizePath(personalize.dirName),
         sanitizePath(dirName),
         sanitizePath(fileName),

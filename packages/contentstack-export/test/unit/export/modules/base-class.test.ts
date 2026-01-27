@@ -23,24 +23,23 @@ describe('BaseClass', () => {
         fetch: sinon.stub().resolves({ uid: 'asset-123', title: 'Test Asset' }),
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
-            items: [{ uid: 'asset-1' }, { uid: 'asset-2' }]
-          })
+            items: [{ uid: 'asset-1' }, { uid: 'asset-2' }],
+          }),
         }),
-        download: sinon.stub().resolves({ data: 'stream-data' })
+        download: sinon.stub().resolves({ data: 'stream-data' }),
       }),
       contentType: sinon.stub().returns({
-        fetch: sinon.stub().resolves({ uid: 'ct-123' })
+        fetch: sinon.stub().resolves({ uid: 'ct-123' }),
       }),
       entry: sinon.stub().returns({
-        fetch: sinon.stub().resolves({ uid: 'entry-123' })
+        fetch: sinon.stub().resolves({ uid: 'entry-123' }),
       }),
       taxonomy: sinon.stub().returns({
-        export: sinon.stub().resolves({ data: 'taxonomy-export' })
-      })
+        export: sinon.stub().resolves({ data: 'taxonomy-export' }),
+      }),
     };
 
     mockExportConfig = {
-      contentVersion: 1,
       versioning: false,
       host: 'https://api.contentstack.io',
       developerHubUrls: {},
@@ -55,7 +54,7 @@ describe('BaseClass', () => {
         sessionId: 'session-123',
         apiKey: 'test-api-key',
         orgId: 'org-123',
-        authenticationMethod: 'Basic Auth'
+        authenticationMethod: 'Basic Auth',
       },
       cliLogsPath: '/test/logs',
       forceStopMarketplaceAppsPrompt: false,
@@ -64,7 +63,7 @@ describe('BaseClass', () => {
         name: 'us',
         cma: 'https://api.contentstack.io',
         cda: 'https://cdn.contentstack.io',
-        uiHost: 'https://app.contentstack.com'
+        uiHost: 'https://app.contentstack.com',
       },
       skipStackSettings: false,
       skipDependencies: false,
@@ -81,7 +80,7 @@ describe('BaseClass', () => {
         users: '',
         extension: '',
         webhooks: '',
-        stacks: ''
+        stacks: '',
       },
       preserveStackVersion: false,
       personalizationEnabled: false,
@@ -89,57 +88,56 @@ describe('BaseClass', () => {
       writeConcurrency: 5,
       developerHubBaseUrl: '',
       marketplaceAppEncryptionKey: '',
-      onlyTSModules: [],
       modules: {
         types: ['assets'],
         locales: {
           dirName: 'locales',
           fileName: 'locales.json',
-          requiredKeys: ['code']
+          requiredKeys: ['code'],
         },
         customRoles: {
           dirName: 'custom_roles',
           fileName: 'custom_roles.json',
-          customRolesLocalesFileName: ''
+          customRolesLocalesFileName: '',
         },
         'custom-roles': {
           dirName: 'custom_roles',
           fileName: 'custom_roles.json',
-          customRolesLocalesFileName: ''
+          customRolesLocalesFileName: '',
         },
         environments: {
           dirName: 'environments',
-          fileName: 'environments.json'
+          fileName: 'environments.json',
         },
         labels: {
           dirName: 'labels',
           fileName: 'labels.json',
-          invalidKeys: []
+          invalidKeys: [],
         },
         webhooks: {
           dirName: 'webhooks',
-          fileName: 'webhooks.json'
+          fileName: 'webhooks.json',
         },
         releases: {
           dirName: 'releases',
           fileName: 'releases.json',
           releasesList: 'releases_list.json',
-          invalidKeys: []
+          invalidKeys: [],
         },
         workflows: {
           dirName: 'workflows',
           fileName: 'workflows.json',
-          invalidKeys: []
+          invalidKeys: [],
         },
         globalfields: {
           dirName: 'global_fields',
           fileName: 'globalfields.json',
-          validKeys: ['title', 'uid']
+          validKeys: ['title', 'uid'],
         },
         'global-fields': {
           dirName: 'global_fields',
           fileName: 'globalfields.json',
-          validKeys: ['title', 'uid']
+          validKeys: ['title', 'uid'],
         },
         assets: {
           dirName: 'assets',
@@ -154,19 +152,19 @@ describe('BaseClass', () => {
           securedAssets: false,
           displayExecutionTime: false,
           enableDownloadStatus: false,
-          includeVersionedAssets: false
+          includeVersionedAssets: false,
         },
         content_types: {
           dirName: 'content_types',
           fileName: 'content_types.json',
           validKeys: ['title', 'uid'],
-          limit: 100
+          limit: 100,
         },
         'content-types': {
           dirName: 'content_types',
           fileName: 'content_types.json',
           validKeys: ['title', 'uid'],
-          limit: 100
+          limit: 100,
         },
         entries: {
           dirName: 'entries',
@@ -175,75 +173,75 @@ describe('BaseClass', () => {
           batchLimit: 100,
           downloadLimit: 5,
           limit: 100,
-          exportVersions: false
+          exportVersions: false,
         },
         personalize: {
           dirName: 'personalize',
-          baseURL: {}
+          baseURL: {},
         },
         variantEntry: {
           dirName: 'variant_entries',
           fileName: 'variant_entries.json',
           chunkFileSize: 5,
-          query: { skip: 0, limit: 100, include_variant: true, include_count: false, include_publish_details: true }
+          query: { skip: 0, limit: 100, include_variant: true, include_count: false, include_publish_details: true },
         },
         extensions: {
           dirName: 'extensions',
-          fileName: 'extensions.json'
+          fileName: 'extensions.json',
         },
         stack: {
           dirName: 'stack',
-          fileName: 'stack.json'
+          fileName: 'stack.json',
         },
         dependency: {
-          entries: []
+          entries: [],
         },
         marketplace_apps: {
           dirName: 'marketplace_apps',
-          fileName: 'marketplace_apps.json'
+          fileName: 'marketplace_apps.json',
         },
         'marketplace-apps': {
           dirName: 'marketplace_apps',
-          fileName: 'marketplace_apps.json'
+          fileName: 'marketplace_apps.json',
         },
         'composable-studio': {
           dirName: 'composable-studio',
           fileName: 'composable-studio.json',
           apiBaseUrl: 'https://api.contentstack.io',
-          apiVersion: 'v1'
+          apiVersion: 'v1',
         },
         masterLocale: {
           dirName: 'master_locale',
           fileName: 'master_locale.json',
-          requiredKeys: ['code']
+          requiredKeys: ['code'],
         },
         taxonomies: {
           dirName: 'taxonomies',
           fileName: 'taxonomies.json',
           invalidKeys: [],
-          limit: 100
+          limit: 100,
         },
         events: {
           dirName: 'events',
           fileName: 'events.json',
-          invalidKeys: []
+          invalidKeys: [],
         },
         audiences: {
           dirName: 'audiences',
           fileName: 'audiences.json',
-          invalidKeys: []
+          invalidKeys: [],
         },
         attributes: {
           dirName: 'attributes',
           fileName: 'attributes.json',
-          invalidKeys: []
-        }
-      }
+          invalidKeys: [],
+        },
+      },
     } as ExportConfig;
 
     testClass = new TestBaseClass({
       exportConfig: mockExportConfig,
-      stackAPIClient: mockStackClient
+      stackAPIClient: mockStackClient,
     });
   });
 
@@ -323,8 +321,8 @@ describe('BaseClass', () => {
         apiParams: {
           module: 'assets',
           resolve: sinon.stub(),
-          reject: sinon.stub()
-        }
+          reject: sinon.stub(),
+        },
       };
 
       await testClass.makeConcurrentCall(env);
@@ -339,8 +337,8 @@ describe('BaseClass', () => {
         apiParams: {
           module: 'asset',
           resolve: sinon.stub(),
-          reject: sinon.stub()
-        }
+          reject: sinon.stub(),
+        },
       };
 
       const result = await testClass.makeConcurrentCall(env);
@@ -356,7 +354,7 @@ describe('BaseClass', () => {
       const env: EnvType = {
         module: 'test',
         totalCount: 150,
-        concurrencyLimit: 5
+        concurrencyLimit: 5,
       };
 
       await testClass.makeConcurrentCall(env, customHandler);
@@ -372,7 +370,7 @@ describe('BaseClass', () => {
       const env: EnvType = {
         module: 'test',
         totalCount: 300,
-        concurrencyLimit: 2
+        concurrencyLimit: 2,
       };
 
       await testClass.makeConcurrentCall(env, customHandler);
@@ -384,7 +382,7 @@ describe('BaseClass', () => {
       const env: EnvType = {
         module: 'test',
         totalCount: 100,
-        concurrencyLimit: 10
+        concurrencyLimit: 10,
       };
 
       const result = await testClass.makeConcurrentCall(env);
@@ -401,8 +399,8 @@ describe('BaseClass', () => {
           uid: 'asset-123',
           resolve: sinon.stub(),
           reject: sinon.stub(),
-          queryParam: {}
-        }
+          queryParam: {},
+        },
       };
 
       await testClass.makeConcurrentCall(env);
@@ -418,8 +416,8 @@ describe('BaseClass', () => {
           module: 'assets',
           resolve: sinon.stub(),
           reject: sinon.stub(),
-          queryParam: { skip: 0 }
-        }
+          queryParam: { skip: 0 },
+        },
       };
 
       await testClass.makeConcurrentCall(env);
@@ -436,8 +434,8 @@ describe('BaseClass', () => {
           url: 'https://example.com/asset.jpg',
           resolve: sinon.stub(),
           reject: sinon.stub(),
-          queryParam: {}
-        }
+          queryParam: {},
+        },
       };
 
       await testClass.makeConcurrentCall(env);
@@ -454,8 +452,8 @@ describe('BaseClass', () => {
           uid: 'taxonomy-123',
           resolve: sinon.stub(),
           reject: sinon.stub(),
-          queryParam: {}
-        }
+          queryParam: {},
+        },
       };
 
       await testClass.makeConcurrentCall(env);
@@ -466,7 +464,7 @@ describe('BaseClass', () => {
       const env: EnvType = {
         module: 'test',
         totalCount: 100,
-        concurrencyLimit: 5
+        concurrencyLimit: 5,
       };
 
       let isLastRequestValues: boolean[] = [];
@@ -483,7 +481,7 @@ describe('BaseClass', () => {
     it('should handle API errors gracefully', async () => {
       const error = new Error('API Error');
       mockStackClient.asset = sinon.stub().returns({
-        fetch: sinon.stub().rejects(error)
+        fetch: sinon.stub().rejects(error),
       });
 
       const env: EnvType = {
@@ -497,8 +495,8 @@ describe('BaseClass', () => {
           reject: (error) => {
             expect(error.error).to.equal(error);
           },
-          queryParam: {}
-        }
+          queryParam: {},
+        },
       };
 
       await testClass.makeConcurrentCall(env);
@@ -507,22 +505,22 @@ describe('BaseClass', () => {
 
     it('should provide correct batch and index information', async () => {
       const batchInfo: Array<{ batchIndex: number; index: number }> = [];
-      
+
       const customHandler: CustomPromiseHandler = async (input) => {
         batchInfo.push({
           batchIndex: input.batchIndex,
-          index: input.index
+          index: input.index,
         });
       };
 
       const env: EnvType = {
         module: 'test',
         totalCount: 250,
-        concurrencyLimit: 5
+        concurrencyLimit: 5,
       };
 
       await testClass.makeConcurrentCall(env, customHandler);
-      
+
       // Verify batch and index information
       expect(batchInfo.length).to.be.greaterThan(0);
       expect(batchInfo[0]?.batchIndex).to.be.a('number');
@@ -541,37 +539,37 @@ describe('BaseClass', () => {
 
     it('should log batch completion', async () => {
       const start = Date.now();
-      
+
       await (testClass as any).logMsgAndWaitIfRequired('test-module', start, 1);
-      
+
       // Just verify it completes without error - the log is tested implicitly
     });
 
-    it('should wait when execution time is less than 1000ms', async function() {
+    it('should wait when execution time is less than 1000ms', async function () {
       clock = sinon.useFakeTimers();
       const start = Date.now();
-      
+
       const waitPromise = (testClass as any).logMsgAndWaitIfRequired('test-module', start, 1);
       clock.tick(1000);
       await waitPromise;
-      
+
       // Just verify it completes
       clock.restore();
     });
 
     it('should not wait when execution time is more than 1000ms', async () => {
       const start = Date.now() - 1500;
-      
+
       await (testClass as any).logMsgAndWaitIfRequired('test-module', start, 1);
-      
+
       // Just verify it completes
     });
 
     it('should display execution time when configured', async () => {
       mockExportConfig.modules.assets.displayExecutionTime = true;
-      
+
       await (testClass as any).logMsgAndWaitIfRequired('test-module', Date.now() - 100, 1);
-      
+
       // Verify it completes - display logic is tested implicitly
     });
   });
@@ -586,7 +584,7 @@ describe('BaseClass', () => {
         uid: 'asset-123',
         queryParam: {},
         resolve: resolveStub,
-        reject: rejectStub
+        reject: rejectStub,
       });
 
       expect(mockStackClient.asset.calledWith('asset-123')).to.be.true;
@@ -600,7 +598,7 @@ describe('BaseClass', () => {
         module: 'assets',
         queryParam: { skip: 0 },
         resolve: resolveStub,
-        reject: rejectStub
+        reject: rejectStub,
       });
 
       expect(mockStackClient.asset.called).to.be.true;
@@ -609,7 +607,7 @@ describe('BaseClass', () => {
     it('should handle API errors', async () => {
       const error = new Error('Network error');
       mockStackClient.asset = sinon.stub().returns({
-        fetch: sinon.stub().rejects(error)
+        fetch: sinon.stub().rejects(error),
       });
 
       const rejectStub = sinon.stub();
@@ -619,7 +617,7 @@ describe('BaseClass', () => {
         uid: 'asset-123',
         queryParam: {},
         resolve: sinon.stub(),
-        reject: rejectStub
+        reject: rejectStub,
       });
 
       // Error should be handled by reject
@@ -629,7 +627,7 @@ describe('BaseClass', () => {
       const result = await (testClass as any).makeAPICall({
         module: 'unknown' as any,
         resolve: sinon.stub(),
-        reject: sinon.stub()
+        reject: sinon.stub(),
       });
 
       expect(result).to.be.undefined;
@@ -641,7 +639,7 @@ describe('BaseClass', () => {
       const env: EnvType = {
         module: 'test',
         totalCount: 100,
-        concurrencyLimit: 5
+        concurrencyLimit: 5,
       };
 
       const result = await testClass.makeConcurrentCall(env);
@@ -652,7 +650,7 @@ describe('BaseClass', () => {
       const env: EnvType = {
         module: 'test',
         totalCount: 101,
-        concurrencyLimit: 5
+        concurrencyLimit: 5,
       };
 
       const result = await testClass.makeConcurrentCall(env);
@@ -663,7 +661,7 @@ describe('BaseClass', () => {
       const env: EnvType = {
         module: 'test',
         totalCount: 50,
-        concurrencyLimit: 1
+        concurrencyLimit: 1,
       };
 
       const result = await testClass.makeConcurrentCall(env);
@@ -674,7 +672,7 @@ describe('BaseClass', () => {
       const env: EnvType = {
         module: 'test',
         totalCount: 50,
-        concurrencyLimit: 100
+        concurrencyLimit: 100,
       };
 
       const result = await testClass.makeConcurrentCall(env);
@@ -682,4 +680,3 @@ describe('BaseClass', () => {
     });
   });
 });
-

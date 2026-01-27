@@ -15,15 +15,13 @@ describe('ExportMarketplaceApps', () => {
 
   beforeEach(() => {
     mockExportConfig = {
-      contentVersion: 1,
       versioning: false,
       host: 'https://api.contentstack.io',
       developerHubUrls: {},
-      apiKey: 'test-api-key',
+      apiKey: 'test-stack-uid',
       exportDir: '/test/export',
       data: '/test/data',
       branchName: '',
-      source_stack: 'test-stack-uid',
       org_uid: 'test-org-uid',
       context: {
         command: 'cm:stacks:export',
@@ -33,7 +31,7 @@ describe('ExportMarketplaceApps', () => {
         sessionId: 'session-123',
         apiKey: 'test-api-key',
         orgId: 'org-123',
-        authenticationMethod: 'Basic Auth'
+        authenticationMethod: 'Basic Auth',
       },
       cliLogsPath: '/test/logs',
       forceStopMarketplaceAppsPrompt: false,
@@ -42,7 +40,7 @@ describe('ExportMarketplaceApps', () => {
         name: 'us',
         cma: 'https://api.contentstack.io',
         cda: 'https://cdn.contentstack.io',
-        uiHost: 'https://app.contentstack.com'
+        uiHost: 'https://app.contentstack.com',
       },
       skipStackSettings: false,
       skipDependencies: false,
@@ -54,31 +52,30 @@ describe('ExportMarketplaceApps', () => {
       writeConcurrency: 5,
       developerHubBaseUrl: 'https://developer-api.contentstack.io',
       marketplaceAppEncryptionKey: 'test-encryption-key',
-      onlyTSModules: [],
       modules: {
         types: ['marketplace-apps'],
         marketplace_apps: {
           dirName: 'marketplace-apps',
-          fileName: 'marketplace-apps.json'
+          fileName: 'marketplace-apps.json',
         },
         'marketplace-apps': {
           dirName: 'marketplace-apps',
-          fileName: 'marketplace-apps.json'
+          fileName: 'marketplace-apps.json',
         },
         'composable-studio': {
           dirName: 'composable-studio',
           fileName: 'composable-studio.json',
           apiBaseUrl: 'https://api.contentstack.io',
-          apiVersion: 'v1'
-        }
+          apiVersion: 'v1',
+        },
       },
-      query: undefined
+      query: undefined,
     } as any;
 
     exportMarketplaceApps = new ExportMarketplaceApps({
       exportConfig: mockExportConfig,
       stackAPIClient: {} as any,
-      moduleName: 'marketplace-apps' as any
+      moduleName: 'marketplace-apps' as any,
     });
 
     // Mock app SDK
@@ -87,18 +84,18 @@ describe('ExportMarketplaceApps', () => {
         installation: sinon.stub().returns({
           fetchAll: sinon.stub().resolves({
             items: [],
-            count: 0
-          })
+            count: 0,
+          }),
         }),
         app: sinon.stub().returns({
-          fetch: sinon.stub().resolves({})
-        })
-      })
+          fetch: sinon.stub().resolves({}),
+        }),
+      }),
     };
 
     // Mock NodeCrypto
     mockNodeCrypto = {
-      encrypt: sinon.stub().returns('encrypted-data')
+      encrypt: sinon.stub().returns('encrypted-data'),
     };
 
     // Stub utility functions
@@ -169,22 +166,22 @@ describe('ExportMarketplaceApps', () => {
               {
                 uid: 'installation-1',
                 manifest: { uid: 'app-1', name: 'Test App', visibility: 'public' },
-                configuration: {} as any
-              }
+                configuration: {} as any,
+              },
             ],
-            count: 1
-          })
+            count: 1,
+          }),
         }),
         app: sinon.stub().returns({
-          fetch: sinon.stub().resolves({})
-        })
+          fetch: sinon.stub().resolves({}),
+        }),
       });
 
       // marketplaceSDKClient is already stubbed in beforeEach, no need to stub again
       // getOrgUid and getDeveloperHubUrl are already stubbed in beforeEach, just ensure they resolve correctly
       (marketplaceAppHelper.getOrgUid as sinon.SinonStub).resolves('test-org-uid');
       (marketplaceAppHelper.getDeveloperHubUrl as sinon.SinonStub).resolves('https://developer-api.contentstack.io');
-      
+
       // Mock exportApps and getAppManifestAndAppConfig to avoid complex setup
       const exportAppsStub = sinon.stub(exportMarketplaceApps, 'exportApps').resolves();
       const getAppManifestAndAppConfigStub = sinon.stub(exportMarketplaceApps, 'getAppManifestAndAppConfig').resolves();
@@ -216,7 +213,7 @@ describe('ExportMarketplaceApps', () => {
       await exportMarketplaceApps.start();
 
       expect(exportMarketplaceApps.marketplaceAppPath).to.include('marketplace-apps');
-      expect(exportMarketplaceApps.marketplaceAppPath).to.include('/test/data');
+      expect(exportMarketplaceApps.marketplaceAppPath).to.include('/test/export');
 
       exportAppsStub.restore();
       configHandlerGetStub.restore();
@@ -227,7 +224,7 @@ describe('ExportMarketplaceApps', () => {
       exportMarketplaceApps = new ExportMarketplaceApps({
         exportConfig: mockExportConfig,
         stackAPIClient: {} as any,
-        moduleName: 'marketplace-apps' as any
+        moduleName: 'marketplace-apps' as any,
       });
 
       const configHandlerGetStub = sinon.stub(utilities.configHandler, 'get');
@@ -247,7 +244,7 @@ describe('ExportMarketplaceApps', () => {
       exportMarketplaceApps = new ExportMarketplaceApps({
         exportConfig: mockExportConfig,
         stackAPIClient: {} as any,
-        moduleName: 'marketplace-apps' as any
+        moduleName: 'marketplace-apps' as any,
       });
 
       const configHandlerGetStub = sinon.stub(utilities.configHandler, 'get');
@@ -289,9 +286,9 @@ describe('ExportMarketplaceApps', () => {
       mockExportConfig.query = {
         modules: {
           'marketplace-apps': {
-            app_uid: { $in: ['app-1', 'app-2'] }
-          }
-        }
+            app_uid: { $in: ['app-1', 'app-2'] },
+          },
+        },
       };
       exportMarketplaceApps.exportConfig = mockExportConfig;
 
@@ -305,7 +302,7 @@ describe('ExportMarketplaceApps', () => {
       // Note: getAppManifestAndAppConfig is called from start(), not exportApps()
       // So it should not be called when testing exportApps() directly
       expect(getAppManifestAndAppConfigStub.called).to.be.false;
-      
+
       getStackSpecificAppsStub.restore();
       getAppManifestAndAppConfigStub.restore();
 
@@ -317,9 +314,9 @@ describe('ExportMarketplaceApps', () => {
       mockExportConfig.query = {
         modules: {
           'marketplace-apps': {
-            installation_uid: { $in: ['inst-1', 'inst-2'] }
-          }
-        }
+            installation_uid: { $in: ['inst-1', 'inst-2'] },
+          },
+        },
       };
       exportMarketplaceApps.exportConfig = mockExportConfig;
 
@@ -339,8 +336,8 @@ describe('ExportMarketplaceApps', () => {
         {
           uid: 'inst-1',
           manifest: { uid: 'app-1', name: 'Test App' },
-          configuration: { key: 'value' }
-        }
+          configuration: { key: 'value' },
+        },
       ];
 
       const getStackSpecificAppsStub = sinon.stub(exportMarketplaceApps, 'getStackSpecificApps').resolves();
@@ -360,9 +357,9 @@ describe('ExportMarketplaceApps', () => {
       exportMarketplaceApps.installedApps = [
         {
           uid: 'inst-1',
-          manifest: { uid: 'app-1', name: 'Test App' }
+          manifest: { uid: 'app-1', name: 'Test App' },
           // No configuration property at all
-        }
+        },
       ];
 
       const getStackSpecificAppsStub = sinon.stub(exportMarketplaceApps, 'getStackSpecificApps').resolves();
@@ -390,22 +387,22 @@ describe('ExportMarketplaceApps', () => {
         {
           uid: 'installation-1',
           manifest: { uid: 'app-1', name: 'Test App 1' },
-          someFunction: () => {}
+          someFunction: () => {},
         },
         {
           uid: 'installation-2',
           manifest: { uid: 'app-2', name: 'Test App 2' },
-          someFunction: () => {}
-        }
+          someFunction: () => {},
+        },
       ];
 
       mockAppSdk.marketplace.returns({
         installation: sinon.stub().returns({
           fetchAll: sinon.stub().resolves({
             items: apps,
-            count: 2
-          })
-        })
+            count: 2,
+          }),
+        }),
       });
 
       await exportMarketplaceApps.getStackSpecificApps();
@@ -424,16 +421,16 @@ describe('ExportMarketplaceApps', () => {
             if (callCount === 1) {
               return Promise.resolve({
                 items: Array(50).fill({ uid: 'app', manifest: {} }),
-                count: 100
+                count: 100,
               });
             } else {
               return Promise.resolve({
                 items: Array(50).fill({ uid: 'app2', manifest: {} }),
-                count: 100
+                count: 100,
               });
             }
-          })
-        })
+          }),
+        }),
       });
 
       await exportMarketplaceApps.getStackSpecificApps();
@@ -450,10 +447,10 @@ describe('ExportMarketplaceApps', () => {
             callCount++;
             return Promise.resolve({
               items: Array(30).fill({ uid: 'app', manifest: {} }),
-              count: 30
+              count: 30,
             });
-          })
-        })
+          }),
+        }),
       });
 
       await exportMarketplaceApps.getStackSpecificApps();
@@ -465,8 +462,8 @@ describe('ExportMarketplaceApps', () => {
     it('should handle API errors gracefully', async () => {
       mockAppSdk.marketplace.returns({
         installation: sinon.stub().returns({
-          fetchAll: sinon.stub().rejects(new Error('API Error'))
-        })
+          fetchAll: sinon.stub().rejects(new Error('API Error')),
+        }),
       });
 
       await exportMarketplaceApps.getStackSpecificApps();
@@ -480,9 +477,9 @@ describe('ExportMarketplaceApps', () => {
         installation: sinon.stub().returns({
           fetchAll: sinon.stub().resolves({
             items: [],
-            count: 0
-          })
-        })
+            count: 0,
+          }),
+        }),
       });
 
       const initialLength = exportMarketplaceApps.installedApps.length;
@@ -497,16 +494,16 @@ describe('ExportMarketplaceApps', () => {
         manifest: { uid: 'app-1' },
         regularProperty: 'value',
         functionProperty: () => {},
-        anotherFunction: function() {}
+        anotherFunction: function () {},
       };
 
       mockAppSdk.marketplace.returns({
         installation: sinon.stub().returns({
           fetchAll: sinon.stub().resolves({
             items: [appWithFunction],
-            count: 1
-          })
-        })
+            count: 1,
+          }),
+        }),
       });
 
       await exportMarketplaceApps.getStackSpecificApps();
@@ -540,9 +537,9 @@ describe('ExportMarketplaceApps', () => {
           manifest: {
             uid: 'app-1',
             name: 'Private App',
-            visibility: 'private'
-          }
-        }
+            visibility: 'private',
+          },
+        },
       ];
 
       const getPrivateAppsManifestStub = sinon.stub(exportMarketplaceApps, 'getPrivateAppsManifest').resolves();
@@ -566,9 +563,9 @@ describe('ExportMarketplaceApps', () => {
           manifest: {
             uid: 'app-1',
             name: 'Public App',
-            visibility: 'public'
-          }
-        }
+            visibility: 'public',
+          },
+        },
       ];
 
       const getPrivateAppsManifestStub = sinon.stub(exportMarketplaceApps, 'getPrivateAppsManifest').resolves();
@@ -588,8 +585,8 @@ describe('ExportMarketplaceApps', () => {
       exportMarketplaceApps.installedApps = [
         {
           uid: 'inst-1',
-          manifest: { uid: 'app-1', name: 'Test App', visibility: 'public' }
-        }
+          manifest: { uid: 'app-1', name: 'Test App', visibility: 'public' },
+        },
       ];
 
       const getAppConfigurationsStub = sinon.stub(exportMarketplaceApps, 'getAppConfigurations').resolves();
@@ -616,9 +613,9 @@ describe('ExportMarketplaceApps', () => {
           manifest: {
             uid: 'app-1',
             name: 'Private App',
-            visibility: 'private'
-          }
-        }
+            visibility: 'private',
+          },
+        },
       ];
     });
 
@@ -627,13 +624,13 @@ describe('ExportMarketplaceApps', () => {
         uid: 'app-1',
         name: 'Private App Updated',
         visibility: 'private',
-        oauth: { client_id: 'test-client-id' }
+        oauth: { client_id: 'test-client-id' },
       };
 
       mockAppSdk.marketplace.returns({
         app: sinon.stub().returns({
-          fetch: sinon.stub().resolves(fetchedManifest)
-        })
+          fetch: sinon.stub().resolves(fetchedManifest),
+        }),
       });
 
       await exportMarketplaceApps.getPrivateAppsManifest(0, exportMarketplaceApps.installedApps[0]);
@@ -644,8 +641,8 @@ describe('ExportMarketplaceApps', () => {
     it('should handle API errors gracefully', async () => {
       mockAppSdk.marketplace.returns({
         app: sinon.stub().returns({
-          fetch: sinon.stub().rejects(new Error('API Error'))
-        })
+          fetch: sinon.stub().rejects(new Error('API Error')),
+        }),
       });
 
       const originalManifest = exportMarketplaceApps.installedApps[0].manifest;
@@ -660,8 +657,8 @@ describe('ExportMarketplaceApps', () => {
       const fetchStub = sinon.stub().resolves({ uid: 'app-1', name: 'Private App' });
       mockAppSdk.marketplace.returns({
         app: sinon.stub().returns({
-          fetch: fetchStub
-        })
+          fetch: fetchStub,
+        }),
       });
 
       await exportMarketplaceApps.getPrivateAppsManifest(0, exportMarketplaceApps.installedApps[0]);
@@ -681,23 +678,23 @@ describe('ExportMarketplaceApps', () => {
           uid: 'inst-1',
           manifest: {
             uid: 'app-1',
-            name: 'Test App'
-          }
-        }
+            name: 'Test App',
+          },
+        },
       ];
     });
 
     it('should fetch and encrypt app configuration', async () => {
       const installationData = {
         data: {
-          configuration: { key: 'value' }
-        }
+          configuration: { key: 'value' },
+        },
       };
 
       mockAppSdk.marketplace.returns({
         installation: sinon.stub().returns({
-          installationData: sinon.stub().resolves(installationData)
-        })
+          installationData: sinon.stub().resolves(installationData),
+        }),
       });
 
       await exportMarketplaceApps.getAppConfigurations(0, exportMarketplaceApps.installedApps[0]);
@@ -709,14 +706,14 @@ describe('ExportMarketplaceApps', () => {
     it('should fetch and encrypt server configuration', async () => {
       const installationData = {
         data: {
-          server_configuration: { secret: 'value' }
-        }
+          server_configuration: { secret: 'value' },
+        },
       };
 
       mockAppSdk.marketplace.returns({
         installation: sinon.stub().returns({
-          installationData: sinon.stub().resolves(installationData)
-        })
+          installationData: sinon.stub().resolves(installationData),
+        }),
       });
 
       await exportMarketplaceApps.getAppConfigurations(0, exportMarketplaceApps.installedApps[0]);
@@ -729,14 +726,14 @@ describe('ExportMarketplaceApps', () => {
       exportMarketplaceApps.nodeCrypto = undefined;
       const installationData = {
         data: {
-          configuration: { key: 'value' }
-        }
+          configuration: { key: 'value' },
+        },
       };
 
       mockAppSdk.marketplace.returns({
         installation: sinon.stub().returns({
-          installationData: sinon.stub().resolves(installationData)
-        })
+          installationData: sinon.stub().resolves(installationData),
+        }),
       });
 
       await exportMarketplaceApps.getAppConfigurations(0, exportMarketplaceApps.installedApps[0]);
@@ -748,14 +745,14 @@ describe('ExportMarketplaceApps', () => {
     it('should handle empty configuration gracefully', async () => {
       const installationData = {
         data: {
-          configuration: null
-        } as any
+          configuration: null,
+        } as any,
       };
 
       mockAppSdk.marketplace.returns({
         installation: sinon.stub().returns({
-          installationData: sinon.stub().resolves(installationData)
-        })
+          installationData: sinon.stub().resolves(installationData),
+        }),
       });
 
       await exportMarketplaceApps.getAppConfigurations(0, exportMarketplaceApps.installedApps[0]);
@@ -766,8 +763,8 @@ describe('ExportMarketplaceApps', () => {
     it('should handle API errors gracefully', async () => {
       mockAppSdk.marketplace.returns({
         installation: sinon.stub().returns({
-          installationData: sinon.stub().rejects(new Error('API Error'))
-        })
+          installationData: sinon.stub().rejects(new Error('API Error')),
+        }),
       });
 
       await exportMarketplaceApps.getAppConfigurations(0, exportMarketplaceApps.installedApps[0]);
@@ -779,13 +776,13 @@ describe('ExportMarketplaceApps', () => {
     it('should handle error in installation data response', async () => {
       const installationData = {
         data: null,
-        error: { message: 'Error fetching data' }
+        error: { message: 'Error fetching data' },
       } as any;
 
       mockAppSdk.marketplace.returns({
         installation: sinon.stub().returns({
-          installationData: sinon.stub().resolves(installationData)
-        })
+          installationData: sinon.stub().resolves(installationData),
+        }),
       });
 
       await exportMarketplaceApps.getAppConfigurations(0, exportMarketplaceApps.installedApps[0]);
@@ -798,14 +795,14 @@ describe('ExportMarketplaceApps', () => {
       exportMarketplaceApps.installedApps[0].manifest.name = 'Test App Name';
       const installationData = {
         data: {
-          configuration: { key: 'value' }
-        }
+          configuration: { key: 'value' },
+        },
       };
 
       mockAppSdk.marketplace.returns({
         installation: sinon.stub().returns({
-          installationData: sinon.stub().resolves(installationData)
-        })
+          installationData: sinon.stub().resolves(installationData),
+        }),
       });
 
       await exportMarketplaceApps.getAppConfigurations(0, exportMarketplaceApps.installedApps[0]);
@@ -819,14 +816,14 @@ describe('ExportMarketplaceApps', () => {
       exportMarketplaceApps.installedApps[0].manifest.uid = 'app-uid-123';
       const installationData = {
         data: {
-          configuration: { key: 'value' }
-        }
+          configuration: { key: 'value' },
+        },
       };
 
       mockAppSdk.marketplace.returns({
         installation: sinon.stub().returns({
-          installationData: sinon.stub().resolves(installationData)
-        })
+          installationData: sinon.stub().resolves(installationData),
+        }),
       });
 
       await exportMarketplaceApps.getAppConfigurations(0, exportMarketplaceApps.installedApps[0]);
@@ -836,4 +833,3 @@ describe('ExportMarketplaceApps', () => {
     });
   });
 });
-

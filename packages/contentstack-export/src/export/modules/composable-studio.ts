@@ -41,7 +41,7 @@ export default class ExportComposableStudio {
     }
 
     this.composableStudioPath = pResolve(
-      this.exportConfig.data,
+      this.exportConfig.exportDir,
       this.exportConfig.branchName || '',
       this.composableStudioConfig.dirName,
     );

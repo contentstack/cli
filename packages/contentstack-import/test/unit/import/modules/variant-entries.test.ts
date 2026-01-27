@@ -75,7 +75,7 @@ describe('ImportVariantEntries', () => {
 
   beforeEach(() => {
     mockImportConfig = {
-      data: '/test/backup',
+      contentDir: '/test/backup',
       apiKey: 'test-api-key',
       context: {
         command: 'cm:stacks:import',
@@ -269,7 +269,7 @@ describe('ImportVariantEntries', () => {
       const constructorArgs = mockImport.VariantEntries.getCall(0).args[0];
       
       // Verify original config properties are preserved
-      expect(constructorArgs.data).to.equal('/test/backup');
+      expect(constructorArgs.contentDir).to.equal('/test/backup');
       expect(constructorArgs.apiKey).to.equal('test-api-key');
       expect(constructorArgs.context).to.deep.equal(mockImportConfig.context);
       
@@ -470,7 +470,7 @@ describe('ImportVariantEntries', () => {
       expect(constructorArgs.helpers).to.be.an('object');
       
       // Verify other config properties are still present
-      expect(constructorArgs).to.have.property('data');
+      expect(constructorArgs).to.have.property('contentDir');
       expect(constructorArgs).to.have.property('apiKey');
       expect(constructorArgs).to.have.property('context');
     });
@@ -528,7 +528,7 @@ describe('ImportVariantEntries', () => {
     it('should handle different data paths in projectMapperFilePath construction', () => {
       const customConfig = {
         ...mockImportConfig,
-        data: '/custom/backup/path'
+        contentDir: '/custom/backup/path'
       };
       const customImportVariantEntries = new ImportVariantEntries({ 
         importConfig: customConfig
