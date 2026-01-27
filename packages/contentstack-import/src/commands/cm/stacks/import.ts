@@ -12,6 +12,7 @@ import {
   CLIProgressManager,
   cliux,
   clearProgressModuleSetting,
+  createLogContext,
 } from '@contentstack/cli-utilities';
 
 import { Context, ImportConfig } from '../../../types';
