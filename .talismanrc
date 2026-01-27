@@ -1,8 +1,8 @@
 fileignoreconfig:
   - filename: package-lock.json
-    checksum: 21d5e66a045c155578dc6b6d747745b94c4591c1e17f5226b94b833a46ee9bff
+    checksum: 8b2d0a8e903fc76cdc723e3f740226a90fa6bb00ef08560edde096565730d79d
   - filename: pnpm-lock.yaml
-    checksum: a0e789a97a39aece1d637ed121bb6847d39dfb9033b71ea8bf10619eec2e246a
+    checksum: 6a121bd3ebdc1c6394f524b47f5c9d4f75cafbe098eb760a4ba65323c3650c7f
   - filename: packages/contentstack-import-setup/test/unit/backup-handler.test.ts
     checksum: 0582d62b88834554cf12951c8690a73ef3ddbb78b82d2804d994cf4148e1ef93
   - filename: packages/contentstack-import-setup/test/config.json
@@ -295,4 +295,22 @@ fileignoreconfig:
     checksum: 9ef96342102d27d5734d3ac46143c2adb8ba1e23dc70816935310321b69ee1ce
   - filename: packages/contentstack-migration/src/utils/constants.ts
     checksum: 1e647efebd553a249ef306e1bbb9b3553feea1c353e9e2787751c3c47d1137f6
+  - filename: packages/contentstack-migration/test/unit/commands/cm/stacks/migration.test.ts
+    checksum: 95d3bf9b2a1a8b31006ea2186a385de379f9faf9475fb8c3703c5dcb5c81d29c
+  - filename: packages/contentstack-migration/test/unit/utils/auto-retry.test.ts
+    checksum: 6c52191d64e8015038505a5e4b0b956c444658d521b837648ea6d2a7ef1b0dea
+  - filename: packages/contentstack-migration/test/unit/modules/migration.test.ts
+    checksum: 962353bebafc82ffa5857d74e0866a462c523cc84da6e71ad4bfc1320995261c
+  - filename: packages/contentstack-migration/test/unit/services/content-types.test.ts
+    checksum: 4f6f754b8f99494cd815cb41dd1a3dab1cc03300fe333f3e0c43adc7eddf5957
+  - filename: packages/contentstack-migration/test/unit/utils/error-helper.test.ts
+    checksum: 727aa53a907dd30779f519eedccf7d6cbd93edcaa7983af7e0ac95b990c82b66
+  - filename: packages/contentstack-migration/test/unit/services/locales.test.ts
+    checksum: 8742c451b8b1fcb1f45292ee54db07baea89ec1775f722986183801c57031606
+  - filename: packages/contentstack-migration/test/unit/utils/fs-helper.test.ts
+    checksum: af94885c8e2065beaea7fb0eebc5035e777bb3a46f7e705fcb6cd9a50d4e575f
+  - filename: packages/contentstack-migration/test/unit/utils/map.test.ts
+    checksum: 0463362e87a31c8ac66cbf49d227ba40de4e570a92d78d0ebdccd08916056149
+  - filename: packages/contentstack-migration/test/unit/actions/index.test.ts
+    checksum: 493a0fa5e5f10c5d899c592c37d20f37a71614da12194e98f6885fe8cf429f35
 version: '1.0'
