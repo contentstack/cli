@@ -253,6 +253,14 @@ const sensitiveKeys = [
   /delivery[-._]?token/i,
 ];
 
+export function clearProgressModuleSetting(): void {
+  const logConfig = configHandler.get('log') || {};
+  if (logConfig?.progressSupportedModule) {
+    delete logConfig.progressSupportedModule;
+    configHandler.set('log', logConfig);
+  }
+}
+
 /**
  * Get authentication method from config
  * @returns Authentication method string ('OAuth', 'Basic Auth', or empty string)
