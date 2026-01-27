@@ -20,7 +20,7 @@ export default async function (opts): Promise<void> {
   // Auth guard
   if (protectedCommands[opts.Command.id]) {
     if (!isAuthenticated()) {
-      handleAndLogError(new Error('No auth token found for command.'), { module: 'auth-guard', commandId: opts.Command.id });
+      handleAndLogError(new Error('Authentication required for this command'), { module: 'auth-guard', commandId: opts.Command.id });
       cliux.error('Please log in to execute the command');
       this.exit();
     }
