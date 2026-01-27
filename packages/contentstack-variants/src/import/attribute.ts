@@ -124,7 +124,7 @@ export default class Attribute extends PersonalizationAdapter<ImportConfig> {
     return this.withLoadingSpinner('ATTRIBUTES: Analyzing import data...', async () => {
       const { dirName, fileName } = this.attributeConfig;
       const attributesPath = resolve(
-        sanitizePath(this.config.data),
+        sanitizePath(this.config.contentDir),
         sanitizePath(this.personalizeConfig.dirName),
         sanitizePath(dirName),
         sanitizePath(fileName),

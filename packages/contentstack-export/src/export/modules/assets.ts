@@ -47,8 +47,8 @@ export default class ExportAssets extends BaseClass {
   }
 
   async start(): Promise<void> {
-    this.assetsRootPath = pResolve(
-      this.exportConfig.data,
+      this.assetsRootPath = pResolve(
+      this.exportConfig.exportDir,
       this.exportConfig.branchName || '',
       this.assetConfig.dirName,
     );

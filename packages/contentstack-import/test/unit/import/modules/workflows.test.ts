@@ -16,11 +16,11 @@ describe('ImportWorkflows', () => {
     fsUtilStub = {
       readFile: sinon.stub(),
       writeFile: sinon.stub(),
-      makeDirectory: sinon.stub().resolves()
+      makeDirectory: sinon.stub().resolves(),
     };
-    
+
     fileHelperStub = {
-      fileExistsSync: sinon.stub()
+      fileExistsSync: sinon.stub(),
     };
 
     // Use sinon.replace to replace the entire modules
@@ -30,19 +30,18 @@ describe('ImportWorkflows', () => {
     const mockWorkflowUpdate = sinon.stub().resolves({ uid: 'wf-123', name: 'Test WF' });
     mockStackClient = {
       role: sinon.stub().returns({
-        fetchAll: sinon.stub().resolves({ items: [{ name: 'Test Role', uid: 'role-123' }] })
+        fetchAll: sinon.stub().resolves({ items: [{ name: 'Test Role', uid: 'role-123' }] }),
       }),
       workflow: sinon.stub().returns({
         create: sinon.stub().resolves({ uid: 'wf-123', name: 'Test WF', workflow_stages: [] }),
-        update: mockWorkflowUpdate
-      })
+        update: mockWorkflowUpdate,
+      }),
     };
 
     mockImportConfig = {
       apiKey: 'test',
       backupDir: '/test/backup',
       data: '/test/content',
-      contentVersion: 1,
       region: 'us',
       fetchConcurrency: 2,
       context: {
@@ -53,20 +52,20 @@ describe('ImportWorkflows', () => {
         sessionId: 'session-123',
         apiKey: 'test',
         orgId: 'org-123',
-        authenticationMethod: 'Basic Auth'
+        authenticationMethod: 'Basic Auth',
       },
       modules: {
         workflows: {
           dirName: 'workflows',
-          fileName: 'workflows.json'
-        }
-      }
+          fileName: 'workflows.json',
+        },
+      },
     } as any;
 
     importWorkflows = new ImportWorkflows({
       importConfig: mockImportConfig as any,
       stackAPIClient: mockStackClient,
-      moduleName: 'workflows'
+      moduleName: 'workflows',
     });
 
     sinon.stub(importWorkflows as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
@@ -78,7 +77,7 @@ describe('ImportWorkflows', () => {
       startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
       completeProcess: sinon.stub(),
       updateStatus: sinon.stub(),
-      tick: sinon.stub()
+      tick: sinon.stub(),
     };
     sinon.stub(importWorkflows as any, 'createNestedProgress').returns(mockProgress);
     sinon.stub(importWorkflows as any, 'prepareWorkflowMapper').resolves();
@@ -123,14 +122,16 @@ describe('ImportWorkflows', () => {
   describe('start()', () => {
     it('should return early when workflows folder does not exist', async () => {
       sinon.restore();
-      
+
       sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      
-      sinon.stub(importWorkflows as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
-      
+
+      sinon
+        .stub(importWorkflows as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+
       fileHelperStub.fileExistsSync.returns(false);
 
       await importWorkflows.start();
@@ -140,14 +141,16 @@ describe('ImportWorkflows', () => {
 
     it('should return early when workflows is empty', async () => {
       sinon.restore();
-      
+
       sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      
-      sinon.stub(importWorkflows as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
-      
+
+      sinon
+        .stub(importWorkflows as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+
       fileHelperStub.fileExistsSync.returns(true);
       fsUtilStub.readFile.returns({});
 
@@ -158,13 +161,15 @@ describe('ImportWorkflows', () => {
 
     it('should process workflows when available', async () => {
       sinon.restore();
-      
+
       sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      
-      sinon.stub(importWorkflows as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+
+      sinon
+        .stub(importWorkflows as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       sinon.stub(importWorkflows as any, 'getRoles').resolves();
       sinon.stub(importWorkflows as any, 'completeProgress').resolves();
       const mockProgress = {
@@ -172,14 +177,14 @@ describe('ImportWorkflows', () => {
         startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
         completeProcess: sinon.stub(),
         updateStatus: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       };
       sinon.stub(importWorkflows as any, 'createNestedProgress').returns(mockProgress);
       sinon.stub(importWorkflows as any, 'processWorkflowResults').resolves();
       makeConcurrentCallStub = sinon.stub(importWorkflows as any, 'makeConcurrentCall').resolves();
-      
+
       const mockWorkflows = {
-        wf1: { uid: 'wf1', name: 'Workflow 1', workflow_stages: [] as any }
+        wf1: { uid: 'wf1', name: 'Workflow 1', workflow_stages: [] as any },
       };
 
       fileHelperStub.fileExistsSync.withArgs(sinon.match(/workflows$/)).returns(true);
@@ -193,13 +198,15 @@ describe('ImportWorkflows', () => {
 
     it('should load existing UID mapper when file exists', async () => {
       sinon.restore();
-      
+
       sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      
-      sinon.stub(importWorkflows as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+
+      sinon
+        .stub(importWorkflows as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       sinon.stub(importWorkflows as any, 'getRoles').resolves();
       sinon.stub(importWorkflows as any, 'completeProgress').resolves();
       const mockProgress = {
@@ -207,12 +214,12 @@ describe('ImportWorkflows', () => {
         startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
         completeProcess: sinon.stub(),
         updateStatus: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       };
       sinon.stub(importWorkflows as any, 'createNestedProgress').returns(mockProgress);
       sinon.stub(importWorkflows as any, 'processWorkflowResults').resolves();
       makeConcurrentCallStub = sinon.stub(importWorkflows as any, 'makeConcurrentCall').resolves();
-      
+
       const mockWorkflows = { wf1: { uid: 'wf1', name: 'WF 1', workflow_stages: [] as any } };
       const mockUidMapper = { wf1: 'mapped-wf1' };
 
@@ -228,13 +235,15 @@ describe('ImportWorkflows', () => {
 
     it('should write success file when workflows created', async () => {
       sinon.restore();
-      
+
       sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      
-      sinon.stub(importWorkflows as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+
+      sinon
+        .stub(importWorkflows as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       sinon.stub(importWorkflows as any, 'getRoles').resolves();
       sinon.stub(importWorkflows as any, 'completeProgress').resolves();
       const mockProgress = {
@@ -242,11 +251,11 @@ describe('ImportWorkflows', () => {
         startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
         completeProcess: sinon.stub(),
         updateStatus: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       };
       sinon.stub(importWorkflows as any, 'createNestedProgress').returns(mockProgress);
       makeConcurrentCallStub = sinon.stub(importWorkflows as any, 'makeConcurrentCall').resolves();
-      
+
       const mockWorkflows = { wf1: { uid: 'wf1', name: 'WF 1', workflow_stages: [] as any } };
 
       fileHelperStub.fileExistsSync.withArgs(sinon.match(/workflows$/)).returns(true);
@@ -264,16 +273,18 @@ describe('ImportWorkflows', () => {
       const mockWorkflows = { wf1: { uid: 'wf1', name: 'WF 1', workflow_stages: [] as any } };
 
       sinon.restore();
-      sinon.stub(importWorkflows as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+      sinon
+        .stub(importWorkflows as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       sinon.stub(importWorkflows as any, 'analyzeWorkflows').resolves([1]);
       const mockProgress = {
         addProcess: sinon.stub(),
         startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
         completeProcess: sinon.stub(),
         updateStatus: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       };
       sinon.stub(importWorkflows as any, 'createNestedProgress').returns(mockProgress);
       sinon.stub(importWorkflows as any, 'prepareWorkflowMapper').resolves();
@@ -288,7 +299,7 @@ describe('ImportWorkflows', () => {
       importWorkflows['failedWebhooks'] = [{ uid: 'wf1' }];
 
       const processWorkflowResultsStub = sinon.stub(importWorkflows as any, 'processWorkflowResults');
-      
+
       await importWorkflows.start();
 
       expect(processWorkflowResultsStub.called).to.be.true;
@@ -303,24 +314,24 @@ describe('ImportWorkflows', () => {
 
       const mockRoles = [
         { name: 'Role 1', uid: 'role1' },
-        { name: 'Role 2', uid: 'role2' }
+        { name: 'Role 2', uid: 'role2' },
       ];
 
       mockStackClient.role.returns({
-        fetchAll: sinon.stub().resolves({ items: mockRoles })
+        fetchAll: sinon.stub().resolves({ items: mockRoles }),
       });
 
       await importWorkflows.getRoles();
 
       expect(importWorkflows['roleNameMap']).to.deep.equal({
         'Role 1': 'role1',
-        'Role 2': 'role2'
+        'Role 2': 'role2',
       });
     });
 
     it('should handle role fetch error', async () => {
       mockStackClient.role.returns({
-        fetchAll: sinon.stub().rejects(new Error('Fetch failed'))
+        fetchAll: sinon.stub().rejects(new Error('Fetch failed')),
       });
 
       await importWorkflows.getRoles();
@@ -330,7 +341,7 @@ describe('ImportWorkflows', () => {
 
     it('should handle empty roles response', async () => {
       mockStackClient.role.returns({
-        fetchAll: sinon.stub().resolves({ items: [] })
+        fetchAll: sinon.stub().resolves({ items: [] }),
       });
 
       await importWorkflows.getRoles();
@@ -342,7 +353,7 @@ describe('ImportWorkflows', () => {
   describe('importWorkflows()', () => {
     beforeEach(() => {
       importWorkflows['workflows'] = {
-        wf1: { uid: 'wf1', name: 'Workflow 1', workflow_stages: [] as any }
+        wf1: { uid: 'wf1', name: 'Workflow 1', workflow_stages: [] as any },
       };
     });
 
@@ -372,7 +383,7 @@ describe('ImportWorkflows', () => {
       const onReject = makeConcurrentCallStub.firstCall.args[0].apiParams.reject;
       onReject({
         error: { message: JSON.stringify({ errors: { name: 'exists' } }) },
-        apiData: { name: 'Workflow 1', uid: 'wf1' }
+        apiData: { name: 'Workflow 1', uid: 'wf1' },
       });
 
       expect(importWorkflows['failedWebhooks']).to.have.lengthOf(0);
@@ -384,7 +395,7 @@ describe('ImportWorkflows', () => {
       const onReject = makeConcurrentCallStub.firstCall.args[0].apiParams.reject;
       onReject({
         error: { errors: { 'workflow_stages.0.users': 'error' } },
-        apiData: { name: 'Workflow 1', uid: 'wf1' }
+        apiData: { name: 'Workflow 1', uid: 'wf1' },
       });
 
       expect(importWorkflows['failedWebhooks']).to.have.lengthOf(1);
@@ -396,7 +407,7 @@ describe('ImportWorkflows', () => {
       const onReject = makeConcurrentCallStub.firstCall.args[0].apiParams.reject;
       onReject({
         error: { message: JSON.stringify({ errorCode: 500 }) },
-        apiData: { name: 'Workflow 1', uid: 'wf1' }
+        apiData: { name: 'Workflow 1', uid: 'wf1' },
       });
 
       expect(importWorkflows['failedWebhooks']).to.have.lengthOf(1);
@@ -406,9 +417,7 @@ describe('ImportWorkflows', () => {
       const mockWorkflow = {
         uid: 'wf1',
         name: 'WF 1',
-        workflow_stages: [
-          { uid: 'stage1', name: 'Stage 1', next_available_stages: ['stage2'] }
-        ]
+        workflow_stages: [{ uid: 'stage1', name: 'Stage 1', next_available_stages: ['stage2'] }],
       };
       importWorkflows['workflows'] = { wf1: mockWorkflow };
 
@@ -418,7 +427,7 @@ describe('ImportWorkflows', () => {
       const response = {
         uid: 'wf-new',
         name: 'WF 1',
-        workflow_stages: [{ uid: 'new-stage1', name: 'Stage 1' }]
+        workflow_stages: [{ uid: 'new-stage1', name: 'Stage 1' }],
       };
 
       await onSuccess({ response, apiData: { uid: 'wf1', name: 'WF 1' } });
@@ -432,7 +441,7 @@ describe('ImportWorkflows', () => {
       importWorkflows['workflowUidMapper'] = { wf1: 'mapped-wf1' };
       const apiOptions = {
         apiData: { uid: 'wf1', name: 'Workflow 1', workflow_stages: [] as any },
-        entity: 'create-workflows'
+        entity: 'create-workflows',
       };
 
       const result = importWorkflows.serializeWorkflows(apiOptions as any);
@@ -446,8 +455,8 @@ describe('ImportWorkflows', () => {
           uid: 'wf1',
           name: 'Workflow 1',
           admin_users: ['user1'],
-          workflow_stages: [] as any
-        }
+          workflow_stages: [] as any,
+        },
       };
 
       const result = importWorkflows.serializeWorkflows(apiOptions as any);
@@ -457,7 +466,7 @@ describe('ImportWorkflows', () => {
 
     it('should add default branches if not present', () => {
       const apiOptions = {
-        apiData: { uid: 'wf1', name: 'Workflow 1', workflow_stages: [] as any }
+        apiData: { uid: 'wf1', name: 'Workflow 1', workflow_stages: [] as any },
       };
 
       const result = importWorkflows.serializeWorkflows(apiOptions as any);
@@ -471,8 +480,8 @@ describe('ImportWorkflows', () => {
           uid: 'wf1',
           name: 'Workflow 1',
           branches: ['custom-branch'],
-          workflow_stages: [] as any
-        }
+          workflow_stages: [] as any,
+        },
       };
 
       const result = importWorkflows.serializeWorkflows(apiOptions as any);
@@ -485,10 +494,8 @@ describe('ImportWorkflows', () => {
         apiData: {
           uid: 'wf1',
           name: 'Workflow 1',
-          workflow_stages: [
-            { uid: 'stage1', name: 'Stage 1', next_available_stages: ['stage2'] }
-          ] as any
-        }
+          workflow_stages: [{ uid: 'stage1', name: 'Stage 1', next_available_stages: ['stage2'] }] as any,
+        },
       };
 
       const result = importWorkflows.serializeWorkflows(apiOptions as any);
@@ -502,8 +509,8 @@ describe('ImportWorkflows', () => {
         apiData: {
           uid: 'wf1',
           name: 'Workflow 1',
-          workflow_stages: [{ uid: 'stage1', name: 'Stage 1', next_available_stages: [] }] as any
-        }
+          workflow_stages: [{ uid: 'stage1', name: 'Stage 1', next_available_stages: [] }] as any,
+        },
       };
 
       const result = importWorkflows.serializeWorkflows(apiOptions as any);
@@ -517,11 +524,11 @@ describe('ImportWorkflows', () => {
       const workflow = { uid: 'wf1', name: 'WF 1' };
       const newStages = [
         { uid: 'new-stage1', name: 'Stage 1' },
-        { uid: 'new-stage2', name: 'Stage 2' }
+        { uid: 'new-stage2', name: 'Stage 2' },
       ];
       const oldStages = [
         { uid: 'old-stage1', name: 'Stage 1', next_available_stages: ['old-stage2'] as any },
-        { uid: 'old-stage2', name: 'Stage 2', next_available_stages: [] as any }
+        { uid: 'old-stage2', name: 'Stage 2', next_available_stages: [] as any },
       ];
 
       const result = importWorkflows.updateNextAvailableStagesUid(workflow, newStages, oldStages);
@@ -560,10 +567,10 @@ describe('ImportWorkflows', () => {
           {
             SYS_ACL: {
               users: { uids: ['user1'] as any },
-              roles: { uids: [{ uid: 'role1', name: 'Role 1', rules: [] as any }] }
-            }
-          }
-        ]
+              roles: { uids: [{ uid: 'role1', name: 'Role 1', rules: [] as any }] },
+            },
+          },
+        ],
       };
 
       await importWorkflows.createCustomRoleIfNotExists(workflow);
@@ -579,10 +586,10 @@ describe('ImportWorkflows', () => {
           {
             SYS_ACL: {
               users: { uids: ['user1', 'user2'] as any },
-              roles: { uids: [] as any }
-            }
-          }
-        ]
+              roles: { uids: [] as any },
+            },
+          },
+        ],
       };
 
       await importWorkflows.createCustomRoleIfNotExists(workflow);
@@ -598,10 +605,10 @@ describe('ImportWorkflows', () => {
           {
             SYS_ACL: {
               users: { uids: ['$all'] as any },
-              roles: { uids: [] as any }
-            }
-          }
-        ]
+              roles: { uids: [] as any },
+            },
+          },
+        ],
       };
 
       await importWorkflows.createCustomRoleIfNotExists(workflow);
@@ -614,7 +621,7 @@ describe('ImportWorkflows', () => {
     it('should add branch rule if not exists', () => {
       const apiOptions = {
         apiData: { name: 'Role 1', rules: [] as any },
-        additionalInfo: { workflowUid: 'wf1', stageIndex: 0 }
+        additionalInfo: { workflowUid: 'wf1', stageIndex: 0 },
       };
       importWorkflows['roleNameMap'] = {};
 
@@ -628,9 +635,9 @@ describe('ImportWorkflows', () => {
       const apiOptions = {
         apiData: {
           name: 'Role 1',
-          rules: [{ module: 'branch', branches: ['main'], acl: { read: true } }] as any
+          rules: [{ module: 'branch', branches: ['main'], acl: { read: true } }] as any,
         },
-        additionalInfo: { workflowUid: 'wf1', stageIndex: 0 }
+        additionalInfo: { workflowUid: 'wf1', stageIndex: 0 },
       };
       importWorkflows['roleNameMap'] = {};
 
@@ -643,13 +650,13 @@ describe('ImportWorkflows', () => {
       importWorkflows['roleNameMap'] = { 'Role 1': 'role-123' };
       importWorkflows['workflows'] = {
         wf1: {
-          workflow_stages: [{ SYS_ACL: { roles: { uids: [{ uid: 'old-role', name: 'Role 1' }] } } }]
-        }
+          workflow_stages: [{ SYS_ACL: { roles: { uids: [{ uid: 'old-role', name: 'Role 1' }] } } }],
+        },
       };
       const apiOptions = {
         apiData: { uid: 'old-role', name: 'Role 1', rules: [] as any },
         additionalInfo: { workflowUid: 'wf1', stageIndex: 0 },
-        entity: 'create-custom-role'
+        entity: 'create-custom-role',
       };
 
       const result = importWorkflows.serializeCustomRoles(apiOptions as any);
@@ -662,15 +669,15 @@ describe('ImportWorkflows', () => {
     it('should update role UID in workflow stage', () => {
       importWorkflows['workflows'] = {
         wf1: {
-          workflow_stages: [{ SYS_ACL: { roles: { uids: [{ uid: 'old-role', name: 'Role 1' }] } } }]
-        }
+          workflow_stages: [{ SYS_ACL: { roles: { uids: [{ uid: 'old-role', name: 'Role 1' }] } } }],
+        },
       };
       importWorkflows['roleNameMap'] = { 'Role 1': 'new-role' };
 
       importWorkflows.updateRoleData({
         workflowUid: 'wf1',
         stageIndex: 0,
-        roleData: { uid: 'old-role', name: 'Role 1' }
+        roleData: { uid: 'old-role', name: 'Role 1' },
       });
 
       expect(importWorkflows['workflows']['wf1'].workflow_stages[0].SYS_ACL.roles.uids[0]).to.equal('new-role');
@@ -679,15 +686,15 @@ describe('ImportWorkflows', () => {
     it('should append role if not found in existing list', () => {
       importWorkflows['workflows'] = {
         wf1: {
-          workflow_stages: [{ SYS_ACL: { roles: { uids: [] } } }]
-        }
+          workflow_stages: [{ SYS_ACL: { roles: { uids: [] } } }],
+        },
       };
       importWorkflows['roleNameMap'] = { 'Role 1': 'new-role' };
 
       importWorkflows.updateRoleData({
         workflowUid: 'wf1',
         stageIndex: 0,
-        roleData: { uid: 'old-role', name: 'Role 1' }
+        roleData: { uid: 'old-role', name: 'Role 1' },
       });
 
       expect(importWorkflows['workflows']['wf1'].workflow_stages[0].SYS_ACL.roles.uids).to.include('new-role');
@@ -730,17 +737,19 @@ describe('ImportWorkflows', () => {
       sinon.restore();
       sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      
-      sinon.stub(importWorkflows as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+
+      sinon
+        .stub(importWorkflows as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       sinon.stub(importWorkflows as any, 'analyzeWorkflows').resolves([2]);
       const mockProgress = {
         addProcess: sinon.stub(),
         startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
         completeProcess: sinon.stub(),
         updateStatus: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       };
       sinon.stub(importWorkflows as any, 'createNestedProgress').returns(mockProgress);
       sinon.stub(importWorkflows as any, 'prepareWorkflowMapper').resolves();
@@ -752,7 +761,7 @@ describe('ImportWorkflows', () => {
 
       const mockWorkflows = {
         wf1: { uid: 'wf1', name: 'Workflow 1', workflow_stages: [] as any },
-        wf2: { uid: 'wf2', name: 'Workflow 2', workflow_stages: [] as any }
+        wf2: { uid: 'wf2', name: 'Workflow 2', workflow_stages: [] as any },
       };
 
       fileHelperStub.fileExistsSync.withArgs(sinon.match(/workflows$/)).returns(true);
@@ -765,7 +774,7 @@ describe('ImportWorkflows', () => {
 
       const importWorkflowsStub = sinon.stub(importWorkflows as any, 'importWorkflows').resolves();
       const processWorkflowResultsStub = sinon.stub(importWorkflows as any, 'processWorkflowResults').resolves();
-      
+
       await importWorkflows.start();
 
       expect(importWorkflowsStub.called).to.be.true;
@@ -773,4 +782,3 @@ describe('ImportWorkflows', () => {
     });
   });
 });
-

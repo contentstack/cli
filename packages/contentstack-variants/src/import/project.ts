@@ -133,7 +133,7 @@ export default class Project extends PersonalizationAdapter<ImportConfig> {
       const personalize = this.config.modules.personalize;
       const { dirName, fileName } = personalize.projects;
       const projectPath = join(
-        sanitizePath(this.config.data),
+        sanitizePath(this.config.contentDir),
         sanitizePath(personalize.dirName),
         sanitizePath(dirName),
         sanitizePath(fileName),

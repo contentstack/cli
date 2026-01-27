@@ -61,19 +61,19 @@ export default class ContentTypesImport extends BaseClass {
     this.cTsConfig = importConfig.modules['content-types'];
     this.gFsConfig = importConfig.modules['global-fields'];
     this.reqConcurrency = this.cTsConfig.writeConcurrency || this.importConfig.writeConcurrency;
-    this.cTsFolderPath = path.join(sanitizePath(this.importConfig.data), sanitizePath(this.cTsConfig.dirName));
-    this.cTsMapperPath = path.join(sanitizePath(this.importConfig.data), 'mapper', 'content_types');
-    this.cTsSuccessPath = path.join(sanitizePath(this.importConfig.data), 'mapper', 'content_types', 'success.json');
-    this.gFsFolderPath = path.resolve(sanitizePath(this.importConfig.data), sanitizePath(this.gFsConfig.dirName));
-    this.gFsMapperFolderPath = path.join(sanitizePath(importConfig.data), 'mapper', 'global_fields', 'success.json');
+    this.cTsFolderPath = path.join(sanitizePath(this.importConfig.contentDir), sanitizePath(this.cTsConfig.dirName));
+    this.cTsMapperPath = path.join(sanitizePath(this.importConfig.contentDir), 'mapper', 'content_types');
+    this.cTsSuccessPath = path.join(sanitizePath(this.importConfig.contentDir), 'mapper', 'content_types', 'success.json');
+    this.gFsFolderPath = path.resolve(sanitizePath(this.importConfig.contentDir), sanitizePath(this.gFsConfig.dirName));
+    this.gFsMapperFolderPath = path.join(sanitizePath(importConfig.contentDir), 'mapper', 'global_fields', 'success.json');
     this.gFsPendingPath = path.join(
-      sanitizePath(importConfig.data),
+      sanitizePath(importConfig.contentDir),
       'mapper',
       'global_fields',
       'pending_global_fields.js',
     );
     this.marketplaceAppMapperPath = path.join(
-      sanitizePath(this.importConfig.data),
+      sanitizePath(this.importConfig.contentDir),
       'mapper',
       'marketplace_apps',
       'uid-mapping.json',
@@ -92,8 +92,8 @@ export default class ContentTypesImport extends BaseClass {
     this.createdGFs = [];
     this.pendingGFs = [];
     this.pendingExts = [];
-    this.taxonomiesPath = path.join(sanitizePath(importConfig.data), 'mapper', 'taxonomies', 'success.json');
-    this.extPendingPath = path.join(sanitizePath(importConfig.data), 'mapper', 'extensions', 'pending_extensions.js');
+    this.taxonomiesPath = path.join(sanitizePath(importConfig.contentDir), 'mapper', 'taxonomies', 'success.json');
+    this.extPendingPath = path.join(sanitizePath(importConfig.contentDir), 'mapper', 'extensions', 'pending_extensions.js');
   }
 
   async start(): Promise<any> {

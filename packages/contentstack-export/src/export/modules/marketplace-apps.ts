@@ -121,7 +121,7 @@ export default class ExportMarketplaceApps extends BaseClass {
 
   async setupPaths(): Promise<void> {
     this.marketplaceAppPath = pResolve(
-      this.exportConfig.data,
+      this.exportConfig.exportDir,
       this.exportConfig.branchName || '',
       this.marketplaceAppConfig.dirName,
     );
@@ -133,7 +133,7 @@ export default class ExportMarketplaceApps extends BaseClass {
     this.developerHubBaseUrl = this.exportConfig.developerHubBaseUrl || (await getDeveloperHubUrl(this.exportConfig));
     log.debug(`Developer hub base URL: '${this.developerHubBaseUrl}'`, this.exportConfig.context);
     this.exportConfig.org_uid = await getOrgUid(this.exportConfig);
-    this.query = { target_uids: this.exportConfig.source_stack };
+    this.query = { target_uids: this.exportConfig.apiKey };
     log.debug(`Organization UID: '${this.exportConfig.org_uid}'.`, this.exportConfig.context);
 
     // NOTE init marketplace app sdk
