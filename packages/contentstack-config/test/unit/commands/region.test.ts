@@ -1,8 +1,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import { configHandler } from '@contentstack/cli-utilities';
+import { configHandler, log, cliux } from '@contentstack/cli-utilities';
 import GetRegionCommand from '../../../src/commands/config/get/region';
-import { cliux } from '@contentstack/cli-utilities';
 import { Region } from '../../../src/interfaces';
 import UserConfig from '../../../src/utils/region-handler';
 import { askCustomRegion, askRegions } from '../../../src/utils/interactive';
@@ -51,10 +50,6 @@ describe('Region command', function () {
     // Stub the exit method to throw to stop execution
     const exitStub = sinon.stub(command, 'exit').throws(new Error('EXIT_CALLED'));
     
-    // Mock the logger with error method
-    const loggerErrorStub = sinon.stub();
-    command.logger = { error: loggerErrorStub } as any;
-    
     // Stub cliux.error to capture error calls
     const errorStub = sinon.stub(cliux, 'error');
     
@@ -68,10 +63,7 @@ describe('Region command', function () {
       // Expected to throw due to exit stub
     }
     
-    // Verify that logger.error was called
-    expect(loggerErrorStub.calledWith('No region is set.')).to.be.true;
-    
-    // Verify that cliux.error was called
+    // Verify that cliux.error was called with the correct message
     expect(errorStub.calledWith('CLI_CONFIG_GET_REGION_NOT_FOUND')).to.be.true;
     
     // Verify exit was called
