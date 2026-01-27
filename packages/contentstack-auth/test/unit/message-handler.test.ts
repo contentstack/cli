@@ -1,5 +1,6 @@
 import { expect } from 'chai';
-import { messageHandler } from '@contentstack/cli-utilities';
+import * as cliUtilities from '@contentstack/cli-utilities';
+const { messageHandler } = cliUtilities;
 
 describe('Message Handler', () => {
   it('parse with invalid message key, returns the key itself', function () {
