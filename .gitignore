@@ -21,3 +21,4 @@ contents-*
 *.todo
 talisman_output.log
 snyk_output.log
+*.logs
