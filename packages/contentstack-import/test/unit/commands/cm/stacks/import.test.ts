@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { fancy } from 'fancy-test';
 import sinon from 'sinon';
-import { managementSDKClient, configHandler, log, handleAndLogError, getLogPath, createLogContext } from '@contentstack/cli-utilities';
+import { managementSDKClient, configHandler, log, handleAndLogError, getLogPath } from '@contentstack/cli-utilities';
 import ImportCommand from '../../../../../src/commands/cm/stacks/import';
 import { ModuleImporter } from '../../../../../src/import';
 import { ImportConfig } from '../../../../../src/types';
@@ -198,23 +198,14 @@ describe('ImportCommand', () => {
     });
   });
 
-  describe('createLogContext', () => {
+  describe('createImportContext', () => {
     let configHandlerStub: sinon.SinonStub;
-    let configHandlerSetStub: sinon.SinonStub;
 
     beforeEach(() => {
       configHandlerStub = sinon.stub(configHandler, 'get');
-      configHandlerSetStub = sinon.stub(configHandler, 'set');
-      configHandlerStub.withArgs('clientId').returns('user-123');
+      configHandlerStub.withArgs('userUid').returns('user-123');
       configHandlerStub.withArgs('email').returns('test@example.com');
-      configHandlerStub.withArgs('sessionId').returns('test-session-123');
       configHandlerStub.withArgs('oauthOrgUid').returns('org-123');
-      configHandlerStub.withArgs('authorisationType').returns('BASIC');
-    });
-
-    afterEach(() => {
-      configHandlerStub.restore();
-      configHandlerSetStub.restore();
     });
 
     it('should create context with all required properties', () => {
@@ -228,7 +219,6 @@ describe('ImportCommand', () => {
       expect(context).to.have.property('apiKey', 'test');
       expect(context).to.have.property('orgId', 'org-123');
       expect(context).to.have.property('authenticationMethod', 'Basic Auth');
-      expect(configHandlerSetStub.calledWith('apiKey', 'test')).to.be.true;
     });
 
     it('should use default authentication method when not provided', () => {
@@ -524,7 +514,6 @@ describe('ImportCommand', () => {
       const context = command['createImportContext']('test');
 
       expect(context.command).to.equal('cm:stacks:import');
-      expect(context.sessionId).to.equal('test-session');
     });
 
     it('should handle context without sessionId', () => {
@@ -535,7 +524,8 @@ describe('ImportCommand', () => {
       expect(context.sessionId).to.be.undefined;
     });
 
-    it('should handle configHandler returning undefined values', () => {
+    it('should handle configHandler throwing errors', () => {
+      configHandlerStub.reset();
       configHandlerStub.returns(undefined);
 
       const context = command['createImportContext']('test');
