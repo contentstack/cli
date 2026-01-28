@@ -2,6 +2,7 @@ import { checkSync } from 'recheck';
 import traverse from 'traverse';
 import authHandler from './auth-handler';
 import { ContentstackClient, HttpClient, cliux, configHandler } from '.';
+import { hasProxy, getProxyUrl } from './proxy-helper';
 
 export const isAuthenticated = () => authHandler.isAuthenticated();
 export const doesBranchExist = async (stack, branchName) => {
@@ -176,7 +177,12 @@ export const formatError = function (error: any) {
   }
 
   // ENHANCED: Handle network errors with user-friendly messages
-  if (['ECONNREFUSED', 'ENOTFOUND', 'ETIMEDOUT', 'ENETUNREACH'].includes(parsedError?.code)) {
+  const networkErrorCodes = ['ECONNREFUSED', 'ENOTFOUND', 'ETIMEDOUT', 'ENETUNREACH', 'ERR_BAD_RESPONSE'];
+  if (networkErrorCodes.includes(parsedError?.code) || parsedError?.message?.includes('ERR_BAD_RESPONSE')) {
+    // Check if proxy is configured and connection failed - likely proxy issue
+    if (hasProxy()) {
+      return `Proxy error: Unable to connect to proxy server at ${getProxyUrl()}. Please verify your proxy configuration. Error: ${parsedError?.code || 'Unknown'}`;
+    }
     return `Connection failed: Unable to reach the server. Please check your internet connection.`;
   }
 
