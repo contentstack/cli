@@ -1,13 +1,13 @@
 {
   "name": "@contentstack/cli-cm-clone",
   "description": "Contentstack stack clone plugin",
-  "version": "1.19.0",
+  "version": "1.20.0",
   "author": "Contentstack",
   "bugs": "https://github.com/rohitmishra209/cli-cm-clone/issues",
   "dependencies": {
     "@colors/colors": "^1.6.0",
-    "@contentstack/cli-cm-export": "~1.23.0",
-    "@contentstack/cli-cm-import": "~1.31.1",
+    "@contentstack/cli-cm-export": "~1.23.1",
+    "@contentstack/cli-cm-import": "~1.31.2",
     "@contentstack/cli-command": "~1.7.2",
     "@contentstack/cli-utilities": "~1.17.0",
     "@oclif/core": "^4.3.0",
@@ -22,21 +22,29 @@
   },
   "devDependencies": {
     "@oclif/test": "^4.1.13",
+    "@types/chai": "^4.3.0",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^14.18.63",
+    "@types/sinon": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
     "chai": "^4.5.0",
     "eslint": "^8.57.1",
     "eslint-config-oclif": "^6.0.62",
     "mocha": "^10.8.2",
     "nyc": "^15.1.0",
     "oclif": "^4.17.46",
-    "sinon": "^19.0.5"
+    "sinon": "^21.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^4.9.5"
   },
   "engines": {
     "node": ">=14.0.0"
   },
   "files": [
+    "/bin",
+    "/lib",
     "/npm-shrinkwrap.json",
-    "/oclif.manifest.json",
-    "/src"
+    "/oclif.manifest.json"
   ],
   "homepage": "https://github.com/rohitmishra209/cli-cm-clone",
   "keywords": [
@@ -45,19 +53,25 @@
     "plugin"
   ],
   "license": "MIT",
+  "main": "./lib/commands/cm/stacks/clone.js",
   "oclif": {
-    "commands": "./src/commands",
+    "commands": "./lib/commands",
     "bin": "csdx",
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-clone/<%- commandPath %>"
   },
   "repository": "https://github.com/contentstack/cli",
   "scripts": {
+    "build": "npm run clean && npm run compile",
+    "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
+    "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
-    "prepack": "oclif manifest && oclif readme",
-    "test": "nyc --reporter=html mocha --forbid-only \"test/**/*.test.js\"",
-    "posttest": "eslint .",
-    "version": "oclif readme && git add README.md",
-    "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
+    "prepack": "pnpm compile && oclif manifest && oclif readme",
+    "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\" 2>&1 | grep -v 'ERR_INVALID_ARG_TYPE' ; npx nyc report --reporter=text-summary --reporter=text || true",
+    "pretest": "tsc -p test",
+    "test:unit": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\" 2>&1 | grep -v 'ERR_INVALID_ARG_TYPE' ; npx nyc report --reporter=text-summary --reporter=text || true",
+    "lint": "eslint src/**/*.ts",
+    "format": "eslint src/**/*.ts --fix",
+    "test:unit:report": "nyc --reporter=text --reporter=text-summary --extension .ts mocha --forbid-only \"test/**/*.test.ts\""
   },
   "csdxConfig": {
     "expiredCommands": {
