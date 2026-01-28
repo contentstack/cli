@@ -32,7 +32,7 @@ export default class ExportWorkFlows extends BaseClass {
       // Setup with loading spinner
       const [totalCount] = await this.withLoadingSpinner('WORKFLOWS: Analyzing workflows...', async () => {
         this.webhooksFolderPath = pResolve(
-          this.exportConfig.data,
+          this.exportConfig.exportDir,
           this.exportConfig.branchName || '',
           this.workflowConfig.dirName,
         );

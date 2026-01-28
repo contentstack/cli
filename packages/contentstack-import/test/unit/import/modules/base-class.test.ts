@@ -23,72 +23,71 @@ describe('BaseClass', () => {
         replace: sinon.stub().resolves({ uid: 'asset-123' }),
         publish: sinon.stub().resolves({ uid: 'asset-123' }),
         folder: sinon.stub().returns({
-          create: sinon.stub().resolves({ uid: 'folder-123' })
-        })
+          create: sinon.stub().resolves({ uid: 'folder-123' }),
+        }),
       }),
       contentType: sinon.stub().returns({
         create: sinon.stub().resolves({ uid: 'ct-123' }),
         entry: sinon.stub().returns({
           create: sinon.stub().resolves({ uid: 'entry-123' }),
           publish: sinon.stub().resolves({ uid: 'entry-123' }),
-          delete: sinon.stub().resolves({ uid: 'entry-123' })
-        })
+          delete: sinon.stub().resolves({ uid: 'entry-123' }),
+        }),
       }),
       locale: sinon.stub().returns({
         create: sinon.stub().resolves({ uid: 'locale-123' }),
         fetch: sinon.stub().resolves({
           name: 'French',
           fallback_locale: 'en-us',
-          update: sinon.stub().resolves({ code: 'fr-fr' })
-        })
+          update: sinon.stub().resolves({ code: 'fr-fr' }),
+        }),
       }),
       extension: sinon.stub().returns({
         create: sinon.stub().resolves({ uid: 'ext-123' }),
         fetch: sinon.stub().resolves({
           scope: 'local',
-          update: sinon.stub().resolves({ uid: 'ext-123' })
-        })
+          update: sinon.stub().resolves({ uid: 'ext-123' }),
+        }),
       }),
       environment: sinon.stub().returns({
-        create: sinon.stub().resolves({ uid: 'env-123' })
+        create: sinon.stub().resolves({ uid: 'env-123' }),
       }),
       label: sinon.stub().returns({
         create: sinon.stub().resolves({ uid: 'label-123' }),
         fetch: sinon.stub().resolves({
           parent: 'old-parent',
-          update: sinon.stub().resolves({ uid: 'label-123' })
-        })
+          update: sinon.stub().resolves({ uid: 'label-123' }),
+        }),
       }),
       webhook: sinon.stub().returns({
-        create: sinon.stub().resolves({ uid: 'webhook-123' })
+        create: sinon.stub().resolves({ uid: 'webhook-123' }),
       }),
       workflow: sinon.stub().returns({
-        create: sinon.stub().resolves({ uid: 'workflow-123' })
+        create: sinon.stub().resolves({ uid: 'workflow-123' }),
       }),
       role: sinon.stub().returns({
-        create: sinon.stub().resolves({ uid: 'role-123' })
+        create: sinon.stub().resolves({ uid: 'role-123' }),
       }),
       taxonomy: sinon.stub().returns({
         create: sinon.stub().resolves({ uid: 'taxonomy-123' }),
         terms: sinon.stub().returns({
-          create: sinon.stub().resolves({ uid: 'term-123' })
+          create: sinon.stub().resolves({ uid: 'term-123' }),
         }),
-        import: sinon.stub().resolves({ uid: 'import-123' })
+        import: sinon.stub().resolves({ uid: 'import-123' }),
       }),
       globalField: sinon.stub().returns({
         create: sinon.stub().resolves({ uid: 'gf-123' }),
         fetch: sinon.stub().resolves({
           title: 'Test GF',
-          update: sinon.stub().resolves({ uid: 'gf-123' })
-        })
-      })
+          update: sinon.stub().resolves({ uid: 'gf-123' }),
+        }),
+      }),
     };
 
     mockImportConfig = {
       apiKey: 'test',
       contentDir: '/test/content',
       data: '/test/content',
-      contentVersion: 1,
       region: { name: 'us', cma: 'https://api.contentstack.io' } as any,
       master_locale: { code: 'en-us' },
       masterLocale: { code: 'en-us' },
@@ -100,7 +99,7 @@ describe('BaseClass', () => {
         sessionId: 'session-123',
         apiKey: 'test',
         orgId: 'org-123',
-        authenticationMethod: 'Management Token'
+        authenticationMethod: 'Management Token',
       },
       modules: {
         types: ['assets', 'content-types'],
@@ -114,15 +113,15 @@ describe('BaseClass', () => {
           importFoldersConcurrency: 1,
           displayExecutionTime: false,
           includeVersionedAssets: false,
-          importSameStructure: false
+          importSameStructure: false,
         },
         contentTypes: {
           writeConcurrency: 1,
           dirName: 'content_types',
           fileName: 'content_types.json',
           validKeys: ['title', 'uid', 'schema'],
-          apiConcurrency: 1
-        }
+          apiConcurrency: 1,
+        },
       } as any,
       backupDir: '/test/backup',
       cliLogsPath: '/test/logs',
@@ -133,12 +132,12 @@ describe('BaseClass', () => {
       auth_token: 'auth-token',
       selectedModules: ['assets'],
       skipAudit: false,
-      'exclude-global-modules': false
+      'exclude-global-modules': false,
     } as any;
 
     testClass = new TestBaseClass({
       importConfig: mockImportConfig,
-      stackAPIClient: mockStackClient
+      stackAPIClient: mockStackClient,
     });
   });
 
@@ -178,7 +177,7 @@ describe('BaseClass', () => {
       const start = Date.now();
       await testClass.delay(100);
       const end = Date.now();
-      
+
       expect(end - start).to.be.at.least(90); // Allow some tolerance
     });
 
@@ -186,7 +185,7 @@ describe('BaseClass', () => {
       const start = Date.now();
       await testClass.delay(0);
       const end = Date.now();
-      
+
       expect(end - start).to.be.at.most(10); // Should be very fast
     });
 
@@ -194,7 +193,7 @@ describe('BaseClass', () => {
       const start = Date.now();
       await testClass.delay(-100);
       const end = Date.now();
-      
+
       expect(end - start).to.be.at.most(10); // Should be very fast
     });
 
@@ -213,13 +212,13 @@ describe('BaseClass', () => {
       mockApiContent = [
         { uid: 'item1', title: 'Item 1' },
         { uid: 'item2', title: 'Item 2' },
-        { uid: 'item3', title: 'Item 3' }
+        { uid: 'item3', title: 'Item 3' },
       ] as any[];
       mockApiParams = {
         entity: 'create-assets',
         uid: 'test-uid',
         resolve: sinon.stub(),
-        reject: sinon.stub()
+        reject: sinon.stub(),
       };
       mockProcessName = 'test-process';
     });
@@ -231,7 +230,7 @@ describe('BaseClass', () => {
         processName: mockProcessName,
         indexerCount: 1,
         currentIndexer: 1,
-        concurrencyLimit: 2
+        concurrencyLimit: 2,
       };
 
       await testClass.makeConcurrentCall(env);
@@ -246,7 +245,7 @@ describe('BaseClass', () => {
         processName: mockProcessName,
         indexerCount: 1,
         currentIndexer: 1,
-        concurrencyLimit: 2
+        concurrencyLimit: 2,
       };
 
       await testClass.makeConcurrentCall(env, customHandler);
@@ -264,7 +263,7 @@ describe('BaseClass', () => {
         processName: mockProcessName,
         indexerCount: 1,
         currentIndexer: 1,
-        concurrencyLimit: 2
+        concurrencyLimit: 2,
       };
 
       await testClass.makeConcurrentCall(env);
@@ -279,7 +278,7 @@ describe('BaseClass', () => {
         processName: mockProcessName,
         indexerCount: 1,
         currentIndexer: 1,
-        concurrencyLimit: 2
+        concurrencyLimit: 2,
       };
 
       await testClass.makeConcurrentCall(env);
@@ -294,7 +293,7 @@ describe('BaseClass', () => {
         processName: mockProcessName,
         indexerCount: 1,
         currentIndexer: 1,
-        concurrencyLimit: 2
+        concurrencyLimit: 2,
       };
 
       await testClass.makeConcurrentCall(env);
@@ -308,7 +307,7 @@ describe('BaseClass', () => {
         apiParams: mockApiParams,
         processName: mockProcessName,
         indexerCount: 1,
-        currentIndexer: 1
+        currentIndexer: 1,
         // No concurrencyLimit specified
       };
 
@@ -329,15 +328,7 @@ describe('BaseClass', () => {
     });
 
     it('should log batch completion message when enabled', async () => {
-      await testClass.logMsgAndWaitIfRequired(
-        'test-process',
-        Date.now() - 500,
-        5,
-        2,
-        true,
-        10,
-        3
-      );
+      await testClass.logMsgAndWaitIfRequired('test-process', Date.now() - 500, 5, 2, true, 10, 3);
 
       // The log.debug is called in the real method, so we can't easily test the stub
       // This test verifies that the method executes without throwing errors
@@ -345,27 +336,13 @@ describe('BaseClass', () => {
     });
 
     it('should not log when logBatchCompletionMsg is false', async () => {
-      await testClass.logMsgAndWaitIfRequired(
-        'test-process',
-        Date.now() - 500,
-        5,
-        2,
-        false
-      );
+      await testClass.logMsgAndWaitIfRequired('test-process', Date.now() - 500, 5, 2, false);
 
       expect(logDebugStub.called).to.be.false;
     });
 
     it('should include current chunk processing info when provided', async () => {
-      await testClass.logMsgAndWaitIfRequired(
-        'test-process',
-        Date.now() - 500,
-        5,
-        2,
-        true,
-        10,
-        3
-      );
+      await testClass.logMsgAndWaitIfRequired('test-process', Date.now() - 500, 5, 2, true, 10, 3);
 
       expect(true).to.be.true;
     });
@@ -377,7 +354,7 @@ describe('BaseClass', () => {
         start - 100, // 100ms execution time
         5,
         2,
-        true
+        true,
       );
       const end = Date.now();
 
@@ -391,23 +368,17 @@ describe('BaseClass', () => {
         start - 1500, // 1500ms execution time
         5,
         2,
-        true
+        true,
       );
       const end = Date.now();
 
-      expect(end - start).to.be.at.most(100); 
+      expect(end - start).to.be.at.most(100);
     });
 
     it('should display execution time when enabled', async () => {
       mockImportConfig.modules.assets.displayExecutionTime = true;
-      
-      await testClass.logMsgAndWaitIfRequired(
-        'test-process',
-        Date.now() - 500,
-        5,
-        2,
-        true
-      );
+
+      await testClass.logMsgAndWaitIfRequired('test-process', Date.now() - 500, 5, 2, true);
 
       expect(consoleLogStub.calledOnce).to.be.true;
       expect(consoleLogStub.firstCall.args[0]).to.include('Time taken to execute');
@@ -425,7 +396,7 @@ describe('BaseClass', () => {
         reject: sinon.stub(),
         apiData: { title: 'Test Asset', filename: 'test.jpg' },
         additionalInfo: {},
-        includeParamOnCompletion: false
+        includeParamOnCompletion: false,
       };
     });
 
@@ -529,7 +500,7 @@ describe('BaseClass', () => {
         reject: sinon.stub(),
         apiData: { title: 'Test Asset', filename: 'test.jpg' },
         additionalInfo: {},
-        includeParamOnCompletion: false
+        includeParamOnCompletion: false,
       };
     });
 
@@ -579,10 +550,10 @@ describe('BaseClass', () => {
       it('should handle update-extensions', async () => {
         mockApiOptions.entity = 'update-extensions' as any;
         mockApiOptions.apiData = { uid: 'ext-123', scope: 'global' };
-        
+
         const mockExtension = {
           scope: 'local',
-          update: sinon.stub().resolves({ uid: 'ext-123' })
+          update: sinon.stub().resolves({ uid: 'ext-123' }),
         };
         mockStackClient.extension().fetch.resolves(mockExtension);
 
@@ -608,11 +579,11 @@ describe('BaseClass', () => {
       it('should handle update-locale', async () => {
         mockApiOptions.entity = 'update-locale' as any;
         mockApiOptions.apiData = { code: 'fr-fr', name: 'French Updated', fallback_locale: 'en-us' };
-        
+
         const mockLocale = {
           name: 'French',
           fallback_locale: 'en-us',
-          update: sinon.stub().resolves({ code: 'fr-fr' })
+          update: sinon.stub().resolves({ code: 'fr-fr' }),
         };
         mockStackClient.locale().fetch.resolves(mockLocale);
 
@@ -661,10 +632,10 @@ describe('BaseClass', () => {
       it('should handle update-gfs with uid in apiData', async () => {
         mockApiOptions.entity = 'update-gfs' as any;
         mockApiOptions.apiData = { uid: 'gf-123', title: 'Updated GF' };
-        
+
         const mockGF = {
           title: 'Test GF',
-          update: sinon.stub().resolves({ uid: 'gf-123' })
+          update: sinon.stub().resolves({ uid: 'gf-123' }),
         };
         mockStackClient.globalField().fetch.resolves(mockGF);
 
@@ -678,10 +649,10 @@ describe('BaseClass', () => {
       it('should handle update-gfs with uid in global_field', async () => {
         mockApiOptions.entity = 'update-gfs' as any;
         mockApiOptions.apiData = { global_field: { uid: 'gf-123' }, title: 'Updated GF' };
-        
+
         const mockGF = {
           title: 'Test GF',
-          update: sinon.stub().resolves({ uid: 'gf-123' })
+          update: sinon.stub().resolves({ uid: 'gf-123' }),
         };
         mockStackClient.globalField().fetch.resolves(mockGF);
 
@@ -719,10 +690,10 @@ describe('BaseClass', () => {
       it('should handle update-labels', async () => {
         mockApiOptions.entity = 'update-labels' as any;
         mockApiOptions.apiData = { uid: 'label-123', parent: 'parent-123' };
-        
+
         const mockLabel = {
           parent: 'old-parent',
-          update: sinon.stub().resolves({ uid: 'label-123' })
+          update: sinon.stub().resolves({ uid: 'label-123' }),
         };
         mockStackClient.label().fetch.resolves(mockLabel);
 
@@ -775,10 +746,10 @@ describe('BaseClass', () => {
         mockApiOptions.entity = 'create-entries' as any;
         const mockEntry = { uid: 'entry-123', update: sinon.stub().resolves({ uid: 'entry-123' }) };
         mockApiOptions.apiData = mockEntry;
-        mockApiOptions.additionalInfo = { 
-          cTUid: 'ct-123', 
+        mockApiOptions.additionalInfo = {
+          cTUid: 'ct-123',
           locale: 'en-us',
-          [mockEntry.uid]: { isLocalized: true }
+          [mockEntry.uid]: { isLocalized: true },
         };
 
         await testClass.makeAPICall(mockApiOptions);
@@ -790,9 +761,9 @@ describe('BaseClass', () => {
       it('should handle create-entries for new entry', async () => {
         mockApiOptions.entity = 'create-entries' as any;
         mockApiOptions.apiData = { uid: 'entry-123', title: 'Test Entry' };
-        mockApiOptions.additionalInfo = { 
-          cTUid: 'ct-123', 
-          locale: 'en-us'
+        mockApiOptions.additionalInfo = {
+          cTUid: 'ct-123',
+          locale: 'en-us',
         };
 
         await testClass.makeAPICall(mockApiOptions);
@@ -815,10 +786,10 @@ describe('BaseClass', () => {
 
       it('should handle publish-entries', async () => {
         mockApiOptions.entity = 'publish-entries' as any;
-        mockApiOptions.apiData = { 
+        mockApiOptions.apiData = {
           entryUid: 'entry-123',
           environments: ['production'],
-          locales: ['en-us']
+          locales: ['en-us'],
         };
         mockApiOptions.additionalInfo = { cTUid: 'ct-123' };
 
@@ -830,9 +801,9 @@ describe('BaseClass', () => {
 
       it('should handle delete-entries', async () => {
         mockApiOptions.entity = 'delete-entries' as any;
-        mockApiOptions.apiData = { 
+        mockApiOptions.apiData = {
           entryUid: 'entry-123',
-          cTUid: 'ct-123'
+          cTUid: 'ct-123',
         };
         mockApiOptions.additionalInfo = { locale: 'en-us' };
 
@@ -856,9 +827,9 @@ describe('BaseClass', () => {
 
       it('should handle create-terms', async () => {
         mockApiOptions.entity = 'create-terms' as any;
-        mockApiOptions.apiData = { 
-          name: 'Test Term', 
-          taxonomy_uid: 'taxonomy-123' 
+        mockApiOptions.apiData = {
+          name: 'Test Term',
+          taxonomy_uid: 'taxonomy-123',
         };
 
         await testClass.makeAPICall(mockApiOptions);
@@ -900,7 +871,7 @@ describe('BaseClass', () => {
         reject: sinon.stub(),
         apiData: { title: 'Test Asset', filename: 'test.jpg' },
         additionalInfo: {},
-        includeParamOnCompletion: false
+        includeParamOnCompletion: false,
       };
     });
 
@@ -918,7 +889,7 @@ describe('BaseClass', () => {
     it('should handle API errors in update-extensions', async () => {
       mockApiOptions.entity = 'update-extensions' as any;
       mockApiOptions.apiData = { uid: 'ext-123', scope: 'global' };
-      
+
       const error = new Error('Extension fetch failed');
       mockStackClient.extension().fetch.rejects(error);
 
@@ -932,10 +903,10 @@ describe('BaseClass', () => {
     it('should handle API errors in update-gfs', async () => {
       mockApiOptions.entity = 'update-gfs' as any;
       mockApiOptions.apiData = { uid: 'gf-123', title: 'Updated GF' };
-      
+
       const mockGF = {
         title: 'Test GF',
-        update: sinon.stub().rejects(new Error('Update failed'))
+        update: sinon.stub().rejects(new Error('Update failed')),
       };
       mockStackClient.globalField().fetch.resolves(mockGF);
 
@@ -949,10 +920,10 @@ describe('BaseClass', () => {
     it('should handle API errors in update-labels', async () => {
       mockApiOptions.entity = 'update-labels' as any;
       mockApiOptions.apiData = { uid: 'label-123', parent: 'parent-123' };
-      
+
       const mockLabel = {
         parent: 'old-parent',
-        update: sinon.stub().rejects(new Error('Label update failed'))
+        update: sinon.stub().rejects(new Error('Label update failed')),
       };
       mockStackClient.label().fetch.resolves(mockLabel);
 
@@ -974,29 +945,33 @@ describe('BaseClass', () => {
         { uid: 'item2', title: 'Item 2' },
         { uid: 'item3', title: 'Item 3' },
         { uid: 'item4', title: 'Item 4' },
-        { uid: 'item5', title: 'Item 5' }
+        { uid: 'item5', title: 'Item 5' },
       ] as any[];
       mockApiParams = {
         entity: 'create-assets',
         uid: 'test-uid',
         resolve: sinon.stub(),
-        reject: sinon.stub()
+        reject: sinon.stub(),
       };
     });
 
     it('should handle custom promise handler with errors', async () => {
-      const customHandler = sinon.stub()
-        .onFirstCall().resolves({ success: true })
-        .onSecondCall().rejects(new Error('Handler error'))
-        .onThirdCall().resolves({ success: true });
-      
+      const customHandler = sinon
+        .stub()
+        .onFirstCall()
+        .resolves({ success: true })
+        .onSecondCall()
+        .rejects(new Error('Handler error'))
+        .onThirdCall()
+        .resolves({ success: true });
+
       const env = {
         apiContent: mockApiContent.slice(0, 3),
         apiParams: mockApiParams,
         processName: 'test-process',
         indexerCount: 1,
         currentIndexer: 1,
-        concurrencyLimit: 2
+        concurrencyLimit: 2,
       };
 
       await testClass.makeConcurrentCall(env, customHandler);
@@ -1015,7 +990,7 @@ describe('BaseClass', () => {
         processName: 'test-process',
         indexerCount: 1,
         currentIndexer: 1,
-        concurrencyLimit: 2
+        concurrencyLimit: 2,
       };
 
       await testClass.makeConcurrentCall(env);
@@ -1025,14 +1000,14 @@ describe('BaseClass', () => {
 
     it('should handle large batches with high concurrency', async () => {
       const largeContent = Array.from({ length: 20 }, (_, i) => ({ uid: `item${i}`, title: `Item ${i}` }));
-      
+
       const env = {
         apiContent: largeContent,
         apiParams: mockApiParams,
         processName: 'test-process',
         indexerCount: 1,
         currentIndexer: 1,
-        concurrencyLimit: 5
+        concurrencyLimit: 5,
       };
 
       await testClass.makeConcurrentCall(env);
@@ -1042,14 +1017,14 @@ describe('BaseClass', () => {
 
     it('should handle isLastRequest correctly', async () => {
       const customHandler = sinon.stub().resolves({ success: true });
-      
+
       const env = {
         apiContent: mockApiContent.slice(0, 3),
         apiParams: mockApiParams,
         processName: 'test-process',
         indexerCount: 1,
         currentIndexer: 1,
-        concurrencyLimit: 2
+        concurrencyLimit: 2,
       };
 
       await testClass.makeConcurrentCall(env, customHandler);
@@ -1058,7 +1033,7 @@ describe('BaseClass', () => {
       const calls = customHandler.getCalls();
       expect(calls[0].args[0].isLastRequest).to.be.false; // First item in first batch
       expect(calls[1].args[0].isLastRequest).to.be.false; // Second item in first batch
-      expect(calls[2].args[0].isLastRequest).to.be.true;  // First item in second batch (last batch)
+      expect(calls[2].args[0].isLastRequest).to.be.true; // First item in second batch (last batch)
     });
   });
 
@@ -1074,14 +1049,8 @@ describe('BaseClass', () => {
 
     it('should handle execution time display when disabled', async () => {
       mockImportConfig.modules.assets.displayExecutionTime = false;
-      
-      await testClass.logMsgAndWaitIfRequired(
-        'test-process',
-        Date.now() - 500,
-        5,
-        2,
-        true
-      );
+
+      await testClass.logMsgAndWaitIfRequired('test-process', Date.now() - 500, 5, 2, true);
 
       expect(consoleLogStub.called).to.be.false;
     });
@@ -1093,7 +1062,7 @@ describe('BaseClass', () => {
         start - 50, // 50ms execution time
         5,
         2,
-        true
+        true,
       );
       const end = Date.now();
 
@@ -1107,7 +1076,7 @@ describe('BaseClass', () => {
         start - 5000, // 5000ms execution time
         5,
         2,
-        true
+        true,
       );
       const end = Date.now();
 
@@ -1118,13 +1087,7 @@ describe('BaseClass', () => {
       const originalContext = testClass.importConfig.context;
       testClass.importConfig.context = undefined as any;
 
-      await testClass.logMsgAndWaitIfRequired(
-        'test-process',
-        Date.now() - 500,
-        5,
-        2,
-        true
-      );
+      await testClass.logMsgAndWaitIfRequired('test-process', Date.now() - 500, 5, 2, true);
 
       // Should not throw error
       expect(true).to.be.true;
@@ -1137,14 +1100,14 @@ describe('BaseClass', () => {
     it('should handle makeConcurrentCall with empty batches', async () => {
       const env = {
         apiContent: [] as any[],
-        apiParams: { 
+        apiParams: {
           entity: 'create-assets' as any,
           resolve: sinon.stub(),
-          reject: sinon.stub()
+          reject: sinon.stub(),
         },
         processName: 'test',
         indexerCount: 1,
-        currentIndexer: 1
+        currentIndexer: 1,
       };
 
       await testClass.makeConcurrentCall(env);
@@ -1154,14 +1117,14 @@ describe('BaseClass', () => {
     it('should handle makeConcurrentCall with null apiContent', async () => {
       const env = {
         apiContent: null as any,
-        apiParams: { 
+        apiParams: {
           entity: 'create-assets' as any,
           resolve: sinon.stub(),
-          reject: sinon.stub()
+          reject: sinon.stub(),
         },
         processName: 'test',
         indexerCount: 1,
-        currentIndexer: 1
+        currentIndexer: 1,
       };
 
       await testClass.makeConcurrentCall(env);
@@ -1173,7 +1136,7 @@ describe('BaseClass', () => {
         entity: 'create-assets' as any,
         apiData: { title: 'Test' },
         resolve: sinon.stub(),
-        reject: sinon.stub()
+        reject: sinon.stub(),
       };
 
       // Should not throw error
@@ -1195,11 +1158,11 @@ describe('BaseClass', () => {
         apiParams: {
           entity: 'create-assets' as any,
           resolve: sinon.stub(),
-          reject: sinon.stub()
+          reject: sinon.stub(),
         },
         processName: 'test',
         indexerCount: 1,
-        currentIndexer: 1
+        currentIndexer: 1,
       };
 
       await testClass.makeConcurrentCall(env, undefined);
@@ -1212,11 +1175,11 @@ describe('BaseClass', () => {
         apiParams: {
           entity: 'create-assets' as any,
           resolve: sinon.stub(),
-          reject: sinon.stub()
+          reject: sinon.stub(),
         },
         processName: 'test',
         indexerCount: 1,
-        currentIndexer: 1
+        currentIndexer: 1,
       };
 
       await testClass.makeConcurrentCall(env, null as any);
@@ -1228,7 +1191,7 @@ describe('BaseClass', () => {
         apiData: { title: 'Test' },
         resolve: sinon.stub(),
         reject: sinon.stub(),
-        additionalInfo: undefined as any
+        additionalInfo: undefined as any,
       };
 
       await testClass.makeAPICall(apiOptions as any);
@@ -1241,7 +1204,7 @@ describe('BaseClass', () => {
         apiData: { title: 'Test' },
         resolve: sinon.stub(),
         reject: sinon.stub(),
-        additionalInfo: null as any
+        additionalInfo: null as any,
       };
 
       await testClass.makeAPICall(apiOptions as any);

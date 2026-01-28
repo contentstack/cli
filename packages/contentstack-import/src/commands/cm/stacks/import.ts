@@ -12,6 +12,7 @@ import {
   CLIProgressManager,
   cliux,
   clearProgressModuleSetting,
+  createLogContext,
 } from '@contentstack/cli-utilities';
 
 import { Context, ImportConfig } from '../../../types';
@@ -122,9 +123,14 @@ export default class ImportCommand extends Command {
       const { flags } = await this.parse(ImportCommand);
       importConfig = await setupImportConfig(flags);
       // Prepare the context object
+      createLogContext(
+        this.context?.info?.command || 'cm:stacks:export',
+        importConfig.apiKey,
+        importConfig.authenticationMethod
+      );
       const context = this.createImportContext(importConfig.apiKey, importConfig.authenticationMethod);
       importConfig.context = { ...context };
-      // log.info(`Using CLI version: ${this.context?.cliVersion}`, importConfig.context);
+      //log.info(`Using Cli Version: ${this.context?.cliVersion}`, importConfig.context);
 
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;
@@ -148,14 +154,7 @@ export default class ImportCommand extends Command {
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       const result = await moduleImporter.start();
       backupDir = importConfig.backupDir;
-
-      if (!result?.noSuccessMsg) {
-        const successMessage = importConfig.stackName
-          ? `Successfully imported the content to the stack named ${importConfig.stackName} with the API key ${importConfig.apiKey} .`
-          : `The content has been imported to the stack ${importConfig.apiKey} successfully!`;
-        log.success(successMessage, importConfig.context);
-      }
-
+      //Note: Final summary is now handled by summary manager
       CLIProgressManager.printGlobalSummary();
       this.logSuccessAndBackupMessages(backupDir, importConfig);
       // Clear progress module setting now that import is complete

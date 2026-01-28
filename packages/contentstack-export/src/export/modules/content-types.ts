@@ -47,7 +47,7 @@ export default class ContentTypesExport extends BaseClass {
     this.applyQueryFilters(this.qs, 'content-types');
 
     this.contentTypesDirPath = path.resolve(
-      sanitizePath(exportConfig.data),
+      sanitizePath(exportConfig.exportDir),
       sanitizePath(exportConfig.branchName || ''),
       sanitizePath(this.contentTypesConfig.dirName),
     );

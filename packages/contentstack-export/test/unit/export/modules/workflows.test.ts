@@ -22,24 +22,23 @@ describe('ExportWorkflows', () => {
                   name: 'Draft',
                   SYS_ACL: {
                     roles: {
-                      uids: [1, 2]
-                    }
-                  }
-                }
+                      uids: [1, 2],
+                    },
+                  },
+                },
               ],
-              invalidKey: 'remove'
-            }
+              invalidKey: 'remove',
+            },
           ],
-          count: 1
-        })
+          count: 1,
+        }),
       }),
       role: sinon.stub().returns({
-        fetch: sinon.stub().resolves({ uid: 'role-1', name: 'Role 1' })
-      })
+        fetch: sinon.stub().resolves({ uid: 'role-1', name: 'Role 1' }),
+      }),
     };
 
     mockExportConfig = {
-      contentVersion: 1,
       versioning: false,
       host: 'https://api.contentstack.io',
       developerHubUrls: {},
@@ -55,7 +54,7 @@ describe('ExportWorkflows', () => {
         sessionId: 'session-123',
         apiKey: 'test-api-key',
         orgId: 'org-123',
-        authenticationMethod: 'Basic Auth'
+        authenticationMethod: 'Basic Auth',
       },
       cliLogsPath: '/test/logs',
       forceStopMarketplaceAppsPrompt: false,
@@ -64,7 +63,7 @@ describe('ExportWorkflows', () => {
         name: 'us',
         cma: 'https://api.contentstack.io',
         cda: 'https://cdn.contentstack.io',
-        uiHost: 'https://app.contentstack.com'
+        uiHost: 'https://app.contentstack.com',
       },
       skipStackSettings: false,
       skipDependencies: false,
@@ -76,22 +75,21 @@ describe('ExportWorkflows', () => {
       writeConcurrency: 5,
       developerHubBaseUrl: '',
       marketplaceAppEncryptionKey: '',
-      onlyTSModules: [],
       modules: {
         types: ['workflows'],
         workflows: {
           dirName: 'workflows',
           fileName: 'workflows.json',
           limit: 100,
-          invalidKeys: ['invalidKey']
-        }
-      }
+          invalidKeys: ['invalidKey'],
+        },
+      },
     } as any;
 
     exportWorkflows = new ExportWorkflows({
       exportConfig: mockExportConfig,
       stackAPIClient: mockStackClient,
-      moduleName: 'workflows'
+      moduleName: 'workflows',
     });
 
     // Stub FsUtility methods
@@ -147,15 +145,15 @@ describe('ExportWorkflows', () => {
           if (callCount === 1) {
             return Promise.resolve({
               items: new Array(100).fill({ uid: 'test', name: 'Test', workflow_stages: [] as any[] }),
-              count: 150
+              count: 150,
             });
           } else {
             return Promise.resolve({
               items: new Array(50).fill({ uid: 'test2', name: 'Test2', workflow_stages: [] as any[] }),
-              count: 150
+              count: 150,
             });
           }
-        })
+        }),
       });
 
       await exportWorkflows.getWorkflows();
@@ -166,7 +164,7 @@ describe('ExportWorkflows', () => {
 
     it('should handle API errors gracefully without throwing', async () => {
       mockStackClient.workflow.returns({
-        fetchAll: sinon.stub().rejects(new Error('API Error'))
+        fetchAll: sinon.stub().rejects(new Error('API Error')),
       });
 
       // Should complete without throwing
@@ -177,8 +175,8 @@ describe('ExportWorkflows', () => {
       mockStackClient.workflow.returns({
         fetchAll: sinon.stub().resolves({
           items: [],
-          count: 0
-        })
+          count: 0,
+        }),
       });
 
       const initialCount = Object.keys(exportWorkflows.workflows).length;
@@ -192,10 +190,10 @@ describe('ExportWorkflows', () => {
       mockStackClient.workflow.returns({
         fetchAll: sinon.stub().resolves({
           items: [{ uid: 'wf-1', name: 'Test' }],
-          count: 1
-        })
+          count: 1,
+        }),
       });
-      
+
       await exportWorkflows.getWorkflows(50);
 
       // Verify skip was set in query
@@ -210,8 +208,8 @@ describe('ExportWorkflows', () => {
           uid: 'wf-1',
           name: 'Workflow 1',
           invalidKey: 'remove',
-          workflow_stages: [] as any[]
-        }
+          workflow_stages: [] as any[],
+        },
       ];
 
       await exportWorkflows.sanitizeAttribs(workflows);
@@ -231,12 +229,12 @@ describe('ExportWorkflows', () => {
               name: 'Draft',
               SYS_ACL: {
                 roles: {
-                  uids: [1, 2]
-                }
-              }
-            }
-          ]
-        }
+                  uids: [1, 2],
+                },
+              },
+            },
+          ],
+        },
       ];
 
       await exportWorkflows.sanitizeAttribs(workflows);
@@ -250,8 +248,8 @@ describe('ExportWorkflows', () => {
         {
           uid: 'wf-1',
           name: 'Workflow 1',
-          workflow_stages: [] as any[]
-        }
+          workflow_stages: [] as any[],
+        },
       ];
 
       await exportWorkflows.sanitizeAttribs(workflows);
@@ -279,7 +277,7 @@ describe('ExportWorkflows', () => {
 
     it('should handle API errors gracefully', async () => {
       mockStackClient.role.returns({
-        fetch: sinon.stub().rejects(new Error('API Error'))
+        fetch: sinon.stub().rejects(new Error('API Error')),
       });
 
       // Should complete without throwing
@@ -305,8 +303,8 @@ describe('ExportWorkflows', () => {
       mockStackClient.workflow.returns({
         fetchAll: sinon.stub().resolves({
           items: [],
-          count: 0
-        })
+          count: 0,
+        }),
       });
 
       const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
@@ -320,7 +318,7 @@ describe('ExportWorkflows', () => {
 
     it('should handle errors during export without throwing', async () => {
       mockStackClient.workflow.returns({
-        fetchAll: sinon.stub().rejects(new Error('Export failed'))
+        fetchAll: sinon.stub().rejects(new Error('Export failed')),
       });
 
       // Should complete without throwing
@@ -328,4 +326,3 @@ describe('ExportWorkflows', () => {
     });
   });
 });
-
