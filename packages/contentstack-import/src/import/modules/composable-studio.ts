@@ -20,6 +20,7 @@ export default class ImportComposableStudio {
   private apiClient: HttpClient;
   private envUidMapperPath: string;
   private envUidMapper: Record<string, string>;
+  private projectMapperPath: string;
 
   constructor({ importConfig }: ModuleClassParams) {
     this.importConfig = importConfig;
@@ -28,6 +29,7 @@ export default class ImportComposableStudio {
 
     // Setup paths
     this.composableStudioPath = join(this.importConfig.backupDir, this.composableStudioConfig.dirName);
+    this.projectMapperPath = join(this.importConfig.backupDir, 'mapper', this.composableStudioConfig.dirName);
     this.composableStudioFilePath = join(this.composableStudioPath, this.composableStudioConfig.fileName);
     this.envUidMapperPath = join(this.importConfig.backupDir, 'mapper', 'environments', 'uid-mapping.json');
     this.envUidMapper = {};
@@ -244,6 +246,14 @@ export default class ImportComposableStudio {
       if (response.status >= 200 && response.status < 300) {
         projectCreated = true;
         log.debug(`Project created successfully with UID: ${response.data?.uid}`, this.importConfig.context);
+
+        // Create mapper directory if it doesn't exist
+        await fsUtil.makeDirectory(this.projectMapperPath);
+
+        // write the project to file
+        const projectFileSuccessPath = join(this.projectMapperPath, this.composableStudioConfig.fileName);
+        fsUtil.writeFile(projectFileSuccessPath, response.data as unknown as Record<string, unknown>);
+        log.debug(`Project written to: ${projectFileSuccessPath}`, this.importConfig.context);
       } else {
         throw new Error(`API call failed with status ${response.status}: ${JSON.stringify(response.data)}`);
       }

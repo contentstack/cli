@@ -1,13 +1,13 @@
 {
   "name": "@contentstack/cli-cm-export-to-csv",
-  "description": "Export entities to csv",
-  "version": "1.10.1",
-  "author": "Abhinav Gupta @abhinav-from-contentstack",
+  "description": "Export entries, taxonomies, terms, or organization users to CSV",
+  "version": "1.11.0",
+  "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-command": "~1.7.0",
+    "@contentstack/cli-command": "~1.7.2",
     "@contentstack/cli-utilities": "~1.15.0",
-    "@oclif/core": "^4.3.0",
+    "@oclif/core": "^4.8.0",
     "@oclif/plugin-help": "^6.2.32",
     "fast-csv": "^4.3.6",
     "inquirer": "8.2.7",
@@ -17,45 +17,44 @@
   "devDependencies": {
     "@oclif/test": "^4.1.13",
     "@types/chai": "^4.3.20",
+    "@types/inquirer": "^9.0.8",
     "@types/mocha": "^10.0.10",
+    "@types/mkdirp": "^1.0.2",
+    "@types/node": "^20.17.50",
     "chai": "^4.5.0",
-    "debug": "^4.4.1",
-    "eslint": "^7.32.0",
-    "eslint-config-oclif": "^6.0.15",
+    "eslint": "^8.57.1",
+    "eslint-config-oclif": "^6.0.62",
+    "eslint-config-oclif-typescript": "^3.1.14",
     "mocha": "^10.8.2",
+    "nock": "^13.5.6",
     "nyc": "^15.1.0",
     "oclif": "^4.17.46",
-    "sinon": "^19.0.5"
+    "sinon": "^19.0.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=18.0.0"
   },
   "files": [
+    "/bin",
+    "/lib",
     "/npm-shrinkwrap.json",
-    "/oclif.manifest.json",
-    "/src",
-    "/yarn.lock"
+    "/oclif.manifest.json"
   ],
   "homepage": "https://github.com/contentstack/cli",
   "keywords": [
     "contentstack",
     "cli",
-    "plugin"
+    "plugin",
+    "export",
+    "csv"
   ],
-  "scripts": {
-    "pack": "npm pack && mv *.tgz ../../build",
-    "postpack": "rm -f oclif.manifest.json",
-    "prepack": "oclif manifest && oclif readme",
-    "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
-    "test:unit": "mocha --timeout 10000 --forbid-only \"test/unit/**/*.test.js\" \"test/util/*.test.js\"",
-    "test:unit:report": "nyc --extension .js mocha --forbid-only \"test/unit/**/*.test.js\" \"test/util/*.test.js\"",
-    "version": "oclif readme && git add README.md",
-    "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
-  },
-  "main": "./src/commands/cm/export-to-csv.js",
   "license": "MIT",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "oclif": {
-    "commands": "./src/commands",
+    "commands": "./lib/commands",
     "bin": "csdx",
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-export-to-csv/<%- commandPath %>"
   },
@@ -64,5 +63,18 @@
       "cm:export-to-csv": "EXPRTCSV"
     }
   },
-  "repository": "https://github.com/contentstack/cli"
+  "repository": "https://github.com/contentstack/cli",
+  "scripts": {
+    "build": "npm run clean && npm run compile",
+    "clean": "rm -rf ./lib ./node_modules tsconfig.tsbuildinfo oclif.manifest.json",
+    "compile": "tsc -b tsconfig.json",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "postpack": "rm -f oclif.manifest.json",
+    "prepack": "pnpm compile && oclif manifest && oclif readme",
+    "test": "nyc mocha --forbid-only \"test/**/*.test.ts\"",
+    "test:unit": "mocha --timeout 10000 --forbid-only \"test/unit/**/*.test.ts\"",
+    "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\"",
+    "version": "oclif readme && git add README.md"
+  }
 }

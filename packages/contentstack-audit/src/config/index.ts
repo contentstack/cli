@@ -11,9 +11,10 @@ const config = {
     'custom-roles',
     'assets',
     'field-rules',
+    'composable-studio',
   ],
   'fix-fields': ['reference', 'global_field', 'json:rte', 'json:extension', 'blocks', 'group', 'content_types'],
-  'schema-fields-data-type': ['blocks','group','global_field'],
+  'schema-fields-data-type': ['blocks', 'group', 'global_field'],
   moduleConfig: {
     'content-types': {
       name: 'content type',
@@ -59,6 +60,11 @@ const config = {
       name: 'environments',
       dirName: 'environments',
       fileName: 'environments.json',
+    },
+    'composable-studio': {
+      name: 'composable-studio',
+      dirName: 'composable_studio',
+      fileName: 'composable_studio.json',
     },
   },
   entries: {
@@ -107,13 +113,14 @@ const config = {
     'selectedValue',
     'ct_uid',
     'action',
-    "Module",
-    "Total",
-    "Fixable",
-    "Non-Fixable",
-    "Fixed",
-    "Not-Fixed",
-    "Passed",
+    'Module',
+    'Total',
+    'Fixable',
+    'Non-Fixable',
+    'Fixed',
+    'Not-Fixed',
+    'Passed',
+    'issues',
   ],
   ReportTitleForEntries: {
     Entries_Select_field: 'Entries_Select_field',
@@ -121,7 +128,7 @@ const config = {
     Entries_Title_field: 'Entries_Title_field',
     Entry_Missing_Locale_and_Env: 'Entry_Missing_Locale_and_Env',
     Entry_Missing_Locale_and_Env_in_Publish_Details: 'Entry_Missing_Locale_and_Env_in_Publish_Details',
-    Entry_Multiple_Fields:"Entry_Multiple_Fields"
+    Entry_Multiple_Fields: 'Entry_Multiple_Fields',
   },
   feild_level_modules: [
     'Entries_Title_field',
@@ -130,7 +137,7 @@ const config = {
     'Entry_Missing_Locale_and_Env_in_Publish_Details',
     'field-rules',
     'Entry_Multiple_Fields',
-    'Summary'
+    'Summary',
   ],
   fixSelectField: false,
 };

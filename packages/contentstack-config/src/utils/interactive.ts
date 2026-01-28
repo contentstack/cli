@@ -128,3 +128,14 @@ export async function askLogPath(): Promise<string> {
   ]);
   return logPath;
 }
+
+export async function askProxyPassword(): Promise<string> {
+  return cliux.inquire<string>({
+    type: 'input',
+    message: 'Enter proxy password:',
+    name: 'password',
+    transformer: (password: string) => {
+      return '*'.repeat(password.length);
+    },
+  });
+}
