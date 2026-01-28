@@ -2,7 +2,7 @@ fileignoreconfig:
   - filename: pnpm-lock.yaml
     checksum: f0d2b2bc5a7b24b2cd8ba12d8ccaa119d74cf73c9462ae0ddd1e1685d03967c9
   - filename: package-lock.json
-    checksum: 997709a07527146588f012035907f303db7b475b17724e33c314b34b1ae3ef61
+    checksum: ed904450857be36b3792ab8650a9ba91ae2f55e67db945915743d1316593a573
   - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/environments/environments.json
     checksum: 0402604e5919a7e38ecb5ff0916d6ae5ab7d98fe78ff6ac9eba8a9b8130af34d
   - filename: packages/contentstack-utilities/src/helpers.ts
