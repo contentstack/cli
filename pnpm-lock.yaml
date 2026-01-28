@@ -17,7 +17,7 @@ importers:
       '@contentstack/cli-cm-bootstrap': ~1.18.2
       '@contentstack/cli-cm-branches': ~1.6.3
       '@contentstack/cli-cm-bulk-publish': ~1.10.6
-      '@contentstack/cli-cm-clone': ~1.20.0
+      '@contentstack/cli-cm-clone': ~1.20.1
       '@contentstack/cli-cm-export': ~1.23.1
       '@contentstack/cli-cm-export-to-csv': ~1.11.0
       '@contentstack/cli-cm-import': ~1.31.2
@@ -2193,11 +2193,11 @@ packages:
     engines: {node: '>=0.1.90'}
     dev: false
 
-  /@contentstack/cli-command/1.7.1_lxq42tdpoxpye5tb7w3htdbbdq:
-    resolution: {integrity: sha512-VS+f+hwStXNShyVs9m/xV5l+KVZZ81k9lhJu+XjO5zXV/ZS3BNzW96xS6oAOUvSURVUPmZvELzjXFIvwbdBnGQ==}
+  /@contentstack/cli-command/1.7.2_lxq42tdpoxpye5tb7w3htdbbdq:
+    resolution: {integrity: sha512-dtXc3gIcnivfLegADy5/PZb+1x/esZ65H2E1CjO/pg50UC8Vy1U+U0ozS0hJZTFoaVjeG+1VJRoxf5MrtUGnNA==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      '@contentstack/cli-utilities': 1.16.1_lxq42tdpoxpye5tb7w3htdbbdq
+      '@contentstack/cli-utilities': 1.17.0_lxq42tdpoxpye5tb7w3htdbbdq
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.37
       contentstack: 3.26.3
@@ -2212,8 +2212,8 @@ packages:
     hasBin: true
     dependencies:
       '@apollo/client': 3.14.0_graphql@16.12.0
-      '@contentstack/cli-command': 1.7.1_lxq42tdpoxpye5tb7w3htdbbdq
-      '@contentstack/cli-utilities': 1.16.1_lxq42tdpoxpye5tb7w3htdbbdq
+      '@contentstack/cli-command': 1.7.2_lxq42tdpoxpye5tb7w3htdbbdq
+      '@contentstack/cli-utilities': 1.17.0_lxq42tdpoxpye5tb7w3htdbbdq
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.37
       '@oclif/plugin-plugins': 5.4.55
@@ -2249,8 +2249,8 @@ packages:
       - typescript
     dev: false
 
-  /@contentstack/cli-utilities/1.16.1_lxq42tdpoxpye5tb7w3htdbbdq:
-    resolution: {integrity: sha512-aQ+P/+mUDAE1qpY/7XuX3bb+KLXJZpDxj5gsmco4InJyxojR7rLKwwYVvD8f/MLSw5x3kkkwytpXmHFeTAFA6w==}
+  /@contentstack/cli-utilities/1.17.0_lxq42tdpoxpye5tb7w3htdbbdq:
+    resolution: {integrity: sha512-ZeyLOR50BYfuP7MnYpn9fladCtnqfaJw7Q1xWfhysQj098X33hjY9aQgmqIwEJnFqEdnS+VyCbtoTdBtH3sbDQ==}
     dependencies:
       '@contentstack/management': 1.27.3_debug@4.4.3
       '@contentstack/marketplace-sdk': 1.4.2_debug@4.4.3
