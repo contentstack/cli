@@ -68,6 +68,10 @@ jobs:
       - name: Run tests for Contentstack Branches
         working-directory: ./packages/contentstack-branches
         run: npm run test:unit
+      
+      - name: Run tests for Contentstack Clone
+        working-directory: ./packages/contentstack-clone
+        run: npm run test:unit
 
       # - name: Fetch latest references
       #   run: |

@@ -1,5 +1,5 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, flags, configHandler, FlagInput } from '@contentstack/cli-utilities';
+import { cliux, flags, configHandler, FlagInput, handleAndLogError } from '@contentstack/cli-utilities';
 import { interactive } from '../../../utils';
 
 export default class RemoveBranchConfigCommand extends Command {
@@ -40,7 +40,7 @@ export default class RemoveBranchConfigCommand extends Command {
         }
       }
     } catch (error) {
-      cliux.error('error', error);
+      handleAndLogError(error, { module: 'config-remove-base-branch' });
     }
   }
 }

@@ -79,6 +79,10 @@ describe('ImportContentTypes', () => {
           fileName: 'globalfields.json',
           limit: 100,
         },
+        'composable-studio': {
+          dirName: 'composable_studio',
+          fileName: 'composable_studio.json'
+        },
       },
       backupDir: '/test/backup',
       cliLogsPath: '/test/logs',

@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Development",
+    "uid": "blt_env_dev",
+    "deploy_content": true
+  },
+  {
+    "name": "Poduction",
+    "uid": "blt_env_prod",
+    "deploy_content": true
+  }
+]
