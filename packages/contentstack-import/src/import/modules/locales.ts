@@ -1,7 +1,7 @@
 /* eslint-disable no-prototype-builtins */
 /*!
  * Contentstack Import
- * Copyright (c) 2024 Contentstack LLC
+ * Copyright (c) 2026 Contentstack LLC
  * MIT Licensed
  */
 
@@ -60,11 +60,11 @@ export default class ImportLocales extends BaseClass {
     this.createdLocales = [];
     this.failedLocales = [];
     this.reqConcurrency = this.localeConfig.writeConcurrency || this.config.writeConcurrency;
-    this.langMapperPath = path.resolve(sanitizePath(this.config.data), 'mapper', 'languages');
-    this.langFolderPath = path.resolve(sanitizePath(this.config.data), sanitizePath(this.localeConfig.dirName));
-    this.langFailsPath = path.resolve(sanitizePath(this.config.data), 'mapper', 'languages', 'fails.json');
-    this.langSuccessPath = path.resolve(sanitizePath(this.config.data), 'mapper', 'languages', 'success.json');
-    this.langUidMapperPath = path.resolve(sanitizePath(this.config.data), 'mapper', 'languages', 'uid-mapper.json');
+    this.langMapperPath = path.resolve(sanitizePath(this.config.contentDir), 'mapper', 'languages');
+    this.langFolderPath = path.resolve(sanitizePath(this.config.contentDir), sanitizePath(this.localeConfig.dirName));
+    this.langFailsPath = path.resolve(sanitizePath(this.config.contentDir), 'mapper', 'languages', 'fails.json');
+    this.langSuccessPath = path.resolve(sanitizePath(this.config.contentDir), 'mapper', 'languages', 'success.json');
+    this.langUidMapperPath = path.resolve(sanitizePath(this.config.contentDir), 'mapper', 'languages', 'uid-mapper.json');
   }
 
   async start(): Promise<void> {

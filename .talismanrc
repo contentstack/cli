@@ -1,60 +1,24 @@
 fileignoreconfig:
-  - filename: package-lock.json
-    checksum: 00e4a9ed4b961c39cc2fa0391d3fad67b3e3e6ed9e1ec18de317521951852d84
   - filename: pnpm-lock.yaml
-    checksum: 99f51c8898c4201c5a00cda4564b84713f7d6a77b263199de854bc12bff57552
-  - filename: packages/contentstack-import/src/commands/cm/stacks/import.ts
-    checksum: ee643d664d69eafc6f82923048a85c4dc26f78b1ac93cfe1e152c69945b65d9e
-  - filename: packages/contentstack-seed/src/commands/cm/stacks/seed.ts
-    checksum: d04770564196b080878566255ea0faf1c82c1460161d2004d2b1edece0546493
-  - filename: packages/contentstack-import/README.md
-    checksum: f701583669afcf9be38c8b1698aede39658c0df5afe6691ba1301408d20c7c69
-  - filename: packages/contentstack-auth/test/unit/commands/tokens-remove.test.ts
-    checksum: 7e256db86c516b40c47eab78b3881b7ece525607281ebcd0b8711c089bdac056
-  - filename: packages/contentstack-export/src/commands/cm/stacks/export.ts
-    checksum: 0f419db76a2e4132e8f833ae2b194d2c2658a0417265390a6036b63b3401c876
-  - filename: packages/contentstack-export/README.md
-    checksum: ed79c7f29e1cb17a4889c9b19877fd2d7596aec4cc8fcbf4f83643155ef1800c
-  - filename: packages/contentstack-import-setup/README.md
-    checksum: f1640c025b0f7603b5f81b511802bf9de18ee6daefbf01521b8d2347490c7757
-  - filename: packages/contentstack-import-setup/src/commands/cm/stacks/import-setup.ts
-    checksum: a903276f842ec00e49ed4751d6df8f4f7213fb1aaa631323f6ce593dad0b236c
-  - filename: packages/contentstack-migration/README.md
-    checksum: f25b5601b30057471827d44b41483ea9664586f6c65559ac04a3d39bfb319526
-  - filename: packages/contentstack-import-setup/src/utils/login-handler.ts
-    checksum: ca22ae9649dbc11eba4a4399ef517bdd3f3e3b0ca815307a3313bc9332be3f85
-  - filename: packages/contentstack-migration/src/commands/cm/stacks/migration.js
-    checksum: ebc17ed46356ec89d294fa0caa84a654d09823410ba5f122331c0ebd83decd92
-  - filename: packages/contentstack-import-setup/test/unit/login-handler.test.ts
-    checksum: 51155d629b9825ab8218023cba367ea41264ce534f891e3a6e14a829c2399654
-  - filename: packages/contentstack-bootstrap/test/bootstrap-integration.test.js
-    checksum: d3e3902b2ee72aa41483da5c135e5c4bcec85f65939695708e9bec9478f6336c
-  - filename: packages/contentstack-migration/test/unit/utils/map.test.js
-    checksum: 7d570280b2f379531dde84946b06171d50f92489ff0de6336f7fbd81c336ee89
-  - filename: packages/contentstack-seed/test/commands/cm/stacks/seed.test.ts
-    checksum: 61143bbb2ac86c24afc6972d17d9179c6181ec68a909b84570afdad2aaa13ade
-  - filename: packages/contentstack-config/test/unit/commands/remove-base-branch.test.ts
-    checksum: 3e73b079b749120221f357d66ac7351ddb300d283f28410d5e6f3b0309ab3962
-  - filename: packages/contentstack-migration/test/unit/validators/edit-content-type-validator.test.js
-    checksum: bde4bc6b2a90e7ce5872e6fbbabef9f2db352705be4d2f8d28d71d84209a714e
-  - filename: packages/contentstack-bootstrap/test/bootstrap.test.js
-    checksum: b1f46b3447b1b358f80d6404d9d5b385fb385714e5c1f865ca97d64d6edaefc2
-  - filename: packages/contentstack-seed/README.md
-    checksum: 67378f35a33ae250a8099bbb42a5e644486e7279715685e3ba5c65add6451c46
-  - filename: packages/contentstack-utilities/test/unit/contentstack-marketplace-sdk.test.ts
-    checksum: ccf521d7eafe03d5c4b597c8b30c4cceac00e75d597685fbfb411da4603fbd29
-  - filename: packages/contentstack-migration/test/unit/validators/create-content-type-validator.test.js
-    checksum: f92e39a542cd2d561c441d23395515cadc24c9514de55c3edb038f70bd2458b3
-  - filename: packages/contentstack-migration/test/unit/modules/parser.test.js
-    checksum: 243fa1c45875675f719f660c0c988e2ba9266c562a37aaeb09b0db93a0cb037d
-  - filename: packages/contentstack-bootstrap/test/interactive.test.js
-    checksum: fb0c32cd846cce3a53927316699a1c5aaa814939fe9b33bcd9141addbbe447d0
-  - filename: packages/contentstack-seed/test/seed/interactive.test.ts
-    checksum: e7a823051b5eb27f2674ca2c31719205fa822e9cac1524dbd14e48b1ec078c06
-  - filename: packages/contentstack/README.md
-    checksum: e650b0eb54404b08fb2b802a05883dc5984bff43842876df70bcbb5821034fe5
-  - filename: packages/contentstack-seed/test/seed/importer.test.ts
-    checksum: 77bc27f5217c6d69c21bac51afc94d677ad67374c1b39b0575646300eb0decd3
-  - filename: packages/contentstack-seed/test/seed/contentstack/client.test.ts
-    checksum: f1bc369c9c3c4a84ddd590864c0f3e8b13be956b8fb8891b6324f44cdcc7d568
-version: '1.0'
+    checksum: f0d2b2bc5a7b24b2cd8ba12d8ccaa119d74cf73c9462ae0ddd1e1685d03967c9
+  - filename: package-lock.json
+    checksum: 997709a07527146588f012035907f303db7b475b17724e33c314b34b1ae3ef61
+  - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/environments/environments.json
+    checksum: 0402604e5919a7e38ecb5ff0916d6ae5ab7d98fe78ff6ac9eba8a9b8130af34d
+  - filename: packages/contentstack-utilities/src/helpers.ts
+    checksum: 6a741bb972f59c56d2c0f3a9f96e2963392361db2e401948c9c1796829478e13
+  - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/composable_studio.json
+    checksum: 6912e5ea32b4456ad04d1645750c72bbb29ab1895368c3a242ab39e9350ec531
+  - filename: packages/contentstack-utilities/src/logger/session-path.ts
+    checksum: 4c66980a857bc12012a45e50790c0eaab06883db5e1476d84fb142a08b70b2e7
+  - filename: packages/contentstack-import/test/unit/commands/cm/stacks/import.test.ts
+    checksum: a9e24596e7ae54b71cc28a41cf9d65bbdbf6754446e08958288e90a579cc351d
+  - filename: packages/contentstack-audit/src/modules/modulesData.ts
+    checksum: 1e6c1fba1172512401038d5454c8d218201ec62262449c5c878609592e0124c4
+  - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/invalid_composable_studio.json
+    checksum: e6465aa0011d1565a2de848d9cca74395d11419e6ac840e7dfb52e1d255b1c4f
+  - filename: packages/contentstack-audit/src/modules/composable-studio.ts
+    checksum: 4fc97ff582d6dff9a54b3a50dfa3cbb5febd38a55aeb8737034b97188ad543ba
+  - filename: packages/contentstack-utilities/test/unit/logger.test.ts
+    checksum: a1939dea16166b1893a248179524a76f2ed20b04b99c83bd1a5a13fcf6f0dadc
+version: "1.0"

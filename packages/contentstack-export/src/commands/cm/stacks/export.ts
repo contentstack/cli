@@ -98,13 +98,12 @@ export default class ExportCommand extends Command {
       // Assign exportConfig variables
       this.assignExportConfig(exportConfig);
 
-      exportDir = sanitizePath(exportConfig.cliLogsPath || exportConfig.data || exportConfig.exportDir);
+      exportDir = sanitizePath(exportConfig.cliLogsPath || exportConfig.exportDir);
       const managementAPIClient: ContentstackClient = await managementSDKClient(exportConfig);
       const moduleExporter = new ModuleExporter(managementAPIClient, exportConfig);
       await moduleExporter.start();
       log.success(
         `The content of the stack ${exportConfig.apiKey} has been exported successfully!`,
-        exportConfig.context,
       );
       log.info(`The exported content has been stored at '${exportDir}'`, exportConfig.context);
       log.success(`The log has been stored at '${getLogPath()}'`, exportConfig.context);

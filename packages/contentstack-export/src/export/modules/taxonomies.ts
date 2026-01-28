@@ -42,7 +42,7 @@ export default class ExportTaxonomies extends BaseClass {
     this.applyQueryFilters(this.qs, 'taxonomies');
     this.exportConfig.context.module = 'taxonomies';
     this.localesFilePath = pResolve(
-      sanitizePath(exportConfig.data),
+      sanitizePath(exportConfig.exportDir),
       sanitizePath(exportConfig.branchName || ''),
       sanitizePath(exportConfig.modules.locales.dirName),
       sanitizePath(exportConfig.modules.locales.fileName),
@@ -54,7 +54,7 @@ export default class ExportTaxonomies extends BaseClass {
     
     //create taxonomies folder
     this.taxonomiesFolderPath = pResolve(
-      this.exportConfig.data,
+      this.exportConfig.exportDir,
       this.exportConfig.branchName || '',
       this.taxonomiesConfig.dirName,
     );

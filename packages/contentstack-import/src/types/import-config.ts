@@ -50,7 +50,6 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   authtoken?: string;
   destinationStackName?: string;
   org_uid?: string;
-  contentVersion: number;
   replaceExisting?: boolean;
   skipExisting?: boolean;
   skipAudit?: boolean;
@@ -59,7 +58,6 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   personalizeProjectName?: string;
   'exclude-global-modules': false;
   context: Context;
-  onlyTSModules?: Modules[];
 }
 
 type branch = {

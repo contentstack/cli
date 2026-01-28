@@ -454,12 +454,12 @@ export default class ImportMarketplaceApps extends BaseClass {
    */
   async installApp(config: ImportConfig, appManifestUid?: string): Promise<any> {
     log.debug(`Installing app with manifest UID: ${appManifestUid}`, this.importConfig.context);
-    log.debug(`Target stack: ${config.target_stack}`, this.importConfig.context);
+    log.debug(`Target stack: ${config.apiKey}`, this.importConfig.context);
 
     return await this.appSdk
       .marketplace(this.importConfig.org_uid)
       .app(appManifestUid)
-      .install({ targetUid: config.target_stack, targetType: 'stack' })
+      .install({ targetUid: config.apiKey, targetType: 'stack' })
       .then((response) => {
         log.debug(`App installation successful: ${appManifestUid}`, this.importConfig.context);
         return response;

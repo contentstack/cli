@@ -21,7 +21,7 @@ describe('ImportContentTypes', () => {
     fsUtilStub = {
       readFile: sinon.stub(),
       writeFile: sinon.stub(),
-      makeDirectory: sinon.stub().resolves()
+      makeDirectory: sinon.stub().resolves(),
     };
     sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
     sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
@@ -35,19 +35,18 @@ describe('ImportContentTypes', () => {
       contentType: sinon.stub().returns({
         create: sinon.stub().resolves({ uid: 'ct-123', title: 'Test CT' }),
         update: sinon.stub().resolves({ uid: 'ct-123', title: 'Updated CT' }),
-        fetch: sinon.stub().resolves({ uid: 'ct-123', title: 'Fetched CT' })
+        fetch: sinon.stub().resolves({ uid: 'ct-123', title: 'Fetched CT' }),
       }),
       globalField: sinon.stub().returns({
         update: sinon.stub().resolves({ uid: 'gf-123', title: 'Test GF' }),
-        fetch: sinon.stub().resolves({ uid: 'gf-123', title: 'Fetched GF' })
-      })
+        fetch: sinon.stub().resolves({ uid: 'gf-123', title: 'Fetched GF' }),
+      }),
     };
 
     mockImportConfig = {
       apiKey: 'test',
       contentDir: '/test/content',
       data: '/test/content',
-      contentVersion: 1,
       region: 'us',
       master_locale: { code: 'en-us' },
       masterLocale: { code: 'en-us' },
@@ -60,17 +59,17 @@ describe('ImportContentTypes', () => {
         sessionId: 'session-123',
         apiKey: 'test',
         orgId: 'org-123',
-        authenticationMethod: 'Basic Auth'
+        authenticationMethod: 'Basic Auth',
       },
       modules: {
         types: ['content-types'],
-        'content-types': { 
+        'content-types': {
           dirName: 'content_types',
           validKeys: ['title', 'uid', 'schema'],
           apiConcurrency: 5,
           writeConcurrency: 3,
           fileName: 'content_types.json',
-          limit: 100
+          limit: 100,
         },
         'global-fields': {
           dirName: 'global_fields',
@@ -78,8 +77,12 @@ describe('ImportContentTypes', () => {
           apiConcurrency: 5,
           writeConcurrency: 1,
           fileName: 'globalfields.json',
-          limit: 100
-        }
+          limit: 100,
+        },
+        'composable-studio': {
+          dirName: 'composable_studio',
+          fileName: 'composable_studio.json'
+        },
       },
       backupDir: '/test/backup',
       cliLogsPath: '/test/logs',
@@ -91,28 +94,30 @@ describe('ImportContentTypes', () => {
       selectedModules: ['content-types'],
       skipAudit: false,
       preserveStackVersion: false,
-      'exclude-global-modules': false
+      'exclude-global-modules': false,
     } as any;
 
     importContentTypes = new ImportContentTypes({
       importConfig: mockImportConfig as any,
       stackAPIClient: mockStackClient,
-      moduleName: 'content-types'
+      moduleName: 'content-types',
     });
 
     makeConcurrentCallStub = sinon.stub(importContentTypes as any, 'makeConcurrentCall').resolves();
 
-    sinon.stub(importContentTypes as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-      return await fn();
-    });
+    sinon
+      .stub(importContentTypes as any, 'withLoadingSpinner')
+      .callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
     sinon.stub(importContentTypes as any, 'createNestedProgress').returns({
       addProcess: sinon.stub(),
       startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
       completeProcess: sinon.stub(),
       updateStatus: sinon.stub(),
-      tick: sinon.stub()
+      tick: sinon.stub(),
     });
-    sinon.stub(importContentTypes as any, 'initializeProgress').callsFake(function() {
+    sinon.stub(importContentTypes as any, 'initializeProgress').callsFake(function () {
       return this.createNestedProgress(this.currentModuleName);
     });
     sinon.stub(importContentTypes as any, 'completeProgress').resolves();
@@ -132,9 +137,9 @@ describe('ImportContentTypes', () => {
       expect((importContentTypes as any)['client']).to.equal(mockStackClient);
     });
 
-  it('should set context module to content-types', () => {
-    expect(importContentTypes['importConfig'].context.module).to.equal('content-types');
-  });
+    it('should set context module to content-types', () => {
+      expect(importContentTypes['importConfig'].context.module).to.equal('content-types');
+    });
 
     it('should initialize paths correctly', () => {
       expect(importContentTypes['cTsFolderPath']).to.include('content_types');
@@ -170,7 +175,7 @@ describe('ImportContentTypes', () => {
       const instance = new ImportContentTypes({
         importConfig: config as any,
         stackAPIClient: mockStackClient,
-        moduleName: 'content-types'
+        moduleName: 'content-types',
       });
       expect(instance['reqConcurrency']).to.equal(2);
     });
@@ -184,17 +189,19 @@ describe('ImportContentTypes', () => {
       sinon.stub(importContentTypes as any, 'analyzeImportData').callsFake(async () => {
         (importContentTypes as any).cTs = [];
       });
-      sinon.stub(importContentTypes as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+      sinon
+        .stub(importContentTypes as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       sinon.stub(importContentTypes as any, 'createNestedProgress').returns({
         addProcess: sinon.stub(),
         startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
         completeProcess: sinon.stub(),
         updateStatus: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       });
-      sinon.stub(importContentTypes as any, 'initializeProgress').callsFake(function() {
+      sinon.stub(importContentTypes as any, 'initializeProgress').callsFake(function () {
         return this.createNestedProgress(this.currentModuleName);
       });
       sinon.stub(importContentTypes as any, 'completeProgress').resolves();
@@ -211,17 +218,19 @@ describe('ImportContentTypes', () => {
       sinon.stub(importContentTypes as any, 'analyzeImportData').callsFake(async () => {
         (importContentTypes as any).cTs = [];
       });
-      sinon.stub(importContentTypes as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
-        return await fn();
-      });
+      sinon
+        .stub(importContentTypes as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
       sinon.stub(importContentTypes as any, 'createNestedProgress').returns({
         addProcess: sinon.stub(),
         startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
         completeProcess: sinon.stub(),
         updateStatus: sinon.stub(),
-        tick: sinon.stub()
+        tick: sinon.stub(),
       });
-      sinon.stub(importContentTypes as any, 'initializeProgress').callsFake(function() {
+      sinon.stub(importContentTypes as any, 'initializeProgress').callsFake(function () {
         return this.createNestedProgress(this.currentModuleName);
       });
       sinon.stub(importContentTypes as any, 'completeProgress').resolves();
@@ -234,7 +243,7 @@ describe('ImportContentTypes', () => {
     it('should process content types when available', async () => {
       const mockCTs = [
         { uid: 'ct1', title: 'Content Type 1', schema: [] as any },
-        { uid: 'ct2', title: 'Content Type 2', schema: [] as any }
+        { uid: 'ct2', title: 'Content Type 2', schema: [] as any },
       ];
 
       fsUtilStub.readFile.withArgs(sinon.match(/schema\.json/)).returns(mockCTs);
@@ -352,12 +361,12 @@ describe('ImportContentTypes', () => {
 
     it('should update pending global fields when available', async () => {
       (importContentTypes as any).handlePendingGlobalFields.restore();
-      
+
       const mockCTs = [{ uid: 'ct1', title: 'CT 1', schema: [] as any }];
       const pendingGFs = ['gf1', 'gf2'];
       const mockGFs = [
         { uid: 'gf1', schema: [] as any },
-        { uid: 'gf2', schema: [] as any }
+        { uid: 'gf2', schema: [] as any },
       ];
 
       fsUtilStub.readFile.withArgs(sinon.match(/schema\.json/)).returns(mockCTs);
@@ -424,7 +433,7 @@ describe('ImportContentTypes', () => {
       const onReject = makeConcurrentCallStub.firstCall.args[0].apiParams.reject;
       onReject({
         error: { errorCode: 115, errors: { uid: 'exists' } },
-        apiData: { content_type: { uid: 'ct1' } }
+        apiData: { content_type: { uid: 'ct1' } },
       });
 
       // Should not throw, just log
@@ -439,7 +448,7 @@ describe('ImportContentTypes', () => {
       const onReject = makeConcurrentCallStub.firstCall.args[0].apiParams.reject;
       onReject({
         error: { errorCode: 500, message: 'Server error' },
-        apiData: { content_type: { uid: 'ct1' } }
+        apiData: { content_type: { uid: 'ct1' } },
       });
 
       // Should handle error gracefully
@@ -449,7 +458,7 @@ describe('ImportContentTypes', () => {
   describe('serializeCTs()', () => {
     it('should serialize content type correctly', () => {
       const apiOptions = {
-        apiData: { uid: 'test_ct', title: 'Test Content Type', schema: [] as any }
+        apiData: { uid: 'test_ct', title: 'Test Content Type', schema: [] as any },
       };
 
       const result = importContentTypes.serializeCTs(apiOptions as any);
@@ -461,7 +470,7 @@ describe('ImportContentTypes', () => {
 
     it('should use schemaTemplate structure', () => {
       const apiOptions = {
-        apiData: { uid: 'ct_uid', title: 'CT Title', schema: [] as any }
+        apiData: { uid: 'ct_uid', title: 'CT Title', schema: [] as any },
       };
 
       const result = importContentTypes.serializeCTs(apiOptions as any);
@@ -488,9 +497,9 @@ describe('ImportContentTypes', () => {
       await importContentTypes.updateCTs();
 
       expect(makeConcurrentCallStub.called).to.be.true;
-      const callArgs = makeConcurrentCallStub.getCalls().find((call: any) => 
-        call.args[0].processName === 'Update content types'
-      )?.args[0];
+      const callArgs = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Update content types')?.args[0];
       expect(callArgs.processName).to.equal('Update content types');
       expect(callArgs.apiParams.entity).to.equal('update-cts');
     });
@@ -500,9 +509,9 @@ describe('ImportContentTypes', () => {
 
       await importContentTypes.updateCTs();
 
-      const onSuccess = makeConcurrentCallStub.getCalls().find((call: any) => 
-        call.args[0].processName === 'Update content types'
-      )?.args[0].apiParams.resolve;
+      const onSuccess = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Update content types')?.args[0].apiParams.resolve;
 
       expect(() => {
         onSuccess({ response: {}, apiData: { uid: 'ct1' } });
@@ -514,9 +523,9 @@ describe('ImportContentTypes', () => {
 
       await importContentTypes.updateCTs();
 
-      const onReject = makeConcurrentCallStub.getCalls().find((call: any) => 
-        call.args[0].processName === 'Update content types'
-      )?.args[0].apiParams.reject;
+      const onReject = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Update content types')?.args[0].apiParams.reject;
 
       // onReject calls handleAndLogError which doesn't throw, it logs the error
       // So we just verify it can be called without throwing
@@ -530,7 +539,7 @@ describe('ImportContentTypes', () => {
     beforeEach(() => {
       mockStackClient.contentType.returns({
         uid: 'test_ct',
-        title: 'Test CT'
+        title: 'Test CT',
       });
       updateFieldRulesStub.returns([]);
       lookupExtensionStub.returns(undefined);
@@ -542,7 +551,7 @@ describe('ImportContentTypes', () => {
         uid: 'ct1',
         title: 'CT 1',
         schema: [] as any,
-        field_rules: [{ conditions: [] as any }]
+        field_rules: [{ conditions: [] as any }],
       };
       updateFieldRulesStub.returns([{ conditions: [] as any }]);
 
@@ -558,7 +567,7 @@ describe('ImportContentTypes', () => {
         uid: 'ct1',
         title: 'CT 1',
         schema: [] as any,
-        field_rules: [] as any
+        field_rules: [] as any,
       };
       updateFieldRulesStub.returns([]);
 
@@ -603,11 +612,11 @@ describe('ImportContentTypes', () => {
       importContentTypes['pendingGFs'] = ['gf1', 'gf2'];
       importContentTypes['gFs'] = [
         { uid: 'gf1', title: 'GF 1', schema: [] as any },
-        { uid: 'gf2', title: 'GF 2', schema: [] as any }
+        { uid: 'gf2', title: 'GF 2', schema: [] as any },
       ];
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns([
         { uid: 'gf1', title: 'GF 1', schema: [] as any },
-        { uid: 'gf2', title: 'GF 2', schema: [] as any }
+        { uid: 'gf2', title: 'GF 2', schema: [] as any },
       ]);
       fsUtilStub.readFile.withArgs(sinon.match(/pending_global_fields\.js/)).returns(['gf1', 'gf2']);
     });
@@ -615,9 +624,9 @@ describe('ImportContentTypes', () => {
     it('should process pending global fields', async () => {
       await importContentTypes.updatePendingGFs();
 
-      const callArgs = makeConcurrentCallStub.getCalls().find((call: any) => 
-        (call.args[0] as any)?.processName === 'Update pending global fields'
-      )?.args[0] as any;
+      const callArgs = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => (call.args[0] as any)?.processName === 'Update pending global fields')?.args[0] as any;
       expect(callArgs).to.not.be.undefined;
       expect(callArgs?.processName).to.equal('Update pending global fields');
       expect(callArgs?.apiParams?.entity).to.equal('update-gfs');
@@ -626,9 +635,9 @@ describe('ImportContentTypes', () => {
     it('should transform pending GFs to apiContent format', async () => {
       await importContentTypes.updatePendingGFs();
 
-      const callArgs = makeConcurrentCallStub.getCalls().find((call: any) => 
-        (call.args[0] as any)?.processName === 'Update pending global fields'
-      )?.args[0] as any;
+      const callArgs = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => (call.args[0] as any)?.processName === 'Update pending global fields')?.args[0] as any;
       expect(callArgs).to.not.be.undefined;
       const apiContent = callArgs?.apiContent;
       expect(apiContent).to.have.lengthOf(2);
@@ -640,9 +649,9 @@ describe('ImportContentTypes', () => {
       importContentTypes['pendingGFs'] = ['gf1'];
       await importContentTypes.updatePendingGFs();
 
-      const callArgs = makeConcurrentCallStub.getCalls().find((call: any) => 
-        call.args[0].processName === 'Update pending global fields'
-      )?.args[0] as any;
+      const callArgs = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Update pending global fields')?.args[0] as any;
       expect(callArgs).to.not.be.undefined;
       const onSuccess = callArgs?.apiParams?.resolve;
       expect(onSuccess).to.be.a('function');
@@ -656,9 +665,9 @@ describe('ImportContentTypes', () => {
       importContentTypes['pendingGFs'] = ['gf1'];
       await importContentTypes.updatePendingGFs();
 
-      const callArgs = makeConcurrentCallStub.getCalls().find((call: any) => 
-        call.args[0].processName === 'Update pending global fields'
-      )?.args[0] as any;
+      const callArgs = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Update pending global fields')?.args[0] as any;
       expect(callArgs).to.not.be.undefined;
       const onReject = callArgs?.apiParams?.reject;
       expect(onReject).to.be.a('function');
@@ -673,7 +682,7 @@ describe('ImportContentTypes', () => {
     beforeEach(() => {
       mockStackClient.globalField.returns({
         uid: 'test_gf',
-        title: 'Test GF'
+        title: 'Test GF',
       });
       lookupExtensionStub.returns(undefined);
     });
@@ -749,9 +758,9 @@ describe('ImportContentTypes', () => {
 
       await importContentTypes.updatePendingExtensions();
 
-      const onSuccess = makeConcurrentCallStub.getCalls().find((call: any) => 
-        call.args[0].processName === 'update extensions'
-      )?.args[0].apiParams.resolve;
+      const onSuccess = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'update extensions')?.args[0].apiParams.resolve;
 
       expect(() => {
         onSuccess({ response: { title: 'Extension 1' }, apiData: { uid: 'ext1', title: 'Extension 1' } });
@@ -764,9 +773,9 @@ describe('ImportContentTypes', () => {
 
       await importContentTypes.updatePendingExtensions();
 
-      const onReject = makeConcurrentCallStub.getCalls().find((call: any) => 
-        call.args[0].processName === 'update extensions'
-      )?.args[0].apiParams.reject;
+      const onReject = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'update extensions')?.args[0].apiParams.reject;
 
       expect(() => {
         onReject({ error: { errors: { title: 'exists' } }, apiData: { uid: 'ext1' } });
@@ -779,9 +788,9 @@ describe('ImportContentTypes', () => {
 
       await importContentTypes.updatePendingExtensions();
 
-      const onReject = makeConcurrentCallStub.getCalls().find((call: any) => 
-        call.args[0].processName === 'update extensions'
-      )?.args[0].apiParams.reject;
+      const onReject = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'update extensions')?.args[0].apiParams.reject;
 
       expect(() => {
         onReject({ error: { message: 'Server error' }, apiData: { uid: 'ext1' } });
@@ -794,9 +803,9 @@ describe('ImportContentTypes', () => {
 
       await importContentTypes.updatePendingExtensions();
 
-      const callArgs = makeConcurrentCallStub.getCalls().find((call: any) => 
-        call.args[0].processName === 'update extensions'
-      )?.args[0];
+      const callArgs = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'update extensions')?.args[0];
       expect(callArgs.concurrencyLimit).to.be.a('number');
     });
   });
@@ -879,14 +888,16 @@ describe('ImportContentTypes', () => {
     it('should complete full content types import flow', async () => {
       const mockCTs = [
         { uid: 'ct1', title: 'Content Type 1', schema: [] as any },
-        { uid: 'ct2', title: 'Content Type 2', schema: [] as any }
+        { uid: 'ct2', title: 'Content Type 2', schema: [] as any },
       ];
 
       fsUtilStub.readFile.withArgs(sinon.match(/schema\.json/)).returns(mockCTs);
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns([]);
       fsUtilStub.readFile.withArgs(sinon.match(/pending_global_fields\.js/)).returns([]);
       fsUtilStub.readFile.withArgs(sinon.match(/pending_extensions\.js/)).returns([]);
-      fsUtilStub.readFile.withArgs(sinon.match(/marketplace_apps.*uid-mapping\.json/)).returns({ extension_uid: { ext1: 'uid1' } });
+      fsUtilStub.readFile
+        .withArgs(sinon.match(/marketplace_apps.*uid-mapping\.json/))
+        .returns({ extension_uid: { ext1: 'uid1' } });
       fsUtilStub.readFile.withArgs(sinon.match(/taxonomies.*success\.json/)).returns({ tax1: {} });
       fsUtilStub.readFile.withArgs(sinon.match(/success\.json/)).returns({});
 
@@ -907,12 +918,12 @@ describe('ImportContentTypes', () => {
 
     it('should handle complete flow with pending global fields', async () => {
       (importContentTypes as any).handlePendingGlobalFields.restore();
-      
+
       const mockCTs = [{ uid: 'ct1', title: 'CT 1', schema: [] as any }];
       const pendingGFs = ['gf1', 'gf2'];
       const mockGFs = [
         { uid: 'gf1', schema: [] as any },
-        { uid: 'gf2', schema: [] as any }
+        { uid: 'gf2', schema: [] as any },
       ];
 
       fsUtilStub.readFile.withArgs(sinon.match(/schema\.json/)).returns(mockCTs);
@@ -934,7 +945,7 @@ describe('ImportContentTypes', () => {
       const mockExtensions = [{ uid: 'ext1', title: 'Extension 1' }];
 
       (importContentTypes as any).handlePendingExtensions.restore();
-      
+
       fsUtilStub.readFile.withArgs(sinon.match(/schema\.json/)).returns(mockCTs);
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns([]);
       fsUtilStub.readFile.withArgs(sinon.match(/pending_global_fields\.js/)).returns([]);
@@ -954,7 +965,7 @@ describe('ImportContentTypes', () => {
   describe('Additional Branch Coverage Tests', () => {
     it('should handle different error conditions in seedCTs onReject', async () => {
       const mockCTs = [{ uid: 'ct1', title: 'Content Type 1' }];
-      
+
       fsUtilStub.readFile.withArgs(sinon.match(/schema\.json/)).returns(mockCTs);
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns([]);
       fsUtilStub.readFile.withArgs(sinon.match(/pending_global_fields\.js/)).returns([]);
@@ -966,17 +977,17 @@ describe('ImportContentTypes', () => {
       await importContentTypes.start();
 
       const onReject = makeConcurrentCallStub.firstCall.args[0].apiParams.reject;
-      
+
       // Test error with errorCode 115 but different error structure
       onReject({
         error: { errorCode: 115, errors: { title: 'Title already exists' } },
-        apiData: { content_type: { uid: 'ct1' } }
+        apiData: { content_type: { uid: 'ct1' } },
       });
 
       // Test error with errorCode 115 but different error structure
       onReject({
         error: { errorCode: 115, errors: { uid: 'UID already exists' } },
-        apiData: { content_type: { uid: 'ct1' } }
+        apiData: { content_type: { uid: 'ct1' } },
       });
 
       expect(makeConcurrentCallStub.called).to.be.true;
@@ -984,14 +995,14 @@ describe('ImportContentTypes', () => {
 
     it('should handle different conditions in updatePendingGFs', async () => {
       (importContentTypes as any).handlePendingGlobalFields.restore();
-      
+
       const mockCTs = [{ uid: 'ct1', title: 'Content Type 1' }];
       const mockPendingGFs = ['gf1', 'gf2'];
       const mockGFs = [
         { uid: 'gf1', title: 'Global Field 1' },
-        { uid: 'gf2', title: 'Global Field 2' }
+        { uid: 'gf2', title: 'Global Field 2' },
       ];
-      
+
       fsUtilStub.readFile.withArgs(sinon.match(/schema\.json/)).returns(mockCTs);
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns(mockGFs);
       fsUtilStub.readFile.withArgs(sinon.match(/pending_global_fields\.js/)).returns(mockPendingGFs);
@@ -1006,21 +1017,21 @@ describe('ImportContentTypes', () => {
       expect(makeConcurrentCallStub.callCount).to.be.greaterThanOrEqual(3);
       const updatePendingGFsCall = makeConcurrentCallStub.getCall(2);
       expect(updatePendingGFsCall).to.not.be.null;
-      
+
       if (updatePendingGFsCall) {
         const onSuccess = updatePendingGFsCall.args[0].apiParams.resolve;
         const onReject = updatePendingGFsCall.args[0].apiParams.reject;
-        
+
         // Test onSuccess with undefined uid
         onSuccess({
           response: { uid: 'gf1' },
-          apiData: { uid: undefined }
+          apiData: { uid: undefined },
         });
 
         // Test onReject with undefined uid
         onReject({
           error: { message: 'Update failed' },
-          apiData: { uid: undefined }
+          apiData: { uid: undefined },
         });
       }
     });
@@ -1028,7 +1039,7 @@ describe('ImportContentTypes', () => {
     it('should handle different conditions in updatePendingExtensions', async () => {
       const mockCTs = [{ uid: 'ct1', title: 'Content Type 1' }];
       const mockExtensions = [{ uid: 'ext1', title: 'Extension 1' }];
-      
+
       fsUtilStub.readFile.withArgs(sinon.match(/schema\.json/)).returns(mockCTs);
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns([]);
       fsUtilStub.readFile.withArgs(sinon.match(/pending_global_fields\.js/)).returns([]);
@@ -1041,25 +1052,25 @@ describe('ImportContentTypes', () => {
 
       const onSuccess = makeConcurrentCallStub.lastCall.args[0].apiParams.resolve;
       const onReject = makeConcurrentCallStub.lastCall.args[0].apiParams.reject;
-      
+
       // Test onSuccess with undefined uid and title
       onSuccess({
         response: { title: 'Updated Extension' },
-        apiData: { uid: undefined, title: undefined }
+        apiData: { uid: undefined, title: undefined },
       });
 
       // Test onReject with title error and skipExisting true
       importContentTypes['importConfig'].skipExisting = true;
       onReject({
         error: { errors: { title: 'Title already exists' } },
-        apiData: { uid: 'ext1' }
+        apiData: { uid: 'ext1' },
       });
 
       // Test onReject with title error and skipExisting false
       importContentTypes['importConfig'].skipExisting = false;
       onReject({
         error: { errors: { title: 'Title already exists' } },
-        apiData: { uid: 'ext1' }
+        apiData: { uid: 'ext1' },
       });
 
       expect(makeConcurrentCallStub.called).to.be.true;
@@ -1067,7 +1078,7 @@ describe('ImportContentTypes', () => {
 
     it('should handle null apiContent in updatePendingExtensions', async () => {
       const mockCTs = [{ uid: 'ct1', title: 'Content Type 1' }];
-      
+
       fsUtilStub.readFile.withArgs(sinon.match(/schema\.json/)).returns(mockCTs);
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns([]);
       fsUtilStub.readFile.withArgs(sinon.match(/pending_global_fields\.js/)).returns([]);
@@ -1083,7 +1094,7 @@ describe('ImportContentTypes', () => {
 
     it('should handle empty array apiContent in updatePendingExtensions', async () => {
       const mockCTs = [{ uid: 'ct1', title: 'Content Type 1' }];
-      
+
       fsUtilStub.readFile.withArgs(sinon.match(/schema\.json/)).returns(mockCTs);
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns([]);
       fsUtilStub.readFile.withArgs(sinon.match(/pending_global_fields\.js/)).returns([]);
@@ -1100,7 +1111,7 @@ describe('ImportContentTypes', () => {
     it('should handle onSuccess with different response structure in updatePendingExtensions', async () => {
       const mockCTs = [{ uid: 'ct1', title: 'Content Type 1' }];
       const mockExtensions = [{ uid: 'ext1', title: 'Extension 1' }];
-      
+
       fsUtilStub.readFile.withArgs(sinon.match(/schema\.json/)).returns(mockCTs);
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns([]);
       fsUtilStub.readFile.withArgs(sinon.match(/pending_global_fields\.js/)).returns([]);
@@ -1112,11 +1123,11 @@ describe('ImportContentTypes', () => {
       await importContentTypes.start();
 
       const onSuccess = makeConcurrentCallStub.lastCall.args[0].apiParams.resolve;
-      
+
       // Test onSuccess with response that has no title property
       onSuccess({
         response: { uid: 'ext1' },
-        apiData: { uid: 'ext1', title: 'Extension 1' }
+        apiData: { uid: 'ext1', title: 'Extension 1' },
       });
 
       expect(makeConcurrentCallStub.called).to.be.true;
@@ -1125,7 +1136,7 @@ describe('ImportContentTypes', () => {
     it('should handle onReject with different error structures in updatePendingExtensions', async () => {
       const mockCTs = [{ uid: 'ct1', title: 'Content Type 1' }];
       const mockExtensions = [{ uid: 'ext1', title: 'Extension 1' }];
-      
+
       fsUtilStub.readFile.withArgs(sinon.match(/schema\.json/)).returns(mockCTs);
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns([]);
       fsUtilStub.readFile.withArgs(sinon.match(/pending_global_fields\.js/)).returns([]);
@@ -1137,17 +1148,17 @@ describe('ImportContentTypes', () => {
       await importContentTypes.start();
 
       const onReject = makeConcurrentCallStub.lastCall.args[0].apiParams.reject;
-      
+
       // Test onReject with error that has no errors property
       onReject({
         error: { message: 'Server error' },
-        apiData: { uid: 'ext1' }
+        apiData: { uid: 'ext1' },
       });
 
       // Test onReject with error that has errors but no title
       onReject({
         error: { errors: { uid: 'UID already exists' } },
-        apiData: { uid: 'ext1' }
+        apiData: { uid: 'ext1' },
       });
 
       expect(makeConcurrentCallStub.called).to.be.true;

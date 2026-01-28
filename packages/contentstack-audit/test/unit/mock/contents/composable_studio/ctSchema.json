@@ -1,0 +1,18 @@
+[
+  {
+    "uid": "page_1",
+    "title": "Page Type 1",
+    "schema": []
+  },
+  {
+    "uid": "page_2",
+    "title": "Page Type 2",
+    "schema": []
+  },
+  {
+    "uid": "page_3",
+    "title": "Page Type 3",
+    "schema": []
+  }
+]
+
