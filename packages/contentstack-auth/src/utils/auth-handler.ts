@@ -182,36 +182,6 @@ class AuthHandler {
       }
     });
   }
-
-  /**
-   * Validate token
-   * @param {string} authtoken
-   * @returns {Promise} Promise object returns response object from Contentstack
-   */
-  async validateAuthtoken(authtoken: string): Promise<object> {
-    log.debug('Starting token validation.', { module: 'auth-handler', hasAuthToken: !!authtoken });
-
-    return new Promise((resolve, reject) => {
-      if (authtoken) {
-        log.debug('Making token validation API call.', { module: 'auth-handler' });
-
-        this._client
-          .getUser()
-          .then((user: object) => {
-            log.debug('Token validation successful.', { module: 'auth-handler', user });
-            resolve(user);
-          })
-          .catch((error: Error) => {
-            log.debug('Token validation failed.', { module: 'auth-handler', error: error.message });
-            cliux.print('CLI_AUTH_TOKEN_VALIDATION_FAILED', { color: 'yellow' });
-            reject(error);
-          });
-      } else {
-        log.debug('Token validation failed: no auth token provided.', { module: 'auth-handler' });
-        reject(new Error(messageHandler.parse('CLI_AUTH_TOKEN_VALIDATION_NO_TOKEN')));
-      }
-    });
-  }
 }
 
 export default new AuthHandler();
