@@ -77,8 +77,8 @@ export default class ContentType extends Base {
     };
     let field = new Field(id, CREATE_CT, contentTypeService, req);
     // TODO: should find better way to attach content type level methods
-    (field as any).singleton = this.singleton.bind(this);
-    (field as any).isPage = this.isPage.bind(this);
+    (field as any).singleton = this.singleton;
+    (field as any).isPage = this.isPage;
     return field;
   }
 
@@ -163,8 +163,8 @@ export default class ContentType extends Base {
     // Keeping the same instance of contentTypeService in Field class
     let fieldI = new Field(id, EDIT_CT, contentTypeService, req);
     // TODO: should find better way to attach content type level methods
-    (fieldI as any).singleton = this.singleton.bind(this);
-    (fieldI as any).isPage = this.isPage.bind(this);
+    (fieldI as any).singleton = this.singleton;
+    (fieldI as any).isPage = this.isPage;
     return fieldI;
   }
 
