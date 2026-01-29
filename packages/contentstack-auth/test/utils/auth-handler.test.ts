@@ -32,7 +32,8 @@ describe('Auth Handler', function () {
               return Promise.reject(new Error('Invalid 2FA code'));
             }
           } else {
-            return Promise.resolve({ error_code: 294 });
+            // Handler expects 2FA required as a rejection (catch path checks error.errorCode === 294)
+            return Promise.reject({ errorCode: 294 });
           }
         }
         return Promise.resolve({ user });
