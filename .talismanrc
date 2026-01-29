@@ -2,7 +2,7 @@ fileignoreconfig:
   - filename: packages/contentstack-export-to-csv/src/types/index.ts
     checksum: 28c19efb0c13969d40df964f86fa6de444316e320801f19dee7392df7a36851d
   - filename: package-lock.json
-    checksum: 62632519fd82d3941a5e7434fd86a3daf122d7922d765b27147c43ef08f01d87
-  - filename: pnpm-lock.yaml
-    checksum: 7615fbce5f716d889b6558fb06df28d1f34c9e2af7225eb22ed23e2817d6dd69
+    checksum: 0982a352c260f7dd5bdde813104c2db8268abc489c791ec467b63eb8badb3cf1
+  - filename: packages/contentstack-config/src/utils/region-handler.ts
+    checksum: ae2df0d7570c11e28a3306bd3ef03ca0ec9e04b3b9b320d6ed50a1764459072c
 version: '1.0'
