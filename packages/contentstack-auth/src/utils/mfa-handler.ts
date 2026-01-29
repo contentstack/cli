@@ -1,4 +1,4 @@
-import { cliux, configHandler, NodeCrypto, log, handleAndLogError, messageHandler } from '@contentstack/cli-utilities';
+import { cliux, NodeCrypto, log, messageHandler } from '@contentstack/cli-utilities';
 import { authenticator } from 'otplib';
 import { askOTP } from './interactive';
 
