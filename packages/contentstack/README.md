@@ -82,13 +82,14 @@ USAGE
 * [`csdx login`](#csdx-login)
 * [`csdx logout`](#csdx-logout)
 * [`csdx plugins`](#csdx-plugins)
-* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
+* [`csdx plugins:add PLUGIN`](#csdx-pluginsadd-plugin)
 * [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
-* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
-* [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
-* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
-* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
-* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
+* [`csdx plugins:install PLUGIN`](#csdx-pluginsinstall-plugin)
+* [`csdx plugins:link PATH`](#csdx-pluginslink-path)
+* [`csdx plugins:remove [PLUGIN]`](#csdx-pluginsremove-plugin)
+* [`csdx plugins:reset`](#csdx-pluginsreset)
+* [`csdx plugins:uninstall [PLUGIN]`](#csdx-pluginsuninstall-plugin)
+* [`csdx plugins:unlink [PLUGIN]`](#csdx-pluginsunlink-plugin)
 * [`csdx plugins:update`](#csdx-pluginsupdate)
 * [`csdx tokens`](#csdx-tokens)
 * [`csdx whoami`](#csdx-whoami)
@@ -1689,33 +1690,33 @@ USAGE
     React App)|CSR (Client-Side Rendered)|Angular|Nuxt|VueJs|Remix|Other] [--org <value>] [-n <value>] [-e <value>]
     [--branch <value>] [--build-command <value>] [--out-dir <value>] [--server-command <value>] [--variable-type Import
     variables from a stack|Manually add custom variables to the list|Import variables from the .env.local file|Skip
-    adding environment variables] [-a <value>] [--env-variables <value>] [--redeploy-latest] [--redeploy-last-upload]
+    adding environment variables...] [-a <value>] [--env-variables <value>] [--redeploy-latest] [--redeploy-last-upload]
 
 FLAGS
-  -a, --alias=<value>           [optional] Alias (name) for the delivery token.
-  -c, --config=<value>          Path to the local '.cs-launch.json' file
-  -d, --data-dir=<value>        Current working directory
-  -e, --environment=<value>     [optional] Environment name for the Launch project.
-  -n, --name=<value>            [optional] Name of the project.
-      --branch=<value>          [optional] GitHub branch name.
-      --build-command=<value>   [optional] Build Command.
-      --env-variables=<value>   [optional] Provide the environment variables in the key:value format, separated by
-                                comma. For example: APP_ENV:prod, TEST_ENV:testVal.
-      --framework=<option>      [optional] Type of framework. <options: Gatsby|NextJS|Other>
-                                <options: Gatsby|NextJs|CRA (Create React App)|CSR (Client-Side
-                                Rendered)|Angular|Nuxt|VueJs|Remix|Other>
-      --org=<value>             [optional] Provide the organization UID to create a new project or deployment.
-      --out-dir=<value>         [optional] Output Directory.
-      --redeploy-last-upload    [optional] Redeploy with last file upload
-      --redeploy-latest         [optional] Redeploy latest commit/code
-      --server-command=<value>  [optional] Server Command.
-      --type=<option>           [optional] Type of adapters. <options: GitHub|FileUpload>
-                                <options: GitHub|FileUpload>
-      --variable-type=<option>  [optional] Provide a variable type. <options: Import variables from a stack|Manually add
-                                custom variables to the list|Import variables from the .env.local file|Skip adding
-                                environment variables>
-                                <options: Import variables from a stack|Manually add custom variables to the list|Import
-                                variables from the .env.local file|Skip adding environment variables>
+  -a, --alias=<value>              [optional] Alias (name) for the delivery token.
+  -c, --config=<value>             Path to the local '.cs-launch.json' file
+  -d, --data-dir=<value>           Current working directory
+  -e, --environment=<value>        [optional] Environment name for the Launch project.
+  -n, --name=<value>               [optional] Name of the project.
+      --branch=<value>             [optional] GitHub branch name.
+      --build-command=<value>      [optional] Build Command.
+      --env-variables=<value>      [optional] Provide the environment variables in the key:value format, separated by
+                                   comma. For example: APP_ENV:prod, TEST_ENV:testVal.
+      --framework=<option>         [optional] Type of framework. <options: Gatsby|NextJS|Other>
+                                   <options: Gatsby|NextJs|CRA (Create React App)|CSR (Client-Side
+                                   Rendered)|Angular|Nuxt|VueJs|Remix|Other>
+      --org=<value>                [optional] Provide the organization UID to create a new project or deployment.
+      --out-dir=<value>            [optional] Output Directory.
+      --redeploy-last-upload       [optional] Redeploy with last file upload
+      --redeploy-latest            [optional] Redeploy latest commit/code
+      --server-command=<value>     [optional] Server Command.
+      --type=<option>              [optional] Type of adapters. <options: GitHub|FileUpload>
+                                   <options: GitHub|FileUpload>
+      --variable-type=<option>...  [optional] Provide a variable type (can specify multiple times). <options: Import
+                                   variables from a stack|Manually add custom variables to the list|Import variables
+                                   from the .env.local file|Skip adding environment variables>
+                                   <options: Import variables from a stack|Manually add custom variables to the
+                                   list|Import variables from the .env.local file|Skip adding environment variables>
 
 DESCRIPTION
   Launch related operations
@@ -1746,6 +1747,8 @@ EXAMPLES
   $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --variable-type="Import variables from a stack" --alias=<value>
 
   $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --variable-type="Manually add custom variables to the list" --env-variables="APP_ENV:prod, TEST_ENV:testVal"
+
+  $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --variable-type="Import variables from a stack" --variable-type="Manually add custom variables to the list" --alias=<value>
 ```
 
 _See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/index.ts)_
@@ -1995,44 +1998,53 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.10.1/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/index.ts)_
 
-## `csdx plugins:install PLUGIN...`
+## `csdx plugins:add PLUGIN`
 
-Installs a plugin into the CLI.
+Installs a plugin into csdx.
 
 ```
 USAGE
-  $ csdx plugins:add plugins:install PLUGIN...
+  $ csdx plugins:add PLUGIN... [--json] [-f] [-h] [-s | -v]
 
 ARGUMENTS
   PLUGIN...  Plugin to install.
 
 FLAGS
-  -f, --force    Run yarn install with force flag.
+  -f, --force    Force npm to fetch remote resources even if a local copy exists on disk.
   -h, --help     Show CLI help.
-  -v, --verbose
+  -s, --silent   Silences npm output.
+  -v, --verbose  Show verbose npm output.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
-  Installs a plugin into the CLI.
-  Can be installed from npm or a git url.
+  Installs a plugin into csdx.
+
+  Uses npm to install plugins.
 
   Installation of a user-installed plugin will override a core plugin.
 
-  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
-  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
-  the CLI without the need to patch and update the whole CLI.
-
+  Use the CSDX_NPM_LOG_LEVEL environment variable to set the npm loglevel.
+  Use the CSDX_NPM_REGISTRY environment variable to set the npm registry.
 
 ALIASES
   $ csdx plugins:add
 
 EXAMPLES
-  $ csdx plugins:install myplugin 
+  Install a plugin from npm registry.
 
-  $ csdx plugins:install https://github.com/someuser/someplugin
+    $ csdx plugins:add myplugin
 
-  $ csdx plugins:install someuser/someplugin
+  Install a plugin from a github url.
+
+    $ csdx plugins:add https://github.com/someuser/someplugin
+
+  Install a plugin from a github slug.
+
+    $ csdx plugins:add someuser/someplugin
 ```
 
 ## `csdx plugins:inspect PLUGIN...`
@@ -2060,55 +2072,64 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.10.1/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/inspect.ts)_
 
-## `csdx plugins:install PLUGIN...`
+## `csdx plugins:install PLUGIN`
 
-Installs a plugin into the CLI.
+Installs a plugin into csdx.
 
 ```
 USAGE
-  $ csdx plugins:install PLUGIN...
+  $ csdx plugins:install PLUGIN... [--json] [-f] [-h] [-s | -v]
 
 ARGUMENTS
   PLUGIN...  Plugin to install.
 
 FLAGS
-  -f, --force    Run yarn install with force flag.
+  -f, --force    Force npm to fetch remote resources even if a local copy exists on disk.
   -h, --help     Show CLI help.
-  -v, --verbose
+  -s, --silent   Silences npm output.
+  -v, --verbose  Show verbose npm output.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
-  Installs a plugin into the CLI.
-  Can be installed from npm or a git url.
+  Installs a plugin into csdx.
+
+  Uses npm to install plugins.
 
   Installation of a user-installed plugin will override a core plugin.
 
-  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
-  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
-  the CLI without the need to patch and update the whole CLI.
-
+  Use the CSDX_NPM_LOG_LEVEL environment variable to set the npm loglevel.
+  Use the CSDX_NPM_REGISTRY environment variable to set the npm registry.
 
 ALIASES
   $ csdx plugins:add
 
 EXAMPLES
-  $ csdx plugins:install myplugin 
+  Install a plugin from npm registry.
 
-  $ csdx plugins:install https://github.com/someuser/someplugin
+    $ csdx plugins:install myplugin
 
-  $ csdx plugins:install someuser/someplugin
+  Install a plugin from a github url.
+
+    $ csdx plugins:install https://github.com/someuser/someplugin
+
+  Install a plugin from a github slug.
+
+    $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.10.1/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/install.ts)_
 
-## `csdx plugins:link PLUGIN`
+## `csdx plugins:link PATH`
 
 Links a plugin into the CLI for development.
 
 ```
 USAGE
-  $ csdx plugins:link PLUGIN
+  $ csdx plugins:link PATH [-h] [--install] [-v]
 
 ARGUMENTS
   PATH  [default: .] path to plugin
@@ -2120,6 +2141,7 @@ FLAGS
 
 DESCRIPTION
   Links a plugin into the CLI for development.
+
   Installation of a linked plugin will override a user-installed or core plugin.
 
   e.g. If you have a user-installed or core plugin that has a 'hello' command, installing a linked plugin with a 'hello'
@@ -2130,18 +2152,18 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.10.1/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/link.ts)_
 
-## `csdx plugins:uninstall PLUGIN...`
+## `csdx plugins:remove [PLUGIN]`
 
 Removes a plugin from the CLI.
 
 ```
 USAGE
-  $ csdx plugins:remove plugins:uninstall PLUGIN...
+  $ csdx plugins:remove [PLUGIN...] [-h] [-v]
 
 ARGUMENTS
-  [PLUGIN]  plugin to uninstall
+  [PLUGIN...]  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
@@ -2153,18 +2175,36 @@ DESCRIPTION
 ALIASES
   $ csdx plugins:unlink
   $ csdx plugins:remove
+
+EXAMPLES
+  $ csdx plugins:remove myplugin
 ```
 
-## `csdx plugins:uninstall PLUGIN...`
+## `csdx plugins:reset`
+
+Remove all user-installed and linked plugins.
+
+```
+USAGE
+  $ csdx plugins:reset [--hard] [--reinstall]
+
+FLAGS
+  --hard       Delete node_modules and package manager related files in addition to uninstalling plugins.
+  --reinstall  Reinstall all plugins after uninstalling.
+```
+
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/reset.ts)_
+
+## `csdx plugins:uninstall [PLUGIN]`
 
 Removes a plugin from the CLI.
 
 ```
 USAGE
-  $ csdx plugins:uninstall PLUGIN...
+  $ csdx plugins:uninstall [PLUGIN...] [-h] [-v]
 
 ARGUMENTS
-  [PLUGIN]  plugin to uninstall
+  [PLUGIN...]  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
@@ -2176,20 +2216,23 @@ DESCRIPTION
 ALIASES
   $ csdx plugins:unlink
   $ csdx plugins:remove
+
+EXAMPLES
+  $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.10.1/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/uninstall.ts)_
 
-## `csdx plugins:uninstall PLUGIN...`
+## `csdx plugins:unlink [PLUGIN]`
 
 Removes a plugin from the CLI.
 
 ```
 USAGE
-  $ csdx plugins:unlink plugins:uninstall PLUGIN...
+  $ csdx plugins:unlink [PLUGIN...] [-h] [-v]
 
 ARGUMENTS
-  [PLUGIN]  plugin to uninstall
+  [PLUGIN...]  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
@@ -2201,6 +2244,9 @@ DESCRIPTION
 ALIASES
   $ csdx plugins:unlink
   $ csdx plugins:remove
+
+EXAMPLES
+  $ csdx plugins:unlink myplugin
 ```
 
 ## `csdx plugins:update`
@@ -2219,7 +2265,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.10.1/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
