@@ -1,8 +1,8 @@
 fileignoreconfig:
   - filename: pnpm-lock.yaml
-    checksum: f0d2b2bc5a7b24b2cd8ba12d8ccaa119d74cf73c9462ae0ddd1e1685d03967c9
+    checksum: f20d4336b379ba896f0092ed8dd03df2c6e5bc34fe200e58002efc2c77fd9359
   - filename: package-lock.json
-    checksum: ed904450857be36b3792ab8650a9ba91ae2f55e67db945915743d1316593a573
+    checksum: b41714137255ba498375116ae9410e04af150d75ba323c8dbaeb8995564a4677
   - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/environments/environments.json
     checksum: 0402604e5919a7e38ecb5ff0916d6ae5ab7d98fe78ff6ac9eba8a9b8130af34d
   - filename: packages/contentstack-utilities/src/helpers.ts
@@ -21,4 +21,8 @@ fileignoreconfig:
     checksum: 4fc97ff582d6dff9a54b3a50dfa3cbb5febd38a55aeb8737034b97188ad543ba
   - filename: packages/contentstack-utilities/test/unit/logger.test.ts
     checksum: a1939dea16166b1893a248179524a76f2ed20b04b99c83bd1a5a13fcf6f0dadc
+  - filename: packages/contentstack-clone/README.md
+    checksum: 8580ab3f52a079a6411c27cbaad66e3a70d9ac5ea59fc429a8f17c95d09399f8
+  - filename: packages/contentstack/README.md
+    checksum: 72850c976661f2912b5bca39734de09d56c311c2266fc67696c45ed3fb0b7511
 version: "1.0"
