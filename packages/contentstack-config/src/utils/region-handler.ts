@@ -17,21 +17,36 @@ function validURL(str) {
 }
 
 /**
- * Helper function to get composable studio URL for a region
+ * Helper function to get composable studio URL from CMA endpoint
  * Since composableStudio endpoint is not yet in @contentstack/utils, we construct it manually
- * @param {string} region - Region identifier (e.g., 'na', 'eu', 'au', 'azure-na', etc.)
+ * by extracting the region prefix from the CMA URL
+ * @param {string} cmaUrl - Content Management API URL (e.g., 'https://eu-api.contentstack.com')
  * @returns {string} Composable Studio URL for the region
  */
-function getComposableStudioUrl(region: string): string {
-  const normalizedRegion = region.toLowerCase().trim().replace(/_/g, '-');
-  
-  // For North America (default region), no prefix is needed
-  if (normalizedRegion === 'na' || normalizedRegion === 'us' || normalizedRegion === 'aws-na') {
+function getComposableStudioUrl(cmaUrl: string): string {
+  // Extract hostname from URL (e.g., "eu-api.contentstack.com")
+  const match = cmaUrl.match(/https?:\/\/([^/]+)/);
+  if (!match) {
     return 'https://composable-studio-api.contentstack.com';
   }
   
-  // For other regions, use the region as a prefix
-  return `https://${normalizedRegion}-composable-studio-api.contentstack.com`;
+  const hostname = match[1];
+  
+  // For default NA region: api.contentstack.io or api.contentstack.com
+  if (hostname === 'api.contentstack.io' || hostname === 'api.contentstack.com') {
+    return 'https://composable-studio-api.contentstack.com';
+  }
+  
+  // For other regions: {region}-api.contentstack.com
+  // Extract the region prefix before "-api"
+  const prefixMatch = hostname.match(/^(.+?)-api\.contentstack\.(com|io)$/);
+  const regionPrefix = prefixMatch ? prefixMatch[1] : '';
+  
+  if (!regionPrefix) {
+    return 'https://composable-studio-api.contentstack.com';
+  }
+  
+  return `https://${regionPrefix}-composable-studio-api.contentstack.com`;
 }
 
 /**
@@ -56,7 +71,7 @@ function getRegionObject(regionKey: string) {
       developerHubUrl: endpoints.developerHub,
       launchHubUrl: endpoints.launch,
       personalizeUrl: endpoints.personalizeManagement,
-      composableStudioUrl: getComposableStudioUrl(regionKey),
+      composableStudioUrl: getComposableStudioUrl(endpoints.contentManagement),
     };
   } catch (error) {
     return null;
