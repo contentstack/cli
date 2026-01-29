@@ -1,4 +1,5 @@
 import { configHandler } from '@contentstack/cli-utilities';
+import { getContentstackEndpoint } from '@contentstack/utils';
 
 function validURL(str) {
   const pattern = new RegExp(
@@ -15,109 +16,85 @@ function validURL(str) {
   return pattern.test(str);
 }
 
-// Available region list
-const regions = {
-  NA: {
-    name: 'NA',
-    cma: 'https://api.contentstack.io',
-    cda: 'https://cdn.contentstack.io',
-    uiHost: 'https://app.contentstack.com',
-    developerHubUrl: 'https://developerhub-api.contentstack.com',
-    launchHubUrl: 'https://launch-api.contentstack.com',
-    personalizeUrl: 'https://personalize-api.contentstack.com',
-    composableStudioUrl: 'https://composable-studio-api.contentstack.com',
-  },
-  'AWS-NA': {
-    name: 'AWS-NA',
-    cma: 'https://api.contentstack.io',
-    cda: 'https://cdn.contentstack.io',
-    uiHost: 'https://app.contentstack.com',
-    developerHubUrl: 'https://developerhub-api.contentstack.com',
-    launchHubUrl: 'https://launch-api.contentstack.com',
-    personalizeUrl: 'https://personalize-api.contentstack.com',
-    composableStudioUrl: 'https://composable-studio-api.contentstack.com',
-  },
-  EU: {
-    name: 'EU',
-    cma: 'https://eu-api.contentstack.com',
-    cda: 'https://eu-cdn.contentstack.com',
-    uiHost: 'https://eu-app.contentstack.com',
-    developerHubUrl: 'https://eu-developerhub-api.contentstack.com',
-    launchHubUrl: 'https://eu-launch-api.contentstack.com',
-    personalizeUrl: 'https://eu-personalize-api.contentstack.com',
-    composableStudioUrl: 'https://eu-composable-studio-api.contentstack.com',
-  },
-  'AWS-EU': {
-    name: 'AWS-EU',
-    cma: 'https://eu-api.contentstack.com',
-    cda: 'https://eu-cdn.contentstack.com',
-    uiHost: 'https://eu-app.contentstack.com',
-    developerHubUrl: 'https://eu-developerhub-api.contentstack.com',
-    launchHubUrl: 'https://eu-launch-api.contentstack.com',
-    personalizeUrl: 'https://eu-personalize-api.contentstack.com',
-    composableStudioUrl: 'https://eu-composable-studio-api.contentstack.com',
-  },
-  AU: {
-    name: 'AU',
-    cma: 'https://au-api.contentstack.com',
-    cda: 'https://au-cdn.contentstack.com',
-    uiHost: 'https://au-app.contentstack.com',
-    developerHubUrl: 'https://au-developerhub-api.contentstack.com',
-    launchHubUrl: 'https://au-launch-api.contentstack.com',
-    personalizeUrl: 'https://au-personalize-api.contentstack.com',
-    composableStudioUrl: 'https://au-composable-studio-api.contentstack.com',
-  },
-  'AWS-AU': {
-    name: 'AWS-AU',
-    cma: 'https://au-api.contentstack.com',
-    cda: 'https://au-cdn.contentstack.com',
-    uiHost: 'https://au-app.contentstack.com',
-    developerHubUrl: 'https://au-developerhub-api.contentstack.com',
-    launchHubUrl: 'https://au-launch-api.contentstack.com',
-    personalizeUrl: 'https://au-personalize-api.contentstack.com',
-    composableStudioUrl: 'https://au-composable-studio-api.contentstack.com',
-  },
-  'AZURE-NA': {
-    name: 'AZURE-NA',
-    cma: 'https://azure-na-api.contentstack.com',
-    cda: 'https://azure-na-cdn.contentstack.com',
-    uiHost: 'https://azure-na-app.contentstack.com',
-    developerHubUrl: 'https://azure-na-developerhub-api.contentstack.com',
-    launchHubUrl: 'https://azure-na-launch-api.contentstack.com',
-    personalizeUrl: 'https://azure-na-personalize-api.contentstack.com',
-    composableStudioUrl: 'https://azure-na-composable-studio-api.contentstack.com',
-  },
-  'AZURE-EU': {
-    name: 'AZURE-EU',
-    cma: 'https://azure-eu-api.contentstack.com',
-    cda: 'https://azure-eu-cdn.contentstack.com',
-    uiHost: 'https://azure-eu-app.contentstack.com',
-    developerHubUrl: 'https://azure-eu-developerhub-api.contentstack.com',
-    launchHubUrl: 'https://azure-eu-launch-api.contentstack.com',
-    personalizeUrl: 'https://azure-eu-personalize-api.contentstack.com',
-    composableStudioUrl: 'https://azure-eu-composable-studio-api.contentstack.com',
-  },
-  'GCP-NA': {
-    name: 'GCP-NA',
-    cma: 'https://gcp-na-api.contentstack.com',
-    cda: 'https://gcp-na-cdn.contentstack.com',
-    uiHost: 'https://gcp-na-app.contentstack.com',
-    developerHubUrl: 'https://gcp-na-developerhub-api.contentstack.com',
-    launchHubUrl: 'https://gcp-na-launch-api.contentstack.com',
-    personalizeUrl: 'https://gcp-na-personalize-api.contentstack.com',
-    composableStudioUrl: 'https://gcp-na-composable-studio-api.contentstack.com',
-  },
-  'GCP-EU': {
-    name: 'GCP-EU',
-    cma: 'https://gcp-eu-api.contentstack.com',
-    cda: 'https://gcp-eu-cdn.contentstack.com',
-    uiHost: 'https://gcp-eu-app.contentstack.com',
-    developerHubUrl: 'https://gcp-eu-developerhub-api.contentstack.com',
-    launchHubUrl: 'https://gcp-eu-launch-api.contentstack.com',
-    personalizeUrl: 'https://gcp-eu-personalize-api.contentstack.com',
-    composableStudioUrl: 'https://gcp-eu-composable-studio-api.contentstack.com',
-  },
-};
+/**
+ * Helper function to get composable studio URL for a region
+ * Since composableStudio endpoint is not yet in @contentstack/utils, we construct it manually
+ * @param {string} region - Region identifier (e.g., 'na', 'eu', 'au', 'azure-na', etc.)
+ * @returns {string} Composable Studio URL for the region
+ */
+function getComposableStudioUrl(region: string): string {
+  const normalizedRegion = region.toLowerCase().trim().replace(/_/g, '-');
+  
+  // For North America (default region), no prefix is needed
+  if (normalizedRegion === 'na' || normalizedRegion === 'us' || normalizedRegion === 'aws-na') {
+    return 'https://composable-studio-api.contentstack.com';
+  }
+  
+  // For other regions, use the region as a prefix
+  return `https://${normalizedRegion}-composable-studio-api.contentstack.com`;
+}
+
+/**
+ * Helper function to build region object from @contentstack/utils
+ * @param {string} regionKey - Region identifier
+ * @returns {object} Region object with all necessary URLs
+ */
+function getRegionObject(regionKey: string) {
+  try {
+    // getContentstackEndpoint handles all aliases defined in regions.json
+    const endpoints = getContentstackEndpoint(regionKey) as any;
+    
+    if (typeof endpoints === 'string') {
+      throw new Error('Invalid endpoint response');
+    }
+
+    return {
+      name: regionKey,
+      cma: endpoints.contentManagement,
+      cda: endpoints.contentDelivery,
+      uiHost: endpoints.application,
+      developerHubUrl: endpoints.developerHub,
+      launchHubUrl: endpoints.launch,
+      personalizeUrl: endpoints.personalizeManagement,
+      composableStudioUrl: getComposableStudioUrl(regionKey),
+    };
+  } catch (error) {
+    return null;
+  }
+}
+
+/**
+ * Get all available regions dynamically
+ * This creates a regions object similar to the old hardcoded one but using @contentstack/utils
+ */
+function getAvailableRegions() {
+  const regionKeys = [
+    'NA',
+    'AWS-NA',
+    'EU',
+    'AWS-EU',
+    'AU',
+    'AWS-AU',
+    'AZURE-NA',
+    'AZURE-EU',
+    'GCP-NA',
+    'GCP-EU',
+  ];
+
+  const regions: any = {};
+  
+  for (const key of regionKeys) {
+    const regionObj = getRegionObject(key);
+    if (regionObj) {
+      regions[key] = regionObj;
+    }
+  }
+
+  return regions;
+}
+
+// Available region list - now dynamically generated
+const regions = getAvailableRegions();
 
 class UserConfig {
   /**
