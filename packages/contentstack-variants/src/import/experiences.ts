@@ -57,7 +57,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
 
     this.personalizeConfig = this.config.modules.personalize;
     this.experiencesDirPath = resolve(
-      sanitizePath(this.config.data),
+      sanitizePath(this.config.contentDir),
       sanitizePath(this.personalizeConfig.dirName),
       sanitizePath(this.personalizeConfig.experiences.dirName),
     );
@@ -86,7 +86,7 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
     this.failedCmsExpPath = resolve(sanitizePath(this.expMapperDirPath), 'failed-cms-experience.json');
     this.experienceCTsPath = resolve(sanitizePath(this.experiencesDirPath), 'experiences-content-types.json');
     this.experienceVariantsIdsPath = resolve(
-      sanitizePath(this.config.data),
+      sanitizePath(this.config.contentDir),
       sanitizePath(this.personalizeConfig.dirName),
       sanitizePath(this.experienceConfig.dirName),
       'experiences-variants-ids.json',

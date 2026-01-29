@@ -1,4 +1,4 @@
-import { cliux, flags, configHandler, FlagInput } from '@contentstack/cli-utilities';
+import { cliux, flags, configHandler, FlagInput, handleAndLogError } from '@contentstack/cli-utilities';
 import { interactive } from '../../../utils';
 import { Command } from '@contentstack/cli-command';
 
@@ -7,7 +7,10 @@ export default class RemoveEarlyAccessHeader extends Command {
   static aliases: string[] = ['config:remove:ea-header'];
   static flags: FlagInput = {
     'header-alias': flags.string({ description: '(optional) Provide the Early Access header alias name.' }),
-    yes: flags.boolean({ char: 'y', description: '(optional) Force the removal of Early Access header configuration by skipping the confirmation.' }),
+    yes: flags.boolean({
+      char: 'y',
+      description: '(optional) Force the removal of Early Access header configuration by skipping the confirmation.',
+    }),
   };
   static examples: string[] = [
     '$ <%= config.bin %> <%= command.id %>',
@@ -35,7 +38,7 @@ export default class RemoveEarlyAccessHeader extends Command {
       configHandler.delete(`earlyAccessHeaders.${earlyAccessHeaderAlias}`);
       cliux.success(`Early Access header has been successfully removed`);
     } catch (error) {
-      this.log('Unable to remove the Early Access header config', error instanceof Error ? error.message : error);
+      handleAndLogError(error, { module: 'config-remove-early-access-header' });
     }
   }
 }

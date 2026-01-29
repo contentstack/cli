@@ -47,7 +47,6 @@ describe('ImportCommand', () => {
       apiKey: 'test',
       contentDir: '/test/data',
       data: '/test/data',
-      contentVersion: 1,
       region: 'us' as any,
       master_locale: { code: 'en-us' },
       masterLocale: { code: 'en-us' },

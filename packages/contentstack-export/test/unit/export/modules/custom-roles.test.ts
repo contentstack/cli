@@ -16,23 +16,20 @@ describe('ExportCustomRoles', () => {
           items: [
             { uid: 'custom-role-1', name: 'Custom Role 1' },
             { uid: 'Admin', name: 'Admin' },
-            { uid: 'Developer', name: 'Developer' }
-          ]
-        })
+            { uid: 'Developer', name: 'Developer' },
+          ],
+        }),
       }),
       locale: sinon.stub().returns({
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
-            items: [
-              { uid: 'locale-1', name: 'English', code: 'en-us' }
-            ]
-          })
-        })
-      })
+            items: [{ uid: 'locale-1', name: 'English', code: 'en-us' }],
+          }),
+        }),
+      }),
     };
 
     mockExportConfig = {
-      contentVersion: 1,
       versioning: false,
       host: 'https://api.contentstack.io',
       developerHubUrls: {},
@@ -48,7 +45,7 @@ describe('ExportCustomRoles', () => {
         sessionId: 'session-123',
         apiKey: 'test-api-key',
         orgId: 'org-123',
-        authenticationMethod: 'Basic Auth'
+        authenticationMethod: 'Basic Auth',
       },
       cliLogsPath: '/test/logs',
       forceStopMarketplaceAppsPrompt: false,
@@ -57,7 +54,7 @@ describe('ExportCustomRoles', () => {
         name: 'us',
         cma: 'https://api.contentstack.io',
         cda: 'https://cdn.contentstack.io',
-        uiHost: 'https://app.contentstack.com'
+        uiHost: 'https://app.contentstack.com',
       },
       skipStackSettings: false,
       skipDependencies: false,
@@ -69,21 +66,20 @@ describe('ExportCustomRoles', () => {
       writeConcurrency: 5,
       developerHubBaseUrl: '',
       marketplaceAppEncryptionKey: '',
-      onlyTSModules: [],
       modules: {
         types: ['custom-roles'],
         customRoles: {
           dirName: 'custom_roles',
           fileName: 'custom_roles.json',
-          customRolesLocalesFileName: 'custom_roles_locales.json'
-        }
-      }
+          customRolesLocalesFileName: 'custom_roles_locales.json',
+        },
+      },
     } as any;
 
     exportCustomRoles = new ExportCustomRoles({
       exportConfig: mockExportConfig,
       stackAPIClient: mockStackClient,
-      moduleName: 'custom-roles'
+      moduleName: 'custom-roles',
     });
 
     // Stub FsUtility methods
@@ -118,7 +114,7 @@ describe('ExportCustomRoles', () => {
       expect(exportCustomRoles.existingRoles).to.deep.equal({
         Admin: 1,
         Developer: 1,
-        'Content Manager': 1
+        'Content Manager': 1,
       });
     });
   });
@@ -127,7 +123,7 @@ describe('ExportCustomRoles', () => {
     it('should fetch and filter only custom roles', async () => {
       // Set rolesFolderPath before calling
       exportCustomRoles.rolesFolderPath = '/test/data/custom_roles';
-      
+
       await exportCustomRoles.getCustomRoles();
 
       // Verify only custom role was added (not Admin or Developer)
@@ -138,18 +134,18 @@ describe('ExportCustomRoles', () => {
 
     it('should handle no custom roles found', async () => {
       exportCustomRoles.rolesFolderPath = '/test/data/custom_roles';
-      
+
       mockStackClient.role.returns({
         fetchAll: sinon.stub().resolves({
           items: [
             { uid: 'Admin', name: 'Admin' },
-            { uid: 'Developer', name: 'Developer' }
-          ]
-        })
+            { uid: 'Developer', name: 'Developer' },
+          ],
+        }),
       });
 
       const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
-      
+
       await exportCustomRoles.getCustomRoles();
 
       // Verify no custom roles were added
@@ -158,16 +154,16 @@ describe('ExportCustomRoles', () => {
 
     it('should handle API errors gracefully without crashing', async () => {
       exportCustomRoles.rolesFolderPath = '/test/data/custom_roles';
-      
+
       // Mock to return valid data structure with no items to avoid undefined
       mockStackClient.role.returns({
         fetchAll: sinon.stub().resolves({
-          items: []
-        })
+          items: [],
+        }),
       });
 
       await exportCustomRoles.getCustomRoles();
-      
+
       // Verify method completed without throwing
       expect(Object.keys(exportCustomRoles.customRoles).length).to.equal(0);
     });
@@ -186,13 +182,13 @@ describe('ExportCustomRoles', () => {
       mockStackClient.locale.returns({
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
-            items: []
-          })
-        })
+            items: [],
+          }),
+        }),
       });
 
       await exportCustomRoles.getLocales();
-      
+
       // Verify method completed
       expect(exportCustomRoles.sourceLocalesMap).to.be.an('object');
     });
@@ -206,15 +202,15 @@ describe('ExportCustomRoles', () => {
           rules: [
             {
               module: 'locale',
-              locales: ['locale-1', 'locale-2']
-            }
-          ]
-        }
+              locales: ['locale-1', 'locale-2'],
+            },
+          ],
+        },
       };
 
       exportCustomRoles.sourceLocalesMap = {
         'locale-1': { uid: 'locale-1', name: 'English' },
-        'locale-2': { uid: 'locale-2', name: 'Spanish' }
+        'locale-2': { uid: 'locale-2', name: 'Spanish' },
       };
 
       await exportCustomRoles.getCustomRolesLocales();
@@ -227,8 +223,8 @@ describe('ExportCustomRoles', () => {
       exportCustomRoles.customRoles = {
         'custom-role-1': {
           name: 'Custom Role 1',
-          rules: []
-        }
+          rules: [],
+        },
       };
 
       await exportCustomRoles.getCustomRolesLocales();
@@ -253,16 +249,16 @@ describe('ExportCustomRoles', () => {
       // Mock to return empty result to avoid undefined issues
       mockStackClient.role.returns({
         fetchAll: sinon.stub().resolves({
-          items: []
-        })
+          items: [],
+        }),
       });
-      
+
       mockStackClient.locale.returns({
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
-            items: []
-          })
-        })
+            items: [],
+          }),
+        }),
       });
 
       // Should complete without throwing
@@ -270,4 +266,3 @@ describe('ExportCustomRoles', () => {
     });
   });
 });
-

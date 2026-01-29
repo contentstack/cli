@@ -16,16 +16,15 @@ describe('ExportTaxonomies', () => {
           find: sinon.stub().resolves({
             items: [
               { uid: 'taxonomy-1', name: 'Category' },
-              { uid: 'taxonomy-2', name: 'Tag' }
+              { uid: 'taxonomy-2', name: 'Tag' },
             ],
-            count: 2
-          })
-        })
-      })
+            count: 2,
+          }),
+        }),
+      }),
     };
 
     mockExportConfig = {
-      contentVersion: 1,
       versioning: false,
       host: 'https://api.contentstack.io',
       developerHubUrls: {},
@@ -41,7 +40,7 @@ describe('ExportTaxonomies', () => {
         sessionId: 'session-123',
         apiKey: 'test-api-key',
         orgId: 'org-123',
-        authenticationMethod: 'Basic Auth'
+        authenticationMethod: 'Basic Auth',
       },
       cliLogsPath: '/test/logs',
       forceStopMarketplaceAppsPrompt: false,
@@ -50,7 +49,7 @@ describe('ExportTaxonomies', () => {
         name: 'us',
         cma: 'https://api.contentstack.io',
         cda: 'https://cdn.contentstack.io',
-        uiHost: 'https://app.contentstack.com'
+        uiHost: 'https://app.contentstack.com',
       },
       skipStackSettings: false,
       skipDependencies: false,
@@ -62,27 +61,26 @@ describe('ExportTaxonomies', () => {
       writeConcurrency: 5,
       developerHubBaseUrl: '',
       marketplaceAppEncryptionKey: '',
-      onlyTSModules: [],
       modules: {
         types: ['taxonomies'],
         taxonomies: {
           dirName: 'taxonomies',
           fileName: 'taxonomies.json',
           invalidKeys: [],
-          limit: 100
+          limit: 100,
         },
         locales: {
           dirName: 'locales',
           fileName: 'locales.json',
-          requiredKeys: ['code', 'uid', 'name', 'fallback_locale']
-        }
-      }
+          requiredKeys: ['code', 'uid', 'name', 'fallback_locale'],
+        },
+      },
     } as any;
 
     exportTaxonomies = new ExportTaxonomies({
       exportConfig: mockExportConfig,
       stackAPIClient: mockStackClient,
-      moduleName: 'taxonomies'
+      moduleName: 'taxonomies',
     });
 
     sinon.stub(FsUtility.prototype, 'writeFile').resolves();
@@ -112,20 +110,20 @@ describe('ExportTaxonomies', () => {
     it('should fetch and process taxonomies correctly', async () => {
       const taxonomies = [
         { uid: 'taxonomy-1', name: 'Category', invalidField: 'remove' },
-        { uid: 'taxonomy-2', name: 'Tag', invalidField: 'remove' }
+        { uid: 'taxonomy-2', name: 'Tag', invalidField: 'remove' },
       ];
 
       mockStackClient.taxonomy.returns({
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: taxonomies,
-            count: 2
-          })
-        })
+            count: 2,
+          }),
+        }),
       });
 
       await exportTaxonomies.fetchTaxonomies();
-      
+
       // Verify taxonomies were processed
       expect(Object.keys(exportTaxonomies.taxonomies).length).to.equal(2);
       expect(exportTaxonomies.taxonomies['taxonomy-1']).to.exist;
@@ -141,20 +139,20 @@ describe('ExportTaxonomies', () => {
             if (callCount === 1) {
               return Promise.resolve({
                 items: Array(100).fill({ uid: `taxonomy-${callCount}`, name: 'Test' }),
-                count: 150
+                count: 150,
               });
             } else {
               return Promise.resolve({
                 items: Array(50).fill({ uid: `taxonomy-${callCount}`, name: 'Test' }),
-                count: 150
+                count: 150,
               });
             }
-          })
-        })
+          }),
+        }),
       });
 
       await exportTaxonomies.fetchTaxonomies();
-      
+
       // Verify multiple calls were made
       expect(callCount).to.be.greaterThan(1);
     });
@@ -164,52 +162,52 @@ describe('ExportTaxonomies', () => {
     it('should complete full export flow and call makeAPICall for each taxonomy', async () => {
       const mockMakeAPICall = sinon.stub(exportTaxonomies, 'makeAPICall').resolves();
       const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
-      
+
       // Mock fetchTaxonomies to return one taxonomy
       const mockTaxonomy = {
         uid: 'taxonomy-1',
-        name: 'Category'
+        name: 'Category',
       };
-      
+
       // Mock the API call to return taxonomies
       mockStackClient.taxonomy.returns({
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: [mockTaxonomy],
-            count: 1
-          })
-        })
+            count: 1,
+          }),
+        }),
       });
 
       await exportTaxonomies.start();
-      
+
       // Verify makeAPICall was called for the taxonomy
       expect(mockMakeAPICall.called).to.be.true;
       expect(mockMakeAPICall.callCount).to.equal(1);
       // Verify writeFile was called for taxonomies.json
       expect(writeFileStub.called).to.be.true;
-      
+
       mockMakeAPICall.restore();
     });
 
     it('should handle empty taxonomies and not call makeAPICall', async () => {
       const mockMakeAPICall = sinon.stub(exportTaxonomies, 'makeAPICall').resolves();
-      
+
       mockStackClient.taxonomy.returns({
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: [],
-            count: 0
-          })
-        })
+            count: 0,
+          }),
+        }),
       });
 
       exportTaxonomies.taxonomies = {};
       await exportTaxonomies.start();
-      
+
       // Verify makeAPICall was NOT called when taxonomies are empty
       expect(mockMakeAPICall.called).to.be.false;
-      
+
       mockMakeAPICall.restore();
     });
   });
@@ -220,14 +218,14 @@ describe('ExportTaxonomies', () => {
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: [],
-            count: 0
-          })
-        })
+            count: 0,
+          }),
+        }),
       });
 
       const initialCount = Object.keys(exportTaxonomies.taxonomies).length;
       await exportTaxonomies.fetchTaxonomies();
-      
+
       // Verify no new taxonomies were added
       expect(Object.keys(exportTaxonomies.taxonomies).length).to.equal(initialCount);
     });
@@ -237,14 +235,14 @@ describe('ExportTaxonomies', () => {
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: null,
-            count: 0
-          })
-        })
+            count: 0,
+          }),
+        }),
       });
 
       const initialCount = Object.keys(exportTaxonomies.taxonomies).length;
       await exportTaxonomies.fetchTaxonomies();
-      
+
       // Verify no processing occurred with null items
       expect(Object.keys(exportTaxonomies.taxonomies).length).to.equal(initialCount);
     });
@@ -252,30 +250,30 @@ describe('ExportTaxonomies', () => {
     it('should handle API errors gracefully without crashing', async () => {
       mockStackClient.taxonomy.returns({
         query: sinon.stub().returns({
-          find: sinon.stub().rejects(new Error('API Error'))
-        })
+          find: sinon.stub().rejects(new Error('API Error')),
+        }),
       });
 
       await exportTaxonomies.fetchTaxonomies();
-      
+
       // Verify method completes without throwing
       expect(exportTaxonomies.taxonomies).to.exist;
     });
 
     it('should handle count undefined scenario and use items length', async () => {
       const taxonomies = [{ uid: 'taxonomy-1', name: 'Category' }];
-      
+
       mockStackClient.taxonomy.returns({
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: taxonomies,
-            count: undefined
-          })
-        })
+            count: undefined,
+          }),
+        }),
       });
 
       await exportTaxonomies.fetchTaxonomies();
-      
+
       // Verify taxonomies were still processed despite undefined count
       expect(exportTaxonomies.taxonomies['taxonomy-1']).to.exist;
     });
@@ -285,7 +283,7 @@ describe('ExportTaxonomies', () => {
     it('should sanitize taxonomy attributes', () => {
       const taxonomies = [
         { uid: 'taxonomy-1', name: 'Category', invalidField: 'remove' },
-        { uid: 'taxonomy-2', name: 'Tag', invalidField: 'remove' }
+        { uid: 'taxonomy-2', name: 'Tag', invalidField: 'remove' },
       ];
 
       exportTaxonomies.sanitizeTaxonomiesAttribs(taxonomies);
@@ -295,9 +293,7 @@ describe('ExportTaxonomies', () => {
     });
 
     it('should handle taxonomies without name field', () => {
-      const taxonomies = [
-        { uid: 'taxonomy-1', invalidField: 'remove' }
-      ];
+      const taxonomies = [{ uid: 'taxonomy-1', invalidField: 'remove' }];
 
       exportTaxonomies.sanitizeTaxonomiesAttribs(taxonomies);
 
@@ -373,7 +369,7 @@ describe('ExportTaxonomies', () => {
     it('should handle locales file with missing code field', () => {
       const localesData = {
         'locale-1': { name: 'English' }, // missing code
-        'locale-2': { code: 'es-es', name: 'Spanish' }
+        'locale-2': { code: 'es-es', name: 'Spanish' },
       };
       const readFileStub = FsUtility.prototype.readFile as sinon.SinonStub;
       readFileStub.returns(localesData);
@@ -390,7 +386,7 @@ describe('ExportTaxonomies', () => {
       const localesData = {
         'locale-1': { code: 'en-us', name: 'English US' },
         'locale-2': { code: 'en-us', name: 'English UK' }, // duplicate code
-        'locale-3': { code: 'es-es', name: 'Spanish' }
+        'locale-3': { code: 'es-es', name: 'Spanish' },
       };
       const readFileStub = FsUtility.prototype.readFile as sinon.SinonStub;
       readFileStub.returns(localesData);
@@ -451,7 +447,6 @@ describe('ExportTaxonomies', () => {
   });
 
   describe('writeTaxonomiesMetadata() method', () => {
-
     it('should skip writing when taxonomies object is empty', () => {
       const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
       exportTaxonomies.taxonomies = {};
@@ -475,16 +470,16 @@ describe('ExportTaxonomies', () => {
     it('should fetch taxonomies with locale code', async () => {
       const taxonomies = [
         { uid: 'taxonomy-1', name: 'Category', locale: 'en-us' },
-        { uid: 'taxonomy-2', name: 'Tag', locale: 'en-us' }
+        { uid: 'taxonomy-2', name: 'Tag', locale: 'en-us' },
       ];
 
       mockStackClient.taxonomy.returns({
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: taxonomies,
-            count: 2
-          })
-        })
+            count: 2,
+          }),
+        }),
       });
 
       await exportTaxonomies.fetchTaxonomies('en-us');
@@ -495,17 +490,15 @@ describe('ExportTaxonomies', () => {
     });
 
     it('should detect locale-based export support when items have locale field', async () => {
-      const taxonomies = [
-        { uid: 'taxonomy-1', name: 'Category', locale: 'en-us' }
-      ];
+      const taxonomies = [{ uid: 'taxonomy-1', name: 'Category', locale: 'en-us' }];
 
       mockStackClient.taxonomy.returns({
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: taxonomies,
-            count: 1
-          })
-        })
+            count: 1,
+          }),
+        }),
       });
 
       await exportTaxonomies.fetchTaxonomies('en-us', true);
@@ -516,16 +509,16 @@ describe('ExportTaxonomies', () => {
 
     it('should disable locale-based export when items lack locale field', async () => {
       const taxonomies = [
-        { uid: 'taxonomy-1', name: 'Category' } // no locale field
+        { uid: 'taxonomy-1', name: 'Category' }, // no locale field
       ];
 
       mockStackClient.taxonomy.returns({
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: taxonomies,
-            count: 1
-          })
-        })
+            count: 1,
+          }),
+        }),
       });
 
       await exportTaxonomies.fetchTaxonomies('en-us', true);
@@ -539,11 +532,11 @@ describe('ExportTaxonomies', () => {
       const apiError: any = new Error('API Error');
       apiError.status = 500;
       apiError.errors = { general: ['Internal server error'] };
-      
+
       mockStackClient.taxonomy.returns({
         query: sinon.stub().returns({
-          find: sinon.stub().rejects(apiError)
-        })
+          find: sinon.stub().rejects(apiError),
+        }),
       });
 
       await exportTaxonomies.fetchTaxonomies('en-us', true);
@@ -558,13 +551,15 @@ describe('ExportTaxonomies', () => {
       planLimitationError.status = 403;
       planLimitationError.statusText = 'Forbidden';
       planLimitationError.errors = {
-        taxonomies: ['Taxonomy localization is not included in your plan. Please contact the support@contentstack.com team for assistance.']
+        taxonomies: [
+          'Taxonomy localization is not included in your plan. Please contact the support@contentstack.com team for assistance.',
+        ],
       };
-      
+
       mockStackClient.taxonomy.returns({
         query: sinon.stub().returns({
-          find: sinon.stub().rejects(planLimitationError)
-        })
+          find: sinon.stub().rejects(planLimitationError),
+        }),
       });
 
       await exportTaxonomies.fetchTaxonomies('en-us', true);
@@ -575,7 +570,6 @@ describe('ExportTaxonomies', () => {
   });
 
   describe('exportTaxonomies() method - locale-based export', () => {
-
     it('should skip export when no taxonomies for locale', async () => {
       const mockMakeAPICall = sinon.stub(exportTaxonomies, 'makeAPICall').resolves();
       exportTaxonomies.taxonomiesByLocale['en-us'] = new Set();
@@ -590,11 +584,13 @@ describe('ExportTaxonomies', () => {
 
   describe('start() method - locale-based export scenarios', () => {
     it('should use legacy export when locale-based export is not supported', async () => {
-      const mockFetchTaxonomies = sinon.stub(exportTaxonomies, 'fetchTaxonomies').callsFake(async (locale, checkSupport) => {
-        if (checkSupport) {
-          exportTaxonomies.isLocaleBasedExportSupported = false;
-        }
-      });
+      const mockFetchTaxonomies = sinon
+        .stub(exportTaxonomies, 'fetchTaxonomies')
+        .callsFake(async (locale, checkSupport) => {
+          if (checkSupport) {
+            exportTaxonomies.isLocaleBasedExportSupported = false;
+          }
+        });
       const mockExportTaxonomies = sinon.stub(exportTaxonomies, 'exportTaxonomies').resolves();
       const mockWriteMetadata = sinon.stub(exportTaxonomies, 'writeTaxonomiesMetadata').resolves();
       const mockGetLocales = sinon.stub(exportTaxonomies, 'getLocalesToExport').returns(['en-us']);
@@ -614,17 +610,19 @@ describe('ExportTaxonomies', () => {
 
     it('should clear taxonomies and re-fetch when falling back to legacy export', async () => {
       let fetchCallCount = 0;
-      const mockFetchTaxonomies = sinon.stub(exportTaxonomies, 'fetchTaxonomies').callsFake(async (locale, checkSupport) => {
-        fetchCallCount++;
-        if (checkSupport) {
-          // First call fails locale check
-          exportTaxonomies.isLocaleBasedExportSupported = false;
-          exportTaxonomies.taxonomies = { 'partial-data': { uid: 'partial-data' } }; // Simulate partial data
-        } else {
-          // Second call should have cleared data
-          expect(exportTaxonomies.taxonomies).to.deep.equal({});
-        }
-      });
+      const mockFetchTaxonomies = sinon
+        .stub(exportTaxonomies, 'fetchTaxonomies')
+        .callsFake(async (locale, checkSupport) => {
+          fetchCallCount++;
+          if (checkSupport) {
+            // First call fails locale check
+            exportTaxonomies.isLocaleBasedExportSupported = false;
+            exportTaxonomies.taxonomies = { 'partial-data': { uid: 'partial-data' } }; // Simulate partial data
+          } else {
+            // Second call should have cleared data
+            expect(exportTaxonomies.taxonomies).to.deep.equal({});
+          }
+        });
       const mockExportTaxonomies = sinon.stub(exportTaxonomies, 'exportTaxonomies').resolves();
       const mockWriteMetadata = sinon.stub(exportTaxonomies, 'writeTaxonomiesMetadata').resolves();
       const mockGetLocales = sinon.stub(exportTaxonomies, 'getLocalesToExport').returns(['en-us']);
@@ -644,14 +642,16 @@ describe('ExportTaxonomies', () => {
     });
 
     it('should use locale-based export when supported', async () => {
-      const mockFetchTaxonomies = sinon.stub(exportTaxonomies, 'fetchTaxonomies').callsFake(async (locale, checkSupport) => {
-        if (checkSupport) {
-          exportTaxonomies.isLocaleBasedExportSupported = true;
-        }
-        if (locale && typeof locale === 'string' && !exportTaxonomies.taxonomiesByLocale[locale]) {
-          exportTaxonomies.taxonomiesByLocale[locale] = new Set(['taxonomy-1']);
-        }
-      });
+      const mockFetchTaxonomies = sinon
+        .stub(exportTaxonomies, 'fetchTaxonomies')
+        .callsFake(async (locale, checkSupport) => {
+          if (checkSupport) {
+            exportTaxonomies.isLocaleBasedExportSupported = true;
+          }
+          if (locale && typeof locale === 'string' && !exportTaxonomies.taxonomiesByLocale[locale]) {
+            exportTaxonomies.taxonomiesByLocale[locale] = new Set(['taxonomy-1']);
+          }
+        });
       const mockProcessLocale = sinon.stub(exportTaxonomies, 'processLocaleExport').resolves();
       const mockWriteMetadata = sinon.stub(exportTaxonomies, 'writeTaxonomiesMetadata').resolves();
       const mockGetLocales = sinon.stub(exportTaxonomies, 'getLocalesToExport').returns(['en-us', 'es-es']);
@@ -683,4 +683,3 @@ describe('ExportTaxonomies', () => {
     });
   });
 });
-

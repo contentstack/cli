@@ -3,7 +3,7 @@ node_modules
 .env
 .dccache
 logs
-contents
+/contents
 lerna-debug.log
 .DS_Store
 contentTest
@@ -25,3 +25,4 @@ snyk_output.log
 .cursor/rules/snyk_rules.mdc
 **/migration-logs
 **/migration-logs/**
+*.logs

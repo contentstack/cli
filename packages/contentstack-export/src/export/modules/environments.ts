@@ -32,7 +32,7 @@ export default class ExportEnvironments extends BaseClass {
       // Setup with loading spinner
       const [totalCount] = await this.withLoadingSpinner('ENVIRONMENTS: Analyzing environments...', async () => {
         this.environmentsFolderPath = pResolve(
-          this.exportConfig.data,
+          this.exportConfig.exportDir,
           this.exportConfig.branchName || '',
           this.environmentConfig.dirName,
         );

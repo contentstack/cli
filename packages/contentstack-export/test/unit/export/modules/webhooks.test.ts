@@ -15,15 +15,14 @@ describe('ExportWebhooks', () => {
         fetchAll: sinon.stub().resolves({
           items: [
             { uid: 'webhook-1', name: 'Webhook 1' },
-            { uid: 'webhook-2', name: 'Webhook 2' }
+            { uid: 'webhook-2', name: 'Webhook 2' },
           ],
-          count: 2
-        })
-      })
+          count: 2,
+        }),
+      }),
     };
 
     mockExportConfig = {
-      contentVersion: 1,
       versioning: false,
       host: 'https://api.contentstack.io',
       developerHubUrls: {},
@@ -39,7 +38,7 @@ describe('ExportWebhooks', () => {
         sessionId: 'session-123',
         apiKey: 'test-api-key',
         orgId: 'org-123',
-        authenticationMethod: 'Basic Auth'
+        authenticationMethod: 'Basic Auth',
       },
       cliLogsPath: '/test/logs',
       forceStopMarketplaceAppsPrompt: false,
@@ -48,7 +47,7 @@ describe('ExportWebhooks', () => {
         name: 'us',
         cma: 'https://api.contentstack.io',
         cda: 'https://cdn.contentstack.io',
-        uiHost: 'https://app.contentstack.com'
+        uiHost: 'https://app.contentstack.com',
       },
       skipStackSettings: false,
       skipDependencies: false,
@@ -60,22 +59,21 @@ describe('ExportWebhooks', () => {
       writeConcurrency: 5,
       developerHubBaseUrl: '',
       marketplaceAppEncryptionKey: '',
-      onlyTSModules: [],
       modules: {
         types: ['webhooks'],
         webhooks: {
           dirName: 'webhooks',
           fileName: 'webhooks.json',
           limit: 100,
-          invalidKeys: []
-        }
-      }
+          invalidKeys: [],
+        },
+      },
     } as any;
 
     exportWebhooks = new ExportWebhooks({
       exportConfig: mockExportConfig,
       stackAPIClient: mockStackClient,
-      moduleName: 'webhooks'
+      moduleName: 'webhooks',
     });
 
     // Stub FsUtility methods - created once in beforeEach
@@ -105,18 +103,18 @@ describe('ExportWebhooks', () => {
     it('should fetch and process webhooks correctly', async () => {
       const webhooks = [
         { uid: 'webhook-1', name: 'Webhook 1', SYS_ACL: 'test' },
-        { uid: 'webhook-2', name: 'Webhook 2', SYS_ACL: 'test' }
+        { uid: 'webhook-2', name: 'Webhook 2', SYS_ACL: 'test' },
       ];
 
       mockStackClient.webhook.returns({
         fetchAll: sinon.stub().resolves({
           items: webhooks,
-          count: 2
-        })
+          count: 2,
+        }),
       });
 
       await exportWebhooks.getWebhooks();
-      
+
       // Verify webhooks were processed and SYS_ACL was removed
       expect(Object.keys(exportWebhooks.webhooks).length).to.equal(2);
       expect(exportWebhooks.webhooks['webhook-1'].SYS_ACL).to.be.undefined;
@@ -131,19 +129,19 @@ describe('ExportWebhooks', () => {
           if (callCount === 1) {
             return Promise.resolve({
               items: Array(100).fill({ uid: `webhook-${callCount}`, name: 'Test' }),
-              count: 150
+              count: 150,
             });
           } else {
             return Promise.resolve({
               items: Array(50).fill({ uid: `webhook-${callCount}`, name: 'Test' }),
-              count: 150
+              count: 150,
             });
           }
-        })
+        }),
       });
 
       await exportWebhooks.getWebhooks();
-      
+
       // Verify multiple calls were made
       expect(callCount).to.be.greaterThan(1);
     });
@@ -153,21 +151,21 @@ describe('ExportWebhooks', () => {
     it('should complete full export flow and write webhooks to file', async () => {
       const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
       const makeDirectoryStub = FsUtility.prototype.makeDirectory as sinon.SinonStub;
-      
+
       const webhooks = [
         { uid: 'webhook-1', name: 'Webhook 1' },
-        { uid: 'webhook-2', name: 'Webhook 2' }
+        { uid: 'webhook-2', name: 'Webhook 2' },
       ];
 
       mockStackClient.webhook.returns({
         fetchAll: sinon.stub().resolves({
           items: webhooks,
-          count: 2
-        })
+          count: 2,
+        }),
       });
 
       await exportWebhooks.start();
-      
+
       // Verify webhooks were processed
       expect(Object.keys(exportWebhooks.webhooks).length).to.equal(2);
       expect(exportWebhooks.webhooks['webhook-1']).to.exist;
@@ -183,13 +181,13 @@ describe('ExportWebhooks', () => {
       mockStackClient.webhook.returns({
         fetchAll: sinon.stub().resolves({
           items: [],
-          count: 0
-        })
+          count: 0,
+        }),
       });
 
       exportWebhooks.webhooks = {};
       await exportWebhooks.start();
-      
+
       // Verify writeFile was NOT called when webhooks are empty
       expect(writeFileStub.called).to.be.false;
     });
@@ -199,7 +197,7 @@ describe('ExportWebhooks', () => {
     it('should sanitize webhook attributes and remove SYS_ACL', () => {
       const webhooks = [
         { uid: 'webhook-1', name: 'Webhook 1', SYS_ACL: 'remove' },
-        { uid: 'webhook-2', name: 'Webhook 2', SYS_ACL: 'remove' }
+        { uid: 'webhook-2', name: 'Webhook 2', SYS_ACL: 'remove' },
       ];
 
       exportWebhooks.sanitizeAttribs(webhooks);
@@ -209,9 +207,7 @@ describe('ExportWebhooks', () => {
     });
 
     it('should handle webhooks without name field', () => {
-      const webhooks = [
-        { uid: 'webhook-1', SYS_ACL: 'remove' }
-      ];
+      const webhooks = [{ uid: 'webhook-1', SYS_ACL: 'remove' }];
 
       exportWebhooks.sanitizeAttribs(webhooks);
 
@@ -228,4 +224,3 @@ describe('ExportWebhooks', () => {
     });
   });
 });
-
