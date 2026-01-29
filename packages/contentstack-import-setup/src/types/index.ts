@@ -62,7 +62,7 @@ export interface InquirePayload {
   name: string;
   message: string;
   choices?: Array<any>;
-  transformer?: Function;
+  transformer?: (...args: any[]) => any;
 }
 
 export interface User {
@@ -154,5 +154,12 @@ export type TaxonomyQueryParams = {
 };
 
 export interface Context {
+  command: string;
   module: string;
+  userId: string | undefined;
+  email: string | undefined;
+  sessionId: string | undefined;
+  apiKey: string;
+  orgId: string;
+  authenticationMethod?: string;
 }

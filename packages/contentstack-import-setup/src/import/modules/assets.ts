@@ -1,10 +1,11 @@
 import * as chalk from 'chalk';
-import { fsUtil } from '../../utils';
+import { log, fsUtil } from '../../utils';
 import { join } from 'path';
 import { AssetRecord, ImportConfig, ModuleClassParams } from '../../types';
 import { isEmpty, orderBy, values } from 'lodash';
-import { FsUtility, sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
+import { formatError, FsUtility, sanitizePath } from '@contentstack/cli-utilities';
 import BaseImportSetup from './base-setup';
+import { MODULE_NAMES, MODULE_CONTEXTS, PROCESS_NAMES, PROCESS_STATUS } from '../../utils';
 
 export default class AssetImportSetup extends BaseImportSetup {
   private assetsFilePath: string;
@@ -20,7 +21,7 @@ export default class AssetImportSetup extends BaseImportSetup {
 
   constructor({ config, stackAPIClient, dependencies }: ModuleClassParams) {
     super({ config, stackAPIClient, dependencies });
-    this.initializeContext('assets');
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.ASSETS];
     this.assetsFolderPath = join(sanitizePath(this.config.contentDir), 'assets');
     this.assetsFilePath = join(sanitizePath(this.config.contentDir), 'assets', 'assets.json');
     this.assetsConfig = config.modules.assets;
@@ -40,16 +41,52 @@ export default class AssetImportSetup extends BaseImportSetup {
    */
   async start() {
     try {
-      fsUtil.makeDirectory(this.mapperDirPath);
-      log.debug('Mapper directory created', { mapperDirPath: this.mapperDirPath });
-      await this.fetchAndMapAssets();
-      log.debug('Asset mapping completed', { 
-        mappedCount: Object.keys(this.assetUidMapper).length,
-        duplicateCount: Object.keys(this.duplicateAssets).length 
+      const progress = this.createNestedProgress(this.currentModuleName);
+      
+      // Analyze to get chunk count
+      const indexerCount = await this.withLoadingSpinner('ASSETS: Analyzing import data...', async () => {
+        const basePath = this.assetsFolderPath;
+        const fs = new FsUtility({ basePath, indexFileName: 'assets.json' });
+        const indexer = fs.indexFileContent;
+        return values(indexer).length;
       });
-      log.success(`The required setup files for the asset have been generated successfully.`);
+
+      if (indexerCount === 0) {
+        log(this.config, 'No assets found in the content folder.', 'info');
+        return;
+      }
+
+      // Add processes - use a large number for total assets since we don't know exact count
+      // The progress will update as we process each asset
+      progress.addProcess(PROCESS_NAMES.ASSETS_MAPPER_GENERATION, 1);
+      progress.addProcess(PROCESS_NAMES.ASSETS_FETCH_AND_MAP, indexerCount * 10); // Estimate: ~10 assets per chunk
+
+      // Create mapper directory
+      progress
+        .startProcess(PROCESS_NAMES.ASSETS_MAPPER_GENERATION)
+        .updateStatus(
+          PROCESS_STATUS.ASSETS_MAPPER_GENERATION.GENERATING,
+          PROCESS_NAMES.ASSETS_MAPPER_GENERATION,
+        );
+      fsUtil.makeDirectory(this.mapperDirPath);
+      this.progressManager?.tick(true, 'mapper directory created', null, PROCESS_NAMES.ASSETS_MAPPER_GENERATION);
+      progress.completeProcess(PROCESS_NAMES.ASSETS_MAPPER_GENERATION, true);
+
+      // Fetch and map assets
+      progress
+        .startProcess(PROCESS_NAMES.ASSETS_FETCH_AND_MAP)
+        .updateStatus(
+          PROCESS_STATUS.ASSETS_FETCH_AND_MAP.FETCHING,
+          PROCESS_NAMES.ASSETS_FETCH_AND_MAP,
+        );
+      await this.fetchAndMapAssets();
+      progress.completeProcess(PROCESS_NAMES.ASSETS_FETCH_AND_MAP, true);
+
+      this.completeProgress(true);
+      log(this.config, `The required setup files for the asset have been generated successfully.`, 'success');
     } catch (error) {
-      handleAndLogError(error, { ...this.config.context }, 'Error occurred while generating the asset mapper');
+      this.completeProgress(false, error?.message || 'Assets mapper generation failed');
+      log(this.config, `Error occurred while generating the asset mapper: ${formatError(error)}.`, 'error');
     }
   }
 
@@ -59,7 +96,6 @@ export default class AssetImportSetup extends BaseImportSetup {
    * @returns {Promise<void>} Promise<void>
    */
   async fetchAndMapAssets(): Promise<void> {
-    log.debug('Starting asset fetch and mapping', { assetsFolderPath: this.assetsFolderPath });
     const processName = 'mapping assets';
     const indexFileName = 'assets.json';
     const basePath = this.assetsFolderPath;
@@ -74,28 +110,33 @@ export default class AssetImportSetup extends BaseImportSetup {
       if (items.length === 1) {
         this.assetUidMapper[uid] = items[0].uid;
         this.assetUrlMapper[url] = items[0].url;
-        log.info(`Mapped asset successfully: '${title}'`);
+        this.progressManager?.tick(true, `asset: ${title}`, null, PROCESS_NAMES.ASSETS_FETCH_AND_MAP);
+        log(this.config, `Mapped asset successfully: '${title}'`, 'info');
       } else if (items.length > 1) {
         this.duplicateAssets[uid] = items.map((asset: any) => {
           return { uid: asset.uid, title: asset.title, url: asset.url };
         });
-        log.info(`Multiple assets found with the title '${title}'.`);
+        this.progressManager?.tick(true, `asset: ${title} (duplicate)`, null, PROCESS_NAMES.ASSETS_FETCH_AND_MAP);
+        log(this.config, `Multiple assets found with the title '${title}'.`, 'info');
       } else {
-        log.info(`Asset with title '${title}' not found in the stack!`);
+        this.progressManager?.tick(false, `asset: ${title}`, 'Not found in stack', PROCESS_NAMES.ASSETS_FETCH_AND_MAP);
+        log(this.config, `Asset with title '${title}' not found in the stack!`, 'info');
       }
     };
     const onReject = ({ error, apiData: { title } = undefined }: any) => {
-      handleAndLogError(error, { ...this.config.context }, `Failed to map the asset '${title}'`);
+      this.progressManager?.tick(false, `asset: ${title}`, formatError(error), PROCESS_NAMES.ASSETS_FETCH_AND_MAP);
+      log(this.config, `Failed to map the asset '${title}'.`, 'error');
+      log(this.config, formatError(error), 'error');
     };
 
     /* eslint-disable @typescript-eslint/no-unused-vars, guard-for-in */
     for (const index in indexer) {
       const chunk = await fs.readChunkFiles.next().catch((error) => {
-        log.error(String(error), { error });
+        log(this.config, error, 'error');
       });
 
       if (chunk) {
-        let apiContent = orderBy(values(chunk as Record<string, any>[]), '_version');
+        const apiContent = orderBy(values(chunk as Record<string, any>[]), '_version');
 
         await this.makeConcurrentCall(
           {
@@ -122,7 +163,7 @@ export default class AssetImportSetup extends BaseImportSetup {
     }
     if (!isEmpty(this.duplicateAssets)) {
       fsUtil.writeFile(this.duplicateAssetPath, this.duplicateAssets);
-      log.info(`Duplicate asset files are stored at: ${this.duplicateAssetPath}.`);
+      log(this.config, `Duplicate asset files are stored at: ${this.duplicateAssetPath}.`, 'info');
     }
   }
 }

@@ -14,7 +14,7 @@ import { ImportConfig } from '../../../src/types';
 import * as interactive from '../../../src/utils/interactive';
 import * as cliUtilities from '@contentstack/cli-utilities';
 import { HttpClient } from '@contentstack/cli-utilities';
-import * as logUtils from '../../../src/utils/log';
+// Removed import of non-existent log module - using cliUtilities.log instead
 
 describe('Marketplace App Helper', () => {
   let sandbox: sinon.SinonSandbox;
@@ -34,7 +34,7 @@ describe('Marketplace App Helper', () => {
 
     mockConfig = {
       org_uid: 'test-org-uid',
-      target_stack: 'test-stack-uid',
+      apiKey: 'test-stack-uid',
       host: 'https://api.contentstack.io',
       developerHubBaseUrl: 'https://developerhub-api.contentstack.com',
       forceStopMarketplaceAppsPrompt: false,
@@ -230,7 +230,7 @@ describe('Marketplace App Helper', () => {
       const result = await getOrgUid(mockConfig);
 
       expect(result).to.equal('test-org-123');
-      expect(mockClient.stack.calledWith({ api_key: mockConfig.target_stack })).to.be.true;
+      expect(mockClient.stack.calledWith({ api_key: mockConfig.apiKey })).to.be.true;
     });
 
     it('should return empty string when org_uid is not present', async () => {

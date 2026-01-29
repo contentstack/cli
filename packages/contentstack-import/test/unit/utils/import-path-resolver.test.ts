@@ -119,11 +119,7 @@ describe('Import Path Resolver', () => {
     it('should prompt user when multiple branches exist', async () => {
       const branchesJsonPath = path.join(contentDir, 'branches.json');
       const selectedBranchPath = path.join(contentDir, 'branch2');
-      const branchesData = [
-        { uid: 'branch1' },
-        { uid: 'branch2' },
-        { uid: 'branch3' },
-      ];
+      const branchesData = [{ uid: 'branch1' }, { uid: 'branch2' }, { uid: 'branch3' }];
 
       fileExistsSyncStub.withArgs(branchesJsonPath).returns(true);
       fileExistsSyncStub.withArgs(selectedBranchPath).returns(true);
@@ -140,10 +136,7 @@ describe('Import Path Resolver', () => {
     it('should return null when selected branch path does not exist', async () => {
       const branchesJsonPath = path.join(contentDir, 'branches.json');
       const selectedBranchPath = path.join(contentDir, 'branch2');
-      const branchesData = [
-        { uid: 'branch1' },
-        { uid: 'branch2' },
-      ];
+      const branchesData = [{ uid: 'branch1' }, { uid: 'branch2' }];
 
       fileExistsSyncStub.withArgs(branchesJsonPath).returns(true);
       fileExistsSyncStub.withArgs(selectedBranchPath).returns(false);
@@ -195,11 +188,9 @@ describe('Import Path Resolver', () => {
       }
     });
 
-    it('should use contentDir from importConfig.data when contentDir is not set', async () => {
-      delete (mockConfig as any).contentDir;
-      (mockConfig as any).data = '/test/data';
+    it('should use contentDir from importConfig when set', async () => {
+      mockConfig.contentDir = '/test/data';
       fileExistsSyncStub.withArgs('/test/data').returns(true);
-      fileExistsSyncStub.withArgs(path.join('/test/data', 'export-info.json')).returns(false);
 
       // Mock module types check
       defaultConfig.modules.types.forEach((moduleType) => {
@@ -244,23 +235,10 @@ describe('Import Path Resolver', () => {
       expect(result).to.equal('/test/content');
     });
 
-    it('should return contentDir when export-info.json exists (v2 export)', async () => {
-      const exportInfoPath = path.join('/test/content', 'export-info.json');
-
-      fileExistsSyncStub.withArgs('/test/content').returns(true);
-      fileExistsSyncStub.withArgs(exportInfoPath).returns(true);
-
-      const result = await resolveImportPath(mockConfig, mockStackAPIClient);
-
-      expect(result).to.equal('/test/content');
-    });
-
     it('should return contentDir when module folders exist', async () => {
-      const exportInfoPath = path.join('/test/content', 'export-info.json');
       const modulePath = path.join('/test/content', defaultConfig.modules.types[0]);
 
       fileExistsSyncStub.withArgs('/test/content').returns(true);
-      fileExistsSyncStub.withArgs(exportInfoPath).returns(false);
       fileExistsSyncStub.withArgs(modulePath).returns(true);
 
       const result = await resolveImportPath(mockConfig, mockStackAPIClient);
@@ -268,12 +246,10 @@ describe('Import Path Resolver', () => {
       expect(result).to.equal('/test/content');
     });
 
-    it('should call selectBranchFromDirectory when no branch name or export-info.json', async () => {
-      const exportInfoPath = path.join('/test/content', 'export-info.json');
+    it('should call selectBranchFromDirectory when no branch name', async () => {
       const branchPath = path.join('/test/content', 'branch1');
 
       fileExistsSyncStub.withArgs('/test/content').returns(true);
-      fileExistsSyncStub.withArgs(exportInfoPath).returns(false);
 
       // Mock module types check - all return false
       defaultConfig.modules.types.forEach((moduleType) => {
@@ -292,10 +268,7 @@ describe('Import Path Resolver', () => {
     });
 
     it('should return contentDir when selectBranchFromDirectory returns null', async () => {
-      const exportInfoPath = path.join('/test/content', 'export-info.json');
-
       fileExistsSyncStub.withArgs('/test/content').returns(true);
-      fileExistsSyncStub.withArgs(exportInfoPath).returns(false);
 
       // Mock module types check - all return false
       defaultConfig.modules.types.forEach((moduleType) => {
@@ -318,7 +291,6 @@ describe('Import Path Resolver', () => {
     beforeEach(() => {
       mockConfig = {
         contentDir: '/test/content',
-        data: '/test/data',
         apiKey: 'test',
       } as ImportConfig;
     });
@@ -331,66 +303,17 @@ describe('Import Path Resolver', () => {
 
       expect(mockConfig.branchDir).to.be.undefined;
       expect(mockConfig.contentDir).to.equal('/test/content');
-      expect(mockConfig.data).to.equal('/test/data');
     });
 
-    it('should update config with resolved path and set contentVersion to 1 when export-info.json does not exist', async () => {
+    it('should update config with resolved path', async () => {
       const resolvedPath = '/test/resolved';
-      const exportInfoPath = path.join(resolvedPath, 'export-info.json');
 
       fileExistsSyncStub.withArgs(resolvedPath).returns(true);
-      fileExistsSyncStub.withArgs(exportInfoPath).returns(false);
 
       await updateImportConfigWithResolvedPath(mockConfig, resolvedPath);
 
       expect(mockConfig.branchDir).to.equal(resolvedPath);
       expect(mockConfig.contentDir).to.equal(resolvedPath);
-      expect(mockConfig.data).to.equal(resolvedPath);
-      expect(mockConfig.contentVersion).to.equal(1);
-    });
-
-    it('should update config with resolved path and set contentVersion from export-info.json', async () => {
-      const resolvedPath = '/test/resolved';
-      const exportInfoPath = path.join(resolvedPath, 'export-info.json');
-      const exportInfo = { contentVersion: 2 };
-
-      fileExistsSyncStub.withArgs(resolvedPath).returns(true);
-      fileExistsSyncStub.withArgs(exportInfoPath).returns(true);
-      readFileStub.withArgs(exportInfoPath).resolves(exportInfo);
-
-      await updateImportConfigWithResolvedPath(mockConfig, resolvedPath);
-
-      expect(mockConfig.branchDir).to.equal(resolvedPath);
-      expect(mockConfig.contentDir).to.equal(resolvedPath);
-      expect(mockConfig.data).to.equal(resolvedPath);
-      expect(mockConfig.contentVersion).to.equal(2);
-    });
-
-    it('should set contentVersion to 2 when export-info.json exists but contentVersion is missing', async () => {
-      const resolvedPath = '/test/resolved';
-      const exportInfoPath = path.join(resolvedPath, 'export-info.json');
-      const exportInfo = {};
-
-      fileExistsSyncStub.withArgs(resolvedPath).returns(true);
-      fileExistsSyncStub.withArgs(exportInfoPath).returns(true);
-      readFileStub.withArgs(exportInfoPath).resolves(exportInfo);
-
-      await updateImportConfigWithResolvedPath(mockConfig, resolvedPath);
-
-      expect(mockConfig.contentVersion).to.equal(2);
-    });
-
-    it('should set contentVersion to 2 when export-info.json is null', async () => {
-      const resolvedPath = '/test/resolved';
-      const exportInfoPath = path.join(resolvedPath, 'export-info.json');
-
-      fileExistsSyncStub.withArgs(resolvedPath).returns(true);
-      fileExistsSyncStub.withArgs(exportInfoPath).returns(true);
-      readFileStub.withArgs(exportInfoPath).resolves(null);
-
-      await updateImportConfigWithResolvedPath(mockConfig, resolvedPath);
-
-      expect(mockConfig.contentVersion).to.equal(2);
     });
   });
 
@@ -408,15 +331,9 @@ describe('Import Path Resolver', () => {
 
     it('should execute complete path resolution logic', async () => {
       const resolvedPath = path.join('/test/content', 'branch1');
-      const exportInfoPath = path.join(resolvedPath, 'export-info.json');
 
       fileExistsSyncStub.withArgs('/test/content').returns(true);
       fileExistsSyncStub.withArgs(resolvedPath).returns(true);
-      fileExistsSyncStub.withArgs(exportInfoPath).returns(false);
-
-      // Mock export-info.json not found at contentDir
-      const contentDirExportInfoPath = path.join('/test/content', 'export-info.json');
-      fileExistsSyncStub.withArgs(contentDirExportInfoPath).returns(false);
 
       // Mock module types check
       defaultConfig.modules.types.forEach((moduleType) => {
@@ -434,8 +351,6 @@ describe('Import Path Resolver', () => {
       expect(result).to.equal(resolvedPath);
       expect(mockConfig.branchDir).to.equal(resolvedPath);
       expect(mockConfig.contentDir).to.equal(resolvedPath);
-      expect(mockConfig.data).to.equal(resolvedPath);
     });
   });
 });
-

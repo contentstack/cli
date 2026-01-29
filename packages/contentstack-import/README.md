@@ -47,7 +47,7 @@ $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-import/1.31.2 darwin-arm64 node-v24.13.0
+@contentstack/cli-cm-import/2.0.0-beta.4 darwin-arm64 node-v24.12.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -58,28 +58,20 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
-* [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
+* [`csdx cm:stacks:import [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport---config-value---stack-api-key-value---data-dir-value---alias-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
 
-## `csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
+## `csdx cm:stacks:import [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
 
 Import content from a stack
 
 ```
 USAGE
-  $ csdx cm:import cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>]
-    [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]
+  $ csdx cm:stacks:import [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>]
+    [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]
 
 FLAGS
-  -B, --branch=<value>
-      The name of the branch where you want to import your content. If you don't mention the branch name, then by default
-      the content will be imported to the main branch.
-
   -a, --alias=<value>
       The management token of the destination stack where you will import the content.
-
-  -b, --backup-dir=<value>
-      [optional] Backup directory name when using specific module.
 
   -c, --config=<value>
       [optional] The path of the configuration JSON file containing all the options for a single run.
@@ -92,14 +84,15 @@ FLAGS
   -k, --stack-api-key=<value>
       API Key of the target stack
 
-  -m, --module=<value>
-      [optional] Specify the module to import into the target stack. If not specified, the import command will import all
-      the modules into the stack. The available modules are assets, content-types, entries, environments, extensions,
-      marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, personalize projects,
-      taxonomies, and composable-studio.
-
   -y, --yes
       [optional] Force override all Marketplace prompts.
+
+  --backup-dir=<value>
+      [optional] Backup directory name when using specific module.
+
+  --branch=<value>
+      The name of the branch where you want to import your content. If you don't mention the branch name, then by default
+      the content will be imported to the main branch.
 
   --branch-alias=<value>
       Specify the branch alias where you want to import your content. If not specified, the content is imported into the
@@ -113,14 +106,17 @@ FLAGS
       stack. <options: disable|current>
       <options: disable|current>
 
+  --module=<value>
+      [optional] Specify the module to import into the target stack. If not specified, the import command will import all
+      the modules into the stack. The available modules are assets, content-types, entries, environments, extensions,
+      marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, personalize projects,
+      taxonomies, and composable-studio.
+
   --personalize-project-name=<value>
       (optional) Provide a unique name for the Personalize project.
 
   --replace-existing
       Replaces the existing module in the target stack.
-
-  --skip-app-recreation
-      (optional) Skips the recreation of private apps if they already exist.
 
   --skip-assets-publish
       Skips asset publishing during the import process.
@@ -136,106 +132,6 @@ FLAGS
 
 DESCRIPTION
   Import content from a stack
-
-ALIASES
-  $ csdx cm:import
-
-EXAMPLES
-  $ csdx cm:stacks:import --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>
-
-  $ csdx cm:stacks:import --config <path/of/config/dir>
-
-  $ csdx cm:stacks:import --module <single module name>
-
-  $ csdx cm:stacks:import --module <single module name> --backup-dir <backup dir>
-
-  $ csdx cm:stacks:import --alias <management_token_alias>
-
-  $ csdx cm:stacks:import --alias <management_token_alias> --data-dir <path/of/export/destination/dir>
-
-  $ csdx cm:stacks:import --alias <management_token_alias> --config <path/of/config/file>
-
-  $ csdx cm:stacks:import --branch <branch name>  --yes --skip-audit
-```
-
-## `csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
-
-Import content from a stack
-
-```
-USAGE
-  $ csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir
-    <value>] [--branch <value>] [--import-webhook-status disable|current]
-
-FLAGS
-  -B, --branch=<value>
-      The name of the branch where you want to import your content. If you don't mention the branch name, then by default
-      the content will be imported to the main branch.
-
-  -a, --alias=<value>
-      The management token of the destination stack where you will import the content.
-
-  -b, --backup-dir=<value>
-      [optional] Backup directory name when using specific module.
-
-  -c, --config=<value>
-      [optional] The path of the configuration JSON file containing all the options for a single run.
-
-  -d, --data-dir=<value>
-      The path or the location in your file system where the content, you intend to import, is stored. For example, -d
-      "C:\Users\Name\Desktop\cli\content". If the export folder has branches involved, then the path should point till the
-      particular branch. For example, “-d "C:\Users\Name\Desktop\cli\content\branch_name"
-
-  -k, --stack-api-key=<value>
-      API Key of the target stack
-
-  -m, --module=<value>
-      [optional] Specify the module to import into the target stack. If not specified, the import command will import all
-      the modules into the stack. The available modules are assets, content-types, entries, environments, extensions,
-      marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, personalize projects,
-      taxonomies, and composable-studio.
-
-  -y, --yes
-      [optional] Force override all Marketplace prompts.
-
-  --branch-alias=<value>
-      Specify the branch alias where you want to import your content. If not specified, the content is imported into the
-      main branch by default.
-
-  --exclude-global-modules
-      Excludes the branch-independent module from the import operation.
-
-  --import-webhook-status=<option>
-      [default: disable] [default: disable] (optional) This webhook state keeps the same state of webhooks as the source
-      stack. <options: disable|current>
-      <options: disable|current>
-
-  --personalize-project-name=<value>
-      (optional) Provide a unique name for the Personalize project.
-
-  --replace-existing
-      Replaces the existing module in the target stack.
-
-  --skip-app-recreation
-      (optional) Skips the recreation of private apps if they already exist.
-
-  --skip-assets-publish
-      Skips asset publishing during the import process.
-
-  --skip-audit
-      Skips the audit fix that occurs during an import operation.
-
-  --skip-entries-publish
-      Skips entry publishing during the import process
-
-  --skip-existing
-      Skips the module exists warning messages.
-
-DESCRIPTION
-  Import content from a stack
-
-ALIASES
-  $ csdx cm:import
 
 EXAMPLES
   $ csdx cm:stacks:import --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>

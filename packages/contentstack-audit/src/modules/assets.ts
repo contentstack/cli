@@ -2,7 +2,6 @@ import { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { FsUtility, sanitizePath, cliux, log } from '@contentstack/cli-utilities';
 import {
-  ConfigType,
   ContentTypeStruct,
   CtConstructorParam,
   ModuleConstructorParam,
@@ -12,13 +11,13 @@ import auditConfig from '../config';
 import { $t, auditFixMsg, auditMsg, commonMsg } from '../messages';
 import values from 'lodash/values';
 import { keys } from 'lodash';
+import BaseClass from './base-class';
 
-/* The `ContentType` class is responsible for scanning content types, looking for references, and
-generating a report in JSON and CSV formats. */
-export default class Assets {
+/* The `Assets` class is responsible for scanning assets, looking for missing environment/locale references,
+and generating a report in JSON and CSV formats. */
+export default class Assets extends BaseClass {
   protected fix: boolean;
   public fileName: string;
-  public config: ConfigType;
   public folderPath: string;
   public currentUid!: string;
   public currentTitle!: string;
@@ -30,7 +29,7 @@ export default class Assets {
   public moduleName: keyof typeof auditConfig.moduleConfig;
 
   constructor({ fix, config, moduleName }: ModuleConstructorParam & CtConstructorParam) {
-    this.config = config;
+    super({ config });
     this.fix = fix ?? false;
     this.moduleName = this.validateModules(moduleName!, this.config.moduleConfig);
     this.fileName = config.moduleConfig[this.moduleName].fileName;
@@ -52,25 +51,36 @@ export default class Assets {
   /**
    * The `run` function checks if a folder path exists, sets the schema based on the module name,
    * iterates over the schema and looks for references, and returns a list of missing references.
+   * @param returnFixSchema - If true, returns the fixed schema instead of missing references
+   * @param totalCount - Total number of assets to process (for progress tracking)
    * @returns the `missingEnvLocales` object.
    */
-  async run(returnFixSchema = false) {
-    log.debug(`Starting ${this.moduleName} audit process`, this.config.auditContext);
-    log.debug(`Data directory: ${this.folderPath}`, this.config.auditContext);
-    log.debug(`Fix mode: ${this.fix}`, this.config.auditContext);
+  async run(returnFixSchema = false, totalCount?: number) {
+    try {
+      log.debug(`Starting ${this.moduleName} audit process`, this.config.auditContext);
+      log.debug(`Data directory: ${this.folderPath}`, this.config.auditContext);
+      log.debug(`Fix mode: ${this.fix}`, this.config.auditContext);
 
-    if (!existsSync(this.folderPath)) {
-      log.debug(`Skipping ${this.moduleName} audit - path does not exist`, this.config.auditContext);
-      log.warn(`Skipping ${this.moduleName} audit`, this.config.auditContext);
-      cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
-      return returnFixSchema ? [] : {};
-    }
+      if (!existsSync(this.folderPath)) {
+        log.debug(`Skipping ${this.moduleName} audit - path does not exist`, this.config.auditContext);
+        log.warn(`Skipping ${this.moduleName} audit`, this.config.auditContext);
+        cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
+        return returnFixSchema ? [] : {};
+      }
 
-    log.debug('Loading prerequisite data (locales and environments)', this.config.auditContext);
-    await this.prerequisiteData();
+      // Load prerequisite data with loading spinner
+      await this.withLoadingSpinner('ASSETS: Loading prerequisite data (locales and environments)...', async () => {
+        await this.prerequisiteData();
+      });
 
-    log.debug('Starting asset Reference, Environment and Locale validation', this.config.auditContext);
-    await this.lookForReference();
+      // Create progress manager if we have a total count
+      if (totalCount && totalCount > 0) {
+        const progress = this.createSimpleProgress(this.moduleName, totalCount);
+        progress.updateStatus('Validating asset references...');
+      }
+
+      log.debug('Starting asset Reference, Environment and Locale validation', this.config.auditContext);
+      await this.lookForReference();
 
     if (returnFixSchema) {
       log.debug(`Returning fixed schema with ${this.schema?.length || 0} items`, this.config.auditContext);
@@ -86,9 +96,15 @@ export default class Assets {
       }
     }
 
-    const totalIssues = Object.keys(this.missingEnvLocales).length;
-    log.debug(`${this.moduleName} audit completed. Found ${totalIssues} assets with missing environment/locale references`, this.config.auditContext);
-    return this.missingEnvLocales;
+      const totalIssues = Object.keys(this.missingEnvLocales).length;
+      log.debug(`${this.moduleName} audit completed. Found ${totalIssues} assets with missing environment/locale references`, this.config.auditContext);
+      
+      this.completeProgress(true);
+      return this.missingEnvLocales;
+    } catch (error: any) {
+      this.completeProgress(false, error?.message || 'Assets audit failed');
+      throw error;
+    }
   }
 
   /**
@@ -226,6 +242,11 @@ export default class Assets {
         
         const remainingPublishDetails = this.assets[assetUid].publish_details?.length || 0;
         log.debug(`Asset ${assetUid} now has ${remainingPublishDetails} valid publish details`, this.config.auditContext);
+        
+        // Track progress for each asset processed
+        if (this.progressManager) {
+          this.progressManager.tick(true, `asset: ${assetUid}`, null);
+        }
         
         if (this.fix) {
           log.debug(`Fixing asset ${assetUid}`, this.config.auditContext);

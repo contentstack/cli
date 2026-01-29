@@ -2,7 +2,6 @@ import { Command } from '@contentstack/cli-command';
 import {
   cliux,
   messageHandler,
-  printFlagDeprecation,
   managementSDKClient,
   flags,
   ContentstackClient,
@@ -13,12 +12,13 @@ import {
   log,
   handleAndLogError,
   getLogPath,
-  createLogContext,
+  CLIProgressManager,
+  clearProgressModuleSetting,
 } from '@contentstack/cli-utilities';
 
 import { ModuleExporter } from '../../../export';
-import { ExportConfig } from '../../../types';
-import { setupExportConfig, writeExportMetaFile } from '../../../utils';
+import { Context, ExportConfig } from '../../../types';
+import { setupExportConfig } from '../../../utils';
 
 export default class ExportCommand extends Command {
   static description: string = messageHandler.parse('Export content from a stack');
@@ -34,27 +34,16 @@ export default class ExportCommand extends Command {
   ];
 
   static usage: string =
-    'cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]';
+    'cm:stacks:export [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]';
 
   static flags: FlagInput = {
     config: flags.string({
       char: 'c',
       description: '[optional] Path of the config',
     }),
-    'stack-uid': flags.string({
-      char: 's',
-      description: 'API key of the source stack',
-      hidden: true,
-      parse: printFlagDeprecation(['-s', '--stack-uid'], ['-k', '--stack-api-key']),
-    }),
     'stack-api-key': flags.string({
       char: 'k',
       description: 'API Key of the source stack',
-    }),
-    data: flags.string({
-      description: 'path or location to store the data',
-      hidden: true,
-      parse: printFlagDeprecation(['--data'], ['--data-dir']),
     }),
     'data-dir': flags.string({
       char: 'd',
@@ -64,36 +53,19 @@ export default class ExportCommand extends Command {
       char: 'a',
       description: 'The management token alias of the source stack from which you will export content.',
     }),
-    'management-token-alias': flags.string({
-      description: 'alias of the management token',
-      hidden: true,
-      parse: printFlagDeprecation(['--management-token-alias'], ['-a', '--alias']),
-    }),
-    'auth-token': flags.boolean({
-      char: 'A',
-      description: 'to use auth token',
-      hidden: true,
-      parse: printFlagDeprecation(['-A', '--auth-token']),
-    }),
     module: flags.string({
-      char: 'm',
       description:
         '[optional] Specific module name. If not specified, the export command will export all the modules to the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, taxonomies, and studio.',
-      parse: printFlagDeprecation(['-m'], ['--module']),
     }),
     'content-types': flags.string({
-      char: 't',
       description:
         '[optional]  The UID of the content type(s) whose content you want to export. In case of multiple content types, specify the IDs separated by spaces.',
       multiple: true,
-      parse: printFlagDeprecation(['-t'], ['--content-types']),
     }),
     branch: flags.string({
-      char: 'B',
       // default: 'main',
       description:
         "[optional] The name of the branch where you want to export your content. If you don't mention the branch name, then by default the content will be exported from all the branches of your stack.",
-      parse: printFlagDeprecation(['-B'], ['--branch']),
       exclusive: ['branch-alias'],
     }),
     'branch-alias': flags.string({
@@ -114,46 +86,58 @@ export default class ExportCommand extends Command {
     }),
   };
 
-  static aliases: string[] = ['cm:export'];
-
   async run(): Promise<void> {
     let exportDir: string = pathValidator('logs');
     try {
       const { flags } = await this.parse(ExportCommand);
       const exportConfig = await setupExportConfig(flags);
-      
-      // Store apiKey in configHandler for session.json (return value not needed)
-      createLogContext(
-        this.context?.info?.command || 'cm:stacks:export',
-        exportConfig.apiKey,
-        exportConfig.authenticationMethod
-      );
-      
-      // For log entries, only pass module (other fields are in session.json)
-      exportConfig.context = { module: '' };
-      //log.info(`Using Cli Version: ${this.context?.cliVersion}`, exportConfig.context);
+      // Prepare the context object
+      const context = this.createExportContext(exportConfig.apiKey, exportConfig.authenticationMethod);
+      exportConfig.context = { ...context };
 
       // Assign exportConfig variables
       this.assignExportConfig(exportConfig);
 
-      exportDir = sanitizePath(exportConfig.cliLogsPath || exportConfig.data || exportConfig.exportDir);
+      exportDir = sanitizePath(exportConfig.cliLogsPath || exportConfig.exportDir);
       const managementAPIClient: ContentstackClient = await managementSDKClient(exportConfig);
       const moduleExporter = new ModuleExporter(managementAPIClient, exportConfig);
       await moduleExporter.start();
-      if (!exportConfig.branches?.length) {
-        writeExportMetaFile(exportConfig);
-      }
       log.success(
         `The content of the stack ${exportConfig.apiKey} has been exported successfully!`,
       );
-      log.info(`The exported content has been stored at '${exportDir}'.`, exportConfig.context);
-      log.success(`The log has been stored at '${getLogPath()}'.`, exportConfig.context);
+      log.info(`The exported content has been stored at '${exportDir}'`, exportConfig.context);
+      log.success(`The log has been stored at '${getLogPath()}'`, exportConfig.context);
+
+      // Print comprehensive summary at the end
+      if (!exportConfig.branches) CLIProgressManager.printGlobalSummary();
+      if (!configHandler.get('log')?.showConsoleLogs) {
+        cliux.print(`The log has been stored at '${getLogPath()}'`, { color: 'green' });
+      }
+      // Clear progress module setting now that export is complete
+      clearProgressModuleSetting();
     } catch (error) {
+      // Clear progress module setting even on error
+      clearProgressModuleSetting();
       handleAndLogError(error);
-      log.info(`The log has been stored at '${getLogPath()}'.`);
+      if (!configHandler.get('log')?.showConsoleLogs) {
+        cliux.print(`Error: ${error}`, { color: 'red' });
+        cliux.print(`The log has been stored at '${getLogPath()}'`, { color: 'green' });
+      }
     }
   }
 
+  // Create export context object
+  private createExportContext(apiKey: string, authenticationMethod?: string): Context {
+    return {
+      command: this.context?.info?.command || 'cm:stacks:export',
+      module: '',
+      userId: configHandler.get('userUid') || '',
+      sessionId: this.context?.sessionId || '',
+      apiKey: apiKey || '',
+      orgId: configHandler.get('oauthOrgUid') || '',
+      authenticationMethod: authenticationMethod || 'Basic Auth',
+    };
+  }
 
   // Assign values to exportConfig
   private assignExportConfig(exportConfig: ExportConfig): void {

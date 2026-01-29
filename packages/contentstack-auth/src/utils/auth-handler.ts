@@ -118,15 +118,10 @@ class AuthHandler {
             if (result.user) {
               log.debug('Login successful, user found', { module: 'auth-handler', userEmail: result.user.email });
               resolve(result.user as User);
-            } else {
-              log.debug('Login failed: no user found.', { module: 'auth-handler', result });
-              reject(new Error(messageHandler.parse('CLI_AUTH_LOGIN_NO_USER')));
-            }
-          })
-          .catch(async (error: any) => {
-            if (error.errorCode === 294) {
+            } else if (result.error_code === 294) {
+              const tfToken = await this.handleOTPFlow(tfaToken, loginPayload);
+
               try {
-                const tfToken = await this.handleOTPFlow(tfaToken, loginPayload);
                 resolve(await this.login(email, password, tfToken));
               } catch (error) {
                 log.debug('Login with TFA token failed.', { module: 'auth-handler', error });
@@ -134,10 +129,14 @@ class AuthHandler {
                 reject(error);
               }
             } else {
-              log.debug('Login API call failed.', { module: 'auth-handler', error: error?.errorMessage || error });
-              cliux.print('CLI_AUTH_LOGIN_FAILED', { color: 'yellow' });
-              reject(error);
+              log.debug('Login failed: no user found.', { module: 'auth-handler', result });
+              reject(new Error(messageHandler.parse('CLI_AUTH_LOGIN_NO_USER')));
             }
+          })
+          .catch((error: any) => {
+            log.debug('Login API call failed.', { module: 'auth-handler', error: error?.errorMessage || error });
+            cliux.print('CLI_AUTH_LOGIN_FAILED', { color: 'yellow' });
+            handleAndLogError(error, { module: 'auth-handler' });
           });
       } else {
         const hasEmail = !!email;

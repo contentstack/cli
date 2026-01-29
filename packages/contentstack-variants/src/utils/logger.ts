@@ -132,7 +132,7 @@ function init(_logPath: string, module: string) {
 }
 
 export const log = (config: ExportConfig | ImportConfig, message: any, type: 'info' | 'error' | 'success') => {
-  const logsPath = config.data;
+  const logsPath = 'exportDir' in config ? config.exportDir : 'contentDir' in config ? config.contentDir : (config as any).data;
   // ignoring the type argument, as we are not using it to create a logfile anymore
   const module = (config as ImportConfig)['backupDir'] ? 'import' : 'export';
   if (type !== 'error') {

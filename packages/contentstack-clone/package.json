@@ -1,13 +1,13 @@
 {
   "name": "@contentstack/cli-cm-clone",
   "description": "Contentstack stack clone plugin",
-  "version": "1.20.1",
+  "version": "2.0.0-beta.5",
   "author": "Contentstack",
   "bugs": "https://github.com/rohitmishra209/cli-cm-clone/issues",
   "dependencies": {
     "@colors/colors": "^1.6.0",
-    "@contentstack/cli-cm-export": "~1.23.1",
-    "@contentstack/cli-cm-import": "~1.31.2",
+    "@contentstack/cli-cm-export": "~2.0.0-beta.5",
+    "@contentstack/cli-cm-import": "~2.0.0-beta.4",
     "@contentstack/cli-command": "~1.7.2",
     "@contentstack/cli-utilities": "~1.17.0",
     "@oclif/core": "^4.3.0",
@@ -74,12 +74,8 @@
     "test:unit:report": "nyc --reporter=text --reporter=text-summary --extension .ts mocha --forbid-only \"test/**/*.test.ts\""
   },
   "csdxConfig": {
-    "expiredCommands": {
-      "cm:stack-clone": "csdx cm:stacks:clone"
-    },
     "shortCommandName": {
-      "cm:stacks:clone": "CLN",
-      "cm:stack-clone": "O-CLN"
+      "cm:stacks:clone": "CLN"
     }
   }
 }
