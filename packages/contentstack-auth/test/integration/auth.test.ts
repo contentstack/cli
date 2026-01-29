@@ -97,7 +97,7 @@ describe('contentstack-auth plugin test', () => {
         mockClient.login.resetHistory();
         
         mockClient.login
-          .onFirstCall().resolves({ error_code: 294 })
+          .onFirstCall().rejects({ errorCode: 294 })
           .onSecondCall().resolves({ user: { email: credentials.email, authtoken: 'test-token' } });
         
         await authHandler.login(credentials.email, credentials.password);
