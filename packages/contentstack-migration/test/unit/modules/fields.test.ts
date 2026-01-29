@@ -79,8 +79,134 @@ describe('Fields Module', () => {
     });
   });
 
+  describe('createField(), editField(), deleteField() and chain (real map)', () => {
+    let mapInstance: Map<string, any>;
 
+    beforeEach(function () {
+      sandbox.restore();
+      mapInstance = mapModule.getMapInstance();
+      mapInstance.set('test-ct', {
+        CREATE_CT: {
+          content_type: {
+            schema: [] as any[],
+          },
+        },
+      });
+      getSchemaStub = sandbox.stub(schemaHelperModule, 'getSchema');
+      mockContentTypeService = { getActions: sandbox.stub() };
+      mockRequest = { title: 'Test', tasks: [] };
+      field = new Field('test-ct', 'CREATE_CT', mockContentTypeService, mockRequest);
+    });
 
+    afterEach(function () {
+      mapInstance.delete('test-ct');
+    });
+
+    it('should update schema and apply options when opts provided', () => {
+      getSchemaStub.returns({
+        uid: 'author',
+        display_name: 'author',
+        data_type: 'text',
+        mandatory: false,
+        unique: false,
+        field_metadata: {},
+        non_localizable: false,
+        isDelete: false,
+        isEdit: false,
+      });
+      const result = field.createField('author', { display_name: 'Author', data_type: 'text' });
+
+      const schema = mapInstance.get('test-ct').CREATE_CT.content_type.schema;
+      expect(schema).to.have.lengthOf(1);
+      expect(schema[0].uid).to.equal('author');
+      expect(schema[0].display_name).to.equal('Author');
+      expect(schema[0].data_type).to.equal('text');
+      expect(result).to.equal(field);
+    });
+
+    it('should update schema only and return this when opts omitted', () => {
+      getSchemaStub.returns({
+        uid: 'title',
+        display_name: 'title',
+        data_type: 'text',
+        mandatory: false,
+        unique: false,
+        field_metadata: {},
+        non_localizable: false,
+        isDelete: false,
+        isEdit: false,
+      });
+      const result = field.createField('title');
+
+      expect(field.field).to.equal('title');
+      const schema = mapInstance.get('test-ct').CREATE_CT.content_type.schema;
+      expect(schema).to.have.lengthOf(1);
+      expect(schema[0].uid).to.equal('title');
+      expect(result).to.equal(field);
+    });
+
+    it('should update schema with EDIT_FIELD and apply options when opts provided', () => {
+      getSchemaStub.returns({
+        uid: 'uniqueid',
+        display_name: 'uniqueid',
+        data_type: 'text',
+        mandatory: false,
+        unique: false,
+        field_metadata: {},
+        non_localizable: false,
+        isDelete: false,
+        isEdit: true,
+      });
+      const result = field.editField('uniqueid', { display_name: 'Unique ID', mandatory: false });
+
+      const schema = mapInstance.get('test-ct').CREATE_CT.content_type.schema;
+      expect(schema).to.have.lengthOf(1);
+      expect(schema[0].uid).to.equal('uniqueid');
+      expect(schema[0].display_name).to.equal('Unique ID');
+      expect(schema[0].mandatory).to.equal(false);
+      expect(result).to.equal(field);
+    });
+
+    it('should update schema with DELETE_FIELD', () => {
+      getSchemaStub.returns({
+        uid: 'oldfield',
+        display_name: 'oldfield',
+        data_type: 'text',
+        mandatory: false,
+        unique: false,
+        field_metadata: {},
+        non_localizable: false,
+        isDelete: true,
+        isEdit: false,
+      });
+      const result = field.deleteField('oldfield');
+
+      const schema = mapInstance.get('test-ct').CREATE_CT.content_type.schema;
+      expect(schema).to.have.lengthOf(1);
+      expect(schema[0].uid).to.equal('oldfield');
+      expect(schema[0].isDelete).to.be.true;
+      expect(result).to.equal(field);
+    });
+
+    it('should mutate schema via display_name and data_type chain', () => {
+      getSchemaStub.returns({
+        uid: 'author',
+        display_name: 'author',
+        data_type: 'text',
+        mandatory: false,
+        unique: false,
+        field_metadata: {},
+        non_localizable: false,
+        isDelete: false,
+        isEdit: false,
+      });
+      field.createField('author').display_name('Author Name').data_type('single_line');
+
+      const schema = mapInstance.get('test-ct').CREATE_CT.content_type.schema;
+      expect(schema[0].display_name).to.equal('Author Name');
+      expect(schema[0].data_type).to.equal('single_line');
+    });
+  });
 
   describe('moveField()', () => {
     it('should set fieldToMove and return instance for chaining', () => {

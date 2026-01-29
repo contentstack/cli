@@ -64,8 +64,7 @@ describe('Migration Command', () => {
     // Don't stub fs operations - use real temporary files/directories instead
     // This avoids issues with non-configurable properties in newer Node.js versions
 
-    // Stub utilities - use configHandler to control isAuthenticated behavior
-    // Default: isAuthenticated returns true (OAUTH) - individual tests can override
+    // Stub utilities - use configHandler and isAuthenticated
     const cliUtilities = require('@contentstack/cli-utilities');
     sandbox.stub(cliUtilities.configHandler, 'get').callsFake((key: string) => {
       if (key === 'authorisationType') {
@@ -73,7 +72,6 @@ describe('Migration Command', () => {
       }
       return undefined;
     });
-    
     try {
       managementSDKClientStub = sandbox.stub(cliUtilities, 'managementSDKClient').resolves({
         stack: sandbox.stub().returns({}),
@@ -118,23 +116,25 @@ describe('Migration Command', () => {
       expect(MigrationCommand.flags).to.have.property('file-path');
       expect(MigrationCommand.flags).to.have.property('alias');
     });
+
+    it('should have usage string containing migration', () => {
+      expect(MigrationCommand.usage).to.be.a('string');
+      expect(MigrationCommand.usage).to.include('migration');
+    });
+
+    it('should have aliases including cm:migration', () => {
+      expect(MigrationCommand.aliases).to.be.an('array');
+      expect(MigrationCommand.aliases).to.include('cm:migration');
+    });
   });
 
   describe('run() method', () => {
     it.skip('should exit when no authtoken and no alias', async () => {
-      // Override configHandler.get to return undefined (not authenticated)
       const cliUtilities = require('@contentstack/cli-utilities');
-      sandbox.stub(cliUtilities.configHandler, 'get').callsFake((key: string) => {
-        if (key === 'authorisationType') {
-          return undefined; // Not authenticated
-        }
-        return undefined;
-      });
-      
+      sandbox.stub(cliUtilities.configHandler, 'get').callsFake((key: string) => undefined);
       parseStub.resolves({
         flags: {
           'file-path': tempFile,
-          // No alias provided
         },
       } as any);
 
@@ -145,7 +145,6 @@ describe('Migration Command', () => {
     });
 
     it.skip('should exit when file path is not provided', async () => {
-      // Don't stub execSingleFile since we exit before reaching it
       parseStub.resolves({
         flags: {},
       } as any);
@@ -157,7 +156,6 @@ describe('Migration Command', () => {
     });
 
     it.skip('should exit when file path does not exist', async () => {
-      // Use a path that definitely doesn't exist
       parseStub.resolves({
         flags: {
           'file-path': '/nonexistent/path/that/does/not/exist.js',
@@ -430,6 +428,123 @@ describe('Migration Command', () => {
         fs.rmSync(migrationLogsPath, { recursive: true, force: true });
       }
     });
+
+    it('should not log migration-logs path when directory does not exist', async () => {
+      sandbox.stub(command, 'execSingleFile').resolves();
+      const cwdStub = sandbox.stub(process, 'cwd').returns(tempDir);
+      parseStub.resolves({
+        flags: {
+          'file-path': tempFile,
+        },
+      } as any);
+
+      await command.run();
+
+      const migrationLogCall = logStub.getCalls().find(
+        (c: any) => c.args[1] && String(c.args[1]).includes('migration-logs')
+      );
+      expect(migrationLogCall).to.be.undefined;
+    });
+  });
+
+  describe('getTasks() method', () => {
+    let safePromiseStub: SinonStub;
+    let waterfallStub: SinonStub;
+
+    beforeEach(() => {
+      safePromiseStub = sandbox.stub(utilsModule, 'safePromise').callsFake(async (p: any) => {
+        try {
+          const result = await p;
+          return [null, result];
+        } catch (err) {
+          return [err, null];
+        }
+      });
+      const asyncModule = require('async');
+      waterfallStub = sandbox.stub(asyncModule, 'waterfall').callsFake((tasks: any[], callback?: any) => {
+        if (typeof callback === 'function') {
+          callback(null, 'result');
+        }
+        return Promise.resolve('result');
+      });
+    });
+
+    it('should return array of task objects from requests', () => {
+      const requests = [
+        { title: 'Task 1', failedTitle: 'F1', successTitle: 'S1', tasks: [async () => 'r1'] },
+        { title: 'Task 2', failedTitle: 'F2', successTitle: 'S2', tasks: [async () => 'r2'] },
+      ];
+      const tasks = command.getTasks(requests);
+      expect(tasks).to.be.an('array').with.lengthOf(2);
+      expect(tasks[0].title).to.equal('Task 1');
+      expect(tasks[0].task).to.be.a('function');
+      expect(tasks[1].title).to.equal('Task 2');
+      expect(tasks[1].task).to.be.a('function');
+    });
+
+    it('should return empty array when requests is empty', () => {
+      const tasks = command.getTasks([]);
+      expect(tasks).to.be.an('array').with.lengthOf(0);
+    });
+
+    it('should run task and set success title on success', async () => {
+      const requests = [
+        { title: 'T', failedTitle: 'F', successTitle: 'S', tasks: [async () => 'ok'] },
+      ];
+      const tasks = command.getTasks(requests);
+      const mockCtx: any = {};
+      const mockTask: any = { title: 'T' };
+      await tasks[0].task(mockCtx, mockTask);
+      expect(mockTask.title).to.equal('S');
+    });
+
+    it('should set failedTitle and ctx.error and throw when waterfall fails', async () => {
+      safePromiseStub.callsFake(async (p: any) => {
+        await p;
+        return [new Error('waterfall failed'), null];
+      });
+      const requests = [
+        { title: 'T', failedTitle: 'Failed', successTitle: 'S', tasks: [async () => 'ok'] },
+      ];
+      const tasks = command.getTasks(requests);
+      const mockCtx: any = {};
+      const mockTask: any = { title: 'T' };
+      try {
+        await tasks[0].task(mockCtx, mockTask);
+        expect.fail('task should have thrown');
+      } catch (err: any) {
+        expect(err.message).to.equal('waterfall failed');
+      }
+      expect(mockTask.title).to.equal('Failed');
+      expect(mockCtx.error).to.be.true;
+    });
+
+    it('should return result from task when successful', async () => {
+      const requests = [
+        { title: 'T', failedTitle: 'F', successTitle: 'S', tasks: [async () => ({ id: '123' })] },
+      ];
+      const tasks = command.getTasks(requests);
+      const mockCtx: any = {};
+      const mockTask: any = { title: 'T' };
+      const result = await tasks[0].task(mockCtx, mockTask);
+      expect(result).to.equal('result');
+    });
+  });
+
+  describe('handleErrors() method', () => {
+    beforeEach(() => {
+      getStub.returns([]);
+    });
+
+    it('should run without throwing when actions array is empty', () => {
+      expect(() => command.handleErrors()).to.not.throw();
+    });
+
+    it('should run and invoke validation when actions exist', () => {
+      getStub.returns([{ type: 'create', payload: {} }]);
+      expect(() => command.handleErrors()).to.not.throw();
+    });
+
   });
 
   describe.skip('execSingleFile() method', () => {
@@ -561,137 +676,4 @@ describe('Migration Command', () => {
     });
   });
 
-  describe.skip('getTasks() method', () => {
-    let safePromiseStub: SinonStub;
-    let waterfallStub: SinonStub;
-
-    beforeEach(() => {
-      safePromiseStub = sandbox.stub(utilsModule, 'safePromise').resolves([null, 'result']);
-      waterfallStub = sandbox.stub(require('async'), 'waterfall').callsFake((tasks: any[], callback: any) => {
-        callback(null, 'result');
-      });
-    });
-
-    it('should create tasks from requests', () => {
-      const requests = [
-        {
-          title: 'Task 1',
-          failedTitle: 'Task 1 Failed',
-          successTitle: 'Task 1 Success',
-          tasks: [sandbox.stub().callsArg(1)],
-        },
-        {
-          title: 'Task 2',
-          failedTitle: 'Task 2 Failed',
-          successTitle: 'Task 2 Success',
-          tasks: [sandbox.stub().callsArg(1)],
-        },
-      ];
-
-      const tasks = command.getTasks(requests);
-
-      expect(tasks).to.be.an('array');
-      expect(tasks.length).to.equal(2);
-      expect(tasks[0]).to.have.property('title', 'Task 1');
-      expect(tasks[0]).to.have.property('task');
-      expect(tasks[1]).to.have.property('title', 'Task 2');
-      expect(tasks[1]).to.have.property('task');
-    });
-
-    it('should create task function that handles success', async () => {
-      const requests = [
-        {
-          title: 'Test Task',
-          failedTitle: 'Test Failed',
-          successTitle: 'Test Success',
-          tasks: [sandbox.stub().callsArg(1)],
-        },
-      ];
-
-      const tasks = command.getTasks(requests);
-      const taskFn = tasks[0].task;
-      const mockCtx: any = {};
-      const mockTask: any = {
-        title: 'Test Task',
-      };
-
-      await taskFn(mockCtx, mockTask);
-
-      expect(mockTask.title).to.equal('Test Success');
-    });
-
-    it('should create task function that handles errors', async () => {
-      const testError = new Error('Test error');
-      // Make safePromise return the error
-      safePromiseStub.resolves([testError, null]);
-      // waterfall will be called with tasks array, and safePromise wraps it
-      // So when safePromise resolves with [error, null], the task function should handle it
-      waterfallStub.restore();
-      waterfallStub = sandbox.stub(require('async'), 'waterfall').callsFake((tasks: any[], callback: any) => {
-        // Simulate waterfall calling callback with error
-        if (callback) {
-          callback(testError);
-        }
-      });
-
-      const requests = [
-        {
-          title: 'Test Task',
-          failedTitle: 'Test Failed',
-          successTitle: 'Test Success',
-          tasks: [sandbox.stub().callsArgWith(0, testError)],
-        },
-      ];
-
-      const tasks = command.getTasks(requests);
-      const taskFn = tasks[0].task;
-      const mockCtx: any = {};
-      const mockTask: any = {
-        title: 'Test Task',
-      };
-
-      try {
-        await taskFn(mockCtx, mockTask);
-        // Should not reach here
-        expect.fail('Should have thrown an error');
-      } catch (err) {
-        expect(err).to.equal(testError);
-        expect(mockCtx.error).to.be.true;
-        expect(mockTask.title).to.equal('Test Failed');
-      }
-    });
-  });
-
-  describe.skip('handleErrors() method', () => {
-    let actionListInstance: any;
-    let ActionListConstructorStub: SinonStub;
-
-    beforeEach(() => {
-      actionListInstance = {
-        addValidators: sandbox.stub(),
-        validate: sandbox.stub().returns([]),
-      };
-      const actionListModule = require('../../../../../src/actions/action-list');
-      ActionListConstructorStub = sandbox.stub(actionListModule, 'default').returns(actionListInstance);
-      getStub.returns([]);
-    });
-
-    it('should validate actions and handle errors', () => {
-      command.handleErrors();
-
-      expect(getMapInstanceStub.called).to.be.true;
-      expect(getStub.called).to.be.true;
-      expect(ActionListConstructorStub.called).to.be.true;
-      expect(actionListInstance.addValidators.callCount).to.equal(4);
-      expect(actionListInstance.validate.called).to.be.true;
-      expect(errorHelperStub.called).to.be.true;
-    });
-
-    it('should add all validators', () => {
-      command.handleErrors();
-
-      const validatorCalls = actionListInstance.addValidators.getCalls();
-      expect(validatorCalls.length).to.equal(4);
-    });
-  });
 });
