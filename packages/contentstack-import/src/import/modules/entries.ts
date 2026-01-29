@@ -102,15 +102,18 @@ export default class EntriesImport extends BaseClass {
 
     // Initialize composable studio paths if config exists
     if (this.importConfig.modules['composable-studio']) {
+      // Use contentDir as fallback if data is not available
+      const basePath = this.importConfig.data || this.importConfig.contentDir;
+      
       this.composableStudioSuccessPath = path.join(
-        sanitizePath(this.importConfig.data),
+        sanitizePath(basePath),
         'mapper',
         this.importConfig.modules['composable-studio'].dirName,
         this.importConfig.modules['composable-studio'].fileName,
       );
 
       this.composableStudioExportPath = path.join(
-        sanitizePath(this.importConfig.data),
+        sanitizePath(basePath),
         this.importConfig.modules['composable-studio'].dirName,
         this.importConfig.modules['composable-studio'].fileName,
       );
