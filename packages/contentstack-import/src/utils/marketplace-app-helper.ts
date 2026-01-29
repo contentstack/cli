@@ -32,7 +32,7 @@ export const getAllStackSpecificApps = async (
   const collection = await appSdk
     .marketplace(config.org_uid)
     .installation()
-    .fetchAll({ target_uids: config.target_stack, skip })
+    .fetchAll({ target_uids: config.apiKey, skip })
     .catch((error) => {
       handleAndLogError(error);
       log.error(error, config?.context);
@@ -75,7 +75,7 @@ export const getOrgUid = async (config: ImportConfig): Promise<string> => {
   
   const tempAPIClient = await managementSDKClient({ host: config.host });
   const tempStackData = await tempAPIClient
-    .stack({ api_key: config.target_stack })
+    .stack({ api_key: config.apiKey })
     .fetch()
     .catch((error: any) => {
       handleAndLogError(error);

@@ -3,7 +3,7 @@
 /* eslint-disable no-empty */
 /*!
  * Contentstack Import
- * Copyright (c) 2024 Contentstack LLC
+ * Copyright (c) 2026 Contentstack LLC
  * MIT Licensed
  */
 
@@ -24,7 +24,7 @@ const login = async (config: ImportConfig): Promise<any> => {
       log.debug('Login successful, setting up headers');
 
       config.headers = {
-        api_key: config.source_stack,
+        api_key: config.apiKey,
         access_token: config.access_token,
         authtoken: config.authtoken,
         'X-User-Agent': 'contentstack-export/v',
@@ -40,7 +40,7 @@ const login = async (config: ImportConfig): Promise<any> => {
     log.debug('Using existing authentication, validating stack access');
 
     const stackAPIClient = client.stack({
-      api_key: config.target_stack,
+      api_key: config.apiKey,
       management_token: config.management_token,
     });
 

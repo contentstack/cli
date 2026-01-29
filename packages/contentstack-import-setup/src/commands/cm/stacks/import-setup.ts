@@ -12,6 +12,7 @@ import {
   log,
   handleAndLogError,
   configHandler,
+  createLogContext,
 } from '@contentstack/cli-utilities';
 
 import { ImportConfig, Context } from '../../../types';
@@ -107,6 +108,7 @@ export default class ImportSetupCommand extends Command {
       handleAndLogError(error);
     }
   }
+
 
   // Create import setup context object
   private createImportSetupContext(apiKey: string, authenticationMethod?: string, module?: string): Context {

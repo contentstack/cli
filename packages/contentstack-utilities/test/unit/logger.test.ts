@@ -450,5 +450,251 @@ describe('Session Log Path', () => {
       const dateFolder = path.dirname(logDir);
       expect(fs.existsSync(dateFolder)).to.be.true;
       expect(dateFolder).to.match(/\d{4}-\d{2}-\d{2}/);
+      
+      // Verify the log file exists (winston writes asynchronously, so wait a bit)
+      // Wait for winston to flush the file with timeout
+      return new Promise<void>((resolve, reject) => {
+        const maxAttempts = 20; // 20 * 50ms = 1 second max wait
+        let attempts = 0;
+        const checkFile = () => {
+          attempts++;
+          if (fs.existsSync(actualLogFile)) {
+            resolve();
+          } else if (attempts >= maxAttempts) {
+            reject(new Error(`Log file ${actualLogFile} was not created within timeout`));
+          } else {
+            setTimeout(checkFile, 50);
+          }
+        };
+        checkFile();
+      }).then(() => {
+        expect(fs.existsSync(actualLogFile)).to.be.true;
+      });
+    });
+
+  describe('Session Metadata (session.json)', () => {
+    let tempDir: string;
+
+    beforeEach(() => {
+      tempDir = path.join(os.tmpdir(), `cli-test-${Date.now()}-${Math.random().toString(36).substring(7)}`);
+      configHandler.delete('currentCommandId');
+      configHandler.delete('sessionId');
+      configHandler.delete('email');
+      configHandler.delete('authorisationType');
+    });
+
+    afterEach(() => {
+      if (fs.existsSync(tempDir)) {
+        fs.rmSync(tempDir, { recursive: true, force: true });
+      }
+      configHandler.delete('currentCommandId');
+      configHandler.delete('sessionId');
+      configHandler.delete('email');
+      configHandler.delete('authorisationType');
+    });
+
+    fancy
+      .stub(configHandler, 'get', (...args: any[]) => {
+        const key = args[0];
+        if (key === 'log.path') return tempDir;
+        if (key === 'currentCommandId') return 'cm:stacks:audit';
+        if (key === 'sessionId') return 'a3f8c9';
+        if (key === 'email') return 'user@example.com';
+        if (key === 'authorisationType') return 'OAUTH';
+        return undefined;
+      })
+      .it('should create session.json with correct metadata structure', () => {
+        const sessionPath = getSessionLogPath();
+        const metadataPath = path.join(sessionPath, 'session.json');
+        
+        // Verify session.json exists
+        expect(fs.existsSync(metadataPath)).to.be.true;
+        
+        // Read and parse session.json
+        const metadataContent = fs.readFileSync(metadataPath, 'utf8');
+        const metadata = JSON.parse(metadataContent);
+        
+        // Verify required fields
+        expect(metadata).to.have.property('command');
+        expect(metadata).to.have.property('module');
+        expect(metadata).to.have.property('sessionId');
+        expect(metadata).to.have.property('startTimestamp');
+        expect(metadata).to.have.property('authenticationMethod');
+        expect(metadata).to.have.property('email');
+        expect(metadata).to.have.property('MachineEnvironment');
+        
+        // Verify values
+        expect(metadata.command).to.equal('cm:stacks:audit');
+        expect(metadata.module).to.equal('audit');
+        expect(metadata.sessionId).to.equal('a3f8c9');
+        expect(metadata.authenticationMethod).to.equal('OAuth');
+        expect(metadata.email).to.equal('user@example.com');
+        
+        // Verify MachineEnvironment object
+        expect(metadata.MachineEnvironment).to.have.property('nodeVersion');
+        expect(metadata.MachineEnvironment).to.have.property('os');
+        expect(metadata.MachineEnvironment).to.have.property('hostname');
+        expect(metadata.MachineEnvironment.nodeVersion).to.equal(process.version);
+        expect(metadata.MachineEnvironment.os).to.equal(process.platform);
+        expect(metadata.MachineEnvironment.hostname).to.equal(os.hostname());
+        
+        // Verify timestamp is ISO format
+        expect(metadata.startTimestamp).to.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+      });
+
+    fancy
+      .stub(configHandler, 'get', (...args: any[]) => {
+        const key = args[0];
+        if (key === 'log.path') return tempDir;
+        if (key === 'currentCommandId') return 'cm:stacks:export';
+        if (key === 'sessionId') return 'test-session-123';
+        if (key === 'email') return undefined;
+        if (key === 'authorisationType') return 'BASIC';
+        return undefined;
+      })
+      .it('should create session.json with Basic Auth authentication method', () => {
+        const sessionPath = getSessionLogPath();
+        const metadataPath = path.join(sessionPath, 'session.json');
+        
+        const metadataContent = fs.readFileSync(metadataPath, 'utf8');
+        const metadata = JSON.parse(metadataContent);
+        
+        expect(metadata.authenticationMethod).to.equal('Basic Auth');
+        expect(metadata.email).to.equal('');
+        expect(metadata.module).to.equal('export');
+      });
+
+    fancy
+      .stub(configHandler, 'get', (...args: any[]) => {
+        const key = args[0];
+        if (key === 'log.path') return tempDir;
+        if (key === 'currentCommandId') return 'cm:stacks:import';
+        if (key === 'sessionId') return 'test-session-456';
+        if (key === 'email') return 'test@example.com';
+        if (key === 'authorisationType') return undefined;
+        return undefined;
+      })
+      .it('should create session.json with empty authentication method when not set', () => {
+        const sessionPath = getSessionLogPath();
+        const metadataPath = path.join(sessionPath, 'session.json');
+        
+        const metadataContent = fs.readFileSync(metadataPath, 'utf8');
+        const metadata = JSON.parse(metadataContent);
+        
+        expect(metadata.authenticationMethod).to.equal('');
+        expect(metadata.email).to.equal('test@example.com');
+        expect(metadata.module).to.equal('import');
+      });
+
+    fancy
+      .stub(configHandler, 'get', (...args: any[]) => {
+        const key = args[0];
+        if (key === 'log.path') return tempDir;
+        if (key === 'currentCommandId') return 'unknown';
+        if (key === 'sessionId') return 'test-session-789';
+        if (key === 'email') return undefined;
+        if (key === 'authorisationType') return undefined;
+        return undefined;
+      })
+      .it('should create session.json with empty module when command is unknown', () => {
+        const sessionPath = getSessionLogPath();
+        const metadataPath = path.join(sessionPath, 'session.json');
+        
+        const metadataContent = fs.readFileSync(metadataPath, 'utf8');
+        const metadata = JSON.parse(metadataContent);
+        
+        expect(metadata.command).to.equal('unknown');
+        expect(metadata.module).to.equal('');
+      });
+
+    fancy
+      .stub(configHandler, 'get', (...args: any[]) => {
+        const key = args[0];
+        if (key === 'log.path') return tempDir;
+        if (key === 'currentCommandId') return 'cm:stacks:audit';
+        if (key === 'sessionId') return 'a3f8c9';
+        if (key === 'email') return 'user@example.com';
+        if (key === 'authorisationType') return 'OAUTH';
+        return undefined;
+      })
+      .it('should create session.json only once per session folder', () => {
+        // First call creates the session folder and metadata
+        const sessionPath1 = getSessionLogPath();
+        const metadataPath = path.join(sessionPath1, 'session.json');
+        
+        // Read first metadata
+        const metadataContent1 = fs.readFileSync(metadataPath, 'utf8');
+        const metadata1 = JSON.parse(metadataContent1);
+        const firstTimestamp = metadata1.startTimestamp;
+        
+        // Second call should return same path (session already exists)
+        const sessionPath2 = getSessionLogPath();
+        expect(sessionPath1).to.equal(sessionPath2);
+        
+        // Verify metadata file still exists and wasn't overwritten
+        expect(fs.existsSync(metadataPath)).to.be.true;
+        const metadataContent2 = fs.readFileSync(metadataPath, 'utf8');
+        const metadata2 = JSON.parse(metadataContent2);
+        
+        // Timestamp should be the same (created only once)
+        expect(metadata2.startTimestamp).to.equal(firstTimestamp);
+      });
+
+    fancy
+      .stub(configHandler, 'get', (...args: any[]) => {
+        const key = args[0];
+        if (key === 'log.path') return tempDir;
+        if (key === 'currentCommandId') return 'cm:stacks:clone';
+        if (key === 'sessionId') return 'clone-session';
+        if (key === 'email') return 'clone@example.com';
+        if (key === 'authorisationType') return 'BASIC';
+        return undefined;
+      })
+      .it('should create session.json before any logs are written', () => {
+        const sessionPath = getSessionLogPath();
+        const metadataPath = path.join(sessionPath, 'session.json');
+        
+        // Verify session.json exists immediately after getSessionLogPath
+        expect(fs.existsSync(metadataPath)).to.be.true;
+        
+        // Now create logger and write a log
+        const logger = new Logger({
+          basePath: tempDir,
+          consoleLogLevel: 'info',
+          logLevel: 'info',
+        });
+        
+        const winLogger = logger.getLoggerInstance('error');
+        winLogger.error('Test log entry');
+        
+        // Verify session.json still exists and wasn't overwritten
+        expect(fs.existsSync(metadataPath)).to.be.true;
+        
+        // Verify log file exists (winston writes asynchronously, so wait a bit)
+        const logFilePath = path.join(sessionPath, 'error.log');
+        return new Promise<void>((resolve, reject) => {
+          const maxAttempts = 20; // 20 * 50ms = 1 second max wait
+          let attempts = 0;
+          const checkFile = () => {
+            attempts++;
+            if (fs.existsSync(logFilePath)) {
+              resolve();
+            } else if (attempts >= maxAttempts) {
+              reject(new Error(`Log file ${logFilePath} was not created within timeout`));
+            } else {
+              setTimeout(checkFile, 50);
+            }
+          };
+          checkFile();
+        }).then(() => {
+          expect(fs.existsSync(logFilePath)).to.be.true;
+          
+          // Verify metadata is valid JSON
+          const metadataContent = fs.readFileSync(metadataPath, 'utf8');
+          const metadata = JSON.parse(metadataContent);
+          expect(metadata.command).to.equal('cm:stacks:clone');
+          expect(metadata.module).to.equal('clone');
+        });
+      });
     });
 });

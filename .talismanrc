@@ -1,6 +1,24 @@
 fileignoreconfig:
   - filename: pnpm-lock.yaml
-    checksum: 521b36eb2bf32512d127911eeb7c279c6dc6bc17beac921145c0ab80922313aa
+    checksum: f0d2b2bc5a7b24b2cd8ba12d8ccaa119d74cf73c9462ae0ddd1e1685d03967c9
   - filename: package-lock.json
-    checksum: 45b6ae37fa21d20a5588b7c758cdff4ba3bcd94d98c03eb819e94e32914c726b
+    checksum: ed904450857be36b3792ab8650a9ba91ae2f55e67db945915743d1316593a573
+  - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/environments/environments.json
+    checksum: 0402604e5919a7e38ecb5ff0916d6ae5ab7d98fe78ff6ac9eba8a9b8130af34d
+  - filename: packages/contentstack-utilities/src/helpers.ts
+    checksum: 6a741bb972f59c56d2c0f3a9f96e2963392361db2e401948c9c1796829478e13
+  - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/composable_studio.json
+    checksum: 6912e5ea32b4456ad04d1645750c72bbb29ab1895368c3a242ab39e9350ec531
+  - filename: packages/contentstack-utilities/src/logger/session-path.ts
+    checksum: 4c66980a857bc12012a45e50790c0eaab06883db5e1476d84fb142a08b70b2e7
+  - filename: packages/contentstack-import/test/unit/commands/cm/stacks/import.test.ts
+    checksum: a9e24596e7ae54b71cc28a41cf9d65bbdbf6754446e08958288e90a579cc351d
+  - filename: packages/contentstack-audit/src/modules/modulesData.ts
+    checksum: 1e6c1fba1172512401038d5454c8d218201ec62262449c5c878609592e0124c4
+  - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/invalid_composable_studio.json
+    checksum: e6465aa0011d1565a2de848d9cca74395d11419e6ac840e7dfb52e1d255b1c4f
+  - filename: packages/contentstack-audit/src/modules/composable-studio.ts
+    checksum: 4fc97ff582d6dff9a54b3a50dfa3cbb5febd38a55aeb8737034b97188ad543ba
+  - filename: packages/contentstack-utilities/test/unit/logger.test.ts
+    checksum: a1939dea16166b1893a248179524a76f2ed20b04b99c83bd1a5a13fcf6f0dadc
 version: "1.0"

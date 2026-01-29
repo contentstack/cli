@@ -123,7 +123,7 @@ export default class Events extends PersonalizationAdapter<ImportConfig> {
     return this.withLoadingSpinner('EVENTS: Analyzing import data...', async () => {
       const { dirName, fileName } = this.eventConfig;
       const eventsPath = resolve(
-        sanitizePath(this.config.data),
+        sanitizePath(this.config.contentDir),
         sanitizePath(this.personalizeConfig.dirName),
         sanitizePath(dirName),
         sanitizePath(fileName),

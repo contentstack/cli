@@ -33,7 +33,7 @@ export default class ExportWebhooks extends BaseClass {
       // Setup with loading spinner
       const [totalCount] = await this.withLoadingSpinner('WEBHOOKS: Analyzing webhooks...', async () => {
         this.webhooksFolderPath = pResolve(
-          this.exportConfig.data,
+          this.exportConfig.exportDir,
           this.exportConfig.branchName || '',
           this.webhookConfig.dirName,
         );

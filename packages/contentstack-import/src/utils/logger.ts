@@ -1,6 +1,6 @@
 /*!
  * Contentstack Export
- * Copyright (c) 2024 Contentstack LLC
+ * Copyright (c) 2026 Contentstack LLC
  * MIT Licensed
  */
 
@@ -140,7 +140,7 @@ function init(_logPath: string) {
 }
 
 export const log = async (config: ImportConfig, message: any, type: string) => {
-  config.cliLogsPath = sanitizePath(config.cliLogsPath || config.data || path.join(__dirname, 'logs'));
+  config.cliLogsPath = sanitizePath(config.cliLogsPath || config.contentDir || path.join(__dirname, 'logs'));
   // ignoring the type argument, as we are not using it to create a logfile anymore
   if (type !== 'error') {
     // removed type argument from init method
