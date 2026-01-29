@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.56.0 darwin-arm64 node-v24.13.0
+@contentstack/cli/2.0.0-beta.4 darwin-arm64 node-v24.12.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -29,8 +29,6 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`csdx audit`](#csdx-audit)
-* [`csdx audit:fix`](#csdx-auditfix)
 * [`csdx auth:login`](#csdx-authlogin)
 * [`csdx auth:logout`](#csdx-authlogout)
 * [`csdx auth:tokens`](#csdx-authtokens)
@@ -57,51 +55,40 @@ USAGE
 * [`csdx cm:bulk-publish:revert`](#csdx-cmbulk-publishrevert)
 * [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries)
 * [`csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-only-unpublished--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
-* [`csdx cm:entries:migrate-html-rte`](#csdx-cmentriesmigrate-html-rte)
 * [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value---entry-uid-value---include-variants)
 * [`csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-modified--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
 * [`csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-non-localized-fields--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value--e-value--c-value--y---branch-value)
 * [`csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-only-unpublished--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
 * [`csdx cm:entries:unpublish`](#csdx-cmentriesunpublish)
 * [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value)
-* [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets)
 * [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
-* [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
-* [`csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`](#csdx-cmstacksimport-setup--k-value--d-value--a-value---modules-valuevalue)
-* [`csdx cm:migrate-rte`](#csdx-cmmigrate-rte)
-* [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple)
-* [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value---locale-value)
-* [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent)
 * [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
 * [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix)
 * [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent)
-* [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets)
-* [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
+* [`csdx cm:stacks:export [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport---config-value---stack-api-key-value---data-dir-value---alias-value---module-value---content-types-value---branch-value---secured-assets)
+* [`csdx cm:stacks:import [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport---config-value---stack-api-key-value---data-dir-value---alias-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
 * [`csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`](#csdx-cmstacksimport-setup--k-value--d-value--a-value---modules-valuevalue)
 * [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple)
 * [`csdx cm:stacks:publish`](#csdx-cmstackspublish)
 * [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
 * [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
 * [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
-* [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value---locale-value)
+* [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [--stack-api-key <value>] [--stack-name <value>] [--yes <value>] [--alias <value>] [--locale <value>]`](#csdx-cmstacksseed---repo-value---org-value---stack-api-key-value---stack-name-value---yes-value---alias-value---locale-value)
 * [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries)
 * [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
 * [`csdx config:get:ea-header`](#csdx-configgetea-header)
 * [`csdx config:get:early-access-header`](#csdx-configgetearly-access-header)
 * [`csdx config:get:log`](#csdx-configgetlog)
-* [`csdx config:get:proxy`](#csdx-configgetproxy)
 * [`csdx config:get:rate-limit`](#csdx-configgetrate-limit)
 * [`csdx config:get:region`](#csdx-configgetregion)
 * [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
 * [`csdx config:remove:ea-header`](#csdx-configremoveea-header)
 * [`csdx config:remove:early-access-header`](#csdx-configremoveearly-access-header)
-* [`csdx config:remove:proxy`](#csdx-configremoveproxy)
 * [`csdx config:remove:rate-limit`](#csdx-configremoverate-limit)
 * [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
 * [`csdx config:set:ea-header`](#csdx-configsetea-header)
 * [`csdx config:set:early-access-header`](#csdx-configsetearly-access-header)
 * [`csdx config:set:log`](#csdx-configsetlog)
-* [`csdx config:set:proxy`](#csdx-configsetproxy)
 * [`csdx config:set:rate-limit`](#csdx-configsetrate-limit)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMAND]`](#csdx-help-command)
@@ -125,115 +112,6 @@ USAGE
 * [`csdx plugins:update`](#csdx-pluginsupdate)
 * [`csdx tokens`](#csdx-tokens)
 * [`csdx whoami`](#csdx-whoami)
-
-## `csdx audit`
-
-Perform audits and find possible errors in the exported Contentstack data
-
-```
-USAGE
-  $ csdx audit [-c <value>] [-d <value>] [--show-console-output] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules|composable-studio...]
-    [--columns <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output
-    csv|json|yaml]
-
-FLAGS
-  --modules=<option>...  Provide the list of modules to be audited
-                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-ru
-                         les|composable-studio>
-  --report-path=<value>  Path to store the audit reports
-
-COMMON FLAGS
-  -c, --config=<value>       Path of the external config
-  -d, --data-dir=<value>     Path where the data is stored
-      --show-console-output  Display the audit and audit fix result for individual modules
-
-TABLE FLAGS
-  --columns=<value>  Specify columns to display, comma-separated.
-  --csv              Output results in CSV format.
-  --filter=<value>   Filter rows by a column value (e.g., name=foo).
-  --no-header        Hide table headers in output.
-  --no-truncate      Prevent truncation of long text in columns.
-  --output=<option>  Specify output format: csv, json, or yaml.
-                     <options: csv|json|yaml>
-  --sort=<value>     Sort the table by a column. Use "-" for descending.
-
-DESCRIPTION
-  Perform audits and find possible errors in the exported Contentstack data
-
-ALIASES
-  $ csdx audit
-  $ csdx cm:stacks:audit
-
-EXAMPLES
-  $ csdx audit
-
-  $ csdx audit --report-path=<path>
-
-  $ csdx audit --report-path=<path> --csv
-
-  $ csdx audit --report-path=<path> --filter="name=<filter-value>"
-
-  $ csdx audit --report-path=<path> --modules=content-types --filter="name="<filter-value>"
-```
-
-## `csdx audit:fix`
-
-Perform audits and fix possible errors in the exported Contentstack data.
-
-```
-USAGE
-  $ csdx audit:fix [-c <value>] [-d <value>] [--show-console-output] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules|composable-studio...]
-    [--copy-path <value> --copy-dir] [--fix-only
-    reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value>] [--sort <value>]
-    [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
-
-FLAGS
-  --copy-dir              Create backup from the original data.
-  --copy-path=<value>     Provide the path to backup the copied data
-  --fix-only=<option>...  Provide the list of fix options
-                          <options: reference|global_field|json:rte|json:extension|blocks|group|content_types>
-  --modules=<option>...   Provide the list of modules to be audited
-                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-r
-                          ules|composable-studio>
-  --report-path=<value>   Path to store the audit reports
-
-COMMON FLAGS
-  -c, --config=<value>       Path of the external config
-  -d, --data-dir=<value>     Path where the data is stored
-      --show-console-output  Display the audit and audit fix result for individual modules
-
-TABLE FLAGS
-  --columns=<value>  Specify columns to display, comma-separated.
-  --csv              Output results in CSV format.
-  --filter=<value>   Filter rows by a column value (e.g., name=foo).
-  --no-header        Hide table headers in output.
-  --no-truncate      Prevent truncation of long text in columns.
-  --output=<option>  Specify output format: csv, json, or yaml.
-                     <options: csv|json|yaml>
-  --sort=<value>     Sort the table by a column. Use "-" for descending.
-
-DESCRIPTION
-  Perform audits and fix possible errors in the exported Contentstack data.
-
-ALIASES
-  $ csdx audit:fix
-  $ csdx cm:stacks:audit:fix
-
-EXAMPLES
-  $ csdx audit:fix --copy-dir
-
-  $ csdx audit:fix --report-path=<path> --copy-dir
-
-  $ csdx audit:fix --report-path=<path> --copy-dir --csv
-
-  $ csdx audit:fix --fix-only=reference,global_field --copy-dir
-
-  $ csdx audit:fix --report-path=<path> --filter="name=<filter-value>"
-
-  $ csdx audit:fix --report-path=<path> --modules=content-types --filter="name="<filter-value>" --copy-dir --copy-path=<path>
-```
 
 ## `csdx auth:login`
 
@@ -336,12 +214,12 @@ USAGE
 
 FLAGS
   -a, --alias=<value>          Alias (name) you want to assign to the token
-  -d, --delivery               Set this flag to save delivery token
   -e, --environment=<value>    Environment name for delivery token
   -k, --stack-api-key=<value>  Stack API Key
-  -m, --management             Set this flag to save management token
-  -t, --token=<value>          [env: TOKEN] Add the token name
   -y, --yes                    Use this flag to skip confirmation
+      --delivery               Set this flag to save delivery token
+      --management             Set this flag to save management token
+      --token=<value>          [env: TOKEN] Add the token name
 
 DESCRIPTION
   Adds management/delivery tokens to your session to use it with other CLI commands
@@ -1601,69 +1479,6 @@ EXAMPLES
   $ csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a [MANAGEMENT TOKEN ALIAS] --stack-api-key [STACK API KEY] -source-env [SOURCE ENV]
 ```
 
-## `csdx cm:entries:migrate-html-rte`
-
-Migration script to migrate content from HTML RTE to JSON RTE
-
-```
-USAGE
-  $ csdx cm:entries:migrate-html-rte [-c <value>] [-a <value>] [--stack-api-key <value>] [--content-type <value>]
-    [--global-field] [-y] [--branch <value>] [--html-path <value> --json-path <value>] [--delay <value>] [--locale
-    <value>] [--batch-limit <value>]
-
-FLAGS
-  -a, --alias=<value>          Enter the alias name. You must use either the --alias flag or the --stack-api-key flag.
-  -c, --config-path=<value>    Specify the path where your config file is located.
-  -y, --yes                    Avoids reconfirmation of your configuration.
-      --batch-limit=<value>    [default: 50] Provide batch limit for updating entries (default: 50).
-      --branch=<value>         The name of the branch to be used.
-      --content-type=<value>   Specify the UID of the content type for which you want to migrate HTML RTE content.
-      --delay=<value>          [default: 1000] To set the interval time between the migration of HTML RTE to JSON RTE in
-                               subsequent entries of a content type. The default value is 1,000 milliseconds.
-      --global-field           Checks whether the specified UID belongs to a content type or a global field. This flag
-                               is set to false by default.
-      --html-path=<value>      Enter the path to the HTML RTE whose content you want to migrate.
-      --json-path=<value>      Enter the path to the JSON RTE to which you want to migrate the HTML RTE content.
-      --locale=<value>         The locale from which entries will be migrated.
-      --stack-api-key=<value>  API key of the source stack. You must use either the --stack-api-key flag or the --alias
-                               flag.
-
-DESCRIPTION
-  Migration script to migrate content from HTML RTE to JSON RTE
-
-ALIASES
-  $ csdx cm:migrate-rte
-
-EXAMPLES
-  General Usage
-
-  $ csdx cm:entries:migrate-html-rte --config-path path/to/config.json
-
-
-
-  Using Flags
-
-  $ csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path html-path --json-path json-path
-
-
-
-  Nested RTE
-
-  $ csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path modular_block_uid.block_uid.html_rte_uid --json-path modular_block_uid.block_uid.json_rte_uid
-
-
-
-  $ csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path group_uid.html_rte_uid --json-path group_uid.json_rte_uid
-
-
-
-  Global Field
-
-  $ csdx cm:entries:migrate-html-rte --alias alias --content-type global_field_uid --global-field --html-path html-path --json-path json-path
-```
-
-_See code: [@contentstack/cli-cm-migrate-rte](https://github.com/contentstack/cli/blob/main/packages/contentstack-migrate-rte/src/commands/cm/entries/migrate-html-rte.js)_
-
 ## `csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--entry-uid <value>] [--include-variants]`
 
 Publish entries from multiple contenttypes to multiple environments and locales
@@ -2185,56 +2000,6 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/entries/update-and-publish.js)_
 
-## `csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`
-
-Export content from a stack
-
-```
-USAGE
-  $ csdx cm:export cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>]
-    [--content-types <value>] [--branch <value>] [--secured-assets]
-
-FLAGS
-  -B, --branch=<value>            [optional] The name of the branch where you want to export your content. If you don't
-                                  mention the branch name, then by default the content will be exported from all the
-                                  branches of your stack.
-  -a, --alias=<value>             The management token alias of the source stack from which you will export content.
-  -c, --config=<value>            [optional] Path of the config
-  -d, --data-dir=<value>          The path or the location in your file system to store the exported content. For e.g.,
-                                  ./content
-  -k, --stack-api-key=<value>     API Key of the source stack
-  -m, --module=<value>            [optional] Specific module name. If not specified, the export command will export all
-                                  the modules to the stack. The available modules are assets, content-types, entries,
-                                  environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks,
-                                  workflows, custom-roles, taxonomies, and studio.
-  -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
-                                  of multiple content types, specify the IDs separated by spaces.
-  -y, --yes                       [optional] Force override all Marketplace prompts.
-      --branch-alias=<value>      (Optional) The alias of the branch from which you want to export content.
-      --secured-assets            [optional] Use this flag for assets that are secured.
-
-DESCRIPTION
-  Export content from a stack
-
-ALIASES
-  $ csdx cm:export
-
-EXAMPLES
-  $ csdx cm:stacks:export --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>
-
-  $ csdx cm:stacks:export --config <path/to/config/dir>
-
-  $ csdx cm:stacks:export --alias <management_token_alias>
-
-  $ csdx cm:stacks:export --alias <management_token_alias> --data-dir <path/to/export/destination/dir>
-
-  $ csdx cm:stacks:export --alias <management_token_alias> --config <path/to/config/file>
-
-  $ csdx cm:stacks:export --module <single module name>
-
-  $ csdx cm:stacks:export --branch [optional] branch name
-```
-
 ## `csdx cm:export-to-csv`
 
 Export entries, taxonomies, terms or organization users to csv using this command
@@ -2271,9 +2036,6 @@ FLAGS
 DESCRIPTION
   Export entries, taxonomies, terms or organization users to csv using this command
 
-ALIASES
-  $ csdx cm:export-to-csv
-
 EXAMPLES
   $ csdx cm:export-to-csv
 
@@ -2281,381 +2043,94 @@ EXAMPLES
 
   Exporting entries to CSV
 
-  $ csdx cm:export-to-csv --action entries --locale <locale> --alias <management-token-alias> --content-type <content-type>
+  $ csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type <content-type>
 
 
 
-  Exporting entries to CSV with stack name and branch
+  Exporting entries to CSV with stack name provided and branch name provided
 
-  $ csdx cm:export-to-csv --action entries --locale <locale> --alias <management-token-alias> --content-type <content-type> --stack-name <stack-name> --branch <branch-name>
+  $ csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type <content-type> --stack-name <stack-name> --branch <branch-name>
 
 
 
   Exporting organization users to CSV
 
-  $ csdx cm:export-to-csv --action users --org <org-uid>
+  $ csdx cm:export-to-csv --action <users> --org <org-uid>
+
+
+
+  Exporting organization users to CSV with organization name provided
+
+  $ csdx cm:export-to-csv --action <users> --org <org-uid> --org-name <org-name>
 
 
 
   Exporting organization teams to CSV
 
-  $ csdx cm:export-to-csv --action teams --org <org-uid>
+  $ csdx cm:export-to-csv --action <teams>
 
 
 
-  Exporting teams with specific team UID
+  Exporting organization teams to CSV with org UID
 
-  $ csdx cm:export-to-csv --action teams --org <org-uid> --team-uid <team-uid>
-
-
-
-  Exporting taxonomies to CSV
-
-  $ csdx cm:export-to-csv --action taxonomies --alias <management-token-alias>
+  $ csdx cm:export-to-csv --action <teams> --org <org-uid>
 
 
 
-  Exporting specific taxonomy with locale
+  Exporting organization teams to CSV with team UID
 
-  $ csdx cm:export-to-csv --action taxonomies --alias <management-token-alias> --taxonomy-uid <taxonomy-uid> --locale <locale>
+  $ csdx cm:export-to-csv --action <teams> --team-uid <team-uid>
 
 
 
-  Exporting taxonomies with fallback locale
+  Exporting organization teams to CSV with org UID and team UID
 
-  $ csdx cm:export-to-csv --action taxonomies --alias <management-token-alias> --locale <locale> --include-fallback --fallback-locale <fallback-locale>
+  $ csdx cm:export-to-csv --action <teams> --org <org-uid> --team-uid <team-uid>
+
+
+
+  Exporting organization teams to CSV with org UID and team UID
+
+  $ csdx cm:export-to-csv --action <teams> --org <org-uid> --team-uid <team-uid> --org-name <org-name>
+
+
+
+  Exporting taxonomies and related terms to a .CSV file with the provided taxonomy UID
+
+  $ csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --taxonomy-uid <taxonomy-uid>
+
+
+
+  Exporting taxonomies and respective terms to a .CSV file
+
+  $ csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias>
+
+
+
+  Exporting taxonomies and respective terms to a .CSV file with a delimiter
+
+  $ csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --delimiter <delimiter>
+
+
+
+  Exporting taxonomies with specific locale
+
+  $ csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --locale <locale>
+
+
+
+  Exporting taxonomies with fallback locale support
+
+  $ csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --locale <locale> --include-fallback
+
+
+
+  Exporting taxonomies with custom fallback locale
+
+  $ csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --locale <locale> --include-fallback --fallback-locale <fallback-locale>
 ```
 
-_See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/cli/blob/main/packages/contentstack-export-to-csv/src/commands/cm/export-to-csv.ts)_
-
-## `csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
-
-Import content from a stack
-
-```
-USAGE
-  $ csdx cm:import cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>]
-    [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]
-
-FLAGS
-  -B, --branch=<value>
-      The name of the branch where you want to import your content. If you don't mention the branch name, then by default
-      the content will be imported to the main branch.
-
-  -a, --alias=<value>
-      The management token of the destination stack where you will import the content.
-
-  -b, --backup-dir=<value>
-      [optional] Backup directory name when using specific module.
-
-  -c, --config=<value>
-      [optional] The path of the configuration JSON file containing all the options for a single run.
-
-  -d, --data-dir=<value>
-      The path or the location in your file system where the content, you intend to import, is stored. For example, -d
-      "C:\Users\Name\Desktop\cli\content". If the export folder has branches involved, then the path should point till the
-      particular branch. For example, “-d "C:\Users\Name\Desktop\cli\content\branch_name"
-
-  -k, --stack-api-key=<value>
-      API Key of the target stack
-
-  -m, --module=<value>
-      [optional] Specify the module to import into the target stack. If not specified, the import command will import all
-      the modules into the stack. The available modules are assets, content-types, entries, environments, extensions,
-      marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, personalize projects,
-      taxonomies, and composable-studio.
-
-  -y, --yes
-      [optional] Force override all Marketplace prompts.
-
-  --branch-alias=<value>
-      Specify the branch alias where you want to import your content. If not specified, the content is imported into the
-      main branch by default.
-
-  --exclude-global-modules
-      Excludes the branch-independent module from the import operation.
-
-  --import-webhook-status=<option>
-      [default: disable] [default: disable] (optional) This webhook state keeps the same state of webhooks as the source
-      stack. <options: disable|current>
-      <options: disable|current>
-
-  --personalize-project-name=<value>
-      (optional) Provide a unique name for the Personalize project.
-
-  --replace-existing
-      Replaces the existing module in the target stack.
-
-  --skip-app-recreation
-      (optional) Skips the recreation of private apps if they already exist.
-
-  --skip-assets-publish
-      Skips asset publishing during the import process.
-
-  --skip-audit
-      Skips the audit fix that occurs during an import operation.
-
-  --skip-entries-publish
-      Skips entry publishing during the import process
-
-  --skip-existing
-      Skips the module exists warning messages.
-
-DESCRIPTION
-  Import content from a stack
-
-ALIASES
-  $ csdx cm:import
-
-EXAMPLES
-  $ csdx cm:stacks:import --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>
-
-  $ csdx cm:stacks:import --config <path/of/config/dir>
-
-  $ csdx cm:stacks:import --module <single module name>
-
-  $ csdx cm:stacks:import --module <single module name> --backup-dir <backup dir>
-
-  $ csdx cm:stacks:import --alias <management_token_alias>
-
-  $ csdx cm:stacks:import --alias <management_token_alias> --data-dir <path/of/export/destination/dir>
-
-  $ csdx cm:stacks:import --alias <management_token_alias> --config <path/of/config/file>
-
-  $ csdx cm:stacks:import --branch <branch name>  --yes --skip-audit
-```
-
-## `csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`
-
-Helps to generate mappers and backup folder for importing (overwriting) specific modules
-
-```
-USAGE
-  $ csdx cm:import-setup cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]
-
-FLAGS
-  -B, --branch=<value>         The name of the branch where you want to import your content. If you don't mention the
-                               branch name, then by default the content will be imported to the main branch.
-  -a, --alias=<value>          The management token of the destination stack where you will import the content.
-  -d, --data-dir=<value>       The path or the location in your file system where the content, you intend to import, is
-                               stored. For example, -d "C:\Users\Name\Desktop\cli\content". If the export folder has
-                               branches involved, then the path should point till the particular branch. For example,
-                               “-d "C:\Users\Name\Desktop\cli\content\branch_name"
-  -k, --stack-api-key=<value>  API key of the target stack
-      --branch-alias=<value>   Specify the branch alias where you want to import your content. If not specified, the
-                               content is imported into the main branch by default.
-      --module=<option>...     [optional] Specify the modules/module to import into the target stack. currently options
-                               are global-fields, content-types, entries
-                               <options: global-fields|content-types|entries>
-
-DESCRIPTION
-  Helps to generate mappers and backup folder for importing (overwriting) specific modules
-
-ALIASES
-  $ csdx cm:import-setup
-
-EXAMPLES
-  $ csdx cm:stacks:import-setup --stack-api-key <target_stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>
-
-  $ csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name>
-
-  $ csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name> -b <branch_name>
-```
-
-## `csdx cm:migrate-rte`
-
-Migration script to migrate content from HTML RTE to JSON RTE
-
-```
-USAGE
-  $ csdx cm:migrate-rte [-c <value>] [-a <value>] [--stack-api-key <value>] [--content-type <value>]
-    [--global-field] [-y] [--branch <value>] [--html-path <value> --json-path <value>] [--delay <value>] [--locale
-    <value>] [--batch-limit <value>]
-
-FLAGS
-  -a, --alias=<value>          Enter the alias name. You must use either the --alias flag or the --stack-api-key flag.
-  -c, --config-path=<value>    Specify the path where your config file is located.
-  -y, --yes                    Avoids reconfirmation of your configuration.
-      --batch-limit=<value>    [default: 50] Provide batch limit for updating entries (default: 50).
-      --branch=<value>         The name of the branch to be used.
-      --content-type=<value>   Specify the UID of the content type for which you want to migrate HTML RTE content.
-      --delay=<value>          [default: 1000] To set the interval time between the migration of HTML RTE to JSON RTE in
-                               subsequent entries of a content type. The default value is 1,000 milliseconds.
-      --global-field           Checks whether the specified UID belongs to a content type or a global field. This flag
-                               is set to false by default.
-      --html-path=<value>      Enter the path to the HTML RTE whose content you want to migrate.
-      --json-path=<value>      Enter the path to the JSON RTE to which you want to migrate the HTML RTE content.
-      --locale=<value>         The locale from which entries will be migrated.
-      --stack-api-key=<value>  API key of the source stack. You must use either the --stack-api-key flag or the --alias
-                               flag.
-
-DESCRIPTION
-  Migration script to migrate content from HTML RTE to JSON RTE
-
-ALIASES
-  $ csdx cm:migrate-rte
-
-EXAMPLES
-  General Usage
-
-  $ csdx cm:entries:migrate-html-rte --config-path path/to/config.json
-
-
-
-  Using Flags
-
-  $ csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path html-path --json-path json-path
-
-
-
-  Nested RTE
-
-  $ csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path modular_block_uid.block_uid.html_rte_uid --json-path modular_block_uid.block_uid.json_rte_uid
-
-
-
-  $ csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path group_uid.html_rte_uid --json-path group_uid.json_rte_uid
-
-
-
-  Global Field
-
-  $ csdx cm:entries:migrate-html-rte --alias alias --content-type global_field_uid --global-field --html-path html-path --json-path json-path
-```
-
-## `csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`
-
-Contentstack migration script.
-
-```
-USAGE
-  $ csdx cm:migration cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>]
-    [--config-file <value>] [--config <value>] [--multiple]
-
-FLAGS
-  -B, --branch=<value>         Use this flag to add the branch name where you want to perform the migration. (target
-                               branch name)
-  -a, --alias=<value>          Use this flag to add the management token alias. You must use either the --alias flag or
-                               the --stack-api-key flag.
-  -k, --stack-api-key=<value>  Use this flag to add the API key of your stack. You must use either the --stack-api-key
-                               flag or the --alias flag.
-      --config=<value>...      [optional] Inline configuration, <key1>:<value1>. Passing an external configuration makes
-                               the script re-usable.
-      --config-file=<value>    [optional] Path of the JSON configuration file.
-      --file-path=<value>      Use this flag to provide the path of the file of the migration script.
-      --multiple               This flag helps you to migrate multiple content files in a single instance. Mention the
-                               folder path where your migration script files are stored.
-
-DESCRIPTION
-  Contentstack migration script.
-
-ALIASES
-  $ csdx cm:migration
-
-EXAMPLES
-  $ csdx cm:migration --file-path <migration/script/file/path> -k <api-key>
-
-  $ csdx cm:migration --file-path <migration/script/file/path> -k <api-key> --branch <target branch name>
-
-  $ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... --file-path <migration/script/file/path>
-
-  $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
-
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
-
-  $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
-```
-
-## `csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]`
-
-Create a stack from existing content types, entries, assets, etc
-
-```
-USAGE
-  $ csdx cm:seed cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s
-    <value>] [--locale <value>]
-
-FLAGS
-  -a, --alias=<value>          Alias of the management token
-  -k, --stack-api-key=<value>  Provide stack API key to seed content to
-  -n, --stack-name=<value>     Name of a new stack that needs to be created.
-  -o, --org=<value>            Provide Organization UID to create a new stack
-  -r, --repo=<value>           GitHub organization name or GitHub user name/repository name.
-  -s, --stack=<value>          Provide the stack UID to seed content.
-  -y, --yes=<value>            [Optional] Skip the stack confirmation.
-
-DESCRIPTION
-  Create a stack from existing content types, entries, assets, etc
-
-ALIASES
-  $ csdx cm:seed
-
-EXAMPLES
-  $ csdx cm:stacks:seed
-
-  $ csdx cm:stacks:seed --repo "account"
-
-  $ csdx cm:stacks:seed --repo "account/repository"
-
-  $ csdx cm:stacks:seed --repo "account/repository" --stack-api-key "stack-api-key" //seed content into specific stack
-
-  $ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack in given org uid
-```
-
-## `csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`
-
-Clone data (structure/content or both) of a stack into another stack
-
-```
-USAGE
-  $ csdx cm:stack-clone cm:stacks:clone [--source-branch <value>] [--target-branch <value>]
-    [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b]
-    [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]
-
-FLAGS
-  -c, --config=<value>                              Path for the external configuration
-  -n, --stack-name=<value>                          Provide a name for the new stack to store the cloned content.
-  -y, --yes                                         Force override all Marketplace prompts.
-      --destination-management-token-alias=<value>  Destination management token alias.
-      --destination-stack-api-key=<value>           Destination stack API key
-      --import-webhook-status=<option>              [default: disable] [default: disable] (optional) The status of the
-                                                    import webhook. <options: disable|current>
-                                                    <options: disable|current>
-      --skip-audit                                  (optional) Skips the audit fix that occurs during an import
-                                                    operation.
-      --source-branch=<value>                       Branch of the source stack.
-      --source-branch-alias=<value>                 Alias of Branch of the source stack.
-      --source-management-token-alias=<value>       Source management token alias.
-      --source-stack-api-key=<value>                Source stack API key
-      --target-branch=<value>                       Branch of the target stack.
-      --target-branch-alias=<value>                 Alias of Branch of the target stack.
-      --type=<option>                               Type of data to clone. You can select option a or b.
-                                                    a) Structure (all modules except entries & assets).
-                                                    b) Structure with content (all modules including entries & assets).
-
-                                                    <options: a|b>
-
-DESCRIPTION
-  Clone data (structure/content or both) of a stack into another stack
-  Use this plugin to automate the process of cloning a stack in few steps.
-
-
-ALIASES
-  $ csdx cm:stack-clone
-
-EXAMPLES
-  $ csdx cm:stacks:clone
-
-  $ csdx cm:stacks:clone --source-branch <source-branch-name> --target-branch <target-branch-name> --yes
-
-  $ csdx cm:stacks:clone --source-stack-api-key <apiKey> --destination-stack-api-key <apiKey>
-
-  $ csdx cm:stacks:clone --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias>
-
-  $ csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias>
-
-  $ csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias> --type <value a or b>
-```
+_See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/cli/blob/main/packages/contentstack-export-to-csv/src/commands/cm/export-to-csv.js)_
 
 ## `csdx cm:stacks:audit`
 
@@ -2664,14 +2139,13 @@ Perform audits and find possible errors in the exported Contentstack data
 ```
 USAGE
   $ csdx cm:stacks:audit [-c <value>] [-d <value>] [--show-console-output] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules|composable-studio...]
-    [--columns <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output
-    csv|json|yaml]
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules...] [--columns <value>]
+    [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --modules=<option>...  Provide the list of modules to be audited
-                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-ru
-                         les|composable-studio>
+                         <options:
+                         content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules>
   --report-path=<value>  Path to store the audit reports
 
 COMMON FLAGS
@@ -2691,10 +2165,6 @@ TABLE FLAGS
 
 DESCRIPTION
   Perform audits and find possible errors in the exported Contentstack data
-
-ALIASES
-  $ csdx audit
-  $ csdx cm:stacks:audit
 
 EXAMPLES
   $ csdx cm:stacks:audit
@@ -2717,10 +2187,9 @@ Perform audits and fix possible errors in the exported Contentstack data.
 ```
 USAGE
   $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>] [--show-console-output] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules|composable-studio...]
-    [--copy-path <value> --copy-dir] [--fix-only
-    reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value>] [--sort <value>]
-    [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
+    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules...] [--copy-path <value>
+    --copy-dir] [--fix-only reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns
+    <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
 
 FLAGS
   --copy-dir              Create backup from the original data.
@@ -2728,8 +2197,8 @@ FLAGS
   --fix-only=<option>...  Provide the list of fix options
                           <options: reference|global_field|json:rte|json:extension|blocks|group|content_types>
   --modules=<option>...   Provide the list of modules to be audited
-                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-r
-                          ules|composable-studio>
+                          <options:
+                          content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules>
   --report-path=<value>   Path to store the audit reports
 
 COMMON FLAGS
@@ -2749,10 +2218,6 @@ TABLE FLAGS
 
 DESCRIPTION
   Perform audits and fix possible errors in the exported Contentstack data.
-
-ALIASES
-  $ csdx audit:fix
-  $ csdx cm:stacks:audit:fix
 
 EXAMPLES
   $ csdx cm:stacks:audit:fix --copy-dir
@@ -2808,9 +2273,6 @@ DESCRIPTION
   Use this plugin to automate the process of cloning a stack in few steps.
 
 
-ALIASES
-  $ csdx cm:stack-clone
-
 EXAMPLES
   $ csdx cm:stacks:clone
 
@@ -2825,41 +2287,38 @@ EXAMPLES
   $ csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias> --type <value a or b>
 ```
 
-_See code: [@contentstack/cli-cm-clone](https://github.com/contentstack/cli/blob/main/packages/contentstack-clone/src/commands/cm/stacks/clone.ts)_
+_See code: [@contentstack/cli-cm-clone](https://github.com/contentstack/cli/blob/main/packages/contentstack-clone/src/commands/cm/stacks/clone.js)_
 
-## `csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`
+## `csdx cm:stacks:export [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`
 
 Export content from a stack
 
 ```
 USAGE
-  $ csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types
-    <value>] [--branch <value>] [--secured-assets]
+  $ csdx cm:stacks:export [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>]
+    [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]
 
 FLAGS
-  -B, --branch=<value>            [optional] The name of the branch where you want to export your content. If you don't
-                                  mention the branch name, then by default the content will be exported from all the
-                                  branches of your stack.
   -a, --alias=<value>             The management token alias of the source stack from which you will export content.
   -c, --config=<value>            [optional] Path of the config
   -d, --data-dir=<value>          The path or the location in your file system to store the exported content. For e.g.,
                                   ./content
   -k, --stack-api-key=<value>     API Key of the source stack
-  -m, --module=<value>            [optional] Specific module name. If not specified, the export command will export all
+  -y, --yes                       [optional] Force override all Marketplace prompts.
+      --branch=<value>            [optional] The name of the branch where you want to export your content. If you don't
+                                  mention the branch name, then by default the content will be exported from all the
+                                  branches of your stack.
+      --branch-alias=<value>      (Optional) The alias of the branch from which you want to export content.
+      --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
+                                  of multiple content types, specify the IDs separated by spaces.
+      --module=<value>            [optional] Specific module name. If not specified, the export command will export all
                                   the modules to the stack. The available modules are assets, content-types, entries,
                                   environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks,
                                   workflows, custom-roles, taxonomies, and studio.
-  -t, --content-types=<value>...  [optional]  The UID of the content type(s) whose content you want to export. In case
-                                  of multiple content types, specify the IDs separated by spaces.
-  -y, --yes                       [optional] Force override all Marketplace prompts.
-      --branch-alias=<value>      (Optional) The alias of the branch from which you want to export content.
       --secured-assets            [optional] Use this flag for assets that are secured.
 
 DESCRIPTION
   Export content from a stack
-
-ALIASES
-  $ csdx cm:export
 
 EXAMPLES
   $ csdx cm:stacks:export --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>
@@ -2879,25 +2338,18 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/stacks/export.ts)_
 
-## `csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
+## `csdx cm:stacks:import [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
 
 Import content from a stack
 
 ```
 USAGE
-  $ csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir
-    <value>] [--branch <value>] [--import-webhook-status disable|current]
+  $ csdx cm:stacks:import [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>]
+    [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]
 
 FLAGS
-  -B, --branch=<value>
-      The name of the branch where you want to import your content. If you don't mention the branch name, then by default
-      the content will be imported to the main branch.
-
   -a, --alias=<value>
       The management token of the destination stack where you will import the content.
-
-  -b, --backup-dir=<value>
-      [optional] Backup directory name when using specific module.
 
   -c, --config=<value>
       [optional] The path of the configuration JSON file containing all the options for a single run.
@@ -2910,14 +2362,15 @@ FLAGS
   -k, --stack-api-key=<value>
       API Key of the target stack
 
-  -m, --module=<value>
-      [optional] Specify the module to import into the target stack. If not specified, the import command will import all
-      the modules into the stack. The available modules are assets, content-types, entries, environments, extensions,
-      marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, personalize projects,
-      taxonomies, and composable-studio.
-
   -y, --yes
       [optional] Force override all Marketplace prompts.
+
+  --backup-dir=<value>
+      [optional] Backup directory name when using specific module.
+
+  --branch=<value>
+      The name of the branch where you want to import your content. If you don't mention the branch name, then by default
+      the content will be imported to the main branch.
 
   --branch-alias=<value>
       Specify the branch alias where you want to import your content. If not specified, the content is imported into the
@@ -2931,14 +2384,17 @@ FLAGS
       stack. <options: disable|current>
       <options: disable|current>
 
+  --module=<value>
+      [optional] Specify the module to import into the target stack. If not specified, the import command will import all
+      the modules into the stack. The available modules are assets, content-types, entries, environments, extensions,
+      marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, personalize projects,
+      taxonomies, and composable-studio.
+
   --personalize-project-name=<value>
       (optional) Provide a unique name for the Personalize project.
 
   --replace-existing
       Replaces the existing module in the target stack.
-
-  --skip-app-recreation
-      (optional) Skips the recreation of private apps if they already exist.
 
   --skip-assets-publish
       Skips asset publishing during the import process.
@@ -2954,9 +2410,6 @@ FLAGS
 
 DESCRIPTION
   Import content from a stack
-
-ALIASES
-  $ csdx cm:import
 
 EXAMPLES
   $ csdx cm:stacks:import --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>
@@ -2987,14 +2440,14 @@ USAGE
   $ csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]
 
 FLAGS
-  -B, --branch=<value>         The name of the branch where you want to import your content. If you don't mention the
-                               branch name, then by default the content will be imported to the main branch.
   -a, --alias=<value>          The management token of the destination stack where you will import the content.
   -d, --data-dir=<value>       The path or the location in your file system where the content, you intend to import, is
                                stored. For example, -d "C:\Users\Name\Desktop\cli\content". If the export folder has
                                branches involved, then the path should point till the particular branch. For example,
                                “-d "C:\Users\Name\Desktop\cli\content\branch_name"
   -k, --stack-api-key=<value>  API key of the target stack
+      --branch=<value>         The name of the branch where you want to import your content. If you don't mention the
+                               branch name, then by default the content will be imported to the main branch.
       --branch-alias=<value>   Specify the branch alias where you want to import your content. If not specified, the
                                content is imported into the main branch by default.
       --module=<option>...     [optional] Specify the modules/module to import into the target stack. currently options
@@ -3004,15 +2457,8 @@ FLAGS
 DESCRIPTION
   Helps to generate mappers and backup folder for importing (overwriting) specific modules
 
-ALIASES
-  $ csdx cm:import-setup
-
 EXAMPLES
-  $ csdx cm:stacks:import-setup --stack-api-key <target_stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name>
-
-  $ csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name>
-
-  $ csdx cm:stacks:import-setup -k <target_stack_api_key> -d <path/of/export/destination/dir> --modules <module_name, module_name> -b <branch_name>
+  $ csdx cm:stacks:import-setup --stack-api-key <target_stack_api_key> --data-dir <path/of/export/destination/dir> --modules <module_name, module_name> --branch <branch_name>
 ```
 
 _See code: [@contentstack/cli-cm-import-setup](https://github.com/contentstack/cli/blob/main/packages/contentstack-import-setup/src/commands/cm/stacks/import-setup.ts)_
@@ -3027,12 +2473,12 @@ USAGE
     [--config <value>] [--multiple]
 
 FLAGS
-  -B, --branch=<value>         Use this flag to add the branch name where you want to perform the migration. (target
-                               branch name)
   -a, --alias=<value>          Use this flag to add the management token alias. You must use either the --alias flag or
                                the --stack-api-key flag.
   -k, --stack-api-key=<value>  Use this flag to add the API key of your stack. You must use either the --stack-api-key
                                flag or the --alias flag.
+      --branch=<value>         Use this flag to add the branch name where you want to perform the migration. (target
+                               branch name)
       --config=<value>...      [optional] Inline configuration, <key1>:<value1>. Passing an external configuration makes
                                the script re-usable.
       --config-file=<value>    [optional] Path of the JSON configuration file.
@@ -3043,13 +2489,10 @@ FLAGS
 DESCRIPTION
   Contentstack migration script.
 
-ALIASES
-  $ csdx cm:migration
-
 EXAMPLES
-  $ csdx cm:migration --file-path <migration/script/file/path> -k <api-key>
+  $ csdx cm:migration --file-path <migration/script/file/path> --stack-api-key <stack-api-key>
 
-  $ csdx cm:migration --file-path <migration/script/file/path> -k <api-key> --branch <target branch name>
+  $ csdx cm:migration --file-path <migration/script/file/path> --stack-api-key <stack-api-key> --branch <target branch name>
 
   $ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... --file-path <migration/script/file/path>
 
@@ -3057,7 +2500,7 @@ EXAMPLES
 
   $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
 
-  $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
+  $ csdx cm:migration --alias <management-token-alias> --file-path <migration/script/file/path>
 ```
 
 _See code: [@contentstack/cli-migration](https://github.com/contentstack/cli/blob/main/packages/contentstack-migration/src/commands/cm/stacks/migration.js)_
@@ -3213,29 +2656,25 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish-revert.js)_
 
-## `csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]`
+## `csdx cm:stacks:seed [--repo <value>] [--org <value>] [--stack-api-key <value>] [--stack-name <value>] [--yes <value>] [--alias <value>] [--locale <value>]`
 
 Create a stack from existing content types, entries, assets, etc
 
 ```
 USAGE
-  $ csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]
-    [--locale <value>]
+  $ csdx cm:stacks:seed [--repo <value>] [--org <value>] [--stack-api-key <value>] [--stack-name <value>] [--yes
+    <value>] [--alias <value>] [--locale <value>]
 
 FLAGS
   -a, --alias=<value>          Alias of the management token
   -k, --stack-api-key=<value>  Provide stack API key to seed content to
   -n, --stack-name=<value>     Name of a new stack that needs to be created.
-  -o, --org=<value>            Provide Organization UID to create a new stack
-  -r, --repo=<value>           GitHub organization name or GitHub user name/repository name.
-  -s, --stack=<value>          Provide the stack UID to seed content.
   -y, --yes=<value>            [Optional] Skip the stack confirmation.
+      --org=<value>            Provide Organization UID to create a new stack
+      --repo=<value>           GitHub organization name or GitHub user name/repository name.
 
 DESCRIPTION
   Create a stack from existing content types, entries, assets, etc
-
-ALIASES
-  $ csdx cm:seed
 
 EXAMPLES
   $ csdx cm:stacks:seed
@@ -3422,23 +2861,6 @@ EXAMPLES
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/log.ts)_
 
-## `csdx config:get:proxy`
-
-Get proxy configuration for CLI
-
-```
-USAGE
-  $ csdx config:get:proxy
-
-DESCRIPTION
-  Get proxy configuration for CLI
-
-EXAMPLES
-  $ csdx config:get:proxy
-```
-
-_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/proxy.ts)_
-
 ## `csdx config:get:rate-limit`
 
 Get rate-limit of organizations
@@ -3547,23 +2969,6 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/early-access-header.ts)_
-
-## `csdx config:remove:proxy`
-
-Remove proxy configuration from global config
-
-```
-USAGE
-  $ csdx config:remove:proxy
-
-DESCRIPTION
-  Remove proxy configuration from global config
-
-EXAMPLES
-  $ csdx config:remove:proxy
-```
-
-_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/proxy.ts)_
 
 ## `csdx config:remove:rate-limit`
 
@@ -3696,34 +3101,6 @@ EXAMPLES
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/log.ts)_
 
-## `csdx config:set:proxy`
-
-Set proxy configuration for CLI
-
-```
-USAGE
-  $ csdx config:set:proxy --host <value> --port <value> --protocol http|https [--username <value>]
-
-FLAGS
-  --host=<value>       (required) Proxy host address
-  --port=<value>       (required) Proxy port number
-  --protocol=<option>  (required) [default: http] Proxy protocol (http or https)
-                       <options: http|https>
-  --username=<value>   Proxy username (optional)
-
-DESCRIPTION
-  Set proxy configuration for CLI
-
-EXAMPLES
-  $ csdx config:set:proxy --host 127.0.0.1 --port 3128
-
-  $ csdx config:set:proxy --host proxy.example.com --port 8080 --protocol https
-
-  $ csdx config:set:proxy --host proxy.example.com --port 8080 --username user
-```
-
-_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/proxy.ts)_
-
 ## `csdx config:set:rate-limit`
 
 Set rate-limit for CLI
@@ -3829,7 +3206,7 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.37/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.36/src/commands/help.ts)_
 
 ## `csdx launch`
 
@@ -3841,33 +3218,33 @@ USAGE
     React App)|CSR (Client-Side Rendered)|Angular|Nuxt|VueJs|Remix|Other] [--org <value>] [-n <value>] [-e <value>]
     [--branch <value>] [--build-command <value>] [--out-dir <value>] [--server-command <value>] [--variable-type Import
     variables from a stack|Manually add custom variables to the list|Import variables from the .env.local file|Skip
-    adding environment variables...] [-a <value>] [--env-variables <value>] [--redeploy-latest] [--redeploy-last-upload]
+    adding environment variables] [-a <value>] [--env-variables <value>] [--redeploy-latest] [--redeploy-last-upload]
 
 FLAGS
-  -a, --alias=<value>              [optional] Alias (name) for the delivery token.
-  -c, --config=<value>             Path to the local '.cs-launch.json' file
-  -d, --data-dir=<value>           Current working directory
-  -e, --environment=<value>        [optional] Environment name for the Launch project.
-  -n, --name=<value>               [optional] Name of the project.
-      --branch=<value>             [optional] GitHub branch name.
-      --build-command=<value>      [optional] Build Command.
-      --env-variables=<value>      [optional] Provide the environment variables in the key:value format, separated by
-                                   comma. For example: APP_ENV:prod, TEST_ENV:testVal.
-      --framework=<option>         [optional] Type of framework. <options: Gatsby|NextJS|Other>
-                                   <options: Gatsby|NextJs|CRA (Create React App)|CSR (Client-Side
-                                   Rendered)|Angular|Nuxt|VueJs|Remix|Other>
-      --org=<value>                [optional] Provide the organization UID to create a new project or deployment.
-      --out-dir=<value>            [optional] Output Directory.
-      --redeploy-last-upload       [optional] Redeploy with last file upload
-      --redeploy-latest            [optional] Redeploy latest commit/code
-      --server-command=<value>     [optional] Server Command.
-      --type=<option>              [optional] Type of adapters. <options: GitHub|FileUpload>
-                                   <options: GitHub|FileUpload>
-      --variable-type=<option>...  [optional] Provide a variable type (can specify multiple times). <options: Import
-                                   variables from a stack|Manually add custom variables to the list|Import variables
-                                   from the .env.local file|Skip adding environment variables>
-                                   <options: Import variables from a stack|Manually add custom variables to the
-                                   list|Import variables from the .env.local file|Skip adding environment variables>
+  -a, --alias=<value>           [optional] Alias (name) for the delivery token.
+  -c, --config=<value>          Path to the local '.cs-launch.json' file
+  -d, --data-dir=<value>        Current working directory
+  -e, --environment=<value>     [optional] Environment name for the Launch project.
+  -n, --name=<value>            [optional] Name of the project.
+      --branch=<value>          [optional] GitHub branch name.
+      --build-command=<value>   [optional] Build Command.
+      --env-variables=<value>   [optional] Provide the environment variables in the key:value format, separated by
+                                comma. For example: APP_ENV:prod, TEST_ENV:testVal.
+      --framework=<option>      [optional] Type of framework. <options: Gatsby|NextJS|Other>
+                                <options: Gatsby|NextJs|CRA (Create React App)|CSR (Client-Side
+                                Rendered)|Angular|Nuxt|VueJs|Remix|Other>
+      --org=<value>             [optional] Provide the organization UID to create a new project or deployment.
+      --out-dir=<value>         [optional] Output Directory.
+      --redeploy-last-upload    [optional] Redeploy with last file upload
+      --redeploy-latest         [optional] Redeploy latest commit/code
+      --server-command=<value>  [optional] Server Command.
+      --type=<option>           [optional] Type of adapters. <options: GitHub|FileUpload>
+                                <options: GitHub|FileUpload>
+      --variable-type=<option>  [optional] Provide a variable type. <options: Import variables from a stack|Manually add
+                                custom variables to the list|Import variables from the .env.local file|Skip adding
+                                environment variables>
+                                <options: Import variables from a stack|Manually add custom variables to the list|Import
+                                variables from the .env.local file|Skip adding environment variables>
 
 DESCRIPTION
   Launch related operations
@@ -3898,8 +3275,6 @@ EXAMPLES
   $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --variable-type="Import variables from a stack" --alias=<value>
 
   $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --variable-type="Manually add custom variables to the list" --env-variables="APP_ENV:prod, TEST_ENV:testVal"
-
-  $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value> --variable-type="Import variables from a stack" --variable-type="Manually add custom variables to the list" --alias=<value>
 ```
 
 _See code: [@contentstack/cli-launch](https://github.com/contentstack/launch-cli/blob/main/packages/contentstack-launch/src/commands/launch/index.ts)_
@@ -3972,8 +3347,7 @@ USAGE
   $ csdx launch:functions [-p <value>] [-d <value>]
 
 FLAGS
-  -d, --data-dir=<value>  [default: /Users/netraj.patel/projects/contentstack/cli/packages/contentstack] Current working
-                          directory
+  -d, --data-dir=<value>  [default: /Users/naman.dembla/Documents/cli/packages/contentstack] Current working directory
   -p, --port=<value>      [default: 3000] Port number
 
 DESCRIPTION
@@ -4149,7 +3523,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.54/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:add PLUGIN`
 
@@ -4223,7 +3597,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.54/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN`
 
@@ -4272,7 +3646,7 @@ EXAMPLES
     $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.54/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PATH`
 
@@ -4303,7 +3677,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.54/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:remove [PLUGIN]`
 
@@ -4344,7 +3718,7 @@ FLAGS
   --reinstall  Reinstall all plugins after uninstalling.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/reset.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.54/src/commands/plugins/reset.ts)_
 
 ## `csdx plugins:uninstall [PLUGIN]`
 
@@ -4372,7 +3746,7 @@ EXAMPLES
   $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.54/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:unlink [PLUGIN]`
 
@@ -4416,7 +3790,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.54/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 

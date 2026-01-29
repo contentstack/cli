@@ -11,25 +11,21 @@ import {
 } from '@contentstack/cli-utilities';
 import { Region } from '../../../interfaces';
 import { regionHandler, interactive } from '../../../utils';
-import { Args, BaseCommand } from '../../../base-command';
+import { BaseCommand } from '../../../base-command';
 
 export default class RegionSetCommand extends BaseCommand<typeof RegionSetCommand> {
   config: any;
   static description = 'Set region for CLI';
   static flags: FlagInput = {
     cda: _flags.string({
-      char: 'd',
       description:
         'Custom host to set for content delivery API, if this flag is added then cma, ui-host and name flags are required',
       dependsOn: ['cma', 'ui-host', 'name'],
-      parse: printFlagDeprecation(['-d'], ['--cda']),
     }),
     cma: _flags.string({
-      char: 'm',
       description:
         'Custom host to set for content management API, , if this flag is added then cda, ui-host and name flags are required',
       dependsOn: ['cda', 'ui-host', 'name'],
-      parse: printFlagDeprecation(['-m'], ['--cma']),
     }),
     'ui-host': _flags.string({
       description: 'Custom UI host to set for CLI, if this flag is added then cda, cma and name flags are required',

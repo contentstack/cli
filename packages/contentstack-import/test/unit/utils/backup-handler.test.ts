@@ -21,18 +21,18 @@ describe('Backup Handler', () => {
   beforeEach(() => {
     // Store original working directory
     originalCwd = process.cwd();
-    
+
     // Create temp directory - os.tmpdir() works in both local and CI environments (e.g., /tmp on Linux)
     // This ensures backups are created in isolated temp space, not in the working directory
     // In CI, os.tmpdir() returns a safe temp directory that's cleaned up automatically
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'backup-handler-test-'));
     sourceDir = path.join(tempDir, 'source');
     backupDir = path.join(tempDir, 'backup');
-    
+
     // Stub process.cwd() to return tempDir so backups are created there, not in actual working directory
     // This is critical for CI - prevents creating files in the workspace during tests
     processCwdStub = sinon.stub(process, 'cwd').returns(tempDir);
-    
+
     // Create source directory with some files
     fs.mkdirSync(sourceDir);
     fs.writeFileSync(path.join(sourceDir, 'test.json'), JSON.stringify({ key: 'value' }));
@@ -46,7 +46,6 @@ describe('Backup Handler', () => {
         command: 'cm:stacks:import',
         module: 'all',
       },
-      contentVersion: 1,
       masterLocale: { code: 'en-us' },
       backupDir: backupDir,
       region: 'us',
@@ -73,10 +72,10 @@ describe('Backup Handler', () => {
     if (processCwdStub) {
       processCwdStub.restore();
     }
-    
+
     // Restore all stubs
     sinon.restore();
-    
+
     // Clean up temp directory (which includes any backup dirs created in it)
     // This is critical for CI - must clean up temp files
     try {
@@ -87,7 +86,7 @@ describe('Backup Handler', () => {
       // Ignore cleanup errors - temp dirs will be cleaned by OS
       console.warn(`Failed to clean temp dir ${tempDir}:`, error);
     }
-    
+
     // Clean up any backup directories that might have been created in original working directory
     // This ensures CI doesn't leave files behind
     // Note: In CI (GitHub Actions), os.tmpdir() returns /tmp and we stub process.cwd(),

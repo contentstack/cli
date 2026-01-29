@@ -1,17 +1,17 @@
 import { join, resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { cloneDeep } from 'lodash';
-import { ConfigType, ContentTypeStruct, CtConstructorParam, ModuleConstructorParam, Workflow } from '../types';
+import { ContentTypeStruct, CtConstructorParam, ModuleConstructorParam, Workflow } from '../types';
 import { cliux, sanitizePath, log } from '@contentstack/cli-utilities';
 
 import auditConfig from '../config';
 import { $t, auditMsg, commonMsg } from '../messages';
 import { values } from 'lodash';
+import BaseClass from './base-class';
 
-export default class Workflows {
+export default class Workflows extends BaseClass {
   protected fix: boolean;
   public fileName: any;
-  public config: ConfigType;
   public folderPath: string;
   public workflowSchema: Workflow[];
   public ctSchema: ContentTypeStruct[];
@@ -28,7 +28,7 @@ export default class Workflows {
     moduleName,
     ctSchema,
   }: ModuleConstructorParam & Pick<CtConstructorParam, 'ctSchema'>) {
-    this.config = config;
+    super({ config });
     this.fix = fix ?? false;
     this.ctSchema = ctSchema;
     this.workflowSchema = [];
@@ -78,30 +78,38 @@ export default class Workflows {
    * From the ctSchema add all the content type UID into ctUidSet to check whether the content-type is present or not
    * @returns Array of object containing the workflow name, uid and content_types that are missing
    */
-  async run() {
-    
-    if (!existsSync(this.folderPath)) {
-      log.debug(`Skipping ${this.moduleName} audit - path does not exist`, this.config.auditContext);
-      log.warn(`Skipping ${this.moduleName} audit`, this.config.auditContext);
-      cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
-      return {};
-    }
+  async run(totalCount?: number) {
+    try {
+      if (!existsSync(this.folderPath)) {
+        log.debug(`Skipping ${this.moduleName} audit - path does not exist`, this.config.auditContext);
+        log.warn(`Skipping ${this.moduleName} audit`, this.config.auditContext);
+        cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
+        return {};
+      }
 
-    this.workflowPath = join(this.folderPath, this.fileName);
-    log.debug(`Workflows file path: ${this.workflowPath}`, this.config.auditContext);
+      this.workflowPath = join(this.folderPath, this.fileName);
+      log.debug(`Workflows file path: ${this.workflowPath}`, this.config.auditContext);
 
-    log.debug(`Loading workflows schema from file`, this.config.auditContext);
-    this.workflowSchema = existsSync(this.workflowPath)
-      ? values(JSON.parse(readFileSync(this.workflowPath, 'utf8')) as Workflow[])
-      : [];
-    log.debug(`Loaded ${this.workflowSchema.length} workflows`, this.config.auditContext);
+      // Load workflows schema with loading spinner
+      await this.withLoadingSpinner('WORKFLOWS: Loading workflows schema...', async () => {
+        this.workflowSchema = existsSync(this.workflowPath)
+          ? values(JSON.parse(readFileSync(this.workflowPath, 'utf8')) as Workflow[])
+          : [];
+      });
+      log.debug(`Loaded ${this.workflowSchema.length} workflows`, this.config.auditContext);
 
-    log.debug(`Building content type UID set from ${this.ctSchema.length} content types`, this.config.auditContext);
-    this.ctSchema.forEach((ct) => this.ctUidSet.add(ct.uid));
-    log.debug(`Content type UID set contains: ${Array.from(this.ctUidSet).join(', ')}`, this.config.auditContext);
+      log.debug(`Building content type UID set from ${this.ctSchema.length} content types`, this.config.auditContext);
+      this.ctSchema.forEach((ct) => this.ctUidSet.add(ct.uid));
+      log.debug(`Content type UID set contains: ${Array.from(this.ctUidSet).join(', ')}`, this.config.auditContext);
 
-    log.debug(`Processing ${this.workflowSchema.length} workflows`, this.config.auditContext);
-    for (const workflow of this.workflowSchema) {
+      // Create progress manager if we have a total count
+      if (totalCount && totalCount > 0) {
+        const progress = this.createSimpleProgress(this.moduleName, totalCount);
+        progress.updateStatus('Validating workflows...');
+      }
+
+      log.debug(`Processing ${this.workflowSchema.length} workflows`, this.config.auditContext);
+      for (const workflow of this.workflowSchema) {
       const { name, uid } = workflow;
       log.debug(`Processing workflow: ${name} (${uid})`, this.config.auditContext);
       log.debug(`Workflow content types: ${workflow.content_types?.join(', ') || 'none'}`, this.config.auditContext);
@@ -152,23 +160,29 @@ export default class Workflows {
       );
     }
 
-    log.debug(`Workflows audit completed. Found ${this.missingCtInWorkflows.length} workflows with issues`, this.config.auditContext);
-    log.debug(`Total missing content types: ${this.missingCts.size}`, this.config.auditContext);
-    log.debug(`Branch fix needed: ${this.isBranchFixDone}`, this.config.auditContext);
+      log.debug(`Workflows audit completed. Found ${this.missingCtInWorkflows.length} workflows with issues`, this.config.auditContext);
+      log.debug(`Total missing content types: ${this.missingCts.size}`, this.config.auditContext);
+      log.debug(`Branch fix needed: ${this.isBranchFixDone}`, this.config.auditContext);
 
-    if (this.fix && (this.missingCtInWorkflows.length || this.isBranchFixDone)) {
-      log.debug(`Fix mode enabled, fixing ${this.missingCtInWorkflows.length} workflows`, this.config.auditContext);
-      await this.fixWorkflowSchema();
-      this.missingCtInWorkflows.forEach((wf) => {
-        log.debug(`Marking workflow ${wf.name} as fixed`, this.config.auditContext);
-        wf.fixStatus = 'Fixed';
-      });
-      log.debug(`Workflows fix completed`, this.config.auditContext);
+      if (this.fix && (this.missingCtInWorkflows.length || this.isBranchFixDone)) {
+        log.debug(`Fix mode enabled, fixing ${this.missingCtInWorkflows.length} workflows`, this.config.auditContext);
+        await this.fixWorkflowSchema();
+        this.missingCtInWorkflows.forEach((wf) => {
+          log.debug(`Marking workflow ${wf.name} as fixed`, this.config.auditContext);
+          wf.fixStatus = 'Fixed';
+        });
+        log.debug(`Workflows fix completed`, this.config.auditContext);
+        this.completeProgress(true);
+        return this.missingCtInWorkflows;
+      }
+      
+      log.debug(`Workflows audit completed without fixes`, this.config.auditContext);
+      this.completeProgress(true);
       return this.missingCtInWorkflows;
+    } catch (error: any) {
+      this.completeProgress(false, error?.message || 'Workflows audit failed');
+      throw error;
     }
-    
-    log.debug(`Workflows audit completed without fixes`, this.config.auditContext);
-    return this.missingCtInWorkflows;
   }
 
   async fixWorkflowSchema() {

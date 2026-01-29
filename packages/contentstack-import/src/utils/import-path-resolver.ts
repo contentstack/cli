@@ -1,9 +1,10 @@
 import * as path from 'path';
 import { log } from '@contentstack/cli-utilities';
-import { fileExistsSync, readFile } from './file-helper';
-import { askBranchSelection } from './interactive';
-import { ImportConfig } from '../types';
+
 import defaultConfig from '../config';
+import { ImportConfig } from '../types';
+import { askBranchSelection } from './interactive';
+import { fileExistsSync, readFile } from './file-helper';
 
 /**
  * Selects a branch from directory structure when multiple branches are found
@@ -55,8 +56,8 @@ export const selectBranchFromDirectory = async (contentDir: string): Promise<{ b
       return { branchPath: selectedBranchPath };
     }
   } catch (error) {
-      log.error(`Error selecting branch directory from directory structure: ${error}`);
-      throw error;
+    log.error(`Error selecting branch directory from directory structure: ${error}`);
+    throw error;
   }
 };
 
@@ -69,7 +70,7 @@ export const selectBranchFromDirectory = async (contentDir: string): Promise<{ b
 export const resolveImportPath = async (importConfig: ImportConfig, stackAPIClient: any): Promise<string> => {
   log.debug('Resolving import path based on directory structure');
 
-  const contentDir = importConfig.contentDir || importConfig.data;
+  const contentDir = importConfig.contentDir;
   log.debug(`Content directory: ${contentDir}`);
 
   if (!fileExistsSync(contentDir)) {
@@ -95,12 +96,6 @@ export const resolveImportPath = async (importConfig: ImportConfig, stackAPIClie
     return contentDir;
   }
 
-  const exportInfoPath = path.join(contentDir, 'export-info.json');
-  if (fileExistsSync(exportInfoPath)) {
-    log.debug('Found export-info.json - using contentDir as-is (v2 export)');
-    return contentDir;
-  }
-
   const moduleTypes = defaultConfig.modules.types;
   const hasModuleFolders = moduleTypes.some((moduleType) => fileExistsSync(path.join(contentDir, moduleType)));
 
@@ -123,7 +118,10 @@ export const resolveImportPath = async (importConfig: ImportConfig, stackAPIClie
  * @param importConfig - The import configuration object
  * @param resolvedPath - The resolved path
  */
-export const updateImportConfigWithResolvedPath = async (importConfig: ImportConfig, resolvedPath: string): Promise<void> => {
+export const updateImportConfigWithResolvedPath = async (
+  importConfig: ImportConfig,
+  resolvedPath: string,
+): Promise<void> => {
   log.debug(`Updating import config with resolved path: ${resolvedPath}`);
 
   if (!fileExistsSync(resolvedPath)) {
@@ -135,20 +133,8 @@ export const updateImportConfigWithResolvedPath = async (importConfig: ImportCon
 
   importConfig.contentDir = resolvedPath;
 
-  importConfig.data = resolvedPath;
-
-  const exportInfoPath = path.join(resolvedPath, 'export-info.json');
-  if (fileExistsSync(exportInfoPath)) {
-    const exportInfo = await readFile(exportInfoPath);
-    importConfig.contentVersion = exportInfo?.contentVersion || 2;
-    log.debug(`Content version set to ${importConfig.contentVersion} from ${exportInfoPath}`);
-  } else {
-    importConfig.contentVersion = 1;
-    log.debug(`No export-info.json found at ${exportInfoPath}, setting content version to 1`);
-  }
-
   log.debug(
-    `Import config updated - contentDir: ${importConfig.contentDir}, branchDir: ${importConfig.branchDir}, data: ${importConfig.data}, contentVersion: ${importConfig.contentVersion}`,
+    `Import config updated - contentDir: ${importConfig.contentDir}, branchDir: ${importConfig.branchDir}`,
   );
 };
 

@@ -1,6 +1,6 @@
 {
   "ASSET_EXPORT_COMPLETE": "Asset export process completed successfully",
-  "ASSET_FOLDERS_EXPORT_COMPLETE": "Asset folder structure exported successfully",
+  "ASSET_FOLDERS_EXPORT_COMPLETE": "Asset folder structure exported successfully with %s folder(s)",
   "ASSET_METADATA_EXPORT_COMPLETE": "Asset metadata exported successfully",
   "ASSET_VERSIONED_METADATA_EXPORT_COMPLETE": "Versioned asset metadata exported successfully",
   "ASSET_DOWNLOAD_COMPLETE": "Asset download completed successfully",
@@ -71,5 +71,7 @@
   "BRANCH_EXPORT_FAILED": "Failed to export contents from branch (UID: %s)",
 
   "ROLES_NO_CUSTOM_ROLES": "No custom roles found in the current stack",
-  "ROLES_EXPORTING_ROLE": "Exporting role '%s'"
+  "ROLES_EXPORTING_ROLE": "Exporting role '%s'",
+
+"GLOBAL_FIELDS_NOT_FOUND": "No global fields found in the current stack"
 }
