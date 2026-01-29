@@ -53,4 +53,10 @@ fileignoreconfig:
     checksum: f5e40f93389f4fa62be90f0203ebd849c9c882d38afe3a8c35ae91970894a74e
   - filename: packages/contentstack-utilities/src/proxy-helper.ts
     checksum: 2a8379d7a34acb3c14093599fb4ba7307c94b0f280ea70d6d862ecb2448fe924
+  - filename: packages/contentstack-migration/test/unit/validators/edit-content-type-validator.test.ts
+    checksum: 0eeae791e22943cd871ffd9e29db84d30abddadd381969539e9acb122d2e03af
+  - filename: packages/contentstack-migration/test/unit/commands/cm/stacks/migration.test.ts
+    checksum: 9efc2552963731c0ddc8feeed42c97fbde98f2472407e61f0e98502e1599993c
+  - filename: packages/contentstack-migration/test/unit/validators/create-content-type-validator.test.ts
+    checksum: 2b82ec338f6e2723086ffd04d9d6c324ef0c33ee286a067903bc11f539cf8907
 version: ""

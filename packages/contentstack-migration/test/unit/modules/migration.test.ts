@@ -412,7 +412,44 @@ describe('Migration Module', () => {
       expect(result).to.be.undefined;
   });
 
+  describe('run', () => {
+    it('should get requests from map, build Listr tasks, and run listr (happy path)', async () => {
+      const requestItem = {
+        title: 'Run task',
+        tasks: [async () => 'ok'],
+        failedTitle: 'Failed',
+        successTitle: 'Success',
+      };
+      mockMapInstance.set(constantsModule.requests, [requestItem]);
+
+      await migration.run();
+    });
+  });
+
   describe('addTask', () => {
+    it('should call base.dispatch with callsite, null, null, and normalized tasks array', () => {
+      const taskFn = async () => 'done';
+      const taskDescription = {
+        title: 'My custom task',
+        task: taskFn,
+        failMessage: 'Custom fail',
+        successMessage: 'Custom success',
+      };
+
+      migration.addTask(taskDescription);
+
+      expect(mockBase.dispatch.calledOnce).to.be.true;
+      const [callsite, id, opts, tasks] = mockBase.dispatch.firstCall.args;
+      expect(callsite).to.have.property('getFileName').that.is.a('function');
+      expect(callsite).to.have.property('getLineNumber').that.is.a('function');
+      expect(callsite.getFileName()).to.equal('test.js');
+      expect(callsite.getLineNumber()).to.equal(1);
+      expect(id).to.be.null;
+      expect(opts).to.be.null;
+      expect(tasks).to.be.an('array').with.lengthOf(1);
+      expect(tasks[0]).to.equal(taskFn);
+    });
+
     it.skip('should add task to requests array in map', () => {
       const initialRequests: any[] = [];
       // Set up get stub to return the initialRequests array
