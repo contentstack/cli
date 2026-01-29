@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/2.0.0-beta.6 darwin-arm64 node-v24.12.0
+@contentstack/cli/2.0.0-beta.7 darwin-arm64 node-v24.12.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -45,6 +45,8 @@ USAGE
 * [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent)
 * [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
 * [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix)
+* [`csdx cm:stacks:bulk-assets`](#csdx-cmstacksbulk-assets)
+* [`csdx cm:stacks:bulk-entries`](#csdx-cmstacksbulk-entries)
 * [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent)
 * [`csdx cm:stacks:export [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport---config-value---stack-api-key-value---data-dir-value---alias-value---module-value---content-types-value---branch-value---secured-assets)
 * [`csdx cm:stacks:import [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport---config-value---stack-api-key-value---data-dir-value---alias-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
@@ -80,14 +82,13 @@ USAGE
 * [`csdx login`](#csdx-login)
 * [`csdx logout`](#csdx-logout)
 * [`csdx plugins`](#csdx-plugins)
-* [`csdx plugins:add PLUGIN`](#csdx-pluginsadd-plugin)
+* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
 * [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
-* [`csdx plugins:install PLUGIN`](#csdx-pluginsinstall-plugin)
-* [`csdx plugins:link PATH`](#csdx-pluginslink-path)
-* [`csdx plugins:remove [PLUGIN]`](#csdx-pluginsremove-plugin)
-* [`csdx plugins:reset`](#csdx-pluginsreset)
-* [`csdx plugins:uninstall [PLUGIN]`](#csdx-pluginsuninstall-plugin)
-* [`csdx plugins:unlink [PLUGIN]`](#csdx-pluginsunlink-plugin)
+* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
+* [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
+* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
+* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
+* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
 * [`csdx plugins:update`](#csdx-pluginsupdate)
 * [`csdx tokens`](#csdx-tokens)
 * [`csdx whoami`](#csdx-whoami)
@@ -741,6 +742,154 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-audit](https://github.com/contentstack/audit/blob/main/packages/contentstack-audit/src/commands/cm/stacks/audit/fix.ts)_
+
+## `csdx cm:stacks:bulk-assets`
+
+Bulk operations for assets (publish/unpublish/cross-publish)
+
+```
+USAGE
+  $ csdx cm:stacks:bulk-assets [-a <value>] [-k <value>] [--operation publish|unpublish] [--environments <value>...]
+    [--locales <value>...] [--source-env <value>] [--source-alias <value>] [--publish-mode bulk|single] [--branch
+    <value>] [-c <value>] [-y] [--retry-failed <value>] [--revert <value>] [--bulk-operation-file <value>] [--folder-uid
+    <value>]
+
+FLAGS
+  -a, --alias=<value>                Uses the name of a saved Management Token to authenticate the command. The command
+                                     can only access the branches allowed for that token. This option can be used as an
+                                     alternative to` --stack-api-key.`
+  -c, --config=<value>               (optional) Specifies the path to a JSON configuration file that defines the options
+                                     for the command. Use this file instead of passing multiple CLI flags for a single
+                                     run.
+  -k, --stack-api-key=<value>        API key of the source stack. You must use either the --stack-api-key flag or the
+                                     --alias flag.
+  -y, --yes                          Skips interactive confirmation prompts and runs the command immediately using the
+                                     provided options. Useful for automation and scripts.
+      --branch=<value>               [default: main] The name of the branch where you want to perform the bulk publish
+                                     operation. If you don't mention the branch name, then by default the content from
+                                     main branch will be published.
+      --bulk-operation-file=<value>  [default: bulk-operation] (optional) Folder path to store operation logs. Creates
+                                     separate files for success and failed operations. Default: bulk-operation
+      --environments=<value>...      Specifies one or more environments where the entries or assets should be published.
+                                     Separate multiple environments with spaces.
+      --folder-uid=<value>           (optional) The UID of the Assets' folder from which the assets need to be
+                                     published. The default value is cs_root.
+      --locales=<value>...           Specifies one or more locale codes for which the entries or assets should be
+                                     published. Separate multiple locales with spaces.
+      --operation=<option>           Specifies whether to `publish` or `unpublish` content.
+                                     <options: publish|unpublish>
+      --publish-mode=<option>        [default: bulk] Publish mode: bulk (uses Bulk Publish API) or single (individual
+                                     API calls)
+                                     <options: bulk|single>
+      --retry-failed=<value>         (optional) Use this option to retry publishing the failed entries/assets from the
+                                     logfile. Specify the name of the logfile that lists failed publish calls. If this
+                                     option is used, it will override all other flags.
+      --revert=<value>               (optional) Revert publish operations from a log folder. Specify the folder path
+                                     containing success logs. Works similar to retry-failed.
+      --source-alias=<value>         Alias name for source environment delivery token (required for cross-publish). Add
+                                     delivery token using: csdx auth:tokens:add
+      --source-env=<value>           Source environment for cross-publish
+
+DESCRIPTION
+  Bulk operations for assets (publish/unpublish/cross-publish)
+
+EXAMPLES
+  $ csdx cm:stacks:bulk-assets --operation publish --environments dev,staging --locales en-us -k blt123
+
+  $ csdx cm:stacks:bulk-assets --operation unpublish --environments prod --locales en-us -a myAlias
+
+  $ csdx cm:stacks:bulk-assets --operation publish --folder-uid cs_root --environments prod --locales en-us -k blt123
+
+  $ csdx cm:stacks:bulk-assets --operation publish --environments prod --locales en-us --publish-mode bulk -k blt123
+
+  $ csdx cm:stacks:bulk-assets --operation publish --source-env production --source-alias prod-delivery --environments staging,dev --locales en-us -a myAlias
+
+  $ csdx cm:stacks:bulk-assets --retry-failed ./bulk-operation -a myAlias
+
+  $ csdx cm:stacks:bulk-assets --revert ./bulk-operation -a myAlias
+```
+
+_See code: [@contentstack/cli-bulk-operations](https://github.com/contentstack/cli-bulk-operations/blob/v1.0.0-beta/src/commands/cm/stacks/bulk-assets.ts)_
+
+## `csdx cm:stacks:bulk-entries`
+
+Bulk operations for entries (publish/unpublish/cross-publish)
+
+```
+USAGE
+  $ csdx cm:stacks:bulk-entries [-a <value>] [-k <value>] [--operation publish|unpublish] [--environments <value>...]
+    [--locales <value>...] [--source-env <value>] [--source-alias <value>] [--publish-mode bulk|single] [--branch
+    <value>] [-c <value>] [-y] [--retry-failed <value>] [--revert <value>] [--bulk-operation-file <value>]
+    [--content-types <value>...] [--filter draft|modified|non-localized|unpublished] [--include-variants] [--api-version
+    <value>]
+
+FLAGS
+  -a, --alias=<value>                Uses the name of a saved Management Token to authenticate the command. The command
+                                     can only access the branches allowed for that token. This option can be used as an
+                                     alternative to` --stack-api-key.`
+  -c, --config=<value>               (optional) Specifies the path to a JSON configuration file that defines the options
+                                     for the command. Use this file instead of passing multiple CLI flags for a single
+                                     run.
+  -k, --stack-api-key=<value>        API key of the source stack. You must use either the --stack-api-key flag or the
+                                     --alias flag.
+  -y, --yes                          Skips interactive confirmation prompts and runs the command immediately using the
+                                     provided options. Useful for automation and scripts.
+      --api-version=<value>          [default: 3.2] Specifies the Content Management API version used for publishing.
+                                     Use version `3.2` when publishing entries with nested references, otherwise, use
+                                     the default version 3.2
+      --branch=<value>               [default: main] The name of the branch where you want to perform the bulk publish
+                                     operation. If you don't mention the branch name, then by default the content from
+                                     main branch will be published.
+      --bulk-operation-file=<value>  [default: bulk-operation] (optional) Folder path to store operation logs. Creates
+                                     separate files for success and failed operations. Default: bulk-operation
+      --content-types=<value>...     Content type UIDs to perform operation on. If not provided, operates on all content
+                                     types.
+      --environments=<value>...      Specifies one or more environments where the entries or assets should be published.
+                                     Separate multiple environments with spaces.
+      --filter=<option>              Filter entries by status
+                                     <options: draft|modified|non-localized|unpublished>
+      --include-variants             Includes entry variants (alternate versions of a base entry) in the bulk operation.
+                                     By default, only base entries are processed.
+      --locales=<value>...           Specifies one or more locale codes for which the entries or assets should be
+                                     published. Separate multiple locales with spaces.
+      --operation=<option>           Specifies whether to `publish` or `unpublish` content.
+                                     <options: publish|unpublish>
+      --publish-mode=<option>        [default: bulk] Publish mode: bulk (uses Bulk Publish API) or single (individual
+                                     API calls)
+                                     <options: bulk|single>
+      --retry-failed=<value>         (optional) Use this option to retry publishing the failed entries/assets from the
+                                     logfile. Specify the name of the logfile that lists failed publish calls. If this
+                                     option is used, it will override all other flags.
+      --revert=<value>               (optional) Revert publish operations from a log folder. Specify the folder path
+                                     containing success logs. Works similar to retry-failed.
+      --source-alias=<value>         Alias name for source environment delivery token (required for cross-publish). Add
+                                     delivery token using: csdx auth:tokens:add
+      --source-env=<value>           Source environment for cross-publish
+
+DESCRIPTION
+  Bulk operations for entries (publish/unpublish/cross-publish)
+
+EXAMPLES
+  $ csdx cm:stacks:bulk-entries --operation publish --environments dev --locales en-us -k blt123
+
+  $ csdx cm:stacks:bulk-entries --operation publish --content-types blog,article --environments dev --locales en-us -k blt123
+
+  $ csdx cm:stacks:bulk-entries --operation unpublish --content-types blog --environments prod --locales en-us -a myAlias
+
+  $ csdx cm:stacks:bulk-entries --operation publish --content-types blog --source-env production --source-alias prod-delivery --environments staging --locales en-us -a myAlias
+
+  $ csdx cm:stacks:bulk-entries --operation publish --content-types blog --environments prod --locales en-us --publish-mode bulk -k blt123
+
+  $ csdx cm:stacks:bulk-entries --operation publish --content-types blog --environments prod --locales en-us --filter modified -k blt123
+
+  $ csdx cm:stacks:bulk-entries --operation publish --content-types blog --environments prod --locales en-us --include-variants -k blt123
+
+  $ csdx cm:stacks:bulk-entries --retry-failed ./bulk-operation
+
+  $ csdx cm:stacks:bulk-entries --revert ./bulk-operation
+```
+
+_See code: [@contentstack/cli-bulk-operations](https://github.com/contentstack/cli-bulk-operations/blob/v1.0.0-beta/src/commands/cm/stacks/bulk-entries.ts)_
 
 ## `csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`
 
@@ -1846,53 +1995,44 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.10.1/src/commands/plugins/index.ts)_
 
-## `csdx plugins:add PLUGIN`
+## `csdx plugins:install PLUGIN...`
 
-Installs a plugin into csdx.
+Installs a plugin into the CLI.
 
 ```
 USAGE
-  $ csdx plugins:add PLUGIN... [--json] [-f] [-h] [-s | -v]
+  $ csdx plugins:add plugins:install PLUGIN...
 
 ARGUMENTS
   PLUGIN...  Plugin to install.
 
 FLAGS
-  -f, --force    Force npm to fetch remote resources even if a local copy exists on disk.
+  -f, --force    Run yarn install with force flag.
   -h, --help     Show CLI help.
-  -s, --silent   Silences npm output.
-  -v, --verbose  Show verbose npm output.
-
-GLOBAL FLAGS
-  --json  Format output as json.
+  -v, --verbose
 
 DESCRIPTION
-  Installs a plugin into csdx.
-
-  Uses npm to install plugins.
+  Installs a plugin into the CLI.
+  Can be installed from npm or a git url.
 
   Installation of a user-installed plugin will override a core plugin.
 
-  Use the CSDX_NPM_LOG_LEVEL environment variable to set the npm loglevel.
-  Use the CSDX_NPM_REGISTRY environment variable to set the npm registry.
+  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
+  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
+  the CLI without the need to patch and update the whole CLI.
+
 
 ALIASES
   $ csdx plugins:add
 
 EXAMPLES
-  Install a plugin from npm registry.
+  $ csdx plugins:install myplugin 
 
-    $ csdx plugins:add myplugin
+  $ csdx plugins:install https://github.com/someuser/someplugin
 
-  Install a plugin from a github url.
-
-    $ csdx plugins:add https://github.com/someuser/someplugin
-
-  Install a plugin from a github slug.
-
-    $ csdx plugins:add someuser/someplugin
+  $ csdx plugins:install someuser/someplugin
 ```
 
 ## `csdx plugins:inspect PLUGIN...`
@@ -1920,64 +2060,55 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.10.1/src/commands/plugins/inspect.ts)_
 
-## `csdx plugins:install PLUGIN`
+## `csdx plugins:install PLUGIN...`
 
-Installs a plugin into csdx.
+Installs a plugin into the CLI.
 
 ```
 USAGE
-  $ csdx plugins:install PLUGIN... [--json] [-f] [-h] [-s | -v]
+  $ csdx plugins:install PLUGIN...
 
 ARGUMENTS
   PLUGIN...  Plugin to install.
 
 FLAGS
-  -f, --force    Force npm to fetch remote resources even if a local copy exists on disk.
+  -f, --force    Run yarn install with force flag.
   -h, --help     Show CLI help.
-  -s, --silent   Silences npm output.
-  -v, --verbose  Show verbose npm output.
-
-GLOBAL FLAGS
-  --json  Format output as json.
+  -v, --verbose
 
 DESCRIPTION
-  Installs a plugin into csdx.
-
-  Uses npm to install plugins.
+  Installs a plugin into the CLI.
+  Can be installed from npm or a git url.
 
   Installation of a user-installed plugin will override a core plugin.
 
-  Use the CSDX_NPM_LOG_LEVEL environment variable to set the npm loglevel.
-  Use the CSDX_NPM_REGISTRY environment variable to set the npm registry.
+  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
+  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
+  the CLI without the need to patch and update the whole CLI.
+
 
 ALIASES
   $ csdx plugins:add
 
 EXAMPLES
-  Install a plugin from npm registry.
+  $ csdx plugins:install myplugin 
 
-    $ csdx plugins:install myplugin
+  $ csdx plugins:install https://github.com/someuser/someplugin
 
-  Install a plugin from a github url.
-
-    $ csdx plugins:install https://github.com/someuser/someplugin
-
-  Install a plugin from a github slug.
-
-    $ csdx plugins:install someuser/someplugin
+  $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.10.1/src/commands/plugins/install.ts)_
 
-## `csdx plugins:link PATH`
+## `csdx plugins:link PLUGIN`
 
 Links a plugin into the CLI for development.
 
 ```
 USAGE
-  $ csdx plugins:link PATH [-h] [--install] [-v]
+  $ csdx plugins:link PLUGIN
 
 ARGUMENTS
   PATH  [default: .] path to plugin
@@ -1989,7 +2120,6 @@ FLAGS
 
 DESCRIPTION
   Links a plugin into the CLI for development.
-
   Installation of a linked plugin will override a user-installed or core plugin.
 
   e.g. If you have a user-installed or core plugin that has a 'hello' command, installing a linked plugin with a 'hello'
@@ -2000,18 +2130,18 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.10.1/src/commands/plugins/link.ts)_
 
-## `csdx plugins:remove [PLUGIN]`
+## `csdx plugins:uninstall PLUGIN...`
 
 Removes a plugin from the CLI.
 
 ```
 USAGE
-  $ csdx plugins:remove [PLUGIN...] [-h] [-v]
+  $ csdx plugins:remove plugins:uninstall PLUGIN...
 
 ARGUMENTS
-  [PLUGIN...]  plugin to uninstall
+  [PLUGIN]  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
@@ -2023,36 +2153,18 @@ DESCRIPTION
 ALIASES
   $ csdx plugins:unlink
   $ csdx plugins:remove
-
-EXAMPLES
-  $ csdx plugins:remove myplugin
 ```
 
-## `csdx plugins:reset`
-
-Remove all user-installed and linked plugins.
-
-```
-USAGE
-  $ csdx plugins:reset [--hard] [--reinstall]
-
-FLAGS
-  --hard       Delete node_modules and package manager related files in addition to uninstalling plugins.
-  --reinstall  Reinstall all plugins after uninstalling.
-```
-
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/reset.ts)_
-
-## `csdx plugins:uninstall [PLUGIN]`
+## `csdx plugins:uninstall PLUGIN...`
 
 Removes a plugin from the CLI.
 
 ```
 USAGE
-  $ csdx plugins:uninstall [PLUGIN...] [-h] [-v]
+  $ csdx plugins:uninstall PLUGIN...
 
 ARGUMENTS
-  [PLUGIN...]  plugin to uninstall
+  [PLUGIN]  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
@@ -2064,23 +2176,20 @@ DESCRIPTION
 ALIASES
   $ csdx plugins:unlink
   $ csdx plugins:remove
-
-EXAMPLES
-  $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.10.1/src/commands/plugins/uninstall.ts)_
 
-## `csdx plugins:unlink [PLUGIN]`
+## `csdx plugins:uninstall PLUGIN...`
 
 Removes a plugin from the CLI.
 
 ```
 USAGE
-  $ csdx plugins:unlink [PLUGIN...] [-h] [-v]
+  $ csdx plugins:unlink plugins:uninstall PLUGIN...
 
 ARGUMENTS
-  [PLUGIN...]  plugin to uninstall
+  [PLUGIN]  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
@@ -2092,9 +2201,6 @@ DESCRIPTION
 ALIASES
   $ csdx plugins:unlink
   $ csdx plugins:remove
-
-EXAMPLES
-  $ csdx plugins:unlink myplugin
 ```
 
 ## `csdx plugins:update`
@@ -2113,7 +2219,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.10.1/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
