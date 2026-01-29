@@ -45,6 +45,7 @@ const config: DefaultConfig = {
       'variant-entries',
       'labels',
       'webhooks',
+      'publish',
     ],
     locales: {
       dirName: 'locales',
@@ -205,6 +206,18 @@ const config: DefaultConfig = {
       fileName: 'composable_studio.json',
       apiBaseUrl: 'https://composable-studio-api.contentstack.com',
       apiVersion: 'v1',
+    },
+    publish: {
+      dirName: 'publish',
+      pendingAssetsFileName: 'pending-assets.json',
+      successAssetsFileName: 'success-assets.json',
+      failedAssetsFileName: 'failed-assets.json',
+      pendingEntriesFileName: 'pending-entries.json',
+      successEntriesFileName: 'success-entries.json',
+      failedEntriesFileName: 'failed-entries.json',
+      pendingVariantEntriesFileName: 'pending-variant-entries.json',
+      successVariantEntriesFileName: 'success-variant-entries.json',
+      failedVariantEntriesFileName: 'failed-variant-entries.json',
     },
   },
   languagesCode: [
@@ -443,7 +456,7 @@ const config: DefaultConfig = {
   getEncryptionKeyMaxRetry: 3,
   // useBackedupDir: '',
   // backupConcurrency: 10,
-  onlyTSModules: ['taxonomies', 'personalize', 'variant-entries', 'stack'],
+  onlyTSModules: ['taxonomies', 'personalize', 'variant-entries', 'stack', 'publish'],
   auditConfig: {
     noLog: false, // Skip logs printing on terminal
     skipConfirm: true, // Skip confirmation if any

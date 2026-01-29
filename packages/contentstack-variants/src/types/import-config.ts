@@ -49,6 +49,10 @@ export interface ImportDefaultConfig extends AnyProperty {
         locale: string;
       } & AnyProperty;
     } & AnyProperty;
+    publish?: {
+      dirName: string;
+      pendingVariantEntriesFileName: string;
+    };
   } & AnyProperty;
 }
 

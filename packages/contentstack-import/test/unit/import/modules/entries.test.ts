@@ -93,6 +93,18 @@ describe('EntriesImport', () => {
           dirName: 'composable_studio',
           fileName: 'composable_studio.json',
         },
+        publish: {
+          dirName: 'publish',
+          pendingAssetsFileName: 'pending-assets.json',
+          successAssetsFileName: 'success-assets.json',
+          failedAssetsFileName: 'failed-assets.json',
+          pendingEntriesFileName: 'pending-entries.json',
+          successEntriesFileName: 'success-entries.json',
+          failedEntriesFileName: 'failed-entries.json',
+          pendingVariantEntriesFileName: 'pending-variant-entries.json',
+          successVariantEntriesFileName: 'success-variant-entries.json',
+          failedVariantEntriesFileName: 'failed-variant-entries.json',
+        },
       },
       backupDir: '/test/backup',
       cliLogsPath: '/test/logs',
@@ -2597,7 +2609,7 @@ describe('EntriesImport', () => {
       const updateEntriesWithReferencesStub = sinon.stub(entriesImport, 'updateEntriesWithReferences').resolves();
       const enableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
       const updateFieldRulesStub = sinon.stub(entriesImport, 'updateFieldRules').resolves();
-      const publishEntriesStub = sinon.stub(entriesImport, 'publishEntries').resolves();
+      const savePublishDetailsStub = sinon.stub(entriesImport, 'savePublishDetails').resolves();
       const createEntryDataForVariantEntryStub = sinon.stub(entriesImport, 'createEntryDataForVariantEntry').returns();
 
       await entriesImport.start();
@@ -2608,7 +2620,7 @@ describe('EntriesImport', () => {
       expect(updateEntriesWithReferencesStub.called).to.be.true;
       expect(enableMandatoryCTReferencesStub.called).to.be.true;
       expect(updateFieldRulesStub.called).to.be.true;
-      expect(publishEntriesStub.calledTwice).to.be.true;
+      expect(savePublishDetailsStub.calledOnce).to.be.true;
       expect(createEntryDataForVariantEntryStub.called).to.be.true;
     });
 
@@ -2827,13 +2839,13 @@ describe('EntriesImport', () => {
       const updateEntriesWithReferencesStub = sinon.stub(entriesImport, 'updateEntriesWithReferences').resolves();
       const enableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
       const updateFieldRulesStub = sinon.stub(entriesImport, 'updateFieldRules').resolves();
-      const publishEntriesStub = sinon.stub(entriesImport, 'publishEntries').resolves();
+      const savePublishDetailsStub = sinon.stub(entriesImport, 'savePublishDetails').resolves();
       const createEntryDataForVariantEntryStub = sinon.stub(entriesImport, 'createEntryDataForVariantEntry').returns();
 
       await entriesImport.start();
 
-      // Verify publishEntries was NOT called
-      expect(publishEntriesStub.called).to.be.false;
+      // savePublishDetails is NOT called when environments are empty (skipEntriesPublish is handled in publish module)
+      expect(savePublishDetailsStub.called).to.be.false;
     });
 
     it('should handle no environments found for publishing', async () => {
@@ -2880,13 +2892,13 @@ describe('EntriesImport', () => {
       const updateEntriesWithReferencesStub = sinon.stub(entriesImport, 'updateEntriesWithReferences').resolves();
       const enableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
       const updateFieldRulesStub = sinon.stub(entriesImport, 'updateFieldRules').resolves();
-      const publishEntriesStub = sinon.stub(entriesImport, 'publishEntries').resolves();
+      const savePublishDetailsStub = sinon.stub(entriesImport, 'savePublishDetails').resolves();
       const createEntryDataForVariantEntryStub = sinon.stub(entriesImport, 'createEntryDataForVariantEntry').returns();
 
       await entriesImport.start();
 
-      // Verify publishEntries was NOT called due to empty environments
-      expect(publishEntriesStub.called).to.be.false;
+      // savePublishDetails is NOT called due to empty environments
+      expect(savePublishDetailsStub.called).to.be.false;
     });
 
     it('should handle errors in replaceEntries', async () => {
@@ -3159,7 +3171,7 @@ describe('EntriesImport', () => {
       expect(updateFieldRulesStub.called).to.be.true;
     });
 
-    it('should handle errors in publishEntries', async () => {
+    it('should handle errors in savePublishDetails', async () => {
       // Mock file system operations
       const mockFsUtil = {
         readFile: sinon
@@ -3203,13 +3215,13 @@ describe('EntriesImport', () => {
       const updateEntriesWithReferencesStub = sinon.stub(entriesImport, 'updateEntriesWithReferences').resolves();
       const enableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
       const updateFieldRulesStub = sinon.stub(entriesImport, 'updateFieldRules').resolves();
-      const publishEntriesStub = sinon.stub(entriesImport, 'publishEntries').rejects(new Error('Publish failed'));
+      const savePublishDetailsStub = sinon.stub(entriesImport, 'savePublishDetails').rejects(new Error('Save failed'));
       const createEntryDataForVariantEntryStub = sinon.stub(entriesImport, 'createEntryDataForVariantEntry').returns();
 
       await entriesImport.start();
 
-      // Verify publishEntries was called and error was handled
-      expect(publishEntriesStub.called).to.be.true;
+      // Verify savePublishDetails was called and error was handled
+      expect(savePublishDetailsStub.called).to.be.true;
     });
 
     it('should handle general errors in try-catch', async () => {
@@ -3712,6 +3724,165 @@ describe('EntriesImport', () => {
         expect(entriesImport['entriesForVariant'].find((e) => e.entry_uid === 'entry_1')).to.be.undefined;
         expect(entriesImport['entriesForVariant'].find((e) => e.entry_uid === 'entry_2')).to.exist;
         expect(entriesImport['entriesForVariant'].find((e) => e.entry_uid === 'entry_3')).to.exist;
+      });
+    });
+  });
+
+  describe('savePublishDetails() method', () => {
+    it('should skip when no pending entries', async () => {
+      entriesImport['pendingPublishEntries'] = {};
+
+      await (entriesImport as any).savePublishDetails();
+
+      // Should not write file when no pending entries
+      expect(fsUtilityWriteFileStub.called).to.be.false;
+    });
+
+    it('should create publish directory if not exists', async () => {
+      entriesImport['pendingPublishEntries'] = {
+        profiles: [{ locale: 'en-us', oldUid: 'old-entry-1', newUid: 'new-entry-1' }],
+      };
+
+      await (entriesImport as any).savePublishDetails();
+
+      expect(fsUtilityMakeDirectoryStub.called).to.be.true;
+    });
+
+    it('should organize by content type with array of entry details', async () => {
+      entriesImport['pendingPublishEntries'] = {
+        profiles: [
+          { locale: 'en-us', oldUid: 'old-entry-1', newUid: 'new-entry-1' },
+          { locale: 'fr-fr', oldUid: 'old-entry-2', newUid: 'new-entry-2' },
+        ],
+        articles: [{ locale: 'en-us', oldUid: 'old-entry-3', newUid: 'new-entry-3' }],
+      };
+
+      await (entriesImport as any).savePublishDetails();
+
+      expect(fsUtilityMakeDirectoryStub.called).to.be.true;
+      expect(fsUtilityWriteFileStub.called).to.be.true;
+
+      const writeCall = fsUtilityWriteFileStub.getCall(fsUtilityWriteFileStub.callCount - 1);
+      const writtenData = writeCall.args[1];
+      expect(writtenData).to.be.an('object');
+      expect(writtenData).to.have.property('profiles');
+      expect(writtenData.profiles).to.be.an('array');
+      expect(writtenData.profiles).to.have.lengthOf(2);
+      expect(writtenData.profiles[0]).to.deep.equal({
+        locale: 'en-us',
+        oldUid: 'old-entry-1',
+        newUid: 'new-entry-1',
+      });
+      expect(writtenData.profiles[1]).to.deep.equal({
+        locale: 'fr-fr',
+        oldUid: 'old-entry-2',
+        newUid: 'new-entry-2',
+      });
+      expect(writtenData).to.have.property('articles');
+      expect(writtenData.articles).to.have.lengthOf(1);
+      expect(writtenData.articles[0]).to.deep.equal({
+        locale: 'en-us',
+        oldUid: 'old-entry-3',
+        newUid: 'new-entry-3',
+      });
+    });
+
+    it('should write pending entries file with UID mappings', async () => {
+      entriesImport['pendingPublishEntries'] = {
+        profiles: [
+          { locale: 'en-us', oldUid: 'old-entry-1', newUid: 'new-entry-1' },
+          { locale: 'en-us', oldUid: 'old-entry-2', newUid: 'new-entry-2' },
+        ],
+      };
+
+      await (entriesImport as any).savePublishDetails();
+
+      expect(fsUtilityWriteFileStub.called).to.be.true;
+
+      const writeCall = fsUtilityWriteFileStub.getCall(fsUtilityWriteFileStub.callCount - 1);
+      const writtenData = writeCall.args[1];
+      expect(writtenData).to.have.property('profiles');
+      expect(writtenData.profiles).to.have.lengthOf(2);
+      expect(writtenData.profiles[0]).to.deep.equal({
+        locale: 'en-us',
+        oldUid: 'old-entry-1',
+        newUid: 'new-entry-1',
+      });
+      expect(writtenData.profiles[1]).to.deep.equal({
+        locale: 'en-us',
+        oldUid: 'old-entry-2',
+        newUid: 'new-entry-2',
+      });
+    });
+
+    it('should write to correct file path', async () => {
+      entriesImport['pendingPublishEntries'] = {
+        profiles: [{ locale: 'en-us', oldUid: 'old-entry-1', newUid: 'new-entry-1' }],
+      };
+
+      await (entriesImport as any).savePublishDetails();
+
+      const writeCall = fsUtilityWriteFileStub.getCall(fsUtilityWriteFileStub.callCount - 1);
+      const filePath = writeCall.args[0];
+      expect(filePath).to.include('pending-entries.json');
+    });
+  });
+
+  describe('trackPendingPublishEntry() method', () => {
+    beforeEach(() => {
+      entriesImport['pendingPublishEntries'] = {};
+    });
+
+    it('should push entry to content type array', () => {
+      (entriesImport as any).trackPendingPublishEntry('profiles', 'en-us', 'old-1', 'new-1');
+
+      expect(entriesImport['pendingPublishEntries']).to.have.property('profiles');
+      expect(entriesImport['pendingPublishEntries'].profiles).to.be.an('array');
+      expect(entriesImport['pendingPublishEntries'].profiles).to.have.lengthOf(1);
+      expect(entriesImport['pendingPublishEntries'].profiles[0]).to.deep.equal({
+        locale: 'en-us',
+        oldUid: 'old-1',
+        newUid: 'new-1',
+      });
+    });
+
+    it('should add to existing content type array', () => {
+      entriesImport['pendingPublishEntries'] = {
+        profiles: [{ locale: 'en-us', oldUid: 'old-1', newUid: 'new-1' }],
+      };
+
+      (entriesImport as any).trackPendingPublishEntry('profiles', 'fr-fr', 'old-2', 'new-2');
+
+      expect(entriesImport['pendingPublishEntries'].profiles).to.have.lengthOf(2);
+      expect(entriesImport['pendingPublishEntries'].profiles[0]).to.deep.equal({
+        locale: 'en-us',
+        oldUid: 'old-1',
+        newUid: 'new-1',
+      });
+      expect(entriesImport['pendingPublishEntries'].profiles[1]).to.deep.equal({
+        locale: 'fr-fr',
+        oldUid: 'old-2',
+        newUid: 'new-2',
+      });
+    });
+
+    it('should add to same locale in content type array', () => {
+      entriesImport['pendingPublishEntries'] = {
+        profiles: [{ locale: 'en-us', oldUid: 'old-1', newUid: 'new-1' }],
+      };
+
+      (entriesImport as any).trackPendingPublishEntry('profiles', 'en-us', 'old-2', 'new-2');
+
+      expect(entriesImport['pendingPublishEntries'].profiles).to.have.lengthOf(2);
+      expect(entriesImport['pendingPublishEntries'].profiles[0]).to.deep.equal({
+        locale: 'en-us',
+        oldUid: 'old-1',
+        newUid: 'new-1',
+      });
+      expect(entriesImport['pendingPublishEntries'].profiles[1]).to.deep.equal({
+        locale: 'en-us',
+        oldUid: 'old-2',
+        newUid: 'new-2',
       });
     });
   });

@@ -51,7 +51,8 @@ export type Modules =
   | 'taxonomies'
   | 'personalize'
   | 'variant-entries'
-  | 'composable-studio';
+  | 'composable-studio'
+  | 'publish';
 
 export type ModuleClassParams = {
   stackAPIClient: ReturnType<ContentstackClient['stack']>;
@@ -111,6 +112,19 @@ export interface ComposableStudioConfig {
   fileName: string;
   apiBaseUrl: string;
   apiVersion: string;
+}
+
+export interface PublishConfig {
+  dirName: string;
+  pendingAssetsFileName: string;
+  successAssetsFileName: string;
+  failedAssetsFileName: string;
+  pendingEntriesFileName: string;
+  successEntriesFileName: string;
+  failedEntriesFileName: string;
+  pendingVariantEntriesFileName: string;
+  successVariantEntriesFileName: string;
+  failedVariantEntriesFileName: string;
 }
 
 export interface ComposableStudioProject {

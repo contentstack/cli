@@ -57,6 +57,7 @@ export default class EntriesImport extends BaseClass {
   public rteCTs: any;
   public rteCTsWithRef: any;
   public entriesForVariant: Array<{ content_type: string; locale: string; entry_uid: string }> = [];
+  private pendingPublishEntries: Record<string, Array<{ locale: string; oldUid: string; newUid: string }>> = {};
   private composableStudioSuccessPath: string;
   private composableStudioExportPath: string;
 
@@ -195,6 +196,20 @@ export default class EntriesImport extends BaseClass {
       this.locales.unshift(this.importConfig.master_locale); // adds master locale to the list
       log.debug(`Processing entries for ${values(this.locales).length} locales`, this.importConfig.context);
 
+      // Load environments early for publish details tracking during entry creation
+      this.envs = fileHelper.readFileSync(this.envPath) || {};
+      if (Object.keys(this.envs).length === 0) {
+        log.warn(
+          'No environments file found. Entries with publish details will not be tracked for deferred publishing',
+          this.importConfig.context,
+        );
+      } else {
+        log.debug(
+          `Loaded ${Object.keys(this.envs).length} environments for publish details tracking`,
+          this.importConfig.context,
+        );
+      }
+
       //Create Entries
       log.info('Starting entry creation process...', this.importConfig.context);
       const entryRequestOptions = this.populateEntryCreatePayload();
@@ -273,32 +288,13 @@ export default class EntriesImport extends BaseClass {
       });
       log.success('Entries imported successfully', this.importConfig.context);
 
-      // Publishing entries
-      if (!this.importConfig.skipEntriesPublish) {
-        log.info('Starting entry publishing process...', this.importConfig.context);
-        this.envs = fileHelper.readFileSync(this.envPath) || {};
-        if (Object.keys(this.envs).length === 0) {
-          log.warn(
-            `No environments file found at ${this.envPath}. Entries will not be published.`,
-            this.importConfig.context,
-          );
-          return;
-        } else {
-          log.debug(`Loaded ${Object.keys(this.envs).length} environments.`, this.importConfig.context);
-        }
-
-        for (let entryRequestOption of entryRequestOptions) {
-          await this.publishEntries(entryRequestOption).catch((error) => {
-            handleAndLogError(
-              error,
-              { ...this.importConfig.context, cTUid: entryRequestOption.cTUid, locale: entryRequestOption.locale },
-              `Error in publishing entries of ${entryRequestOption.cTUid} in locale ${entryRequestOption.locale}`,
-            );
-          });
-        }
-        log.success('All the entries have been published successfully', this.importConfig.context);
+      // Save publish details for deferred publishing (environments already loaded earlier)
+      log.debug('Saving entry publish details for deferred publishing', this.importConfig.context);
+      if (Object.keys(this.envs).length === 0) {
+        log.warn('No environments found. Entry publish details will not be saved', this.importConfig.context);
       } else {
-        log.info('Skipping entry publishing as per configuration...', this.importConfig.context);
+        await this.savePublishDetails();
+        log.success('Entry publish details saved for deferred publishing', this.importConfig.context);
       }
 
       log.debug('Creating entry data for variant entries...', this.importConfig.context);
@@ -478,6 +474,8 @@ export default class EntriesImport extends BaseClass {
     log.debug(`Found content type schema for ${cTUid}`, this.importConfig.context);
 
     const onSuccess = ({ response, apiData: entry, additionalInfo }: any) => {
+      const entriesWithPublishDetails: Set<string> = additionalInfo.entriesWithPublishDetails;
+
       if (additionalInfo[entry.uid]?.isLocalized) {
         let oldUid = additionalInfo[entry.uid].entryOldUid;
         this.entriesForVariant.push({ content_type: cTUid, entry_uid: oldUid, locale });
@@ -486,6 +484,13 @@ export default class EntriesImport extends BaseClass {
           this.importConfig.context,
         );
         log.debug(`Mapped localized entry UID: ${entry.uid} → ${oldUid}`, this.importConfig.context);
+
+        // Track for deferred publishing if has valid publish_details
+        // oldUid is the original entry UID from source data (set in serializeEntries)
+        if (entriesWithPublishDetails?.has(oldUid)) {
+          this.trackPendingPublishEntry(cTUid, locale, oldUid, this.entriesUidMapper[oldUid] || response.uid);
+        }
+
         entry.uid = oldUid;
         entry.entryOldUid = oldUid;
         entry.sourceEntryFilePath = path.join(sanitizePath(basePath), sanitizePath(additionalInfo.entryFileName)); // stores source file path temporarily
@@ -506,6 +511,12 @@ export default class EntriesImport extends BaseClass {
           log.debug(`Marked entry for auto-cleanup: ${response.uid} in master locale`, this.importConfig.context);
         }
         this.entriesUidMapper[entry.uid] = response.uid;
+
+        // Track for deferred publishing if has valid publish_details
+        if (entriesWithPublishDetails?.has(entry.uid)) {
+          this.trackPendingPublishEntry(cTUid, locale, entry.uid, response.uid);
+        }
+
         entry.sourceEntryFilePath = path.join(sanitizePath(basePath), sanitizePath(additionalInfo.entryFileName)); // stores source file path temporarily
         entry.entryOldUid = entry.uid; // stores old uid temporarily
         entriesCreateFileHelper.writeIntoFile({ [entry.uid]: entry } as any, { mapKeyVal: true });
@@ -552,6 +563,19 @@ export default class EntriesImport extends BaseClass {
         let apiContent = values(chunk as Record<string, any>[]);
         log.debug(`Processing ${apiContent.length} entries in chunk ${index}`, this.importConfig.context);
 
+        // Identify entries with valid publish_details for deferred publishing
+        const entriesWithPublishDetails: Set<string> = new Set();
+        for (const entry of apiContent) {
+          if (!isEmpty(entry.publish_details)) {
+            const validPublishDetails = entry.publish_details.filter((pubDetail: any) =>
+              this.envs?.hasOwnProperty(pubDetail.environment),
+            );
+            if (validPublishDetails.length > 0) {
+              entriesWithPublishDetails.add(entry.uid);
+            }
+          }
+        }
+
         await this.makeConcurrentCall({
           apiContent,
           processName,
@@ -563,7 +587,14 @@ export default class EntriesImport extends BaseClass {
             entity: 'create-entries',
             includeParamOnCompletion: true,
             serializeData: this.serializeEntries.bind(this),
-            additionalInfo: { contentType, locale, cTUid, entryFileName: indexer[index], isMasterLocale },
+            additionalInfo: {
+              contentType,
+              locale,
+              cTUid,
+              entryFileName: indexer[index],
+              isMasterLocale,
+              entriesWithPublishDetails,
+            },
           },
           concurrencyLimit: this.importConcurrency,
         }).then(() => {
@@ -1289,5 +1320,52 @@ export default class EntriesImport extends BaseClass {
     }
     apiOptions.apiData = requestObject;
     return apiOptions;
+  }
+
+  /**
+   * @method trackPendingPublishEntry
+   * @description Tracks an entry for deferred publishing by storing its UID mapping
+   * @param {string} cTUid - Content type UID
+   * @param {string} locale - Locale code
+   * @param {string} oldUid - Original entry UID
+   * @param {string} newUid - New entry UID
+   */
+  trackPendingPublishEntry(cTUid: string, locale: string, oldUid: string, newUid: string): void {
+    if (!this.pendingPublishEntries[cTUid]) {
+      this.pendingPublishEntries[cTUid] = [];
+    }
+    this.pendingPublishEntries[cTUid].push({ locale, oldUid, newUid });
+  }
+
+  /**
+   * @method savePublishDetails
+   * @description Saves pending entry UID mappings for deferred publishing
+   * @returns {Promise<void>} Promise<void>
+   */
+  async savePublishDetails(): Promise<void> {
+    const contentTypeCount = Object.keys(this.pendingPublishEntries).length;
+    if (contentTypeCount === 0) {
+      log.info('No entries with publish details to track', this.importConfig.context);
+      return;
+    }
+
+    const publishConfig = this.importConfig.modules.publish;
+    const publishDirPath = path.join(sanitizePath(this.importConfig.backupDir), 'mapper', publishConfig.dirName);
+    const pendingFilePath = path.join(publishDirPath, publishConfig.pendingEntriesFileName);
+
+    // Ensure the publish directory exists
+    await fsUtil.makeDirectory(publishDirPath);
+
+    let entryCount = 0;
+    for (const list of Object.values(this.pendingPublishEntries)) {
+      entryCount += list.length;
+    }
+
+    log.debug(`Writing ${entryCount} pending entry UID mappings to file`, this.importConfig.context);
+    await fsUtil.writeFile(pendingFilePath, this.pendingPublishEntries);
+    log.success(
+      `Saved ${entryCount} entries for deferred publishing across ${contentTypeCount} content types`,
+      this.importConfig.context,
+    );
   }
 }
