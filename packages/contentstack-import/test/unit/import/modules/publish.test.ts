@@ -286,9 +286,7 @@ describe('ImportPublish', () => {
     });
 
     it('should publish assets with valid publish details', async () => {
-      fsUtilReadFileStub.returns({
-        'old-asset-1': 'new-asset-1',
-      });
+      fsUtilReadFileStub.returns([{ oldUid: 'old-asset-1', newUid: 'new-asset-1' }]);
       buildAssetPublishDataStub.resolves([
         {
           oldUid: 'old-asset-1',
@@ -332,11 +330,7 @@ describe('ImportPublish', () => {
 
     it('should publish entries for each content type and locale', async () => {
       fsUtilReadFileStub.returns({
-        profiles: {
-          'en-us': {
-            'old-entry-1': 'new-entry-1',
-          },
-        },
+        profiles: [{ locale: 'en-us', oldUid: 'old-entry-1', newUid: 'new-entry-1' }],
       });
       buildEntryPublishDataStub.resolves([
         {
