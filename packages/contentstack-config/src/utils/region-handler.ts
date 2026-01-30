@@ -1,5 +1,9 @@
 import { configHandler } from '@contentstack/cli-utilities';
 import { getContentstackEndpoint } from '@contentstack/utils';
+import { Region } from '../interfaces';
+interface RegionsMap {
+  [key: string]: Region;
+}
 
 function validURL(str) {
   const pattern = new RegExp(
@@ -54,7 +58,7 @@ function getComposableStudioUrl(cmaUrl: string): string {
  * @param {string} regionKey - Region identifier
  * @returns {object} Region object with all necessary URLs
  */
-function getRegionObject(regionKey: string) {
+function getRegionObject(regionKey: string): Region {
   try {
     // getContentstackEndpoint handles all aliases defined in regions.json
     const endpoints = getContentstackEndpoint(regionKey) as any;
@@ -96,7 +100,7 @@ function getAvailableRegions() {
     'GCP-EU',
   ];
 
-  const regions: any = {};
+  const regions: RegionsMap = {};
   
   for (const key of regionKeys) {
     const regionObj = getRegionObject(key);

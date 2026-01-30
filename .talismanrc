@@ -4,5 +4,5 @@ fileignoreconfig:
   - filename: package-lock.json
     checksum: 0982a352c260f7dd5bdde813104c2db8268abc489c791ec467b63eb8badb3cf1
   - filename: packages/contentstack-config/src/utils/region-handler.ts
-    checksum: ae2df0d7570c11e28a3306bd3ef03ca0ec9e04b3b9b320d6ed50a1764459072c
+    checksum: 7b36342fda136ce73bcbde45fba78a9fa8f58536abfd6bd48eff1e5d95d3be52
 version: '1.0'
