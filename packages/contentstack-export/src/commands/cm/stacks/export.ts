@@ -104,7 +104,6 @@ export default class ExportCommand extends Command {
       await moduleExporter.start();
       log.success(
         `The content of the stack ${exportConfig.apiKey} has been exported successfully!`,
-        exportConfig.context,
       );
       log.info(`The exported content has been stored at '${exportDir}'`, exportConfig.context);
       log.success(`The log has been stored at '${getLogPath()}'`, exportConfig.context);

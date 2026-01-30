@@ -2,6 +2,7 @@ import { checkSync } from 'recheck';
 import traverse from 'traverse';
 import authHandler from './auth-handler';
 import { ContentstackClient, HttpClient, cliux, configHandler } from '.';
+import { hasProxy, getProxyUrl } from './proxy-helper';
 
 export const isAuthenticated = () => authHandler.isAuthenticated();
 export const doesBranchExist = async (stack, branchName) => {
@@ -176,7 +177,12 @@ export const formatError = function (error: any) {
   }
 
   // ENHANCED: Handle network errors with user-friendly messages
-  if (['ECONNREFUSED', 'ENOTFOUND', 'ETIMEDOUT', 'ENETUNREACH'].includes(parsedError?.code)) {
+  const networkErrorCodes = ['ECONNREFUSED', 'ENOTFOUND', 'ETIMEDOUT', 'ENETUNREACH', 'ERR_BAD_RESPONSE'];
+  if (networkErrorCodes.includes(parsedError?.code) || parsedError?.message?.includes('ERR_BAD_RESPONSE')) {
+    // Check if proxy is configured and connection failed - likely proxy issue
+    if (hasProxy()) {
+      return `Proxy error: Unable to connect to proxy server at ${getProxyUrl()}. Please verify your proxy configuration. Error: ${parsedError?.code || 'Unknown'}`;
+    }
     return `Connection failed: Unable to reach the server. Please check your internet connection.`;
   }
 
@@ -253,4 +259,63 @@ export function clearProgressModuleSetting(): void {
     delete logConfig.progressSupportedModule;
     configHandler.set('log', logConfig);
   }
+}
+
+/**
+ * Get authentication method from config
+ * @returns Authentication method string ('OAuth', 'Basic Auth', or empty string)
+ */
+export function getAuthenticationMethod(): string {
+  const authType = configHandler.get('authorisationType');
+  if (authType === 'OAUTH') {
+    return 'OAuth';
+  } else if (authType === 'BASIC') {
+    return 'Basic Auth';
+  }
+  // Management token detection is command-specific and not stored globally
+  // Return empty string if unknown
+  return '';
+}
+
+/**
+ * Creates a standardized context object for logging
+ * This context contains all session-level metadata that should be in session.json
+ * The apiKey is stored in configHandler so it's available for session.json generation
+ * 
+ * @param commandId - The command ID (e.g., 'cm:stacks:export')
+ * @param apiKey - The API key for the stack (will be stored in configHandler for session.json)
+ * @param authenticationMethod - Optional authentication method
+ * @returns Context object with all session-level metadata
+ */
+export function createLogContext(
+  commandId: string,
+  apiKey: string,
+  authenticationMethod?: string
+): {
+  command: string;
+  module: string;
+  userId: string;
+  email: string;
+  sessionId: string;
+  apiKey: string;
+  orgId: string;
+  authenticationMethod: string;
+} {
+  // Store apiKey in configHandler so it's available for session.json
+  if (apiKey) {
+    configHandler.set('apiKey', apiKey);
+  }
+
+  const authMethod = authenticationMethod || getAuthenticationMethod();
+
+  return {
+    command: commandId,
+    module: '',
+    userId: configHandler.get('clientId') || '',
+    email: configHandler.get('email') || '',
+    sessionId: configHandler.get('sessionId') || '',
+    apiKey: apiKey || '',
+    orgId: configHandler.get('oauthOrgUid') || '',
+    authenticationMethod: authMethod,
+  };
 }

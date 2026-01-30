@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22.x'
-      
+
       - name: Enable Corepack
         run: corepack enable
 
@@ -24,7 +24,7 @@ jobs:
 
       - name: Install root dependencies
         run: pnpm install
-        
+
       - name: Reading Configuration
         id: release_config
         uses: rgarcia-phi/json-to-variables@v1.1.0
@@ -223,6 +223,10 @@ jobs:
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_export-to-csv == 'true'}}
         working-directory: ./packages/contentstack-export-to-csv
         run: npm install
+      - name: Compiling export to csv
+        if: ${{ steps.export-to-csv-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-export-to-csv
+        run: npm run prepack
       - name: Publishing export to csv
         uses: JS-DevTools/npm-publish@v3
         if: ${{ steps.export-to-csv-installation.conclusion == 'success'  }}
