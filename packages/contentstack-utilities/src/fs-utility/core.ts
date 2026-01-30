@@ -70,7 +70,7 @@ export default class FsUtility {
     this.metaPickKeys = metaPickKeys || [];
     this.moduleName = moduleName || 'chunk';
     this.chunkFileSize = chunkFileSize || 10;
-    this.keepMetadata = keepMetadata || (keepMetadata === undefined ?? true);
+    this.keepMetadata = keepMetadata ?? true;
     this.indexFileName = indexFileName || 'index.json';
     this.pageInfo.hasNextPage = keys(this.indexFileContent).length > 0;
     this.defaultInitContent = defaultInitContent || this.isArray ? '[' : this.fileExt === 'json' ? '{' : '';

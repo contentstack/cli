@@ -22,7 +22,7 @@ describe('EntriesExport', () => {
 
     // Mock stack API client
     mockStackAPIClient = {
-      contentType: sandbox.stub()
+      contentType: sandbox.stub(),
     };
     // Set default return value
     mockStackAPIClient.contentType.returns({
@@ -30,16 +30,15 @@ describe('EntriesExport', () => {
         query: sandbox.stub().returns({
           find: sandbox.stub().resolves({
             items: [],
-            count: 0
-          })
+            count: 0,
+          }),
         }),
-        fetch: sandbox.stub().resolves({})
-      })
+        fetch: sandbox.stub().resolves({}),
+      }),
     });
 
     // Mock ExportConfig
     mockExportConfig = {
-      contentVersion: 1,
       versioning: false,
       host: 'https://api.contentstack.io',
       developerHubUrls: {},
@@ -55,7 +54,7 @@ describe('EntriesExport', () => {
         sessionId: 'session-123',
         apiKey: 'test-api-key',
         orgId: 'org-123',
-        authenticationMethod: 'Basic Auth'
+        authenticationMethod: 'Basic Auth',
       },
       cliLogsPath: '/test/logs',
       forceStopMarketplaceAppsPrompt: false,
@@ -64,7 +63,7 @@ describe('EntriesExport', () => {
         name: 'us',
         cma: 'https://api.contentstack.io',
         cda: 'https://cdn.contentstack.io',
-        uiHost: 'https://app.contentstack.com'
+        uiHost: 'https://app.contentstack.com',
       },
       skipStackSettings: false,
       skipDependencies: false,
@@ -76,7 +75,6 @@ describe('EntriesExport', () => {
       writeConcurrency: 5,
       developerHubBaseUrl: '',
       marketplaceAppEncryptionKey: '',
-      onlyTSModules: [],
       modules: {
         types: ['entries'],
         entries: {
@@ -86,47 +84,48 @@ describe('EntriesExport', () => {
           limit: 100,
           chunkFileSize: 1000,
           batchLimit: 5,
-          exportVersions: false
+          exportVersions: false,
         },
         locales: {
           dirName: 'locales',
-          fileName: 'locales.json'
+          fileName: 'locales.json',
         },
         content_types: {
           dirName: 'content_types',
-          fileName: 'schema.json'
+          fileName: 'schema.json',
         },
         personalize: {
           baseURL: {
-            'us': 'https://personalize-api.contentstack.com',
+            us: 'https://personalize-api.contentstack.com',
             'AWS-NA': 'https://personalize-api.contentstack.com',
-            'AWS-EU': 'https://eu-personalize-api.contentstack.com'
+            'AWS-EU': 'https://eu-personalize-api.contentstack.com',
           },
           dirName: 'personalize',
-          exportOrder: []
-        }
+          exportOrder: [],
+        },
       },
       org_uid: 'test-org-uid',
-      query: {}
+      query: {},
     } as any;
 
     // Mock fsUtil
     mockFsUtil = {
       readFile: sandbox.stub(),
       makeDirectory: sandbox.stub().resolves(),
-      writeFile: sandbox.stub()
+      writeFile: sandbox.stub(),
     };
     sandbox.stub(fsUtilModule, 'fsUtil').value(mockFsUtil);
 
     // Mock ExportProjects
     mockExportProjects = {
-      projects: sandbox.stub().resolves([])
+      init: sandbox.stub().resolves(),
+      projects: sandbox.stub().resolves([]),
     };
     sandbox.stub(variants, 'ExportProjects').callsFake(() => mockExportProjects as any);
 
     // Mock VariantEntries
     mockVariantEntries = {
-      exportVariantEntry: sandbox.stub().resolves()
+      exportVariantEntry: sandbox.stub().resolves(),
     };
     sandbox.stub(variants.Export, 'VariantEntries').callsFake(() => mockVariantEntries as any);
 
@@ -145,7 +144,7 @@ describe('EntriesExport', () => {
     entriesExport = new EntriesExport({
       exportConfig: mockExportConfig,
       stackAPIClient: mockStackAPIClient,
-      moduleName: 'entries'
+      moduleName: 'entries',
     });
   });
 
@@ -164,21 +163,21 @@ describe('EntriesExport', () => {
 
     it('should set up correct directory paths based on exportConfig', () => {
       const expectedEntriesPath = path.resolve(
-        mockExportConfig.data,
+        mockExportConfig.exportDir,
         mockExportConfig.branchName || '',
-        mockExportConfig.modules.entries.dirName
+        mockExportConfig.modules.entries.dirName,
       );
       const expectedLocalesPath = path.resolve(
-        mockExportConfig.data,
+        mockExportConfig.exportDir,
         mockExportConfig.branchName || '',
         mockExportConfig.modules.locales.dirName,
-        mockExportConfig.modules.locales.fileName
+        mockExportConfig.modules.locales.fileName,
       );
       const expectedSchemaPath = path.resolve(
-        mockExportConfig.data,
+        mockExportConfig.exportDir,
         mockExportConfig.branchName || '',
         mockExportConfig.modules.content_types.dirName,
-        'schema.json'
+        'schema.json',
       );
 
       expect(entriesExport.entriesDirPath).to.equal(expectedEntriesPath);
@@ -241,12 +240,12 @@ describe('EntriesExport', () => {
         query: sandbox.stub().returns({
           find: sandbox.stub().resolves({
             items: [],
-            count: 0
-          })
-        })
+            count: 0,
+          }),
+        }),
       };
       const contentTypeStub = sandbox.stub().returns({
-        entry: sandbox.stub().returns(mockEntryQuery)
+        entry: sandbox.stub().returns(mockEntryQuery),
       });
       // Update both the mock and entriesExport to use the new stub
       mockStackAPIClient.contentType = contentTypeStub;
@@ -270,11 +269,7 @@ describe('EntriesExport', () => {
 
       const locales = [{ code: 'en-us' }];
       const contentTypes = [{ uid: 'ct-1', title: 'Content Type 1' }];
-      mockFsUtil.readFile
-        .onFirstCall()
-        .returns(locales)
-        .onSecondCall()
-        .returns(contentTypes);
+      mockFsUtil.readFile.onFirstCall().returns(locales).onSecondCall().returns(contentTypes);
 
       // Mock successful entry fetch - use callsFake to preserve call tracking
       const contentTypeStub = sandbox.stub().returns({
@@ -282,10 +277,10 @@ describe('EntriesExport', () => {
           query: sandbox.stub().returns({
             find: sandbox.stub().resolves({
               items: [],
-              count: 0
-            })
-          })
-        })
+              count: 0,
+            }),
+          }),
+        }),
       });
       mockStackAPIClient.contentType = contentTypeStub;
       // Update entriesExport to use the new mock
@@ -303,7 +298,7 @@ describe('EntriesExport', () => {
       const variantEntriesStub = variants.Export.VariantEntries as unknown as sinon.SinonStub;
       expect(variantEntriesStub.called).to.be.true;
       expect(variantEntriesStub.firstCall.args[0]).to.include({
-        project_id: 'project-123'
+        project_id: 'project-123',
       });
       // Verify the flow completed successfully
       // The key behavior is that exportVariantEntry is enabled when project is found
@@ -315,25 +310,22 @@ describe('EntriesExport', () => {
     it('should not enable variant entry export when personalization is enabled but no project is found', async () => {
       mockExportConfig.personalizationEnabled = true;
       entriesExport.exportConfig.personalizationEnabled = true;
+      mockExportProjects.init.resolves();
       mockExportProjects.projects.resolves([]);
 
       const locales = [{ code: 'en-us' }];
       const contentTypes = [{ uid: 'ct-1', title: 'Content Type 1' }];
-      mockFsUtil.readFile
-        .onFirstCall()
-        .returns(locales)
-        .onSecondCall()
-        .returns(contentTypes);
+      mockFsUtil.readFile.onFirstCall().returns(locales).onSecondCall().returns(contentTypes);
 
       const contentTypeStub = sandbox.stub().returns({
         entry: sandbox.stub().returns({
           query: sandbox.stub().returns({
             find: sandbox.stub().resolves({
               items: [],
-              count: 0
-            })
-          })
-        })
+              count: 0,
+            }),
+          }),
+        }),
       });
       mockStackAPIClient.contentType = contentTypeStub;
       // Update entriesExport to use the new mock
@@ -356,6 +348,7 @@ describe('EntriesExport', () => {
       mockExportConfig.personalizationEnabled = true;
       entriesExport.exportConfig.personalizationEnabled = true;
       const projectError = new Error('Project fetch failed');
+      mockExportProjects.init.resolves();
       mockExportProjects.projects.rejects(projectError);
       const handleAndLogErrorSpy = sandbox.spy();
       try {
@@ -368,21 +361,17 @@ describe('EntriesExport', () => {
 
       const locales = [{ code: 'en-us' }];
       const contentTypes = [{ uid: 'ct-1', title: 'Content Type 1' }];
-      mockFsUtil.readFile
-        .onFirstCall()
-        .returns(locales)
-        .onSecondCall()
-        .returns(contentTypes);
+      mockFsUtil.readFile.onFirstCall().returns(locales).onSecondCall().returns(contentTypes);
 
       const contentTypeStub = sandbox.stub().returns({
         entry: sandbox.stub().returns({
           query: sandbox.stub().returns({
             find: sandbox.stub().resolves({
               items: [],
-              count: 0
-            })
-          })
-        })
+              count: 0,
+            }),
+          }),
+        }),
       });
       mockStackAPIClient.contentType = contentTypeStub;
       // Update entriesExport to use the new mock
@@ -405,13 +394,10 @@ describe('EntriesExport', () => {
 
   describe('createRequestObjects() method', () => {
     it('should create request objects for each content type and locale combination', () => {
-      const locales = [
-        { code: 'en-us' },
-        { code: 'fr-fr' }
-      ];
+      const locales = [{ code: 'en-us' }, { code: 'fr-fr' }];
       const contentTypes = [
         { uid: 'ct-1', title: 'Content Type 1' },
-        { uid: 'ct-2', title: 'Content Type 2' }
+        { uid: 'ct-2', title: 'Content Type 2' },
       ];
 
       const requestObjects = entriesExport.createRequestObjects(locales, contentTypes);
@@ -421,19 +407,19 @@ describe('EntriesExport', () => {
       expect(requestObjects).to.have.length(6);
       expect(requestObjects).to.deep.include({
         contentType: 'ct-1',
-        locale: 'en-us'
+        locale: 'en-us',
       });
       expect(requestObjects).to.deep.include({
         contentType: 'ct-1',
-        locale: 'fr-fr'
+        locale: 'fr-fr',
       });
       expect(requestObjects).to.deep.include({
         contentType: 'ct-1',
-        locale: mockExportConfig.master_locale.code
+        locale: mockExportConfig.master_locale.code,
       });
       expect(requestObjects).to.deep.include({
         contentType: 'ct-2',
-        locale: 'en-us'
+        locale: 'en-us',
       });
     });
 
@@ -448,9 +434,7 @@ describe('EntriesExport', () => {
 
     it('should use master locale only when locales array is empty', () => {
       const locales: any[] = [];
-      const contentTypes = [
-        { uid: 'ct-1', title: 'Content Type 1' }
-      ];
+      const contentTypes = [{ uid: 'ct-1', title: 'Content Type 1' }];
 
       const requestObjects = entriesExport.createRequestObjects(locales, contentTypes);
 
@@ -458,15 +442,13 @@ describe('EntriesExport', () => {
       expect(requestObjects).to.have.length(1);
       expect(requestObjects[0]).to.deep.equal({
         contentType: 'ct-1',
-        locale: mockExportConfig.master_locale.code
+        locale: mockExportConfig.master_locale.code,
       });
     });
 
     it('should use master locale only when locales is not an array', () => {
       const locales = {} as any;
-      const contentTypes = [
-        { uid: 'ct-1', title: 'Content Type 1' }
-      ];
+      const contentTypes = [{ uid: 'ct-1', title: 'Content Type 1' }];
 
       const requestObjects = entriesExport.createRequestObjects(locales, contentTypes);
 
@@ -484,7 +466,7 @@ describe('EntriesExport', () => {
       // Should have 2 objects: one for de-de and one for master locale
       expect(requestObjects).to.have.length(2);
       const masterLocaleObjects = requestObjects.filter(
-        (obj: any) => obj.locale === mockExportConfig.master_locale.code
+        (obj: any) => obj.locale === mockExportConfig.master_locale.code,
       );
       expect(masterLocaleObjects).to.have.length(1);
     });
@@ -495,7 +477,7 @@ describe('EntriesExport', () => {
       const options = {
         contentType: 'ct-1',
         locale: 'en-us',
-        skip: 0
+        skip: 0,
       };
 
       const mockEntryQuery = {
@@ -503,35 +485,29 @@ describe('EntriesExport', () => {
           find: sandbox.stub().resolves({
             items: [
               { uid: 'entry-1', title: 'Entry 1' },
-              { uid: 'entry-2', title: 'Entry 2' }
+              { uid: 'entry-2', title: 'Entry 2' },
             ],
-            count: 2
-          })
-        })
+            count: 2,
+          }),
+        }),
       };
 
       mockStackAPIClient.contentType.returns({
-        entry: sandbox.stub().returns(mockEntryQuery)
+        entry: sandbox.stub().returns(mockEntryQuery),
       });
 
       await entriesExport.getEntries(options);
 
       // Should create directory
-      const expectedPath = path.join(
-        entriesExport.entriesDirPath,
-        'ct-1',
-        'en-us'
-      );
+      const expectedPath = path.join(entriesExport.entriesDirPath, 'ct-1', 'en-us');
       expect(mockFsUtil.makeDirectory.called).to.be.true;
       expect(mockFsUtil.makeDirectory.calledWith(expectedPath)).to.be.true;
       // Should initialize FsUtility
       expect(entriesExport.entriesFileHelper).to.be.instanceOf(FsUtility);
       // Should write entries to file
       expect((FsUtility.prototype.writeIntoFile as sinon.SinonStub).called).to.be.true;
-      expect((FsUtility.prototype.writeIntoFile as sinon.SinonStub).calledWith(
-        sinon.match.array,
-        { mapKeyVal: true }
-      )).to.be.true;
+      expect((FsUtility.prototype.writeIntoFile as sinon.SinonStub).calledWith(sinon.match.array, { mapKeyVal: true }))
+        .to.be.true;
       // Should query with correct parameters
       expect(mockEntryQuery.query.called).to.be.true;
     });
@@ -540,7 +516,7 @@ describe('EntriesExport', () => {
       const options = {
         contentType: 'ct-1',
         locale: 'en-us',
-        skip: 0
+        skip: 0,
       };
 
       // Initialize FsUtility on first call
@@ -550,20 +526,20 @@ describe('EntriesExport', () => {
         basePath: '/test/path',
         chunkFileSize: 1000,
         keepMetadata: false,
-        omitKeys: []
+        omitKeys: [],
       });
 
       const mockEntryQuery = {
         query: sandbox.stub().returns({
           find: sandbox.stub().resolves({
             items: [{ uid: 'entry-1' }],
-            count: 150 // More than limit, will paginate
-          })
-        })
+            count: 150, // More than limit, will paginate
+          }),
+        }),
       };
 
       mockStackAPIClient.contentType.returns({
-        entry: sandbox.stub().returns(mockEntryQuery)
+        entry: sandbox.stub().returns(mockEntryQuery),
       });
 
       // First call
@@ -582,7 +558,7 @@ describe('EntriesExport', () => {
       const options = {
         contentType: 'ct-1',
         locale: 'en-us',
-        skip: 0
+        skip: 0,
       };
 
       let callCount = 0;
@@ -592,26 +568,32 @@ describe('EntriesExport', () => {
             callCount++;
             if (callCount === 1) {
               return Promise.resolve({
-                items: Array(100).fill(null).map((_, i) => ({ uid: `entry-${i}` })),
-                count: 250 // Total entries
+                items: Array(100)
+                  .fill(null)
+                  .map((_, i) => ({ uid: `entry-${i}` })),
+                count: 250, // Total entries
               });
             } else if (callCount === 2) {
               return Promise.resolve({
-                items: Array(100).fill(null).map((_, i) => ({ uid: `entry-${100 + i}` })),
-                count: 250
+                items: Array(100)
+                  .fill(null)
+                  .map((_, i) => ({ uid: `entry-${100 + i}` })),
+                count: 250,
               });
             } else {
               return Promise.resolve({
-                items: Array(50).fill(null).map((_, i) => ({ uid: `entry-${200 + i}` })),
-                count: 250
+                items: Array(50)
+                  .fill(null)
+                  .map((_, i) => ({ uid: `entry-${200 + i}` })),
+                count: 250,
               });
             }
-          })
-        })
+          }),
+        }),
       };
 
       mockStackAPIClient.contentType.returns({
-        entry: sandbox.stub().returns(mockEntryQuery)
+        entry: sandbox.stub().returns(mockEntryQuery),
       });
 
       await entriesExport.getEntries(options);
@@ -626,20 +608,20 @@ describe('EntriesExport', () => {
       const options = {
         contentType: 'ct-1',
         locale: 'en-us',
-        skip: 0
+        skip: 0,
       };
 
       const mockEntryQuery = {
         query: sandbox.stub().returns({
           find: sandbox.stub().resolves({
             items: [],
-            count: 0
-          })
-        })
+            count: 0,
+          }),
+        }),
       };
 
       mockStackAPIClient.contentType.returns({
-        entry: sandbox.stub().returns(mockEntryQuery)
+        entry: sandbox.stub().returns(mockEntryQuery),
       });
 
       await entriesExport.getEntries(options);
@@ -655,7 +637,7 @@ describe('EntriesExport', () => {
       const options = {
         contentType: 'ct-1',
         locale: 'en-us',
-        skip: 0
+        skip: 0,
       };
 
       const apiError = new Error('API Error');
@@ -670,12 +652,12 @@ describe('EntriesExport', () => {
 
       const mockEntryQuery = {
         query: sandbox.stub().returns({
-          find: sandbox.stub().rejects(apiError)
-        })
+          find: sandbox.stub().rejects(apiError),
+        }),
       };
 
       mockStackAPIClient.contentType.returns({
-        entry: sandbox.stub().returns(mockEntryQuery)
+        entry: sandbox.stub().returns(mockEntryQuery),
       });
 
       try {
@@ -685,13 +667,10 @@ describe('EntriesExport', () => {
         expect(error).to.equal(apiError);
         // Should handle and log error with context
         expect(handleAndLogErrorSpy.called).to.be.true;
-        expect(handleAndLogErrorSpy.calledWith(
-          apiError,
-          sinon.match.has('contentType', 'ct-1')
-        )).to.be.true;
+        expect(handleAndLogErrorSpy.calledWith(apiError, sinon.match.has('contentType', 'ct-1'))).to.be.true;
         expect(handleAndLogErrorSpy.getCall(0).args[1]).to.include({
           locale: 'en-us',
-          contentType: 'ct-1'
+          contentType: 'ct-1',
         });
       }
     });
@@ -703,7 +682,7 @@ describe('EntriesExport', () => {
       entriesExport = new EntriesExport({
         exportConfig: mockExportConfig,
         stackAPIClient: mockStackAPIClient,
-        moduleName: 'entries'
+        moduleName: 'entries',
       });
     });
 
@@ -711,25 +690,25 @@ describe('EntriesExport', () => {
       const options = {
         contentType: 'ct-1',
         locale: 'en-us',
-        skip: 0
+        skip: 0,
       };
 
       const entries = [
         { uid: 'entry-1', _version: 3 },
-        { uid: 'entry-2', _version: 2 }
+        { uid: 'entry-2', _version: 2 },
       ];
 
       const mockEntryQuery = {
         query: sandbox.stub().returns({
           find: sandbox.stub().resolves({
             items: entries,
-            count: 2
-          })
-        })
+            count: 2,
+          }),
+        }),
       };
 
       mockStackAPIClient.contentType.returns({
-        entry: sandbox.stub().returns(mockEntryQuery)
+        entry: sandbox.stub().returns(mockEntryQuery),
       });
 
       // Stub fetchEntriesVersions
@@ -739,14 +718,16 @@ describe('EntriesExport', () => {
 
       // Should call fetchEntriesVersions with entries
       expect((entriesExport.fetchEntriesVersions as sinon.SinonStub).called).to.be.true;
-      expect((entriesExport.fetchEntriesVersions as sinon.SinonStub).calledWith(
-        entries,
-        sinon.match({
-          locale: 'en-us',
-          contentType: 'ct-1',
-          versionedEntryPath: sinon.match.string
-        })
-      )).to.be.true;
+      expect(
+        (entriesExport.fetchEntriesVersions as sinon.SinonStub).calledWith(
+          entries,
+          sinon.match({
+            locale: 'en-us',
+            contentType: 'ct-1',
+            versionedEntryPath: sinon.match.string,
+          }),
+        ),
+      ).to.be.true;
       // Should create versions directory
       expect(mockFsUtil.makeDirectory.called).to.be.true;
       const makeDirCalls = mockFsUtil.makeDirectory.getCalls();
@@ -759,26 +740,26 @@ describe('EntriesExport', () => {
       entriesExport = new EntriesExport({
         exportConfig: mockExportConfig,
         stackAPIClient: mockStackAPIClient,
-        moduleName: 'entries'
+        moduleName: 'entries',
       });
 
       const options = {
         contentType: 'ct-1',
         locale: 'en-us',
-        skip: 0
+        skip: 0,
       };
 
       const mockEntryQuery = {
         query: sandbox.stub().returns({
           find: sandbox.stub().resolves({
             items: [{ uid: 'entry-1' }],
-            count: 1
-          })
-        })
+            count: 1,
+          }),
+        }),
       };
 
       mockStackAPIClient.contentType.returns({
-        entry: sandbox.stub().returns(mockEntryQuery)
+        entry: sandbox.stub().returns(mockEntryQuery),
       });
 
       sandbox.stub(entriesExport, 'fetchEntriesVersions').resolves();
@@ -798,36 +779,38 @@ describe('EntriesExport', () => {
       const options = {
         contentType: 'ct-1',
         locale: 'en-us',
-        skip: 0
+        skip: 0,
       };
 
       const entries = [
         { uid: 'entry-1', title: 'Entry 1' },
-        { uid: 'entry-2', title: 'Entry 2' }
+        { uid: 'entry-2', title: 'Entry 2' },
       ];
 
       const mockEntryQuery = {
         query: sandbox.stub().returns({
           find: sandbox.stub().resolves({
             items: entries,
-            count: 2
-          })
-        })
+            count: 2,
+          }),
+        }),
       };
 
       mockStackAPIClient.contentType.returns({
-        entry: sandbox.stub().returns(mockEntryQuery)
+        entry: sandbox.stub().returns(mockEntryQuery),
       });
 
       await entriesExport.getEntries(options);
 
       // Should call exportVariantEntry with correct parameters
       expect(mockVariantEntries.exportVariantEntry.called).to.be.true;
-      expect(mockVariantEntries.exportVariantEntry.calledWith({
-        locale: 'en-us',
-        contentTypeUid: 'ct-1',
-        entries: entries
-      })).to.be.true;
+      expect(
+        mockVariantEntries.exportVariantEntry.calledWith({
+          locale: 'en-us',
+          contentTypeUid: 'ct-1',
+          entries: entries,
+        }),
+      ).to.be.true;
     });
 
     it('should not export variant entries when exportVariantEntry is disabled', async () => {
@@ -836,20 +819,20 @@ describe('EntriesExport', () => {
       const options = {
         contentType: 'ct-1',
         locale: 'en-us',
-        skip: 0
+        skip: 0,
       };
 
       const mockEntryQuery = {
         query: sandbox.stub().returns({
           find: sandbox.stub().resolves({
             items: [{ uid: 'entry-1' }],
-            count: 1
-          })
-        })
+            count: 1,
+          }),
+        }),
       };
 
       mockStackAPIClient.contentType.returns({
-        entry: sandbox.stub().returns(mockEntryQuery)
+        entry: sandbox.stub().returns(mockEntryQuery),
       });
 
       await entriesExport.getEntries(options);
@@ -865,12 +848,12 @@ describe('EntriesExport', () => {
     it('should process entries through makeConcurrentCall with correct configuration', async () => {
       const entries = [
         { uid: 'entry-1', _version: 2 },
-        { uid: 'entry-2', _version: 1 }
+        { uid: 'entry-2', _version: 1 },
       ];
       const options = {
         locale: 'en-us',
         contentType: 'ct-1',
-        versionedEntryPath: '/test/versions'
+        versionedEntryPath: '/test/versions',
       };
 
       // Stub makeConcurrentCall
@@ -901,33 +884,35 @@ describe('EntriesExport', () => {
         module: 'versioned-entries',
         queryParam: {
           locale: 'en-us',
-          contentType: 'ct-1'
+          contentType: 'ct-1',
         },
         resolve: sandbox.spy(),
-        reject: sandbox.spy()
+        reject: sandbox.spy(),
       };
 
-      const versions = [{ uid: 'entry-1', _version: 1 }, { uid: 'entry-1', _version: 2 }];
+      const versions = [
+        { uid: 'entry-1', _version: 1 },
+        { uid: 'entry-1', _version: 2 },
+      ];
       sandbox.stub(entriesExport, 'getEntryByVersion').resolves(versions);
 
       await entriesExport.entryVersionHandler({
         apiParams: apiParams as any,
         element: entry,
-        isLastRequest: false
+        isLastRequest: false,
       });
 
       // Should call getEntryByVersion
       expect((entriesExport.getEntryByVersion as sinon.SinonStub).called).to.be.true;
-      expect((entriesExport.getEntryByVersion as sinon.SinonStub).calledWith(
-        apiParams.queryParam,
-        entry
-      )).to.be.true;
+      expect((entriesExport.getEntryByVersion as sinon.SinonStub).calledWith(apiParams.queryParam, entry)).to.be.true;
       // Should call resolve with correct data
       expect(apiParams.resolve.called).to.be.true;
-      expect(apiParams.resolve.calledWith({
-        response: versions,
-        apiData: entry
-      })).to.be.true;
+      expect(
+        apiParams.resolve.calledWith({
+          response: versions,
+          apiData: entry,
+        }),
+      ).to.be.true;
       // Should not call reject
       expect(apiParams.reject.called).to.be.false;
     });
@@ -938,10 +923,10 @@ describe('EntriesExport', () => {
         module: 'versioned-entries',
         queryParam: {
           locale: 'en-us',
-          contentType: 'ct-1'
+          contentType: 'ct-1',
         },
         resolve: sandbox.spy(),
-        reject: sandbox.spy()
+        reject: sandbox.spy(),
       };
 
       const versionError = new Error('Version fetch failed');
@@ -952,7 +937,7 @@ describe('EntriesExport', () => {
         await entriesExport.entryVersionHandler({
           apiParams: apiParams as any,
           element: entry,
-          isLastRequest: false
+          isLastRequest: false,
         });
       } catch (error) {
         // Expected - the handler rejects with true
@@ -961,10 +946,12 @@ describe('EntriesExport', () => {
 
       // Should call reject with error
       expect(apiParams.reject.called).to.be.true;
-      expect(apiParams.reject.calledWith({
-        error: versionError,
-        apiData: entry
-      })).to.be.true;
+      expect(
+        apiParams.reject.calledWith({
+          error: versionError,
+          apiData: entry,
+        }),
+      ).to.be.true;
       // Should not call resolve
       expect(apiParams.resolve.called).to.be.false;
     });
@@ -975,7 +962,7 @@ describe('EntriesExport', () => {
       const entry = { uid: 'entry-1', _version: 3 };
       const options = {
         locale: 'en-us',
-        contentType: 'ct-1'
+        contentType: 'ct-1',
       };
 
       let versionCallCount = 0;
@@ -983,15 +970,15 @@ describe('EntriesExport', () => {
         versionCallCount++;
         return Promise.resolve({
           uid: 'entry-1',
-          _version: 4 - versionCallCount // 3, 2, 1
+          _version: 4 - versionCallCount, // 3, 2, 1
         });
       });
 
       const mockEntryMethod = sandbox.stub().callsFake((uid: string) => ({
-        fetch: mockEntryFetch
+        fetch: mockEntryFetch,
       }));
       mockStackAPIClient.contentType.returns({
-        entry: mockEntryMethod
+        entry: mockEntryMethod,
       });
 
       const versions = await entriesExport.getEntryByVersion(options, entry);
@@ -1002,7 +989,7 @@ describe('EntriesExport', () => {
       // Should fetch with correct version numbers
       expect(mockEntryFetch.getCall(0).args[0]).to.deep.include({
         version: 3,
-        locale: 'en-us'
+        locale: 'en-us',
       });
     });
 
@@ -1010,19 +997,19 @@ describe('EntriesExport', () => {
       const entry = { uid: 'entry-1', _version: 1 };
       const options = {
         locale: 'en-us',
-        contentType: 'ct-1'
+        contentType: 'ct-1',
       };
 
       const mockEntryFetch = sandbox.stub().resolves({
         uid: 'entry-1',
-        _version: 1
+        _version: 1,
       });
 
       const mockEntryMethod = sandbox.stub().callsFake((uid: string) => ({
-        fetch: mockEntryFetch
+        fetch: mockEntryFetch,
       }));
       mockStackAPIClient.contentType.returns({
-        entry: mockEntryMethod
+        entry: mockEntryMethod,
       });
 
       const versions = await entriesExport.getEntryByVersion(options, entry);
@@ -1036,29 +1023,31 @@ describe('EntriesExport', () => {
       const entry = { uid: 'entry-1', _version: 1 };
       const options = {
         locale: 'en-us',
-        contentType: 'ct-1'
+        contentType: 'ct-1',
       };
 
       const mockEntryFetch = sandbox.stub().resolves({ uid: 'entry-1' });
 
       const mockEntryMethod = sandbox.stub().callsFake((uid: string) => ({
-        fetch: mockEntryFetch
+        fetch: mockEntryFetch,
       }));
       mockStackAPIClient.contentType.returns({
-        entry: mockEntryMethod
+        entry: mockEntryMethod,
       });
 
       await entriesExport.getEntryByVersion(options, entry);
 
       // Should include except.BASE with invalidKeys
       expect(mockEntryFetch.called).to.be.true;
-      expect(mockEntryFetch.calledWith(
-        sinon.match({
-          except: {
-            BASE: mockExportConfig.modules.entries.invalidKeys
-          }
-        })
-      )).to.be.true;
+      expect(
+        mockEntryFetch.calledWith(
+          sinon.match({
+            except: {
+              BASE: mockExportConfig.modules.entries.invalidKeys,
+            },
+          }),
+        ),
+      ).to.be.true;
     });
   });
 
@@ -1067,26 +1056,22 @@ describe('EntriesExport', () => {
       const locales = [{ code: 'en-us' }];
       const contentTypes = [
         { uid: 'ct-1', title: 'Content Type 1' },
-        { uid: 'ct-2', title: 'Content Type 2' }
+        { uid: 'ct-2', title: 'Content Type 2' },
       ];
 
-      mockFsUtil.readFile
-        .onFirstCall()
-        .returns(locales)
-        .onSecondCall()
-        .returns(contentTypes);
+      mockFsUtil.readFile.onFirstCall().returns(locales).onSecondCall().returns(contentTypes);
 
       const mockEntryQuery = {
         query: sandbox.stub().returns({
           find: sandbox.stub().resolves({
             items: [{ uid: 'entry-1' }],
-            count: 1
-          })
-        })
+            count: 1,
+          }),
+        }),
       };
 
       const contentTypeStub = sandbox.stub().returns({
-        entry: sandbox.stub().returns(mockEntryQuery)
+        entry: sandbox.stub().returns(mockEntryQuery),
       });
       mockStackAPIClient.contentType = contentTypeStub;
       // Update entriesExport to use the new mock
@@ -1115,33 +1100,39 @@ describe('EntriesExport', () => {
       const locales = [{ code: 'en-us' }];
       const contentTypes = [{ uid: 'ct-1', title: 'Content Type 1' }];
 
-      mockFsUtil.readFile
-        .onFirstCall()
-        .returns(locales)
-        .onSecondCall()
-        .returns(contentTypes);
+      mockFsUtil.readFile.onFirstCall().returns(locales).onSecondCall().returns(contentTypes);
 
       const processingError = new Error('Entry processing failed');
-      sandbox.stub(entriesExport, 'getEntries').rejects(processingError);
+      const getEntriesStub = sandbox.stub(entriesExport, 'getEntries').rejects(processingError);
 
-      const handleAndLogErrorSpy = sandbox.spy();
-      try {
-        sandbox.replaceGetter(utilities, 'handleAndLogError', () => handleAndLogErrorSpy);
-      } catch (e) {
-        // Already replaced, restore first
-        sandbox.restore();
-        sandbox.replaceGetter(utilities, 'handleAndLogError', () => handleAndLogErrorSpy);
-      }
+      // Stub getTotalEntriesCount to return > 0 so the loop executes
+      sandbox.stub(entriesExport, 'getTotalEntriesCount').resolves(1);
+      sandbox.stub(entriesExport, 'setupVariantExport').resolves(null);
+
+      // Stub progress manager to avoid issues
+      sandbox.stub(entriesExport as any, 'createNestedProgress').returns({
+        addProcess: sandbox.stub(),
+        startProcess: sandbox.stub().returns({
+          updateStatus: sandbox.stub(),
+        }),
+        updateStatus: sandbox.stub(),
+        completeProcess: sandbox.stub(),
+        tick: sandbox.stub(),
+      } as any);
+      sandbox
+        .stub(entriesExport as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+      const completeProgressStub = sandbox.stub(entriesExport as any, 'completeProgress');
 
       await entriesExport.start();
 
-      // Should handle error
-      expect(handleAndLogErrorSpy.called).to.be.true;
-      expect(handleAndLogErrorSpy.calledWith(
-        processingError,
-        sinon.match.has('module', 'entries')
-      )).to.be.true;
+      // Should handle error - the error is thrown in the loop and caught in outer catch
+      // The error is caught in the outer catch block which calls handleAndLogError and completeProgress(false)
+      // Verify completeProgress was called with false to indicate error handling
+      expect(completeProgressStub.called).to.be.true;
+      expect(completeProgressStub.calledWith(false, sinon.match.string)).to.be.true;
     });
   });
 });
-

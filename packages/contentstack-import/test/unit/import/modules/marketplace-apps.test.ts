@@ -23,7 +23,6 @@ describe('ImportMarketplaceApps', () => {
   beforeEach(() => {
     sandbox = sinon.createSandbox();
 
-    // Mock fsUtil with proper methods
     fsUtilStub = {
       readFile: sandbox.stub(),
       writeFile: sandbox.stub(),
@@ -33,10 +32,8 @@ describe('ImportMarketplaceApps', () => {
     sandbox.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
     sandbox.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
 
-    // Mock fileHelper
     sandbox.stub(fileHelper, 'fileExistsSync').returns(true);
 
-    // Mock marketplace app helper functions
     marketplaceAppHelperStub = {
       getAllStackSpecificApps: sandbox.stub(),
       getDeveloperHubUrl: sandbox.stub(),
@@ -62,7 +59,6 @@ describe('ImportMarketplaceApps', () => {
       .callsFake(marketplaceAppHelperStub.confirmToCloseProcess);
     sandbox.stub(marketplaceAppHelper, 'ifAppAlreadyExist').callsFake(marketplaceAppHelperStub.ifAppAlreadyExist);
 
-    // Mock interactive utilities
     interactiveStub = {
       askEncryptionKey: sandbox.stub(),
       getLocationName: sandbox.stub(),
@@ -70,7 +66,6 @@ describe('ImportMarketplaceApps', () => {
     sandbox.stub(interactive, 'askEncryptionKey').callsFake(interactiveStub.askEncryptionKey);
     sandbox.stub(interactive, 'getLocationName').callsFake(interactiveStub.getLocationName);
 
-    // Mock cliux
     cliuxStub = {
       print: sandbox.stub(),
       confirm: sandbox.stub(),
@@ -82,7 +77,6 @@ describe('ImportMarketplaceApps', () => {
 
     // Skip mocking isAuthenticated for now - focus on core functionality
 
-    // Mock NodeCrypto with proper methods
     nodeCryptoStub = {
       encrypt: sandbox.stub().returns('encrypted-data'),
       decrypt: sandbox.stub().returns('decrypted-data'),
@@ -90,7 +84,6 @@ describe('ImportMarketplaceApps', () => {
     sandbox.stub(NodeCrypto.prototype, 'encrypt').callsFake(nodeCryptoStub.encrypt);
     sandbox.stub(NodeCrypto.prototype, 'decrypt').callsFake(nodeCryptoStub.decrypt);
 
-    // Mock marketplace SDK client with proper structure
     mockAppSdk = {
       marketplace: sandbox.stub().callsFake((orgUid) => ({
         app: sandbox.stub().returns({
@@ -116,7 +109,6 @@ describe('ImportMarketplaceApps', () => {
     };
     sandbox.replace(require('@contentstack/cli-utilities'), 'marketplaceSDKClient', () => Promise.resolve(mockAppSdk));
 
-    // Setup mock config
     mockImportConfig = {
       apiKey: 'test',
       backupDir: '/test/backup',
@@ -150,12 +142,10 @@ describe('ImportMarketplaceApps', () => {
       moduleName: 'marketplace-apps' as any,
     };
 
-    // Setup file system mocks
     fsUtilStub.readFile.returns(mockData.mockMarketplaceApps);
     fsUtilStub.makeDirectory.resolves();
     fsUtilStub.writeFile.resolves();
 
-    // Setup helper mocks
     marketplaceAppHelperStub.getAllStackSpecificApps.resolves(mockData.mockInstalledApps);
     marketplaceAppHelperStub.getDeveloperHubUrl.resolves('https://test-dev-hub.com');
     marketplaceAppHelperStub.getOrgUid.resolves('test-org-uid');
@@ -187,7 +177,6 @@ describe('ImportMarketplaceApps', () => {
     it('should successfully complete the full start process', async () => {
       importMarketplaceApps = new ImportMarketplaceApps(mockModuleClassParams);
 
-      // Mock configHandler.get to return 'OAUTH' for authorisationType, making isAuthenticated() return true
       const configHandler = require('@contentstack/cli-utilities').configHandler;
       sandbox.stub(configHandler, 'get').callsFake((key) => {
         if (key === 'authorisationType') {
@@ -227,7 +216,6 @@ describe('ImportMarketplaceApps', () => {
       importMarketplaceApps = new ImportMarketplaceApps(mockModuleClassParams);
       fsUtilStub.readFile.returns(mockData.mockMarketplaceApps);
 
-      // Mock configHandler.get to return undefined for authorisationType, making isAuthenticated() return false
       const configHandler = require('@contentstack/cli-utilities').configHandler;
       sandbox.stub(configHandler, 'get').callsFake((key) => {
         if (key === 'authorisationType') {
@@ -255,7 +243,6 @@ describe('ImportMarketplaceApps', () => {
       // Set marketplaceApps directly since we're not calling start()
       (importMarketplaceApps as any).marketplaceApps = mockData.mockMarketplaceApps;
 
-      // Mock the private methods
       const handleAllPrivateAppsCreationProcessStub = sandbox
         .stub(importMarketplaceApps, 'handleAllPrivateAppsCreationProcess')
         .resolves();
@@ -264,7 +251,6 @@ describe('ImportMarketplaceApps', () => {
 
       await importMarketplaceApps.importMarketplaceApps();
 
-      expect(handleAllPrivateAppsCreationProcessStub.calledOnce).to.be.true;
       expect(marketplaceAppHelperStub.getAllStackSpecificApps.calledOnce).to.be.true;
       expect(installAppsStub.callCount).to.equal(mockData.mockMarketplaceApps.length);
       expect(generateUidMapperStub.calledOnce).to.be.true;
@@ -276,7 +262,6 @@ describe('ImportMarketplaceApps', () => {
       importMarketplaceApps.importConfig = mockImportConfig;
       interactiveStub.askEncryptionKey.resolves('user-provided-key');
 
-      // Create mock data with configuration that requires encryption
       const mockAppsWithConfig = [
         {
           ...mockData.mockMarketplaceApps[0],
@@ -287,7 +272,6 @@ describe('ImportMarketplaceApps', () => {
       // Set marketplaceApps directly since we're not calling start()
       (importMarketplaceApps as any).marketplaceApps = mockAppsWithConfig;
 
-      // Mock the private methods (but not getAndValidateEncryptionKey so it can call askEncryptionKey)
       const handleAllPrivateAppsCreationProcessStub = sandbox
         .stub(importMarketplaceApps, 'handleAllPrivateAppsCreationProcess')
         .resolves();
@@ -296,8 +280,6 @@ describe('ImportMarketplaceApps', () => {
 
       await importMarketplaceApps.importMarketplaceApps();
 
-      expect(interactiveStub.askEncryptionKey.calledOnce).to.be.true;
-      expect(handleAllPrivateAppsCreationProcessStub.calledOnce).to.be.true;
       expect(marketplaceAppHelperStub.getAllStackSpecificApps.calledOnce).to.be.true;
       expect(installAppsStub.callCount).to.equal(mockAppsWithConfig.length);
       expect(generateUidMapperStub.calledOnce).to.be.true;
@@ -430,7 +412,6 @@ describe('ImportMarketplaceApps', () => {
     it('should return true when app exists', async () => {
       const app = mockData.mockPrivateApps[0];
 
-      // Override the fetch mock to return data (app exists)
       const installationStub = sandbox.stub().returns({
         fetch: sandbox.stub().resolves({ uid: 'existing-app-uid' }),
       });
@@ -456,7 +437,6 @@ describe('ImportMarketplaceApps', () => {
 
   // describe('createPrivateApp() - Complete Flow', () => {
   //   beforeEach(() => {
-  //     importMarketplaceApps = new ImportMarketplaceApps(mockModuleClassParams);
   //     importMarketplaceApps.appSdk = mockAppSdk;
   //   });
 
@@ -552,7 +532,6 @@ describe('ImportMarketplaceApps', () => {
     });
 
     it('should handle installation error', async () => {
-      // Override the install mock to reject
       const appStub = sandbox.stub().returns({
         install: sandbox.stub().rejects(new Error('Installation failed')),
       });
@@ -845,7 +824,6 @@ describe('ImportMarketplaceApps', () => {
       marketplaceAppHelperStub.getAllStackSpecificApps.resolves([]);
 
       const app = mockData.mockMarketplaceApps[0];
-      // Mock installApp to return error response without installation_uid
       const installAppStub = sandbox.stub(importMarketplaceApps, 'installApp').resolves({ message: 'Installation failed' });
 
       await importMarketplaceApps.installApps(app);
@@ -936,7 +914,6 @@ describe('ImportMarketplaceApps', () => {
       // Set up marketplace apps with UI locations
       (importMarketplaceApps as any).marketplaceApps = appsWithUI;
 
-      // Mock installed apps with different meta structure
       const installedAppsWithDifferentMeta = [
         {
           manifest: { name: 'App 1' },
@@ -975,7 +952,6 @@ describe('ImportMarketplaceApps', () => {
       // Set up marketplace apps with UI locations
       (importMarketplaceApps as any).marketplaceApps = appsWithUI;
 
-      // Mock installed apps with matching meta
       const installedAppsWithMatchingMeta = [
         {
           manifest: { name: 'App 1' },
@@ -1190,7 +1166,6 @@ describe('ImportMarketplaceApps', () => {
         server_configuration: { encrypted: 'server-data' },
       };
 
-      // Mock ifAppAlreadyExist to return updateParam with configuration
       marketplaceAppHelperStub.ifAppAlreadyExist.resolves({
         installation_uid: 'test-installation-uid',
         manifest: app.manifest,
@@ -1215,7 +1190,6 @@ describe('ImportMarketplaceApps', () => {
         server_configuration: { encrypted: 'server-data' },
       };
 
-      // Mock ifAppAlreadyExist to return updateParam without configuration
       marketplaceAppHelperStub.ifAppAlreadyExist.resolves({
         installation_uid: 'test-installation-uid',
         manifest: app.manifest,
@@ -1293,7 +1267,6 @@ describe('ImportMarketplaceApps', () => {
         ui_location: { locations: [] },
       } as any;
 
-      // Mock successful configuration update
       mockAppSdk
         .marketplace()
         .installation()
@@ -1324,7 +1297,6 @@ describe('ImportMarketplaceApps', () => {
         ui_location: { locations: [] },
       } as any;
 
-      // Mock successful server configuration update
       mockAppSdk
         .marketplace()
         .installation()
@@ -1355,7 +1327,6 @@ describe('ImportMarketplaceApps', () => {
         ui_location: { locations: [] },
       } as any;
 
-      // Mock configuration update that throws an error
       mockAppSdk
         .marketplace()
         .installation()
@@ -1390,7 +1361,6 @@ describe('ImportMarketplaceApps', () => {
         ui_location: { locations: [] },
       } as any;
 
-      // Mock server configuration update that throws an error
       mockAppSdk
         .marketplace()
         .installation()
@@ -1414,7 +1384,6 @@ describe('ImportMarketplaceApps', () => {
       importMarketplaceApps.appSdk = mockAppSdk;
       importMarketplaceApps.nodeCrypto = new NodeCrypto({ encryptionKey: 'test-key' });
 
-      // Create an app that exists in installedApps with configuration
       const existingApp = {
         ...mockData.mockInstalledApps[0],
         configuration: { encrypted: 'existing-config' },
@@ -1429,7 +1398,6 @@ describe('ImportMarketplaceApps', () => {
         server_configuration: { encrypted: 'server-data' },
       };
 
-      // Mock ifAppAlreadyExist to return updateParam with configuration
       marketplaceAppHelperStub.ifAppAlreadyExist.resolves({
         installation_uid: 'test-installation-uid',
         manifest: app.manifest,
@@ -1474,7 +1442,6 @@ describe('ImportMarketplaceApps', () => {
         ui_location: { locations: [] },
       } as any;
 
-      // Mock successful configuration update - no message in data (success path)
       const setConfigStub = sandbox.stub();
       setConfigStub.returns({
         then: sandbox.stub().callsFake((callback) => {
@@ -1504,7 +1471,6 @@ describe('ImportMarketplaceApps', () => {
         ui_location: { locations: [] },
       } as any;
 
-      // Mock successful server configuration update - no message in data (success path)
       const setServerConfigStub = sandbox.stub();
       setServerConfigStub.returns({
         then: sandbox.stub().callsFake((callback) => {
@@ -1534,7 +1500,6 @@ describe('ImportMarketplaceApps', () => {
         ui_location: { locations: [] },
       } as any;
 
-      // Mock configuration update that throws an error in catch block - hits lines 654-658
       const setConfigStub = sandbox.stub();
       setConfigStub.returns({
         then: sandbox.stub().callsFake((callback) => {
@@ -1568,7 +1533,6 @@ describe('ImportMarketplaceApps', () => {
         ui_location: { locations: [] },
       } as any;
 
-      // Mock server configuration update that throws an error in catch block - hits lines 676-680
       const setServerConfigStub = sandbox.stub();
       setServerConfigStub.returns({
         then: sandbox.stub().callsFake((callback) => {
@@ -1608,7 +1572,6 @@ describe('ImportMarketplaceApps', () => {
         server_configuration: { encrypted: 'server-data' },
       };
 
-      // Mock ifAppAlreadyExist to return updateParam with configuration
       marketplaceAppHelperStub.ifAppAlreadyExist.resolves({
         installation_uid: 'test-installation-uid',
         manifest: app.manifest,
@@ -1632,7 +1595,6 @@ describe('ImportMarketplaceApps', () => {
         server_configuration: { encrypted: 'server-data' },
       };
 
-      // Mock installApp to return installation failure (no installation_uid, has message)
       const installAppStub = sandbox.stub(importMarketplaceApps, 'installApp');
       installAppStub.resolves({
         installation_uid: null, // No installation_uid
@@ -1672,7 +1634,6 @@ describe('ImportMarketplaceApps', () => {
     it('should handle errors during start process', async () => {
       importMarketplaceApps = new ImportMarketplaceApps(mockModuleClassParams);
       
-      // Mock configHandler.get to return 'OAUTH' for authorisationType, making isAuthenticated() return true
       const configHandler = require('@contentstack/cli-utilities').configHandler;
       sandbox.stub(configHandler, 'get').callsFake((key) => {
         if (key === 'authorisationType') {
@@ -1683,13 +1644,13 @@ describe('ImportMarketplaceApps', () => {
       
       const error = new Error('Start process failed');
       sandbox.stub(importMarketplaceApps, 'getAndValidateEncryptionKey').rejects(error);
+      const completeProgressStub = sandbox.stub(importMarketplaceApps as any, 'completeProgress');
 
-      try {
-        await importMarketplaceApps.start();
-        expect.fail('Should have thrown an error');
-      } catch (err) {
-        expect(err).to.equal(error);
-      }
+      await importMarketplaceApps.start();
+
+      // Error should be caught and completeProgress should be called with error
+      expect(completeProgressStub.called).to.be.true;
+      expect(completeProgressStub.calledWith(false, 'Start process failed')).to.be.true;
     });
   });
 
@@ -1715,7 +1676,6 @@ describe('ImportMarketplaceApps', () => {
 
       await importMarketplaceApps.importMarketplaceApps();
 
-      expect(handleAllPrivateAppsCreationProcessStub.calledOnce).to.be.true;
       expect(marketplaceAppHelperStub.getAllStackSpecificApps.calledOnce).to.be.true;
       expect(installAppsStub.callCount).to.equal(mockData.mockMarketplaceApps.length);
       expect(generateUidMapperStub.calledOnce).to.be.true;
@@ -1739,8 +1699,6 @@ describe('ImportMarketplaceApps', () => {
 
       await importMarketplaceApps.importMarketplaceApps();
 
-      expect(getAndValidateEncryptionKeyStub.calledOnce).to.be.true;
-      expect(handleAllPrivateAppsCreationProcessStub.calledOnce).to.be.true;
       expect(marketplaceAppHelperStub.getAllStackSpecificApps.calledOnce).to.be.true;
       expect(installAppsStub.callCount).to.equal(mockData.mockMarketplaceApps.length);
       expect(generateUidMapperStub.calledOnce).to.be.true;
@@ -1765,7 +1723,6 @@ describe('ImportMarketplaceApps', () => {
   describe('handleAllPrivateAppsCreationProcess()', () => {
     beforeEach(() => {
       importMarketplaceApps = new ImportMarketplaceApps(mockModuleClassParams);
-      // Mock the marketplace apps data
       fsUtilStub.readFile.returns(mockData.mockPrivateApps);
     });
 
@@ -1792,7 +1749,6 @@ describe('ImportMarketplaceApps', () => {
 
     it('should handle errors during private app creation', async () => {
       const error = new Error('Private app creation failed');
-      // Stub createPrivateApp to return undefined (which it does when errors are caught)
       sandbox.stub(importMarketplaceApps, 'createPrivateApp').resolves(undefined);
 
       // The method should complete successfully even when createPrivateApp encounters errors
@@ -1880,7 +1836,6 @@ describe('ImportMarketplaceApps', () => {
 
   // describe('createPrivateApp()', () => {
   //   beforeEach(() => {
-  //     importMarketplaceApps = new ImportMarketplaceApps(mockModuleClassParams);
   //     importMarketplaceApps.appSdk = {
   //       marketplace: sandbox.stub().returns({
   //         app: sandbox.stub().returns({
@@ -2085,7 +2040,6 @@ describe('ImportMarketplaceApps', () => {
     it('should handle case when user is not authenticated', async () => {
       fsUtilStub.readFile.returns(mockData.mockMarketplaceApps);
 
-      // Mock configHandler.get to return undefined for authorisationType, making isAuthenticated() return false
       const configHandler = require('@contentstack/cli-utilities').configHandler;
       sandbox.stub(configHandler, 'get').callsFake((key) => {
         if (key === 'authorisationType') {
@@ -2113,14 +2067,13 @@ describe('ImportMarketplaceApps', () => {
       // Set marketplaceApps to empty array
       (importMarketplaceApps as any).marketplaceApps = [];
 
-      const handleAllPrivateAppsCreationProcessStub = sandbox
-        .stub(importMarketplaceApps, 'handleAllPrivateAppsCreationProcess')
-        .resolves();
+      // handleAllPrivateAppsCreationProcess is called in start(), not in importMarketplaceApps()
       const generateUidMapperStub = sandbox.stub(importMarketplaceApps, 'generateUidMapper').resolves({});
+      marketplaceAppHelperStub.getAllStackSpecificApps.resolves([]);
 
       await importMarketplaceApps.importMarketplaceApps();
 
-      expect(handleAllPrivateAppsCreationProcessStub.calledOnce).to.be.true;
+      // generateUidMapper should still be called even when marketplaceApps is empty
       expect(generateUidMapperStub.calledOnce).to.be.true;
     });
 
@@ -2137,7 +2090,6 @@ describe('ImportMarketplaceApps', () => {
 
       await importMarketplaceApps.importMarketplaceApps();
 
-      expect(handleAllPrivateAppsCreationProcessStub.calledOnce).to.be.true;
       expect(installAppsStub.callCount).to.equal(mockData.mockMarketplaceApps.length);
       expect(generateUidMapperStub.calledOnce).to.be.true;
     });
@@ -2145,7 +2097,6 @@ describe('ImportMarketplaceApps', () => {
 
   // describe('createPrivateApp() - Edge Cases', () => {
   //   beforeEach(() => {
-  //     importMarketplaceApps = new ImportMarketplaceApps(mockModuleClassParams);
   //     importMarketplaceApps.appSdk = {
   //       marketplace: sandbox.stub().returns({
   //         app: sandbox.stub().returns({
@@ -2215,7 +2166,6 @@ describe('ImportMarketplaceApps', () => {
     it('should handle network errors gracefully', async () => {
       importMarketplaceApps = new ImportMarketplaceApps(mockModuleClassParams);
       
-      // Mock configHandler.get to return 'OAUTH' for authorisationType, making isAuthenticated() return true
       const configHandler = require('@contentstack/cli-utilities').configHandler;
       sandbox.stub(configHandler, 'get').callsFake((key) => {
         if (key === 'authorisationType') {
@@ -2226,13 +2176,13 @@ describe('ImportMarketplaceApps', () => {
       
       const error = new Error('Network error');
       marketplaceAppHelperStub.getAllStackSpecificApps.rejects(error);
+      const completeProgressStub = sandbox.stub(importMarketplaceApps as any, 'completeProgress');
 
-      try {
-        await importMarketplaceApps.start();
-        expect.fail('Should have thrown an error');
-      } catch (err) {
-        expect(err).to.equal(error);
-      }
+      await importMarketplaceApps.start();
+
+      // Error should be caught and completeProgress should be called with error
+      expect(completeProgressStub.called).to.be.true;
+      expect(completeProgressStub.calledWith(false, 'Network error')).to.be.true;
     });
 
     it('should handle encryption key validation errors', async () => {
@@ -2279,7 +2229,6 @@ describe('ImportMarketplaceApps', () => {
         ui_location: { locations: [] },
       } as any;
 
-      // Mock successful configuration update with no message (success path - lines 650-652)
       const setConfigStub = sandbox.stub();
       setConfigStub.returns({
         then: sandbox.stub().callsFake((callback) => {
@@ -2306,7 +2255,6 @@ describe('ImportMarketplaceApps', () => {
         ui_location: { locations: [] },
       } as any;
 
-      // Mock configuration update that throws an error in catch block (lines 654-658)
       const setConfigStub = sandbox.stub();
       setConfigStub.returns({
         then: sandbox.stub().callsFake((callback) => {
@@ -2337,7 +2285,6 @@ describe('ImportMarketplaceApps', () => {
         ui_location: { locations: [] },
       } as any;
 
-      // Mock successful server configuration update with no message (success path - lines 672-674)
       const setServerConfigStub = sandbox.stub();
       setServerConfigStub.returns({
         then: sandbox.stub().callsFake((callback) => {
@@ -2364,7 +2311,6 @@ describe('ImportMarketplaceApps', () => {
         ui_location: { locations: [] },
       } as any;
 
-      // Mock server configuration update that throws an error in catch block (lines 676-680)
       const setServerConfigStub = sandbox.stub();
       setServerConfigStub.returns({
         then: sandbox.stub().callsFake((callback) => {
@@ -2508,7 +2454,6 @@ describe('ImportMarketplaceApps', () => {
         ui_location: { locations: [] },
       };
 
-      // Mock the appCreationCallback to return the expected value
       const appCreationCallbackStub = sandbox
         .stub(importMarketplaceApps, 'appCreationCallback')
         .resolves(undefined);
@@ -2525,7 +2470,6 @@ describe('ImportMarketplaceApps', () => {
         name: '12345678901234567890', // exactly 20 characters
       };
 
-      // Mock the appCreationCallback to return the expected value
       const appCreationCallbackStub = sandbox
         .stub(importMarketplaceApps, 'appCreationCallback')
         .resolves(undefined);
@@ -2604,7 +2548,6 @@ describe('ImportMarketplaceApps', () => {
         },
       ];
 
-      // Mock installed apps with different meta structure
       marketplaceAppHelperStub.getAllStackSpecificApps.resolves([
         {
           manifest: { name: 'App 1' },
@@ -2641,7 +2584,6 @@ describe('ImportMarketplaceApps', () => {
         },
       ];
 
-      // Mock installed apps with matching meta
       marketplaceAppHelperStub.getAllStackSpecificApps.resolves([
         {
           manifest: { name: 'App 1' },
@@ -2681,7 +2623,6 @@ describe('ImportMarketplaceApps', () => {
       ];
       interactiveStub.askEncryptionKey.resolves('user-key');
 
-      // Mock NodeCrypto to throw a non-OSSL error
       const nodeCryptoStub = {
         decrypt: sandbox.stub().throws(new Error('Some other error')),
       };

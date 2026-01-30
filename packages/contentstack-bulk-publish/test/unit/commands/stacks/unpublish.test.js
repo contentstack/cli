@@ -1,6 +1,6 @@
-const { describe, it, afterEach } = require('mocha');
+const { describe, it, afterEach, beforeEach } = require('mocha');
 const StackUnpublish = require('../../../../src/commands/cm/stacks/unpublish');
-const { cliux } = require('@contentstack/cli-utilities');
+const { cliux, configHandler } = require('@contentstack/cli-utilities');
 const sinon = require('sinon');
 const { config } = require('dotenv');
 const { expect } = require('chai');
@@ -14,6 +14,25 @@ const contentTypes = ['ct1', 'ct2'];
 describe('StackUnpublish', () => {
   let promptStub;
   let runStub;
+  let configHandlerGetStub;
+
+  beforeEach(() => {
+    // Stub configHandler.get to configure region
+    // Region is required for cmaHost property in Command base class
+    configHandlerGetStub = sinon.stub(configHandler, 'get').callsFake((key) => {
+      if (key === 'region') {
+        return {
+          cma: 'api.contentstack.io',
+          cda: 'cdn.contentstack.io',
+          uiHost: 'app.contentstack.com',
+          developerHubUrl: 'developer.contentstack.com',
+          launchHubUrl: 'launch.contentstack.com',
+          personalizeUrl: 'personalize.contentstack.com',
+        };
+      }
+      return undefined;
+    });
+  });
 
   afterEach(() => {
     sinon.restore(); // clean up all stubs

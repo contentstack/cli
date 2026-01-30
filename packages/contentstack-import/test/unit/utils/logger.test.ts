@@ -13,10 +13,10 @@ describe('Logger Utils', () => {
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
-    
+
     // Clear module cache to ensure fresh state for each test
     delete require.cache[require.resolve('../../../src/utils/logger')];
-    
+
     // Create temp directory for log files
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'logger-test-'));
 
@@ -29,7 +29,6 @@ describe('Logger Utils', () => {
       canCreatePrivateApp: false,
       forceStopMarketplaceAppsPrompt: false,
       skipPrivateAppRecreationIfExist: false,
-      contentVersion: 1,
       backupDir: tempDir,
       masterLocale: { code: 'en-us' },
       master_locale: { code: 'en-us' },
@@ -37,13 +36,13 @@ describe('Logger Utils', () => {
       context: {} as any,
       'exclude-global-modules': false,
       fetchConcurrency: 5,
-      writeConcurrency: 5
+      writeConcurrency: 5,
     } as ImportConfig;
   });
 
   afterEach(() => {
     sandbox.restore();
-    
+
     // Clean up temp directory
     try {
       if (tempDir && fs.existsSync(tempDir)) {

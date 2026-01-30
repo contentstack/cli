@@ -16,16 +16,15 @@ describe('ExportContentTypes', () => {
           find: sinon.stub().resolves({
             items: [
               { uid: 'ct-1', title: 'Content Type 1', description: 'Description', invalidKey: 'remove' },
-              { uid: 'ct-2', title: 'Content Type 2', description: 'Description', invalidKey: 'remove' }
+              { uid: 'ct-2', title: 'Content Type 2', description: 'Description', invalidKey: 'remove' },
             ],
-            count: 2
-          })
-        })
-      })
+            count: 2,
+          }),
+        }),
+      }),
     };
 
     mockExportConfig = {
-      contentVersion: 1,
       versioning: false,
       host: 'https://api.contentstack.io',
       developerHubUrls: {},
@@ -42,7 +41,7 @@ describe('ExportContentTypes', () => {
         sessionId: 'session-123',
         apiKey: 'test-api-key',
         orgId: 'org-123',
-        authenticationMethod: 'Basic Auth'
+        authenticationMethod: 'Basic Auth',
       },
       cliLogsPath: '/test/logs',
       forceStopMarketplaceAppsPrompt: false,
@@ -51,7 +50,7 @@ describe('ExportContentTypes', () => {
         name: 'us',
         cma: 'https://api.contentstack.io',
         cda: 'https://cdn.contentstack.io',
-        uiHost: 'https://app.contentstack.com'
+        uiHost: 'https://app.contentstack.com',
       },
       skipStackSettings: false,
       skipDependencies: false,
@@ -63,7 +62,6 @@ describe('ExportContentTypes', () => {
       writeConcurrency: 5,
       developerHubBaseUrl: '',
       marketplaceAppEncryptionKey: '',
-      onlyTSModules: [],
       modules: {
         types: ['content-types'],
         'content-types': {
@@ -72,15 +70,15 @@ describe('ExportContentTypes', () => {
           validKeys: ['uid', 'title', 'description', 'schema'],
           fetchConcurrency: 5,
           writeConcurrency: 5,
-          limit: 100
-        }
-      }
+          limit: 100,
+        },
+      },
     } as any;
 
     exportContentTypes = new ExportContentTypes({
       exportConfig: mockExportConfig,
       stackAPIClient: mockStackClient,
-      moduleName: 'content-types'
+      moduleName: 'content-types',
     });
 
     // Stub FsUtility methods
@@ -110,7 +108,7 @@ describe('ExportContentTypes', () => {
       expect((exportContentTypes as any).qs).to.deep.include({
         include_count: true,
         asc: 'updated_at',
-        include_global_field_schema: true
+        include_global_field_schema: true,
       });
     });
 
@@ -122,13 +120,13 @@ describe('ExportContentTypes', () => {
     it('should set uid filter when contentTypes are provided', () => {
       const configWithTypes = {
         ...mockExportConfig,
-        contentTypes: ['ct-1', 'ct-2']
+        contentTypes: ['ct-1', 'ct-2'],
       };
 
       const instance = new ExportContentTypes({
         exportConfig: configWithTypes,
         stackAPIClient: mockStackClient,
-        moduleName: 'content-types'
+        moduleName: 'content-types',
       });
 
       expect((instance as any).qs.uid).to.deep.equal({ $in: ['ct-1', 'ct-2'] });
@@ -139,16 +137,16 @@ describe('ExportContentTypes', () => {
     it('should fetch and process content types correctly', async () => {
       const contentTypes = [
         { uid: 'ct-1', title: 'Type 1', description: 'Desc', invalidKey: 'remove' },
-        { uid: 'ct-2', title: 'Type 2', description: 'Desc', invalidKey: 'remove' }
+        { uid: 'ct-2', title: 'Type 2', description: 'Desc', invalidKey: 'remove' },
       ];
 
       mockStackClient.contentType.returns({
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: contentTypes,
-            count: 2
-          })
-        })
+            count: 2,
+          }),
+        }),
       });
 
       await exportContentTypes.getContentTypes();
@@ -170,16 +168,16 @@ describe('ExportContentTypes', () => {
             if (callCount === 1) {
               return Promise.resolve({
                 items: new Array(100).fill({ uid: 'test', title: 'Test', description: 'Desc' }),
-                count: 150
+                count: 150,
               });
             } else {
               return Promise.resolve({
                 items: new Array(50).fill({ uid: 'test2', title: 'Test2', description: 'Desc' }),
-                count: 150
+                count: 150,
               });
             }
-          })
-        })
+          }),
+        }),
       });
 
       await exportContentTypes.getContentTypes();
@@ -192,8 +190,8 @@ describe('ExportContentTypes', () => {
     it('should handle API errors and log them', async () => {
       mockStackClient.contentType.returns({
         query: sinon.stub().returns({
-          find: sinon.stub().rejects(new Error('API Error'))
-        })
+          find: sinon.stub().rejects(new Error('API Error')),
+        }),
       });
 
       try {
@@ -209,9 +207,9 @@ describe('ExportContentTypes', () => {
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: [],
-            count: 0
-          })
-        })
+            count: 0,
+          }),
+        }),
       });
 
       const initialCount = exportContentTypes.contentTypes.length;
@@ -226,11 +224,11 @@ describe('ExportContentTypes', () => {
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: [{ uid: 'ct-1', title: 'Test', description: 'Desc' }],
-            count: 1
-          })
-        })
+            count: 1,
+          }),
+        }),
       });
-      
+
       await exportContentTypes.getContentTypes(50);
 
       // Verify skip was set in query
@@ -242,7 +240,7 @@ describe('ExportContentTypes', () => {
     it('should sanitize content type attributes and remove invalid keys', () => {
       const contentTypes = [
         { uid: 'ct-1', title: 'Type 1', description: 'Desc', invalidKey: 'remove' },
-        { uid: 'ct-2', title: 'Type 2', description: 'Desc', invalidKey: 'remove' }
+        { uid: 'ct-2', title: 'Type 2', description: 'Desc', invalidKey: 'remove' },
       ];
 
       const result = exportContentTypes.sanitizeAttribs(contentTypes);
@@ -254,9 +252,7 @@ describe('ExportContentTypes', () => {
     });
 
     it('should handle content types without required keys', () => {
-      const contentTypes = [
-        { uid: 'ct-1', invalidKey: 'remove' }
-      ];
+      const contentTypes = [{ uid: 'ct-1', invalidKey: 'remove' }];
 
       const result = exportContentTypes.sanitizeAttribs(contentTypes);
 
@@ -278,7 +274,7 @@ describe('ExportContentTypes', () => {
       const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
       const contentTypes = [
         { uid: 'ct-1', title: 'Type 1', description: 'Desc' },
-        { uid: 'ct-2', title: 'Type 2', description: 'Desc' }
+        { uid: 'ct-2', title: 'Type 2', description: 'Desc' },
       ];
 
       await exportContentTypes.writeContentTypes(contentTypes);
@@ -295,16 +291,16 @@ describe('ExportContentTypes', () => {
 
       const contentTypes = [
         { uid: 'ct-1', title: 'Type 1', description: 'Desc' },
-        { uid: 'ct-2', title: 'Type 2', description: 'Desc' }
+        { uid: 'ct-2', title: 'Type 2', description: 'Desc' },
       ];
 
       mockStackClient.contentType.returns({
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: contentTypes,
-            count: 2
-          })
-        })
+            count: 2,
+          }),
+        }),
       });
 
       await exportContentTypes.start();
@@ -323,9 +319,9 @@ describe('ExportContentTypes', () => {
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: [],
-            count: 0
-          })
-        })
+            count: 0,
+          }),
+        }),
       });
 
       exportContentTypes.contentTypes = [];
@@ -338,8 +334,8 @@ describe('ExportContentTypes', () => {
     it('should handle errors during export without throwing', async () => {
       mockStackClient.contentType.returns({
         query: sinon.stub().returns({
-          find: sinon.stub().rejects(new Error('Export failed'))
-        })
+          find: sinon.stub().rejects(new Error('Export failed')),
+        }),
       });
 
       // Should complete without throwing
@@ -347,4 +343,3 @@ describe('ExportContentTypes', () => {
     });
   });
 });
-

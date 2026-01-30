@@ -159,7 +159,14 @@ export interface ComposableStudioProject {
   uid: string;
 }
 export interface Context {
+  command: string;
   module: string;
+  userId: string | undefined;
+  sessionId: string | undefined;
+  clientId?: string | undefined;
+  apiKey: string;
+  orgId: string;
+  authenticationMethod?: string;
 }
 
 export { default as DefaultConfig } from './default-config';

@@ -37,7 +37,7 @@ export const uploadAssetHelper = function (config: ImportConfig, req: any, fsPat
 
           req.upload = fsPath;
           const stackAPIClient = APIClient.stack({
-            api_key: config.target_stack,
+            api_key: config.apiKey,
             management_token: config.management_token,
           });
 

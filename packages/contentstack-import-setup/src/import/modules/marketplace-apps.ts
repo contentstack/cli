@@ -1,4 +1,4 @@
-import { fsUtil, fileHelper } from '../../utils';
+import { log, fsUtil } from '../../utils';
 import { join } from 'path';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import { get, isEmpty } from 'lodash';
@@ -10,16 +10,13 @@ import {
   NodeCrypto,
   createDeveloperHubUrl,
   sanitizePath,
-  log,
-  handleAndLogError,
 } from '@contentstack/cli-utilities';
+import BaseImportSetup from './base-setup';
+import { MODULE_NAMES, MODULE_CONTEXTS, PROCESS_NAMES, PROCESS_STATUS } from '../../utils';
 
-export default class marketplaceAppImportSetup {
-  private config: ImportConfig;
+export default class marketplaceAppImportSetup extends BaseImportSetup {
   private marketplaceAppsFilePath: string;
   private marketplaceAppMapper: any;
-  private stackAPIClient: ModuleClassParams['stackAPIClient'];
-  private dependencies: ModuleClassParams['dependencies'];
   private marketplaceAppsConfig: ImportConfig['modules']['marketplace-apps'];
   private mapperDirPath: string;
   private marketplaceAppsFolderPath: string;
@@ -29,12 +26,9 @@ export default class marketplaceAppImportSetup {
   public nodeCrypto: NodeCrypto;
   public appSdk: ContentstackMarketplaceClient;
 
-  constructor({ config, stackAPIClient, dependencies }: ModuleClassParams) {
-    this.config = config;
-    if (this.config.context) {
-      this.config.context.module = 'marketplace-apps';
-    }
-    this.stackAPIClient = stackAPIClient;
+  constructor({ config, stackAPIClient }: ModuleClassParams) {
+    super({ config, stackAPIClient, dependencies: [] });
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.MARKETPLACE_APPS];
     this.marketplaceAppsFilePath = join(
       sanitizePath(this.config.contentDir),
       'marketplace_apps',
@@ -52,27 +46,58 @@ export default class marketplaceAppImportSetup {
    */
   async start() {
     try {
-      if (!fileHelper.fileExistsSync(this.marketplaceAppsFilePath)) {
-        log.info('No Marketplace apps found in the content folder.');
-        return;
-      }
-      const sourceMarketplaceApps: any = await fsUtil.readFile(this.marketplaceAppsFilePath);
+      const sourceMarketplaceApps: any = await this.withLoadingSpinner('MARKETPLACE APPS: Analyzing import data...', async () => {
+        return await fsUtil.readFile(this.marketplaceAppsFilePath);
+      });
+
       if (!isEmpty(sourceMarketplaceApps)) {
-        fsUtil.makeDirectory(this.marketplaceAppsUidMapperPath); // Use fsUtil
+        const appsArray = Array.isArray(sourceMarketplaceApps) ? sourceMarketplaceApps : Object.values(sourceMarketplaceApps);
+        const progress = this.createNestedProgress(this.currentModuleName);
+        
+        // Add processes
+        progress.addProcess(PROCESS_NAMES.MARKETPLACE_APPS_MAPPER_GENERATION, 1);
+        progress.addProcess(PROCESS_NAMES.MARKETPLACE_APPS_FETCH, appsArray.length);
+
+        // Create mapper directory
+        progress
+          .startProcess(PROCESS_NAMES.MARKETPLACE_APPS_MAPPER_GENERATION)
+          .updateStatus(
+            PROCESS_STATUS.MARKETPLACE_APPS_MAPPER_GENERATION.GENERATING,
+            PROCESS_NAMES.MARKETPLACE_APPS_MAPPER_GENERATION,
+          );
+        fsUtil.makeDirectory(this.marketplaceAppsUidMapperPath);
+        this.progressManager?.tick(true, 'mapper directory created', null, PROCESS_NAMES.MARKETPLACE_APPS_MAPPER_GENERATION);
+        progress.completeProcess(PROCESS_NAMES.MARKETPLACE_APPS_MAPPER_GENERATION, true);
+
+        // Fetch marketplace apps
+        progress
+          .startProcess(PROCESS_NAMES.MARKETPLACE_APPS_FETCH)
+          .updateStatus(
+            PROCESS_STATUS.MARKETPLACE_APPS_FETCH.FETCHING,
+            PROCESS_NAMES.MARKETPLACE_APPS_FETCH,
+          );
+        
         this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await createDeveloperHubUrl(this.config.host));
         // NOTE init marketplace app sdk
         const host = this.developerHubBaseUrl.split('://').pop();
         this.appSdk = await marketplaceSDKClient({ host });
         const targetMarketplaceApps: any = await this.getMarketplaceApps();
+        
+        this.progressManager?.tick(true, 'marketplace apps fetched', null, PROCESS_NAMES.MARKETPLACE_APPS_FETCH);
+        
         this.createMapper(sourceMarketplaceApps, targetMarketplaceApps);
         await fsUtil.writeFile(join(this.marketplaceAppsUidMapperPath, 'uid-mapping.json'), this.marketplaceAppMapper);
+        
+        progress.completeProcess(PROCESS_NAMES.MARKETPLACE_APPS_FETCH, true);
+        this.completeProgress(true);
 
-        log.success(`The required setup files for Marketplace apps have been generated successfully.`);
+        log(this.config, `The required setup files for Marketplace apps have been generated successfully.`, 'success');
       } else {
-        log.info('No Marketplace apps found in the content folder.');
+        log(this.config, 'No Marketplace apps found in the content folder.', 'info');
       }
     } catch (error) {
-      handleAndLogError(error, { ...this.config.context }, 'Error occurred while generating the Marketplace app mapper');
+      this.completeProgress(false, error?.message || 'Marketplace apps mapper generation failed');
+      log(this.config, `Error occurred while generating the Marketplace app mapper: ${error.message}.`, 'error');
     }
   }
 
@@ -92,7 +117,9 @@ export default class marketplaceAppImportSetup {
   }
 
   createMapper(sourceMarketplaceApps: any, targetMarketplaceApps: any) {
-    sourceMarketplaceApps.forEach((sourceApp: any) => {
+    const appsArray = Array.isArray(sourceMarketplaceApps) ? sourceMarketplaceApps : Object.values(sourceMarketplaceApps);
+    
+    appsArray.forEach((sourceApp: any) => {
       // Find matching target item based on manifest.name
       // TBD: This logic is not foolproof, need to find a better way to match source and target apps
       // Reason: While importing apps, if an app exist in the target with the same name, it will be a conflict and will not be imported
@@ -128,8 +155,10 @@ export default class marketplaceAppImportSetup {
             });
           }
         });
+        this.progressManager?.tick(true, `app: ${sourceAppName}`, null, PROCESS_NAMES.MARKETPLACE_APPS_FETCH);
       } else {
-        log.info(`No matching Marketplace app found in the target stack with name ${sourceAppName}`);
+        this.progressManager?.tick(false, `app: ${sourceAppName}`, 'Not found in target stack', PROCESS_NAMES.MARKETPLACE_APPS_FETCH);
+        log(this.config, `No matching Marketplace app found in the target stack with name ${sourceAppName}`, 'info');
       }
     });
   }

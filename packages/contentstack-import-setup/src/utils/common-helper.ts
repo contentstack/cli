@@ -1,8 +1,22 @@
 import chalk from 'chalk';
-import { log } from '@contentstack/cli-utilities';
+import { log as defaultLog } from '@contentstack/cli-utilities';
 import { ImportConfig } from 'src/types';
 
-export const validateBranch = async (stackAPIClient: any, config: ImportConfig, branch: any) => {
+/**
+ * Dependencies for validateBranch - can be injected for testing
+ */
+export interface ValidateBranchDeps {
+  log?: typeof defaultLog;
+}
+
+export const validateBranch = async (
+  stackAPIClient: any,
+  config: ImportConfig,
+  branch: any,
+  deps: ValidateBranchDeps = {},
+) => {
+  const log = deps.log ?? defaultLog;
+
   return new Promise(async (resolve, reject) => {
     try {
       const data = await stackAPIClient.branch(branch).fetch();

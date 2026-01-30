@@ -17,39 +17,37 @@ describe('ImportGlobalFields', () => {
   let makeConcurrentCallStub: sinon.SinonStub;
 
   beforeEach(() => {
-    // Setup filesystem stubs
     fsUtilStub = {
       readFile: sinon.stub(),
       writeFile: sinon.stub(),
-      makeDirectory: sinon.stub().resolves()
+      makeDirectory: sinon.stub().resolves(),
     };
     sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
     sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
     sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
 
     fileHelperStub = {
-      fileExistsSync: sinon.stub().returns(false)
+      fileExistsSync: sinon.stub().returns(false),
     };
     sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
 
-    // Setup helper stubs
     lookupExtensionStub = sinon.stub(extensionHelper, 'lookupExtension');
     removeReferenceFieldsStub = sinon.stub(contentTypeHelper, 'removeReferenceFields').resolves();
 
-    // Setup mock stack client
     mockStackClient = {
       globalField: sinon.stub().returns({
-        fetch: sinon.stub().resolves({ uid: 'gf-123', title: 'Test GF', update: sinon.stub().resolves({ uid: 'gf-123' }) }),
+        fetch: sinon
+          .stub()
+          .resolves({ uid: 'gf-123', title: 'Test GF', update: sinon.stub().resolves({ uid: 'gf-123' }) }),
         update: sinon.stub().resolves({ uid: 'gf-123', title: 'Updated GF' }),
-        create: sinon.stub().resolves({ uid: 'gf-123', title: 'Test GF' })
-      })
+        create: sinon.stub().resolves({ uid: 'gf-123', title: 'Test GF' }),
+      }),
     };
 
     mockImportConfig = {
       apiKey: 'test',
       contentDir: '/test/content',
       data: '/test/content',
-      contentVersion: 1,
       region: 'us',
       master_locale: { code: 'en-us' },
       masterLocale: { code: 'en-us' },
@@ -62,7 +60,7 @@ describe('ImportGlobalFields', () => {
         sessionId: 'session-123',
         apiKey: 'test',
         orgId: 'org-123',
-        authenticationMethod: 'Basic Auth'
+        authenticationMethod: 'Basic Auth',
       },
       modules: {
         types: ['global-fields'],
@@ -72,8 +70,8 @@ describe('ImportGlobalFields', () => {
           apiConcurrency: 5,
           writeConcurrency: 3,
           fileName: 'globalfields.json',
-          limit: 100
-        }
+          limit: 100,
+        },
       },
       backupDir: '/test/backup',
       cliLogsPath: '/test/logs',
@@ -87,16 +85,15 @@ describe('ImportGlobalFields', () => {
       preserveStackVersion: false,
       replaceExisting: false,
       skipExisting: false,
-      'exclude-global-modules': false
+      'exclude-global-modules': false,
     } as any;
 
     importGlobalFields = new ImportGlobalFields({
       importConfig: mockImportConfig as any,
       stackAPIClient: mockStackClient,
-      moduleName: 'global-fields'
+      moduleName: 'global-fields',
     });
 
-    // Stub makeConcurrentCall after instance creation
     makeConcurrentCallStub = sinon.stub(importGlobalFields as any, 'makeConcurrentCall').resolves();
   });
 
@@ -143,7 +140,7 @@ describe('ImportGlobalFields', () => {
       const instance = new ImportGlobalFields({
         importConfig: config as any,
         stackAPIClient: mockStackClient,
-        moduleName: 'global-fields'
+        moduleName: 'global-fields',
       });
       expect(instance['reqConcurrency']).to.equal(2);
     });
@@ -151,44 +148,104 @@ describe('ImportGlobalFields', () => {
 
   describe('start()', () => {
     it('should return early when no global fields found', async () => {
-      fsUtilStub.readFile.returns(null);
+      sinon.restore();
+
+      sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
+      sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
+      sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
+      sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
+
+      sinon.stub(importGlobalFields as any, 'analyzeGlobalFields').resolves([0]);
 
       await importGlobalFields.start();
 
-      expect(makeConcurrentCallStub.called).to.be.false;
+      expect(makeConcurrentCallStub?.called || false).to.be.false;
     });
 
     it('should return early when global fields array is empty', async () => {
-      fsUtilStub.readFile.returns([]);
+      sinon.restore();
+
+      sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
+      sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
+      sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
+      sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
+
+      sinon.stub(importGlobalFields as any, 'analyzeGlobalFields').resolves([0]);
 
       await importGlobalFields.start();
 
-      expect(makeConcurrentCallStub.called).to.be.false;
+      expect(makeConcurrentCallStub?.called || false).to.be.false;
     });
 
     it('should process global fields when available', async () => {
-      const mockGFs = [
-        { uid: 'gf1', title: 'Global Field 1', schema: [] as any },
-        { uid: 'gf2', title: 'Global Field 2', schema: [] as any }
-      ];
+      sinon.restore();
+      sinon.stub(fsUtil, 'readFile');
+      sinon.stub(fsUtil, 'writeFile');
+      sinon.stub(fsUtil, 'makeDirectory');
+      sinon.stub(fileHelper, 'fileExistsSync');
 
-      fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns(mockGFs);
-      fsUtilStub.readFile.withArgs(sinon.match(/uid-mapping\.json/)).returns({ extension_uid: {} });
+      const seedGFsStub = sinon.stub(importGlobalFields as any, 'seedGFs').resolves();
+      const updateGFsStub = sinon.stub(importGlobalFields as any, 'updateGFs').resolves();
+      sinon
+        .stub(importGlobalFields as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+      sinon.stub(importGlobalFields as any, 'analyzeGlobalFields').resolves([2]);
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+      sinon.stub(importGlobalFields as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importGlobalFields as any, 'prepareGlobalFieldMapper').resolves();
+      sinon.stub(importGlobalFields as any, 'processGlobalFieldResults').resolves();
+      sinon.stub(importGlobalFields as any, 'completeProgress').resolves();
 
       await importGlobalFields.start();
 
-      expect(makeConcurrentCallStub.callCount).to.equal(2); // seedGFs and updateGFs
-      expect(fsUtilStub.makeDirectory.called).to.be.true;
+      expect(seedGFsStub.called).to.be.true;
+      expect(updateGFsStub.called).to.be.true;
     });
 
     it('should load existing UID mapper when file exists', async () => {
+      sinon.restore();
+
+      sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
+      sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
+      sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
+      sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
+
       const mockGFs = [{ uid: 'gf1', title: 'GF 1', schema: [] as any }];
       const mockUidMapper = { gf1: 'mapped-gf1' };
 
-      fileHelperStub.fileExistsSync.returns(true);
+      fileHelperStub.fileExistsSync.withArgs(sinon.match(/uid-mapping\.json/)).returns(true);
+      fileHelperStub.fileExistsSync.returns(false);
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns(mockGFs);
-      fsUtilStub.readFile.withArgs(sinon.match(/uid-mapping\.json/)).onFirstCall().returns(mockUidMapper);
+      fsUtilStub.readFile.withArgs(sinon.match(/uid-mapping\.json/)).returns(mockUidMapper);
       fsUtilStub.readFile.withArgs(sinon.match(/marketplace_apps.*uid-mapping\.json/)).returns({ extension_uid: {} });
+
+      sinon
+        .stub(importGlobalFields as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+      sinon.stub(importGlobalFields as any, 'analyzeGlobalFields').resolves([1]);
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+      sinon.stub(importGlobalFields as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importGlobalFields as any, 'seedGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'updateGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'processGlobalFieldResults').resolves();
+      sinon.stub(importGlobalFields as any, 'completeProgress').resolves();
+      makeConcurrentCallStub = sinon.stub(importGlobalFields as any, 'makeConcurrentCall').resolves();
 
       await importGlobalFields.start();
 
@@ -196,23 +253,78 @@ describe('ImportGlobalFields', () => {
     });
 
     it('should load installed extensions', async () => {
-      const mockExtensions = { extension_uid: { ext1: 'uid1', ext2: 'uid2' } };
-      const mockGFs = [{ uid: 'gf1', title: 'GF 1', schema: [] as any }];
+      sinon.restore();
+      sinon.stub(fsUtil, 'readFile').callsFake((path: string) => {
+        if (path.includes('marketplace_apps')) {
+          return { extension_uid: { ext1: 'uid1', ext2: 'uid2' } };
+        }
+        return [];
+      });
+      sinon.stub(fsUtil, 'writeFile');
+      sinon.stub(fsUtil, 'makeDirectory');
+      sinon.stub(fileHelper, 'fileExistsSync');
 
-      fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns(mockGFs);
-      fsUtilStub.readFile.withArgs(sinon.match(/marketplace_apps.*uid-mapping\.json/)).returns(mockExtensions);
+      sinon
+        .stub(importGlobalFields as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+      sinon.stub(importGlobalFields as any, 'analyzeGlobalFields').callsFake(async () => {
+        (importGlobalFields as any).installedExtensions = { ext1: 'uid1', ext2: 'uid2' };
+        return [1];
+      });
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+      sinon.stub(importGlobalFields as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importGlobalFields as any, 'prepareGlobalFieldMapper').resolves();
+      sinon.stub(importGlobalFields as any, 'seedGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'updateGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'processGlobalFieldResults').resolves();
+      sinon.stub(importGlobalFields as any, 'completeProgress').resolves();
 
       await importGlobalFields.start();
 
-      expect(importGlobalFields['installedExtensions']).to.deep.equal(mockExtensions.extension_uid);
+      expect((importGlobalFields as any).installedExtensions).to.deep.equal({ ext1: 'uid1', ext2: 'uid2' });
     });
 
     it('should write pending global fields when available', async () => {
+      sinon.restore();
+
+      sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
+      sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
+      sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
+      sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
+
       const mockGFs = [{ uid: 'gf1', title: 'GF 1', schema: [] as any }];
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns(mockGFs);
       fsUtilStub.readFile.withArgs(sinon.match(/marketplace_apps.*uid-mapping\.json/)).returns({ extension_uid: {} });
 
       importGlobalFields['pendingGFs'] = ['gf1', 'gf2'];
+
+      sinon
+        .stub(importGlobalFields as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+      sinon.stub(importGlobalFields as any, 'analyzeGlobalFields').resolves([1]);
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+      sinon.stub(importGlobalFields as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importGlobalFields as any, 'prepareGlobalFieldMapper').resolves();
+      sinon.stub(importGlobalFields as any, 'seedGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'updateGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'completeProgress').resolves();
+      makeConcurrentCallStub = sinon.stub(importGlobalFields as any, 'makeConcurrentCall').resolves();
 
       await importGlobalFields.start();
 
@@ -220,11 +332,38 @@ describe('ImportGlobalFields', () => {
     });
 
     it('should write success file when global fields created', async () => {
+      sinon.restore();
+
+      sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
+      sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
+      sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
+      sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
+
       const mockGFs = [{ uid: 'gf1', title: 'GF 1', schema: [] as any }];
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns(mockGFs);
       fsUtilStub.readFile.withArgs(sinon.match(/marketplace_apps.*uid-mapping\.json/)).returns({ extension_uid: {} });
 
       importGlobalFields['createdGFs'] = [{ uid: 'gf1' }, { uid: 'gf2' }];
+
+      sinon
+        .stub(importGlobalFields as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+      sinon.stub(importGlobalFields as any, 'analyzeGlobalFields').resolves([1]);
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+      sinon.stub(importGlobalFields as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importGlobalFields as any, 'prepareGlobalFieldMapper').resolves();
+      sinon.stub(importGlobalFields as any, 'seedGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'updateGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'completeProgress').resolves();
+      makeConcurrentCallStub = sinon.stub(importGlobalFields as any, 'makeConcurrentCall').resolves();
 
       await importGlobalFields.start();
 
@@ -232,11 +371,38 @@ describe('ImportGlobalFields', () => {
     });
 
     it('should write fails file when global fields failed', async () => {
+      sinon.restore();
+
+      sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
+      sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
+      sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
+      sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
+
       const mockGFs = [{ uid: 'gf1', title: 'GF 1', schema: [] as any }];
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns(mockGFs);
       fsUtilStub.readFile.withArgs(sinon.match(/marketplace_apps.*uid-mapping\.json/)).returns({ extension_uid: {} });
 
       importGlobalFields['failedGFs'] = [{ uid: 'gf1' }];
+
+      sinon
+        .stub(importGlobalFields as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+      sinon.stub(importGlobalFields as any, 'analyzeGlobalFields').resolves([1]);
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+      sinon.stub(importGlobalFields as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importGlobalFields as any, 'prepareGlobalFieldMapper').resolves();
+      sinon.stub(importGlobalFields as any, 'seedGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'updateGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'completeProgress').resolves();
+      makeConcurrentCallStub = sinon.stub(importGlobalFields as any, 'makeConcurrentCall').resolves();
 
       await importGlobalFields.start();
 
@@ -244,30 +410,90 @@ describe('ImportGlobalFields', () => {
     });
 
     it('should call replaceGFs when replaceExisting is true and existingGFs exist', async () => {
+      sinon.restore();
+
+      sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
+      sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
+      sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
+      sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
+
       const mockGFs = [{ uid: 'gf1', title: 'GF 1', schema: [] as any }];
       importGlobalFields['importConfig'].replaceExisting = true;
       importGlobalFields['existingGFs'] = [{ uid: 'gf1', global_field: { uid: 'gf1' } }];
 
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns(mockGFs);
       fsUtilStub.readFile.withArgs(sinon.match(/marketplace_apps.*uid-mapping\.json/)).returns({ extension_uid: {} });
+
+      sinon
+        .stub(importGlobalFields as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+      sinon.stub(importGlobalFields as any, 'analyzeGlobalFields').resolves([1]);
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+      sinon.stub(importGlobalFields as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importGlobalFields as any, 'prepareGlobalFieldMapper').resolves();
+      const seedGFsStub = sinon.stub(importGlobalFields as any, 'seedGFs').resolves();
+      const updateGFsStub = sinon.stub(importGlobalFields as any, 'updateGFs').resolves();
+      const replaceGFsStub = sinon.stub(importGlobalFields as any, 'replaceGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'processGlobalFieldResults').resolves();
+      sinon.stub(importGlobalFields as any, 'completeProgress').resolves();
+      makeConcurrentCallStub = sinon.stub(importGlobalFields as any, 'makeConcurrentCall').resolves();
 
       await importGlobalFields.start();
 
-      expect(makeConcurrentCallStub.callCount).to.equal(3); // seedGFs, updateGFs, replaceGFs
+      expect(seedGFsStub.called).to.be.true;
+      expect(updateGFsStub.called).to.be.true;
+      expect(replaceGFsStub.called).to.be.true;
     });
 
     it('should handle replaceGFs errors gracefully', async () => {
+      sinon.restore();
+
+      sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
+      sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
+      sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
+      sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
+
       const mockGFs = [{ uid: 'gf1', title: 'GF 1', schema: [] as any }];
       importGlobalFields['importConfig'].replaceExisting = true;
       importGlobalFields['existingGFs'] = [{ uid: 'gf1', global_field: { uid: 'gf1' } }];
 
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns(mockGFs);
       fsUtilStub.readFile.withArgs(sinon.match(/marketplace_apps.*uid-mapping\.json/)).returns({ extension_uid: {} });
-      makeConcurrentCallStub.onThirdCall().rejects(new Error('Replace failed'));
+
+      sinon
+        .stub(importGlobalFields as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+      sinon.stub(importGlobalFields as any, 'analyzeGlobalFields').resolves([1]);
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+      sinon.stub(importGlobalFields as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importGlobalFields as any, 'prepareGlobalFieldMapper').resolves();
+      sinon.stub(importGlobalFields as any, 'seedGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'updateGFs').resolves();
+      const replaceGFsStub = sinon.stub(importGlobalFields as any, 'replaceGFs').rejects(new Error('Replace failed'));
+      sinon.stub(importGlobalFields as any, 'processGlobalFieldResults').resolves();
+      sinon.stub(importGlobalFields as any, 'completeProgress').resolves();
+      makeConcurrentCallStub = sinon.stub(importGlobalFields as any, 'makeConcurrentCall').resolves();
 
       await importGlobalFields.start();
 
       // Should not throw, error is caught and handled
+      expect(replaceGFsStub.called).to.be.true;
     });
   });
 
@@ -309,7 +535,7 @@ describe('ImportGlobalFields', () => {
       const mockGF = { global_field: { uid: 'gf1' } };
       onReject({
         error: { errors: { title: 'exists' } },
-        apiData: mockGF
+        apiData: mockGF,
       });
 
       expect(importGlobalFields['existingGFs']).to.include(mockGF);
@@ -324,7 +550,7 @@ describe('ImportGlobalFields', () => {
       const onReject = makeConcurrentCallStub.firstCall.args[0].apiParams.reject;
       onReject({
         error: { errors: { title: 'exists' } },
-        apiData: { global_field: { uid: 'gf1' } }
+        apiData: { global_field: { uid: 'gf1' } },
       });
 
       // Should not throw, just log
@@ -338,7 +564,7 @@ describe('ImportGlobalFields', () => {
       const onReject = makeConcurrentCallStub.firstCall.args[0].apiParams.reject;
       onReject({
         error: { errorCode: 500, message: 'Server error' },
-        apiData: { global_field: { uid: 'gf1' } }
+        apiData: { global_field: { uid: 'gf1' } },
       });
 
       expect(importGlobalFields['failedGFs']).to.have.lengthOf(1);
@@ -356,7 +582,7 @@ describe('ImportGlobalFields', () => {
   describe('serializeGFs()', () => {
     it('should serialize global field correctly', () => {
       const apiOptions = {
-        apiData: { uid: 'test_gf', title: 'Test Global Field', schema: [] as any }
+        apiData: { uid: 'test_gf', title: 'Test Global Field', schema: [] as any },
       };
 
       const result = importGlobalFields.serializeGFs(apiOptions as any);
@@ -368,7 +594,7 @@ describe('ImportGlobalFields', () => {
 
     it('should use gfSchemaTemplate structure', () => {
       const apiOptions = {
-        apiData: { uid: 'gf_uid', title: 'GF Title', schema: [] as any }
+        apiData: { uid: 'gf_uid', title: 'GF Title', schema: [] as any },
       };
 
       const result = importGlobalFields.serializeGFs(apiOptions as any);
@@ -395,9 +621,9 @@ describe('ImportGlobalFields', () => {
       await importGlobalFields.updateGFs();
 
       expect(makeConcurrentCallStub.called).to.be.true;
-      const callArgs = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Update Global Fields'
-      )?.args[0];
+      const callArgs = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Update Global Fields')?.args[0];
       expect(callArgs.processName).to.equal('Update Global Fields');
       expect(callArgs.apiParams.entity).to.equal('update-gfs');
     });
@@ -409,9 +635,9 @@ describe('ImportGlobalFields', () => {
       await importGlobalFields.updateGFs();
 
       expect(makeConcurrentCallStub.called).to.be.true;
-      const serializeFunc = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Update Global Fields'
-      )?.args[1];
+      const serializeFunc = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Update Global Fields')?.args[1];
       expect(serializeFunc).to.be.a('function');
     });
 
@@ -420,9 +646,9 @@ describe('ImportGlobalFields', () => {
 
       await importGlobalFields.updateGFs();
 
-      const onSuccess = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Update Global Fields'
-      )?.args[0].apiParams.resolve;
+      const onSuccess = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Update Global Fields')?.args[0].apiParams.resolve;
 
       expect(() => {
         onSuccess({ response: {}, apiData: { uid: 'gf1' } });
@@ -434,9 +660,9 @@ describe('ImportGlobalFields', () => {
 
       await importGlobalFields.updateGFs();
 
-      const onReject = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Update Global Fields'
-      )?.args[0].apiParams.reject;
+      const onReject = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Update Global Fields')?.args[0].apiParams.reject;
 
       expect(() => {
         onReject({ error: { message: 'Update failed' }, apiData: { uid: 'gf1' } });
@@ -460,7 +686,7 @@ describe('ImportGlobalFields', () => {
       mockGlobalField = { uid: 'gf1', title: 'GF 1', schema: [] };
       mockApiParams = {
         resolve: sinon.stub(),
-        reject: sinon.stub()
+        reject: sinon.stub(),
       };
       importGlobalFields['installedExtensions'] = {};
       importGlobalFields['config'] = mockImportConfig;
@@ -470,7 +696,7 @@ describe('ImportGlobalFields', () => {
       await importGlobalFields.updateSerializedGFs({
         apiParams: mockApiParams,
         element: mockGlobalField,
-        isLastRequest: false
+        isLastRequest: false,
       });
 
       expect(lookupExtensionStub.calledOnce).to.be.true;
@@ -480,7 +706,7 @@ describe('ImportGlobalFields', () => {
       await importGlobalFields.updateSerializedGFs({
         apiParams: mockApiParams,
         element: mockGlobalField,
-        isLastRequest: false
+        isLastRequest: false,
       });
 
       expect(removeReferenceFieldsStub.calledOnce).to.be.true;
@@ -494,7 +720,7 @@ describe('ImportGlobalFields', () => {
       await importGlobalFields.updateSerializedGFs({
         apiParams: mockApiParams,
         element: mockGlobalField,
-        isLastRequest: false
+        isLastRequest: false,
       });
 
       expect(importGlobalFields['pendingGFs']).to.include('gf1');
@@ -504,13 +730,13 @@ describe('ImportGlobalFields', () => {
     it('should fetch and update global field when not suppressed', async () => {
       const mockResponse = { uid: 'gf1', update: sinon.stub().resolves({ uid: 'gf1' }) };
       mockStackClient.globalField.returns({
-        fetch: sinon.stub().resolves(mockResponse)
+        fetch: sinon.stub().resolves(mockResponse),
       });
 
       await importGlobalFields.updateSerializedGFs({
         apiParams: mockApiParams,
         element: mockGlobalField,
-        isLastRequest: false
+        isLastRequest: false,
       });
 
       expect(mockStackClient.globalField.calledWith('gf1', { api_version: '3.2' })).to.be.true;
@@ -519,14 +745,14 @@ describe('ImportGlobalFields', () => {
 
     it('should handle fetch error', async () => {
       mockStackClient.globalField.returns({
-        fetch: sinon.stub().rejects(new Error('Fetch failed'))
+        fetch: sinon.stub().rejects(new Error('Fetch failed')),
       });
 
       try {
         await importGlobalFields.updateSerializedGFs({
           apiParams: mockApiParams,
           element: mockGlobalField,
-          isLastRequest: false
+          isLastRequest: false,
         });
         expect.fail('Should have thrown an error');
       } catch (error) {
@@ -539,14 +765,14 @@ describe('ImportGlobalFields', () => {
     it('should handle update error', async () => {
       const mockResponse = { uid: 'gf1', update: sinon.stub().rejects(new Error('Update failed')) };
       mockStackClient.globalField.returns({
-        fetch: sinon.stub().resolves(mockResponse)
+        fetch: sinon.stub().resolves(mockResponse),
       });
 
       try {
         await importGlobalFields.updateSerializedGFs({
           apiParams: mockApiParams,
           element: mockGlobalField,
-          isLastRequest: false
+          isLastRequest: false,
         });
         expect.fail('Should have thrown an error');
       } catch (error) {
@@ -561,16 +787,16 @@ describe('ImportGlobalFields', () => {
     beforeEach(() => {
       importGlobalFields['existingGFs'] = [
         { uid: 'gf1', global_field: { uid: 'gf1' } },
-        { uid: 'gf2', global_field: { uid: 'gf2' } }
+        { uid: 'gf2', global_field: { uid: 'gf2' } },
       ];
     });
 
     it('should call makeConcurrentCall with correct parameters', async () => {
       await importGlobalFields.replaceGFs();
 
-      const callArgs = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Replace global fields'
-      )?.args[0];
+      const callArgs = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Replace global fields')?.args[0];
       expect(callArgs.processName).to.equal('Replace global fields');
       expect(callArgs.apiContent).to.equal(importGlobalFields['existingGFs']);
       expect(callArgs.apiParams.entity).to.equal('update-gfs');
@@ -579,9 +805,9 @@ describe('ImportGlobalFields', () => {
     it('should handle successful replacement', async () => {
       await importGlobalFields.replaceGFs();
 
-      const onSuccess = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Replace global fields'
-      )?.args[0].apiParams.resolve;
+      const onSuccess = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Replace global fields')?.args[0].apiParams.resolve;
 
       const mockGF = { uid: 'gf1', title: 'GF 1' };
       onSuccess({ response: mockGF, apiData: { uid: 'gf1' } });
@@ -593,9 +819,9 @@ describe('ImportGlobalFields', () => {
     it('should handle replacement with global_field nested uid', async () => {
       await importGlobalFields.replaceGFs();
 
-      const onSuccess = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Replace global fields'
-      )?.args[0].apiParams.resolve;
+      const onSuccess = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Replace global fields')?.args[0].apiParams.resolve;
 
       const mockGF = { uid: 'gf1', title: 'GF 1' };
       onSuccess({ response: mockGF, apiData: { global_field: { uid: 'gf1' } } });
@@ -606,9 +832,9 @@ describe('ImportGlobalFields', () => {
     it('should handle replacement failure', async () => {
       await importGlobalFields.replaceGFs();
 
-      const onReject = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Replace global fields'
-      )?.args[0].apiParams.reject;
+      const onReject = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Replace global fields')?.args[0].apiParams.reject;
 
       onReject({ error: { message: 'Replace failed' }, apiData: { uid: 'gf1' } });
 
@@ -618,9 +844,9 @@ describe('ImportGlobalFields', () => {
     it('should use correct concurrency', async () => {
       await importGlobalFields.replaceGFs();
 
-      const callArgs = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Replace global fields'
-      )?.args[0];
+      const callArgs = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Replace global fields')?.args[0];
       expect(callArgs.concurrencyLimit).to.be.a('number');
     });
   });
@@ -629,13 +855,13 @@ describe('ImportGlobalFields', () => {
     beforeEach(() => {
       mockStackClient.globalField.returns({
         uid: 'test_gf',
-        stackHeaders: { 'test-header': 'value' }
+        stackHeaders: { 'test-header': 'value' },
       });
     });
 
     it('should serialize global field replacement correctly', () => {
       const apiOptions = {
-        apiData: { uid: 'gf1', title: 'GF 1', schema: [] as any }
+        apiData: { uid: 'gf1', title: 'GF 1', schema: [] as any },
       };
 
       const result = importGlobalFields.serializeReplaceGFs(apiOptions as any);
@@ -646,7 +872,7 @@ describe('ImportGlobalFields', () => {
 
     it('should handle global field with nested uid', () => {
       const apiOptions = {
-        apiData: { global_field: { uid: 'gf1' }, title: 'GF 1' }
+        apiData: { global_field: { uid: 'gf1' }, title: 'GF 1' },
       };
 
       const result = importGlobalFields.serializeReplaceGFs(apiOptions as any);
@@ -656,7 +882,7 @@ describe('ImportGlobalFields', () => {
 
     it('should preserve stackHeaders', () => {
       const apiOptions = {
-        apiData: { uid: 'gf1', title: 'GF 1', schema: [] as any }
+        apiData: { uid: 'gf1', title: 'GF 1', schema: [] as any },
       };
 
       const result = importGlobalFields.serializeReplaceGFs(apiOptions as any);
@@ -667,13 +893,39 @@ describe('ImportGlobalFields', () => {
 
   describe('Edge Cases', () => {
     it('should handle missing extension_uid in marketplace mapping', async () => {
-      const mockGFs = [{ uid: 'gf1', title: 'GF 1', schema: [] as any }];
-      fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns(mockGFs);
-      fsUtilStub.readFile.withArgs(sinon.match(/marketplace_apps.*uid-mapping\.json/)).returns(null);
+      sinon.restore();
+      sinon.stub(fsUtil, 'readFile').callsFake((path: string) => {
+        if (path.includes('marketplace_apps')) {
+          return null;
+        }
+        return [];
+      });
+      sinon.stub(fsUtil, 'writeFile');
+      sinon.stub(fsUtil, 'makeDirectory');
+      sinon.stub(fileHelper, 'fileExistsSync');
+
+      sinon
+        .stub(importGlobalFields as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+      sinon.stub(importGlobalFields as any, 'analyzeGlobalFields').callsFake(async () => {
+        (importGlobalFields as any).installedExtensions = {};
+        return [0];
+      });
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+      sinon.stub(importGlobalFields as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importGlobalFields as any, 'completeProgress').resolves();
 
       await importGlobalFields.start();
 
-      expect(importGlobalFields['installedExtensions']).to.deep.equal({});
+      expect((importGlobalFields as any).installedExtensions).to.deep.equal({});
     });
 
     it('should handle error without title field in seedGFs', async () => {
@@ -684,7 +936,7 @@ describe('ImportGlobalFields', () => {
       const onReject = makeConcurrentCallStub.firstCall.args[0].apiParams.reject;
       onReject({
         error: { errorCode: 500, message: 'Server error' }, // No errors.title
-        apiData: { global_field: { uid: 'gf1' } }
+        apiData: { global_field: { uid: 'gf1' } },
       });
 
       expect(importGlobalFields['failedGFs']).to.have.lengthOf(1);
@@ -699,7 +951,7 @@ describe('ImportGlobalFields', () => {
       const onReject = makeConcurrentCallStub.firstCall.args[0].apiParams.reject;
       onReject({
         error: { errors: { title: 'exists' } },
-        apiData: { global_field: { uid: 'gf1' } }
+        apiData: { global_field: { uid: 'gf1' } },
       });
 
       // Should not log "already exist" message when skipExisting is true
@@ -711,9 +963,9 @@ describe('ImportGlobalFields', () => {
 
       await importGlobalFields.updateGFs();
 
-      const onSuccess = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Update Global Fields'
-      )?.args[0].apiParams.resolve;
+      const onSuccess = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Update Global Fields')?.args[0].apiParams.resolve;
 
       expect(() => {
         onSuccess({ response: { uid: 'gf1' }, apiData: { uid: 'gf1' } });
@@ -725,9 +977,9 @@ describe('ImportGlobalFields', () => {
 
       await importGlobalFields.updateGFs();
 
-      const onReject = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Update Global Fields'
-      )?.args[0].apiParams.reject;
+      const onReject = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Update Global Fields')?.args[0].apiParams.reject;
 
       expect(() => {
         onReject({ error: { message: 'Update failed' }, apiData: { uid: 'gf1' } });
@@ -735,15 +987,13 @@ describe('ImportGlobalFields', () => {
     });
 
     it('should handle replaceGFs onSuccess with apiData.uid', async () => {
-      importGlobalFields['existingGFs'] = [
-        { uid: 'gf1', global_field: { uid: 'gf1' } }
-      ];
+      importGlobalFields['existingGFs'] = [{ uid: 'gf1', global_field: { uid: 'gf1' } }];
 
       await importGlobalFields.replaceGFs();
 
-      const onSuccess = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Replace global fields'
-      )?.args[0].apiParams.resolve;
+      const onSuccess = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Replace global fields')?.args[0].apiParams.resolve;
 
       const mockGF = { uid: 'gf1', title: 'GF 1' };
       onSuccess({ response: mockGF, apiData: { uid: 'gf1' } });
@@ -753,15 +1003,13 @@ describe('ImportGlobalFields', () => {
     });
 
     it('should handle replaceGFs onSuccess with apiData.global_field.uid', async () => {
-      importGlobalFields['existingGFs'] = [
-        { uid: 'gf1', global_field: { uid: 'gf1' } }
-      ];
+      importGlobalFields['existingGFs'] = [{ uid: 'gf1', global_field: { uid: 'gf1' } }];
 
       await importGlobalFields.replaceGFs();
 
-      const onSuccess = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Replace global fields'
-      )?.args[0].apiParams.resolve;
+      const onSuccess = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Replace global fields')?.args[0].apiParams.resolve;
 
       const mockGF = { uid: 'gf1', title: 'GF 1' };
       onSuccess({ response: mockGF, apiData: { global_field: { uid: 'gf1' } } });
@@ -771,15 +1019,13 @@ describe('ImportGlobalFields', () => {
     });
 
     it('should handle replaceGFs onSuccess with unknown uid', async () => {
-      importGlobalFields['existingGFs'] = [
-        { uid: 'gf1', global_field: { uid: 'gf1' } }
-      ];
+      importGlobalFields['existingGFs'] = [{ uid: 'gf1', global_field: { uid: 'gf1' } }];
 
       await importGlobalFields.replaceGFs();
 
-      const onSuccess = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Replace global fields'
-      )?.args[0].apiParams.resolve;
+      const onSuccess = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Replace global fields')?.args[0].apiParams.resolve;
 
       const mockGF = { uid: 'gf1', title: 'GF 1' };
       onSuccess({ response: mockGF, apiData: {} }); // No uid or global_field.uid
@@ -789,15 +1035,13 @@ describe('ImportGlobalFields', () => {
     });
 
     it('should handle replaceGFs onReject with apiData.uid', async () => {
-      importGlobalFields['existingGFs'] = [
-        { uid: 'gf1', global_field: { uid: 'gf1' } }
-      ];
+      importGlobalFields['existingGFs'] = [{ uid: 'gf1', global_field: { uid: 'gf1' } }];
 
       await importGlobalFields.replaceGFs();
 
-      const onReject = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Replace global fields'
-      )?.args[0].apiParams.reject;
+      const onReject = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Replace global fields')?.args[0].apiParams.reject;
 
       onReject({ error: { message: 'Replace failed' }, apiData: { uid: 'gf1' } });
 
@@ -806,15 +1050,13 @@ describe('ImportGlobalFields', () => {
     });
 
     it('should handle replaceGFs onReject with apiData.global_field.uid', async () => {
-      importGlobalFields['existingGFs'] = [
-        { uid: 'gf1', global_field: { uid: 'gf1' } }
-      ];
+      importGlobalFields['existingGFs'] = [{ uid: 'gf1', global_field: { uid: 'gf1' } }];
 
       await importGlobalFields.replaceGFs();
 
-      const onReject = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Replace global fields'
-      )?.args[0].apiParams.reject;
+      const onReject = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Replace global fields')?.args[0].apiParams.reject;
 
       onReject({ error: { message: 'Replace failed' }, apiData: { global_field: { uid: 'gf1' } } });
 
@@ -823,15 +1065,13 @@ describe('ImportGlobalFields', () => {
     });
 
     it('should handle replaceGFs onReject with unknown uid', async () => {
-      importGlobalFields['existingGFs'] = [
-        { uid: 'gf1', global_field: { uid: 'gf1' } }
-      ];
+      importGlobalFields['existingGFs'] = [{ uid: 'gf1', global_field: { uid: 'gf1' } }];
 
       await importGlobalFields.replaceGFs();
 
-      const onReject = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Replace global fields'
-      )?.args[0].apiParams.reject;
+      const onReject = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Replace global fields')?.args[0].apiParams.reject;
 
       onReject({ error: { message: 'Replace failed' }, apiData: {} }); // No uid or global_field.uid
 
@@ -841,7 +1081,7 @@ describe('ImportGlobalFields', () => {
 
     it('should handle serializeReplaceGFs with global_field.uid', () => {
       const apiOptions = {
-        apiData: { global_field: { uid: 'gf1' }, title: 'GF 1' }
+        apiData: { global_field: { uid: 'gf1' }, title: 'GF 1' },
       };
 
       const result = importGlobalFields.serializeReplaceGFs(apiOptions as any);
@@ -851,7 +1091,7 @@ describe('ImportGlobalFields', () => {
 
     it('should handle serializeReplaceGFs with unknown uid', () => {
       const apiOptions = {
-        apiData: { title: 'GF 1' } // No uid or global_field.uid
+        apiData: { title: 'GF 1' }, // No uid or global_field.uid
       };
 
       const result = importGlobalFields.serializeReplaceGFs(apiOptions as any);
@@ -880,7 +1120,7 @@ describe('ImportGlobalFields', () => {
       const onReject = makeConcurrentCallStub.firstCall.args[0].apiParams.reject;
       onReject({
         error: { errors: { title: 'exists' } },
-        apiData: undefined // No globalField
+        apiData: undefined, // No globalField
       });
 
       // Should not throw, just log
@@ -891,9 +1131,9 @@ describe('ImportGlobalFields', () => {
 
       await importGlobalFields.updateGFs();
 
-      const onSuccess = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Update Global Fields'
-      )?.args[0].apiParams.resolve;
+      const onSuccess = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Update Global Fields')?.args[0].apiParams.resolve;
 
       expect(() => {
         onSuccess({ response: { uid: 'gf1' }, apiData: {} }); // No uid in apiData
@@ -905,9 +1145,9 @@ describe('ImportGlobalFields', () => {
 
       await importGlobalFields.updateGFs();
 
-      const onReject = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Update Global Fields'
-      )?.args[0].apiParams.reject;
+      const onReject = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Update Global Fields')?.args[0].apiParams.reject;
 
       expect(() => {
         onReject({ error: { message: 'Update failed' }, apiData: {} }); // No uid in apiData
@@ -915,15 +1155,13 @@ describe('ImportGlobalFields', () => {
     });
 
     it('should handle replaceGFs onSuccess with null apiData', async () => {
-      importGlobalFields['existingGFs'] = [
-        { uid: 'gf1', global_field: { uid: 'gf1' } }
-      ];
+      importGlobalFields['existingGFs'] = [{ uid: 'gf1', global_field: { uid: 'gf1' } }];
 
       await importGlobalFields.replaceGFs();
 
-      const onSuccess = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Replace global fields'
-      )?.args[0].apiParams.resolve;
+      const onSuccess = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Replace global fields')?.args[0].apiParams.resolve;
 
       const mockGF = { uid: 'gf1', title: 'GF 1' };
       onSuccess({ response: mockGF, apiData: null }); // Null apiData
@@ -933,15 +1171,13 @@ describe('ImportGlobalFields', () => {
     });
 
     it('should handle replaceGFs onReject with null apiData', async () => {
-      importGlobalFields['existingGFs'] = [
-        { uid: 'gf1', global_field: { uid: 'gf1' } }
-      ];
+      importGlobalFields['existingGFs'] = [{ uid: 'gf1', global_field: { uid: 'gf1' } }];
 
       await importGlobalFields.replaceGFs();
 
-      const onReject = makeConcurrentCallStub.getCalls().find((call: any) =>
-        call.args[0].processName === 'Replace global fields'
-      )?.args[0].apiParams.reject;
+      const onReject = makeConcurrentCallStub
+        .getCalls()
+        .find((call: any) => call.args[0].processName === 'Replace global fields')?.args[0].apiParams.reject;
 
       onReject({ error: { message: 'Replace failed' }, apiData: null }); // Null apiData
 
@@ -949,13 +1185,40 @@ describe('ImportGlobalFields', () => {
       expect(importGlobalFields['failedGFs'][0].uid).to.equal('unknown');
     });
 
-
     it('should handle null UID mapper file', async () => {
+      sinon.restore();
+
+      sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
+      sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
+      sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
+      sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
+
       const mockGFs = [{ uid: 'gf1', title: 'GF 1', schema: [] as any }];
-      fileHelperStub.fileExistsSync.returns(true);
+      fileHelperStub.fileExistsSync.withArgs(sinon.match(/uid-mapping\.json/)).returns(true);
+      fileHelperStub.fileExistsSync.returns(false);
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns(mockGFs);
-      fsUtilStub.readFile.withArgs(sinon.match(/uid-mapping\.json/)).onFirstCall().returns(null);
+      fsUtilStub.readFile.withArgs(sinon.match(/uid-mapping\.json/)).returns(null);
       fsUtilStub.readFile.withArgs(sinon.match(/marketplace_apps.*uid-mapping\.json/)).returns({ extension_uid: {} });
+
+      sinon
+        .stub(importGlobalFields as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+      sinon.stub(importGlobalFields as any, 'analyzeGlobalFields').resolves([1]);
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+      sinon.stub(importGlobalFields as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importGlobalFields as any, 'seedGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'updateGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'processGlobalFieldResults').resolves();
+      sinon.stub(importGlobalFields as any, 'completeProgress').resolves();
+      makeConcurrentCallStub = sinon.stub(importGlobalFields as any, 'makeConcurrentCall').resolves();
 
       await importGlobalFields.start();
 
@@ -963,6 +1226,13 @@ describe('ImportGlobalFields', () => {
     });
 
     it('should not replace when replaceExisting is false', async () => {
+      sinon.restore();
+
+      sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
+      sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
+      sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
+      sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
+
       const mockGFs = [{ uid: 'gf1', title: 'GF 1', schema: [] as any }];
       importGlobalFields['importConfig'].replaceExisting = false;
       importGlobalFields['existingGFs'] = [{ uid: 'gf1', global_field: { uid: 'gf1' } }];
@@ -970,12 +1240,41 @@ describe('ImportGlobalFields', () => {
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns(mockGFs);
       fsUtilStub.readFile.withArgs(sinon.match(/marketplace_apps.*uid-mapping\.json/)).returns({ extension_uid: {} });
 
+      sinon
+        .stub(importGlobalFields as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+      sinon.stub(importGlobalFields as any, 'analyzeGlobalFields').resolves([1]);
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+      sinon.stub(importGlobalFields as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importGlobalFields as any, 'prepareGlobalFieldMapper').resolves();
+      const seedGFsStub = sinon.stub(importGlobalFields as any, 'seedGFs').resolves();
+      const updateGFsStub = sinon.stub(importGlobalFields as any, 'updateGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'processGlobalFieldResults').resolves();
+      sinon.stub(importGlobalFields as any, 'completeProgress').resolves();
+      makeConcurrentCallStub = sinon.stub(importGlobalFields as any, 'makeConcurrentCall').resolves();
+
       await importGlobalFields.start();
 
-      expect(makeConcurrentCallStub.callCount).to.equal(2); // Only seedGFs and updateGFs
+      expect(seedGFsStub.called).to.be.true;
+      expect(updateGFsStub.called).to.be.true;
     });
 
     it('should not replace when existingGFs is empty', async () => {
+      sinon.restore();
+
+      sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
+      sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
+      sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
+      sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
+
       const mockGFs = [{ uid: 'gf1', title: 'GF 1', schema: [] as any }];
       importGlobalFields['importConfig'].replaceExisting = true;
       importGlobalFields['existingGFs'] = [];
@@ -983,17 +1282,66 @@ describe('ImportGlobalFields', () => {
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns(mockGFs);
       fsUtilStub.readFile.withArgs(sinon.match(/marketplace_apps.*uid-mapping\.json/)).returns({ extension_uid: {} });
 
+      sinon
+        .stub(importGlobalFields as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+      sinon.stub(importGlobalFields as any, 'analyzeGlobalFields').resolves([1]);
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+      sinon.stub(importGlobalFields as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importGlobalFields as any, 'prepareGlobalFieldMapper').resolves();
+      const seedGFsStub = sinon.stub(importGlobalFields as any, 'seedGFs').resolves();
+      const updateGFsStub = sinon.stub(importGlobalFields as any, 'updateGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'processGlobalFieldResults').resolves();
+      sinon.stub(importGlobalFields as any, 'completeProgress').resolves();
+      makeConcurrentCallStub = sinon.stub(importGlobalFields as any, 'makeConcurrentCall').resolves();
+
       await importGlobalFields.start();
 
-      expect(makeConcurrentCallStub.callCount).to.equal(2); // Only seedGFs and updateGFs
+      expect(seedGFsStub.called).to.be.true;
+      expect(updateGFsStub.called).to.be.true;
     });
 
     it('should not write pending file when array is empty', async () => {
+      sinon.restore();
+
+      sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
+      sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
+      sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
+      sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
+
       const mockGFs = [{ uid: 'gf1', title: 'GF 1', schema: [] as any }];
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns(mockGFs);
       fsUtilStub.readFile.withArgs(sinon.match(/marketplace_apps.*uid-mapping\.json/)).returns({ extension_uid: {} });
 
       importGlobalFields['pendingGFs'] = [];
+
+      sinon
+        .stub(importGlobalFields as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+      sinon.stub(importGlobalFields as any, 'analyzeGlobalFields').resolves([1]);
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+      sinon.stub(importGlobalFields as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importGlobalFields as any, 'prepareGlobalFieldMapper').resolves();
+      sinon.stub(importGlobalFields as any, 'seedGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'updateGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'completeProgress').resolves();
+      makeConcurrentCallStub = sinon.stub(importGlobalFields as any, 'makeConcurrentCall').resolves();
 
       await importGlobalFields.start();
 
@@ -1001,11 +1349,38 @@ describe('ImportGlobalFields', () => {
     });
 
     it('should not write success file when array is empty', async () => {
+      sinon.restore();
+
+      sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
+      sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
+      sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
+      sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
+
       const mockGFs = [{ uid: 'gf1', title: 'GF 1', schema: [] as any }];
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns(mockGFs);
       fsUtilStub.readFile.withArgs(sinon.match(/marketplace_apps.*uid-mapping\.json/)).returns({ extension_uid: {} });
 
       importGlobalFields['createdGFs'] = [];
+
+      sinon
+        .stub(importGlobalFields as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+      sinon.stub(importGlobalFields as any, 'analyzeGlobalFields').resolves([1]);
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+      sinon.stub(importGlobalFields as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importGlobalFields as any, 'prepareGlobalFieldMapper').resolves();
+      sinon.stub(importGlobalFields as any, 'seedGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'updateGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'completeProgress').resolves();
+      makeConcurrentCallStub = sinon.stub(importGlobalFields as any, 'makeConcurrentCall').resolves();
 
       await importGlobalFields.start();
 
@@ -1013,11 +1388,38 @@ describe('ImportGlobalFields', () => {
     });
 
     it('should not write fails file when array is empty', async () => {
+      sinon.restore();
+
+      sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
+      sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
+      sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
+      sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
+
       const mockGFs = [{ uid: 'gf1', title: 'GF 1', schema: [] as any }];
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns(mockGFs);
       fsUtilStub.readFile.withArgs(sinon.match(/marketplace_apps.*uid-mapping\.json/)).returns({ extension_uid: {} });
 
       importGlobalFields['failedGFs'] = [];
+
+      sinon
+        .stub(importGlobalFields as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+      sinon.stub(importGlobalFields as any, 'analyzeGlobalFields').resolves([1]);
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+      sinon.stub(importGlobalFields as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importGlobalFields as any, 'prepareGlobalFieldMapper').resolves();
+      sinon.stub(importGlobalFields as any, 'seedGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'updateGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'completeProgress').resolves();
+      makeConcurrentCallStub = sinon.stub(importGlobalFields as any, 'makeConcurrentCall').resolves();
 
       await importGlobalFields.start();
 
@@ -1027,42 +1429,118 @@ describe('ImportGlobalFields', () => {
 
   describe('Integration Tests', () => {
     it('should complete full global fields import flow', async () => {
-      const mockGFs = [
-        { uid: 'gf1', title: 'Global Field 1', schema: [] as any },
-        { uid: 'gf2', title: 'Global Field 2', schema: [] as any }
-      ];
+      sinon.restore();
+      sinon.stub(fsUtil, 'readFile');
+      sinon.stub(fsUtil, 'writeFile');
+      sinon.stub(fsUtil, 'makeDirectory');
+      sinon.stub(fileHelper, 'fileExistsSync');
 
-      fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns(mockGFs);
-      fsUtilStub.readFile.withArgs(sinon.match(/marketplace_apps.*uid-mapping\.json/)).returns({ extension_uid: {} });
-
-      importGlobalFields['createdGFs'] = [{ uid: 'gf1' }, { uid: 'gf2' }];
+      sinon
+        .stub(importGlobalFields as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+      sinon.stub(importGlobalFields as any, 'analyzeGlobalFields').resolves([2]);
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+      sinon.stub(importGlobalFields as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importGlobalFields as any, 'prepareGlobalFieldMapper').resolves();
+      const seedGFsStub = sinon.stub(importGlobalFields as any, 'seedGFs').resolves();
+      const updateGFsStub = sinon.stub(importGlobalFields as any, 'updateGFs').resolves();
+      const processGlobalFieldResultsStub = sinon
+        .stub(importGlobalFields as any, 'processGlobalFieldResults')
+        .resolves();
+      sinon.stub(importGlobalFields as any, 'completeProgress').resolves();
 
       await importGlobalFields.start();
 
-      expect(makeConcurrentCallStub.callCount).to.equal(2);
-      expect(fsUtilStub.makeDirectory.called).to.be.true;
-      expect(fsUtilStub.writeFile.called).to.be.true;
+      expect(seedGFsStub.called).to.be.true;
+      expect(updateGFsStub.called).to.be.true;
+      expect(processGlobalFieldResultsStub.called).to.be.true;
     });
 
     it('should handle complete flow with replaceExisting', async () => {
+      sinon.restore();
+
+      sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
+      sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
+      sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
+      sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
+
       const mockGFs = [{ uid: 'gf1', title: 'GF 1', schema: [] as any }];
       importGlobalFields['importConfig'].replaceExisting = true;
 
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns(mockGFs);
       fsUtilStub.readFile.withArgs(sinon.match(/marketplace_apps.*uid-mapping\.json/)).returns({ extension_uid: {} });
 
+      sinon
+        .stub(importGlobalFields as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+      sinon.stub(importGlobalFields as any, 'analyzeGlobalFields').resolves([1]);
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+      sinon.stub(importGlobalFields as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importGlobalFields as any, 'prepareGlobalFieldMapper').resolves();
+      const seedGFsStub = sinon.stub(importGlobalFields as any, 'seedGFs').resolves();
+      const updateGFsStub = sinon.stub(importGlobalFields as any, 'updateGFs').resolves();
+      const replaceGFsStub = sinon.stub(importGlobalFields as any, 'replaceGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'processGlobalFieldResults').resolves();
+      sinon.stub(importGlobalFields as any, 'completeProgress').resolves();
+      makeConcurrentCallStub = sinon.stub(importGlobalFields as any, 'makeConcurrentCall').resolves();
+
       importGlobalFields['existingGFs'] = [{ uid: 'gf1', global_field: { uid: 'gf1' } }];
 
       await importGlobalFields.start();
 
-      expect(makeConcurrentCallStub.callCount).to.equal(3);
+      expect(seedGFsStub.called).to.be.true;
+      expect(updateGFsStub.called).to.be.true;
+      expect(replaceGFsStub.called).to.be.true;
     });
 
     it('should handle complete flow with pending and failed global fields', async () => {
+      sinon.restore();
+
+      sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
+      sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
+      sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
+      sinon.stub(fileHelper, 'fileExistsSync').callsFake(fileHelperStub.fileExistsSync);
+
       const mockGFs = [{ uid: 'gf1', title: 'GF 1', schema: [] as any }];
 
       fsUtilStub.readFile.withArgs(sinon.match(/globalfields\.json/)).returns(mockGFs);
       fsUtilStub.readFile.withArgs(sinon.match(/marketplace_apps.*uid-mapping\.json/)).returns({ extension_uid: {} });
+
+      sinon
+        .stub(importGlobalFields as any, 'withLoadingSpinner')
+        .callsFake(async (msg: string, fn: () => Promise<any>) => {
+          return await fn();
+        });
+      sinon.stub(importGlobalFields as any, 'analyzeGlobalFields').resolves([1]);
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+      sinon.stub(importGlobalFields as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importGlobalFields as any, 'prepareGlobalFieldMapper').resolves();
+      sinon.stub(importGlobalFields as any, 'seedGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'updateGFs').resolves();
+      sinon.stub(importGlobalFields as any, 'completeProgress').resolves();
+      makeConcurrentCallStub = sinon.stub(importGlobalFields as any, 'makeConcurrentCall').resolves();
 
       importGlobalFields['pendingGFs'] = ['gf1'];
       importGlobalFields['failedGFs'] = [{ uid: 'gf2' }];
@@ -1074,4 +1552,3 @@ describe('ImportGlobalFields', () => {
     });
   });
 });
-

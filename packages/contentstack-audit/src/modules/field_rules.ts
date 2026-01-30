@@ -5,7 +5,6 @@ import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { FsUtility, Locale, sanitizePath, cliux, log } from '@contentstack/cli-utilities';
 
 import {
-  ConfigType,
   ModularBlockType,
   ContentTypeStruct,
   GroupFieldDataType,
@@ -20,13 +19,13 @@ import auditConfig from '../config';
 import { $t, auditFixMsg, auditMsg, commonMsg } from '../messages';
 import { MarketplaceAppsInstallationData } from '../types/extension';
 import { values } from 'lodash';
+import BaseClass from './base-class';
 
-/* The `ContentType` class is responsible for scanning content types, looking for references, and
+/* The `FieldRule` class is responsible for scanning field rules, looking for references, and
 generating a report in JSON and CSV formats. */
-export default class FieldRule {
+export default class FieldRule extends BaseClass {
   protected fix: boolean;
   public fileName: string;
-  public config: ConfigType;
   public folderPath: string;
   public currentUid!: string;
   public currentTitle!: string;
@@ -46,7 +45,7 @@ export default class FieldRule {
   public entryMetaData: Record<string, any>[] = [];
   public action: string[] = ['show', 'hide'];
   constructor({ fix, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
-    this.config = config;
+    super({ config });
     this.fix = fix ?? false;
     this.ctSchema = ctSchema;
     this.gfSchema = gfSchema;
@@ -90,31 +89,42 @@ export default class FieldRule {
    * iterates over the schema and looks for references, and returns a list of missing references.
    * @returns the `missingRefs` object.
    */
-  async run() {
-    log.debug(`Starting ${this.moduleName} field rules audit process`, this.config.auditContext);
-    log.debug(`Field rules folder path: ${this.folderPath}`, this.config.auditContext);
-    log.debug(`Fix mode: ${this.fix}`, this.config.auditContext);
-    
-    if (!existsSync(this.folderPath)) {
-      log.debug(`Skipping ${this.moduleName} audit - path does not exist`, this.config.auditContext);
-      log.warn(`Skipping ${this.moduleName} audit`, this.config.auditContext);
-      cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
-      return {};
-    }
+  async run(totalCount?: number) {
+    try {
+      log.debug(`Starting ${this.moduleName} field rules audit process`, this.config.auditContext);
+      log.debug(`Field rules folder path: ${this.folderPath}`, this.config.auditContext);
+      log.debug(`Fix mode: ${this.fix}`, this.config.auditContext);
+      
+      if (!existsSync(this.folderPath)) {
+        log.debug(`Skipping ${this.moduleName} audit - path does not exist`, this.config.auditContext);
+        log.warn(`Skipping ${this.moduleName} audit`, this.config.auditContext);
+        cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
+        return {};
+      }
 
-    this.schema = this.moduleName === 'content-types' ? this.ctSchema : this.gfSchema;
-    log.debug(`Using ${this.moduleName} schema with ${this.schema?.length || 0} items`, this.config.auditContext);
-    
-    log.debug(`Loading prerequisite data`, this.config.auditContext);
-    await this.prerequisiteData();
-    log.debug(`Loaded ${this.extensions.length} extensions`, this.config.auditContext);
-    
-    log.debug(`Preparing entry metadata`, this.config.auditContext);
-    await this.prepareEntryMetaData();
-    log.debug(`Prepared metadata for ${this.entryMetaData.length} entries`, this.config.auditContext);
-    
-    log.debug(`Processing ${this.schema?.length || 0} schemas for field rules`, this.config.auditContext);
-    for (const schema of this.schema ?? []) {
+      this.schema = this.moduleName === 'content-types' ? this.ctSchema : this.gfSchema;
+      log.debug(`Using ${this.moduleName} schema with ${this.schema?.length || 0} items`, this.config.auditContext);
+      
+      // Load prerequisite data with loading spinner
+      await this.withLoadingSpinner('FIELD-RULES: Loading prerequisite data...', async () => {
+        await this.prerequisiteData();
+      });
+      log.debug(`Loaded ${this.extensions.length} extensions`, this.config.auditContext);
+      
+      // Prepare entry metadata with loading spinner
+      await this.withLoadingSpinner('FIELD-RULES: Preparing entry metadata...', async () => {
+        await this.prepareEntryMetaData();
+      });
+      log.debug(`Prepared metadata for ${this.entryMetaData.length} entries`, this.config.auditContext);
+      
+      // Create progress manager if we have a total count
+      if (totalCount && totalCount > 0) {
+        const progress = this.createSimpleProgress(this.moduleName, totalCount);
+        progress.updateStatus('Validating field rules...');
+      }
+      
+      log.debug(`Processing ${this.schema?.length || 0} schemas for field rules`, this.config.auditContext);
+      for (const schema of this.schema ?? []) {
       this.currentUid = schema.uid;
       this.currentTitle = schema.title;
       this.missingRefs[this.currentUid] = [];
@@ -144,21 +154,27 @@ export default class FieldRule {
       );
     }
 
-    if (this.fix) {
-      log.debug(`Fix mode enabled, writing fix content`, this.config.auditContext);
-      await this.writeFixContent();
-    }
-
-    log.debug(`Cleaning up empty missing references`, this.config.auditContext);
-    for (let propName in this.missingRefs) {
-      if (!this.missingRefs[propName].length) {
-        log.debug(`Removing empty missing references for: ${propName}`, this.config.auditContext);
-        delete this.missingRefs[propName];
+      if (this.fix) {
+        log.debug(`Fix mode enabled, writing fix content`, this.config.auditContext);
+        await this.writeFixContent();
       }
-    }
 
-    log.debug(`Field rules audit completed. Found ${Object.keys(this.missingRefs).length} schemas with issues`, this.config.auditContext);
-    return this.missingRefs;
+      log.debug(`Cleaning up empty missing references`, this.config.auditContext);
+      for (let propName in this.missingRefs) {
+        if (!this.missingRefs[propName].length) {
+          log.debug(`Removing empty missing references for: ${propName}`, this.config.auditContext);
+          delete this.missingRefs[propName];
+        }
+      }
+
+      log.debug(`Field rules audit completed. Found ${Object.keys(this.missingRefs).length} schemas with issues`, this.config.auditContext);
+      
+      this.completeProgress(true);
+      return this.missingRefs;
+    } catch (error: any) {
+      this.completeProgress(false, error?.message || 'Field rules audit failed');
+      throw error;
+    }
   }
 
   validateFieldRules(schema: Record<string, unknown>): void {

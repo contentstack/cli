@@ -4,7 +4,7 @@ import mkdirp from 'mkdirp';
 import * as bigJSON from 'big-json';
 import { FsUtility, sanitizePath, log } from '@contentstack/cli-utilities';
 
-export const readFileSync = function (filePath: string, parse: boolean = true): any {
+export const readFileSync = function (filePath: string, parse = true): any {
   let data;
   filePath = path.resolve(sanitizePath(filePath));
   if (fs.existsSync(filePath)) {
@@ -87,7 +87,7 @@ export const writeLargeFile = function (filePath: string, data: any): Promise<an
     const stringifyStream = bigJSON.createStringifyStream({
       body: data,
     });
-    var writeStream = fs.createWriteStream(filePath, 'utf-8');
+    const writeStream = fs.createWriteStream(filePath, 'utf-8');
     stringifyStream.pipe(writeStream);
     writeStream.on('finish', () => {
       resolve('');
@@ -98,9 +98,9 @@ export const writeLargeFile = function (filePath: string, data: any): Promise<an
   });
 };
 
-export const makeDirectory = function (dir: string): void {
-  for (let key in arguments) {
-    const dirname = path.resolve(arguments[key]);
+export const makeDirectory = function (...dirs: string[]): void {
+  for (const dir of dirs) {
+    const dirname = path.resolve(dir);
     if (!fs.existsSync(dirname)) {
       mkdirp.sync(dirname);
     }

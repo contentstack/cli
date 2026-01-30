@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { validateConfig, formatError, executeTask, writeExportMetaFile } from '../../../src/utils/common-helper';
+import { validateConfig, formatError, executeTask } from '../../../src/utils/common-helper';
 import { ExternalConfig, ExportConfig } from '../../../src/types';
 
 describe('Common Helper Utils', () => {
@@ -196,60 +196,9 @@ describe('Common Helper Utils', () => {
     });
   });
 
-  describe('writeExportMetaFile', () => {
-    it('should write export meta file with correct data', () => {
-      const exportConfig: ExportConfig = {
-        contentVersion: 1,
-        exportDir: '/test/export'
-      } as ExportConfig;
-      
-      // Stub FsUtility constructor to avoid fs operations
-      const FsUtility = require('@contentstack/cli-utilities').FsUtility;
-      const originalWriteFile = FsUtility.prototype.writeFile;
-      const writeFileStub = sinon.stub().resolves();
-      FsUtility.prototype.writeFile = writeFileStub;
-      
-      writeExportMetaFile(exportConfig);
-      
-      // Verify that writeFile was called with correct data
-      expect(writeFileStub.called).to.be.true;
-      const filePath = writeFileStub.firstCall.args[0];
-      const metaData = writeFileStub.firstCall.args[1];
-      
-      expect(filePath).to.include('export-info.json');
-      expect(metaData.contentVersion).to.equal(1);
-      expect(metaData.logsPath).to.exist;
-      
-      // Restore original
-      FsUtility.prototype.writeFile = originalWriteFile;
-    });
-
-    it('should accept custom meta file path', () => {
-      const exportConfig: ExportConfig = {
-        contentVersion: 2,
-        exportDir: '/test/export'
-      } as ExportConfig;
-      
-      // Stub FsUtility constructor to avoid fs operations
-      const FsUtility = require('@contentstack/cli-utilities').FsUtility;
-      const originalWriteFile = FsUtility.prototype.writeFile;
-      const writeFileStub = sinon.stub().resolves();
-      FsUtility.prototype.writeFile = writeFileStub;
-      
-      writeExportMetaFile(exportConfig, '/custom/path');
-      
-      // Verify that writeFile was called with custom path and correct data
-      expect(writeFileStub.called).to.be.true;
-      const filePath = writeFileStub.firstCall.args[0];
-      const metaData = writeFileStub.firstCall.args[1];
-      
-      expect(filePath).to.include('/custom/path');
-      expect(filePath).to.include('export-info.json');
-      expect(metaData.contentVersion).to.equal(2);
-      
-      // Restore original
-      FsUtility.prototype.writeFile = originalWriteFile;
-    });
-  });
+  // Note: writeExportMetaFile function was removed/doesn't exist in current codebase
+  // describe('writeExportMetaFile', () => {
+  //   Tests removed as function doesn't exist
+  // });
 });
 
