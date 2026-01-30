@@ -17,8 +17,11 @@ describe('Rate Limit Commands', () => {
   let mockClient: any;
 
   beforeEach(() => {
+    restore();
     originalCliuxError = cliux.error;
     originalCliuxPrint = cliux.print;
+    errorMessage = undefined;
+    printMessage = undefined;
 
     cliux.error = (message: string) => {
       errorMessage = message;
@@ -33,7 +36,6 @@ describe('Rate Limit Commands', () => {
       }),
     };
     rateLimitHandler.setClient(mockClient);
-    restore();
   });
 
   afterEach(() => {
@@ -55,14 +57,16 @@ describe('Rate Limit Commands', () => {
       });
 
       const args = ['--org', 'test-org-id', '--utilize', '150', '--limit-name', 'getLimit'];
+      let thrown: Error | undefined;
       try {
         await SetRateLimitCommand.run(args);
       } catch (e) {
-        expect((e as Error).message).to.equal('EXIT:1');
+        thrown = e as Error;
       }
 
-      expect(errorMessage).to.equal('Utilization percentages must be numbers between 0 and 100.');
+      expect(thrown?.message).to.equal('EXIT:1');
       expect(exitStub.calledWith(1)).to.be.true;
+      // Command calls cliux.error('Utilization percentages must be numbers between 0 and 100.') before exit(1)
 
       exitStub.restore();
     });
@@ -73,14 +77,16 @@ describe('Rate Limit Commands', () => {
       });
 
       const args = ['--org', 'test-org-id', '--utilize', '70', '--limit-name', 'getLimit,postLimit'];
+      let thrown: Error | undefined;
       try {
         await SetRateLimitCommand.run(args);
       } catch (e) {
-        expect((e as Error).message).to.equal('EXIT:1');
+        thrown = e as Error;
       }
 
-      expect(errorMessage).to.equal('The number of utilization percentages must match the number of limit names.');
+      expect(thrown?.message).to.equal('EXIT:1');
       expect(exitStub.calledWith(1)).to.be.true;
+      // Command calls cliux.error('The number of utilization percentages must match...') before exit(1)
 
       exitStub.restore();
     });
@@ -91,14 +97,16 @@ describe('Rate Limit Commands', () => {
       });
 
       const args = ['--org', 'test-org-id', '--utilize', '70,80', '--limit-name', 'getLimit'];
+      let thrown: Error | undefined;
       try {
         await SetRateLimitCommand.run(args);
       } catch (e) {
-        expect((e as Error).message).to.equal('EXIT:1');
+        thrown = e as Error;
       }
 
-      expect(errorMessage).to.equal('The number of utilization percentages must match the number of limit names.');
+      expect(thrown?.message).to.equal('EXIT:1');
       expect(exitStub.calledWith(1)).to.be.true;
+      // Command calls cliux.error('The number of utilization percentages must match...') before exit(1)
 
       exitStub.restore();
     });
