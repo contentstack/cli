@@ -28,7 +28,7 @@ importers:
       '@contentstack/cli-config': ~1.18.0
       '@contentstack/cli-launch': ^1.9.2
       '@contentstack/cli-migration': ~1.10.3
-      '@contentstack/cli-utilities': ~1.17.0
+      '@contentstack/cli-utilities': ~1.17.1
       '@contentstack/cli-variants': ~1.3.7
       '@contentstack/management': ~1.27.3
       '@oclif/core': ^4.3.0
@@ -132,7 +132,7 @@ importers:
   packages/contentstack-audit:
     specifiers:
       '@contentstack/cli-command': ~1.7.2
-      '@contentstack/cli-utilities': ~1.17.0
+      '@contentstack/cli-utilities': ~1.17.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@oclif/plugin-plugins': ^5.4.54
@@ -193,7 +193,7 @@ importers:
   packages/contentstack-auth:
     specifiers:
       '@contentstack/cli-command': ~1.7.2
-      '@contentstack/cli-utilities': ~1.17.0
+      '@contentstack/cli-utilities': ~1.17.1
       '@fancy-test/nock': ^0.1.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
@@ -245,7 +245,7 @@ importers:
     specifiers:
       '@contentstack/cli-cm-seed': ~1.14.2
       '@contentstack/cli-command': ~1.7.2
-      '@contentstack/cli-utilities': ~1.17.0
+      '@contentstack/cli-utilities': ~1.17.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@oclif/test': ^4.1.13
@@ -296,7 +296,7 @@ importers:
     specifiers:
       '@contentstack/cli-command': ~1.7.2
       '@contentstack/cli-dev-dependencies': ~1.3.0
-      '@contentstack/cli-utilities': ~1.17.0
+      '@contentstack/cli-utilities': ~1.17.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@types/flat': ^5.0.5
@@ -341,7 +341,7 @@ importers:
     specifiers:
       '@contentstack/cli-command': ~1.7.2
       '@contentstack/cli-config': ~1.18.0
-      '@contentstack/cli-utilities': ~1.17.0
+      '@contentstack/cli-utilities': ~1.17.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@oclif/test': ^4.1.13
@@ -382,7 +382,7 @@ importers:
       '@contentstack/cli-cm-export': ~1.23.1
       '@contentstack/cli-cm-import': ~1.31.2
       '@contentstack/cli-command': ~1.7.2
-      '@contentstack/cli-utilities': ~1.17.0
+      '@contentstack/cli-utilities': ~1.17.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@oclif/test': ^4.1.13
@@ -441,7 +441,7 @@ importers:
 
   packages/contentstack-command:
     specifiers:
-      '@contentstack/cli-utilities': ~1.17.0
+      '@contentstack/cli-utilities': ~1.17.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@oclif/test': ^4.1.13
@@ -477,7 +477,7 @@ importers:
   packages/contentstack-config:
     specifiers:
       '@contentstack/cli-command': ~1.7.2
-      '@contentstack/cli-utilities': ~1.17.0
+      '@contentstack/cli-utilities': ~1.17.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@oclif/test': ^4.1.13
@@ -550,7 +550,7 @@ importers:
       '@contentstack/cli-command': ~1.7.2
       '@contentstack/cli-config': ~1.18.0
       '@contentstack/cli-dev-dependencies': ~1.3.1
-      '@contentstack/cli-utilities': ~1.17.0
+      '@contentstack/cli-utilities': ~1.17.1
       '@contentstack/cli-variants': ~1.3.7
       '@oclif/core': ^4.3.3
       '@oclif/plugin-help': ^6.2.28
@@ -626,7 +626,7 @@ importers:
   packages/contentstack-export-to-csv:
     specifiers:
       '@contentstack/cli-command': ~1.7.2
-      '@contentstack/cli-utilities': ~1.17.0
+      '@contentstack/cli-utilities': ~1.17.1
       '@oclif/core': ^4.8.0
       '@oclif/plugin-help': ^6.2.32
       '@oclif/test': ^4.1.13
@@ -682,7 +682,7 @@ importers:
     specifiers:
       '@contentstack/cli-audit': ~1.17.1
       '@contentstack/cli-command': ~1.7.1
-      '@contentstack/cli-utilities': ~1.17.0
+      '@contentstack/cli-utilities': ~1.17.1
       '@contentstack/cli-variants': ~1.3.7
       '@contentstack/management': ~1.27.3
       '@oclif/core': ^4.3.0
@@ -760,7 +760,7 @@ importers:
   packages/contentstack-import-setup:
     specifiers:
       '@contentstack/cli-command': ~1.7.2
-      '@contentstack/cli-utilities': ~1.17.0
+      '@contentstack/cli-utilities': ~1.17.1
       '@oclif/core': ^4.3.0
       '@types/big-json': ^3.2.5
       '@types/bluebird': ^3.5.42
@@ -827,7 +827,7 @@ importers:
   packages/contentstack-migrate-rte:
     specifiers:
       '@contentstack/cli-command': ~1.7.2
-      '@contentstack/cli-utilities': ~1.17.0
+      '@contentstack/cli-utilities': ~1.17.1
       '@contentstack/json-rte-serializer': ~2.1.0
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
@@ -872,7 +872,7 @@ importers:
   packages/contentstack-migration:
     specifiers:
       '@contentstack/cli-command': ~1.7.2
-      '@contentstack/cli-utilities': ~1.17.0
+      '@contentstack/cli-utilities': ~1.17.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@oclif/test': ^4.1.13
@@ -916,7 +916,7 @@ importers:
     specifiers:
       '@contentstack/cli-cm-import': ~1.31.2
       '@contentstack/cli-command': ~1.7.2
-      '@contentstack/cli-utilities': ~1.17.0
+      '@contentstack/cli-utilities': ~1.17.1
       '@contentstack/management': ~1.27.3
       '@types/inquirer': ^9.0.8
       '@types/jest': ^26.0.24
@@ -1063,7 +1063,7 @@ importers:
   packages/contentstack-variants:
     specifiers:
       '@contentstack/cli-dev-dependencies': ^1.3.0
-      '@contentstack/cli-utilities': ~1.17.0
+      '@contentstack/cli-utilities': ~1.17.1
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@oclif/test': ^4.1.13
@@ -1199,7 +1199,7 @@ packages:
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
       '@aws-sdk/core': 3.973.4
-      '@aws-sdk/credential-provider-node': 3.972.2
+      '@aws-sdk/credential-provider-node': 3.972.3
       '@aws-sdk/middleware-host-header': 3.972.2
       '@aws-sdk/middleware-logger': 3.972.2
       '@aws-sdk/middleware-recursion-detection': 3.972.2
@@ -1249,7 +1249,7 @@ packages:
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
       '@aws-sdk/core': 3.973.4
-      '@aws-sdk/credential-provider-node': 3.972.2
+      '@aws-sdk/credential-provider-node': 3.972.3
       '@aws-sdk/middleware-bucket-endpoint': 3.972.2
       '@aws-sdk/middleware-expect-continue': 3.972.2
       '@aws-sdk/middleware-flexible-checksums': 3.972.2
@@ -1461,8 +1461,8 @@ packages:
       - aws-crt
     dev: true
 
-  /@aws-sdk/credential-provider-node/3.972.2:
-    resolution: {integrity: sha512-Lz1J5IZdTjLYTVIcDP5DVDgi1xlgsF3p1cnvmbfKbjCRhQpftN2e2J4NFfRRvPD54W9+bZ8l5VipPXtTYK7aEg==}
+  /@aws-sdk/credential-provider-node/3.972.3:
+    resolution: {integrity: sha512-iu+JwWHM7tHowKqE+8wNmI3sM6mPEiI9Egscz2BEV7adyKmV95oR9tBO4VIOl72FGDi7X9mXg19VtqIpSkEEsA==}
     engines: {node: '>=20.0.0'}
     dependencies:
       '@aws-sdk/credential-provider-env': 3.972.2
@@ -7324,8 +7324,8 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /ci-info/4.3.1:
-    resolution: {integrity: sha512-Wdy2Igu8OcBpI2pZePZ5oWjPC38tmDVx5WKUXKwlLYkA0ozo85sLsLvkBbBn/sZaSCMFOGZJ14fvW9t5/d7kdA==}
+  /ci-info/4.4.0:
+    resolution: {integrity: sha512-77PSwercCZU2Fc4sX94eF8k8Pxte6JAwL4/ICZLFjJLqegs7kCuAsqqj/70NQF6TvDpgFjkubQB2FW2ZZddvQg==}
     engines: {node: '>=8'}
     dev: true
 
@@ -8960,7 +8960,7 @@ packages:
     dependencies:
       '@babel/helper-validator-identifier': 7.28.5
       '@eslint-community/eslint-utils': 4.9.1_eslint@8.57.1
-      ci-info: 4.3.1
+      ci-info: 4.4.0
       clean-regexp: 1.0.0
       core-js-compat: 3.48.0
       eslint: 8.57.1

@@ -1,4 +1,4 @@
-import { cliux, configHandler, HttpClient, LoggerService } from '@contentstack/cli-utilities';
+import { cliux, configHandler, HttpClient, handleAndLogError } from '@contentstack/cli-utilities';
 import * as semver from 'semver';
 import { IVersionUpgradeCache, IVersionUpgradeWarningFrequency } from '../../interfaces';
 
@@ -8,7 +8,6 @@ const versionUpgradeWarningFrequency: IVersionUpgradeWarningFrequency = {
 export default async function (_opts): Promise<void> {
   const now = Date.now();
   const today = new Date().toISOString().split('T')[0];
-  const logger: LoggerService = new LoggerService(process.env.CS_CLI_LOG_PATH || process.cwd(), 'cli-log');
   let cache: IVersionUpgradeCache = { lastChecked: 0, lastWarnedDate: '', latestVersion: '' };
 
   // if CLI_VERSION is not set or is not the same as the current version, set it
@@ -36,7 +35,7 @@ export default async function (_opts): Promise<void> {
       const latestVersion = (await httpClient.get(`https://registry.npmjs.org/@contentstack/cli/latest`))?.data
         ?.version;
       if (!latestVersion) {
-        logger.error('Failed to retrieve the latest version from the registry.');
+        handleAndLogError(new Error('Failed to retrieve the latest version from the registry.'), { module: 'latest-version-warning' });
         return;
       }
       cache.latestVersion = latestVersion;
@@ -45,7 +44,7 @@ export default async function (_opts): Promise<void> {
       // Save updated cache
       configHandler.set('versionUpgradeWarningCache', cache);
     } catch (error) {
-      logger.error('Failed to check the latest version', error);
+      handleAndLogError(error, { module: 'latest-version-warning' }, 'Failed to check the latest version');
       return;
     }
   }
