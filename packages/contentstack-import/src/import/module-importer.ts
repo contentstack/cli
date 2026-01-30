@@ -4,15 +4,8 @@ import messages, { $t } from '@contentstack/cli-audit/lib/messages';
 import { addLocale, cliux, ContentstackClient, log } from '@contentstack/cli-utilities';
 
 import startModuleImport from './modules';
-import startJSModuleImport from './modules-js';
 import { ImportConfig, Modules } from '../types';
-import {
-  backupHandler,
-  masterLocalDetails,
-  sanitizeStack,
-  setupBranchConfig,
-  executeImportPathLogic,
-} from '../utils';
+import { backupHandler, masterLocalDetails, sanitizeStack, setupBranchConfig, executeImportPathLogic } from '../utils';
 
 class ModuleImporter {
   private managementAPIClient: ContentstackClient;
@@ -29,15 +22,14 @@ class ModuleImporter {
   }
 
   async start(): Promise<any> {
-
     if (!this.importConfig.management_token) {
       const stackDetails: Record<string, unknown> = await this.stackAPIClient.fetch();
       this.importConfig.stackName = stackDetails.name as string;
       this.importConfig.org_uid = stackDetails.org_uid as string;
     }
-    
+
     await this.resolveImportPath();
-    
+
     await setupBranchConfig(this.importConfig, this.stackAPIClient);
     if (this.importConfig.branchAlias && this.importConfig.branchName) {
       this.stackAPIClient = this.managementAPIClient.stack({
@@ -54,8 +46,6 @@ class ModuleImporter {
     const backupDir = await backupHandler(this.importConfig);
     if (backupDir) {
       this.importConfig.backupDir = backupDir;
-      // To support the old config
-      this.importConfig.data = backupDir;
     }
 
     // NOTE audit and fix the import content.
@@ -83,7 +73,7 @@ class ModuleImporter {
   }
 
   async import() {
-    log.info(`Starting to import content version ${this.importConfig.contentVersion}`, this.importConfig.context);
+    log.info(`Starting to import`, this.importConfig.context);
 
     // checks for single module or all modules
     if (this.importConfig.singleModuleImport) {
@@ -94,25 +84,12 @@ class ModuleImporter {
 
   async importByModuleByName(moduleName: Modules) {
     log.info(`Starting import of ${moduleName} module`, this.importConfig.context);
-    // import the modules by name
-    // calls the module runner which inturn calls the module itself
-    // NOTE: Implement a mechanism to determine whether module is new or old
-    if (this.importConfig.contentVersion === 2) {
-      return startModuleImport({
-        stackAPIClient: this.stackAPIClient,
-        importConfig: this.importConfig,
-        moduleName,
-      });
-    } else {
-      //NOTE - new modules support only ts
-      if (this.importConfig.onlyTSModules.indexOf(moduleName) === -1) {
-        return startJSModuleImport({
-          stackAPIClient: this.stackAPIClient,
-          importConfig: this.importConfig,
-          moduleName,
-        });
-      }
-    }
+
+    return startModuleImport({
+      stackAPIClient: this.stackAPIClient,
+      importConfig: this.importConfig,
+      moduleName,
+    });
   }
 
   async importAllModules(): Promise<any> {

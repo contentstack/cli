@@ -47,7 +47,7 @@ export default class MigrationCommand extends Command {
     '$ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... --file-path <migration/script/file/path>',
     '$ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>',
     '$ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> ',
-    '$ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>',
+    '$ csdx cm:migration --alias <management-token-alias> --file-path <migration/script/file/path>',
   ];
 
   static flags: FlagInput = {

@@ -5,7 +5,7 @@ import { resolve } from 'path';
 import { fancy } from 'fancy-test';
 import { PassThrough } from 'stream';
 import { expect } from 'chai';
-import { ux, cliux } from '@contentstack/cli-utilities';
+import { ux, cliux, CLIProgressManager, configHandler, clearProgressModuleSetting } from '@contentstack/cli-utilities';
 
 import { AuditBaseCommand } from '../../src/audit-base-command';
 import {
@@ -371,145 +371,245 @@ describe('AuditBaseCommand class', () => {
       });
   });
 
-  describe('prepareReport method - Report file names', () => {
+  describe('Progress Manager Integration', () => {
+    let configHandlerStub: sinon.SinonStub;
+    let initializeGlobalSummarySpy: sinon.SinonSpy;
+    let printGlobalSummarySpy: sinon.SinonSpy;
+
+    beforeEach(() => {
+      // Mock CLIProgressManager static methods
+      initializeGlobalSummarySpy = sinon.spy(CLIProgressManager, 'initializeGlobalSummary');
+      printGlobalSummarySpy = sinon.spy(CLIProgressManager, 'printGlobalSummary');
+      
+      // Mock configHandler
+      configHandlerStub = sinon.stub(configHandler, 'get').returns({});
+      sinon.stub(configHandler, 'set');
+    });
+
+    afterEach(() => {
+      try {
+        if (initializeGlobalSummarySpy && typeof initializeGlobalSummarySpy.restore === 'function') {
+          initializeGlobalSummarySpy.restore();
+        }
+      } catch (e) {
+        // Ignore
+      }
+      
+      try {
+        if (printGlobalSummarySpy && typeof printGlobalSummarySpy.restore === 'function') {
+          printGlobalSummarySpy.restore();
+        }
+      } catch (e) {
+        // Ignore
+      }
+      
+      try {
+        if (configHandlerStub && typeof configHandlerStub.restore === 'function') {
+          configHandlerStub.restore();
+        }
+      } catch (e) {
+        // Ignore
+      }
+      
+      try {
+        CLIProgressManager.clearGlobalSummary();
+        clearProgressModuleSetting();
+      } catch (e) {
+        // Ignore
+      }
+      
+      try {
+        sinon.restore();
+      } catch (e) {
+        // Ignore
+      }
+    });
+
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', createMockWinstonLogger)
-      .stub(fs, 'createWriteStream', () => new PassThrough())
       .stub(fs, 'mkdirSync', () => {})
-      .stub(fs, 'existsSync', () => true)
-      .it('should generate report file with correct spelling: Entries_Select_field (not feild)', async () => {
-        const writeFileSyncSpy = sinon.spy(fs, 'writeFileSync');
-        class CMD extends AuditBaseCommand {
-          async run() {
-            await this.init();
-            this.sharedConfig.reportPath = resolve(__dirname, 'mock', 'contents');
-            
-            await this.prepareReport('Entries_Select_field', {
-              entry1: {
-                name: 'Test Entry',
-                display_name: 'Select Field',
-                missingRefs: ['ref1'],
-              },
-            });
-            
-            const jsonCall = writeFileSyncSpy.getCalls().find(call => 
-              typeof call.args[0] === 'string' && call.args[0].includes('.json')
-            );
-            return jsonCall ? (jsonCall.args[0] as string) : undefined;
-          }
-        }
-
-        const result = await CMD.run([]);
-        writeFileSyncSpy.restore();
-        expect(result).to.include('Entries_Select_field.json');
-        expect(result).to.not.include('Entries_Select_feild');
+      .stub(fs, 'writeFileSync', () => {})
+      .stub(cliux, 'table', () => {})
+      .stub(ux.action, 'stop', () => {})
+      .stub(ux.action, 'start', () => {})
+      .stub(cliux, 'inquire', () => resolve(__dirname, 'mock', 'contents'))
+      .stub(AuditBaseCommand.prototype, 'scanAndFix', () => ({
+        missingCtRefs: {},
+        missingGfRefs: {},
+        missingEntryRefs: {},
+        missingCtRefsInExtensions: {},
+        missingCtRefsInWorkflow: {},
+        missingSelectFeild: {},
+        missingMandatoryFields: {},
+        missingTitleFields: {},
+        missingRefInCustomRoles: {},
+        missingEnvLocalesInAssets: {},
+        missingEnvLocalesInEntries: {},
+        missingFieldRules: {},
+        missingMultipleFields: {},
+      }))
+      .stub(AuditBaseCommand.prototype, 'showOutputOnScreenWorkflowsAndExtension', () => {})
+      .stub(fs, 'createWriteStream', () => new PassThrough())
+      .it('should initialize global summary when start is called', async () => {
+        await AuditCMD.run(['--data-dir', resolve(__dirname, 'mock', 'contents')]);
+        
+        expect(initializeGlobalSummarySpy.calledOnce).to.be.true;
+        expect(initializeGlobalSummarySpy.calledWith('AUDIT', '', 'Auditing content...')).to.be.true;
       });
 
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', createMockWinstonLogger)
-      .stub(fs, 'createWriteStream', () => new PassThrough())
       .stub(fs, 'mkdirSync', () => {})
-      .stub(fs, 'existsSync', () => true)
-      .it('should generate report file with correct spelling: Entries_Mandatory_field (not feild)', async () => {
-        const writeFileSyncSpy = sinon.spy(fs, 'writeFileSync');
-        class CMD extends AuditBaseCommand {
-          async run() {
-            await this.init();
-            this.sharedConfig.reportPath = resolve(__dirname, 'mock', 'contents');
-            
-            await this.prepareReport('Entries_Mandatory_field', {
-              entry1: {
-                name: 'Test Entry',
-                display_name: 'Mandatory Field',
-                missingRefs: ['ref1'],
-              },
-            });
-            
-            const jsonCall = writeFileSyncSpy.getCalls().find(call => 
-              typeof call.args[0] === 'string' && call.args[0].includes('.json')
-            );
-            return jsonCall ? (jsonCall.args[0] as string) : undefined;
-          }
-        }
-
-        const result = await CMD.run([]);
-        writeFileSyncSpy.restore();
-        expect(result).to.include('Entries_Mandatory_field.json');
-        expect(result).to.not.include('Entries_Mandatory_feild');
-      });
-
-    fancy
-      .stdout({ print: process.env.PRINT === 'true' || false })
-      .stub(winston.transports, 'File', () => fsTransport)
-      .stub(winston, 'createLogger', createMockWinstonLogger)
+      .stub(fs, 'writeFileSync', () => {})
+      .stub(cliux, 'table', () => {})
+      .stub(ux.action, 'stop', () => {})
+      .stub(ux.action, 'start', () => {})
+      .stub(cliux, 'inquire', () => resolve(__dirname, 'mock', 'contents'))
+      .stub(AuditBaseCommand.prototype, 'scanAndFix', () => ({
+        missingCtRefs: {},
+        missingGfRefs: {},
+        missingEntryRefs: {},
+        missingCtRefsInExtensions: {},
+        missingCtRefsInWorkflow: {},
+        missingSelectFeild: {},
+        missingMandatoryFields: {},
+        missingTitleFields: {},
+        missingRefInCustomRoles: {},
+        missingEnvLocalesInAssets: {},
+        missingEnvLocalesInEntries: {},
+        missingFieldRules: {},
+        missingMultipleFields: {},
+      }))
+      .stub(AuditBaseCommand.prototype, 'showOutputOnScreenWorkflowsAndExtension', () => {})
       .stub(fs, 'createWriteStream', () => new PassThrough())
-      .stub(fs, 'mkdirSync', () => {})
-      .stub(fs, 'existsSync', () => true)
-      .it('should generate report file with correct spelling: Entries_Title_field (not feild)', async () => {
-        const writeFileSyncSpy = sinon.spy(fs, 'writeFileSync');
-        class CMD extends AuditBaseCommand {
-          async run() {
-            await this.init();
-            this.sharedConfig.reportPath = resolve(__dirname, 'mock', 'contents');
-            
-            await this.prepareReport('Entries_Title_field', {
-              entry1: {
-                name: 'Test Entry',
-                display_name: 'Title Field',
-                missingRefs: ['ref1'],
-              },
-            });
-            
-            const jsonCall = writeFileSyncSpy.getCalls().find(call => 
-              typeof call.args[0] === 'string' && call.args[0].includes('.json')
-            );
-            return jsonCall ? (jsonCall.args[0] as string) : undefined;
-          }
-        }
-
-        const result = await CMD.run([]);
-        writeFileSyncSpy.restore();
-        expect(result).to.include('Entries_Title_field.json');
-        expect(result).to.not.include('Entries_Title_feild');
+      .it('should print global summary at the end of start method', async () => {
+        await AuditCMD.run(['--data-dir', resolve(__dirname, 'mock', 'contents')]);
+        
+        expect(printGlobalSummarySpy.calledOnce).to.be.true;
       });
+   
   });
 
-  describe('Config - ReportTitleForEntries keys', () => {
-    it('should have correct spelling in ReportTitleForEntries config', () => {
-      const config = require('../../src/config').default;
+  describe('Spinner Message Conditional Display', () => {
+    let printSpy: sinon.SinonSpy | undefined;
+    let configHandlerGetStub: sinon.SinonStub | undefined;
+
+    beforeEach(() => {
+      // Clear any existing global summary
+      CLIProgressManager.clearGlobalSummary();
       
-      // Verify correct spelling (field, not feild)
-      expect(config.ReportTitleForEntries).to.have.property('Entries_Select_field');
-      expect(config.ReportTitleForEntries).to.have.property('Entries_Mandatory_field');
-      expect(config.ReportTitleForEntries).to.have.property('Entries_Title_field');
-      
-      // Verify old typo is not present
-      expect(config.ReportTitleForEntries).to.not.have.property('Entries_Select_feild');
-      expect(config.ReportTitleForEntries).to.not.have.property('Entries_Mandatory_feild');
-      expect(config.ReportTitleForEntries).to.not.have.property('Entries_Title_feild');
-      
-      // Verify values match keys
-      expect(config.ReportTitleForEntries.Entries_Select_field).to.equal('Entries_Select_field');
-      expect(config.ReportTitleForEntries.Entries_Mandatory_field).to.equal('Entries_Mandatory_field');
-      expect(config.ReportTitleForEntries.Entries_Title_field).to.equal('Entries_Title_field');
+      // Import print function from the correct path
+      const logModule = require('../../src/util/log');
+      printSpy = sinon.spy(logModule, 'print');
+      configHandlerGetStub = sinon.stub(configHandler, 'get');
     });
 
-    it('should have correct spelling in feild_level_modules array', () => {
-      const config = require('../../src/config').default;
+    afterEach(() => {
+      try {
+        // Clear global summary first
+        CLIProgressManager.clearGlobalSummary();
+      } catch (e) {
+        // Ignore errors
+      }
       
-      // Verify correct spelling in the array
-      expect(config.feild_level_modules).to.include('Entries_Select_field');
-      expect(config.feild_level_modules).to.include('Entries_Mandatory_field');
-      expect(config.feild_level_modules).to.include('Entries_Title_field');
+      try {
+        if (printSpy) {
+          printSpy.restore();
+        }
+      } catch (e) {
+        // Ignore errors
+      }
       
-      // Verify old typo is not present
-      expect(config.feild_level_modules).to.not.include('Entries_Select_feild');
-      expect(config.feild_level_modules).to.not.include('Entries_Mandatory_feild');
-      expect(config.feild_level_modules).to.not.include('Entries_Title_feild');
+      try {
+        if (configHandlerGetStub) {
+          configHandlerGetStub.restore();
+        }
+      } catch (e) {
+        // Ignore errors
+      }
+      
+      try {
+        // Restore all sinon stubs
+        sinon.restore();
+      } catch (e) {
+        // Ignore errors
+      }
     });
+
+    fancy
+      .stdout({ print: process.env.PRINT === 'true' || false })
+      .stub(winston.transports, 'File', () => fsTransport)
+      .stub(winston, 'createLogger', createMockWinstonLogger)
+      .stub(fs, 'mkdirSync', () => {})
+      .stub(fs, 'writeFileSync', () => {})
+      .stub(cliux, 'table', () => {})
+      .stub(ux.action, 'stop', () => {})
+      .stub(ux.action, 'start', () => {})
+      .stub(cliux, 'inquire', () => resolve(__dirname, 'mock', 'contents'))
+      .stub(Entries.prototype, 'run', () => ({ entry_1: {} }))
+      .stub(ContentType.prototype, 'run', () => ({ ct_1: {} }))
+      .stub(GlobalField.prototype, 'run', () => ({ gf_1: {} }))
+      .stub(Extensions.prototype, 'run', () => ({ ext_1: {} }))
+      .stub(Workflows.prototype, 'run', () => ({ wf_1: {} }))
+      .stub(CustomRoles.prototype, 'run', () => ({ cr_1: {} }))
+      .stub(Assets.prototype, 'run', () => ({ assets_1: {} }))
+      .stub(FieldRule.prototype, 'run', () => ({ fr_1: {} }))
+      .stub(AuditBaseCommand.prototype, 'showOutputOnScreenWorkflowsAndExtension', () => {})
+      .stub(fs, 'createWriteStream', () => new PassThrough())
+      .it('should hide spinner messages when showConsoleLogs is false', async function() {
+        this.timeout(5000); // Set timeout to 5 seconds
+        if (!configHandlerGetStub || !printSpy) {
+          throw new Error('Spies not initialized');
+        }
+        configHandlerGetStub.returns({ showConsoleLogs: false });
+        await AuditCMD.run(['--data-dir', resolve(__dirname, 'mock', 'contents')]);
+        
+        // Print should not be called for spinner messages when showConsoleLogs is false
+        const printCalls = printSpy.getCalls();
+        const spinnerCalls = printCalls.filter((call: any) => 
+          call.args[0]?.[0]?.message?.includes('scanning')
+        );
+        expect(spinnerCalls.length).to.equal(0);
+      });
+
+    fancy
+      .stdout({ print: process.env.PRINT === 'true' || false })
+      .stub(winston.transports, 'File', () => fsTransport)
+      .stub(winston, 'createLogger', createMockWinstonLogger)
+      .stub(fs, 'mkdirSync', () => {})
+      .stub(fs, 'writeFileSync', () => {})
+      .stub(cliux, 'table', () => {})
+      .stub(ux.action, 'stop', () => {})
+      .stub(ux.action, 'start', () => {})
+      .stub(cliux, 'inquire', () => resolve(__dirname, 'mock', 'contents'))
+      .stub(Entries.prototype, 'run', () => ({ entry_1: {} }))
+      .stub(ContentType.prototype, 'run', () => ({ ct_1: {} }))
+      .stub(GlobalField.prototype, 'run', () => ({ gf_1: {} }))
+      .stub(Extensions.prototype, 'run', () => ({ ext_1: {} }))
+      .stub(Workflows.prototype, 'run', () => ({ wf_1: {} }))
+      .stub(CustomRoles.prototype, 'run', () => ({ cr_1: {} }))
+      .stub(Assets.prototype, 'run', () => ({ assets_1: {} }))
+      .stub(FieldRule.prototype, 'run', () => ({ fr_1: {} }))
+      .stub(AuditBaseCommand.prototype, 'showOutputOnScreenWorkflowsAndExtension', () => {})
+      .stub(fs, 'createWriteStream', () => new PassThrough())
+      .it('should show spinner messages when showConsoleLogs is true', async function() {
+        this.timeout(5000); // Set timeout to 5 seconds
+        if (!configHandlerGetStub || !printSpy) {
+          throw new Error('Spies not initialized');
+        }
+        configHandlerGetStub.returns({ showConsoleLogs: true });
+        await AuditCMD.run(['--data-dir', resolve(__dirname, 'mock', 'contents')]);
+        
+        // Print should be called for spinner messages when showConsoleLogs is true
+        const printCalls = printSpy.getCalls();
+        const spinnerCalls = printCalls.filter((call: any) => 
+          call.args[0]?.[0]?.message?.includes('scanning')
+        );
+        expect(spinnerCalls.length).to.be.greaterThan(0);
+      });
   });
 });

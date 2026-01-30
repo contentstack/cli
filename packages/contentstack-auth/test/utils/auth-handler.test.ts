@@ -3,8 +3,10 @@ import * as sinon from 'sinon';
 import { authHandler, interactive } from '../../src/utils';
 import { CLIError, cliux } from '@contentstack/cli-utilities';
 import { User } from '../../src/interfaces';
-// @ts-ignore
-import * as config from '../config.json';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
+const config = JSON.parse(readFileSync(join(__dirname, '../config.json'), "utf-8"));
 
 const user: User = { email: '***REMOVED***', authtoken: 'testtoken' };
 const credentials = { email: '***REMOVED***', password: config.password };
@@ -30,7 +32,8 @@ describe('Auth Handler', function () {
               return Promise.reject(new Error('Invalid 2FA code'));
             }
           } else {
-            return Promise.resolve({ error_code: 294 });
+            // Handler expects 2FA required as a rejection (catch path checks error.errorCode === 294)
+            return Promise.reject({ errorCode: 294 });
           }
         }
         return Promise.resolve({ user });

@@ -16,16 +16,15 @@ describe('ExportExtensions', () => {
           find: sinon.stub().resolves({
             items: [
               { uid: 'ext-1', title: 'Extension 1' },
-              { uid: 'ext-2', title: 'Extension 2' }
+              { uid: 'ext-2', title: 'Extension 2' },
             ],
-            count: 2
-          })
-        })
-      })
+            count: 2,
+          }),
+        }),
+      }),
     };
 
     mockExportConfig = {
-      contentVersion: 1,
       versioning: false,
       host: 'https://api.contentstack.io',
       developerHubUrls: {},
@@ -41,7 +40,7 @@ describe('ExportExtensions', () => {
         sessionId: 'session-123',
         apiKey: 'test-api-key',
         orgId: 'org-123',
-        authenticationMethod: 'Basic Auth'
+        authenticationMethod: 'Basic Auth',
       },
       cliLogsPath: '/test/logs',
       forceStopMarketplaceAppsPrompt: false,
@@ -50,7 +49,7 @@ describe('ExportExtensions', () => {
         name: 'us',
         cma: 'https://api.contentstack.io',
         cda: 'https://cdn.contentstack.io',
-        uiHost: 'https://app.contentstack.com'
+        uiHost: 'https://app.contentstack.com',
       },
       skipStackSettings: false,
       skipDependencies: false,
@@ -62,22 +61,21 @@ describe('ExportExtensions', () => {
       writeConcurrency: 5,
       developerHubBaseUrl: '',
       marketplaceAppEncryptionKey: '',
-      onlyTSModules: [],
       modules: {
         types: ['extensions'],
         extensions: {
           dirName: 'extensions',
           fileName: 'extensions.json',
           limit: 100,
-          invalidKeys: []
-        }
-      }
+          invalidKeys: [],
+        },
+      },
     } as any;
 
     exportExtensions = new ExportExtensions({
       exportConfig: mockExportConfig,
       stackAPIClient: mockStackClient,
-      moduleName: 'extensions'
+      moduleName: 'extensions',
     });
 
     sinon.stub(FsUtility.prototype, 'writeFile').resolves();
@@ -106,20 +104,20 @@ describe('ExportExtensions', () => {
     it('should fetch and process extensions correctly', async () => {
       const extensions = [
         { uid: 'ext-1', title: 'Extension 1', SYS_ACL: 'test' },
-        { uid: 'ext-2', title: 'Extension 2', SYS_ACL: 'test' }
+        { uid: 'ext-2', title: 'Extension 2', SYS_ACL: 'test' },
       ];
 
       mockStackClient.extension.returns({
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: extensions,
-            count: 2
-          })
-        })
+            count: 2,
+          }),
+        }),
       });
 
       await exportExtensions.getExtensions();
-      
+
       // Verify extensions were processed
       expect(Object.keys(exportExtensions.extensions).length).to.equal(2);
       expect(exportExtensions.extensions['ext-1']).to.exist;
@@ -137,20 +135,20 @@ describe('ExportExtensions', () => {
             if (callCount === 1) {
               return Promise.resolve({
                 items: Array(100).fill({ uid: 'test', title: 'Test' }),
-                count: 150
+                count: 150,
               });
             } else {
               return Promise.resolve({
                 items: Array(50).fill({ uid: 'test2', title: 'Test2' }),
-                count: 150
+                count: 150,
               });
             }
-          })
-        })
+          }),
+        }),
       });
 
       await exportExtensions.getExtensions();
-      
+
       // Verify multiple calls were made for recursive fetching
       expect(callCount).to.be.greaterThan(1);
     });
@@ -158,12 +156,12 @@ describe('ExportExtensions', () => {
     it('should handle API errors gracefully', async () => {
       mockStackClient.extension.returns({
         query: sinon.stub().returns({
-          find: sinon.stub().rejects(new Error('API Error'))
-        })
+          find: sinon.stub().rejects(new Error('API Error')),
+        }),
       });
 
       await exportExtensions.getExtensions();
-      
+
       // Verify method completes without throwing
       expect(exportExtensions.extensions).to.exist;
     });
@@ -173,14 +171,14 @@ describe('ExportExtensions', () => {
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: [],
-            count: 0
-          })
-        })
+            count: 0,
+          }),
+        }),
       });
 
       const initialCount = Object.keys(exportExtensions.extensions).length;
       await exportExtensions.getExtensions();
-      
+
       // Verify no new extensions were added
       expect(Object.keys(exportExtensions.extensions).length).to.equal(initialCount);
     });
@@ -190,14 +188,14 @@ describe('ExportExtensions', () => {
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: null,
-            count: 0
-          })
-        })
+            count: 0,
+          }),
+        }),
       });
 
       const initialCount = Object.keys(exportExtensions.extensions).length;
       await exportExtensions.getExtensions();
-      
+
       // Verify no processing occurred with null items
       expect(Object.keys(exportExtensions.extensions).length).to.equal(initialCount);
     });
@@ -206,23 +204,23 @@ describe('ExportExtensions', () => {
   describe('start() method', () => {
     it('should complete full export flow and write files', async () => {
       const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
-      
+
       const extensions = [
         { uid: 'ext-1', title: 'Extension 1' },
-        { uid: 'ext-2', title: 'Extension 2' }
+        { uid: 'ext-2', title: 'Extension 2' },
       ];
 
       mockStackClient.extension.returns({
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: extensions,
-            count: 2
-          })
-        })
+            count: 2,
+          }),
+        }),
       });
 
       await exportExtensions.start();
-      
+
       // Verify extensions were processed
       expect(Object.keys(exportExtensions.extensions).length).to.equal(2);
       expect(exportExtensions.extensions['ext-1']).to.exist;
@@ -238,14 +236,14 @@ describe('ExportExtensions', () => {
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: [],
-            count: 0
-          })
-        })
+            count: 0,
+          }),
+        }),
       });
 
       exportExtensions.extensions = {};
       await exportExtensions.start();
-      
+
       // Verify writeFile was NOT called when extensions are empty
       expect(writeFileStub.called).to.be.false;
     });
@@ -255,7 +253,7 @@ describe('ExportExtensions', () => {
     it('should sanitize extension attributes and remove SYS_ACL', () => {
       const extensions = [
         { uid: 'ext-1', title: 'Extension 1', SYS_ACL: 'remove' },
-        { uid: 'ext-2', title: 'Extension 2', SYS_ACL: 'remove' }
+        { uid: 'ext-2', title: 'Extension 2', SYS_ACL: 'remove' },
       ];
 
       exportExtensions.sanitizeAttribs(extensions);
@@ -265,9 +263,7 @@ describe('ExportExtensions', () => {
     });
 
     it('should handle extensions without title field', () => {
-      const extensions = [
-        { uid: 'ext-1', SYS_ACL: 'remove' }
-      ];
+      const extensions = [{ uid: 'ext-1', SYS_ACL: 'remove' }];
 
       exportExtensions.sanitizeAttribs(extensions);
 
@@ -284,4 +280,3 @@ describe('ExportExtensions', () => {
     });
   });
 });
-

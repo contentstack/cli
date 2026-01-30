@@ -9,4 +9,11 @@ export interface LogType {
 
 export interface Context {
   module: string;
+  userId: string | undefined;
+  email?: string | undefined;
+  sessionId: string | undefined;
+  clientId?: string | undefined;
+  apiKey: string;
+  orgId: string;
+  authMethod?: string;
 }

@@ -1,14 +1,16 @@
 import merge from 'merge';
 import * as path from 'path';
-import { omit, filter, includes, isArray } from 'lodash';
 import { configHandler, isAuthenticated, cliux, sanitizePath } from '@contentstack/cli-utilities';
 import defaultConfig from '../config';
-import { readFile, fileExistsSync } from './file-helper';
 import { askContentDir, askAPIKey, askSelectedModules } from './interactive';
 import login from './login-handler';
 import { ImportConfig } from '../types';
 
 const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
+  // Set progress supported module FIRST, before any log calls
+  // This ensures the logger respects the showConsoleLogs setting correctly
+  configHandler.set('log.progressSupportedModule', 'import-setup');
+
   let config: ImportConfig = merge({}, defaultConfig);
   // setup the config
   // if (importCmdFlags['config']) {
@@ -20,7 +22,9 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   //   config = merge.recursive(config, externalConfig);
   // }
 
-  config.contentDir = sanitizePath(importCmdFlags['data'] || importCmdFlags['data-dir'] || config.data || (await askContentDir()));
+  config.contentDir = sanitizePath(
+    importCmdFlags['data'] || importCmdFlags['data-dir'] || config.data || (await askContentDir()),
+  );
   const pattern = /[*$%#<>{}!&?]/g;
   if (pattern.test(config.contentDir)) {
     cliux.print(`\nPlease enter a directory path without special characters: (*,&,{,},[,],$,%,<,>,?,!)`, {
@@ -32,12 +36,6 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   config.contentDir = path.resolve(config.contentDir);
   //Note to support the old key
   config.data = config.contentDir;
-  if (fileExistsSync(path.join(config.contentDir, 'export-info.json'))) {
-    config.contentVersion =
-      ((await readFile(path.join(config.contentDir, 'export-info.json'))) || {}).contentVersion || 2;
-  } else {
-    config.contentVersion = 1;
-  }
 
   const managementTokenAlias = importCmdFlags['management-token-alias'] || importCmdFlags['alias'];
 

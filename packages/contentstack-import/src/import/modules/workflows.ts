@@ -7,10 +7,17 @@ import filter from 'lodash/filter';
 import isEmpty from 'lodash/isEmpty';
 import cloneDeep from 'lodash/cloneDeep';
 import findIndex from 'lodash/findIndex';
+import { log, handleAndLogError } from '@contentstack/cli-utilities';
 
 import BaseClass, { ApiOptions } from './base-class';
-import { fsUtil, fileHelper } from '../../utils';
-import { log, handleAndLogError } from '@contentstack/cli-utilities';
+import {
+  fsUtil,
+  fileHelper,
+  PROCESS_NAMES,
+  MODULE_CONTEXTS,
+  PROCESS_STATUS,
+  MODULE_NAMES,
+} from '../../utils';
 import { ModuleClassParams, WorkflowConfig } from '../../types';
 
 export default class ImportWorkflows extends BaseClass {
@@ -28,7 +35,8 @@ export default class ImportWorkflows extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.importConfig.context.module = 'workflows';
+    this.importConfig.context.module = MODULE_CONTEXTS.WORKFLOWS;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.WORKFLOWS];
     this.workflowsConfig = importConfig.modules.workflows;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'workflows');
     this.workflowsFolderPath = join(this.importConfig.backupDir, this.workflowsConfig.dirName);
@@ -47,60 +55,49 @@ export default class ImportWorkflows extends BaseClass {
    * @returns {Promise<void>} Promise<void>
    */
   async start(): Promise<void> {
-    log.debug('Checking for workflows folder existence', this.importConfig.context);
+    try {
+      log.debug('Starting workflows import process...', this.importConfig.context);
 
-    //Step1 check folder exists or not
-    if (fileHelper.fileExistsSync(this.workflowsFolderPath)) {
-      log.debug(`Found workflows folder: ${this.workflowsFolderPath}`, this.importConfig.context);
-      this.workflows = fsUtil.readFile(join(this.workflowsFolderPath, this.workflowsConfig.fileName), true) as Record<
-        string,
-        unknown
-      >;
-      const workflowCount = Object.keys(this.workflows || {}).length;
-      log.debug(`Loaded ${workflowCount} workflow items from file`, this.importConfig.context);
-    } else {
-      log.info(`No Workflows Found - '${this.workflowsFolderPath}'`, this.importConfig.context);
-      return;
+      const [workflowsCount] = await this.analyzeWorkflows();
+
+      if (workflowsCount === 0) {
+        log.info(`No Workflows Found - '${this.workflowsFolderPath}'`, this.importConfig.context);
+        return;
+      }
+
+      const progress = this.createNestedProgress(this.currentModuleName);
+      progress.addProcess(PROCESS_NAMES.GET_ROLES, 1);
+      progress.addProcess(PROCESS_NAMES.WORKFLOWS_CREATE, workflowsCount);
+
+      await this.prepareWorkflowMapper();
+
+      // Step 1: Fetch and setup roles
+      progress
+        .startProcess(PROCESS_NAMES.GET_ROLES)
+        .updateStatus(PROCESS_STATUS[PROCESS_NAMES.GET_ROLES].FETCHING, PROCESS_NAMES.GET_ROLES);
+      log.info('Fetching all roles for workflow processing', this.importConfig.context);
+      await this.getRoles();
+      progress.completeProcess(PROCESS_NAMES.GET_ROLES, true);
+
+      // Step 2: Import workflows
+      progress
+        .startProcess(PROCESS_NAMES.WORKFLOWS_CREATE)
+        .updateStatus(
+          PROCESS_STATUS[PROCESS_NAMES.WORKFLOWS_CREATE].IMPORTING,
+          PROCESS_NAMES.WORKFLOWS_CREATE,
+        );
+      log.info('Starting workflows import process', this.importConfig.context);
+      await this.importWorkflows();
+      progress.completeProcess(PROCESS_NAMES.WORKFLOWS_CREATE, true);
+
+      this.processWorkflowResults();
+
+      this.completeProgress(true);
+      log.success('Workflows have been imported successfully!', this.importConfig.context);
+    } catch (error) {
+      this.completeProgress(false, error?.message || 'Workflows import failed');
+      handleAndLogError(error, { ...this.importConfig.context });
     }
-
-    //create workflows in mapper directory
-    log.debug('Creating workflows mapper directory', this.importConfig.context);
-    await fsUtil.makeDirectory(this.mapperDirPath);
-    log.debug('Loading existing workflow UID mappings', this.importConfig.context);
-    this.workflowUidMapper = fileHelper.fileExistsSync(this.workflowUidMapperPath)
-      ? (fsUtil.readFile(join(this.workflowUidMapperPath), true) as Record<string, unknown>)
-      : {};
-
-    if (Object.keys(this.workflowUidMapper)?.length > 0) {
-      const workflowUidCount = Object.keys(this.workflowUidMapper || {}).length;
-      log.debug(`Loaded existing workflow UID data: ${workflowUidCount} items`, this.importConfig.context);
-    } else {
-      log.debug('No existing workflow UID mappings found', this.importConfig.context);
-    }
-
-    if (this.workflows === undefined || isEmpty(this.workflows)) {
-      log.info('No Workflow Found', this.importConfig.context);
-      return;
-    }
-
-    //fetch all roles
-    log.debug('Fetching all roles for workflow processing', this.importConfig.context);
-    await this.getRoles();
-    log.debug('Starting workflow import process', this.importConfig.context);
-    await this.importWorkflows();
-
-    log.debug('Processing workflow import results', this.importConfig.context);
-    if (this.createdWorkflows?.length) {
-      fsUtil.writeFile(this.createdWorkflowsPath, this.createdWorkflows);
-      log.debug(`Written ${this.createdWorkflows.length} successful workflows to file`, this.importConfig.context);
-    }
-
-    if (this.failedWebhooks?.length) {
-      fsUtil.writeFile(this.failedWorkflowsPath, this.failedWebhooks);
-      log.debug(`Written ${this.failedWebhooks.length} failed workflows to file`, this.importConfig.context);
-    }
-
-    log.success('Workflows have been imported successfully!', this.importConfig.context);
   }
 
   async getRoles(): Promise<void> {
@@ -157,6 +154,12 @@ export default class ImportWorkflows extends BaseClass {
           response.workflow_stages,
           oldWorkflowStages,
         ).catch((error) => {
+          this.progressManager?.tick(
+            false,
+            `workflow: ${name || uid}`,
+            error?.message || 'Failed to update next available stages',
+            PROCESS_NAMES.WORKFLOWS_CREATE,
+          );
           handleAndLogError(error, { ...this.importConfig.context, name }, `Workflow '${name}' update failed`);
         });
 
@@ -168,6 +171,7 @@ export default class ImportWorkflows extends BaseClass {
 
       this.createdWorkflows.push(response);
       this.workflowUidMapper[uid] = response.uid;
+      this.progressManager?.tick(true, `workflow: ${name || uid}`, null, PROCESS_NAMES.WORKFLOWS_CREATE);
       log.success(`Workflow '${name}' imported successfully`, this.importConfig.context);
       log.debug(`Workflow UID mapping: ${uid} → ${response.uid}`, this.importConfig.context);
       fsUtil.writeFile(this.workflowUidMapperPath, this.workflowUidMapper);
@@ -178,11 +182,24 @@ export default class ImportWorkflows extends BaseClass {
       const { name, uid } = apiData;
       log.debug(`Workflow '${name}' (${uid}) failed to import`, this.importConfig.context);
       const workflowExists = err?.errors?.name || err?.errors?.['workflow.name'];
+
       if (workflowExists) {
+        this.progressManager?.tick(
+          true,
+          `workflow: ${name || uid} (already exists)`,
+          null,
+          PROCESS_NAMES.WORKFLOWS_CREATE,
+        );
         log.info(`Workflow '${name}' already exists`, this.importConfig.context);
       } else {
         this.failedWebhooks.push(apiData);
-        if (error.errors?.['workflow_stages.0.users']) {
+        this.progressManager?.tick(
+          false,
+          `workflow: ${name || uid}`,
+          error?.message || 'Failed to import workflow',
+          PROCESS_NAMES.WORKFLOWS_CREATE,
+        );
+        if (error?.errors && error.errors['workflow_stages.0.users']) {
           log.error(
             "Failed to import Workflows as you've specified certain roles in the Stage transition and access rules section. We currently don't import roles to the stack.",
             this.importConfig.context,
@@ -250,11 +267,19 @@ export default class ImportWorkflows extends BaseClass {
    */
   serializeWorkflows(apiOptions: ApiOptions): ApiOptions {
     let { apiData: workflow } = apiOptions;
+    log.debug(`Serializing workflow: ${workflow.name} (${workflow.uid})`, this.importConfig.context);
 
     if (this.workflowUidMapper.hasOwnProperty(workflow.uid)) {
       log.info(
         `Workflow '${workflow.name}' already exists. Skipping it to avoid duplicates!`,
         this.importConfig.context,
+      );
+      log.debug(`Skipping workflow serialization for: ${workflow.uid}`, this.importConfig.context);
+      this.progressManager?.tick(
+        true,
+        `workflow: ${workflow.name} (skipped - already exists)`,
+        null,
+        PROCESS_NAMES.WORKFLOWS_CREATE,
       );
       apiOptions.entity = undefined;
     } else {
@@ -277,6 +302,7 @@ export default class ImportWorkflows extends BaseClass {
         }
       }
 
+      log.debug(`Workflow serialization completed: ${workflow.name}`, this.importConfig.context);
       apiOptions.apiData = workflow;
     }
     return apiOptions;
@@ -287,9 +313,11 @@ export default class ImportWorkflows extends BaseClass {
       const { name } = apiData;
       this.updateRoleData({ workflowUid, stageIndex, roleData: apiData });
       this.roleNameMap[name] = response?.uid;
+      log.debug(`Custom role '${name}' created successfully for workflow`, this.importConfig.context);
     };
 
     const onReject = ({ error, apiData: { name } = { name: '' } }: any) => {
+      log.debug(`Custom role '${name}' creation failed`, this.importConfig.context);
       handleAndLogError(error, { ...this.importConfig.context, name }, `Failed to create custom roles '${name}'`);
     };
 
@@ -301,6 +329,10 @@ export default class ImportWorkflows extends BaseClass {
       }
       if (stage?.SYS_ACL?.roles?.uids?.length) {
         const apiContent = stage.SYS_ACL.roles.uids;
+        log.debug(
+          `Creating ${apiContent.length} custom roles for workflow stage ${stageIndex}`,
+          this.importConfig.context,
+        );
         await this.makeConcurrentCall(
           {
             apiContent,
@@ -333,6 +365,9 @@ export default class ImportWorkflows extends BaseClass {
       apiData: roleData,
       additionalInfo: { workflowUid, stageIndex },
     } = apiOptions;
+
+    log.debug(`Serializing custom role: ${roleData.name}`, this.importConfig.context);
+
     if (!this.roleNameMap[roleData.name]) {
       // rules.branch is required to create custom roles.
       const branchRuleExists = find(roleData.rules, (rule: any) => rule.module === 'branch');
@@ -342,9 +377,11 @@ export default class ImportWorkflows extends BaseClass {
           branches: ['main'],
           acl: { read: true },
         });
+        log.debug(`Added branch rule to custom role: ${roleData.name}`, this.importConfig.context);
       }
       apiOptions = roleData;
     } else {
+      log.debug(`Custom role '${roleData.name}' already exists, skipping creation`, this.importConfig.context);
       apiOptions.entity = undefined;
       this.updateRoleData({ workflowUid, stageIndex, roleData });
     }
@@ -357,5 +394,66 @@ export default class ImportWorkflows extends BaseClass {
     const roles = workflowStage[stageIndex].SYS_ACL.roles.uids;
     const index = findIndex(roles, ['uid', roleData.uid]);
     roles[index >= 0 ? index : roles.length] = this.roleNameMap[roleData.name];
+    log.debug(`Updated role data for workflow ${workflowUid}, stage ${stageIndex}`, this.importConfig.context);
+  }
+
+  private async analyzeWorkflows(): Promise<[number]> {
+    return this.withLoadingSpinner('WORKFLOWS: Analyzing import data...', async () => {
+      log.debug('Checking for workflows folder existence', this.importConfig.context);
+
+      if (!fileHelper.fileExistsSync(this.workflowsFolderPath)) {
+        log.info(`No Workflows Found - '${this.workflowsFolderPath}'`, this.importConfig.context);
+        return [0];
+      }
+
+      log.debug(`Found workflows folder: ${this.workflowsFolderPath}`, this.importConfig.context);
+      this.workflows = fsUtil.readFile(join(this.workflowsFolderPath, this.workflowsConfig.fileName), true) as Record<
+        string,
+        unknown
+      >;
+
+      if (!this.workflows || isEmpty(this.workflows)) {
+        log.info(
+          `No workflows found in file - '${join(this.workflowsFolderPath, this.workflowsConfig.fileName)}'`,
+          this.importConfig.context,
+        );
+        return [0];
+      }
+
+      const count = Object.keys(this.workflows || {}).length;
+      log.debug(`Loaded ${count} workflow items from file`, this.importConfig.context);
+      return [count];
+    });
+  }
+
+  private async prepareWorkflowMapper(): Promise<void> {
+    log.debug('Creating workflows mapper directory', this.importConfig.context);
+    await fsUtil.makeDirectory(this.mapperDirPath);
+
+    log.debug('Loading existing workflow UID mappings', this.importConfig.context);
+    this.workflowUidMapper = fileHelper.fileExistsSync(this.workflowUidMapperPath)
+      ? (fsUtil.readFile(join(this.workflowUidMapperPath), true) as Record<string, unknown>) || {}
+      : {};
+
+    const count = Object.keys(this.workflowUidMapper || {}).length;
+    if (count > 0) {
+      log.debug(`Loaded existing workflow UID data: ${count} items`, this.importConfig.context);
+    } else {
+      log.debug('No existing workflow UID mappings found', this.importConfig.context);
+    }
+  }
+
+  private processWorkflowResults() {
+    log.debug('Processing workflow import results', this.importConfig.context);
+
+    if (this.createdWorkflows?.length) {
+      fsUtil.writeFile(this.createdWorkflowsPath, this.createdWorkflows);
+      log.debug(`Written ${this.createdWorkflows.length} successful workflows to file`, this.importConfig.context);
+    }
+
+    if (this.failedWebhooks?.length) {
+      fsUtil.writeFile(this.failedWorkflowsPath, this.failedWebhooks);
+      log.debug(`Written ${this.failedWebhooks.length} failed workflows to file`, this.importConfig.context);
+    }
   }
 }

@@ -1,8 +1,9 @@
-const { describe, it, afterEach } = require('mocha');
+const { describe, it, afterEach, beforeEach } = require('mocha');
 const EntriesPublishOnlyUnpublished = require('../../../../src/commands/cm/entries/publish-only-unpublished');
 const sinon = require('sinon');
 const { config } = require('dotenv');
 const { expect } = require('chai');
+const { configHandler } = require('@contentstack/cli-utilities');
 
 config();
 
@@ -12,9 +13,29 @@ const contentTypes = ['ct1', 'ct2'];
 
 describe('EntriesPublishOnlyUnpublished', () => {
   let runStub;
+  let configHandlerGetStub;
+
+  beforeEach(() => {
+    // Stub configHandler.get to configure region
+    // Region is required for cmaHost property in Command base class
+    configHandlerGetStub = sinon.stub(configHandler, 'get').callsFake((key) => {
+      if (key === 'region') {
+        return {
+          cma: 'api.contentstack.io',
+          cda: 'cdn.contentstack.io',
+          uiHost: 'app.contentstack.com',
+          developerHubUrl: 'developer.contentstack.com',
+          launchHubUrl: 'launch.contentstack.com',
+          personalizeUrl: 'personalize.contentstack.com',
+        };
+      }
+      return undefined;
+    });
+  });
 
   afterEach(() => {
     if (runStub && runStub.restore) runStub.restore();
+    if (configHandlerGetStub && configHandlerGetStub.restore) configHandlerGetStub.restore();
   });
 
   it('should run the command all the required parameters', async () => {

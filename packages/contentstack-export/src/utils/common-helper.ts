@@ -4,7 +4,6 @@
  * MIT Licensed
  */
 
-import * as path from 'path';
 import promiseLimit from 'promise-limit';
 import { isAuthenticated, getLogPath, sanitizePath } from '@contentstack/cli-utilities';
 
@@ -16,13 +15,13 @@ export const validateConfig = function (config: ExternalConfig) {
     throw new Error('Host/CDN end point is missing from config');
   }
 
-  if (config.email && config.password && !config.access_token && !config.source_stack) {
+  if (config.email && config.password && !config.access_token && !config.apiKey) {
     throw new Error('Kindly provide access_token or api_token');
   } else if (
     !config.email &&
     !config.password &&
     !config.management_token &&
-    config.source_stack &&
+    config.apiKey &&
     !config.access_token &&
     !isAuthenticated()
   ) {
@@ -31,7 +30,7 @@ export const validateConfig = function (config: ExternalConfig) {
     config.email &&
     config.password &&
     !config.access_token &&
-    config.source_stack &&
+    config.apiKey &&
     !config.management_token &&
     !isAuthenticated()
   ) {
@@ -78,13 +77,4 @@ export const executeTask = function (
       return limit(() => handler(task));
     }),
   );
-};
-
-// Note: we can add more useful details in meta file
-export const writeExportMetaFile = (exportConfig: ExportConfig, metaFilePath?: string) => {
-  const exportMeta = {
-    contentVersion: exportConfig.contentVersion,
-    logsPath: getLogPath(),
-  };
-  fsUtil.writeFile(path.join(sanitizePath(metaFilePath || exportConfig.exportDir), 'export-info.json'), exportMeta);
 };

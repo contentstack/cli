@@ -50,10 +50,14 @@ describe('base-branch command', function () {
   });
 
   it('Get base-branch: should print base-branch', async function () {
+    // Set up config data so the command has something to display
+    config.set('baseBranch', { 'test-api-key': 'test-branch' });
     const branchStub = stub(cliux, 'table').callsFake(() => {});
     await BranchGetCommand.run([]);
     expect(branchStub.calledOnce).to.be.true;
     branchStub.restore();
+    // Clean up
+    config.delete('baseBranch');
   });
 });
 

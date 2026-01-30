@@ -16,7 +16,7 @@ const login = async (config: ExternalConfig): Promise<any> => {
     const response = await client.login({ email: config.email, password: config.password }).catch(Promise.reject);
     if (response?.user?.authtoken) {
       config.headers = {
-        api_key: config.source_stack,
+        api_key: config.apiKey,
         access_token: config.access_token,
         authtoken: response.user.authtoken,
         'X-User-Agent': 'contentstack-export/v',
@@ -28,7 +28,7 @@ const login = async (config: ExternalConfig): Promise<any> => {
       log.error(`Failed to log in!`, config.context);
       process.exit(1);
     }
-  } else if (!config.email && !config.password && config.source_stack && config.access_token) {
+  } else if (!config.email && !config.password && config.apiKey && config.access_token) {
     log.info(
       `Content types, entries, assets, labels, global fields, extensions modules will be exported`,
       config.context,
@@ -38,7 +38,7 @@ const login = async (config: ExternalConfig): Promise<any> => {
       config.context,
     );
     config.headers = {
-      api_key: config.source_stack,
+      api_key: config.apiKey,
       access_token: config.access_token,
       'X-User-Agent': 'contentstack-export/v',
     };

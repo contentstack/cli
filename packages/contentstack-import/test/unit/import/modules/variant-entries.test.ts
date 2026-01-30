@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { ImportConfig } from '../../../../src/types';
 
-// Mock @contentstack/cli-variants
 const mockImport = {
   VariantEntries: sinon.stub()
 };
@@ -11,7 +10,6 @@ const mockVariantsModule = {
   Import: mockImport
 };
 
-// Mock utility functions
 const mockFsUtil = {
   readFile: sinon.stub(),
   makeDirectory: sinon.stub().resolves(),
@@ -37,10 +35,23 @@ const mockUtilsModule = {
   lookupExtension: mockHelperMethods.lookupExtension,
   restoreJsonRteEntryRefs: mockHelperMethods.restoreJsonRteEntryRefs,
   fsUtil: mockFsUtil,
-  fileHelper: mockFileHelper
+  fileHelper: mockFileHelper,
+  MODULE_CONTEXTS: {
+    VARIANT_ENTRIES: 'variant-entries'
+  },
+  MODULE_NAMES: {
+    'variant-entries': 'Variant Entries'
+  },
+  PROCESS_NAMES: {
+    VARIANT_ENTRIES_IMPORT: 'Variant Entries Import'
+  },
+  PROCESS_STATUS: {
+    'Variant Entries Import': {
+      IMPORTING: 'Importing Variant Entries'
+    }
+  }
 };
 
-// Mock the require cache
 const Module = require('node:module');
 const originalRequire = Module.prototype.require;
 Module.prototype.require = function(id: string) {
@@ -56,7 +67,6 @@ Module.prototype.require = function(id: string) {
 // Now import the module while require mock is active
 const ImportVariantEntries = require('../../../../src/import/modules/variant-entries').default;
 
-// Restore original require immediately after import to avoid affecting other tests
 Module.prototype.require = originalRequire;
 
 describe('ImportVariantEntries', () => {
@@ -64,9 +74,8 @@ describe('ImportVariantEntries', () => {
   let mockImportConfig: ImportConfig;
 
   beforeEach(() => {
-    // Setup mock ImportConfig
     mockImportConfig = {
-      data: '/test/backup',
+      contentDir: '/test/backup',
       apiKey: 'test-api-key',
       context: {
         command: 'cm:stacks:import',
@@ -194,14 +203,29 @@ describe('ImportVariantEntries', () => {
         importConfig: mockImportConfig
       });
 
-      // Setup successful mocks
-      mockFileHelper.fileExistsSync.returns(true);
+      // analyzeVariantEntries checks for both project file and data file
+      // fileExistsSync is called: 1) project file, 2) data file
+      mockFileHelper.fileExistsSync.returns(true); // Both files exist
       mockFsUtil.readFile.returns({ uid: 'project-123', name: 'Test Project' });
       
       mockVariantEntriesInstance = {
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       };
       mockImport.VariantEntries.returns(mockVariantEntriesInstance);
+      
+      sinon.stub(importVariantEntries as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub()
+      };
+      sinon.stub(importVariantEntries as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importVariantEntries as any, 'completeProgress').resolves();
     });
 
     it('should successfully import variant entries with valid project', async () => {
@@ -245,7 +269,7 @@ describe('ImportVariantEntries', () => {
       const constructorArgs = mockImport.VariantEntries.getCall(0).args[0];
       
       // Verify original config properties are preserved
-      expect(constructorArgs.data).to.equal('/test/backup');
+      expect(constructorArgs.contentDir).to.equal('/test/backup');
       expect(constructorArgs.apiKey).to.equal('test-api-key');
       expect(constructorArgs.context).to.deep.equal(mockImportConfig.context);
       
@@ -274,11 +298,29 @@ describe('ImportVariantEntries', () => {
     });
 
     it('should handle error when Import.VariantEntries constructor throws', async () => {
-      mockFileHelper.fileExistsSync.returns(true);
+      importVariantEntries = new ImportVariantEntries({ 
+        importConfig: mockImportConfig
+      });
+      
+      // analyzeVariantEntries checks for both project file and data file
+      mockFileHelper.fileExistsSync.returns(true); // Both files exist
       mockFsUtil.readFile.returns({ uid: 'project-123', name: 'Test Project' });
       
       const constructorError = new Error('VariantEntries constructor error');
       mockImport.VariantEntries.throws(constructorError);
+      
+      sinon.stub(importVariantEntries as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub()
+      };
+      sinon.stub(importVariantEntries as any, 'createNestedProgress').returns(mockProgress);
+      const completeProgressStub = sinon.stub(importVariantEntries as any, 'completeProgress').resolves();
 
       await importVariantEntries.start();
 
@@ -286,17 +328,37 @@ describe('ImportVariantEntries', () => {
       expect(mockFileHelper.fileExistsSync.called).to.be.true;
       expect(mockFsUtil.readFile.called).to.be.true;
       expect(mockImport.VariantEntries.called).to.be.true;
+      expect(completeProgressStub.calledWith(false, sinon.match.string)).to.be.true;
     });
 
     it('should handle error when variantEntriesImporter.import() rejects', async () => {
-      mockFileHelper.fileExistsSync.returns(true);
+      importVariantEntries = new ImportVariantEntries({ 
+        importConfig: mockImportConfig
+      });
+      
+      // analyzeVariantEntries checks for both project file and data file
+      mockFileHelper.fileExistsSync.returns(true); // Both files exist
       mockFsUtil.readFile.returns({ uid: 'project-123', name: 'Test Project' });
       
       const importError = new Error('Import failed');
       const mockVariantEntriesInstance = {
-        import: sinon.stub().rejects(importError)
+        import: sinon.stub().rejects(importError),
+        setParentProgressManager: sinon.stub()
       };
       mockImport.VariantEntries.returns(mockVariantEntriesInstance);
+      
+      sinon.stub(importVariantEntries as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub()
+      };
+      sinon.stub(importVariantEntries as any, 'createNestedProgress').returns(mockProgress);
+      const completeProgressStub = sinon.stub(importVariantEntries as any, 'completeProgress').resolves();
 
       await importVariantEntries.start();
 
@@ -305,6 +367,7 @@ describe('ImportVariantEntries', () => {
       expect(mockFsUtil.readFile.called).to.be.true;
       expect(mockImport.VariantEntries.called).to.be.true;
       expect(mockVariantEntriesInstance.import.called).to.be.true;
+      expect(completeProgressStub.calledWith(false, sinon.match.string)).to.be.true;
     });
   });
 
@@ -313,13 +376,28 @@ describe('ImportVariantEntries', () => {
       importVariantEntries = new ImportVariantEntries({ 
         importConfig: mockImportConfig
       });
-      mockFileHelper.fileExistsSync.returns(true);
+      // analyzeVariantEntries checks for both project file and data file
+      mockFileHelper.fileExistsSync.returns(true); // Both files exist
       mockFsUtil.readFile.returns({ uid: 'project-123', name: 'Test Project' });
+      
+      sinon.stub(importVariantEntries as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub()
+      };
+      sinon.stub(importVariantEntries as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importVariantEntries as any, 'completeProgress').resolves();
     });
 
     it('should include all 5 required helper methods in config', async () => {
       const mockVariantEntriesInstance = {
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       };
       mockImport.VariantEntries.returns(mockVariantEntriesInstance);
 
@@ -337,7 +415,8 @@ describe('ImportVariantEntries', () => {
 
     it('should assign correct helper function references', async () => {
       const mockVariantEntriesInstance = {
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       };
       mockImport.VariantEntries.returns(mockVariantEntriesInstance);
 
@@ -356,7 +435,8 @@ describe('ImportVariantEntries', () => {
 
     it('should create helpers object with correct structure', async () => {
       const mockVariantEntriesInstance = {
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       };
       mockImport.VariantEntries.returns(mockVariantEntriesInstance);
 
@@ -376,7 +456,8 @@ describe('ImportVariantEntries', () => {
 
     it('should pass helpers as part of merged config to VariantEntries', async () => {
       const mockVariantEntriesInstance = {
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       };
       mockImport.VariantEntries.returns(mockVariantEntriesInstance);
 
@@ -389,14 +470,15 @@ describe('ImportVariantEntries', () => {
       expect(constructorArgs.helpers).to.be.an('object');
       
       // Verify other config properties are still present
-      expect(constructorArgs).to.have.property('data');
+      expect(constructorArgs).to.have.property('contentDir');
       expect(constructorArgs).to.have.property('apiKey');
       expect(constructorArgs).to.have.property('context');
     });
 
     it('should maintain helper function integrity during config merge', async () => {
       const mockVariantEntriesInstance = {
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       };
       mockImport.VariantEntries.returns(mockVariantEntriesInstance);
 
@@ -419,6 +501,23 @@ describe('ImportVariantEntries', () => {
       importVariantEntries = new ImportVariantEntries({ 
         importConfig: mockImportConfig
       });
+      
+      // analyzeVariantEntries checks for both project file and data file
+      mockFileHelper.fileExistsSync.returns(true); // Both files exist
+      mockFsUtil.readFile.returns({ uid: 'project-123', name: 'Test Project' });
+      
+      sinon.stub(importVariantEntries as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub()
+      };
+      sinon.stub(importVariantEntries as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(importVariantEntries as any, 'completeProgress').resolves();
     });
 
     it('should construct projectMapperFilePath using correct path structure', () => {
@@ -429,7 +528,7 @@ describe('ImportVariantEntries', () => {
     it('should handle different data paths in projectMapperFilePath construction', () => {
       const customConfig = {
         ...mockImportConfig,
-        data: '/custom/backup/path'
+        contentDir: '/custom/backup/path'
       };
       const customImportVariantEntries = new ImportVariantEntries({ 
         importConfig: customConfig
@@ -459,11 +558,13 @@ describe('ImportVariantEntries', () => {
     });
 
     it('should verify config mutation during successful import', async () => {
-      mockFileHelper.fileExistsSync.returns(true);
+      // analyzeVariantEntries checks for both project file and data file
+      mockFileHelper.fileExistsSync.returns(true); // Both files exist
       mockFsUtil.readFile.returns({ uid: 'project-123', name: 'Test Project' });
       
       const mockVariantEntriesInstance = {
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       };
       mockImport.VariantEntries.returns(mockVariantEntriesInstance);
 
@@ -477,11 +578,13 @@ describe('ImportVariantEntries', () => {
     });
 
     it('should verify Object.assign merges config with helpers correctly', async () => {
-      mockFileHelper.fileExistsSync.returns(true);
+      // analyzeVariantEntries checks for both project file and data file
+      mockFileHelper.fileExistsSync.returns(true); // Both files exist
       mockFsUtil.readFile.returns({ uid: 'project-123', name: 'Test Project' });
       
       const mockVariantEntriesInstance = {
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       };
       mockImport.VariantEntries.returns(mockVariantEntriesInstance);
 
@@ -502,11 +605,13 @@ describe('ImportVariantEntries', () => {
 
     it('should verify complete data flow from file read to VariantEntries creation', async () => {
       const mockProjectData = { uid: 'project-456', name: 'Test Project 2' };
-      mockFileHelper.fileExistsSync.returns(true);
+      // analyzeVariantEntries checks for both project file and data file
+      mockFileHelper.fileExistsSync.returns(true); // Both files exist
       mockFsUtil.readFile.returns(mockProjectData);
       
       const mockVariantEntriesInstance = {
-        import: sinon.stub().resolves()
+        import: sinon.stub().resolves(),
+        setParentProgressManager: sinon.stub()
       };
       mockImport.VariantEntries.returns(mockVariantEntriesInstance);
 

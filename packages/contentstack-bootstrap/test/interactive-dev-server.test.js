@@ -104,5 +104,67 @@ describe('Interactive Dev Server Tests', () => {
       const token = await inquireGithubAccessToken();
       expect(token).to.equal('test-token');
     });
+
+    it('should handle inquireRunDevServer with different scenarios', async () => {
+      // Test with default true
+      sandbox.stub(inquirer, 'prompt').resolves({ runDevServer: true });
+      const result1 = await inquireRunDevServer();
+      expect(result1).to.be.true;
+
+      // Test with false
+      sandbox.restore();
+      sandbox = sinon.createSandbox();
+      sandbox.stub(inquirer, 'prompt').resolves({ runDevServer: false });
+      const result2 = await inquireRunDevServer();
+      expect(result2).to.be.false;
+    });
+
+    it('should verify run-dev-server flag integration with command', () => {
+      const BootstrapCommand = require('../lib/commands/cm/bootstrap').default;
+      const flag = BootstrapCommand.flags['run-dev-server'];
+
+      expect(flag).to.exist;
+      expect(flag.type).to.equal('boolean');
+      expect(flag.default).to.be.false;
+      expect(flag.description).to.include('development server');
+    });
+
+    it('should handle error cases in inquireRunDevServer', async () => {
+      const error = new Error('Prompt error');
+      sandbox.stub(inquirer, 'prompt').rejects(error);
+
+      try {
+        await inquireRunDevServer();
+        expect.fail('Should have thrown an error');
+      } catch (err) {
+        expect(err).to.equal(error);
+      }
+    });
+
+    it('should verify message content for run dev server enquiry', () => {
+      expect(messages.CLI_BOOTSTRAP_RUN_DEV_SERVER_ENQUIRY).to.exist;
+      expect(messages.CLI_BOOTSTRAP_RUN_DEV_SERVER_ENQUIRY).to.be.a('string');
+      expect(messages.CLI_BOOTSTRAP_RUN_DEV_SERVER_ENQUIRY.length).to.be.greaterThan(0);
+    });
+
+    it('should handle multiple consecutive calls to inquireRunDevServer', async () => {
+      sandbox
+        .stub(inquirer, 'prompt')
+        .onFirstCall()
+        .resolves({ runDevServer: true })
+        .onSecondCall()
+        .resolves({ runDevServer: false })
+        .onThirdCall()
+        .resolves({ runDevServer: true });
+
+      const result1 = await inquireRunDevServer();
+      expect(result1).to.be.true;
+
+      const result2 = await inquireRunDevServer();
+      expect(result2).to.be.false;
+
+      const result3 = await inquireRunDevServer();
+      expect(result3).to.be.true;
+    });
   });
 });

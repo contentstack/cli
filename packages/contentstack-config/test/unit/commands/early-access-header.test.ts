@@ -57,6 +57,10 @@ describe('Early access header command', function () {
   });
 
   it('Get early access header: with all flags, should be successful', async function () {
+    // Restore table if it was already stubbed in a previous test
+    if ((cliux.table as any).restore) {
+      (cliux.table as any).restore();
+    }
     const cliuxTableStub = stub(cliux, 'table');
     const configGetStub = stub(configHandler, 'get').returns({
       'header-alias': 'header-value',

@@ -85,7 +85,7 @@ class AuthHandler {
     if (this._host) {
       return this._host;
     }
-    
+
     const cma = configHandler.get('region')?.cma;
     if (cma && cma.startsWith('http')) {
       try {
@@ -415,6 +415,7 @@ class AuthHandler {
     } else {
       cliux.print('No OAuth configuration set.');
       this.unsetConfigData();
+      return Promise.resolve();
     }
   }
 
