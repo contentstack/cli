@@ -1,4 +1,4 @@
-import { cliux, configHandler, NodeCrypto, log, handleAndLogError, messageHandler } from '@contentstack/cli-utilities';
+import { cliux, NodeCrypto, log, messageHandler } from '@contentstack/cli-utilities';
 import { authenticator } from 'otplib';
 import { askOTP } from './interactive';
 
@@ -84,20 +84,6 @@ class MFAHandler {
       } else {
         secret = envSecret;
         source = 'environment variable';
-      }
-    }
-
-    if (!secret) {
-      log.debug('Checking stored MFA secret', { module: 'mfa-handler' });
-      const mfaConfig = configHandler.get('mfa');
-      if (mfaConfig?.secret) {
-        try {
-          secret = this.encrypter.decrypt(mfaConfig.secret);
-          source = 'stored configuration';
-        } catch (error) {
-          log.debug('Failed to decrypt stored MFA secret', { module: 'mfa-handler', error });
-          handleAndLogError(error, { module: 'mfa-handler' }, messageHandler.parse('CLI_AUTH_MFA_DECRYPT_FAILED'));
-        }
       }
     }
 

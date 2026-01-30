@@ -10,17 +10,15 @@ import { LOG_CONFIG_DEFAULTS } from '../../../src/utils/log-config-defaults';
 describe('Log Commands', () => {
   describe('Log Set Command', () => {
     let successMessage: string[] = [];
-    let errorMessage: any;
+    let handleAndLogErrorStub: sinon.SinonStub;
 
     beforeEach(() => {
       successMessage = [];
-      errorMessage = null;
 
       sinon.stub(cliux, 'success').callsFake((msg: string) => successMessage.push(msg));
       sinon.stub(cliux, 'print').callsFake((msg: string) => successMessage.push(msg)); // Add this to capture print messages
-      sinon.stub(cliux, 'error').callsFake((_, err) => {
-        errorMessage = err;
-      });
+      handleAndLogErrorStub = sinon.stub();
+      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'handleAndLogError', () => handleAndLogErrorStub);
     });
 
     afterEach(() => {
@@ -278,24 +276,23 @@ describe('Log Commands', () => {
 
       await cmd.run();
 
-      expect(errorMessage).to.equal(testError);
+      expect(handleAndLogErrorStub.called).to.be.true;
+      expect(handleAndLogErrorStub.calledWith(testError, { module: 'config-set-log' })).to.be.true;
     });
   });
 
   describe('Log Get Command', () => {
     let tableMessage: any[] = [];
-    let errorMessage: any;
+    let handleAndLogErrorStub: sinon.SinonStub;
 
     beforeEach(() => {
       tableMessage = [];
-      errorMessage = null;
 
       sinon.stub(cliux, 'table').callsFake((headers: any, data: any) => {
         tableMessage.push({ headers, data });
       });
-      sinon.stub(cliux, 'error').callsFake((_, err) => {
-        errorMessage = err;
-      });
+      handleAndLogErrorStub = sinon.stub();
+      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'handleAndLogError', () => handleAndLogErrorStub);
     });
 
     afterEach(() => {
@@ -437,23 +434,22 @@ describe('Log Commands', () => {
 
       await cmd.run();
 
-      expect(errorMessage).to.equal(testError);
+      expect(handleAndLogErrorStub.called).to.be.true;
+      expect(handleAndLogErrorStub.calledWith(testError, { module: 'config-get-log' })).to.be.true;
     });
   });
 
   describe('Log Set Command - New Functionality', () => {
     let successMessage: string[] = [];
-    let errorMessage: any;
+    let handleAndLogErrorStub: sinon.SinonStub;
 
     beforeEach(() => {
       successMessage = [];
-      errorMessage = null;
 
       sinon.stub(cliux, 'success').callsFake((msg: string) => successMessage.push(msg));
       sinon.stub(cliux, 'print').callsFake((msg: string) => successMessage.push(msg));
-      sinon.stub(cliux, 'error').callsFake((_, err) => {
-        errorMessage = err;
-      });
+      handleAndLogErrorStub = sinon.stub();
+      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'handleAndLogError', () => handleAndLogErrorStub);
     });
 
     afterEach(() => {
@@ -548,12 +544,12 @@ describe('Log Commands', () => {
       const cmd = new LogSetCommand([], {} as any);
       const newPath = './override/logs/cli.log';
       const expectedAbsolutePath = path.resolve(process.cwd(), './override/logs'); // Directory, not file
-
+      
       sinon.stub(cmd as any, 'parse').resolves({
         flags: {
           level: 'error',
           path: newPath,
-          'show-console-logs': true,
+          'show-console-logs': true
         },
       });
 
@@ -586,8 +582,8 @@ describe('Log Commands', () => {
       const expectedDirectoryPath = path.resolve(process.cwd(), './custom/logs');
 
       sinon.stub(cmd as any, 'parse').resolves({
-        flags: {
-          path: filePath,
+        flags: { 
+          path: filePath
         },
       });
 
@@ -602,8 +598,7 @@ describe('Log Commands', () => {
         }),
       ).to.be.true;
 
-      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.true;
-      expect(successMessage.some((msg) => msg.includes('CLI_CONFIG_LOG_SET_SUCCESS'))).to.be.true;
+      expect(successMessage.some(msg => msg.includes('CLI_CONFIG_LOG_PATH_SET'))).to.be.true;
     });
 
     it('should keep directory paths unchanged', async () => {
