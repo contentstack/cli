@@ -1,5 +1,5 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, configHandler, TableHeader } from '@contentstack/cli-utilities';
+import { cliux, configHandler, TableHeader, handleAndLogError } from '@contentstack/cli-utilities';
 import { getEffectiveLogConfig } from '../../../utils/log-config-defaults';
 
 export default class LogGetCommand extends Command {
@@ -34,7 +34,7 @@ export default class LogGetCommand extends Command {
         color: 'dim',
       });
     } catch (error) {
-      cliux.error('Error', error);
+      handleAndLogError(error, { module: 'config-get-log' });
     }
   }
 }

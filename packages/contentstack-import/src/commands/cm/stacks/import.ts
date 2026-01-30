@@ -12,6 +12,7 @@ import {
   CLIProgressManager,
   cliux,
   clearProgressModuleSetting,
+  createLogContext,
 } from '@contentstack/cli-utilities';
 
 import { Context, ImportConfig } from '../../../types';
@@ -122,9 +123,14 @@ export default class ImportCommand extends Command {
       const { flags } = await this.parse(ImportCommand);
       importConfig = await setupImportConfig(flags);
       // Prepare the context object
+      createLogContext(
+        this.context?.info?.command || 'cm:stacks:export',
+        importConfig.apiKey,
+        importConfig.authenticationMethod
+      );
       const context = this.createImportContext(importConfig.apiKey, importConfig.authenticationMethod);
       importConfig.context = { ...context };
-      // log.info(`Using CLI version: ${this.context?.cliVersion}`, importConfig.context);
+      //log.info(`Using Cli Version: ${this.context?.cliVersion}`, importConfig.context);
 
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;

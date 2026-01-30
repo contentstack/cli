@@ -1,4 +1,14 @@
-import { cliux, flags as _flags, authHandler, FlagInput, ArgInput, args } from '@contentstack/cli-utilities';
+import { Command } from '@contentstack/cli-command';
+import {
+  cliux,
+  printFlagDeprecation,
+  flags as _flags,
+  authHandler,
+  FlagInput,
+  ArgInput,
+  args,
+  handleAndLogError,
+} from '@contentstack/cli-utilities';
 import { Region } from '../../../interfaces';
 import { regionHandler, interactive } from '../../../utils';
 import { BaseCommand } from '../../../base-command';
@@ -121,8 +131,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
         cliux.success(`Launch URL: ${customRegion.launchHubUrl}`);
         cliux.success(`Studio URL: ${customRegion.composableStudioUrl}`);
       } catch (error) {
-        this.logger.error('failed to set the region', error);
-        cliux.error(`Failed to set region due to: ${error.message}`);
+        handleAndLogError(error, { ...this.contextDetails, module: 'config-set-region' });
       }
     } else if (
       ['NA', 'EU', 'AU', 'AWS-NA', 'AWS-EU', 'AWS-AU', 'AZURE-NA', 'AZURE-EU', 'GCP-NA', 'GCP-EU'].includes(
