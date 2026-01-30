@@ -104,32 +104,6 @@ class MFAHandler {
     }
   }
 
-  /**
-   * Gets MFA code through manual user input
-   * @returns Promise<string> The MFA code
-   * @throws Error if code format is invalid
-   */
-  async getManualMFACode(): Promise<string> {
-    try {
-      const code = await askOTP();
-      if (!/^\d{6}$/.test(code)) {
-        throw new Error(messageHandler.parse('CLI_AUTH_MFA_INVALID_CODE'));
-      }
-      return code;
-    } catch (error) {
-      log.debug('Failed to get MFA code', { module: 'mfa-handler', error });
-      throw error;
-    }
-  }
-
-  /**
-   * Validates an MFA code format
-   * @param code The MFA code to validate
-   * @returns boolean True if valid, false otherwise
-   */
-  isValidMFACode(code: string): boolean {
-    return /^\d{6}$/.test(code);
-  }
 }
 
 export default new MFAHandler();
