@@ -1,7 +1,7 @@
 /* eslint-disable no-prototype-builtins */
 /*!
  * Contentstack Import
- * Copyright (c) 2024 Contentstack LLC
+ * Copyright (c) 2026 Contentstack LLC
  * MIT Licensed
  */
 import * as path from 'path';
@@ -61,6 +61,8 @@ export default class EntriesImport extends BaseClass {
   public rteCTs: any;
   public rteCTsWithRef: any;
   public entriesForVariant: Array<{ content_type: string; locale: string; entry_uid: string }> = [];
+  private composableStudioSuccessPath: string;
+  private composableStudioExportPath: string;
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -97,6 +99,29 @@ export default class EntriesImport extends BaseClass {
       sanitizePath(importConfig.modules.locales.dirName),
       sanitizePath(importConfig.modules.locales.fileName),
     );
+
+    // Initialize composable studio paths if config exists
+    if (this.importConfig.modules['composable-studio']) {
+      // Use contentDir as fallback if data is not available
+      const basePath = this.importConfig.data || this.importConfig.contentDir;
+      
+      this.composableStudioSuccessPath = path.join(
+        sanitizePath(basePath),
+        'mapper',
+        this.importConfig.modules['composable-studio'].dirName,
+        this.importConfig.modules['composable-studio'].fileName,
+      );
+
+      this.composableStudioExportPath = path.join(
+        sanitizePath(basePath),
+        this.importConfig.modules['composable-studio'].dirName,
+        this.importConfig.modules['composable-studio'].fileName,
+      );
+    } else {
+      this.composableStudioSuccessPath = '';
+      this.composableStudioExportPath = '';
+    }
+
     this.importConcurrency = this.entriesConfig.importConcurrency || importConfig.importConcurrency;
     this.entriesUidMapper = {};
     this.modifiedCTs = [];

@@ -1,5 +1,12 @@
 import { Command } from '@contentstack/cli-command';
-import { configHandler, Flags, Interfaces, log } from '@contentstack/cli-utilities';
+import {
+  configHandler,
+  createLogContext,
+  Flags,
+  getAuthenticationMethod,
+  Interfaces,
+  log,
+} from '@contentstack/cli-utilities';
 import { Context } from './interfaces';
 
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
@@ -16,7 +23,10 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
    */
   public async init(): Promise<void> {
     await super.init();
-    this.contextDetails = { ...this.createExportContext() };
+    // this.contextDetails = { ...this.createExportContext() };
+    this.contextDetails = {
+      ...createLogContext(this.context?.info?.command || 'auth', '', configHandler.get('authenticationMethod')),
+    };
   }
 
   /**

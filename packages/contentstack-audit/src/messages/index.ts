@@ -38,6 +38,7 @@ const auditMsg = {
   AUDIT_CMD_DESCRIPTION: 'Perform audits and find possible errors in the exported Contentstack data',
   SCAN_WF_SUCCESS_MSG: 'Successfully completed the scanning of workflow with UID {uid} and name {name}.',
   SCAN_CR_SUCCESS_MSG: 'Successfully completed the scanning of custom role with UID {uid} and name {name}.',
+  SCAN_CS_SUCCESS_MSG: 'Successfully completed the scanning of studio project with UID {uid} and name {name}.',
   SCAN_ASSET_SUCCESS_MSG: `Successfully completed the scanning of Asset with UID '{uid}'.`,
   SCAN_ASSET_WARN_MSG: `The locale '{locale}' or environment '{environment}' are not present for asset with uid '{uid}'`,
   ENTRY_PUBLISH_DETAILS: `Removing the publish detials for entry '{uid}' of ct '{ctuid}' in locale '{locale}' as locale '{publocale}' or environment '{environment}' does not exist`,
@@ -47,7 +48,7 @@ const auditMsg = {
   FIELD_RULE_CONDITION_ABSENT: `The operand field '{condition_field}' is not present in the schema of the content-type {ctUid}`,
   FIELD_RULE_TARGET_ABSENT: `The target field '{target_field}' is not present in the schema of the content-type {ctUid}`,
   FIELD_RULE_CONDITION_SCAN_MESSAGE: `Completed Scanning of Field Rule '{num}' condition of Content-type '{ctUid}'`,
-  FIELD_RULE_TARGET_SCAN_MESSAGE: `Completed Scanning of Field Rule '{num}' target of Content-type '{ctUid}'`
+  FIELD_RULE_TARGET_SCAN_MESSAGE: `Completed Scanning of Field Rule '{num}' target of Content-type '{ctUid}'`,
 };
 
 const auditFixMsg = {

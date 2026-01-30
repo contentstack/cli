@@ -1,4 +1,4 @@
-import { cliux, configHandler, TableHeader } from '@contentstack/cli-utilities';
+import { cliux, configHandler, TableHeader, handleAndLogError } from '@contentstack/cli-utilities';
 import { Command } from '@contentstack/cli-command';
 import { RateLimitConfig } from '../../../interfaces';
 
@@ -34,7 +34,7 @@ export default class RateLimitGetCommand extends Command {
 
       cliux.table(headers, tableData);
     } catch (error) {
-      this.log('Unable to retrieve the rate limits configuration', error instanceof Error ? error.message : error);
+      handleAndLogError(error, { module: 'config-get-rate-limit' });
     }
   }
 }

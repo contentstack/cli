@@ -21,6 +21,7 @@ import {
   FieldRule,
   ModuleDataReader,
   CustomRoles,
+  ComposableStudio,
 } from './modules';
 
 import {
@@ -51,19 +52,6 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
   }
 
   /**
-   * Create audit context object similar to export command
-   */
-  private createAuditContext(moduleName?: string): AuditContext {
-    return {
-      command: this.context?.info?.command || 'cm:stacks:audit',
-      module: moduleName || 'audit',
-      email: configHandler.get('email') || '',
-      sessionId: this.context?.sessionId || '',
-      authenticationMethod: configHandler.get('authenticationMethod') || '',
-    };
-  }
-
-  /**
    * The `start` function performs an audit on content types, global fields, entries, and workflows and displays
    * any missing references.
    * @param {string} command - The `command` parameter is a string that represents the current command
@@ -80,11 +68,6 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       configHandler.set('log.showConsoleLogs', false);
     }
     configHandler.set('log.progressSupportedModule', 'audit');
-    
-    // Initialize audit context
-    this.auditContext = this.createAuditContext();
-    log.debug(`Starting audit command: ${command}`, this.auditContext);
-    log.info(`Starting audit command: ${command}`, this.auditContext);
     
     // Initialize global summary for progress tracking
     CLIProgressManager.initializeGlobalSummary('AUDIT', '', 'Auditing content...');
@@ -109,6 +92,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingEnvLocalesInEntries,
       missingFieldRules,
       missingMultipleFields,
+      missingRefsInComposableStudio,
     } = await this.scanAndFix();
 
     if (this.flags['show-console-output']) {
@@ -139,6 +123,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       this.showOutputOnScreenWorkflowsAndExtension([
         { module: 'Entries Changed Multiple Fields', missingRefs: missingMultipleFields },
       ]);
+      this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Studio', missingRefs: missingRefsInComposableStudio }]);
     }
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Summary', missingRefs: this.summaryDataToPrint }]);
 
@@ -154,12 +139,16 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       !isEmpty(missingEnvLocalesInAssets) ||
       !isEmpty(missingEnvLocalesInEntries) ||
       !isEmpty(missingFieldRules) ||
-      !isEmpty(missingMultipleFields)
+      !isEmpty(missingMultipleFields) ||
+      !isEmpty(missingRefsInComposableStudio)
     ) {
       if (this.currentCommand === 'cm:stacks:audit') {
         log.warn(this.$t(auditMsg.FINAL_REPORT_PATH, { path: this.sharedConfig.reportPath }), this.auditContext);
       } else {
-        log.warn(this.$t(this.messages.FIXED_CONTENT_PATH_MAG, { path: this.sharedConfig.basePath }), this.auditContext);
+        log.warn(
+          this.$t(this.messages.FIXED_CONTENT_PATH_MAG, { path: this.sharedConfig.basePath }),
+          this.auditContext,
+        );
       }
     } else {
       log.info(this.messages.NO_MISSING_REF_FOUND, this.auditContext);
@@ -191,7 +180,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       !isEmpty(missingRefInCustomRoles) ||
       !isEmpty(missingEnvLocalesInAssets) ||
       !isEmpty(missingEnvLocalesInEntries) ||
-      !isEmpty(missingFieldRules)
+      !isEmpty(missingFieldRules) ||
+      !isEmpty(missingRefsInComposableStudio)
     );
   }
 
@@ -204,8 +194,11 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
   async scanAndFix() {
     log.debug('Starting scan and fix process', this.auditContext);
     let { ctSchema, gfSchema } = this.getCtAndGfSchema();
-    log.info(`Retrieved ${ctSchema?.length || 0} content types and ${gfSchema?.length || 0} global fields`, this.auditContext);
-    
+    log.info(
+      `Retrieved ${ctSchema?.length || 0} content types and ${gfSchema?.length || 0} global fields`,
+      this.auditContext,
+    );
+
     let missingCtRefs,
       missingGfRefs,
       missingEntryRefs,
@@ -226,7 +219,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingEnvLocalesInAssets,
       missingEnvLocalesInEntries,
       missingFieldRules,
-      missingMultipleFields;
+      missingMultipleFields,
+      missingRefsInComposableStudio;
 
     const constructorParam: ModuleConstructorParam & CtConstructorParam = {
       ctSchema,
@@ -247,7 +241,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       // Update audit context with current module
-      this.auditContext = this.createAuditContext(module);
+      this.auditContext = { module: module };
       log.debug(`Starting audit for module: ${module}`, this.auditContext);
       log.info(`Starting audit for module: ${module}`, this.auditContext);
 
@@ -271,7 +265,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           missingEnvLocalesInAssets = await new Assets(cloneDeep(constructorParam)).run(false, assetsTotalCount);
           await this.prepareReport(module, missingEnvLocalesInAssets);
           this.getAffectedData('assets', dataModuleWise['assets'], missingEnvLocalesInAssets);
-          log.success(`Assets audit completed. Found ${Object.keys(missingEnvLocalesInAssets || {}).length} issues`, this.auditContext);
+          log.success(
+            `Assets audit completed. Found ${Object.keys(missingEnvLocalesInAssets || {}).length} issues`,
+            this.auditContext,
+          );
           break;
         case 'content-types':
           log.info('Executing content-types audit', this.auditContext);
@@ -279,7 +276,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           missingCtRefs = await new ContentType(cloneDeep(constructorParam)).run(false, contentTypesTotalCount);
           await this.prepareReport(module, missingCtRefs);
           this.getAffectedData('content-types', dataModuleWise['content-types'], missingCtRefs);
-          log.success(`Content-types audit completed. Found ${Object.keys(missingCtRefs || {}).length} issues`, this.auditContext);
+          log.success(
+            `Content-types audit completed. Found ${Object.keys(missingCtRefs || {}).length} issues`,
+            this.auditContext,
+          );
           break;
         case 'global-fields':
           log.info('Executing global-fields audit', this.auditContext);
@@ -287,7 +287,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           missingGfRefs = await new GlobalField(cloneDeep(constructorParam)).run(false, globalFieldsTotalCount);
           await this.prepareReport(module, missingGfRefs);
           this.getAffectedData('global-fields', dataModuleWise['global-fields'], missingGfRefs);
-          log.success(`Global-fields audit completed. Found ${Object.keys(missingGfRefs || {}).length} issues`, this.auditContext);
+          log.success(
+            `Global-fields audit completed. Found ${Object.keys(missingGfRefs || {}).length} issues`,
+            this.auditContext,
+          );
           break;
         case 'entries':
           log.info('Executing entries audit', this.auditContext);
@@ -311,7 +314,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
           await this.prepareReport('Entry_Multiple_Fields', missingMultipleFields);
           this.getAffectedData('entries', dataModuleWise['entries'], missingEntry);
-          log.success(`Entries audit completed. Found ${Object.keys(missingEntryRefs || {}).length} reference issues`, this.auditContext);
+          log.success(
+            `Entries audit completed. Found ${Object.keys(missingEntryRefs || {}).length} reference issues`,
+            this.auditContext,
+          );
 
           break;
         case 'workflows':
@@ -325,7 +331,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           }).run(workflowsTotalCount);
           await this.prepareReport(module, missingCtRefsInWorkflow);
           this.getAffectedData('workflows', dataModuleWise['workflows'], missingCtRefsInWorkflow);
-          log.success(`Workflows audit completed. Found ${Object.keys(missingCtRefsInWorkflow || {}).length} issues`, this.auditContext);
+          log.success(
+            `Workflows audit completed. Found ${Object.keys(missingCtRefsInWorkflow || {}).length} issues`,
+            this.auditContext,
+          );
 
           break;
         case 'extensions':
@@ -334,7 +343,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           missingCtRefsInExtensions = await new Extensions(cloneDeep(constructorParam)).run(extensionsTotalCount);
           await this.prepareReport(module, missingCtRefsInExtensions);
           this.getAffectedData('extensions', dataModuleWise['extensions'], missingCtRefsInExtensions);
-          log.success(`Extensions audit completed. Found ${Object.keys(missingCtRefsInExtensions || {}).length} issues`, this.auditContext);
+          log.success(
+            `Extensions audit completed. Found ${Object.keys(missingCtRefsInExtensions || {}).length} issues`,
+            this.auditContext,
+          );
           break;
         case 'custom-roles':
           log.info('Executing custom-roles audit', this.auditContext);
@@ -342,20 +354,42 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           missingRefInCustomRoles = await new CustomRoles(cloneDeep(constructorParam)).run(customRolesTotalCount);
           await this.prepareReport(module, missingRefInCustomRoles);
           this.getAffectedData('custom-roles', dataModuleWise['custom-roles'], missingRefInCustomRoles);
-          log.success(`Custom-roles audit completed. Found ${Object.keys(missingRefInCustomRoles || {}).length} issues`, this.auditContext);
+          log.success(
+            `Custom-roles audit completed. Found ${Object.keys(missingRefInCustomRoles || {}).length} issues`,
+            this.auditContext,
+          );
 
           break;
         case 'field-rules':
           log.info('Executing field-rules audit', this.auditContext);
           // NOTE: We are using the fixed content-type for validation of field rules
-          const data =  this.getCtAndGfSchema();
+          const data = this.getCtAndGfSchema();
           constructorParam.ctSchema = data.ctSchema;
           constructorParam.gfSchema = data.gfSchema;
           const fieldRulesTotalCount = dataModuleWise['content-types']?.Total || 0;
           missingFieldRules = await new FieldRule(cloneDeep(constructorParam)).run(fieldRulesTotalCount);
           await this.prepareReport(module, missingFieldRules);
           this.getAffectedData('field-rules', dataModuleWise['content-types'], missingFieldRules);
-          log.success(`Field-rules audit completed. Found ${Object.keys(missingFieldRules || {}).length} issues`, this.auditContext);
+          log.success(
+            `Field-rules audit completed. Found ${Object.keys(missingFieldRules || {}).length} issues`,
+            this.auditContext,
+          );
+          break;
+        case 'composable-studio':
+          log.info('Executing composable-studio audit', this.auditContext);
+          missingRefsInComposableStudio = await new ComposableStudio(cloneDeep(constructorParam)).run();
+          await this.prepareReport(module, missingRefsInComposableStudio);
+          this.getAffectedData(
+            'composable-studio',
+            dataModuleWise['composable-studio'] || { Total: Object.keys(missingRefsInComposableStudio || {}).length },
+            missingRefsInComposableStudio,
+          );
+          log.success(
+            `Composable-studio audit completed. Found ${
+              Object.keys(missingRefsInComposableStudio || {}).length
+            } issues`,
+            this.auditContext,
+          );
           break;
       }
 
@@ -393,6 +427,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       missingEnvLocalesInEntries,
       missingFieldRules,
       missingMultipleFields,
+      missingRefsInComposableStudio,
     };
   }
 
@@ -536,7 +571,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       }
 
       print([{ bold: true, color: 'cyan', message: ` ${module}` }]);
-      
+
       const tableValues = Object.values(missingRefs).flat();
       missingRefs = Object.values(missingRefs).flat();
       const tableKeys = Object.keys(missingRefs[0]);
@@ -590,7 +625,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     log.debug(`Preparing report for module: ${moduleName}`, this.auditContext);
     log.debug(`Report path: ${this.sharedConfig.reportPath}`, this.auditContext);
     log.info(`Missing references count: ${Object.keys(listOfMissingRefs).length}`, this.auditContext);
-    
+
     if (isEmpty(listOfMissingRefs)) {
       log.debug(`No missing references found for ${moduleName}, skipping report generation`, this.auditContext);
       return Promise.resolve(void 0);
