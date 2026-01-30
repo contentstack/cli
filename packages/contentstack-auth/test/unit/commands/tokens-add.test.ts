@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { configHandler, cliux } from '@contentstack/cli-utilities';
 import TokensAddCommand from '../../../src/commands/auth/tokens/add';
-import { tokenValidation } from '../../../src/utils';
 import { stub, assert } from 'sinon';
 import { config as dotenvConfig } from 'dotenv';
 import nock from 'nock';
@@ -70,8 +69,6 @@ function resetConfig() {
   config.delete(`${configKeyTokens}.newToken`);
 }
 describe('Tokens Add Command', () => {
-  let apiKeyValidationStub: sinon.SinonStub;
-  let environmentTokenValidationStub: sinon.SinonStub;
   let printStub: sinon.SinonStub;
   const validAPIKey = conf.validAPIKey;
   const validDeliveryToken = '***REMOVED***';
@@ -82,28 +79,9 @@ describe('Tokens Add Command', () => {
     resetConfig();
     if ((cliux.print as any).restore) (cliux.print as any).restore();
     printStub = stub(cliux, 'print');
-    apiKeyValidationStub = sinon
-      .stub(tokenValidation, 'validateAPIKey')
-      .callsFake(function (client: any, apiKey: string): Promise<any> {
-        if (apiKey === validAPIKey) {
-          return Promise.resolve({ valid: true, message: 'success' });
-        }
-        return Promise.resolve({ valid: false, message: 'failed' });
-      });
-
-    environmentTokenValidationStub = sinon
-      .stub(tokenValidation, 'validateEnvironment')
-      .callsFake(function (client: any, apiKey: string, environment): Promise<any> {
-        if (environment === validEnvironment) {
-          return Promise.resolve({ valid: true, message: 'success' });
-        }
-        return Promise.resolve({ valid: false, message: 'failed' });
-      });
   });
 
   after(() => {
-    apiKeyValidationStub.restore();
-    environmentTokenValidationStub.restore();
     printStub.restore();
     resetConfig();
   });
