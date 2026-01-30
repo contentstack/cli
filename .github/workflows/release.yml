@@ -244,6 +244,10 @@ jobs:
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_migration == 'true'}}
         working-directory: ./packages/contentstack-migration
         run: npm install
+      - name: Compiling Migration
+        if: ${{ steps.migration-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-migration
+        run: npm run prepack
       - name: Publishing migration
         uses: JS-DevTools/npm-publish@v3
         if: ${{ steps.migration-installation.conclusion == 'success'  }}
