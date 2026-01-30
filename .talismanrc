@@ -1,28 +1,6 @@
 fileignoreconfig:
-  - filename: pnpm-lock.yaml
-    checksum: f20d4336b379ba896f0092ed8dd03df2c6e5bc34fe200e58002efc2c77fd9359
-  - filename: package-lock.json
-    checksum: b41714137255ba498375116ae9410e04af150d75ba323c8dbaeb8995564a4677
-  - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/environments/environments.json
-    checksum: 0402604e5919a7e38ecb5ff0916d6ae5ab7d98fe78ff6ac9eba8a9b8130af34d
-  - filename: packages/contentstack-utilities/src/helpers.ts
-    checksum: 6a741bb972f59c56d2c0f3a9f96e2963392361db2e401948c9c1796829478e13
-  - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/composable_studio.json
-    checksum: 6912e5ea32b4456ad04d1645750c72bbb29ab1895368c3a242ab39e9350ec531
-  - filename: packages/contentstack-utilities/src/logger/session-path.ts
-    checksum: 4c66980a857bc12012a45e50790c0eaab06883db5e1476d84fb142a08b70b2e7
-  - filename: packages/contentstack-import/test/unit/commands/cm/stacks/import.test.ts
-    checksum: a9e24596e7ae54b71cc28a41cf9d65bbdbf6754446e08958288e90a579cc351d
-  - filename: packages/contentstack-audit/src/modules/modulesData.ts
-    checksum: 1e6c1fba1172512401038d5454c8d218201ec62262449c5c878609592e0124c4
-  - filename: packages/contentstack-audit/test/unit/mock/contents/composable_studio/invalid_composable_studio.json
-    checksum: e6465aa0011d1565a2de848d9cca74395d11419e6ac840e7dfb52e1d255b1c4f
-  - filename: packages/contentstack-audit/src/modules/composable-studio.ts
-    checksum: 4fc97ff582d6dff9a54b3a50dfa3cbb5febd38a55aeb8737034b97188ad543ba
-  - filename: packages/contentstack-utilities/test/unit/logger.test.ts
-    checksum: a1939dea16166b1893a248179524a76f2ed20b04b99c83bd1a5a13fcf6f0dadc
-  - filename: packages/contentstack-clone/README.md
-    checksum: 8580ab3f52a079a6411c27cbaad66e3a70d9ac5ea59fc429a8f17c95d09399f8
-  - filename: packages/contentstack/README.md
-    checksum: 72850c976661f2912b5bca39734de09d56c311c2266fc67696c45ed3fb0b7511
-version: "1.0"
+- filename: pnpm-lock.yaml
+  checksum: 2ab7172b5b105a5e903aa7d4fc4b38d282e2c32befdc8b219c3bb3fb40aead2a
+- filename: package-lock.json
+  checksum: 62030a34e011bd34bc4a071d868210cfe9c90ae5241250a576f7cb212084dbf1
+version: '1.0'
