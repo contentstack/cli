@@ -1,8 +1,8 @@
 fileignoreconfig:
   - filename: pnpm-lock.yaml
-    checksum: 9d13bdb1cc90e6fab62c94ea5767f6585442ddb4ea80bc3e74d522a0738596ec
+    checksum: 0752290f958c3f14f617c0f58568415a9337ce0cf5a551a1d81ad65bbdc462a6
   - filename: package-lock.json
-    checksum: fd5c63d5813f991a2439958033748fdb56088b8ff5dd23b2d0632620cc97d92c
+    checksum: 840448a79fea752dee717baeb9a74ea9a7a54d576c09e565dd8f8ecb69c7f0f6
   - filename: packages/contentstack-clone/.eslintrc
     checksum: a7230ffa600c58047ac73f2dec7a23ca5862e36e68f04f2671379496739bd818
   - filename: packages/contentstack-clone/package.json

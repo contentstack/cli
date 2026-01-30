@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-migration",
-  "version": "1.10.3",
+  "version": "1.11.0",
   "author": "@contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
@@ -56,7 +56,7 @@
     "postpack": "rm -f oclif.manifest.json",
     "generate-api-ref-md-doc": "nyc jsdoc2md ./src/modules/*.ts > ./docs/api-reference.md || true",
     "compile": "tsc -b tsconfig.json",
-    "prepack": "pnpm compile && oclif manifest && oclif readme && pnpm generate-api-ref-md-doc",
+    "prepack": "pnpm compile && oclif manifest && oclif readme",
     "pretest": "tsc -p test",
     "test": "mocha --forbid-only \"test/unit/**/*.test.ts\"",
     "test:unit": "mocha --timeout 10000 --forbid-only \"test/unit/**/*.test.ts\"",
