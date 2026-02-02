@@ -301,7 +301,7 @@ describe('ImportTaxonomies', () => {
       await (importTaxonomies as any).importTaxonomies({ apiContent: values((importTaxonomies as any).taxonomies) });
 
       expect(makeConcurrentCallStub.calledOnce).to.be.true;
-      const callArgs = makeConcurrentCallStub.getCall(0).args[0];
+      const callArgs = makeConcurrentCallStub.getCall(0).args[0] as any;
       expect(callArgs.concurrencyLimit).to.equal(2); // Should use concurrency from config
     });
   });
