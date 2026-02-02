@@ -34,7 +34,7 @@ module.exports = async ({ migration, config }) => {
         if (masterLocale) {
           masterLocale = JSON.parse(masterLocale);
           masterLocale = Object.values(masterLocale);
-          masterLocale = masterLocale[0]?.code;
+          masterLocale = masterLocale[0]
           
           // Validate that we have a valid master locale code
           if (!masterLocale) {

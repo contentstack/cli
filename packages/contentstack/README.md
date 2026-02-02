@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/2.0.0-beta.7 darwin-arm64 node-v24.12.0
+@contentstack/cli/2.0.0-beta.8 darwin-arm64 node-v24.12.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -42,6 +42,7 @@ USAGE
 * [`csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>] [--format <value>] [--csv-path <value>]`](#csdx-cmbranchesdiff---base-branch-value---compare-branch-value--k-value--module-value---format-value---csv-path-value)
 * [`csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>] [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]`](#csdx-cmbranchesmerge--k-value--compare-branch-value---no-revert---export-summary-path-value---use-merge-summary-value---comment-value---base-branch-value)
 * [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
+* [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple)
 * [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent)
 * [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
 * [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix)
@@ -583,6 +584,49 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/cli/blob/main/packages/contentstack-export-to-csv/src/commands/cm/export-to-csv.ts)_
+
+## `csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`
+
+Contentstack migration script.
+
+```
+USAGE
+  $ csdx cm:migration cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>]
+    [--config-file <value>] [--config <value>] [--multiple]
+
+FLAGS
+  -a, --alias=<value>          Use this flag to add the management token alias. You must use either the --alias flag or
+                               the --stack-api-key flag.
+  -k, --stack-api-key=<value>  Use this flag to add the API key of your stack. You must use either the --stack-api-key
+                               flag or the --alias flag.
+      --branch=<value>         Use this flag to add the branch name where you want to perform the migration. (target
+                               branch name)
+      --config=<value>...      [optional] Inline configuration, <key1>:<value1>. Passing an external configuration makes
+                               the script re-usable.
+      --config-file=<value>    [optional] Path of the JSON configuration file.
+      --file-path=<value>      Use this flag to provide the path of the file of the migration script.
+      --multiple               This flag helps you to migrate multiple content files in a single instance. Mention the
+                               folder path where your migration script files are stored.
+
+DESCRIPTION
+  Contentstack migration script.
+
+ALIASES
+  $ csdx cm:migration
+
+EXAMPLES
+  $ csdx cm:migration --file-path <migration/script/file/path> -k <api-key>
+
+  $ csdx cm:migration --file-path <migration/script/file/path> -k <api-key> --branch <target branch name>
+
+  $ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... --file-path <migration/script/file/path>
+
+  $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
+
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
+
+  $ csdx cm:migration --alias <management-token-alias> --file-path <migration/script/file/path>
+```
 
 ## `csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`
 
@@ -1149,10 +1193,13 @@ FLAGS
 DESCRIPTION
   Contentstack migration script.
 
-EXAMPLES
-  $ csdx cm:migration --file-path <migration/script/file/path> --stack-api-key <stack-api-key>
+ALIASES
+  $ csdx cm:migration
 
-  $ csdx cm:migration --file-path <migration/script/file/path> --stack-api-key <stack-api-key> --branch <target branch name>
+EXAMPLES
+  $ csdx cm:migration --file-path <migration/script/file/path> -k <api-key>
+
+  $ csdx cm:migration --file-path <migration/script/file/path> -k <api-key> --branch <target branch name>
 
   $ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... --file-path <migration/script/file/path>
 
@@ -1163,7 +1210,7 @@ EXAMPLES
   $ csdx cm:migration --alias <management-token-alias> --file-path <migration/script/file/path>
 ```
 
-_See code: [@contentstack/cli-migration](https://github.com/contentstack/cli/blob/main/packages/contentstack-migration/src/commands/cm/stacks/migration.js)_
+_See code: [@contentstack/cli-migration](https://github.com/contentstack/cli/blob/main/packages/contentstack-migration/src/commands/cm/stacks/migration.ts)_
 
 ## `csdx cm:stacks:seed [--repo <value>] [--org <value>] [--stack-api-key <value>] [--stack-name <value>] [--yes <value>] [--alias <value>] [--locale <value>]`
 
