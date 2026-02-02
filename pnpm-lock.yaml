@@ -17,14 +17,14 @@ importers:
       '@contentstack/cli-cm-bootstrap': ~2.0.0-beta.5
       '@contentstack/cli-cm-branches': ~1.6.3
       '@contentstack/cli-cm-bulk-publish': ~1.10.6
-      '@contentstack/cli-cm-clone': ~2.0.0-beta.7
-      '@contentstack/cli-cm-export': ~2.0.0-beta.6
+      '@contentstack/cli-cm-clone': ~2.0.0-beta.8
+      '@contentstack/cli-cm-export': ~2.0.0-beta.7
       '@contentstack/cli-cm-export-to-csv': ~1.11.0
       '@contentstack/cli-cm-import': ~2.0.0-beta.5
       '@contentstack/cli-cm-import-setup': ~2.0.0-beta.3
       '@contentstack/cli-cm-seed': ~2.0.0-beta.5
       '@contentstack/cli-command': ~1.7.2
-      '@contentstack/cli-config': ~1.18.0
+      '@contentstack/cli-config': ~1.19.0
       '@contentstack/cli-launch': 1.9.3
       '@contentstack/cli-migration': ~2.0.0-beta.3
       '@contentstack/cli-utilities': ~1.17.1
@@ -379,7 +379,7 @@ importers:
   packages/contentstack-clone:
     specifiers:
       '@colors/colors': ^1.6.0
-      '@contentstack/cli-cm-export': ~2.0.0-beta.6
+      '@contentstack/cli-cm-export': ~2.0.0-beta.7
       '@contentstack/cli-cm-import': ~2.0.0-beta.5
       '@contentstack/cli-command': ~1.7.2
       '@contentstack/cli-utilities': ~1.17.1
@@ -2107,7 +2107,7 @@ packages:
     hasBin: true
     dependencies:
       '@contentstack/cli-command': 1.7.2_lxq42tdpoxpye5tb7w3htdbbdq
-      '@contentstack/cli-utilities': 1.17.0_lxq42tdpoxpye5tb7w3htdbbdq
+      '@contentstack/cli-utilities': 1.17.1_lxq42tdpoxpye5tb7w3htdbbdq
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.37
       '@oclif/plugin-plugins': 5.4.55
@@ -2216,8 +2216,8 @@ packages:
       - debug
     dev: false
 
-  /@contentstack/management/1.27.3:
-    resolution: {integrity: sha512-6gL2MgKDnPdIOeqgYjLibhzzuXj9uRyLrIuN00XdpfXiJE6mQ343GwQ7EOMzXcMf17/sedDJ7C7BKLSdDtG2Zg==}
+  /@contentstack/management/1.27.4:
+    resolution: {integrity: sha512-p1xQNsyLejeaZ1rcobkwZRhoTiFvR1SeAhC95RCGm8XXyQ6JaNwn2EJQsZvhv0vT8NcRQlvFXtQhVu1zHiPQ8w==}
     engines: {node: '>=8.0.0'}
     dependencies:
       '@contentstack/utils': 1.6.3
