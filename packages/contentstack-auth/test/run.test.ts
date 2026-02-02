@@ -1,6 +1,5 @@
-import { join, resolve, dirname } from "path";
+import { join, resolve } from "path";
 import { existsSync, readdirSync, readFileSync } from "fs";
-import { fileURLToPath } from "url";
 import filter from "lodash/filter.js";
 import forEach from "lodash/forEach.js";
 import isEmpty from "lodash/isEmpty.js";
@@ -11,9 +10,7 @@ import dotenv from 'dotenv';
 // NOTE init env variables
 dotenv.config();
 
-// ES module equivalent of __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// __filename and __dirname are already available in CommonJS mode
 
 const config = JSON.parse(readFileSync(join(__dirname, "config.json"), "utf-8"));
 const { IS_TS, UNIT_EXECUTION_ORDER, INTEGRATION_EXECUTION_ORDER } = config;
