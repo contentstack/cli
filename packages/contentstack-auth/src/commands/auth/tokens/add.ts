@@ -1,7 +1,6 @@
 import {
   cliux,
   configHandler,
-  printFlagDeprecation,
   flags,
   FlagInput,
   HttpClient,
@@ -33,16 +32,12 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
   static flags: FlagInput = {
     alias: Flags.string({ char: 'a', description: 'Alias (name) you want to assign to the token' }),
     delivery: flags.boolean({
-      char: 'd',
       description: 'Set this flag to save delivery token',
       exclusive: ['management'],
-      parse: printFlagDeprecation(['-d'], ['--delivery']),
     }),
     management: flags.boolean({
-      char: 'm',
       description: 'Set this flag to save management token',
       exclusive: ['delivery', 'environment'],
-      parse: printFlagDeprecation(['-m'], ['--management']),
     }),
     environment: flags.string({
       char: 'e',
@@ -52,23 +47,8 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
     'stack-api-key': flags.string({ char: 'k', description: 'Stack API Key' }),
     yes: flags.boolean({ char: 'y', description: 'Use this flag to skip confirmation' }),
     token: flags.string({
-      char: 't',
       description: 'Add the token name',
       env: 'TOKEN',
-      parse: printFlagDeprecation(['-t'], ['--token']),
-    }),
-
-    //To be deprecated
-    'api-key': flags.string({
-      description: 'API Key',
-      hidden: true,
-      parse: printFlagDeprecation(['api-key'], ['-k', 'stack-api-key']),
-    }),
-    force: flags.boolean({
-      char: 'f',
-      hidden: true,
-      description: 'Force adding',
-      parse: printFlagDeprecation(['-f', '--force'], ['-y', '--yes']),
     }),
     branch: flags.string({
       required: false,
@@ -111,7 +91,7 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
 
     if (!isDelivery && !isManagement && !Boolean(environment)) {
       log.debug('No token type specified, requesting user input', this.contextDetails);
-      let tokenType = await askTokenType();
+      const tokenType = await askTokenType();
       isDelivery = tokenType === 'delivery';
       isManagement = tokenType === 'management';
       log.debug(`Token type selected: ${tokenType}`, this.contextDetails);

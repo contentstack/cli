@@ -62,11 +62,13 @@ export default class SetRateLimitCommand extends BaseCommand<typeof SetRateLimit
       const utilizeValues = utilize?.split(',')?.map((u: string) => Number(u.trim()));
       if (utilizeValues.some((u: number) => isNaN(u) || u < 0 || u > 100)) {
         cliux.error('Utilization percentages must be numbers between 0 and 100.');
-        return;
+        this.exit(1);
+        return; // Unreachable in production, but needed when exit is stubbed in tests
       }
       if (limitName?.length > 0 && limitName[0]?.split(',')?.length !== utilizeValues.length) {
         cliux.error('The number of utilization percentages must match the number of limit names.');
-        return;
+        this.exit(1);
+        return; // Unreachable in production, but needed when exit is stubbed in tests
       } else {
         config.utilize = utilize.split(',').map((v: string) => v.trim());
       }
@@ -77,7 +79,8 @@ export default class SetRateLimitCommand extends BaseCommand<typeof SetRateLimit
 
       if (invalidLimitNames.some((name: string) => !limitNamesConfig.includes(name))) {
         cliux.error(`Invalid limit names provided: ${invalidLimitNames.join(', ')}`);
-        return;
+        this.exit(1);
+        return; // Unreachable in production, but needed when exit is stubbed in tests
       } else {
         config['limit-name'] = limitName[0].split(',').map((n) => n.trim());
       }

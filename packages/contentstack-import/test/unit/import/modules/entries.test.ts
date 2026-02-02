@@ -3,7 +3,7 @@ import sinon from 'sinon';
 import EntriesImport from '../../../../src/import/modules/entries';
 import { ImportConfig, ModuleClassParams } from '../../../../src/types';
 import { FsUtility } from '@contentstack/cli-utilities';
-import { fsUtil, fileHelper } from '../../../../src/utils';
+import { fsUtil, fileHelper, MODULE_CONTEXTS } from '../../../../src/utils';
 import * as path from 'path';
 
 const mockData = require('./mock-data/entries/content-types.json');
@@ -60,7 +60,6 @@ describe('EntriesImport', () => {
       apiKey: 'test',
       contentDir: '/test/content',
       data: '/test/content',
-      contentVersion: 1,
       region: 'us',
       master_locale: { code: 'en-us' },
       masterLocale: { code: 'en-us' },
@@ -88,10 +87,6 @@ describe('EntriesImport', () => {
         locales: {
           dirName: 'locales',
           fileName: 'locales.json',
-        },
-        'composable-studio': {
-          dirName: 'composable_studio',
-          fileName: 'composable_studio.json',
         },
       },
       backupDir: '/test/backup',
@@ -130,7 +125,7 @@ describe('EntriesImport', () => {
     });
 
     it('should set context module to entries', () => {
-      expect(entriesImport['importConfig'].context.module).to.equal('entries');
+      expect(entriesImport['importConfig'].context.module).to.equal(MODULE_CONTEXTS.ENTRIES);
     });
 
     it('should initialize paths correctly', () => {
@@ -578,7 +573,6 @@ describe('EntriesImport', () => {
 
   describe('Entry Creation Flow', () => {
     beforeEach(() => {
-      // Setup mock data for entry creation
       entriesImport['cTs'] = [
         mockData.simpleContentType,
         mockData.contentTypeWithReferences,
@@ -648,7 +642,6 @@ describe('EntriesImport', () => {
 
     describe('createEntries()', () => {
       it('should handle empty chunks', async () => {
-        // Mock FsUtility to return empty indexer
         const mockFsUtility = {
           indexFileContent: {},
         };
@@ -660,7 +653,6 @@ describe('EntriesImport', () => {
       });
 
       it('should process entries successfully in master locale', async () => {
-        // Mock FsUtility for entry creation
         const mockFsUtility = {
           indexFileContent: {
             'chunk1.json': ['entry1', 'entry2'],
@@ -668,7 +660,6 @@ describe('EntriesImport', () => {
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
 
-        // Mock readChunkFiles.next() to return entry data
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
             entry1: mockEntries.simpleEntry,
@@ -677,7 +668,6 @@ describe('EntriesImport', () => {
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
-        // Mock FsUtility for file writing
         const mockWriteIntoFile = sinon.stub().resolves();
         const mockCompleteFile = sinon.stub().resolves();
         sinon.stub(FsUtility.prototype, 'writeIntoFile').callsFake(mockWriteIntoFile);
@@ -829,12 +819,21 @@ describe('EntriesImport', () => {
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
 
+        const originalCompleteFile = FsUtility.prototype.completeFile;
+        FsUtility.prototype.completeFile = sinon.stub().resolves();
+
         const mockReadChunkFiles = {
           next: sinon.stub().rejects(new Error('Chunk read failed')),
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
-        await entriesImport['createEntries']({ cTUid: 'simple_ct', locale: 'en-us' });
+        try {
+          await entriesImport['createEntries']({ cTUid: 'simple_ct', locale: 'en-us' });
+        } catch (error) {
+          // Expected to throw error
+        } finally {
+          FsUtility.prototype.completeFile = originalCompleteFile;
+        }
 
         expect(mockReadChunkFiles.next.called).to.be.true;
         expect(makeConcurrentCallStub.called).to.be.false;
@@ -1237,7 +1236,6 @@ describe('EntriesImport', () => {
 
         entriesImport['entriesUidMapper'] = { old_localized_entry_1: 'new_localized_entry_1' };
 
-        // Mock lookupAssets to modify the entry in place and return it
         const originalLookupAssets = require('../../../../src/utils').lookupAssets;
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           get: () => (entryData: any) => {
@@ -1250,7 +1248,6 @@ describe('EntriesImport', () => {
           configurable: true,
         });
 
-        // Mock the stack client for localized entry processing
         const mockEntryResponse = { uid: 'new_localized_entry_1' };
         const mockEntry = {
           uid: sinon.stub().returns(mockEntryResponse),
@@ -1259,7 +1256,6 @@ describe('EntriesImport', () => {
           entry: sinon.stub().returns(mockEntry),
         });
 
-        // Mock the stack client on the entriesImport instance
         sinon.stub(entriesImport, 'stack').value(mockStackClient);
 
         const result = entriesImport['serializeEntries'](apiOptions);
@@ -1271,7 +1267,6 @@ describe('EntriesImport', () => {
           entryOldUid: 'old_localized_entry_1',
         });
 
-        // Restore original function
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           value: originalLookupAssets,
           configurable: true,
@@ -1292,7 +1287,6 @@ describe('EntriesImport', () => {
           },
         };
 
-        // Create an entry that will cause an error during serialization
         const invalidEntry = {
           uid: 'invalid_entry',
           title: 'Invalid Entry',
@@ -1305,7 +1299,6 @@ describe('EntriesImport', () => {
           apiData: invalidEntry,
         };
 
-        // Mock the lookupAssets function to throw an error
         const lookupAssetsStub = sinon.stub().throws(new Error('Asset lookup failed'));
         const utils = require('../../../../src/utils');
 
@@ -1336,7 +1329,6 @@ describe('EntriesImport', () => {
           { content_type: 'ref_ct', entry_uid: 'entry_2', locale: 'en-us' },
         ];
 
-        // Mock the writeFileSync function to avoid file system errors
         const originalWriteFileSync = require('fs').writeFileSync;
         const writeFileSyncStub = sinon.stub();
         require('fs').writeFileSync = writeFileSyncStub;
@@ -1348,14 +1340,12 @@ describe('EntriesImport', () => {
         expect(writeCall.args[0]).to.include('data-for-variant-entry.json');
         expect(JSON.parse(writeCall.args[1])).to.deep.equal(entriesImport['entriesForVariant']);
 
-        // Restore original function
         require('fs').writeFileSync = originalWriteFileSync;
       });
 
       it('should handle empty variant entries array', () => {
         entriesImport['entriesForVariant'] = [];
 
-        // Mock the writeFileSync function to avoid file system errors
         const originalWriteFileSync = require('fs').writeFileSync;
         const writeFileSyncStub = sinon.stub();
         require('fs').writeFileSync = writeFileSyncStub;
@@ -1365,7 +1355,6 @@ describe('EntriesImport', () => {
         // The method should NOT write a file when the array is empty
         expect(writeFileSyncStub.called).to.be.false;
 
-        // Restore original function
         require('fs').writeFileSync = originalWriteFileSync;
       });
     });
@@ -1373,7 +1362,6 @@ describe('EntriesImport', () => {
 
   describe('Entry Update and Replace Flow', () => {
     beforeEach(() => {
-      // Setup mock data for entry update and replace
       entriesImport['cTs'] = [
         mockData.simpleContentType,
         mockData.contentTypeWithReferences,
@@ -1437,7 +1425,6 @@ describe('EntriesImport', () => {
 
     describe('updateEntriesWithReferences()', () => {
       it('should handle empty chunks', async () => {
-        // Mock FsUtility to return empty indexer
         const mockFsUtility = {
           indexFileContent: {},
         };
@@ -1449,7 +1436,6 @@ describe('EntriesImport', () => {
       });
 
       it('should process entries with references successfully', async () => {
-        // Mock FsUtility for entry updates
         const mockFsUtility = {
           indexFileContent: {
             'chunk1.json': ['entry1', 'entry2'],
@@ -1457,7 +1443,6 @@ describe('EntriesImport', () => {
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
 
-        // Mock readChunkFiles.next() to return entry data
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
             entry1: mockEntries.entryWithReferences,
@@ -1553,7 +1538,6 @@ describe('EntriesImport', () => {
           },
         };
 
-        // Mock fsUtil.readFile to return source entry
         fsUtilityReadFileStub.callsFake((path) => {
           if (path.includes('source.json')) {
             return {
@@ -1570,7 +1554,6 @@ describe('EntriesImport', () => {
           return {};
         });
 
-        // Mock lookupAssets to return the entry unchanged
         const originalLookupAssets = require('../../../../src/utils').lookupAssets;
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           get: () => (entryData: any) => entryData.entry,
@@ -1583,7 +1566,6 @@ describe('EntriesImport', () => {
         expect(result.apiData.uid).to.equal('new_ref_entry_1');
         expect(result.apiData.title).to.equal('Entry with References');
 
-        // Restore original function
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           get: () => originalLookupAssets,
           configurable: true,
@@ -1608,7 +1590,6 @@ describe('EntriesImport', () => {
           },
         };
 
-        // Mock fsUtil.readFile to return source entry with JSON RTE
         fsUtilityReadFileStub.callsFake((path) => {
           if (path.includes('source.json')) {
             return {
@@ -1638,7 +1619,6 @@ describe('EntriesImport', () => {
           return {};
         });
 
-        // Mock lookupAssets to return the entry unchanged
         const originalLookupAssets = require('../../../../src/utils').lookupAssets;
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           get: () => (entryData: any) => entryData.entry,
@@ -1650,7 +1630,6 @@ describe('EntriesImport', () => {
         expect(result.apiData).to.not.be.null;
         expect(result.apiData.uid).to.equal('new_json_rte_entry_1');
 
-        // Restore original function
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           get: () => originalLookupAssets,
           configurable: true,
@@ -1675,7 +1654,6 @@ describe('EntriesImport', () => {
           },
         };
 
-        // Mock fsUtil.readFile to return source entry with RTE
         fsUtilityReadFileStub.callsFake((path) => {
           if (path.includes('source.json')) {
             return {
@@ -1689,7 +1667,6 @@ describe('EntriesImport', () => {
           return {};
         });
 
-        // Mock lookupAssets to return the entry unchanged
         const originalLookupAssets = require('../../../../src/utils').lookupAssets;
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           get: () => (entryData: any) => entryData.entry,
@@ -1701,7 +1678,6 @@ describe('EntriesImport', () => {
         expect(result.apiData).to.not.be.null;
         expect(result.apiData.uid).to.equal('new_rte_entry_1');
 
-        // Restore original function
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           get: () => originalLookupAssets,
           configurable: true,
@@ -1726,7 +1702,6 @@ describe('EntriesImport', () => {
           },
         };
 
-        // Mock fsUtil.readFile to throw an error
         fsUtilityReadFileStub.callsFake(() => {
           throw new Error('File read failed');
         });
@@ -1739,7 +1714,6 @@ describe('EntriesImport', () => {
 
     describe('replaceEntries()', () => {
       it('should handle empty chunks', async () => {
-        // Mock FsUtility to return empty indexer
         const mockFsUtility = {
           indexFileContent: {},
         };
@@ -1751,7 +1725,6 @@ describe('EntriesImport', () => {
       });
 
       it('should process existing entries for replacement', async () => {
-        // Mock FsUtility for entry replacement
         const mockFsUtility = {
           indexFileContent: {
             'chunk1.json': ['entry1'],
@@ -1759,7 +1732,6 @@ describe('EntriesImport', () => {
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
 
-        // Mock readChunkFiles.next() to return entry data
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
             entry1: mockEntries.existingEntry,
@@ -1767,12 +1739,10 @@ describe('EntriesImport', () => {
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
-        // Mock writeIntoFile method and writeFileSync
         sinon.stub(FsUtility.prototype, 'writeIntoFile').callsFake(() => {
           return Promise.resolve();
         });
 
-        // Mock writeFileSync to prevent file system writes
         const originalWriteFileSync = require('fs').writeFileSync;
         const writeFileSyncStub = sinon.stub(require('fs'), 'writeFileSync').callsFake(() => {});
 
@@ -1825,7 +1795,6 @@ describe('EntriesImport', () => {
         };
         sinon.stub(FsUtility.prototype, 'readChunkFiles').get(() => mockReadChunkFiles);
 
-        // Mock writeFileSync to prevent file system writes
         const writeFileSyncStub = sinon.stub(require('fs'), 'writeFileSync').callsFake(() => {});
 
         makeConcurrentCallStub.callsFake(async (options) => {
@@ -1865,7 +1834,6 @@ describe('EntriesImport', () => {
           },
         };
 
-        // Mock stack API calls
         const mockQuery = {
           findOne: sinon.stub().resolves({
             items: [
@@ -1884,7 +1852,6 @@ describe('EntriesImport', () => {
           update: sinon.stub().resolves({ uid: 'updated_entry_uid' }),
         };
 
-        // Mock the stack API chain: contentType().entry().query().findOne()
         const mockQueryChain = {
           query: sinon.stub().returns({
             findOne: sinon.stub().resolves({
@@ -1943,7 +1910,6 @@ describe('EntriesImport', () => {
           },
         };
 
-        // Mock stack API to return empty result
         const mockQueryChain = {
           query: sinon.stub().returns({
             findOne: sinon.stub().resolves({
@@ -1989,7 +1955,6 @@ describe('EntriesImport', () => {
           },
         };
 
-        // Mock stack API to throw error
         const mockQueryChain = {
           query: sinon.stub().returns({
             findOne: sinon.stub().rejects(new Error('Query failed')),
@@ -2032,7 +1997,6 @@ describe('EntriesImport', () => {
           },
         };
 
-        // Mock stack API calls
         const mockQueryChain = {
           query: sinon.stub().returns({
             findOne: sinon.stub().resolves({
@@ -2080,7 +2044,6 @@ describe('EntriesImport', () => {
 
   describe('Entry Publishing Flow', () => {
     beforeEach(() => {
-      // Setup mock data for entry publishing
       entriesImport['cTs'] = [
         mockData.simpleContentType,
         mockData.contentTypeWithReferences,
@@ -2099,7 +2062,6 @@ describe('EntriesImport', () => {
 
     describe('publishEntries()', () => {
       it('should handle empty chunks', async () => {
-        // Mock FsUtility to return empty indexer
         const mockFsUtility = {
           indexFileContent: {},
         };
@@ -2111,7 +2073,6 @@ describe('EntriesImport', () => {
       });
 
       it('should process entries with publish details successfully', async () => {
-        // Mock FsUtility for entry publishing
         const mockFsUtility = {
           indexFileContent: {
             'chunk1.json': ['entry1', 'entry2'],
@@ -2119,7 +2080,6 @@ describe('EntriesImport', () => {
         };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockFsUtility.indexFileContent);
 
-        // Mock readChunkFiles.next() to return entry data with publish details
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
             entry1: mockEntries.simpleEntry,
@@ -2534,7 +2494,17 @@ describe('EntriesImport', () => {
       // Reset all stubs before each test
       sinon.restore();
 
-      // Setup basic mock data
+      sinon.stub(FsUtility.prototype, 'createFolderIfNotExist').callsFake(() => {
+        return Promise.resolve();
+      });
+
+      // Recreate entriesImport instance after restore
+      entriesImport = new EntriesImport({
+        importConfig: mockImportConfig as any,
+        stackAPIClient: mockStackClient,
+        moduleName: 'entries',
+      });
+
       entriesImport['cTs'] = [mockData.simpleContentType, mockData.contentTypeWithReferences];
       entriesImport['locales'] = [
         { code: 'en-us', name: 'English' },
@@ -2548,92 +2518,48 @@ describe('EntriesImport', () => {
       entriesImport['failedEntries'] = [];
       entriesImport['autoCreatedEntries'] = [];
       entriesImport['entriesForVariant'] = [];
+
+      sinon
+        .stub(entriesImport as any, 'withLoadingSpinner')
+        .callsFake(async (message: string, action: () => Promise<any>) => {
+          return await action();
+        });
     });
 
     it('should complete full start process successfully', async () => {
-      // Mock file system operations
-      const mockFsUtil = {
-        readFile: sinon
-          .stub()
-          .onCall(0)
-          .resolves([mockData.simpleContentType, mockData.contentTypeWithReferences]) // content types
-          .onCall(1)
-          .resolves({ extension_uid: { ext_1: 'new_ext_1' } }) // marketplace apps
-          .onCall(2)
-          .resolves({ asset_1: 'new_asset_1' }) // asset UID mapper
-          .onCall(3)
-          .resolves({ 'https://old.com': 'https://new.com' }) // asset URL mapper
-          .onCall(4)
-          .resolves({ taxonomy_1: { terms: [] } }) // taxonomies
-          .onCall(5)
-          .resolves([{ code: 'en-us' }, { code: 'fr-fr' }]), // locales
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub().resolves(),
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
       };
-      sinon.stub(require('../../../../src/utils'), 'fsUtil').value(mockFsUtil);
+      sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]); // contentTypesCount, localesCount, totalEntryChunks, totalActualEntries, totalEntriesForPublishing
+      sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(entriesImport as any, 'initializeProgress').callsFake(() => {}); // Not async
+      sinon.stub(entriesImport as any, 'completeProgress').callsFake(() => {});
 
-      // Mock isEmpty function to return false for non-empty arrays
-      const isEmptyStub6 = sinon.stub().returns(false);
-      sinon.stub(require('lodash'), 'isEmpty').value(isEmptyStub6);
-
-      // Mock fileHelper
-      const mockFileHelper = {
-        readFileSync: sinon.stub().returns(entriesImport['envs']),
-        writeLargeFile: sinon.stub().resolves(),
-        fileExistsSync: sinon.stub().returns(false),
-      };
-      sinon.stub(require('../../../../src/utils'), 'fileHelper').value(mockFileHelper);
-
-      // Mock all the method calls
       const disableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
-      const populateEntryCreatePayloadStub = sinon.stub(entriesImport, 'populateEntryCreatePayload').returns([
-        { cTUid: 'simple_ct', locale: 'en-us' },
-        { cTUid: 'simple_ct', locale: 'fr-fr' },
-      ]);
-      const createEntriesStub = sinon.stub(entriesImport, 'createEntries').resolves();
-      const populateEntryUpdatePayloadStub = sinon
-        .stub(entriesImport, 'populateEntryUpdatePayload')
-        .returns([{ cTUid: 'simple_ct', locale: 'en-us' }]);
-      const updateEntriesWithReferencesStub = sinon.stub(entriesImport, 'updateEntriesWithReferences').resolves();
+      sinon.stub(entriesImport as any, 'processEntryCreation').resolves();
+      sinon.stub(entriesImport as any, 'processEntryReplacement').resolves();
+      sinon.stub(entriesImport as any, 'processEntryReferenceUpdates').resolves();
       const enableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
       const updateFieldRulesStub = sinon.stub(entriesImport, 'updateFieldRules').resolves();
-      const publishEntriesStub = sinon.stub(entriesImport, 'publishEntries').resolves();
+      sinon.stub(entriesImport as any, 'processEntryPublishing').resolves();
+      sinon.stub(entriesImport as any, 'processCleanup').resolves();
       const createEntryDataForVariantEntryStub = sinon.stub(entriesImport, 'createEntryDataForVariantEntry').returns();
 
       await entriesImport.start();
 
       // Verify all methods were called
       expect(disableMandatoryCTReferencesStub.called).to.be.true;
-      expect(createEntriesStub.calledTwice).to.be.true;
-      expect(updateEntriesWithReferencesStub.called).to.be.true;
       expect(enableMandatoryCTReferencesStub.called).to.be.true;
       expect(updateFieldRulesStub.called).to.be.true;
-      expect(publishEntriesStub.calledTwice).to.be.true;
-      expect(createEntryDataForVariantEntryStub.called).to.be.true;
+      expect(createEntryDataForVariantEntryStub.called).to.be.false; // Should not be called on success
     });
 
     it('should handle no content types found', async () => {
-      // Mock file system to return empty content types
-      const mockFsUtil = {
-        readFile: sinon.stub().resolves([]),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub().resolves(),
-      };
-      sinon.stub(require('../../../../src/utils'), 'fsUtil').value(mockFsUtil);
-
-      // Mock fileHelper
-      const mockFileHelper = {
-        readFileSync: sinon.stub().returns({}),
-        writeLargeFile: sinon.stub().resolves(),
-        fileExistsSync: sinon.stub().returns(false),
-      };
-      sinon.stub(require('../../../../src/utils'), 'fileHelper').value(mockFileHelper);
-
-      // Mock isEmpty function to return true for empty arrays
-      const isEmptyStub = sinon.stub().returns(true);
-      sinon.stub(require('lodash'), 'isEmpty').value(isEmptyStub);
-
-      // Mock createEntryDataForVariantEntry to be called in catch block
+      sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([0, 0, 0, 0, 0]);
       const createEntryDataForVariantEntryStub = sinon.stub(entriesImport, 'createEntryDataForVariantEntry').returns();
 
       await entriesImport.start();
@@ -2643,27 +2569,7 @@ describe('EntriesImport', () => {
     });
 
     it('should handle null content types', async () => {
-      // Mock file system to return null
-      const mockFsUtil = {
-        readFile: sinon.stub().resolves(null),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub().resolves(),
-      };
-      sinon.stub(require('../../../../src/utils'), 'fsUtil').value(mockFsUtil);
-
-      // Mock fileHelper
-      const mockFileHelper = {
-        readFileSync: sinon.stub().returns({}),
-        writeLargeFile: sinon.stub().resolves(),
-        fileExistsSync: sinon.stub().returns(false),
-      };
-      sinon.stub(require('../../../../src/utils'), 'fileHelper').value(mockFileHelper);
-
-      // Mock isEmpty function to return true for null
-      const isEmptyStub = sinon.stub().returns(true);
-      sinon.stub(require('lodash'), 'isEmpty').value(isEmptyStub);
-
-      // Mock createEntryDataForVariantEntry to be called in catch block
+      sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([0, 0, 0, 0, 0]);
       const createEntryDataForVariantEntryStub = sinon.stub(entriesImport, 'createEntryDataForVariantEntry').returns();
 
       await entriesImport.start();
@@ -2676,7 +2582,18 @@ describe('EntriesImport', () => {
       // Set replaceExisting to true
       entriesImport['importConfig'].replaceExisting = true;
 
-      // Mock file system operations
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+      sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]);
+      sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(entriesImport as any, 'initializeProgress').callsFake(() => {}); // Not async
+      sinon.stub(entriesImport as any, 'completeProgress').callsFake(() => {});
+
       const mockFsUtil = {
         readFile: sinon
           .stub()
@@ -2697,418 +2614,252 @@ describe('EntriesImport', () => {
       };
       sinon.stub(require('../../../../src/utils'), 'fsUtil').value(mockFsUtil);
 
-      // Mock isEmpty function to return false for non-empty arrays
       const isEmptyStub2 = sinon.stub().returns(false);
       sinon.stub(require('lodash'), 'isEmpty').value(isEmptyStub2);
 
-      // Mock fileHelper
       const mockFileHelper = {
         readFileSync: sinon.stub().returns({}),
         writeLargeFile: sinon.stub().resolves(),
-        fileExistsSync: sinon.stub().returns(false),
       };
       sinon.stub(require('../../../../src/utils'), 'fileHelper').value(mockFileHelper);
 
-      // Mock all the method calls
-      const disableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
-      const populateEntryCreatePayloadStub = sinon
-        .stub(entriesImport, 'populateEntryCreatePayload')
-        .returns([{ cTUid: 'simple_ct', locale: 'en-us' }]);
-      const createEntriesStub = sinon.stub(entriesImport, 'createEntries').resolves();
-      const replaceEntriesStub = sinon.stub(entriesImport, 'replaceEntries').resolves();
-      const populateEntryUpdatePayloadStub = sinon.stub(entriesImport, 'populateEntryUpdatePayload').returns([]);
-      const updateEntriesWithReferencesStub = sinon.stub(entriesImport, 'updateEntriesWithReferences').resolves();
-      const enableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
-      const updateFieldRulesStub = sinon.stub(entriesImport, 'updateFieldRules').resolves();
-      const createEntryDataForVariantEntryStub = sinon.stub(entriesImport, 'createEntryDataForVariantEntry').returns();
+      sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
+      sinon.stub(entriesImport as any, 'processEntryCreation').resolves();
+      const processEntryReplacementStub = sinon.stub(entriesImport as any, 'processEntryReplacement').resolves();
+      sinon.stub(entriesImport as any, 'processEntryReferenceUpdates').resolves();
+      sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
+      sinon.stub(entriesImport, 'updateFieldRules').resolves();
+      sinon.stub(entriesImport as any, 'processEntryPublishing').resolves();
+      sinon.stub(entriesImport as any, 'processCleanup').resolves();
 
       await entriesImport.start();
 
-      // Verify replaceEntries was called
-      expect(replaceEntriesStub.called).to.be.true;
+      // Verify processEntryReplacement was called when replaceExisting is true
+      expect(processEntryReplacementStub.calledOnce).to.be.true;
     });
 
     it('should handle autoCreatedEntries cleanup', async () => {
       // Set up autoCreatedEntries
       entriesImport['autoCreatedEntries'] = [{ cTUid: 'simple_ct', locale: 'en-us', entryUid: 'entry_1' }];
 
-      // Mock file system operations
-      const mockFsUtil = {
-        readFile: sinon
-          .stub()
-          .onCall(0)
-          .resolves([mockData.simpleContentType])
-          .onCall(1)
-          .resolves({ extension_uid: {} })
-          .onCall(2)
-          .resolves({})
-          .onCall(3)
-          .resolves({})
-          .onCall(4)
-          .resolves({})
-          .onCall(5)
-          .resolves([{ code: 'en-us' }]),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub().resolves(),
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
       };
-      sinon.stub(require('../../../../src/utils'), 'fsUtil').value(mockFsUtil);
+      sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]);
+      sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(entriesImport as any, 'initializeProgress').callsFake(() => {});
+      sinon.stub(entriesImport as any, 'completeProgress').callsFake(() => {});
 
-      // Mock isEmpty function to return false for non-empty arrays
-      const isEmptyStub3 = sinon.stub().returns(false);
-      sinon.stub(require('lodash'), 'isEmpty').value(isEmptyStub3);
-
-      // Mock fileHelper
-      const mockFileHelper = {
-        readFileSync: sinon.stub().returns({}),
-        writeLargeFile: sinon.stub().resolves(),
-        fileExistsSync: sinon.stub().returns(false),
-      };
-      sinon.stub(require('../../../../src/utils'), 'fileHelper').value(mockFileHelper);
-
-      // Mock all the method calls
-      const disableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
-      const populateEntryCreatePayloadStub = sinon.stub(entriesImport, 'populateEntryCreatePayload').returns([]);
-      const createEntriesStub = sinon.stub(entriesImport, 'createEntries').resolves();
-      const populateEntryUpdatePayloadStub = sinon.stub(entriesImport, 'populateEntryUpdatePayload').returns([]);
-      const updateEntriesWithReferencesStub = sinon.stub(entriesImport, 'updateEntriesWithReferences').resolves();
-      const enableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
-      const updateFieldRulesStub = sinon.stub(entriesImport, 'updateFieldRules').resolves();
-      const removeAutoCreatedEntriesStub = sinon.stub(entriesImport, 'removeAutoCreatedEntries').resolves();
-      const createEntryDataForVariantEntryStub = sinon.stub(entriesImport, 'createEntryDataForVariantEntry').returns();
+      sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
+      sinon.stub(entriesImport as any, 'processEntryCreation').resolves();
+      sinon.stub(entriesImport as any, 'processEntryReplacement').resolves();
+      sinon.stub(entriesImport as any, 'processEntryReferenceUpdates').resolves();
+      sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
+      sinon.stub(entriesImport, 'updateFieldRules').resolves();
+      sinon.stub(entriesImport as any, 'processEntryPublishing').resolves();
+      const processCleanupStub = sinon.stub(entriesImport as any, 'processCleanup').resolves();
 
       await entriesImport.start();
 
-      // Verify removeAutoCreatedEntries was called
-      expect(removeAutoCreatedEntriesStub.called).to.be.true;
+      // Verify processCleanup was called (which handles removeAutoCreatedEntries)
+      expect(processCleanupStub.called).to.be.true;
     });
 
     it('should handle skipEntriesPublish true', async () => {
       // Set skipEntriesPublish to true
       entriesImport['importConfig'].skipEntriesPublish = true;
 
-      // Mock file system operations
-      const mockFsUtil = {
-        readFile: sinon
-          .stub()
-          .onCall(0)
-          .resolves([mockData.simpleContentType])
-          .onCall(1)
-          .resolves({ extension_uid: {} })
-          .onCall(2)
-          .resolves({})
-          .onCall(3)
-          .resolves({})
-          .onCall(4)
-          .resolves({})
-          .onCall(5)
-          .resolves([{ code: 'en-us' }]),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub().resolves(),
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
       };
-      sinon.stub(require('../../../../src/utils'), 'fsUtil').value(mockFsUtil);
+      sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]);
+      sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(entriesImport as any, 'initializeProgress').callsFake(() => {});
+      sinon.stub(entriesImport as any, 'completeProgress').callsFake(() => {});
 
-      // Mock isEmpty function to return false for non-empty arrays
-      const isEmptyStub4 = sinon.stub().returns(false);
-      sinon.stub(require('lodash'), 'isEmpty').value(isEmptyStub4);
-
-      // Mock fileHelper
-      const mockFileHelper = {
-        readFileSync: sinon.stub().returns({}),
-        writeLargeFile: sinon.stub().resolves(),
-        fileExistsSync: sinon.stub().returns(false),
-      };
-      sinon.stub(require('../../../../src/utils'), 'fileHelper').value(mockFileHelper);
-
-      // Mock all the method calls
-      const disableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
-      const populateEntryCreatePayloadStub = sinon.stub(entriesImport, 'populateEntryCreatePayload').returns([]);
-      const createEntriesStub = sinon.stub(entriesImport, 'createEntries').resolves();
-      const populateEntryUpdatePayloadStub = sinon.stub(entriesImport, 'populateEntryUpdatePayload').returns([]);
-      const updateEntriesWithReferencesStub = sinon.stub(entriesImport, 'updateEntriesWithReferences').resolves();
-      const enableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
-      const updateFieldRulesStub = sinon.stub(entriesImport, 'updateFieldRules').resolves();
-      const publishEntriesStub = sinon.stub(entriesImport, 'publishEntries').resolves();
-      const createEntryDataForVariantEntryStub = sinon.stub(entriesImport, 'createEntryDataForVariantEntry').returns();
+      sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
+      sinon.stub(entriesImport as any, 'processEntryCreation').resolves();
+      sinon.stub(entriesImport as any, 'processEntryReplacement').resolves();
+      sinon.stub(entriesImport as any, 'processEntryReferenceUpdates').resolves();
+      sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
+      sinon.stub(entriesImport, 'updateFieldRules').resolves();
+      const processEntryPublishingStub = sinon.stub(entriesImport as any, 'processEntryPublishing').resolves();
+      sinon.stub(entriesImport as any, 'processCleanup').resolves();
 
       await entriesImport.start();
 
-      // Verify publishEntries was NOT called
-      expect(publishEntriesStub.called).to.be.false;
+      // Verify processEntryPublishing was NOT called
+      expect(processEntryPublishingStub.called).to.be.false;
     });
 
     it('should handle no environments found for publishing', async () => {
-      // Mock file system operations
-      const mockFsUtil = {
-        readFile: sinon
-          .stub()
-          .onCall(0)
-          .resolves([mockData.simpleContentType])
-          .onCall(1)
-          .resolves({ extension_uid: {} })
-          .onCall(2)
-          .resolves({})
-          .onCall(3)
-          .resolves({})
-          .onCall(4)
-          .resolves({})
-          .onCall(5)
-          .resolves([{ code: 'en-us' }]),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub().resolves(),
+      // Set empty environments
+      entriesImport['envs'] = {};
+
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
       };
-      sinon.stub(require('../../../../src/utils'), 'fsUtil').value(mockFsUtil);
+      sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]);
+      sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(entriesImport as any, 'initializeProgress').callsFake(() => {});
+      sinon.stub(entriesImport as any, 'completeProgress').callsFake(() => {});
 
-      // Mock isEmpty function to return false for non-empty arrays
-      const isEmptyStub5 = sinon.stub().returns(false);
-      sinon.stub(require('lodash'), 'isEmpty').value(isEmptyStub5);
-
-      // Mock fileHelper to return empty environments
-      const mockFileHelper = {
-        readFileSync: sinon.stub().returns({}), // Empty environments
-        writeLargeFile: sinon.stub().resolves(),
-        fileExistsSync: sinon.stub().returns(false),
-      };
-      sinon.stub(require('../../../../src/utils'), 'fileHelper').value(mockFileHelper);
-
-      // Mock all the method calls
-      const disableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
-      const populateEntryCreatePayloadStub = sinon
-        .stub(entriesImport, 'populateEntryCreatePayload')
-        .returns([{ cTUid: 'simple_ct', locale: 'en-us' }]);
-      const createEntriesStub = sinon.stub(entriesImport, 'createEntries').resolves();
-      const populateEntryUpdatePayloadStub = sinon.stub(entriesImport, 'populateEntryUpdatePayload').returns([]);
-      const updateEntriesWithReferencesStub = sinon.stub(entriesImport, 'updateEntriesWithReferences').resolves();
-      const enableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
-      const updateFieldRulesStub = sinon.stub(entriesImport, 'updateFieldRules').resolves();
-      const publishEntriesStub = sinon.stub(entriesImport, 'publishEntries').resolves();
-      const createEntryDataForVariantEntryStub = sinon.stub(entriesImport, 'createEntryDataForVariantEntry').returns();
+      sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
+      sinon.stub(entriesImport as any, 'processEntryCreation').resolves();
+      sinon.stub(entriesImport as any, 'processEntryReplacement').resolves();
+      sinon.stub(entriesImport as any, 'processEntryReferenceUpdates').resolves();
+      sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
+      sinon.stub(entriesImport, 'updateFieldRules').resolves();
+      const processEntryPublishingStub = sinon.stub(entriesImport as any, 'processEntryPublishing').resolves();
+      sinon.stub(entriesImport as any, 'processCleanup').resolves();
 
       await entriesImport.start();
 
-      // Verify publishEntries was NOT called due to empty environments
-      expect(publishEntriesStub.called).to.be.false;
+      // Verify processEntryPublishing was called (it handles empty environments internally)
+      expect(processEntryPublishingStub.called).to.be.true;
     });
 
     it('should handle errors in replaceEntries', async () => {
       // Set replaceExisting to true
       entriesImport['importConfig'].replaceExisting = true;
 
-      // Mock file system operations
-      const mockFsUtil = {
-        readFile: sinon
-          .stub()
-          .onCall(0)
-          .resolves([mockData.simpleContentType])
-          .onCall(1)
-          .resolves({ extension_uid: {} })
-          .onCall(2)
-          .resolves({})
-          .onCall(3)
-          .resolves({})
-          .onCall(4)
-          .resolves({})
-          .onCall(5)
-          .resolves([{ code: 'en-us' }]),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub().resolves(),
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
       };
-      sinon.stub(require('../../../../src/utils'), 'fsUtil').value(mockFsUtil);
+      sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]);
+      sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(entriesImport as any, 'initializeProgress').callsFake(() => {});
+      const completeProgressStub = sinon.stub(entriesImport as any, 'completeProgress');
 
-      // Mock isEmpty function to return false for non-empty arrays
-      const isEmptyStub6 = sinon.stub().returns(false);
-      sinon.stub(require('lodash'), 'isEmpty').value(isEmptyStub6);
-
-      // Mock fileHelper
-      const mockFileHelper = {
-        readFileSync: sinon.stub().returns({}),
-        writeLargeFile: sinon.stub().resolves(),
-        fileExistsSync: sinon.stub().returns(false),
-      };
-      sinon.stub(require('../../../../src/utils'), 'fileHelper').value(mockFileHelper);
-
-      // Mock all the method calls
-      const disableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
-      const populateEntryCreatePayloadStub = sinon
-        .stub(entriesImport, 'populateEntryCreatePayload')
-        .returns([{ cTUid: 'simple_ct', locale: 'en-us' }]);
-      const createEntriesStub = sinon.stub(entriesImport, 'createEntries').resolves();
-      const replaceEntriesStub = sinon.stub(entriesImport, 'replaceEntries').rejects(new Error('Replace failed'));
-      const populateEntryUpdatePayloadStub = sinon.stub(entriesImport, 'populateEntryUpdatePayload').returns([]);
-      const updateEntriesWithReferencesStub = sinon.stub(entriesImport, 'updateEntriesWithReferences').resolves();
-      const enableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
-      const updateFieldRulesStub = sinon.stub(entriesImport, 'updateFieldRules').resolves();
+      sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
+      sinon.stub(entriesImport as any, 'processEntryCreation').resolves();
+      sinon.stub(entriesImport as any, 'processEntryReplacement').rejects(new Error('Replace failed'));
+      sinon.stub(entriesImport as any, 'processEntryReferenceUpdates').resolves();
+      sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
+      sinon.stub(entriesImport, 'updateFieldRules').resolves();
+      sinon.stub(entriesImport as any, 'processEntryPublishing').resolves();
+      sinon.stub(entriesImport as any, 'processCleanup').resolves();
       const createEntryDataForVariantEntryStub = sinon.stub(entriesImport, 'createEntryDataForVariantEntry').returns();
 
       await entriesImport.start();
 
-      // Verify replaceEntries was called and error was handled
-      expect(replaceEntriesStub.called).to.be.true;
+      // Verify error was handled
+      expect(completeProgressStub.calledWith(false, sinon.match.string)).to.be.true;
+      expect(createEntryDataForVariantEntryStub.called).to.be.true;
     });
 
     it('should handle errors in removeAutoCreatedEntries', async () => {
       // Set up autoCreatedEntries
       entriesImport['autoCreatedEntries'] = [{ cTUid: 'simple_ct', locale: 'en-us', entryUid: 'entry_1' }];
 
-      // Mock file system operations
-      const mockFsUtil = {
-        readFile: sinon
-          .stub()
-          .onCall(0)
-          .resolves([mockData.simpleContentType])
-          .onCall(1)
-          .resolves({ extension_uid: {} })
-          .onCall(2)
-          .resolves({})
-          .onCall(3)
-          .resolves({})
-          .onCall(4)
-          .resolves({})
-          .onCall(5)
-          .resolves([{ code: 'en-us' }]),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub().resolves(),
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
       };
-      sinon.stub(require('../../../../src/utils'), 'fsUtil').value(mockFsUtil);
+      sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]);
+      sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(entriesImport as any, 'initializeProgress').callsFake(() => {});
+      sinon.stub(entriesImport as any, 'completeProgress').callsFake(() => {});
 
-      // Mock isEmpty function to return false for non-empty arrays
-      const isEmptyStub6 = sinon.stub().returns(false);
-      sinon.stub(require('lodash'), 'isEmpty').value(isEmptyStub6);
-
-      // Mock fileHelper
-      const mockFileHelper = {
-        readFileSync: sinon.stub().returns({}),
-        writeLargeFile: sinon.stub().resolves(),
-        fileExistsSync: sinon.stub().returns(false),
-      };
-      sinon.stub(require('../../../../src/utils'), 'fileHelper').value(mockFileHelper);
-
-      // Mock all the method calls
-      const disableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
-      const populateEntryCreatePayloadStub = sinon.stub(entriesImport, 'populateEntryCreatePayload').returns([]);
-      const createEntriesStub = sinon.stub(entriesImport, 'createEntries').resolves();
-      const populateEntryUpdatePayloadStub = sinon.stub(entriesImport, 'populateEntryUpdatePayload').returns([]);
-      const updateEntriesWithReferencesStub = sinon.stub(entriesImport, 'updateEntriesWithReferences').resolves();
-      const enableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
-      const updateFieldRulesStub = sinon.stub(entriesImport, 'updateFieldRules').resolves();
-      const removeAutoCreatedEntriesStub = sinon
-        .stub(entriesImport, 'removeAutoCreatedEntries')
-        .rejects(new Error('Remove failed'));
-      const createEntryDataForVariantEntryStub = sinon.stub(entriesImport, 'createEntryDataForVariantEntry').returns();
+      sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
+      sinon.stub(entriesImport as any, 'processEntryCreation').resolves();
+      sinon.stub(entriesImport as any, 'processEntryReplacement').resolves();
+      sinon.stub(entriesImport as any, 'processEntryReferenceUpdates').resolves();
+      sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
+      sinon.stub(entriesImport, 'updateFieldRules').resolves();
+      sinon.stub(entriesImport as any, 'processEntryPublishing').resolves();
+      // processCleanup calls removeAutoCreatedEntries internally
+      sinon.stub(entriesImport, 'removeAutoCreatedEntries').rejects(new Error('Remove failed'));
+      const processCleanupStub = sinon.stub(entriesImport as any, 'processCleanup').rejects(new Error('Remove failed'));
 
       await entriesImport.start();
 
-      // Verify removeAutoCreatedEntries was called and error was handled
-      expect(removeAutoCreatedEntriesStub.called).to.be.true;
+      // Verify processCleanup was called (which handles removeAutoCreatedEntries)
+      expect(processCleanupStub.called).to.be.true;
     });
 
     it('should handle errors in updateEntriesWithReferences', async () => {
-      // Mock file system operations
-      const mockFsUtil = {
-        readFile: sinon
-          .stub()
-          .onCall(0)
-          .resolves([mockData.simpleContentType])
-          .onCall(1)
-          .resolves({ extension_uid: {} })
-          .onCall(2)
-          .resolves({})
-          .onCall(3)
-          .resolves({})
-          .onCall(4)
-          .resolves({})
-          .onCall(5)
-          .resolves([{ code: 'en-us' }]),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub().resolves(),
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
       };
-      sinon.stub(require('../../../../src/utils'), 'fsUtil').value(mockFsUtil);
+      sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]);
+      sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(entriesImport as any, 'initializeProgress').callsFake(() => {});
+      const completeProgressStub = sinon.stub(entriesImport as any, 'completeProgress');
 
-      // Mock isEmpty function to return false for non-empty arrays
-      const isEmptyStub6 = sinon.stub().returns(false);
-      sinon.stub(require('lodash'), 'isEmpty').value(isEmptyStub6);
-
-      // Mock fileHelper
-      const mockFileHelper = {
-        readFileSync: sinon.stub().returns({}),
-        writeLargeFile: sinon.stub().resolves(),
-        fileExistsSync: sinon.stub().returns(false),
-      };
-      sinon.stub(require('../../../../src/utils'), 'fileHelper').value(mockFileHelper);
-
-      // Mock all the method calls
-      const disableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
-      const populateEntryCreatePayloadStub = sinon.stub(entriesImport, 'populateEntryCreatePayload').returns([]);
-      const createEntriesStub = sinon.stub(entriesImport, 'createEntries').resolves();
-      const populateEntryUpdatePayloadStub = sinon
-        .stub(entriesImport, 'populateEntryUpdatePayload')
-        .returns([{ cTUid: 'simple_ct', locale: 'en-us' }]);
-      const updateEntriesWithReferencesStub = sinon
-        .stub(entriesImport, 'updateEntriesWithReferences')
-        .rejects(new Error('Update failed'));
-      const enableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
-      const updateFieldRulesStub = sinon.stub(entriesImport, 'updateFieldRules').resolves();
+      sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
+      sinon.stub(entriesImport as any, 'processEntryCreation').resolves();
+      sinon.stub(entriesImport as any, 'processEntryReplacement').resolves();
+      sinon.stub(entriesImport as any, 'processEntryReferenceUpdates').rejects(new Error('Update failed'));
+      sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
+      sinon.stub(entriesImport, 'updateFieldRules').resolves();
+      sinon.stub(entriesImport as any, 'processEntryPublishing').resolves();
+      sinon.stub(entriesImport as any, 'processCleanup').resolves();
       const createEntryDataForVariantEntryStub = sinon.stub(entriesImport, 'createEntryDataForVariantEntry').returns();
 
       await entriesImport.start();
 
-      // Verify updateEntriesWithReferences was called and error was handled
-      expect(updateEntriesWithReferencesStub.called).to.be.true;
+      // Verify error was handled
+      expect(completeProgressStub.calledWith(false, sinon.match.string)).to.be.true;
+      expect(createEntryDataForVariantEntryStub.called).to.be.true;
     });
 
     it('should handle errors in enableMandatoryCTReferences', async () => {
-      // Mock file system operations
-      const mockFsUtil = {
-        readFile: sinon
-          .stub()
-          .onCall(0)
-          .resolves([mockData.simpleContentType])
-          .onCall(1)
-          .resolves({ extension_uid: {} })
-          .onCall(2)
-          .resolves({})
-          .onCall(3)
-          .resolves({})
-          .onCall(4)
-          .resolves({})
-          .onCall(5)
-          .resolves([{ code: 'en-us' }]),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub().resolves(),
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
       };
-      sinon.stub(require('../../../../src/utils'), 'fsUtil').value(mockFsUtil);
+      sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]);
+      sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(entriesImport as any, 'initializeProgress').callsFake(() => {});
+      const completeProgressStub = sinon.stub(entriesImport as any, 'completeProgress');
 
-      // Mock isEmpty function to return false for non-empty arrays
-      const isEmptyStub6 = sinon.stub().returns(false);
-      sinon.stub(require('lodash'), 'isEmpty').value(isEmptyStub6);
-
-      // Mock fileHelper
-      const mockFileHelper = {
-        readFileSync: sinon.stub().returns({}),
-        writeLargeFile: sinon.stub().resolves(),
-        fileExistsSync: sinon.stub().returns(false),
-      };
-      sinon.stub(require('../../../../src/utils'), 'fileHelper').value(mockFileHelper);
-
-      // Mock all the method calls
-      const disableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
-      const populateEntryCreatePayloadStub = sinon.stub(entriesImport, 'populateEntryCreatePayload').returns([]);
-      const createEntriesStub = sinon.stub(entriesImport, 'createEntries').resolves();
-      const populateEntryUpdatePayloadStub = sinon.stub(entriesImport, 'populateEntryUpdatePayload').returns([]);
-      const updateEntriesWithReferencesStub = sinon.stub(entriesImport, 'updateEntriesWithReferences').resolves();
+      sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
+      sinon.stub(entriesImport as any, 'processEntryCreation').resolves();
+      sinon.stub(entriesImport as any, 'processEntryReplacement').resolves();
+      sinon.stub(entriesImport as any, 'processEntryReferenceUpdates').resolves();
       const enableMandatoryCTReferencesStub = sinon
         .stub(entriesImport, 'enableMandatoryCTReferences')
         .rejects(new Error('Enable failed'));
-      const updateFieldRulesStub = sinon.stub(entriesImport, 'updateFieldRules').resolves();
+      sinon.stub(entriesImport, 'updateFieldRules').resolves();
+      sinon.stub(entriesImport as any, 'processEntryPublishing').resolves();
+      sinon.stub(entriesImport as any, 'processCleanup').resolves();
       const createEntryDataForVariantEntryStub = sinon.stub(entriesImport, 'createEntryDataForVariantEntry').returns();
 
       await entriesImport.start();
 
-      // Verify enableMandatoryCTReferences was called and error was handled
-      expect(enableMandatoryCTReferencesStub.called).to.be.true;
+      // Verify error was handled
+      expect(completeProgressStub.calledWith(false, sinon.match.string)).to.be.true;
+      expect(createEntryDataForVariantEntryStub.called).to.be.true;
     });
 
     it('should handle errors in updateFieldRules', async () => {
-      // Mock file system operations
       const mockFsUtil = {
         readFile: sinon
           .stub()
@@ -3129,25 +2880,41 @@ describe('EntriesImport', () => {
       };
       sinon.stub(require('../../../../src/utils'), 'fsUtil').value(mockFsUtil);
 
-      // Mock isEmpty function to return false for non-empty arrays
       const isEmptyStub6 = sinon.stub().returns(false);
       sinon.stub(require('lodash'), 'isEmpty').value(isEmptyStub6);
 
-      // Mock fileHelper
       const mockFileHelper = {
         readFileSync: sinon.stub().returns({}),
         writeLargeFile: sinon.stub().resolves(),
-        fileExistsSync: sinon.stub().returns(false),
       };
       sinon.stub(require('../../../../src/utils'), 'fileHelper').value(mockFileHelper);
 
-      // Mock all the method calls
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+      sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]);
+      sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(entriesImport as any, 'initializeProgress').callsFake(() => {}); // Not async
+      const completeProgressStub = sinon.stub(entriesImport as any, 'completeProgress');
+
       const disableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
       const populateEntryCreatePayloadStub = sinon.stub(entriesImport, 'populateEntryCreatePayload').returns([]);
       const createEntriesStub = sinon.stub(entriesImport, 'createEntries').resolves();
       const populateEntryUpdatePayloadStub = sinon.stub(entriesImport, 'populateEntryUpdatePayload').returns([]);
       const updateEntriesWithReferencesStub = sinon.stub(entriesImport, 'updateEntriesWithReferences').resolves();
       const enableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
+      sinon.stub(entriesImport as any, 'processEntryCreation').resolves();
+      sinon.stub(entriesImport as any, 'processEntryReplacement').resolves();
+      sinon.stub(entriesImport as any, 'processEntryReferenceUpdates').resolves();
+      // enableMandatoryCTReferences is a public method, not processMandatoryCTReferences
+      // updateFieldRules is a public method, not processFieldRules
+      sinon.stub(entriesImport as any, 'processEntryPublishing').resolves();
+      sinon.stub(entriesImport as any, 'processCleanup').resolves();
+      sinon.stub(entriesImport as any, 'removeAutoCreatedEntries').resolves();
       const updateFieldRulesStub = sinon
         .stub(entriesImport, 'updateFieldRules')
         .rejects(new Error('Field rules failed'));
@@ -3155,108 +2922,51 @@ describe('EntriesImport', () => {
 
       await entriesImport.start();
 
-      // Verify updateFieldRules was called and error was handled
-      expect(updateFieldRulesStub.called).to.be.true;
+      // Verify error was handled
+      expect(completeProgressStub.calledWith(false, sinon.match.string)).to.be.true;
     });
 
     it('should handle errors in publishEntries', async () => {
-      // Mock file system operations
-      const mockFsUtil = {
-        readFile: sinon
-          .stub()
-          .onCall(0)
-          .resolves([mockData.simpleContentType])
-          .onCall(1)
-          .resolves({ extension_uid: {} })
-          .onCall(2)
-          .resolves({})
-          .onCall(3)
-          .resolves({})
-          .onCall(4)
-          .resolves({})
-          .onCall(5)
-          .resolves([{ code: 'en-us' }]),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub().resolves(),
+      const mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
       };
-      sinon.stub(require('../../../../src/utils'), 'fsUtil').value(mockFsUtil);
+      sinon.stub(entriesImport as any, 'analyzeEntryData').resolves([2, 2, 2, 10, 5]);
+      sinon.stub(entriesImport as any, 'createNestedProgress').returns(mockProgress);
+      sinon.stub(entriesImport as any, 'initializeProgress').callsFake(() => {});
+      const completeProgressStub = sinon.stub(entriesImport as any, 'completeProgress');
 
-      // Mock isEmpty function to return false for non-empty arrays
-      const isEmptyStub6 = sinon.stub().returns(false);
-      sinon.stub(require('lodash'), 'isEmpty').value(isEmptyStub6);
-
-      // Mock fileHelper
-      const mockFileHelper = {
-        readFileSync: sinon.stub().returns(entriesImport['envs']),
-        writeLargeFile: sinon.stub().resolves(),
-        fileExistsSync: sinon.stub().returns(false),
-      };
-      sinon.stub(require('../../../../src/utils'), 'fileHelper').value(mockFileHelper);
-
-      // Mock all the method calls
-      const disableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
-      const populateEntryCreatePayloadStub = sinon
-        .stub(entriesImport, 'populateEntryCreatePayload')
-        .returns([{ cTUid: 'simple_ct', locale: 'en-us' }]);
-      const createEntriesStub = sinon.stub(entriesImport, 'createEntries').resolves();
-      const populateEntryUpdatePayloadStub = sinon.stub(entriesImport, 'populateEntryUpdatePayload').returns([]);
-      const updateEntriesWithReferencesStub = sinon.stub(entriesImport, 'updateEntriesWithReferences').resolves();
-      const enableMandatoryCTReferencesStub = sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
-      const updateFieldRulesStub = sinon.stub(entriesImport, 'updateFieldRules').resolves();
-      const publishEntriesStub = sinon.stub(entriesImport, 'publishEntries').rejects(new Error('Publish failed'));
+      sinon.stub(entriesImport, 'disableMandatoryCTReferences').resolves();
+      sinon.stub(entriesImport as any, 'processEntryCreation').resolves();
+      sinon.stub(entriesImport as any, 'processEntryReplacement').resolves();
+      sinon.stub(entriesImport as any, 'processEntryReferenceUpdates').resolves();
+      sinon.stub(entriesImport, 'enableMandatoryCTReferences').resolves();
+      sinon.stub(entriesImport, 'updateFieldRules').resolves();
+      sinon.stub(entriesImport as any, 'processEntryPublishing').rejects(new Error('Publish failed'));
+      sinon.stub(entriesImport as any, 'processCleanup').resolves();
       const createEntryDataForVariantEntryStub = sinon.stub(entriesImport, 'createEntryDataForVariantEntry').returns();
 
       await entriesImport.start();
 
-      // Verify publishEntries was called and error was handled
-      expect(publishEntriesStub.called).to.be.true;
+      // Verify error was handled
+      expect(completeProgressStub.calledWith(false, sinon.match.string)).to.be.true;
+      expect(createEntryDataForVariantEntryStub.called).to.be.true;
     });
 
     it('should handle general errors in try-catch', async () => {
-      // Mock file system operations to return valid data but cause error later
-      const mockFsUtil = {
-        readFile: sinon
-          .stub()
-          .onCall(0)
-          .resolves([mockData.simpleContentType]) // content types
-          .onCall(1)
-          .resolves({ extension_uid: {} }) // marketplace apps
-          .onCall(2)
-          .resolves({}) // asset UID mapper
-          .onCall(3)
-          .resolves({}) // asset URL mapper
-          .onCall(4)
-          .resolves({}) // taxonomies
-          .onCall(5)
-          .rejects(new Error('File read failed')), // locales - this will cause error
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub().resolves(),
-      };
-      sinon.stub(require('../../../../src/utils'), 'fsUtil').value(mockFsUtil);
-
-      // Mock fileHelper
-      const mockFileHelper = {
-        readFileSync: sinon.stub().returns({}),
-        writeLargeFile: sinon.stub().resolves(),
-        fileExistsSync: sinon.stub().returns(false),
-      };
-      sinon.stub(require('../../../../src/utils'), 'fileHelper').value(mockFileHelper);
-
-      // Mock isEmpty function to return false for non-empty arrays
-      const isEmptyStub = sinon.stub().returns(false);
-      sinon.stub(require('lodash'), 'isEmpty').value(isEmptyStub);
-
-      // Mock createEntryDataForVariantEntry to be called in catch block
+      sinon.stub(entriesImport as any, 'analyzeEntryData').rejects(new Error('File read failed'));
+      const completeProgressStub = sinon.stub(entriesImport as any, 'completeProgress');
       const createEntryDataForVariantEntryStub = sinon.stub(entriesImport, 'createEntryDataForVariantEntry').returns();
 
-      try {
-        await entriesImport.start();
-      } catch (error) {
-        // Expected to throw error
-      }
+      await entriesImport.start();
 
       // Verify createEntryDataForVariantEntry was called in catch block
       expect(createEntryDataForVariantEntryStub.called).to.be.true;
+      // Verify completeProgress was called with error
+      expect(completeProgressStub.calledWith(false, sinon.match.string)).to.be.true;
     });
   });
 
@@ -3266,7 +2976,6 @@ describe('EntriesImport', () => {
 
   describe('Additional Branch Coverage Tests', () => {
     beforeEach(() => {
-      // Don't restore all stubs, just reset the specific ones we need
       entriesImport['entriesForVariant'] = [];
       entriesImport['autoCreatedEntries'] = [];
       // Reset the fsUtilityReadFileStub
@@ -3275,7 +2984,6 @@ describe('EntriesImport', () => {
 
     describe('removeAutoCreatedEntries() Method', () => {
       it('should successfully remove auto-created entries', async () => {
-        // Setup auto-created entries
         entriesImport['autoCreatedEntries'] = [
           { entryUid: 'auto_entry_1', title: 'Auto Entry 1' },
           { entryUid: 'auto_entry_2', title: 'Auto Entry 2' },
@@ -3316,7 +3024,6 @@ describe('EntriesImport', () => {
       });
 
       it('should handle errors when removing auto-created entries', async () => {
-        // Setup auto-created entries
         entriesImport['autoCreatedEntries'] = [{ entryUid: 'auto_entry_1', title: 'Auto Entry 1' }];
         entriesImport['entriesForVariant'] = [
           { entry_uid: 'auto_entry_1', locale: 'en-us', content_type: 'simple_ct' },
@@ -3359,13 +3066,11 @@ describe('EntriesImport', () => {
 
     describe('createEntryDataForVariantEntry() Method', () => {
       it('should write file when entriesForVariant is not empty', () => {
-        // Setup entriesForVariant with data
         entriesImport['entriesForVariant'] = [
           { entry_uid: 'entry_1', locale: 'en-us', content_type: 'simple_ct' },
           { entry_uid: 'entry_2', locale: 'fr-fr', content_type: 'ref_ct' },
         ];
 
-        // Mock writeFileSync
         const writeFileSyncStub = sinon.stub(require('fs'), 'writeFileSync');
 
         entriesImport.createEntryDataForVariantEntry();
@@ -3379,10 +3084,8 @@ describe('EntriesImport', () => {
       });
 
       it('should not write file when entriesForVariant is empty', () => {
-        // Setup empty entriesForVariant
         entriesImport['entriesForVariant'] = [];
 
-        // Mock writeFileSync
         const writeFileSyncStub = sinon.stub(require('fs'), 'writeFileSync');
 
         entriesImport.createEntryDataForVariantEntry();
@@ -3394,10 +3097,8 @@ describe('EntriesImport', () => {
 
     describe('updateFieldRules() Method Error Handling', () => {
       it('should handle content type fetch error', async () => {
-        // Setup content types with field rules
         const mockContentTypes = [mockData.simpleContentType, mockData.contentTypeWithReferences];
 
-        // Mock fsUtil.readFile to return field rules data
         fsUtilityReadFileStub.callsFake((filePath) => {
           console.log('fsUtil.readFile called with path:', filePath);
           if (filePath.includes('field_rules_uid.json')) {
@@ -3412,7 +3113,6 @@ describe('EntriesImport', () => {
           return [];
         });
 
-        // Mock stack client methods directly
         const mockContentType = {
           fetch: sinon.stub().rejects(new Error('Fetch failed')),
         };
@@ -3432,10 +3132,8 @@ describe('EntriesImport', () => {
       });
 
       it('should handle content type update error', async () => {
-        // Setup content types with field rules
         const mockContentTypes = [mockData.simpleContentType, mockData.contentTypeWithReferences];
 
-        // Mock fsUtil.readFile to return field rules data
         fsUtilityReadFileStub.callsFake((path) => {
           if (path.includes('field_rules_uid.json')) {
             return ['simple_ct']; // array of strings
@@ -3446,7 +3144,6 @@ describe('EntriesImport', () => {
           return [];
         });
 
-        // Mock stack client to simulate successful fetch but failed update
         const mockUpdate = sinon.stub().rejects(new Error('Update failed'));
         const mockContentType = {
           fetch: sinon.stub().resolves({
@@ -3472,10 +3169,8 @@ describe('EntriesImport', () => {
       });
 
       it('should skip when content type not found', async () => {
-        // Setup content types with field rules
         const mockContentTypes = [mockData.simpleContentType, mockData.contentTypeWithReferences];
 
-        // Mock fsUtil.readFile to return field rules data
         fsUtilityReadFileStub.callsFake((path) => {
           if (path.includes('field_rules_uid.json')) {
             return ['simple_ct']; // array of strings
@@ -3486,7 +3181,6 @@ describe('EntriesImport', () => {
           return [];
         });
 
-        // Mock stack client to return null (content type not found)
         const mockContentType = {
           fetch: sinon.stub().resolves(null),
         };
@@ -3495,7 +3189,6 @@ describe('EntriesImport', () => {
         };
         sinon.stub(entriesImport, 'stack').value(mockStackClient);
 
-        // Mock log.debug
         const mockLog = {
           debug: sinon.stub(),
           info: sinon.stub(),
@@ -3516,12 +3209,10 @@ describe('EntriesImport', () => {
       });
 
       it('should handle no field rules found', async () => {
-        // Setup content types without field rules
         const contentTypeWithoutRules = { ...mockData.simpleContentType };
         delete contentTypeWithoutRules.field_rules;
         const mockContentTypes = [contentTypeWithoutRules];
 
-        // Mock fsUtil.readFile to return field rules data
         fsUtilityReadFileStub.callsFake((path) => {
           if (path.includes('field_rules_uid.json')) {
             return ['simple_ct']; // array of strings
@@ -3532,7 +3223,6 @@ describe('EntriesImport', () => {
           return [];
         });
 
-        // Mock log.info
         const mockLog = {
           debug: sinon.stub(),
           info: sinon.stub(),
@@ -3555,7 +3245,6 @@ describe('EntriesImport', () => {
 
     describe('serializeEntries() Localized Entry Handling', () => {
       it('should handle localized entry with UID mapping', () => {
-        // Setup localized entry scenario
         const entry = {
           uid: 'localized_entry_1',
           title: 'Localized Entry',
@@ -3564,24 +3253,20 @@ describe('EntriesImport', () => {
         const contentType = mockData.simpleContentType;
         const isMasterLocale = false;
 
-        // Setup UID mapping
         entriesImport['entriesUidMapper'] = {
           localized_entry_1: 'new_localized_entry_1',
         };
 
-        // Setup asset mappers
         entriesImport['assetUidMapper'] = {};
         entriesImport['assetUrlMapper'] = {};
         entriesImport['installedExtensions'] = [];
 
-        // Mock lookupAssets to return the entry unchanged
         const originalLookupAssets = require('../../../../src/utils').lookupAssets;
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           get: () => (entryData: any) => entryData.entry,
           configurable: true,
         });
 
-        // Mock stack client
         const mockEntryResponse = {
           uid: 'new_localized_entry_1',
           title: 'Localized Entry',
@@ -3614,7 +3299,6 @@ describe('EntriesImport', () => {
           entryOldUid: 'localized_entry_1',
         });
 
-        // Restore original function
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           value: originalLookupAssets,
           configurable: true,
@@ -3622,7 +3306,6 @@ describe('EntriesImport', () => {
       });
 
       it('should handle localized entry without UID mapping', () => {
-        // Setup localized entry scenario without mapping
         const entry = {
           uid: 'localized_entry_1',
           title: 'Localized Entry',
@@ -3631,15 +3314,12 @@ describe('EntriesImport', () => {
         const contentType = mockData.simpleContentType;
         const isMasterLocale = false;
 
-        // Setup empty UID mapping
         entriesImport['entriesUidMapper'] = {};
 
-        // Setup asset mappers
         entriesImport['assetUidMapper'] = {};
         entriesImport['assetUrlMapper'] = {};
         entriesImport['installedExtensions'] = [];
 
-        // Mock lookupAssets to return the entry unchanged
         const originalLookupAssets = require('../../../../src/utils').lookupAssets;
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           get: () => (entryData: any) => entryData.entry,
@@ -3662,7 +3342,6 @@ describe('EntriesImport', () => {
         expect(result.apiData.title).to.equal('Localized Entry');
         expect(result.additionalInfo).to.not.be.empty;
 
-        // Restore original function
         Object.defineProperty(require('../../../../src/utils'), 'lookupAssets', {
           value: originalLookupAssets,
           configurable: true,
@@ -3672,7 +3351,6 @@ describe('EntriesImport', () => {
 
     describe('Filter Conditions in onReject Callbacks', () => {
       it('should filter entriesForVariant in updateEntriesWithReferences onReject', async () => {
-        // Setup entriesForVariant
         entriesImport['entriesForVariant'] = [
           { entry_uid: 'entry_1', locale: 'en-us', content_type: 'simple_ct' },
           { entry_uid: 'entry_2', locale: 'fr-fr', content_type: 'ref_ct' },
@@ -3688,14 +3366,11 @@ describe('EntriesImport', () => {
           });
         });
 
-        // Mock handleAndLogError
         const handleAndLogErrorStub = sinon.stub(require('@contentstack/cli-utilities'), 'handleAndLogError');
 
-        // Mock FsUtility.indexFileContent to return some data
         const mockIndexFileContent = { chunk1: true };
         sinon.stub(FsUtility.prototype, 'indexFileContent').get(() => mockIndexFileContent);
 
-        // Mock FsUtility.readChunkFiles to return some data
         const mockReadChunkFiles = {
           next: sinon.stub().resolves({
             entry1: { uid: 'entry_1', title: 'Entry 1' },
@@ -3712,6 +3387,291 @@ describe('EntriesImport', () => {
         expect(entriesImport['entriesForVariant'].find((e) => e.entry_uid === 'entry_1')).to.be.undefined;
         expect(entriesImport['entriesForVariant'].find((e) => e.entry_uid === 'entry_2')).to.exist;
         expect(entriesImport['entriesForVariant'].find((e) => e.entry_uid === 'entry_3')).to.exist;
+      });
+    });
+  });
+
+  // ==========================================
+  // PROGRESS BAR METHODS TESTS
+  // ==========================================
+
+  describe('Progress Bar Methods', () => {
+    let mockProgress: any;
+    let progressEntriesImport: EntriesImport;
+
+    beforeEach(() => {
+      sinon.restore();
+
+      sinon.stub(FsUtility.prototype, 'createFolderIfNotExist').callsFake(() => {
+        return Promise.resolve();
+      });
+
+      // Recreate entriesImport instance after restore
+      progressEntriesImport = new EntriesImport({
+        importConfig: mockImportConfig as any,
+        stackAPIClient: mockStackClient,
+        moduleName: 'entries',
+      });
+
+      // Initialize required properties (will be set by analyzeEntryData from mocks)
+
+      mockProgress = {
+        addProcess: sinon.stub(),
+        startProcess: sinon.stub().returns({ updateStatus: sinon.stub() }),
+        completeProcess: sinon.stub(),
+        updateStatus: sinon.stub(),
+        tick: sinon.stub(),
+      };
+    });
+
+    describe('analyzeEntryData()', () => {
+      it('should analyze entry data and return correct counts', async () => {
+        // This test verifies the method structure and return type
+        // Full integration test would require complex mocking of file system operations
+        const result = await progressEntriesImport['analyzeEntryData']();
+
+        expect(result).to.be.an('array');
+        expect(result.length).to.equal(5);
+        expect(result[0]).to.be.a('number'); // contentTypesCount
+        expect(result[1]).to.be.a('number'); // localesCount
+        expect(result[2]).to.be.a('number'); // totalEntryChunks
+        expect(result[3]).to.be.a('number'); // totalActualEntries
+        expect(result[4]).to.be.a('number'); // totalEntriesForPublishing
+      });
+
+      it('should return zeros when no content types found', async () => {
+        const fsUtilReadFileStub = sinon.stub(fsUtil, 'readFile').resolves([]);
+        const fsUtilMakeDirectoryStub = sinon.stub(fsUtil, 'makeDirectory').resolves();
+
+        const isEmptyStub = sinon.stub().returns(true);
+        sinon.stub(require('lodash'), 'isEmpty').value(isEmptyStub);
+
+        sinon
+          .stub(progressEntriesImport as any, 'withLoadingSpinner')
+          .callsFake(async (message: string, action: () => Promise<any>) => {
+            return await action();
+          });
+
+        const result = await progressEntriesImport['analyzeEntryData']();
+
+        expect(result).to.deep.equal([0, 0, 0, 0, 0]);
+
+        fsUtilReadFileStub.restore();
+        fsUtilMakeDirectoryStub.restore();
+      });
+    });
+
+    describe('initializeProgress()', () => {
+      it('should initialize progress with correct process counts', () => {
+        const counts = {
+          contentTypesCount: 2,
+          localesCount: 2,
+          totalEntryChunks: 5,
+          totalActualEntries: 10,
+          totalEntriesForPublishing: 5,
+        };
+
+        progressEntriesImport['importConfig'].replaceExisting = false;
+        progressEntriesImport['importConfig'].skipEntriesPublish = false;
+
+        progressEntriesImport['initializeProgress'](mockProgress, counts);
+
+        expect(mockProgress.addProcess.called).to.be.true;
+        expect(mockProgress.addProcess.callCount).to.be.greaterThan(0);
+      });
+
+      it('should add replace existing process when replaceExisting is true', () => {
+        const counts = {
+          contentTypesCount: 2,
+          localesCount: 2,
+          totalEntryChunks: 5,
+          totalActualEntries: 10,
+          totalEntriesForPublishing: 5,
+        };
+
+        progressEntriesImport['importConfig'].replaceExisting = true;
+        progressEntriesImport['importConfig'].skipEntriesPublish = false;
+
+        progressEntriesImport['initializeProgress'](mockProgress, counts);
+
+        expect(mockProgress.addProcess.called).to.be.true;
+      });
+
+      it('should skip entries publish process when skipEntriesPublish is true', () => {
+        const counts = {
+          contentTypesCount: 2,
+          localesCount: 2,
+          totalEntryChunks: 5,
+          totalActualEntries: 10,
+          totalEntriesForPublishing: 5,
+        };
+
+        progressEntriesImport['importConfig'].replaceExisting = false;
+        progressEntriesImport['importConfig'].skipEntriesPublish = true;
+
+        progressEntriesImport['initializeProgress'](mockProgress, counts);
+
+        expect(mockProgress.addProcess.called).to.be.true;
+      });
+    });
+
+    describe('processEntryCreation()', () => {
+      it('should process entry creation successfully', async () => {
+        const writeFileStub = sinon.stub(fsUtil, 'writeFile').resolves();
+        const writeLargeFileStub = sinon.stub(fileHelper, 'writeLargeFile').resolves();
+
+        const populateStub = sinon
+          .stub(progressEntriesImport, 'populateEntryCreatePayload')
+          .returns([{ cTUid: 'simple_ct', locale: 'en-us' }]);
+        const createEntriesStub = sinon.stub(progressEntriesImport, 'createEntries').resolves();
+
+        await progressEntriesImport['processEntryCreation']();
+
+        expect(populateStub.called).to.be.true;
+        expect(createEntriesStub.called).to.be.true;
+        expect(writeLargeFileStub.called).to.be.true;
+        expect(writeFileStub.called).to.be.true;
+      });
+    });
+
+    describe('processEntryReplacement()', () => {
+      it('should process entry replacement successfully', async () => {
+        const populateStub = sinon
+          .stub(progressEntriesImport, 'populateEntryCreatePayload')
+          .returns([{ cTUid: 'simple_ct', locale: 'en-us' }]);
+        const replaceEntriesStub = sinon.stub(progressEntriesImport, 'replaceEntries').resolves();
+
+        await progressEntriesImport['processEntryReplacement']();
+
+        expect(populateStub.called).to.be.true;
+        expect(replaceEntriesStub.called).to.be.true;
+      });
+
+      it('should handle errors in replaceEntries gracefully', async () => {
+        const populateStub = sinon
+          .stub(progressEntriesImport, 'populateEntryCreatePayload')
+          .returns([{ cTUid: 'simple_ct', locale: 'en-us' }]);
+        const replaceEntriesStub = sinon
+          .stub(progressEntriesImport, 'replaceEntries')
+          .rejects(new Error('Replace failed'));
+        const handleErrorStub = sinon.stub(require('@contentstack/cli-utilities'), 'handleAndLogError');
+
+        await progressEntriesImport['processEntryReplacement']();
+
+        expect(populateStub.called).to.be.true;
+        expect(replaceEntriesStub.called).to.be.true;
+      });
+    });
+
+    describe('processEntryReferenceUpdates()', () => {
+      beforeEach(() => {
+        sinon.stub(fsUtil, 'writeFile').resolves();
+      });
+
+      it('should process entry reference updates successfully', async () => {
+        const populateStub = sinon
+          .stub(progressEntriesImport, 'populateEntryUpdatePayload')
+          .returns([{ cTUid: 'simple_ct', locale: 'en-us' }]);
+        const updateStub = sinon.stub(progressEntriesImport, 'updateEntriesWithReferences').resolves();
+
+        await progressEntriesImport['processEntryReferenceUpdates']();
+
+        expect(populateStub.called).to.be.true;
+        expect(updateStub.called).to.be.true;
+        expect((fsUtil.writeFile as sinon.SinonStub).called).to.be.true;
+      });
+
+      it('should handle errors in updateEntriesWithReferences gracefully', async () => {
+        const populateStub = sinon
+          .stub(progressEntriesImport, 'populateEntryUpdatePayload')
+          .returns([{ cTUid: 'simple_ct', locale: 'en-us' }]);
+        const updateStub = sinon
+          .stub(progressEntriesImport, 'updateEntriesWithReferences')
+          .rejects(new Error('Update failed'));
+        const handleErrorStub = sinon.stub(require('@contentstack/cli-utilities'), 'handleAndLogError');
+
+        try {
+          await progressEntriesImport['processEntryReferenceUpdates']();
+        } catch (error) {
+          // Expected to throw
+        }
+
+        expect(populateStub.called).to.be.true;
+        expect(updateStub.called).to.be.true;
+      });
+    });
+
+    describe('processEntryPublishing()', () => {
+      beforeEach(() => {
+        progressEntriesImport['envs'] = {
+          env_1: { name: 'production', uid: 'env_1' },
+        };
+        sinon.stub(fileHelper, 'readFileSync').returns(progressEntriesImport['envs']);
+      });
+
+      it('should process entry publishing successfully', async () => {
+        const populateStub = sinon
+          .stub(progressEntriesImport, 'populateEntryCreatePayload')
+          .returns([{ cTUid: 'simple_ct', locale: 'en-us' }]);
+        const publishStub = sinon.stub(progressEntriesImport, 'publishEntries').resolves();
+
+        await progressEntriesImport['processEntryPublishing']();
+
+        expect((fileHelper.readFileSync as sinon.SinonStub).called).to.be.true;
+        expect(populateStub.called).to.be.true;
+        expect(publishStub.called).to.be.true;
+      });
+
+      it('should handle errors in publishEntries gracefully', async () => {
+        const handleErrorStub = sinon.stub(require('@contentstack/cli-utilities'), 'handleAndLogError');
+        const populateStub = sinon
+          .stub(progressEntriesImport, 'populateEntryCreatePayload')
+          .returns([{ cTUid: 'simple_ct', locale: 'en-us' }]);
+        const publishStub = sinon.stub(progressEntriesImport, 'publishEntries').rejects(new Error('Publish failed'));
+
+        await progressEntriesImport['processEntryPublishing']();
+
+        expect((fileHelper.readFileSync as sinon.SinonStub).called).to.be.true;
+        expect(populateStub.called).to.be.true;
+        expect(publishStub.called).to.be.true;
+      });
+    });
+
+    describe('processCleanup()', () => {
+      it('should process cleanup successfully when autoCreatedEntries exist', async () => {
+        progressEntriesImport['autoCreatedEntries'] = [{ cTUid: 'simple_ct', locale: 'en-us', entryUid: 'entry_1' }];
+        progressEntriesImport['progressManager'] = mockProgress;
+        const removeStub = sinon.stub(progressEntriesImport, 'removeAutoCreatedEntries').resolves();
+        const createVariantStub = sinon.stub(progressEntriesImport, 'createEntryDataForVariantEntry').returns();
+
+        await progressEntriesImport['processCleanup']();
+
+        expect(removeStub.called).to.be.true;
+        expect(createVariantStub.called).to.be.true;
+      });
+
+      it('should process cleanup successfully when no autoCreatedEntries', async () => {
+        progressEntriesImport['autoCreatedEntries'] = [];
+        progressEntriesImport['progressManager'] = mockProgress;
+        const createVariantStub = sinon.stub(progressEntriesImport, 'createEntryDataForVariantEntry').returns();
+
+        await progressEntriesImport['processCleanup']();
+
+        expect(createVariantStub.called).to.be.true;
+      });
+
+      it('should handle errors in removeAutoCreatedEntries gracefully', async () => {
+        progressEntriesImport['autoCreatedEntries'] = [{ cTUid: 'simple_ct', locale: 'en-us', entryUid: 'entry_1' }];
+        const removeStub = sinon
+          .stub(progressEntriesImport, 'removeAutoCreatedEntries')
+          .rejects(new Error('Remove failed'));
+        const handleErrorStub = sinon.stub(require('@contentstack/cli-utilities'), 'handleAndLogError');
+        const createVariantStub = sinon.stub(progressEntriesImport, 'createEntryDataForVariantEntry').returns();
+
+        await progressEntriesImport['processCleanup']();
+
+        expect(removeStub.called).to.be.true;
+        expect(createVariantStub.called).to.be.true;
       });
     });
   });

@@ -12,7 +12,7 @@ let loggerInstance: Logger | null = null;
 function createLoggerInstance(): Logger {
   const logConfig = configHandler.get('log');
   const logLevel = logConfig?.level || 'info';
-  const showConsoleLogs = logConfig?.['show-console-logs'] ?? false;
+  const showConsoleLogs = logConfig?.showConsoleLogs ?? false;
 
   const config = {
     basePath: getLogPath(),

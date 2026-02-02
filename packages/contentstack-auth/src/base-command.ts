@@ -61,7 +61,6 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       command: this.context?.info?.command || 'auth',
       module: '',
       userId: configHandler.get('userUid') || '',
-      email: configHandler.get('email') || '',
       sessionId: this.context?.sessionId,
       apiKey: apiKey || '',
       orgId: configHandler.get('oauthOrgUid') || '',

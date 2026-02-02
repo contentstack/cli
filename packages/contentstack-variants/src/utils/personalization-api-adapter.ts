@@ -1,5 +1,5 @@
 import { AdapterHelper } from './adapter-helper';
-import { HttpClient, authenticationHandler, log } from '@contentstack/cli-utilities';
+import { HttpClient, authenticationHandler, log, CLIProgressManager, configHandler } from '@contentstack/cli-utilities';
 
 import {
   ProjectStruct,
@@ -23,51 +23,164 @@ import {
   VariantGroupStruct,
   VariantGroup,
   CreateExperienceVersionInput,
-  ExportConfig
+  ExportConfig,
 } from '../types';
 import { formatErrors } from './error-helper';
 
 export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> implements Personalization<T> {
   public exportConfig?: ExportConfig; // Add exportConfig property to access context
+  protected progressManager: CLIProgressManager | null = null;
+  protected parentProgressManager: CLIProgressManager | null = null; // Add parent progress manager
+  protected currentModuleName: string = '';
+  protected cachedData: any[] | null = null; // Add cached data property
 
   constructor(options: APIConfig) {
     super(options);
-    log.debug('Personalization adapter initialized.', this.exportConfig?.context);
+    log.debug('PersonalizationAdapter initialized', this.exportConfig?.context);
+  }
+
+  /**
+   * Set parent progress manager for sub-module integration
+   */
+  public setParentProgressManager(parentProgress: CLIProgressManager): void {
+    this.parentProgressManager = parentProgress;
+  }
+
+  /**
+   * Set cached data to avoid redundant API calls
+   */
+  public setCachedData(data: any[]): void {
+    this.cachedData = data;
+    log.debug(`Cached data set with ${data?.length || 0} items`, this.exportConfig?.context);
+  }
+
+  /**
+   * Create simple progress manager for single process tracking
+   */
+  protected createSimpleProgress(moduleName: string, total?: number): CLIProgressManager {
+    this.currentModuleName = moduleName;
+
+    // If we have a parent progress manager, use it instead of creating a new one
+    if (this.parentProgressManager) {
+      this.progressManager = this.parentProgressManager;
+      return this.progressManager;
+    }
+
+    const logConfig = configHandler.get('log') || {};
+    const showConsoleLogs = logConfig.showConsoleLogs ?? false;
+    this.progressManager = CLIProgressManager.createSimple(moduleName, total, showConsoleLogs);
+    return this.progressManager;
+  }
+
+  /**
+   * Create nested progress manager for multi-process tracking
+   */
+  protected createNestedProgress(moduleName: string): CLIProgressManager {
+    this.currentModuleName = moduleName;
+
+    // If we have a parent progress manager, use it instead of creating a new one
+    if (this.parentProgressManager) {
+      this.progressManager = this.parentProgressManager;
+      return this.progressManager;
+    }
+
+    const logConfig = configHandler.get('log') || {};
+    const showConsoleLogs = logConfig.showConsoleLogs ?? false;
+    this.progressManager = CLIProgressManager.createNested(moduleName, showConsoleLogs);
+    return this.progressManager;
+  }
+
+  /**
+   * Complete progress manager
+   */
+  protected completeProgress(success: boolean = true, error?: string): void {
+    // Only complete progress if we own the progress manager (no parent)
+    if (!this.parentProgressManager) {
+      this.progressManager?.complete(success, error);
+    }
+    this.progressManager = null;
+  }
+
+  /**
+   * Execute action with loading spinner for initial setup tasks
+   */
+  protected async withLoadingSpinner<T>(message: string, action: () => Promise<T>): Promise<T> {
+    const logConfig = configHandler.get('log') || {};
+    const showConsoleLogs = logConfig.showConsoleLogs ?? false;
+
+    if (showConsoleLogs) {
+      // If console logs are enabled, don't show spinner, just execute the action
+      return await action();
+    }
+    return await CLIProgressManager.withLoadingSpinner(message, action);
+  }
+
+  /**
+   * Update progress for a specific item
+   */
+  protected updateProgress(success: boolean, itemName: string, error?: string, processName?: string): void {
+    if (this.parentProgressManager) {
+      this.parentProgressManager.tick(success, itemName, error, processName);
+    } else if (this.progressManager) {
+      this.progressManager.tick(success, itemName, error, processName);
+    }
+  }
+
+  static printFinalSummary(): void {
+    CLIProgressManager.printGlobalSummary();
   }
 
   async init(): Promise<void> {
-    log.debug('Initializing personalization adapter...', this.exportConfig?.context );
-    await authenticationHandler.getAuthDetails();
-    const token = authenticationHandler.accessToken;
-    log.debug(`Authentication type: ${authenticationHandler.isOauthEnabled ? 'OAuth' : 'Token'}`, this.exportConfig?.context );
-    
-    if (authenticationHandler.isOauthEnabled) {
-      log.debug('Setting OAuth authorization header...', this.exportConfig?.context );
-      this.apiClient.headers({ authorization: token });
-      if (this.adapterConfig.cmaConfig) {
-        log.debug('Setting OAuth authorization header for CMA client...', this.exportConfig?.context );
-        this.cmaAPIClient?.headers({ authorization: token });
+    try {
+      log.debug('Initializing personalization adapter...', this.exportConfig?.context);
+      await authenticationHandler.getAuthDetails();
+      const token = authenticationHandler.accessToken;
+      log.debug(
+        `Authentication type: ${authenticationHandler.isOauthEnabled ? 'OAuth' : 'Token'}`,
+        this.exportConfig?.context,
+      );
+
+      if (authenticationHandler.isOauthEnabled) {
+        log.debug('Setting OAuth authorization header', this.exportConfig?.context);
+        this.apiClient.headers({ authorization: token });
+        if (this.adapterConfig.cmaConfig) {
+          log.debug('Setting OAuth authorization header for CMA client', this.exportConfig?.context);
+          this.cmaAPIClient?.headers({ authorization: token });
+        }
+      } else {
+        log.debug('Setting authtoken header', this.exportConfig?.context);
+        this.apiClient.headers({ authtoken: token });
+        if (this.adapterConfig.cmaConfig) {
+          log.debug('Setting authtoken header for CMA client', this.exportConfig?.context);
+          this.cmaAPIClient?.headers({ authtoken: token });
+        }
       }
-    } else {
-      log.debug('Setting authtoken header...', this.exportConfig?.context );
-      this.apiClient.headers({ authtoken: token });
-      if (this.adapterConfig.cmaConfig) {
-        log.debug('Setting authtoken header for CMA client...', this.exportConfig?.context );
-        this.cmaAPIClient?.headers({ authtoken: token });
-      }
+      log.debug('Personalization adapter initialization completed', this.exportConfig?.context);
+    } catch (error: any) {
+      log.debug(`Personalization adapter initialization failed: ${error}`, this.exportConfig?.context);
     }
-    log.debug('Personalization adapter initialization completed.', this.exportConfig?.context );
   }
 
   async projects(options: GetProjectsParams): Promise<ProjectStruct[]> {
-    log.debug(`Fetching projects for stack API key: ${options.connectedStackApiKey}`, this.exportConfig?.context );
     await this.init();
     const getProjectEndPoint = `/projects?connectedStackApiKey=${options.connectedStackApiKey}`;
-    log.debug(`Making API call to: ${getProjectEndPoint}`, this.exportConfig?.context );
-    const data = await this.apiClient.get(getProjectEndPoint);
-    const result = (await this.handleVariantAPIRes(data)) as ProjectStruct[];
-    log.debug(`Fetched ${result?.length || 0} projects`, this.exportConfig?.context );
-    return result;
+    log.debug(`Making API call to: ${getProjectEndPoint}`, this.exportConfig?.context);
+
+    try {
+      const data = await this.apiClient.get(getProjectEndPoint);
+      const result = (await this.handleVariantAPIRes(data)) as ProjectStruct[];
+      log.debug(`Fetched ${result?.length || 0} projects`, this.exportConfig?.context);
+
+      // Update progress for each project fetched
+      result?.forEach((project) => {
+        this.updateProgress(true, `project: ${project.name || project.uid}`, undefined, 'Projects');
+      });
+
+      return result;
+    } catch (error: any) {
+      log.debug(`Failed to fetch projects: ${error}`, this.exportConfig?.context);
+      throw error;
+    }
   }
 
   /**
@@ -81,10 +194,10 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    * `ProjectStruct` object or `void`.
    */
   async createProject(project: CreateProjectInput): Promise<ProjectStruct> {
-    log.debug(`Creating project: ${project.name}`, this.exportConfig?.context );
+    log.debug(`Creating project: ${project.name}`, this.exportConfig?.context);
     const data = await this.apiClient.post<ProjectStruct>('/projects', project);
     const result = (await this.handleVariantAPIRes(data)) as ProjectStruct;
-    log.info(`Project created successfully: ${result?.uid}`, this.exportConfig?.context );
+    log.info(`Project created successfully: ${result?.uid}`, this.exportConfig?.context);
     return result;
   }
 
@@ -98,7 +211,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    * `ProjectStruct`.
    */
   async createAttribute(attribute: CreateAttributeInput): Promise<AttributeStruct> {
-    log.debug(`Creating attribute: ${attribute.name}`, this.exportConfig?.context );
+    log.debug(`Creating attribute: ${attribute.name}`, this.exportConfig?.context);
     const data = await this.apiClient.post<AttributeStruct>('/attributes', attribute);
     const result = (await this.handleVariantAPIRes(data)) as AttributeStruct;
     log.info(`Attribute created successfully: ${result?.name || result?.uid}`, this.exportConfig?.context );
@@ -106,28 +219,40 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
   }
 
   async getExperiences(): Promise<ExperienceStruct[]> {
-    log.debug('Fetching experiences from Personalize API...', this.exportConfig?.context );
+    log.debug('Fetching experiences from personalization API', this.exportConfig?.context);
     const getExperiencesEndPoint = `/experiences`;
-    const data = await this.apiClient.get(getExperiencesEndPoint);
-    const result = (await this.handleVariantAPIRes(data)) as ExperienceStruct[];
-    log.debug(`Fetched ${result?.length || 0} experiences`, this.exportConfig?.context );
-    return result;
+
+    try {
+      const data = await this.apiClient.get(getExperiencesEndPoint);
+      const result = (await this.handleVariantAPIRes(data)) as ExperienceStruct[];
+      log.debug(`Fetched ${result?.length || 0} experiences`, this.exportConfig?.context);
+
+      // Update progress for each experience fetched
+      result?.forEach((experience) => {
+        this.updateProgress(true, `experience: ${experience.name || experience.uid}`, undefined, 'Experiences');
+      });
+
+      return result;
+    } catch (error: any) {
+      log.debug(`Failed to fetch experiences: ${error}`, this.exportConfig?.context);
+      throw error;
+    }
   }
 
   async getExperience(experienceUid: string): Promise<ExperienceStruct | void> {
-    log.debug(`Fetching experience: ${experienceUid}`, this.exportConfig?.context );
+    log.debug(`Fetching experience: ${experienceUid}`, this.exportConfig?.context);
     const getExperiencesEndPoint = `/experiences/${experienceUid}`;
     if (this.apiClient.requestConfig?.().data) {
       delete this.apiClient.requestConfig?.().data; // explicitly prevent any accidental body
     }
     const data = await this.apiClient.get(getExperiencesEndPoint);
     const result = (await this.handleVariantAPIRes(data)) as ExperienceStruct;
-    log.debug(`Experience fetched successfully: ${result?.uid}`, this.exportConfig?.context );
+    log.debug(`Experience fetched successfully: ${result?.uid}`, this.exportConfig?.context);
     return result;
   }
 
   async getExperienceVersions(experienceUid: string): Promise<ExperienceStruct | void> {
-    log.debug(`Fetching versions for experience: ${experienceUid}`, this.exportConfig?.context );
+    log.debug(`Fetching versions for experience: ${experienceUid}`, this.exportConfig?.context);
     const getExperiencesVersionsEndPoint = `/experiences/${experienceUid}/versions`;
     if (this.apiClient.requestConfig?.().data) {
       delete this.apiClient.requestConfig?.().data; // explicitly prevent any accidental body
@@ -142,11 +267,11 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     experienceUid: string,
     input: CreateExperienceVersionInput,
   ): Promise<ExperienceStruct | void> {
-    log.debug(`Creating experience version for: ${experienceUid}`, this.exportConfig?.context );
+    log.debug(`Creating experience version for: ${experienceUid}`, this.exportConfig?.context);
     const createExperiencesVersionsEndPoint = `/experiences/${experienceUid}/versions`;
     const data = await this.apiClient.post(createExperiencesVersionsEndPoint, input);
     const result = (await this.handleVariantAPIRes(data)) as ExperienceStruct;
-    log.info(`Experience version created successfully for: ${experienceUid}`, this.exportConfig?.context );
+    log.debug(`Experience version created successfully for: ${experienceUid}`, this.exportConfig?.context);
     return result;
   }
 
@@ -155,21 +280,21 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     versionId: string,
     input: CreateExperienceVersionInput,
   ): Promise<ExperienceStruct | void> {
-    log.debug(`Updating experience version: ${versionId} for experience: ${experienceUid}`, this.exportConfig?.context );
+    log.debug(`Updating experience version: ${versionId} for experience: ${experienceUid}`, this.exportConfig?.context);
     // loop through input and remove shortId from variant
     if (input?.variants) {
       input.variants = input.variants.map(({ shortUid, ...rest }) => rest);
-      log.debug(`Processed ${input.variants.length} variants for update`, this.exportConfig?.context );
+      log.debug(`Processed ${input.variants.length} variants for update`, this.exportConfig?.context);
     }
     const updateExperiencesVersionsEndPoint = `/experiences/${experienceUid}/versions/${versionId}`;
     const data = await this.apiClient.put(updateExperiencesVersionsEndPoint, input);
     const result = (await this.handleVariantAPIRes(data)) as ExperienceStruct;
-    log.debug(`Experience version updated successfully: ${versionId}`, this.exportConfig?.context );
+    log.debug(`Experience version updated successfully: ${versionId}`, this.exportConfig?.context);
     return result;
   }
 
   async getVariantGroup(input: GetVariantGroupInput): Promise<VariantGroupStruct | void> {
-    log.debug(`Fetching variant group for experience: ${input.experienceUid}`, this.exportConfig?.context );
+    log.debug(`Fetching variant group for experience: ${input.experienceUid}`, this.exportConfig?.context);
     if (this.cmaAPIClient) {
       const getVariantGroupEndPoint = `/variant_groups`;
       const data = await this.cmaAPIClient
@@ -179,12 +304,12 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
       log.debug(`Variant group fetched successfully for experience: ${input?.experienceUid}`, this.exportConfig?.context );
       return result;
     } else {
-      log.debug('CMA API client not available for variant group fetch.', this.exportConfig?.context );
+      log.debug('CMA API client not available for variant group fetch', this.exportConfig?.context);
     }
   }
 
   async updateVariantGroup(input: VariantGroup): Promise<VariantGroup | void> {
-    log.debug(`Updating variant group: ${input.uid}`, this.exportConfig?.context );
+    log.debug(`Updating variant group: ${input.uid}`, this.exportConfig?.context);
     if (this.cmaAPIClient) {
       const updateVariantGroupEndPoint = `/variant_groups/${input.uid}`;
       const data = await this.cmaAPIClient.put(updateVariantGroupEndPoint, input);
@@ -192,20 +317,25 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
       log.debug(`Variant group updated successfully: ${input?.uid}`, this.exportConfig?.context );
       return result;
     } else {
-      log.debug('CMA API client not available for variant group update.', this.exportConfig?.context );
+      log.debug('CMA API client not available for variant group update', this.exportConfig?.context);
     }
   }
 
   async getEvents(): Promise<EventStruct[] | void> {
-    log.debug('Fetching events from Personalize API...', this.exportConfig?.context );
-    const data = await this.apiClient.get<EventStruct>('/events');
-    const result = (await this.handleVariantAPIRes(data)) as EventStruct[];
-    log.debug(`Fetched ${result?.length || 0} events`, this.exportConfig?.context );
-    return result;
+    log.debug('Fetching events from personalization API', this.exportConfig?.context);
+    try {
+      const data = await this.apiClient.get<EventStruct>('/events');
+      const result = (await this.handleVariantAPIRes(data)) as EventStruct[];
+      log.debug(`Fetched ${result?.length || 0} events`, this.exportConfig?.context);
+      return result;
+    } catch (error: any) {
+      log.debug(`Failed to fetch events: ${error}`, this.exportConfig?.context);
+      // Return empty array instead of throwing to prevent spinner from hanging
+      throw error;
+    }
   }
 
   async createEvents(event: CreateEventInput): Promise<void | EventStruct> {
-    log.debug(`Creating event: ${event.key}`, this.exportConfig?.context );
     const data = await this.apiClient.post<EventStruct>('/events', event);
     const result = (await this.handleVariantAPIRes(data)) as EventStruct;
     log.info(`Event created successfully: ${result?.uid}`, this.exportConfig?.context );
@@ -213,15 +343,21 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
   }
 
   async getAudiences(): Promise<AudienceStruct[] | void> {
-    log.debug('Fetching audiences from Personalize API...', this.exportConfig?.context );
-    const data = await this.apiClient.get<AudienceStruct>('/audiences');
-    const result = (await this.handleVariantAPIRes(data)) as AudienceStruct[];
-    log.debug(`Fetched ${result?.length || 0} audiences`, this.exportConfig?.context );
-    return result;
+    log.debug('Fetching audiences from personalization API', this.exportConfig?.context);
+    try {
+      const data = await this.apiClient.get<AudienceStruct>('/audiences');
+      const result = (await this.handleVariantAPIRes(data)) as AudienceStruct[];
+      log.debug(`Fetched ${result?.length || 0} audiences`, this.exportConfig?.context);
+      return result;
+    } catch (error: any) {
+      log.debug(`Failed to fetch audiences: ${error}`, this.exportConfig?.context);
+      // Return empty array instead of throwing to prevent spinner from hanging
+      throw error;
+    }
   }
 
   async getAttributes(): Promise<AttributeStruct[] | void> {
-    log.debug('Fetching attributes from Personalize API...', this.exportConfig?.context );
+    log.debug('Fetching attributes from personalization API', this.exportConfig?.context );
     const data = await this.apiClient.get<AttributeStruct>('/attributes');
     const result = (await this.handleVariantAPIRes(data)) as AttributeStruct[];
     log.info(`Fetched ${result?.length || 0} attributes`, this.exportConfig?.context );
@@ -237,7 +373,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    * `AudienceStruct`.
    */
   async createAudience(audience: CreateAudienceInput): Promise<void | AudienceStruct> {
-    log.debug(`Creating audience: ${audience.name}`, this.exportConfig?.context );
+    log.debug(`Creating audience: ${audience.name}`, this.exportConfig?.context);
     const data = await this.apiClient.post<AudienceStruct>('/audiences', audience);
     const result = (await this.handleVariantAPIRes(data)) as AudienceStruct;
     log.info(`Audience created successfully: ${result?.name || result?.uid}`, this.exportConfig?.context );
@@ -253,7 +389,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    * `ExperienceStruct`.
    */
   async createExperience(experience: CreateExperienceInput): Promise<void | ExperienceStruct> {
-    log.debug(`Creating experience: ${experience.name}`, this.exportConfig?.context );
+    log.debug(`Creating experience: ${experience.name}`, this.exportConfig?.context);
     const data = await this.apiClient.post<ExperienceStruct>('/experiences', experience);
     const result = (await this.handleVariantAPIRes(data)) as ExperienceStruct;
     log.info(`Experience created successfully: ${result?.name || result?.uid}`, this.exportConfig?.context );
@@ -269,7 +405,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
     experience: UpdateExperienceInput,
     experienceUid: string,
   ): Promise<void | CMSExperienceStruct> {
-    log.debug(`Updating content types in experience: ${experienceUid}`, this.exportConfig?.context );
+    log.debug(`Updating content types in experience: ${experienceUid}`, this.exportConfig?.context);
     const updateCTInExpEndPoint = `/experiences/${experienceUid}/cms-integration/variant-group`;
     const data = await this.apiClient.post<CMSExperienceStruct>(updateCTInExpEndPoint, experience);
     const result = (await this.handleVariantAPIRes(data)) as CMSExperienceStruct;
@@ -283,7 +419,7 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    * needed to fetch CT details related to experience.
    */
   async getCTsFromExperience(experienceUid: string): Promise<void | CMSExperienceStruct> {
-    log.debug(`Fetching content types from experience: ${experienceUid}`, this.exportConfig?.context );
+    log.debug(`Fetching content types from experience: ${experienceUid}`, this.exportConfig?.context);
     const getCTFromExpEndPoint = `/experiences/${experienceUid}/cms-integration/variant-group`;
     const data = await this.apiClient.get<CMSExperienceStruct>(getCTFromExpEndPoint);
     const result = (await this.handleVariantAPIRes(data)) as CMSExperienceStruct;
@@ -299,21 +435,21 @@ export class PersonalizationAdapter<T> extends AdapterHelper<T, HttpClient> impl
    */
   async handleVariantAPIRes(res: APIResponse): Promise<VariantAPIRes> {
     const { status, data } = res;
-    log.debug(`API response status: ${status}`, this.exportConfig?.context );
+    log.debug(`API response status: ${status}`, this.exportConfig?.context);
 
     if (status >= 200 && status < 300) {
-      log.debug('API request successful.', this.exportConfig?.context );
+      log.debug('API request successful', this.exportConfig?.context);
       return data;
     }
 
-    log.debug(`API request failed with status: ${status}`, this.exportConfig?.context );
+    log.debug(`API request failed with status: ${status}`, this.exportConfig?.context);
     // Refresh the access token if it has expired
     await authenticationHandler.refreshAccessToken(res);
 
     const errorMsg = data?.errors
       ? formatErrors(data.errors)
       : data?.error || data?.error_message || data?.message || data;
-    log.debug(`API error: ${errorMsg}`, this.exportConfig?.context );
+    log.debug(`API error: ${errorMsg}`, this.exportConfig?.context);
     throw errorMsg;
   }
 }

@@ -11,9 +11,8 @@ describe('Logger', () => {
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
-    
+
     mockExportConfig = {
-      contentVersion: 1,
       versioning: false,
       host: 'https://api.contentstack.io',
       developerHubUrls: {},
@@ -30,7 +29,7 @@ describe('Logger', () => {
         sessionId: 'session-123',
         apiKey: 'test-api-key',
         orgId: 'org-123',
-        authenticationMethod: 'Basic Auth'
+        authenticationMethod: 'Basic Auth',
       },
       forceStopMarketplaceAppsPrompt: false,
       master_locale: { code: 'en-us' },
@@ -38,7 +37,7 @@ describe('Logger', () => {
         name: 'us',
         cma: 'https://api.contentstack.io',
         cda: 'https://cdn.contentstack.io',
-        uiHost: 'https://app.contentstack.com'
+        uiHost: 'https://app.contentstack.com',
       },
       skipStackSettings: false,
       skipDependencies: false,
@@ -50,8 +49,7 @@ describe('Logger', () => {
       writeConcurrency: 5,
       developerHubBaseUrl: '',
       marketplaceAppEncryptionKey: '',
-      onlyTSModules: [],
-      modules: {}
+      modules: {},
     } as any;
   });
 
@@ -65,7 +63,7 @@ describe('Logger', () => {
     it('should log message when type is not error', async () => {
       // Should complete without throwing
       await loggerModule.log(mockExportConfig, 'Test message', 'info');
-      
+
       // Verify function completed successfully
       expect(true).to.be.true; // Basic assertion that function executed
     });
@@ -73,7 +71,7 @@ describe('Logger', () => {
     it('should log error message when type is error', async () => {
       // Should complete without throwing
       await loggerModule.log(mockExportConfig, 'Error message', 'error');
-      
+
       // Verify function completed successfully
       expect(true).to.be.true; // Basic assertion that function executed
     });
@@ -81,37 +79,37 @@ describe('Logger', () => {
     it('should use cliLogsPath when available', async () => {
       // Should complete without throwing
       await loggerModule.log(mockExportConfig, 'Test', 'info');
-      
+
       // Verify function completed successfully
       expect(true).to.be.true;
     });
 
     it('should fallback to data path when cliLogsPath is not available', async () => {
       const configWithoutLogsPath = { ...mockExportConfig, cliLogsPath: undefined as any };
-      
+
       // Should complete without throwing
       await loggerModule.log(configWithoutLogsPath, 'Test', 'info');
-      
+
       // Verify function completed successfully
       expect(true).to.be.true;
     });
 
     it('should handle object arguments in log message', async () => {
       const testObject = { key: 'value', message: 'test' };
-      
+
       // Should complete without throwing
       await loggerModule.log(mockExportConfig, testObject, 'info');
-      
+
       // Verify function completed successfully
       expect(true).to.be.true;
     });
 
     it('should remove ANSI escape codes from log messages', async () => {
       const ansiMessage = '\u001B[31mRed text\u001B[0m';
-      
+
       // Should complete without throwing
       await loggerModule.log(mockExportConfig, ansiMessage, 'info');
-      
+
       // Verify function completed successfully
       expect(true).to.be.true;
     });
@@ -119,7 +117,7 @@ describe('Logger', () => {
     it('should handle null message arguments', async () => {
       // Should complete without throwing
       await loggerModule.log(mockExportConfig, null as any, 'info');
-      
+
       // Verify function completed successfully
       expect(true).to.be.true;
     });
@@ -127,7 +125,7 @@ describe('Logger', () => {
     it('should handle undefined message arguments', async () => {
       // Should complete without throwing
       await loggerModule.log(mockExportConfig, undefined as any, 'info');
-      
+
       // Verify function completed successfully
       expect(true).to.be.true;
     });
@@ -142,7 +140,7 @@ describe('Logger', () => {
     it('should remove file transports after logger is initialized', async () => {
       // Initialize logger by calling log
       await loggerModule.log(mockExportConfig, 'init', 'info');
-      
+
       // Should not throw when removing file transports
       expect(() => loggerModule.unlinkFileLogger()).to.not.throw();
     });
@@ -150,7 +148,7 @@ describe('Logger', () => {
     it('should handle multiple calls gracefully', async () => {
       // Initialize logger
       await loggerModule.log(mockExportConfig, 'init', 'info');
-      
+
       // Should handle multiple calls
       loggerModule.unlinkFileLogger();
       expect(() => loggerModule.unlinkFileLogger()).to.not.throw();
@@ -162,7 +160,7 @@ describe('Logger', () => {
       // Test all log types
       await loggerModule.log(mockExportConfig, 'Info message', 'info');
       await loggerModule.log(mockExportConfig, 'Error message', 'error');
-      
+
       // Verify all completed successfully
       expect(true).to.be.true;
     });
@@ -173,13 +171,13 @@ describe('Logger', () => {
           data: 'value',
           array: [1, 2, 3],
           nullValue: null as any,
-          undefinedValue: undefined as any
-        }
+          undefinedValue: undefined as any,
+        },
       };
-      
+
       // Should complete without throwing
       await loggerModule.log(mockExportConfig, complexObject, 'info');
-      
+
       // Verify function completed successfully
       expect(true).to.be.true;
     });
@@ -187,17 +185,17 @@ describe('Logger', () => {
     it('should handle empty string messages', async () => {
       // Should complete without throwing
       await loggerModule.log(mockExportConfig, '', 'info');
-      
+
       // Verify function completed successfully
       expect(true).to.be.true;
     });
 
     it('should handle very long messages', async () => {
       const longMessage = 'A'.repeat(10);
-      
+
       // Should complete without throwing
       await loggerModule.log(mockExportConfig, longMessage, 'info');
-      
+
       // Verify function completed successfully
       expect(true).to.be.true;
     });

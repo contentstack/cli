@@ -40,7 +40,6 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   authtoken?: string;
   destinationStackName?: string;
   org_uid?: string;
-  contentVersion: number;
   stackName?: string;
   branchName: string;
   selectedModules: Modules[];
@@ -48,6 +47,7 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   backupDir: string;
   createBackupDir?: string;
   region: any;
+  authenticationMethod?: string;
 }
 
 type branch = {

@@ -13,25 +13,22 @@ describe('ExportStack', () => {
   beforeEach(() => {
     mockStackClient = {
       fetch: sinon.stub().resolves({ name: 'Test Stack', uid: 'stack-uid', org_uid: 'org-uid' }),
-      settings: sinon.stub().resolves({ 
-        name: 'Stack Settings', 
+      settings: sinon.stub().resolves({
+        name: 'Stack Settings',
         description: 'Stack settings description',
-        settings: { global: { example: 'value' } }
+        settings: { global: { example: 'value' } },
       }),
       locale: sinon.stub().returns({
         query: sinon.stub().returns({
-          find: sinon.stub().resolves({ 
-            items: [
-              { uid: 'locale-1', name: 'English (United States)', code: 'en-us', fallback_locale: null }
-            ], 
-            count: 1 
-          })
-        })
-      })
+          find: sinon.stub().resolves({
+            items: [{ uid: 'locale-1', name: 'English (United States)', code: 'en-us', fallback_locale: null }],
+            count: 1,
+          }),
+        }),
+      }),
     };
 
     mockExportConfig = {
-      contentVersion: 1,
       versioning: false,
       host: 'https://api.contentstack.io',
       developerHubUrls: {},
@@ -52,7 +49,7 @@ describe('ExportStack', () => {
         sessionId: 'session-123',
         apiKey: 'test-api-key',
         orgId: 'org-123',
-        authenticationMethod: 'Basic Auth'
+        authenticationMethod: 'Basic Auth',
       },
       cliLogsPath: '/test/logs',
       forceStopMarketplaceAppsPrompt: false,
@@ -62,7 +59,7 @@ describe('ExportStack', () => {
         name: 'us',
         cma: 'https://api.contentstack.io',
         cda: 'https://cdn.contentstack.io',
-        uiHost: 'https://app.contentstack.com'
+        uiHost: 'https://app.contentstack.com',
       },
       skipStackSettings: false,
       skipDependencies: false,
@@ -79,64 +76,63 @@ describe('ExportStack', () => {
         users: '',
         extension: '',
         webhooks: '',
-        stacks: ''
+        stacks: '',
       },
       personalizationEnabled: false,
       fetchConcurrency: 5,
       writeConcurrency: 5,
       developerHubBaseUrl: '',
       marketplaceAppEncryptionKey: '',
-      onlyTSModules: [],
       modules: {
         types: ['stack'],
         locales: {
           dirName: 'locales',
           fileName: 'locales.json',
-          requiredKeys: ['code']
+          requiredKeys: ['code'],
         },
         customRoles: {
           dirName: 'custom_roles',
           fileName: 'custom_roles.json',
-          customRolesLocalesFileName: ''
+          customRolesLocalesFileName: '',
         },
         'custom-roles': {
           dirName: 'custom_roles',
           fileName: 'custom_roles.json',
-          customRolesLocalesFileName: ''
+          customRolesLocalesFileName: '',
         },
         environments: {
           dirName: 'environments',
-          fileName: 'environments.json'
+          fileName: 'environments.json',
         },
         labels: {
           dirName: 'labels',
           fileName: 'labels.json',
-          invalidKeys: []
+          invalidKeys: [],
         },
         webhooks: {
           dirName: 'webhooks',
-          fileName: 'webhooks.json'
+          fileName: 'webhooks.json',
         },
         releases: {
           dirName: 'releases',
           fileName: 'releases.json',
           releasesList: 'releases_list.json',
-          invalidKeys: []
+          invalidKeys: [],
         },
         workflows: {
           dirName: 'workflows',
           fileName: 'workflows.json',
-          invalidKeys: []
+          invalidKeys: [],
         },
         globalfields: {
           dirName: 'global_fields',
           fileName: 'globalfields.json',
-          validKeys: ['title', 'uid']
+          validKeys: ['title', 'uid'],
         },
         'global-fields': {
           dirName: 'global_fields',
           fileName: 'globalfields.json',
-          validKeys: ['title', 'uid']
+          validKeys: ['title', 'uid'],
         },
         assets: {
           dirName: 'assets',
@@ -151,19 +147,19 @@ describe('ExportStack', () => {
           securedAssets: false,
           displayExecutionTime: false,
           enableDownloadStatus: false,
-          includeVersionedAssets: false
+          includeVersionedAssets: false,
         },
         content_types: {
           dirName: 'content_types',
           fileName: 'content_types.json',
           validKeys: ['title', 'uid'],
-          limit: 100
+          limit: 100,
         },
         'content-types': {
           dirName: 'content_types',
           fileName: 'content_types.json',
           validKeys: ['title', 'uid'],
-          limit: 100
+          limit: 100,
         },
         entries: {
           dirName: 'entries',
@@ -172,71 +168,71 @@ describe('ExportStack', () => {
           batchLimit: 100,
           downloadLimit: 5,
           limit: 100,
-          exportVersions: false
+          exportVersions: false,
         },
         personalize: {
           dirName: 'personalize',
-          baseURL: {}
+          baseURL: {},
         },
         variantEntry: {
           dirName: 'variant_entries',
           fileName: 'variant_entries.json',
           chunkFileSize: 5,
-          query: { skip: 0, limit: 100, include_variant: true, include_count: false, include_publish_details: true }
+          query: { skip: 0, limit: 100, include_variant: true, include_count: false, include_publish_details: true },
         },
         extensions: {
           dirName: 'extensions',
-          fileName: 'extensions.json'
+          fileName: 'extensions.json',
         },
         stack: {
           dirName: 'stack',
           fileName: 'stack.json',
-          limit: 100
+          limit: 100,
         },
         dependency: {
-          entries: []
+          entries: [],
         },
         marketplace_apps: {
           dirName: 'marketplace_apps',
-          fileName: 'marketplace_apps.json'
+          fileName: 'marketplace_apps.json',
         },
         'marketplace-apps': {
           dirName: 'marketplace_apps',
-          fileName: 'marketplace_apps.json'
+          fileName: 'marketplace_apps.json',
         },
         masterLocale: {
           dirName: 'master_locale',
           fileName: 'master_locale.json',
-          requiredKeys: ['code']
+          requiredKeys: ['code'],
         },
         taxonomies: {
           dirName: 'taxonomies',
           fileName: 'taxonomies.json',
           invalidKeys: [],
-          limit: 100
+          limit: 100,
         },
         events: {
           dirName: 'events',
           fileName: 'events.json',
-          invalidKeys: []
+          invalidKeys: [],
         },
         audiences: {
           dirName: 'audiences',
           fileName: 'audiences.json',
-          invalidKeys: []
+          invalidKeys: [],
         },
         attributes: {
           dirName: 'attributes',
           fileName: 'attributes.json',
-          invalidKeys: []
-        }
-      }
+          invalidKeys: [],
+        },
+      },
     } as any;
 
     exportStack = new ExportStack({
       exportConfig: mockExportConfig,
       stackAPIClient: mockStackClient,
-      moduleName: 'stack'
+      moduleName: 'stack',
     });
 
     // Stub FsUtility methods
@@ -269,7 +265,7 @@ describe('ExportStack', () => {
   describe('getLocales() method', () => {
     it('should fetch and return master locale', async () => {
       const locale = await exportStack.getLocales();
-      
+
       expect(locale).to.exist;
       expect(locale.code).to.equal('en-us');
       expect(locale.name).to.equal('English (United States)');
@@ -285,22 +281,22 @@ describe('ExportStack', () => {
               // First batch without master locale
               return Promise.resolve({
                 items: new Array(100).fill({ uid: 'locale-test', code: 'en', fallback_locale: 'en-us' }),
-                count: 150
+                count: 150,
               });
             } else {
               // Second batch with master locale
               return Promise.resolve({
                 items: [{ uid: 'locale-master', code: 'en-us', fallback_locale: null, name: 'English' }],
-                count: 150
+                count: 150,
               });
             }
-          })
-        })
+          }),
+        }),
       };
-      
+
       mockStackClient.locale.returns(localeStub);
       const locale = await exportStack.getLocales();
-      
+
       expect(callCount).to.be.greaterThan(1);
       expect(locale.code).to.equal('en-us');
     });
@@ -308,12 +304,12 @@ describe('ExportStack', () => {
     it('should handle error when fetching locales', async () => {
       const localeStub = {
         query: sinon.stub().returns({
-          find: sinon.stub().rejects(new Error('API Error'))
-        })
+          find: sinon.stub().rejects(new Error('API Error')),
+        }),
       };
-      
+
       mockStackClient.locale.returns(localeStub);
-      
+
       try {
         await exportStack.getLocales();
         expect.fail('Should have thrown an error');
@@ -327,14 +323,14 @@ describe('ExportStack', () => {
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: [],
-            count: 0
-          })
-        })
+            count: 0,
+          }),
+        }),
       };
-      
+
       mockStackClient.locale.returns(localeStub);
       const locale = await exportStack.getLocales();
-      
+
       expect(locale).to.be.undefined;
     });
 
@@ -349,15 +345,15 @@ describe('ExportStack', () => {
             // First call: 100 items, count 100, skip will be 100, which equals count, so it stops
             return Promise.resolve({
               items: Array(limit).fill({ uid: `locale-${callCount}`, code: 'en', fallback_locale: 'en-us' }),
-              count: limit // Only limit items, so skip will equal count and stop
+              count: limit, // Only limit items, so skip will equal count and stop
             });
-          })
-        })
+          }),
+        }),
       };
-      
+
       mockStackClient.locale.returns(localeStub);
       const locale = await exportStack.getLocales();
-      
+
       // Should return undefined when master locale not found after all pages
       expect(locale).to.be.undefined;
       // Should have searched through available pages
@@ -369,14 +365,14 @@ describe('ExportStack', () => {
         query: sinon.stub().returns({
           find: sinon.stub().resolves({
             items: [{ uid: 'locale-master', code: 'en-us', fallback_locale: null, name: 'English' }],
-            count: 1
-          })
-        })
+            count: 1,
+          }),
+        }),
       };
-      
+
       mockStackClient.locale.returns(localeStub);
       const locale = await exportStack.getLocales(100);
-      
+
       // Should find master locale even when starting with skip
       expect(locale).to.exist;
       expect(locale.code).to.equal('en-us');
@@ -388,14 +384,14 @@ describe('ExportStack', () => {
       const localeError = new Error('Locale fetch failed');
       const localeStub = {
         query: sinon.stub().returns({
-          find: sinon.stub().rejects(localeError)
-        })
+          find: sinon.stub().rejects(localeError),
+        }),
       };
-      
+
       mockStackClient.locale.returns(localeStub);
       const handleAndLogErrorSpy = sinon.spy();
       sinon.replaceGetter(utilities, 'handleAndLogError', () => handleAndLogErrorSpy);
-      
+
       try {
         await exportStack.getLocales();
         expect.fail('Should have thrown error');
@@ -403,10 +399,7 @@ describe('ExportStack', () => {
         expect(error).to.equal(localeError);
         // Should handle and log error
         expect(handleAndLogErrorSpy.called).to.be.true;
-        expect(handleAndLogErrorSpy.calledWith(
-          localeError,
-          sinon.match.has('module', 'stack')
-        )).to.be.true;
+        expect(handleAndLogErrorSpy.calledWith(localeError, sinon.match.has('module', 'stack'))).to.be.true;
       }
     });
 
@@ -416,16 +409,16 @@ describe('ExportStack', () => {
           find: sinon.stub().resolves({
             items: [
               { uid: 'locale-1', code: 'es-es', fallback_locale: 'en-us' },
-              { uid: 'locale-master', code: 'en-us', fallback_locale: null, name: 'English' }
+              { uid: 'locale-master', code: 'en-us', fallback_locale: null, name: 'English' },
             ],
-            count: 2
-          })
-        })
+            count: 2,
+          }),
+        }),
       };
-      
+
       mockStackClient.locale.returns(localeStub);
       const locale = await exportStack.getLocales();
-      
+
       expect(locale.code).to.equal('en-us');
     });
   });
@@ -436,9 +429,9 @@ describe('ExportStack', () => {
       const makeDirectoryStub = FsUtility.prototype.makeDirectory as sinon.SinonStub;
       const stackData = { name: 'Test Stack', uid: 'stack-uid', org_uid: 'org-123' };
       mockStackClient.fetch = sinon.stub().resolves(stackData);
-      
+
       const result = await exportStack.exportStack();
-      
+
       expect(writeFileStub.called).to.be.true;
       expect(makeDirectoryStub.called).to.be.true;
       // Should return the stack data
@@ -454,27 +447,24 @@ describe('ExportStack', () => {
       mockStackClient.fetch = sinon.stub().rejects(stackError);
       const handleAndLogErrorSpy = sinon.spy();
       sinon.replaceGetter(utilities, 'handleAndLogError', () => handleAndLogErrorSpy);
-      
+
       // Should complete without throwing despite error
       const result = await exportStack.exportStack();
-      
+
       // Should return undefined on error
       expect(result).to.be.undefined;
       // Should handle and log error
       expect(handleAndLogErrorSpy.called).to.be.true;
-      expect(handleAndLogErrorSpy.calledWith(
-        stackError,
-        sinon.match.has('module', 'stack')
-      )).to.be.true;
+      expect(handleAndLogErrorSpy.calledWith(stackError, sinon.match.has('module', 'stack'))).to.be.true;
     });
 
     it('should create directory before writing stack file', async () => {
       const makeDirectoryStub = FsUtility.prototype.makeDirectory as sinon.SinonStub;
       const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
       mockStackClient.fetch = sinon.stub().resolves({ name: 'Test Stack' });
-      
+
       await exportStack.exportStack();
-      
+
       // Directory should be created before file write
       expect(makeDirectoryStub.called).to.be.true;
       expect(writeFileStub.called).to.be.true;
@@ -487,15 +477,15 @@ describe('ExportStack', () => {
     it('should export stack settings successfully and write to file', async () => {
       const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
       const makeDirectoryStub = FsUtility.prototype.makeDirectory as sinon.SinonStub;
-      const settingsData = { 
-        name: 'Stack Settings', 
+      const settingsData = {
+        name: 'Stack Settings',
         description: 'Settings description',
-        settings: { global: { example: 'value' } }
+        settings: { global: { example: 'value' } },
       };
       mockStackClient.settings = sinon.stub().resolves(settingsData);
-      
+
       const result = await exportStack.exportStackSettings();
-      
+
       expect(writeFileStub.called).to.be.true;
       expect(makeDirectoryStub.called).to.be.true;
       // Should return the settings data
@@ -514,24 +504,21 @@ describe('ExportStack', () => {
 
       // Should complete without throwing despite error
       const result = await exportStack.exportStackSettings();
-      
+
       // Should return undefined on error
       expect(result).to.be.undefined;
       // Should handle and log error
       expect(handleAndLogErrorSpy.called).to.be.true;
-      expect(handleAndLogErrorSpy.calledWith(
-        settingsError,
-        sinon.match.has('module', 'stack')
-      )).to.be.true;
+      expect(handleAndLogErrorSpy.calledWith(settingsError, sinon.match.has('module', 'stack'))).to.be.true;
     });
 
     it('should create directory before writing settings file', async () => {
       const makeDirectoryStub = FsUtility.prototype.makeDirectory as sinon.SinonStub;
       const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
       mockStackClient.settings = sinon.stub().resolves({ name: 'Settings' });
-      
+
       await exportStack.exportStackSettings();
-      
+
       // Directory should be created before file write
       expect(makeDirectoryStub.called).to.be.true;
       expect(writeFileStub.called).to.be.true;
@@ -545,13 +532,13 @@ describe('ExportStack', () => {
       const exportStackStub = sinon.stub(exportStack, 'exportStack').resolves({ name: 'test-stack' });
       const exportStackSettingsStub = sinon.stub(exportStack, 'exportStackSettings').resolves();
       const getStackStub = sinon.stub(exportStack, 'getStack').resolves({});
-      
+
       exportStack.exportConfig.preserveStackVersion = true;
-      
+
       await exportStack.start();
-      
+
       expect(exportStackStub.called).to.be.true;
-      
+
       exportStackStub.restore();
       exportStackSettingsStub.restore();
       getStackStub.restore();
@@ -560,20 +547,19 @@ describe('ExportStack', () => {
     it('should skip exportStackSettings when management_token is present', async () => {
       const getStackStub = sinon.stub(exportStack, 'getStack').resolves({});
       const exportStackSettingsSpy = sinon.spy(exportStack, 'exportStackSettings');
-      
+
       exportStack.exportConfig.management_token = 'some-token';
       exportStack.exportConfig.preserveStackVersion = false;
       exportStack.exportConfig.master_locale = { code: 'en-us' };
       exportStack.exportConfig.hasOwnProperty = sinon.stub().returns(true);
-      
+
       await exportStack.start();
-      
+
       // Verify exportStackSettings was NOT called
       expect(exportStackSettingsSpy.called).to.be.false;
-      
+
       getStackStub.restore();
       exportStackSettingsSpy.restore();
     });
   });
 });
-

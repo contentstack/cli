@@ -2,6 +2,7 @@ const { describe, it } = require('mocha');
 const sinon = require('sinon');
 const { expect } = require('chai');
 const { config } = require('dotenv');
+const { configHandler } = require('@contentstack/cli-utilities');
 
 const EntriesPublishModified = require('../../../../src/commands/cm/entries/publish-modified');
 
@@ -13,9 +14,26 @@ const contentTypes = ['ct1', 'ct2'];
 
 describe('EntriesPublishModified Command', () => {
   let sandbox;
+  let configHandlerGetStub;
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
+    
+    // Stub configHandler.get to configure region
+    // Region is required for cmaHost property in Command base class
+    configHandlerGetStub = sandbox.stub(configHandler, 'get').callsFake((key) => {
+      if (key === 'region') {
+        return {
+          cma: 'api.contentstack.io',
+          cda: 'cdn.contentstack.io',
+          uiHost: 'app.contentstack.com',
+          developerHubUrl: 'developer.contentstack.com',
+          launchHubUrl: 'launch.contentstack.com',
+          personalizeUrl: 'personalize.contentstack.com',
+        };
+      }
+      return undefined;
+    });
   });
 
   afterEach(() => {
