@@ -478,7 +478,7 @@ importers:
     specifiers:
       '@contentstack/cli-command': ~1.7.2
       '@contentstack/cli-utilities': ~1.17.0
-      '@contentstack/utils': ~1.6.3
+      '@contentstack/utils': ~1.7.0
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.28
       '@oclif/test': ^4.1.13
@@ -500,7 +500,7 @@ importers:
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@contentstack/utils': 1.6.3
+      '@contentstack/utils': 1.7.0
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.37
       lodash: 4.17.23
@@ -2295,7 +2295,7 @@ packages:
   /@contentstack/marketplace-sdk/1.5.0:
     resolution: {integrity: sha512-n2USMwswXBDtmVOg0t5FUks8X0d49u0UDFSrwxti09X/SONeP0P8wSqIDCjoB2gGRQc6fg/Fg2YPRvejUWeR4A==}
     dependencies:
-      '@contentstack/utils': 1.6.3
+      '@contentstack/utils': 1.7.0
       axios: 1.13.4
     transitivePeerDependencies:
       - debug
@@ -2304,7 +2304,7 @@ packages:
   /@contentstack/marketplace-sdk/1.5.0_debug@4.4.3:
     resolution: {integrity: sha512-n2USMwswXBDtmVOg0t5FUks8X0d49u0UDFSrwxti09X/SONeP0P8wSqIDCjoB2gGRQc6fg/Fg2YPRvejUWeR4A==}
     dependencies:
-      '@contentstack/utils': 1.6.3
+      '@contentstack/utils': 1.7.0
       axios: 1.13.4_debug@4.4.3
     transitivePeerDependencies:
       - debug
@@ -2312,6 +2312,10 @@ packages:
 
   /@contentstack/utils/1.6.3:
     resolution: {integrity: sha512-FU1hFks9vnJ5e9cwBTPgnf3obx/fuKh+c3Gtc71mq1Mrub3/z4rJZJWLJ2kublVKnXWnhz+Yt66rshxO/TT9IQ==}
+    dev: false
+
+  /@contentstack/utils/1.7.0:
+    resolution: {integrity: sha512-wNWNt+wkoGJzCr5ZhAMKWJ5ND5xbD7N3t++Y6s1O+FB+AFzJszqCT740j6VqwjhQzw5sGfHoGjHIvlQA9dCcBw==}
     dev: false
 
   /@cspotcode/source-map-support/0.8.1:
@@ -8536,7 +8540,7 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 8.54.0_k2rwabtyo525wwqr6566umnmhy
+      '@typescript-eslint/parser': 8.54.0_avq3eyf5kaj6ssrwo7fvkrwnji
       debug: 3.2.7
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
@@ -8566,7 +8570,7 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 6.21.0_k2rwabtyo525wwqr6566umnmhy
+      '@typescript-eslint/parser': 6.21.0_avq3eyf5kaj6ssrwo7fvkrwnji
       debug: 3.2.7
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
@@ -8609,7 +8613,7 @@ packages:
         optional: true
     dependencies:
       '@rtsao/scc': 1.1.0
-      '@typescript-eslint/parser': 6.21.0_k2rwabtyo525wwqr6566umnmhy
+      '@typescript-eslint/parser': 6.21.0_avq3eyf5kaj6ssrwo7fvkrwnji
       array-includes: 3.1.9
       array.prototype.findlastindex: 1.2.6
       array.prototype.flat: 1.3.3
@@ -8646,7 +8650,7 @@ packages:
         optional: true
     dependencies:
       '@rtsao/scc': 1.1.0
-      '@typescript-eslint/parser': 8.54.0_k2rwabtyo525wwqr6566umnmhy
+      '@typescript-eslint/parser': 8.54.0_avq3eyf5kaj6ssrwo7fvkrwnji
       array-includes: 3.1.9
       array.prototype.findlastindex: 1.2.6
       array.prototype.flat: 1.3.3
