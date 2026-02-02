@@ -2,6 +2,14 @@
 
 Please refer to the Contentstack Command-line Interface release notes [here](https://www.contentstack.com/docs/developers/cli/cli-changelog).
 
+
+
+## @contentstack/cli-cm-config
+### Version: 1.9.0
+#### Date:  Feb-30-2025
+##### Fix:
+ - Refactor Endpoints Integration using Utils SDK in cli-cm-config v1.9.0
+
 ## @contentstack/cli-cm-clone
 ### Version: 1.8.2
 #### Date:  June-30-2025
