@@ -208,6 +208,21 @@ const envFileHandler = async (
     case 'kickstart-next-ssr':
     case 'kickstart-next-ssg':
     case 'kickstart-next-middleware':
+      fileName = `.env`;
+      filePath = pathValidator(path.join(sanitizePath(clonedDirectory), sanitizePath(fileName)));
+      content = `NEXT_PUBLIC_CONTENTSTACK_API_KEY=${environmentVariables.api_key
+        }\nNEXT_PUBLIC_CONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken
+        }\nNEXT_PUBLIC_CONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token || ''
+        }\nNEXT_PUBLIC_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment
+        }\nNEXT_PUBLIC_CONTENTSTACK_REGION=${regionName
+        }\nNEXT_PUBLIC_CONTENTSTACK_PREVIEW=${livePreviewEnabled ? 'true' : 'false'
+        }\nNEXT_PUBLIC_CONTENTSTACK_CONTENT_DELIVERY = ${cdnHost
+        }\nNEXT_PUBLIC_CONTENTSTACK_CONTENT_APPLICATION = ${appHost
+        }\nNEXT_PUBLIC_CONTENTSTACK_PREVIEW_HOST = ${previewHost
+        }\nNEXT_PUBLIC_CONTENTSTACK_IMAGE_HOSTNAME=${imageHostname}`;
+
+      result = await writeEnvFile(content, filePath);
+      break;
     case 'kickstart-next-graphql':
       fileName = `.env`;
       filePath = pathValidator(path.join(sanitizePath(clonedDirectory), sanitizePath(fileName)));
