@@ -2260,7 +2260,7 @@ packages:
     resolution: {integrity: sha512-p1xQNsyLejeaZ1rcobkwZRhoTiFvR1SeAhC95RCGm8XXyQ6JaNwn2EJQsZvhv0vT8NcRQlvFXtQhVu1zHiPQ8w==}
     engines: {node: '>=8.0.0'}
     dependencies:
-      '@contentstack/utils': 1.6.3
+      '@contentstack/utils': 1.7.0
       assert: 2.1.0
       axios: 1.13.4
       buffer: 6.0.3
@@ -2278,7 +2278,7 @@ packages:
     resolution: {integrity: sha512-p1xQNsyLejeaZ1rcobkwZRhoTiFvR1SeAhC95RCGm8XXyQ6JaNwn2EJQsZvhv0vT8NcRQlvFXtQhVu1zHiPQ8w==}
     engines: {node: '>=8.0.0'}
     dependencies:
-      '@contentstack/utils': 1.6.3
+      '@contentstack/utils': 1.7.0
       assert: 2.1.0
       axios: 1.13.4_debug@4.4.3
       buffer: 6.0.3
@@ -2308,10 +2308,6 @@ packages:
       axios: 1.13.4_debug@4.4.3
     transitivePeerDependencies:
       - debug
-    dev: false
-
-  /@contentstack/utils/1.6.3:
-    resolution: {integrity: sha512-FU1hFks9vnJ5e9cwBTPgnf3obx/fuKh+c3Gtc71mq1Mrub3/z4rJZJWLJ2kublVKnXWnhz+Yt66rshxO/TT9IQ==}
     dev: false
 
   /@contentstack/utils/1.7.0:
@@ -5251,7 +5247,7 @@ packages:
   /@types/mkdirp/1.0.2:
     resolution: {integrity: sha512-o0K1tSO0Dx5X6xlU5F1D6625FawhC3dU3iqr25lluNv/+/QIVH8RLNEiVokgIZo+mz+87w/3Mkg/VvQS+J51fQ==}
     dependencies:
-      '@types/node': 20.19.30
+      '@types/node': 14.18.63
     dev: true
 
   /@types/mocha/10.0.10:
@@ -7587,7 +7583,7 @@ packages:
     resolution: {integrity: sha512-NUe1Yz+NwmNJHTbSMr0tJ4YrerhHSaHPgptXFGxhTQkHG1d/2JDmjGeKocpA5ffO/x9JhgJmzrki+V4BsyQN4A==}
     engines: {node: '>= 10.14.2'}
     dependencies:
-      '@contentstack/utils': 1.6.3
+      '@contentstack/utils': 1.7.0
       es6-promise: 4.2.8
       husky: 9.1.7
       localStorage: 1.0.4
