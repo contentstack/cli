@@ -130,6 +130,29 @@ csdx cm:stacks:migration -k b*******9ca0 --file-path "../contentstack-migration/
 
 **Migration Action:** use the import/export commands instead.
 
+### 5. 📦 Bulk Operations Command Consolidation
+
+**What Changed:**
+- The bulk publish plugin has been consolidated into unified bulk operations commands
+- 15 separate commands have been simplified into 2 commands with operation flags
+- Enhanced functionality with new filtering and cross-publish capabilities
+
+**Impact:**
+- Commands like `cm:entries:publish`, `cm:entries:unpublish`, `cm:assets:publish` have been replaced
+- New unified commands: `cm:stacks:bulk-entries` and `cm:stacks:bulk-assets`
+- Operation flag (`--operation`) is now required
+
+**Migration Action:** Refer to the detailed [Bulk Operations Migration Guide](./BULK-OPERATIONS-MIGRATION.md) for complete command mappings and examples.
+
+**Quick Example:**
+```bash
+# Before (1.x.x)
+csdx cm:entries:publish --content-types blog --environments prod --locales en-us -k blt123
+
+# After (2.x.x-beta)
+csdx cm:stacks:bulk-entries --operation publish --content-types blog --environments prod --locales en-us -k blt123
+```
+
 ## Troubleshooting
 
 ### Common Issues
