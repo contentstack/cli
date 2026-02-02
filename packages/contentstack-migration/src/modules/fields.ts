@@ -65,9 +65,9 @@ export default class Field extends Base {
    *   .data_type('text')
    *   .mandatory(false);
    * };
-   * 
+   *
    * Create a taxonomy field
-   * 
+   *
    *  module.exports =({ migration })=> {
    *  const blog = migration.editContentType('blog');
    *
@@ -347,3 +347,5 @@ export default class Field extends Base {
     });
   }
 }
+
+module.exports = Field;

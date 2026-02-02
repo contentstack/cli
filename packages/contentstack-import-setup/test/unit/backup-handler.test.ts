@@ -25,7 +25,6 @@ describe('Backup Handler', () => {
     branchName: '',
     selectedModules: ['entries'],
     backupDir: '',
-    contentVersion: 1,
     region: 'us',
   };
 

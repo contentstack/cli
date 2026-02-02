@@ -1,4 +1,4 @@
-import { cliux, log, handleAndLogError, messageHandler } from '@contentstack/cli-utilities';
+import { cliux, log, messageHandler } from '@contentstack/cli-utilities';
 import { User } from '../interfaces';
 import { askOTPChannel, askOTP } from './interactive';
 

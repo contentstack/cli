@@ -13,7 +13,6 @@ describe('ModuleImporter', () => {
   
   // Mock dependencies
   let startModuleImportStub: sinon.SinonStub;
-  let startJSModuleImportStub: sinon.SinonStub;
   let backupHandlerStub: sinon.SinonStub;
   let masterLocalDetailsStub: sinon.SinonStub;
   let sanitizeStackStub: sinon.SinonStub;
@@ -45,7 +44,6 @@ describe('ModuleImporter', () => {
     mockImportConfig = {
       apiKey: 'test',
       management_token: undefined,
-      contentVersion: 1,
       backupDir: '/test/backup',
       data: '/test/data',
       cliLogsPath: '/test/logs',
@@ -69,7 +67,6 @@ describe('ModuleImporter', () => {
       masterLocale: undefined,
       singleModuleImport: false,
       moduleName: undefined,
-      onlyTSModules: [],
       branchName: undefined,
       branchAlias: undefined,
       auditConfig: {
@@ -102,8 +99,6 @@ describe('ModuleImporter', () => {
     const modulesIndex = require('../../../src/import/modules');
     startModuleImportStub = sandbox.stub(modulesIndex, 'default').resolves();
 
-    const modulesJSIndex = require('../../../src/import/modules-js');
-    startJSModuleImportStub = sandbox.stub(modulesJSIndex, 'default').resolves();
 
     // Mock @contentstack/cli-utilities
     // TODO: Fix addLocale mocking - currently skipping tests that need it
@@ -356,7 +351,6 @@ describe('ModuleImporter', () => {
 
         expect(backupHandlerStub.calledOnce).to.be.true;
         expect(importer['importConfig'].backupDir).to.equal('/custom/backup/path');
-        expect(importer['importConfig'].data).to.equal('/custom/backup/path');
       });
 
       it('should not modify config when backupHandler returns null', async () => {
@@ -369,7 +363,6 @@ describe('ModuleImporter', () => {
 
         expect(backupHandlerStub.calledOnce).to.be.true;
         expect(importer['importConfig'].backupDir).to.equal(originalBackupDir);
-        expect(importer['importConfig'].data).to.equal(originalData);
       });
 
       it('should continue execution when backupHandler fails', async () => {
@@ -578,7 +571,7 @@ describe('ModuleImporter', () => {
       await moduleImporter.import();
 
       expect(logStub.info.calledWith(
-        `Starting to import content version ${mockImportConfig.contentVersion}`,
+        'Starting to import',
         mockImportConfig.context
       )).to.be.true;
     });
@@ -606,88 +599,6 @@ describe('ModuleImporter', () => {
     });
   });
 
-  describe('importByModuleByName()', () => {
-    describe('Content Version 2', () => {
-      it('should call startModuleImport when contentVersion === 2', async () => {
-        mockImportConfig.contentVersion = 2;
-        const importer = new ModuleImporter(mockManagementClient as any, mockImportConfig);
-        
-        await importer.importByModuleByName('entries');
-
-        expect(startModuleImportStub.calledOnce).to.be.true;
-        expect(startModuleImportStub.firstCall.args[0]).to.deep.equal({
-          stackAPIClient: mockStackClient,
-          importConfig: mockImportConfig,
-          moduleName: 'entries'
-        });
-      });
-
-      it('should pass correct moduleName to startModuleImport', async () => {
-        mockImportConfig.contentVersion = 2;
-        const importer = new ModuleImporter(mockManagementClient as any, mockImportConfig);
-        
-        await importer.importByModuleByName('assets');
-
-        expect(startModuleImportStub.firstCall.args[0].moduleName).to.equal('assets');
-      });
-    });
-
-    describe('Content Version 1', () => {
-      it('should call startJSModuleImport when contentVersion !== 2 and module is NOT in onlyTSModules', async () => {
-        mockImportConfig.contentVersion = 1;
-        mockImportConfig.onlyTSModules = ['personalize'];
-        const importer = new ModuleImporter(mockManagementClient as any, mockImportConfig);
-        
-        await importer.importByModuleByName('entries');
-
-        expect(startJSModuleImportStub.calledOnce).to.be.true;
-        expect(startJSModuleImportStub.firstCall.args[0]).to.deep.equal({
-          stackAPIClient: mockStackClient,
-          importConfig: mockImportConfig,
-          moduleName: 'entries'
-        });
-      });
-
-      it('should return undefined when contentVersion !== 2 and module IS in onlyTSModules', async () => {
-        mockImportConfig.contentVersion = 1;
-        mockImportConfig.onlyTSModules = ['entries', 'assets'];
-        const importer = new ModuleImporter(mockManagementClient as any, mockImportConfig);
-        
-        const result = await importer.importByModuleByName('entries');
-
-        expect(startJSModuleImportStub.called).to.be.false;
-        expect(result).to.be.undefined;
-      });
-
-      it('should handle multiple modules in onlyTSModules list', async () => {
-        mockImportConfig.contentVersion = 1;
-        mockImportConfig.onlyTSModules = ['entries', 'assets', 'content-types'];
-        const importer = new ModuleImporter(mockManagementClient as any, mockImportConfig);
-        
-        const result1 = await importer.importByModuleByName('entries');
-        const result2 = await importer.importByModuleByName('assets');
-        const result3 = await importer.importByModuleByName('content-types');
-        const result4 = await importer.importByModuleByName('webhooks');
-
-        expect(result1).to.be.undefined;
-        expect(result2).to.be.undefined;
-        expect(result3).to.be.undefined;
-        expect(result4).to.be.undefined; // webhooks would call startJSModuleImport
-        expect(startJSModuleImportStub.calledOnce).to.be.true;
-        expect(startJSModuleImportStub.firstCall.args[0].moduleName).to.equal('webhooks');
-      });
-
-      it('should handle empty onlyTSModules list', async () => {
-        mockImportConfig.contentVersion = 1;
-        mockImportConfig.onlyTSModules = [];
-        const importer = new ModuleImporter(mockManagementClient as any, mockImportConfig);
-        
-        await importer.importByModuleByName('entries');
-
-        expect(startJSModuleImportStub.calledOnce).to.be.true;
-      });
-    });
-  });
 
   describe('importAllModules()', () => {
     it('should loop through all modules in modules.types', async () => {
@@ -1160,12 +1071,6 @@ describe('ModuleImporter', () => {
       expect(importer['importConfig'].auditConfig.config.branch).to.be.undefined;
     });
 
-    it('should handle empty onlyTSModules array', async () => {
-      mockImportConfig.onlyTSModules = [];
-      await moduleImporter.importByModuleByName('entries');
-
-      expect(startJSModuleImportStub.calledOnce).to.be.true;
-    });
 
     it('should handle undefined auditConfig', async () => {
       mockImportConfig.auditConfig = undefined as any;

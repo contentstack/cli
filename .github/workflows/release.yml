@@ -31,6 +31,7 @@ jobs:
         with:
           filename: .github/config/release.json
           prefix: release
+      # Dev Dependencies
       - name: Installing dependencies of dev dependencies
         id: dev-dependencies-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_dev-dependencies == 'true'}}
@@ -46,6 +47,8 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-dev-dependencies/package.json
+
+      # Utilities
       - name: Installing dependencies of utilities
         id: utilities-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_utilities == 'true'}}
@@ -61,6 +64,8 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-utilities/package.json
+      
+      # Variants
       - name: Installing dependencies of variants
         id: variants-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_utilities == 'true'}}
@@ -77,6 +82,8 @@ jobs:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-variants/package.json
           access: public
+
+      # Command
       - name: Installing dependencies of command
         id: command-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_command == 'true'}}
@@ -92,6 +99,8 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-command/package.json
+
+      # Config
       - name: Installing dependencies of config
         id: config-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_config == 'true'}}
@@ -107,6 +116,8 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-config/package.json
+
+      # Auth
       - name: Installing dependencies of auth
         id: auth-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_auth == 'true'}}
@@ -122,6 +133,8 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-auth/package.json
+
+      # Export
       - name: Installing dependencies of export
         id: export-installation
         if: ${{ env.release_releaseAll == 'true' || env.release_plugins_export == 'true'}}
@@ -137,6 +150,8 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-export/package.json
+
+      # Audit
       - name: Installing dependencies of audit
         id: audit-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_audit == 'true'}}
@@ -153,6 +168,8 @@ jobs:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-audit/package.json
           access: public
+
+      # Import
       - name: Installing dependencies of import
         id: import-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_import == 'true'}}
@@ -168,6 +185,8 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-import/package.json
+
+      # Clone
       - name: Installing dependencies of clone
         id: clone-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_clone == 'true'}}
@@ -183,6 +202,8 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-clone/package.json
+
+      # Import Setup
       - name: Installing dependencies of import-setup
         id: import-setup-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_import_setup == 'true'}}
@@ -199,6 +220,8 @@ jobs:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-import-setup/package.json
           access: public
+
+      # Export to CSV
       - name: Installing dependencies of export to csv
         id: export-to-csv-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_export-to-csv == 'true'}}
@@ -214,17 +237,8 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-export-to-csv/package.json
-      - name: Installing dependencies of migrate rte
-        id: migrate-rte-installation
-        if: ${{env.release_releaseAll == 'true' || env.release_plugins_migrate-rte == 'true'}}
-        working-directory: ./packages/contentstack-migrate-rte
-        run: npm install
-      - name: Publishing migrate rte
-        uses: JS-DevTools/npm-publish@v3
-        if: ${{ steps.migrate-rte-installation.conclusion == 'success'  }}
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/contentstack-migrate-rte/package.json
+
+      # Migration
       - name: Installing dependencies of migration
         id: migration-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_migration == 'true'}}
@@ -240,6 +254,8 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-migration/package.json
+
+      # Seed
       - name: Installing dependencies of seed
         id: seed-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_seed == 'true'}}
@@ -255,6 +271,8 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-seed/package.json
+
+      # Bootstrap
       - name: Installing dependencies of bootstrap
         id: bootstrap-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_bootstrap == 'true'}}
@@ -270,6 +288,8 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-bootstrap/package.json
+
+      # Bulk Publish
       - name: Installing dependencies of bulk publish
         id: bulk-publish-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_bulk-publish == 'true'}}
@@ -281,6 +301,8 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-bulk-publish/package.json
+
+      # Branches
       - name: Installing dependencies of branches
         id: branches-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_branches == 'true'}}

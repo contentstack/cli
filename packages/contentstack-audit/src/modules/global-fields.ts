@@ -6,15 +6,17 @@ export default class GlobalField extends ContentType {
   /**
    * The above function is an asynchronous function that runs a validation and returns any missing
    * references.
+   * @param returnFixSchema - If true, returns the fixed schema instead of missing references
+   * @param totalCount - Total number of items to process (for progress tracking)
    * @returns the value of the variable `missingRefs`.
    */
-  async run(returnFixSchema = false) {
+  async run(returnFixSchema = false, totalCount?: number) {
     log.debug(`Starting GlobalField audit process`, this.config.auditContext);
     log.debug(`Return fix schema: ${returnFixSchema}`, this.config.auditContext);
     
     // NOTE add any validation if required
     log.debug(`Calling parent ContentType.run() method`, this.config.auditContext);
-    const missingRefs = await super.run(returnFixSchema);
+    const missingRefs = await super.run(returnFixSchema, totalCount);
     log.debug(`Parent method completed, found ${Object.keys(missingRefs || {}).length} missing references`, this.config.auditContext);
 
     log.debug(`GlobalField audit completed`, this.config.auditContext);

@@ -1,4 +1,5 @@
 import map from 'lodash/map';
+import chalk from 'chalk';
 import chunk from 'lodash/chunk';
 import first from 'lodash/first';
 import merge from 'lodash/merge';
@@ -23,6 +24,7 @@ import {
 import config from '../../config';
 import { ModuleClassParams } from '../../types';
 import BaseClass, { CustomPromiseHandler, CustomPromiseHandlerInput } from './base-class';
+import { PROCESS_NAMES, MODULE_CONTEXTS, PROCESS_STATUS, MODULE_NAMES } from '../../utils';
 
 export default class ExportAssets extends BaseClass {
   private assetsRootPath: string;
@@ -32,7 +34,8 @@ export default class ExportAssets extends BaseClass {
 
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
-    this.exportConfig.context.module = 'assets';
+    this.exportConfig.context.module = MODULE_CONTEXTS.ASSETS;
+    this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.ASSETS];
   }
 
   get commonQueryParam(): Record<string, unknown> {
@@ -44,32 +47,84 @@ export default class ExportAssets extends BaseClass {
   }
 
   async start(): Promise<void> {
-    this.assetsRootPath = pResolve(
-      this.exportConfig.data,
+      this.assetsRootPath = pResolve(
+      this.exportConfig.exportDir,
       this.exportConfig.branchName || '',
       this.assetConfig.dirName,
     );
-
     log.debug(`Assets root path resolved to: ${this.assetsRootPath}`, this.exportConfig.context);
     log.debug('Fetching assets and folders count...', this.exportConfig.context);
     // NOTE step 1: Get assets and it's folder count in parallel
-    const [assetsCount, assetsFolderCount] = await Promise.all([this.getAssetsCount(), this.getAssetsCount(true)]);
+    const [assetsCount, assetsFolderCount] = await this.withLoadingSpinner(
+      `${chalk.bold('ASSETS')}: Analyzing stack content...`,
+      () => Promise.all([this.getAssetsCount(), this.getAssetsCount(true)]),
+    );
 
-    log.debug('Fetching assets and folders data...', this.exportConfig.context);
-    // NOTE step 2: Get assets and it's folder data in parallel
-    await Promise.all([this.getAssetsFolders(assetsFolderCount), this.getAssets(assetsCount)]);
+    // Create nested progress manager
+    const progress = this.createNestedProgress(this.currentModuleName);
 
-    // NOTE step 3: Get versioned assets
-    if (!isEmpty(this.versionedAssets) && this.assetConfig.includeVersionedAssets) {
-      log.debug('Fetching versioned assets metadata...', this.exportConfig.context);
-      await this.getVersionedAssets();
+    // Add sub-processes
+    if (typeof assetsFolderCount === 'number' && assetsFolderCount > 0) {
+      progress.addProcess(PROCESS_NAMES.ASSET_FOLDERS, assetsFolderCount);
+    }
+    if (typeof assetsCount === 'number' && assetsCount > 0) {
+      progress.addProcess(PROCESS_NAMES.ASSET_METADATA, assetsCount);
+      progress.addProcess(PROCESS_NAMES.ASSET_DOWNLOADS, assetsCount);
     }
 
-    log.debug('Starting download of all assets...', this.exportConfig.context);
-    // NOTE step 4: Download all assets
-    await this.downloadAssets();
+    try {
+      // Process asset folders
+      if (typeof assetsFolderCount === 'number' && assetsFolderCount > 0) {
+        progress
+          .startProcess(PROCESS_NAMES.ASSET_FOLDERS)
+          .updateStatus(
+            PROCESS_STATUS[PROCESS_NAMES.ASSET_FOLDERS].FETCHING,
+            PROCESS_NAMES.ASSET_FOLDERS,
+          );
+        await this.getAssetsFolders(assetsFolderCount);
+        progress.completeProcess(PROCESS_NAMES.ASSET_FOLDERS, true);
+      }
 
-    log.success(messageHandler.parse('ASSET_EXPORT_COMPLETE'), this.exportConfig.context);
+      // Process asset metadata
+      if (typeof assetsCount === 'number' && assetsCount > 0) {
+        progress
+          .startProcess(PROCESS_NAMES.ASSET_METADATA)
+          .updateStatus(
+            PROCESS_STATUS[PROCESS_NAMES.ASSET_METADATA].FETCHING,
+            PROCESS_NAMES.ASSET_METADATA,
+          );
+        await this.getAssets(assetsCount);
+        progress.completeProcess(PROCESS_NAMES.ASSET_METADATA, true);
+      }
+
+      // Get versioned assets
+      if (!isEmpty(this.versionedAssets) && this.assetConfig.includeVersionedAssets) {
+        log.debug('Fetching versioned assets metadata...', this.exportConfig.context);
+        progress.updateStatus(
+          PROCESS_STATUS[PROCESS_NAMES.ASSET_METADATA].FETCHING_VERSION,
+          PROCESS_NAMES.ASSET_METADATA,
+        );
+        await this.getVersionedAssets();
+      }
+
+      // Download all assets
+      if (typeof assetsCount === 'number' && assetsCount > 0) {
+        progress
+          .startProcess(PROCESS_NAMES.ASSET_DOWNLOADS)
+          .updateStatus(
+            PROCESS_STATUS[PROCESS_NAMES.ASSET_DOWNLOADS].DOWNLOADING,
+            PROCESS_NAMES.ASSET_DOWNLOADS,
+          );
+        log.debug('Starting download of all assets...', this.exportConfig.context);
+        await this.downloadAssets();
+        progress.completeProcess(PROCESS_NAMES.ASSET_DOWNLOADS, true);
+      }
+
+      this.completeProgress(true);
+      log.success(messageHandler.parse('ASSET_EXPORT_COMPLETE'), this.exportConfig.context);
+    } catch (error) {
+      this.completeProgress(false, error?.message || 'Asset export failed');
+    }
   }
 
   /**
@@ -89,10 +144,26 @@ export default class ExportAssets extends BaseClass {
 
     const onSuccess = ({ response: { items } }: any) => {
       log.debug(`Fetched ${items?.length || 0} asset folders`, this.exportConfig.context);
-      if (!isEmpty(items)) this.assetsFolder.push(...items);
+      if (!isEmpty(items)) {
+        this.assetsFolder.push(...items);
+        items.forEach((folder: any) => {
+          this.progressManager?.tick(
+            true,
+            `folder: ${folder.name || folder.uid}`,
+            null,
+            PROCESS_NAMES.ASSET_FOLDERS,
+          );
+        });
+      }
     };
 
     const onReject = ({ error }: any) => {
+      this.progressManager?.tick(
+        false,
+        'asset folder',
+        error?.message || PROCESS_STATUS[PROCESS_NAMES.ASSET_FOLDERS].FAILED,
+        PROCESS_NAMES.ASSET_FOLDERS,
+      );
       handleAndLogError(error, { ...this.exportConfig.context });
     };
 
@@ -155,6 +226,12 @@ export default class ExportAssets extends BaseClass {
     }
 
     const onReject = ({ error }: any) => {
+      this.progressManager?.tick(
+        false,
+        'asset',
+        error?.message || PROCESS_STATUS[PROCESS_NAMES.ASSET_METADATA].FAILED,
+        PROCESS_NAMES.ASSET_METADATA,
+      );
       handleAndLogError(error, { ...this.exportConfig.context }, messageHandler.parse('ASSET_QUERY_FAILED'));
     };
 
@@ -174,6 +251,15 @@ export default class ExportAssets extends BaseClass {
       if (!isEmpty(items)) {
         log.debug(`Writing ${items.length} assets into file`, this.exportConfig.context);
         fs?.writeIntoFile(items, { mapKeyVal: true });
+        // Track progress for each asset with process name
+        items.forEach((asset: any) => {
+          this.progressManager?.tick(
+            true,
+            `asset: ${asset.filename || asset.uid}`,
+            null,
+            PROCESS_NAMES.ASSET_METADATA,
+          );
+        });
       }
     };
 
@@ -371,12 +457,23 @@ export default class ExportAssets extends BaseClass {
       } else {
         data.pipe(assetWriterStream);
       }
-
+      this.progressManager?.tick(
+        true,
+        `Downloaded asset: ${asset.filename || asset.uid}`,
+        null,
+        PROCESS_NAMES.ASSET_DOWNLOADS,
+      );
       log.success(messageHandler.parse('ASSET_DOWNLOAD_SUCCESS', asset.filename, asset.uid), this.exportConfig.context);
     };
 
     const onReject = ({ error, additionalInfo }: any) => {
       const { asset } = additionalInfo;
+      this.progressManager?.tick(
+        false,
+        `Failed to download asset: ${asset.filename || asset.uid}`,
+        null,
+        PROCESS_NAMES.ASSET_DOWNLOADS,
+      );
       handleAndLogError(
         error,
         { ...this.exportConfig.context, uid: asset.uid, filename: asset.filename },

@@ -1,16 +1,17 @@
 import { Command } from '@contentstack/cli-command';
 import {
   messageHandler,
-  printFlagDeprecation,
   managementSDKClient,
   flags,
   FlagInput,
   ContentstackClient,
-  pathValidator,
   log,
   handleAndLogError,
   configHandler,
   getLogPath,
+  CLIProgressManager,
+  cliux,
+  clearProgressModuleSetting,
   createLogContext,
 } from '@contentstack/cli-utilities';
 
@@ -37,20 +38,9 @@ export default class ImportCommand extends Command {
       char: 'c',
       description: '[optional] The path of the configuration JSON file containing all the options for a single run.',
     }),
-    'stack-uid': flags.string({
-      char: 's',
-      description: 'API key of the target stack.',
-      hidden: true,
-      parse: printFlagDeprecation(['-s', '--stack-uid'], ['-k', '--stack-api-key']),
-    }),
     'stack-api-key': flags.string({
       char: 'k',
       description: 'API Key of the target stack',
-    }),
-    data: flags.string({
-      description: 'path and location where data is stored',
-      hidden: true,
-      parse: printFlagDeprecation(['--data'], ['--data-dir']),
     }),
     'data-dir': flags.string({
       char: 'd',
@@ -60,34 +50,17 @@ export default class ImportCommand extends Command {
       char: 'a',
       description: 'The management token of the destination stack where you will import the content.',
     }),
-    'management-token-alias': flags.string({
-      description: 'alias of the management token',
-      hidden: true,
-      parse: printFlagDeprecation(['--management-token-alias'], ['-a', '--alias']),
-    }),
-    'auth-token': flags.boolean({
-      char: 'A',
-      description: 'to use auth token',
-      hidden: true,
-      parse: printFlagDeprecation(['-A', '--auth-token']),
-    }),
     module: flags.string({
       required: false,
-      char: 'm',
       description:
         '[optional] Specify the module to import into the target stack. If not specified, the import command will import all the modules into the stack. The available modules are assets, content-types, entries, environments, extensions, marketplace-apps, global-fields, labels, locales, webhooks, workflows, custom-roles, personalize projects, taxonomies, and composable-studio.',
-      parse: printFlagDeprecation(['-m'], ['--module']),
     }),
     'backup-dir': flags.string({
-      char: 'b',
       description: '[optional] Backup directory name when using specific module.',
-      parse: printFlagDeprecation(['-b'], ['--backup-dir']),
     }),
     branch: flags.string({
-      char: 'B',
       description:
         "The name of the branch where you want to import your content. If you don't mention the branch name, then by default the content will be imported to the main branch.",
-      parse: printFlagDeprecation(['-B'], ['--branch']),
       exclusive: ['branch-alias'],
     }),
     'branch-alias': flags.string({
@@ -106,10 +79,6 @@ export default class ImportCommand extends Command {
       char: 'y',
       required: false,
       description: '[optional] Force override all Marketplace prompts.',
-    }),
-    'skip-app-recreation': flags.boolean({
-      description: '(optional) Skips the recreation of private apps if they already exist.',
-      parse: printFlagDeprecation(['--skip-app-recreation']),
     }),
     'replace-existing': flags.boolean({
       required: false,
@@ -141,10 +110,8 @@ export default class ImportCommand extends Command {
     }),
   };
 
-  static aliases: string[] = ['cm:import'];
-
   static usage: string =
-    'cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]';
+    'cm:stacks:import [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]';
 
   async run(): Promise<void> {
     // setup import config
@@ -161,8 +128,8 @@ export default class ImportCommand extends Command {
         importConfig.apiKey,
         importConfig.authenticationMethod
       );
-      
-      importConfig.context = { module: '' };
+      const context = this.createImportContext(importConfig.apiKey, importConfig.authenticationMethod);
+      importConfig.context = { ...context };
       //log.info(`Using Cli Version: ${this.context?.cliVersion}`, importConfig.context);
 
       // Note setting host to create cma client
@@ -174,27 +141,81 @@ export default class ImportCommand extends Command {
 
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
 
+      if (flags.branch) {
+        CLIProgressManager.initializeGlobalSummary(
+          `IMPORT-${flags.branch}`,
+          flags.branch,
+          `Importing content into "${flags.branch}" branch...`,
+        );
+      } else {
+        CLIProgressManager.initializeGlobalSummary(`IMPORT`, flags.branch, 'Importing content...');
+      }
+
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       const result = await moduleImporter.start();
       backupDir = importConfig.backupDir;
-
-      if (!result?.noSuccessMsg) {
-        const successMessage = importConfig.stackName
-          ? `Successfully imported the content to the stack named ${importConfig.stackName} with the API key ${importConfig.apiKey} .`
-          : `The content has been imported to the stack ${importConfig.apiKey} successfully!`;
-        log.success(successMessage, importConfig.context);
-      }
-
-      log.success(`The log has been stored at: ${getLogPath()}`, importConfig.context);
-      log.info(`The backup content has been stored at: ${backupDir}`, importConfig.context);
+      //Note: Final summary is now handled by summary manager
+      CLIProgressManager.printGlobalSummary();
+      this.logSuccessAndBackupMessages(backupDir, importConfig);
+      // Clear progress module setting now that import is complete
+      clearProgressModuleSetting();
     } catch (error) {
+      // Clear progress module setting even on error
+      clearProgressModuleSetting();
+
       handleAndLogError(error);
-      log.info(`The log has been stored at '${getLogPath()}'`);
-      if (importConfig?.backupDir) {
-        log.info(`The backup content has been stored at: ${importConfig?.backupDir}`);
-      } else {
-        log.info('No backup directory was created due to early termination');
-      }
+      this.logAndPrintErrorDetails(error, importConfig);
     }
+  }
+
+  private logAndPrintErrorDetails(error: unknown, importConfig: any) {
+    cliux.print('\n');
+    const logPath = getLogPath();
+    const logMsg = `The log has been stored at '${logPath}'`;
+
+    const backupDir = importConfig?.backupDir;
+    const backupDirMsg = backupDir
+      ? `The backup content has been stored at '${backupDir}'`
+      : 'No backup directory was created due to early termination';
+
+    log.info(logMsg);
+    log.info(backupDirMsg);
+
+    const showConsoleLogs = configHandler.get('log')?.showConsoleLogs;
+    if (!showConsoleLogs) {
+      cliux.print(`Error: ${error}`, { color: 'red' });
+      cliux.print(logMsg, { color: 'blue' });
+      cliux.print(backupDirMsg, { color: 'blue' });
+    }
+  }
+
+  private logSuccessAndBackupMessages(backupDir: string, importConfig: any) {
+    cliux.print('\n');
+    const logPath = getLogPath();
+    const logMsg = `The log has been stored at '${logPath}'`;
+    const backupDirMsg = `The backup content has been stored at '${backupDir}'`;
+
+    log.success(logMsg, importConfig.context);
+    log.info(backupDirMsg, importConfig.context);
+
+    const showConsoleLogs = configHandler.get('log')?.showConsoleLogs;
+    if (!showConsoleLogs) {
+      cliux.print(logMsg, { color: 'blue' });
+      cliux.print(backupDirMsg, { color: 'blue' });
+    }
+  }
+
+  // Create export context object
+  private createImportContext(apiKey: string, authenticationMethod?: string): Context {
+    return {
+      command: this.context?.info?.command || 'cm:stacks:import',
+      module: '',
+      userId: configHandler.get('userUid') || '',
+      email: configHandler.get('email') || '',
+      sessionId: this.context?.sessionId,
+      apiKey: apiKey || '',
+      orgId: configHandler.get('oauthOrgUid') || '',
+      authenticationMethod: authenticationMethod || 'Basic Auth',
+    };
   }
 }

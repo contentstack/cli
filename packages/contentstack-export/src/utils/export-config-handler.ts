@@ -1,6 +1,6 @@
 import merge from 'merge';
 import * as path from 'path';
-import { configHandler, isAuthenticated,cliux, sanitizePath, log } from '@contentstack/cli-utilities';
+import { configHandler, isAuthenticated, cliux, sanitizePath, log } from '@contentstack/cli-utilities';
 import defaultConfig from '../config';
 import { readFile } from './file-helper';
 import { askExportDir, askAPIKey } from './interactive';
@@ -9,6 +9,10 @@ import { filter, includes } from 'lodash';
 import { ExportConfig } from '../types';
 
 const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
+  // Set progress supported module FIRST, before any log calls
+  // This ensures the logger respects the showConsoleLogs setting correctly
+  configHandler.set('log.progressSupportedModule', 'export');
+
   let config = merge({}, defaultConfig);
 
   // Track authentication method
@@ -20,10 +24,12 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
   if (exportCmdFlags['config']) {
     log.debug('Loading external configuration file...', { configFile: exportCmdFlags['config'] });
     const externalConfig = await readFile(exportCmdFlags['config']);
+
+
     config = merge.recursive(config, externalConfig);
   }
   config.exportDir = sanitizePath(
-    exportCmdFlags['data'] || exportCmdFlags['data-dir'] || config.data || (await askExportDir()),
+    exportCmdFlags['data'] || exportCmdFlags['data-dir'] || config.exportDir || (await askExportDir()),
   );
 
   const pattern = /[*$%#<>{}!&?]/g;
@@ -35,9 +41,6 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
   }
   config.exportDir = config.exportDir.replace(/['"]/g, '');
   config.exportDir = path.resolve(config.exportDir);
-
-  //Note to support the old key
-  config.data = config.exportDir;
 
   const managementTokenAlias = exportCmdFlags['management-token-alias'] || exportCmdFlags['alias'];
 
@@ -80,7 +83,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
       }
 
       config.apiKey =
-        exportCmdFlags['stack-uid'] || exportCmdFlags['stack-api-key'] || config.source_stack || (await askAPIKey());
+        exportCmdFlags['stack-uid'] || exportCmdFlags['stack-api-key'] || config.apiKey || (await askAPIKey());
       if (typeof config.apiKey !== 'string') {
         log.debug('Invalid API key received!', { apiKey: config.apiKey });
         throw new Error('Invalid API key received');
@@ -88,16 +91,13 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
     }
   }
 
-  // Note support old config
-  config.source_stack = config.apiKey;
-
   config.forceStopMarketplaceAppsPrompt = exportCmdFlags.yes;
   config.auth_token = configHandler.get('authtoken'); // TBD handle auth token in httpClient & sdk
   config.isAuthenticated = isAuthenticated();
 
   if (exportCmdFlags['branch-alias']) {
     config.branchAlias = exportCmdFlags['branch-alias'];
-  } 
+  }
   if (exportCmdFlags['branch']) {
     config.branchName = exportCmdFlags['branch'];
   }
@@ -132,8 +132,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
       throw new Error(`Invalid query format: ${error.message}`);
     }
   }
-
-    // Add authentication details to config for context tracking
+  // Add authentication details to config for context tracking
   config.authenticationMethod = authenticationMethod;
   log.debug('Export configuration setup completed.', { ...config });
 

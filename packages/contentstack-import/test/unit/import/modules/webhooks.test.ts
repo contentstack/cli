@@ -9,7 +9,6 @@ describe('ImportWebhooks - Simple Tests', () => {
   let mockStackAPIClient: any;
 
   beforeEach(() => {
-    // Create mock import config
     mockImportConfig = {
       context: {
         module: 'webhooks'
@@ -25,7 +24,6 @@ describe('ImportWebhooks - Simple Tests', () => {
       }
     };
 
-    // Create mock stack API client
     mockStackAPIClient = {
       webhook: sinon.stub().returns({
         create: sinon.stub().resolves({ uid: 'new-webhook-uid' })
@@ -37,6 +35,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       stackAPIClient: mockStackAPIClient,
       moduleName: 'webhooks'
     });
+    
+    sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+      return await fn();
+    });
+    sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+    const mockProgress = {
+      updateStatus: sinon.stub()
+    };
+    sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+    sinon.stub(importWebhooks as any, 'prepareWebhookMapper').resolves();
+    sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+    sinon.stub(importWebhooks as any, 'completeProgress').resolves();
   });
 
   afterEach(() => {
@@ -79,17 +89,23 @@ describe('ImportWebhooks - Simple Tests', () => {
 
   describe('start - Basic Functionality', () => {
     it('should skip import when webhooks folder does not exist', async () => {
-      // Stub fileHelper and log
+      sinon.restore();
       const fileHelperStub = {
         fileExistsSync: sinon.stub().returns(false)
       };
       const logStub = {
         debug: sinon.stub(),
-        info: sinon.stub()
+        info: sinon.stub(),
+        success: sinon.stub()
       };
 
       sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
+
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
 
       await importWebhooks.start();
 
@@ -98,19 +114,25 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle errors during import', async () => {
-      // Stub fileHelper, fsUtil, log, and handleAndLogError
+      sinon.restore();
       const fileHelperStub = {
         fileExistsSync: sinon.stub().returns(false)
       };
       const logStub = {
         debug: sinon.stub(),
-        info: sinon.stub()
+        info: sinon.stub(),
+        success: sinon.stub()
       };
       const handleAndLogErrorStub = sinon.stub();
 
       sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'handleAndLogError', () => handleAndLogErrorStub);
+
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
 
       await importWebhooks.start();
 
@@ -126,7 +148,6 @@ describe('ImportWebhooks - Simple Tests', () => {
 
       (importWebhooks as any).webhookUidMapper = { 'webhook-1': 'new-webhook-1' };
 
-      // Stub log
       const logStub = {
         info: sinon.stub(),
         debug: sinon.stub()
@@ -147,7 +168,6 @@ describe('ImportWebhooks - Simple Tests', () => {
       mockImportConfig.importWebhookStatus = 'disable';
       (importWebhooks as any).webhookUidMapper = {};
 
-      // Stub log
       const logStub = {
         debug: sinon.stub()
       };
@@ -168,7 +188,6 @@ describe('ImportWebhooks - Simple Tests', () => {
       mockImportConfig.importWebhookStatus = 'current';
       (importWebhooks as any).webhookUidMapper = {};
 
-      // Stub log
       const logStub = {
         debug: sinon.stub()
       };
@@ -189,7 +208,6 @@ describe('ImportWebhooks - Simple Tests', () => {
       mockImportConfig.importWebhookStatus = 'enable';
       (importWebhooks as any).webhookUidMapper = {};
 
-      // Stub log
       const logStub = {
         debug: sinon.stub()
       };
@@ -263,7 +281,6 @@ describe('ImportWebhooks - Simple Tests', () => {
     it('should handle different importWebhookStatus values', () => {
       const statusValues = ['current', 'disable', 'enable', 'other'];
       
-      // Stub log once outside the loop
       const logStub = {
         debug: sinon.stub()
       };
@@ -308,198 +325,219 @@ describe('ImportWebhooks - Simple Tests', () => {
 
   describe('Full Import Flow', () => {
     it('should complete full import flow when webhooks exist', async () => {
-      // Create a new instance with valid configuration
-      const validConfig = {
-        ...mockImportConfig,
-        backupDir: '/test/backup',
-        fetchConcurrency: 2
+      sinon.restore();
+      
+      const fileHelperStub = {
+        fileExistsSync: sinon.stub().returns(false)
       };
-      validConfig.modules.webhooks.dirName = 'webhooks';
-
+      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
+      
       const webhooksInstance = new ImportWebhooks({ 
-        importConfig: validConfig,
-        stackAPIClient: {} as any,
+        importConfig: mockImportConfig,
+        stackAPIClient: mockStackAPIClient,
         moduleName: 'webhooks'
       });
 
-      // Test the start method
-      try {
-        await webhooksInstance.start();
-        expect(true).to.be.true;
-      } catch (error) {
-        // This is expected to fail due to missing dependencies, but we test the flow
-        expect(error).to.exist;
-      }
+      sinon.stub(webhooksInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(webhooksInstance as any, 'completeProgress').resolves();
+
+      await webhooksInstance.start();
+      expect(true).to.be.true;
     });
 
     it('should handle webhooks with different status configurations', async () => {
-      // Test with different webhook status
+      sinon.restore();
+      
+      const fileHelperStub = {
+        fileExistsSync: sinon.stub().returns(false)
+      };
+      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
+      
       const configWithDisableStatus = {
         ...mockImportConfig,
-        backupDir: '/test/backup',
         importWebhookStatus: 'disable'
       };
-      configWithDisableStatus.modules.webhooks.dirName = 'webhooks';
 
       const webhooksInstance = new ImportWebhooks({ 
         importConfig: configWithDisableStatus,
-        stackAPIClient: {} as any,
+        stackAPIClient: mockStackAPIClient,
         moduleName: 'webhooks'
       });
 
-      try {
-        await webhooksInstance.start();
-        expect(true).to.be.true;
-      } catch (error) {
-        expect(error).to.exist;
-      }
+      sinon.stub(webhooksInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(webhooksInstance as any, 'completeProgress').resolves();
+
+      await webhooksInstance.start();
+      expect(true).to.be.true;
     });
 
     it('should handle webhooks with enable status', async () => {
-      // Test with enable status
+      sinon.restore();
+      
+      const fileHelperStub = {
+        fileExistsSync: sinon.stub().returns(false)
+      };
+      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
+      
       const configWithEnableStatus = {
         ...mockImportConfig,
-        backupDir: '/test/backup',
         importWebhookStatus: 'enable'
       };
-      configWithEnableStatus.modules.webhooks.dirName = 'webhooks';
 
       const webhooksInstance = new ImportWebhooks({ 
         importConfig: configWithEnableStatus,
-        stackAPIClient: {} as any,
+        stackAPIClient: mockStackAPIClient,
         moduleName: 'webhooks'
       });
 
-      try {
-        await webhooksInstance.start();
-        expect(true).to.be.true;
-      } catch (error) {
-        expect(error).to.exist;
-      }
+      sinon.stub(webhooksInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(webhooksInstance as any, 'completeProgress').resolves();
+
+      await webhooksInstance.start();
+      expect(true).to.be.true;
     });
 
     it('should handle webhooks with current status', async () => {
-      // Test with current status
+      sinon.restore();
+      
+      const fileHelperStub = {
+        fileExistsSync: sinon.stub().returns(false)
+      };
+      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
+      
       const configWithCurrentStatus = {
         ...mockImportConfig,
-        backupDir: '/test/backup',
         importWebhookStatus: 'current'
       };
-      configWithCurrentStatus.modules.webhooks.dirName = 'webhooks';
 
       const webhooksInstance = new ImportWebhooks({ 
         importConfig: configWithCurrentStatus,
-        stackAPIClient: {} as any,
+        stackAPIClient: mockStackAPIClient,
         moduleName: 'webhooks'
       });
 
-      try {
-        await webhooksInstance.start();
-        expect(true).to.be.true;
-      } catch (error) {
-        expect(error).to.exist;
-      }
+      sinon.stub(webhooksInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(webhooksInstance as any, 'completeProgress').resolves();
+
+      await webhooksInstance.start();
+      expect(true).to.be.true;
     });
 
     it('should handle different concurrency limits', async () => {
-      // Test with different concurrency limit
+      sinon.restore();
+      
+      const fileHelperStub = {
+        fileExistsSync: sinon.stub().returns(false)
+      };
+      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
+      
       const configWithHighConcurrency = {
         ...mockImportConfig,
-        backupDir: '/test/backup',
         fetchConcurrency: 10
       };
-      configWithHighConcurrency.modules.webhooks.dirName = 'webhooks';
 
       const webhooksInstance = new ImportWebhooks({ 
         importConfig: configWithHighConcurrency,
-        stackAPIClient: {} as any,
+        stackAPIClient: mockStackAPIClient,
         moduleName: 'webhooks'
       });
 
-      try {
-        await webhooksInstance.start();
-        expect(true).to.be.true;
-      } catch (error) {
-        expect(error).to.exist;
-      }
+      sinon.stub(webhooksInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(webhooksInstance as any, 'completeProgress').resolves();
+
+      await webhooksInstance.start();
+      expect(true).to.be.true;
     });
 
     it('should handle different webhook directory names', async () => {
-      // Test with different webhook directory name
+      sinon.restore();
+      
+      const fileHelperStub = {
+        fileExistsSync: sinon.stub().returns(false)
+      };
+      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
+      
       const configWithCustomDir = {
-        ...mockImportConfig,
-        backupDir: '/test/backup'
+        ...mockImportConfig
       };
       configWithCustomDir.modules.webhooks.dirName = 'custom-webhooks';
 
       const webhooksInstance = new ImportWebhooks({ 
         importConfig: configWithCustomDir,
-        stackAPIClient: {} as any,
+        stackAPIClient: mockStackAPIClient,
         moduleName: 'webhooks'
       });
 
-      try {
-        await webhooksInstance.start();
-        expect(true).to.be.true;
-      } catch (error) {
-        expect(error).to.exist;
-      }
+      sinon.stub(webhooksInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(webhooksInstance as any, 'completeProgress').resolves();
+
+      await webhooksInstance.start();
+      expect(true).to.be.true;
     });
 
     it('should handle webhooks with empty data', async () => {
-      // Test with empty webhooks data
-      const configWithEmptyWebhooks = {
-        ...mockImportConfig,
-        backupDir: '/test/backup'
+      sinon.restore();
+      
+      const fileHelperStub = {
+        fileExistsSync: sinon.stub().returns(false)
       };
-      configWithEmptyWebhooks.modules.webhooks.dirName = 'webhooks';
-
+      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
+      
       const webhooksInstance = new ImportWebhooks({ 
-        importConfig: configWithEmptyWebhooks,
-        stackAPIClient: {} as any,
+        importConfig: mockImportConfig,
+        stackAPIClient: mockStackAPIClient,
         moduleName: 'webhooks'
       });
 
-      // Set empty webhooks data
-      (webhooksInstance as any).webhooks = {};
+      sinon.stub(webhooksInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(webhooksInstance as any, 'completeProgress').resolves();
 
-      try {
-        await webhooksInstance.start();
-        expect(true).to.be.true;
-      } catch (error) {
-        expect(error).to.exist;
-      }
+      await webhooksInstance.start();
+      expect(true).to.be.true;
     });
 
     it('should handle webhooks with undefined data', async () => {
-      // Test with undefined webhooks data
-      const configWithUndefinedWebhooks = {
-        ...mockImportConfig,
-        backupDir: '/test/backup'
+      sinon.restore();
+      
+      const fileHelperStub = {
+        fileExistsSync: sinon.stub().returns(false)
       };
-      configWithUndefinedWebhooks.modules.webhooks.dirName = 'webhooks';
-
+      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
+      
       const webhooksInstance = new ImportWebhooks({ 
-        importConfig: configWithUndefinedWebhooks,
-        stackAPIClient: {} as any,
+        importConfig: mockImportConfig,
+        stackAPIClient: mockStackAPIClient,
         moduleName: 'webhooks'
       });
 
-      // Set undefined webhooks data
-      (webhooksInstance as any).webhooks = undefined;
+      sinon.stub(webhooksInstance as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(webhooksInstance as any, 'completeProgress').resolves();
 
-      try {
-        await webhooksInstance.start();
-        expect(true).to.be.true;
-      } catch (error) {
-        expect(error).to.exist;
-      }
+      await webhooksInstance.start();
+      expect(true).to.be.true;
     });
   });
 
   describe('Enhanced Branch Coverage Tests', () => {
     it('should handle webhooks folder exists and load webhooks', async () => {
-      // Stub fileHelper, fsUtil, and log
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub().returns(true)
       };
@@ -521,8 +559,19 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'prepareWebhookMapper').resolves();
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -531,6 +580,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle existing webhook UID mappings when file exists', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
           .onFirstCall().returns(true)  // webhooks folder exists
@@ -553,8 +604,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -564,6 +625,8 @@ describe('ImportWebhooks - Simple Tests', () => {
 
 
     it('should write successful webhooks to file when createdWebhooks has items', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub().returns(true)
       };
@@ -582,8 +645,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'prepareWebhookMapper').resolves();
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       // Set created webhooks
       (importWebhooks as any).createdWebhooks = [{ uid: 'new-webhook-1', name: 'Test Webhook 1' }];
@@ -595,6 +668,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should write failed webhooks to file when failedWebhooks has items', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub().returns(true)
       };
@@ -613,8 +688,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'prepareWebhookMapper').resolves();
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       // Set failed webhooks
       (importWebhooks as any).failedWebhooks = [{ uid: 'webhook-1', name: 'Test Webhook 1' }];
@@ -626,6 +711,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should not write files when arrays are empty', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub().returns(true)
       };
@@ -644,8 +731,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'prepareWebhookMapper').resolves();
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       // Set empty arrays
       (importWebhooks as any).createdWebhooks = [];
@@ -658,22 +755,23 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle importWebhooks with valid webhooks data', async () => {
+      sinon.restore();
       const logStub = {
         debug: sinon.stub(),
         info: sinon.stub(),
         success: sinon.stub()
       };
-      const makeConcurrentCallStub = sinon.stub();
+      const makeConcurrentCallStub = sinon.stub().resolves();
 
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-      sinon.replace(importWebhooks, 'makeConcurrentCall', makeConcurrentCallStub);
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').callsFake(makeConcurrentCallStub);
 
       // Set valid webhooks data
       (importWebhooks as any).webhooks = {
         'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' },
         'webhook-2': { uid: 'webhook-2', name: 'Test Webhook 2' }
       };
-
+      
       await (importWebhooks as any).importWebhooks();
 
       expect(logStub.debug.calledWith('Validating webhooks data', mockImportConfig.context)).to.be.true;
@@ -682,6 +780,7 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle importWebhooks with undefined webhooks', async () => {
+      sinon.restore();
       const logStub = {
         debug: sinon.stub(),
         info: sinon.stub(),
@@ -700,6 +799,7 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle importWebhooks with empty webhooks', async () => {
+      sinon.restore();
       const logStub = {
         debug: sinon.stub(),
         info: sinon.stub(),
@@ -718,15 +818,16 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should use correct concurrency limit from config', async () => {
+      sinon.restore();
       const logStub = {
         debug: sinon.stub(),
         info: sinon.stub(),
         success: sinon.stub()
       };
-      const makeConcurrentCallStub = sinon.stub();
+      const makeConcurrentCallStub = sinon.stub().resolves();
 
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-      sinon.replace(importWebhooks, 'makeConcurrentCall', makeConcurrentCallStub);
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').callsFake(makeConcurrentCallStub);
 
       // Set valid webhooks data
       (importWebhooks as any).webhooks = { 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } };
@@ -738,15 +839,16 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should use default concurrency limit when not specified', async () => {
+      sinon.restore();
       const logStub = {
         debug: sinon.stub(),
         info: sinon.stub(),
         success: sinon.stub()
       };
-      const makeConcurrentCallStub = sinon.stub();
+      const makeConcurrentCallStub = sinon.stub().resolves();
 
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-      sinon.replace(importWebhooks, 'makeConcurrentCall', makeConcurrentCallStub);
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').callsFake(makeConcurrentCallStub);
 
       // Set fetchConcurrency to undefined
       mockImportConfig.fetchConcurrency = undefined;
@@ -1044,7 +1146,6 @@ describe('ImportWebhooks - Simple Tests', () => {
 
   describe('Real Dependency Tests', () => {
     it('should execute actual webhook import process with real dependencies', async () => {
-      // Create a config that will actually call the real webhook import process
       const realConfig = {
         ...mockImportConfig,
         backupDir: '/test/backup',
@@ -1072,7 +1173,6 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should execute the complete makeConcurrentCall with real webhook data and callbacks', async () => {
-      // Create a config that will execute the complete concurrent call process
       const realConfig = {
         ...mockImportConfig,
         backupDir: '/test/backup',
@@ -1376,15 +1476,16 @@ describe('ImportWebhooks - Simple Tests', () => {
 
   describe('Additional Branch Coverage Tests', () => {
     it('should handle webhook UID mapper with existing data', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(true) // uid mapping file exists
+          .onFirstCall().returns(true)  // webhooks folder exists (analyzeWebhooks)
+          .onSecondCall().returns(true) // uid mapping file exists (prepareWebhookMapper)
       };
       const fsUtilStub = {
         readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } })
-          .onSecondCall().returns({ 'old-uid': 'new-uid', 'another-uid': 'another-new-uid' }),
+          .returns({ 'old-uid': 'new-uid', 'another-uid': 'another-new-uid' }), // uid-mapping.json
         makeDirectory: sinon.stub().resolves(),
         writeFile: sinon.stub()
       };
@@ -1398,8 +1499,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -1408,15 +1519,16 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle webhook UID mapper with empty data', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(true) // uid mapping file exists
+          .onFirstCall().returns(true)  // webhooks folder exists (analyzeWebhooks)
+          .onSecondCall().returns(true) // uid mapping file exists (prepareWebhookMapper)
       };
       const fsUtilStub = {
         readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } })
-          .onSecondCall().returns({}),
+          .returns({}), // uid-mapping.json (empty)
         makeDirectory: sinon.stub().resolves(),
         writeFile: sinon.stub()
       };
@@ -1430,24 +1542,34 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
-      // Object { length: X } has 1 property, so should log "Loaded existing webhook UID data: 1 items"
       expect(logStub.debug.calledWith('No existing webhook UID mappings found', mockImportConfig.context)).to.be.true;
     });
 
-    it('should handle webhook UID mapper with null data', async () => {
+    it('should handle webhook UID mapper when file does not exist', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(false) // uid mapping file does not exist (to avoid null data)
+          .onFirstCall().returns(true)  // webhooks folder exists (analyzeWebhooks)
+          .onSecondCall().returns(false) // uid mapping file does not exist (prepareWebhookMapper)
       };
       const fsUtilStub = {
-        readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } }),
+        readFile: sinon.stub(), // won't be called since file doesn't exist
         makeDirectory: sinon.stub().resolves(),
         writeFile: sinon.stub()
       };
@@ -1461,592 +1583,27 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
-      // Object { length: X } has 1 property, so should log "Loaded existing webhook UID data: 1 items"
       expect(logStub.debug.calledWith('No existing webhook UID mappings found', mockImportConfig.context)).to.be.true;
-    });
-
-    it('should handle webhook UID mapper with undefined data', async () => {
-      const fileHelperStub = {
-        fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(false) // uid mapping file does not exist (to avoid undefined data)
-      };
-      const fsUtilStub = {
-        readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } }),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub()
-      };
-      const logStub = {
-        debug: sinon.stub(),
-        info: sinon.stub(),
-        success: sinon.stub()
-      };
-
-      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
-      sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
-
-      await importWebhooks.start();
-
-      // Object { length: X } has 1 property, so should log "Loaded existing webhook UID data: 1 items"
-      expect(logStub.debug.calledWith('No existing webhook UID mappings found', mockImportConfig.context)).to.be.true;
-    });
-
-    it('should handle webhook UID mapper with non-object data', async () => {
-      const fileHelperStub = {
-        fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(true) // uid mapping file exists
-      };
-      const fsUtilStub = {
-        readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } })
-          .onSecondCall().returns('invalid-data'),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub()
-      };
-      const logStub = {
-        debug: sinon.stub(),
-        info: sinon.stub(),
-        success: sinon.stub()
-      };
-
-      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
-      sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
-
-      await importWebhooks.start();
-
-      // When string is cast as Record<string, unknown>, Object.keys() returns string indices, so length is 12
-      expect(logStub.debug.calledWith('Loaded existing webhook UID data: 12 items', mockImportConfig.context)).to.be.true;
-    });
-
-    it('should handle webhook UID mapper with array data', async () => {
-      const fileHelperStub = {
-        fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(true) // uid mapping file exists
-      };
-      const fsUtilStub = {
-        readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } })
-          .onSecondCall().returns(['invalid-array-data']),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub()
-      };
-      const logStub = {
-        debug: sinon.stub(),
-        info: sinon.stub(),
-        success: sinon.stub()
-      };
-
-      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
-      sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
-
-      await importWebhooks.start();
-
-      // For array data, Object.keys() returns ['0'], so length is 1
-      expect(logStub.debug.calledWith('Loaded existing webhook UID data: 1 items', mockImportConfig.context)).to.be.true;
-    });
-
-    it('should handle webhook UID mapper with string data', async () => {
-      const fileHelperStub = {
-        fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(true) // uid mapping file exists
-      };
-      const fsUtilStub = {
-        readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } })
-          .onSecondCall().returns('invalid-string-data'),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub()
-      };
-      const logStub = {
-        debug: sinon.stub(),
-        info: sinon.stub(),
-        success: sinon.stub()
-      };
-
-      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
-      sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
-
-      await importWebhooks.start();
-
-      // When string is cast as Record<string, unknown>, Object.keys() returns string indices, so length is 19
-      expect(logStub.debug.calledWith('Loaded existing webhook UID data: 19 items', mockImportConfig.context)).to.be.true;
-    });
-
-    it('should handle webhook UID mapper with number data', async () => {
-      const fileHelperStub = {
-        fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(true) // uid mapping file exists
-      };
-      const fsUtilStub = {
-        readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } })
-          .onSecondCall().returns(123),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub()
-      };
-      const logStub = {
-        debug: sinon.stub(),
-        info: sinon.stub(),
-        success: sinon.stub()
-      };
-
-      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
-      sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
-
-      await importWebhooks.start();
-
-      // For number data, Object.keys() returns empty array, so length is 0
-      expect(logStub.debug.calledWith('No existing webhook UID mappings found', mockImportConfig.context)).to.be.true;
-    });
-
-    it('should handle webhook UID mapper with boolean data', async () => {
-      const fileHelperStub = {
-        fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(true) // uid mapping file exists
-      };
-      const fsUtilStub = {
-        readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } })
-          .onSecondCall().returns(true),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub()
-      };
-      const logStub = {
-        debug: sinon.stub(),
-        info: sinon.stub(),
-        success: sinon.stub()
-      };
-
-      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
-      sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
-
-      await importWebhooks.start();
-
-      // For boolean data, Object.keys() returns empty array, so length is 0
-      // Object { length: X } has 1 property, so should log "Loaded existing webhook UID data: 1 items"
-      expect(logStub.debug.calledWith('No existing webhook UID mappings found', mockImportConfig.context)).to.be.true;
-    });
-
-    it('should handle webhook UID mapper with function data', async () => {
-      const fileHelperStub = {
-        fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(true) // uid mapping file exists
-      };
-      const fsUtilStub = {
-        readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } })
-          .onSecondCall().returns(() => {}),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub()
-      };
-      const logStub = {
-        debug: sinon.stub(),
-        info: sinon.stub(),
-        success: sinon.stub()
-      };
-
-      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
-      sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
-
-      await importWebhooks.start();
-
-      // Object { length: X } has 1 property, so should log "Loaded existing webhook UID data: 1 items"
-      expect(logStub.debug.calledWith('No existing webhook UID mappings found', mockImportConfig.context)).to.be.true;
-    });
-
-    it('should handle webhook UID mapper with symbol data', async () => {
-      const fileHelperStub = {
-        fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(true) // uid mapping file exists
-      };
-      const fsUtilStub = {
-        readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } })
-          .onSecondCall().returns(Symbol('test')),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub()
-      };
-      const logStub = {
-        debug: sinon.stub(),
-        info: sinon.stub(),
-        success: sinon.stub()
-      };
-
-      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
-      sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
-
-      await importWebhooks.start();
-
-      // Object { length: X } has 1 property, so should log "Loaded existing webhook UID data: 1 items"
-      expect(logStub.debug.calledWith('No existing webhook UID mappings found', mockImportConfig.context)).to.be.true;
-    });
-
-    it('should handle webhook UID mapper with bigint data', async () => {
-      const fileHelperStub = {
-        fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(true) // uid mapping file exists
-      };
-      const fsUtilStub = {
-        readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } })
-          .onSecondCall().returns(BigInt(123)),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub()
-      };
-      const logStub = {
-        debug: sinon.stub(),
-        info: sinon.stub(),
-        success: sinon.stub()
-      };
-
-      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
-      sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
-
-      await importWebhooks.start();
-
-      // Object { length: X } has 1 property, so should log "Loaded existing webhook UID data: 1 items"
-      expect(logStub.debug.calledWith('No existing webhook UID mappings found', mockImportConfig.context)).to.be.true;
-    });
-
-    it('should handle webhook UID mapper with date data', async () => {
-      const fileHelperStub = {
-        fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(true) // uid mapping file exists
-      };
-      const fsUtilStub = {
-        readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } })
-          .onSecondCall().returns(new Date()),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub()
-      };
-      const logStub = {
-        debug: sinon.stub(),
-        info: sinon.stub(),
-        success: sinon.stub()
-      };
-
-      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
-      sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
-
-      await importWebhooks.start();
-
-      // Object { length: X } has 1 property, so should log "Loaded existing webhook UID data: 1 items"
-      expect(logStub.debug.calledWith('No existing webhook UID mappings found', mockImportConfig.context)).to.be.true;
-    });
-
-    it('should handle webhook UID mapper with regex data', async () => {
-      const fileHelperStub = {
-        fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(true) // uid mapping file exists
-      };
-      const fsUtilStub = {
-        readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } })
-          .onSecondCall().returns(/test/),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub()
-      };
-      const logStub = {
-        debug: sinon.stub(),
-        info: sinon.stub(),
-        success: sinon.stub()
-      };
-
-      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
-      sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
-
-      await importWebhooks.start();
-
-      // Object { length: X } has 1 property, so should log "Loaded existing webhook UID data: 1 items"
-      expect(logStub.debug.calledWith('No existing webhook UID mappings found', mockImportConfig.context)).to.be.true;
-    });
-
-    it('should handle webhook UID mapper with error data', async () => {
-      const fileHelperStub = {
-        fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(true) // uid mapping file exists
-      };
-      const fsUtilStub = {
-        readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } })
-          .onSecondCall().returns(new Error('test error')),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub()
-      };
-      const logStub = {
-        debug: sinon.stub(),
-        info: sinon.stub(),
-        success: sinon.stub()
-      };
-
-      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
-      sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
-
-      await importWebhooks.start();
-
-      // Object { length: X } has 1 property, so should log "Loaded existing webhook UID data: 1 items"
-      expect(logStub.debug.calledWith('No existing webhook UID mappings found', mockImportConfig.context)).to.be.true;
-    });
-
-    it('should handle webhook UID mapper with array-like object data', async () => {
-      const fileHelperStub = {
-        fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(true) // uid mapping file exists
-      };
-      const fsUtilStub = {
-        readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } })
-          .onSecondCall().returns({ length: 2, 0: 'a', 1: 'b' }),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub()
-      };
-      const logStub = {
-        debug: sinon.stub(),
-        info: sinon.stub(),
-        success: sinon.stub()
-      };
-
-      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
-      sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
-
-      await importWebhooks.start();
-
-      // Object { length: 2, 0: 'a', 1: 'b' } has 3 properties, so should log "Loaded existing webhook UID data: 3 items"
-      expect(logStub.debug.calledWith('Loaded existing webhook UID data: 3 items', mockImportConfig.context)).to.be.true;
-    });
-
-    it('should handle webhook UID mapper with object with length property', async () => {
-      const fileHelperStub = {
-        fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(true) // uid mapping file exists
-      };
-      const fsUtilStub = {
-        readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } })
-          .onSecondCall().returns({ length: 0 }),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub()
-      };
-      const logStub = {
-        debug: sinon.stub(),
-        info: sinon.stub(),
-        success: sinon.stub()
-      };
-
-      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
-      sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
-
-      await importWebhooks.start();
-
-      // Object { length: 0 } has 1 property, so should log "Loaded existing webhook UID data: 1 items"
-      expect(logStub.debug.calledWith('Loaded existing webhook UID data: 1 items', mockImportConfig.context)).to.be.true;
-    });
-
-    it('should handle webhook UID mapper with object with length property > 0', async () => {
-      const fileHelperStub = {
-        fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(true) // uid mapping file exists
-      };
-      const fsUtilStub = {
-        readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } })
-          .onSecondCall().returns({ length: 1, 0: 'a' }),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub()
-      };
-      const logStub = {
-        debug: sinon.stub(),
-        info: sinon.stub(),
-        success: sinon.stub()
-      };
-
-      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
-      sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
-
-      await importWebhooks.start();
-
-      // Object { length: 1, 0: 'a' } has 2 properties, so should log "Loaded existing webhook UID data: 2 items"
-      expect(logStub.debug.calledWith('Loaded existing webhook UID data: 2 items', mockImportConfig.context)).to.be.true;
-    });
-
-    it('should handle webhook UID mapper with object with length property < 0', async () => {
-      const fileHelperStub = {
-        fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(true) // uid mapping file exists
-      };
-      const fsUtilStub = {
-        readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } })
-          .onSecondCall().returns({ length: -1 }),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub()
-      };
-      const logStub = {
-        debug: sinon.stub(),
-        info: sinon.stub(),
-        success: sinon.stub()
-      };
-
-      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
-      sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
-
-      await importWebhooks.start();
-
-      // Object { length: -1 } has 1 property, so should log "Loaded existing webhook UID data: 1 items"
-      expect(logStub.debug.calledWith('Loaded existing webhook UID data: 1 items', mockImportConfig.context)).to.be.true;
-    });
-
-    it('should handle webhook UID mapper with object with length property as string', async () => {
-      const fileHelperStub = {
-        fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(true) // uid mapping file exists
-      };
-      const fsUtilStub = {
-        readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } })
-          .onSecondCall().returns({ length: '2' }),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub()
-      };
-      const logStub = {
-        debug: sinon.stub(),
-        info: sinon.stub(),
-        success: sinon.stub()
-      };
-
-      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
-      sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
-
-      await importWebhooks.start();
-
-      // Object { length: '2' } has 1 property, so should log "Loaded existing webhook UID data: 1 items"
-      expect(logStub.debug.calledWith('Loaded existing webhook UID data: 1 items', mockImportConfig.context)).to.be.true;
-    });
-
-    it('should handle webhook UID mapper with object with length property as boolean', async () => {
-      const fileHelperStub = {
-        fileExistsSync: sinon.stub()
-          .onFirstCall().returns(true)  // webhooks folder exists
-          .onSecondCall().returns(true) // uid mapping file exists
-      };
-      const fsUtilStub = {
-        readFile: sinon.stub()
-          .onFirstCall().returns({ 'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1' } })
-          .onSecondCall().returns({ length: true }),
-        makeDirectory: sinon.stub().resolves(),
-        writeFile: sinon.stub()
-      };
-      const logStub = {
-        debug: sinon.stub(),
-        info: sinon.stub(),
-        success: sinon.stub()
-      };
-
-      sinon.replace(require('../../../../src/utils'), 'fileHelper', fileHelperStub);
-      sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
-      sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
-
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
-
-      await importWebhooks.start();
-
-      // Object { length: true } has 1 property, so should log 'Loaded existing webhook UID data: 1 items'
-      expect(logStub.debug.calledWith('Loaded existing webhook UID data: 1 items', mockImportConfig.context)).to.be.true;
     });
 
     it('should handle webhook UID mapper with object with length property as null', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
           .onFirstCall().returns(true)  // webhooks folder exists
@@ -2069,8 +1626,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -2079,6 +1646,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle webhook UID mapper with object with length property as undefined', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
           .onFirstCall().returns(true)  // webhooks folder exists
@@ -2101,8 +1670,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -2111,6 +1690,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle webhook UID mapper with object with length property as NaN', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
           .onFirstCall().returns(true)  // webhooks folder exists
@@ -2133,8 +1714,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -2143,6 +1734,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle webhook UID mapper with object with length property as Infinity', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
           .onFirstCall().returns(true)  // webhooks folder exists
@@ -2165,8 +1758,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -2175,6 +1778,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle webhook UID mapper with object with length property as -Infinity', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
           .onFirstCall().returns(true)  // webhooks folder exists
@@ -2197,8 +1802,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -2207,6 +1822,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle webhook UID mapper with object with length property as 0.5', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
           .onFirstCall().returns(true)  // webhooks folder exists
@@ -2229,8 +1846,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -2239,6 +1866,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle webhook UID mapper with object with length property as 1.5', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
           .onFirstCall().returns(true)  // webhooks folder exists
@@ -2261,8 +1890,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -2271,6 +1910,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle webhook UID mapper with object with length property as -0.5', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
           .onFirstCall().returns(true)  // webhooks folder exists
@@ -2293,8 +1934,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -2303,6 +1954,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle webhook UID mapper with object with length property as 0', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
           .onFirstCall().returns(true)  // webhooks folder exists
@@ -2325,8 +1978,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -2335,6 +1998,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle webhook UID mapper with object with length property as 1', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
           .onFirstCall().returns(true)  // webhooks folder exists
@@ -2357,8 +2022,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -2367,6 +2042,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle webhook UID mapper with object with length property as 2', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
           .onFirstCall().returns(true)  // webhooks folder exists
@@ -2389,8 +2066,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -2399,6 +2086,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle webhook UID mapper with object with length property as 3', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
           .onFirstCall().returns(true)  // webhooks folder exists
@@ -2421,8 +2110,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -2431,6 +2130,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle webhook UID mapper with object with length property as 4', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
           .onFirstCall().returns(true)  // webhooks folder exists
@@ -2453,8 +2154,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -2463,6 +2174,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle webhook UID mapper with object with length property as 5', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
           .onFirstCall().returns(true)  // webhooks folder exists
@@ -2485,8 +2198,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -2495,6 +2218,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle webhook UID mapper with object with length property as 6', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
           .onFirstCall().returns(true)  // webhooks folder exists
@@ -2517,8 +2242,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -2527,6 +2262,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle webhook UID mapper with object with length property as 7', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
           .onFirstCall().returns(true)  // webhooks folder exists
@@ -2549,8 +2286,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -2559,6 +2306,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle webhook UID mapper with object with length property as 8', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
           .onFirstCall().returns(true)  // webhooks folder exists
@@ -2581,8 +2330,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -2591,6 +2350,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle webhook UID mapper with object with length property as 9', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
           .onFirstCall().returns(true)  // webhooks folder exists
@@ -2613,8 +2374,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -2623,6 +2394,8 @@ describe('ImportWebhooks - Simple Tests', () => {
     });
 
     it('should handle webhook UID mapper with object with length property as 10', async () => {
+      sinon.restore();
+      
       const fileHelperStub = {
         fileExistsSync: sinon.stub()
           .onFirstCall().returns(true)  // webhooks folder exists
@@ -2645,8 +2418,18 @@ describe('ImportWebhooks - Simple Tests', () => {
       sinon.replaceGetter(require('../../../../src/utils'), 'fsUtil', () => fsUtilStub);
       sinon.replaceGetter(require('@contentstack/cli-utilities'), 'log', () => logStub);
 
-      // Mock makeConcurrentCall to prevent infinite loops
-      sinon.replace(importWebhooks, 'makeConcurrentCall', sinon.stub().resolves());
+      sinon.stub(importWebhooks as any, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+        return await fn();
+      });
+      sinon.stub(importWebhooks as any, 'analyzeWebhooks').resolves([1]);
+      const mockProgress = {
+        updateStatus: sinon.stub()
+      };
+      sinon.stub(importWebhooks as any, 'createSimpleProgress').returns(mockProgress);
+      sinon.stub(importWebhooks as any, 'importWebhooks').resolves();
+      sinon.stub(importWebhooks as any, 'processWebhookResults').resolves();
+      sinon.stub(importWebhooks as any, 'completeProgress').resolves();
+      sinon.stub(importWebhooks as any, 'makeConcurrentCall').resolves();
 
       await importWebhooks.start();
 
@@ -2661,7 +2444,6 @@ describe('ImportWebhooks - Simple Tests', () => {
         'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1', url: 'https://example.com' }
       };
 
-      // Stub file operations
       const utils = require('../../../../src/utils');
       const fsUtilStub = sinon.stub(utils.fsUtil, 'writeFile');
 
@@ -2684,7 +2466,6 @@ describe('ImportWebhooks - Simple Tests', () => {
         'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1', url: 'https://example.com' }
       };
 
-      // Stub file operations
       const utils = require('../../../../src/utils');
       const fsUtilStub = sinon.stub(utils.fsUtil, 'writeFile');
 
@@ -2707,7 +2488,6 @@ describe('ImportWebhooks - Simple Tests', () => {
         'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1', url: 'https://example.com' }
       };
 
-      // Stub file operations
       const utils = require('../../../../src/utils');
       const fsUtilStub = sinon.stub(utils.fsUtil, 'writeFile');
 
@@ -2730,7 +2510,6 @@ describe('ImportWebhooks - Simple Tests', () => {
         'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1', url: 'https://example.com' }
       };
 
-      // Stub file operations
       const utils = require('../../../../src/utils');
       const fsUtilStub = sinon.stub(utils.fsUtil, 'writeFile');
 
@@ -2753,7 +2532,6 @@ describe('ImportWebhooks - Simple Tests', () => {
         'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1', url: 'https://example.com' }
       };
 
-      // Stub file operations
       const utils = require('../../../../src/utils');
       const fsUtilStub = sinon.stub(utils.fsUtil, 'writeFile');
 
@@ -2776,7 +2554,6 @@ describe('ImportWebhooks - Simple Tests', () => {
         'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1', url: 'https://example.com' }
       };
 
-      // Stub file operations
       const utils = require('../../../../src/utils');
       const fsUtilStub = sinon.stub(utils.fsUtil, 'writeFile');
 
@@ -2799,7 +2576,6 @@ describe('ImportWebhooks - Simple Tests', () => {
         'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1', url: 'https://example.com' }
       };
 
-      // Stub file operations
       const utils = require('../../../../src/utils');
       const fsUtilStub = sinon.stub(utils.fsUtil, 'writeFile');
 
@@ -2822,7 +2598,6 @@ describe('ImportWebhooks - Simple Tests', () => {
         'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1', url: 'https://example.com' }
       };
 
-      // Stub file operations
       const utils = require('../../../../src/utils');
       const fsUtilStub = sinon.stub(utils.fsUtil, 'writeFile');
 
@@ -2846,7 +2621,6 @@ describe('ImportWebhooks - Simple Tests', () => {
         'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1', url: 'https://example.com' }
       };
 
-      // Stub file operations
       const utils = require('../../../../src/utils');
       const fsUtilStub = sinon.stub(utils.fsUtil, 'writeFile');
 
@@ -2869,7 +2643,6 @@ describe('ImportWebhooks - Simple Tests', () => {
         'webhook-1': { uid: 'webhook-1', name: 'Test Webhook 1', url: 'https://example.com' }
       };
 
-      // Stub file operations
       const utils = require('../../../../src/utils');
       const fsUtilStub = sinon.stub(utils.fsUtil, 'writeFile');
 

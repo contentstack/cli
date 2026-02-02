@@ -166,25 +166,19 @@ describe('Auth Handler', () => {
         refresh_token: refreshToken,
       };
 
-      try {
-        const expectedPayload = {
-          grant_type: 'authorization_code',
-          client_id: authHandler.OAuthClientId,
-          code_verifier: authHandler.codeVerifier,
-          redirect_uri: authHandler.OAuthRedirectURL,
-          code,
-        };
+      const oauthHandlerStub = {
+        exchangeCodeForToken: sandbox.stub().resolves(userData),
+      };
 
-        const httpClientStub = sandbox.stub(HttpClient.prototype, 'post').resolves({ data: userData });
-        const getUserDetailsStub = sandbox.stub(authHandler, 'getUserDetails').resolves(userData);
-        const setConfigDataStub = sandbox.stub(authHandler, 'setConfigData').resolves();
+      sandbox.stub(authHandler, 'oauthHandler').value(oauthHandlerStub);
+      const getUserDetailsStub = sandbox.stub(authHandler, 'getUserDetails').resolves(userData);
+      const setConfigDataStub = sandbox.stub(authHandler, 'setConfigData').resolves();
 
-        await authHandler.getAccessToken(code);
+      await authHandler.getAccessToken(code);
 
-        assert.calledWith(httpClientStub, `${authHandler.OAuthBaseURL}/apps-api/apps/token`, expectedPayload);
-        assert.calledWith(getUserDetailsStub, userData);
-        assert.calledWith(setConfigDataStub, 'oauth', userData);
-      } catch (error) {}
+      assert.calledWith(oauthHandlerStub.exchangeCodeForToken, code);
+      assert.calledWith(getUserDetailsStub, userData);
+      assert.calledWith(setConfigDataStub, 'oauth', userData);
     });
   });
 
@@ -354,7 +348,7 @@ describe('Auth Handler', () => {
       const data = {
         access_token: '',
       };
-    
+
       try {
         await authHandler.getUserDetails(data);
         throw new Error('Expected getUserDetails to throw'); // ensure failure if no error is thrown
@@ -362,7 +356,7 @@ describe('Auth Handler', () => {
         expect(error).to.be.instanceOf(Error);
         expect(error.message).to.equal('Invalid or empty access token.');
       }
-    }); 
+    });
   });
 
   describe('isAuthenticated', () => {
@@ -462,10 +456,10 @@ describe('Auth Handler', () => {
 
     beforeEach(() => {
       sandbox = createSandbox();
-      configHandlerGetStub = sandbox.stub();
-      cliuxPrintStub = sandbox.stub();
-      refreshTokenStub = sandbox.stub();
-      unsetConfigDataStub = sandbox.stub();
+      configHandlerGetStub = sandbox.stub(configHandler, 'get');
+      cliuxPrintStub = sandbox.stub(cliux, 'print');
+      refreshTokenStub = sandbox.stub(authHandler, 'refreshToken').resolves();
+      unsetConfigDataStub = sandbox.stub(authHandler, 'unsetConfigData');
     });
 
     afterEach(() => {

@@ -7,10 +7,27 @@
  * MIT Licensed
  */
 
-import { managementSDKClient, isAuthenticated, log } from '@contentstack/cli-utilities';
+import {
+  managementSDKClient as defaultManagementSDKClient,
+  isAuthenticated as defaultIsAuthenticated,
+  log as defaultLog,
+} from '@contentstack/cli-utilities';
 import { ImportConfig } from '../types';
 
-const login = async (config: ImportConfig): Promise<any> => {
+/**
+ * Dependencies for login handler - can be injected for testing
+ */
+export interface LoginHandlerDeps {
+  managementSDKClient?: typeof defaultManagementSDKClient;
+  isAuthenticated?: typeof defaultIsAuthenticated;
+  log?: typeof defaultLog;
+}
+
+const login = async (config: ImportConfig, deps: LoginHandlerDeps = {}): Promise<any> => {
+  const managementSDKClient = deps.managementSDKClient ?? defaultManagementSDKClient;
+  const isAuthenticated = deps.isAuthenticated ?? defaultIsAuthenticated;
+  const log = deps.log ?? defaultLog;
+
   const client = await managementSDKClient(config);
   if (config.email && config.password) {
     const { user: { authtoken = null } = {} } = await client.login({ email: config.email, password: config.password });
@@ -34,7 +51,7 @@ const login = async (config: ImportConfig): Promise<any> => {
       management_token: config.management_token,
     });
     const stack = await stackAPIClient.fetch().catch((error: any) => {
-      let errorstack_key = error?.errors?.api_key;
+      const errorstack_key = error?.errors?.api_key;
       if (errorstack_key) {
         log.error('Stack Api key ' + errorstack_key[0] + 'Please enter valid Key', { error });
         throw error;
