@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import open from 'open';
 import http from 'http';
 import url from 'url';
-import { LoggerService } from './logger';
+import { handleAndLogError } from './logger/log';
 import managementSDKClient, { ContentstackClient } from './contentstack-management-sdk';
 import { formatError } from './helpers';
 
@@ -33,7 +33,6 @@ class AuthHandler {
   private authorisationTypeOAUTHValue: string;
   private authorisationTypeAUTHValue: string;
   private allAuthConfigItems: any;
-  private logger: any;
   private oauthHandler: any;
   private managementAPIClient: ContentstackClient;
   private isRefreshingToken: boolean = false; // Flag to track if a refresh operation is in progress
@@ -98,9 +97,6 @@ class AuthHandler {
     }
     return cma;
   }
-  initLog() {
-    this.logger = new LoggerService(process.cwd(), 'cli-log');
-  }
   async setOAuthBaseURL() {
     if (configHandler.get('region')['uiHost']) {
       this.OAuthBaseURL = configHandler.get('region')['uiHost'] || '';
@@ -132,12 +128,11 @@ class AuthHandler {
    */
   async oauth(): Promise<void> {
     try {
-      this.initLog();
       await this.initSDK();
       await this.createHTTPServer();
       await this.openOAuthURL();
     } catch (error) {
-      this.logger.error('OAuth login failed!', error.message);
+      handleAndLogError(error, { module: 'auth-handler' }, 'OAuth login failed!');
       throw error;
     }
   }
