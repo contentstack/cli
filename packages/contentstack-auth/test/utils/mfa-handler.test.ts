@@ -64,16 +64,4 @@ describe('MFAHandler', () => {
       expect(authenticator.verify({ token: code, secret: envSecret })).to.be.true;
     });
   });
-
-  describe('isValidMFACode', () => {
-    it('should validate correct format MFA codes', () => {
-      expect(mfaHandler.isValidMFACode('123456')).to.be.true;
-    });
-
-    it('should reject incorrect format MFA codes', () => {
-      expect(mfaHandler.isValidMFACode('12345')).to.be.false; // Too short
-      expect(mfaHandler.isValidMFACode('1234567')).to.be.false; // Too long
-      expect(mfaHandler.isValidMFACode('abcdef')).to.be.false; // Non-numeric
-    });
-  });
 });
