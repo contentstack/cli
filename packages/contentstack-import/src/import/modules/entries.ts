@@ -218,8 +218,7 @@ export default class EntriesImport extends BaseClass {
       await this.processCleanup();
       progress.completeProcess(PROCESS_NAMES.CLEANUP, true);
 
-      this.completeProgress(true);
-      log.success('Entries imported successfully', this.importConfig.context);
+      this.completeProgressWithMessage();
     } catch (error) {
       this.createEntryDataForVariantEntry();
       this.completeProgress(false, (error as any)?.message || 'Entries import failed');

@@ -132,9 +132,8 @@ export default class ImportGlobalFields extends BaseClass {
       }
 
       await this.processGlobalFieldResults();
+      this.completeProgressWithMessage();
 
-      this.completeProgress(true);
-      log.success('Global fields import has been completed!', this.importConfig.context);
     } catch (error) {
       this.completeProgress(false, error?.message || 'Global fields import failed');
       handleAndLogError(error, { ...this.importConfig.context });

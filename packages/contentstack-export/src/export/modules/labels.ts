@@ -66,13 +66,11 @@ export default class ExportLabels extends BaseClass {
         const labelsFilePath = pResolve(this.labelsFolderPath, this.labelConfig.fileName);
         log.debug(`Writing labels to: ${labelsFilePath}`, this.exportConfig.context);
         fsUtil.writeFile(labelsFilePath, this.labels);
-        log.success(
-          messageHandler.parse('LABELS_EXPORT_COMPLETE', Object.keys(this.labels || {}).length),
-          this.exportConfig.context,
-        );
+      
       }
 
-      this.completeProgress(true);
+      this.completeProgressWithMessage();
+
     } catch (error) {
       handleAndLogError(error, { ...this.exportConfig.context });
       this.completeProgress(false, error?.message || 'Labels export failed');
