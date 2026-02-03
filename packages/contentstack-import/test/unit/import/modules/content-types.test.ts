@@ -1164,4 +1164,35 @@ describe('ImportContentTypes', () => {
       expect(makeConcurrentCallStub.called).to.be.true;
     });
   });
+
+  describe('analyzeImportData() with individual content type files', () => {
+    it('should read content types from individual files', async () => {
+      const mockContentTypes = [
+        { uid: 'ct-1', title: 'CT 1', schema: [] },
+        { uid: 'ct-2', title: 'CT 2', schema: [] },
+      ];
+
+      // Stub readContentTypeSchemas to return mock content types
+      const readContentTypeSchemasStub = sinon.stub().returns(mockContentTypes);
+      sinon.stub(require('@contentstack/cli-utilities'), 'readContentTypeSchemas').value(readContentTypeSchemasStub);
+
+      fsUtilStub.readFile.returns([]);
+
+      await (importContentTypes as any).analyzeImportData();
+
+      expect((importContentTypes as any).cTs).to.deep.equal(mockContentTypes);
+    });
+
+    it('should return empty array when no individual files are found', async () => {
+      // Stub readContentTypeSchemas to return empty array (no individual files)
+      const readContentTypeSchemasStub = sinon.stub().returns([]);
+      sinon.stub(require('@contentstack/cli-utilities'), 'readContentTypeSchemas').value(readContentTypeSchemasStub);
+
+      fsUtilStub.readFile.returns([]);
+
+      await (importContentTypes as any).analyzeImportData();
+
+      expect((importContentTypes as any).cTs).to.deep.equal([]);
+    });
+  });
 });
