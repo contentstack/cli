@@ -197,14 +197,17 @@ const envFileHandler = async (
     customHost = region?.cma?.substring(8);
   }
   
-  const getGraphqlHost = (name?: string): string => {
-    const normalizedRegion = name?.toLowerCase();
-    if (!normalizedRegion || normalizedRegion === 'na' || normalizedRegion === 'aws-na') {
-      return 'graphql.contentstack.com';
+  const getGraphqlHost = (): string => {
+    if (!isPredefinedRegion) {
+      return cdnHost.replace('-cdn.', '-graphql.');
     }
-    return `${normalizedRegion}-graphql.contentstack.com`;
+    const normalizedRegion = regionName?.toLowerCase();
+    if (!normalizedRegion || normalizedRegion === 'na' || normalizedRegion === 'aws-na' || normalizedRegion === 'us') {
+      return cdnHost.replace('cdn.', 'graphql.').replace('.io', '.com');
+    }
+    return cdnHost.replace('-cdn.', '-graphql.');
   };
-  const graphqlHost = getGraphqlHost(regionName);
+  const graphqlHost = getGraphqlHost();
 
   let imageHostname: string;
   if (isPredefinedRegion && region?.cda) {
@@ -214,6 +217,7 @@ const envFileHandler = async (
     const baseHost = region.cda.replace(/^https?:\/\//, '').replace(/^[^.]+\./, '');
     imageHostname = `*-images.${baseHost}`;
   } else {
+    //default
     imageHostname = '*-images.contentstack.com';
   }
   const production = environmentVariables.environment === 'production' ? true : false;
