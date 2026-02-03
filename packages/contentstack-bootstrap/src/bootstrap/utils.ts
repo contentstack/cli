@@ -4,6 +4,7 @@ import { cliux, pathValidator, sanitizePath } from '@contentstack/cli-utilities'
 import { continueBootstrapCommand } from '../bootstrap/interactive';
 import { AppConfig } from '../config';
 import messageHandler from '../messages';
+import { regions } from '@contentstack/cli-config/lib/utils/region-handler';
 
 interface EnvironmentVariables {
   api_key: string;
@@ -187,8 +188,10 @@ const envFileHandler = async (
   const cdnHost = region?.cda?.substring('8');
   const appHost = region?.uiHost?.substring(8);
   const isUSRegion = regionName === 'us' || regionName === 'na';
-  const isPredefinedRegion = region?.cda && 
-    (region.cda.includes('contentstack.io') || region.cda.includes('contentstack.com'));
+  
+  const isPredefinedRegion = region?.name && Object.keys(regions).some(
+    key => key.toLowerCase() === region.name.toLowerCase()
+  );
   
   if (regionName !== 'eu' && !isUSRegion) {
     customHost = region?.cma?.substring(8);
