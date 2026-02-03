@@ -155,10 +155,5 @@ export default class ContentTypesExport extends BaseClass {
     await executeTask(contentTypes, writeWithProgress.bind(this), {
       concurrency: this.exportConfig.writeConcurrency,
     });
-
-    const schemaFilePath = path.join(this.contentTypesDirPath, 'schema.json');
-    log.debug(`Writing aggregate schema to: ${schemaFilePath}`, this.exportConfig.context);
-
-    return fsUtil.writeFile(schemaFilePath, contentTypes);
   }
 }

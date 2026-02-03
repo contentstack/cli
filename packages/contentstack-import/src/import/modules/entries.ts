@@ -7,7 +7,7 @@
 import * as path from 'path';
 import { writeFileSync } from 'fs';
 import { isEmpty, values, cloneDeep, find, indexOf, forEach, remove } from 'lodash';
-import { FsUtility, sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
+import { FsUtility, sanitizePath, log, handleAndLogError, readContentTypeSchemas } from '@contentstack/cli-utilities';
 import {
   fsUtil,
   lookupExtension,
@@ -231,7 +231,8 @@ export default class EntriesImport extends BaseClass {
     return this.withLoadingSpinner('ENTRIES: Analyzing import data...', async () => {
       log.debug('Loading content types for entry analysis', this.importConfig.context);
 
-      this.cTs = fsUtil.readFile(path.join(this.cTsPath, 'schema.json')) as Record<string, unknown>[];
+      this.cTs = readContentTypeSchemas(this.cTsPath);
+      
       if (!this.cTs || isEmpty(this.cTs)) {
         return [0, 0, 0, 0, 0];
       }
@@ -1205,10 +1206,8 @@ export default class EntriesImport extends BaseClass {
       for (let cTUid of cTsWithFieldRules) {
         log.debug(`Processing field rules for content type: ${cTUid}`, this.importConfig.context);
 
-        const cTs: Record<string, any>[] = fsUtil.readFile(path.join(this.cTsPath, 'schema.json')) as Record<
-          string,
-          unknown
-        >[];
+        // Read content types from individual files
+        const cTs = readContentTypeSchemas(this.cTsPath);
         const contentType: any = find(cTs, { uid: cTUid });
 
         if (contentType.field_rules) {

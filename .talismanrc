@@ -15,7 +15,7 @@ fileignoreconfig:
 - filename: pnpm-lock.yaml
   checksum: 454f794a75f7d972451575ac5d7d208f691acd776fd01fe9f0d3277ae1142d10
 - filename: package-lock.json
-  checksum: 6585e1ce86e49a60e3593d926180e0bf4e151f9ff989d44841410eee2fab59a4
+  checksum: 232dc3c29b538cc900979dbcddbede259430cefc2212da775c5aa8fc2739dcea
 - filename: packages/contentstack-export/test/unit/export/modules/taxonomies.test.ts
   checksum: f6175a8e89fb9dde4b0ff269d65a9e42c4374ef7efb1b828e54e2ebd7c4379fa
 - filename: packages/contentstack-export/test/unit/export/modules/workflows.test.ts

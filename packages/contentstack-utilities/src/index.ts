@@ -24,6 +24,7 @@ export {
 export { default as printFlagDeprecation } from './flag-deprecation-check';
 export * from './http-client';
 export * from './fs-utility';
+export * from './content-type-utils';
 export { default as NodeCrypto } from './encrypter';
 export { Args as args, Flags as flags, Command } from './cli-ux';
 export * from './helpers';
