@@ -1,9 +1,6 @@
 import { configHandler } from '@contentstack/cli-utilities';
 import { getContentstackEndpoint } from '@contentstack/utils';
-import { Region } from '../interfaces';
-interface RegionsMap {
-  [key: string]: Region;
-}
+import { Region, RegionsMap } from '../interfaces';
 
 function validURL(str) {
   const pattern = new RegExp(
