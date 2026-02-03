@@ -588,10 +588,6 @@ export default class CLIProgressManager {
       this.spinner.stop();
     }
 
-    // // Print summary when console logs are enabled
-    // if (this.showConsoleLogs) {
-    //   this.printSummary();
-    // }
   }
 
   private printSummary(): void {
