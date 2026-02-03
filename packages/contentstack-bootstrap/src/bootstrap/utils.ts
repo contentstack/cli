@@ -190,10 +190,14 @@ const envFileHandler = async (
   if (regionName !== 'eu' && !isUSRegion) {
     customHost = region?.cma?.substring(8);
   }
-  let graphqlHost = "graphql.contentstack.com";
-  if(regionName != 'na'){
-    graphqlHost = `${regionName}-.graphql.contentstack.com`;
-  }
+  const getGraphqlHost = (name?: string): string => {
+    const r = name?.toLowerCase();
+    if (!r || r === 'na' || r === 'aws-na') {
+      return 'graphql.contentstack.com';
+    }
+    return `${r}-graphql.contentstack.com`;
+  };
+  const graphqlHost = getGraphqlHost(regionName);
 
   
   // Construct image hostname based on the actual host being used
