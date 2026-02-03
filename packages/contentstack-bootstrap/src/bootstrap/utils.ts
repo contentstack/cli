@@ -187,24 +187,31 @@ const envFileHandler = async (
   const cdnHost = region?.cda?.substring('8');
   const appHost = region?.uiHost?.substring(8);
   const isUSRegion = regionName === 'us' || regionName === 'na';
+  const isPredefinedRegion = region?.cda && 
+    (region.cda.includes('contentstack.io') || region.cda.includes('contentstack.com'));
+  
   if (regionName !== 'eu' && !isUSRegion) {
     customHost = region?.cma?.substring(8);
   }
+  
   const getGraphqlHost = (name?: string): string => {
-    const r = name?.toLowerCase();
-    if (!r || r === 'na' || r === 'aws-na') {
+    const normalizedRegion = name?.toLowerCase();
+    if (!normalizedRegion || normalizedRegion === 'na' || normalizedRegion === 'aws-na') {
       return 'graphql.contentstack.com';
     }
-    return `${r}-graphql.contentstack.com`;
+    return `${normalizedRegion}-graphql.contentstack.com`;
   };
   const graphqlHost = getGraphqlHost(regionName);
 
-  
-  // Construct image hostname based on the actual host being used
-  let imageHostname = '*-images.contentstack.com'; // default fallback
-  if (region?.cda) {
+  let imageHostname: string;
+  if (isPredefinedRegion && region?.cda) {
     const baseHost = region.cda.replace(/^https?:\/\//, '').replace(/^[^.]+\./, '');
     imageHostname = `images.${baseHost}`;
+  } else if (region?.cda) {
+    const baseHost = region.cda.replace(/^https?:\/\//, '').replace(/^[^.]+\./, '');
+    imageHostname = `*-images.${baseHost}`;
+  } else {
+    imageHostname = '*-images.contentstack.com';
   }
   const production = environmentVariables.environment === 'production' ? true : false;
   switch (appConfigKey) {
