@@ -92,8 +92,8 @@ export default class ImportWorkflows extends BaseClass {
 
       this.processWorkflowResults();
 
-      this.completeProgress(true);
-      log.success('Workflows have been imported successfully!', this.importConfig.context);
+      this.completeProgressWithMessage();
+
     } catch (error) {
       this.completeProgress(false, error?.message || 'Workflows import failed');
       handleAndLogError(error, { ...this.importConfig.context });

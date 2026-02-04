@@ -55,8 +55,7 @@ export default class ImportEnvironments extends BaseClass {
       await this.importEnvironments();
 
       await this.processImportResults();
-      this.completeProgress(true);
-      log.success('Environments have been imported successfully!', this.importConfig.context);
+      this.completeProgressWithMessage();
     } catch (error) {
       this.completeProgress(false, error?.message || 'Environments import failed');
       handleAndLogError(error, { ...this.importConfig.context });

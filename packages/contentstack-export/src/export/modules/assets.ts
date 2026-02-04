@@ -120,8 +120,8 @@ export default class ExportAssets extends BaseClass {
         progress.completeProcess(PROCESS_NAMES.ASSET_DOWNLOADS, true);
       }
 
-      this.completeProgress(true);
-      log.success(messageHandler.parse('ASSET_EXPORT_COMPLETE'), this.exportConfig.context);
+      this.completeProgressWithMessage();
+
     } catch (error) {
       this.completeProgress(false, error?.message || 'Asset export failed');
     }

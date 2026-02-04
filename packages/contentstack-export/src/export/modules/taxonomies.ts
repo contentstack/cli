@@ -98,10 +98,8 @@ export default class ExportTaxonomies extends BaseClass {
       await this.writeTaxonomiesMetadata();
     }
 
-    log.success(
-      messageHandler.parse('TAXONOMY_EXPORT_COMPLETE', keys(this.taxonomies || {}).length),
-      this.exportConfig.context,
-    );
+    this.completeProgressWithMessage();
+
   }
 
   /**
