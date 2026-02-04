@@ -13,7 +13,7 @@
     "chalk": "^4.1.2",
     "dotenv": "^16.5.0",
     "inquirer": "8.2.7",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "winston": "^3.17.0"
   },
   "devDependencies": {
