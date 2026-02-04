@@ -14,7 +14,7 @@ importers:
     specifiers:
       '@contentstack/cli-audit': ~1.17.1
       '@contentstack/cli-auth': ~1.7.3
-      '@contentstack/cli-cm-bootstrap': ~1.18.2
+      '@contentstack/cli-cm-bootstrap': ~1.18.3
       '@contentstack/cli-cm-branches': ~1.6.3
       '@contentstack/cli-cm-bulk-publish': ~1.10.6
       '@contentstack/cli-cm-clone': ~1.20.1
@@ -149,7 +149,7 @@ importers:
       eslint-config-oclif-typescript: ^3.1.14
       fast-csv: ^4.3.6
       fs-extra: ^11.3.0
-      lodash: ^4.17.21
+      lodash: ^4.17.23
       mocha: ^10.8.2
       nyc: ^15.1.0
       oclif: ^4.17.46
@@ -307,7 +307,7 @@ importers:
       eslint: ^8.57.1
       eslint-config-oclif: ^6.0.62
       just-diff: ^6.0.2
-      lodash: ^4.17.21
+      lodash: ^4.17.23
       mocha: 10.8.2
       nyc: ^15.1.0
       oclif: ^4.17.46
@@ -351,7 +351,7 @@ importers:
       eslint: ^8.57.1
       eslint-config-oclif: ^6.0.62
       inquirer: 8.2.7
-      lodash: ^4.17.21
+      lodash: ^4.17.23
       mocha: ^10.8.2
       nyc: ^15.1.0
       oclif: ^4.17.46
@@ -396,7 +396,7 @@ importers:
       eslint: ^8.57.1
       eslint-config-oclif: ^6.0.62
       inquirer: 8.2.7
-      lodash: ^4.17.21
+      lodash: ^4.17.23
       merge: ^2.1.1
       mocha: ^10.8.2
       nyc: ^15.1.0
@@ -489,7 +489,7 @@ importers:
       eslint: ^8.57.1
       eslint-config-oclif: ^6.0.62
       eslint-config-oclif-typescript: ^3.1.14
-      lodash: ^4.17.21
+      lodash: ^4.17.23
       mocha: 10.8.2
       nyc: ^15.1.0
       oclif: ^4.17.46
@@ -526,7 +526,7 @@ importers:
       '@types/node': ^14.18.63
       eslint: ^7.32.0
       fancy-test: ^2.0.42
-      lodash: ^4.17.21
+      lodash: ^4.17.23
       mocha: 10.8.2
       ts-node: ^10.9.2
       tslib: ^2.8.1
@@ -570,7 +570,7 @@ importers:
       dotenv-expand: ^9.0.0
       eslint: ^8.57.1
       eslint-config-oclif: ^6.0.68
-      lodash: ^4.17.21
+      lodash: ^4.17.23
       merge: ^2.1.1
       mkdirp: ^1.0.4
       mocha: 10.8.2
@@ -704,7 +704,7 @@ importers:
       eslint: ^8.57.1
       eslint-config-oclif: ^6.0.89
       fs-extra: ^11.3.0
-      lodash: ^4.17.21
+      lodash: ^4.17.23
       marked: ^4.3.0
       merge: ^2.1.1
       mkdirp: ^1.0.4
@@ -779,7 +779,7 @@ importers:
       eslint: ^8.57.1
       eslint-config-oclif: ^6.0.62
       fs-extra: ^11.3.0
-      lodash: ^4.17.21
+      lodash: ^4.17.23
       merge: ^2.1.1
       mkdirp: ^1.0.4
       mocha: ^10.8.2
@@ -839,7 +839,7 @@ importers:
       eslint-config-oclif: ^6.0.62
       jsdom: ^20.0.3
       jsonschema: ^1.5.0
-      lodash: ^4.17.21
+      lodash: ^4.17.23
       mocha: ^10.8.2
       nock: ^13.5.6
       nyc: ^15.1.0
@@ -1007,7 +1007,7 @@ importers:
       inquirer-search-list: ^1.2.6
       js-yaml: ^4.1.1
       klona: ^2.0.6
-      lodash: ^4.17.21
+      lodash: ^4.17.23
       mkdirp: ^1.0.4
       mocha: 10.8.2
       nyc: ^15.1.0
@@ -1082,7 +1082,7 @@ importers:
       '@oclif/plugin-help': ^6.2.28
       '@oclif/test': ^4.1.13
       '@types/node': ^20.17.50
-      lodash: ^4.17.21
+      lodash: ^4.17.23
       mkdirp: ^1.0.4
       mocha: ^10.8.2
       nyc: ^15.1.0
@@ -2211,7 +2211,7 @@ packages:
     resolution: {integrity: sha512-dtXc3gIcnivfLegADy5/PZb+1x/esZ65H2E1CjO/pg50UC8Vy1U+U0ozS0hJZTFoaVjeG+1VJRoxf5MrtUGnNA==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      '@contentstack/cli-utilities': 1.17.0_lxq42tdpoxpye5tb7w3htdbbdq
+      '@contentstack/cli-utilities': 1.17.1_lxq42tdpoxpye5tb7w3htdbbdq
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.37
       contentstack: 3.26.3
@@ -2227,7 +2227,7 @@ packages:
     dependencies:
       '@apollo/client': 3.14.0_graphql@16.12.0
       '@contentstack/cli-command': 1.7.2_lxq42tdpoxpye5tb7w3htdbbdq
-      '@contentstack/cli-utilities': 1.17.0_lxq42tdpoxpye5tb7w3htdbbdq
+      '@contentstack/cli-utilities': 1.17.1_lxq42tdpoxpye5tb7w3htdbbdq
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.37
       '@oclif/plugin-plugins': 5.4.55
@@ -2263,8 +2263,8 @@ packages:
       - typescript
     dev: false
 
-  /@contentstack/cli-utilities/1.17.0_lxq42tdpoxpye5tb7w3htdbbdq:
-    resolution: {integrity: sha512-ZeyLOR50BYfuP7MnYpn9fladCtnqfaJw7Q1xWfhysQj098X33hjY9aQgmqIwEJnFqEdnS+VyCbtoTdBtH3sbDQ==}
+  /@contentstack/cli-utilities/1.17.1_lxq42tdpoxpye5tb7w3htdbbdq:
+    resolution: {integrity: sha512-4N25Nq+stSoSRwK+otBwzkyYg6DycwY+AAHMkUGKWSRqrtyieitQfWe///+kghqmfTE81A9BHO7Pv0j00KKpLQ==}
     dependencies:
       '@contentstack/management': 1.27.3_debug@4.4.3
       '@contentstack/marketplace-sdk': 1.4.2_debug@4.4.3
