@@ -162,8 +162,8 @@ export default class EntriesExport extends BaseClass {
         }
       }
 
-      this.completeProgress(true);
-      log.success(messageHandler.parse('ENTRIES_EXPORT_SUCCESS'), this.exportConfig.context);
+      this.completeProgressWithMessage();
+
     } catch (error) {
       handleAndLogError(error, { ...this.exportConfig.context });
       this.completeProgress(false, error?.message || 'Entries export failed');
