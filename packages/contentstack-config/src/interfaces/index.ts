@@ -39,3 +39,7 @@ export interface SetRateLimitConfig {
   default?: boolean;
   host?: string;
 }
+
+export interface RegionsMap {
+  [key: string]: Region;
+}
