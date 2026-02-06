@@ -31,7 +31,8 @@ export interface CloneConfig {
   forceStopMarketplaceAppsPrompt?: boolean;
   
   // Data and modules
-  data?: string;
+  /** Path to exported content for import (aligns with import plugin's contentDir) */
+  contentDir?: string;
   modules?: string[];
   filteredModules?: string[];
   
