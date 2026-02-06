@@ -74,8 +74,7 @@ export default class ImportCustomRoles extends BaseClass {
 
       this.handleImportResults();
 
-      this.completeProgress(true);
-      log.success('Custom roles have been imported successfully!', this.importConfig.context);
+      this.completeProgressWithMessage();
     } catch (error) {
       this.completeProgress(false, error?.message || 'Custom roles import failed');
       handleAndLogError(error, { ...this.importConfig.context });

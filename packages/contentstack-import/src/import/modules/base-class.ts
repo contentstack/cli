@@ -25,6 +25,13 @@ export type AdditionalKeys = {
   backupDir: string;
 };
 
+export type CompleteProgressOptions = {
+  moduleName?: string;
+  customSuccessMessage?: string;
+  customWarningMessage?: string;
+  context?: Record<string, any>;
+};
+
 export type ApiModuleType =
   | 'create-assets'
   | 'replace-assets'
@@ -136,6 +143,35 @@ export default abstract class BaseClass {
   protected completeProgress(success: boolean = true, error?: string): void {
     this.progressManager?.complete(success, error);
     this.progressManager = null;
+  }
+
+  /**
+   * Complete progress and log success/warning message based on errors
+   * Checks the progress manager's failure count to determine if errors occurred
+   * @param options - Options object containing:
+   *   - moduleName: The module name to generate the message (e.g., 'Content types', 'Entries')
+   *                 If not provided, uses this.currentModuleName
+   *   - customSuccessMessage: Optional custom success message. If not provided, generates: "{moduleName} have been imported successfully!"
+   *   - customWarningMessage: Optional custom warning message. If not provided, generates: "{moduleName} have been imported with some errors. Please check the logs for details."
+   *   - context: Optional context for logging
+   */
+  protected completeProgressWithMessage(options?: CompleteProgressOptions): void {
+    const logContext = options?.context || this.importConfig?.context || {};
+    const failureCount = this.progressManager?.getFailureCount() || 0;
+    const hasErrors = failureCount > 0;
+    const name = options?.moduleName || this.currentModuleName || 'Module';
+
+    // Generate default messages if not provided
+    const successMessage = options?.customSuccessMessage || `${name} have been imported successfully!`;
+    const warningMessage = options?.customWarningMessage || `${name} have been imported with some errors. Please check the logs for details.`;
+
+    this.completeProgress(true);
+
+    if (hasErrors) {
+      log.warn(warningMessage, logContext);
+    } else {
+      log.success(successMessage, logContext);
+    }
   }
 
   protected async withLoadingSpinner<T>(message: string, action: () => Promise<T>): Promise<T> {

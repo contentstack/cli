@@ -65,12 +65,9 @@ export default class ExportEnvironments extends BaseClass {
         const environmentsFilePath = pResolve(this.environmentsFolderPath, this.environmentConfig.fileName);
         log.debug(`Writing environments to: ${environmentsFilePath}`, this.exportConfig.context);
         fsUtil.writeFile(environmentsFilePath, this.environments);
-        log.success(
-          messageHandler.parse('ENVIRONMENT_EXPORT_COMPLETE', Object.keys(this.environments || {}).length),
-          this.exportConfig.context,
-        );
       }
-      this.completeProgress(true);
+      this.completeProgressWithMessage();
+
     } catch (error) {
       handleAndLogError(error, { ...this.exportConfig.context });
       this.completeProgress(false, error?.message || 'Environments export failed');

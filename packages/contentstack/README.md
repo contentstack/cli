@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/2.0.0-beta.8 darwin-arm64 node-v24.12.0
+@contentstack/cli/2.0.0-beta.9 darwin-arm64 node-v24.12.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -1868,7 +1868,7 @@ USAGE
   $ csdx launch:functions [-p <value>] [-d <value>]
 
 FLAGS
-  -d, --data-dir=<value>  [default: /Users/aman.kumar/Documents/repos/cli-repos/cli/packages/contentstack] Current
+  -d, --data-dir=<value>  [default: /Users/aman.kumar/Documents/repos/v2-beta-branch/cli/packages/contentstack] Current
                           working directory
   -p, --port=<value>      [default: 3000] Port number
 
