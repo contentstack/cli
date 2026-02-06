@@ -130,6 +130,42 @@ csdx cm:stacks:migration -k b*******9ca0 --file-path "../contentstack-migration/
 
 **Migration Action:** use the import/export commands instead.
 
+### 5. 📝 Migrate RTE Plugin Separation
+
+**What Changed:**
+- The migrate-rte plugin has been separated into a standalone plugin
+- Requires separate installation to use RTE migration features
+- Provides more flexibility and modular architecture
+
+**Before (1.x.x):**
+- RTE migration was built into the core CLI package
+- Available by default with CLI installation
+
+**After (2.x.x-beta):**
+- RTE migration is a separate plugin that must be installed explicitly
+- Install using one of the following methods:
+
+**Installation Methods:**
+
+
+**Option 1: Using npm**
+```bash
+npm install -g @contentstack/cli-cm-migrate-rte
+```
+
+**Option 2: Using CLI Plugin Manager**
+```bash
+csdx plugins:install @contentstack/cli-cm-migrate-rte@2.0.0-beta
+```
+
+**Usage:**
+After installation, RTE migration commands will be available through the CLI:
+```bash
+csdx cm:migrate-rte --help
+```
+
+**Migration Action:** Install the `@contentstack/cli-cm-migrate-rte` plugin separately if you need RTE migration functionality.
+
 ## Troubleshooting
 
 ### Common Issues
