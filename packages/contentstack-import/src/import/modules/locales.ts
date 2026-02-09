@@ -87,8 +87,7 @@ export default class ImportLocales extends BaseClass {
       fsUtil.writeFile(this.langFailsPath, this.failedLocales);
       log.debug(`Written ${this.failedLocales.length} failed locales to file`, this.config.context);
 
-      this.completeProgress(true);
-      log.success('Languages have been imported successfully!', this.config.context);
+      this.completeProgressWithMessage({ context: this.config.context });
     } catch (error) {
       this.completeProgress(false, error?.message || 'Locales import failed');
       handleAndLogError(error, { ...this.config.context });
