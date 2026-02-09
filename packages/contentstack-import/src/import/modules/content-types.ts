@@ -194,8 +194,7 @@ export default class ContentTypesImport extends BaseClass {
         await this.handlePendingGlobalFields(progress);
       }
 
-      this.completeProgress(true);
-      log.success('Content types have been imported successfully!', this.importConfig.context);
+      this.completeProgressWithMessage();
     } catch (error) {
       this.completeProgress(false, error?.message || 'Content types import failed');
       handleAndLogError(error, { ...this.importConfig.context });

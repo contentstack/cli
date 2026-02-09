@@ -62,8 +62,8 @@ export default class ImportVariantEntries extends BaseClass {
       log.info('Starting variant entries import process', this.config.context);
       await this.importVariantEntries();
 
-      this.completeProgress(true);
-      log.success('Variant entries imported successfully', this.config.context);
+      this.completeProgressWithMessage();
+
     } catch (error) {
       this.completeProgress(false, (error as any)?.message || 'Variant entries import failed');
       handleAndLogError(error, { ...this.config.context });
