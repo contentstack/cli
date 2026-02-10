@@ -1,15 +1,14 @@
-
 fileignoreconfig:
-- filename: package-lock.json
-  checksum: 1837e7d9de21b99975ab38b2de493dbd69347aa2e2ba06bc5e8a5a555a0834f1
-- filename: pnpm-lock.yaml
-  checksum: 902643ce426736c17c037e3ca90f88fada78b43c37a890d35411f5e5bca07d95
-- filename: packages/contentstack-export/src/export/modules/environments.ts
-  checksum: 5077c6d8418163d538b28252b62ce7679247c795af2387fd0d9535af974106e8
-- filename: packages/contentstack-import/src/import/modules/environments.ts
-  checksum: d1d83112db63ed7e45de89f68b2e6873ef08c9035d9f7313c950fb8036f93761
-- filename: packages/contentstack-migration/README.md
-  checksum: f121657165a68e289ac8a8b58f3eea3a6bb6f25a8e6ae01eb8cbb1ebaa4c15c6
-- filename: packages/contentstack/README.md
-  checksum: 0c9a7c376d29d58272538654c34996d4ab6c2891b4ce9fef4bd050149b32c405
-version: ""
+  - filename: package-lock.json
+    checksum: d42b12a21c38a527fb850cbe8500160120ccb58e57aa0b4f8098b835e7ca0b4d
+  - filename: pnpm-lock.yaml
+    checksum: c442a57252ba95771003f170786afed30888f14f67dc59766352be4a57d5ad55
+  - filename: packages/contentstack-clone/src/core/util/clone-handler.ts
+    checksum: 0a7ed55e96aa5a94084538b4a480608593b04c316bf02cf54cdd3a647e9b714c
+  - filename: packages/contentstack-config/src/interfaces/index.ts
+    checksum: 0c8e8a6e478151f6f6a1c50a5ce66c64e93d5d1d1bcd22344a9496cdc19f63b8
+  - filename: packages/contentstack-config/src/utils/region-handler.ts
+    checksum: 0ce1a0f3e4228f5429661a32611fda32f04da038337b74bad93bc717406481f4
+  - filename: packages/contentstack/README.md
+    checksum: 2f6da4ed14592fcb5c5fb8bc70bf57dd9fed512ed580b3edfad23055d8f05f38
+version: '1.0'

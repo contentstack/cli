@@ -21,7 +21,6 @@ export {
   ContentstackClient,
   ContentstackConfig,
 } from './contentstack-management-sdk';
-export { default as printFlagDeprecation } from './flag-deprecation-check';
 export * from './http-client';
 export * from './fs-utility';
 export * from './content-type-utils';

@@ -1,7 +1,5 @@
-import { Command } from '@contentstack/cli-command';
 import {
   cliux,
-  printFlagDeprecation,
   flags as _flags,
   authHandler,
   FlagInput,

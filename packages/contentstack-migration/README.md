@@ -21,7 +21,7 @@ $ npm install -g @contentstack/cli-migration
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-migration/2.0.0-beta.3 darwin-arm64 node-v23.11.0
+@contentstack/cli-migration/2.0.0-beta.3 darwin-arm64 node-v24.12.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -45,12 +45,12 @@ USAGE
     [--config-file <value>] [--config <value>] [--multiple]
 
 FLAGS
-  -B, --branch=<value>         Use this flag to add the branch name where you want to perform the migration. (target
-                               branch name)
   -a, --alias=<value>          Use this flag to add the management token alias. You must use either the --alias flag or
                                the --stack-api-key flag.
   -k, --stack-api-key=<value>  Use this flag to add the API key of your stack. You must use either the --stack-api-key
                                flag or the --alias flag.
+      --branch=<value>         Use this flag to add the branch name where you want to perform the migration. (target
+                               branch name)
       --config=<value>...      [optional] Inline configuration, <key1>:<value1>. Passing an external configuration makes
                                the script re-usable.
       --config-file=<value>    [optional] Path of the JSON configuration file.
