@@ -1061,11 +1061,19 @@ describe('EntriesExport', () => {
     it('should process all request objects and complete file writing', async () => {
       const locales = [{ code: 'en-us' }];
       const contentTypes = [
-        { uid: 'ct-1', title: 'Content Type 1' },
-        { uid: 'ct-2', title: 'Content Type 2' },
+        { uid: 'ct-1', title: 'Content Type 1', schema: [] as any },
+        { uid: 'ct-2', title: 'Content Type 2', schema: [] as any },
       ];
 
-      mockFsUtil.readFile.onFirstCall().returns(locales).onSecondCall().returns(contentTypes);
+      mockFsUtil.readFile.returns(locales); // For locales file
+      
+      // Stub FsUtility.prototype for readContentTypeSchemas
+      (FsUtility.prototype.readdir as sinon.SinonStub).returns(['ct-1.json', 'ct-2.json']);
+      (FsUtility.prototype.readFile as sinon.SinonStub).callsFake((filePath: string) => {
+        if (filePath.includes('ct-1.json')) return contentTypes[0];
+        if (filePath.includes('ct-2.json')) return contentTypes[1];
+        return undefined;
+      });
 
       const mockEntryQuery = {
         query: sandbox.stub().returns({
@@ -1104,9 +1112,13 @@ describe('EntriesExport', () => {
 
     it('should handle errors during entry processing gracefully', async () => {
       const locales = [{ code: 'en-us' }];
-      const contentTypes = [{ uid: 'ct-1', title: 'Content Type 1' }];
+      const contentTypes = [{ uid: 'ct-1', title: 'Content Type 1', schema: [] as any }];
 
-      mockFsUtil.readFile.onFirstCall().returns(locales).onSecondCall().returns(contentTypes);
+      mockFsUtil.readFile.returns(locales); // For locales file
+      
+      // Stub FsUtility.prototype for readContentTypeSchemas
+      (FsUtility.prototype.readdir as sinon.SinonStub).returns(['ct-1.json']);
+      (FsUtility.prototype.readFile as sinon.SinonStub).returns(contentTypes[0]);
 
       const processingError = new Error('Entry processing failed');
       const getEntriesStub = sandbox.stub(entriesExport, 'getEntries').rejects(processingError);
