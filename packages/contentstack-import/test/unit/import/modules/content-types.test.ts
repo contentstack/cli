@@ -6,6 +6,7 @@ import { fsUtil } from '../../../../src/utils';
 import * as contentTypeHelper from '../../../../src/utils/content-type-helper';
 import * as extensionHelper from '../../../../src/utils/extension-helper';
 import * as taxonomiesHelper from '../../../../src/utils/taxonomies-helper';
+import { FsUtility } from '@contentstack/cli-utilities';
 
 describe('ImportContentTypes', () => {
   let importContentTypes: ImportContentTypes;
@@ -16,6 +17,8 @@ describe('ImportContentTypes', () => {
   let lookupExtensionStub: sinon.SinonStub;
   let lookUpTaxonomyStub: sinon.SinonStub;
   let makeConcurrentCallStub: sinon.SinonStub;
+  let fsUtilityReaddirStub: sinon.SinonStub;
+  let fsUtilityReadFileStub: sinon.SinonStub;
 
   beforeEach(() => {
     fsUtilStub = {
@@ -26,6 +29,46 @@ describe('ImportContentTypes', () => {
     sinon.stub(fsUtil, 'readFile').callsFake(fsUtilStub.readFile);
     sinon.stub(fsUtil, 'writeFile').callsFake(fsUtilStub.writeFile);
     sinon.stub(fsUtil, 'makeDirectory').callsFake(fsUtilStub.makeDirectory);
+
+    // Stub FsUtility prototype to make readContentTypeSchemas work
+    // readContentTypeSchemas reads individual JSON files (ignoring schema.json)
+    // We'll check what fsUtilStub.readFile returns for schema.json and use that to populate individual files
+    fsUtilityReaddirStub = sinon.stub(FsUtility.prototype, 'readdir').callsFake((dirPath: string) => {
+      // Try to get mock CTs from the test's fsUtilStub setup for schema.json
+      // This allows tests to continue using schema.json pattern
+      try {
+        const mockCTs = fsUtilStub.readFile(dirPath + '/schema.json');
+        if (Array.isArray(mockCTs) && mockCTs.length > 0) {
+          return mockCTs.map((ct: any) => `${ct.uid}.json`);
+        }
+      } catch (e) {
+        // If schema.json isn't stubbed, return empty
+      }
+      return [];
+    });
+    
+    fsUtilityReadFileStub = sinon.stub(FsUtility.prototype, 'readFile').callsFake((filePath: string) => {
+      // Extract the UID from the file path and return matching content type
+      const match = filePath.match(/([^\/]+)\.json$/);
+      if (match) {
+        const uid = match[1];
+        const dirPath = filePath.substring(0, filePath.lastIndexOf('/'));
+        try {
+          // Check if test has stubbed schema.json with mock content types
+          const mockCTs = fsUtilStub.readFile(dirPath + '/schema.json');
+          if (Array.isArray(mockCTs)) {
+            const ct = mockCTs.find((ct: any) => ct.uid === uid);
+            if (ct) {
+              // FsUtility.readFile returns parsed JSON (object), not string
+              return ct;
+            }
+          }
+        } catch (e) {
+          // If schema.json isn't stubbed, return undefined (file doesn't exist)
+        }
+      }
+      return undefined;
+    });
 
     updateFieldRulesStub = sinon.stub(contentTypeHelper, 'updateFieldRules');
     lookupExtensionStub = sinon.stub(extensionHelper, 'lookupExtension');
@@ -1168,13 +1211,17 @@ describe('ImportContentTypes', () => {
   describe('analyzeImportData() with individual content type files', () => {
     it('should read content types from individual files', async () => {
       const mockContentTypes = [
-        { uid: 'ct-1', title: 'CT 1', schema: [] },
-        { uid: 'ct-2', title: 'CT 2', schema: [] },
+        { uid: 'ct-1', title: 'CT 1', schema: [] as any },
+        { uid: 'ct-2', title: 'CT 2', schema: [] as any },
       ];
 
-      // Stub readContentTypeSchemas to return mock content types
-      const readContentTypeSchemasStub = sinon.stub().returns(mockContentTypes);
-      sinon.stub(require('@contentstack/cli-utilities'), 'readContentTypeSchemas').value(readContentTypeSchemasStub);
+      // Configure FsUtility stubs to make readContentTypeSchemas return mock content types
+      (FsUtility.prototype.readdir as sinon.SinonStub).returns(['ct-1.json', 'ct-2.json']);
+      (FsUtility.prototype.readFile as sinon.SinonStub).callsFake((filePath: string) => {
+        if (filePath.includes('ct-1.json')) return JSON.stringify(mockContentTypes[0]);
+        if (filePath.includes('ct-2.json')) return JSON.stringify(mockContentTypes[1]);
+        return '{}';
+      });
 
       fsUtilStub.readFile.returns([]);
 
@@ -1184,10 +1231,7 @@ describe('ImportContentTypes', () => {
     });
 
     it('should return empty array when no individual files are found', async () => {
-      // Stub readContentTypeSchemas to return empty array (no individual files)
-      const readContentTypeSchemasStub = sinon.stub().returns([]);
-      sinon.stub(require('@contentstack/cli-utilities'), 'readContentTypeSchemas').value(readContentTypeSchemasStub);
-
+      // readdir returns [] by default, so readContentTypeSchemas will return []
       fsUtilStub.readFile.returns([]);
 
       await (importContentTypes as any).analyzeImportData();
