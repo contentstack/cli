@@ -140,6 +140,11 @@ describe('EntriesExport', () => {
     createFolderStub.callsFake(() => {
       // Do nothing - prevent actual directory creation
     });
+    
+    // Stub FsUtility.prototype.readdir and readFile for readContentTypeSchemas support
+    // readContentTypeSchemas creates its own FsUtility instance, so we need to stub the prototype
+    sandbox.stub(FsUtility.prototype, 'readdir').returns([]);
+    sandbox.stub(FsUtility.prototype, 'readFile').returns(undefined);
 
     entriesExport = new EntriesExport({
       exportConfig: mockExportConfig,
@@ -173,16 +178,15 @@ describe('EntriesExport', () => {
         mockExportConfig.modules.locales.dirName,
         mockExportConfig.modules.locales.fileName,
       );
-      const expectedSchemaPath = path.resolve(
+      const expectedContentTypesDirPath = path.resolve(
         mockExportConfig.exportDir,
         mockExportConfig.branchName || '',
         mockExportConfig.modules.content_types.dirName,
-        'schema.json',
       );
 
       expect(entriesExport.entriesDirPath).to.equal(expectedEntriesPath);
       expect(entriesExport.localesFilePath).to.equal(expectedLocalesPath);
-      expect(entriesExport.schemaFilePath).to.equal(expectedSchemaPath);
+      expect(entriesExport.contentTypesDirPath).to.equal(expectedContentTypesDirPath);
     });
 
     it('should initialize ExportProjects instance', () => {
@@ -197,27 +201,29 @@ describe('EntriesExport', () => {
 
   describe('start() method - Early Returns', () => {
     it('should return early when no content types are found', async () => {
-      mockFsUtil.readFile
-        .onFirstCall()
-        .returns([{ code: 'en-us' }]) // locales
-        .onSecondCall()
-        .returns([]); // content types
+      // Stub mockFsUtil.readFile for locales
+      mockFsUtil.readFile.returns([{ code: 'en-us' }]);
+      
+      // Stub FsUtility.prototype for readContentTypeSchemas to return empty
+      (FsUtility.prototype.readdir as sinon.SinonStub).returns([]); // No content type files
 
       await entriesExport.start();
 
       // Should not attempt to fetch entries
       expect(mockStackAPIClient.contentType.called).to.be.false;
-      // Should read both locales and content types files
-      expect(mockFsUtil.readFile.calledTwice).to.be.true;
+      // Should read locales file
+      expect(mockFsUtil.readFile.called).to.be.true;
     });
 
     it('should handle empty locales array gracefully', async () => {
-      const contentTypes = [{ uid: 'ct-1', title: 'Content Type 1' }];
-      mockFsUtil.readFile
-        .onFirstCall()
-        .returns([]) // empty locales
-        .onSecondCall()
-        .returns(contentTypes);
+      const contentTypes = [{ uid: 'ct-1', title: 'Content Type 1', schema: [] as any }];
+      
+      // Stub mockFsUtil.readFile for locales
+      mockFsUtil.readFile.returns([]); // empty locales
+      
+      // Stub FsUtility.prototype for readContentTypeSchemas to return content types
+      (FsUtility.prototype.readdir as sinon.SinonStub).returns(['ct-1.json']);
+      (FsUtility.prototype.readFile as sinon.SinonStub).returns(contentTypes[0]);
 
       await entriesExport.start();
 
@@ -226,14 +232,14 @@ describe('EntriesExport', () => {
     });
 
     it('should handle non-array locales gracefully', async () => {
-      const contentTypes = [{ uid: 'ct-1', title: 'Content Type 1' }];
-      // Use empty array instead of null to avoid Object.keys error
-      // The code checks !Array.isArray first, so empty array will work
-      mockFsUtil.readFile
-        .onFirstCall()
-        .returns([]) // empty locales array
-        .onSecondCall()
-        .returns(contentTypes);
+      const contentTypes = [{ uid: 'ct-1', title: 'Content Type 1', schema: [] as any }];
+      
+      // Stub mockFsUtil.readFile for locales
+      mockFsUtil.readFile.returns([]); // empty locales array
+      
+      // Stub FsUtility.prototype for readContentTypeSchemas to return content types
+      (FsUtility.prototype.readdir as sinon.SinonStub).returns(['ct-1.json']);
+      (FsUtility.prototype.readFile as sinon.SinonStub).returns(contentTypes[0]);
 
       // Mock entry query for when entries are processed
       const mockEntryQuery = {

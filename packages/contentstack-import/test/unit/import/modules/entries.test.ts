@@ -29,11 +29,13 @@ describe('EntriesImport', () => {
     });
     
     // Stub FsUtility prototype to support readContentTypeSchemas
-    // readContentTypeSchemas reads individual JSON files and returns parsed objects
+    // readContentTypeSchemas creates its own FsUtility instance, so we need to stub the prototype
     sinon.stub(FsUtility.prototype, 'readdir').returns([]);
-    sinon.stub(FsUtility.prototype, 'readFile').returns(undefined);
     
-    fsUtilityReadFileStub = sinon.stub(fsUtil, 'readFile');
+    // Stub FsUtility.prototype.readFile for readContentTypeSchemas (returns parsed objects)
+    // This also stubs fsUtil.readFile since fsUtil is an instance of FsUtility
+    // Don't set a default return value - let individual tests configure it
+    fsUtilityReadFileStub = sinon.stub(FsUtility.prototype, 'readFile');
     fsUtilityWriteFileStub = sinon.stub(fsUtil, 'writeFile').callsFake(() => {
       return Promise.resolve();
     });
@@ -509,12 +511,14 @@ describe('EntriesImport', () => {
           if (path.includes('schema.json')) {
             return [mockData.contentTypeWithFieldRules];
           }
-          return {};
+          if (path.includes('field_rules_ct.json')) {
+            return mockData.contentTypeWithFieldRules;
+          }
+          return undefined;
         });
         
-        // Override FsUtility stubs to return field_rules_ct
+        // Override FsUtility.prototype.readdir for readContentTypeSchemas
         (FsUtility.prototype.readdir as sinon.SinonStub).returns(['field_rules_ct.json']);
-        (FsUtility.prototype.readFile as sinon.SinonStub).returns(mockData.contentTypeWithFieldRules);
       });
 
       it('should update field rules with new UIDs', async () => {

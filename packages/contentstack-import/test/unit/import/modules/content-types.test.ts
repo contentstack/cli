@@ -1218,9 +1218,9 @@ describe('ImportContentTypes', () => {
       // Configure FsUtility stubs to make readContentTypeSchemas return mock content types
       (FsUtility.prototype.readdir as sinon.SinonStub).returns(['ct-1.json', 'ct-2.json']);
       (FsUtility.prototype.readFile as sinon.SinonStub).callsFake((filePath: string) => {
-        if (filePath.includes('ct-1.json')) return JSON.stringify(mockContentTypes[0]);
-        if (filePath.includes('ct-2.json')) return JSON.stringify(mockContentTypes[1]);
-        return '{}';
+        if (filePath.includes('ct-1.json')) return mockContentTypes[0];
+        if (filePath.includes('ct-2.json')) return mockContentTypes[1];
+        return {};
       });
 
       fsUtilStub.readFile.returns([]);
