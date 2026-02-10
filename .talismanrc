@@ -1,7 +1,9 @@
 
 fileignoreconfig:
 - filename: package-lock.json
-  checksum: 13b82bf3ada05a792580596fbedb02c988fd556b208a742da1ecb3f2678675b4
+  checksum: fa2c81c72305bc19fa4f64457af1000aa2f0c179ecb7e46a5fc9d8b760c705a7
 - filename: pnpm-lock.yaml
-  checksum: 24ffee6d868d77669d32ac036c4abc2ab5f4c2d7f45f74c62f38a07e91240c26
+  checksum: faaef9e003c5ba45e56ab1ca24a4fc285f53a2b9ecc6d3dbd11e7130a31db4a2
+- filename: packages/contentstack-clone/src/core/util/clone-handler.ts
+  checksum: 0a7ed55e96aa5a94084538b4a480608593b04c316bf02cf54cdd3a647e9b714c
 version: '1.0'
