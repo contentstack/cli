@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli",
   "description": "Command-line tool (CLI) to interact with Contentstack",
-  "version": "2.0.0-beta.8",
+  "version": "2.0.0-beta.9",
   "author": "Contentstack",
   "bin": {
     "csdx": "./bin/run.js"
@@ -26,20 +26,21 @@
     "@contentstack/cli-cm-export": "~2.0.0-beta.7",
     "@contentstack/cli-cm-import": "~2.0.0-beta.6",
     "@contentstack/cli-auth": "~2.0.0-beta.4",
+    "@contentstack/cli-bulk-operations": "^1.0.0-beta",
     "@contentstack/cli-cm-bootstrap": "~2.0.0-beta.6",
     "@contentstack/cli-cm-branches": "~1.6.3",
-    "@contentstack/cli-cm-bulk-publish": "~1.10.6",
     "@contentstack/cli-cm-clone": "~2.0.0-beta.8",
     "@contentstack/cli-cm-export-to-csv": "~1.11.0",
     "@contentstack/cli-cm-import-setup": "~2.0.0-beta.3",
     "@contentstack/cli-cm-seed": "~2.0.0-beta.6",
     "@contentstack/cli-command": "~1.7.2",
-    "@contentstack/cli-config": "~1.18.0",
-    "@contentstack/cli-launch": "1.9.3",
+    "@contentstack/cli-config": "~1.19.0",
+    "@contentstack/cli-launch": "^1.9.2",
     "@contentstack/cli-migration": "~2.0.0-beta.3",
     "@contentstack/cli-utilities": "~1.17.2",
     "@contentstack/cli-variants": "~2.0.0-beta.4",
     "@contentstack/management": "~1.27.3",
+    "@contentstack/utils": "~1.7.0",
     "@oclif/core": "^4.3.0",
     "@oclif/plugin-help": "^6.2.28",
     "@oclif/plugin-not-found": "^3.2.53",
@@ -77,7 +78,7 @@
     "oclif": "^4.17.46",
     "rimraf": "^5.0.10",
     "shelljs": "^0.10.0",
-    "sinon": "^19.0.5",
+    "sinon": "^21.0.1",
     "tmp": "^0.2.3",
     "ts-node": "^10.9.2",
     "tslib": "^2.8.1",
@@ -148,15 +149,14 @@
       "@contentstack/cli-cm-export-to-csv",
       "@contentstack/cli-cm-clone",
       "@contentstack/cli-migration",
-      "@contentstack/cli-cm-bulk-publish",
       "@contentstack/cli-cm-branches",
       "@contentstack/cli-audit",
       "@contentstack/cli-cm-import-setup",
-      "@contentstack/cli-launch"
+      "@contentstack/cli-launch",
+      "@contentstack/cli-bulk-operations"
     ],
     "hooks": {
       "prerun": [
-        "./lib/hooks/prerun/command-deprecation-check",
         "./lib/hooks/prerun/default-rate-limit-check",
         "./lib/hooks/prerun/latest-version-warning"
       ],

@@ -568,11 +568,14 @@ export class CloneHandler {
       delete exportConfig.import;
       delete exportConfig.export;
 
+      if (exportConfig.source_stack) {
+        exportConfig.apiKey = exportConfig.source_stack;
+      }
       // Resolve path to package root - go up 3 levels from __dirname (core/util -> package root)
       const packageRoot = path.resolve(__dirname, '../../..');
       const exportDir = path.join(packageRoot, 'contents');
       log.debug(`Export directory: ${exportDir}`, this.config.cloneContext);
-      const cmd: string[] = ['-k', exportConfig.source_stack, '-d', exportDir];
+      const cmd: string[] = ['-k', exportConfig.apiKey || exportConfig.source_stack, '-d', exportDir];
       
       if (exportConfig.cloneType === 'a') {
         exportConfig.filteredModules = ['stack'].concat(STRUCTURE_LIST);
@@ -604,7 +607,7 @@ export class CloneHandler {
         ...this.config.cloneContext,
         cmd: cmd.join(' '),
         exportDir,
-        sourceStack: exportConfig.source_stack,
+        sourceStack: exportConfig.apiKey || exportConfig.source_stack,
         branch: exportConfig.sourceStackBranch 
       });
       log.debug('Running export command', { ...this.config.cloneContext, cmd });
@@ -634,7 +637,15 @@ export class CloneHandler {
         cmd.push('-a', importConfig.destination_alias);
         log.debug(`Using destination alias: ${importConfig.destination_alias}`, this.config.cloneContext);
       }
-      if (!importConfig.data && importConfig.sourceStackBranch && importConfig.pathDir) {
+      if (importConfig.target_stack) {
+        importConfig.apiKey = importConfig.target_stack;
+        log.debug(`Using target stack api key for import: ${importConfig.target_stack}`, this.config.cloneContext);
+      }
+      if (importConfig.data) {
+        importConfig.contentDir = importConfig.data;
+      }
+
+      if (!importConfig.contentDir && importConfig.sourceStackBranch && importConfig.pathDir) {
         const dataPath = path.join(importConfig.pathDir, importConfig.sourceStackBranch);
         cmd.push('-d', dataPath);
         log.debug(`Import data path: ${dataPath}`, this.config.cloneContext);
@@ -660,12 +671,12 @@ export class CloneHandler {
 
       log.debug(`Writing import config to: ${configFilePath}`, this.config.cloneContext);
       fs.writeFileSync(configFilePath, JSON.stringify(importConfig));
-      log.debug('Import command prepared', { 
+      log.debug('Import command prepared', {
         ...this.config.cloneContext,
         cmd: cmd.join(' '),
-        targetStack: importConfig.target_stack,
+        targetStack: importConfig.apiKey || importConfig.target_stack,
         targetBranch: importConfig.targetStackBranch,
-        dataPath: importConfig.data || (importConfig.pathDir && importConfig.sourceStackBranch ? path.join(importConfig.pathDir, importConfig.sourceStackBranch) : undefined)
+        dataPath: importConfig.contentDir || (importConfig.pathDir && importConfig.sourceStackBranch ? path.join(importConfig.pathDir, importConfig.sourceStackBranch) : undefined)
       });
       log.debug('Running import command', { ...this.config.cloneContext, cmd });
       const importData = importCmd.run(cmd);
@@ -796,8 +807,8 @@ export class CloneHandler {
         let selectedValue: any = {};
         // Resolve path to package root - go up 3 levels from __dirname (core/util -> package root)
         const cloneTypePackageRoot = path.resolve(__dirname, '../../..');
-        this.config.data = path.join(cloneTypePackageRoot, 'contents', this.config.sourceStackBranch || '');
-        log.debug(`Clone data directory: ${this.config.data}`, this.config.cloneContext);
+        this.config.contentDir = path.join(cloneTypePackageRoot, 'contents', this.config.sourceStackBranch || '');
+        log.debug(`Clone content directory: ${this.config.contentDir}`, this.config.cloneContext);
 
         if (!this.config.cloneType) {
           log.debug('Clone type not specified, prompting user for selection', this.config.cloneContext);
