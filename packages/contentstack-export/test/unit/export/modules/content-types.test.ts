@@ -84,6 +84,9 @@ describe('ExportContentTypes', () => {
     // Stub FsUtility methods
     sinon.stub(FsUtility.prototype, 'writeFile').resolves();
     sinon.stub(FsUtility.prototype, 'makeDirectory').resolves();
+    // Stub FsUtility.prototype.readdir and readFile for readContentTypeSchemas support
+    sinon.stub(FsUtility.prototype, 'readdir').returns([]);
+    sinon.stub(FsUtility.prototype, 'readFile').returns(undefined);
   });
 
   afterEach(() => {
