@@ -317,6 +317,7 @@ describe('ExportContentTypes', () => {
 
     it('should handle empty content types', async () => {
       const writeFileStub = FsUtility.prototype.writeFile as sinon.SinonStub;
+      const completeProgressStub = sinon.stub(exportContentTypes as any, 'completeProgress');
 
       mockStackClient.contentType.returns({
         query: sinon.stub().returns({
@@ -330,8 +331,10 @@ describe('ExportContentTypes', () => {
       exportContentTypes.contentTypes = [];
       await exportContentTypes.start();
 
-      // Verify writeFile was called even with empty array
-      expect(writeFileStub.called).to.be.true;
+      // With empty content types, writeFile is not called (no files to write)
+      // But completeProgress should be called to mark the process as complete
+      expect(completeProgressStub.called).to.be.true;
+      expect(completeProgressStub.calledWith(true)).to.be.true;
     });
 
     it('should handle errors during export without throwing', async () => {
