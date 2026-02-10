@@ -10,12 +10,12 @@ import { FsUtility } from './fs-utility';
 export function readContentTypeSchemas(
   dirPath: string,
   ignoredFiles: string[] = ['schema.json', '.DS_Store', '__master.json', '__priority.json'],
-): Record<string, unknown>[] {
+): Record<string, unknown>[] | null {
   const fsUtil = new FsUtility();
   const files = fsUtil.readdir(dirPath);
 
   if (!files || files.length === 0) {
-    return [];
+    return null;
   }
 
   const contentTypes: Record<string, unknown>[] = [];

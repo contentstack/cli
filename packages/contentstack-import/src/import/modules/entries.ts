@@ -1202,12 +1202,18 @@ export default class EntriesImport extends BaseClass {
     log.debug(`Found ${cTsWithFieldRules.length} content types with field rules to update`, this.importConfig.context);
 
     try {
+      // Read content types from individual files
+      const cTs = readContentTypeSchemas(this.cTsPath) || [];
       for (let cTUid of cTsWithFieldRules) {
         log.debug(`Processing field rules for content type: ${cTUid}`, this.importConfig.context);
 
-        // Read content types from individual files
-        const cTs = readContentTypeSchemas(this.cTsPath);
+
         const contentType: any = find(cTs, { uid: cTUid });
+
+        if (!contentType) {
+          log.debug(`Content type ${cTUid} not found in schemas`, this.importConfig.context);
+          continue;
+        }
 
         if (contentType.field_rules) {
           log.debug(
