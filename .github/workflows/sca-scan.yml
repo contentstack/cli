@@ -15,5 +15,7 @@ jobs:
           args: --all-projects --fail-on=all
           json: true
         continue-on-error: true
+      - run: ls -al
+      - run: pwd
       - uses: contentstack/contentstack-ci-workflows@main
           
