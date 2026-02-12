@@ -1,6 +1,0 @@
-{
-  "name": "test",
-  "value": 123,
-  "active": true
-  // Missing closing brace - invalid JSON
-

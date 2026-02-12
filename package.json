@@ -3,26 +3,26 @@
   "version": "1.0.0",
   "devDependencies": {
     "husky": "^9.1.7",
-    "pnpm": "^7.33.7"
+    "pnpm": "^10.28.0"
   },
   "engines": {
     "node": ">=18.0.0"
   },
   "private": true,
   "scripts": {
-    "cache:clear": "pnpm store prune",
-    "clean": "pnpm --filter './packages/*' -w clean",
-    "bootstrap": "pnpm install --no-frozen-lockfile",
-    "prepack": "pnpm --filter \"./packages/*\" -w prepack",
-    "test": "pnpm --filter './packages/*' -w test:unit",
-    "package-lock-only": "npm i --package-lock-only --workspaces",
-    "setup-repo-old": "npm i && pnpm package-lock-only && pnpm clean && pnpm install --no-frozen-lockfile && pnpm prepack",
-    "clean-repo": "rm -rf ./package-lock.json ./node_modules ./packages/**/node_modules ./packages/**/.nyc_output ./packages/**/package-lock.json",
-    "preinstall-clean": "npm run clean-repo && npm cache clean --force && npx pnpm store prune",
-    "setup-repo": "npm run preinstall-clean && npm i && npm run package-lock-only && npm run clean && pnpm install --no-frozen-lockfile && npm run prepack",
+    "clean": "pnpm -r --filter './packages/*' run clean",
+    "build": "pnpm -r --filter './packages/*' run build",
+    "test": "pnpm -r --filter './packages/*' run test",
+    "prepack": "pnpm -r --filter './packages/*' run prepack",
+    "bootstrap": "pnpm install",
+    "clean:modules": "rm -rf node_modules packages/**/node_modules",
+    "clean:lock": "rm -f pnpm-lock.yaml",
+    "clean:all": "pnpm store prune && pnpm run clean:modules && pnpm run clean:lock",
+    "setup": "pnpm run clean:all && pnpm run bootstrap && pnpm run build",
     "prepare": "npx husky && chmod +x .husky/pre-commit"
   },
   "license": "MIT",
+  "packageManager": "pnpm@10.28.0",
   "workspaces": [
     "packages/*"
   ]
