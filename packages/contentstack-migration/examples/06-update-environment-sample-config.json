@@ -1,7 +1,0 @@
-{
-  "environmentMapping": {
-    "source_environment_name": "destination_environment_name"
-  },
-  "source_stack_exported_data_path": "path",
-  "destination_stack_exported_data_path": "path"
-}

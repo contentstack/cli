@@ -1,8 +1,0 @@
-{
-  "PRINT_LOGS": true,
-  "REGION_NAME": "AWS-NA",
-  "DEFAULT_TIMEOUT": 600000,
-  "EXPORT_PATH": "./contents",
-  "ALIAS_NAME": "marketplace_api",
-  "encryptionKey": "***REMOVED***"
-}
