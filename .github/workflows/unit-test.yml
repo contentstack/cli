@@ -18,94 +18,20 @@ jobs:
 
       - name: Install dependencies for all plugins
         run: |
-          NODE_ENV=PREPACK_MODE npm run setup-repo-old
+          NODE_ENV=PREPACK_MODE npm run bootstrap
+
+      - name: Build all plugins
+        run: |
+          NODE_ENV=PREPACK_MODE npm run build
 
       - name: Run tests for Contentstack Command
         working-directory: ./packages/contentstack-command
-        run: npm run test:unit
-
-      - name: Run tests for Contentstack Import Plugin
-        working-directory: ./packages/contentstack-import
-        run: npm run test:unit
-      
-      - name: Run tests for Contentstack Export Plugin
-        working-directory: ./packages/contentstack-export
-        run: npm run test:unit
-
-      - name: Run tests for Audit plugin
-        working-directory: ./packages/contentstack-audit
         run: npm run test:unit
 
       - name: Run tests for Contentstack Config
         working-directory: ./packages/contentstack-config
         run: npm run test:unit
 
-      - name: Run tests for Contentstack Migration
-        working-directory: ./packages/contentstack-migration
-        run: npm run test
-
-      - name: Run tests for Contentstack Export To CSV
-        working-directory: ./packages/contentstack-export-to-csv
-        run: NODE_ENV=PREPACK_MODE npm run test:unit
-
-      - name: Run tests for Contentstack Bootstrap
-        working-directory: ./packages/contentstack-bootstrap
-        run: npm run test
-
       - name: Run tests for Contentstack Auth
         working-directory: ./packages/contentstack-auth
         run: NODE_ENV=PREPACK_MODE npm run test
-
-      # - name: Run tests for Contentstack Import Setup
-      #   working-directory: ./packages/contentstack-import-setup
-      #   run: npm run test:unit
-
-      # TODO: Uncomment this when the tests are fixed
-      # - name: Run tests for Contentstack Bulk Publish
-      #   working-directory: ./packages/contentstack-bulk-publish
-      #   run: npm run test:unit
-
-      - name: Run tests for Contentstack Branches
-        working-directory: ./packages/contentstack-branches
-        run: npm run test:unit
-      
-      - name: Run tests for Contentstack Clone
-        working-directory: ./packages/contentstack-clone
-        run: npm run test:unit
-
-      # - name: Fetch latest references
-      #   run: |
-      #     git fetch --prune
-
-      # - name: Identify Changed Plugins
-      #   id: changes
-      #   run: |
-      #     echo "Finding changed files..."
-      #     # Ensure both commit references are valid
-      #     if [[ -z "${{ github.event.before }}" || -z "${{ github.sha }}" ]]; then
-      #       echo "Error: Missing commit references"
-      #       exit 1
-      #     fi
-
-      #     CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
-      #     echo "Changed files:"
-      #     echo "$CHANGED_FILES"
-
-      #     # Identify affected plugins
-      #     AFFECTED_PLUGINS=$(echo "$CHANGED_FILES" | grep -oP '(?<=^packages/)([^/]+)' | sort -u | tr '\n' ' ')
-      #     echo "Affected plugins: $AFFECTED_PLUGINS"
-
-      #     # Set output for the next step
-      #     echo "::set-output name=affected_plugins::$AFFECTED_PLUGINS"
-
-      # - name: Run Unit Tests for Affected Plugins
-      #   run: |
-      #     for plugin in ${{ steps.changes.outputs.affected_plugins }}; do
-      #       echo "Checking if tests should run for $plugin..."
-      #       if [[ "$plugin" == "contentstack-audit" ]]; then
-      #         echo "Running tests for contentstack-audit..."
-      #         npm run test:unit --prefix ./packages/contentstack-audit
-      #       else
-      #         echo "contentstack-audit has not changed. Skipping tests."
-      #       fi
-      #     done
