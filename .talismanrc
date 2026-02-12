@@ -1,8 +1,8 @@
 fileignoreconfig:
 - filename: package-lock.json
-  checksum: 09bde87514151440d68bc6154984a984c536728e37d18173bab4fdb53827dadd
+  checksum: c06c94b01ad82058f0f3f96a9acbe2ebc5e0095d1c2ed179bd271f479431764e
 - filename: pnpm-lock.yaml
-  checksum: e81b8b629ff23df0cd27af8c055c9bb3718b68e388fd9ff5e3485ef37bfe794b
+  checksum: 9e6a3c280cfd7356f1440a592c8b4f1d6294f4ae133696680c253a029be017c7
 - filename: packages/contentstack-bootstrap/src/bootstrap/utils.ts
   checksum: 6e6fb00bb11b03141e5ad27eeaa4af9718dc30520c3e73970bc208cc0ba2a7d2
 version: '1.0'
