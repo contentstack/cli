@@ -1,5 +1,0 @@
---recursive
---reporter spec
---timeout 5000
---exit
---require ./test/cleanup.js
