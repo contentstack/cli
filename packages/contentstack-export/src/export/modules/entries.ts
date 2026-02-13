@@ -1,7 +1,14 @@
 import * as path from 'path';
-import { ContentstackClient, FsUtility, handleAndLogError, messageHandler, log } from '@contentstack/cli-utilities';
+import {
+  ContentstackClient,
+  FsUtility,
+  handleAndLogError,
+  messageHandler,
+  log,
+  sanitizePath,
+} from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
 import { Export, ExportProjects } from '@contentstack/cli-variants';
-import { sanitizePath } from '@contentstack/cli-utilities';
 
 import {
   fsUtil,
@@ -55,7 +62,7 @@ export default class EntriesExport extends BaseClass {
       sanitizePath(exportConfig.exportDir),
       sanitizePath(exportConfig.branchName || ''),
       sanitizePath(exportConfig.modules.content_types.dirName),
-      'schema.json',
+      PATH_CONSTANTS.FILES.SCHEMA,
     );
     this.projectInstance = new ExportProjects(this.exportConfig);
     this.exportConfig.context.module = MODULE_CONTEXTS.ENTRIES;
@@ -313,7 +320,7 @@ export default class EntriesExport extends BaseClass {
         await fsUtil.makeDirectory(entryBasePath);
         this.entriesFileHelper = new FsUtility({
           moduleName: 'entries',
-          indexFileName: 'index.json',
+          indexFileName: PATH_CONSTANTS.FILES.INDEX,
           basePath: entryBasePath,
           chunkFileSize: this.entriesConfig.chunkFileSize,
           keepMetadata: false,

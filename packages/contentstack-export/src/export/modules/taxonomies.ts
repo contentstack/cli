@@ -125,7 +125,7 @@ export default class ExportTaxonomies extends BaseClass {
       return;
     }
 
-    const taxonomiesFilePath = pResolve(this.taxonomiesFolderPath, 'taxonomies.json');
+    const taxonomiesFilePath = pResolve(this.taxonomiesFolderPath, this.taxonomiesConfig.fileName);
     log.debug(`Writing taxonomies metadata to: ${taxonomiesFilePath}`, this.exportConfig.context);
     fsUtil.writeFile(taxonomiesFilePath, this.taxonomies);
   }
