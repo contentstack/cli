@@ -218,7 +218,7 @@ export default class ImportWorkflows extends BaseClass {
     workflow: Record<string, any>,
     newWorkflowStages: Record<string, any>[],
     oldWorkflowStages: Record<string, any>[],
-  ) {
+  ): Promise<any> {
     newWorkflowStages = map(newWorkflowStages, (newStage, index) => {
       const oldStage = oldWorkflowStages[index];
       if (!isEmpty(oldStage.next_available_stages)) {
