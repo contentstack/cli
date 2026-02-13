@@ -94,6 +94,11 @@ export default class ImportTaxonomies extends BaseClass {
    * @returns {Promise<any>} Promise<any>
    */
   async importTaxonomies({ apiContent, localeCode }: { apiContent: any[]; localeCode?: string }): Promise<void> {
+    if (!apiContent || apiContent?.length === 0) {
+      log.debug('No taxonomies to import', this.importConfig.context);
+      return;
+    }
+
     const onSuccess = ({ apiData }: any) => this.handleSuccess(apiData, localeCode);
     const onReject = ({ error, apiData }: any) => this.handleFailure(error, apiData, localeCode);
 

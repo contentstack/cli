@@ -36,6 +36,7 @@ describe('ImportTaxonomies', () => {
     mockImportConfig = {
       apiKey: 'test',
       backupDir: testBackupDir,
+      contentDir: testBackupDir,
       context: { module: 'taxonomies' },
       concurrency: 2,
       fetchConcurrency: 3,
