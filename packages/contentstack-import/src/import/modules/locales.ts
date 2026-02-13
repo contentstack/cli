@@ -8,6 +8,7 @@
 import * as path from 'path';
 import { values, isEmpty, filter, pick, keys } from 'lodash';
 import { cliux, sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
 
 import BaseClass from './base-class';
 import {
@@ -60,11 +61,30 @@ export default class ImportLocales extends BaseClass {
     this.createdLocales = [];
     this.failedLocales = [];
     this.reqConcurrency = this.localeConfig.writeConcurrency || this.config.writeConcurrency;
-    this.langMapperPath = path.resolve(sanitizePath(this.config.contentDir), 'mapper', 'languages');
+    this.langMapperPath = path.resolve(
+      sanitizePath(this.config.backupDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.LANGUAGES,
+    );
     this.langFolderPath = path.resolve(sanitizePath(this.config.contentDir), sanitizePath(this.localeConfig.dirName));
-    this.langFailsPath = path.resolve(sanitizePath(this.config.contentDir), 'mapper', 'languages', 'fails.json');
-    this.langSuccessPath = path.resolve(sanitizePath(this.config.contentDir), 'mapper', 'languages', 'success.json');
-    this.langUidMapperPath = path.resolve(sanitizePath(this.config.contentDir), 'mapper', 'languages', 'uid-mapper.json');
+    this.langFailsPath = path.resolve(
+      sanitizePath(this.config.backupDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.LANGUAGES,
+      PATH_CONSTANTS.FILES.FAILS,
+    );
+    this.langSuccessPath = path.resolve(
+      sanitizePath(this.config.backupDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.LANGUAGES,
+      PATH_CONSTANTS.FILES.SUCCESS,
+    );
+    this.langUidMapperPath = path.resolve(
+      sanitizePath(this.config.backupDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.LANGUAGES,
+      PATH_CONSTANTS.FILES.UID_MAPPER,
+    );
   }
 
   async start(): Promise<void> {

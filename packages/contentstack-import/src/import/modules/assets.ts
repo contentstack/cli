@@ -9,7 +9,12 @@ import { existsSync } from 'node:fs';
 import includes from 'lodash/includes';
 import { v4 as uuid } from 'uuid';
 import { resolve as pResolve, join } from 'node:path';
-import { FsUtility, log, handleAndLogError } from '@contentstack/cli-utilities';
+import {
+  FsUtility,
+  log,
+  handleAndLogError,
+} from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
 
 import config from '../../config';
 import { ModuleClassParams } from '../../types';
@@ -36,15 +41,23 @@ export default class ImportAssets extends BaseClass {
     this.importConfig.context.module = MODULE_CONTEXTS.ASSETS;
     this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.ASSETS];
 
-    this.assetsPath = join(this.importConfig.backupDir, 'assets');
-    this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'assets');
-    this.assetUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
-    this.assetUrlMapperPath = join(this.mapperDirPath, 'url-mapping.json');
-    this.assetFolderUidMapperPath = join(this.mapperDirPath, 'folder-mapping.json');
+    this.assetsPath = join(this.importConfig.backupDir, PATH_CONSTANTS.CONTENT_DIRS.ASSETS);
+    this.mapperDirPath = join(
+      this.importConfig.backupDir,
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.ASSETS,
+    );
+    this.assetUidMapperPath = join(this.mapperDirPath, PATH_CONSTANTS.FILES.UID_MAPPING);
+    this.assetUrlMapperPath = join(this.mapperDirPath, PATH_CONSTANTS.FILES.URL_MAPPING);
+    this.assetFolderUidMapperPath = join(this.mapperDirPath, PATH_CONSTANTS.FILES.FOLDER_MAPPING);
     this.assetsRootPath = join(this.importConfig.backupDir, this.assetConfig.dirName);
     this.fs = new FsUtility({ basePath: this.mapperDirPath });
     this.environments = this.fs.readFile(
-      join(this.importConfig.backupDir, 'environments', 'environments.json'),
+      join(
+        this.importConfig.backupDir,
+        PATH_CONSTANTS.CONTENT_DIRS.ENVIRONMENTS,
+        PATH_CONSTANTS.FILES.ENVIRONMENTS,
+      ),
       true,
     ) as Record<string, unknown>;
   }
@@ -208,7 +221,9 @@ export default class ImportAssets extends BaseClass {
    */
   async importAssets(isVersion = false): Promise<void> {
     const processName = isVersion ? 'import versioned assets' : 'import assets';
-    const indexFileName = isVersion ? 'versioned-assets.json' : 'assets.json';
+    const indexFileName = isVersion
+      ? PATH_CONSTANTS.FILES.VERSIONED_ASSETS
+      : this.assetConfig.fileName;
     const basePath = isVersion ? join(this.assetsPath, 'versions') : this.assetsPath;
     const progressProcessName = isVersion ? PROCESS_NAMES.ASSET_VERSIONS : PROCESS_NAMES.ASSET_UPLOAD;
 
@@ -355,7 +370,10 @@ export default class ImportAssets extends BaseClass {
    * @returns {Promise<void>} Promise<void>
    */
   async publish() {
-    const fs = new FsUtility({ basePath: this.assetsPath, indexFileName: 'assets.json' });
+    const fs = new FsUtility({
+      basePath: this.assetsPath,
+      indexFileName: this.assetConfig.fileName,
+    });
     if (isEmpty(this.assetsUidMap)) {
       log.debug('Loading asset UID mappings from file', this.importConfig.context);
       this.assetsUidMap = fs.readFile(this.assetUidMapperPath, true) as any;
@@ -563,7 +581,10 @@ export default class ImportAssets extends BaseClass {
   }
 
   private async countPublishableAssets(): Promise<number> {
-    const fsUtil = new FsUtility({ basePath: this.assetsPath, indexFileName: 'assets.json' });
+    const fsUtil = new FsUtility({
+      basePath: this.assetsPath,
+      indexFileName: this.assetConfig.fileName,
+    });
     let count = 0;
 
     for (const _ of values(fsUtil.indexFileContent)) {

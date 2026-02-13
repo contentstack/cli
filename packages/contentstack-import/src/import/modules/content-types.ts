@@ -8,6 +8,7 @@
 import * as path from 'path';
 import { find, cloneDeep, map } from 'lodash';
 import { sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
 import { updateFieldRules } from '../../utils/content-type-helper';
@@ -71,37 +72,51 @@ export default class ContentTypesImport extends BaseClass {
     this.gFsConfig = importConfig.modules['global-fields'];
     this.reqConcurrency = this.cTsConfig.writeConcurrency || this.importConfig.writeConcurrency;
     this.cTsFolderPath = path.join(sanitizePath(this.importConfig.contentDir), sanitizePath(this.cTsConfig.dirName));
-    this.cTsMapperPath = path.join(sanitizePath(this.importConfig.contentDir), 'mapper', 'content_types');
-    this.cTsSuccessPath = path.join(sanitizePath(this.importConfig.contentDir), 'mapper', 'content_types', 'success.json');
-    this.gFsFolderPath = path.resolve(sanitizePath(this.importConfig.contentDir), sanitizePath(this.gFsConfig.dirName));
-    this.gFsMapperFolderPath = path.join(sanitizePath(importConfig.contentDir), 'mapper', 'global_fields', 'success.json');
+    this.cTsMapperPath = path.join(
+      sanitizePath(this.importConfig.backupDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.CONTENT_TYPES,
+    );
+    this.cTsSuccessPath = path.join(
+      sanitizePath(this.importConfig.backupDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.CONTENT_TYPES,
+      PATH_CONSTANTS.FILES.SUCCESS,
+    );
+    this.gFsFolderPath = path.resolve(sanitizePath(this.importConfig.backupDir), sanitizePath(this.gFsConfig.dirName));
+    this.gFsMapperFolderPath = path.join(
+      sanitizePath(importConfig.backupDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.GLOBAL_FIELDS,
+      PATH_CONSTANTS.FILES.SUCCESS,
+    );
     this.gFsPendingPath = path.join(
-      sanitizePath(importConfig.contentDir),
-      'mapper',
-      'global_fields',
-      'pending_global_fields.js',
+      sanitizePath(importConfig.backupDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.GLOBAL_FIELDS,
+      PATH_CONSTANTS.FILES.PENDING_GLOBAL_FIELDS,
     );
     this.marketplaceAppMapperPath = path.join(
-      sanitizePath(this.importConfig.contentDir),
-      'mapper',
-      'marketplace_apps',
-      'uid-mapping.json',
+      sanitizePath(this.importConfig.backupDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.MARKETPLACE_APPS,
+      PATH_CONSTANTS.FILES.UID_MAPPING,
     );
     this.ignoredFilesInContentTypesFolder = new Map([
       ['__master.json', 'true'],
       ['__priority.json', 'true'],
-      ['schema.json', 'true'],
+      [PATH_CONSTANTS.FILES.SCHEMA, 'true'],
       ['.DS_Store', 'true'],
     ]);
 
     // Initialize composable studio paths if config exists
     if (this.importConfig.modules['composable-studio']) {
       // Use contentDir as fallback if data is not available
-      const basePath = this.importConfig.data || this.importConfig.contentDir;
+      const basePath = this.importConfig.contentDir;
       
       this.composableStudioSuccessPath = path.join(
         sanitizePath(basePath),
-        'mapper',
+        PATH_CONSTANTS.MAPPER,
         this.importConfig.modules['composable-studio'].dirName,
         this.importConfig.modules['composable-studio'].fileName,
       );
@@ -124,8 +139,18 @@ export default class ContentTypesImport extends BaseClass {
     this.createdGFs = [];
     this.pendingGFs = [];
     this.pendingExts = [];
-    this.taxonomiesPath = path.join(sanitizePath(importConfig.contentDir), 'mapper', 'taxonomies', 'success.json');
-    this.extPendingPath = path.join(sanitizePath(importConfig.contentDir), 'mapper', 'extensions', 'pending_extensions.js');
+    this.taxonomiesPath = path.join(
+      sanitizePath(importConfig.contentDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.TAXONOMIES,
+      PATH_CONSTANTS.FILES.SUCCESS,
+    );
+    this.extPendingPath = path.join(
+      sanitizePath(importConfig.contentDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.EXTENSIONS,
+      PATH_CONSTANTS.FILES.PENDING_EXTENSIONS,
+    );
   }
 
   async start(): Promise<any> {
@@ -474,7 +499,7 @@ export default class ContentTypesImport extends BaseClass {
     const [cts, gfs, pendingGfs, pendingExt] = await this.withLoadingSpinner(
       'CONTENT TYPES: Analyzing import data...',
       async () => {
-        const cts = fsUtil.readFile(path.join(this.cTsFolderPath, 'schema.json'));
+        const cts = fsUtil.readFile(path.join(this.cTsFolderPath, PATH_CONSTANTS.FILES.SCHEMA));
         const gfs = fsUtil.readFile(path.resolve(this.gFsFolderPath, this.gFsConfig.fileName));
         const pendingGfs = fsUtil.readFile(this.gFsPendingPath);
         const pendingExt = fsUtil.readFile(this.extPendingPath);

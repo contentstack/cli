@@ -19,6 +19,7 @@ import {
   log,
   handleAndLogError,
 } from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
 
 import { askEncryptionKey, getLocationName } from '../../utils/interactive';
 import { ModuleClassParams, MarketplaceAppsConfig, ImportConfig, Installation, Manifest } from '../../types';
@@ -62,9 +63,13 @@ export default class ImportMarketplaceApps extends BaseClass {
     this.importConfig.context.module = MODULE_CONTEXTS.MARKETPLACE_APPS;
     this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.MARKETPLACE_APPS];
     this.marketPlaceAppConfig = importConfig.modules.marketplace_apps;
-    this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'marketplace_apps');
+    this.mapperDirPath = join(
+      this.importConfig.backupDir,
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.MARKETPLACE_APPS,
+    );
     this.marketPlaceFolderPath = join(this.importConfig.backupDir, this.marketPlaceAppConfig.dirName);
-    this.marketPlaceUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
+    this.marketPlaceUidMapperPath = join(this.mapperDirPath, PATH_CONSTANTS.FILES.UID_MAPPING);
     this.appNameMapping = {};
     this.appUidMapping = {};
     this.appOriginalName = undefined;

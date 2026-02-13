@@ -20,6 +20,7 @@ import {
   handleAndLogError,
   messageHandler,
 } from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
 
 import config from '../../config';
 import { ModuleClassParams } from '../../types';
@@ -242,7 +243,7 @@ export default class ExportAssets extends BaseClass {
         fs = new FsUtility({
           metaHandler,
           moduleName: 'assets',
-          indexFileName: 'assets.json',
+          indexFileName: this.assetConfig.fileName,
           basePath: this.assetsRootPath,
           chunkFileSize: this.assetConfig.chunkFileSize,
           metaPickKeys: merge(['uid', 'url', 'filename', 'parent_uid'], this.assetConfig.assetsMetaKeys),
@@ -326,7 +327,7 @@ export default class ExportAssets extends BaseClass {
       if (!fs && !isEmpty(response)) {
         fs = new FsUtility({
           moduleName: 'assets',
-          indexFileName: 'versioned-assets.json',
+          indexFileName: PATH_CONSTANTS.FILES.VERSIONED_ASSETS,
           chunkFileSize: this.assetConfig.chunkFileSize,
           basePath: pResolve(this.assetsRootPath, 'versions'),
           metaPickKeys: merge(['uid', 'url', 'filename', '_version', 'parent_uid'], this.assetConfig.assetsMetaKeys),
