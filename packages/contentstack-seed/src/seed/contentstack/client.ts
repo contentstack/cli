@@ -1,6 +1,5 @@
 import ContentstackError from './error';
-import { managementSDKClient, configHandler } from '@contentstack/cli-utilities';
-import * as ContentstackManagementSDK from '@contentstack/management';
+import { managementSDKClient, configHandler, ContentstackClient as ContentstackAPIClient } from '@contentstack/cli-utilities';
 
 export interface Organization {
   uid: string;
@@ -44,7 +43,7 @@ export interface createManagementTokenOptions{
 }
 
 export default class ContentstackClient {
-  instance: Promise<ContentstackManagementSDK.ContentstackClient>;
+  instance: Promise<ContentstackAPIClient>;
 
   limit: number;
 
