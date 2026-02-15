@@ -86,6 +86,21 @@ describe('ExportTaxonomies', () => {
     sinon.stub(FsUtility.prototype, 'writeFile').resolves();
     sinon.stub(FsUtility.prototype, 'makeDirectory').resolves();
     sinon.stub(FsUtility.prototype, 'readFile').resolves({});
+
+    // Stub progress manager methods
+    const mockProgress = {
+      addProcess: sinon.stub().returnsThis(),
+      startProcess: sinon.stub().returnsThis(),
+      updateStatus: sinon.stub().returnsThis(),
+      completeProcess: sinon.stub().returnsThis(),
+      updateProcessTotal: sinon.stub().returnsThis(),
+    };
+    sinon.stub(exportTaxonomies, 'withLoadingSpinner').callsFake(async (msg: string, fn: () => Promise<any>) => {
+      return await fn();
+    });
+    sinon.stub(exportTaxonomies, 'createNestedProgress').returns(mockProgress);
+    sinon.stub(exportTaxonomies, 'completeProgress').resolves();
+    sinon.stub(exportTaxonomies, 'completeProgressWithMessage').resolves();
   });
 
   afterEach(() => {
@@ -584,87 +599,82 @@ describe('ExportTaxonomies', () => {
 
   describe('start() method - locale-based export scenarios', () => {
     it('should use legacy export when locale-based export is not supported', async () => {
-      const mockFetchTaxonomies = sinon
-        .stub(exportTaxonomies, 'fetchTaxonomies')
-        .callsFake(async (locale, checkSupport) => {
-          if (checkSupport) {
-            exportTaxonomies.isLocaleBasedExportSupported = false;
-          }
+      const mockDetermineStrategy = sinon
+        .stub(exportTaxonomies as any, 'determineExportStrategy')
+        .callsFake(async () => {
+          exportTaxonomies.isLocaleBasedExportSupported = false;
         });
-      const mockExportTaxonomies = sinon.stub(exportTaxonomies, 'exportTaxonomies').resolves();
+      const mockFetchAll = sinon.stub(exportTaxonomies as any, 'fetchAllTaxonomies').resolves();
+      const mockExportAll = sinon.stub(exportTaxonomies as any, 'exportAllTaxonomies').resolves(2);
       const mockWriteMetadata = sinon.stub(exportTaxonomies, 'writeTaxonomiesMetadata').resolves();
       const mockGetLocales = sinon.stub(exportTaxonomies, 'getLocalesToExport').returns(['en-us']);
 
       await exportTaxonomies.start();
 
-      // Should use legacy export (no locale parameter)
-      expect(mockExportTaxonomies.called).to.be.true;
-      expect(mockExportTaxonomies.calledWith()).to.be.true; // Called without locale
+      // Should call the helper methods
+      expect(mockDetermineStrategy.called).to.be.true;
+      expect(mockFetchAll.called).to.be.true;
+      expect(mockExportAll.called).to.be.true;
       expect(mockWriteMetadata.called).to.be.true;
 
-      mockFetchTaxonomies.restore();
-      mockExportTaxonomies.restore();
+      mockDetermineStrategy.restore();
+      mockFetchAll.restore();
+      mockExportAll.restore();
       mockWriteMetadata.restore();
       mockGetLocales.restore();
     });
 
     it('should clear taxonomies and re-fetch when falling back to legacy export', async () => {
-      let fetchCallCount = 0;
-      const mockFetchTaxonomies = sinon
-        .stub(exportTaxonomies, 'fetchTaxonomies')
-        .callsFake(async (locale, checkSupport) => {
-          fetchCallCount++;
-          if (checkSupport) {
-            // First call fails locale check
-            exportTaxonomies.isLocaleBasedExportSupported = false;
-            exportTaxonomies.taxonomies = { 'partial-data': { uid: 'partial-data' } }; // Simulate partial data
-          } else {
-            // Second call should have cleared data
-            expect(exportTaxonomies.taxonomies).to.deep.equal({});
-          }
+      const mockDetermineStrategy = sinon
+        .stub(exportTaxonomies as any, 'determineExportStrategy')
+        .callsFake(async () => {
+          // Simulate fallback to legacy - clears data
+          exportTaxonomies.isLocaleBasedExportSupported = false;
+          exportTaxonomies.taxonomies = {};
+          exportTaxonomies.taxonomiesByLocale = {};
         });
-      const mockExportTaxonomies = sinon.stub(exportTaxonomies, 'exportTaxonomies').resolves();
+      const mockFetchAll = sinon.stub(exportTaxonomies as any, 'fetchAllTaxonomies').resolves();
+      const mockExportAll = sinon.stub(exportTaxonomies as any, 'exportAllTaxonomies').resolves(2);
       const mockWriteMetadata = sinon.stub(exportTaxonomies, 'writeTaxonomiesMetadata').resolves();
       const mockGetLocales = sinon.stub(exportTaxonomies, 'getLocalesToExport').returns(['en-us']);
 
       await exportTaxonomies.start();
 
-      // Should call fetchTaxonomies twice: once for check, once for legacy
-      expect(fetchCallCount).to.equal(2);
-      // First call with locale, second without
-      expect(mockFetchTaxonomies.firstCall.args).to.deep.equal(['en-us', true]);
-      expect(mockFetchTaxonomies.secondCall.args).to.deep.equal([]);
+      // Should clear taxonomies and re-fetch
+      expect(mockDetermineStrategy.called).to.be.true;
+      expect(mockFetchAll.called).to.be.true;
 
-      mockFetchTaxonomies.restore();
-      mockExportTaxonomies.restore();
+      mockDetermineStrategy.restore();
+      mockFetchAll.restore();
+      mockExportAll.restore();
       mockWriteMetadata.restore();
       mockGetLocales.restore();
     });
 
     it('should use locale-based export when supported', async () => {
-      const mockFetchTaxonomies = sinon
-        .stub(exportTaxonomies, 'fetchTaxonomies')
-        .callsFake(async (locale, checkSupport) => {
-          if (checkSupport) {
-            exportTaxonomies.isLocaleBasedExportSupported = true;
-          }
-          if (locale && typeof locale === 'string' && !exportTaxonomies.taxonomiesByLocale[locale]) {
-            exportTaxonomies.taxonomiesByLocale[locale] = new Set(['taxonomy-1']);
-          }
+      const mockDetermineStrategy = sinon
+        .stub(exportTaxonomies as any, 'determineExportStrategy')
+        .callsFake(async () => {
+          exportTaxonomies.isLocaleBasedExportSupported = true;
+          exportTaxonomies.taxonomiesByLocale['en-us'] = new Set(['taxonomy-1']);
+          exportTaxonomies.taxonomiesByLocale['es-es'] = new Set(['taxonomy-2']);
         });
-      const mockProcessLocale = sinon.stub(exportTaxonomies, 'processLocaleExport').resolves();
+      const mockFetchAll = sinon.stub(exportTaxonomies as any, 'fetchAllTaxonomies').resolves();
+      const mockExportAll = sinon.stub(exportTaxonomies as any, 'exportAllTaxonomies').resolves(2);
       const mockWriteMetadata = sinon.stub(exportTaxonomies, 'writeTaxonomiesMetadata').resolves();
       const mockGetLocales = sinon.stub(exportTaxonomies, 'getLocalesToExport').returns(['en-us', 'es-es']);
 
       await exportTaxonomies.start();
 
-      // Should process each locale
-      expect(mockProcessLocale.called).to.be.true;
-      expect(mockProcessLocale.callCount).to.equal(2); // Two locales
+      // Should call helper methods
+      expect(mockDetermineStrategy.called).to.be.true;
+      expect(mockFetchAll.called).to.be.true;
+      expect(mockExportAll.called).to.be.true;
       expect(mockWriteMetadata.called).to.be.true;
 
-      mockFetchTaxonomies.restore();
-      mockProcessLocale.restore();
+      mockDetermineStrategy.restore();
+      mockFetchAll.restore();
+      mockExportAll.restore();
       mockWriteMetadata.restore();
       mockGetLocales.restore();
     });

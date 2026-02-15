@@ -8,7 +8,7 @@ import {
   log,
   handleAndLogError,
   configHandler,
-  getLogPath,
+  getSessionLogPath,
   CLIProgressManager,
   cliux,
   clearProgressModuleSetting,
@@ -170,8 +170,8 @@ export default class ImportCommand extends Command {
 
   private logAndPrintErrorDetails(error: unknown, importConfig: any) {
     cliux.print('\n');
-    const logPath = getLogPath();
-    const logMsg = `The log has been stored at '${logPath}'`;
+    const sessionLogPath = getSessionLogPath();
+    const logMsg = `The log has been stored at '${sessionLogPath}'`;
 
     const backupDir = importConfig?.backupDir;
     const backupDirMsg = backupDir
@@ -191,8 +191,8 @@ export default class ImportCommand extends Command {
 
   private logSuccessAndBackupMessages(backupDir: string, importConfig: any) {
     cliux.print('\n');
-    const logPath = getLogPath();
-    const logMsg = `The log has been stored at '${logPath}'`;
+    const sessionLogPath = getSessionLogPath();
+    const logMsg = `The log has been stored at '${sessionLogPath}'`;
     const backupDirMsg = `The backup content has been stored at '${backupDir}'`;
 
     log.success(logMsg, importConfig.context);

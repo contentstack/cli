@@ -11,7 +11,7 @@ import {
   configHandler,
   log,
   handleAndLogError,
-  getLogPath,
+  getSessionLogPath,
   CLIProgressManager,
   clearProgressModuleSetting,
 } from '@contentstack/cli-utilities';
@@ -102,16 +102,17 @@ export default class ExportCommand extends Command {
       const managementAPIClient: ContentstackClient = await managementSDKClient(exportConfig);
       const moduleExporter = new ModuleExporter(managementAPIClient, exportConfig);
       await moduleExporter.start();
+      const sessionLogPath = getSessionLogPath();
       log.success(
         `The content of the stack ${exportConfig.apiKey} has been exported successfully!`,
       );
       log.info(`The exported content has been stored at '${exportDir}'`, exportConfig.context);
-      log.success(`The log has been stored at '${getLogPath()}'`, exportConfig.context);
+      log.success(`The log has been stored at '${sessionLogPath}'`, exportConfig.context);
 
       // Print comprehensive summary at the end
       if (!exportConfig.branches) CLIProgressManager.printGlobalSummary();
       if (!configHandler.get('log')?.showConsoleLogs) {
-        cliux.print(`The log has been stored at '${getLogPath()}'`, { color: 'green' });
+        cliux.print(`The log has been stored at '${sessionLogPath}'`, { color: 'green' });
       }
       // Clear progress module setting now that export is complete
       clearProgressModuleSetting();
@@ -119,9 +120,10 @@ export default class ExportCommand extends Command {
       // Clear progress module setting even on error
       clearProgressModuleSetting();
       handleAndLogError(error);
+      const sessionLogPath = getSessionLogPath();
       if (!configHandler.get('log')?.showConsoleLogs) {
         cliux.print(`Error: ${error}`, { color: 'red' });
-        cliux.print(`The log has been stored at '${getLogPath()}'`, { color: 'green' });
+        cliux.print(`The log has been stored at '${sessionLogPath}'`, { color: 'green' });
       }
     }
   }
