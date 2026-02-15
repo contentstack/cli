@@ -7,20 +7,16 @@
 
 import * as path from 'path';
 import { isEmpty, cloneDeep } from 'lodash';
-import { GlobalField } from '@contentstack/management/types/stack/globalField';
-import { sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
+import { sanitizePath, log, handleAndLogError, GlobalFieldData, GlobalField } from '@contentstack/cli-utilities';
 import { PATH_CONSTANTS } from '../../constants';
-
-import {
-  fsUtil,
+import {   fsUtil,
   fileHelper,
   lookupExtension,
   removeReferenceFields,
   PROCESS_NAMES,
   MODULE_CONTEXTS,
   PROCESS_STATUS,
-  MODULE_NAMES,
-} from '../../utils';
+  MODULE_NAMES } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
 import { gfSchemaTemplate } from '../../utils/global-field-helper';
