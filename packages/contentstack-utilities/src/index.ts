@@ -21,6 +21,7 @@ export {
   ContentstackClient,
   ContentstackConfig,
 } from './contentstack-management-sdk';
+export * from './management-types';
 export * from './http-client';
 export * from './fs-utility';
 export { default as NodeCrypto } from './encrypter';
