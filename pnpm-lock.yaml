@@ -15,14 +15,14 @@ importers:
       '@contentstack/cli-audit': ~2.0.0-beta.2
       '@contentstack/cli-auth': ~2.0.0-beta.4
       '@contentstack/cli-bulk-operations': ^1.0.0-beta
-      '@contentstack/cli-cm-bootstrap': ~2.0.0-beta.6
+      '@contentstack/cli-cm-bootstrap': ~2.0.0-beta.7
       '@contentstack/cli-cm-branches': ~1.6.3
       '@contentstack/cli-cm-clone': ~2.0.0-beta.8
       '@contentstack/cli-cm-export': ~2.0.0-beta.7
       '@contentstack/cli-cm-export-to-csv': ~1.11.0
-      '@contentstack/cli-cm-import': ~2.0.0-beta.6
+      '@contentstack/cli-cm-import': ~2.0.0-beta.7
       '@contentstack/cli-cm-import-setup': ~2.0.0-beta.3
-      '@contentstack/cli-cm-seed': ~2.0.0-beta.6
+      '@contentstack/cli-cm-seed': ~2.0.0-beta.7
       '@contentstack/cli-command': ~1.7.2
       '@contentstack/cli-config': ~1.19.0
       '@contentstack/cli-launch': ^1.9.6
@@ -245,7 +245,7 @@ importers:
 
   packages/contentstack-bootstrap:
     specifiers:
-      '@contentstack/cli-cm-seed': ~2.0.0-beta.6
+      '@contentstack/cli-cm-seed': ~2.0.0-beta.7
       '@contentstack/cli-command': ~1.7.2
       '@contentstack/cli-utilities': ~1.17.2
       '@oclif/core': ^4.3.0
@@ -265,7 +265,7 @@ importers:
       nyc: ^15.1.0
       oclif: ^4.17.46
       tar: ^7.5.7
-      tmp: ^0.2.3
+      tmp: ^0.2.5
       ts-node: ^8.10.2
       typescript: ^4.9.5
     dependencies:
@@ -343,7 +343,7 @@ importers:
     specifiers:
       '@colors/colors': ^1.6.0
       '@contentstack/cli-cm-export': ~2.0.0-beta.7
-      '@contentstack/cli-cm-import': ~2.0.0-beta.6
+      '@contentstack/cli-cm-import': ~2.0.0-beta.7
       '@contentstack/cli-command': ~1.7.2
       '@contentstack/cli-utilities': ~1.17.2
       '@oclif/core': ^4.3.0
@@ -846,7 +846,7 @@ importers:
 
   packages/contentstack-seed:
     specifiers:
-      '@contentstack/cli-cm-import': ~2.0.0-beta.6
+      '@contentstack/cli-cm-import': ~2.0.0-beta.7
       '@contentstack/cli-command': ~1.7.2
       '@contentstack/cli-utilities': ~1.17.2
       '@types/inquirer': ^9.0.9
@@ -863,8 +863,8 @@ importers:
       jest: ^29.7.0
       mkdirp: ^1.0.4
       oclif: ^4.17.46
-      tar: ^7.5.4
-      tmp: ^0.2.3
+      tar: ^7.5.7
+      tmp: ^0.2.5
       ts-jest: ^29.4.6
       ts-node: ^8.10.2
       typescript: ^4.9.5
