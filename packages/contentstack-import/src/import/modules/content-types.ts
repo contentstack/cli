@@ -1,4 +1,3 @@
-
 /* eslint-disable no-prototype-builtins */
 /*!
  * Contentstack Import
@@ -111,18 +110,15 @@ export default class ContentTypesImport extends BaseClass {
 
     // Initialize composable studio paths if config exists
     if (this.importConfig.modules['composable-studio']) {
-      // Use contentDir as fallback if data is not available
-      const basePath = this.importConfig.contentDir;
-      
       this.composableStudioSuccessPath = path.join(
-        sanitizePath(basePath),
+        sanitizePath(importConfig.backupDir),
         PATH_CONSTANTS.MAPPER,
         this.importConfig.modules['composable-studio'].dirName,
         this.importConfig.modules['composable-studio'].fileName,
       );
 
       this.composableStudioExportPath = path.join(
-        sanitizePath(basePath),
+        sanitizePath(importConfig.backupDir),
         this.importConfig.modules['composable-studio'].dirName,
         this.importConfig.modules['composable-studio'].fileName,
       );
@@ -162,40 +158,43 @@ export default class ContentTypesImport extends BaseClass {
         log.info('No content type found to import', this.importConfig.context);
         return;
       }
-    // If success file doesn't exist but export file does, skip the composition content type
-    // Only check if composable studio paths are configured
-    if (
-      this.composableStudioSuccessPath &&
-      this.composableStudioExportPath &&
-      !fileHelper.fileExistsSync(this.composableStudioSuccessPath) &&
-      fileHelper.fileExistsSync(this.composableStudioExportPath)
-    ) {
-      const exportedProject = fileHelper.readFileSync(this.composableStudioExportPath) as {
-        contentTypeUid: string;
-      };
+      // If success file doesn't exist but export file does, skip the composition content type
+      // Only check if composable studio paths are configured
+      if (
+        this.composableStudioSuccessPath &&
+        this.composableStudioExportPath &&
+        !fileHelper.fileExistsSync(this.composableStudioSuccessPath) &&
+        fileHelper.fileExistsSync(this.composableStudioExportPath)
+      ) {
+        const exportedProject = fileHelper.readFileSync(this.composableStudioExportPath) as {
+          contentTypeUid: string;
+        };
 
-      if (exportedProject?.contentTypeUid) {
-        const originalCount = this.cTs.length;
-        this.cTs = this.cTs.filter((ct: Record<string, unknown>) => {
-          const shouldSkip = ct.uid === exportedProject.contentTypeUid;
-          if (shouldSkip) {
-            log.info(
-              `Skipping content type '${ct.uid}' as Composable Studio project was not created successfully`,
+        if (exportedProject?.contentTypeUid) {
+          const originalCount = this.cTs.length;
+          this.cTs = this.cTs.filter((ct: Record<string, unknown>) => {
+            const shouldSkip = ct.uid === exportedProject.contentTypeUid;
+            if (shouldSkip) {
+              log.info(
+                `Skipping content type '${ct.uid}' as Composable Studio project was not created successfully`,
+                this.importConfig.context,
+              );
+            }
+            return !shouldSkip;
+          });
+
+          const skippedCount = originalCount - this.cTs.length;
+          if (skippedCount > 0) {
+            log.debug(
+              `Filtered out ${skippedCount} composition content type(s) from import`,
               this.importConfig.context,
             );
           }
-          return !shouldSkip;
-        });
-
-        const skippedCount = originalCount - this.cTs.length;
-        if (skippedCount > 0) {
-          log.debug(`Filtered out ${skippedCount} composition content type(s) from import`, this.importConfig.context);
         }
       }
-    }
 
-    await fsUtil.makeDirectory(this.cTsMapperPath);
-    log.debug('Created content types mapper directory.', this.importConfig.context);
+      await fsUtil.makeDirectory(this.cTsMapperPath);
+      log.debug('Created content types mapper directory.', this.importConfig.context);
 
       await fsUtil.makeDirectory(this.cTsMapperPath);
       log.debug('Created content types mapper directory', this.importConfig.context);

@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { ModuleResult, SummaryOptions } from '../interfaces/index';
-import { getLogPath } from '../logger/log';
+import { getSessionLogPath } from '../logger/log';
 
 export default class SummaryManager {
   private modules: Map<string, ModuleResult> = new Map();
@@ -180,7 +180,7 @@ export default class SummaryManager {
     });
 
     console.log(chalk.blue('\n📋 For detailed error information, check the log files:'));
-    //console.log(chalk.blue(`   ${getLogPath()}`));
+    //console.log(chalk.blue(`   ${getSessionLogPath()}`));
     console.log(chalk.gray('   Recent errors are logged with full context and stack traces.'));
   }
 
