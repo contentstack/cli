@@ -5,18 +5,20 @@ import isEmpty from 'lodash/isEmpty';
 import entries from 'lodash/entries';
 import isEqual from 'lodash/isEqual';
 import omit from 'lodash/omit';
-import { Stack } from '@contentstack/management/types/stack';
-import { AssetData } from '@contentstack/management/types/stack/asset';
-import { LocaleData } from '@contentstack/management/types/stack/locale';
-import { PublishConfig } from '@contentstack/management/types/utility/publish';
-import { FolderData } from '@contentstack/management/types/stack/asset/folder';
-import { ExtensionData } from '@contentstack/management/types/stack/extension';
-import { EnvironmentData } from '@contentstack/management/types/stack/environment';
-import { LabelData } from '@contentstack/management/types/stack/label';
-import { WebhookData } from '@contentstack/management/types/stack/webhook';
-import { WorkflowData } from '@contentstack/management/types/stack/workflow';
-import { RoleData } from '@contentstack/management/types/stack/role';
-import { log } from '@contentstack/cli-utilities';
+import {
+  log,
+  ManagementStack,
+  AssetData,
+  LocaleData,
+  PublishConfig,
+  FolderData,
+  ExtensionData,
+  EnvironmentData,
+  LabelData,
+  WebhookData,
+  WorkflowData,
+  RoleData,
+} from '@contentstack/cli-utilities';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -85,7 +87,7 @@ export type CustomPromiseHandlerInput = {
 export type CustomPromiseHandler = (input: CustomPromiseHandlerInput) => Promise<any>;
 
 export default abstract class BaseClass {
-  readonly client: Stack;
+  readonly client: ManagementStack;
 
   public importConfig: ImportConfig;
 
@@ -97,7 +99,7 @@ export default abstract class BaseClass {
     this.modulesConfig = importConfig.modules;
   }
 
-  get stack(): Stack {
+  get stack(): ManagementStack {
     return this.client;
   }
 

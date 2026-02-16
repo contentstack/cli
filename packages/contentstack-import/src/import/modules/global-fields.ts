@@ -7,8 +7,7 @@
 
 import * as path from 'path';
 import { isEmpty, cloneDeep } from 'lodash';
-import { cliux, sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
-import { GlobalFieldData, GlobalField } from '@contentstack/management/types/stack/globalField';
+import { cliux, sanitizePath, log, handleAndLogError, GlobalFieldData, GlobalField } from '@contentstack/cli-utilities';
 import { fsUtil,fileHelper, lookupExtension, removeReferenceFields } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
