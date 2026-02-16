@@ -1,6 +1,12 @@
 import find from 'lodash/find';
 import { resolve as pResolve } from 'node:path';
-import { handleAndLogError, isAuthenticated, managementSDKClient, log } from '@contentstack/cli-utilities';
+import {
+  handleAndLogError,
+  isAuthenticated,
+  managementSDKClient,
+  log,
+} from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
 
 import BaseClass from './base-class';
 import {
@@ -265,7 +271,7 @@ export default class ExportStack extends BaseClass {
     return this.stack
       .settings()
       .then((resp: any) => {
-        fsUtil.writeFile(pResolve(this.stackFolderPath, 'settings.json'), resp);
+        fsUtil.writeFile(pResolve(this.stackFolderPath, PATH_CONSTANTS.FILES.SETTINGS), resp);
 
         // Track progress for stack settings completion
         this.progressManager?.tick(true, 'stack settings', null, PROCESS_NAMES.STACK_SETTINGS);
