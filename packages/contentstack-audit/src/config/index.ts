@@ -18,7 +18,7 @@ const config = {
   moduleConfig: {
     'content-types': {
       name: 'content type',
-      fileName: 'schema.json', // Not used - reads from individual files
+      fileName: 'schema.json',
       dirName: 'content_types',
     },
     'global-fields': {
