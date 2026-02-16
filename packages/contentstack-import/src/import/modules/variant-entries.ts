@@ -1,5 +1,6 @@
 import path from 'path';
 import { sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
 import { Import, ImportHelperMethodsConfig, ProjectStruct } from '@contentstack/cli-variants';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import {
@@ -29,8 +30,8 @@ export default class ImportVariantEntries extends BaseClass {
     this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.VARIANT_ENTRIES];
     this.personalize = importConfig.modules.personalize;
     this.projectMapperFilePath = path.resolve(
-      sanitizePath(this.config.contentDir),
-      'mapper',
+      sanitizePath(this.config.backupDir),
+      PATH_CONSTANTS.MAPPER,
       sanitizePath(this.personalize.dirName),
       'projects',
       'projects.json',
