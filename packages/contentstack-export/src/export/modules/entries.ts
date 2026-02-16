@@ -5,18 +5,12 @@ import {
   handleAndLogError,
   messageHandler,
   log,
+  readContentTypeSchemas,
   sanitizePath,
 } from '@contentstack/cli-utilities';
 import { PATH_CONSTANTS } from '../../constants';
 import { Export, ExportProjects } from '@contentstack/cli-variants';
-
-import {
-  fsUtil,
-  PROCESS_NAMES,
-  MODULE_CONTEXTS,
-  PROCESS_STATUS,
-  MODULE_NAMES,
-} from '../../utils';
+import { fsUtil, PROCESS_NAMES, MODULE_CONTEXTS, PROCESS_STATUS, MODULE_NAMES } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ExportConfig, ModuleClassParams } from '../../types';
 
@@ -37,7 +31,7 @@ export default class EntriesExport extends BaseClass {
   private variantEntries!: any;
   private entriesDirPath: string;
   private localesFilePath: string;
-  private schemaFilePath: string;
+  private contentTypesDirPath: string;
   private entriesFileHelper: FsUtility;
   private projectInstance: ExportProjects;
   public exportVariantEntry: boolean = false;
@@ -58,11 +52,10 @@ export default class EntriesExport extends BaseClass {
       sanitizePath(exportConfig.modules.locales.dirName),
       sanitizePath(exportConfig.modules.locales.fileName),
     );
-    this.schemaFilePath = path.resolve(
+    this.contentTypesDirPath = path.resolve(
       sanitizePath(exportConfig.exportDir),
       sanitizePath(exportConfig.branchName || ''),
       sanitizePath(exportConfig.modules.content_types.dirName),
-      PATH_CONSTANTS.FILES.SCHEMA,
     );
     this.projectInstance = new ExportProjects(this.exportConfig);
     this.exportConfig.context.module = MODULE_CONTEXTS.ENTRIES;
@@ -77,7 +70,7 @@ export default class EntriesExport extends BaseClass {
       const [locales, contentTypes, entryRequestOptions, totalEntriesCount, variantInfo] =
         await this.withLoadingSpinner('ENTRIES: Analyzing content structure and entries...', async () => {
           const locales = fsUtil.readFile(this.localesFilePath) as Array<Record<string, unknown>>;
-          const contentTypes = fsUtil.readFile(this.schemaFilePath) as Array<Record<string, unknown>>;
+          const contentTypes = readContentTypeSchemas(this.contentTypesDirPath);
 
           if (!Array.isArray(locales) || locales?.length === 0) {
             log.debug(`No locales found in ${this.localesFilePath}`, this.exportConfig.context);
@@ -90,7 +83,7 @@ export default class EntriesExport extends BaseClass {
             return [locales, contentTypes, [], 0, null];
           }
           log.debug(
-            `Loaded ${contentTypes?.length} content types from ${this.schemaFilePath}`,
+            `Loaded ${contentTypes?.length} content types from individual files in ${this.contentTypesDirPath}`,
             this.exportConfig.context,
           );
 
@@ -121,7 +114,6 @@ export default class EntriesExport extends BaseClass {
         if (this.entriesConfig.exportVersions) {
           progress.addProcess(PROCESS_NAMES.ENTRY_VERSIONS, totalEntriesCount);
         }
-
       }
 
       // Process entry collections
@@ -170,7 +162,6 @@ export default class EntriesExport extends BaseClass {
       }
 
       this.completeProgressWithMessage();
-
     } catch (error) {
       handleAndLogError(error, { ...this.exportConfig.context });
       this.completeProgress(false, error?.message || 'Entries export failed');
