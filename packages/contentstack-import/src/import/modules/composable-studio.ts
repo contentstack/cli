@@ -7,6 +7,7 @@ import {
   HttpClient,
   authenticationHandler,
 } from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
 import isEmpty from 'lodash/isEmpty';
 
 import { fsUtil, fileHelper } from '../../utils';
@@ -29,9 +30,18 @@ export default class ImportComposableStudio {
 
     // Setup paths
     this.composableStudioPath = join(this.importConfig.backupDir, this.composableStudioConfig.dirName);
-    this.projectMapperPath = join(this.importConfig.backupDir, 'mapper', this.composableStudioConfig.dirName);
+    this.projectMapperPath = join(
+      this.importConfig.backupDir,
+      PATH_CONSTANTS.MAPPER,
+      this.composableStudioConfig.dirName,
+    );
     this.composableStudioFilePath = join(this.composableStudioPath, this.composableStudioConfig.fileName);
-    this.envUidMapperPath = join(this.importConfig.backupDir, 'mapper', 'environments', 'uid-mapping.json');
+    this.envUidMapperPath = join(
+      this.importConfig.backupDir,
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.ENVIRONMENTS,
+      PATH_CONSTANTS.FILES.UID_MAPPING,
+    );
     this.envUidMapper = {};
 
     // Initialize HttpClient with Studio API base URL

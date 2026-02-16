@@ -5,19 +5,23 @@ import isEmpty from 'lodash/isEmpty';
 import entries from 'lodash/entries';
 import isEqual from 'lodash/isEqual';
 import omit from 'lodash/omit';
-import { Stack } from '@contentstack/management/types/stack';
-import { AssetData } from '@contentstack/management/types/stack/asset';
-import { LocaleData } from '@contentstack/management/types/stack/locale';
-import { PublishConfig } from '@contentstack/management/types/utility/publish';
-import { FolderData } from '@contentstack/management/types/stack/asset/folder';
-import { ExtensionData } from '@contentstack/management/types/stack/extension';
-import { EnvironmentData } from '@contentstack/management/types/stack/environment';
-import { LabelData } from '@contentstack/management/types/stack/label';
-import { WebhookData } from '@contentstack/management/types/stack/webhook';
-import { WorkflowData } from '@contentstack/management/types/stack/workflow';
-import { RoleData } from '@contentstack/management/types/stack/role';
-import { log, CLIProgressManager, configHandler } from '@contentstack/cli-utilities';
-
+import {
+  log,
+  ManagementStack,
+  AssetData,
+  LocaleData,
+  PublishConfig,
+  FolderData,
+  ExtensionData,
+  EnvironmentData,
+  LabelData,
+  WebhookData,
+  WorkflowData,
+  RoleData,
+  CLIProgressManager, 
+  configHandler,
+  getSessionLogPath
+} from '@contentstack/cli-utilities';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -93,7 +97,7 @@ export type CustomPromiseHandlerInput = {
 export type CustomPromiseHandler = (input: CustomPromiseHandlerInput) => Promise<any>;
 
 export default abstract class BaseClass {
-  readonly client: Stack;
+  readonly client: ManagementStack;
 
   public importConfig: ImportConfig;
 
@@ -107,7 +111,7 @@ export default abstract class BaseClass {
     this.modulesConfig = importConfig.modules;
   }
 
-  get stack(): Stack {
+  get stack(): ManagementStack {
     return this.client;
   }
 
@@ -152,7 +156,7 @@ export default abstract class BaseClass {
    *   - moduleName: The module name to generate the message (e.g., 'Content types', 'Entries')
    *                 If not provided, uses this.currentModuleName
    *   - customSuccessMessage: Optional custom success message. If not provided, generates: "{moduleName} have been imported successfully!"
-   *   - customWarningMessage: Optional custom warning message. If not provided, generates: "{moduleName} have been imported with some errors. Please check the logs for details."
+   *   - customWarningMessage: Optional custom warning message. If not provided, generates: "{moduleName} have been imported with some errors. Please check the logs at: {sessionLogPath}"
    *   - context: Optional context for logging
    */
   protected completeProgressWithMessage(options?: CompleteProgressOptions): void {
@@ -163,7 +167,8 @@ export default abstract class BaseClass {
 
     // Generate default messages if not provided
     const successMessage = options?.customSuccessMessage || `${name} have been imported successfully!`;
-    const warningMessage = options?.customWarningMessage || `${name} have been imported with some errors. Please check the logs for details.`;
+    const sessionLogPath = getSessionLogPath();
+    const warningMessage = options?.customWarningMessage || `${name} have been imported with some errors. Please check the logs at: ${sessionLogPath}`;
 
     this.completeProgress(true);
 

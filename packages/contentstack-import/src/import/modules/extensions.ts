@@ -3,6 +3,7 @@ import values from 'lodash/values';
 import cloneDeep from 'lodash/cloneDeep';
 import { join } from 'node:path';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
 
 import { fsUtil, fileHelper, PROCESS_NAMES, MODULE_CONTEXTS, PROCESS_STATUS, MODULE_NAMES } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
@@ -28,12 +29,16 @@ export default class ImportExtensions extends BaseClass {
     this.importConfig.context.module = MODULE_CONTEXTS.EXTENSIONS;
     this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.EXTENSIONS];
     this.extensionsConfig = importConfig.modules.extensions;
-    this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'extensions');
+    this.mapperDirPath = join(
+      this.importConfig.backupDir,
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.EXTENSIONS,
+    );
     this.extensionsFolderPath = join(this.importConfig.backupDir, this.extensionsConfig.dirName);
-    this.extUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
-    this.extSuccessPath = join(this.mapperDirPath, 'success.json');
-    this.extFailsPath = join(this.mapperDirPath, 'fails.json');
-    this.extPendingPath = join(this.mapperDirPath, 'pending_extensions.js');
+    this.extUidMapperPath = join(this.mapperDirPath, PATH_CONSTANTS.FILES.UID_MAPPING);
+    this.extSuccessPath = join(this.mapperDirPath, PATH_CONSTANTS.FILES.SUCCESS);
+    this.extFailsPath = join(this.mapperDirPath, PATH_CONSTANTS.FILES.FAILS);
+    this.extPendingPath = join(this.mapperDirPath, PATH_CONSTANTS.FILES.PENDING_EXTENSIONS);
     this.extFailed = [];
     this.extSuccess = [];
     this.existingExtensions = [];
