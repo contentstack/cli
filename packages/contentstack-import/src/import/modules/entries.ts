@@ -7,7 +7,7 @@
 import * as path from 'path';
 import { writeFileSync } from 'fs';
 import { isEmpty, values, cloneDeep, find, indexOf, forEach, remove } from 'lodash';
-import { FsUtility, sanitizePath, log, handleAndLogError, readContentTypeSchemas } from '@contentstack/cli-utilities';
+import { FsUtility, sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
 import { PATH_CONSTANTS } from '../../constants';
 import {
   fsUtil,
@@ -120,7 +120,7 @@ export default class EntriesImport extends BaseClass {
     );
 
     // Initialize composable studio paths if config exists
-    if (this.importConfig.modules['composable-studio']) {
+    if (this.importConfig.modules['composable-studio']) {     
       this.composableStudioSuccessPath = path.join(
         sanitizePath(importConfig.backupDir),
         PATH_CONSTANTS.MAPPER,
@@ -245,7 +245,10 @@ export default class EntriesImport extends BaseClass {
   private async analyzeEntryData(): Promise<[number, number, number, number, number]> {
     return this.withLoadingSpinner('ENTRIES: Analyzing import data...', async () => {
       log.debug('Loading content types for entry analysis', this.importConfig.context);
-      this.cTs = readContentTypeSchemas(this.cTsPath);
+
+      this.cTs = fsUtil.readFile(
+        path.join(this.cTsPath, PATH_CONSTANTS.FILES.SCHEMA),
+      ) as Record<string, unknown>[];
       if (!this.cTs || isEmpty(this.cTs)) {
         return [0, 0, 0, 0, 0];
       }
@@ -1131,11 +1134,7 @@ export default class EntriesImport extends BaseClass {
         error?.message || `Failed to update references of content type ${uid}`,
         PROCESS_NAMES.CT_RESTORATION,
       );
-      handleAndLogError(
-        error,
-        { ...this.importConfig.context, uid },
-        `Failed to update references of content type ${uid}`,
-      );
+      handleAndLogError(error, { ...this.importConfig.context, uid }, `Failed to update references of content type ${uid}`);
     };
 
     return await this.makeConcurrentCall({
@@ -1223,16 +1222,16 @@ export default class EntriesImport extends BaseClass {
     log.debug(`Found ${cTsWithFieldRules.length} content types with field rules to update`, this.importConfig.context);
 
     try {
-      // Read content types from individual files
-      const cTs = readContentTypeSchemas(this.cTsPath) || [];
       for (let cTUid of cTsWithFieldRules) {
         log.debug(`Processing field rules for content type: ${cTUid}`, this.importConfig.context);
-        const contentType: any = find(cTs, { uid: cTUid });
 
-        if (!contentType) {
-          log.debug(`Content type ${cTUid} not found in schemas`, this.importConfig.context);
-          continue;
-        }
+        const cTs: Record<string, any>[] = fsUtil.readFile(
+          path.join(this.cTsPath, PATH_CONSTANTS.FILES.SCHEMA),
+        ) as Record<
+          string,
+          unknown
+        >[];
+        const contentType: any = find(cTs, { uid: cTUid });
 
         if (contentType.field_rules) {
           log.debug(
