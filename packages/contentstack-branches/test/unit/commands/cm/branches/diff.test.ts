@@ -64,7 +64,7 @@ describe('Diff Command', () => {
       '-k',
       mockData.flags.stackAPIKey,
       '--format',
-      'verbose'
+      'detailed-text'
     ]);
     expect(stub1.calledOnce).to.be.true;
   }).timeout(10000);
