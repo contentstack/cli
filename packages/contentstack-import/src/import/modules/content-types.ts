@@ -6,7 +6,7 @@
  */
 import * as path from 'path';
 import { find, cloneDeep, map } from 'lodash';
-import { sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
+import { sanitizePath, log, handleAndLogError, readContentTypeSchemas } from '@contentstack/cli-utilities';
 import { PATH_CONSTANTS } from '../../constants';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
@@ -498,7 +498,7 @@ export default class ContentTypesImport extends BaseClass {
     const [cts, gfs, pendingGfs, pendingExt] = await this.withLoadingSpinner(
       'CONTENT TYPES: Analyzing import data...',
       async () => {
-        const cts = fsUtil.readFile(path.join(this.cTsFolderPath, PATH_CONSTANTS.FILES.SCHEMA));
+        const cts = readContentTypeSchemas(this.cTsFolderPath);
         const gfs = fsUtil.readFile(path.resolve(this.gFsFolderPath, this.gFsConfig.fileName));
         const pendingGfs = fsUtil.readFile(this.gFsPendingPath);
         const pendingExt = fsUtil.readFile(this.extPendingPath);
