@@ -7,7 +7,15 @@
 
 import * as _ from 'lodash';
 import * as path from 'path';
-import { HttpClient, managementSDKClient, isAuthenticated, sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
+import {
+  HttpClient,
+  managementSDKClient,
+  isAuthenticated,
+  sanitizePath,
+  log,
+  handleAndLogError,
+} from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../constants';
 import { readFileSync, readdirSync, readFile, fileExistsSync } from './file-helper';
 
 import chalk from 'chalk';
@@ -161,8 +169,12 @@ export const field_rules_update = (importConfig: ImportConfig, ctPath: string) =
                   if (schema.field_rules[k].conditions[i].operand_field === 'reference') {
                     log.debug(`Processing reference field rule condition`);
 
-                    let entryMapperPath = path.resolve(importConfig.contentDir, 'mapper', 'entries');
-                    let entryUidMapperPath = path.join(entryMapperPath, 'uid-mapping.json');
+                    let entryMapperPath = path.resolve(
+                      importConfig.contentDir,
+                      PATH_CONSTANTS.MAPPER,
+                      PATH_CONSTANTS.MAPPER_MODULES.ENTRIES,
+                    );
+                    let entryUidMapperPath = path.join(entryMapperPath, PATH_CONSTANTS.FILES.UID_MAPPING);
                     let fieldRulesValue = schema.field_rules[k].conditions[i].value;
                     let fieldRulesArray = fieldRulesValue.split('.');
                     let updatedValue = [];

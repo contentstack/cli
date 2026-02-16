@@ -5,7 +5,7 @@ import chunk from 'lodash/chunk';
 import isEmpty from 'lodash/isEmpty';
 import entries from 'lodash/entries';
 import isEqual from 'lodash/isEqual';
-import { log, CLIProgressManager, configHandler } from '@contentstack/cli-utilities';
+import { log, CLIProgressManager, configHandler, getSessionLogPath } from '@contentstack/cli-utilities';
 
 import { ExportConfig, ModuleClassParams } from '../../types';
 
@@ -109,7 +109,7 @@ export default abstract class BaseClass {
    *   - moduleName: The module name to generate the message (e.g., 'Assets', 'Entries')
    *                 If not provided, uses this.currentModuleName
    *   - customSuccessMessage: Optional custom success message. If not provided, generates: "{moduleName} have been exported successfully!"
-   *   - customWarningMessage: Optional custom warning message. If not provided, generates: "{moduleName} have been exported with some errors. Please check the logs for details."
+   *   - customWarningMessage: Optional custom warning message. If not provided, generates: "{moduleName} have been exported with some errors. Please check the logs at: {sessionLogPath}"
    *   - context: Optional context for logging
    */
   protected completeProgressWithMessage(options?: CompleteProgressOptions): void {
@@ -120,7 +120,8 @@ export default abstract class BaseClass {
 
     // Generate default messages if not provided
     const successMessage = options?.customSuccessMessage || `${name} have been exported successfully!`;
-    const warningMessage = options?.customWarningMessage || `${name} have been exported with some errors. Please check the logs for details.`;
+    const sessionLogPath = getSessionLogPath();
+    const warningMessage = options?.customWarningMessage || `${name} have been exported with some errors. Please check the logs at: ${sessionLogPath}`;
 
     this.completeProgress(true);
 

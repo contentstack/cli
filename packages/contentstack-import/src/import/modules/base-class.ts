@@ -19,7 +19,8 @@ import {
   WorkflowData,
   RoleData,
   CLIProgressManager, 
-  configHandler
+  configHandler,
+  getSessionLogPath
 } from '@contentstack/cli-utilities';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import cloneDeep from 'lodash/cloneDeep';
@@ -155,7 +156,7 @@ export default abstract class BaseClass {
    *   - moduleName: The module name to generate the message (e.g., 'Content types', 'Entries')
    *                 If not provided, uses this.currentModuleName
    *   - customSuccessMessage: Optional custom success message. If not provided, generates: "{moduleName} have been imported successfully!"
-   *   - customWarningMessage: Optional custom warning message. If not provided, generates: "{moduleName} have been imported with some errors. Please check the logs for details."
+   *   - customWarningMessage: Optional custom warning message. If not provided, generates: "{moduleName} have been imported with some errors. Please check the logs at: {sessionLogPath}"
    *   - context: Optional context for logging
    */
   protected completeProgressWithMessage(options?: CompleteProgressOptions): void {
@@ -166,7 +167,8 @@ export default abstract class BaseClass {
 
     // Generate default messages if not provided
     const successMessage = options?.customSuccessMessage || `${name} have been imported successfully!`;
-    const warningMessage = options?.customWarningMessage || `${name} have been imported with some errors. Please check the logs for details.`;
+    const sessionLogPath = getSessionLogPath();
+    const warningMessage = options?.customWarningMessage || `${name} have been imported with some errors. Please check the logs at: ${sessionLogPath}`;
 
     this.completeProgress(true);
 

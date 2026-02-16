@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import isEmpty from 'lodash/isEmpty';
 import values from 'lodash/values';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
 
 import { fsUtil, fileHelper, PROCESS_NAMES, MODULE_CONTEXTS, PROCESS_STATUS, MODULE_NAMES } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
@@ -25,11 +26,15 @@ export default class ImportLabels extends BaseClass {
     this.importConfig.context.module = MODULE_CONTEXTS.LABELS;
     this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.LABELS];
     this.labelsConfig = importConfig.modules.labels;
-    this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'labels');
+    this.mapperDirPath = join(
+      this.importConfig.backupDir,
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.LABELS,
+    );
     this.labelsFolderPath = join(this.importConfig.backupDir, this.labelsConfig.dirName);
-    this.labelUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
-    this.createdLabelPath = join(this.mapperDirPath, 'success.json');
-    this.labelFailsPath = join(this.mapperDirPath, 'fails.json');
+    this.labelUidMapperPath = join(this.mapperDirPath, PATH_CONSTANTS.FILES.UID_MAPPING);
+    this.createdLabelPath = join(this.mapperDirPath, PATH_CONSTANTS.FILES.SUCCESS);
+    this.labelFailsPath = join(this.mapperDirPath, PATH_CONSTANTS.FILES.FAILS);
     this.labels = {};
     this.failedLabel = [];
     this.createdLabel = [];

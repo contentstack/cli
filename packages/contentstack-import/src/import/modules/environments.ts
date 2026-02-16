@@ -2,6 +2,7 @@ import isEmpty from 'lodash/isEmpty';
 import values from 'lodash/values';
 import { join } from 'node:path';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
 
 import { fsUtil, fileHelper, PROCESS_NAMES, MODULE_CONTEXTS, PROCESS_STATUS, MODULE_NAMES } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
@@ -24,11 +25,15 @@ export default class ImportEnvironments extends BaseClass {
     this.importConfig.context.module = MODULE_CONTEXTS.ENVIRONMENTS;
     this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.ENVIRONMENTS];
     this.environmentsConfig = importConfig.modules.environments;
-    this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'environments');
+    this.mapperDirPath = join(
+      this.importConfig.backupDir,
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.ENVIRONMENTS,
+    );
     this.environmentsFolderPath = join(this.importConfig.backupDir, this.environmentsConfig.dirName);
-    this.envUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
-    this.envSuccessPath = join(this.mapperDirPath, 'success.json');
-    this.envFailsPath = join(this.mapperDirPath, 'fails.json');
+    this.envUidMapperPath = join(this.mapperDirPath, PATH_CONSTANTS.FILES.UID_MAPPING);
+    this.envSuccessPath = join(this.mapperDirPath, PATH_CONSTANTS.FILES.SUCCESS);
+    this.envFailsPath = join(this.mapperDirPath, PATH_CONSTANTS.FILES.FAILS);
     this.envFailed = [];
     this.envSuccess = [];
     this.envUidMapper = {};

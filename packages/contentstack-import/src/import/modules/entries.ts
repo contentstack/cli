@@ -8,6 +8,7 @@ import * as path from 'path';
 import { writeFileSync } from 'fs';
 import { isEmpty, values, cloneDeep, find, indexOf, forEach, remove } from 'lodash';
 import { FsUtility, sanitizePath, log, handleAndLogError } from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
 import {
   fsUtil,
   lookupExtension,
@@ -68,25 +69,43 @@ export default class EntriesImport extends BaseClass {
     super({ importConfig, stackAPIClient });
     this.importConfig.context.module = MODULE_CONTEXTS.ENTRIES;
     this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.ENTRIES];
-    this.assetUidMapperPath = path.resolve(sanitizePath(importConfig.contentDir), 'mapper', 'assets', 'uid-mapping.json');
-    this.assetUrlMapperPath = path.resolve(sanitizePath(importConfig.contentDir), 'mapper', 'assets', 'url-mapping.json');
-    this.entriesMapperPath = path.resolve(sanitizePath(importConfig.contentDir), 'mapper', 'entries');
-    this.envPath = path.resolve(sanitizePath(importConfig.contentDir), 'environments', 'environments.json');
-    this.entriesUIDMapperPath = path.join(sanitizePath(this.entriesMapperPath), 'uid-mapping.json');
-    this.uniqueUidMapperPath = path.join(sanitizePath(this.entriesMapperPath), 'unique-mapping.json');
-    this.modifiedCTsPath = path.join(sanitizePath(this.entriesMapperPath), 'modified-schemas.json');
+    this.assetUidMapperPath = path.resolve(
+      sanitizePath(importConfig.backupDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.ASSETS,
+      PATH_CONSTANTS.FILES.UID_MAPPING,
+    );
+    this.assetUrlMapperPath = path.resolve(
+      sanitizePath(importConfig.backupDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.ASSETS,
+      PATH_CONSTANTS.FILES.URL_MAPPING,
+    );
+    this.entriesMapperPath = path.resolve(
+      sanitizePath(importConfig.backupDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.ENTRIES,
+    );
+    this.envPath = path.resolve(
+      sanitizePath(importConfig.contentDir),
+      PATH_CONSTANTS.CONTENT_DIRS.ENVIRONMENTS,
+      PATH_CONSTANTS.FILES.ENVIRONMENTS,
+    );
+    this.entriesUIDMapperPath = path.join(sanitizePath(this.entriesMapperPath), PATH_CONSTANTS.FILES.UID_MAPPING);
+    this.uniqueUidMapperPath = path.join(sanitizePath(this.entriesMapperPath), PATH_CONSTANTS.FILES.UNIQUE_MAPPING);
+    this.modifiedCTsPath = path.join(sanitizePath(this.entriesMapperPath), PATH_CONSTANTS.FILES.MODIFIED_SCHEMAS);
     this.marketplaceAppMapperPath = path.join(
-      sanitizePath(this.importConfig.contentDir),
-      'mapper',
-      'marketplace_apps',
-      'uid-mapping.json',
+      sanitizePath(this.importConfig.backupDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.MARKETPLACE_APPS,
+      PATH_CONSTANTS.FILES.UID_MAPPING,
     );
     this.taxonomiesPath = path.join(
-      sanitizePath(this.importConfig.contentDir),
-      'mapper',
-      'taxonomies',
-      'terms',
-      'success.json',
+      sanitizePath(this.importConfig.backupDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.TAXONOMIES,
+      PATH_CONSTANTS.MAPPER_MODULES.TAXONOMY_TERMS,
+      PATH_CONSTANTS.FILES.SUCCESS,
     );
     this.entriesConfig = importConfig.modules.entries;
     this.entriesPath = path.resolve(sanitizePath(importConfig.contentDir), sanitizePath(this.entriesConfig.dirName));
@@ -101,19 +120,16 @@ export default class EntriesImport extends BaseClass {
     );
 
     // Initialize composable studio paths if config exists
-    if (this.importConfig.modules['composable-studio']) {
-      // Use contentDir as fallback if data is not available
-      const basePath = this.importConfig.data || this.importConfig.contentDir;
-      
+    if (this.importConfig.modules['composable-studio']) {     
       this.composableStudioSuccessPath = path.join(
-        sanitizePath(basePath),
-        'mapper',
+        sanitizePath(importConfig.backupDir),
+        PATH_CONSTANTS.MAPPER,
         this.importConfig.modules['composable-studio'].dirName,
         this.importConfig.modules['composable-studio'].fileName,
       );
 
       this.composableStudioExportPath = path.join(
-        sanitizePath(basePath),
+        sanitizePath(importConfig.backupDir),
         this.importConfig.modules['composable-studio'].dirName,
         this.importConfig.modules['composable-studio'].fileName,
       );
@@ -230,7 +246,9 @@ export default class EntriesImport extends BaseClass {
     return this.withLoadingSpinner('ENTRIES: Analyzing import data...', async () => {
       log.debug('Loading content types for entry analysis', this.importConfig.context);
 
-      this.cTs = fsUtil.readFile(path.join(this.cTsPath, 'schema.json')) as Record<string, unknown>[];
+      this.cTs = fsUtil.readFile(
+        path.join(this.cTsPath, PATH_CONSTANTS.FILES.SCHEMA),
+      ) as Record<string, unknown>[];
       if (!this.cTs || isEmpty(this.cTs)) {
         return [0, 0, 0, 0, 0];
       }
@@ -263,7 +281,7 @@ export default class EntriesImport extends BaseClass {
       for (let locale of this.locales) {
         for (let contentType of this.cTs) {
           const basePath = path.join(this.entriesPath, contentType.uid, locale.code);
-          const fs = new FsUtility({ basePath, indexFileName: 'index.json' });
+          const fs = new FsUtility({ basePath, indexFileName: PATH_CONSTANTS.FILES.INDEX });
           const indexer = fs.indexFileContent;
           const chunksInThisCTLocale = values(indexer).length;
           totalEntryChunks += chunksInThisCTLocale;
@@ -342,7 +360,10 @@ export default class EntriesImport extends BaseClass {
     }
 
     log.debug('Writing entry UID mappings to file', this.importConfig.context);
-    await fileHelper.writeLargeFile(path.join(this.entriesMapperPath, 'uid-mapping.json'), this.entriesUidMapper);
+    await fileHelper.writeLargeFile(
+      path.join(this.entriesMapperPath, PATH_CONSTANTS.FILES.UID_MAPPING),
+      this.entriesUidMapper,
+    );
     fsUtil.writeFile(path.join(this.entriesMapperPath, 'failed-entries.json'), this.failedEntries);
   }
 
@@ -563,7 +584,7 @@ export default class EntriesImport extends BaseClass {
 
   async createEntries({ cTUid, locale }: { cTUid: string; locale: string }): Promise<void> {
     const processName = 'Create Entries';
-    const indexFileName = 'index.json';
+    const indexFileName = PATH_CONSTANTS.FILES.INDEX;
     const basePath = path.join(this.entriesPath, cTUid, locale);
     const fs = new FsUtility({ basePath, indexFileName });
     const indexer = fs.indexFileContent;
@@ -585,7 +606,7 @@ export default class EntriesImport extends BaseClass {
     // Write created entries
     const entriesCreateFileHelper = new FsUtility({
       moduleName: 'entries',
-      indexFileName: 'index.json',
+      indexFileName: PATH_CONSTANTS.FILES.INDEX,
       basePath: path.join(this.entriesMapperPath, cTUid, locale),
       chunkFileSize: this.entriesConfig.chunkFileSize,
       keepMetadata: false,
@@ -595,7 +616,7 @@ export default class EntriesImport extends BaseClass {
     // create file instance for existing entries
     const existingEntriesFileHelper = new FsUtility({
       moduleName: 'entries',
-      indexFileName: 'index.json',
+      indexFileName: PATH_CONSTANTS.FILES.INDEX,
       basePath: path.join(this.entriesMapperPath, cTUid, locale, 'existing'),
       chunkFileSize: this.entriesConfig.chunkFileSize,
       keepMetadata: false,
@@ -784,7 +805,7 @@ export default class EntriesImport extends BaseClass {
 
   async replaceEntries({ cTUid, locale }: { cTUid: string; locale: string }): Promise<void> {
     const processName = 'Replace existing Entries';
-    const indexFileName = 'index.json';
+    const indexFileName = PATH_CONSTANTS.FILES.INDEX;
     const basePath = path.join(this.entriesMapperPath, cTUid, locale, 'existing');
     const fs = new FsUtility({ basePath, indexFileName });
     const indexer = fs.indexFileContent;
@@ -801,7 +822,7 @@ export default class EntriesImport extends BaseClass {
     // Write updated entries
     const entriesReplaceFileHelper = new FsUtility({
       moduleName: 'entries',
-      indexFileName: 'index.json',
+      indexFileName: PATH_CONSTANTS.FILES.INDEX,
       basePath: path.join(this.entriesMapperPath, cTUid, locale),
       chunkFileSize: this.entriesConfig.chunkFileSize,
       keepMetadata: false,
@@ -946,7 +967,7 @@ export default class EntriesImport extends BaseClass {
 
   async updateEntriesWithReferences({ cTUid, locale }: { cTUid: string; locale: string }): Promise<void> {
     const processName = 'Update Entries';
-    const indexFileName = 'index.json';
+    const indexFileName = PATH_CONSTANTS.FILES.INDEX;
     const basePath = path.join(this.entriesMapperPath, cTUid, locale);
     const fs = new FsUtility({ basePath, indexFileName });
     const indexer = fs.indexFileContent;
@@ -1204,7 +1225,9 @@ export default class EntriesImport extends BaseClass {
       for (let cTUid of cTsWithFieldRules) {
         log.debug(`Processing field rules for content type: ${cTUid}`, this.importConfig.context);
 
-        const cTs: Record<string, any>[] = fsUtil.readFile(path.join(this.cTsPath, 'schema.json')) as Record<
+        const cTs: Record<string, any>[] = fsUtil.readFile(
+          path.join(this.cTsPath, PATH_CONSTANTS.FILES.SCHEMA),
+        ) as Record<
           string,
           unknown
         >[];
@@ -1296,7 +1319,7 @@ export default class EntriesImport extends BaseClass {
 
   async publishEntries({ cTUid, locale }: { cTUid: string; locale: string }): Promise<void> {
     const processName = 'Publish Entries';
-    const indexFileName = 'index.json';
+    const indexFileName = PATH_CONSTANTS.FILES.INDEX;
     const basePath = path.join(this.entriesPath, cTUid, locale);
     const fs = new FsUtility({ basePath, indexFileName });
     const indexer = fs.indexFileContent;
@@ -1357,19 +1380,9 @@ export default class EntriesImport extends BaseClass {
       });
 
       if (chunk) {
-        let apiContent = values(chunk as Record<string, any>[]);
-        let apiContentDuplicate: any = [];
-        apiContentDuplicate = apiContent.flatMap((content: Record<string, any>) => {
-          if (content?.publish_details?.length > 0) {
-            return content.publish_details.map((publish: Record<string, any>) => ({
-              ...content,
-              locale: publish.locale,
-              publish_details: [publish],
-            }));
-          }
-          return []; // Return an empty array if publish_details is empty
-        });
-        apiContent = apiContentDuplicate;
+        const apiContent = values(chunk as Record<string, any>[]).filter(
+          (content) => content?.publish_details?.length > 0,
+        );
 
         log.debug(`Processing ${apiContent.length} publishable entries in chunk ${index}`, this.importConfig.context);
 

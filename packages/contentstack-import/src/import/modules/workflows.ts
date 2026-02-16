@@ -8,6 +8,7 @@ import isEmpty from 'lodash/isEmpty';
 import cloneDeep from 'lodash/cloneDeep';
 import findIndex from 'lodash/findIndex';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
 
 import BaseClass, { ApiOptions } from './base-class';
 import {
@@ -38,11 +39,15 @@ export default class ImportWorkflows extends BaseClass {
     this.importConfig.context.module = MODULE_CONTEXTS.WORKFLOWS;
     this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.WORKFLOWS];
     this.workflowsConfig = importConfig.modules.workflows;
-    this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'workflows');
+    this.mapperDirPath = join(
+      this.importConfig.backupDir,
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.WORKFLOWS,
+    );
     this.workflowsFolderPath = join(this.importConfig.backupDir, this.workflowsConfig.dirName);
-    this.workflowUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
-    this.createdWorkflowsPath = join(this.mapperDirPath, 'success.json');
-    this.failedWorkflowsPath = join(this.mapperDirPath, 'fails.json');
+    this.workflowUidMapperPath = join(this.mapperDirPath, PATH_CONSTANTS.FILES.UID_MAPPING);
+    this.createdWorkflowsPath = join(this.mapperDirPath, PATH_CONSTANTS.FILES.SUCCESS);
+    this.failedWorkflowsPath = join(this.mapperDirPath, PATH_CONSTANTS.FILES.FAILS);
     this.workflows = {};
     this.failedWebhooks = [];
     this.createdWorkflows = [];
