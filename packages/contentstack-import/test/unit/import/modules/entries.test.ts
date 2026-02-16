@@ -29,11 +29,13 @@ describe('EntriesImport', () => {
     });
     
     // Stub FsUtility prototype to support readContentTypeSchemas
-    // readContentTypeSchemas reads individual JSON files and returns parsed objects
+    // readContentTypeSchemas creates its own FsUtility instance, so we need to stub the prototype
     sinon.stub(FsUtility.prototype, 'readdir').returns([]);
-    sinon.stub(FsUtility.prototype, 'readFile').returns(undefined);
     
-    fsUtilityReadFileStub = sinon.stub(fsUtil, 'readFile');
+    // Stub FsUtility.prototype.readFile for readContentTypeSchemas (returns parsed objects)
+    // This also stubs fsUtil.readFile since fsUtil is an instance of FsUtility
+    // Don't set a default return value - let individual tests configure it
+    fsUtilityReadFileStub = sinon.stub(FsUtility.prototype, 'readFile');
     fsUtilityWriteFileStub = sinon.stub(fsUtil, 'writeFile').callsFake(() => {
       return Promise.resolve();
     });
@@ -509,12 +511,14 @@ describe('EntriesImport', () => {
           if (path.includes('schema.json')) {
             return [mockData.contentTypeWithFieldRules];
           }
-          return {};
+          if (path.includes('field_rules_ct.json')) {
+            return mockData.contentTypeWithFieldRules;
+          }
+          return undefined;
         });
         
-        // Override FsUtility stubs to return field_rules_ct
+        // Override FsUtility.prototype.readdir for readContentTypeSchemas
         (FsUtility.prototype.readdir as sinon.SinonStub).returns(['field_rules_ct.json']);
-        (FsUtility.prototype.readFile as sinon.SinonStub).returns(mockData.contentTypeWithFieldRules);
       });
 
       it('should update field rules with new UIDs', async () => {
@@ -574,11 +578,14 @@ describe('EntriesImport', () => {
           if (path.includes('schema.json')) {
             return [contentTypeWithoutFieldRules];
           }
-          return {};
+          if (path.includes('field_rules_ct.json')) {
+            return contentTypeWithoutFieldRules;
+          }
+          return undefined;
         });
         
-        // Override FsUtility.readFile for this test
-        (FsUtility.prototype.readFile as sinon.SinonStub).returns(contentTypeWithoutFieldRules);
+        // Override FsUtility.readdir for this test
+        (FsUtility.prototype.readdir as sinon.SinonStub).returns(['field_rules_ct.json']);
 
         await entriesImport['updateFieldRules']();
 
@@ -3120,25 +3127,17 @@ describe('EntriesImport', () => {
       it('should handle content type fetch error', async () => {
         const mockContentTypes = [mockData.simpleContentType, mockData.contentTypeWithReferences];
 
-        // Configure FsUtility.readFile to return the right content type based on file name
-        (FsUtility.prototype.readFile as sinon.SinonStub).callsFake((filePath: string) => {
-          if (filePath.includes('simple_ct.json')) return JSON.stringify(mockData.simpleContentType);
-          if (filePath.includes('ref_ct.json')) return JSON.stringify(mockData.contentTypeWithReferences);
-          return '{}';
-        });
-
+        // Configure FsUtility.readFile to handle all file reads (for both fsUtil and readContentTypeSchemas)
         fsUtilityReadFileStub.callsFake((filePath) => {
-          console.log('fsUtil.readFile called with path:', filePath);
           if (filePath.includes('field_rules_uid.json')) {
-            console.log('Returning field rules data');
             return ['simple_ct', 'ref_ct']; // array of strings
           }
+          if (filePath.includes('simple_ct.json')) return mockData.simpleContentType;
+          if (filePath.includes('ref_ct.json')) return mockData.contentTypeWithReferences;
           if (filePath.includes('schema.json')) {
-            console.log('Returning schema data');
             return mockContentTypes;
           }
-          console.log('Returning empty array');
-          return [];
+          return undefined;
         });
 
         const mockContentType = {
@@ -3162,16 +3161,17 @@ describe('EntriesImport', () => {
       it('should handle content type update error', async () => {
         const mockContentTypes = [mockData.simpleContentType, mockData.contentTypeWithReferences];
 
-        (FsUtility.prototype.readFile as sinon.SinonStub).returns(JSON.stringify(mockData.simpleContentType));
+        (FsUtility.prototype.readdir as sinon.SinonStub).returns(['simple_ct.json']);
 
         fsUtilityReadFileStub.callsFake((path) => {
           if (path.includes('field_rules_uid.json')) {
             return ['simple_ct']; // array of strings
           }
+          if (path.includes('simple_ct.json')) return mockData.simpleContentType;
           if (path.includes('schema.json')) {
             return mockContentTypes;
           }
-          return [];
+          return undefined;
         });
 
         const mockUpdate = sinon.stub().rejects(new Error('Update failed'));
@@ -3201,16 +3201,17 @@ describe('EntriesImport', () => {
       it('should skip when content type not found', async () => {
         const mockContentTypes = [mockData.simpleContentType, mockData.contentTypeWithReferences];
 
-        (FsUtility.prototype.readFile as sinon.SinonStub).returns(JSON.stringify(mockData.simpleContentType));
+        (FsUtility.prototype.readdir as sinon.SinonStub).returns(['simple_ct.json']);
 
         fsUtilityReadFileStub.callsFake((path) => {
           if (path.includes('field_rules_uid.json')) {
             return ['simple_ct']; // array of strings
           }
+          if (path.includes('simple_ct.json')) return mockData.simpleContentType;
           if (path.includes('schema.json')) {
             return mockContentTypes;
           }
-          return [];
+          return undefined;
         });
 
         const mockContentType = {
@@ -3245,16 +3246,17 @@ describe('EntriesImport', () => {
         delete contentTypeWithoutRules.field_rules;
         const mockContentTypes = [contentTypeWithoutRules];
 
-        (FsUtility.prototype.readFile as sinon.SinonStub).returns(JSON.stringify(contentTypeWithoutRules));
+        (FsUtility.prototype.readdir as sinon.SinonStub).returns(['simple_ct.json']);
 
         fsUtilityReadFileStub.callsFake((path) => {
           if (path.includes('field_rules_uid.json')) {
             return ['simple_ct']; // array of strings
           }
+          if (path.includes('simple_ct.json')) return contentTypeWithoutRules;
           if (path.includes('schema.json')) {
             return mockContentTypes;
           }
-          return [];
+          return undefined;
         });
 
         const mockLog = {
