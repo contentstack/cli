@@ -350,7 +350,7 @@ describe('Extension Helper', () => {
         'global-field-123': 'mapped-global-field-456',
       };
 
-      fsUtilityStub.withArgs(path.join(tempDir, 'mapper/globalfields/uid-mapping.json')).returns(globalFieldsMapping);
+      fsUtilityStub.withArgs(path.join(tempDir, 'mapper/global_fields/uid-mapping.json')).returns(globalFieldsMapping);
 
       lookupExtension(config, schema, preserveStackVersion, installedExtensions);
 
@@ -369,7 +369,7 @@ describe('Extension Helper', () => {
       const preserveStackVersion = false;
       const installedExtensions = {};
 
-      fsUtilityStub.withArgs(path.join(tempDir, 'mapper/globalfields/uid-mapping.json')).returns({});
+      fsUtilityStub.withArgs(path.join(tempDir, 'mapper/global_fields/uid-mapping.json')).returns({});
 
       lookupExtension(config, schema, preserveStackVersion, installedExtensions);
 
@@ -543,7 +543,7 @@ describe('Extension Helper', () => {
         'global-1': 'mapped-global-1',
       };
 
-      fsUtilityStub.withArgs(path.join(tempDir, 'mapper/globalfields/uid-mapping.json')).returns(globalFieldsMapping);
+      fsUtilityStub.withArgs(path.join(tempDir, 'mapper/global_fields/uid-mapping.json')).returns(globalFieldsMapping);
 
       lookupExtension(config, schema, preserveStackVersion, installedExtensions);
 

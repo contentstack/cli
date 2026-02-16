@@ -9,6 +9,7 @@
  */
 import { join } from 'node:path';
 import { FsUtility, log } from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../constants';
 import { ImportConfig } from '../types';
 
 // eslint-disable-next-line camelcase
@@ -21,9 +22,24 @@ export const lookupExtension = function (
   log.debug('Starting extension lookup process...');
 
   const fs = new FsUtility({ basePath: config.backupDir });
-  const extensionPath = join(config.backupDir, 'mapper/extensions', 'uid-mapping.json');
-  const globalfieldsPath = join(config.backupDir, 'mapper/globalfields', 'uid-mapping.json');
-  const marketPlaceAppsPath = join(config.backupDir, 'mapper/marketplace_apps', 'uid-mapping.json');
+  const extensionPath = join(
+    config.backupDir,
+    PATH_CONSTANTS.MAPPER,
+    PATH_CONSTANTS.MAPPER_MODULES.EXTENSIONS,
+    PATH_CONSTANTS.FILES.UID_MAPPING,
+  );
+  const globalfieldsPath = join(
+    config.backupDir,
+    PATH_CONSTANTS.MAPPER,
+    PATH_CONSTANTS.MAPPER_MODULES.GLOBAL_FIELDS,
+    PATH_CONSTANTS.FILES.UID_MAPPING,
+  );
+  const marketPlaceAppsPath = join(
+    config.backupDir,
+    PATH_CONSTANTS.MAPPER,
+    PATH_CONSTANTS.MAPPER_MODULES.MARKETPLACE_APPS,
+    PATH_CONSTANTS.FILES.UID_MAPPING,
+  );
 
   log.debug(
     `Extension mapping paths - Extensions: ${extensionPath}, Global fields: ${globalfieldsPath}, Marketplace apps: ${marketPlaceAppsPath}`,

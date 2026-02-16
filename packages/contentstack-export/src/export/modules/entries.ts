@@ -1,15 +1,16 @@
 import * as path from 'path';
-import { ContentstackClient, FsUtility, handleAndLogError, messageHandler, log, readContentTypeSchemas } from '@contentstack/cli-utilities';
-import { Export, ExportProjects } from '@contentstack/cli-variants';
-import { sanitizePath } from '@contentstack/cli-utilities';
-
 import {
-  fsUtil,
-  PROCESS_NAMES,
-  MODULE_CONTEXTS,
-  PROCESS_STATUS,
-  MODULE_NAMES,
-} from '../../utils';
+  ContentstackClient,
+  FsUtility,
+  handleAndLogError,
+  messageHandler,
+  log,
+  readContentTypeSchemas,
+  sanitizePath,
+} from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
+import { Export, ExportProjects } from '@contentstack/cli-variants';
+import { fsUtil, PROCESS_NAMES, MODULE_CONTEXTS, PROCESS_STATUS, MODULE_NAMES } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ExportConfig, ModuleClassParams } from '../../types';
 
@@ -55,6 +56,7 @@ export default class EntriesExport extends BaseClass {
       sanitizePath(exportConfig.exportDir),
       sanitizePath(exportConfig.branchName || ''),
       sanitizePath(exportConfig.modules.content_types.dirName),
+      PATH_CONSTANTS.FILES.SCHEMA,
     );
     this.projectInstance = new ExportProjects(this.exportConfig);
     this.exportConfig.context.module = MODULE_CONTEXTS.ENTRIES;
@@ -113,7 +115,6 @@ export default class EntriesExport extends BaseClass {
         if (this.entriesConfig.exportVersions) {
           progress.addProcess(PROCESS_NAMES.ENTRY_VERSIONS, totalEntriesCount);
         }
-
       }
 
       // Process entry collections
@@ -162,7 +163,6 @@ export default class EntriesExport extends BaseClass {
       }
 
       this.completeProgressWithMessage();
-
     } catch (error) {
       handleAndLogError(error, { ...this.exportConfig.context });
       this.completeProgress(false, error?.message || 'Entries export failed');
@@ -312,7 +312,7 @@ export default class EntriesExport extends BaseClass {
         await fsUtil.makeDirectory(entryBasePath);
         this.entriesFileHelper = new FsUtility({
           moduleName: 'entries',
-          indexFileName: 'index.json',
+          indexFileName: PATH_CONSTANTS.FILES.INDEX,
           basePath: entryBasePath,
           chunkFileSize: this.entriesConfig.chunkFileSize,
           keepMetadata: false,

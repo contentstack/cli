@@ -92,7 +92,7 @@ describe('EntriesExport', () => {
         },
         content_types: {
           dirName: 'content_types',
-          fileName: 'schema.json',
+          fileName: 'content_types.json',
         },
         personalize: {
           baseURL: {

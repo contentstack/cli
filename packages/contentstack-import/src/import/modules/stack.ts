@@ -1,5 +1,6 @@
 import { join } from 'node:path';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
 
 import BaseClass from './base-class';
 import { fileHelper, fsUtil, PROCESS_NAMES, MODULE_CONTEXTS, PROCESS_STATUS, MODULE_NAMES } from '../../utils';
@@ -15,8 +16,17 @@ export default class ImportStack extends BaseClass {
     super({ importConfig, stackAPIClient });
     this.importConfig.context.module = MODULE_CONTEXTS.STACK;
     this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.STACK];
-    this.stackSettingsPath = join(this.importConfig.backupDir, 'stack', 'settings.json');
-    this.envUidMapperPath = join(this.importConfig.backupDir, 'mapper', 'environments', 'uid-mapping.json');
+    this.stackSettingsPath = join(
+      this.importConfig.backupDir,
+      PATH_CONSTANTS.CONTENT_DIRS.STACK,
+      PATH_CONSTANTS.FILES.SETTINGS,
+    );
+    this.envUidMapperPath = join(
+      this.importConfig.backupDir,
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.ENVIRONMENTS,
+      PATH_CONSTANTS.FILES.UID_MAPPING,
+    );
   }
 
   /**
