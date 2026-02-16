@@ -32,10 +32,10 @@
   "author": "contentstack",
   "license": "MIT",
   "dependencies": {
-    "@contentstack/management": "~1.27.3",
+    "@contentstack/management": "~1.27.5",
     "@contentstack/marketplace-sdk": "^1.4.0",
     "@oclif/core": "^4.3.0",
-    "axios": "^1.9.0",
+    "axios": "^1.13.5",
     "chalk": "^4.1.2",
     "cli-cursor": "^3.1.0",
     "cli-progress": "^3.12.0",
