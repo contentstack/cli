@@ -8,6 +8,7 @@
 import * as path from 'path';
 import { isEmpty, cloneDeep } from 'lodash';
 import { sanitizePath, log, handleAndLogError, GlobalFieldData, GlobalField } from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
 import {   fsUtil,
   fileHelper,
   lookupExtension,
@@ -59,22 +60,41 @@ export default class ImportGlobalFields extends BaseClass {
     this.pendingGFs = [];
     this.existingGFs = [];
     this.reqConcurrency = this.gFsConfig.writeConcurrency || this.config.writeConcurrency;
-    this.gFsMapperPath = path.resolve(sanitizePath(this.config.contentDir), 'mapper', 'global_fields');
-    this.gFsFolderPath = path.resolve(sanitizePath(this.config.contentDir), sanitizePath(this.gFsConfig.dirName));
-    this.gFsFailsPath = path.resolve(sanitizePath(this.config.contentDir), 'mapper', 'global_fields', 'fails.json');
-    this.gFsSuccessPath = path.resolve(sanitizePath(this.config.contentDir), 'mapper', 'global_fields', 'success.json');
-    this.gFsUidMapperPath = path.resolve(sanitizePath(this.config.contentDir), 'mapper', 'global_fields', 'uid-mapping.json');
-    this.gFsPendingPath = path.resolve(
+    this.gFsMapperPath = path.resolve(
       sanitizePath(this.config.contentDir),
-      'mapper',
-      'global_fields',
-      'pending_global_fields.js',
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.GLOBAL_FIELDS,
+    );
+    this.gFsFolderPath = path.resolve(sanitizePath(this.config.contentDir), sanitizePath(this.gFsConfig.dirName));
+    this.gFsFailsPath = path.resolve(
+      sanitizePath(this.config.backupDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.GLOBAL_FIELDS,
+      PATH_CONSTANTS.FILES.FAILS,
+    );
+    this.gFsSuccessPath = path.resolve(
+      sanitizePath(this.config.backupDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.GLOBAL_FIELDS,
+      PATH_CONSTANTS.FILES.SUCCESS,
+    );
+    this.gFsUidMapperPath = path.resolve(
+      sanitizePath(this.config.backupDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.GLOBAL_FIELDS,
+      PATH_CONSTANTS.FILES.UID_MAPPING,
+    );
+    this.gFsPendingPath = path.resolve(
+      sanitizePath(this.config.backupDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.GLOBAL_FIELDS,
+      PATH_CONSTANTS.FILES.PENDING_GLOBAL_FIELDS,
     );
     this.marketplaceAppMapperPath = path.join(
-      sanitizePath(this.config.contentDir),
-      'mapper',
-      'marketplace_apps',
-      'uid-mapping.json',
+      sanitizePath(this.config.backupDir),
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.MARKETPLACE_APPS,
+      PATH_CONSTANTS.FILES.UID_MAPPING,
     );
   }
 

@@ -36,6 +36,7 @@ describe('ImportTaxonomies', () => {
     mockImportConfig = {
       apiKey: 'test',
       backupDir: testBackupDir,
+      contentDir: testBackupDir,
       context: { module: 'taxonomies' },
       concurrency: 2,
       fetchConcurrency: 3,
@@ -100,6 +101,9 @@ describe('ImportTaxonomies', () => {
       expect((importTaxonomies as any).taxFailsPath).to.equal(join(testBackupDir, 'mapper', 'taxonomies', 'fails.json'));
       expect((importTaxonomies as any).termsSuccessPath).to.equal(join(testBackupDir, 'mapper', 'taxonomies', 'terms', 'success.json'));
       expect((importTaxonomies as any).termsFailsPath).to.equal(join(testBackupDir, 'mapper', 'taxonomies', 'terms', 'fails.json'));
+      expect((importTaxonomies as any).localesFilePath).to.equal(
+        join(testBackupDir, 'locales', 'locales.json'),
+      );
     });
 
     it('should set context module to taxonomies', () => {
@@ -272,22 +276,20 @@ describe('ImportTaxonomies', () => {
     });
 
     it('should handle empty taxonomies data', async () => {
-      (importTaxonomies as any).taxonomies = {};
       const makeConcurrentCallStub = sandbox.stub(importTaxonomies as any, 'makeConcurrentCall').resolves();
 
-      await (importTaxonomies as any).importTaxonomies();
+      await (importTaxonomies as any).importTaxonomies({ apiContent: [] });
 
-      // When taxonomies is empty, makeConcurrentCall should not be called
+      // When apiContent is empty, makeConcurrentCall should not be called
       expect(makeConcurrentCallStub.called).to.be.false;
     });
 
     it('should handle undefined taxonomies', async () => {
-      (importTaxonomies as any).taxonomies = undefined;
       const makeConcurrentCallStub = sandbox.stub(importTaxonomies as any, 'makeConcurrentCall').resolves();
 
-      await (importTaxonomies as any).importTaxonomies();
+      await (importTaxonomies as any).importTaxonomies({ apiContent: undefined as any });
 
-      // When taxonomies is undefined, makeConcurrentCall should not be called
+      // When apiContent is undefined, makeConcurrentCall should not be called
       expect(makeConcurrentCallStub.called).to.be.false;
     });
 
@@ -306,7 +308,7 @@ describe('ImportTaxonomies', () => {
     });
   });
 
-  describe('serializeTaxonomiesData', () => {
+  describe('serializeTaxonomy', () => {
     it('should serialize taxonomy successfully', () => {
       const mockApiOptions = {
         entity: 'import-taxonomy' as any,
@@ -322,7 +324,7 @@ describe('ImportTaxonomies', () => {
         terms: { 'term_1': { uid: 'term_1', name: 'Term 1' } }
       });
 
-      const result = (importTaxonomies as any).serializeTaxonomiesData(mockApiOptions);
+      const result = (importTaxonomies as any).serializeTaxonomy(mockApiOptions);
 
       expect(result).to.have.property('apiData');
       expect(result.apiData.taxonomy).to.have.property('uid');
@@ -340,7 +342,7 @@ describe('ImportTaxonomies', () => {
 
       (fileHelper.fileExistsSync as any).returns(false);
 
-      const result = (importTaxonomies as any).serializeTaxonomiesData(mockApiOptions);
+      const result = (importTaxonomies as any).serializeTaxonomy(mockApiOptions);
 
       expect(result.apiData).to.be.undefined;
     });
@@ -363,7 +365,7 @@ describe('ImportTaxonomies', () => {
         }
       });
 
-      const result = (importTaxonomies as any).serializeTaxonomiesData(mockApiOptions);
+      const result = (importTaxonomies as any).serializeTaxonomy(mockApiOptions);
 
       expect(result.apiData.terms).to.have.property('term_1');
       expect(result.apiData.terms).to.have.property('term_2');
@@ -384,7 +386,7 @@ describe('ImportTaxonomies', () => {
         terms: {}
       });
 
-      const result = (importTaxonomies as any).serializeTaxonomiesData(mockApiOptions);
+      const result = (importTaxonomies as any).serializeTaxonomy(mockApiOptions);
 
       expect(result.apiData.terms).to.deep.equal({});
     });
@@ -780,7 +782,7 @@ describe('ImportTaxonomies', () => {
 
   describe('Callback Functions Integration', () => {
     it('should execute actual onSuccess callback with lines 93-105', async () => {
-      // Set up file helper to return false so serializeTaxonomiesData gets proper data
+      // Set up file helper to return false so serializeTaxonomy gets proper data
       (fileHelper.fileExistsSync as any).returns(false);
       (fsUtil.readFile as any).returns({});
       (fsUtil.makeDirectory as any).resolves();
@@ -839,14 +841,18 @@ describe('ImportTaxonomies', () => {
         actualOnSuccess = config.apiParams.resolve;
         actualOnReject = config.apiParams.reject;
         
-        // Execute serializeTaxonomiesData to get proper apiData
-        const serialized = (importTaxonomies as any).serializeTaxonomiesData({
+        // Execute serializeTaxonomy to get proper apiData
+        const apiOptions = {
           apiData: config.apiContent[0],
           entity: 'import-taxonomy',
           queryParam: { locale: config.apiParams.queryParam?.locale },
           resolve: actualOnSuccess,
           reject: actualOnReject
-        });
+        };
+        const serialized = (importTaxonomies as any).serializeTaxonomy(
+          apiOptions,
+          config.apiParams.queryParam?.locale
+        );
         
         // Call the ACTUAL onReject callback with 409 error
         if (serialized.apiData) {
@@ -859,7 +865,7 @@ describe('ImportTaxonomies', () => {
 
       await (importTaxonomies as any).importTaxonomies({ apiContent: values((importTaxonomies as any).taxonomies) });
 
-      // Verify lines 117-118 executed (adding to createdTaxonomies and createdTerms on 409)
+      // Verify 409 conflict adds to createdTaxonomies and createdTerms
       expect((importTaxonomies as any).createdTaxonomies['taxonomy_1']).to.exist;
       expect((importTaxonomies as any).createdTerms['taxonomy_1']).to.exist;
     });
@@ -895,14 +901,18 @@ describe('ImportTaxonomies', () => {
         actualOnSuccess = config.apiParams.resolve;
         actualOnReject = config.apiParams.reject;
         
-        // Execute serializeTaxonomiesData to get proper apiData
-        const serialized = (importTaxonomies as any).serializeTaxonomiesData({
+        // Execute serializeTaxonomy to get proper apiData
+        const apiOptions = {
           apiData: config.apiContent[0],
           entity: 'import-taxonomy',
           queryParam: { locale: config.apiParams.queryParam?.locale },
           resolve: actualOnSuccess,
           reject: actualOnReject
-        });
+        };
+        const serialized = (importTaxonomies as any).serializeTaxonomy(
+          apiOptions,
+          config.apiParams.queryParam?.locale
+        );
         
         // Call the ACTUAL onReject callback with other error
         if (serialized.apiData) {
@@ -915,7 +925,7 @@ describe('ImportTaxonomies', () => {
 
       await (importTaxonomies as any).importTaxonomies({ apiContent: values((importTaxonomies as any).taxonomies) });
 
-      // Verify lines 131-132 executed (adding to failedTaxonomies and failedTerms)
+      // Verify error adds to failedTaxonomies and failedTerms
       expect((importTaxonomies as any).failedTaxonomies['taxonomy_1']).to.exist;
       expect((importTaxonomies as any).failedTerms['taxonomy_1']).to.exist;
     });
@@ -1132,7 +1142,7 @@ describe('ImportTaxonomies', () => {
       }
     });
 
-    it('should handle file read errors in serializeTaxonomiesData', () => {
+    it('should handle file read errors in serializeTaxonomy', () => {
       const mockApiOptions = {
         entity: 'import-taxonomy' as any,
         apiData: { uid: 'taxonomy_1', name: 'Test Taxonomy' },
@@ -1144,15 +1154,10 @@ describe('ImportTaxonomies', () => {
       (fileHelper.fileExistsSync as any).returns(true);
       (fsUtil.readFile as any).throws(new Error('File read error'));
 
-      // The error will be thrown since serializeTaxonomiesData doesn't catch it
-      try {
-        const result = (importTaxonomies as any).serializeTaxonomiesData(mockApiOptions);
-        // If we get here, the error wasn't thrown (unexpected)
-        expect.fail('Expected error to be thrown');
-      } catch (error: any) {
-        // Error should be thrown
-        expect(error.message).to.equal('File read error');
-      }
+      // loadTaxonomyFile catches errors and returns undefined, so apiData becomes undefined
+      const result = (importTaxonomies as any).serializeTaxonomy(mockApiOptions);
+
+      expect(result.apiData).to.be.undefined;
     });
   });
 });
