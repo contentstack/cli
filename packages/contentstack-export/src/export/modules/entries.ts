@@ -56,7 +56,6 @@ export default class EntriesExport extends BaseClass {
       sanitizePath(exportConfig.exportDir),
       sanitizePath(exportConfig.branchName || ''),
       sanitizePath(exportConfig.modules.content_types.dirName),
-      PATH_CONSTANTS.FILES.SCHEMA,
     );
     this.projectInstance = new ExportProjects(this.exportConfig);
     this.exportConfig.context.module = MODULE_CONTEXTS.ENTRIES;
