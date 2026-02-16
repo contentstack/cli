@@ -1,12 +1,7 @@
+
 fileignoreconfig:
-  - filename: package-lock.json
-    checksum: 8f542a625fb86173eecc0cb3ae7fe36354ccddd6031ba054077151d92135462c
-  - filename: pnpm-lock.yaml
-    checksum: a0d51f8126adbbea646a7c803f67d9b4e8c791b14e81caf76cd673083181ced0
-  - filename: packages/contentstack-import/src/import/modules/environments.ts
-    checksum: f61c635eaec8026e0cfa80a5ab8272f7946531f6d89505dc0d247b4c7ab0eab7
-  - filename: packages/contentstack-import/src/import/modules/taxonomies.ts
-    checksum: f4f44b6031d2936ec2da98b39bb5f5c1bd0f3be34dbe498c75e64a35b7d25a33
-  - filename: packages/contentstack-bootstrap/src/bootstrap/utils.ts
-    checksum: 5ab20e057fa9c4c300f7a882d30e1c68bbc91ed19de520488107e8c37239682a
+- filename: package-lock.json
+  checksum: ca243e72c60bd55daf7cea89c8a9dbf2ba984d5cf8b15a80233eb115fee8daa0
+- filename: pnpm-lock.yaml
+  checksum: a0bc2e8eb75b43a9b37b94bade8ce482f43aa7aeaf4fb85c3a7185d95f92ba40
 version: '1.0'
