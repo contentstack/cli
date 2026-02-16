@@ -237,7 +237,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     
     // Extract logConfig and showConsoleLogs once before the loop to reuse throughout
     const logConfig = configHandler.get('log') || {};
-    const showConsoleLogs = logConfig.showConsoleLogs ?? true;
+    const showConsoleLogs = logConfig.showConsoleLogs ?? false;
     
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       // Update audit context with current module

@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { ContentstackClient, handleAndLogError, messageHandler, log, sanitizePath } from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
 
 import BaseClass from './base-class';
 import { ExportConfig, ModuleClassParams } from '../../types';
@@ -87,7 +88,6 @@ export default class ContentTypesExport extends BaseClass {
       await this.writeContentTypes(this.contentTypes);
 
       this.completeProgressWithMessage();
-
     } catch (error) {
       handleAndLogError(error, { ...this.exportConfig.context });
       this.completeProgress(false, error?.message || 'Content types export failed');

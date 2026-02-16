@@ -2,6 +2,7 @@ import isEmpty from 'lodash/isEmpty';
 import values from 'lodash/values';
 import { join } from 'node:path';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
 
 import { fsUtil, fileHelper, PROCESS_NAMES, MODULE_CONTEXTS, PROCESS_STATUS, MODULE_NAMES } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
@@ -24,11 +25,15 @@ export default class ImportWebhooks extends BaseClass {
     this.importConfig.context.module = MODULE_CONTEXTS.WEBHOOKS;
     this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.WEBHOOKS];
     this.webhooksConfig = importConfig.modules.webhooks;
-    this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'webhooks');
+    this.mapperDirPath = join(
+      this.importConfig.backupDir,
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.WEBHOOKS,
+    );
     this.webhooksFolderPath = join(this.importConfig.backupDir, this.webhooksConfig.dirName);
-    this.webhookUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
-    this.createdWebhooksPath = join(this.mapperDirPath, 'success.json');
-    this.failedWebhooksPath = join(this.mapperDirPath, 'fails.json');
+    this.webhookUidMapperPath = join(this.mapperDirPath, PATH_CONSTANTS.FILES.UID_MAPPING);
+    this.createdWebhooksPath = join(this.mapperDirPath, PATH_CONSTANTS.FILES.SUCCESS);
+    this.failedWebhooksPath = join(this.mapperDirPath, PATH_CONSTANTS.FILES.FAILS);
     this.webhooks = {};
     this.failedWebhooks = [];
     this.createdWebhooks = [];
