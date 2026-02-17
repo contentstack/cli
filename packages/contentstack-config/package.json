@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.18.0",
+  "version": "1.19.0",
   "author": "Contentstack",
   "scripts": {
     "build": "npm run clean && npm run compile",
@@ -22,10 +22,11 @@
   },
   "dependencies": {
     "@contentstack/cli-command": "~1.7.2",
-    "@contentstack/cli-utilities": "~1.17.0",
+    "@contentstack/cli-utilities": "~1.17.2",
+    "@contentstack/utils": "~1.7.0",
     "@oclif/core": "^4.3.0",
     "@oclif/plugin-help": "^6.2.28",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.23"
   },
   "devDependencies": {
     "@oclif/test": "^4.1.13",
