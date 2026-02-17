@@ -3,6 +3,7 @@ import values from 'lodash/values';
 import { join } from 'node:path';
 import { forEach, map } from 'lodash';
 import { log, handleAndLogError } from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
 
 import { fsUtil, fileHelper, PROCESS_NAMES, MODULE_CONTEXTS, PROCESS_STATUS, MODULE_NAMES } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
@@ -33,13 +34,25 @@ export default class ImportCustomRoles extends BaseClass {
     this.importConfig.context.module = MODULE_CONTEXTS.CUSTOM_ROLES;
     this.currentModuleName = MODULE_NAMES[MODULE_CONTEXTS.CUSTOM_ROLES];
     this.customRolesConfig = importConfig.modules.customRoles;
-    this.customRolesMapperPath = join(this.importConfig.backupDir, 'mapper', 'custom-roles');
+    this.customRolesMapperPath = join(
+      this.importConfig.backupDir,
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.CUSTOM_ROLES,
+    );
     this.customRolesFolderPath = join(this.importConfig.backupDir, this.customRolesConfig.dirName);
-    this.customRolesUidMapperPath = join(this.customRolesMapperPath, 'uid-mapping.json');
-    this.envUidMapperFolderPath = join(this.importConfig.backupDir, 'mapper', 'environments');
-    this.entriesUidMapperFolderPath = join(this.importConfig.backupDir, 'mapper', 'entries');
-    this.createdCustomRolesPath = join(this.customRolesMapperPath, 'success.json');
-    this.customRolesFailsPath = join(this.customRolesMapperPath, 'fails.json');
+    this.customRolesUidMapperPath = join(this.customRolesMapperPath, PATH_CONSTANTS.FILES.UID_MAPPING);
+    this.envUidMapperFolderPath = join(
+      this.importConfig.backupDir,
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.ENVIRONMENTS,
+    );
+    this.entriesUidMapperFolderPath = join(
+      this.importConfig.backupDir,
+      PATH_CONSTANTS.MAPPER,
+      PATH_CONSTANTS.MAPPER_MODULES.ENTRIES,
+    );
+    this.createdCustomRolesPath = join(this.customRolesMapperPath, PATH_CONSTANTS.FILES.SUCCESS);
+    this.customRolesFailsPath = join(this.customRolesMapperPath, PATH_CONSTANTS.FILES.FAILS);
     this.customRoles = {};
     this.failedCustomRoles = [];
     this.createdCustomRoles = [];
@@ -309,11 +322,11 @@ export default class ImportCustomRoles extends BaseClass {
 
     this.customRolesUidMapper = this.loadJsonFileIfExists(this.customRolesUidMapperPath, 'custom roles');
     this.environmentsUidMap = this.loadJsonFileIfExists(
-      join(this.envUidMapperFolderPath, 'uid-mapping.json'),
+      join(this.envUidMapperFolderPath, PATH_CONSTANTS.FILES.UID_MAPPING),
       'environments',
     );
     this.entriesUidMap = this.loadJsonFileIfExists(
-      join(this.entriesUidMapperFolderPath, 'uid-mapping.json'),
+      join(this.entriesUidMapperFolderPath, PATH_CONSTANTS.FILES.UID_MAPPING),
       'entries',
     );
   }

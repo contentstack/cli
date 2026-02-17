@@ -4,6 +4,7 @@ import { cliux, pathValidator, sanitizePath } from '@contentstack/cli-utilities'
 import { continueBootstrapCommand } from '../bootstrap/interactive';
 import { AppConfig } from '../config';
 import messageHandler from '../messages';
+import { regions } from '@contentstack/cli-config/lib/utils/region-handler';
 
 interface EnvironmentVariables {
   api_key: string;
@@ -187,20 +188,37 @@ const envFileHandler = async (
   const cdnHost = region?.cda?.substring('8');
   const appHost = region?.uiHost?.substring(8);
   const isUSRegion = regionName === 'us' || regionName === 'na';
+  
+  const isPredefinedRegion = region?.name && Object.keys(regions).some(
+    key => key.toLowerCase() === region.name.toLowerCase()
+  );
+  
   if (regionName !== 'eu' && !isUSRegion) {
     customHost = region?.cma?.substring(8);
   }
-  let graphqlHost = "graphql.contentstack.com";
-  if(regionName != 'na'){
-    graphqlHost = `${regionName}-.graphql.contentstack.com`;
-  }
-
   
-  // Construct image hostname based on the actual host being used
-  let imageHostname = '*-images.contentstack.com'; // default fallback
-  if (region?.cda) {
+  const getGraphqlHost = (): string => {
+    if (!isPredefinedRegion) {
+      return cdnHost.replace('-cdn.', '-graphql.');
+    }
+    const normalizedRegion = regionName?.toLowerCase();
+    if (!normalizedRegion || normalizedRegion === 'na' || normalizedRegion === 'aws-na' || normalizedRegion === 'us') {
+      return cdnHost.replace('cdn.', 'graphql.').replace('.io', '.com');
+    }
+    return cdnHost.replace('-cdn.', '-graphql.');
+  };
+  const graphqlHost = getGraphqlHost();
+
+  let imageHostname: string;
+  if (isPredefinedRegion && region?.cda) {
     const baseHost = region.cda.replace(/^https?:\/\//, '').replace(/^[^.]+\./, '');
     imageHostname = `images.${baseHost}`;
+  } else if (region?.cda) {
+    const baseHost = region.cda.replace(/^https?:\/\//, '').replace(/^[^.]+\./, '');
+    imageHostname = `*-images.${baseHost}`;
+  } else {
+    //default
+    imageHostname = '*-images.contentstack.com';
   }
   const production = environmentVariables.environment === 'production' ? true : false;
   switch (appConfigKey) {
@@ -208,6 +226,21 @@ const envFileHandler = async (
     case 'kickstart-next-ssr':
     case 'kickstart-next-ssg':
     case 'kickstart-next-middleware':
+      fileName = `.env`;
+      filePath = pathValidator(path.join(sanitizePath(clonedDirectory), sanitizePath(fileName)));
+      content = `NEXT_PUBLIC_CONTENTSTACK_API_KEY=${environmentVariables.api_key
+        }\nNEXT_PUBLIC_CONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken
+        }\nNEXT_PUBLIC_CONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token || ''
+        }\nNEXT_PUBLIC_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment
+        }\nNEXT_PUBLIC_CONTENTSTACK_REGION=${regionName
+        }\nNEXT_PUBLIC_CONTENTSTACK_PREVIEW=${livePreviewEnabled ? 'true' : 'false'
+        }\nNEXT_PUBLIC_CONTENTSTACK_CONTENT_DELIVERY = ${cdnHost
+        }\nNEXT_PUBLIC_CONTENTSTACK_CONTENT_APPLICATION = ${appHost
+        }\nNEXT_PUBLIC_CONTENTSTACK_PREVIEW_HOST = ${previewHost
+        }\nNEXT_PUBLIC_CONTENTSTACK_IMAGE_HOSTNAME=${imageHostname}`;
+
+      result = await writeEnvFile(content, filePath);
+      break;
     case 'kickstart-next-graphql':
       fileName = `.env`;
       filePath = pathValidator(path.join(sanitizePath(clonedDirectory), sanitizePath(fileName)));
