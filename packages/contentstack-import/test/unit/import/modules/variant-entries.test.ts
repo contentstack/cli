@@ -76,6 +76,7 @@ describe('ImportVariantEntries', () => {
   beforeEach(() => {
     mockImportConfig = {
       contentDir: '/test/backup',
+      backupDir: '/test/backup',
       apiKey: 'test-api-key',
       context: {
         command: 'cm:stacks:import',
@@ -528,7 +529,7 @@ describe('ImportVariantEntries', () => {
     it('should handle different data paths in projectMapperFilePath construction', () => {
       const customConfig = {
         ...mockImportConfig,
-        contentDir: '/custom/backup/path'
+        backupDir: '/custom/backup/path'
       };
       const customImportVariantEntries = new ImportVariantEntries({ 
         importConfig: customConfig

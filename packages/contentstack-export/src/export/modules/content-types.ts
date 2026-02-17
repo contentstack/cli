@@ -1,5 +1,12 @@
 import * as path from 'path';
-import { ContentstackClient, handleAndLogError, messageHandler, log, sanitizePath } from '@contentstack/cli-utilities';
+import {
+  ContentstackClient,
+  handleAndLogError,
+  messageHandler,
+  log,
+  sanitizePath,
+} from '@contentstack/cli-utilities';
+import { PATH_CONSTANTS } from '../../constants';
 
 import BaseClass from './base-class';
 import { ExportConfig, ModuleClassParams } from '../../types';
@@ -156,7 +163,7 @@ export default class ContentTypesExport extends BaseClass {
       concurrency: this.exportConfig.writeConcurrency,
     });
 
-    const schemaFilePath = path.join(this.contentTypesDirPath, 'schema.json');
+    const schemaFilePath = path.join(this.contentTypesDirPath, PATH_CONSTANTS.FILES.SCHEMA);
     log.debug(`Writing aggregate schema to: ${schemaFilePath}`, this.exportConfig.context);
 
     return fsUtil.writeFile(schemaFilePath, contentTypes);

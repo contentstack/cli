@@ -1,9 +1,17 @@
 
 fileignoreconfig:
-- filename: package-lock.json
-  checksum: fa2c81c72305bc19fa4f64457af1000aa2f0c179ecb7e46a5fc9d8b760c705a7
+- filename: packages/contentstack-import/src/import/modules/environments.ts
+  checksum: f61c635eaec8026e0cfa80a5ab8272f7946531f6d89505dc0d247b4c7ab0eab7
 - filename: pnpm-lock.yaml
-  checksum: faaef9e003c5ba45e56ab1ca24a4fc285f53a2b9ecc6d3dbd11e7130a31db4a2
-- filename: packages/contentstack-clone/src/core/util/clone-handler.ts
-  checksum: 0a7ed55e96aa5a94084538b4a480608593b04c316bf02cf54cdd3a647e9b714c
+  checksum: e96e05b21091fede31e67eea7814321cb9a887dfd2c8f9b81e4bc8a47ebf1624
+- filename: package-lock.json
+  checksum: 270916294e02bdf230fbdd3f6d7c370ff326697ff7a98754c3a9904420b8c7f4
+- filename: packages/contentstack-bootstrap/src/bootstrap/utils.ts
+  checksum: 5ab20e057fa9c4c300f7a882d30e1c68bbc91ed19de520488107e8c37239682a
+- filename: packages/contentstack-migration/README.md
+  checksum: 0deea9c8e43a89a4f20fb25ffe1a38cccd19020fe4fedae80f1ca24d34307f2b
+- filename: packages/contentstack-import/src/import/modules/taxonomies.ts
+  checksum: f4f44b6031d2936ec2da98b39bb5f5c1bd0f3be34dbe498c75e64a35b7d25a33
+- filename: packages/contentstack/README.md
+  checksum: 3a0fab964797476a71d2149ce261d265f410bd756eb9cde9400be9e5250fdc35
 version: '1.0'

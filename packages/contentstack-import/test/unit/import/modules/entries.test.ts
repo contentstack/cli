@@ -2136,8 +2136,8 @@ describe('EntriesImport', () => {
         await entriesImport['publishEntries']({ cTUid: 'simple_ct', locale: 'en-us' });
 
         expect(makeConcurrentCallStub.called).to.be.true;
-        // Should create multiple entries for each publish detail
-        expect(makeConcurrentCallStub.getCall(0).args[0].apiContent).to.have.lengthOf(3); // 3 publish details
+        // Should pass 1 entry with all publish details (serializePublishEntries aggregates them into one API call)
+        expect(makeConcurrentCallStub.getCall(0).args[0].apiContent).to.have.lengthOf(1);
       });
 
       it('should handle entries without publish details', async () => {
