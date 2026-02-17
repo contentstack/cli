@@ -202,6 +202,10 @@ jobs:
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_clone == 'true'}}
         working-directory: ./packages/contentstack-clone
         run: npm install
+      - name: Compiling Clone
+        if: ${{ steps.clone-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-clone
+        run: npm run prepack
       - name: Publishing clone (Beta)
         uses: JS-DevTools/npm-publish@v3
         if: ${{ steps.clone-installation.conclusion == 'success'  }}
