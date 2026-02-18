@@ -17,6 +17,7 @@ describe('Region command', function () {
     launchHubUrl: 'https://launch-api.contentstack.com',
     personalizeUrl: 'https://personalization-api.contentstack.com',
     composableStudioUrl: 'https://composable-studio-api.contentstack.com',
+    assetManagementUrl: 'https://asset-management-api.contentstack.com',
   };
   let cliuxPrintStub: sinon.SinonStub;
   let configGetStub: sinon.SinonStub;
@@ -43,32 +44,32 @@ describe('Region command', function () {
   });
   it('should log an error and exit when the region is not set', async function () {
     const command = new GetRegionCommand([], {} as any);
-    
+
     // Stub the region property to return undefined
     sinon.stub(command, 'region').get(() => undefined);
-    
+
     // Stub the exit method to throw to stop execution
     const exitStub = sinon.stub(command, 'exit').throws(new Error('EXIT_CALLED'));
-    
+
     // Stub cliux.error to capture error calls
     const errorStub = sinon.stub(cliux, 'error');
-    
+
     // Reset cliuxPrintStub to capture new calls
     cliuxPrintStub.reset();
-    
+
     // Call the run method directly, expect it to throw
     try {
       await command.run();
     } catch (error) {
       // Expected to throw due to exit stub
     }
-    
+
     // Verify that cliux.error was called with the correct message
     expect(errorStub.calledWith('CLI_CONFIG_GET_REGION_NOT_FOUND')).to.be.true;
-    
+
     // Verify exit was called
     expect(exitStub.called).to.be.true;
-    
+
     errorStub.restore();
   });
 
@@ -309,6 +310,7 @@ describe('Region command', function () {
       personalizeUrl: 'https://custom-personalize.com',
       launchHubUrl: 'https://custom-launch.com',
       composableStudioUrl: 'https://custom-composable-studio.com',
+      assetManagementUrl: 'https://custom-asset-management.com',
     };
     const result = UserConfig.setCustomRegion(customRegion);
     expect(result).to.deep.equal(customRegion);
