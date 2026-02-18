@@ -40,6 +40,7 @@ function getRegionObject(regionKey: string): Region {
       launchHubUrl: endpoints.launch,
       personalizeUrl: endpoints.personalizeManagement,
       composableStudioUrl: endpoints.composableStudio,
+      assetManagementUrl: endpoints.assetManagement || (endpoints.application ? `${endpoints.application.replace(/\/$/, '')}/am/api` : undefined),
     };
   } catch (error) {
     return null;
@@ -166,6 +167,7 @@ class UserConfig {
       personalizeUrl: regionObject['personalizeUrl'],
       launchHubUrl: regionObject['launchHubUrl'],
       composableStudioUrl: regionObject['composableStudioUrl'],
+      assetManagementUrl: regionObject['assetManagementUrl'],
     };
 
     return sanitizedRegion;
