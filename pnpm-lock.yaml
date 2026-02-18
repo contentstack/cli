@@ -247,6 +247,7 @@ importers:
     specifiers:
       '@contentstack/cli-cm-seed': ~2.0.0-beta.8
       '@contentstack/cli-command': ~2.0.0-beta
+      '@contentstack/cli-config': ~2.0.0-beta.1
       '@contentstack/cli-utilities': ~2.0.0-beta
       '@oclif/core': ^4.3.0
       '@oclif/plugin-help': ^6.2.37
@@ -271,6 +272,7 @@ importers:
     dependencies:
       '@contentstack/cli-cm-seed': link:../contentstack-seed
       '@contentstack/cli-command': link:../contentstack-command
+      '@contentstack/cli-config': link:../contentstack-config
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.37
