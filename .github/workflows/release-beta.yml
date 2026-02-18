@@ -66,7 +66,6 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-utilities/package.json
-          tag: beta
 
       # Variants
       - name: Installing dependencies of variants
@@ -103,7 +102,6 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-command/package.json
-          tag: beta
 
       # Config
       - name: Installing dependencies of config
@@ -202,6 +200,10 @@ jobs:
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_clone == 'true'}}
         working-directory: ./packages/contentstack-clone
         run: npm install
+      - name: Compiling Clone
+        if: ${{ steps.clone-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-clone
+        run: npm run prepack
       - name: Publishing clone (Beta)
         uses: JS-DevTools/npm-publish@v3
         if: ${{ steps.clone-installation.conclusion == 'success'  }}
@@ -241,7 +243,6 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-export-to-csv/package.json
-          tag: beta
 
       # Migration
       - name: Installing dependencies of migration
@@ -310,7 +311,6 @@ jobs:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-branches/package.json
           access: public
-          tag: beta
 
       # Core CLI
       - name: Installing dependencies of core
