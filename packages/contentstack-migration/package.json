@@ -5,7 +5,7 @@
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@contentstack/cli-command": "~1.7.2",
-    "@contentstack/cli-utilities": "~1.17.2",
+    "@contentstack/cli-utilities": "~1.17.3",
     "@oclif/core": "^4.3.0",
     "@oclif/plugin-help": "^6.2.28",
     "async": "^3.2.6",
