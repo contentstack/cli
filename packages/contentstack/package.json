@@ -24,7 +24,7 @@
   "dependencies": {
     "@contentstack/cli-audit": "~2.0.0-beta.4",
     "@contentstack/cli-cm-export": "~2.0.0-beta.9",
-    "@contentstack/cli-cm-import": "~2.0.0-beta.8",
+    "@contentstack/cli-cm-import": "~2.0.0-beta.9",
     "@contentstack/cli-auth": "~2.0.0-beta.5",
     "@contentstack/cli-bulk-operations": "^1.0.0-beta",
     "@contentstack/cli-cm-bootstrap": "~2.0.0-beta.8",
