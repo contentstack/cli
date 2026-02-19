@@ -202,6 +202,10 @@ jobs:
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_clone == 'true'}}
         working-directory: ./packages/contentstack-clone
         run: npm install
+      - name: Compiling Clone
+        if: ${{ steps.clone-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-clone
+        run: npm run prepack
       - name: Publishing clone (Beta)
         uses: JS-DevTools/npm-publish@v3
         if: ${{ steps.clone-installation.conclusion == 'success'  }}
@@ -291,20 +295,6 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-bootstrap/package.json
-          tag: beta
-
-      # Bulk Publish
-      - name: Installing dependencies of bulk publish
-        id: bulk-publish-installation
-        if: ${{env.release_releaseAll == 'true' || env.release_plugins_bulk-publish == 'true'}}
-        working-directory: ./packages/contentstack-bulk-publish
-        run: npm install
-      - name: Publishing bulk publish (Beta)
-        uses: JS-DevTools/npm-publish@v3
-        if: ${{ steps.bulk-publish-installation.conclusion == 'success'  }}
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/contentstack-bulk-publish/package.json
           tag: beta
 
       # Branches

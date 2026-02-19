@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-utilities",
-  "version": "1.17.2",
+  "version": "2.0.0-beta",
   "description": "Utilities for contentstack projects",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
