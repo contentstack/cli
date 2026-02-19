@@ -133,14 +133,14 @@ export default class ImportVariantEntries extends BaseClass {
       }
 
       // Basic validation - check if data file exists
-      const dataFilePath = path.resolve(
-        sanitizePath(this.config.contentDir),
+      const varientEntriesMapperFilePath = path.resolve(
+        sanitizePath(this.config.backupDir),
         'mapper',
         'entries',
         'data-for-variant-entry.json',
       );
 
-      const hasVariantData = fileHelper.fileExistsSync(dataFilePath);
+      const hasVariantData = fileHelper.fileExistsSync(varientEntriesMapperFilePath);
 
       log.debug(
         `Found valid personalize project: ${project.uid} with variant data: ${hasVariantData}`,
