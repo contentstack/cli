@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
 import cloneDeep from 'lodash/cloneDeep';
-import { cliux, sanitizePath, TableFlags, TableHeader, log, configHandler, CLIProgressManager, clearProgressModuleSetting } from '@contentstack/cli-utilities';
+import { cliux, sanitizePath, TableFlags, TableHeader, log, configHandler, CLIProgressManager, clearProgressModuleSetting, readContentTypeSchemas } from '@contentstack/cli-utilities';
 import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'fs';
 import config from './config';
 import { print } from './util/log';
@@ -480,10 +480,9 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    * `gfSchema`. The values of these properties are the parsed JSON data from two different files.
    */
   getCtAndGfSchema() {
-    const ctPath = join(
+    const ctDirPath = join(
       this.sharedConfig.basePath,
       this.sharedConfig.moduleConfig['content-types'].dirName,
-      this.sharedConfig.moduleConfig['content-types'].fileName,
     );
     const gfPath = join(
       this.sharedConfig.basePath,
@@ -492,7 +491,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     );
 
     const gfSchema = existsSync(gfPath) ? (JSON.parse(readFileSync(gfPath, 'utf8')) as ContentTypeStruct[]) : [];
-    const ctSchema = existsSync(ctPath) ? (JSON.parse(readFileSync(ctPath, 'utf8')) as ContentTypeStruct[]) : [];
+    const ctSchema = (readContentTypeSchemas(ctDirPath) || []) as ContentTypeStruct[];
 
     return { ctSchema, gfSchema };
   }

@@ -1,17 +1,16 @@
-
 fileignoreconfig:
-- filename: packages/contentstack-import/src/import/modules/environments.ts
-  checksum: f61c635eaec8026e0cfa80a5ab8272f7946531f6d89505dc0d247b4c7ab0eab7
-- filename: pnpm-lock.yaml
-  checksum: c3020538089092e55f086c39cc4c027ef3d48f6c786a217db9c5e49f55ab8380
-- filename: package-lock.json
-  checksum: 099edd9ec7ed92eb61ce916511ac87e2fc1ff985efe64a25749ac88ba0d3fa7d
-- filename: packages/contentstack-bootstrap/src/bootstrap/utils.ts
-  checksum: 5ab20e057fa9c4c300f7a882d30e1c68bbc91ed19de520488107e8c37239682a
-- filename: packages/contentstack-migration/README.md
-  checksum: 0deea9c8e43a89a4f20fb25ffe1a38cccd19020fe4fedae80f1ca24d34307f2b
-- filename: packages/contentstack-import/src/import/modules/taxonomies.ts
-  checksum: f4f44b6031d2936ec2da98b39bb5f5c1bd0f3be34dbe498c75e64a35b7d25a33
-- filename: packages/contentstack/README.md
-  checksum: 3a0fab964797476a71d2149ce261d265f410bd756eb9cde9400be9e5250fdc35
+  - filename: packages/contentstack-import/src/import/modules/environments.ts
+    checksum: f61c635eaec8026e0cfa80a5ab8272f7946531f6d89505dc0d247b4c7ab0eab7
+  - filename: pnpm-lock.yaml
+    checksum: 113f9187b27a5c8fe0bb5b923e045cc129ef663b7d87b0aa1ba610c0e4429ffa
+  - filename: package-lock.json
+    checksum: 099edd9ec7ed92eb61ce916511ac87e2fc1ff985efe64a25749ac88ba0d3fa7d
+  - filename: packages/contentstack-bootstrap/src/bootstrap/utils.ts
+    checksum: 5ab20e057fa9c4c300f7a882d30e1c68bbc91ed19de520488107e8c37239682a
+  - filename: packages/contentstack-migration/README.md
+    checksum: 0deea9c8e43a89a4f20fb25ffe1a38cccd19020fe4fedae80f1ca24d34307f2b
+  - filename: packages/contentstack-import/src/import/modules/taxonomies.ts
+    checksum: f4f44b6031d2936ec2da98b39bb5f5c1bd0f3be34dbe498c75e64a35b7d25a33
+  - filename: packages/contentstack/README.md
+    checksum: 3a0fab964797476a71d2149ce261d265f410bd756eb9cde9400be9e5250fdc35
 version: '1.0'
