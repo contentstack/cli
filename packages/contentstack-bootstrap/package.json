@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-cm-bootstrap",
   "description": "Bootstrap contentstack apps",
-  "version": "2.0.0-beta.8",
+  "version": "2.0.0-beta.9",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "scripts": {
@@ -19,6 +19,7 @@
     "@contentstack/cli-cm-seed": "~2.0.0-beta.8",
     "@contentstack/cli-command": "~2.0.0-beta",
     "@contentstack/cli-utilities": "~2.0.0-beta",
+    "@contentstack/cli-config": "~2.0.0-beta.1",
     "@oclif/core": "^4.3.0",
     "@oclif/plugin-help": "^6.2.37",
     "inquirer": "8.2.7",
