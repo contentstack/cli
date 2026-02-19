@@ -164,6 +164,18 @@ export default interface DefaultConfig {
       apiBaseUrl: string;
       apiVersion: string;
     };
+    publish: {
+      dirName: string;
+      pendingAssetsFileName: string;
+      successAssetsFileName: string;
+      failedAssetsFileName: string;
+      pendingEntriesFileName: string;
+      successEntriesFileName: string;
+      failedEntriesFileName: string;
+      pendingVariantEntriesFileName: string;
+      successVariantEntriesFileName: string;
+      failedVariantEntriesFileName: string;
+    };
   };
   languagesCode: string[];
   apis: {

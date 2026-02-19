@@ -9,11 +9,11 @@ import { existsSync } from 'node:fs';
 import includes from 'lodash/includes';
 import { v4 as uuid } from 'uuid';
 import { resolve as pResolve, join } from 'node:path';
-import { FsUtility, log, handleAndLogError } from '@contentstack/cli-utilities';
+import { FsUtility, log, handleAndLogError, sanitizePath } from '@contentstack/cli-utilities';
 
 import config from '../../config';
 import { ModuleClassParams } from '../../types';
-import { formatDate } from '../../utils';
+import { formatDate, fsUtil } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 
 export default class ImportAssets extends BaseClass {
@@ -29,6 +29,7 @@ export default class ImportAssets extends BaseClass {
   private assetsUidMap: Record<string, unknown> = {};
   private assetsUrlMap: Record<string, unknown> = {};
   private assetsFolderMap: Record<string, unknown> = {};
+  private pendingPublishAssets: Array<{ oldUid: string; newUid: string }> = [];
   private rootFolder: { uid: string; name: string; parent_uid: string; created_at: string };
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
@@ -54,11 +55,11 @@ export default class ImportAssets extends BaseClass {
    */
   async start(): Promise<void> {
     try {
-    // NOTE Step 1: Import folders and create uid mapping file
+      // NOTE Step 1: Import folders and create uid mapping file
       log.debug('Starting folder import process...', this.importConfig.context);
       await this.importFolders();
 
-    // NOTE Step 2: Import versioned assets and create it mapping files (uid, url)
+      // NOTE Step 2: Import versioned assets and create it mapping files (uid, url)
       if (this.assetConfig.includeVersionedAssets) {
         const versionsPath = `${this.assetsPath}/versions`;
         if (existsSync(versionsPath)) {
@@ -69,17 +70,15 @@ export default class ImportAssets extends BaseClass {
         }
       }
 
-    // NOTE Step 3: Import Assets and create it mapping files (uid, url)
+      // NOTE Step 3: Import Assets and create it mapping files (uid, url)
       log.debug('Starting assets import...', this.importConfig.context);
       await this.importAssets();
 
-    // NOTE Step 4: Publish assets
-      if (!this.importConfig.skipAssetsPublish) {
-        log.debug('Starting assets publishing...', this.importConfig.context);
-        await this.publish();
-      }
+      // NOTE Step 4: Save publish details for deferred publishing
+      log.debug('Saving asset publish details for deferred publishing', this.importConfig.context);
+      await this.savePublishDetails();
 
-      log.success('Assets imported successfully!', this.importConfig.context);
+      log.success('Assets imported successfully', this.importConfig.context);
     } catch (error) {
       handleAndLogError(error, { ...this.importConfig.context });
     }
@@ -179,9 +178,18 @@ export default class ImportAssets extends BaseClass {
 
     log.debug(`Found ${indexerCount} asset chunks to process`, this.importConfig.context);
 
-    const onSuccess = ({ response = {}, apiData: { uid, url, title } = undefined }: any) => {
+    const onSuccess = ({ response = {}, apiData: { uid, url, title, publish_details } = undefined }: any) => {
       this.assetsUidMap[uid] = response.uid;
       this.assetsUrlMap[url] = response.url;
+      // Track assets with valid publish_details for deferred publishing
+      if (!isEmpty(publish_details)) {
+        const validPublishDetails = filter(publish_details, ({ environment }: any) =>
+          this.environments?.hasOwnProperty(environment),
+        );
+        if (validPublishDetails.length > 0) {
+          this.pendingPublishAssets.push({ oldUid: uid, newUid: response.uid });
+        }
+      }
       log.debug(`Created asset: ${title} (Mapped ${uid} → ${response.uid})`, this.importConfig.context);
       log.success(`Created asset: '${title}'`, this.importConfig.context);
     };
@@ -385,6 +393,30 @@ export default class ImportAssets extends BaseClass {
         concurrencyLimit: this.assetConfig.uploadAssetsConcurrency,
       });
     }
+  }
+
+  /**
+   * @method savePublishDetails
+   * @description Saves pending asset UID mappings for deferred publishing
+   * @returns {Promise<void>} Promise<void>
+   */
+  async savePublishDetails(): Promise<void> {
+    if (this.pendingPublishAssets.length === 0) {
+      log.info('No assets with publish details to track', this.importConfig.context);
+      return;
+    }
+
+    const publishConfig = this.importConfig.modules.publish;
+    const publishDirPath = join(sanitizePath(this.importConfig.backupDir), 'mapper', publishConfig.dirName);
+    const pendingFilePath = join(publishDirPath, publishConfig.pendingAssetsFileName);
+
+    // Ensure the publish directory exists
+    await fsUtil.makeDirectory(publishDirPath);
+
+    const assetCount = this.pendingPublishAssets.length;
+    log.debug(`Writing ${assetCount} pending asset UID mappings to file`, this.importConfig.context);
+    await fsUtil.writeFile(pendingFilePath, this.pendingPublishAssets);
+    log.success(`Saved ${assetCount} assets for deferred publishing`, this.importConfig.context);
   }
 
   /**

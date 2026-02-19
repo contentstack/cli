@@ -48,6 +48,7 @@ export type ApiModuleType =
   | 'create-entries'
   | 'update-entries'
   | 'publish-entries'
+  | 'publish-variant-entries'
   | 'delete-entries'
   | 'create-taxonomies'
   | 'create-terms'
@@ -402,6 +403,8 @@ export default abstract class BaseClass {
           })
           .then(onSuccess)
           .catch(onReject);
+      case 'publish-variant-entries':
+        return Promise.resolve();
       case 'delete-entries':
         return this.stack
           .contentType(apiData.cTUid)

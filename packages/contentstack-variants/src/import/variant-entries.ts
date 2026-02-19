@@ -39,6 +39,14 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
   private failedVariantPath!: string;
   private failedVariantEntries!: Record<string, any>;
   private environments!: Record<string, any>;
+  private pendingVariantEntries: Array<{
+    content_type: string;
+    old_entry_uid: string;
+    entry_uid: string;
+    locale: string;
+    old_variant_uid: string;
+    variant_uid: string;
+  }> = [];
 
   constructor(readonly config: ImportConfig & { helpers?: ImportHelperMethodsConfig }) {
     const conf: APIConfig & AdapterType<VariantHttpClient<ImportConfig>, APIConfig> = {
@@ -153,7 +161,9 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       await this.importVariantEntries(entriesForVariant);
     }
 
-    log.success('All variant entries have been imported and published successfully', this.config.context);
+    await this.savePublishDetails();
+
+    log.success('All variant entries have been imported successfully', this.config.context);
   }
 
   /**
@@ -301,12 +311,12 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
       }
 
       // NOTE Handle the API response here
-      log.debug(`Waiting for ${allPromise.length} variant entry creation promises to complete`, this.config.context);     
+      log.debug(`Waiting for ${allPromise.length} variant entry creation promises to complete`, this.config.context);
       await Promise.allSettled(allPromise);
       log.debug(`Batch ${batchNo} creation completed`, this.config.context);
 
-      // NOTE publish all the entries
-      await this.publishVariantEntries(batch, entryUid, content_type);
+      // Track variant entries for deferred publishing
+      this.trackPendingVariantEntries(batch, entry_uid, entryUid, content_type, locale);
       const end = Date.now();
       const exeTime = end - start;
       log.debug(`Batch ${batchNo} completed in ${exeTime}ms`, this.config.context);
@@ -315,6 +325,73 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
 
     log.debug(`Writing failed variant entries to: ${this.failedVariantPath}`, this.config.context);
     fsUtil.writeFile(this.failedVariantPath, this.failedVariantEntries);
+  }
+
+  /**
+   * Tracks variant entries for deferred publishing.
+   * @param batch - Array of variant entries
+   * @param oldEntryUid - Source entry UID
+   * @param entryUid - Target entry UID
+   * @param content_type - Content type UID
+   * @param locale - Locale code
+   */
+  private trackPendingVariantEntries(
+    batch: VariantEntryStruct[],
+    oldEntryUid: string,
+    entryUid: string,
+    content_type: string,
+    locale: string,
+  ): void {
+    for (const variantEntry of batch) {
+      const oldVariantUid = variantEntry._variant._uid || '';
+      const newVariantUid = this.variantIdList[oldVariantUid] as string;
+
+      if (!newVariantUid) continue;
+      if (this.failedVariantEntries.has(variantEntry.uid)) continue;
+
+      if (!isEmpty(variantEntry.publish_details)) {
+        const validPublishDetails = variantEntry.publish_details.filter((pd: any) =>
+          this.environments?.hasOwnProperty(pd.environment),
+        );
+        if (validPublishDetails.length > 0) {
+          this.pendingVariantEntries.push({
+            content_type,
+            old_entry_uid: oldEntryUid,
+            entry_uid: entryUid,
+            locale,
+            old_variant_uid: oldVariantUid,
+            variant_uid: newVariantUid,
+          });
+        }
+      }
+    }
+  }
+
+  /**
+   * Saves pending variant entry UID mappings for deferred publishing.
+   */
+  async savePublishDetails(): Promise<void> {
+    if (this.pendingVariantEntries.length === 0) {
+      log.info('No variant entries with publish details to track', this.config.context);
+      return;
+    }
+
+    const publishConfig = this.config.modules.publish;
+    if (!publishConfig) {
+      log.warn('Publish config not found, skipping save', this.config.context);
+      return;
+    }
+
+    const publishDirPath = resolve(sanitizePath(this.config.backupDir), 'mapper', publishConfig.dirName);
+    const pendingFilePath = resolve(publishDirPath, publishConfig.pendingVariantEntriesFileName);
+
+    await fsUtil.makeDirectory(publishDirPath);
+    fsUtil.writeFile(pendingFilePath, this.pendingVariantEntries);
+
+    log.success(
+      `Saved ${this.pendingVariantEntries.length} variant entries for deferred publishing`,
+      this.config.context,
+    );
   }
 
   /**
@@ -488,7 +565,7 @@ export default class VariantEntries extends VariantAdapter<VariantHttpClient<Imp
         continue;
       }
 
-      if (this.environments?.length) {
+      if (!this.environments || Object.keys(this.environments).length === 0) {
         log.info('No environments found. Skipping entry variant publishing...', this.config.context);
         return;
       }

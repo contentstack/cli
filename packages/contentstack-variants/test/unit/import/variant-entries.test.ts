@@ -73,6 +73,17 @@ describe('Variant Entries Import', () => {
 
         expect(entryVariantInstace.taxonomies).to.contain({});
       });
+
+    test
+      .stub(Import.VariantEntries.prototype, 'importVariantEntries', async () => {})
+      .stub(Import.VariantEntries.prototype, 'savePublishDetails', async () => {})
+      .spy(Import.VariantEntries.prototype, 'savePublishDetails')
+      .it('should call savePublishDetails after importing variant entries', async ({ spy }) => {
+        let entryVariantInstace = new Import.VariantEntries(config);
+        await entryVariantInstace.import();
+
+        expect(spy.savePublishDetails.called).to.be.true;
+      });
   });
 
   describe('importVariantEntries method', () => {
@@ -150,6 +161,18 @@ describe('Variant Entries Import', () => {
         await entryVariantInstace.handleCuncurrency(ContentType, variantEntries, variantEntryData[0]);
 
         expect(ctx.stdout).to.be.includes(entryVariantInstace.messages.VARIANT_ID_NOT_FOUND);
+      });
+
+    test
+      .stub(VariantHttpClient.prototype, 'createVariantEntry', async () => {})
+      .stub(Import.VariantEntries.prototype, 'handleVariantEntryRelationalData', () => variantEntries[0])
+      .spy(VariantHttpClient.prototype, 'publishVariantEntry')
+      .it('should not call publishVariantEntry (deferred to publish module)', async ({ spy }) => {
+        let entryVariantInstace = new Import.VariantEntries(config);
+        entryVariantInstace.variantIdList = { 'VARIANT-ID-1': 'VARIANT-ID-2' };
+        await entryVariantInstace.handleConcurrency(ContentType, variantEntries, variantEntryData[0]);
+
+        expect(spy.publishVariantEntry.called).to.be.false;
       });
   });
 

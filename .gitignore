@@ -22,3 +22,5 @@ contents-*
 talisman_output.log
 snyk_output.log
 *.logs
+# Snyk Security Extension - AI Rules (auto-generated)
+.cursor/rules/snyk_rules.mdc
