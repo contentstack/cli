@@ -61,7 +61,7 @@ export default class ImportGlobalFields extends BaseClass {
     this.existingGFs = [];
     this.reqConcurrency = this.gFsConfig.writeConcurrency || this.config.writeConcurrency;
     this.gFsMapperPath = path.resolve(
-      sanitizePath(this.config.contentDir),
+      sanitizePath(this.config.backupDir),
       PATH_CONSTANTS.MAPPER,
       PATH_CONSTANTS.MAPPER_MODULES.GLOBAL_FIELDS,
     );
