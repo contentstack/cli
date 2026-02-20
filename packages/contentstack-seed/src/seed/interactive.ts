@@ -1,4 +1,4 @@
-const inquirer = require('inquirer');
+import inquirer from 'inquirer';
 import { Organization, Stack } from './contentstack/client';
 
 export interface InquireStackResponse {

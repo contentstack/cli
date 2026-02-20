@@ -43,7 +43,7 @@
     "conf": "^10.2.0",
     "dotenv": "^16.6.1",
     "figures": "^3.2.0",
-    "inquirer": "8.2.7",
+    "inquirer": "12.11.1",
     "inquirer-search-checkbox": "^1.0.0",
     "inquirer-search-list": "^1.2.6",
     "js-yaml": "^4.1.1",
@@ -67,7 +67,7 @@
     "@types/inquirer": "^9.0.8",
     "@types/mkdirp": "^1.0.2",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^14.18.63",
+    "@types/node": "^18.11.9",
     "@types/sinon": "^21.0.0",
     "@types/traverse": "^0.6.37",
     "chai": "^4.5.0",
@@ -79,6 +79,6 @@
     "nyc": "^15.1.0",
     "sinon": "^21.0.1",
     "ts-node": "^10.9.2",
-    "typescript": "^4.9.5"
+    "typescript": "^5.0.0"
   }
 }
