@@ -1,6 +1,9 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const { expect } = require('chai');
 const sinon = require('sinon');
-const inquirer = require('inquirer');
+// Inquirer v12 CJS export is { default: { prompt, ... } }; use default so stubs apply to what lib uses
+const inquirer = require('inquirer').default || require('inquirer');
 const {
   inquireApp,
   inquireCloneDirectory,
@@ -11,6 +14,7 @@ const {
   continueBootstrapCommand,
 } = require('../lib/bootstrap/interactive');
 const messages = require('../messages/index.json');
+const { pathValidator } = require('@contentstack/cli-utilities');
 
 describe('Interactive Functions Tests', () => {
   let sandbox;
@@ -101,30 +105,25 @@ describe('Interactive Functions Tests', () => {
         .resolves({ path: 'Other' })
         .onSecondCall()
         .resolves({ path: customPath });
-      const pathValidatorStub = sandbox.stub(require('@contentstack/cli-utilities'), 'pathValidator').returns(customPath);
 
       const result = await inquireCloneDirectory();
 
-      expect(result).to.equal(customPath);
+      expect(result).to.equal(pathValidator(customPath));
       expect(inquirer.prompt.calledTwice).to.be.true;
-      expect(pathValidatorStub.calledOnce).to.be.true;
     });
 
     it('should validate custom path using pathValidator', async () => {
       const rawPath = '/some/path';
-      const validatedPath = '/validated/path';
       sandbox
         .stub(inquirer, 'prompt')
         .onFirstCall()
         .resolves({ path: 'Other' })
         .onSecondCall()
         .resolves({ path: rawPath });
-      const pathValidatorStub = sandbox.stub(require('@contentstack/cli-utilities'), 'pathValidator').returns(validatedPath);
 
       const result = await inquireCloneDirectory();
 
-      expect(pathValidatorStub.calledWith(rawPath)).to.be.true;
-      expect(result).to.equal(validatedPath);
+      expect(result).to.equal(pathValidator(rawPath));
     });
   });
 

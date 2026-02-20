@@ -425,10 +425,6 @@ describe('CloneHandler - Execution', () => {
         stack: sandbox.stub(),
       };
       handler.setClient(mockClient);
-      // Stub inquirer.ui.BottomBar to prevent hanging
-      sandbox.stub(inquirer.ui, 'BottomBar').returns({
-        updateBottomBar: sandbox.stub(),
-      } as any);
     });
 
     afterEach(() => {

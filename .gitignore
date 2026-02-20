@@ -26,3 +26,4 @@ snyk_output.log
 **/migration-logs
 **/migration-logs/**
 *.logs
+tsconfig.tsbuildinfo
