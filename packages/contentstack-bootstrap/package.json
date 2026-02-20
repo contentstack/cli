@@ -11,7 +11,7 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "pnpm compile && oclif manifest && oclif readme",
     "version": "oclif readme && git add README.md",
-    "test": "npm run build && npm run test:e2e",
+    "test": "npm run compile && npm run test:e2e",
     "test:e2e": "nyc mocha \"test/**/*.test.js\" || exit 0",
     "test:report": "nyc --reporter=lcov mocha \"test/**/*.test.js\""
   },
