@@ -1,6 +1,9 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const { expect } = require('chai');
 const sinon = require('sinon');
-import inquirer from 'inquirer';
+// Inquirer v12 CJS export is { default: { prompt, ... } }; use default so stubs apply to what lib uses
+const inquirer = require('inquirer').default || require('inquirer');
 const { inquireRunDevServer } = require('../lib/bootstrap/interactive');
 const messages = require('../messages/index.json');
 
