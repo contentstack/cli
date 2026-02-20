@@ -170,8 +170,7 @@ export class CloneHandler {
   }
 
   displayBackOptionMessage(): void {
-    const ui = new inquirer.ui.BottomBar();
-    ui.updateBottomBar(chalk.cyan('\nPress shift & left arrow together to undo the operation\n'));
+    process.stdout.write(chalk.cyan('\nPress shift & left arrow together to undo the operation\n'));
   }
 
   setBackKeyPressHandler(backKeyPressHandler: (...args: any[]) => void): void {

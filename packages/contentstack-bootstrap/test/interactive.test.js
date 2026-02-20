@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
-const inquirer = require('inquirer');
+import inquirer from 'inquirer';
 const {
   inquireApp,
   inquireCloneDirectory,

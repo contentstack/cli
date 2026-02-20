@@ -26,14 +26,11 @@ describe('CloneHandler - Helpers', () => {
     });
 
     it('should display back option message', () => {
-      const uiStub = {
-        updateBottomBar: sandbox.stub(),
-      };
-      sandbox.stub(inquirer.ui, 'BottomBar').returns(uiStub as any);
-      
+      const writeStub = sandbox.stub(process.stdout, 'write');
       handler.displayBackOptionMessage();
-      
-      expect(uiStub.updateBottomBar.calledOnce).to.be.true;
+      expect(writeStub.calledOnce).to.be.true;
+      expect(writeStub.firstCall.args[0]).to.include('Press shift & left arrow together to undo');
+      writeStub.restore();
     });
   });
 

@@ -1,5 +1,5 @@
 import chalk, { Chalk } from 'chalk';
-import { default as inquirer, QuestionCollection, Answers } from 'inquirer';
+import inquirer from 'inquirer';
 import { ux as cliux, Args, Flags, Command } from '@oclif/core';
 import { Ora, default as ora } from 'ora';
 import cliProgress from 'cli-progress';
@@ -69,10 +69,10 @@ class CLIInterface {
 
   async inquire<T>(inquirePayload: InquirePayload | Array<InquirePayload>): Promise<T> {
     if (Array.isArray(inquirePayload)) {
-      return inquirer.prompt(inquirePayload);
+      return inquirer.prompt(inquirePayload) as Promise<T>;
     } else {
       inquirePayload.message = messageHandler.parse(inquirePayload.message);
-      const result = await inquirer.prompt(inquirePayload as QuestionCollection<Answers>);
+      const result = await inquirer.prompt(inquirePayload as any);
       return result[inquirePayload.name] as T;
     }
   }

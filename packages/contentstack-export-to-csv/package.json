@@ -7,11 +7,10 @@
   "dependencies": {
     "@contentstack/cli-command": "~2.0.0-beta",
     "@contentstack/cli-utilities": "~2.0.0-beta",
+    "@inquirer/prompts": "^8.2.1",
     "@oclif/core": "^4.8.0",
     "@oclif/plugin-help": "^6.2.32",
-    "fast-csv": "^4.3.6",
-    "inquirer": "8.2.7",
-    "inquirer-checkbox-plus-prompt": "1.4.2"
+    "fast-csv": "^4.3.6"
   },
   "devDependencies": {
     "@oclif/test": "^4.1.13",

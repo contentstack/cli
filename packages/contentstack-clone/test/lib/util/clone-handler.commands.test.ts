@@ -399,11 +399,6 @@ describe('CloneHandler - Commands', () => {
       const configHandler = require('@contentstack/cli-utilities').configHandler;
       configHandlerGetStub = sandbox.stub(configHandler, 'get').returns(undefined);
       
-      // Stub inquirer.ui.BottomBar to prevent hanging in displayBackOptionMessage
-      sandbox.stub(inquirer.ui, 'BottomBar').returns({
-        updateBottomBar: sandbox.stub(),
-      } as any);
-      
       // Stub ora spinner - following import plugin pattern
       const oraModule = require('ora');
       const mockSpinner = {

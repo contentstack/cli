@@ -1,4 +1,4 @@
-const inquirer = require('inquirer');
+import inquirer from 'inquirer';
 import { cliux, pathValidator } from '@contentstack/cli-utilities';
 
 import messageHandler from '../messages';
@@ -50,15 +50,14 @@ export async function inquireCloneDirectory(): Promise<string> {
   }
 
   // Ask for the custom path
-  let selectedCustomPath = await inquirer.prompt([
+  const selectedCustomPath = await inquirer.prompt([
     {
-      type: 'string',
+      type: 'input',
       name: 'path',
       message: messageHandler.parse('CLI_BOOTSTRAP_APP_COPY_SOURCE_CODE_DESTINATION_ENQUIRY'),
     },
   ]);
-  selectedCustomPath = pathValidator(selectedCustomPath.path);
-  return selectedCustomPath;
+  return pathValidator(selectedCustomPath.path);
 }
 
 export async function inquireGithubAccessToken(): Promise<any> {
