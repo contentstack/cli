@@ -812,6 +812,7 @@ importers:
       nock: ^13.5.6
       nyc: ^15.1.0
       oclif: ^4.17.46
+      rxjs: ^6.6.7
       sinon: ^21.0.1
       source-map-support: ^0.5.21
       ts-node: ^10.9.2
@@ -828,6 +829,7 @@ importers:
       chalk: 4.1.2
       concat-stream: 2.0.0
       listr: 0.14.3
+      rxjs: 6.6.7
       winston: 3.19.0
     devDependencies:
       '@oclif/test': 4.1.16_@oclif+core@4.8.1

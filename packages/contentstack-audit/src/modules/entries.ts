@@ -472,7 +472,7 @@ export default class Entries extends BaseClass {
       moduleName: 'content-types',
       ctSchema: this.ctSchema,
       gfSchema: this.gfSchema,
-    }).run(true)) as ContentTypeStruct[];
+    }).run(true, this.ctSchema.length)) as ContentTypeStruct[];
     log.debug(`Content type schema fixed: ${this.ctSchema.length} schemas`, this.config.auditContext);
 
     log.debug('Fixing global field schema', this.config.auditContext);
