@@ -114,7 +114,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
           composableStudioUrl = this.transformUrl(cma, 'composable-studio-api');
         }
         if (!assetManagementUrl) {
-          assetManagementUrl = this.transformUrl(uiHost, '/am/api');
+          assetManagementUrl = this.transformUrl(cma, 'dam-api');
         }
         let customRegion: Region = {
           cda,
@@ -162,12 +162,6 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     }
   }
   transformUrl(url: string, replacement: string): string {
-    // If replacement contains '/', treat it as a path to append to the base URL
-    if (replacement.includes('/')) {
-      const baseUrl = url.replace(/\/$/, ''); // Remove trailing slash if present
-      return `${baseUrl}${replacement}`;
-    }
-    
     let transformedUrl = url.replace('api', replacement);
     if (transformedUrl.startsWith('http')) {
       transformedUrl = transformedUrl.split('//')[1];

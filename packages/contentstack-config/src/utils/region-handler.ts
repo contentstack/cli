@@ -26,7 +26,7 @@ function getRegionObject(regionKey: string): Region {
   try {
     // getContentstackEndpoint handles all aliases defined in regions.json
     const endpoints = getContentstackEndpoint(regionKey) as any;
-    
+
     if (typeof endpoints === 'string') {
       throw new Error('Invalid endpoint response');
     }
@@ -40,7 +40,7 @@ function getRegionObject(regionKey: string): Region {
       launchHubUrl: endpoints.launch,
       personalizeUrl: endpoints.personalizeManagement,
       composableStudioUrl: endpoints.composableStudio,
-      assetManagementUrl: endpoints.assetManagement || (endpoints.application ? `${endpoints.application.replace(/\/$/, '')}/am/api` : undefined),
+      assetManagementUrl: endpoints.assetManagement,
     };
   } catch (error) {
     return null;
@@ -52,21 +52,10 @@ function getRegionObject(regionKey: string): Region {
  * This creates a regions object similar to the old hardcoded one but using @contentstack/utils
  */
 function getAvailableRegions() {
-  const regionKeys = [
-    'NA',
-    'AWS-NA',
-    'EU',
-    'AWS-EU',
-    'AU',
-    'AWS-AU',
-    'AZURE-NA',
-    'AZURE-EU',
-    'GCP-NA',
-    'GCP-EU',
-  ];
+  const regionKeys = ['NA', 'AWS-NA', 'EU', 'AWS-EU', 'AU', 'AWS-AU', 'AZURE-NA', 'AZURE-EU', 'GCP-NA', 'GCP-EU'];
 
   const regions: RegionsMap = {};
-  
+
   for (const key of regionKeys) {
     const regionObj = getRegionObject(key);
     if (regionObj) {

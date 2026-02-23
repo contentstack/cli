@@ -13,4 +13,6 @@ fileignoreconfig:
     checksum: f4f44b6031d2936ec2da98b39bb5f5c1bd0f3be34dbe498c75e64a35b7d25a33
   - filename: packages/contentstack/README.md
     checksum: 3a0fab964797476a71d2149ce261d265f410bd756eb9cde9400be9e5250fdc35
+  - filename: packages/contentstack-config/src/utils/region-handler.ts
+    checksum: 7fb77272b01e48e0cde7a0b25d18a6a237bd59a8e2156aed8a8de5acd27f2465
 version: '1.0'
