@@ -1041,6 +1041,55 @@ describe('Entries module', () => {
 
         expect(result).to.be.an('array'); // Should return array of missing references
       });
+
+    fancy
+      .stdout({ print: process.env.PRINT === 'true' || false })
+      .it('should flag reference when ref entry has wrong content type (ct2 ref when reference_to is ct1)', () => {
+        const ctInstance = new Entries(constructorParam);
+        (ctInstance as any).currentUid = 'test-entry';
+        (ctInstance as any).entryMetaData = [{ uid: 'blt123', ctUid: 'ct2' }]; // Entry exists but is ct2
+
+        const referenceFieldSchema = { uid: 'ref', display_name: 'Ref', data_type: 'reference', reference_to: ['ct1'] };
+        const entryData = [{ uid: 'blt123', _content_type_uid: 'ct2' }];
+        const tree = [{ uid: 'test-entry', name: 'Test Entry' }];
+
+        const result = ctInstance.validateReferenceValues(tree, referenceFieldSchema as any, entryData);
+
+        expect(result).to.have.length(1);
+        expect(result[0].missingRefs).to.deep.include({ uid: 'blt123', _content_type_uid: 'ct2' });
+      });
+
+    fancy
+      .stdout({ print: process.env.PRINT === 'true' || false })
+      .it('should not flag reference when ref entry has correct content type (ct1 ref when reference_to is ct1)', () => {
+        const ctInstance = new Entries(constructorParam);
+        (ctInstance as any).currentUid = 'test-entry';
+        (ctInstance as any).entryMetaData = [{ uid: 'blt123', ctUid: 'ct1' }];
+
+        const referenceFieldSchema = { uid: 'ref', display_name: 'Ref', data_type: 'reference', reference_to: ['ct1'] };
+        const entryData = [{ uid: 'blt123', _content_type_uid: 'ct1' }];
+        const tree = [{ uid: 'test-entry', name: 'Test Entry' }];
+
+        const result = ctInstance.validateReferenceValues(tree, referenceFieldSchema as any, entryData);
+
+        expect(result).to.have.length(0);
+      });
+
+    fancy
+      .stdout({ print: process.env.PRINT === 'true' || false })
+      .it('should normalize reference_to string and allow matching ref (ct1 when reference_to is string ct1)', () => {
+        const ctInstance = new Entries(constructorParam);
+        (ctInstance as any).currentUid = 'test-entry';
+        (ctInstance as any).entryMetaData = [{ uid: 'blt456', ctUid: 'ct1' }];
+
+        const referenceFieldSchema = { uid: 'ref', display_name: 'Ref', data_type: 'reference', reference_to: 'ct1' };
+        const entryData = [{ uid: 'blt456', _content_type_uid: 'ct1' }];
+        const tree = [{ uid: 'test-entry', name: 'Test Entry' }];
+
+        const result = ctInstance.validateReferenceValues(tree, referenceFieldSchema as any, entryData);
+
+        expect(result).to.have.length(0);
+      });
   });
 
   describe('validateModularBlocksField method', () => {
@@ -1365,5 +1414,130 @@ describe('Entries module', () => {
 
         // Should not throw - method is void
       });
+
+    fancy
+      .stdout({ print: process.env.PRINT === 'true' || false })
+      .it('should flag JSON RTE embed when ref has wrong content type (ct2 when reference_to is ct1,sys_assets)', () => {
+        const ctInstance = new Entries(constructorParam);
+        (ctInstance as any).currentUid = 'test-entry';
+        (ctInstance as any).missingRefs = { 'test-entry': [] };
+        (ctInstance as any).entryMetaData = [{ uid: 'blt123', ctUid: 'ct2' }];
+
+        const schema = {
+          uid: 'json_rte',
+          display_name: 'JSON RTE',
+          data_type: 'richtext',
+          reference_to: ['ct1', 'sys_assets'],
+        };
+        const child = {
+          type: 'embed',
+          uid: 'child-uid',
+          attrs: { 'entry-uid': 'blt123', 'content-type-uid': 'ct2' },
+          children: [],
+        };
+        const tree: Record<string, unknown>[] = [];
+
+        (ctInstance as any).jsonRefCheck(tree, schema, child);
+
+        expect((ctInstance as any).missingRefs['test-entry']).to.have.length(1);
+        expect((ctInstance as any).missingRefs['test-entry'][0].missingRefs).to.deep.include({
+          uid: 'blt123',
+          'content-type-uid': 'ct2',
+        });
+      });
+  });
+
+  describe('fixMissingReferences method', () => {
+    fancy
+      .stdout({ print: process.env.PRINT === 'true' || false })
+      .it('should filter out ref when ref has wrong content type (ct2 when reference_to is ct1)', () => {
+        const ctInstance = new Entries({ ...constructorParam, fix: true });
+        (ctInstance as any).currentUid = 'test-entry';
+        (ctInstance as any).missingRefs = { 'test-entry': [] };
+        (ctInstance as any).entryMetaData = [{ uid: 'blt123', ctUid: 'ct2' }];
+
+        const field = {
+          uid: 'ref_field',
+          display_name: 'Ref',
+          data_type: 'reference',
+          reference_to: ['ct1'],
+        };
+        const entry = [{ uid: 'blt123', _content_type_uid: 'ct2' }];
+        const tree = [{ uid: 'test-entry', name: 'Test Entry' }];
+
+        const result = ctInstance.fixMissingReferences(tree, field as any, entry);
+
+        expect(result).to.have.length(0);
+        expect((ctInstance as any).missingRefs['test-entry']).to.have.length(1);
+        expect((ctInstance as any).missingRefs['test-entry'][0].missingRefs).to.deep.include({
+          uid: 'blt123',
+          _content_type_uid: 'ct2',
+        });
+      });
+  });
+
+  describe('jsonRefCheck in fix mode', () => {
+    fancy
+      .stdout({ print: process.env.PRINT === 'true' || false })
+      .it('should return null when ref has wrong content type (fix mode)', () => {
+        const ctInstance = new Entries({ ...constructorParam, fix: true });
+        (ctInstance as any).currentUid = 'test-entry';
+        (ctInstance as any).missingRefs = { 'test-entry': [] };
+        (ctInstance as any).entryMetaData = [{ uid: 'blt123', ctUid: 'ct2' }];
+
+        const schema = {
+          uid: 'json_rte',
+          display_name: 'JSON RTE',
+          data_type: 'richtext',
+          reference_to: ['ct1'],
+        };
+        const child = {
+          type: 'embed',
+          uid: 'child-uid',
+          attrs: { 'entry-uid': 'blt123', 'content-type-uid': 'ct2' },
+          children: [],
+        };
+        const tree: Record<string, unknown>[] = [];
+
+        const result = (ctInstance as any).jsonRefCheck(tree, schema, child);
+
+        expect(result).to.be.null;
+      });
+  });
+
+  describe('isRefContentTypeAllowed helper', () => {
+    const callHelper = (refCtUid: string | undefined, referenceTo: string | string[] | undefined) => {
+      const ctInstance = new Entries(constructorParam);
+      return (ctInstance as any).isRefContentTypeAllowed(refCtUid, referenceTo);
+    };
+
+    fancy.stdout({ print: process.env.PRINT === 'true' || false }).it('returns true when refCtUid is in reference_to', () => {
+      expect(callHelper('ct1', ['ct1', 'ct2'])).to.be.true;
+    });
+
+    fancy.stdout({ print: process.env.PRINT === 'true' || false }).it('returns false when refCtUid is not in reference_to', () => {
+      expect(callHelper('ct2', ['ct1'])).to.be.false;
+    });
+
+    fancy.stdout({ print: process.env.PRINT === 'true' || false }).it('returns true when reference_to is undefined', () => {
+      expect(callHelper('ct1', undefined)).to.be.true;
+    });
+
+    fancy.stdout({ print: process.env.PRINT === 'true' || false }).it('normalizes reference_to string and allows matching refCtUid', () => {
+      expect(callHelper('ct1', 'ct1')).to.be.true;
+      expect(callHelper('ct2', 'ct1')).to.be.false;
+    });
+
+    fancy.stdout({ print: process.env.PRINT === 'true' || false }).it('returns false when reference_to is empty array', () => {
+      expect(callHelper('ct1', [])).to.be.false;
+    });
+
+    fancy.stdout({ print: process.env.PRINT === 'true' || false }).it('returns true when refCtUid is undefined', () => {
+      expect(callHelper(undefined, ['ct1'])).to.be.true;
+    });
+
+    fancy.stdout({ print: process.env.PRINT === 'true' || false }).it('returns true when refCtUid is in skipRefs', () => {
+      expect(callHelper('sys_assets', ['ct1'])).to.be.true;
+    });
   });
 });
