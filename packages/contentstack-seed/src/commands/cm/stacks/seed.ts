@@ -80,6 +80,7 @@ export default class SeedCommand extends Command {
     }),
     locale: flags.string({
       description: 'Master Locale of the stack',
+      default: 'en-us',
       hidden: true,
     }),
   };

@@ -40,26 +40,20 @@ export const setupEnvironments = async (
   if (!managementToken) {
     const managementBody = {
       token: {
-        name: 'sample app',
-        description: 'This is a sample management token.',
+        name: 'Compass Starter App',
+        description: 'This is a compass starter app management token.',
         scope: [
           {
-            module: 'content_type',
+            module: '$all',
             acl: {
               read: true,
               write: true,
             },
           },
-          {
-            module: 'branch',
-            branches: ['main'],
-            acl: {
-              read: true,
-            },
-          },
         ],
-        expires_on: '3000-01-01',
+        expires_on: null,
         is_email_notification_enabled: false,
+        rate_limit_enabled: false,
       },
     };
     managementTokenResult = await managementAPIClient
@@ -313,7 +307,7 @@ const envFileHandler = async (
         }CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${!isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
         }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\nCONTENTSTACK_LIVE_EDIT_TAGS=false\nCONTENTSTACK_API_HOST=${customHost ? customHost : managementAPIHost
         }${!isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
-        }\nCONTENTSTACK_APP_HOST=${appHost}\nCONTENTSTACK_MANAGEMENT_TOKEN=${managementTokenResult.uid
+        }\nCONTENTSTACK_APP_HOST=${appHost}\nCONTENTSTACK_MANAGEMENT_TOKEN=${managementTokenResult.token
         }\nCONTENTSTACK_HOST=${cdnHost}`;
       result = await writeEnvFile(content, filePath);
       break;

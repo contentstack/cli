@@ -14,7 +14,7 @@ importers:
     specifiers:
       '@contentstack/cli-audit': ~1.17.1
       '@contentstack/cli-auth': ~1.7.3
-      '@contentstack/cli-cm-bootstrap': ~1.18.4
+      '@contentstack/cli-cm-bootstrap': ~1.18.5
       '@contentstack/cli-cm-branches': ~1.6.3
       '@contentstack/cli-cm-bulk-publish': ~1.10.7
       '@contentstack/cli-cm-clone': ~1.20.1
@@ -23,7 +23,7 @@ importers:
       '@contentstack/cli-cm-import': ~1.31.3
       '@contentstack/cli-cm-import-setup': ~1.7.3
       '@contentstack/cli-cm-migrate-rte': ~1.6.4
-      '@contentstack/cli-cm-seed': ~1.14.3
+      '@contentstack/cli-cm-seed': ~1.14.4
       '@contentstack/cli-command': ~1.7.2
       '@contentstack/cli-config': ~1.19.0
       '@contentstack/cli-launch': ^1.9.6
@@ -243,7 +243,7 @@ importers:
 
   packages/contentstack-bootstrap:
     specifiers:
-      '@contentstack/cli-cm-seed': ~1.14.3
+      '@contentstack/cli-cm-seed': ~1.14.4
       '@contentstack/cli-command': ~1.7.2
       '@contentstack/cli-config': ~1.19.0
       '@contentstack/cli-utilities': ~1.17.4
@@ -2148,7 +2148,7 @@ packages:
     resolution: {integrity: sha512-dtXc3gIcnivfLegADy5/PZb+1x/esZ65H2E1CjO/pg50UC8Vy1U+U0ozS0hJZTFoaVjeG+1VJRoxf5MrtUGnNA==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      '@contentstack/cli-utilities': 1.17.2_lxq42tdpoxpye5tb7w3htdbbdq
+      '@contentstack/cli-utilities': 1.17.4_lxq42tdpoxpye5tb7w3htdbbdq
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.37
       contentstack: 3.26.4
@@ -2164,7 +2164,7 @@ packages:
     dependencies:
       '@apollo/client': 3.14.0_graphql@16.12.0
       '@contentstack/cli-command': 1.7.2_lxq42tdpoxpye5tb7w3htdbbdq
-      '@contentstack/cli-utilities': 1.17.2_lxq42tdpoxpye5tb7w3htdbbdq
+      '@contentstack/cli-utilities': 1.17.4_lxq42tdpoxpye5tb7w3htdbbdq
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.37
       '@rollup/plugin-commonjs': 28.0.9_rollup@4.57.1
@@ -2199,8 +2199,8 @@ packages:
       - typescript
     dev: false
 
-  /@contentstack/cli-utilities/1.17.2_lxq42tdpoxpye5tb7w3htdbbdq:
-    resolution: {integrity: sha512-lnh6iI3SPoT04QFHIBs7hqkwTcsFjHt1kaWdRBozU8j6on28N3OlmObUcvuyx4vg704hHfL17CSnGxsNNwhnvA==}
+  /@contentstack/cli-utilities/1.17.4_lxq42tdpoxpye5tb7w3htdbbdq:
+    resolution: {integrity: sha512-45Ujy0lNtQiU0FhZrtfGEfte4kjy3tlOnlVz6REH+cW/y1Dgg1nMh+YVgygbOh+6b8PkvTYVlEvb15UxRarNiA==}
     dependencies:
       '@contentstack/management': 1.27.5_debug@4.4.3
       '@contentstack/marketplace-sdk': 1.5.0_debug@4.4.3
