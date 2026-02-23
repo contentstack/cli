@@ -92,6 +92,27 @@ export default class Entries extends BaseClass {
   }
 
   /**
+   * Returns whether a referenced entry's content type is allowed by the schema's reference_to.
+   * @param refCtUid - Content type UID of the referenced entry (e.g. from _content_type_uid)
+   * @param referenceTo - Schema's reference_to (string or string[])
+   * @param configOverride - Optional config with skipRefs; falls back to this.config
+   * @returns true if allowed or check cannot be performed; false if refCtUid is not in reference_to
+   */
+  protected isRefContentTypeAllowed(
+    refCtUid: string | undefined,
+    referenceTo: string | string[] | undefined,
+    configOverride?: { skipRefs?: string[] },
+  ): boolean {
+    if (refCtUid === undefined) return true;
+    const skipRefs = configOverride?.skipRefs ?? (this.config as any).skipRefs ?? [];
+    if (Array.isArray(skipRefs) && skipRefs.includes(refCtUid)) return true;
+    if (referenceTo === undefined || referenceTo === null) return true;
+    const refToList = Array.isArray(referenceTo) ? referenceTo : [referenceTo];
+    if (refToList.length === 0) return false;
+    return refToList.includes(refCtUid);
+  }
+
+  /**
    * The `run` function checks if a folder path exists, sets the schema based on the module name,
    * iterates over the schema and looks for references, and returns a list of missing references.
    * @param totalCount - Total number of entries to process (for progress tracking)
@@ -896,8 +917,9 @@ export default class Entries extends BaseClass {
 
     const missingRefs: Record<string, any>[] = [];
     const { uid: data_type, display_name, reference_to } = fieldStructure;
+    const refToList = Array.isArray(reference_to) ? reference_to : reference_to != null ? [reference_to] : [];
     log.debug(`Reference field UID: ${data_type}`);
-    log.debug(`Reference to: ${reference_to?.join(', ') || 'none'}`);
+    log.debug(`Reference to: ${refToList.join(', ') || 'none'}`);
     log.debug(`Found ${field?.length || 0} references to validate`);
 
     for (const index in field ?? []) {
@@ -916,7 +938,13 @@ export default class Entries extends BaseClass {
             missingRefs.push(reference);
           }
         } else {
-          log.debug(`Reference ${reference} is valid`);
+          const refCtUid = refExist.ctUid;
+          if (!this.isRefContentTypeAllowed(refCtUid, reference_to)) {
+            log.debug(`Reference ${reference} has wrong content type: ${refCtUid} not in reference_to`);
+            missingRefs.push(refToList.length === 1 ? { uid: reference, _content_type_uid: refCtUid } : reference);
+          } else {
+            log.debug(`Reference ${reference} is valid`);
+          }
         }
       }
       // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
@@ -929,7 +957,13 @@ export default class Entries extends BaseClass {
           log.debug(`Missing reference: ${uid}`);
           missingRefs.push(reference);
         } else {
-          log.debug(`Reference ${uid} is valid`);
+          const refCtUid = reference._content_type_uid ?? refExist.ctUid;
+          if (!this.isRefContentTypeAllowed(refCtUid, reference_to)) {
+            log.debug(`Reference ${uid} has wrong content type: ${refCtUid} not in reference_to`);
+            missingRefs.push(refToList.length === 1 ? { uid, _content_type_uid: refCtUid } : reference);
+          } else {
+            log.debug(`Reference ${uid} is valid`);
+          }
         }
       }
     }
@@ -1704,6 +1738,16 @@ export default class Entries extends BaseClass {
               missingRefs.push(reference);
             }
           } else {
+            const refCtUid = reference._content_type_uid ?? refExist.ctUid;
+            if (!this.isRefContentTypeAllowed(refCtUid, reference_to)) {
+              log.debug(`Blt reference ${reference} has wrong content type: ${refCtUid} not in reference_to`);
+              missingRefs.push(
+                Array.isArray(reference_to) && reference_to.length === 1
+                  ? { uid: reference, _content_type_uid: refCtUid }
+                  : reference,
+              );
+              return null;
+            }
             log.debug(`Blt reference ${reference} is valid`);
             return { uid: reference, _content_type_uid: refExist.ctUid };
           }
@@ -1715,6 +1759,16 @@ export default class Entries extends BaseClass {
             missingRefs.push(reference);
             return null;
           } else {
+            const refCtUid = reference._content_type_uid ?? refExist.ctUid;
+            if (!this.isRefContentTypeAllowed(refCtUid, reference_to)) {
+              log.debug(`Reference ${uid} has wrong content type: ${refCtUid} not in reference_to`);
+              missingRefs.push(
+                Array.isArray(reference_to) && reference_to.length === 1
+                  ? { uid, _content_type_uid: refCtUid }
+                  : reference,
+              );
+              return null;
+            }
             log.debug(`Reference ${uid} is valid`);
             return reference;
           }
@@ -1846,6 +1900,25 @@ export default class Entries extends BaseClass {
         log.debug(`JSON reference check failed for entry: ${entryUid}`);
         return null;
       } else {
+        const refCtUid = contentTypeUid ?? refExist.ctUid;
+        const referenceTo = (schema as any).reference_to;
+        if (!this.isRefContentTypeAllowed(refCtUid, referenceTo)) {
+          log.debug(`JSON RTE embed ${entryUid} has wrong content type: ${refCtUid} not in reference_to`);
+          this.missingRefs[this.currentUid].push({
+            tree,
+            uid: this.currentUid,
+            name: this.currentTitle,
+            data_type: schema.data_type,
+            display_name: schema.display_name,
+            fixStatus: this.fix ? 'Fixed' : undefined,
+            treeStr: tree
+              .map(({ name }) => name)
+              .filter((val) => val)
+              .join(' ➜ '),
+            missingRefs: [{ uid: entryUid, 'content-type-uid': refCtUid }],
+          });
+          return this.fix ? null : true;
+        }
         log.debug(`Entry reference ${entryUid} is valid`);
       }
     } else {
