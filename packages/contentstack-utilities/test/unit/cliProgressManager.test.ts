@@ -57,6 +57,7 @@ Module.prototype.require = function (id: string) {
 
 import CLIProgressManager from '../../src/progress-summary/cli-progress-manager';
 import SummaryManager from '../../src/progress-summary/summary-manager';
+import { configHandler } from '../../src';
 
 // Optimized cleanup function for fast tests
 function forceCleanupSpinners() {
@@ -237,11 +238,34 @@ describe('CLIProgressManager', () => {
     });
 
     // Note: Skipping actual withLoadingSpinner tests to avoid ora spinner issues in test environment
-    fancy.it('should print global summary when exists', () => {
+    fancy.it('should print global summary when exists and showConsoleLogs is false', () => {
       const summaryStub = sinon.stub(SummaryManager.prototype, 'printFinalSummary');
-      CLIProgressManager.initializeGlobalSummary('TEST', '');
-      CLIProgressManager.printGlobalSummary();
-      expect(summaryStub.calledOnce).to.be.true;
+      const configGetStub = sinon.stub(configHandler, 'get').callThrough();
+      configGetStub.withArgs('log').returns({ showConsoleLogs: false });
+
+      try {
+        CLIProgressManager.initializeGlobalSummary('TEST', '');
+        CLIProgressManager.printGlobalSummary();
+        expect(summaryStub.calledOnce).to.be.true;
+      } finally {
+        configGetStub.restore();
+        summaryStub.restore();
+      }
+    });
+
+    fancy.it('should skip global summary when showConsoleLogs is true (pure console log mode)', () => {
+      const summaryStub = sinon.stub(SummaryManager.prototype, 'printFinalSummary');
+      const configGetStub = sinon.stub(configHandler, 'get').callThrough();
+      configGetStub.withArgs('log').returns({ showConsoleLogs: true });
+
+      try {
+        CLIProgressManager.initializeGlobalSummary('SKIP_SUMMARY_TEST', '');
+        CLIProgressManager.printGlobalSummary();
+        expect(summaryStub.called).to.be.false;
+      } finally {
+        configGetStub.restore();
+        summaryStub.restore();
+      }
     });
   });
 
@@ -412,30 +436,28 @@ describe('CLIProgressManager', () => {
       expect(consoleLogStub.called).to.be.false;
     });
 
-    fancy.it('should print summary on stop when showConsoleLogs is true', () => {
+    fancy.it('should not print Progress Manager summary when showConsoleLogs is true (pure console log mode)', () => {
       progressManager.tick(true, 'item1');
       progressManager.tick(false, 'item2', 'error');
       progressManager.stop();
 
-      expect(consoleLogStub.called).to.be.true;
-      // Check if summary content was logged
+      // When showConsoleLogs is enabled, per-module summary blocks are skipped for consistent log output
       const logCalls = consoleLogStub.getCalls();
-      const summaryCall = logCalls.find(call => 
+      const summaryCall = logCalls.find(call =>
         call.args[0] && call.args[0].includes('TEST Summary:')
       );
-      expect(summaryCall).to.not.be.undefined;
-      
-      // Ensure progress manager is stopped
+      expect(summaryCall).to.be.undefined;
+
       progressManager = null as any;
     });
 
-    fancy.it('should print detailed summary for nested progress', () => {
+    fancy.it('should not print Detailed Summary blocks when showConsoleLogs is true (pure console log mode)', () => {
       const nestedManager = new CLIProgressManager({
         showConsoleLogs: true,
         enableNestedProgress: true,
         moduleName: 'NESTED_TEST',
       });
-      
+
       try {
         nestedManager.addProcess('process1', 5);
         nestedManager.startProcess('process1');
@@ -444,14 +466,13 @@ describe('CLIProgressManager', () => {
         nestedManager.completeProcess('process1');
         nestedManager.stop();
 
-        expect(consoleLogStub.called).to.be.true;
+        // When showConsoleLogs is enabled, Detailed Summary blocks are skipped
         const logCalls = consoleLogStub.getCalls();
-        const detailedSummaryCall = logCalls.find(call => 
+        const detailedSummaryCall = logCalls.find(call =>
           call.args[0] && call.args[0].includes('NESTED_TEST Detailed Summary:')
         );
-        expect(detailedSummaryCall).to.not.be.undefined;
+        expect(detailedSummaryCall).to.be.undefined;
       } finally {
-        // Ensure cleanup
         try {
           nestedManager.stop();
         } catch (e) {

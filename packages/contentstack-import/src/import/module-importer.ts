@@ -1,7 +1,7 @@
 import { resolve } from 'path';
 import { AuditFix } from '@contentstack/cli-audit';
 import messages, { $t } from '@contentstack/cli-audit/lib/messages';
-import { addLocale, cliux, ContentstackClient, log } from '@contentstack/cli-utilities';
+import { addLocale, cliux, ContentstackClient, log, CLIProgressManager } from '@contentstack/cli-utilities';
 
 import startModuleImport from './modules';
 import { ImportConfig, Modules } from '../types';
@@ -59,6 +59,14 @@ class ModuleImporter {
       if (!(await this.auditImportData())) {
         return { noSuccessMsg: true };
       }
+      // Audit overwrote the global summary with 'AUDIT'. Re-initialize for IMPORT so the final
+      // summary shows "IMPORT completed successfully!" and only import module stats.
+      const branchName = this.importConfig.branchName || '';
+      CLIProgressManager.initializeGlobalSummary(
+        branchName ? `IMPORT-${branchName}` : 'IMPORT',
+        branchName,
+        'Importing content...',
+      );
     }
 
     if (!this.importConfig.master_locale) {
