@@ -66,6 +66,7 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-utilities/package.json
+          tag: beta
 
       # Variants
       - name: Installing dependencies of variants
@@ -102,6 +103,7 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-command/package.json
+          tag: beta
 
       # Config
       - name: Installing dependencies of config
@@ -243,6 +245,7 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-export-to-csv/package.json
+          tag: beta
 
       # Migration
       - name: Installing dependencies of migration
@@ -311,6 +314,7 @@ jobs:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-branches/package.json
           access: public
+          tag: beta
 
       # Core CLI
       - name: Installing dependencies of core
