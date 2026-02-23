@@ -325,7 +325,7 @@ describe('Bootstrapping an app', () => {
   });
 
   describe('Authentication and Alias handling', () => {
-    it.skip('should retrieve management token from configHandler when alias is provided', async () => {
+    it('should retrieve management token from configHandler when alias is provided', async () => {
       sandbox.restore();
       sandbox = sinon.createSandbox();
       const testAlias = 'test-alias';
@@ -371,9 +371,8 @@ describe('Bootstrapping an app', () => {
         },
       });
 
-      // Mock region and cmaHost
-      command.region = mock.region;
-      command.cmaHost = mock.region.cma;
+      // Mock region and cmaHost (base class getter uses _region, then cmaHost uses region)
+      command._region = mock.region;
 
       // Mock managementSDKClient
       const managementAPIClientStub = {
