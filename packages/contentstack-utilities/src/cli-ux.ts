@@ -6,7 +6,7 @@ import cliProgress from 'cli-progress';
 import CLITable, { TableFlags, TableHeader, TableData, TableOptions } from './cli-table';
 
 import messageHandler from './message-handler';
-import { PrintOptions, InquirePayload, CliUXPromptOptions } from './interfaces';
+import { PrintOptions, InquirePayload, CliUXPromptOptions, InquirerQuestion, Answers } from './interfaces';
 
 inquirer.registerPrompt('table', require('./inquirer-table-prompt'));
 
@@ -72,7 +72,7 @@ class CLIInterface {
       return inquirer.prompt(inquirePayload) as Promise<T>;
     } else {
       inquirePayload.message = messageHandler.parse(inquirePayload.message);
-      const result = await inquirer.prompt(inquirePayload as any);
+      const result = (await inquirer.prompt(inquirePayload as InquirerQuestion)) as Answers;
       return result[inquirePayload.name] as T;
     }
   }
