@@ -114,7 +114,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
           composableStudioUrl = this.transformUrl(cma, 'composable-studio-api');
         }
         if (!assetManagementUrl) {
-          assetManagementUrl = this.transformUrl(cma, 'dam-api');
+          assetManagementUrl = this.transformUrl(cma, 'am-api');
         }
         let customRegion: Region = {
           cda,
