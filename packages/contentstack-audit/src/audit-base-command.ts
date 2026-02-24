@@ -5,7 +5,17 @@ import { v4 as uuid } from 'uuid';
 import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
 import cloneDeep from 'lodash/cloneDeep';
-import { cliux, sanitizePath, TableFlags, TableHeader, log, configHandler, CLIProgressManager, clearProgressModuleSetting } from '@contentstack/cli-utilities';
+import {
+  cliux,
+  sanitizePath,
+  TableFlags,
+  TableHeader,
+  log,
+  configHandler,
+  CLIProgressManager,
+  clearProgressModuleSetting,
+  readContentTypeSchemas,
+} from '@contentstack/cli-utilities';
 import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'fs';
 import config from './config';
 import { print } from './util/log';
@@ -59,7 +69,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    */
   async start(command: CommandNames): Promise<boolean> {
     this.currentCommand = command;
-    
+
     // Set progress supported module and console logs setting BEFORE any log calls
     // This ensures the logger respects the setting when it's initialized
     const logConfig = configHandler.get('log') || {};
@@ -68,10 +78,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       configHandler.set('log.showConsoleLogs', false);
     }
     configHandler.set('log.progressSupportedModule', 'audit');
-    
+
     // Initialize global summary for progress tracking
     CLIProgressManager.initializeGlobalSummary('AUDIT', '', 'Auditing content...');
-    
+
     await this.promptQueue();
     await this.createBackUp();
     this.sharedConfig.reportPath = resolve(this.flags['report-path'] || process.cwd(), 'audit-report');
@@ -166,7 +176,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
     // Print comprehensive summary at the end
     CLIProgressManager.printGlobalSummary();
-    
+
     // Clear progress module setting now that audit is complete
     clearProgressModuleSetting();
 
@@ -234,11 +244,11 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
     let dataModuleWise: Record<string, any> = await new ModuleDataReader(cloneDeep(constructorParam)).run();
     log.debug(`Data module wise: ${JSON.stringify(dataModuleWise)}`, this.auditContext);
-    
+
     // Extract logConfig and showConsoleLogs once before the loop to reuse throughout
     const logConfig = configHandler.get('log') || {};
     const showConsoleLogs = logConfig.showConsoleLogs ?? false;
-    
+
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       // Update audit context with current module
       this.auditContext = { module: module };
@@ -480,11 +490,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    * `gfSchema`. The values of these properties are the parsed JSON data from two different files.
    */
   getCtAndGfSchema() {
-    const ctPath = join(
-      this.sharedConfig.basePath,
-      this.sharedConfig.moduleConfig['content-types'].dirName,
-      this.sharedConfig.moduleConfig['content-types'].fileName,
-    );
+    const ctDirPath = join(this.sharedConfig.basePath, this.sharedConfig.moduleConfig['content-types'].dirName);
     const gfPath = join(
       this.sharedConfig.basePath,
       this.sharedConfig.moduleConfig['global-fields'].dirName,
@@ -492,7 +498,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     );
 
     const gfSchema = existsSync(gfPath) ? (JSON.parse(readFileSync(gfPath, 'utf8')) as ContentTypeStruct[]) : [];
-    const ctSchema = existsSync(ctPath) ? (JSON.parse(readFileSync(ctPath, 'utf8')) as ContentTypeStruct[]) : [];
+    const ctSchema = (readContentTypeSchemas(ctDirPath) || []) as ContentTypeStruct[];
 
     return { ctSchema, gfSchema };
   }
