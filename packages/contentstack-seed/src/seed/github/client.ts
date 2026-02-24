@@ -118,6 +118,26 @@ export default class GitHubClient {
     return false;
   }
 
+  async getMasterLocaleFromRepo(repo: string): Promise<string | null> {
+    try {
+      const response = await this.httpClient.get(
+        `https://raw.githubusercontent.com/${this.username}/${repo}/main/stack/locales/master-locale.json`
+      );
+      
+      if (response.data) {
+        const localeData = response.data;
+        const localeKey = Object.keys(localeData)[0];
+        if (localeKey && localeData[localeKey]?.code) {
+          return localeData[localeKey].code;
+        }
+      }
+    } catch (error) {
+      console.log('Could not fetch master locale from repository', error);
+    }
+    
+    return null;
+  }
+
   async getLatestTarballUrl(repo: string) {
     try {
       const response = await this.httpClient.get(`${this.gitHubRepoUrl}/${repo}/releases/latest`);

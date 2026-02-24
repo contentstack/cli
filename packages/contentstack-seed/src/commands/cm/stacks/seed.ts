@@ -20,7 +20,7 @@ export default class SeedCommand extends Command {
     '$ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack in given org uid',
   ];
 
-  static usage = 'cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]';
+  static usage = 'cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y] [-s <value>] [--locale <value>]';
 
   static flags: FlagInput = {
     repo: flags.string({
@@ -59,7 +59,7 @@ export default class SeedCommand extends Command {
       required: false,
       hidden: true,
     }),
-    yes: flags.string({
+    yes: flags.boolean({
       char: 'y',
       required: false,
       description: '[Optional] Skip the stack confirmation.',
@@ -80,6 +80,7 @@ export default class SeedCommand extends Command {
     }),
     locale: flags.string({
       description: 'Master Locale of the stack',
+      default: 'en-us',
       hidden: true,
     }),
   };

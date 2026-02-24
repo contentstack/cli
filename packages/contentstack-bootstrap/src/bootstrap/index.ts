@@ -28,7 +28,7 @@ export interface SeedParams {
   stackAPIKey?: string;
   org?: string;
   stackName?: string;
-  yes?: string;
+  yes?: boolean;
   managementTokenAlias?: string | undefined;
   managementToken?: string | undefined;
 }
@@ -95,7 +95,7 @@ export default class Bootstrap {
         cmd.push('-n', this.options.seedParams.stackName);
       }
       if (this.options.seedParams.yes) {
-        cmd.push('-y', this.options.seedParams.yes);
+        cmd.push('-y');
       }
       if (this.options.seedParams.managementTokenAlias) {
         cmd.push('--alias', this.options.seedParams.managementTokenAlias);
