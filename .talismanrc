@@ -14,4 +14,6 @@ fileignoreconfig:
   checksum: f4f44b6031d2936ec2da98b39bb5f5c1bd0f3be34dbe498c75e64a35b7d25a33
 - filename: packages/contentstack/README.md
   checksum: 3a0fab964797476a71d2149ce261d265f410bd756eb9cde9400be9e5250fdc35
+- filename: packages/contentstack-audit/src/modules/entries.ts
+  checksum: 8ad10d72522433bc5ce66079248aa2dabae1758ee63335024efd8526d76dd885
 version: '1.0'
