@@ -66,7 +66,7 @@ export default class BootstrapCommand extends Command {
       required: false,
       exclusive: ['stack-api-key'],
     }),
-    yes: flags.string({
+    yes: flags.boolean({
       description: '[Optional] Skip stack confirmation',
       char: 'y',
       required: false,
@@ -123,7 +123,7 @@ export default class BootstrapCommand extends Command {
         });
       }
 
-      const yes = bootstrapCommandFlags.yes as string;
+      const yes = bootstrapCommandFlags.yes as boolean;
 
       const appConfig: AppConfig = getAppLevelConfigByName(selectedAppName || selectedApp.configKey);
       const master_locale = appConfig.master_locale || DEFAULT_MASTER_LOCALE;
@@ -147,7 +147,7 @@ export default class BootstrapCommand extends Command {
       if (stackAPIKey) seedParams.stackAPIKey = stackAPIKey;
       if (org) seedParams.org = org;
       if (stackName) seedParams.stackName = stackName;
-      if (yes) seedParams.yes = yes;
+      if (yes) seedParams.yes = true;
       if (managementTokenAlias) {
         seedParams.managementTokenAlias = managementTokenAlias;
         const listOfTokens = configHandler.get('tokens');

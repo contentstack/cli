@@ -224,7 +224,7 @@ describe('SeedCommand', () => {
         'stack-api-key': undefined,
         'stack-name': undefined,
         'fetch-limit': undefined,
-        yes: 'yes',
+        yes: true,
         alias: undefined,
         locale: undefined,
       };
@@ -239,7 +239,7 @@ describe('SeedCommand', () => {
 
       expect(ContentModelSeeder).toHaveBeenCalledWith(
         expect.objectContaining({
-          skipStackConfirmation: 'yes',
+          skipStackConfirmation: true,
         }),
       );
     });
@@ -251,7 +251,7 @@ describe('SeedCommand', () => {
         'stack-api-key': undefined,
         'stack-name': 'My Stack',
         'fetch-limit': '100',
-        yes: 'yes',
+        yes: true,
         alias: 'my-alias',
         locale: 'fr-fr',
       };
@@ -273,7 +273,7 @@ describe('SeedCommand', () => {
         stackUid: undefined,
         stackName: 'My Stack',
         fetchLimit: '100',
-        skipStackConfirmation: 'yes',
+        skipStackConfirmation: true,
         isAuthenticated: true,
         alias: 'my-alias',
         master_locale: 'fr-fr',
@@ -349,7 +349,7 @@ describe('SeedCommand', () => {
 
     it('should have correct usage', () => {
       expect(SeedCommand.usage).toBe(
-        'cm:stacks:seed [--repo <value>] [--org <value>] [--stack-api-key <value>] [--stack-name <value>] [--yes <value>] [--alias <value>] [--locale <value>]',
+        'cm:stacks:seed [--repo <value>] [--org <value>] [--stack-api-key <value>] [--stack-name <value>] [--yes] [--alias <value>] [--locale <value>]',
       );
     });
 
