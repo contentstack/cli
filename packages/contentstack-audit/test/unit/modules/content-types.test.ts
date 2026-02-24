@@ -152,7 +152,7 @@ describe('Content types', () => {
       .stub(cliux, 'confirm', async () => true)
       .it('should not write the file', async () => {
         const ctInstance = new ContentType({ ...constructorParam, fix: true });
-        (ctInstance as any).schema = [constructorParam.ctSchema[0]];
+        (ctInstance as any).schema = constructorParam.ctSchema?.length ? [constructorParam.ctSchema[0]] : [];
         const fsSpy = sinon.spy(fs, 'writeFileSync');
         await ctInstance.writeFixContent();
         expect(fsSpy.callCount).to.be.equals(1);
