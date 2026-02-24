@@ -27,7 +27,7 @@ export interface ContentModelSeederOptions {
   stackUid: string | undefined;
   stackName: string | undefined;
   fetchLimit: string | undefined;
-  skipStackConfirmation: string | undefined;
+  skipStackConfirmation: boolean | undefined;
   isAuthenticated: boolean | false;
   managementToken?: string | undefined;
   alias?: string | undefined;
@@ -200,7 +200,7 @@ export default class ContentModelSeeder {
 
     count = await this.csClient.getContentTypeCount(api_key, this.managementToken);
 
-    if (count > 0 && this._options.skipStackConfirmation !== 'yes') {
+    if (count > 0 && !this._options.skipStackConfirmation) {
       const proceed = await inquireProceed();
 
       if (!proceed) {
