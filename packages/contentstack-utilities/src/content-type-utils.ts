@@ -9,7 +9,7 @@ import { FsUtility } from './fs-utility';
  */
 export function readContentTypeSchemas(
   dirPath: string,
-  ignoredFiles: string[] = ['schema.json', '.DS_Store', '__master.json', '__priority.json'],
+  ignoredFiles: string[] = ['schema.json', '.DS_Store', '__master.json', '__priority.json', 'field_rules_uid.json'],
 ): Record<string, unknown>[] | null {
   const fsUtil = new FsUtility();
   const files = fsUtil.readdir(dirPath);
