@@ -115,6 +115,25 @@ export default class Entries {
   }
 
   /**
+   * If ref CT is not allowed, pushes to missingRefs.
+   * @returns true if invalid (pushed), false if valid
+   */
+  private addInvalidRefIfNeeded(
+    missingRefs: Record<string, any>[],
+    uidValue: string,
+    refCtUid: string | undefined,
+    referenceTo: string | string[] | undefined,
+    fullRef: any,
+    logLabel: string,
+  ): boolean {
+    if (this.isRefContentTypeAllowed(refCtUid, referenceTo)) return false;
+    log.debug(`${logLabel} has wrong content type: ${refCtUid} not in reference_to`);
+    const refList = Array.isArray(referenceTo) ? referenceTo : referenceTo != null ? [referenceTo] : [];
+    missingRefs.push(refList.length === 1 ? { uid: uidValue, _content_type_uid: refCtUid } : fullRef);
+    return true;
+  }
+
+  /**
    * The `run` function checks if a folder path exists, sets the schema based on the module name,
    * iterates over the schema and looks for references, and returns a list of missing references.
    * @returns the `missingRefs` object.
@@ -920,10 +939,7 @@ export default class Entries {
           }
         } else {
           const refCtUid = refExist.ctUid;
-          if (!this.isRefContentTypeAllowed(refCtUid, reference_to)) {
-            log.debug(`Reference ${reference} has wrong content type: ${refCtUid} not in reference_to`);
-            missingRefs.push(refToList.length === 1 ? { uid: reference, _content_type_uid: refCtUid } : reference);
-          } else {
+          if (!this.addInvalidRefIfNeeded(missingRefs, reference, refCtUid, reference_to, reference, `Reference ${reference}`)) {
             log.debug(`Reference ${reference} is valid`);
           }
         }
@@ -939,10 +955,7 @@ export default class Entries {
           missingRefs.push(reference);
         } else {
           const refCtUid = reference._content_type_uid ?? refExist.ctUid;
-          if (!this.isRefContentTypeAllowed(refCtUid, reference_to)) {
-            log.debug(`Reference ${uid} has wrong content type: ${refCtUid} not in reference_to`);
-            missingRefs.push(refToList.length === 1 ? { uid, _content_type_uid: refCtUid } : reference);
-          } else {
+          if (!this.addInvalidRefIfNeeded(missingRefs, uid, refCtUid, reference_to, reference, `Reference ${uid}`)) {
             log.debug(`Reference ${uid} is valid`);
           }
         }
@@ -1720,13 +1733,7 @@ export default class Entries {
             }
           } else {
             const refCtUid = reference._content_type_uid ?? refExist.ctUid;
-            if (!this.isRefContentTypeAllowed(refCtUid, reference_to)) {
-              log.debug(`Blt reference ${reference} has wrong content type: ${refCtUid} not in reference_to`);
-              missingRefs.push(
-                Array.isArray(reference_to) && reference_to.length === 1
-                  ? { uid: reference, _content_type_uid: refCtUid }
-                  : reference,
-              );
+            if (this.addInvalidRefIfNeeded(missingRefs, reference, refCtUid, reference_to, reference, `Blt reference ${reference}`)) {
               return null;
             }
             log.debug(`Blt reference ${reference} is valid`);
@@ -1741,13 +1748,7 @@ export default class Entries {
             return null;
           } else {
             const refCtUid = reference._content_type_uid ?? refExist.ctUid;
-            if (!this.isRefContentTypeAllowed(refCtUid, reference_to)) {
-              log.debug(`Reference ${uid} has wrong content type: ${refCtUid} not in reference_to`);
-              missingRefs.push(
-                Array.isArray(reference_to) && reference_to.length === 1
-                  ? { uid, _content_type_uid: refCtUid }
-                  : reference,
-              );
+            if (this.addInvalidRefIfNeeded(missingRefs, uid, refCtUid, reference_to, reference, `Reference ${uid}`)) {
               return null;
             }
             log.debug(`Reference ${uid} is valid`);
