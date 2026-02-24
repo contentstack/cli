@@ -1,8 +1,8 @@
 import map from 'lodash/map';
 import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
+import fs from 'fs';
 import { join, resolve } from 'path';
-import { existsSync, readFileSync, writeFileSync } from 'fs';
 
 import { sanitizePath, cliux, log } from '@contentstack/cli-utilities';
 
@@ -82,7 +82,7 @@ export default class ContentType extends BaseClass {
     try {
       this.inMemoryFix = returnFixSchema;
 
-      if (!existsSync(this.folderPath)) {
+      if (!fs.existsSync(this.folderPath)) {
         log.warn(`Skipping ${this.moduleName} audit`, this.config.auditContext);
         cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
         return returnFixSchema ? [] : {};
@@ -170,10 +170,10 @@ export default class ContentType extends BaseClass {
     const extensionPath = resolve(this.config.basePath, 'extensions', 'extensions.json');
     const marketplacePath = resolve(this.config.basePath, 'marketplace_apps', 'marketplace_apps.json');
 
-    if (existsSync(extensionPath)) {
+    if (fs.existsSync(extensionPath)) {
       log.debug(`Loading extensions from: ${extensionPath}`, this.config.auditContext);
       try {
-        this.extensions = Object.keys(JSON.parse(readFileSync(extensionPath, 'utf8')));
+        this.extensions = Object.keys(JSON.parse(fs.readFileSync(extensionPath, 'utf8')));
         log.debug(`Loaded ${this.extensions.length} extensions`, this.config.auditContext);
       } catch (error) {
         log.debug(`Failed to load extensions: ${error}`, this.config.auditContext);
@@ -182,10 +182,10 @@ export default class ContentType extends BaseClass {
       log.debug('No extensions.json found', this.config.auditContext);
     }
 
-    if (existsSync(marketplacePath)) {
+    if (fs.existsSync(marketplacePath)) {
       log.debug(`Loading marketplace apps from: ${marketplacePath}`, this.config.auditContext);
       try {
-        const marketplaceApps: MarketplaceAppsInstallationData[] = JSON.parse(readFileSync(marketplacePath, 'utf8'));
+        const marketplaceApps: MarketplaceAppsInstallationData[] = JSON.parse(fs.readFileSync(marketplacePath, 'utf8'));
         log.debug(`Found ${marketplaceApps.length} marketplace apps`, this.config.auditContext);
 
         for (const app of marketplaceApps) {
@@ -232,7 +232,7 @@ export default class ContentType extends BaseClass {
           if (contentType.uid) {
             const filePath = join(this.folderPath, `${contentType.uid}.json`);
             log.debug(`Writing fixed content type to: ${filePath}`, this.config.auditContext);
-            writeFileSync(filePath, JSON.stringify(contentType));
+            fs.writeFileSync(filePath, JSON.stringify(contentType));
           } else {
             log.warn(
               `Skipping content type without uid: ${JSON.stringify(contentType).substring(0, 100)}`,

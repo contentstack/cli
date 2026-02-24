@@ -1,6 +1,6 @@
 import map from 'lodash/map';
+import fs from 'fs';
 import { join, resolve } from 'path';
-import { existsSync, readFileSync, writeFileSync } from 'fs';
 
 import { FsUtility, Locale, sanitizePath, cliux, log } from '@contentstack/cli-utilities';
 
@@ -95,7 +95,7 @@ export default class FieldRule extends BaseClass {
       log.debug(`Field rules folder path: ${this.folderPath}`, this.config.auditContext);
       log.debug(`Fix mode: ${this.fix}`, this.config.auditContext);
 
-      if (!existsSync(this.folderPath)) {
+      if (!fs.existsSync(this.folderPath)) {
         log.debug(`Skipping ${this.moduleName} audit - path does not exist`, this.config.auditContext);
         log.warn(`Skipping ${this.moduleName} audit`, this.config.auditContext);
         cliux.print($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
@@ -412,10 +412,10 @@ export default class FieldRule extends BaseClass {
     log.debug(`Extensions path: ${extensionPath}`, this.config.auditContext);
     log.debug(`Marketplace apps path: ${marketplacePath}`, this.config.auditContext);
 
-    if (existsSync(extensionPath)) {
+    if (fs.existsSync(extensionPath)) {
       log.debug(`Loading extensions from file`, this.config.auditContext);
       try {
-        this.extensions = Object.keys(JSON.parse(readFileSync(extensionPath, 'utf8')));
+        this.extensions = Object.keys(JSON.parse(fs.readFileSync(extensionPath, 'utf8')));
         log.debug(`Loaded ${this.extensions.length} extensions`, this.config.auditContext);
       } catch (error) {
         log.debug(`Error loading extensions: ${error}`, this.config.auditContext);
@@ -424,10 +424,10 @@ export default class FieldRule extends BaseClass {
       log.debug(`Extensions file not found`, this.config.auditContext);
     }
 
-    if (existsSync(marketplacePath)) {
+    if (fs.existsSync(marketplacePath)) {
       log.debug(`Loading marketplace apps from file`, this.config.auditContext);
       try {
-        const marketplaceApps: MarketplaceAppsInstallationData[] = JSON.parse(readFileSync(marketplacePath, 'utf8'));
+        const marketplaceApps: MarketplaceAppsInstallationData[] = JSON.parse(fs.readFileSync(marketplacePath, 'utf8'));
         log.debug(`Found ${marketplaceApps.length} marketplace apps`, this.config.auditContext);
 
         for (const app of marketplaceApps) {
@@ -490,7 +490,7 @@ export default class FieldRule extends BaseClass {
             continue;
           }
           const filePath = join(this.folderPath, `${schema.uid}.json`);
-          writeFileSync(filePath, JSON.stringify(schema));
+          fs.writeFileSync(filePath, JSON.stringify(schema));
           log.debug(`Wrote fixed schema: ${schema.uid} → ${filePath}`, this.config.auditContext);
         }
       } else {
@@ -635,12 +635,12 @@ export default class FieldRule extends BaseClass {
     log.debug(`Master locales path: ${masterLocalesPath}`, this.config.auditContext);
 
     log.debug(`Loading master locales`, this.config.auditContext);
-    this.locales = existsSync(masterLocalesPath) ? values(JSON.parse(readFileSync(masterLocalesPath, 'utf8'))) : [];
+    this.locales = fs.existsSync(masterLocalesPath) ? values(JSON.parse(fs.readFileSync(masterLocalesPath, 'utf8'))) : [];
     log.debug(`Loaded ${this.locales.length} master locales`, this.config.auditContext);
 
-    if (existsSync(localesPath)) {
+    if (fs.existsSync(localesPath)) {
       log.debug(`Loading additional locales from file`, this.config.auditContext);
-      this.locales.push(...values(JSON.parse(readFileSync(localesPath, 'utf8'))));
+      this.locales.push(...values(JSON.parse(fs.readFileSync(localesPath, 'utf8'))));
       log.debug(`Total locales after loading: ${this.locales.length}`, this.config.auditContext);
     } else {
       log.debug(`Additional locales file not found`, this.config.auditContext);

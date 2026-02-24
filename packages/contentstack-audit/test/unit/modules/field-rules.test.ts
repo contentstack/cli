@@ -147,6 +147,7 @@ describe('Field Rules', () => {
       .stub(cliux, 'confirm', async () => true)
       .it('should not write the file', async () => {
         const ctInstance = new FieldRule({ ...constructorParam, fix: true });
+        (ctInstance as any).schema = [constructorParam.ctSchema[0]];
         const fsSpy = sinon.spy(fs, 'writeFileSync');
         await ctInstance.writeFixContent();
         expect(fsSpy.callCount).to.be.equals(1);
