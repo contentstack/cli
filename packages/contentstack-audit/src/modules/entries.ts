@@ -472,7 +472,7 @@ export default class Entries extends BaseClass {
       moduleName: 'content-types',
       ctSchema: this.ctSchema,
       gfSchema: this.gfSchema,
-    }).run(true, this.ctSchema.length)) as ContentTypeStruct[];
+    }).run(true)) as ContentTypeStruct[];
     log.debug(`Content type schema fixed: ${this.ctSchema.length} schemas`, this.config.auditContext);
 
     log.debug('Fixing global field schema', this.config.auditContext);
@@ -1029,7 +1029,16 @@ export default class Entries extends BaseClass {
           }
         } else {
           const refCtUid = refExist.ctUid;
-          if (!this.addInvalidRefIfNeeded(missingRefs, reference, refCtUid, reference_to, reference, `Reference ${reference}`)) {
+          if (
+            !this.addInvalidRefIfNeeded(
+              missingRefs,
+              reference,
+              refCtUid,
+              reference_to,
+              reference,
+              `Reference ${reference}`,
+            )
+          ) {
             log.debug(`Reference ${reference} is valid`);
           }
         }
@@ -1847,7 +1856,16 @@ export default class Entries extends BaseClass {
             }
           } else {
             const refCtUid = reference._content_type_uid ?? refExist.ctUid;
-            if (this.addInvalidRefIfNeeded(missingRefs, reference, refCtUid, reference_to, reference, `Blt reference ${reference}`)) {
+            if (
+              this.addInvalidRefIfNeeded(
+                missingRefs,
+                reference,
+                refCtUid,
+                reference_to,
+                reference,
+                `Blt reference ${reference}`,
+              )
+            ) {
               return null;
             }
             log.debug(`Blt reference ${reference} is valid`);
