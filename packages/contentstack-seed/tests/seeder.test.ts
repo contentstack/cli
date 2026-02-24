@@ -99,6 +99,17 @@ describe('ContentModelSeeder', () => {
     expect(proceed).toBe(true);
   });
 
+  test('should skip confirmation when skipStackConfirmation is true', async () => {
+    ContentstackClient.prototype.getContentTypeCount = jest.fn().mockResolvedValue(1);
+
+    const optionsWithSkip = { ...options, skipStackConfirmation: true };
+    const seeder = new ContentModelSeeder(optionsWithSkip);
+    const proceed = await seeder.shouldProceed(api_key);
+
+    expect(proceed).toBe(true);
+    expect(inquireProceed).not.toHaveBeenCalled();
+  });
+
   test('should create stack', async () => {
     ContentstackClient.prototype.createStack = jest.fn().mockResolvedValue({
       api_key: api_key,
