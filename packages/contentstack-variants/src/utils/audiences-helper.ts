@@ -65,11 +65,11 @@ export const lookUpAudiences = (
       const expVariations = experience.variants[index];
       log.debug(`Processing variant ${index + 1}/${experience.variants.length} of type: ${expVariations['__type']}`);
       
-      if (expVariations['__type'] === 'SegmentedVariant' && expVariations?.audiences?.length) {
-        log.debug(`Found ${expVariations.audiences.length} audiences in SegmentedVariant`);
-        updateAudiences(expVariations.audiences, audiencesUid);
-        
-        if (!expVariations.audiences.length) {
+      if (expVariations['__type'] === 'SegmentedVariant' && (expVariations?.audiences?.length || expVariations?.lyticsAudiences?.length)) {
+        log.debug(`Found ${expVariations.audiences?.length ?? 0} audiences in SegmentedVariant`);
+        if (expVariations?.audiences?.length) updateAudiences(expVariations.audiences, audiencesUid);
+        if (expVariations?.lyticsAudiences?.length) updateAudiences(expVariations.lyticsAudiences, audiencesUid);
+        if (!(expVariations.audiences?.length || expVariations?.lyticsAudiences?.length)) {
           log.warn('No audiences remaining after mapping. Removing variant.');
           experience.variants.splice(index, 1);
         }
