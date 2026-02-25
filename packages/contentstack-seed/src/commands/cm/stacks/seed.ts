@@ -14,7 +14,7 @@ export default class SeedCommand extends Command {
   ];
 
   static usage =
-    'cm:stacks:seed [--repo <value>] [--org <value>] [--stack-api-key <value>] [--stack-name <value>] [--yes <value>] [--alias <value>] [--locale <value>]';
+    'cm:stacks:seed [--repo <value>] [--org <value>] [--stack-api-key <value>] [--stack-name <value>] [--yes] [--alias <value>] [--locale <value>]';
 
   static flags: FlagInput = {
     repo: flags.string({
@@ -49,7 +49,7 @@ export default class SeedCommand extends Command {
       required: false,
       hidden: true,
     }),
-    yes: flags.string({
+    yes: flags.boolean({
       char: 'y',
       required: false,
       description: '[Optional] Skip the stack confirmation.',
