@@ -103,11 +103,6 @@ export default class CLIProgressManager {
       return;
     }
 
-    const showConsoleLogs = configHandler.get('log')?.showConsoleLogs;
-    if (showConsoleLogs) {
-      return;
-    }
-
     // Apply strategy-based corrections before printing
     CLIProgressManager.applyStrategyCorrections();
 
@@ -415,7 +410,7 @@ export default class CLIProgressManager {
     const process = this.processes.get(processName);
     if (process) {
       process.status = success ? 'completed' : 'failed';
-      
+
       // If process completed without ticks, update current to reflect completion
       if (process.current === 0 && process.total > 0) {
         process.current = process.total;
@@ -423,7 +418,7 @@ export default class CLIProgressManager {
           process.successCount = process.total;
         }
       }
-      
+
       if (!this.showConsoleLogs && process.progressBar) {
         const totalProcessed = process.current;
         const percentage = Math.round((totalProcessed / process.total) * 100);
@@ -594,7 +589,6 @@ export default class CLIProgressManager {
     if (this.spinner) {
       this.spinner.stop();
     }
-
   }
 
   private printSummary(): void {
@@ -619,10 +613,10 @@ export default class CLIProgressManager {
         process.status === 'completed'
           ? '✓'
           : process.status === 'failed'
-          ? '✗'
-          : process.status === 'active'
-          ? '●'
-          : '○';
+            ? '✗'
+            : process.status === 'active'
+              ? '●'
+              : '○';
 
       this.log(
         `  ${status} ${processName}: ${process.successCount}✓ ${process.failureCount}✗ (${process.current}/${process.total})`,
