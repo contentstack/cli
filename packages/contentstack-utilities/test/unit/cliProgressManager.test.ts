@@ -57,7 +57,7 @@ Module.prototype.require = function (id: string) {
 
 import CLIProgressManager from '../../src/progress-summary/cli-progress-manager';
 import SummaryManager from '../../src/progress-summary/summary-manager';
-import { configHandler } from '../../src';
+import configHandler from '../../src/config-handler';
 
 // Optimized cleanup function for fast tests
 function forceCleanupSpinners() {
