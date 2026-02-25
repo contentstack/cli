@@ -94,10 +94,17 @@ export default class CLIProgressManager {
   }
 
   /**
-   * Print the final summary for all modules using strategies
+   * Print the final summary for all modules using strategies.
+   * When showConsoleLogs is enabled, skip the Progress Manager summary block
+   * so output is pure timestamped log lines (per documentation).
    */
   static printGlobalSummary(): void {
     if (!CLIProgressManager.globalSummary) {
+      return;
+    }
+
+    const showConsoleLogs = configHandler.get('log')?.showConsoleLogs;
+    if (showConsoleLogs) {
       return;
     }
 
@@ -591,6 +598,11 @@ export default class CLIProgressManager {
   }
 
   private printSummary(): void {
+    // In console logs mode, use only timestamped log lines (no Progress Manager blocks)
+    if (this.showConsoleLogs) {
+      return;
+    }
+
     if (!this.enableNestedProgress) {
       // Simple summary for single progress
       this.log('\n' + chalk.bold(`${this.moduleName} Summary:`));
