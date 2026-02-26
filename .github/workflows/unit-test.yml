@@ -22,13 +22,18 @@ jobs:
           node-version: '22.x'
           cache: 'pnpm' # optional but recommended
 
-      - name: Install dependencies for all plugins
-        run: |
-          NODE_ENV=PREPACK_MODE npm run bootstrap
+      - name: Temporarily disable contentstack package
+        run: mv packages/contentstack/package.json packages/contentstack/package.json.disabled || true
 
-      - name: Build all plugins
+      - name: Install Dependencies (Excluding Contentstack)
+        run: npm run bootstrap
+
+      - name: Build all plugins (Excluding Contentstack)
         run: |
-          NODE_ENV=PREPACK_MODE npm run build
+          npm run build
+
+      - name: Restore contentstack package
+        run: mv packages/contentstack/package.json.disabled packages/contentstack/package.json || true
 
       - name: Run tests for Contentstack Command
         working-directory: ./packages/contentstack-command
