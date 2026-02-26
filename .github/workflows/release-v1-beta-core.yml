@@ -1,0 +1,70 @@
+name: Release CLI Core (v1 Beta)
+
+on:
+  push:
+    branches: [v1-beta]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install pnpm
+        run: corepack prepare pnpm@7 --activate
+
+      - name: Install root dependencies
+        run: pnpm install
+
+      - name: Reading Configuration
+        id: release_config
+        uses: rgarcia-phi/json-to-variables@v1.1.0
+        with:
+          filename: .github/config/release.json
+          prefix: release
+
+      # Core CLI
+      - name: Installing dependencies of core
+        id: core-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_core == 'true'}}
+        working-directory: ./packages/contentstack
+        run: npm install
+      - name: Compiling core
+        if: ${{ steps.core-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack
+        run: npm run prepack
+      - name: Publishing core (Beta)
+        id: publish-core
+        uses: JS-DevTools/npm-publish@v3
+        if: ${{ steps.core-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack/package.json
+          tag: beta
+
+      - name: Create Core Beta Release
+        if: ${{ steps.publish-core.conclusion == 'success' }}
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.publish-core.outputs.version }}
+        run: |
+          # Look for the last release specifically starting with the 'core@v' prefix
+          PREVIOUS_BETA=$(gh release list --limit 50 | grep 'core@v' | grep 'beta' | head -1 | cut -f1)
+
+          if [ -n "$PREVIOUS_BETA" ]; then
+            # Compare current core version against previous core version
+            gh release create "core@v$VERSION" --title "Core Beta $VERSION" --notes-from-tag "$PREVIOUS_BETA" --prerelease
+          else
+            # Fallback if this is the first core@v release
+            gh release create "core@v$VERSION" --title "Core Beta $VERSION" --generate-notes --prerelease
+          fi
