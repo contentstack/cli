@@ -22,13 +22,12 @@ jobs:
           node-version: '22.x'
           cache: 'pnpm' # optional but recommended
 
-      - name: Install dependencies for all plugins
-        run: |
-          NODE_ENV=PREPACK_MODE npm run bootstrap
+      - name: Install Dependencies (Excluding Contentstack)
+        run: pnpm install --filter="!./packages/contentstack"
 
-      - name: Build all plugins
+      - name: Build all plugins (Excluding Contentstack)
         run: |
-          NODE_ENV=PREPACK_MODE npm run build
+          pnpm run build --filter="!./packages/contentstack"
 
       - name: Run tests for Contentstack Command
         working-directory: ./packages/contentstack-command
