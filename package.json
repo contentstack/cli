@@ -17,7 +17,7 @@
     "bootstrap": "pnpm install",
     "clean:modules": "rm -rf node_modules packages/**/node_modules",
     "clean:lock": "rm -f pnpm-lock.yaml",
-    "clean:all": "pnpm store prune && pnpm run clean:modules && pnpm run clean:lock",
+    "clean:all": "pnpm store prune && rm -rf node_modules && pnpm run clean",
     "setup": "pnpm run clean:all && pnpm run bootstrap && pnpm run build",
     "prepare": "npx husky && chmod +x .husky/pre-commit"
   },
