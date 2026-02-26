@@ -1,4 +1,4 @@
-name: Release CLI Plugins (Beta)
+name: Release CLI Platform Plugins (v2 Beta)
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22.x'
-      
+
       - name: Enable Corepack
         run: corepack enable
 
@@ -24,7 +24,7 @@ jobs:
 
       - name: Install root dependencies
         run: pnpm install
-        
+
       - name: Reading Configuration
         id: release_config
         uses: rgarcia-phi/json-to-variables@v1.1.0
@@ -316,37 +316,20 @@ jobs:
           access: public
           tag: beta
 
-      # Core CLI
-      - name: Installing dependencies of core
-        id: core-installation
-        if: ${{env.release_releaseAll == 'true' || env.release_plugins_core == 'true'}}
-        working-directory: ./packages/contentstack
-        run: npm install
-      - name: Compiling core
-        if: ${{ steps.core-installation.conclusion == 'success'  }}
-        working-directory: ./packages/contentstack
-        run: npm run prepack
-      - name: Publishing core (Beta)
-        id: publish-core
-        uses: JS-DevTools/npm-publish@v3
-        if: ${{ steps.core-installation.conclusion == 'success'  }}
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/contentstack/package.json
-          tag: beta
-
-      - name: Create Beta Release
-        if: ${{ steps.publish-core.conclusion == 'success'  }}
-        id: create_release
+      - name: Create Platform Plugins Beta Release
+        # Adjust the ID below to match your actual publishing step ID for plugins
+        if: ${{ steps.publish-plugins.conclusion == 'success' }}
+        id: create_release_plugins
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ steps.publish-core.outputs.version }}
+          # Extract version from the output of your plugin publish step
+          VERSION: ${{ steps.publish-plugins.outputs.version }}
         run: |
-          # Get the previous beta release for comparison
-          PREVIOUS_BETA=$(gh release list --limit 10 | grep 'beta' | head -1 | cut -f1)
-          
+          # Look for the last release specifically starting with 'plugins@v'
+          PREVIOUS_BETA=$(gh release list --limit 50 | grep 'platform-plugins@v' | grep 'beta' | head -1 | cut -f1)
+
           if [ -n "$PREVIOUS_BETA" ]; then
-            gh release create v"$VERSION" --title "Beta Release $VERSION" --notes-from-tag "$PREVIOUS_BETA" --prerelease
+            gh release create "platform-plugins@v$VERSION" --title "Platform Plugins Beta $VERSION" --notes-from-tag "$PREVIOUS_BETA" --prerelease
           else
-            gh release create v"$VERSION" --title "Beta Release $VERSION" --generate-notes --prerelease
+            gh release create "platform-plugins@v$VERSION" --title "Platform Plugins Beta $VERSION" --generate-notes --prerelease
           fi

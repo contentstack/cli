@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
+    "build": "pnpm compile",
     "prepack": "npm run clean && npm run compile",
     "clean": "rm -rf ./lib tsconfig.build.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
