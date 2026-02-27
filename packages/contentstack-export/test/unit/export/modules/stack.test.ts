@@ -482,18 +482,16 @@ describe('ExportStack', () => {
         description: 'Settings description',
         settings: { global: { example: 'value' } },
       };
+      const expectedSettings = { ...settingsData, am_v2: { linked_workspaces: [] as any[] } };
       mockStackClient.settings = sinon.stub().resolves(settingsData);
 
       const result = await exportStack.exportStackSettings();
 
-      expect(writeFileStub.called).to.be.true;
-      expect(makeDirectoryStub.called).to.be.true;
-      // Should return the settings data
-      expect(result).to.deep.equal(settingsData);
-      // Verify file was written with correct path
-      const writeCall = writeFileStub.getCall(0);
+      expect(result).to.deep.equal(expectedSettings);
+      const writeCall = writeFileStub.firstCall;
       expect(writeCall.args[0]).to.include('settings.json');
-      expect(writeCall.args[1]).to.deep.equal(settingsData);
+      expect(writeCall.args[1]).to.deep.equal(expectedSettings);
+      expect(makeDirectoryStub.firstCall).to.not.be.null;
     });
 
     it('should handle errors when exporting settings without throwing', async () => {
