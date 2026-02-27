@@ -8,6 +8,7 @@
     "@contentstack/cli-command": "~2.0.0-beta",
     "@contentstack/cli-utilities": "~2.0.0-beta.1",
     "@contentstack/cli-variants": "~2.0.0-beta.7",
+    "@contentstack/cli-asset-management": "1.0.0",
     "@oclif/core": "^4.8.0",
     "async": "^3.2.6",
     "big-json": "^3.2.0",

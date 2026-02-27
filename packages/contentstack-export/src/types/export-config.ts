@@ -36,6 +36,7 @@ export default interface ExportConfig extends DefaultConfig {
   skipStackSettings?: boolean;
   skipDependencies?: boolean;
   authenticationMethod?: string;
+  linkedWorkspaces?: Array<{ uid: string; space_uid: string; is_default: boolean }>;
 }
 
 type branch = {
