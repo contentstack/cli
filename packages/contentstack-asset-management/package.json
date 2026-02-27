@@ -1,0 +1,47 @@
+{
+  "name": "@contentstack/cli-asset-management",
+  "version": "1.0.0",
+  "description": "Asset Management 2.0 API adapter for export and import",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "oclif.manifest.json"
+  ],
+  "scripts": {
+    "prepack": "pnpm compile && oclif manifest && oclif readme",
+    "compile": "tsc -b tsconfig.json",
+    "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
+    "test": "mocha --require ts-node/register --forbid-only \"test/**/*.test.ts\"",
+    "test:unit:report": "nyc --extension .ts mocha --require ts-node/register --forbid-only \"test/unit/**/*.test.ts\""
+  },
+  "keywords": [
+    "contentstack",
+    "asset-management",
+    "cli"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@contentstack/cli-utilities": "~2.0.0-beta"
+  },
+  "oclif": {
+    "commands": "./lib/commands",
+    "bin": "csdx",
+    "devPlugins": [
+      "@oclif/plugin-help"
+    ],
+    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-asset-management/<%- commandPath %>"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.11",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.17.50",
+    "@types/sinon": "^17.0.2",
+    "chai": "^4.4.1",
+    "mocha": "^10.8.2",
+    "nyc": "^15.1.0",
+    "sinon": "^17.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}

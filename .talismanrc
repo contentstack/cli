@@ -1,6 +1,18 @@
 fileignoreconfig:
   - filename: package-lock.json
-    checksum: 45100667793fc7dfaae3e24787871257e7f29e06df69ba10ec05b358d59ff15d
-  - filename: pnpm-lock.yaml
-    checksum: 87d001c32b1d7f9df30a289c277e0ea13cfd8a0e2e5fa5118956ff4183683e5c
+    checksum: 601217277684d397a213756ac3bf9e0048c5bd1637dbc8ad1dff0fb864354557
+  - filename: packages/contentstack-asset-management/src/utils/export-helpers.ts
+    checksum: 1a533a4e4d56a952f61ced63aa6f1bc8fbb3855fd7acecdd9fd40dd71e5fab6d
+  - filename: packages/contentstack-export/src/export/modules/stack.ts
+    checksum: 82f7df78993942debb79e690c8c27d0998157428ef506d0b07ea31d5a1f71aba
+  - filename: packages/contentstack-asset-management/src/export/base.ts
+    checksum: fcae2679bdeb93a6786cb290b60ba98f222a9c682552c6474370d17bf59ae1b4
+  - filename: packages/contentstack-asset-management/src/utils/asset-management-api-adapter.ts
+    checksum: 6f5e11d3685b6093d6c4def7fc4199f673d9a56e5fbc2858ed72f69d764f1260
+  - filename: packages/contentstack-asset-management/src/types/export-types.ts
+    checksum: d00ca608006d864f516e21b76d552c0ecf52ff89b3dcb361ed11ac600abed989
+  - filename: packages/contentstack-asset-management/test/unit/utils/export-helpers.test.ts
+    checksum: 0e8751163491fc45e7ae3999282d336ae1ab8a9f88e601cbb85b4f44e8db96b8
+  - filename: packages/contentstack-asset-management/test/unit/utils/asset-management-api-adapter.test.ts
+    checksum: fb076af66b4ffa5cf4a8e43d70dd5aa76d97ce30e0fb519dbdcbb316585ab4e2
 version: '1.0'

@@ -3,6 +3,11 @@ export const PROCESS_NAMES = {
   ASSET_FOLDERS: 'Folders',
   ASSET_METADATA: 'Metadata',
   ASSET_DOWNLOADS: 'Downloads',
+  /** Used when Assets module runs Asset Management 2.0 path (spaces, metadata, folders, assets, downloads). */
+  ASSET_MANAGEMENT_SPACES: 'Spaces & assets',
+
+  // Asset Management 2.0 module
+  ASSET_MANAGEMENT_EXPORT: 'Asset Management 2.0',
 
   // Custom Roles module
   FETCH_ROLES: 'Fetch Roles',
@@ -37,6 +42,7 @@ export const PROCESS_NAMES = {
 
 export const MODULE_CONTEXTS = {
   ASSETS: 'assets',
+  ASSET_MANAGEMENT: 'asset-management',
   CONTENT_TYPES: 'content-types',
   CUSTOM_ROLES: 'custom-roles',
   ENTRIES: 'entries',
@@ -56,6 +62,7 @@ export const MODULE_CONTEXTS = {
 // Display names for modules to avoid scattering user-facing strings
 export const MODULE_NAMES = {
   [MODULE_CONTEXTS.ASSETS]: 'Assets',
+  [MODULE_CONTEXTS.ASSET_MANAGEMENT]: 'Asset Management 2.0',
   [MODULE_CONTEXTS.CONTENT_TYPES]: 'Content Types',
   [MODULE_CONTEXTS.CUSTOM_ROLES]: 'Custom Roles',
   [MODULE_CONTEXTS.ENTRIES]: 'Entries',
@@ -85,6 +92,15 @@ export const PROCESS_STATUS = {
   [PROCESS_NAMES.ASSET_DOWNLOADS]: {
     DOWNLOADING: 'Downloading asset file...',
     FAILED: 'Failed to download asset:',
+  },
+  [PROCESS_NAMES.ASSET_MANAGEMENT_SPACES]: {
+    EXPORTING: 'Exporting spaces & assets...',
+    FAILED: 'Failed to export spaces & assets.',
+  },
+  // Asset Management 2.0
+  [PROCESS_NAMES.ASSET_MANAGEMENT_EXPORT]: {
+    EXPORTING: 'Exporting...',
+    FAILED: 'Asset Management export failed.',
   },
   // Custom Roles
   [PROCESS_NAMES.FETCH_ROLES]: {
