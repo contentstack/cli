@@ -1,11 +1,6 @@
 import find from 'lodash/find';
 import { resolve as pResolve } from 'node:path';
-import {
-  handleAndLogError,
-  isAuthenticated,
-  managementSDKClient,
-  log,
-} from '@contentstack/cli-utilities';
+import { handleAndLogError, isAuthenticated, managementSDKClient, log } from '@contentstack/cli-utilities';
 import { PATH_CONSTANTS } from '../../constants';
 
 import BaseClass from './base-class';
@@ -15,6 +10,7 @@ import {
   MODULE_CONTEXTS,
   PROCESS_STATUS,
   MODULE_NAMES,
+  getLinkedWorkspacesForBranch,
 } from '../../utils';
 import { StackConfig, ModuleClassParams } from '../../types';
 
@@ -79,10 +75,7 @@ export default class ExportStack extends BaseClass {
       if (!this.exportConfig.management_token) {
         progress
           .startProcess(PROCESS_NAMES.STACK_SETTINGS)
-          .updateStatus(
-            PROCESS_STATUS[PROCESS_NAMES.STACK_SETTINGS].EXPORTING,
-            PROCESS_NAMES.STACK_SETTINGS,
-          );
+          .updateStatus(PROCESS_STATUS[PROCESS_NAMES.STACK_SETTINGS].EXPORTING, PROCESS_NAMES.STACK_SETTINGS);
         await this.exportStackSettings();
         progress.completeProcess(PROCESS_NAMES.STACK_SETTINGS, true);
       } else {
@@ -95,10 +88,7 @@ export default class ExportStack extends BaseClass {
       if (!this.exportConfig.preserveStackVersion && !this.exportConfig.hasOwnProperty('master_locale')) {
         progress
           .startProcess(PROCESS_NAMES.STACK_LOCALE)
-          .updateStatus(
-            PROCESS_STATUS[PROCESS_NAMES.STACK_LOCALE].FETCHING,
-            PROCESS_NAMES.STACK_LOCALE,
-          );
+          .updateStatus(PROCESS_STATUS[PROCESS_NAMES.STACK_LOCALE].FETCHING, PROCESS_NAMES.STACK_LOCALE);
         const masterLocale = await this.getLocales();
         progress.completeProcess(PROCESS_NAMES.STACK_LOCALE, true);
 
@@ -112,10 +102,7 @@ export default class ExportStack extends BaseClass {
       } else if (this.exportConfig.preserveStackVersion) {
         progress
           .startProcess(PROCESS_NAMES.STACK_DETAILS)
-          .updateStatus(
-            PROCESS_STATUS[PROCESS_NAMES.STACK_DETAILS].EXPORTING,
-            PROCESS_NAMES.STACK_DETAILS,
-          );
+          .updateStatus(PROCESS_STATUS[PROCESS_NAMES.STACK_DETAILS].EXPORTING, PROCESS_NAMES.STACK_DETAILS);
         const stackResult = await this.exportStack();
         progress.completeProcess(PROCESS_NAMES.STACK_DETAILS, true);
 
@@ -126,7 +113,6 @@ export default class ExportStack extends BaseClass {
       }
 
       this.completeProgressWithMessage();
-
     } catch (error) {
       log.debug('Error occurred during stack export', this.exportConfig.context);
       handleAndLogError(error, { ...this.exportConfig.context });
@@ -233,18 +219,13 @@ export default class ExportStack extends BaseClass {
 
     return this.stack
       .fetch()
-      .then((resp: any) => {
+      .then(async (resp: any) => {
         const stackFilePath = pResolve(this.stackFolderPath, this.stackConfig.fileName);
         log.debug(`Writing stack data to: '${stackFilePath}'`, this.exportConfig.context);
         fsUtil.writeFile(stackFilePath, resp);
 
         // Track progress for stack export completion
-        this.progressManager?.tick(
-          true,
-          `stack: ${this.exportConfig.apiKey}`,
-          null,
-          PROCESS_NAMES.STACK_DETAILS,
-        );
+        this.progressManager?.tick(true, `stack: ${this.exportConfig.apiKey}`, null, PROCESS_NAMES.STACK_DETAILS);
 
         log.success(
           `Stack details exported successfully for stack ${this.exportConfig.apiKey}`,
@@ -270,14 +251,26 @@ export default class ExportStack extends BaseClass {
     await fsUtil.makeDirectory(this.stackFolderPath);
     return this.stack
       .settings()
-      .then((resp: any) => {
-        fsUtil.writeFile(pResolve(this.stackFolderPath, PATH_CONSTANTS.FILES.SETTINGS), resp);
+      .then(async (resp: any) => {
+        const linked = await getLinkedWorkspacesForBranch(
+          this.stack,
+          this.exportConfig.branchName || 'main',
+          this.exportConfig.context as unknown as Record<string, unknown>,
+        );
+        const settings = {
+          ...resp,
+          am_v2: { ...(resp.am_v2 ?? {}), linked_workspaces: linked },
+        };
+        fsUtil.writeFile(pResolve(this.stackFolderPath, PATH_CONSTANTS.FILES.SETTINGS), settings);
+
+        this.exportConfig.linkedWorkspaces = linked;
 
         // Track progress for stack settings completion
         this.progressManager?.tick(true, 'stack settings', null, PROCESS_NAMES.STACK_SETTINGS);
 
+        log.debug(`Included ${linked.length} linked workspace(s) in settings`, this.exportConfig.context);
         log.success('Exported stack settings successfully!', this.exportConfig.context);
-        return resp;
+        return settings;
       })
       .catch((error: any) => {
         this.progressManager?.tick(

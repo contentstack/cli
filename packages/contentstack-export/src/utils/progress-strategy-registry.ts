@@ -1,3 +1,4 @@
+import { AM_MAIN_PROCESS_NAME } from '@contentstack/cli-asset-management';
 import { MODULE_CONTEXTS, MODULE_NAMES, PROCESS_NAMES } from './constants';
 /**
  * Progress Strategy Registrations for Export Modules
@@ -20,14 +21,31 @@ try {
   ProgressStrategyRegistry.register(
     MODULE_NAMES[MODULE_CONTEXTS.ASSETS],
     new CustomProgressStrategy((processes) => {
-      // Both ASSET_METADATA and ASSET_DOWNLOADS represent the same assets
-      // Count only the downloads process to avoid double counting in summary
+      // Legacy path: both ASSET_METADATA and ASSET_DOWNLOADS represent the same assets
       const downloadsProcess = processes.get(PROCESS_NAMES.ASSET_DOWNLOADS);
       if (downloadsProcess) {
         return {
           total: downloadsProcess.total,
           success: downloadsProcess.successCount,
           failures: downloadsProcess.failureCount,
+        };
+      }
+
+      // Asset Management 2.0 path (process name owned by AM package)
+      const amProcess = processes.get(AM_MAIN_PROCESS_NAME);
+      if (amProcess) {
+        return {
+          total: amProcess.total,
+          success: amProcess.successCount,
+          failures: amProcess.failureCount,
+        };
+      }
+      const spacesProcess = processes.get(PROCESS_NAMES.ASSET_MANAGEMENT_SPACES);
+      if (spacesProcess) {
+        return {
+          total: spacesProcess.total,
+          success: spacesProcess.successCount,
+          failures: spacesProcess.failureCount,
         };
       }
 

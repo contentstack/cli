@@ -8,4 +8,5 @@ export { log, unlinkFileLogger } from './logger';
 export { default as login } from './basic-login';
 export * from './common-helper';
 export * from './marketplace-app-helper';
+export { getLinkedWorkspacesForBranch } from './get-linked-workspaces';
 export { MODULE_CONTEXTS, MODULE_NAMES, PROCESS_NAMES, PROCESS_STATUS } from './constants';

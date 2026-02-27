@@ -25,7 +25,14 @@ import { PATH_CONSTANTS } from '../../constants';
 import config from '../../config';
 import { ModuleClassParams } from '../../types';
 import BaseClass, { CustomPromiseHandler, CustomPromiseHandlerInput } from './base-class';
-import { PROCESS_NAMES, MODULE_CONTEXTS, PROCESS_STATUS, MODULE_NAMES } from '../../utils';
+import { ExportSpaces } from '@contentstack/cli-asset-management';
+import {
+  PROCESS_NAMES,
+  MODULE_CONTEXTS,
+  PROCESS_STATUS,
+  MODULE_NAMES,
+  getOrgUid,
+} from '../../utils';
 
 export default class ExportAssets extends BaseClass {
   private assetsRootPath: string;
@@ -48,7 +55,45 @@ export default class ExportAssets extends BaseClass {
   }
 
   async start(): Promise<void> {
-      this.assetsRootPath = pResolve(
+    const linkedWorkspaces = this.exportConfig.linkedWorkspaces ?? [];
+
+    if (linkedWorkspaces.length > 0) {
+      const assetManagementUrl = this.exportConfig.region?.assetManagementUrl;
+      if (!assetManagementUrl) {
+        this.completeProgress(
+          false,
+          'Asset Management URL is required for AM 2.0 export. Ensure your region is configured with assetManagementUrl.',
+        );
+        throw new Error(
+          'Asset Management URL is required for AM 2.0 export. Ensure your region is configured with assetManagementUrl.',
+        );
+      }
+      log.debug(`Exporting with AM 2.0: ${assetManagementUrl} (linked_workspaces from exportConfig)`, this.exportConfig.context);
+      this.exportConfig.org_uid = this.exportConfig.org_uid || (await getOrgUid(this.exportConfig));
+      const progress = this.createNestedProgress(this.currentModuleName);
+      try {
+        const exporter = new ExportSpaces({
+          linkedWorkspaces,
+          exportDir: this.exportConfig.exportDir,
+          branchName: this.exportConfig.branchName || 'main',
+          assetManagementUrl,
+          org_uid: this.exportConfig.org_uid ?? '',
+          context: this.exportConfig.context as unknown as Record<string, unknown>,
+          securedAssets: this.exportConfig.securedAssets,
+        });
+        exporter.setParentProgressManager(progress);
+        await exporter.start();
+        this.completeProgressWithMessage();
+      } catch (error) {
+        this.completeProgress(false, (error as Error)?.message ?? 'Asset Management export failed');
+        throw error;
+      }
+      return;
+    }
+
+    log.debug('Using legacy asset export (no linked_workspaces in exportConfig)', this.exportConfig.context);
+
+    this.assetsRootPath = pResolve(
       this.exportConfig.exportDir,
       this.exportConfig.branchName || '',
       this.assetConfig.dirName,
