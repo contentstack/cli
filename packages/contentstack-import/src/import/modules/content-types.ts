@@ -136,13 +136,13 @@ export default class ContentTypesImport extends BaseClass {
     this.pendingGFs = [];
     this.pendingExts = [];
     this.taxonomiesPath = path.join(
-      sanitizePath(importConfig.contentDir),
+      sanitizePath(importConfig.backupDir),
       PATH_CONSTANTS.MAPPER,
       PATH_CONSTANTS.MAPPER_MODULES.TAXONOMIES,
       PATH_CONSTANTS.FILES.SUCCESS,
     );
     this.extPendingPath = path.join(
-      sanitizePath(importConfig.contentDir),
+      sanitizePath(importConfig.backupDir),
       PATH_CONSTANTS.MAPPER,
       PATH_CONSTANTS.MAPPER_MODULES.EXTENSIONS,
       PATH_CONSTANTS.FILES.PENDING_EXTENSIONS,
