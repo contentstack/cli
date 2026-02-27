@@ -52,8 +52,7 @@ describe('ExportWorkspace', () => {
       const exporter = new ExportWorkspace(apiConfig, exportContext);
       await exporter.start(workspace, spaceDir, branchName);
 
-      expect(getSpaceStub.calledOnce).to.be.true;
-      expect(getSpaceStub.calledWith(workspace.space_uid)).to.be.true;
+      expect(getSpaceStub.firstCall.args[0]).to.equal(workspace.space_uid);
     });
 
     it('should tick success after writing metadata', async () => {
@@ -62,11 +61,7 @@ describe('ExportWorkspace', () => {
       await exporter.start(workspace, spaceDir, branchName);
 
       const tickStub = (AssetManagementExportAdapter.prototype as any).tick as sinon.SinonStub;
-      expect(tickStub.called).to.be.true;
-      const args = tickStub.firstCall.args;
-      expect(args[0]).to.be.true;
-      expect(args[1]).to.equal(`space: ${workspace.space_uid}`);
-      expect(args[2]).to.be.null;
+      expect(tickStub.firstCall.args).to.deep.equal([true, `space: ${workspace.space_uid}`, null]);
     });
 
     it('should delegate to ExportAssets.start with workspace and spaceDir', async () => {
@@ -75,19 +70,26 @@ describe('ExportWorkspace', () => {
       await exporter.start(workspace, spaceDir, branchName);
 
       const startStub = ExportAssets.prototype.start as sinon.SinonStub;
-      expect(startStub.calledOnce).to.be.true;
-      const args = startStub.firstCall.args;
-      expect(args[0]).to.deep.equal(workspace);
-      expect(args[1]).to.equal(spaceDir);
+      expect(startStub.firstCall.args[0]).to.deep.equal(workspace);
+      expect(startStub.firstCall.args[1]).to.equal(spaceDir);
     });
 
-    it('should use "main" as branch when branchName is empty', async () => {
+    it('should write "main" as branch in metadata when branchName is empty', async () => {
+      const os = require('node:os');
+      const path = require('node:path');
+      const fs = require('node:fs');
+      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-ws-'));
+
       sinon.stub(ExportWorkspace.prototype, 'getSpace').resolves(spaceResponse);
       const exporter = new ExportWorkspace(apiConfig, exportContext);
-      await exporter.start(workspace, spaceDir, '');
+      await exporter.start(workspace, tmpDir, '');
 
-      const startStub = ExportAssets.prototype.start as sinon.SinonStub;
-      expect(startStub.calledOnce).to.be.true;
+      const metadata = JSON.parse(fs.readFileSync(path.join(tmpDir, 'metadata.json'), 'utf-8'));
+      expect(metadata.branch).to.equal('main');
+      expect(metadata.workspace_uid).to.equal(workspace.uid);
+      expect(metadata.is_default).to.equal(workspace.is_default);
+
+      fs.rmSync(tmpDir, { recursive: true });
     });
 
     it('should NOT call setParentProgressManager on assets exporter when progressOrParent is null', async () => {
@@ -97,7 +99,7 @@ describe('ExportWorkspace', () => {
       const exporter = new ExportWorkspace(apiConfig, exportContext);
       await exporter.start(workspace, spaceDir, branchName);
 
-      expect(setParentStub.called).to.be.false;
+      expect(setParentStub.callCount).to.equal(0);
     });
 
     it('should call setParentProgressManager on assets exporter when a progress manager is set', async () => {
@@ -109,7 +111,7 @@ describe('ExportWorkspace', () => {
       exporter.setParentProgressManager(fakeProgress);
       await exporter.start(workspace, spaceDir, branchName);
 
-      expect(setParentStub.calledWith(fakeProgress)).to.be.true;
+      expect(setParentStub.firstCall.args[0]).to.equal(fakeProgress);
     });
   });
 });

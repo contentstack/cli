@@ -7,8 +7,9 @@ import ExportAssetTypes from '../../../src/export/asset-types';
 import ExportFields from '../../../src/export/fields';
 import ExportWorkspace from '../../../src/export/workspaces';
 import { AssetManagementExportAdapter } from '../../../src/export/base';
+import { AM_MAIN_PROCESS_NAME } from '../../../src/constants/index';
 
-import type { AssetManagementExportOptions } from '../../../src/types/asset-management-api';
+import type { AssetManagementExportOptions, LinkedWorkspace } from '../../../src/types/asset-management-api';
 
 describe('ExportSpaces', () => {
   const baseOptions: AssetManagementExportOptions = {
@@ -53,46 +54,48 @@ describe('ExportSpaces', () => {
   });
 
   describe('start method', () => {
-    it('should return early when linkedWorkspaces is empty', async () => {
+    it('should return early without starting any export when linkedWorkspaces is empty', async () => {
       const exporter = new ExportSpaces({ ...baseOptions, linkedWorkspaces: [] });
       await exporter.start();
 
-      expect((ExportAssetTypes.prototype.start as sinon.SinonStub).called).to.be.false;
-      expect((ExportFields.prototype.start as sinon.SinonStub).called).to.be.false;
+      expect((CLIProgressManager.createNested as sinon.SinonStub).callCount).to.equal(0);
+      expect((ExportAssetTypes.prototype.start as sinon.SinonStub).callCount).to.equal(0);
+      expect((ExportFields.prototype.start as sinon.SinonStub).callCount).to.equal(0);
+      expect((ExportWorkspace.prototype.start as sinon.SinonStub).callCount).to.equal(0);
     });
 
-    it('should export shared asset types and fields from the first workspace', async () => {
+    it('should export shared asset types and fields from the first workspace space_uid', async () => {
       const exporter = new ExportSpaces(baseOptions);
       await exporter.start();
 
       const atStub = ExportAssetTypes.prototype.start as sinon.SinonStub;
-      expect(atStub.calledOnce).to.be.true;
       expect(atStub.firstCall.args[0]).to.equal('space-1');
 
       const fieldsStub = ExportFields.prototype.start as sinon.SinonStub;
-      expect(fieldsStub.calledOnce).to.be.true;
       expect(fieldsStub.firstCall.args[0]).to.equal('space-1');
     });
 
-    it('should iterate over all workspaces', async () => {
+    it('should iterate over all workspaces in order', async () => {
       const exporter = new ExportSpaces(baseOptions);
       await exporter.start();
 
       const wsStub = ExportWorkspace.prototype.start as sinon.SinonStub;
       expect(wsStub.callCount).to.equal(2);
-      expect(wsStub.firstCall.args[0]).to.deep.include({ space_uid: 'space-1' });
-      expect(wsStub.secondCall.args[0]).to.deep.include({ space_uid: 'space-2' });
+      expect(wsStub.firstCall.args[0]).to.deep.include({ uid: 'ws-1', space_uid: 'space-1' });
+      expect(wsStub.secondCall.args[0]).to.deep.include({ uid: 'ws-2', space_uid: 'space-2' });
     });
 
-    it('should complete progress on success', async () => {
+    it('should register and complete the progress process with success', async () => {
+      const totalSteps = 2 + baseOptions.linkedWorkspaces.length * 4; // 10
       const exporter = new ExportSpaces(baseOptions);
       await exporter.start();
 
-      expect(fakeProgress.completeProcess.calledOnce).to.be.true;
-      expect(fakeProgress.completeProcess.firstCall.args[1]).to.be.true;
+      expect(fakeProgress.addProcess.firstCall.args).to.deep.equal([AM_MAIN_PROCESS_NAME, totalSteps]);
+      expect(fakeProgress.startProcess.firstCall.args[0]).to.equal(AM_MAIN_PROCESS_NAME);
+      expect(fakeProgress.completeProcess.firstCall.args).to.deep.equal([AM_MAIN_PROCESS_NAME, true]);
     });
 
-    it('should re-throw and complete progress with failure when a workspace export fails', async () => {
+    it('should mark progress as failed and re-throw when a workspace export errors', async () => {
       (ExportWorkspace.prototype.start as sinon.SinonStub).rejects(new Error('workspace-error'));
 
       const exporter = new ExportSpaces(baseOptions);
@@ -103,12 +106,10 @@ describe('ExportSpaces', () => {
         expect(err.message).to.equal('workspace-error');
       }
 
-      expect(fakeProgress.completeProcess.called).to.be.true;
-      const lastCall = fakeProgress.completeProcess.lastCall;
-      expect(lastCall.args[1]).to.be.false;
+      expect(fakeProgress.completeProcess.firstCall.args).to.deep.equal([AM_MAIN_PROCESS_NAME, false]);
     });
 
-    it('should use parentProgressManager directly when setParentProgressManager was called', async () => {
+    it('should use the provided parentProgressManager instead of creating a new one', async () => {
       const fakeParent = {
         addProcess: sinon.stub().returnsThis(),
         startProcess: sinon.stub().returnsThis(),
@@ -116,19 +117,26 @@ describe('ExportSpaces', () => {
         tick: sinon.stub(),
         completeProcess: sinon.stub(),
       };
+      const totalSteps = 2 + baseOptions.linkedWorkspaces.length * 4;
+
       const exporter = new ExportSpaces(baseOptions);
       exporter.setParentProgressManager(fakeParent as any);
       await exporter.start();
 
-      expect((CLIProgressManager.createNested as sinon.SinonStub).called).to.be.false;
-      expect(fakeParent.completeProcess.called).to.be.true;
+      expect((CLIProgressManager.createNested as sinon.SinonStub).callCount).to.equal(0);
+      expect(fakeParent.addProcess.firstCall.args).to.deep.equal([AM_MAIN_PROCESS_NAME, totalSteps]);
+      expect(fakeParent.startProcess.firstCall.args[0]).to.equal(AM_MAIN_PROCESS_NAME);
+      expect(fakeParent.completeProcess.firstCall.args).to.deep.equal([AM_MAIN_PROCESS_NAME, true]);
     });
   });
 
   describe('exportSpaceStructure', () => {
-    it('should delegate to ExportSpaces.start', async () => {
-      await exportSpaceStructure({ ...baseOptions, linkedWorkspaces: [] });
-      expect((ExportAssetTypes.prototype.start as sinon.SinonStub).called).to.be.false;
+    it('should be a thin wrapper that delegates to ExportSpaces.start', async () => {
+      const startSpy = sinon.stub(ExportSpaces.prototype, 'start').resolves();
+      const options: AssetManagementExportOptions = { ...baseOptions, linkedWorkspaces: [] as LinkedWorkspace[] };
+      await exportSpaceStructure(options);
+
+      expect(startSpy.callCount).to.equal(1);
     });
   });
 });

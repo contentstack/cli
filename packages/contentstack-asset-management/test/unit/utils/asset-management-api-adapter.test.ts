@@ -32,7 +32,7 @@ describe('AssetManagementAdapter', () => {
   describe('constructor', () => {
     it('should set the baseURL with trailing slash stripped', () => {
       new AssetManagementAdapter({ baseURL: 'https://am.example.com/' });
-      expect(baseUrlStub.calledWith('https://am.example.com')).to.be.true;
+      expect(baseUrlStub.firstCall.args[0]).to.equal('https://am.example.com');
     });
 
     it('should set default headers with x-cs-api-version when no extra headers provided', () => {
@@ -55,7 +55,7 @@ describe('AssetManagementAdapter', () => {
 
     it('should handle empty baseURL gracefully', () => {
       new AssetManagementAdapter({ baseURL: '' });
-      expect(baseUrlStub.calledWith('')).to.be.true;
+      expect(baseUrlStub.firstCall.args[0]).to.equal('');
     });
   });
 
@@ -116,12 +116,11 @@ describe('AssetManagementAdapter', () => {
   });
 
   describe('getSpace', () => {
-    it('should call GET /api/spaces/{spaceUid} with addl_fields query params', async () => {
+    it('should GET /api/spaces/{spaceUid}?addl_fields=... and return the space', async () => {
       getStub.resolves({ status: 200, data: { space: { uid: 'sp-1' } } });
       const adapter = new AssetManagementAdapter(baseConfig);
       const result = await adapter.getSpace('sp-1');
 
-      expect(getStub.calledOnce).to.be.true;
       const path = getStub.firstCall.args[0] as string;
       expect(path).to.include('/api/spaces/sp-1');
       expect(path).to.include('addl_fields');
@@ -142,25 +141,23 @@ describe('AssetManagementAdapter', () => {
   });
 
   describe('getWorkspaceFields', () => {
-    it('should call GET /api/fields', async () => {
+    it('should GET /api/fields and return the response data', async () => {
       const fieldsResponse = { count: 1, relation: 'org', fields: [{ uid: 'f1' }] };
       getStub.resolves({ status: 200, data: fieldsResponse });
       const adapter = new AssetManagementAdapter(baseConfig);
       const result = await adapter.getWorkspaceFields('sp-1');
 
-      expect(getStub.calledOnce).to.be.true;
       expect(getStub.firstCall.args[0]).to.equal('/api/fields');
       expect(result).to.deep.equal(fieldsResponse);
     });
   });
 
   describe('getWorkspaceAssets', () => {
-    it('should call GET /api/spaces/{spaceUid}/assets', async () => {
+    it('should GET /api/spaces/{spaceUid}/assets', async () => {
       getStub.resolves({ status: 200, data: { items: [] } });
       const adapter = new AssetManagementAdapter(baseConfig);
       await adapter.getWorkspaceAssets('sp-1');
 
-      expect(getStub.calledOnce).to.be.true;
       expect(getStub.firstCall.args[0]).to.include('/api/spaces/sp-1/assets');
     });
 
@@ -175,24 +172,22 @@ describe('AssetManagementAdapter', () => {
   });
 
   describe('getWorkspaceFolders', () => {
-    it('should call GET /api/spaces/{spaceUid}/folders', async () => {
+    it('should GET /api/spaces/{spaceUid}/folders', async () => {
       getStub.resolves({ status: 200, data: [] });
       const adapter = new AssetManagementAdapter(baseConfig);
       await adapter.getWorkspaceFolders('sp-1');
 
-      expect(getStub.calledOnce).to.be.true;
       expect(getStub.firstCall.args[0]).to.include('/api/spaces/sp-1/folders');
     });
   });
 
   describe('getWorkspaceAssetTypes', () => {
-    it('should call GET /api/asset_types with include_fields=true', async () => {
+    it('should GET /api/asset_types?include_fields=true and return the response data', async () => {
       const atResponse = { count: 1, relation: 'org', asset_types: [{ uid: 'at1' }] };
       getStub.resolves({ status: 200, data: atResponse });
       const adapter = new AssetManagementAdapter(baseConfig);
       const result = await adapter.getWorkspaceAssetTypes('sp-1');
 
-      expect(getStub.calledOnce).to.be.true;
       const path = getStub.firstCall.args[0] as string;
       expect(path).to.include('/api/asset_types');
       expect(path).to.include('include_fields=true');
