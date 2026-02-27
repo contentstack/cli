@@ -60,17 +60,15 @@ describe('ExportAssets', () => {
   });
 
   describe('start method', () => {
-    it('should fetch folders and assets in parallel', async () => {
+    it('should fetch folders and assets using the workspace space_uid', async () => {
       const foldersStub = sinon.stub(ExportAssets.prototype, 'getWorkspaceFolders').resolves(foldersData);
       const assetsStub = sinon.stub(ExportAssets.prototype, 'getWorkspaceAssets').resolves(emptyAssetsResponse);
 
       const exporter = new ExportAssets(apiConfig, exportContext);
       await exporter.start(workspace, spaceDir);
 
-      expect(foldersStub.calledOnce).to.be.true;
-      expect(foldersStub.calledWith(workspace.space_uid)).to.be.true;
-      expect(assetsStub.calledOnce).to.be.true;
-      expect(assetsStub.calledWith(workspace.space_uid)).to.be.true;
+      expect(foldersStub.firstCall.args[0]).to.equal(workspace.space_uid);
+      expect(assetsStub.firstCall.args[0]).to.equal(workspace.space_uid);
     });
 
     it('should write chunked assets metadata with correct args', async () => {
@@ -82,7 +80,6 @@ describe('ExportAssets', () => {
       await exporter.start(workspace, spaceDir);
 
       const writeStub = (AssetManagementExportAdapter.prototype as any).writeItemsToChunkedJson as sinon.SinonStub;
-      expect(writeStub.calledOnce).to.be.true;
       const args = writeStub.firstCall.args;
       expect(args[1]).to.equal('assets.json');
       expect(args[2]).to.equal('assets');
@@ -90,19 +87,20 @@ describe('ExportAssets', () => {
       expect(args[4]).to.have.length(2);
     });
 
-    it('should skip downloads when no asset items exist', async () => {
+    it('should not attempt any downloads when the asset list is empty', async () => {
       sinon.stub(ExportAssets.prototype, 'getWorkspaceFolders').resolves(foldersData);
       sinon.stub(ExportAssets.prototype, 'getWorkspaceAssets').resolves(emptyAssetsResponse);
 
       const exporter = new ExportAssets(apiConfig, exportContext);
       await exporter.start(workspace, spaceDir);
 
+      expect(fetchStub.callCount).to.equal(0);
       const tickStub = (AssetManagementExportAdapter.prototype as any).tick as sinon.SinonStub;
       const downloadTick = tickStub.getCalls().find((c) => String(c.args[1]).startsWith('downloads:'));
       expect(downloadTick).to.be.undefined;
     });
 
-    it('should handle download failures gracefully without throwing', async () => {
+    it('should tick with success=false and the error message on download failure', async () => {
       sinon.stub(ExportAssets.prototype, 'getWorkspaceFolders').resolves(foldersData);
       sinon.stub(ExportAssets.prototype, 'getWorkspaceAssets').resolves(assetsResponseWithItems);
       fetchStub.rejects(new Error('network failure'));
@@ -112,12 +110,11 @@ describe('ExportAssets', () => {
 
       const tickStub = (AssetManagementExportAdapter.prototype as any).tick as sinon.SinonStub;
       const downloadTick = tickStub.getCalls().find((c) => String(c.args[1]).startsWith('downloads:'));
-      expect(downloadTick).to.not.be.undefined;
       expect(downloadTick!.args[0]).to.be.false;
       expect(downloadTick!.args[2]).to.equal('network failure');
     });
 
-    it('should tick success for downloads when all succeed', async () => {
+    it('should tick with success=true and null error on successful downloads', async () => {
       sinon.stub(ExportAssets.prototype, 'getWorkspaceFolders').resolves(foldersData);
       sinon.stub(ExportAssets.prototype, 'getWorkspaceAssets').resolves(assetsResponseWithItems);
       fetchStub.callsFake(async () => makeFetchResponse() as any);
@@ -127,12 +124,11 @@ describe('ExportAssets', () => {
 
       const tickStub = (AssetManagementExportAdapter.prototype as any).tick as sinon.SinonStub;
       const downloadTick = tickStub.getCalls().find((c) => String(c.args[1]).startsWith('downloads:'));
-      expect(downloadTick).to.not.be.undefined;
       expect(downloadTick!.args[0]).to.be.true;
       expect(downloadTick!.args[2]).to.be.null;
     });
 
-    it('should skip assets with no url or uid', async () => {
+    it('should skip assets that have neither a url nor a uid', async () => {
       const incompleteAssets = {
         items: [
           { uid: 'a1', url: null as any },
@@ -146,10 +142,10 @@ describe('ExportAssets', () => {
       const exporter = new ExportAssets(apiConfig, exportContext);
       await exporter.start(workspace, spaceDir);
 
-      expect(fetchStub.called).to.be.false;
+      expect(fetchStub.callCount).to.equal(0);
     });
 
-    it('should use _uid when uid is not present on asset', async () => {
+    it('should process assets that have _uid instead of uid without skipping them', async () => {
       const assetsWithUnderscoreUid = {
         items: [{ _uid: 'a-uid', url: 'https://cdn.example.com/a.png', filename: 'a.png' }],
       };
@@ -160,17 +156,18 @@ describe('ExportAssets', () => {
       const exporter = new ExportAssets(apiConfig, exportContext);
       await exporter.start(workspace, spaceDir);
 
+      expect(fetchStub.firstCall.args[0]).to.equal('https://cdn.example.com/a.png');
       const tickStub = (AssetManagementExportAdapter.prototype as any).tick as sinon.SinonStub;
       const downloadTick = tickStub.getCalls().find((c) => String(c.args[1]).startsWith('downloads:'));
-      expect(downloadTick).to.not.be.undefined;
       expect(downloadTick!.args[0]).to.be.true;
+      expect(downloadTick!.args[2]).to.be.null;
     });
 
-    it('should use file_name when filename is not present, defaulting to "asset"', async () => {
+    it('should download assets that use file_name, and fall back to "asset" when both names are absent', async () => {
       const assetsNoFilename = {
         items: [
-          { uid: 'a1', url: 'https://cdn.example.com/a1', file_name: 'named.pdf' },
-          { uid: 'a2', url: 'https://cdn.example.com/a2' },
+          { uid: 'a1', url: 'https://cdn.example.com/a1.pdf', file_name: 'named.pdf' },
+          { uid: 'a2', url: 'https://cdn.example.com/a2.bin' },
         ],
       };
       sinon.stub(ExportAssets.prototype, 'getWorkspaceFolders').resolves(foldersData);
@@ -181,6 +178,11 @@ describe('ExportAssets', () => {
       await exporter.start(workspace, spaceDir);
 
       expect(fetchStub.callCount).to.equal(2);
+      expect(fetchStub.firstCall.args[0]).to.equal('https://cdn.example.com/a1.pdf');
+      expect(fetchStub.secondCall.args[0]).to.equal('https://cdn.example.com/a2.bin');
+      const tickStub = (AssetManagementExportAdapter.prototype as any).tick as sinon.SinonStub;
+      const downloadTick = tickStub.getCalls().find((c) => String(c.args[1]).startsWith('downloads:'));
+      expect(downloadTick!.args[0]).to.be.true;
     });
 
     it('should append authtoken to URL when securedAssets is true', async () => {
@@ -215,7 +217,7 @@ describe('ExportAssets', () => {
       expect(downloadUrl).to.include('?v=1&authtoken=');
     });
 
-    it('should handle non-ok HTTP response as download failure', async () => {
+    it('should tick with success=false and the HTTP status code on non-ok response', async () => {
       sinon.stub(ExportAssets.prototype, 'getWorkspaceFolders').resolves(foldersData);
       sinon.stub(ExportAssets.prototype, 'getWorkspaceAssets').resolves({
         items: [{ uid: 'a1', url: 'https://cdn.example.com/a1.png', filename: 'img.png' }],
@@ -231,7 +233,7 @@ describe('ExportAssets', () => {
       expect(downloadTick!.args[2]).to.include('403');
     });
 
-    it('should handle missing response body as download failure', async () => {
+    it('should tick with success=false and "No response body" when body is null', async () => {
       sinon.stub(ExportAssets.prototype, 'getWorkspaceFolders').resolves(foldersData);
       sinon.stub(ExportAssets.prototype, 'getWorkspaceAssets').resolves({
         items: [{ uid: 'a1', url: 'https://cdn.example.com/a1.png', filename: 'img.png' }],

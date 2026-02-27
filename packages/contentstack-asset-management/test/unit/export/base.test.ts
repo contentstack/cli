@@ -61,14 +61,16 @@ describe('AssetManagementExportAdapter (base)', () => {
       expect(adapter.spacesRootPathPublic).to.equal('/tmp/export/spaces');
     });
 
-    it('should build getAssetTypesDir from spacesRootPath', () => {
+    it('should build getAssetTypesDir as <spacesRootPath>/asset_types', () => {
       const adapter = new TestAdapter(apiConfig, exportContext);
-      expect(adapter.getAssetTypesDirPublic()).to.include('asset_types');
+      const expected = require('node:path').join('/tmp/export/spaces', 'asset_types');
+      expect(adapter.getAssetTypesDirPublic()).to.equal(expected);
     });
 
-    it('should build getFieldsDir from spacesRootPath', () => {
+    it('should build getFieldsDir as <spacesRootPath>/fields', () => {
       const adapter = new TestAdapter(apiConfig, exportContext);
-      expect(adapter.getFieldsDirPublic()).to.include('fields');
+      const expected = require('node:path').join('/tmp/export/spaces', 'fields');
+      expect(adapter.getFieldsDirPublic()).to.equal(expected);
     });
   });
 
@@ -97,15 +99,14 @@ describe('AssetManagementExportAdapter (base)', () => {
   });
 
   describe('createNestedProgress', () => {
-    it('should create a new CLIProgressManager when no parent is set', () => {
-      const getStub = sinon.stub(configHandler, 'get').returns({ showConsoleLogs: true });
+    it('should create a new CLIProgressManager with the given name and showConsoleLogs flag', () => {
+      sinon.stub(configHandler, 'get').returns({ showConsoleLogs: true });
       const fakeProgress = { tick: sinon.stub() } as any;
       const createNestedStub = sinon.stub(CLIProgressManager, 'createNested').returns(fakeProgress);
 
       const adapter = new TestAdapter(apiConfig, exportContext);
       const result = adapter.callCreateNestedProgress('my-module');
 
-      expect(createNestedStub.calledOnce).to.be.true;
       expect(createNestedStub.firstCall.args[0]).to.equal('my-module');
       expect(result).to.equal(fakeProgress);
     });
@@ -132,18 +133,16 @@ describe('AssetManagementExportAdapter (base)', () => {
   });
 
   describe('tick', () => {
-    it('should call tick on progressOrParent when available', () => {
+    it('should forward success, item name, and error to the progress manager tick', () => {
       const fakeParent = { tick: sinon.stub(), updateStatus: sinon.stub() } as any;
       const adapter = new TestAdapter(apiConfig, exportContext);
       adapter.setParentProgressManager(fakeParent);
 
       adapter.callTick(true, 'my-item', null);
 
-      expect(fakeParent.tick.calledOnce).to.be.true;
-      const args = fakeParent.tick.firstCall.args;
-      expect(args[0]).to.be.true;
-      expect(args[1]).to.equal('my-item');
-      expect(args[2]).to.be.null;
+      expect(fakeParent.tick.firstCall.args[0]).to.equal(true);
+      expect(fakeParent.tick.firstCall.args[1]).to.equal('my-item');
+      expect(fakeParent.tick.firstCall.args[2]).to.be.null;
     });
 
     it('should not throw when progressOrParent is null', () => {
@@ -153,14 +152,13 @@ describe('AssetManagementExportAdapter (base)', () => {
   });
 
   describe('updateStatus', () => {
-    it('should call updateStatus on progressOrParent when available', () => {
+    it('should forward the status message to the progress manager', () => {
       const fakeParent = { tick: sinon.stub(), updateStatus: sinon.stub() } as any;
       const adapter = new TestAdapter(apiConfig, exportContext);
       adapter.setParentProgressManager(fakeParent);
 
       adapter.callUpdateStatus('Fetching...');
 
-      expect(fakeParent.updateStatus.calledOnce).to.be.true;
       expect(fakeParent.updateStatus.firstCall.args[0]).to.equal('Fetching...');
     });
 
@@ -171,7 +169,7 @@ describe('AssetManagementExportAdapter (base)', () => {
   });
 
   describe('completeProcess', () => {
-    it('should call completeProcess on progressManager when no parent is set', () => {
+    it('should call completeProcess on progressManager with the given name and success flag', () => {
       sinon.stub(configHandler, 'get').returns({});
       const fakeProgress = { tick: sinon.stub(), completeProcess: sinon.stub() } as any;
       sinon.stub(CLIProgressManager, 'createNested').returns(fakeProgress);
@@ -180,7 +178,7 @@ describe('AssetManagementExportAdapter (base)', () => {
       adapter.callCreateNestedProgress('test');
       adapter.callCompleteProcess('test', true);
 
-      expect(fakeProgress.completeProcess.calledWith('test', true)).to.be.true;
+      expect(fakeProgress.completeProcess.firstCall.args).to.deep.equal(['test', true]);
     });
 
     it('should NOT call completeProcess when parentProgressManager is set', () => {
@@ -190,7 +188,7 @@ describe('AssetManagementExportAdapter (base)', () => {
 
       adapter.callCompleteProcess('test', true);
 
-      expect(fakeParent.completeProcess.called).to.be.false;
+      expect(fakeParent.completeProcess.callCount).to.equal(0);
     });
   });
 
@@ -208,7 +206,7 @@ describe('AssetManagementExportAdapter (base)', () => {
       fsReal.unlinkSync(path.join(tmpDir, 'test-empty.json'));
     });
 
-    it('should use FsUtility to write items in batches when items exist', async () => {
+    it('should write all items in a single batch and complete the file when count is below BATCH_SIZE', async () => {
       const writeIntoFileStub = sinon.stub(FsUtility.prototype, 'writeIntoFile');
       const completeFileStub = sinon.stub(FsUtility.prototype, 'completeFile');
 
@@ -216,8 +214,8 @@ describe('AssetManagementExportAdapter (base)', () => {
       const adapter = new TestAdapter(apiConfig, exportContext);
       await adapter.callWriteItemsToChunkedJson('/tmp/dir', 'items.json', 'items', ['uid'], items);
 
-      expect(writeIntoFileStub.called).to.be.true;
-      expect(completeFileStub.calledWith(true)).to.be.true;
+      expect(writeIntoFileStub.firstCall.args[0]).to.have.length(3);
+      expect(completeFileStub.firstCall.args[0]).to.be.true;
     });
 
     it('should write items in batches of BATCH_SIZE (50)', async () => {

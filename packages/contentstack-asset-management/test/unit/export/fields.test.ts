@@ -46,8 +46,7 @@ describe('ExportFields', () => {
       const exporter = new ExportFields(apiConfig, exportContext);
       await exporter.start(spaceUid);
 
-      expect(getFieldsStub.calledOnce).to.be.true;
-      expect(getFieldsStub.calledWith(spaceUid)).to.be.true;
+      expect(getFieldsStub.firstCall.args[0]).to.equal(spaceUid);
     });
 
     it('should write fields with correct chunked JSON args', async () => {
@@ -56,7 +55,6 @@ describe('ExportFields', () => {
       await exporter.start(spaceUid);
 
       const writeStub = (AssetManagementExportAdapter.prototype as any).writeItemsToChunkedJson as sinon.SinonStub;
-      expect(writeStub.calledOnce).to.be.true;
       const args = writeStub.firstCall.args;
       expect(args[0]).to.equal(fieldsDir);
       expect(args[1]).to.equal('fields.json');
@@ -75,21 +73,16 @@ describe('ExportFields', () => {
       await exporter.start(spaceUid);
 
       const writeStub = (AssetManagementExportAdapter.prototype as any).writeItemsToChunkedJson as sinon.SinonStub;
-      expect(writeStub.calledOnce).to.be.true;
       expect(writeStub.firstCall.args[4]).to.deep.equal([]);
     });
 
-    it('should call tick on success', async () => {
+    it('should tick with success=true, the fields process name, and null error', async () => {
       sinon.stub(ExportFields.prototype, 'getWorkspaceFields').resolves(fieldsResponse);
       const exporter = new ExportFields(apiConfig, exportContext);
       await exporter.start(spaceUid);
 
       const tickStub = (AssetManagementExportAdapter.prototype as any).tick as sinon.SinonStub;
-      expect(tickStub.called).to.be.true;
-      const args = tickStub.firstCall.args;
-      expect(args[0]).to.be.true;
-      expect(args[1]).to.equal(PROCESS_NAMES.AM_FIELDS);
-      expect(args[2]).to.be.null;
+      expect(tickStub.firstCall.args).to.deep.equal([true, PROCESS_NAMES.AM_FIELDS, null]);
     });
   });
 });

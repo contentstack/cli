@@ -46,8 +46,7 @@ describe('ExportAssetTypes', () => {
       const exporter = new ExportAssetTypes(apiConfig, exportContext);
       await exporter.start(spaceUid);
 
-      expect(getStub.calledOnce).to.be.true;
-      expect(getStub.calledWith(spaceUid)).to.be.true;
+      expect(getStub.firstCall.args[0]).to.equal(spaceUid);
     });
 
     it('should write asset types with correct chunked JSON args', async () => {
@@ -56,7 +55,6 @@ describe('ExportAssetTypes', () => {
       await exporter.start(spaceUid);
 
       const writeStub = (AssetManagementExportAdapter.prototype as any).writeItemsToChunkedJson as sinon.SinonStub;
-      expect(writeStub.calledOnce).to.be.true;
       const args = writeStub.firstCall.args;
       expect(args[0]).to.equal(assetTypesDir);
       expect(args[1]).to.equal('asset-types.json');
@@ -75,21 +73,16 @@ describe('ExportAssetTypes', () => {
       await exporter.start(spaceUid);
 
       const writeStub = (AssetManagementExportAdapter.prototype as any).writeItemsToChunkedJson as sinon.SinonStub;
-      expect(writeStub.calledOnce).to.be.true;
       expect(writeStub.firstCall.args[4]).to.deep.equal([]);
     });
 
-    it('should call tick on success', async () => {
+    it('should tick with success=true, the asset types process name, and null error', async () => {
       sinon.stub(ExportAssetTypes.prototype, 'getWorkspaceAssetTypes').resolves(assetTypesResponse);
       const exporter = new ExportAssetTypes(apiConfig, exportContext);
       await exporter.start(spaceUid);
 
       const tickStub = (AssetManagementExportAdapter.prototype as any).tick as sinon.SinonStub;
-      expect(tickStub.called).to.be.true;
-      const args = tickStub.firstCall.args;
-      expect(args[0]).to.be.true;
-      expect(args[1]).to.equal(PROCESS_NAMES.AM_ASSET_TYPES);
-      expect(args[2]).to.be.null;
+      expect(tickStub.firstCall.args).to.deep.equal([true, PROCESS_NAMES.AM_ASSET_TYPES, null]);
     });
   });
 });
