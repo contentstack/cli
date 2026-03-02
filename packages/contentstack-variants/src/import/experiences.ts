@@ -203,9 +203,11 @@ export default class Experiences extends PersonalizationAdapter<ImportConfig> {
       let versionReqObj = lookUpAudiences(version, this.audiencesUid) as CreateExperienceVersionInput;
       versionReqObj = lookUpEvents(version, this.eventsUid) as CreateExperienceVersionInput;
 
-      if (versionReqObj && versionReqObj.status) {
+      if (versionReqObj && versionReqObj.status && (versionReqObj.variants?.length ?? 0) > 0) {
         versionMap[versionReqObj.status] = versionReqObj;
         log.debug(`Mapped version with status: ${versionReqObj.status}`, this.config.context);
+      } else if (versionReqObj?.status && !(versionReqObj.variants?.length ?? 0)) {
+        log.warn(`Skipping version ${versionReqObj.status}: no valid variants (all had unmapped Lytics audiences)`, this.config.context);
       }
     });
 

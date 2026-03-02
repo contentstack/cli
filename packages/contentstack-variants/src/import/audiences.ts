@@ -70,10 +70,16 @@ export default class Audiences extends PersonalizationAdapter<ImportConfig> {
         for (const audience of audiences) {
           let { name, definition, description, uid } = audience;
           log.debug(`Processing audience: ${name} (${uid})`, this.config.context);
-          
+
+          // Skip Lytics audiences - they cannot be created via API (synced from Lytics)
+          if (audience.source?.toUpperCase() === 'LYTICS') {
+            log.debug(`Skipping Lytics audience: ${name} (${uid})`, this.config.context);
+            continue;
+          }
+
           try {
             //check whether reference attributes exists or not
-            if (definition.rules?.length) {
+            if (definition?.rules?.length) {
               log.debug(`Processing ${definition.rules.length} definition rules for audience: ${name}`, this.config.context);
               definition.rules = lookUpAttributes(definition.rules, attributesUid);
               log.debug(`Processed definition rules, remaining rules: ${definition.rules.length}`, this.config.context);
