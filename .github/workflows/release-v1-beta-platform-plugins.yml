@@ -121,34 +121,3 @@ jobs:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-auth/package.json
           tag: beta
-
-      - name: Read platform plugins version
-        id: plugins-version
-        if: >-
-          ${{
-            steps.dev-dependencies-installation.conclusion == 'success' ||
-            steps.utilities-installation.conclusion == 'success' ||
-            steps.command-installation.conclusion == 'success' ||
-            steps.config-installation.conclusion == 'success' ||
-            steps.auth-installation.conclusion == 'success'
-          }}
-        run: |
-          VERSION=$(jq -r .version ./package.json)
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Create Platform Plugins Beta Release
-        if: ${{ steps.plugins-version.conclusion == 'success' }}
-        id: create_release_plugins
-        env:
-          GITHUB_TOKEN: ${{ secrets.PKG_TOKEN }}
-          VERSION: ${{ steps.plugins-version.outputs.version }}
-        run: |
-          TAG="platform-plugins@v${VERSION}"
-          if gh release view "$TAG" &>/dev/null; then
-            echo "Release $TAG already exists — skipping."
-          else
-            gh release create "$TAG" \
-              --title "Platform Plugins Beta $VERSION" \
-              --generate-notes \
-              --prerelease
-          fi
