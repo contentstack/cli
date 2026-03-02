@@ -157,6 +157,7 @@ Use this plugin to automate the process of cloning a stack in few steps.
   async run(): Promise<void> {
     try {
       const self = this;
+      configHandler.set('log.progressSupportedModule', 'clone');
       const { flags: cloneCommandFlags } = await self.parse(StackCloneCommand);
       const {
         yes,
@@ -227,7 +228,10 @@ Use this plugin to automate the process of cloning a stack in few steps.
           config.source_stack = listOfTokens[sourceManagementTokenAlias].apiKey;
           log.debug(`Using source token alias: ${sourceManagementTokenAlias}`, cloneContext);
         } else if (sourceManagementTokenAlias) {
-          log.warn(`Provided source token alias (${sourceManagementTokenAlias}) not found in your config.!`, cloneContext);
+          log.warn(
+            `Provided source token alias (${sourceManagementTokenAlias}) not found in your config.!`,
+            cloneContext,
+          );
         }
         if (destinationManagementTokenAlias && listOfTokens?.[destinationManagementTokenAlias]) {
           config.destination_alias = destinationManagementTokenAlias;
@@ -284,7 +288,10 @@ Use this plugin to automate the process of cloning a stack in few steps.
     } catch (error: any) {
       if (error) {
         await this.cleanUp(pathdir, null, this.createCloneContext('unknown'));
-        log.error('Stack clone command failed', { ...this.createCloneContext('unknown'), error: error?.message || error });
+        log.error('Stack clone command failed', {
+          ...this.createCloneContext('unknown'),
+          error: error?.message || error,
+        });
       }
     }
   }
