@@ -1,0 +1,44 @@
+[
+  {
+    "uid": "contentstack-audience-001",
+    "name": "Contentstack Test Audience",
+    "description": "Audience with rules",
+    "definition": {
+      "__type": "RuleCombination",
+      "combinationType": "AND",
+      "rules": [
+        {
+          "__type": "Rule",
+          "attribute": { "__type": "PresetAttributeReference", "ref": "DEVICE_TYPE" },
+          "attributeMatchOptions": { "__type": "StringMatchOptions", "value": "MOBILE" },
+          "attributeMatchCondition": "STRING_EQUALS",
+          "invertCondition": false
+        }
+      ]
+    }
+  },
+  {
+    "uid": "lytics-audience-001",
+    "name": "Lytics Audience",
+    "description": "From Lytics",
+    "slug": "lytics_audience",
+    "source": "LYTICS"
+  },
+  {
+    "uid": "lytics-lowercase-001",
+    "name": "Lytics Lowercase",
+    "description": "source is lowercase",
+    "slug": "lytics_lowercase",
+    "source": "lytics"
+  },
+  {
+    "uid": "no-source-audience-001",
+    "name": "No Source Audience",
+    "description": "Audience without source field",
+    "definition": {
+      "__type": "RuleCombination",
+      "combinationType": "AND",
+      "rules": []
+    }
+  }
+]
