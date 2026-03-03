@@ -7,7 +7,7 @@
   "scripts": {
     "build": "pnpm compile",
     "prepack": "npm run clean && npm run compile",
-    "clean": "rm -rf ./lib tsconfig.build.tsbuildinfo",
+    "clean": "rm -rf ./lib tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix"
