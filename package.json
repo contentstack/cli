@@ -19,7 +19,8 @@
     "clean:lock": "rm -f pnpm-lock.yaml",
     "clean:all": "pnpm store prune && rm -rf node_modules && pnpm run clean:packages",
     "setup": "pnpm run clean:all && pnpm run bootstrap && pnpm run build",
-    "prepare": "npx husky && chmod +x .husky/pre-commit"
+    "prepare": "npx husky && chmod +x .husky/pre-commit",
+    "update:lockfile": "pnpm install --lockfile-only"
   },
   "license": "MIT",
   "packageManager": "pnpm@10.28.0",
