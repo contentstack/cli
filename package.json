@@ -10,14 +10,14 @@
   },
   "private": true,
   "scripts": {
-    "clean": "pnpm -r --filter './packages/*' run clean",
+    "clean:packages": "pnpm -r --filter './packages/*' run clean",
     "build": "pnpm -r --filter './packages/*' run build",
     "test": "pnpm -r --filter './packages/*' run test",
     "prepack": "pnpm -r --filter './packages/*' run prepack",
     "bootstrap": "pnpm install",
     "clean:modules": "rm -rf node_modules packages/**/node_modules",
     "clean:lock": "rm -f pnpm-lock.yaml",
-    "clean:all": "pnpm store prune && rm -rf node_modules && pnpm run clean",
+    "clean:all": "pnpm store prune && rm -rf node_modules && pnpm run clean:packages",
     "setup": "pnpm run clean:all && pnpm run bootstrap && pnpm run build",
     "prepare": "npx husky && chmod +x .husky/pre-commit"
   },
