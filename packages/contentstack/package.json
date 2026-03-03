@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli",
   "description": "Command-line tool (CLI) to interact with Contentstack",
-  "version": "1.59.0",
+  "version": "1.59.1",
   "author": "Contentstack",
   "bin": {
     "csdx": "./bin/run.js"
@@ -156,6 +156,7 @@
     ],
     "hooks": {
       "prerun": [
+        "./lib/hooks/prerun/init-context-for-command",
         "./lib/hooks/prerun/command-deprecation-check",
         "./lib/hooks/prerun/default-rate-limit-check",
         "./lib/hooks/prerun/latest-version-warning"
