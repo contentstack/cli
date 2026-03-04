@@ -25,7 +25,7 @@
     "@contentstack/cli-audit": "~2.0.0-beta.5",
     "@contentstack/cli-cm-export": "~2.0.0-beta.10",
     "@contentstack/cli-cm-import": "~2.0.0-beta.10",
-    "@contentstack/cli-auth": "~2.0.0-beta.6",
+    "@contentstack/cli-auth": "~2.0.0-beta.7",
     "@contentstack/cli-bulk-operations": "^1.0.0-beta",
     "@contentstack/cli-cm-bootstrap": "~2.0.0-beta.10",
     "@contentstack/cli-cm-branches": "~2.0.0-beta.1",
