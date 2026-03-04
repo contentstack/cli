@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.19.0",
+  "version": "1.19.1",
   "author": "Contentstack",
   "scripts": {
     "build": "pnpm compile && oclif manifest",
@@ -69,14 +69,17 @@
     ],
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-config/<%- commandPath %>",
     "topics": {
+      "config": {
+        "description": "Perform configuration related activities"
+      },
       "config:get": {
-        "description": "View the list of configuration values set for the Contentstack CLI"
+        "description": "View the list of set configuration values"
       },
       "config:set": {
-        "description": "Set configuration values for the Contentstack CLI"
+        "description": "Set configuration values"
       },
       "config:remove": {
-        "description": "Remove the configuration values set for the Contentstack CLI"
+        "description": "Remove set configuration values"
       }
     }
   },
