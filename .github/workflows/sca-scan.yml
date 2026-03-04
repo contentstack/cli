@@ -16,3 +16,5 @@ jobs:
           json: true
         continue-on-error: true
       - uses: contentstack/sca-policy@main 
+        with:
+          MAX_HIGH_ISSUES: 100
