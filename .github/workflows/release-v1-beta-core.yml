@@ -42,7 +42,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build all packages
-        run: pnpm -r --sort run build
+        run: pnpm -r --concurrency 1 run build
 
       - name: Publishing core (Beta)
         id: publish-core
