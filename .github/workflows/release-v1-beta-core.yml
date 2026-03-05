@@ -57,7 +57,7 @@ jobs:
         if: ${{ steps.publish-core.conclusion == 'success' }}
         id: create_release
         env:
-          GITHUB_TOKEN: ${{ secrets.PKG_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ steps.publish-core.outputs.version }}
         run: |
           TAG="core@v${VERSION}"
