@@ -42,20 +42,17 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build all packages
-        if: ${{ steps.core-installation.conclusion == 'success'  }}
         run: pnpm -r --sort run build
 
       - name: Publishing core (Beta)
         id: publish-core
         uses: JS-DevTools/npm-publish@v3
-        if: ${{ steps.core-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack/package.json
           tag: beta
 
       - name: Create Core Beta Release
-        if: ${{ steps.publish-core.conclusion == 'success' }}
         id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
