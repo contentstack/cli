@@ -3,8 +3,8 @@ name: Release CLI Core (v1 Beta)
 on:
   push:
     branches: [v1-beta]
-  paths:
-    - 'packages/contentstack/package.json'
+    paths:
+      - 'packages/contentstack/package.json'
 
 jobs:
   build:
