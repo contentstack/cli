@@ -22,8 +22,8 @@ jobs:
           node-version: '22.x'
           cache: 'pnpm' # optional but recommended
 
-      - name: Temporarily disable contentstack package
-        run: mv packages/contentstack/package.json packages/contentstack/package.json.disabled || true
+      # - name: Temporarily disable contentstack package
+      #   run: mv packages/contentstack/package.json packages/contentstack/package.json.disabled || true
 
       - name: Install Dependencies (Excluding Contentstack)
         run: npm run bootstrap
@@ -32,8 +32,8 @@ jobs:
         run: |
           npm run build
 
-      - name: Restore contentstack package
-        run: mv packages/contentstack/package.json.disabled packages/contentstack/package.json || true
+      # - name: Restore contentstack package
+      #   run: mv packages/contentstack/package.json.disabled packages/contentstack/package.json || true
 
       - name: Run tests for Contentstack Command
         working-directory: ./packages/contentstack-command
