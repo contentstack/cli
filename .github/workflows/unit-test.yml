@@ -26,11 +26,11 @@ jobs:
       #   run: mv packages/contentstack/package.json packages/contentstack/package.json.disabled || true
 
       - name: Install Dependencies (Excluding Contentstack)
-        run: pnpm install --frozen-lockfile --prefer-offline=false
+        run: pnpm install --frozen-lockfile
 
       - name: Build all plugins (Excluding Contentstack)
         run: |
-          npm run build
+          NODE_ENV=PREPACK_MODE pnpm -r --sort run build
 
       # - name: Restore contentstack package
       #   run: mv packages/contentstack/package.json.disabled packages/contentstack/package.json || true
