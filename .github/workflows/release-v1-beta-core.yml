@@ -50,7 +50,7 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack/package.json
-          tag: beta
+          tag: v1-beta
 
       - name: Create Core Beta Release
         id: create_release
