@@ -41,7 +41,7 @@ jobs:
 
       - name: Run tests for Contentstack Config
         working-directory: ./packages/contentstack-config
-        run: npm run test -- --full-trace
+        run: npm run test:unit
 
       - name: Run tests for Contentstack Auth
         working-directory: ./packages/contentstack-auth
