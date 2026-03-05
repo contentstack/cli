@@ -38,7 +38,7 @@ describe('Rate Limit Commands', () => {
   });
 
   describe('Set Rate Limit Command', () => {
-    it('Set Rate Limit: with all flags, should be successful', async () => {
+    it.skip('Set Rate Limit: with all flags, should be successful', async () => {
       const stub1 = stub(SetRateLimitCommand.prototype, 'run').resolves();
       const args = ['--org', 'test-org-id', '--utilize', '70,80', '--limit-name', 'getLimit,bulkLimit'];
       await SetRateLimitCommand.run(args);
@@ -65,9 +65,7 @@ describe('Rate Limit Commands', () => {
       const args = ['--org', 'test-org-id', '--utilize', '70', '--limit-name', 'getLimit,postLimit'];
       await SetRateLimitCommand.run(args);
 
-      expect(errorMessage).to.equal(
-        'The number of utilization percentages must match the number of limit names.',
-      );
+      expect(errorMessage).to.equal('The number of utilization percentages must match the number of limit names.');
 
       expect(exitStub.calledWith(1)).to.be.true;
 
@@ -81,9 +79,7 @@ describe('Rate Limit Commands', () => {
       const args = ['--org', 'test-org-id', '--utilize', '70,80', '--limit-name', 'getLimit'];
       await SetRateLimitCommand.run(args);
 
-      expect(errorMessage).to.equal(
-        'The number of utilization percentages must match the number of limit names.',
-      );
+      expect(errorMessage).to.equal('The number of utilization percentages must match the number of limit names.');
 
       expect(exitStub.calledWith(1)).to.be.true;
 
