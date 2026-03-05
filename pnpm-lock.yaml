@@ -18,59 +18,59 @@ importers:
   packages/contentstack:
     dependencies:
       '@contentstack/cli-audit':
-        specifier: ~1.18.0
-        version: 1.18.0(@types/node@14.18.63)(debug@4.4.3)
+        specifier: ~1.19.0-beta.0
+        version: 1.19.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-auth':
-        specifier: ~1.7.3
-        version: 1.7.3(@types/node@14.18.63)(debug@4.4.3)
+        specifier: ~1.8.0-beta.0
+        version: link:../contentstack-auth
       '@contentstack/cli-cm-bootstrap':
-        specifier: ~1.18.4
-        version: 1.18.4(@types/node@14.18.63)(debug@4.4.3)
+        specifier: ~1.19.0-beta.0
+        version: 1.19.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-cm-branches':
-        specifier: ~1.6.3
-        version: 1.6.3(@types/node@14.18.63)(debug@4.4.3)
+        specifier: ~1.7.0-beta.0
+        version: 1.7.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-cm-bulk-publish':
-        specifier: ~1.10.7
-        version: 1.10.7(@types/node@14.18.63)(debug@4.4.3)
+        specifier: ~1.11.0-beta.0
+        version: 1.11.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-cm-clone':
-        specifier: ~1.20.1
-        version: 1.20.1(@types/node@14.18.63)(debug@4.4.3)
+        specifier: ~1.21.0-beta.0
+        version: 1.21.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-cm-export':
-        specifier: ~1.23.2
-        version: 1.23.2(@types/node@14.18.63)(debug@4.4.3)
+        specifier: ~1.24.0-beta.0
+        version: 1.24.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-cm-export-to-csv':
-        specifier: ~1.11.0
-        version: 1.11.0(@types/node@14.18.63)(debug@4.4.3)
+        specifier: ~1.12.0-beta.0
+        version: 1.12.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-cm-import':
-        specifier: ~1.31.3
-        version: 1.31.3(@types/node@14.18.63)
+        specifier: ~1.32.0-beta.0
+        version: 1.32.0-beta.0(@types/node@14.18.63)
       '@contentstack/cli-cm-import-setup':
-        specifier: ~1.7.3
-        version: 1.7.3(@types/node@14.18.63)(debug@4.4.3)
+        specifier: ~1.8.0-beta.0
+        version: 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-cm-migrate-rte':
         specifier: ~1.6.4
         version: 1.6.4(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-cm-seed':
-        specifier: ~1.14.3
-        version: 1.14.3(@types/node@14.18.63)(debug@4.4.3)
+        specifier: ~1.15.0-beta.0
+        version: 1.15.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-command':
-        specifier: ~1.7.2
-        version: 1.7.2(@types/node@14.18.63)(debug@4.4.3)
+        specifier: ~1.8.0-beta.0
+        version: link:../contentstack-command
       '@contentstack/cli-config':
-        specifier: ~1.19.0
-        version: 1.19.0(@types/node@14.18.63)(debug@4.4.3)
+        specifier: ~1.20.0-beta.0
+        version: link:../contentstack-config
       '@contentstack/cli-launch':
         specifier: ^1.9.6
         version: 1.9.6(@types/node@14.18.63)(debug@4.4.3)(tslib@2.8.1)(typescript@4.9.5)
       '@contentstack/cli-migration':
-        specifier: ~1.11.0
-        version: 1.11.0(@types/node@14.18.63)(debug@4.4.3)
+        specifier: ~1.12.0-beta.0
+        version: 1.12.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-utilities':
-        specifier: ~1.17.4
-        version: 1.17.4(@types/node@14.18.63)(debug@4.4.3)
+        specifier: ~1.18.0-beta.0
+        version: link:../contentstack-utilities
       '@contentstack/cli-variants':
-        specifier: ~1.3.8
-        version: 1.3.8(@types/node@14.18.63)(debug@4.4.3)
+        specifier: ~1.4.0-beta.0
+        version: 1.4.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/management':
         specifier: ~1.27.5
         version: 1.27.6(debug@4.4.3)
@@ -820,66 +820,61 @@ packages:
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
     engines: {node: '>=0.1.90'}
 
-  '@contentstack/cli-audit@1.17.1':
-    resolution: {integrity: sha512-xJCA+oPqj5mmOkkK5+ElCEPLnbzlA/p1/HYnX3JLDJ8FvFEinVicUiTtH2xWdXXCQuBVnA/XgA/5ntkIzvxMWQ==}
+  '@contentstack/cli-audit@1.19.0-beta.0':
+    resolution: {integrity: sha512-uO4BYdMdEmSXO+2r8Sjf2NfHkqWjx69WuMi/sJQzuWEK7l/BppjL6a/sKepGINaylbkz11yA1TZFT5IW/K2wBA==}
     engines: {node: '>=16'}
     hasBin: true
 
-  '@contentstack/cli-audit@1.18.0':
-    resolution: {integrity: sha512-ujEa17rPu/bBBQgdcGxLNRwurUVYLAAlN6YYZ18985ofgADgB6zSEopXdF40eOkY9+T7wqCIXkhgUFpu9E/ahw==}
-    engines: {node: '>=16'}
-    hasBin: true
-
-  '@contentstack/cli-auth@1.7.3':
-    resolution: {integrity: sha512-C34CpY/avOhPgMPHEQVxpECtg5XzPM8hPut2ubUhmty8GT7YpacVkskEd3UwvAptc/cmVtdZgPf/3w1fp108pw==}
+  '@contentstack/cli-cm-bootstrap@1.19.0-beta.0':
+    resolution: {integrity: sha512-FKFNLQjuX6R6Ywg2fFndnVmL9t/KfaYIcLRRPxWgRMrgbxAYwKpCa77pu/DzxaKMUvPS9J99Ek8cHHwMZ0SN7A==}
     engines: {node: '>=14.0.0'}
 
-  '@contentstack/cli-cm-bootstrap@1.18.4':
-    resolution: {integrity: sha512-m0sHhWjTHP8qFVtPs4OkXehFxxh6OloDrnWxofu5wNP02tv8QvDaAoDlL3iVweQ04Yd+Latk1ZSmN08VzhLX7g==}
+  '@contentstack/cli-cm-branches@1.7.0-beta.0':
+    resolution: {integrity: sha512-Ght08vXubRZM9hOEoauotptFxyLR9x0czQLtv+lCzXrvuDQSJp+/ll4+6hSE97/VG2kM+F/LbLvI8Xey/if3Qw==}
     engines: {node: '>=14.0.0'}
 
-  '@contentstack/cli-cm-branches@1.6.3':
-    resolution: {integrity: sha512-t1z9MX7Egql3TG9QbxFAOswqVvknv0AeCcv8j+4dydPvdcZQ3UgUxyQdc6tUHLFaBqhjqIcPiZP8Dbf14bSenw==}
+  '@contentstack/cli-cm-bulk-publish@1.11.0-beta.0':
+    resolution: {integrity: sha512-H44N+EBkdWXMMkiWHCamDHtrZan+g8JQTxUEKuZUAKjE4B3B+X/qfBDRCQpdAznJo8mexiL86whg8dirwd7+YA==}
     engines: {node: '>=14.0.0'}
 
-  '@contentstack/cli-cm-bulk-publish@1.10.7':
-    resolution: {integrity: sha512-26m8Ge5o3M7TuyamtkIehN51gX10QsHDXEKdVbOW5UxGJGsqbMfyQouFQzT/FLRvTtohL/IqbwQIpDDksK2FpA==}
+  '@contentstack/cli-cm-clone@1.21.0-beta.0':
+    resolution: {integrity: sha512-14wmr2nLPbNBWuBAZCchSWWEHMVbxGHIHKd+PQcxbNIywmLF+TBrq/moj+BJk7x3L0mAfFRnx+R7X6qyiYaBtw==}
     engines: {node: '>=14.0.0'}
 
-  '@contentstack/cli-cm-clone@1.20.1':
-    resolution: {integrity: sha512-nWBFLtDWoe7TOjf00zL/hrdZvdwgIbhM02qsd6oBizQLcXEAhVs9vsuZpRBhfbYoPCFGP98dSrvDZ8weFQaJ9A==}
-    engines: {node: '>=14.0.0'}
-
-  '@contentstack/cli-cm-export-to-csv@1.11.0':
-    resolution: {integrity: sha512-S7C5MCiEu3z9Unk3p6majXILpqmDNSuJPmZqt9m+f11+Wk3S1gHq2+mDre8hAx9zpN6Y9wloQCI3MIuC4vcp4g==}
+  '@contentstack/cli-cm-export-to-csv@1.12.0-beta.0':
+    resolution: {integrity: sha512-uSs8PP9hnr8BlpKecgi01Fm8FzG41rkGScoGpxgk2zFlyziwHBg7bauKrSWM0R95RnmvrsWnMQF79zml3lHdJQ==}
     engines: {node: '>=18.0.0'}
 
-  '@contentstack/cli-cm-export@1.23.2':
-    resolution: {integrity: sha512-Woa4nMiM9EyXJI4R33bi6MkBsZIkGiioOtDE1LrHp6gqDv9YB//QSj3xjJQ6Qo74a2DROVc9ZFD8xkInTJr3Gw==}
+  '@contentstack/cli-cm-export@1.24.0-beta.0':
+    resolution: {integrity: sha512-sGT1NMBrJ136bcsQZHC1Cnepub5Pgdw+NkUCvZFuB5hhepzSEv4ggJAJa53ETzFlaBdbSmUJpg5/zd/9zY3tUA==}
     engines: {node: '>=14.0.0'}
 
-  '@contentstack/cli-cm-import-setup@1.7.3':
-    resolution: {integrity: sha512-dEPtaNCaf/oROG6s7McXHy2Eh00WBmGuwZyKLG7+a5k0j6zfkpbI18l8CziI1C7xWtAUAsufO7jGlCLDfjL9uA==}
+  '@contentstack/cli-cm-import-setup@1.8.0-beta.0':
+    resolution: {integrity: sha512-S04EvTE/D2uZuptGM0WSPF+1lP8dRLrpBeXyEYPlcOSLMBdMyNrHY/SCK6AcuJbCMYvIM10zknlpYuPpwbDXKQ==}
     engines: {node: '>=14.0.0'}
 
-  '@contentstack/cli-cm-import@1.31.3':
-    resolution: {integrity: sha512-s/vPCKQigZNmXQ0B5RpKHLypNVWT/Rk7KJIPp3Ua2jUrAG9hXQnbbG9/ySNeQZRFMPcosbgvRp7xUfysQXCouw==}
+  '@contentstack/cli-cm-import@1.32.0-beta.0':
+    resolution: {integrity: sha512-i60DfjDqa+8oADSx+FloQdq4zVBUlTp/NGtjdWcnSFXn3LF84WWckZunI1dmEL1ObK2K8e5biyMRVgJJsRV1Xw==}
     engines: {node: '>=14.0.0'}
 
   '@contentstack/cli-cm-migrate-rte@1.6.4':
     resolution: {integrity: sha512-TKswWWtq+DmUDXv+Fx88vxBAhS3kqfBoRXIOGJQNIdpQzHzaLxiCyOdmcCFyK1YhYDWzU19ad/s0GLBlv0D8fg==}
     engines: {node: '>=14.0.0'}
 
-  '@contentstack/cli-cm-seed@1.14.3':
-    resolution: {integrity: sha512-YQrh2lVv7bbp1RjuUZ1WNg5D2Kvmat/coMnMHNRZBMJ/zY7kVXhliDRdfioK7W31e66QyA084u80FxdGUJVyXQ==}
+  '@contentstack/cli-cm-seed@1.15.0-beta.0':
+    resolution: {integrity: sha512-5eYxRr1KWIHPtle+7mi8f2SyU1qsQ77L0oMNGV4GN+kcZy9zopMupLooG/a4Rg9odgzXzrtr/Ad8OGJasy3XOw==}
     engines: {node: '>=14.0.0'}
 
   '@contentstack/cli-command@1.7.2':
     resolution: {integrity: sha512-dtXc3gIcnivfLegADy5/PZb+1x/esZ65H2E1CjO/pg50UC8Vy1U+U0ozS0hJZTFoaVjeG+1VJRoxf5MrtUGnNA==}
     engines: {node: '>=14.0.0'}
 
-  '@contentstack/cli-config@1.19.0':
-    resolution: {integrity: sha512-c2TMArDEguTneZXt6h7tVFGEPdtv+FhnxeTOpjxcGKRMvDxhQxFGhS5h9G5Q/mMrUjbDn8x5CizGV8zlnvC1Ag==}
+  '@contentstack/cli-command@1.8.0-beta.0':
+    resolution: {integrity: sha512-BPBwABvpea16dQIBJT+YFjBUFpo9Nq+8D79F2ycjpDUkZh1P/2rDCypD6EGB1LY+F+1KX0kWRNQNlcqrz7AMNg==}
+    engines: {node: '>=14.0.0'}
+
+  '@contentstack/cli-config@1.20.0-beta.0':
+    resolution: {integrity: sha512-V3KMwiM74U2JL/QeNl9uqgN9q5mybRvcT8gLSt3s809BYMacfw8GWOEk9wIyVLziWD95LA5/ZklW8ENe1PpCiA==}
     engines: {node: '>=14.0.0'}
 
   '@contentstack/cli-launch@1.9.6':
@@ -887,15 +882,18 @@ packages:
     engines: {node: '>=14.0.0'}
     hasBin: true
 
-  '@contentstack/cli-migration@1.11.0':
-    resolution: {integrity: sha512-lbPNtSK9EKm1EA9X6IyiijrELsjv4TRNZoHpuLNUB5iKzXWAM63L4e/q57sx7S9TkRR4NxMM+ckNwNfSj51Q9Q==}
+  '@contentstack/cli-migration@1.12.0-beta.0':
+    resolution: {integrity: sha512-/jP+T5EbkLXMM5NPY1dRTrA6NnptHZjPP6g6x8fKaKGRCz4QNFn6FECCTZjlCIY/i1F2f+JPKSApQU98d07+bQ==}
     engines: {node: '>=8.3.0'}
 
   '@contentstack/cli-utilities@1.17.4':
     resolution: {integrity: sha512-45Ujy0lNtQiU0FhZrtfGEfte4kjy3tlOnlVz6REH+cW/y1Dgg1nMh+YVgygbOh+6b8PkvTYVlEvb15UxRarNiA==}
 
-  '@contentstack/cli-variants@1.3.8':
-    resolution: {integrity: sha512-DtfA7hdH9zbbeSt0h0QQgwxp27yTdCH3jX58OK+EhPs6lf+c/q3tTxj6Jnf9BEUk3bYBkIkhC9OiRtiCRTaf+g==}
+  '@contentstack/cli-utilities@1.18.0-beta.0':
+    resolution: {integrity: sha512-3MyfkRUsj8RdctA5Oaz6aUOBSYaAh3H0A2IkIZQaCuaoBXzzy6V5Nm7uMX/QPdCEqrFe5YbNpNzSNW39i3bzGg==}
+
+  '@contentstack/cli-variants@1.4.0-beta.0':
+    resolution: {integrity: sha512-sd0aNBkKHm9g9p3xqdZf85vz3cWxafVMyhEZ7kUTw9c5M8CBJvQ32Syet4PT9KMXpp/kYLBxrqt1IYyK5isN4A==}
 
   '@contentstack/json-rte-serializer@2.1.0':
     resolution: {integrity: sha512-klw+0kH5UtL4mHGDP7A8olZIaA4CoyAVzveYqso8uxeDXKkTvwF8D5HBhCqQLr0NXwhofl+FF431cbzGZ3TNCg==}
@@ -5436,8 +5434,8 @@ packages:
     resolution: {integrity: sha512-g9ljZiwki/LfxmQADO3dEY1CbpmXT5Hm2fJ+QaGKwSXUylMybePR7/67YW7jOrrvjEgL1Fmz5kzyAjWVWLlucg==}
     engines: {node: '>=6'}
 
-  tar@7.5.9:
-    resolution: {integrity: sha512-BTLcK0xsDh2+PUe9F6c2TlRp4zOOBMTkoQHQIWSIzI0R7KG46uEwq4OPk2W7bZcprBMsuaeFsqwYr7pjh6CuHg==}
+  tar@7.5.10:
+    resolution: {integrity: sha512-8mOPs1//5q/rlkNSPcCegA6hiHJYDmSLEI8aMH/CdSQJNWztHC9WHNam5zdQlfpTwB9Xp7IBEsHfV5LKMJGVAw==}
     engines: {node: '>=18'}
 
   test-exclude@6.0.0:
@@ -6547,10 +6545,10 @@ snapshots:
 
   '@colors/colors@1.6.0': {}
 
-  '@contentstack/cli-audit@1.17.1(@types/node@14.18.63)(debug@4.4.3)':
+  '@contentstack/cli-audit@1.19.0-beta.0(@types/node@14.18.63)(debug@4.4.3)':
     dependencies:
-      '@contentstack/cli-command': 1.7.2(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-utilities': 1.17.4(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@oclif/core': 4.8.1
       '@oclif/plugin-help': 6.2.37
       '@oclif/plugin-plugins': 5.4.56
@@ -6565,55 +6563,26 @@ snapshots:
       - debug
       - supports-color
 
-  '@contentstack/cli-audit@1.18.0(@types/node@14.18.63)(debug@4.4.3)':
+  '@contentstack/cli-cm-bootstrap@1.19.0-beta.0(@types/node@14.18.63)(debug@4.4.3)':
     dependencies:
-      '@contentstack/cli-command': 1.7.2(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-utilities': 1.17.4(@types/node@14.18.63)(debug@4.4.3)
-      '@oclif/core': 4.8.1
-      '@oclif/plugin-help': 6.2.37
-      '@oclif/plugin-plugins': 5.4.56
-      chalk: 4.1.2
-      fast-csv: 4.3.6
-      fs-extra: 11.3.3
-      lodash: 4.17.23
-      uuid: 9.0.1
-      winston: 3.19.0
-    transitivePeerDependencies:
-      - '@types/node'
-      - debug
-      - supports-color
-
-  '@contentstack/cli-auth@1.7.3(@types/node@14.18.63)(debug@4.4.3)':
-    dependencies:
-      '@contentstack/cli-command': 1.7.2(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-utilities': 1.17.4(@types/node@14.18.63)(debug@4.4.3)
-      '@oclif/core': 4.8.1
-      '@oclif/plugin-help': 6.2.37
-      otplib: 12.0.1
-    transitivePeerDependencies:
-      - '@types/node'
-      - debug
-
-  '@contentstack/cli-cm-bootstrap@1.18.4(@types/node@14.18.63)(debug@4.4.3)':
-    dependencies:
-      '@contentstack/cli-cm-seed': 1.14.3(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-command': 1.7.2(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-config': 1.19.0(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-utilities': 1.17.4(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-cm-seed': 1.15.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-config': 1.20.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@oclif/core': 4.8.1
       '@oclif/plugin-help': 6.2.37
       inquirer: 8.2.7(@types/node@14.18.63)
       mkdirp: 1.0.4
-      tar: 7.5.9
+      tar: 7.5.10
     transitivePeerDependencies:
       - '@types/node'
       - debug
       - supports-color
 
-  '@contentstack/cli-cm-branches@1.6.3(@types/node@14.18.63)(debug@4.4.3)':
+  '@contentstack/cli-cm-branches@1.7.0-beta.0(@types/node@14.18.63)(debug@4.4.3)':
     dependencies:
-      '@contentstack/cli-command': 1.7.2(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-utilities': 1.17.4(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@oclif/core': 4.8.1
       '@oclif/plugin-help': 6.2.37
       chalk: 4.1.2
@@ -6623,11 +6592,11 @@ snapshots:
       - '@types/node'
       - debug
 
-  '@contentstack/cli-cm-bulk-publish@1.10.7(@types/node@14.18.63)(debug@4.4.3)':
+  '@contentstack/cli-cm-bulk-publish@1.11.0-beta.0(@types/node@14.18.63)(debug@4.4.3)':
     dependencies:
-      '@contentstack/cli-command': 1.7.2(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-config': 1.19.0(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-utilities': 1.17.4(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-config': 1.20.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@oclif/core': 4.8.1
       '@oclif/plugin-help': 6.2.37
       chalk: 4.1.2
@@ -6639,13 +6608,13 @@ snapshots:
       - '@types/node'
       - debug
 
-  '@contentstack/cli-cm-clone@1.20.1(@types/node@14.18.63)(debug@4.4.3)':
+  '@contentstack/cli-cm-clone@1.21.0-beta.0(@types/node@14.18.63)(debug@4.4.3)':
     dependencies:
       '@colors/colors': 1.6.0
-      '@contentstack/cli-cm-export': 1.23.2(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-cm-import': 1.31.3(@types/node@14.18.63)
-      '@contentstack/cli-command': 1.7.2(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-utilities': 1.17.4(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-cm-export': 1.24.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-cm-import': 1.32.0-beta.0(@types/node@14.18.63)
+      '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@oclif/core': 4.8.1
       '@oclif/plugin-help': 6.2.37
       chalk: 4.1.2
@@ -6660,10 +6629,10 @@ snapshots:
       - debug
       - supports-color
 
-  '@contentstack/cli-cm-export-to-csv@1.11.0(@types/node@14.18.63)(debug@4.4.3)':
+  '@contentstack/cli-cm-export-to-csv@1.12.0-beta.0(@types/node@14.18.63)(debug@4.4.3)':
     dependencies:
-      '@contentstack/cli-command': 1.7.2(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-utilities': 1.17.4(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@oclif/core': 4.8.1
       '@oclif/plugin-help': 6.2.37
       fast-csv: 4.3.6
@@ -6674,11 +6643,11 @@ snapshots:
       - '@types/node'
       - debug
 
-  '@contentstack/cli-cm-export@1.23.2(@types/node@14.18.63)(debug@4.4.3)':
+  '@contentstack/cli-cm-export@1.24.0-beta.0(@types/node@14.18.63)(debug@4.4.3)':
     dependencies:
-      '@contentstack/cli-command': 1.7.2(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-utilities': 1.17.4(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-variants': 1.3.8(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-variants': 1.4.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@oclif/core': 4.8.1
       async: 3.2.6
       big-json: 3.2.0
@@ -6694,10 +6663,10 @@ snapshots:
       - '@types/node'
       - debug
 
-  '@contentstack/cli-cm-import-setup@1.7.3(@types/node@14.18.63)(debug@4.4.3)':
+  '@contentstack/cli-cm-import-setup@1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)':
     dependencies:
-      '@contentstack/cli-command': 1.7.2(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-utilities': 1.17.4(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@oclif/core': 4.8.1
       big-json: 3.2.0
       chalk: 4.1.2
@@ -6710,12 +6679,12 @@ snapshots:
       - '@types/node'
       - debug
 
-  '@contentstack/cli-cm-import@1.31.3(@types/node@14.18.63)':
+  '@contentstack/cli-cm-import@1.32.0-beta.0(@types/node@14.18.63)':
     dependencies:
-      '@contentstack/cli-audit': 1.17.1(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-command': 1.7.2(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-utilities': 1.17.4(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-variants': 1.3.8(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-audit': 1.19.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-variants': 1.4.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@oclif/core': 4.8.1
       big-json: 3.2.0
       bluebird: 3.7.2
@@ -6756,14 +6725,14 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@contentstack/cli-cm-seed@1.14.3(@types/node@14.18.63)(debug@4.4.3)':
+  '@contentstack/cli-cm-seed@1.15.0-beta.0(@types/node@14.18.63)(debug@4.4.3)':
     dependencies:
-      '@contentstack/cli-cm-import': 1.31.3(@types/node@14.18.63)
-      '@contentstack/cli-command': 1.7.2(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-utilities': 1.17.4(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-cm-import': 1.32.0-beta.0(@types/node@14.18.63)
+      '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       inquirer: 8.2.7(@types/node@14.18.63)
       mkdirp: 1.0.4
-      tar: 7.5.9
+      tar: 7.5.10
       tmp: 0.2.5
     transitivePeerDependencies:
       - '@types/node'
@@ -6780,10 +6749,20 @@ snapshots:
       - '@types/node'
       - debug
 
-  '@contentstack/cli-config@1.19.0(@types/node@14.18.63)(debug@4.4.3)':
+  '@contentstack/cli-command@1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)':
     dependencies:
-      '@contentstack/cli-command': 1.7.2(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-utilities': 1.17.4(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
+      '@oclif/core': 4.8.1
+      '@oclif/plugin-help': 6.2.37
+      contentstack: 3.26.4
+    transitivePeerDependencies:
+      - '@types/node'
+      - debug
+
+  '@contentstack/cli-config@1.20.0-beta.0(@types/node@14.18.63)(debug@4.4.3)':
+    dependencies:
+      '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/utils': 1.7.1
       '@oclif/core': 4.8.1
       '@oclif/plugin-help': 6.2.37
@@ -6830,10 +6809,10 @@ snapshots:
       - tslib
       - typescript
 
-  '@contentstack/cli-migration@1.11.0(@types/node@14.18.63)(debug@4.4.3)':
+  '@contentstack/cli-migration@1.12.0-beta.0(@types/node@14.18.63)(debug@4.4.3)':
     dependencies:
-      '@contentstack/cli-command': 1.7.2(@types/node@14.18.63)(debug@4.4.3)
-      '@contentstack/cli-utilities': 1.17.4(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@oclif/core': 4.8.1
       '@oclif/plugin-help': 6.2.37
       async: 3.2.6
@@ -6884,9 +6863,44 @@ snapshots:
       - '@types/node'
       - debug
 
-  '@contentstack/cli-variants@1.3.8(@types/node@14.18.63)(debug@4.4.3)':
+  '@contentstack/cli-utilities@1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)':
     dependencies:
-      '@contentstack/cli-utilities': 1.17.4(@types/node@14.18.63)(debug@4.4.3)
+      '@contentstack/management': 1.27.6(debug@4.4.3)
+      '@contentstack/marketplace-sdk': 1.5.0(debug@4.4.3)
+      '@oclif/core': 4.8.1
+      axios: 1.13.5(debug@4.4.3)
+      chalk: 4.1.2
+      cli-cursor: 3.1.0
+      cli-progress: 3.12.0
+      cli-table: 0.3.11
+      conf: 10.2.0
+      dotenv: 16.6.1
+      figures: 3.2.0
+      inquirer: 8.2.7(@types/node@14.18.63)
+      inquirer-search-checkbox: 1.0.0
+      inquirer-search-list: 1.2.6
+      js-yaml: 4.1.1
+      klona: 2.0.6
+      lodash: 4.17.23
+      mkdirp: 1.0.4
+      open: 8.4.2
+      ora: 5.4.1
+      papaparse: 5.5.3
+      recheck: 4.4.5
+      rxjs: 6.6.7
+      traverse: 0.6.11
+      tty-table: 4.2.3
+      unique-string: 2.0.0
+      uuid: 9.0.1
+      winston: 3.19.0
+      xdg-basedir: 4.0.0
+    transitivePeerDependencies:
+      - '@types/node'
+      - debug
+
+  '@contentstack/cli-variants@1.4.0-beta.0(@types/node@14.18.63)(debug@4.4.3)':
+    dependencies:
+      '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@oclif/core': 4.8.1
       '@oclif/plugin-help': 6.2.37
       lodash: 4.17.23
@@ -12086,7 +12100,7 @@ snapshots:
 
   tapable@2.3.0: {}
 
-  tar@7.5.9:
+  tar@7.5.10:
     dependencies:
       '@isaacs/fs-minipass': 4.0.1
       chownr: 3.0.0

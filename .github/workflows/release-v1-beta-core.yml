@@ -24,8 +24,8 @@ jobs:
       - name: Install pnpm
         run: corepack prepare pnpm@10.28.0 --activate
 
-      - name: Install root dependencies
-        run: pnpm install
+      - name: Clean the repository
+        run: pnpm run clean:all
 
       - name: Reading Configuration
         id: release_config
@@ -39,11 +39,11 @@ jobs:
         id: core-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_core == 'true'}}
         working-directory: ./packages/contentstack
-        run: npm install
+        run: pnpm install --frozen-lockfile
       - name: Compiling core
         if: ${{ steps.core-installation.conclusion == 'success'  }}
         working-directory: ./packages/contentstack
-        run: npm run prepack
+        run: pnpm run build
       - name: Publishing core (Beta)
         id: publish-core
         uses: JS-DevTools/npm-publish@v3
