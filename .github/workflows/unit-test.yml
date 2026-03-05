@@ -26,7 +26,10 @@ jobs:
       #   run: mv packages/contentstack/package.json packages/contentstack/package.json.disabled || true
 
       - name: Install Dependencies (Excluding Contentstack)
-        run: npm run bootstrap
+        run: pnpm install --frozen-lockfile --prefer-offline=false
+
+      - name: Clean the repository
+        run: git clean -fdx
 
       - name: Build all plugins (Excluding Contentstack)
         run: |
