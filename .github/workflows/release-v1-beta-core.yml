@@ -1,6 +1,7 @@
 name: Release CLI Core (v1 Beta)
 
 on:
+  workflow_dispatch:
   push:
     branches: [v1-beta]
     paths:
@@ -35,15 +36,14 @@ jobs:
           prefix: release
 
       # Core CLI
-      - name: Installing dependencies of core
+      - name: Install all dependencies
         id: core-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_core == 'true'}}
-        working-directory: ./packages/contentstack
         run: pnpm install --frozen-lockfile
-      - name: Compiling core
+
+      - name: Build all packages
         if: ${{ steps.core-installation.conclusion == 'success'  }}
-        working-directory: ./packages/contentstack
-        run: pnpm run build
+        run: pnpm -r --sort run build
       - name: Publishing core (Beta)
         id: publish-core
         uses: JS-DevTools/npm-publish@v3
