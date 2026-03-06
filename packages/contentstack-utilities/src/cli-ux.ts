@@ -68,12 +68,23 @@ class CLIInterface {
   }
 
   async inquire<T>(inquirePayload: InquirePayload | Array<InquirePayload>): Promise<T> {
-    if (Array.isArray(inquirePayload)) {
-      return inquirer.prompt(inquirePayload) as Promise<T>;
-    } else {
-      inquirePayload.message = messageHandler.parse(inquirePayload.message);
-      const result = (await inquirer.prompt(inquirePayload as InquirerQuestion)) as Answers;
-      return result[inquirePayload.name] as T;
+    try {
+      if (Array.isArray(inquirePayload)) {
+        return (await inquirer.prompt(inquirePayload)) as T;
+      } else {
+        inquirePayload.message = messageHandler.parse(inquirePayload.message);
+        const result = (await inquirer.prompt(inquirePayload as InquirerQuestion as Parameters<typeof inquirer.prompt>[0])) as Answers;
+        return result[inquirePayload.name] as T;
+      }
+    } catch (err) {
+      const isExitPrompt =
+        (err as NodeJS.ErrnoException)?.name === 'ExitPromptError' ||
+        (err as Error)?.message?.includes('SIGINT') ||
+        (err as Error)?.message?.includes('force closed');
+      if (isExitPrompt) {
+        process.exit(130);
+      }
+      throw err;
     }
   }
 
