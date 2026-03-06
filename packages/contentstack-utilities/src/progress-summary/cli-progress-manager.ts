@@ -94,7 +94,9 @@ export default class CLIProgressManager {
   }
 
   /**
-   * Print the final summary for all modules using strategies
+   * Print the final summary for all modules using strategies.
+   * When showConsoleLogs is enabled, skip the Progress Manager summary block
+   * so output is pure timestamped log lines (per documentation).
    */
   static printGlobalSummary(): void {
     if (!CLIProgressManager.globalSummary) {
@@ -408,7 +410,7 @@ export default class CLIProgressManager {
     const process = this.processes.get(processName);
     if (process) {
       process.status = success ? 'completed' : 'failed';
-      
+
       // If process completed without ticks, update current to reflect completion
       if (process.current === 0 && process.total > 0) {
         process.current = process.total;
@@ -416,7 +418,7 @@ export default class CLIProgressManager {
           process.successCount = process.total;
         }
       }
-      
+
       if (!this.showConsoleLogs && process.progressBar) {
         const totalProcessed = process.current;
         const percentage = Math.round((totalProcessed / process.total) * 100);
@@ -587,10 +589,14 @@ export default class CLIProgressManager {
     if (this.spinner) {
       this.spinner.stop();
     }
-
   }
 
   private printSummary(): void {
+    // In console logs mode, use only timestamped log lines (no Progress Manager blocks)
+    if (this.showConsoleLogs) {
+      return;
+    }
+
     if (!this.enableNestedProgress) {
       // Simple summary for single progress
       this.log('\n' + chalk.bold(`${this.moduleName} Summary:`));
@@ -607,10 +613,10 @@ export default class CLIProgressManager {
         process.status === 'completed'
           ? '✓'
           : process.status === 'failed'
-          ? '✗'
-          : process.status === 'active'
-          ? '●'
-          : '○';
+            ? '✗'
+            : process.status === 'active'
+              ? '●'
+              : '○';
 
       this.log(
         `  ${status} ${processName}: ${process.successCount}✓ ${process.failureCount}✗ (${process.current}/${process.total})`,
