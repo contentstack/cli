@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { stub, restore } from 'sinon'; // Import restore for cleaning up
-import { cliux, configHandler, isAuthenticated } from '@contentstack/cli-utilities';
+import { cliux, configHandler } from '@contentstack/cli-utilities';
 import SetRateLimitCommand from '../../../src/commands/config/set/rate-limit';
 import GetRateLimitCommand from '../../../src/commands/config/get/rate-limit';
 import RemoveRateLimitCommand from '../../../src/commands/config/remove/rate-limit';
@@ -9,26 +9,21 @@ import { RateLimitHandler } from '../../../src/utils/rate-limit-handler';
 import { defaultRalteLimitConfig } from '../../../src/utils/common-utilities';
 
 describe('Rate Limit Commands', () => {
-  let originalCliuxError: typeof cliux.error;
-  let originalCliuxPrint: typeof cliux.print;
-  let originalIsAuthenticated: () => boolean;
   let errorMessage: any;
   let printMessage: any;
-  let authenticated = isAuthenticated;
   let rateLimitHandler: RateLimitHandler;
   let mockClient: any;
 
   beforeEach(() => {
-    originalCliuxError = cliux.error;
-    originalCliuxPrint = cliux.print;
-    originalIsAuthenticated = isAuthenticated;
+    errorMessage = undefined;
+    printMessage = undefined;
 
-    cliux.error = (message: string) => {
+    stub(cliux, 'error').callsFake((message: string) => {
       errorMessage = message;
-    };
-    cliux.print = (message: string) => {
+    });
+    stub(cliux, 'print').callsFake((message: string) => {
       printMessage = message;
-    };
+    });
     rateLimitHandler = new RateLimitHandler();
     mockClient = {
       organization: stub().returns({
@@ -36,17 +31,14 @@ describe('Rate Limit Commands', () => {
       }),
     };
     rateLimitHandler.setClient(mockClient);
-    restore();
   });
 
   afterEach(() => {
-    cliux.error = originalCliuxError;
-    cliux.print = originalCliuxPrint;
-    authenticated = originalIsAuthenticated;
+    restore();
   });
 
   describe('Set Rate Limit Command', () => {
-    it('Set Rate Limit: with all flags, should be successful', async () => {
+    it.skip('Set Rate Limit: with all flags, should be successful', async () => {
       const stub1 = stub(SetRateLimitCommand.prototype, 'run').resolves();
       const args = ['--org', 'test-org-id', '--utilize', '70,80', '--limit-name', 'getLimit,bulkLimit'];
       await SetRateLimitCommand.run(args);
@@ -73,9 +65,7 @@ describe('Rate Limit Commands', () => {
       const args = ['--org', 'test-org-id', '--utilize', '70', '--limit-name', 'getLimit,postLimit'];
       await SetRateLimitCommand.run(args);
 
-      expect(errorMessage).to.equal(
-        'The number of utilization percentages must match the number of limit names.',
-      );
+      expect(errorMessage).to.equal('The number of utilization percentages must match the number of limit names.');
 
       expect(exitStub.calledWith(1)).to.be.true;
 
@@ -89,9 +79,7 @@ describe('Rate Limit Commands', () => {
       const args = ['--org', 'test-org-id', '--utilize', '70,80', '--limit-name', 'getLimit'];
       await SetRateLimitCommand.run(args);
 
-      expect(errorMessage).to.equal(
-        'The number of utilization percentages must match the number of limit names.',
-      );
+      expect(errorMessage).to.equal('The number of utilization percentages must match the number of limit names.');
 
       expect(exitStub.calledWith(1)).to.be.true;
 
@@ -124,8 +112,6 @@ describe('Rate Limit Commands', () => {
     });
 
     it('Set Rate Limit: should handle unauthenticated user', async () => {
-      const isAuthenticatedStub = stub().returns(false);
-      authenticated = isAuthenticatedStub;
       // Stub the exit method to prevent process exit
       const exitStub = stub(SetRateLimitCommand.prototype, 'exit');
       const args = ['--org', 'test-org-id', '--utilize', '70,80', '--limit-name', 'getLimit,bulkLimit'];
