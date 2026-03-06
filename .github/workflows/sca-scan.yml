@@ -12,7 +12,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --fail-on=all
+          args: --fail-on=all --all-projects
           json: true
         continue-on-error: true
       - uses: contentstack/sca-policy@main 
