@@ -199,10 +199,10 @@ importers:
   packages/contentstack-auth:
     dependencies:
       '@contentstack/cli-command':
-        specifier: ~2.1.0-beta.0
+        specifier: ~2.0.0-beta.2
         version: link:../contentstack-command
       '@contentstack/cli-utilities':
-        specifier: ~2.1.0-beta.0
+        specifier: ~2.0.0-beta.2
         version: link:../contentstack-utilities
       '@oclif/core':
         specifier: ^4.3.0
@@ -272,7 +272,7 @@ importers:
   packages/contentstack-command:
     dependencies:
       '@contentstack/cli-utilities':
-        specifier: ~2.1.0-beta.0
+        specifier: ~2.0.0-beta.2
         version: link:../contentstack-utilities
       '@oclif/core':
         specifier: ^4.3.0
@@ -321,10 +321,10 @@ importers:
   packages/contentstack-config:
     dependencies:
       '@contentstack/cli-command':
-        specifier: ~2.1.0-beta.0
+        specifier: ~2.0.0-beta.2
         version: link:../contentstack-command
       '@contentstack/cli-utilities':
-        specifier: ~2.1.0-beta.0
+        specifier: ~2.0.0-beta.2
         version: link:../contentstack-utilities
       '@contentstack/utils':
         specifier: ~1.7.0
