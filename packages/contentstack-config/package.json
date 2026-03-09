@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "2.0.0-beta.2",
+  "version": "2.1.0-beta.0",
   "author": "Contentstack",
   "scripts": {
     "build": "pnpm compile && oclif manifest && oclif readme",
@@ -21,8 +21,8 @@
     "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
   },
   "dependencies": {
-    "@contentstack/cli-command": "~2.0.0-beta",
-    "@contentstack/cli-utilities": "~2.0.0-beta.1",
+    "@contentstack/cli-command": "~2.1.0-beta.0",
+    "@contentstack/cli-utilities": "~2.1.0-beta.0",
     "@contentstack/utils": "~1.7.0",
     "@oclif/core": "^4.8.1",
     "@oclif/plugin-help": "^6.2.28",
