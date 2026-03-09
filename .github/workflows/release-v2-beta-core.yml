@@ -1,0 +1,69 @@
+name: Release CLI Core (v2 Beta)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [v2-beta]
+    paths:
+      - 'packages/contentstack/package.json'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install pnpm
+        run: corepack prepare pnpm@10.28.0 --activate
+
+      - name: Clean the repository
+        run: pnpm run clean:all
+
+      - name: Reading Configuration
+        id: release_config
+        uses: rgarcia-phi/json-to-variables@v1.1.0
+        with:
+          filename: .github/config/release.json
+          prefix: release
+
+      # Core CLI
+      - name: Install all dependencies
+        id: core-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_core == 'true'}}
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm -r --concurrency 1 run build
+
+      - name: Publishing core (Beta)
+        id: publish-core
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack/package.json
+          tag: beta
+
+      - name: Create Core Beta Release
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.publish-core.outputs.version }}
+        run: |
+          TAG="core@v${VERSION}"
+          if gh release view "$TAG" &>/dev/null; then
+            echo "Release $TAG already exists — skipping."
+          else
+            gh release create "$TAG" \
+              --title "Core Beta $VERSION" \
+              --generate-notes \
+              --prerelease
+          fi

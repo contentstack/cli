@@ -1,8 +1,0 @@
-import { ModuleClassParams } from '../../types';
-import '../../utils/progress-strategy-registry';
-
-export default async function startModuleImport(modulePayload: ModuleClassParams) {
-  const { default: ModuleRunner } = await import(`./${modulePayload.moduleName}`);
-  const moduleRunner = new ModuleRunner(modulePayload);
-  return moduleRunner.start();
-}
