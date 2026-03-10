@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/2.0.0-beta.10 darwin-arm64 node-v22.13.1
+@contentstack/cli/2.0.0-beta.14 darwin-arm64 node-v22.13.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -854,7 +854,7 @@ EXAMPLES
   $ csdx cm:stacks:bulk-assets --revert ./bulk-operation -a myAlias
 ```
 
-_See code: [@contentstack/cli-bulk-operations](https://github.com/contentstack/cli-bulk-operations/blob/v1.0.0-beta/src/commands/cm/stacks/bulk-assets.ts)_
+_See code: [@contentstack/cli-bulk-operations](https://github.com/contentstack/cli-bulk-operations/blob/v1.0.0/src/commands/cm/stacks/bulk-assets.ts)_
 
 ## `csdx cm:stacks:bulk-entries`
 
@@ -927,6 +927,12 @@ EXAMPLES
 
   $ csdx cm:stacks:bulk-entries --operation publish --content-types blog --environments prod --locales en-us --filter modified -k blt123
 
+  $ csdx cm:stacks:bulk-entries --operation publish --content-types blog --environments prod --locales en-us --filter draft -k blt123
+
+  $ csdx cm:stacks:bulk-entries --operation publish --content-types blog --environments prod --locales en-us --filter unpublished -k blt123
+
+  $ csdx cm:stacks:bulk-entries --operation publish --content-types blog --environments prod --filter non-localized -k blt123
+
   $ csdx cm:stacks:bulk-entries --operation publish --content-types blog --environments prod --locales en-us --include-variants -k blt123
 
   $ csdx cm:stacks:bulk-entries --retry-failed ./bulk-operation
@@ -934,7 +940,7 @@ EXAMPLES
   $ csdx cm:stacks:bulk-entries --revert ./bulk-operation
 ```
 
-_See code: [@contentstack/cli-bulk-operations](https://github.com/contentstack/cli-bulk-operations/blob/v1.0.0-beta/src/commands/cm/stacks/bulk-entries.ts)_
+_See code: [@contentstack/cli-bulk-operations](https://github.com/contentstack/cli-bulk-operations/blob/v1.0.0/src/commands/cm/stacks/bulk-entries.ts)_
 
 ## `csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`
 
@@ -1654,23 +1660,25 @@ Set region for CLI
 ```
 USAGE
   $ csdx config:set:region [REGION] [--cda <value> --cma <value> --ui-host <value> -n <value>] [--developer-hub
-    <value>] [--personalize <value>] [--launch <value>] [--studio <value>]
+    <value>] [--personalize <value>] [--launch <value>] [--studio <value>] [--asset-management <value>]
 
 ARGUMENTS
   [REGION]  Name for the region
 
 FLAGS
-  -n, --name=<value>           Name for the region, if this flag is added then cda, cma and ui-host flags are required
-      --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and
-                               name flags are required
-      --cma=<value>            Custom host to set for content management API, , if this flag is added then cda, ui-host
-                               and name flags are required
-      --developer-hub=<value>  Custom host to set for Developer hub API
-      --launch=<value>         Custom host to set for Launch API
-      --personalize=<value>    Custom host to set for Personalize API
-      --studio=<value>         Custom host to set for Studio API
-      --ui-host=<value>        Custom UI host to set for CLI, if this flag is added then cda, cma and name flags are
-                               required
+  -n, --name=<value>              Name for the region, if this flag is added then cda, cma and ui-host flags are
+                                  required
+      --asset-management=<value>  Custom host to set for Asset Management API
+      --cda=<value>               Custom host to set for content delivery API, if this flag is added then cma, ui-host
+                                  and name flags are required
+      --cma=<value>               Custom host to set for content management API, , if this flag is added then cda,
+                                  ui-host and name flags are required
+      --developer-hub=<value>     Custom host to set for Developer hub API
+      --launch=<value>            Custom host to set for Launch API
+      --personalize=<value>       Custom host to set for Personalize API
+      --studio=<value>            Custom host to set for Studio API
+      --ui-host=<value>           Custom UI host to set for CLI, if this flag is added then cda, cma and name flags are
+                                  required
 
 DESCRIPTION
   Set region for CLI
@@ -1701,6 +1709,8 @@ EXAMPLES
   $ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --launch <custom_launch_url>
 
   $ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --studio <custom_studio_url>
+
+  $ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --asset-management <asset_management_url>
 
   $ csdx config:set:region --cda <custom_cda_host_url> --cma <custom_cma_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url> --launch <custom_launch_url> --personalize <custom_personalize_url> --studio <custom_studio_url>
 ```
