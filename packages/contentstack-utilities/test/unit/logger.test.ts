@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import Logger from '../../src/logger/logger';
-import { getSessionLogPath } from '../../src/logger/session-path';
+import { getSessionLogPath, clearSessionLogPathCache } from '../../src/logger/session-path';
 import configHandler from '../../src/config-handler';
 
 describe('Logger', () => {
@@ -239,6 +239,7 @@ describe('Session Log Path', () => {
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
+    clearSessionLogPathCache();
     // Create a temporary directory for testing
     tempDir = path.join(os.tmpdir(), `csdx-log-test-${Date.now()}`);
     fs.mkdirSync(tempDir, { recursive: true });
