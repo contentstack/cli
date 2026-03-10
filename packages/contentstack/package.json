@@ -157,6 +157,7 @@
     ],
     "hooks": {
       "prerun": [
+        "./lib/hooks/prerun/init-context-for-command",
         "./lib/hooks/prerun/default-rate-limit-check",
         "./lib/hooks/prerun/latest-version-warning"
       ],
