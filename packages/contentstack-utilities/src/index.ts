@@ -76,6 +76,8 @@ export {
 export { FlagInput, ArgInput, FlagDefinition } from '@oclif/core/lib/interfaces/parser';
 
 export { default as TablePrompt } from './inquirer-table-prompt';
+export { loadChalk, getChalk } from './chalk';
+export type { ChalkInstance } from './chalk';
 
 export { Logger };
 export { default as authenticationHandler } from './authentication-handler';
