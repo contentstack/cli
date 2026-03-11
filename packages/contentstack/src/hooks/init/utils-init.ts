@@ -1,9 +1,10 @@
-import { messageHandler, cliux, managementSDKInitiator, marketplaceSDKInitiator } from '@contentstack/cli-utilities';
+import { messageHandler, cliux, managementSDKInitiator, marketplaceSDKInitiator, loadChalk } from '@contentstack/cli-utilities';
 
 /**
  * Initialize the utilities 
  */
-export default function (_opts): void {
+export default async function (_opts): Promise<void> {
+  await loadChalk();
   const { context } = this.config;
   messageHandler.init(context);
   cliux.init(context);
