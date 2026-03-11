@@ -1,15 +1,17 @@
-name: Release CLI Core (v2 Beta)
+name: Release CLI Core (v1 Beta)
 
 on:
   workflow_dispatch:
-  push:
-    branches: [v2-beta]
-    paths:
-      - 'packages/contentstack/package.json'
+  workflow_run:
+    workflows: ['Release CLI Platform Plugins (v1 Beta)']
+    types:
+      - completed
+    branches: [v1-beta]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -28,6 +30,12 @@ jobs:
       - name: Clean the repository
         run: pnpm run clean:all
 
+      - name: Install root dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm -r --sort run build
+
       - name: Reading Configuration
         id: release_config
         uses: rgarcia-phi/json-to-variables@v1.1.0
@@ -35,22 +43,13 @@ jobs:
           filename: .github/config/release.json
           prefix: release
 
-      # Core CLI
-      - name: Install all dependencies
-        id: core-installation
-        if: ${{env.release_releaseAll == 'true' || env.release_plugins_core == 'true'}}
-        run: pnpm install --frozen-lockfile
-
-      - name: Build all packages
-        run: pnpm -r --concurrency 1 run build
-
       - name: Publishing core (Beta)
         id: publish-core
         uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack/package.json
-          tag: beta
+          tag: v1-beta
 
       - name: Create Core Beta Release
         id: create_release
