@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli",
   "description": "Command-line tool (CLI) to interact with Contentstack",
-  "version": "2.0.0-beta.13",
+  "version": "2.0.0-beta.15",
   "author": "Contentstack",
   "bin": {
     "csdx": "./bin/run.js"
@@ -26,7 +26,7 @@
     "@contentstack/cli-cm-export": "~2.0.0-beta.10",
     "@contentstack/cli-cm-import": "~2.0.0-beta.10",
     "@contentstack/cli-auth": "~2.0.0-beta.6",
-    "@contentstack/cli-bulk-operations": "^1.0.0-beta",
+    "@contentstack/cli-bulk-operations": "^1.0.0",
     "@contentstack/cli-cm-bootstrap": "~2.0.0-beta.10",
     "@contentstack/cli-cm-branches": "~2.0.0-beta.1",
     "@contentstack/cli-cm-clone": "~2.0.0-beta.11",
