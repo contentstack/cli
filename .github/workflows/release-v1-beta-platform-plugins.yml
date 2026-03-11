@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: 7
+          version: 10.28.0
       - uses: actions/setup-node@v4
         with:
           node-version: '22.x'
@@ -20,10 +20,16 @@ jobs:
         run: corepack enable
 
       - name: Install pnpm
-        run: corepack prepare pnpm@7 --activate
+        run: corepack prepare pnpm@10.28.0 --activate
+
+      - name: Clean the repository
+        run: pnpm run clean:all
 
       - name: Install root dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all plugins
+        run: pnpm -r --sort run build
 
       - name: Reading Configuration
         id: release_config
@@ -33,90 +39,40 @@ jobs:
           prefix: release
 
       # Dev Dependencies
-      - name: Installing dependencies of dev dependencies
-        id: dev-dependencies-installation
-        if: ${{env.release_releaseAll == 'true' || env.release_plugins_dev-dependencies == 'true'}}
-        working-directory: ./packages/contentstack-dev-dependencies
-        run: npm install
-      - name: Compiling dev dependencies
-        if: ${{ steps.dev-dependencies-installation.conclusion == 'success'  }}
-        working-directory: ./packages/contentstack-dev-dependencies
-        run: npm run prepack
       - name: Publishing dev dependencies (Beta)
         uses: JS-DevTools/npm-publish@v3
-        if: ${{ steps.dev-dependencies-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-dev-dependencies/package.json
           tag: beta
 
       # Utilities
-      - name: Installing dependencies of utilities
-        id: utilities-installation
-        if: ${{env.release_releaseAll == 'true' || env.release_plugins_utilities == 'true'}}
-        working-directory: ./packages/contentstack-utilities
-        run: npm install
-      - name: Compiling utilities
-        if: ${{ steps.utilities-installation.conclusion == 'success'  }}
-        working-directory: ./packages/contentstack-utilities
-        run: npm run prepack
       - name: Publishing utilities (Beta)
         uses: JS-DevTools/npm-publish@v3
-        if: ${{ steps.utilities-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-utilities/package.json
           tag: beta
 
       # Command
-      - name: Installing dependencies of command
-        id: command-installation
-        if: ${{env.release_releaseAll == 'true' || env.release_plugins_command == 'true'}}
-        working-directory: ./packages/contentstack-command
-        run: npm install
-      - name: Compiling command
-        if: ${{ steps.command-installation.conclusion == 'success'  }}
-        working-directory: ./packages/contentstack-command
-        run: npm run prepack
       - name: Publishing command (Beta)
         uses: JS-DevTools/npm-publish@v3
-        if: ${{ steps.command-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-command/package.json
           tag: beta
 
       # Config
-      - name: Installing dependencies of config
-        id: config-installation
-        if: ${{env.release_releaseAll == 'true' || env.release_plugins_config == 'true'}}
-        working-directory: ./packages/contentstack-config
-        run: npm install
-      - name: Compiling config
-        if: ${{ steps.config-installation.conclusion == 'success'  }}
-        working-directory: ./packages/contentstack-config
-        run: npm run prepack
       - name: Publishing config (Beta)
         uses: JS-DevTools/npm-publish@v3
-        if: ${{ steps.config-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-config/package.json
           tag: beta
 
       # Auth
-      - name: Installing dependencies of auth
-        id: auth-installation
-        if: ${{env.release_releaseAll == 'true' || env.release_plugins_auth == 'true'}}
-        working-directory: ./packages/contentstack-auth
-        run: npm install
-      - name: Compiling auth
-        if: ${{ steps.auth-installation.conclusion == 'success'  }}
-        working-directory: ./packages/contentstack-auth
-        run: npm run prepack
       - name: Publishing auth (Beta)
         uses: JS-DevTools/npm-publish@v3
-        if: ${{ steps.auth-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-auth/package.json

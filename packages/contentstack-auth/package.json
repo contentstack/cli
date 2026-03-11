@@ -1,11 +1,11 @@
 {
   "name": "@contentstack/cli-auth",
   "description": "Contentstack CLI plugin for authentication activities",
-  "version": "1.7.3",
+  "version": "1.8.0-beta.0",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "scripts": {
-    "build": "pnpm compile && oclif manifest",
+    "build": "pnpm compile && oclif manifest && oclif readme",
     "clean": "rm -rf ./lib ./node_modules tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
@@ -22,8 +22,8 @@
     "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
   },
   "dependencies": {
-    "@contentstack/cli-command": "~1.7.2",
-    "@contentstack/cli-utilities": "~1.17.4",
+    "@contentstack/cli-command": "~1.8.0-beta.0",
+    "@contentstack/cli-utilities": "~1.18.0-beta.0",
     "@oclif/core": "^4.3.0",
     "@oclif/plugin-help": "^6.2.28",
     "otplib": "^12.0.1"

@@ -1,10 +1,11 @@
 name: Release CLI Core (v1 Beta)
 
 on:
+  workflow_dispatch:
   push:
     branches: [v1-beta]
-  paths:
-    - 'packages/contentstack/package.json'
+    paths:
+      - 'packages/contentstack/package.json'
 
 jobs:
   build:
@@ -24,8 +25,8 @@ jobs:
       - name: Install pnpm
         run: corepack prepare pnpm@10.28.0 --activate
 
-      - name: Install root dependencies
-        run: pnpm install
+      - name: Clean the repository
+        run: pnpm run clean:all
 
       - name: Reading Configuration
         id: release_config
@@ -35,29 +36,26 @@ jobs:
           prefix: release
 
       # Core CLI
-      - name: Installing dependencies of core
+      - name: Install all dependencies
         id: core-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_core == 'true'}}
-        working-directory: ./packages/contentstack
-        run: npm install
-      - name: Compiling core
-        if: ${{ steps.core-installation.conclusion == 'success'  }}
-        working-directory: ./packages/contentstack
-        run: npm run prepack
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm -r --concurrency 1 run build
+
       - name: Publishing core (Beta)
         id: publish-core
         uses: JS-DevTools/npm-publish@v3
-        if: ${{ steps.core-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack/package.json
-          tag: beta
+          tag: v1-beta
 
       - name: Create Core Beta Release
-        if: ${{ steps.publish-core.conclusion == 'success' }}
         id: create_release
         env:
-          GITHUB_TOKEN: ${{ secrets.PKG_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ steps.publish-core.outputs.version }}
         run: |
           TAG="core@v${VERSION}"
