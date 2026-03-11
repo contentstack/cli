@@ -6552,7 +6552,7 @@ snapshots:
     dependencies:
       '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
-      '@oclif/core': 4.8.1
+      '@oclif/core': 4.8.3
       '@oclif/plugin-help': 6.2.37
       '@oclif/plugin-plugins': 5.4.56
       chalk: 4.1.2
@@ -6572,7 +6572,7 @@ snapshots:
       '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-config': 1.20.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
-      '@oclif/core': 4.8.1
+      '@oclif/core': 4.8.3
       '@oclif/plugin-help': 6.2.37
       inquirer: 8.2.7(@types/node@14.18.63)
       mkdirp: 1.0.4
@@ -6586,7 +6586,7 @@ snapshots:
     dependencies:
       '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
-      '@oclif/core': 4.8.1
+      '@oclif/core': 4.8.3
       '@oclif/plugin-help': 6.2.37
       chalk: 4.1.2
       just-diff: 6.0.2
@@ -6600,7 +6600,7 @@ snapshots:
       '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-config': 1.20.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
-      '@oclif/core': 4.8.1
+      '@oclif/core': 4.8.3
       '@oclif/plugin-help': 6.2.37
       chalk: 4.1.2
       dotenv: 16.6.1
@@ -6618,7 +6618,7 @@ snapshots:
       '@contentstack/cli-cm-import': 1.32.0-beta.0(@types/node@14.18.63)
       '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
-      '@oclif/core': 4.8.1
+      '@oclif/core': 4.8.3
       '@oclif/plugin-help': 6.2.37
       chalk: 4.1.2
       inquirer: 8.2.7(@types/node@14.18.63)
@@ -6636,7 +6636,7 @@ snapshots:
     dependencies:
       '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
-      '@oclif/core': 4.8.1
+      '@oclif/core': 4.8.3
       '@oclif/plugin-help': 6.2.37
       fast-csv: 4.3.6
       inquirer: 8.2.7(@types/node@14.18.63)
@@ -6651,7 +6651,7 @@ snapshots:
       '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-variants': 1.4.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
-      '@oclif/core': 4.8.1
+      '@oclif/core': 4.8.3
       async: 3.2.6
       big-json: 3.2.0
       bluebird: 3.7.2
@@ -6670,7 +6670,7 @@ snapshots:
     dependencies:
       '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
-      '@oclif/core': 4.8.1
+      '@oclif/core': 4.8.3
       big-json: 3.2.0
       chalk: 4.1.2
       fs-extra: 11.3.4
@@ -6688,7 +6688,7 @@ snapshots:
       '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-variants': 1.4.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
-      '@oclif/core': 4.8.1
+      '@oclif/core': 4.8.3
       big-json: 3.2.0
       bluebird: 3.7.2
       chalk: 4.1.2
@@ -6755,7 +6755,7 @@ snapshots:
   '@contentstack/cli-command@1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)':
     dependencies:
       '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
-      '@oclif/core': 4.8.1
+      '@oclif/core': 4.8.3
       '@oclif/plugin-help': 6.2.37
       contentstack: 3.26.4
     transitivePeerDependencies:
@@ -6816,7 +6816,7 @@ snapshots:
     dependencies:
       '@contentstack/cli-command': 1.8.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
-      '@oclif/core': 4.8.1
+      '@oclif/core': 4.8.3
       '@oclif/plugin-help': 6.2.37
       async: 3.2.6
       callsites: 3.1.0
@@ -6870,8 +6870,8 @@ snapshots:
     dependencies:
       '@contentstack/management': 1.27.6(debug@4.4.3)
       '@contentstack/marketplace-sdk': 1.5.0(debug@4.4.3)
-      '@oclif/core': 4.8.1
-      axios: 1.13.5(debug@4.4.3)
+      '@oclif/core': 4.8.3
+      axios: 1.13.6(debug@4.4.3)
       chalk: 4.1.2
       cli-cursor: 3.1.0
       cli-progress: 3.12.0
@@ -6904,7 +6904,7 @@ snapshots:
   '@contentstack/cli-variants@1.4.0-beta.0(@types/node@14.18.63)(debug@4.4.3)':
     dependencies:
       '@contentstack/cli-utilities': 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
-      '@oclif/core': 4.8.1
+      '@oclif/core': 4.8.3
       '@oclif/plugin-help': 6.2.37
       lodash: 4.17.23
       mkdirp: 1.0.4
