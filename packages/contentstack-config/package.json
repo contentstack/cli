@@ -1,10 +1,10 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.19.1",
+  "version": "1.20.0-beta.0",
   "author": "Contentstack",
   "scripts": {
-    "build": "pnpm compile && oclif manifest",
+    "build": "pnpm compile && oclif manifest && oclif readme",
     "clean": "rm -rf ./lib ./node_modules tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
@@ -12,7 +12,7 @@
     "version": "oclif readme && git add README.md",
     "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "pretest": "tsc -p test",
-    "test": "TS_NODE_PROJECT=test/tsconfig.json mocha --require ts-node/register 'test/**/*.test.ts'",
+    "test": "mocha --require ts-node/register 'test/**/*.test.ts'",
     "posttest": "npm run lint",
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
@@ -21,8 +21,8 @@
     "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
   },
   "dependencies": {
-    "@contentstack/cli-command": "~1.7.2",
-    "@contentstack/cli-utilities": "~1.17.4",
+    "@contentstack/cli-command": "~1.8.0-beta.0",
+    "@contentstack/cli-utilities": "~1.18.0-beta.0",
     "@contentstack/utils": "~1.7.0",
     "@oclif/core": "^4.3.0",
     "@oclif/plugin-help": "^6.2.28",
