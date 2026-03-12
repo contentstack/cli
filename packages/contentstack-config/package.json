@@ -67,7 +67,21 @@
     "protected": [
       "config:get:region"
     ],
-    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-config/<%- commandPath %>"
+    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-config/<%- commandPath %>",
+    "topics": {
+      "config": {
+        "description": "Perform configuration related activities"
+      },
+      "config:get": {
+        "description": "View the list of set configuration values"
+      },
+      "config:set": {
+        "description": "Set configuration values"
+      },
+      "config:remove": {
+        "description": "Remove set configuration values"
+      }
+    }
   },
   "csdxConfig": {
     "shortCommandName": {
