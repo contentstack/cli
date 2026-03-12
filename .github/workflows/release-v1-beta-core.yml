@@ -2,10 +2,12 @@ name: Release CLI Core (v1 Beta)
 
 on:
   workflow_run:
-    workflows: ['Release CLI Platform Plugins (v1 Beta)']
+    workflows:
+      - Release CLI Platform Plugins (v1 Beta)
     types:
       - completed
-    branches: [v1-beta]
+    branches:
+      - v1-beta
 
 jobs:
   build:
