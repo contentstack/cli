@@ -23,7 +23,7 @@ jobs:
           cache: 'pnpm' # optional but recommended
 
       - name: Install Dependencies (Excluding Contentstack)
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build all plugins (Excluding Contentstack)
         run: |
