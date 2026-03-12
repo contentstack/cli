@@ -5,4 +5,6 @@ fileignoreconfig:
     checksum: 93f587bdb40e90560278654d116ca15ac901abfbfc666f82cddb53eac212eebe
   - filename: packages/contentstack-bootstrap/src/bootstrap/utils.ts
     checksum: 6e6fb00bb11b03141e5ad27eeaa4af9718dc30520c3e73970bc208cc0ba2a7d2
+  - filename: .github/workflows/release.yml
+    checksum: 73807361b1a862dc882846ac75fefca49e3c734db032e9aa80158f2a686bea13
 version: '1.0'
