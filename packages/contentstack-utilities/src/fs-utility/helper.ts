@@ -1,12 +1,12 @@
-import map from "lodash/map";
-import omit from "lodash/omit";
-import pick from "lodash/pick";
-import assign from "lodash/assign";
-import isEmpty from "lodash/isEmpty";
-import forEach from "lodash/forEach";
+import map from 'lodash/map';
+import omit from 'lodash/omit';
+import pick from 'lodash/pick';
+import assign from 'lodash/assign';
+import isEmpty from 'lodash/isEmpty';
+import forEach from 'lodash/forEach';
 
 function getKeysFromArray(keys: string[], obj: any): string {
-  let keyName = "";
+  let keyName = '';
   forEach(keys, (key: string) => {
     keyName += keyName ? `_${obj[key]}` : obj[key];
   });

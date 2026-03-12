@@ -151,7 +151,7 @@ export default class FsUtility {
    * @param data Object | undefined
    * @return void
    */
-  writeFile(filePath: string, data: Chunk, mapKeyVal: boolean = false): void {
+  writeFile(filePath: string, data: Chunk, mapKeyVal = false): void {
     if (mapKeyVal) {
       data = mapKeyAndVal(data as Record<string, any>[], 'uid', this.omitKeys); // NOTE Map values as Key/value pair object
     }
@@ -429,12 +429,10 @@ export default class FsUtility {
       this.pageInfo.before = 1;
     }
 
-    /* eslint-disable unicorn/consistent-destructuring */
     if (!isEmpty(this.readIndexer[this.pageInfo.after + 1])) {
       this.pageInfo.hasNextPage = true;
     }
 
-    /* eslint-disable unicorn/consistent-destructuring */
     if (!isEmpty(this.readIndexer[this.pageInfo.after - 1])) {
       this.pageInfo.hasPreviousPage = true;
     }

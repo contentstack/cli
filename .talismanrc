@@ -1,6 +1,14 @@
 fileignoreconfig:
+  - filename: packages/contentstack-utilities/src/fs-utility/core.ts
+    checksum: a3679bdc464c673ee5b53c2dd315cfda0e785bbb889a6fe33e61e8b34de17703
+  - filename: packages/contentstack-auth/src/utils/mfa-handler.ts
+    checksum: 723b1e69b2da51af73a7086e55a9ecedd4d1fd95855473eaa43a8375e0a92a7e
+  - filename: packages/contentstack-utilities/src/logger/logger.ts
+    checksum: ec84008d7715ccdfe32e32a4953b99bdb4c320f06ec411500858f87bf5b7db3c
+  - filename: packages/contentstack-auth/test/unit/commands/tokens-add.test.ts
+    checksum: d75044410ae06c75fb21ed06ac405854bd9a400fab15f74a0548c999bbdafaa3
+  - filename: packages/contentstack-config/test/unit/commands/remove-base-branch.test.ts
+    checksum: c7f98d87a9d686900781130f2c7684eaaf7d74869b79a2ab356140a2b6bf76b4
   - filename: pnpm-lock.yaml
-    checksum: 00d2cba7fffe932f86c5835d3dd23056a2055e6fa60d86175ca73710505b0d1d
-  - filename: packages/contentstack-auth/src/commands/auth/logout.ts
-    checksum: 20ff708d5a0ee56eb8786b19df07b49dacaddfa1deafe99c0397716c7865726d
+    checksum: 53f754f5f8dc328c10809124fb190b2a5d2cdb090075f24928394b781d1eaed7
 version: '1.0'

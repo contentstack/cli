@@ -1,4 +1,4 @@
-import { logLevels } from "../constants/logging";
+import { logLevels } from '../constants/logging';
 
 export interface IPromptOptions {
   prompt?: string;
@@ -18,7 +18,7 @@ export interface InquirePayload {
   default?: any;
   message: string;
   choices?: Array<any>;
-  transformer?: Function;
+  transformer?: (input: unknown) => unknown;
   validate?(input: any, answers?: any): boolean | string | Promise<boolean | string>;
   selectAll?: boolean;
   pageSize?: number;
@@ -73,7 +73,7 @@ export interface Locale {
   code: string;
 }
 
-export interface CliUXPromptOptions extends IPromptOptions {}
+export type CliUXPromptOptions = IPromptOptions
 
 export interface LoggerConfig {
   basePath: string;               // Base path for log storage

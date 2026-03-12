@@ -128,7 +128,7 @@ export class HttpClient implements IHttpClient {
    *
    * @returns {HttpClient}
    */
-  token(token: string, type: string = 'Bearer'): HttpClient {
+  token(token: string, type = 'Bearer'): HttpClient {
     return this.headers({
       Authorization: `${type} ${token}`.trim(),
     });
@@ -457,7 +457,7 @@ export class HttpClient implements IHttpClient {
   }
 }
 
-export interface HttpRequestConfig extends AxiosRequestConfig {}
+export type HttpRequestConfig = AxiosRequestConfig
 
 type BodyFormat = 'json' | 'formParams';
 

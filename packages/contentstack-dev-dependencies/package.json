@@ -10,7 +10,8 @@
     "clean": "rm -rf ./lib tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "lint": "eslint src/**/*.ts",
-    "format": "eslint src/**/*.ts --fix"
+    "format": "eslint src/**/*.ts --fix",
+    "test": "echo 'No tests in this package'"
   },
   "repository": "contentstack/cli",
   "keywords": [

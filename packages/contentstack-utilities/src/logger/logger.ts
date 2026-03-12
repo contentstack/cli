@@ -86,7 +86,7 @@ export default class Logger {
     });
   }
 
-  private isSensitiveKey(keyStr: string, consoleMode: boolean = false): boolean {
+  private isSensitiveKey(keyStr: string, consoleMode = false): boolean {
     if (keyStr && typeof keyStr === 'string') {
       const keysToCheck = consoleMode ? this.consoleSensitiveKeys : this.logSensitiveKeys;
       return keysToCheck.some((regex) => regex.test(keyStr));
@@ -94,7 +94,8 @@ export default class Logger {
     return false;
   }
 
-  private redactObject(obj: any, consoleMode: boolean = false) {
+  private redactObject(obj: any, consoleMode = false) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias -- traverse forEach callback uses 'this' as node context
     const self = this;
     traverse(obj).forEach(function redactor() {
       if (this.key && self.isSensitiveKey(this.key, consoleMode)) {
@@ -105,7 +106,7 @@ export default class Logger {
     return obj;
   }
 
-  private redact(info: any, consoleMode: boolean = false): any {
+  private redact(info: any, consoleMode = false): any {
     try {
       const copy = klona(info);
       this.redactObject(copy, consoleMode);

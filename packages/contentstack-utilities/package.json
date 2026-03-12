@@ -9,14 +9,12 @@
     "build": "pnpm compile",
     "clean": "rm -rf ./lib ./node_modules tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
-    "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
-    "pretest": "tsc -p test",
-    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
-    "posttest": "npm run lint",
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
-    "test:unit": "mocha --forbid-only \"test/unit/**/*.test.ts\"",
-    "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
+    "pretest": "tsc -p test",
+    "posttest": "npm run lint",
+    "test": "NODE_OPTIONS=--no-warnings nyc --concurrency=1 --extension .ts mocha --exit --forbid-only \"test/unit/**/*.test.ts\"",
+    "test:report": "NODE_OPTIONS=--no-warnings nyc --concurrency=1 --extension .ts mocha --exit --forbid-only \"test/unit/**/*.test.ts\""
   },
   "repository": {
     "type": "git",

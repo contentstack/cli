@@ -23,7 +23,11 @@ export class RateLimitHandler {
     if (!rateLimit[config.org]) {
       rateLimit[config.org] = { ...rateLimit.default };
     }
-    const limitNames = Array.isArray(config['limit-name']) ? config['limit-name'] : [];
+    const limitNames = Array.isArray(config['limit-name'])
+      ? config['limit-name']
+      : Array.isArray(config.limitName)
+        ? config.limitName
+        : [];
     const utilizeValues = Array.isArray(config.utilize) ? config.utilize.map((v) => Number(v)) : [];
     const unavailableLimits = [];
 
@@ -32,7 +36,7 @@ export class RateLimitHandler {
       const features = organizations.plan?.features || [];
 
       const limitsToUpdate: { [key: string]: Limit } = { ...rateLimit[config.org] };
-      const utilizationMap = {};
+      const utilizationMap: Record<string, number> = {};
       limitNames.forEach((name, index) => {
         if (utilizeValues[index] !== undefined) {
           utilizationMap[name] = utilizeValues[index];
@@ -42,9 +46,13 @@ export class RateLimitHandler {
       limitNamesConfig.forEach((limitName) => {
         const feature = features.find((f: { uid: string }) => f.uid === limitName);
         if (feature) {
+          const utilize =
+            utilizationMap[limitName] !== undefined
+              ? utilizationMap[limitName]
+              : defaultRalteLimitConfig[limitName]?.utilize;
           limitsToUpdate[limitName] = {
             value: feature.limit || rateLimit[config.org][limitName]?.value || rateLimit.default[limitName]?.value,
-            utilize: utilizationMap[limitName] || defaultRalteLimitConfig[limitName]?.utilize,
+            utilize: utilize ?? defaultRalteLimitConfig[limitName]?.utilize ?? 50,
           };
         } else {
           unavailableLimits.push(limitName);

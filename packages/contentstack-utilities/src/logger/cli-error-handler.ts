@@ -40,6 +40,7 @@ import { redactObject } from '../helpers';
  * @public
  */
 export default class CLIErrorHandler {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   constructor() {}
 
   /**
@@ -178,7 +179,7 @@ export default class CLIErrorHandler {
    * Extracts only essential error payload information for clear debugging.
    */
   private extractErrorPayload(error: Error & Record<string, any>): Record<string, any> {
-    const { name, message, code, status, response, request, config, statusText } = error;
+    const { name, code, status, response, request, config, statusText } = error;
 
     const payload: Record<string, any> = {
       name,

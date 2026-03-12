@@ -14,12 +14,12 @@
     "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
     "version": "oclif readme  && git add README.md",
-    "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
-    "pretest": "tsc -p test",
-    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
-    "posttest": "npm run lint",
     "lint": "eslint src/**/*.ts",
-    "prepack": "pnpm compile && oclif manifest && oclif readme"
+    "prepack": "pnpm compile && oclif manifest && oclif readme",
+    "pretest": "tsc -p test",
+    "posttest": "npm run lint",
+    "test": "NODE_OPTIONS=--no-warnings nyc --concurrency=1 --extension .ts mocha --exit --forbid-only \"test/unit/**/*.test.ts\"",
+    "test:report": "NODE_OPTIONS=--no-warnings nyc --concurrency=1 --extension .ts mocha --exit --forbid-only \"test/unit/**/*.test.ts\""
   },
   "dependencies": {
     "@contentstack/cli-audit": "~1.19.0-beta.0",
