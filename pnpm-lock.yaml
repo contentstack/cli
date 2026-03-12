@@ -6595,7 +6595,7 @@ snapshots:
   '@contentstack/cli-command@1.7.2(@types/node@14.18.63)(debug@4.4.3)':
     dependencies:
       '@contentstack/cli-utilities': 1.17.4(@types/node@14.18.63)(debug@4.4.3)
-      '@oclif/core': 4.8.1
+      '@oclif/core': 4.8.3
       '@oclif/plugin-help': 6.2.37
       contentstack: 3.26.4
     transitivePeerDependencies:
@@ -6686,7 +6686,7 @@ snapshots:
     dependencies:
       '@contentstack/management': 1.27.6(debug@4.4.3)
       '@contentstack/marketplace-sdk': 1.5.0(debug@4.4.3)
-      '@oclif/core': 4.8.1
+      '@oclif/core': 4.8.3
       axios: 1.13.5(debug@4.4.3)
       chalk: 4.1.2
       cli-cursor: 3.1.0
