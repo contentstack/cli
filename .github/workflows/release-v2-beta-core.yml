@@ -1,11 +1,7 @@
 name: Release CLI Core (v2 Beta)
 
 on:
-  workflow_dispatch:
-  push:
-    branches: [v2-beta]
-    paths:
-      - 'packages/contentstack/package.json'
+  workflow_call:
 
 jobs:
   build:
