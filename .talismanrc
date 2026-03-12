@@ -4,7 +4,7 @@ fileignoreconfig:
   - filename: .github/workflows/release.yml
     checksum: 73807361b1a862dc882846ac75fefca49e3c734db032e9aa80158f2a686bea13
   - filename: pnpm-lock.yaml
-    checksum: 45b77e385a0b13c82ba125dcdc82d27a360132ff6edda801cd8b75943996c310
+    checksum: c94a1596f3e28753b0564c2d344eb3ffeb1a5064fbd45e3288975ef6c7113771
   - filename: packages/contentstack-auth/src/commands/auth/logout.ts
     checksum: 20ff708d5a0ee56eb8786b19df07b49dacaddfa1deafe99c0397716c7865726d
 version: '1.0'
