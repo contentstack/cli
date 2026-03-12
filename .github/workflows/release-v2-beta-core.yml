@@ -1,17 +1,11 @@
 name: Release CLI Core (v2 Beta)
 
 on:
-  workflow_dispatch:
-  workflow_run:
-    workflows: ['Release CLI Platform Plugins (v2 Beta)']
-    types:
-      - completed
-    branches: [v2-beta]
+  workflow_call:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
