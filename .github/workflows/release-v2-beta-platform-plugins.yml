@@ -1,8 +1,7 @@
 name: Release CLI Platform Plugins (v2 Beta)
 
 on:
-  push:
-    branches: [v2-beta]
+  workflow_call:
 
 jobs:
   build:
