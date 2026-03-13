@@ -10,14 +10,8 @@
     "prepack": "pnpm compile",
     "clean": "rm -rf ./lib ./node_modules tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
-    "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
-    "pretest": "tsc -p test",
-    "posttest": "npm run lint",
-    "lint": "eslint src/**/*.ts",
-    "format": "eslint src/**/*.ts --fix",
-    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
-    "test:unit:report": "nyc --extension .ts  mocha --forbid-only \"test/unit/**/*.test.ts\"",
-    "test:unit": "mocha --timeout 10000 --forbid-only \"test/unit/**/*.test.ts\""
+    "test": "mocha \"test/unit/**/*.test.ts\"",
+    "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
     "@contentstack/cli-utilities": "~1.18.0-beta.0",

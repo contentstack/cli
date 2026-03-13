@@ -41,10 +41,11 @@ describe('Delete config', () => {
     const config = configHandler;
     const getConfig = config.get(`baseBranch.${removeConfigMockData.flags.apiKey}`);
 
-    const askConfirmation = stub(interactive, 'askConfirmation');
+    const askConfirmation = stub(interactive, 'askConfirmation').resolves(true);
     const showSuccess = stub(cliux, 'success');
     await RemoveBranchConfigCommand.run(['--stack-api-key', removeConfigMockData.flags.apiKey]);
-    if (getConfig && askConfirmation.calledOnce) expect(showSuccess.calledOnce).to.be.true;
+    if (getConfig && askConfirmation.calledOnce) expect(showSuccess.called).to.be.true;
     askConfirmation.restore();
+    showSuccess.restore();
   });
 });

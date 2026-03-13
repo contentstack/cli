@@ -9,8 +9,8 @@
     "prepack": "npm run clean && npm run compile",
     "clean": "rm -rf ./lib tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
-    "lint": "eslint src/**/*.ts",
-    "format": "eslint src/**/*.ts --fix"
+    "test": "echo No tests",
+    "lint": "eslint src/**/*.ts"
   },
   "repository": "contentstack/cli",
   "keywords": [
@@ -29,7 +29,9 @@
   },
   "devDependencies": {
     "@types/node": "^14.18.63",
-    "eslint": "^7.32.0",
+    "@typescript-eslint/eslint-plugin": "^8.56.1",
+    "@typescript-eslint/parser": "^8.56.1",
+    "eslint": "^8.57.1",
     "mocha": "10.8.2",
     "ts-node": "^10.9.2",
     "tslib": "^2.8.1",
