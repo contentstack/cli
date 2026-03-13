@@ -41,7 +41,7 @@ function getRegionObject(regionKey: string): Region {
       personalizeUrl: endpoints.personalizeManagement,
       composableStudioUrl: endpoints.composableStudio,
     };
-  } catch (error) {
+  } catch {
     return null;
   }
 }
