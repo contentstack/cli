@@ -5,7 +5,7 @@
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "scripts": {
-    "build": "pnpm compile && oclif manifest",
+    "build": "pnpm compile && oclif manifest && oclif readme",
     "clean": "rm -rf ./lib ./node_modules tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
