@@ -22,18 +22,18 @@ jobs:
           node-version: '22.x'
           cache: 'pnpm' # optional but recommended
 
-      - name: Temporarily disable contentstack package
-        run: mv packages/contentstack/package.json packages/contentstack/package.json.disabled || true
+      # - name: Temporarily disable contentstack package
+      #   run: mv packages/contentstack/package.json packages/contentstack/package.json.disabled || true
 
       - name: Install Dependencies (Excluding Contentstack)
-        run: npm run bootstrap
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build all plugins (Excluding Contentstack)
         run: |
-          npm run build
+          NODE_ENV=PREPACK_MODE pnpm -r --sort run build
 
-      - name: Restore contentstack package
-        run: mv packages/contentstack/package.json.disabled packages/contentstack/package.json || true
+      # - name: Restore contentstack package
+      #   run: mv packages/contentstack/package.json.disabled packages/contentstack/package.json || true
 
       - name: Run tests for Contentstack Command
         working-directory: ./packages/contentstack-command
@@ -45,4 +45,4 @@ jobs:
 
       - name: Run tests for Contentstack Auth
         working-directory: ./packages/contentstack-auth
-        run: NODE_ENV=PREPACK_MODE npm run test
+        run: NODE_ENV=PREPACK_MODE npm run test:unit
