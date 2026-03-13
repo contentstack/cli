@@ -1,11 +1,11 @@
 {
   "name": "@contentstack/cli-migration",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "author": "@contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@contentstack/cli-command": "~1.7.2",
-    "@contentstack/cli-utilities": "~1.17.4",
+    "@contentstack/cli-utilities": "~1.18.0",
     "@oclif/core": "^4.3.0",
     "@oclif/plugin-help": "^6.2.28",
     "async": "^3.2.6",
@@ -56,7 +56,7 @@
     "postpack": "rm -f oclif.manifest.json",
     "generate-api-ref-md-doc": "nyc jsdoc2md ./src/modules/*.ts > ./docs/api-reference.md || true",
     "compile": "tsc -b tsconfig.json",
-    "prepack": "pnpm compile && oclif manifest && oclif readme",
+    "prepack": "rm -rf lib tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo && pnpm compile && oclif manifest && oclif readme",
     "pretest": "tsc -p test",
     "test": "mocha --forbid-only \"test/unit/**/*.test.ts\"",
     "test:unit": "mocha --timeout 10000 --forbid-only \"test/unit/**/*.test.ts\"",
