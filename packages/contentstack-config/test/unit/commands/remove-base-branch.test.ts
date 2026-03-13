@@ -30,21 +30,23 @@ describe('Delete config', () => {
   });
   it('Should ask for confirmation to remove config if the config exists', async () => {
     const config = configHandler;
-    const getConfig = config.get(`baseBranch.${removeConfigMockData.flags.apiKey}`);
-
-    const askConfirmation = stub(interactive, 'askConfirmation');
+    config.set(`baseBranch.${removeConfigMockData.flags.apiKey}`, 'test');
+    const askConfirmation = stub(interactive, 'askConfirmation').resolves(false);
     await RemoveBranchConfigCommand.run(['--stack-api-key', removeConfigMockData.flags.apiKey]);
-    if (getConfig) expect(askConfirmation.calledOnce).to.be.true;
+    expect(askConfirmation.calledOnce).to.be.true;
     askConfirmation.restore();
+    config.delete(`baseBranch.${removeConfigMockData.flags.apiKey}`);
   });
   it('Should show success message on deletion of config', async () => {
     const config = configHandler;
-    const getConfig = config.get(`baseBranch.${removeConfigMockData.flags.apiKey}`);
-
-    const askConfirmation = stub(interactive, 'askConfirmation');
+    config.set(`baseBranch.${removeConfigMockData.flags.apiKey}`, 'test');
+    const askConfirmation = stub(interactive, 'askConfirmation').resolves(true);
     const showSuccess = stub(cliux, 'success');
     await RemoveBranchConfigCommand.run(['--stack-api-key', removeConfigMockData.flags.apiKey]);
-    if (getConfig && askConfirmation.calledOnce) expect(showSuccess.calledOnce).to.be.true;
+    expect(askConfirmation.calledOnce).to.be.true;
+    expect(showSuccess.called).to.be.true;
     askConfirmation.restore();
+    showSuccess.restore();
+    config.delete(`baseBranch.${removeConfigMockData.flags.apiKey}`);
   });
 });

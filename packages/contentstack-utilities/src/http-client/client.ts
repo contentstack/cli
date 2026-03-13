@@ -87,7 +87,7 @@ export class HttpClient implements IHttpClient {
    * Add request headers.
    * @returns {HttpClient}
    */
-  headers(headers: any): HttpClient {
+  headers(headers: Record<string, string>): HttpClient {
     this.request.headers = { ...this.request.headers, ...headers };
 
     return this;
@@ -128,7 +128,7 @@ export class HttpClient implements IHttpClient {
    *
    * @returns {HttpClient}
    */
-  token(token: string, type: string = 'Bearer'): HttpClient {
+  token(token: string, type = 'Bearer'): HttpClient {
     return this.headers({
       Authorization: `${type} ${token}`.trim(),
     });
@@ -154,7 +154,7 @@ export class HttpClient implements IHttpClient {
    *
    * @returns {HttpClient}
    */
-  payload(data: any): HttpClient {
+  payload(data: unknown): HttpClient {
     this.request.data = data;
 
     return this;
@@ -266,7 +266,7 @@ export class HttpClient implements IHttpClient {
    *
    * @throws
    */
-  async post<R>(url: string, payload?: any): Promise<HttpResponse<R>> {
+  async post<R>(url: string, payload?: unknown): Promise<HttpResponse<R>> {
     if (payload) {
       this.payload(payload);
     }
@@ -284,7 +284,7 @@ export class HttpClient implements IHttpClient {
    *
    * @throws
    */
-  async put<R>(url: string, payload?: any): Promise<HttpResponse<R>> {
+  async put<R>(url: string, payload?: unknown): Promise<HttpResponse<R>> {
     if (payload) {
       this.payload(payload);
     }
@@ -302,7 +302,7 @@ export class HttpClient implements IHttpClient {
    *
    * @throws
    */
-  async patch<R>(url: string, payload?: any): Promise<HttpResponse<R>> {
+  async patch<R>(url: string, payload?: unknown): Promise<HttpResponse<R>> {
     if (payload) {
       this.payload(payload);
     }
@@ -339,9 +339,9 @@ export class HttpClient implements IHttpClient {
   async send<R>(method: HttpMethod, url: string): Promise<HttpResponse<R>> {
     try {
       return new HttpResponse<R>(await this.createAndSendRequest(method, url));
-    } catch (error: any) {
-      if (error.response) {
-        return new HttpResponse(error.response);
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'response' in error) {
+        return new HttpResponse((error as { response: AxiosResponse }).response);
       }
 
       throw error;
@@ -375,7 +375,7 @@ export class HttpClient implements IHttpClient {
       
       if (response?.data?.error_message?.includes('access token is invalid or expired')) {
         const token = await this.refreshToken();
-        this.headers({ ...this.request.headers, authorization: token.authorization });
+        this.headers({ authorization: token.authorization });
         return await this.axiosInstance({
           url,
           method,
@@ -438,7 +438,7 @@ export class HttpClient implements IHttpClient {
   /**
    * Returns the request payload depending on the selected request payload format.
    */
-  prepareRequestPayload(): any {
+  prepareRequestPayload(): unknown {
     return this.bodyFormat === 'formParams' ? new URLSearchParams(this.request.data).toString() : this.request.data;
   }
 
@@ -457,7 +457,7 @@ export class HttpClient implements IHttpClient {
   }
 }
 
-export interface HttpRequestConfig extends AxiosRequestConfig {}
+export type HttpRequestConfig = AxiosRequestConfig
 
 type BodyFormat = 'json' | 'formParams';
 

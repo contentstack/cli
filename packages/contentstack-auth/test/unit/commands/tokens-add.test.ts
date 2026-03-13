@@ -63,6 +63,8 @@ describe('Tokens Add Command', () => {
   });
 
   it('Add a valid management token, should be added successfully', async () => {
+    const cmaHostStub = stub(TokensAddCommand.prototype, 'cmaHost').value('api.contentstack.io');
+    nock('https://api.contentstack.io').get('/v3/environments').query({ limit: 1 }).reply(200, { environments: [] });
     try {
       await TokensAddCommand.run([
         '--alias',
@@ -76,23 +78,44 @@ describe('Tokens Add Command', () => {
       expect(Boolean(config.get(`${configKeyTokens}.test-management-token`))).to.be.true;
     } catch (error: any) {
       expect(Boolean(config.get(`${configKeyTokens}.test-management-token`))).to.be.false;
+    } finally {
+      cmaHostStub.restore();
+      nock.cleanAll();
     }
   });
 
   it('Replace an existing token, should prompt for confirmation', async function () {
-    config.set(`${configKeyTokens}.test-management-token`, { token: validmanagementToken });
+    // Ensure command sees an existing token regardless of shared config (e.g. when run from root after other packages)
+    const tokenKey = `${configKeyTokens}.test-management-token`;
+    config.set(tokenKey, { token: validmanagementToken, apiKey: validAPIKey, type: 'management' });
+    const originalGet = config.get.bind(config);
+    const getStub = sinon.stub(config, 'get').callsFake((key: string) => {
+      if (key === tokenKey) return { token: validmanagementToken, apiKey: validAPIKey, type: 'management' };
+      return originalGet(key);
+    });
+    if ((cliux.inquire as any).restore) (cliux.inquire as any).restore();
     const inquireStub = sinon.stub(cliux, 'inquire').resolves(true);
-    await TokensAddCommand.run([
-      '--alias',
-      'test-management-token',
-      '--stack-api-key',
-      validAPIKey,
-      '--management',
-      '--token',
-      'invalid',
-    ]);
+    const cmaHostStub = stub(TokensAddCommand.prototype, 'cmaHost').value('api.contentstack.io');
+    nock('https://api.contentstack.io').get('/v3/environments').query({ limit: 1 }).reply(200, { error_message: 'invalid token' });
+    try {
+      await TokensAddCommand.run([
+        '--alias',
+        'test-management-token',
+        '--stack-api-key',
+        validAPIKey,
+        '--management',
+        '--token',
+        'invalid',
+      ]);
+    } catch {
+      // Command throws after confirmation when validation fails; we only assert that confirmation was prompted
+    } finally {
+      getStub.restore();
+    }
     expect(inquireStub.calledOnce).to.be.true;
     inquireStub.restore();
+    cmaHostStub.restore();
+    nock.cleanAll();
   });
 
   it('Add a invalid management token, should fail to add', async function () {

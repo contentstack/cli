@@ -5,7 +5,6 @@ import { default as Logger } from './logger';
 import { CLIErrorHandler } from './cli-error-handler';
 import { ErrorContext } from '../interfaces';
 import { configHandler } from '..';
-import { getSessionLogPath } from './session-path';
 
 let loggerInstance: Logger | null = null;
 

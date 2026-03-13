@@ -8,8 +8,8 @@ export interface InquirePayload {
   type: string;
   name: string;
   message: string;
-  choices?: Array<any>;
-  transformer?: Function;
+  choices?: Array<unknown>;
+  transformer?: (value: unknown) => unknown;
 }
 
 export interface Region {
@@ -24,11 +24,11 @@ export interface Context {
     authtoken: string;
     email: string;
   };
-  region: any;
+  region: Region;
   plugin: Plugin;
-  config: any;
-  info: any;
-  messageFilePath: any;
+  config: Record<string, unknown>;
+  info: Record<string, unknown>;
+  messageFilePath: string;
 }
 export interface CLIConfig extends Config {
   context: Context;

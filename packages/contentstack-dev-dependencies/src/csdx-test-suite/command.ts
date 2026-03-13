@@ -3,7 +3,7 @@ import split from 'lodash/split';
 import replace from 'lodash/replace';
 import { Command,Interfaces, toStandardizedId } from '@oclif/core';
 
-import { loadConfig } from './load-config';
+import { loadConfig, LoadConfigOptions } from './load-config';
 
 const castArray = <T>(input?: T | T[]): T[] => {
   if (input === undefined) return [];
@@ -13,16 +13,16 @@ const castArray = <T>(input?: T | T[]): T[] => {
 export function command(
   commandInstance: Command.Class,
   args: string[] | string,
-  opts: loadConfig.Options = {},
+  opts: LoadConfigOptions = {},
 ): {
   run(ctx: { config: Interfaces.Config; expectation: string }): Promise<void>;
 } {
   return {
     async run(ctx: { config: Interfaces.Config; expectation: string }) {
-      if (!ctx.config || opts.reset) ctx.config = await loadConfig(opts).run({} as any);
+      if (!ctx.config || opts.reset) ctx.config = await loadConfig(opts).run({});
       args = castArray(args);
-      const firstExample: string = '' + first(commandInstance.examples);
-      const [id] = split(replace(firstExample, '$ csdx ', ''), ' ');
+      const exampleText = String(first(commandInstance.examples));
+      const [id] = split(replace(exampleText, '$ csdx ', ''), ' ');
       const cmdId = toStandardizedId(id, ctx.config);
       ctx.expectation = ctx.expectation || `runs ${args.join(' ')}`;
       await ctx.config.runHook('init', { id: cmdId, argv: args });

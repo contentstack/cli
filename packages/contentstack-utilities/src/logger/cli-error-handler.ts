@@ -40,6 +40,7 @@ import { redactObject } from '../helpers';
  * @public
  */
 export default class CLIErrorHandler {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   constructor() {}
 
   /**
@@ -84,7 +85,7 @@ export default class CLIErrorHandler {
   /**
    * Extracts a clear, concise error message from various error types.
    */
-  private extractClearMessage(error: Error & Record<string, any>): string {
+  private extractClearMessage(error: Error): string {
     // Use existing formatError function for other cases
     try {
       const formattedMessage = formatError(error);
@@ -92,12 +93,15 @@ export default class CLIErrorHandler {
       return formattedMessage || 'An error occurred. Please try again.';
     } catch {
       // Fallback to basic error message extraction if formatError fails
-      if (typeof error?.response?.data?.errorMessage === 'string') {
-        return error.response.data.errorMessage;
+      const err = error as unknown as Record<string, unknown>;
+      const response = err?.response as Record<string, unknown> | undefined;
+      const data = response?.data as Record<string, unknown> | undefined;
+      if (typeof data?.errorMessage === 'string') {
+        return data.errorMessage;
       }
 
-      if (typeof error?.errorMessage === 'string') {
-        return error.errorMessage;
+      if (typeof err?.errorMessage === 'string') {
+        return err.errorMessage as string;
       }
     }
   }
@@ -115,8 +119,8 @@ export default class CLIErrorHandler {
 
     if (typeof error === 'object') {
       try {
-        const errorObj = error as Record<string, any>;
-        const message = errorObj.message || errorObj.error || errorObj.statusText || 'Unknown error';
+        const errorObj = error as Record<string, unknown>;
+        const message = (errorObj.message as string) || (errorObj.error as string) || (errorObj.statusText as string) || 'Unknown error';
         const normalizedError = new Error(message);
 
         // Only copy essential properties
@@ -134,7 +138,7 @@ export default class CLIErrorHandler {
         ];
         essentialProps.forEach((prop) => {
           if (errorObj[prop] !== undefined) {
-            (normalizedError as any)[prop] = errorObj[prop];
+            (normalizedError as unknown as Record<string, unknown>)[prop] = errorObj[prop];
           }
         });
 
@@ -150,12 +154,16 @@ export default class CLIErrorHandler {
   /**
    * Determines the type of error based on its characteristics.
    */
-  private determineErrorType(error: Error & Record<string, any>): string {
-    const { status, code, name, response } = error;
-    const actualStatus = status || response?.status;
+  private determineErrorType(error: Error): string {
+    const err = error as unknown as Record<string, unknown>;
+    const status = err.status as number | undefined;
+    const code = err.code as string | undefined;
+    const name = err.name as string | undefined;
+    const response = err.response as Record<string, unknown> | undefined;
+    const actualStatus = status ?? (response?.status as number | undefined);
 
     // Network and timeout errors
-    if (['ECONNREFUSED', 'ENOTFOUND', 'ETIMEDOUT', 'ENETUNREACH'].includes(code)) {
+    if (code && ['ECONNREFUSED', 'ENOTFOUND', 'ETIMEDOUT', 'ENETUNREACH'].includes(code)) {
       return ERROR_TYPES.NETWORK;
     }
 
@@ -169,7 +177,7 @@ export default class CLIErrorHandler {
 
     // Specific error types
     if (name === 'DatabaseError') return ERROR_TYPES.DATABASE;
-    if ((error as AxiosError).isAxiosError) return ERROR_TYPES.NETWORK;
+    if ((error as unknown as AxiosError).isAxiosError) return ERROR_TYPES.NETWORK;
 
     return ERROR_TYPES.APPLICATION;
   }
@@ -177,39 +185,47 @@ export default class CLIErrorHandler {
   /**
    * Extracts only essential error payload information for clear debugging.
    */
-  private extractErrorPayload(error: Error & Record<string, any>): Record<string, any> {
-    const { name, message, code, status, response, request, config, statusText } = error;
+  private extractErrorPayload(error: Error): Record<string, unknown> {
+    const err = error as unknown as Record<string, unknown>;
+    const name = err.name;
+    const code = err.code;
+    const status = err.status;
+    const response = err.response as Record<string, unknown> | undefined;
+    const request = err.request as Record<string, unknown> | undefined;
+    const config = err.config as Record<string, unknown> | undefined;
+    const statusText = err.statusText;
 
-    const payload: Record<string, any> = {
+    const payload: Record<string, unknown> = {
       name,
       message: this.extractClearMessage(error),
     };
 
     // Add error identifiers
     if (code) payload.code = code;
-    if (status || response?.status) payload.status = status || response?.status;
+    if (status ?? response?.status) payload.status = status ?? response?.status;
 
     // Add detailed field-level errors if available
-    if (response?.data?.errors && typeof response.data.errors === 'object') {
-      payload.errors = response.data.errors;
-    } else if (error?.errors && typeof error.errors === 'object') {
-      payload.errors = error.errors;
+    const resData = response?.data as Record<string, unknown> | undefined;
+    if (resData?.errors && typeof resData.errors === 'object') {
+      payload.errors = resData.errors;
+    } else if (err?.errors && typeof err.errors === 'object') {
+      payload.errors = err.errors;
     }
 
     // Add error code if available
-    if (response?.data?.error_code) {
-      payload.errorCode = response.data.error_code;
-    } else if (error?.error_code) {
-      payload.errorCode = error.error_code;
+    if (resData?.error_code) {
+      payload.errorCode = resData.error_code;
+    } else if (err?.error_code) {
+      payload.errorCode = err.error_code;
     }
 
     // Add request context with sensitive data redaction
     if (request || config) {
       const requestData = {
-        method: request?.method || config?.method,
-        url: request?.url || config?.url,
-        headers: request?.headers || config?.headers,
-        data: request?.data || config?.data,
+        method: request?.method ?? config?.method,
+        url: request?.url ?? config?.url,
+        headers: request?.headers ?? config?.headers,
+        data: request?.data ?? config?.data,
         timeout: config?.timeout,
         baseURL: config?.baseURL,
         params: config?.params,
@@ -233,8 +249,8 @@ export default class CLIErrorHandler {
     }
 
     // Extract user-friendly error message for API errors
-    if (response?.data?.errorMessage) {
-      payload.userFriendlyMessage = response.data.errorMessage;
+    if (resData?.errorMessage) {
+      payload.userFriendlyMessage = resData.errorMessage;
     }
 
     // Add stack trace only for non-API errors to avoid clutter

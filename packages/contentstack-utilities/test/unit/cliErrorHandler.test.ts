@@ -52,8 +52,8 @@ describe('CLIErrorHandler', () => {
     (error as any).status = 500; // Also set status on error directly
 
     const errorPayload = errorHandler['extractErrorPayload'](error);
-    expect(errorPayload.request.method).to.equal('GET');
-    expect(errorPayload.response.status).to.equal(500);
+    expect((errorPayload.request as { method: string }).method).to.equal('GET');
+    expect((errorPayload.response as { status: number }).status).to.equal(500);
     expect(errorPayload.status).to.equal(500);
     expect(errorPayload.name).to.equal('Error');
     expect(errorPayload.message).to.equal('API error');

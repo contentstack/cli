@@ -143,15 +143,15 @@ describe('Logger', () => {
       [Symbol.for('splat')]: [{ password: '1234' }],
     };
     // Test file mode (consoleMode = false) - token is redacted, password is not
-    const result = logger['redact'](obj, false);
+    const result = logger['redact'](obj, false) as Record<string | symbol, unknown>;
     expect(result.token).to.equal('[REDACTED]');
     // In file mode, password is not redacted
-    expect(result[Symbol.for('splat')][0].password).to.equal('1234');
+    expect((result[Symbol.for('splat')] as Array<{ password: string }>)[0].password).to.equal('1234');
     
     // Test console mode (consoleMode = true) - both token and password are redacted
-    const consoleResult = logger['redact'](obj, true);
+    const consoleResult = logger['redact'](obj, true) as Record<string | symbol, unknown>;
     expect(consoleResult.token).to.equal('[REDACTED]');
-    expect(consoleResult[Symbol.for('splat')][0].password).to.equal('[REDACTED]');
+    expect((consoleResult[Symbol.for('splat')] as Array<{ password: string }>)[0].password).to.equal('[REDACTED]');
   });
 
   fancy.it('redact should return original if klona fails', () => {

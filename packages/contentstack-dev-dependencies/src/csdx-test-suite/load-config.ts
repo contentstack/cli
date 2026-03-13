@@ -1,25 +1,28 @@
 import { Interfaces, Config } from '@oclif/core';
 
+export interface LoadConfigOptions {
+  root?: string;
+  reset?: boolean;
+}
+
+type LoadConfigFn = ((opts?: LoadConfigOptions) => {
+  run(ctx: { config?: Interfaces.Config }): Promise<Interfaces.Config>;
+}) & {
+  root: string;
+};
+
 /**
  * loads CLI plugin/multi config
- * @param {loadConfig.Options} opts options
+ * @param {LoadConfigOptions} opts options
  * @return {Promise<Interfaces.Config>} config
  */
-export function loadConfig(opts: loadConfig.Options = {}): {
-  run(ctx: { config: Interfaces.Config }): Promise<Interfaces.Config>;
-} {
+export const loadConfig = ((opts: LoadConfigOptions = {}) => {
   return {
-    async run(ctx: { config: Interfaces.Config }) {
+    async run(ctx: { config?: Interfaces.Config }) {
       ctx.config = await Config.load(opts.root || loadConfig.root);
       return ctx.config;
     },
   };
-}
+}) as LoadConfigFn;
 
-export namespace loadConfig {
-  export let root: string;
-  export interface Options {
-    root?: string;
-    reset?: boolean;
-  }
-}
+loadConfig.root = '';

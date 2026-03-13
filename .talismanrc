@@ -1,10 +1,12 @@
 fileignoreconfig:
-  - filename: packages/contentstack-bootstrap/src/bootstrap/utils.ts
-    checksum: 6e6fb00bb11b03141e5ad27eeaa4af9718dc30520c3e73970bc208cc0ba2a7d2
-  - filename: .github/workflows/release.yml
-    checksum: 73807361b1a862dc882846ac75fefca49e3c734db032e9aa80158f2a686bea13
   - filename: pnpm-lock.yaml
-    checksum: 45b77e385a0b13c82ba125dcdc82d27a360132ff6edda801cd8b75943996c310
-  - filename: packages/contentstack-auth/src/commands/auth/logout.ts
-    checksum: 20ff708d5a0ee56eb8786b19df07b49dacaddfa1deafe99c0397716c7865726d
+    checksum: 06256d662e300370264d1c7ffe1139c1327dce8401d1822e42bebce224f12020
+  - filename: packages/contentstack-auth/src/interfaces/index.ts
+    checksum: ed1e7cd748f199bc5a9236ca727344dd34d9fea96534ee120bfd59476341ba69
+  - filename: packages/contentstack-utilities/test/unit/logger.test.ts
+    checksum: b9308855db67bd3d537f4a2d51ead71762df827a91b09614ae06e4ae2bb482f8
+  - filename: packages/contentstack-utilities/src/fs-utility/core.ts
+    checksum: ca6582e07fc1b5bd0cd508458f85c1a0b6beaa64a9cb72aa762421f61a42fdc4
+  - filename: packages/contentstack-utilities/src/fs-utility/helper.ts
+    checksum: 09d426730e87e084d302d0f842cfc51e9174928d8632e03bc993e3281f63e6d7
 version: '1.0'

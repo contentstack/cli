@@ -1,32 +1,64 @@
 import * as shortUUID from 'short-uuid';
-import * as path from 'path';
+import * as path from 'node:path';
 import { configHandler, pathValidator, sanitizePath } from '@contentstack/cli-utilities';
 import { machineIdSync } from 'node-machine-id';
+
+interface CliOpts {
+  id?: string;
+}
+
+interface CliCommand {
+  pluginName?: string;
+}
+
+interface PluginRuntimeConfig {
+  messageFilePath?: string;
+  shortCommandName?: Record<string, string>;
+}
+
+interface CliPlugin {
+  root?: string;
+  pjson?: {
+    csdxConfig?: PluginRuntimeConfig;
+  };
+  name?: string;
+  config: PluginRuntimeConfig;
+}
+
+interface CliConfig {
+  findCommand?: (id?: string) => CliCommand | undefined;
+  platform?: string;
+  arch?: string;
+  version?: string;
+  plugins?: Map<string, CliPlugin>;
+}
 
 export default class CsdxContext {
   readonly sessionId: string;
   readonly clientId: string;
   readonly user?: object;
   readonly region?: object;
-  readonly config: object;
-  readonly info: any;
-  readonly plugin: any;
-  readonly pluginConfig: any;
+  readonly config: Record<string, unknown>;
+  readonly info: {
+    command?: string;
+    shortCommandName?: string;
+  };
+  readonly plugin: CliPlugin;
+  readonly pluginConfig: PluginRuntimeConfig;
   readonly messageFilePath: string;
   readonly analyticsInfo: string;
-  public flagWarningPrintState: any;
-  public flags: any;
+  public flagWarningPrintState: Record<string, unknown>;
+  public flags: Record<string, unknown>;
   public cliVersion: string;
 
-  constructor(cliOpts: any, cliConfig: any) {
+  constructor(cliOpts: CliOpts, cliConfig: CliConfig) {
     const analyticsInfo = [];
-    const command = cliConfig.findCommand(cliOpts.id) || {};
+    const commandId = cliOpts.id;
+    const command = (commandId && cliConfig.findCommand?.(commandId)) || {};
     const config = configHandler;
     const platform = cliConfig.platform && cliConfig.arch ? `${cliConfig.platform}-${cliConfig.arch}` : 'none';
-    analyticsInfo.push(platform);
     const nodeVersion = process.versions.node ? `v${process.versions.node}` : process.version;
-    analyticsInfo.push(nodeVersion || 'none');
-    analyticsInfo.push(cliConfig.version || 'none');
+    analyticsInfo.push(platform, nodeVersion || 'none', cliConfig.version || 'none');
     this.clientId = configHandler.get('clientId');
     if (!this.clientId) {
       this.clientId = machineIdSync(true);
@@ -42,20 +74,27 @@ export default class CsdxContext {
       email: configHandler.get('email'),
     };
     this.config = { ...config };
-    this.cliVersion = cliConfig.version
+    this.cliVersion = cliConfig.version || 'none';
     this.region = configHandler.get('region');
-    this.info = { command: cliOpts.id };
+    this.info = { command: commandId };
+    this.plugin = { config: {} };
+    this.pluginConfig = {};
+    this.messageFilePath = '';
     if (command.pluginName) {
-      this.plugin = (cliConfig.plugins || new Map()).get(command.pluginName) || {};
+      const resolvedPlugin = (cliConfig.plugins || new Map()).get(command.pluginName);
+      if (resolvedPlugin) this.plugin = { ...resolvedPlugin, config: resolvedPlugin.config || {} };
       this.plugin.name = command.pluginName;
-      this.plugin.config = { ...((this.plugin.pjson && this.plugin.pjson.csdxConfig) || {}) };
+      const pluginCsdxConfig = this.plugin.pjson?.csdxConfig;
+      this.plugin.config = pluginCsdxConfig ? { ...pluginCsdxConfig } : {};
+      this.pluginConfig = { ...this.plugin.config };
       this.messageFilePath = pathValidator(
-        path.resolve(sanitizePath(this.plugin.root), sanitizePath(this.plugin.config.messageFilePath) || './messages/index.json'),
+        path.resolve(sanitizePath(this.plugin.root), sanitizePath(this.pluginConfig.messageFilePath) || './messages/index.json'),
       );
-      this.info.shortCommandName = this.plugin?.config?.shortCommandName?.[cliOpts.id];
-      analyticsInfo.push(this.info.shortCommandName || cliOpts.id);
+      this.info.shortCommandName = commandId ? this.pluginConfig.shortCommandName?.[commandId] : undefined;
+      analyticsInfo.push(this.info.shortCommandName || commandId || 'none');
     }
     this.flagWarningPrintState = {};
+    this.flags = {};
     this.analyticsInfo = analyticsInfo.join(';');
   }
 

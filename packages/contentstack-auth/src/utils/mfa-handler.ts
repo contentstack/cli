@@ -1,6 +1,5 @@
-import { cliux, configHandler, NodeCrypto, log, handleAndLogError, messageHandler } from '@contentstack/cli-utilities';
+import { cliux, configHandler, NodeCrypto, log } from '@contentstack/cli-utilities';
 import { authenticator } from 'otplib';
-import { askOTP } from './interactive';
 
 /**
  * @class
@@ -66,7 +65,7 @@ class MFAHandler {
    * @returns Promise<string> The MFA code
    * @throws Error if MFA code generation fails
    */
-  async getMFACode(): Promise<string> {
+  async getMFACode(): Promise<string | undefined> {
     log.debug('Getting MFA code', { module: 'mfa-handler' });
     let secret: string | undefined;
     let source: string;
@@ -87,6 +86,21 @@ class MFAHandler {
       }
     }
 
+    if (!secret) {
+      const stored = configHandler.get('mfa') as { secret?: string } | undefined;
+      if (stored?.secret) {
+        try {
+          const decrypted = this.encrypter.decrypt(stored.secret);
+          if (decrypted && this.isValidBase32(decrypted.toUpperCase())) {
+            secret = decrypted;
+            source = 'stored configuration';
+          }
+        } catch {
+          log.debug('Failed to decrypt stored MFA secret', { module: 'mfa-handler' });
+        }
+      }
+    }
+
     if (secret) {
       try {
         const code = this.generateMFACode(secret);
@@ -102,6 +116,16 @@ class MFAHandler {
         );
       }
     }
+    return undefined;
+  }
+
+  /**
+   * Validates if a string is a valid 6-digit MFA code format
+   * @param code The code to validate
+   * @returns true if valid format, false otherwise
+   */
+  isValidMFACode(code: string): boolean {
+    return /^\d{6}$/.test(code);
   }
 
 }

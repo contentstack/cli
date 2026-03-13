@@ -7,7 +7,7 @@ export class BaseClientDecorator implements IHttpClient {
   constructor(client: IHttpClient) {
     this.client = client;
   }
-  public headers(headers: any): HttpClient {
+  public headers(headers: Record<string, string>): HttpClient {
     return this.client.headers(headers);
   }
   public contentType(contentType: string): HttpClient {
@@ -16,10 +16,10 @@ export class BaseClientDecorator implements IHttpClient {
   public get<R>(url: string, queryParams: object = {}): Promise<HttpResponse<R>> {
     return this.client.get(url, queryParams);
   }
-  public post<R>(url: string, payload?: any): Promise<HttpResponse<R>> {
+  public post<R>(url: string, payload?: unknown): Promise<HttpResponse<R>> {
     return this.client.post(url, payload);
   }
-  public put<R>(url: string, payload?: any): Promise<HttpResponse<R>> {
+  public put<R>(url: string, payload?: unknown): Promise<HttpResponse<R>> {
     return this.client.put(url, payload);
   }
   public delete<R>(url: string, queryParams: object = {}): Promise<HttpResponse<R>> {

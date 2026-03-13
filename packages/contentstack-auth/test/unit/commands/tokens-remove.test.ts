@@ -25,8 +25,14 @@ describe('Tokens Remove Command', () => {
   });
 
   it('Remove the token with alias, should remove the token', async function () {
-    await TokensRemoveCommand.run(['-a', token1Alias]);
-    expect(Boolean(config.get(`${configKeyTokens}.${token1Alias}`))).to.be.false;
+    // Stub inquire so the command never blocks on an unexpected prompt (e.g. from config state)
+    const inquireStub = sinon.stub(cliux, 'inquire').resolves([]);
+    try {
+      await TokensRemoveCommand.run(['-a', token1Alias]);
+      expect(Boolean(config.get(`${configKeyTokens}.${token1Alias}`))).to.be.false;
+    } finally {
+      inquireStub.restore();
+    }
   });
 
   it('Remove the token with invalid alias, should list the table', async function () {
