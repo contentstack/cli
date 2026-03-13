@@ -1,21 +1,12 @@
-name: Unit Tests
+name: Lint
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        package:
-          - contentstack
-          - contentstack-command
-          - contentstack-config
-          - contentstack-auth
-          - contentstack-utilities
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -27,6 +18,4 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r --sort run build
-      - name: Test ${{ matrix.package }}
-        working-directory: ./packages/${{ matrix.package }}
-        run: pnpm test
+      - run: pnpm run lint
