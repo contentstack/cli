@@ -1,6 +1,0 @@
-fileignoreconfig:
-  - filename: packages/contentstack-config/test/unit/commands/proxy.test.ts
-    checksum: b92210826693683300728e7e82e6789f0ad697b17e6b99a8a004c9a041bced00
-  - filename: packages/contentstack/test/unit/context-handler.test.ts
-    checksum: 6ef78899d3089685271bd16c156d057c807fd9b8560189387ae44e9576d23095
-version: '1.0'

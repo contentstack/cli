@@ -7,15 +7,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        package:
-          - contentstack
-          - contentstack-command
-          - contentstack-config
-          - contentstack-auth
-          - contentstack-utilities
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -27,6 +18,18 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r --sort run build
-      - name: Test ${{ matrix.package }}
-        working-directory: ./packages/${{ matrix.package }}
+      - name: Test contentstack
+        working-directory: ./packages/contentstack
+        run: pnpm test
+      - name: Test contentstack-command
+        working-directory: ./packages/contentstack-command
+        run: pnpm test
+      - name: Test contentstack-config
+        working-directory: ./packages/contentstack-config
+        run: pnpm test
+      - name: Test contentstack-auth
+        working-directory: ./packages/contentstack-auth
+        run: pnpm test
+      - name: Test contentstack-utilities
+        working-directory: ./packages/contentstack-utilities
         run: pnpm test
