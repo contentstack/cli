@@ -1,0 +1,78 @@
+name: Release CLI Platform Plugins (v1 Beta)
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install pnpm
+        run: corepack prepare pnpm@10.28.0 --activate
+
+      - name: Clean the repository
+        run: pnpm run clean:all
+
+      - name: Install root dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all plugins
+        run: pnpm -r --sort run build
+
+      - name: Reading Configuration
+        id: release_config
+        uses: rgarcia-phi/json-to-variables@v1.1.0
+        with:
+          filename: .github/config/release.json
+          prefix: release
+
+      # Dev Dependencies
+      - name: Publishing dev dependencies (Beta)
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-dev-dependencies/package.json
+          tag: beta
+
+      # Utilities
+      - name: Publishing utilities (Beta)
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-utilities/package.json
+          tag: beta
+
+      # Command
+      - name: Publishing command (Beta)
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-command/package.json
+          tag: beta
+
+      # Config
+      - name: Publishing config (Beta)
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-config/package.json
+          tag: beta
+
+      # Auth
+      - name: Publishing auth (Beta)
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-auth/package.json
+          tag: beta

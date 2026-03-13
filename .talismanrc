@@ -1,8 +1,10 @@
 fileignoreconfig:
-- filename: package-lock.json
-  checksum: 10993a3e930b77c3c6e09afcb50c23e6a8a901302172b699e92b0a4bfec0cffa
-- filename: pnpm-lock.yaml
-  checksum: 3e47ed021491e9f3c21d25e4ea72a1101b51f16ebedd279019df1792b72417a4
-- filename: packages/contentstack-bootstrap/src/bootstrap/utils.ts
-  checksum: 6e6fb00bb11b03141e5ad27eeaa4af9718dc30520c3e73970bc208cc0ba2a7d2
+  - filename: packages/contentstack-bootstrap/src/bootstrap/utils.ts
+    checksum: 6e6fb00bb11b03141e5ad27eeaa4af9718dc30520c3e73970bc208cc0ba2a7d2
+  - filename: .github/workflows/release.yml
+    checksum: 73807361b1a862dc882846ac75fefca49e3c734db032e9aa80158f2a686bea13
+  - filename: pnpm-lock.yaml
+    checksum: 45b77e385a0b13c82ba125dcdc82d27a360132ff6edda801cd8b75943996c310
+  - filename: packages/contentstack-auth/src/commands/auth/logout.ts
+    checksum: 20ff708d5a0ee56eb8786b19df07b49dacaddfa1deafe99c0397716c7865726d
 version: '1.0'
