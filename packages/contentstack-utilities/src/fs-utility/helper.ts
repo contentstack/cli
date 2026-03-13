@@ -5,7 +5,7 @@ import assign from 'lodash/assign';
 import isEmpty from 'lodash/isEmpty';
 import forEach from 'lodash/forEach';
 
-function getKeysFromArray(keys: string[], obj: any): string {
+function getKeysFromArray(keys: string[], obj: Record<string, unknown>): string {
   let keyName = '';
   forEach(keys, (key: string) => {
     keyName += keyName ? `_${obj[key]}` : obj[key];
@@ -15,7 +15,7 @@ function getKeysFromArray(keys: string[], obj: any): string {
 }
 
 function mapKeyAndVal(
-  array: Array<Record<string, any>>,
+  array: Array<Record<string, unknown>>,
   keyName: string | string[],
   omitKeys: Array<string> = []
 ): Record<string, unknown> {
@@ -24,20 +24,20 @@ function mapKeyAndVal(
     ...map(array, (row) => {
       if (Array.isArray(keyName))
         return { [getKeysFromArray(keyName, row)]: omit(row, omitKeys) };
-      return { [row[keyName]]: omit(row, omitKeys) };
+      return { [String(row[keyName])]: omit(row, omitKeys) };
     })
   );
 }
 
 function getMetaData(
-  array: Array<Record<string, any>>,
+  array: Array<Record<string, unknown>>,
   pickKeys: Array<string>,
-  handler?: (array: Array<Record<string, any>>) => void
+  handler?: (array: Array<Record<string, unknown>>) => void
 ): Array<Record<string, unknown>> | undefined {
   if (handler instanceof Function) handler(array);
   if (isEmpty(array) || isEmpty(pickKeys)) return;
 
-  return map(array, (row: any) => pick(row, pickKeys));
+  return map(array, (row: Record<string, unknown>) => pick(row, pickKeys));
 }
 
 export { mapKeyAndVal, getMetaData };

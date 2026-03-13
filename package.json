@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "devDependencies": {
     "husky": "^9.1.7",
-    "pnpm": "^10.28.0"
+    "pnpm": "^10.32.1"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -12,6 +12,7 @@
   "scripts": {
     "clean:packages": "pnpm -r --filter './packages/*' run clean",
     "build": "pnpm -r --filter './packages/*' run build",
+    "lint": "pnpm -r --filter './packages/*' run lint",
     "test": "pnpm -r --filter './packages/*' run test",
     "prepack": "pnpm -r --filter './packages/*' run prepack",
     "bootstrap": "pnpm install",

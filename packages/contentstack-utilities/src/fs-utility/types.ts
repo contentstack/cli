@@ -71,7 +71,7 @@ type FsConstructorOptions = {
 
   useIndexer?: boolean;
 
-  metaHandler?: (array: any) => any;
+  metaHandler?: (array: unknown[]) => unknown;
 
   isArray?: boolean;
 };

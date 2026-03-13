@@ -3,7 +3,7 @@
 import { AxiosResponse, AxiosResponseHeaders, RawAxiosResponseHeaders } from 'axios';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export class HttpResponse<ResponseType = any> {
+export class HttpResponse<ResponseType = unknown> {
   /**
    * The Axios response object.
    */

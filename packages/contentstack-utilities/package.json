@@ -31,10 +31,10 @@
   "author": "contentstack",
   "license": "MIT",
   "dependencies": {
-    "@contentstack/management": "~1.27.5",
+    "@contentstack/management": "~1.27.6",
     "@contentstack/marketplace-sdk": "^1.5.0",
-    "@oclif/core": "^4.3.0",
-    "axios": "^1.13.5",
+    "@oclif/core": "^4.8.4",
+    "axios": "^1.13.6",
     "chalk": "^4.1.2",
     "cli-cursor": "^3.1.0",
     "cli-progress": "^3.12.0",
@@ -58,12 +58,12 @@
     "tty-table": "^4.2.3",
     "unique-string": "^2.0.0",
     "uuid": "^9.0.1",
-    "winston": "^3.17.0",
+    "winston": "^3.19.0",
     "xdg-basedir": "^4.0.0"
   },
   "devDependencies": {
     "@types/chai": "^4.3.20",
-    "@types/inquirer": "^9.0.8",
+    "@types/inquirer": "^9.0.9",
     "@types/mkdirp": "^1.0.2",
     "@types/mocha": "^10.0.10",
     "@types/node": "^14.18.63",
@@ -71,12 +71,12 @@
     "@types/traverse": "^0.6.37",
     "chai": "^4.5.0",
     "eslint": "^8.57.1",
-    "eslint-config-oclif": "^6.0.62",
+    "eslint-config-oclif": "^6.0.148",
     "eslint-config-oclif-typescript": "^3.1.14",
     "fancy-test": "^2.0.42",
     "mocha": "10.8.2",
     "nyc": "^15.1.0",
-    "sinon": "^21.0.1",
+    "sinon": "^21.0.2",
     "ts-node": "^10.9.2",
     "typescript": "^4.9.5"
   }

@@ -9,10 +9,10 @@ export class HttpClientDecorator extends BaseClientDecorator {
     super(client);
     this.client = client;
   }
-  public headers(headers: any): HttpClient {
+  public headers(headers: { auth_token?: string; org_uid?: string }): HttpClient {
     return this.client.headers({
-      authtoken: headers.auth_token,
-      organization_uid: headers.org_uid,
+      authtoken: headers.auth_token ?? '',
+      organization_uid: headers.org_uid ?? '',
     });
   }
   public contentType(contentType: string): HttpClient {
@@ -21,10 +21,10 @@ export class HttpClientDecorator extends BaseClientDecorator {
   public get<R>(url: string, queryParams: object = {}): Promise<HttpResponse<R>> {
     return this.client.get(url, queryParams);
   }
-  public post<R>(url: string, payload?: any): Promise<HttpResponse<R>> {
+  public post<R>(url: string, payload?: unknown): Promise<HttpResponse<R>> {
     return this.client.post(url, payload);
   }
-  public put<R>(url: string, payload?: any): Promise<HttpResponse<R>> {
+  public put<R>(url: string, payload?: unknown): Promise<HttpResponse<R>> {
     return this.client.put(url, payload);
   }
   public delete<R>(url: string, queryParams: object = {}): Promise<HttpResponse<R>> {

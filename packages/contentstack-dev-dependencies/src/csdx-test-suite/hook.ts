@@ -1,6 +1,6 @@
 import { Interfaces } from '@oclif/core';
 
-import { loadConfig } from './load-config';
+import { loadConfig, LoadConfigOptions } from './load-config';
 
 // eslint-disable-next-line valid-jsdoc
 /**
@@ -14,13 +14,17 @@ import { loadConfig } from './load-config';
  * @param {string} event hook to run
  * @param {object} hookOpts options to pass to hook. Config object will be passed automatically.
  */
-export default (event: string, hookOpts: Record<string, unknown> = {}, options: loadConfig.Options = {}) => ({
-  async run(ctx: { config: Interfaces.Config; expectation: string }) {
-    if (!event) throw new Error('no hook provided');
-    // eslint-disable-next-line require-atomic-updates
-    if (!ctx.config) ctx.config = await loadConfig(options).run({} as any);
-    // eslint-disable-next-line require-atomic-updates
-    ctx.expectation = ctx.expectation || `runs ${event} hook`;
-    await ctx.config.runHook(event, hookOpts || {});
-  },
-});
+function hook(event: string, hookOpts: Record<string, unknown> = {}, options: LoadConfigOptions = {}) {
+  return {
+    async run(ctx: { config: Interfaces.Config; expectation: string }) {
+      if (!event) throw new Error('no hook provided');
+      // eslint-disable-next-line require-atomic-updates
+      if (!ctx.config) ctx.config = await loadConfig(options).run({});
+      // eslint-disable-next-line require-atomic-updates
+      ctx.expectation = ctx.expectation || `runs ${event} hook`;
+      await ctx.config.runHook(event, hookOpts || {});
+    },
+  };
+}
+
+export default hook;

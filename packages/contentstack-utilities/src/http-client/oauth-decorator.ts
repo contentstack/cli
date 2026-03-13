@@ -12,9 +12,9 @@ export class OauthDecorator extends BaseClientDecorator {
     this.client = client;
   }
 
-  public async preHeadersCheck(config: any) {
-    const headers: any = {};
-    headers.organization_uid = config.org_uid;
+  public async preHeadersCheck(config: { org_uid?: string }): Promise<Record<string, string>> {
+    const headers: Record<string, string> = {};
+    headers.organization_uid = config.org_uid ?? '';
     const authorisationType = configStore.get('authorisationType');
     if (authorisationType === 'BASIC') {
       headers.authtoken = configStore.get('authtoken');
@@ -28,7 +28,7 @@ export class OauthDecorator extends BaseClientDecorator {
     return headers;
   }
 
-  public headers(headers: any): HttpClient {
+  public headers(headers: Record<string, string>): HttpClient {
     return this.client.headers(headers);
   }
   public contentType(contentType: string): HttpClient {

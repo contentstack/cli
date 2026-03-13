@@ -33,10 +33,10 @@ export default class FsUtility {
   private metaPickKeys: Array<string>;
   private currentFileRelativePath: string;
   private writableStream: WriteStream | null;
-  private metaData: Record<string, any> = {};
+  private metaData: Record<string, unknown[]> = {};
   private readIndexer: Record<string, string> = {};
   private writeIndexer: Record<string, string> = {};
-  private metaHandler: ((array: any) => any) | undefined;
+  private metaHandler: ((array: unknown[]) => unknown) | undefined;
 
   public pageInfo: PageInfo = {
     after: 0,
@@ -96,12 +96,12 @@ export default class FsUtility {
     return this.pageInfo;
   }
 
-  get indexFileContent(): Record<string, any> {
-    let indexData = {};
+  get indexFileContent(): Record<string, string> {
+    let indexData: Record<string, string> = {};
     const indexPath = `${this.basePath}/${this.indexFileName}`;
 
     if (existsSync(indexPath)) {
-      indexData = JSON.parse(readFileSync(indexPath, 'utf8'));
+      indexData = JSON.parse(readFileSync(indexPath, 'utf8')) as Record<string, string>;
     }
 
     return indexData;
@@ -153,7 +153,7 @@ export default class FsUtility {
    */
   writeFile(filePath: string, data: Chunk, mapKeyVal = false): void {
     if (mapKeyVal) {
-      data = mapKeyAndVal(data as Record<string, any>[], 'uid', this.omitKeys); // NOTE Map values as Key/value pair object
+      data = mapKeyAndVal(data as Record<string, unknown>[], 'uid', this.omitKeys); // NOTE Map values as Key/value pair object
     }
 
     data = typeof data === 'object' ? JSON.stringify(data) : data || '{}';
@@ -266,11 +266,11 @@ export default class FsUtility {
    * @returns Chunk
    */
   handleKeyValMapAndMetaData(chunk: Chunk, keyName?: string | string[] | undefined): Chunk {
-    const fileContent = mapKeyAndVal(chunk as Record<string, any>[], keyName || 'uid', this.omitKeys); // NOTE Map values as Key/value pair object
+    const fileContent = mapKeyAndVal(chunk as Record<string, unknown>[], keyName || 'uid', this.omitKeys); // NOTE Map values as Key/value pair object
 
     // NOTE update metadata
     if (this.keepMetadata) {
-      const metadata = getMetaData(chunk as Record<string, any>[], this.metaPickKeys, this.metaHandler);
+      const metadata = getMetaData(chunk as Record<string, unknown>[], this.metaPickKeys, this.metaHandler);
 
       if (metadata && !isEmpty(metadata)) {
         if (isEmpty(this.metaData[this.currentFileName])) this.metaData[this.currentFileName] = [];
@@ -453,7 +453,7 @@ export function getDirectories(source: string): string[] | [] {
 export async function getFileList(dirName: string, onlyName = true): Promise<string[] | []> {
   if (!existsSync(dirName)) return [];
 
-  let files: any = [];
+  let files: string[] = [];
   const items = readdirSync(dirName, { withFileTypes: true });
 
   for (const item of items) {

@@ -29,5 +29,8 @@ jobs:
         run: |
           NODE_ENV=PREPACK_MODE pnpm -r --sort run build
 
+      - name: Run lint
+        run: NODE_ENV=PREPACK_MODE npm run lint
+
       - name: Run tests
-        run: NODE_ENV=PREPACK_MODE pnpm test
+        run: NODE_ENV=PREPACK_MODE npm run test

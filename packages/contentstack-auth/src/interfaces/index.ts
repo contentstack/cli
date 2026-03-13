@@ -25,6 +25,7 @@ export interface User {
 }
 
 export interface Context {
+  [key: string]: unknown;
   command: string;
   module: string;
   userId: string | undefined;

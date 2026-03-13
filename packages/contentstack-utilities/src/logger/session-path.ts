@@ -25,7 +25,7 @@ function generateSessionMetadata(
   commandId: string,
   sessionId: string,
   startTimestamp: Date,
-): Record<string, any> {
+): Record<string, unknown> {
   const originalCommandId = configHandler.get('currentCommandId') || commandId;
   const module = extractModule(originalCommandId);
   const apiKey = configHandler.get('apiKey') || '';
@@ -49,7 +49,7 @@ function generateSessionMetadata(
 /**
  * Create session.json metadata file in the session directory
  */
-function createSessionMetadataFile(sessionPath: string, metadata: Record<string, any>): void {
+function createSessionMetadataFile(sessionPath: string, metadata: Record<string, unknown>): void {
   const metadataPath = path.join(sessionPath, 'session.json');
   try {
     fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2), 'utf8');

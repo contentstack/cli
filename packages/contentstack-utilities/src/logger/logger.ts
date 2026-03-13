@@ -74,7 +74,7 @@ export default class Logger {
             winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
             winston.format.printf((info) => {
               // Apply full redaction for console (user-facing)
-              const redactedInfo = this.redact(info, true);
+              const redactedInfo = this.redact(info, true) as { level: string; timestamp: string; message: string };
               const colorizer = winston.format.colorize();
               const levelText = redactedInfo.level.toUpperCase();
               const { timestamp, message } = redactedInfo;
@@ -94,7 +94,7 @@ export default class Logger {
     return false;
   }
 
-  private redactObject(obj: any, consoleMode = false) {
+  private redactObject(obj: unknown, consoleMode = false) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias -- traverse forEach callback uses 'this' as node context
     const self = this;
     traverse(obj).forEach(function redactor() {
@@ -103,18 +103,18 @@ export default class Logger {
       }
     });
 
-    return obj;
+    return obj as Record<string, unknown>;
   }
 
-  private redact(info: any, consoleMode = false): any {
+  private redact(info: unknown, consoleMode = false): Record<string, unknown> {
     try {
       const copy = klona(info);
       this.redactObject(copy, consoleMode);
       const splat = copy[Symbol.for('splat')];
       if (splat) this.redactObject(splat, consoleMode);
-      return copy;
+      return copy as Record<string, unknown>;
     } catch {
-      return info;
+      return (info ?? {}) as Record<string, unknown>;
     }
   }
 
@@ -131,31 +131,31 @@ export default class Logger {
 
   /* === Public Log Methods === */
 
-  public error(message: string, meta?: any): void {
+  public error(message: string, meta?: Record<string, unknown>): void {
     if (this.shouldLog('error', 'console') || this.shouldLog('error', 'file')) {
       this.loggers.error.error(message, { ...meta, level: 'error' });
     }
   }
 
-  public warn(message: string, meta?: any): void {
+  public warn(message: string, meta?: Record<string, unknown>): void {
     if (this.shouldLog('warn', 'console') || this.shouldLog('warn', 'file')) {
       this.loggers.warn.warn(message, { ...meta, level: 'warn' });
     }
   }
 
-  public info(message: string, meta?: any): void {
+  public info(message: string, meta?: Record<string, unknown>): void {
     if (this.shouldLog('info', 'console') || this.shouldLog('info', 'file')) {
       this.loggers.info.info(message, { ...meta, level: 'info' });
     }
   }
 
-  public success(message: string, meta?: any): void {
+  public success(message: string, meta?: Record<string, unknown>): void {
     if (this.shouldLog('success', 'console') || this.shouldLog('success', 'file')) {
       this.loggers.success.log('success', message, { ...meta });
     }
   }
 
-  public debug(message: string, meta?: any): void {
+  public debug(message: string, meta?: Record<string, unknown>): void {
     if (this.shouldLog('debug', 'console') || this.shouldLog('debug', 'file')) {
       this.loggers.debug.debug(message, { ...meta, level: 'debug' });
     }
@@ -166,10 +166,10 @@ export default class Logger {
   public logError(params: {
     type: string;
     message: string;
-    error: any;
-    context?: Record<string, any>;
+    error: unknown;
+    context?: Record<string, unknown>;
     hidden?: boolean;
-    meta?: Record<string, any>;
+    meta?: Record<string, unknown>;
   }): void {
     const logPayload = {
       level: logLevels.error,
@@ -197,9 +197,9 @@ export default class Logger {
   public logWarn(params: {
     type: string;
     message: string;
-    warn?: any;
-    context?: Record<string, any>;
-    meta?: Record<string, any>;
+    warn?: unknown;
+    context?: Record<string, unknown>;
+    meta?: Record<string, unknown>;
   }): void {
     const logPayload = {
       level: logLevels.warn,
@@ -220,9 +220,9 @@ export default class Logger {
   public logInfo(params: {
     type: string;
     message: string;
-    info?: any;
-    context?: Record<string, any>;
-    meta?: Record<string, any>;
+    info?: unknown;
+    context?: Record<string, unknown>;
+    meta?: Record<string, unknown>;
   }): void {
     const logPayload = {
       level: logLevels.info,
@@ -243,9 +243,9 @@ export default class Logger {
   public logSuccess(params: {
     type: string;
     message: string;
-    data?: any;
-    context?: Record<string, any>;
-    meta?: Record<string, any>;
+    data?: unknown;
+    context?: Record<string, unknown>;
+    meta?: Record<string, unknown>;
   }): void {
     const logPayload = {
       level: 'success',
@@ -266,9 +266,9 @@ export default class Logger {
   public logDebug(params: {
     type: string;
     message: string;
-    debug?: any;
-    context?: Record<string, any>;
-    meta?: Record<string, any>;
+    debug?: unknown;
+    context?: Record<string, unknown>;
+    meta?: Record<string, unknown>;
   }): void {
     const logPayload = {
       level: logLevels.debug,

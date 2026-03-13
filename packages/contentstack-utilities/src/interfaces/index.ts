@@ -15,15 +15,15 @@ export interface PrintOptions {
 export interface InquirePayload {
   type: string;
   name: string;
-  default?: any;
+  default?: unknown;
   message: string;
-  choices?: Array<any>;
+  choices?: unknown[];
   transformer?: (input: unknown) => unknown;
-  validate?(input: any, answers?: any): boolean | string | Promise<boolean | string>;
+  validate?(input: unknown, answers?: Record<string, unknown>): boolean | string | Promise<boolean | string>;
   selectAll?: boolean;
   pageSize?: number;
-  columns?: Record<string, any>[];
-  rows?: Array<any>;
+  columns?: Record<string, unknown>[];
+  rows?: unknown[];
 }
 
 export interface Region {
@@ -90,19 +90,19 @@ export interface PrintOptions {
 
 export type LogType = 'info' | 'warn' | 'error' | 'debug' | 'hidden' | 'success';
 export type LogsType = LogType | PrintOptions | undefined;
-export type MessageType = string | Error | Record<string, any> | Record<string, any>[];
+export type MessageType = string | Error | Record<string, unknown> | Record<string, unknown>[];
 
 export type LogLevel = keyof typeof logLevels;
 
 export type ClassifiedError = {
   type: string;
   message: string;
-  error: Record<string, any>;
-  debug?: Record<string, any>;
+  error: Record<string, unknown>;
+  debug?: Record<string, unknown>;
   meta?: Record<string, string | undefined>;
   context?: string;
   hidden?: boolean;
-  stackTrace?: Record<string, any>;
+  stackTrace?: Record<string, unknown>;
 };
 
 export interface ErrorContextBase {
