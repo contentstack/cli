@@ -17,5 +17,5 @@ jobs:
           node-version: '22.x'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm -r --sort run build
+      - run: pnpm -r --sort --workspace-concurrency=1 run build
       - run: pnpm run lint
