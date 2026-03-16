@@ -67,7 +67,7 @@ importers:
         version: 1.12.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-utilities':
         specifier: ~1.18.0-beta.0
-        version: link:../contentstack-utilities
+        version: 1.18.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-variants':
         specifier: ~1.4.0-beta.0
         version: 1.4.0-beta.0(@types/node@14.18.63)(debug@4.4.3)
@@ -193,10 +193,10 @@ importers:
   packages/contentstack-auth:
     dependencies:
       '@contentstack/cli-command':
-        specifier: ~1.8.0-beta.0
+        specifier: ~1.8.0-beta.1
         version: link:../contentstack-command
       '@contentstack/cli-utilities':
-        specifier: ~1.18.0-beta.0
+        specifier: ~1.19.0-beta.0
         version: link:../contentstack-utilities
       '@oclif/core':
         specifier: ^4.3.0
@@ -266,7 +266,7 @@ importers:
   packages/contentstack-command:
     dependencies:
       '@contentstack/cli-utilities':
-        specifier: ~1.18.0-beta.0
+        specifier: ~1.19.0-beta.0
         version: link:../contentstack-utilities
       '@oclif/core':
         specifier: ^4.3.0
@@ -315,10 +315,10 @@ importers:
   packages/contentstack-config:
     dependencies:
       '@contentstack/cli-command':
-        specifier: ~1.8.0-beta.0
+        specifier: ~1.8.0-beta.1
         version: link:../contentstack-command
       '@contentstack/cli-utilities':
-        specifier: ~1.18.0-beta.0
+        specifier: ~1.19.0-beta.0
         version: link:../contentstack-utilities
       '@contentstack/utils':
         specifier: ~1.7.0
