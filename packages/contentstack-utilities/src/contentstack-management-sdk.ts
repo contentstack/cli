@@ -2,7 +2,7 @@ import { client, ContentstackClient, ContentstackConfig } from '@contentstack/ma
 import authHandler from './auth-handler';
 import { Agent } from 'node:https';
 import configHandler, { default as configStore } from './config-handler';
-import { getProxyConfig } from './proxy-helper';
+import { getProxyConfigForHost, resolveRequestHost, clearProxyEnv } from './proxy-helper';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -17,8 +17,15 @@ class ManagementSDKInitiator {
   }
 
   async createAPIClient(config): Promise<ContentstackClient> {
-    // Get proxy configuration with priority: Environment variables > Global config
-    const proxyConfig = getProxyConfig();
+    // Resolve host so NO_PROXY applies even when config.host is omitted (e.g. from region.cma)
+    const host = resolveRequestHost(config);
+    // NO_PROXY has priority over HTTP_PROXY/HTTPS_PROXY and config-set proxy
+    const proxyConfig = getProxyConfigForHost(host);
+
+    // When bypassing, clear proxy env immediately so SDK never see it (they may read at init or first request).
+    if (!proxyConfig) {
+      clearProxyEnv();
+    }
 
     const option: ContentstackConfig = {
       host: config.host,
