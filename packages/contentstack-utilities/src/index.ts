@@ -73,7 +73,7 @@ export {
   ux,
   execute,
 } from '@oclif/core';
-export { FlagInput, ArgInput, FlagDefinition } from '@oclif/core/lib/interfaces/parser';
+export type { FlagInput, ArgInput, FlagDefinition } from '@oclif/core/lib/interfaces/parser';
 
 export { default as TablePrompt } from './inquirer-table-prompt';
 
