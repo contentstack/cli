@@ -1,12 +1,12 @@
 import chalk, { Chalk } from 'chalk';
-import { default as inquirer, QuestionCollection, Answers } from 'inquirer';
+import inquirer from 'inquirer';
 import { ux as cliux, Args, Flags, Command } from '@oclif/core';
 import { Ora, default as ora } from 'ora';
 import cliProgress from 'cli-progress';
 import CLITable, { TableFlags, TableHeader, TableData, TableOptions } from './cli-table';
 
 import messageHandler from './message-handler';
-import { PrintOptions, InquirePayload, CliUXPromptOptions } from './interfaces';
+import { PrintOptions, InquirePayload, CliUXPromptOptions, InquirerQuestion, Answers } from './interfaces';
 
 inquirer.registerPrompt('table', require('./inquirer-table-prompt'));
 
@@ -68,12 +68,23 @@ class CLIInterface {
   }
 
   async inquire<T>(inquirePayload: InquirePayload | Array<InquirePayload>): Promise<T> {
-    if (Array.isArray(inquirePayload)) {
-      return inquirer.prompt(inquirePayload);
-    } else {
-      inquirePayload.message = messageHandler.parse(inquirePayload.message);
-      const result = await inquirer.prompt(inquirePayload as QuestionCollection<Answers>);
-      return result[inquirePayload.name] as T;
+    try {
+      if (Array.isArray(inquirePayload)) {
+        return (await inquirer.prompt(inquirePayload)) as T;
+      } else {
+        inquirePayload.message = messageHandler.parse(inquirePayload.message);
+        const result = (await inquirer.prompt(inquirePayload as InquirerQuestion as Parameters<typeof inquirer.prompt>[0])) as Answers;
+        return result[inquirePayload.name] as T;
+      }
+    } catch (err) {
+      const isExitPrompt =
+        (err as NodeJS.ErrnoException)?.name === 'ExitPromptError' ||
+        (err as Error)?.message?.includes('SIGINT') ||
+        (err as Error)?.message?.includes('force closed');
+      if (isExitPrompt) {
+        process.exit(130);
+      }
+      throw err;
     }
   }
 
