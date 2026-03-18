@@ -169,3 +169,7 @@ export interface ProgressResult {
   success: number;
   failures: number;
 }
+
+export type Answers = Record<string, unknown>;
+
+export type InquirerQuestion = InquirePayload;
