@@ -103,6 +103,10 @@ export default class CLIProgressManager {
       return;
     }
 
+    if (configHandler.get('log')?.showConsoleLogs) {
+      return;
+    }
+
     // Apply strategy-based corrections before printing
     CLIProgressManager.applyStrategyCorrections();
 
