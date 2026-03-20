@@ -9,7 +9,8 @@ import {
   selectMergeStrategySubOptions,
   selectMergeExecution,
   prepareMergeRequestPayload,
-  displayMergeSummary,
+  displayMergeSummary as printMergeSummaryFromHelper,
+  branchDiffUtility as branchDiff,
   askExportMergeSummaryPath,
   askMergeComment,
   writeFile,
@@ -58,7 +59,7 @@ export default class MergeHandler {
   async start() {
     if (this.mergeSummary) {
       this.loadMergeSettings();
-      await this.displayMergeSummary();
+      await this.displayMergeSummaryInternal();
       return await this.executeMerge(this.mergeSummary.requestPayload);
     }
     await this.collectMergeSettings();
@@ -101,13 +102,16 @@ export default class MergeHandler {
     }
     if (this.strategy === 'custom_preferences') {
       this.mergeSettings.itemMergeStrategies = [];
-      for (let module in this.branchCompareData) {
+      for (const module of this.getModuleKeys()) {
         this.mergeSettings.mergeContent[module] = {
           added: [],
           modified: [],
           deleted: [],
         };
-        const selectedItems = await selectCustomPreferences(module, this.branchCompareData[module]);
+        const modulePayload = branchDiff.isBranchCompareCacheRef(this.branchCompareData)
+          ? await branchDiff.loadCompactModuleFromCache(this.branchCompareData, module)
+          : this.branchCompareData[module];
+        const selectedItems = await selectCustomPreferences(module, modulePayload);
         if (selectedItems?.length) {
           forEach(selectedItems, (item) => {
             this.mergeSettings.mergeContent[module][item.status].push(item.value);
@@ -136,7 +140,7 @@ export default class MergeHandler {
       this.mergeSettings.strategy = 'overwrite_with_compare';
     }
 
-    const { allEmpty, moduleStatus } = this.checkEmptySelection();
+    const { allEmpty, moduleStatus } = await this.checkEmptySelection();
     const strategyName = this.mergeSettings.strategy;
     
     if (allEmpty) {
@@ -152,7 +156,7 @@ export default class MergeHandler {
       }
     }
     
-    this.displayMergeSummary();
+    await this.displayMergeSummaryInternal();
   
     if (!this.executeOption) {
       const executionResponse = await selectMergeExecution();
@@ -186,32 +190,84 @@ export default class MergeHandler {
    *   - `exists`: A boolean indicating whether the module exists in the branch comparison data.
    *   - `empty`: A boolean indicating whether the module has no changes (added, modified, or deleted).
    */
-  checkEmptySelection(): {
+  getModuleKeys(): string[] {
+    if (branchDiff.isBranchCompareCacheRef(this.branchCompareData)) {
+      return ['content_types', 'global_fields'];
+    }
+    return Object.keys(this.branchCompareData || {});
+  }
+
+  async mergeMergeContentFromCache(): Promise<void> {
+    this.mergeSettings.mergeContent = {
+      content_types: { added: [], modified: [], deleted: [] },
+      global_fields: { added: [], modified: [], deleted: [] },
+    };
+  }
+
+  /**
+   * When compare data is a disk cache reference, mergeContent is left empty for display (summary reads JSONL).
+   * Entry migration script generation still needs filtered mergeContent — hydrate from cache using the current strategy.
+   */
+  private async hydrateMergeContentFromCacheForEntryScripts(): Promise<void> {
+    if (!branchDiff.isBranchCompareCacheRef(this.branchCompareData)) {
+      return;
+    }
+    const strategy = this.mergeSettings.strategy;
+    if (strategy === 'ignore' || strategy === 'custom_preferences') {
+      return;
+    }
+    this.mergeSettings.mergeContent = {
+      content_types: { added: [], modified: [], deleted: [] },
+      global_fields: { added: [], modified: [], deleted: [] },
+    };
+    for (const module of this.getModuleKeys()) {
+      this.mergeSettings.mergeContent[module] = {};
+      const compact = await branchDiff.loadCompactModuleFromCache(this.branchCompareData, module);
+      this.filterBranchCompareData(module, compact);
+    }
+  }
+
+  async checkEmptySelection(): Promise<{
     allEmpty: boolean;
     moduleStatus: Record<string, { exists: boolean; empty: boolean }>;
-  } {
+  }> {
     const strategy = this.mergeSettings.strategy;
-  
+
     const useMergeContent = new Set(['custom_preferences', 'ignore']);
     const modifiedOnlyStrategies = new Set(['merge_modified_only_prefer_base', 'merge_modified_only_prefer_compare']);
     const addedOnlyStrategies = new Set(['merge_new_only']);
-  
+
     const moduleStatus: Record<string, { exists: boolean; empty: boolean }> = {
       contentType: { exists: false, empty: true },
       globalField: { exists: false, empty: true },
     };
-  
-    for (const module in this.branchCompareData) {
+
+    for (const module of this.getModuleKeys()) {
+      if (branchDiff.isBranchCompareCacheRef(this.branchCompareData) && !useMergeContent.has(strategy)) {
+        const { exists, hasChanges } = await branchDiff.countHasChangesFromCachePath(
+          this.branchCompareData.paths[module],
+          strategy,
+        );
+        if (!exists) continue;
+        const isGlobalField = module === 'global_fields';
+        const type = isGlobalField ? 'globalField' : 'contentType';
+        moduleStatus[type].exists = true;
+        if (hasChanges) {
+          moduleStatus[type].empty = false;
+        }
+        continue;
+      }
+
       const content = useMergeContent.has(strategy)
         ? this.mergeSettings.mergeContent[module]
         : this.branchCompareData[module];
-  
+
       if (!content) continue;
-  
+
       const isGlobalField = module === 'global_fields';
       const type = isGlobalField ? 'globalField' : 'contentType';
       moduleStatus[type].exists = true;
-  
+
       let hasChanges = false;
       if (modifiedOnlyStrategies.has(strategy)) {
         hasChanges = Array.isArray(content.modified) && content.modified.length > 0;
@@ -223,29 +279,34 @@ export default class MergeHandler {
           (Array.isArray(content.added) && content.added.length > 0) ||
           (Array.isArray(content.deleted) && content.deleted.length > 0);
       }
-  
+
       if (hasChanges) {
         moduleStatus[type].empty = false;
       }
     }
-  
-    const allEmpty = Object.values(moduleStatus).every(
-      (status) => !status.exists || status.empty
-    );
-  
+
+    const allEmpty = Object.values(moduleStatus).every((status) => !status.exists || status.empty);
+
     return { allEmpty, moduleStatus };
   }
-  
-  displayMergeSummary() {
+
+  async displayMergeSummaryInternal() {
     if (this.mergeSettings.strategy !== 'ignore') {
-      for (let module in this.branchCompareData) {
-        this.mergeSettings.mergeContent[module] = {};
-        this.filterBranchCompareData(module, this.branchCompareData[module]);
+      if (branchDiff.isBranchCompareCacheRef(this.branchCompareData)) {
+        await this.mergeMergeContentFromCache();
+      } else {
+        for (const module of this.getModuleKeys()) {
+          this.mergeSettings.mergeContent[module] = {};
+          this.filterBranchCompareData(module, this.branchCompareData[module]);
+        }
       }
     }
-    displayMergeSummary({
+    await printMergeSummaryFromHelper({
       format: this.displayFormat,
       compareData: this.mergeSettings.mergeContent,
+      branchCompareCache: branchDiff.isBranchCompareCacheRef(this.branchCompareData)
+        ? this.branchCompareData
+        : undefined,
     });
   }
 
@@ -296,7 +357,7 @@ export default class MergeHandler {
     cliux.success('Exported the summary successfully');
 
     if (this.enableEntryExp) {
-      this.executeEntryExpFlow(this.stackAPIKey, mergePayload);
+      await this.executeEntryExpFlow(this.stackAPIKey, mergePayload);
     }
   }
 
@@ -314,7 +375,7 @@ export default class MergeHandler {
       cliux.success(`Merged the changes successfully. Merge UID: ${mergeResponse.uid}`);
 
       if (this.enableEntryExp) {
-        this.executeEntryExpFlow(mergeResponse.uid, mergePayload);
+        await this.executeEntryExpFlow(mergeResponse.uid, mergePayload);
       }
     } catch (error) {
       cliux.loaderV2('', spinner);
@@ -323,6 +384,7 @@ export default class MergeHandler {
   }
 
   async executeEntryExpFlow(mergeJobUID: string, mergePayload) {
+    await this.hydrateMergeContentFromCacheForEntryScripts();
     const { mergeContent } = this.mergeSettings;
     let mergePreference = await selectContentMergePreference();
 

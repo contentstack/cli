@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import forEach from 'lodash/forEach';
 import { configHandler, cliux, messageHandler, sanitizePath } from '@contentstack/cli-utilities';
+import { countJsonLines } from './cache-manager';
 import { MergeParams } from '../interfaces';
 
 export const getbranchesList = (branchResult, baseBranch: string) => {
@@ -118,7 +119,20 @@ export async function handleErrorMsg(err, retryCallback?: () => Promise<any>) {
   process.exit(1);
 }
 
-export function validateCompareData(branchCompareData) {
+export async function validateCompareData(branchCompareData): Promise<boolean> {
+  if (!branchCompareData) {
+    return false;
+  }
+  if (branchCompareData.kind === 'cache' && branchCompareData.paths) {
+    const ctPath = branchCompareData.paths.content_types;
+    const gfPath = branchCompareData.paths.global_fields;
+    if (!ctPath || !gfPath) {
+      return false;
+    }
+    const ct = await countJsonLines(ctPath);
+    const gf = await countJsonLines(gfPath);
+    return ct + gf > 0;
+  }
   let validCompareData = false;
   if (branchCompareData.content_types) {
     forEach(branchCompareData.content_types, (value, key) => {
@@ -146,4 +160,5 @@ export * from './entry-update-script';
 export * from './entry-create-script';
 export * as interactive from './interactive';
 export * as branchDiffUtility from './branch-diff-utility';
+export { cleanupSession } from './cache-manager';
 export * as deleteBranchUtility from './delete-branch';

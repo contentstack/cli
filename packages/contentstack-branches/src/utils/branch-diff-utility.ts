@@ -8,6 +8,9 @@ import find from 'lodash/find';
 import { cliux, messageHandler, managementSDKClient } from '@contentstack/cli-utilities';
 import isArray from 'lodash/isArray';
 import { diff } from 'just-diff';
+import path from 'path';
+import fs from 'fs';
+import readline from 'readline';
 import { extractValueFromPath, getFieldDisplayName, generateCSVDataFromVerbose } from './csv-utility';
 
 import {
@@ -19,20 +22,25 @@ import {
   BranchDiffSummary,
   BranchCompactTextRes,
   BranchDiffVerboseRes,
+  BranchCompareCacheRef,
+  InlineBranchCompareResult,
 } from '../interfaces/index';
 import config from '../config';
+import {
+  createSessionId,
+  ensureSessionDir,
+  appendJsonLine,
+  splitRawDiffToModules,
+  safeUnlink,
+  cleanupSession,
+  countJsonLines,
+  readAllJsonLines,
+} from './cache-manager';
 
 /**
- * Fetch differences between two branches
- * @async
- * @method
- * @param payload
- * @param branchesDiffData
- * @param skip
- * @param limit
- * @returns {*} Promise<any>
+ * Legacy in-memory pagination (used when payload.useDiskCache === false, e.g. unit tests).
  */
-async function fetchBranchesDiff(
+async function fetchBranchesDiffInMemory(
   payload: BranchDiffPayload,
   branchesDiffData = [],
   skip = config.skip,
@@ -42,17 +50,89 @@ async function fetchBranchesDiff(
   const diffData = branchDiffData?.diff;
   const nextUrl = branchDiffData?.next_url || '';
 
-  if (branchesDiffData?.length) {
-    branchesDiffData = [...branchesDiffData, ...diffData];
+  let merged = branchesDiffData;
+  if (merged?.length) {
+    merged = [...merged, ...diffData];
   } else {
-    branchesDiffData = diffData;
+    merged = diffData;
   }
 
   if (nextUrl) {
     skip = skip + limit;
-    return await fetchBranchesDiff(payload, branchesDiffData, skip, limit);
+    return await fetchBranchesDiffInMemory(payload, merged, skip, limit);
   }
-  return branchesDiffData;
+  return merged;
+}
+
+/**
+ * Fetch differences between two branches.
+ * By default writes paginated results to JSONL on disk to avoid unbounded heap growth, then
+ * either materializes compact results (small diffs) or returns a cache reference (large diffs).
+ */
+async function fetchBranchesDiff(
+  payload: BranchDiffPayload,
+  branchesDiffData: any[] = [],
+  skip = config.skip,
+  limit = config.limit,
+): Promise<any> {
+  if (payload.useDiskCache === false) {
+    return fetchBranchesDiffInMemory(payload, branchesDiffData, skip, limit);
+  }
+
+  const sessionId = payload.cacheSessionId || createSessionId();
+  try {
+    const sessionDir = await ensureSessionDir(sessionId);
+    const rawPath = path.join(sessionDir, 'all.diff.jsonl');
+    let currentSkip = skip;
+    let hasMore = true;
+
+    while (hasMore) {
+      const branchDiffData = await branchCompareSDK(payload, currentSkip, limit);
+      const diffData = branchDiffData?.diff || [];
+      for (const item of diffData) {
+        await appendJsonLine(rawPath, item);
+      }
+      if (branchDiffData?.next_url) {
+        currentSkip += limit;
+      } else {
+        hasMore = false;
+      }
+    }
+
+    const { contentTypesPath, globalFieldsPath } = await splitRawDiffToModules(rawPath, sessionDir);
+    await safeUnlink(rawPath);
+
+    const totalCount =
+      (await countJsonLines(contentTypesPath)) + (await countJsonLines(globalFieldsPath));
+
+    if (totalCount <= config.maxMemoryItems) {
+      const ctRaw = await readAllJsonLines<BranchDiffRes>(contentTypesPath);
+      const gfRaw = await readAllJsonLines<BranchDiffRes>(globalFieldsPath);
+      await cleanupSession(sessionId);
+      const result: InlineBranchCompareResult = {
+        content_types: parseCompactText(ctRaw),
+        global_fields: parseCompactText(gfRaw),
+      };
+      return result;
+    }
+
+    const ref: BranchCompareCacheRef = {
+      kind: 'cache',
+      sessionId,
+      paths: {
+        content_types: contentTypesPath,
+        global_fields: globalFieldsPath,
+      },
+    };
+    return ref;
+  } catch {
+    await cleanupSession(sessionId).catch(() => undefined);
+    cliux.print(
+      'Warning: Could not write branch compare cache to disk (ensure the current working directory is writable). Falling back to in-memory compare; very large stacks may use more memory.',
+      { color: 'yellow' },
+    );
+    return fetchBranchesDiffInMemory(payload, branchesDiffData, skip, limit);
+  }
 }
 
 /**
@@ -215,6 +295,162 @@ function printCompactTextView(branchTextRes: BranchCompactTextRes): void {
 }
 
 /**
+ * Type guard for disk-backed branch compare cache.
+ */
+function isBranchCompareCacheRef(data: unknown): data is BranchCompareCacheRef {
+  return Boolean(
+    data &&
+      typeof data === 'object' &&
+      (data as BranchCompareCacheRef).kind === 'cache' &&
+      typeof (data as BranchCompareCacheRef).sessionId === 'string' &&
+      (data as BranchCompareCacheRef).paths,
+  );
+}
+
+/**
+ * Type guard for in-memory compact branch compare (small diffs).
+ */
+function isInlineBranchCompareResult(data: unknown): data is InlineBranchCompareResult {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return false;
+  const o = data as Record<string, unknown>;
+  if ((o as { kind?: string }).kind === 'cache') return false;
+  return 'content_types' in o && 'global_fields' in o;
+}
+
+function summaryFromCompact(
+  compact: BranchCompactTextRes,
+  baseBranch: string,
+  compareBranch: string,
+): BranchDiffSummary {
+  return {
+    base: baseBranch,
+    compare: compareBranch,
+    base_only: compact.deleted?.length ?? 0,
+    compare_only: compact.added?.length ?? 0,
+    modified: compact.modified?.length ?? 0,
+  };
+}
+
+async function parseSummaryFromJsonlPath(
+  modulePath: string,
+  baseBranch: string,
+  compareBranch: string,
+): Promise<BranchDiffSummary> {
+  const resolved = path.resolve(modulePath);
+  let baseCount = 0,
+    compareCount = 0,
+    modifiedCount = 0;
+  if (!fs.existsSync(resolved)) {
+    return {
+      base: baseBranch,
+      compare: compareBranch,
+      base_only: 0,
+      compare_only: 0,
+      modified: 0,
+    };
+  }
+  const stream = fs.createReadStream(resolved, { encoding: 'utf8' });
+  const rl = readline.createInterface({ input: stream, crlfDelay: Infinity });
+  for await (const line of rl) {
+    const t = line.trim();
+    if (!t) continue;
+    const diff = JSON.parse(t) as BranchDiffRes;
+    if (diff.status === 'compare_only') compareCount++;
+    else if (diff.status === 'base_only') baseCount++;
+    else if (diff.status === 'modified') modifiedCount++;
+  }
+  return {
+    base: baseBranch,
+    compare: compareBranch,
+    base_only: baseCount,
+    compare_only: compareCount,
+    modified: modifiedCount,
+  };
+}
+
+function flatCompactToRawArray(compact: BranchCompactTextRes): BranchDiffRes[] {
+  return [...(compact.added ?? []), ...(compact.modified ?? []), ...(compact.deleted ?? [])];
+}
+
+/**
+ * Print compact diff for one module from JSONL (three passes preserve added → modified → deleted order).
+ */
+async function printCompactTextViewFromJsonlModulePath(modulePath: string): Promise<void> {
+  const resolved = path.resolve(modulePath);
+  if (!fs.existsSync(resolved)) return;
+
+  const printOne = (diff: BranchDiffRes) => {
+    if (diff.merge_strategy === 'ignore') return;
+    if (diff.status === 'compare_only') {
+      cliux.print(chalk.green(`+ '${diff.title}' ${startCase(camelCase(diff.type))}`));
+    } else if (diff.status === 'modified') {
+      cliux.print(chalk.blue(`± '${diff.title}' ${startCase(camelCase(diff.type))}`));
+    } else if (diff.status === 'base_only') {
+      cliux.print(chalk.red(`- '${diff.title}' ${startCase(camelCase(diff.type))}`));
+    }
+  };
+
+  const printStatus = async (status: string) => {
+    const stream = fs.createReadStream(resolved, { encoding: 'utf8' });
+    const rl = readline.createInterface({ input: stream, crlfDelay: Infinity });
+    for await (const line of rl) {
+      const t = line.trim();
+      if (!t) continue;
+      const diff = JSON.parse(t) as BranchDiffRes;
+      if (diff.status === status) printOne(diff);
+    }
+  };
+
+  cliux.print(' ');
+  await printStatus('compare_only');
+  await printStatus('modified');
+  await printStatus('base_only');
+}
+
+async function countHasChangesFromCachePath(
+  modulePath: string,
+  strategy: string,
+): Promise<{ exists: boolean; hasChanges: boolean }> {
+  const resolved = path.resolve(modulePath);
+  if (!fs.existsSync(resolved)) {
+    return { exists: false, hasChanges: false };
+  }
+  const modifiedOnlyStrategies = new Set(['merge_modified_only_prefer_base', 'merge_modified_only_prefer_compare']);
+  const addedOnlyStrategies = new Set(['merge_new_only']);
+
+  let hasModified = 0;
+  let hasAdded = 0;
+  let hasDeleted = 0;
+  const stream = fs.createReadStream(resolved, { encoding: 'utf8' });
+  const rl = readline.createInterface({ input: stream, crlfDelay: Infinity });
+  for await (const line of rl) {
+    const t = line.trim();
+    if (!t) continue;
+    const diff = JSON.parse(t) as BranchDiffRes;
+    if (diff.status === 'modified') hasModified++;
+    else if (diff.status === 'compare_only') hasAdded++;
+    else if (diff.status === 'base_only') hasDeleted++;
+  }
+
+  const exists = hasModified + hasAdded + hasDeleted > 0;
+  let hasChanges = false;
+  if (modifiedOnlyStrategies.has(strategy)) {
+    hasChanges = hasModified > 0;
+  } else if (addedOnlyStrategies.has(strategy)) {
+    hasChanges = hasAdded > 0;
+  } else {
+    hasChanges = hasModified > 0 || hasAdded > 0 || hasDeleted > 0;
+  }
+  return { exists, hasChanges };
+}
+
+async function loadCompactModuleFromCache(cache: BranchCompareCacheRef, module: string): Promise<BranchCompactTextRes> {
+  const p = cache.paths[module as 'content_types' | 'global_fields'];
+  const raw = await readAllJsonLines<BranchDiffRes>(p);
+  return parseCompactText(raw);
+}
+
+/**
  * filter out text verbose details - deleted, added, modified details
  * @async
  * @method
@@ -225,34 +461,53 @@ function printCompactTextView(branchTextRes: BranchCompactTextRes): void {
 async function parseVerbose(branchesDiffData: any[], payload: BranchDiffPayload): Promise<BranchDiffVerboseRes> {
   const { added, modified, deleted } = parseCompactText(branchesDiffData);
   let modifiedDetailList: BranchModifiedDetails[] = [];
+  let verboseSessionId: string | undefined;
 
-  for (let i = 0; i < modified?.length; i++) {
-    const diff: BranchDiffRes = modified[i];
-    payload.uid = diff?.uid;
-    const branchDiff = await branchCompareSDK(payload);
-    if (branchDiff) {
-      const { listOfModifiedFields, listOfAddedFields, listOfDeletedFields } = await prepareBranchVerboseRes(
-        branchDiff,
+  if (modified?.length) {
+    verboseSessionId = createSessionId();
+    const sessionDir = await ensureSessionDir(verboseSessionId);
+    const modifiedDetailsPath = path.join(sessionDir, 'verbose-modified.jsonl');
+
+    const batchSize = config.verboseBatchSize;
+    for (let i = 0; i < modified.length; i += batchSize) {
+      const chunk = modified.slice(i, i + batchSize);
+      const results = await Promise.all(
+        chunk.map(async (diff: BranchDiffRes) => {
+          payload.uid = diff?.uid;
+          const branchDiff = await branchCompareSDK(payload);
+          if (branchDiff) {
+            const { listOfModifiedFields, listOfAddedFields, listOfDeletedFields } = await prepareBranchVerboseRes(
+              branchDiff,
+            );
+            return {
+              moduleDetails: diff,
+              modifiedFields: {
+                modified: listOfModifiedFields,
+                deleted: listOfDeletedFields,
+                added: listOfAddedFields,
+              },
+            } as BranchModifiedDetails;
+          }
+          return null;
+        }),
       );
-      modifiedDetailList.push({
-        moduleDetails: diff,
-        modifiedFields: {
-          modified: listOfModifiedFields,
-          deleted: listOfDeletedFields,
-          added: listOfAddedFields,
-        },
-      });
+      for (const r of results) {
+        if (r) await appendJsonLine(modifiedDetailsPath, r);
+      }
     }
+
+    modifiedDetailList = (await readAllJsonLines<BranchModifiedDetails>(modifiedDetailsPath)) as BranchModifiedDetails[];
   }
 
   const verboseRes: BranchDiffVerboseRes = {
     modified: modifiedDetailList,
     added: added,
     deleted: deleted,
+    verboseCacheSessionId: verboseSessionId,
   };
 
   verboseRes.csvData = generateCSVDataFromVerbose(verboseRes);
-  
+
   return verboseRes;
 }
 
@@ -629,6 +884,7 @@ function prepareModifiedField(params: {
 
 export {
   fetchBranchesDiff,
+  fetchBranchesDiffInMemory,
   parseSummary,
   printSummary,
   parseCompactText,
@@ -640,4 +896,12 @@ export {
   prepareBranchVerboseRes,
   deepDiff,
   prepareModifiedDiff,
+  isBranchCompareCacheRef,
+  isInlineBranchCompareResult,
+  summaryFromCompact,
+  flatCompactToRawArray,
+  printCompactTextViewFromJsonlModulePath,
+  countHasChangesFromCachePath,
+  loadCompactModuleFromCache,
+  parseSummaryFromJsonlPath,
 };

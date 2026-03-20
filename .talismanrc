@@ -1,8 +1,22 @@
 fileignoreconfig:
-- filename: package-lock.json
-  checksum: 10993a3e930b77c3c6e09afcb50c23e6a8a901302172b699e92b0a4bfec0cffa
-- filename: pnpm-lock.yaml
-  checksum: 3e47ed021491e9f3c21d25e4ea72a1101b51f16ebedd279019df1792b72417a4
-- filename: packages/contentstack-bootstrap/src/bootstrap/utils.ts
-  checksum: 6e6fb00bb11b03141e5ad27eeaa4af9718dc30520c3e73970bc208cc0ba2a7d2
+  - filename: pnpm-lock.yaml
+    checksum: 8a476e69987ac9fda9f8b622cbbf3c35d0625654f0a8b0510e37d17af0b15948
+  - filename: package-lock.json
+    checksum: 001e74018a692910c4748816ae9d2ac06d0a105681b89d421a9e99481fb8196c
+  - filename: packages/contentstack-branches/test/unit/commands/cm/branches/create.test.js
+    checksum: ee5622594afb486aec7ffe3fa03162bee4e74bc6578358cb515636faaf79f0fd
+  - filename: packages/contentstack-branches/test/unit/utils/interactive.test.js
+    checksum: a11c00354f2c770ca2195c368bcaa35d5b2b857ff11edda55d820285f9b262ef
+  - filename: packages/contentstack-branches/test/unit/commands/cm/branches/delete.test.js
+    checksum: 9e62382be1b51f123563458b0ee7e530f8ce8cd81e3ddc4a7f709c5a15cdda5a
+  - filename: packages/contentstack-branches/test/unit/utils/create-merge-scripts.test.js
+    checksum: bec39d1d3fa042d388c3a5b1ddebd9aef7d970384a1fde7c40399bb7d5854585
+  - filename: packages/contentstack-branches/src/branch/merge-handler.ts
+    checksum: 5216f83ab87f3f0c20ee537b1fc16f9c9b3e980b6f4ddf8f8154c9f72dd6efda
+  - filename: packages/contentstack-branches/test/unit/commands/cm/branches/list.test.js
+    checksum: 33686e7e986ccc98e3c7fc2b1b6933b04714e0cff1e5b4254b863ff4c202e951
+  - filename: packages/contentstack-branches/test/unit/utils/diff-branch-handler.test.js
+    checksum: 83a9b67bfa5c0dd7a8f6735dac546da77ba49da592c2285e2fa7f7a17d4731ba
+  - filename: packages/contentstack-branches/test/unit/mock/data.js
+    checksum: 783c530873621536d5763dcc7e03f7fe23e324f0f4bb42244d28a85b9e936f75
 version: '1.0'

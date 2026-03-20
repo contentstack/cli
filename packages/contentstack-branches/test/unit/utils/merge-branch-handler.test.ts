@@ -212,7 +212,7 @@ describe('Merge Handler', () => {
     executeMergeStub;
     beforeEach(function () {
       collectMergeSettingsStub = stub(MergeHandler.prototype, 'collectMergeSettings').resolves();
-      displayMergeSummaryStub = stub(MergeHandler.prototype, 'displayMergeSummary').resolves();
+      displayMergeSummaryStub = stub(MergeHandler.prototype, 'displayMergeSummaryInternal').resolves();
       selectMergeExecutionStub = stub(interactive, 'selectMergeExecution');
       mergeRequestStub = stub(mergeHelper, 'prepareMergeRequestPayload').resolves(mockData.mergePayload);
       exportSummaryStub = stub(MergeHandler.prototype, 'exportSummary').resolves();
@@ -294,7 +294,7 @@ describe('Merge Handler', () => {
     beforeEach(function(){
       selectMergeStrategyStub = stub(interactive, 'selectMergeStrategy');
       strategySubOptionStub = stub(interactive, 'selectMergeStrategySubOptions');
-      displayMergeSummaryStub = stub(MergeHandler.prototype, 'displayMergeSummary').resolves();
+      displayMergeSummaryStub = stub(MergeHandler.prototype, 'displayMergeSummaryInternal').resolves();
       selectMergeExecutionStub = stub(interactive, 'selectMergeExecution');
       restartMergeProcessStub = stub(MergeHandler.prototype, 'restartMergeProcess').resolves();
     })
@@ -405,5 +405,58 @@ describe('Merge Handler', () => {
       expect(selectMergeStrategyStub.calledOnce).to.be.true;
       expect(strategySubOptionStub.calledOnce).to.be.true;
     });
-  })
+  });
+
+  describe('hydrateMergeContentFromCacheForEntryScripts', () => {
+    let loadStub;
+
+    beforeEach(function () {
+      loadStub = stub(diffUtility, 'loadCompactModuleFromCache');
+    });
+
+    afterEach(function () {
+      loadStub.restore();
+    });
+
+    it('loads compact modules from cache and applies merge_new_only filtering', async function () {
+      const cacheRef = {
+        kind: 'cache',
+        sessionId: 's1',
+        paths: { content_types: '/x/ct.jsonl', global_fields: '/x/gf.jsonl' },
+      };
+      loadStub.callsFake(async (_cache, mod: string) => {
+        if (mod === 'content_types') {
+          return {
+            added: [
+              {
+                uid: 'ct1',
+                title: 'T',
+                type: 'content_type',
+                status: 'compare_only',
+              },
+            ],
+            modified: [],
+            deleted: [],
+          };
+        }
+        return { added: [], modified: [], deleted: [] };
+      });
+
+      const handler = new MergeHandler({
+        ...mockData.mergeInputOptions,
+        branchCompareData: cacheRef,
+        strategy: 'merge_new_only',
+        enableEntryExp: true,
+      });
+      (handler as any).mergeSettings.strategy = 'merge_new_only';
+
+      await (handler as any).hydrateMergeContentFromCacheForEntryScripts();
+
+      expect(loadStub.callCount).to.equal(2);
+      const mc = (handler as any).mergeSettings.mergeContent;
+      expect(mc.content_types.added).to.have.length(1);
+      expect(mc.content_types.added[0].uid).to.equal('ct1');
+      expect(mc.global_fields.added).to.deep.equal([]);
+    });
+  });
 });

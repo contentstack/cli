@@ -29,6 +29,10 @@ For switching to AZURE-NA region update the hosts at config/default.js
 }
 ```
 
+## Branch compare cache
+
+Large branch compares write temporary JSONL files under **`<current working directory>/.contentstack-branch-cache/`** (see `cacheDir` in `src/config`). The process needs a **writable working directory**. If disk writes fail, the CLI falls back to an in-memory compare and prints a warning (very large stacks may use more memory).
+
 # Usage
 
 <!-- usage -->
@@ -37,7 +41,7 @@ $ npm install -g @contentstack/cli-cm-branches
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-branches/1.6.3 darwin-arm64 node-v24.13.0
+@contentstack/cli-cm-branches/1.7.0 darwin-arm64 node-v24.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
