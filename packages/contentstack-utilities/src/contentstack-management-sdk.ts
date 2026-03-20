@@ -2,7 +2,12 @@ import { client, ContentstackClient, ContentstackConfig } from '@contentstack/ma
 import authHandler from './auth-handler';
 import { Agent } from 'node:https';
 import configHandler, { default as configStore } from './config-handler';
-import { getProxyConfigForHost, resolveRequestHost, clearProxyEnv } from './proxy-helper';
+import {
+  getProxyConfigForHost,
+  resolveRequestHost,
+  clearProxyEnv,
+  shouldBypassProxy,
+} from './proxy-helper';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -118,6 +123,8 @@ class ManagementSDKInitiator {
 
     if (proxyConfig) {
       option.proxy = proxyConfig;
+    } else if (host && shouldBypassProxy(host)) {
+      option.proxy = false;
     }
     if (config.endpoint) {
       option.endpoint = config.endpoint;

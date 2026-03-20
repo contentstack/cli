@@ -3,7 +3,13 @@ import { IHttpClient } from './client-interface';
 import { HttpResponse } from './http-response';
 import configStore from '../config-handler';
 import authHandler from '../auth-handler';
-import { hasProxy, getProxyUrl, getProxyConfig, getProxyConfigForHost } from '../proxy-helper';
+import {
+  hasProxy,
+  getProxyUrl,
+  getProxyConfigForHost,
+  resolveRequestHost,
+  shouldBypassProxy,
+} from '../proxy-helper';
 
 /**
  * Derive request host from baseURL or url for NO_PROXY checks.
@@ -428,11 +434,14 @@ export class HttpClient implements IHttpClient {
     }
 
     // Configure proxy if available. NO_PROXY has priority: hosts in NO_PROXY never use proxy.
+    // Resolve host from the request URL and fall back to region CMA so NO_PROXY applies when baseURL/url omit hostname.
     if (!this.request.proxy) {
-      const host = getRequestHost(this.request.baseURL, url);
-      const proxyConfig = host ? getProxyConfigForHost(host) : getProxyConfig();
+      const host = getRequestHost(this.request.baseURL, url) || resolveRequestHost({});
+      const proxyConfig = getProxyConfigForHost(host);
       if (proxyConfig) {
         this.request.proxy = proxyConfig;
+      } else if (host && shouldBypassProxy(host)) {
+        this.request.proxy = false;
       }
     }
 
