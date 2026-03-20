@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { getChalk } from '../chalk';
 import { ModuleResult, SummaryOptions } from '../interfaces/index';
 import { getSessionLogPath } from '../logger/log';
 
@@ -97,21 +97,21 @@ export default class SummaryManager {
     const totalSuccess = Array.from(this.modules.values()).reduce((sum, m) => sum + m.successCount, 0);
     const totalFailures = Array.from(this.modules.values()).reduce((sum, m) => sum + m.failureCount, 0);
 
-    console.log('\n' + chalk.bold('='.repeat(80)));
-    console.log(chalk.bold(`${this.operationName} SUMMARY`));
-    console.log('\n' + chalk.bold('Overall Statistics:'));
-    console.log(`  Total ${this.operationName} Time: ${chalk.cyan(this.formatDuration(totalDuration))}`);
-    console.log(`  Modules Processed: ${chalk.cyan(completedModules)}/${chalk.cyan(totalModules)}`);
+    console.log('\n' + getChalk().bold('='.repeat(80)));
+    console.log(getChalk().bold(`${this.operationName} SUMMARY`));
+    console.log('\n' + getChalk().bold('Overall Statistics:'));
+    console.log(`  Total ${this.operationName} Time: ${getChalk().cyan(this.formatDuration(totalDuration))}`);
+    console.log(`  Modules Processed: ${getChalk().cyan(completedModules)}/${getChalk().cyan(totalModules)}`);
     console.log(
-      `  Items Processed: ${chalk.green(totalSuccess)} success, ${chalk.red(totalFailures)} failed of ${chalk.cyan(
+      `  Items Processed: ${getChalk().green(totalSuccess)} success, ${getChalk().red(totalFailures)} failed of ${getChalk().cyan(
         totalItems,
       )} total`,
     );
-    console.log(`  Success Rate: ${chalk.cyan(this.calculateSuccessRate(totalSuccess, totalItems))}%`);
+    console.log(`  Success Rate: ${getChalk().cyan(this.calculateSuccessRate(totalSuccess, totalItems))}%`);
 
     // Module Details
-    console.log('\n' + chalk.bold('Module Details:'));
-    console.log(chalk.gray('-'.repeat(80)));
+    console.log('\n' + getChalk().bold('Module Details:'));
+    console.log(getChalk().gray('-'.repeat(80)));
 
     Array.from(this.modules.values()).forEach((module) => {
       const status = this.getStatusIcon(module.status);
@@ -130,19 +130,19 @@ export default class SummaryManager {
     });
 
     // Final Status
-    console.log('\n' + chalk.bold('Final Status:'));
+    console.log('\n' + getChalk().bold('Final Status:'));
     if (!this.hasFailures() && failedModules === 0) {
-      console.log(chalk.bold.green(`✅ ${this.operationName} completed successfully!`));
+      console.log(getChalk().bold.green(`✅ ${this.operationName} completed successfully!`));
     } else if (this.hasFailures() || failedModules > 0) {
       console.log(
-        chalk.bold.yellow(`⚠️ ${this.operationName} completed with failures, see the logs for more details.`),
+        getChalk().bold.yellow(`⚠️ ${this.operationName} completed with failures, see the logs for more details.`),
       );
     } else {
-      console.log(chalk.bold.red(`❌ ${this.operationName} failed`));
+      console.log(getChalk().bold.red(`❌ ${this.operationName} failed`));
     }
 
-    console.log(chalk.bold('='.repeat(80)));
-    console.log(chalk.bold('='.repeat(80)));
+    console.log(getChalk().bold('='.repeat(80)));
+    console.log(getChalk().bold('='.repeat(80)));
 
     // Simple failure summary with log reference
     this.printFailureSummaryWithLogReference();
@@ -162,40 +162,40 @@ export default class SummaryManager {
 
     const totalFailures = modulesWithFailures.reduce((sum, m) => sum + m.failures.length, 0);
 
-    console.log('\n' + chalk.bold.red('Failure Summary:'));
-    console.log(chalk.red('-'.repeat(50)));
+    console.log('\n' + getChalk().bold.red('Failure Summary:'));
+    console.log(getChalk().red('-'.repeat(50)));
 
     modulesWithFailures.forEach((module) => {
-      console.log(`${chalk.bold.red('✗')} ${chalk.bold(module.name)}: ${chalk.red(module.failures.length)} failures`);
+      console.log(`${getChalk().bold.red('✗')} ${getChalk().bold(module.name)}: ${getChalk().red(module.failures.length)} failures`);
 
       // Show just first 2-3 failures briefly
       const preview = module.failures.slice(0, 2);
       preview.forEach((failure) => {
-        console.log(`    • ${chalk.gray(failure.item)}`);
+        console.log(`    • ${getChalk().gray(failure.item)}`);
       });
 
       if (module.failures.length > 2) {
-        console.log(`    ${chalk.gray(`... and ${module.failures.length - 2} more`)}`);
+        console.log(`    ${getChalk().gray(`... and ${module.failures.length - 2} more`)}`);
       }
     });
 
-    console.log(chalk.blue('\n📋 For detailed error information, check the log files:'));
-    //console.log(chalk.blue(`   ${getSessionLogPath()}`));
-    console.log(chalk.gray('   Recent errors are logged with full context and stack traces.'));
+    console.log(getChalk().blue('\n📋 For detailed error information, check the log files:'));
+    //console.log(getChalk().blue(`   ${getSessionLogPath()}`));
+    console.log(getChalk().gray('   Recent errors are logged with full context and stack traces.'));
   }
 
   private getStatusIcon(status: string): string {
     switch (status) {
       case 'completed':
-        return chalk.green('✓');
+        return getChalk().green('✓');
       case 'failed':
-        return chalk.red('✗');
+        return getChalk().red('✗');
       case 'running':
-        return chalk.yellow('●');
+        return getChalk().yellow('●');
       case 'pending':
-        return chalk.gray('○');
+        return getChalk().gray('○');
       default:
-        return chalk.gray('?');
+        return getChalk().gray('?');
     }
   }
 
