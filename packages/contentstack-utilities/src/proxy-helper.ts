@@ -82,44 +82,14 @@ export function shouldBypassProxy(host: string): boolean {
 }
 
 /**
- * Get proxy configuration. Sources (in order): env (HTTP_PROXY/HTTPS_PROXY), then global config
- * from `csdx config:set:proxy --host <host> --port <port> --protocol <protocol>`.
+ * Get proxy configuration. Priority order (per spec):
+ * 1. Global CLI config from `csdx config:set:proxy --host <host> --port <port> --protocol <protocol>`
+ * 2. Environment variables (HTTPS_PROXY or HTTP_PROXY)
  * For per-request use, prefer getProxyConfigForHost(host) so NO_PROXY overrides both sources.
  * @returns ProxyConfig object or undefined if no proxy is configured
  */
 export function getProxyConfig(): ProxyConfig | undefined {
-  // Priority 1: Environment variables (HTTPS_PROXY or HTTP_PROXY)
-  const proxyUrl = process.env.HTTPS_PROXY || process.env.HTTP_PROXY;
-  
-  if (proxyUrl) {
-    try {
-      const url = new URL(proxyUrl);
-      const defaultPort = url.protocol === 'https:' ? 443 : 80;
-      const port = url.port ? Number.parseInt(url.port, 10) : defaultPort;
-      
-      if (!Number.isNaN(port) && port >= 1 && port <= 65535) {
-        const protocol = url.protocol.replace(':', '') as 'http' | 'https';
-        const proxyConfig: ProxyConfig = {
-          protocol: protocol,
-          host: url.hostname,
-          port: port,
-        };
-        
-        if (url.username || url.password) {
-          proxyConfig.auth = {
-            username: url.username,
-            password: url.password,
-          };
-        }
-        
-        return proxyConfig;
-      }
-    } catch {
-      // Invalid URL, continue to check global config
-    }
-  }
-  
-  // Priority 2: Global config (csdx config:set:proxy)
+  // Priority 1: Global config (csdx config:set:proxy)
   const globalProxyConfig = configStore.get('proxy');
   if (globalProxyConfig) {
     if (typeof globalProxyConfig === 'object') {
@@ -151,8 +121,39 @@ export function getProxyConfig(): ProxyConfig | undefined {
           return proxyConfig;
         }
       } catch {
-        // Invalid URL, return undefined
+        // Invalid URL, continue to check environment
       }
+    }
+  }
+  
+  // Priority 2: Environment variables (HTTPS_PROXY or HTTP_PROXY)
+  const proxyUrl = process.env.HTTPS_PROXY || process.env.HTTP_PROXY;
+  
+  if (proxyUrl) {
+    try {
+      const url = new URL(proxyUrl);
+      const defaultPort = url.protocol === 'https:' ? 443 : 80;
+      const port = url.port ? Number.parseInt(url.port, 10) : defaultPort;
+      
+      if (!Number.isNaN(port) && port >= 1 && port <= 65535) {
+        const protocol = url.protocol.replace(':', '') as 'http' | 'https';
+        const proxyConfig: ProxyConfig = {
+          protocol: protocol,
+          host: url.hostname,
+          port: port,
+        };
+        
+        if (url.username || url.password) {
+          proxyConfig.auth = {
+            username: url.username,
+            password: url.password,
+          };
+        }
+        
+        return proxyConfig;
+      }
+    } catch {
+      // Invalid URL, return undefined
     }
   }
   
