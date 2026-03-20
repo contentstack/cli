@@ -2,7 +2,8 @@
   "require": [
     "test/helpers/init.js",
     "ts-node/register",
-    "source-map-support/register"
+    "source-map-support/register",
+    "test/helpers/mocha-root-hooks.js"
   ],
   "watch-extensions": [
     "ts"
