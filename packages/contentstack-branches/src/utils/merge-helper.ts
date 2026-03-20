@@ -2,7 +2,7 @@ import startCase from 'lodash/startCase';
 import camelCase from 'lodash/camelCase';
 import path from 'path';
 import { cliux, managementSDKClient } from '@contentstack/cli-utilities';
-import { BranchDiffPayload, MergeSummary } from '../interfaces';
+import { BranchCompareCacheRef, BranchDiffPayload, MergeSummary } from '../interfaces';
 import {
   askCompareBranch,
   askStackAPIKey,
@@ -14,6 +14,7 @@ import {
   getMergeQueueStatus,
   readFile,
 } from './';
+import { readAllJsonLines } from './cache-manager';
 
 export const prepareMergeRequestPayload = (options) => {
   return {
@@ -94,11 +95,73 @@ export const displayBranchStatus = async (options) => {
   };
 
   payload.spinner = spinner;
-  const branchDiffData = await branchDiff.fetchBranchesDiff(payload);
-  const diffData = branchDiff.filterBranchDiffDataByModule(branchDiffData);
+  const fetchResult = await branchDiff.fetchBranchesDiff(payload);
   cliux.loaderV2('', spinner);
 
-  let parsedResponse = {};
+  const parsedResponse: Record<string, unknown> = {};
+
+  if (branchDiff.isBranchCompareCacheRef(fetchResult)) {
+    const cacheRef = fetchResult as BranchCompareCacheRef;
+    for (const module of ['content_types', 'global_fields'] as const) {
+      payload.module = module;
+      const modulePath = cacheRef.paths[module];
+      cliux.print(' ');
+      cliux.print(`${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
+      const diffSummary = await branchDiff.parseSummaryFromJsonlPath(
+        modulePath,
+        options.baseBranch,
+        options.compareBranch,
+      );
+      branchDiff.printSummary(diffSummary);
+      const spinner1 = cliux.loaderV2('Loading branch differences...');
+      if (options.format === 'compact-text') {
+        cliux.loaderV2('', spinner1);
+        await branchDiff.printCompactTextViewFromJsonlModulePath(modulePath);
+      } else if (options.format === 'detailed-text') {
+        const branchModuleData = await readAllJsonLines(modulePath);
+        const verboseRes = await branchDiff.parseVerbose(branchModuleData, payload);
+        cliux.loaderV2('', spinner1);
+        branchDiff.printVerboseTextView(verboseRes);
+        if (verboseRes.verboseCacheSessionId) {
+          const { cleanupSession } = await import('./cache-manager');
+          await cleanupSession(verboseRes.verboseCacheSessionId);
+        }
+      }
+    }
+    return cacheRef;
+  }
+
+  if (branchDiff.isInlineBranchCompareResult(fetchResult)) {
+    for (const module of ['content_types', 'global_fields'] as const) {
+      const branchTextRes = fetchResult[module];
+      payload.module = module;
+      cliux.print(' ');
+      cliux.print(`${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
+      const diffSummary = branchDiff.summaryFromCompact(branchTextRes, options.baseBranch, options.compareBranch);
+      branchDiff.printSummary(diffSummary);
+      const spinner1 = cliux.loaderV2('Loading branch differences...');
+      if (options.format === 'compact-text') {
+        cliux.loaderV2('', spinner1);
+        branchDiff.printCompactTextView(branchTextRes);
+        parsedResponse[module] = branchTextRes;
+      } else if (options.format === 'detailed-text') {
+        const branchModuleData = branchDiff.flatCompactToRawArray(branchTextRes);
+        const verboseRes = await branchDiff.parseVerbose(branchModuleData, payload);
+        cliux.loaderV2('', spinner1);
+        branchDiff.printVerboseTextView(verboseRes);
+        parsedResponse[module] = verboseRes;
+        if (verboseRes.verboseCacheSessionId) {
+          const { cleanupSession } = await import('./cache-manager');
+          await cleanupSession(verboseRes.verboseCacheSessionId);
+        }
+      }
+    }
+    return { content_types: parsedResponse.content_types, global_fields: parsedResponse.global_fields };
+  }
+
+  const branchDiffData = fetchResult;
+  const diffData = branchDiff.filterBranchDiffDataByModule(branchDiffData);
+
   for (let module in diffData) {
     const branchModuleData = diffData[module];
     payload.module = module;
@@ -117,19 +180,36 @@ export const displayBranchStatus = async (options) => {
       cliux.loaderV2('', spinner1);
       branchDiff.printVerboseTextView(verboseRes);
       parsedResponse[module] = verboseRes;
+      if (verboseRes.verboseCacheSessionId) {
+        const { cleanupSession } = await import('./cache-manager');
+        await cleanupSession(verboseRes.verboseCacheSessionId);
+      }
     }
   }
   return parsedResponse;
 };
 
-export const displayMergeSummary = (options) => {
+export const displayMergeSummary = async (options: {
+  format: string;
+  compareData: Record<string, any>;
+  branchCompareCache?: BranchCompareCacheRef;
+}) => {
   cliux.print(' ');
   cliux.print(`Merge Summary:`, { color: 'yellow' });
-  for (let module in options.compareData) {
-    if (options.format === 'compact-text') {
-      branchDiff.printCompactTextView(options.compareData[module]);
-    } else if (options.format === 'detailed-text') {
-      branchDiff.printVerboseTextView(options.compareData[module]);
+  if (options.branchCompareCache) {
+    for (const module of ['content_types', 'global_fields'] as const) {
+      const p = options.branchCompareCache.paths[module];
+      if (options.format === 'compact-text') {
+        await branchDiff.printCompactTextViewFromJsonlModulePath(p);
+      }
+    }
+  } else {
+    for (let module in options.compareData) {
+      if (options.format === 'compact-text') {
+        branchDiff.printCompactTextView(options.compareData[module]);
+      } else if (options.format === 'detailed-text') {
+        branchDiff.printVerboseTextView(options.compareData[module]);
+      }
     }
   }
   cliux.print(' ');

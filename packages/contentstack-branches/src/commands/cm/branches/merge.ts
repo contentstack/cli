@@ -1,6 +1,13 @@
 import { Command } from '@contentstack/cli-command';
 import { cliux, flags, isAuthenticated } from '@contentstack/cli-utilities';
-import { setupMergeInputs, displayBranchStatus, handleErrorMsg, validateCompareData } from '../../../utils';
+import {
+  setupMergeInputs,
+  displayBranchStatus,
+  handleErrorMsg,
+  validateCompareData,
+  cleanupSession,
+  branchDiffUtility as branchDiff,
+} from '../../../utils';
 import { MergeHandler } from '../../../branch';
 export default class BranchMergeCommand extends Command {
   static description: string = 'Merge changes from a branch'; //TBD update the description
@@ -62,6 +69,7 @@ export default class BranchMergeCommand extends Command {
   static aliases: string[] = []; // Note: alternative usage if any
 
   async run(): Promise<any> {
+    let branchCompareData: any;
     try {
       let { flags: branchMergeFlags } = await this.parse(BranchMergeCommand);
       branchMergeFlags = await setupMergeInputs(branchMergeFlags);
@@ -70,15 +78,15 @@ export default class BranchMergeCommand extends Command {
         handleErrorMsg(err);
       }
       // display branch status
-      const branchCompareData = await displayBranchStatus({
+      branchCompareData = await displayBranchStatus({
         stackAPIKey: branchMergeFlags['stack-api-key'],
         baseBranch: branchMergeFlags['base-branch'],
         compareBranch: branchMergeFlags['compare-branch'],
         host: this.cmaHost,
         format: 'compact-text',
       });
-      const isCompareDataValid = validateCompareData(branchCompareData);
-      if(isCompareDataValid) {
+      const isCompareDataValid = await validateCompareData(branchCompareData);
+      if (isCompareDataValid) {
         await new MergeHandler({
           stackAPIKey: branchMergeFlags['stack-api-key'],
           compareBranch: branchMergeFlags['compare-branch'],
@@ -94,12 +102,16 @@ export default class BranchMergeCommand extends Command {
           mergeSummary: branchMergeFlags.mergeSummary,
           host: this.cmaHost,
           enableEntryExp: false,
-        }).start(); 
+        }).start();
       } else {
-        cliux.print("No changes found to merge.");
+        cliux.print('No changes found to merge.');
       }
     } catch (error) {
       console.log('Error in Merge operations', error);
+    } finally {
+      if (branchCompareData && branchDiff.isBranchCompareCacheRef(branchCompareData)) {
+        await cleanupSession(branchCompareData.sessionId).catch(() => undefined);
+      }
     }
   }
 }

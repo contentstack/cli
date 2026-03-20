@@ -123,6 +123,22 @@ export interface BranchDiffVerboseRes {
   added?: BranchDiffRes[];
   deleted?: BranchDiffRes[];
   csvData?: CSVRow[]; // Pre-processed CSV data
+  /** Temp session for verbose diff JSONL (cleanup when done) */
+  verboseCacheSessionId?: string;
+}
+
+export interface BranchCompareCacheRef {
+  kind: 'cache';
+  sessionId: string;
+  paths: {
+    content_types: string;
+    global_fields: string;
+  };
+}
+
+export interface InlineBranchCompareResult {
+  content_types: BranchCompactTextRes;
+  global_fields: BranchCompactTextRes;
 }
 
 export interface BranchDiffPayload {
@@ -135,6 +151,10 @@ export interface BranchDiffPayload {
   uid?: string;
   spinner?: any;
   url?: string;
+  /** When false, fetch uses legacy in-memory pagination (e.g. tests). Default: disk-backed fetch. */
+  useDiskCache?: boolean;
+  /** Reuse an existing cache session directory */
+  cacheSessionId?: string;
 }
 
 export type MergeStrategy =
