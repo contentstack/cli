@@ -81,81 +81,71 @@ export function shouldBypassProxy(host: string): boolean {
   return false;
 }
 
+function proxyConfigFromUrlString(proxyUrl: string): ProxyConfig | undefined {
+  try {
+    const url = new URL(proxyUrl);
+    const defaultPort = url.protocol === 'https:' ? 443 : 80;
+    const port = url.port ? Number.parseInt(url.port, 10) : defaultPort;
+
+    if (Number.isNaN(port) || port < 1 || port > 65535) {
+      return undefined;
+    }
+
+    const protocol = url.protocol.replace(':', '') as 'http' | 'https';
+    const proxyConfig: ProxyConfig = {
+      protocol,
+      host: url.hostname,
+      port,
+    };
+
+    if (url.username || url.password) {
+      proxyConfig.auth = {
+        username: url.username,
+        password: url.password,
+      };
+    }
+
+    return proxyConfig;
+  } catch {
+    return undefined;
+  }
+}
+
+function proxyFromGlobalStore(): ProxyConfig | undefined {
+  const globalProxyConfig = configStore.get('proxy');
+  if (!globalProxyConfig) {
+    return undefined;
+  }
+  if (typeof globalProxyConfig === 'object') {
+    const port = globalProxyConfig.port;
+    if (port !== undefined && !Number.isNaN(port) && port >= 1 && port <= 65535) {
+      return globalProxyConfig as ProxyConfig;
+    }
+    return undefined;
+  }
+  if (typeof globalProxyConfig === 'string') {
+    return proxyConfigFromUrlString(globalProxyConfig);
+  }
+  return undefined;
+}
+
 /**
- * Get proxy configuration. Sources (in order): env (HTTP_PROXY/HTTPS_PROXY), then global config
- * from `csdx config:set:proxy --host <host> --port <port> --protocol <protocol>`.
+ * Get proxy configuration. Sources (in order): global config from
+ * `csdx config:set:proxy`, then environment (HTTPS_PROXY / HTTP_PROXY).
  * For per-request use, prefer getProxyConfigForHost(host) so NO_PROXY overrides both sources.
  * @returns ProxyConfig object or undefined if no proxy is configured
  */
 export function getProxyConfig(): ProxyConfig | undefined {
-  // Priority 1: Environment variables (HTTPS_PROXY or HTTP_PROXY)
+  const fromGlobal = proxyFromGlobalStore();
+  if (fromGlobal) {
+    return fromGlobal;
+  }
+
   const proxyUrl = process.env.HTTPS_PROXY || process.env.HTTP_PROXY;
-  
   if (proxyUrl) {
-    try {
-      const url = new URL(proxyUrl);
-      const defaultPort = url.protocol === 'https:' ? 443 : 80;
-      const port = url.port ? Number.parseInt(url.port, 10) : defaultPort;
-      
-      if (!Number.isNaN(port) && port >= 1 && port <= 65535) {
-        const protocol = url.protocol.replace(':', '') as 'http' | 'https';
-        const proxyConfig: ProxyConfig = {
-          protocol: protocol,
-          host: url.hostname,
-          port: port,
-        };
-        
-        if (url.username || url.password) {
-          proxyConfig.auth = {
-            username: url.username,
-            password: url.password,
-          };
-        }
-        
-        return proxyConfig;
-      }
-    } catch {
-      // Invalid URL, continue to check global config
-    }
+    return proxyConfigFromUrlString(proxyUrl);
   }
-  
-  // Priority 2: Global config (csdx config:set:proxy)
-  const globalProxyConfig = configStore.get('proxy');
-  if (globalProxyConfig) {
-    if (typeof globalProxyConfig === 'object') {
-      const port = globalProxyConfig.port;
-      if (port !== undefined && !Number.isNaN(port) && port >= 1 && port <= 65535) {
-        return globalProxyConfig as ProxyConfig;
-      }
-    } else if (typeof globalProxyConfig === 'string') {
-      try {
-        const url = new URL(globalProxyConfig);
-        const defaultPort = url.protocol === 'https:' ? 443 : 80;
-        const port = url.port ? Number.parseInt(url.port, 10) : defaultPort;
-        
-        if (!Number.isNaN(port) && port >= 1 && port <= 65535) {
-          const protocol = url.protocol.replace(':', '') as 'http' | 'https';
-          const proxyConfig: ProxyConfig = {
-            protocol: protocol,
-            host: url.hostname,
-            port: port,
-          };
-          
-          if (url.username || url.password) {
-            proxyConfig.auth = {
-              username: url.username,
-              password: url.password,
-            };
-          }
-          
-          return proxyConfig;
-        }
-      } catch {
-        // Invalid URL, return undefined
-      }
-    }
-  }
-  
+
   return undefined;
 }
 
