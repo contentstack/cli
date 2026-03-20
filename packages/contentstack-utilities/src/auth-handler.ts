@@ -35,7 +35,10 @@ class AuthHandler {
   private allAuthConfigItems: any;
   private oauthHandler: any;
   private managementAPIClient: ContentstackClient;
+  /** True while an OAuth access-token refresh is running (for logging/diagnostics; correctness uses `oauthRefreshInFlight`). */
   private isRefreshingToken: boolean = false; // Flag to track if a refresh operation is in progress
+  /** Serialize OAuth refresh so concurrent API calls await the same refresh instead of proceeding with a stale token. */
+  private oauthRefreshInFlight: Promise<void> | null = null;
   private cmaHost: string;
 
   set host(contentStackHost) {
@@ -376,42 +379,42 @@ class AuthHandler {
   checkExpiryAndRefresh = (force: boolean = false) => this.compareOAuthExpiry(force);
 
   async compareOAuthExpiry(force: boolean = false) {
-    // Avoid recursive refresh operations
-    if (this.isRefreshingToken) {
-      cliux.print('Refresh operation already in progress');
-      return Promise.resolve();
-    }
     const oauthDateTime = configHandler.get(this.oauthDateTimeKeyName);
     const authorisationType = configHandler.get(this.authorisationTypeKeyName);
     if (oauthDateTime && authorisationType === this.authorisationTypeOAUTHValue) {
       const now = new Date();
       const oauthDate = new Date(oauthDateTime);
-      const oauthValidUpto = new Date();
-      oauthValidUpto.setTime(oauthDate.getTime() + 59 * 60 * 1000);
-      if (force) {
-        cliux.print('Forcing token refresh...');
-        return this.refreshToken();
-      } else {
-        if (oauthValidUpto > now) {
-          return Promise.resolve();
-        } else {
-          cliux.print('Token expired, refreshing the token');
-          // Set the flag before refreshing the token
-          this.isRefreshingToken = true;
+      const oauthValidUpto = new Date(oauthDate.getTime() + 59 * 60 * 1000);
+      const tokenExpired = oauthValidUpto <= now;
+      const shouldRefresh = force || tokenExpired;
 
-          try {
-            await this.refreshToken();
-          } catch (error) {
-            cliux.error('Error refreshing token');
-            throw error;
-          } finally {
-            // Reset the flag after refresh operation is completed
-            this.isRefreshingToken = false;
-          }
-
-          return Promise.resolve();
-        }
+      if (!shouldRefresh) {
+        return Promise.resolve();
       }
+
+      if (this.oauthRefreshInFlight) {
+        return this.oauthRefreshInFlight;
+      }
+
+      this.isRefreshingToken = true;
+      this.oauthRefreshInFlight = (async () => {
+        try {
+          if (force) {
+            cliux.print('Forcing token refresh...');
+          } else {
+            cliux.print('Token expired, refreshing the token');
+          }
+          await this.refreshToken();
+        } catch (error) {
+          cliux.error('Error refreshing token');
+          throw error;
+        } finally {
+          this.isRefreshingToken = false;
+          this.oauthRefreshInFlight = null;
+        }
+      })();
+
+      return this.oauthRefreshInFlight;
     } else {
       cliux.print('No OAuth configuration set.');
       this.unsetConfigData();
