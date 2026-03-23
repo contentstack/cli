@@ -25,7 +25,7 @@ jobs:
         run: pnpm run clean:all
 
       - name: Install root dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build all plugins
         run: pnpm -r --sort run build
