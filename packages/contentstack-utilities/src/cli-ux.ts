@@ -1,4 +1,4 @@
-import chalk, { Chalk } from 'chalk';
+import { getChalk, ChalkInstance } from './chalk';
 import inquirer from 'inquirer';
 import { ux as cliux, Args, Flags, Command } from '@oclif/core';
 import { Ora, default as ora } from 'ora';
@@ -29,10 +29,11 @@ class CLIInterface {
 
   print(message: string, opts?: PrintOptions): void {
     if (opts) {
-      let chalkFn: Chalk = chalk;
+      const chalk = getChalk();
+      let chalkFn: ChalkInstance = chalk;
 
-      if (opts.color) chalkFn = chalkFn[opts.color] as Chalk;
-      if (opts.bold) chalkFn = chalkFn.bold as Chalk;
+      if (opts.color) chalkFn = chalkFn[opts.color] as ChalkInstance;
+      if (opts.bold) chalkFn = chalkFn.bold as ChalkInstance;
 
       cliux.stdout(chalkFn(messageHandler.parse(message)));
       return;
@@ -42,11 +43,11 @@ class CLIInterface {
   }
 
   success(message: string): void {
-    cliux.stdout(chalk.green(messageHandler.parse(message)));
+    cliux.stdout(getChalk().green(messageHandler.parse(message)));
   }
 
   error(message: string, ...params: any): void {
-    cliux.stdout(chalk.red(messageHandler.parse(message) + (params && params.length > 0 ? ': ' : '')), ...params);
+    cliux.stdout(getChalk().red(messageHandler.parse(message) + (params && params.length > 0 ? ': ' : '')), ...params);
   }
 
   loader(message: string = ''): void {
