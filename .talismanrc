@@ -1,8 +1,4 @@
 fileignoreconfig:
   - filename: pnpm-lock.yaml
-    checksum: 818b43b375b3b8d9c18b127a064db9886671e89576049e48dbbaf0d25baacb99
-  - filename: packages/contentstack/README.md
-    checksum: 68fe850ccf5398d26d3e1f67996284643756ea600bf9440562b54bd162d7afac
-  - filename: .github/workflows/release.yml
-    checksum: 81dcc2694eafebd0cf8ecf7a1c635a2d2978ac9c5d1ab91ae3bab106466a22f9
+    checksum: 9ee7fd63339f3a88cf24ced896ee36dbf2397ad5e173449699756f9ffc4db98f
 version: '1.0'
