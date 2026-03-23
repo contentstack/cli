@@ -18,6 +18,16 @@ describe('Rate Limit Commands', () => {
     errorMessage = undefined;
     printMessage = undefined;
 
+    configHandler.set('region', {
+      cma: 'https://api.contentstack.io',
+      cda: 'https://cdn.contentstack.io',
+      uiHost: 'https://app.contentstack.com',
+      name: 'NA',
+    });
+    if (!configHandler.get('rateLimit')) {
+      configHandler.set('rateLimit', {});
+    }
+
     stub(cliux, 'error').callsFake((message: string) => {
       errorMessage = message;
     });
