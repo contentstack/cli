@@ -147,21 +147,34 @@ export function getProxyConfigForHost(host: string): ProxyConfig | undefined {
   return getProxyConfig();
 }
 
-export function resolveRequestHost(config: { host?: string }): string {
-  if (config.host) return config.host;
+function regionCmaHostname(): string {
   const cma = configStore.get('region')?.cma;
-  if (cma && typeof cma === 'string') {
-    if (cma.startsWith('http')) {
-      try {
-        const u = new URL(cma);
-        return u.hostname || cma;
-      } catch {
-        return cma;
-      }
-    }
-    return cma;
+  if (!cma || typeof cma !== 'string') {
+    return '';
   }
-  return '';
+  if (cma.startsWith('http')) {
+    try {
+      const u = new URL(cma);
+      return u.hostname || cma;
+    } catch {
+      return cma;
+    }
+  }
+  return cma;
+}
+
+
+export function resolveRequestHost(config: { host?: string }): string {
+  const fromRegion = regionCmaHostname();
+  if (fromRegion) {
+    return normalizeHost(fromRegion) || fromRegion;
+  }
+
+  const raw = config.host?.trim() || '';
+  if (!raw) {
+    return '';
+  }
+  return normalizeHost(raw) || raw;
 }
 
 export function clearProxyEnv(): () => void {
