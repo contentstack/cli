@@ -13,6 +13,7 @@
     "clean:packages": "pnpm -r --filter './packages/*' run clean",
     "build": "pnpm -r --filter './packages/*' run build",
     "test": "pnpm -r --filter './packages/*' run test",
+    "lint": "pnpm -r --filter './packages/*' run lint",
     "prepack": "pnpm -r --filter './packages/*' run prepack",
     "bootstrap": "pnpm install",
     "clean:modules": "rm -rf node_modules packages/**/node_modules",

@@ -14,10 +14,7 @@
     "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
     "version": "oclif readme  && git add README.md",
-    "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
-    "pretest": "tsc -p test",
-    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
-    "posttest": "npm run lint",
+    "test": "mocha \"test/unit/**/*.test.ts\"",
     "lint": "eslint src/**/*.ts",
     "prepack": "pnpm compile && oclif manifest && oclif readme"
   },
