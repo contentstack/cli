@@ -5,7 +5,7 @@
  */
 
 import * as readline from 'readline';
-import chalk from 'chalk';
+import { getChalk } from './chalk';
 import figures from 'figures';
 import cliCursor from 'cli-cursor';
 import Table from 'cli-table';
@@ -182,13 +182,13 @@ class TablePrompt {
     if (!this.spaceKeyPressed) {
       msg +=
         ' (Press ' +
-        chalk.cyan.bold('<space>') +
+        getChalk().cyan.bold('<space>') +
         ' to select, ' +
-        chalk.cyan.bold('<Up/Down>') +
+        getChalk().cyan.bold('<Up/Down>') +
         ' rows, ' +
-        chalk.cyan.bold('<Left/Right>') +
+        getChalk().cyan.bold('<Left/Right>') +
         ' columns, ' +
-        chalk.cyan.bold('<Enter>') +
+        getChalk().cyan.bold('<Enter>') +
         ' to confirm)';
     }
     return msg;
@@ -197,8 +197,8 @@ class TablePrompt {
   private render(): void {
     const [firstIndex, lastIndex] = this.paginate();
     const table = new Table({
-      head: [chalk.reset.dim(`${firstIndex + 1}-${lastIndex + 1} of ${this.rows.length}`)].concat(
-        this.columns.map((c) => chalk.reset.bold(pluckName(c))),
+      head: [getChalk().reset.dim(`${firstIndex + 1}-${lastIndex + 1} of ${this.rows.length}`)].concat(
+        this.columns.map((c) => getChalk().reset.bold(pluckName(c))),
       ),
     });
 
@@ -214,7 +214,7 @@ class TablePrompt {
         columnValues.push(`${isSelected ? '[' : ' '} ${cellValue} ${isSelected ? ']' : ' '}`);
       }
       const chalkModifier =
-        this.status !== 'answered' && this.pointer === rowIndex ? chalk.reset.bold.cyan : chalk.reset;
+        this.status !== 'answered' && this.pointer === rowIndex ? getChalk().reset.bold.cyan : getChalk().reset;
       table.push({ [chalkModifier(pluckName(row))]: columnValues });
     }
 

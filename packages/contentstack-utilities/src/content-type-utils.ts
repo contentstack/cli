@@ -1,21 +1,24 @@
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { resolve as pResolve } from 'node:path';
-import { FsUtility } from './fs-utility';
 
 /**
  * Reads all content type schema files from a directory
  * @param dirPath - Path to content types directory
  * @param ignoredFiles - Files to ignore (defaults to schema.json, .DS_Store, __master.json, __priority.json)
- * @returns Array of content type schemas
+ * @returns Array of content type schemas (empty if the path is missing or has no eligible files)
  */
 export function readContentTypeSchemas(
   dirPath: string,
   ignoredFiles: string[] = ['schema.json', '.DS_Store', '__master.json', '__priority.json', 'field_rules_uid.json'],
-): Record<string, unknown>[] | null {
-  const fsUtil = new FsUtility();
-  const files = fsUtil.readdir(dirPath);
+): Record<string, unknown>[] {
+  if (!existsSync(dirPath)) {
+    return [];
+  }
+
+  const files = readdirSync(dirPath);
 
   if (!files || files.length === 0) {
-    return null;
+    return [];
   }
 
   const contentTypes: Record<string, unknown>[] = [];
@@ -33,7 +36,8 @@ export function readContentTypeSchemas(
 
     try {
       const filePath = pResolve(dirPath, file);
-      const contentType = fsUtil.readFile(filePath);
+      const raw = readFileSync(filePath, 'utf8');
+      const contentType = JSON.parse(raw) as Record<string, unknown>;
       if (contentType) {
         contentTypes.push(contentType as Record<string, unknown>);
       }
