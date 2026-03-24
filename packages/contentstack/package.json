@@ -34,7 +34,7 @@
     "@contentstack/cli-cm-import-setup": "~2.0.0-beta.8",
     "@contentstack/cli-cm-seed": "~2.0.0-beta.12",
     "@contentstack/cli-command": "~2.0.0-beta.4",
-    "@contentstack/cli-config": "~2.0.0-beta.6",
+    "@contentstack/cli-config": "~2.0.0-beta.5",
     "@contentstack/cli-launch": "^1.9.6",
     "@contentstack/cli-migration": "~2.0.0-beta.9",
     "@contentstack/cli-utilities": "~2.0.0-beta.4",
