@@ -1,0 +1,323 @@
+---
+description: 'Testing patterns and TDD workflow'
+globs: ['**/test/**/*.ts', '**/test/**/*.js', '**/__tests__/**/*.ts', '**/*.spec.ts', '**/*.test.ts']
+alwaysApply: true
+---
+
+# Testing Standards
+
+## Framework Stack
+
+### Primary Testing Tools
+- **Mocha** - Test runner (used across all packages)
+- **Chai** - Assertion library
+- **@oclif/test** - Command testing support (for plugin packages)
+
+### Test Setup
+- TypeScript compilation via ts-node/register
+- Source map support for stack traces
+- Global test timeout: 30 seconds (configurable per package)
+
+## Test File Patterns
+
+### Naming Conventions
+- **Primary**: `*.test.ts` (standard pattern across all packages)
+- **Location**: `test/unit/**/*.test.ts` (most packages)
+
+### Directory Structure
+```
+packages/*/
+├── test/
+│   └── unit/
+│       ├── commands/          # Command-specific tests
+│       ├── services/          # Service/business logic tests
+│       └── utils/             # Utility function tests
+└── src/                        # Source code
+    ├── commands/              # CLI commands
+    ├── services/              # Business logic
+    └── utils/                 # Utilities
+```
+
+## Mocha Configuration
+
+### Standard Setup (.mocharc.json)
+```json
+{
+  "require": [
+    "test/helpers/init.js",
+    "ts-node/register", 
+    "source-map-support/register"
+  ],
+  "recursive": true,
+  "timeout": 30000,
+  "spec": "test/**/*.test.ts"
+}
+```
+
+### TypeScript Compilation
+```json
+// package.json scripts
+{
+  "test": "mocha \"test/unit/**/*.test.ts\"",
+  "test:coverage": "nyc mocha \"test/unit/**/*.test.ts\""
+}
+```
+
+## Test Structure
+
+### Standard Test Pattern
+```typescript
+// ✅ GOOD - Comprehensive test structure
+describe('ConfigService', () => {
+  let service: ConfigService;
+
+  beforeEach(() => {
+    service = new ConfigService();
+  });
+
+  describe('loadConfig()', () => {
+    it('should load configuration successfully', async () => {
+      // Arrange
+      const expectedConfig = { region: 'us' };
+      
+      // Act
+      const result = await service.loadConfig();
+      
+      // Assert
+      expect(result).to.deep.equal(expectedConfig);
+    });
+
+    it('should handle missing configuration', async () => {
+      // Arrange & Act & Assert
+      await expect(service.loadConfig()).to.be.rejectedWith('Config not found');
+    });
+  });
+});
+```
+
+### Async/Await Pattern
+```typescript
+// ✅ GOOD - Use async/await in tests
+it('should process data asynchronously', async () => {
+  const result = await service.processAsync();
+  expect(result).to.exist;
+});
+
+// ✅ GOOD - Explicit Promise handling
+it('should return a promise', () => {
+  return service.asyncMethod().then(result => {
+    expect(result).to.be.true;
+  });
+});
+```
+
+## Mocking Patterns
+
+### Class Mocking
+```typescript
+// ✅ GOOD - Mock class dependencies
+class MockConfigService {
+  async loadConfig() {
+    return { region: 'us' };
+  }
+}
+
+it('should use mocked service', async () => {
+  const mockService = new MockConfigService();
+  const result = await mockService.loadConfig();
+  expect(result.region).to.equal('us');
+});
+```
+
+### Function Stubs
+```typescript
+// ✅ GOOD - Stub module functions if needed
+beforeEach(() => {
+  // Stub file system operations
+  // Stub network calls
+});
+
+afterEach(() => {
+  // Restore original implementations
+});
+```
+
+## Command Testing
+
+### OCLIF Test Pattern
+```typescript
+// ✅ GOOD - Test commands with @oclif/test
+import { test } from '@oclif/test';
+
+describe('cm:config:region', () => {
+  test
+    .stdout()
+    .command(['cm:config:region', '--help'])
+    .it('shows help message', ctx => {
+      expect(ctx.stdout).to.contain('Display region');
+    });
+
+  test
+    .stdout()
+    .command(['cm:config:region'])
+    .it('shows current region', ctx => {
+      expect(ctx.stdout).to.contain('us');
+    });
+});
+```
+
+### Command Flag Testing
+```typescript
+// ✅ GOOD - Test command flags and arguments
+describe('cm:config:set', () => {
+  test
+    .command(['cm:config:set', '--help'])
+    .it('shows usage information');
+
+  test
+    .command(['cm:config:set', '--region', 'eu'])
+    .it('sets region to eu');
+});
+```
+
+## Error Testing
+
+### Error Handling
+```typescript
+// ✅ GOOD - Test error scenarios
+it('should throw ValidationError on invalid input', async () => {
+  const invalidInput = '';
+  await expect(service.validate(invalidInput))
+    .to.be.rejectedWith('Invalid input');
+});
+
+it('should handle network errors gracefully', async () => {
+  // Mock network failure
+  const result = await service.fetchWithRetry();
+  expect(result).to.be.null;
+});
+```
+
+### Error Types
+```typescript
+// ✅ GOOD - Test specific error types
+it('should throw appropriate error', async () => {
+  try {
+    await service.failingOperation();
+  } catch (error) {
+    expect(error).to.be.instanceof(ValidationError);
+    expect(error.code).to.equal('INVALID_CONFIG');
+  }
+});
+```
+
+## Test Data Management
+
+### Mock Data Organization
+```typescript
+// ✅ GOOD - Organize test data
+const mockData = {
+  validConfig: {
+    region: 'us',
+    timeout: 30000,
+  },
+  invalidConfig: {
+    region: '',
+  },
+  users: [
+    { email: 'user1@example.com', name: 'User 1' },
+    { email: 'user2@example.com', name: 'User 2' },
+  ],
+};
+```
+
+### Test Helpers
+```typescript
+// ✅ GOOD - Create reusable test utilities
+export function createMockConfig(overrides?: Partial<Config>): Config {
+  return {
+    region: 'us',
+    timeout: 30000,
+    ...overrides,
+  };
+}
+
+export function createMockService(
+  config: Config = createMockConfig()
+): ConfigService {
+  return new ConfigService(config);
+}
+```
+
+## Coverage
+
+### Coverage Goals
+- **Team aspiration**: 80% minimum coverage
+- **Current enforcement**: Applied consistently across packages
+- **Focus areas**: Critical business logic and error paths
+
+### Coverage Reporting
+```bash
+# Run tests with coverage
+pnpm test:coverage
+
+# Coverage reports generated in:
+# - coverage/index.html (HTML report)
+# - coverage/coverage-summary.json (JSON report)
+```
+
+## Critical Testing Rules
+
+- **No real external calls** - Mock all dependencies
+- **Test both success and failure paths** - Cover error scenarios completely
+- **One assertion per test** - Focus each test on single behavior
+- **Use descriptive test names** - Test name should explain what's tested
+- **Arrange-Act-Assert** - Follow AAA pattern consistently
+- **Test command validation** - Verify flag validation and error messages
+- **Clean up after tests** - Restore any mocked state
+
+## Best Practices
+
+### Test Organization
+```typescript
+// ✅ GOOD - Organize related tests
+describe('AuthCommand', () => {
+  describe('login', () => {
+    it('should authenticate user');
+    it('should save token');
+  });
+  
+  describe('logout', () => {
+    it('should clear token');
+    it('should reset config');
+  });
+});
+```
+
+### Async Test Patterns
+```typescript
+// ✅ GOOD - Handle async operations properly
+it('should complete async operation', async () => {
+  const promise = service.asyncMethod();
+  expect(promise).to.be.instanceof(Promise);
+  
+  const result = await promise;
+  expect(result).to.equal('success');
+});
+```
+
+### Isolation
+```typescript
+// ✅ GOOD - Ensure test isolation
+describe('ConfigService', () => {
+  let service: ConfigService;
+  
+  beforeEach(() => {
+    service = new ConfigService();
+  });
+  
+  afterEach(() => {
+    // Clean up resources
+  });
+});
+```
