@@ -1,4 +1,4 @@
-name: Release CLI Platform Plugins (v1 Beta)
+name: Release CLI Platform Plugins
 
 on:
   workflow_call:
@@ -38,41 +38,41 @@ jobs:
           prefix: release
 
       # Dev Dependencies
-      - name: Publishing dev dependencies (Beta)
+      - name: Publishing dev dependencies (Production)
         uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-dev-dependencies/package.json
-          tag: beta
+          tag: latest
 
       # Utilities
-      - name: Publishing utilities (Beta)
+      - name: Publishing utilities (Production)
         uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-utilities/package.json
-          tag: beta
+          tag: latest
 
       # Command
-      - name: Publishing command (Beta)
+      - name: Publishing command (Production)
         uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-command/package.json
-          tag: beta
+          tag: latest
 
       # Config
-      - name: Publishing config (Beta)
+      - name: Publishing config (Production)
         uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-config/package.json
-          tag: beta
+          tag: latest
 
       # Auth
-      - name: Publishing auth (Beta)
+      - name: Publishing auth (Production)
         uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-auth/package.json
-          tag: beta
+          tag: latest

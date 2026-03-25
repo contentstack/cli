@@ -1,4 +1,4 @@
-name: Release CLI Core (v1 Beta)
+name: Release CLI Core (Production)
 
 on:
   workflow_call:
@@ -37,15 +37,15 @@ jobs:
           filename: .github/config/release.json
           prefix: release
 
-      - name: Publishing core (Beta)
+      - name: Publishing core (Production)
         id: publish-core
         uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack/package.json
-          tag: v1-beta
+          tag: latest
 
-      - name: Create Core Beta Release
+      - name: Create Core Production Release
         id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -56,7 +56,6 @@ jobs:
             echo "Release $TAG already exists — skipping."
           else
             gh release create "$TAG" \
-              --title "Core Beta $VERSION" \
-              --generate-notes \
-              --prerelease
+              --title "Core Production $VERSION" \
+              --generate-notes
           fi
