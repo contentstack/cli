@@ -1,0 +1,266 @@
+---
+description: 'Testing patterns and TDD workflow'
+globs: ['**/test/**/*.ts', '**/test/**/*.js', '**/__tests__/**/*.ts', '**/*.spec.ts', '**/*.test.ts']
+alwaysApply: true
+---
+
+# Testing Standards
+
+## Framework Stack
+
+### Primary Testing Tools
+- **Mocha** - Test runner (used across all packages)
+- **Chai** - Assertion library
+- **Sinon** - Mocking and stubbing
+- **@oclif/test** - Command testing support
+- **nyc** - Code coverage
+
+### Package-Specific Tools
+- **nock** - HTTP mocking (migration package)
+- **rewire** - Module patching (import package)
+
+## Test File Patterns
+
+### Naming Conventions
+- **Primary**: `*.test.ts` (dominant pattern)
+- **Alternative**: `*.spec.ts` (less common)
+- **Bootstrap exception**: `*.test.js` (JavaScript tests)
+
+### Directory Structure
+```
+packages/*/
+├── test/unit/**/*.test.ts    # Most packages
+├── test/lib/**/*.test.ts     # clone package
+├── test/seed/**/*.test.ts    # seed package
+└── test/commands/**/*.test.ts # command-specific tests
+```
+
+## Mocha Configuration
+
+### Standard Setup (.mocharc.json)
+```json
+{
+  "require": [
+    "test/helpers/init.js",
+    "ts-node/register", 
+    "source-map-support/register"
+  ],
+  "recursive": true,
+  "timeout": 30000,
+  "spec": "test/**/*.test.ts"
+}
+```
+
+### TypeScript Compilation
+```json
+// package.json scripts
+{
+  "pretest": "tsc -p test",
+  "test": "nyc --extension .ts mocha"
+}
+```
+
+## Mocking Patterns
+
+### Sinon SDK Mocking
+```typescript
+// ✅ GOOD - Mock Contentstack SDK methods
+const mockStackClient = {
+  fetch: sinon.stub().resolves({ 
+    name: 'Test Stack', 
+    uid: 'stack-uid', 
+    org_uid: 'org-uid' 
+  }),
+  locale: sinon.stub().returns({
+    query: sinon.stub().returns({
+      find: sinon.stub().resolves({
+        items: [{ 
+          uid: 'locale-1', 
+          name: 'English (United States)', 
+          code: 'en-us' 
+        }],
+        count: 1,
+      }),
+    }),
+  }),
+};
+```
+
+### Module Stubbing
+```typescript
+// ✅ GOOD - Stub sibling modules
+beforeEach(() => {
+  sinon.stub(mapModule, 'processEntries').resolves([]);
+  sinon.stub(configModule, 'getConfig').returns(mockConfig);
+});
+
+afterEach(() => {
+  sinon.restore();
+});
+```
+
+### HTTP Mocking (Migration)
+```typescript
+// ✅ GOOD - Use nock for HTTP mocking
+import nock from 'nock';
+
+beforeEach(() => {
+  nock('https://api.contentstack.io')
+    .get('/v3/stacks')
+    .reply(200, { stacks: [] });
+});
+```
+
+## Coverage Configuration
+
+### NYC Setup (.nycrc.json)
+```json
+{
+  "extension": [".ts"],
+  "include": ["src/**/*.ts"],
+  "exclude": ["**/*.test.ts", "**/*.spec.ts"],
+  "reporter": ["text", "html", "lcov"],
+  "all": true
+}
+```
+
+### Coverage Targets
+- **Team aspiration**: 80% minimum coverage
+- **Current enforcement**: Inconsistent across packages
+- **Note**: Some packages have `check-coverage: false`
+- **Typo alert**: Several `.nycrc.json` files have `"inlcude"` instead of `"include"`
+
+## Test Structure
+
+### Standard Test Pattern
+```typescript
+// ✅ GOOD - Comprehensive test structure
+describe('ContentTypes Module', () => {
+  let mockStackClient: any;
+  let contentTypes: ContentTypes;
+
+  beforeEach(() => {
+    mockStackClient = createMockStackClient();
+    contentTypes = new ContentTypes({
+      stackAPIClient: mockStackClient,
+      importConfig: mockConfig,
+    });
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  describe('import()', () => {
+    it('should import content types successfully', async () => {
+      // Arrange
+      mockStackClient.contentType.returns({
+        create: sinon.stub().resolves({ uid: 'ct-uid' })
+      });
+
+      // Act
+      await contentTypes.import();
+
+      // Assert
+      expect(mockStackClient.contentType).to.have.been.called;
+    });
+
+    it('should handle API errors gracefully', async () => {
+      // Arrange
+      const error = new Error('API Error');
+      mockStackClient.contentType.throws(error);
+
+      // Act & Assert
+      await expect(contentTypes.import()).to.be.rejectedWith('API Error');
+    });
+  });
+});
+```
+
+## Command Testing
+
+### OCLIF Test Pattern
+```typescript
+// ✅ GOOD - Test commands with @oclif/test
+import { test } from '@oclif/test';
+
+describe('cm:stacks:import', () => {
+  test
+    .stdout()
+    .command(['cm:stacks:import', '--help'])
+    .it('shows help message', ctx => {
+      expect(ctx.stdout).to.contain('Import content from a stack');
+    });
+
+  test
+    .stderr()
+    .command(['cm:stacks:import'])
+    .exit(2)
+    .it('fails without required flags');
+});
+```
+
+## Error Testing
+
+### Rate Limit Testing
+```typescript
+// ✅ GOOD - Test rate limiting behavior
+it('should handle 429 rate limit errors', async () => {
+  const rateLimitError = { status: 429 };
+  mockClient.fetch.onFirstCall().rejects(rateLimitError);
+  mockClient.fetch.onSecondCall().resolves(mockResponse);
+
+  const result = await service.fetchWithRetry();
+  
+  expect(mockClient.fetch).to.have.been.calledTwice;
+  expect(result).to.equal(mockResponse);
+});
+```
+
+### Authentication Testing
+```typescript
+// ✅ GOOD - Test authentication scenarios
+it('should handle token expiration', async () => {
+  const authError = { status: 401, message: 'Unauthorized' };
+  mockClient.fetch.rejects(authError);
+
+  await expect(service.makeRequest()).to.be.rejectedWith('Unauthorized');
+});
+```
+
+## Test Data Management
+
+### Mock Data Organization
+```typescript
+// ✅ GOOD - Organize test data
+const mockData = {
+  contentTypes: [
+    { uid: 'ct1', title: 'Content Type 1' },
+    { uid: 'ct2', title: 'Content Type 2' },
+  ],
+  entries: [
+    { uid: 'entry1', title: 'Entry 1', content_type: 'ct1' },
+  ],
+};
+```
+
+### Test Helpers
+```typescript
+// ✅ GOOD - Create reusable test utilities
+export function createMockStackClient() {
+  return {
+    fetch: sinon.stub(),
+    contentType: sinon.stub(),
+    entry: sinon.stub(),
+    // ... other methods
+  };
+}
+```
+
+## Critical Testing Rules
+
+- **No real API calls** - Always mock external dependencies
+- **Test both success and failure paths** - Cover error scenarios
+- **Mock at service boundaries** - Don't mock internal implementation details
+- **Use proper cleanup** - Always restore stubs in afterEach
+- **Test command validation** - Verify flag validation and error messages
