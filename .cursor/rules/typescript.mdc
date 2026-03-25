@@ -1,0 +1,259 @@
+---
+description: 'TypeScript strict mode standards and naming conventions'
+globs: ['**/*.ts', '**/*.tsx']
+alwaysApply: false
+---
+
+# TypeScript Standards
+
+## Configuration
+
+### Root Configuration
+```json
+// tsconfig.json - Baseline configuration
+{
+  "compilerOptions": {
+    "strict": true,
+    "module": "commonjs",
+    "target": "es2016",
+    "declaration": true,
+    "outDir": "lib",
+    "rootDir": "src"
+  }
+}
+```
+
+### Package-Level Variations
+```json
+// Most packages override with:
+{
+  "compilerOptions": {
+    "strict": false,           // ⚠️ Relaxed for legacy code
+    "noImplicitAny": true,     // ✅ Still enforce type annotations
+    "target": "es2017",
+    "allowJs": true           // Mixed JS/TS support
+  }
+}
+```
+
+### Modern Packages (Bootstrap, Variants)
+```json
+// TypeScript 5.x with stricter settings
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "es2020",
+    "moduleResolution": "node16"
+  }
+}
+```
+
+## Naming Conventions (Actual Usage)
+
+### Files
+- **Primary pattern**: `kebab-case.ts` (`base-class.ts`, `import-config-handler.ts`)
+- **Single-word modules**: `stack.ts`, `locales.ts`, `entries.ts`
+- **Commands**: Follow OCLIF topic structure (`cm/stacks/import.ts`)
+
+### Classes
+```typescript
+// ✅ GOOD - PascalCase for classes
+export class ImportCommand extends Command { }
+export class BaseClass { }
+export class ExportStack { }
+export class ContentTypes { }
+```
+
+### Functions and Methods
+```typescript
+// ✅ GOOD - camelCase for functions
+export async function fetchAllEntries(): Promise<Entry[]> { }
+async logMsgAndWaitIfRequired(): Promise<void> { }
+createCommandContext(): CommandContext { }
+```
+
+### Constants
+```typescript
+// ✅ GOOD - SCREAMING_SNAKE_CASE for constants
+const DEFAULT_RATE_LIMIT = 5;
+const MAX_RETRY_ATTEMPTS = 3;
+const API_BASE_URL = 'https://api.contentstack.io';
+```
+
+### Interfaces and Types
+```typescript
+// ✅ GOOD - PascalCase for types
+export interface ModuleClassParams {
+  importConfig: ImportConfig;
+  stackAPIClient: ManagementStack;
+}
+
+export type ApiOptions = {
+  host?: string;
+  timeout?: number;
+};
+
+export type EnvType = 'development' | 'staging' | 'production';
+```
+
+## Import/Export Patterns
+
+### ES Modules (Preferred)
+```typescript
+// ✅ GOOD - ES import/export syntax
+import { Command } from '@contentstack/cli-command';
+import type { ImportConfig } from '../types';
+import { managementSDKClient } from '@contentstack/cli-utilities';
+
+export default class ImportCommand extends Command { }
+export { ImportConfig, ApiOptions };
+```
+
+### Default Exports
+```typescript
+// ✅ GOOD - Default export for commands and main classes
+export default class ImportCommand extends Command { }
+export default class BaseClass { }
+```
+
+### Named Exports
+```typescript
+// ✅ GOOD - Named exports for utilities and types
+export async function delay(ms: number): Promise<void> { }
+export interface ConfigOptions { }
+export type ModuleType = 'import' | 'export';
+```
+
+## Type Definitions
+
+### Local Types
+```typescript
+// ✅ GOOD - Define types close to usage
+export interface ImportOptions {
+  stackApiKey: string;
+  dataDir: string;
+  rateLimit?: number;
+}
+
+export type BatchResult = {
+  success: boolean;
+  errors: Error[];
+  processedCount: number;
+};
+```
+
+### Type Organization
+```typescript
+// ✅ GOOD - Organize types in dedicated files
+// src/types/index.ts
+export interface ImportConfig { }
+export interface ExportConfig { }
+export type ModuleClassParams = { };
+```
+
+## Strict Mode Compliance
+
+### Function Return Types
+```typescript
+// ✅ GOOD - Explicit return types
+export async function fetchEntries(): Promise<Entry[]> {
+  return await this.stack.entry().query().find();
+}
+
+export function createConfig(): ImportConfig {
+  return {
+    stackApiKey: '',
+    dataDir: './data',
+  };
+}
+```
+
+### Null Safety
+```typescript
+// ✅ GOOD - Handle null/undefined explicitly
+function processEntry(entry: Entry | null): void {
+  if (!entry) {
+    throw new Error('Entry is required');
+  }
+  // Process entry safely
+}
+```
+
+### Type Guards
+```typescript
+// ✅ GOOD - Use type guards for runtime checks
+function isImportConfig(config: unknown): config is ImportConfig {
+  return typeof config === 'object' && 
+         config !== null && 
+         'stackApiKey' in config;
+}
+```
+
+## Error Handling Types
+
+### Custom Error Classes
+```typescript
+// ✅ GOOD - Typed error classes
+export class ContentstackApiError extends Error {
+  constructor(
+    message: string,
+    public readonly statusCode?: number,
+    public readonly cause?: Error
+  ) {
+    super(message);
+    this.name = 'ContentstackApiError';
+  }
+}
+```
+
+### Error Union Types
+```typescript
+// ✅ GOOD - Model expected errors
+type ApiResult<T> = {
+  success: true;
+  data: T;
+} | {
+  success: false;
+  error: string;
+  statusCode: number;
+};
+```
+
+## Migration Strategy
+
+### Gradual Strict Mode Adoption
+```typescript
+// ✅ ACCEPTABLE - Gradual migration approach
+// @ts-ignore for legacy code during migration
+// TODO: Remove @ts-ignore and fix types
+// @ts-ignore
+const legacyResult = oldApiCall();
+```
+
+### Type Assertions (Use Sparingly)
+```typescript
+// ⚠️ USE CAREFULLY - Type assertions when necessary
+const config = unknownConfig as ImportConfig;
+
+// ✅ BETTER - Use type guards instead
+if (isImportConfig(unknownConfig)) {
+  const config = unknownConfig; // TypeScript knows the type
+}
+```
+
+## Package-Specific Patterns
+
+### Command Packages
+- Extend `@contentstack/cli-command` types
+- Use OCLIF flag types from utilities
+- Define command-specific interfaces
+
+### Library Packages (Variants)
+- No OCLIF dependencies
+- Pure TypeScript interfaces
+- Consumed by other packages
+
+### Test Files
+- Use `any` sparingly for mock objects
+- Prefer typed mocks when possible
+- Test type safety with TypeScript compiler

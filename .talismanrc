@@ -1,4 +1,10 @@
 fileignoreconfig:
   - filename: pnpm-lock.yaml
     checksum: b8dc082b59f03873ab00adddd07df399fc74e90491f50ee96297467016fc9f20
+  - filename: .cursor/rules/dev-workflow.md
+    checksum: ae8f8b2894c5cf0da6a85eb53c97775bd38835c191f9132ecaa24dcb9f439811
+  - filename: .cursor/rules/contentstack-cli.mdc
+    checksum: ba287a9e9dcf6565d2d2e79c9bbf6350a89e13afbd1f8755973d837563115c83
+  - filename: .cursor/rules/oclif-commands.mdc
+    checksum: 3f9891d3d5872a2823c83215bc1727911dd32935d17d91ad5f2e7d5f75f3ab61
 version: '1.0'
