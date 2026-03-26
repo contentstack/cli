@@ -1,4 +1,6 @@
 fileignoreconfig:
-- filename: .github/workflows/release-production-pipeline.yml
-  checksum: 48264fdeb61cbbed348c7271aae5e155651f490aca063dbb1d54f2c15a154090
-version: "1.0"
+  - filename: .github/workflows/release-production-pipeline.yml
+    checksum: 48264fdeb61cbbed348c7271aae5e155651f490aca063dbb1d54f2c15a154090
+  - filename: pnpm-lock.yaml
+    checksum: f5ffd323b59edddd325158b28b7a203270ebf7cdfd7c64531bf2513d17c55a07
+version: '1.0'
