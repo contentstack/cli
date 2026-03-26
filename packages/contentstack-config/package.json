@@ -1,32 +1,30 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.19.0",
+  "version": "1.20.0",
   "author": "Contentstack",
   "scripts": {
-    "build": "npm run clean && npm run compile",
-    "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
+    "build": "pnpm compile && oclif manifest && oclif readme",
+    "clean": "rm -rf ./lib ./node_modules tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "pnpm compile && oclif manifest && oclif readme",
     "version": "oclif readme && git add README.md",
-    "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
-    "pretest": "tsc -p test",
-    "test": "mocha --require ts-node/register 'test/**/*.test.ts'",
-    "posttest": "npm run lint",
-    "lint": "eslint src/**/*.ts",
-    "format": "eslint src/**/*.ts --fix",
-    "test:integration": "mocha --forbid-only \"test/run.test.ts\" --integration-test",
-    "test:unit": "mocha --forbid-only \"test/unit/**/*.test.ts\" --unit-test",
-    "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
+    "test": "mocha \"test/unit/**/*.test.ts\"",
+    "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
-    "@contentstack/cli-command": "~1.7.2",
-    "@contentstack/cli-utilities": "~1.17.4",
+    "@contentstack/cli-command": "~1.8.0",
+    "@contentstack/cli-utilities": "~1.18.0",
     "@contentstack/utils": "~1.7.0",
-    "@oclif/core": "^4.3.0",
+    "@oclif/core": "^4.8.3",
     "@oclif/plugin-help": "^6.2.28",
     "lodash": "^4.17.23"
+  },
+  "overrides": {
+    "@oclif/core": {
+      "picomatch": "^4.0.4"
+    }
   },
   "devDependencies": {
     "@oclif/test": "^4.1.13",
@@ -67,7 +65,21 @@
     "protected": [
       "config:get:region"
     ],
-    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-config/<%- commandPath %>"
+    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-config/<%- commandPath %>",
+    "topics": {
+      "config": {
+        "description": "Perform configuration related activities"
+      },
+      "config:get": {
+        "description": "View the list of set configuration values"
+      },
+      "config:set": {
+        "description": "Set configuration values"
+      },
+      "config:remove": {
+        "description": "Remove set configuration values"
+      }
+    }
   },
   "csdxConfig": {
     "shortCommandName": {

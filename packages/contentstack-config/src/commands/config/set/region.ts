@@ -1,4 +1,3 @@
-import { Command } from '@contentstack/cli-command';
 import {
   cliux,
   printFlagDeprecation,
@@ -11,7 +10,7 @@ import {
 } from '@contentstack/cli-utilities';
 import { Region } from '../../../interfaces';
 import { regionHandler, interactive } from '../../../utils';
-import { Args, BaseCommand } from '../../../base-command';
+import { BaseCommand } from '../../../base-command';
 
 export default class RegionSetCommand extends BaseCommand<typeof RegionSetCommand> {
   config: any;
