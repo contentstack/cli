@@ -14,16 +14,5 @@ jobs:
         with:
           args: --all-projects --fail-on=all
           json: true
-          output: snyk.json
         continue-on-error: true
-
-      - name: Verify Snyk output exists # ← optional debug step
-        run: |
-          if [ ! -f snyk.json ]; then
-            echo "snyk.json missing — dumping directory contents:"
-            ls -la
-            exit 1
-          fi
-          echo "snyk.json found ($(wc -c < snyk.json) bytes)"
-
       - uses: contentstack/sca-policy@main
