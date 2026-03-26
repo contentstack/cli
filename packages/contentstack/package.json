@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli",
-  "description": "Command-line tool (CLI) to interact with Contentstack v1-beta",
+  "description": "Command-line tool (CLI) to interact with Contentstack",
   "version": "1.59.0",
   "author": "Contentstack",
   "bin": {
