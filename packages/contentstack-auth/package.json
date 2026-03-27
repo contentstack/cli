@@ -1,32 +1,30 @@
 {
   "name": "@contentstack/cli-auth",
   "description": "Contentstack CLI plugin for authentication activities",
-  "version": "1.7.3",
+  "version": "1.8.0",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "scripts": {
-    "build": "npm run clean && npm run compile",
-    "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
+    "build": "pnpm compile && oclif manifest && oclif readme",
+    "clean": "rm -rf ./lib ./node_modules tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "pnpm compile && oclif manifest && oclif readme",
     "version": "oclif readme && git add README.md",
-    "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
-    "pretest": "tsc -p test",
-    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
-    "posttest": "npm run lint",
-    "lint": "eslint src/**/*.ts",
-    "format": "eslint src/**/*.ts --fix",
-    "test:integration": "mocha --forbid-only \"test/integration/*.test.ts\"",
-    "test:unit": "mocha --forbid-only \"test/unit/**/*.test.ts\"",
-    "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
+    "test": "mocha \"test/unit/**/*.test.ts\"",
+    "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
-    "@contentstack/cli-command": "~1.7.2",
-    "@contentstack/cli-utilities": "~1.17.4",
-    "@oclif/core": "^4.3.0",
+    "@contentstack/cli-command": "~1.8.0",
+    "@contentstack/cli-utilities": "~1.18.0",
+    "@oclif/core": "^4.8.3",
     "@oclif/plugin-help": "^6.2.28",
     "otplib": "^12.0.1"
+  },
+  "overrides": {
+    "@oclif/core": {
+      "picomatch": "^4.0.4"
+    }
   },
   "devDependencies": {
     "@fancy-test/nock": "^0.1.1",

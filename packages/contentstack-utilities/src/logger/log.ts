@@ -5,7 +5,6 @@ import { default as Logger } from './logger';
 import { CLIErrorHandler } from './cli-error-handler';
 import { ErrorContext } from '../interfaces';
 import { configHandler } from '..';
-import { getSessionLogPath } from './session-path';
 
 let loggerInstance: Logger | null = null;
 
@@ -98,7 +97,7 @@ function getLogPath(): string {
     }
     fs.accessSync(cwdPath, fs.constants.W_OK);
     return cwdPath;
-  } catch (error) {
+  } catch {
     // If current directory is not writable, fall back to home directory
   }
 

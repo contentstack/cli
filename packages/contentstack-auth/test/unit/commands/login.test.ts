@@ -10,7 +10,7 @@ import {
 } from '@contentstack/cli-utilities';
 import * as managementSDK from '@contentstack/cli-utilities';
 // @ts-ignore
-import * as conf from '../../config.json';
+import * as conf from '../config.json';
 
 const config = configHandler;
 

@@ -4,9 +4,8 @@
   "compilerOptions": {
     "sourceMap": true,
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "module": "commonjs"
   },
-  "include": [
-    "../src/**/*"
-  ]
+  "include": ["../src/**/*"]
 }
