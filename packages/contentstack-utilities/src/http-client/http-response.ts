@@ -2,7 +2,7 @@
 
 import { AxiosResponse, AxiosResponseHeaders, RawAxiosResponseHeaders } from 'axios';
 
-export class HttpResponse<ResponseType = any> {
+export class HttpResponse<_ResponseType = any> {
   /**
    * The Axios response object.
    */

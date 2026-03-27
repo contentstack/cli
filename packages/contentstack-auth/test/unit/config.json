@@ -1,0 +1,8 @@
+{
+  "password": "testpassword",
+  "invalidPassowrd": "invalidpassword",
+  "validAPIKey": "adasdfagsf",
+  "validToken": "adasdfagsf",
+  "invalidAPIKey": "invalidapikey",
+  "invalidToken": "invalidtoken"
+}

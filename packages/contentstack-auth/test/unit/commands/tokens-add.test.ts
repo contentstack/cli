@@ -6,7 +6,7 @@ import { stub, assert } from 'sinon';
 import { config as dotenvConfig } from 'dotenv';
 import nock from 'nock';
 // @ts-ignore
-import * as conf from '../../config.json';
+import * as conf from '../config.json';
 
 dotenvConfig();
 

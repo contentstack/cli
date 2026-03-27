@@ -1,8 +1,0 @@
-{
-  "IS_TS": false,
-  "UNIT_EXECUTION_ORDER": [],
-  "INTEGRATION_EXECUTION_ORDER": [],
-  "ENABLE_PREREQUISITES": true,
-  "REGIONS": ["AWS-NA", "AWS-EU", "AZURE-NA", "AZURE-EU"],
-  "apiKey": "***REMOVED***"
-}
