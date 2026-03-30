@@ -2,7 +2,12 @@ import { client, ContentstackClient, ContentstackConfig } from '@contentstack/ma
 import authHandler from './auth-handler';
 import { Agent } from 'node:https';
 import configHandler, { default as configStore } from './config-handler';
-import { getProxyConfig } from './proxy-helper';
+import {
+  getProxyConfigForHost,
+  resolveRequestHost,
+  clearProxyEnv,
+  shouldBypassProxy,
+} from './proxy-helper';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -17,11 +22,18 @@ class ManagementSDKInitiator {
   }
 
   async createAPIClient(config): Promise<ContentstackClient> {
-    // Get proxy configuration with priority: Environment variables > Global config
-    const proxyConfig = getProxyConfig();
+    // Resolve host so NO_PROXY applies even when config.host is omitted (e.g. from region.cma)
+    const host = resolveRequestHost(config);
+    // NO_PROXY has priority over HTTP_PROXY/HTTPS_PROXY and config-set proxy
+    const proxyConfig = getProxyConfigForHost(host);
+
+    // When NO_PROXY matches, strip proxy env so SDK/axios cannot pick up HTTP_PROXY for this process.
+    if (host && shouldBypassProxy(host)) {
+      clearProxyEnv();
+    }
 
     const option: ContentstackConfig = {
-      host: config.host,
+      host: config.host || host || undefined,
       maxContentLength: config.maxContentLength || 100000000,
       maxBodyLength: config.maxBodyLength || 1000000000,
       maxRequests: 10,
@@ -111,7 +123,10 @@ class ManagementSDKInitiator {
 
     if (proxyConfig) {
       option.proxy = proxyConfig;
+    } else if (host && shouldBypassProxy(host)) {
+      option.proxy = false;
     }
+    // When host is in NO_PROXY, do not add proxy to option at all
     if (config.endpoint) {
       option.endpoint = config.endpoint;
     }

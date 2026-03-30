@@ -1,28 +1,28 @@
 {
   "name": "@contentstack/cli-command",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.7.2",
+  "version": "1.8.0",
   "author": "Contentstack",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
+    "build": "pnpm compile",
     "prepack": "pnpm compile",
-    "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
+    "clean": "rm -rf ./lib ./node_modules tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
-    "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
-    "pretest": "tsc -p test",
-    "posttest": "npm run lint",
-    "lint": "eslint src/**/*.ts",
-    "format": "eslint src/**/*.ts --fix",
-    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
-    "test:unit:report": "nyc --extension .ts  mocha --forbid-only \"test/unit/**/*.test.ts\"",
-    "test:unit": "mocha --timeout 10000 --forbid-only \"test/unit/**/*.test.ts\""
+    "test": "mocha \"test/unit/**/*.test.ts\"",
+    "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
-    "@contentstack/cli-utilities": "~1.17.4",
+    "@contentstack/cli-utilities": "~1.18.0",
     "contentstack": "^3.25.3",
-    "@oclif/core": "^4.3.0",
+    "@oclif/core": "^4.8.3",
     "@oclif/plugin-help": "^6.2.28"
+  },
+  "overrides": {
+    "@oclif/core": {
+      "picomatch": "^4.0.4"
+    }
   },
   "devDependencies": {
     "@oclif/test": "^4.1.13",

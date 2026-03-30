@@ -1,0 +1,61 @@
+name: Release CLI Core (Production)
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install pnpm
+        run: corepack prepare pnpm@10.28.0 --activate
+
+      - name: Clean the repository
+        run: pnpm run clean:all
+
+      - name: Install root dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm -r --sort run build
+
+      - name: Reading Configuration
+        id: release_config
+        uses: rgarcia-phi/json-to-variables@v1.1.0
+        with:
+          filename: .github/config/release.json
+          prefix: release
+
+      - name: Publishing core (Production)
+        id: publish-core
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack/package.json
+          tag: latest
+
+      - name: Create Core Production Release
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.publish-core.outputs.version }}
+        run: |
+          TAG="core@v${VERSION}"
+          if gh release view "$TAG" &>/dev/null; then
+            echo "Release $TAG already exists — skipping."
+          else
+            gh release create "$TAG" \
+              --title "Core Production $VERSION" \
+              --generate-notes
+          fi

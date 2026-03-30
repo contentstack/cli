@@ -93,7 +93,10 @@ export default class LogoutCommand extends BaseCommand<typeof LogoutCommand> {
           confirm,
           isAuthenticated: oauthHandler.isAuthenticated(),
         });
-        log.success(messageHandler.parse('CLI_AUTH_LOGOUT_ALREADY'), this.contextDetails);
+        const messageKey = confirm === false && oauthHandler.isAuthenticated()
+          ? 'CLI_AUTH_LOGOUT_CANCELLED'
+          : 'CLI_AUTH_LOGOUT_ALREADY';
+        log.success(messageHandler.parse(messageKey), this.contextDetails);
       }
     } catch (error) {
       log.debug('Logout failed.', { ...this.contextDetails, error: error.message });
