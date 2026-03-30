@@ -1,8 +1,6 @@
 fileignoreconfig:
-- filename: package-lock.json
-  checksum: 10993a3e930b77c3c6e09afcb50c23e6a8a901302172b699e92b0a4bfec0cffa
-- filename: pnpm-lock.yaml
-  checksum: 3e47ed021491e9f3c21d25e4ea72a1101b51f16ebedd279019df1792b72417a4
-- filename: packages/contentstack-bootstrap/src/bootstrap/utils.ts
-  checksum: 6e6fb00bb11b03141e5ad27eeaa4af9718dc30520c3e73970bc208cc0ba2a7d2
+  - filename: .github/workflows/release-production-pipeline.yml
+    checksum: 48264fdeb61cbbed348c7271aae5e155651f490aca063dbb1d54f2c15a154090
+  - filename: pnpm-lock.yaml
+    checksum: 3143f78aa6c83f0d41ec24a2bb7f25dce0ae25d969ee9fb6bf0787a85773e60a
 version: '1.0'

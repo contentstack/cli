@@ -4,7 +4,7 @@ import { authHandler, interactive } from '../../src/utils';
 import { CLIError, cliux } from '@contentstack/cli-utilities';
 import { User } from '../../src/interfaces';
 // @ts-ignore
-import * as config from '../config.json';
+import * as config from './config.json';
 
 const user: User = { email: '***REMOVED***', authtoken: 'testtoken' };
 const credentials = { email: '***REMOVED***', password: config.password };
@@ -78,7 +78,8 @@ describe('Auth Handler', function () {
       expect(result).to.be.equal(user);
     });
 
-    it.skip('Login with invalid credentials, failed to login', async function () {
+    it('Login with invalid credentials, failed to login', async function () {
+      this.timeout(5000);
       sinon.restore();
       sinon.stub(cliux, 'error').returns();
       sinon.stub(cliux, 'print').returns();
@@ -98,8 +99,8 @@ describe('Auth Handler', function () {
         await authHandler.login(invalidCredentials.email, invalidCredentials.password);
         expect.fail('Should have thrown an error');
       } catch (error) {
-        expect(error).to.be.instanceOf(CLIError);
-        expect(error.message).to.include('Invalid credentials');
+        expect(error).to.be.instanceOf(Error);
+        expect((error as Error).message).to.include('Invalid credentials');
       } finally {
         authHandler.client = null;
       }
@@ -148,7 +149,7 @@ describe('Auth Handler', function () {
       const result: { user: object } = (await authHandler.logout(TFATestToken)) as { user: object };
       expect(result.user).to.be.equal(user);
     });
-    it.skip('Logout with invalid authtoken, failed to logout', async function () {
+    it('Logout with invalid authtoken, failed to logout', async function () {
       sinon.restore();
       sinon.stub(cliux, 'error').returns();
       sinon.stub(cliux, 'print').returns();

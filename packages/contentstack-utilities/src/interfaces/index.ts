@@ -18,7 +18,7 @@ export interface InquirePayload {
   default?: any;
   message: string;
   choices?: Array<any>;
-  transformer?: Function;
+  transformer?: (value: any) => any;
   validate?(input: any, answers?: any): boolean | string | Promise<boolean | string>;
   selectAll?: boolean;
   pageSize?: number;
