@@ -103,10 +103,6 @@ export default class CLIProgressManager {
       return;
     }
 
-    if (configHandler.get('log')?.showConsoleLogs) {
-      return;
-    }
-
     // Apply strategy-based corrections before printing
     CLIProgressManager.applyStrategyCorrections();
 
@@ -541,7 +537,11 @@ export default class CLIProgressManager {
               : getChalk().cyan(`${this.successCount}✓ ${this.failureCount}✗`);
 
           const labelColor =
-            totalProcessed >= this.total ? (this.failureCount === 0 ? getChalk().green : getChalk().yellow) : getChalk().cyan;
+            totalProcessed >= this.total
+              ? this.failureCount === 0
+                ? getChalk().green
+                : getChalk().yellow
+              : getChalk().cyan;
 
           const formattedName = this.formatModuleName(this.moduleName);
           const displayName = formattedName.length > 20 ? formattedName.substring(0, 17) + '...' : formattedName;
@@ -617,10 +617,10 @@ export default class CLIProgressManager {
         process.status === 'completed'
           ? '✓'
           : process.status === 'failed'
-            ? '✗'
-            : process.status === 'active'
-              ? '●'
-              : '○';
+          ? '✗'
+          : process.status === 'active'
+          ? '●'
+          : '○';
 
       this.log(
         `  ${status} ${processName}: ${process.successCount}✓ ${process.failureCount}✗ (${process.current}/${process.total})`,
