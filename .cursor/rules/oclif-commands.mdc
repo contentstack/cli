@@ -1,6 +1,6 @@
 ---
 description: 'OCLIF command development patterns and CLI best practices'
-globs: ['**/commands/**/*.ts']
+globs: ['**/commands/**/*.ts', '**/base-command.ts']
 alwaysApply: false
 ---
 

@@ -1,0 +1,18 @@
+fileignoreconfig:
+  - filename: pnpm-lock.yaml
+    checksum: e7531b8f9e2f1139336e2a33a45261b1417e63361c5f2a9ed55620cb60cf265b
+  - filename: packages/contentstack-utilities/src/proxy-helper.ts
+    checksum: 2169f25563bca3a0fe54edd00c73646ed56d36aa7e8effe904de26b0c1633759
+  - filename: .cursor/skills/code-review/SKILL.md
+    checksum: 29d812ac5c2ed4c55490f8d31e15eb592851601a6a141354cb458b1b9f1daa7a
+  - filename: .cursor/skills/contentstack-cli/SKILL.md
+    checksum: 2130a0c665821cd2831644aa238afef09992388f67f682c867820c0d98ab2406
+  - filename: .cursor/skills/contentstack-cli/references/contentstack-patterns.md
+    checksum: 159d7e31f9e32ceb708c702699c36459ed2210a61ff29ebb78efb66cec466128
+  - filename: .cursor/skills/code-review/references/code-review-checklist.md
+    checksum: bdf7453f08d7209deaee411f47a1132ee872b28f0eb082563dfe20aa56eab057
+  - filename: .cursor/skills/testing/references/testing-patterns.md
+    checksum: 0a6cb66f27eda46b40508517063a2f43fea1b4b8df878e7ddff404ab7fc126f8
+  - filename: .github/workflows/release-production-pipeline.yml
+    checksum: 4aef94feea3ea0538162a9454cfd30457ec85e3123672f0933713e3d113d4504
+version: '1.0'
