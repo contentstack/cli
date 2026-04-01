@@ -11,28 +11,31 @@ alwaysApply: true
 ### Primary Testing Tools
 - **Mocha** - Test runner (used across all packages)
 - **Chai** - Assertion library
-- **Sinon** - Mocking and stubbing
-- **@oclif/test** - Command testing support
-- **nyc** - Code coverage
+- **@oclif/test** - Command testing support (for plugin packages)
 
-### Package-Specific Tools
-- **nock** - HTTP mocking (migration package)
-- **rewire** - Module patching (import package)
+### Test Setup
+- TypeScript compilation via ts-node/register
+- Source map support for stack traces
+- Global test timeout: 30 seconds (configurable per package)
 
 ## Test File Patterns
 
 ### Naming Conventions
-- **Primary**: `*.test.ts` (dominant pattern)
-- **Alternative**: `*.spec.ts` (less common)
-- **Bootstrap exception**: `*.test.js` (JavaScript tests)
+- **Primary**: `*.test.ts` (standard pattern across all packages)
+- **Location**: `test/unit/**/*.test.ts` (most packages)
 
 ### Directory Structure
 ```
 packages/*/
-├── test/unit/**/*.test.ts    # Most packages
-├── test/lib/**/*.test.ts     # clone package
-├── test/seed/**/*.test.ts    # seed package
-└── test/commands/**/*.test.ts # command-specific tests
+├── test/
+│   └── unit/
+│       ├── commands/          # Command-specific tests
+│       ├── services/          # Service/business logic tests
+│       └── utils/             # Utility function tests
+└── src/                        # Source code
+    ├── commands/              # CLI commands
+    ├── services/              # Business logic
+    └── utils/                 # Utilities
 ```
 
 ## Mocha Configuration
@@ -55,125 +58,87 @@ packages/*/
 ```json
 // package.json scripts
 {
-  "pretest": "tsc -p test",
-  "test": "nyc --extension .ts mocha"
+  "test": "mocha \"test/unit/**/*.test.ts\"",
+  "test:coverage": "nyc mocha \"test/unit/**/*.test.ts\""
 }
 ```
-
-## Mocking Patterns
-
-### Sinon SDK Mocking
-```typescript
-// ✅ GOOD - Mock Contentstack SDK methods
-const mockStackClient = {
-  fetch: sinon.stub().resolves({ 
-    name: 'Test Stack', 
-    uid: 'stack-uid', 
-    org_uid: 'org-uid' 
-  }),
-  locale: sinon.stub().returns({
-    query: sinon.stub().returns({
-      find: sinon.stub().resolves({
-        items: [{ 
-          uid: 'locale-1', 
-          name: 'English (United States)', 
-          code: 'en-us' 
-        }],
-        count: 1,
-      }),
-    }),
-  }),
-};
-```
-
-### Module Stubbing
-```typescript
-// ✅ GOOD - Stub sibling modules
-beforeEach(() => {
-  sinon.stub(mapModule, 'processEntries').resolves([]);
-  sinon.stub(configModule, 'getConfig').returns(mockConfig);
-});
-
-afterEach(() => {
-  sinon.restore();
-});
-```
-
-### HTTP Mocking (Migration)
-```typescript
-// ✅ GOOD - Use nock for HTTP mocking
-import nock from 'nock';
-
-beforeEach(() => {
-  nock('https://api.contentstack.io')
-    .get('/v3/stacks')
-    .reply(200, { stacks: [] });
-});
-```
-
-## Coverage Configuration
-
-### NYC Setup (.nycrc.json)
-```json
-{
-  "extension": [".ts"],
-  "include": ["src/**/*.ts"],
-  "exclude": ["**/*.test.ts", "**/*.spec.ts"],
-  "reporter": ["text", "html", "lcov"],
-  "all": true
-}
-```
-
-### Coverage Targets
-- **Team aspiration**: 80% minimum coverage
-- **Current enforcement**: Inconsistent across packages
-- **Note**: Some packages have `check-coverage: false`
-- **Typo alert**: Several `.nycrc.json` files have `"inlcude"` instead of `"include"`
 
 ## Test Structure
 
 ### Standard Test Pattern
 ```typescript
 // ✅ GOOD - Comprehensive test structure
-describe('ContentTypes Module', () => {
-  let mockStackClient: any;
-  let contentTypes: ContentTypes;
+describe('ConfigService', () => {
+  let service: ConfigService;
 
   beforeEach(() => {
-    mockStackClient = createMockStackClient();
-    contentTypes = new ContentTypes({
-      stackAPIClient: mockStackClient,
-      importConfig: mockConfig,
-    });
+    service = new ConfigService();
   });
 
-  afterEach(() => {
-    sinon.restore();
-  });
-
-  describe('import()', () => {
-    it('should import content types successfully', async () => {
+  describe('loadConfig()', () => {
+    it('should load configuration successfully', async () => {
       // Arrange
-      mockStackClient.contentType.returns({
-        create: sinon.stub().resolves({ uid: 'ct-uid' })
-      });
-
+      const expectedConfig = { region: 'us' };
+      
       // Act
-      await contentTypes.import();
-
+      const result = await service.loadConfig();
+      
       // Assert
-      expect(mockStackClient.contentType).to.have.been.called;
+      expect(result).to.deep.equal(expectedConfig);
     });
 
-    it('should handle API errors gracefully', async () => {
-      // Arrange
-      const error = new Error('API Error');
-      mockStackClient.contentType.throws(error);
-
-      // Act & Assert
-      await expect(contentTypes.import()).to.be.rejectedWith('API Error');
+    it('should handle missing configuration', async () => {
+      // Arrange & Act & Assert
+      await expect(service.loadConfig()).to.be.rejectedWith('Config not found');
     });
   });
+});
+```
+
+### Async/Await Pattern
+```typescript
+// ✅ GOOD - Use async/await in tests
+it('should process data asynchronously', async () => {
+  const result = await service.processAsync();
+  expect(result).to.exist;
+});
+
+// ✅ GOOD - Explicit Promise handling
+it('should return a promise', () => {
+  return service.asyncMethod().then(result => {
+    expect(result).to.be.true;
+  });
+});
+```
+
+## Mocking Patterns
+
+### Class Mocking
+```typescript
+// ✅ GOOD - Mock class dependencies
+class MockConfigService {
+  async loadConfig() {
+    return { region: 'us' };
+  }
+}
+
+it('should use mocked service', async () => {
+  const mockService = new MockConfigService();
+  const result = await mockService.loadConfig();
+  expect(result.region).to.equal('us');
+});
+```
+
+### Function Stubs
+```typescript
+// ✅ GOOD - Stub module functions if needed
+beforeEach(() => {
+  // Stub file system operations
+  // Stub network calls
+});
+
+afterEach(() => {
+  // Restore original implementations
 });
 ```
 
@@ -184,47 +149,65 @@ describe('ContentTypes Module', () => {
 // ✅ GOOD - Test commands with @oclif/test
 import { test } from '@oclif/test';
 
-describe('cm:stacks:import', () => {
+describe('cm:config:region', () => {
   test
     .stdout()
-    .command(['cm:stacks:import', '--help'])
+    .command(['cm:config:region', '--help'])
     .it('shows help message', ctx => {
-      expect(ctx.stdout).to.contain('Import content from a stack');
+      expect(ctx.stdout).to.contain('Display region');
     });
 
   test
-    .stderr()
-    .command(['cm:stacks:import'])
-    .exit(2)
-    .it('fails without required flags');
+    .stdout()
+    .command(['cm:config:region'])
+    .it('shows current region', ctx => {
+      expect(ctx.stdout).to.contain('us');
+    });
+});
+```
+
+### Command Flag Testing
+```typescript
+// ✅ GOOD - Test command flags and arguments
+describe('cm:config:set', () => {
+  test
+    .command(['cm:config:set', '--help'])
+    .it('shows usage information');
+
+  test
+    .command(['cm:config:set', '--region', 'eu'])
+    .it('sets region to eu');
 });
 ```
 
 ## Error Testing
 
-### Rate Limit Testing
+### Error Handling
 ```typescript
-// ✅ GOOD - Test rate limiting behavior
-it('should handle 429 rate limit errors', async () => {
-  const rateLimitError = { status: 429 };
-  mockClient.fetch.onFirstCall().rejects(rateLimitError);
-  mockClient.fetch.onSecondCall().resolves(mockResponse);
+// ✅ GOOD - Test error scenarios
+it('should throw ValidationError on invalid input', async () => {
+  const invalidInput = '';
+  await expect(service.validate(invalidInput))
+    .to.be.rejectedWith('Invalid input');
+});
 
+it('should handle network errors gracefully', async () => {
+  // Mock network failure
   const result = await service.fetchWithRetry();
-  
-  expect(mockClient.fetch).to.have.been.calledTwice;
-  expect(result).to.equal(mockResponse);
+  expect(result).to.be.null;
 });
 ```
 
-### Authentication Testing
+### Error Types
 ```typescript
-// ✅ GOOD - Test authentication scenarios
-it('should handle token expiration', async () => {
-  const authError = { status: 401, message: 'Unauthorized' };
-  mockClient.fetch.rejects(authError);
-
-  await expect(service.makeRequest()).to.be.rejectedWith('Unauthorized');
+// ✅ GOOD - Test specific error types
+it('should throw appropriate error', async () => {
+  try {
+    await service.failingOperation();
+  } catch (error) {
+    expect(error).to.be.instanceof(ValidationError);
+    expect(error.code).to.equal('INVALID_CONFIG');
+  }
 });
 ```
 
@@ -234,12 +217,16 @@ it('should handle token expiration', async () => {
 ```typescript
 // ✅ GOOD - Organize test data
 const mockData = {
-  contentTypes: [
-    { uid: 'ct1', title: 'Content Type 1' },
-    { uid: 'ct2', title: 'Content Type 2' },
-  ],
-  entries: [
-    { uid: 'entry1', title: 'Entry 1', content_type: 'ct1' },
+  validConfig: {
+    region: 'us',
+    timeout: 30000,
+  },
+  invalidConfig: {
+    region: '',
+  },
+  users: [
+    { email: 'user1@example.com', name: 'User 1' },
+    { email: 'user2@example.com', name: 'User 2' },
   ],
 };
 ```
@@ -247,20 +234,90 @@ const mockData = {
 ### Test Helpers
 ```typescript
 // ✅ GOOD - Create reusable test utilities
-export function createMockStackClient() {
+export function createMockConfig(overrides?: Partial<Config>): Config {
   return {
-    fetch: sinon.stub(),
-    contentType: sinon.stub(),
-    entry: sinon.stub(),
-    // ... other methods
+    region: 'us',
+    timeout: 30000,
+    ...overrides,
   };
 }
+
+export function createMockService(
+  config: Config = createMockConfig()
+): ConfigService {
+  return new ConfigService(config);
+}
+```
+
+## Coverage
+
+### Coverage Goals
+- **Team aspiration**: 80% minimum coverage
+- **Current enforcement**: Applied consistently across packages
+- **Focus areas**: Critical business logic and error paths
+
+### Coverage Reporting
+```bash
+# Run tests with coverage
+pnpm test:coverage
+
+# Coverage reports generated in:
+# - coverage/index.html (HTML report)
+# - coverage/coverage-summary.json (JSON report)
 ```
 
 ## Critical Testing Rules
 
-- **No real API calls** - Always mock external dependencies
-- **Test both success and failure paths** - Cover error scenarios
-- **Mock at service boundaries** - Don't mock internal implementation details
-- **Use proper cleanup** - Always restore stubs in afterEach
+- **No real external calls** - Mock all dependencies
+- **Test both success and failure paths** - Cover error scenarios completely
+- **One assertion per test** - Focus each test on single behavior
+- **Use descriptive test names** - Test name should explain what's tested
+- **Arrange-Act-Assert** - Follow AAA pattern consistently
 - **Test command validation** - Verify flag validation and error messages
+- **Clean up after tests** - Restore any mocked state
+
+## Best Practices
+
+### Test Organization
+```typescript
+// ✅ GOOD - Organize related tests
+describe('AuthCommand', () => {
+  describe('login', () => {
+    it('should authenticate user');
+    it('should save token');
+  });
+  
+  describe('logout', () => {
+    it('should clear token');
+    it('should reset config');
+  });
+});
+```
+
+### Async Test Patterns
+```typescript
+// ✅ GOOD - Handle async operations properly
+it('should complete async operation', async () => {
+  const promise = service.asyncMethod();
+  expect(promise).to.be.instanceof(Promise);
+  
+  const result = await promise;
+  expect(result).to.equal('success');
+});
+```
+
+### Isolation
+```typescript
+// ✅ GOOD - Ensure test isolation
+describe('ConfigService', () => {
+  let service: ConfigService;
+  
+  beforeEach(() => {
+    service = new ConfigService();
+  });
+  
+  afterEach(() => {
+    // Clean up resources
+  });
+});
+```

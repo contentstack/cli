@@ -1,6 +1,6 @@
 ---
 description: 'OCLIF command development patterns and CLI best practices'
-globs: ['**/commands/**/*.ts']
+globs: ['**/commands/**/*.ts', '**/base-command.ts']
 alwaysApply: false
 ---
 
@@ -12,84 +12,63 @@ alwaysApply: false
 ```typescript
 // ✅ GOOD - Standard command structure
 import { Command } from '@contentstack/cli-command';
+import { cliux, flags, FlagInput, handleAndLogError } from '@contentstack/cli-utilities';
 
-export default class ImportCommand extends Command {
-  static description = 'Import content from a stack';
+export default class ConfigSetCommand extends Command {
+  static description = 'Set CLI configuration values';
   
-  static examples: string[] = [
-    'csdx cm:stacks:import --stack-api-key <key> --data-dir <path>',
-    'csdx cm:stacks:import --alias <alias> --config <config-path>',
+  static flags: FlagInput = {
+    region: flags.string({
+      char: 'r',
+      description: 'Set region (us/eu)',
+    }),
+    alias: flags.string({
+      char: 'a',
+      description: 'Configuration alias',
+    }),
+  };
+  
+  static examples = [
+    'csdx config:set --region eu',
+    'csdx config:set --region us --alias default',
   ];
   
-  static flags = {
-    // Define flags using utilities
-  };
-  
   async run(): Promise<void> {
-    // Main command logic
+    try {
+      const { flags: configFlags } = await this.parse(ConfigSetCommand);
+      // Command logic here
+    } catch (error) {
+      handleAndLogError(error, { module: 'config-set' });
+    }
   }
 }
 ```
 
-## Base Classes Available
+## Base Classes
 
-### BaseCommand (Audit Package)
+### Command Base Class
 ```typescript
-// ✅ GOOD - Extend BaseCommand for shared functionality
+// ✅ GOOD - Extend Command from @contentstack/cli-command
+import { Command } from '@contentstack/cli-command';
+
+export default class MyCommand extends Command {
+  async run(): Promise<void> {
+    // Command implementation
+  }
+}
+```
+
+### Custom Base Classes
+```typescript
+// ✅ GOOD - Create custom base classes for shared functionality
 export abstract class BaseCommand<T extends typeof Command> extends Command {
-  static baseFlags: FlagInput = {
-    config: Flags.string({ char: 'c', description: 'Config path' }),
-    'data-dir': Flags.string({ char: 'd', description: 'Data directory' }),
-    'show-console-output': Flags.boolean({ description: 'Show console output' }),
+  protected contextDetails = {
+    command: this.id || 'unknown',
   };
 
-  public async init(): Promise<void> {
+  async init(): Promise<void> {
     await super.init();
-    const { args, flags } = await this.parse({
-      flags: this.ctor.flags,
-      baseFlags: (super.ctor as typeof BaseCommand).baseFlags,
-      // ...
-    });
-  }
-}
-```
-
-### BaseCommand (Export-to-CSV Package)
-```typescript
-// ✅ GOOD - Lightweight base with command context
-export abstract class BaseCommand extends Command {
-  public commandContext!: CommandContext;
-
-  public async init(): Promise<void> {
-    await super.init();
-    this.commandContext = this.createCommandContext();
-    log.debug('Command initialized', this.commandContext);
-  }
-
-  protected async catch(err: Error & { exitCode?: number }): Promise<unknown> {
-    log.debug('Command error caught', { ...this.commandContext, error: err.message });
-    return super.catch(err);
-  }
-}
-```
-
-## Command Patterns
-
-### Import Commands
-- Use `@contentstack/cli-command` Command base
-- Parse with `ImportCommand` type for config validation
-- Handle authentication via `configHandler` and `isAuthenticated`
-- Delegate to service layer modules
-
-### Direct Extension Pattern
-```typescript
-// ✅ GOOD - Most packages extend Command directly
-export default class BranchMerge extends Command {
-  static description = 'Merge branches';
-  
-  async run(): Promise<void> {
-    const { flags } = await this.parse(BranchMerge);
-    // Command-specific logic
+    log.debug('Command initialized', this.contextDetails);
   }
 }
 ```
@@ -108,9 +87,54 @@ export default class BranchMerge extends Command {
 ```
 
 ### Command Topics
-- All commands use `cm` topic: `cm:stacks:import`, `cm:branches:merge`
+- All commands use `cm` topic: `cm:config:set`, `cm:auth:login`
 - Built commands live in `lib/commands` (compiled from `src/commands`)
-- Optional `csdxConfig.shortCommandName` for abbreviated names
+- Commands use nested directories: `src/commands/config/set.ts` → `cm:config:set`
+
+### Command Naming
+- **Topic hierarchy**: `config/remove/proxy.ts` → `cm:config:remove:proxy`
+- **Descriptive names**: Use verb-noun pattern (`set`, `remove`, `show`)
+- **Grouping**: Related commands share parent topics
+
+## Flag Management
+
+### Flag Definition Patterns
+```typescript
+// ✅ GOOD - Define flags clearly
+static flags: FlagInput = {
+  'stack-api-key': flags.string({
+    char: 'k',
+    description: 'Stack API key',
+    required: false,
+  }),
+  region: flags.string({
+    char: 'r',
+    description: 'Set region',
+    options: ['us', 'eu'],
+  }),
+  verbose: flags.boolean({
+    char: 'v',
+    description: 'Show verbose output',
+    default: false,
+  }),
+};
+```
+
+### Flag Parsing
+```typescript
+// ✅ GOOD - Parse and validate flags
+async run(): Promise<void> {
+  const { flags: parsedFlags } = await this.parse(MyCommand);
+  
+  // Validate flag combinations
+  if (!parsedFlags['stack-api-key'] && !parsedFlags.alias) {
+    this.error('Either --stack-api-key or --alias is required');
+  }
+  
+  // Use parsed flags
+  const region = parsedFlags.region || 'us';
+}
+```
 
 ## Error Handling
 
@@ -120,19 +144,23 @@ export default class BranchMerge extends Command {
 try {
   await this.executeCommand();
 } catch (error) {
-  handleAndLogError(error);
-  this.logAndPrintErrorDetails(error, config);
+  handleAndLogError(error, { module: 'my-command' });
 }
 ```
 
 ### User-Friendly Messages
 ```typescript
 // ✅ GOOD - Clear user feedback
-cliux.print('Operation completed successfully', { color: 'green' });
-cliux.print('Error occurred', { color: 'red' });
+import { cliux } from '@contentstack/cli-utilities';
 
-// For critical failures
-process.exit(1);
+// Success message
+cliux.success('Configuration updated successfully', { color: 'green' });
+
+// Error message
+cliux.error('Invalid region specified', { color: 'red' });
+
+// Info message
+cliux.print('Setting region to eu', { color: 'blue' });
 ```
 
 ## Validation Patterns
@@ -143,44 +171,47 @@ process.exit(1);
 async run(): Promise<void> {
   const { flags } = await this.parse(MyCommand);
   
-  // Validate required combinations
-  if (!flags.alias && !flags['stack-api-key']) {
-    this.error('Either --alias or --stack-api-key is required');
+  // Validate required flags
+  if (!flags.region) {
+    this.error('--region is required');
+  }
+  
+  // Validate flag values
+  if (!['us', 'eu'].includes(flags.region)) {
+    this.error('Region must be "us" or "eu"');
   }
   
   // Proceed with validated input
 }
 ```
 
-### Authentication Check
-```typescript
-// ✅ GOOD - Check authentication before operations
-if (!isAuthenticated()) {
-  this.error('Please login first using: csdx auth:login');
-}
-```
-
 ## Progress and Logging
 
-### Progress Feedback
+### User Feedback
 ```typescript
 // ✅ GOOD - Provide user feedback
-this.log('Starting import process...');
-cliux.print('Processing entries...', { color: 'blue' });
+import { log, cliux } from '@contentstack/cli-utilities';
 
-// Use progress bars for long operations
-const progressBar = cliux.progress.start(total);
-progressBar.increment();
-progressBar.stop();
+// Regular logging
+this.log('Starting configuration update...');
+
+// Debug logging
+log.debug('Detailed operation information', { context: 'data' });
+
+// Status messages
+cliux.print('Processing...', { color: 'blue' });
 ```
 
-### Debug Logging
+### Progress Indication
 ```typescript
-// ✅ GOOD - Use structured logging
-log.debug('Command initialized', { 
-  command: this.id, 
-  flags: this.flags 
-});
+// ✅ GOOD - Show progress for long operations
+cliux.print('Processing items...', { color: 'blue' });
+let count = 0;
+for (const item of items) {
+  await this.processItem(item);
+  count++;
+  cliux.print(`Processed ${count}/${items.length} items`, { color: 'blue' });
+}
 ```
 
 ## Command Delegation
@@ -189,12 +220,13 @@ log.debug('Command initialized', {
 ```typescript
 // ✅ GOOD - Commands orchestrate, services implement
 async run(): Promise<void> {
-  const config = this.buildConfig();
-  const service = new ImportService(config);
-  
   try {
+    const { flags } = await this.parse(MyCommand);
+    const config = this.buildConfig(flags);
+    const service = new ConfigService(config);
+    
     await service.execute();
-    this.log('Import completed successfully');
+    cliux.success('Operation completed successfully');
   } catch (error) {
     this.handleError(error);
   }
@@ -208,12 +240,113 @@ async run(): Promise<void> {
 // ✅ GOOD - Use @oclif/test for command testing
 import { test } from '@oclif/test';
 
-describe('cm:stacks:import', () => {
+describe('cm:config:set', () => {
   test
     .stdout()
-    .command(['cm:stacks:import', '--help'])
+    .command(['cm:config:set', '--help'])
     .it('shows help', ctx => {
-      expect(ctx.stdout).to.contain('Import content from a stack');
+      expect(ctx.stdout).to.contain('Set CLI configuration');
+    });
+
+  test
+    .stdout()
+    .command(['cm:config:set', '--region', 'eu'])
+    .it('sets region to eu', ctx => {
+      expect(ctx.stdout).to.contain('success');
     });
 });
 ```
+
+## Log Integration
+
+### Debug Logging
+```typescript
+// ✅ GOOD - Use structured debug logging
+import { log } from '@contentstack/cli-utilities';
+
+log.debug('Command started', { 
+  command: this.id, 
+  flags: this.flags,
+  timestamp: new Date().toISOString(),
+});
+
+log.debug('Processing complete', { 
+  itemsProcessed: count,
+  module: 'my-command',
+});
+```
+
+### Error Context
+```typescript
+// ✅ GOOD - Include context in error handling
+try {
+  await operation();
+} catch (error) {
+  handleAndLogError(error, { 
+    module: 'config-set',
+    command: 'cm:config:set',
+    flags: { region: 'eu' },
+  });
+}
+```
+
+## Multi-Topic Commands
+
+### Nested Command Structure
+```typescript
+// File: src/commands/config/show.ts
+export default class ShowConfigCommand extends Command {
+  static description = 'Show current configuration';
+  static examples = ['csdx config:show'];
+  async run(): Promise<void> { }
+}
+
+// File: src/commands/config/set.ts
+export default class SetConfigCommand extends Command {
+  static description = 'Set configuration values';
+  static examples = ['csdx config:set --region eu'];
+  async run(): Promise<void> { }
+}
+
+// Generated commands:
+// - cm:config:show
+// - cm:config:set
+```
+
+## Best Practices
+
+### Command Organization
+```typescript
+// ✅ GOOD - Well-organized command
+export default class MyCommand extends Command {
+  static description = 'Clear, concise description';
+  
+  static flags: FlagInput = {
+    // Define all flags
+  };
+  
+  static examples = [
+    'csdx my:command',
+    'csdx my:command --flag value',
+  ];
+  
+  async run(): Promise<void> {
+    try {
+      const { flags } = await this.parse(MyCommand);
+      await this.execute(flags);
+    } catch (error) {
+      handleAndLogError(error, { module: 'my-command' });
+    }
+  }
+  
+  private async execute(flags: Flags<typeof MyCommand>): Promise<void> {
+    // Implementation
+  }
+}
+```
+
+### Clear Help Text
+- Write description as action-oriented statement
+- Provide multiple examples for common use cases
+- Document each flag with clear description
+- Show output format or examples of results

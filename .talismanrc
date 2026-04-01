@@ -1,10 +1,18 @@
 fileignoreconfig:
   - filename: pnpm-lock.yaml
-    checksum: b8dc082b59f03873ab00adddd07df399fc74e90491f50ee96297467016fc9f20
-  - filename: .cursor/rules/dev-workflow.md
-    checksum: ae8f8b2894c5cf0da6a85eb53c97775bd38835c191f9132ecaa24dcb9f439811
-  - filename: .cursor/rules/contentstack-cli.mdc
-    checksum: ba287a9e9dcf6565d2d2e79c9bbf6350a89e13afbd1f8755973d837563115c83
+    checksum: fe9ac61ec17596aed093bd8ae333537962f9256a4a6c7f018a7f628a69f8cd22
+  - filename: .cursor/commands/code-review.md
+    checksum: bb748acc62e25aecdce6e48a519ed293ca97adba270a8736ece7063f3ffc5ab1
   - filename: .cursor/rules/oclif-commands.mdc
-    checksum: 3f9891d3d5872a2823c83215bc1727911dd32935d17d91ad5f2e7d5f75f3ab61
+    checksum: 8e269309cbfc9687e4a889c4a7983f145e77066d515dae53968d7553ae726b41
+  - filename: .cursor/skills/testing/references/testing-patterns.md
+    checksum: 0a6cb66f27eda46b40508517063a2f43fea1b4b8df878e7ddff404ab7fc126f8
+  - filename: .cursor/skills/code-review/SKILL.md
+    checksum: 29d812ac5c2ed4c55490f8d31e15eb592851601a6a141354cb458b1b9f1daa7a
+  - filename: .cursor/skills/contentstack-cli/references/contentstack-patterns.md
+    checksum: 159d7e31f9e32ceb708c702699c36459ed2210a61ff29ebb78efb66cec466128
+  - filename: .cursor/skills/contentstack-cli/SKILL.md
+    checksum: 2130a0c665821cd2831644aa238afef09992388f67f682c867820c0d98ab2406
+  - filename: .cursor/skills/code-review/references/code-review-checklist.md
+    checksum: bdf7453f08d7209deaee411f47a1132ee872b28f0eb082563dfe20aa56eab057
 version: '1.0'

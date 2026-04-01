@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: Automated PR review using comprehensive checklist tailored for Contentstack CLI plugins
+description: Automated PR review using comprehensive checklist tailored for modularized Contentstack CLI
 ---
 
 # Code Review Command
@@ -10,9 +10,9 @@ description: Automated PR review using comprehensive checklist tailored for Cont
 ### Scope-Based Reviews
 - `/code-review` - Review all current changes with full checklist
 - `/code-review --scope typescript` - Focus on TypeScript configuration and patterns
-- `/code-review --scope testing` - Focus on Mocha/Chai/Sinon test patterns
-- `/code-review --scope contentstack` - Focus on API integration and CLI patterns
+- `/code-review --scope testing` - Focus on Mocha/Chai test patterns
 - `/code-review --scope oclif` - Focus on command structure and OCLIF patterns
+- `/code-review --scope packages` - Focus on package structure and organization
 
 ### Severity Filtering
 - `/code-review --severity critical` - Show only critical issues (security, breaking changes)
@@ -20,14 +20,14 @@ description: Automated PR review using comprehensive checklist tailored for Cont
 - `/code-review --severity all` - Show all issues including suggestions
 
 ### Package-Aware Reviews
-- `/code-review --package contentstack-import` - Review changes in specific package
-- `/code-review --package-type plugin` - Review plugin packages only
-- `/code-review --package-type library` - Review library packages (e.g., variants)
+- `/code-review --package contentstack-config` - Review changes in specific package
+- `/code-review --package-type plugin` - Review plugin packages only (auth, config)
+- `/code-review --package-type library` - Review library packages (command, utilities, dev-dependencies)
 
 ### File Type Focus
 - `/code-review --files commands` - Review command files only
 - `/code-review --files tests` - Review test files only
-- `/code-review --files modules` - Review import/export modules
+- `/code-review --files utils` - Review utility files
 
 ## Comprehensive Review Checklist
 
@@ -36,87 +36,119 @@ description: Automated PR review using comprehensive checklist tailored for Cont
 - **pnpm workspace**: Correct `package.json` workspace configuration
 - **Build artifacts**: No `lib/` directories committed to version control
 - **Dependencies**: Proper use of shared utilities (`@contentstack/cli-command`, `@contentstack/cli-utilities`)
+- **Scripts**: Consistent build, test, and lint scripts across packages
 
-### TypeScript Standards (Repository-Specific)
-- **Configuration compliance**: Follows package-specific TypeScript config
+### Package-Specific Structure
+- **Plugin packages** (auth, config): Have `oclif.commands` configuration
+- **Library packages** (command, utilities, dev-dependencies): Proper exports in package.json
+- **Main package** (contentstack): Aggregates plugins correctly
+- **Dependency versions**: Using beta versions appropriately (~version ranges)
+
+### TypeScript Standards
+- **Configuration compliance**: Follows package TypeScript config (`strict: false`, `target: es2017`)
 - **Naming conventions**: kebab-case files, PascalCase classes, camelCase functions
-- **Type safety**: Appropriate use of strict mode vs relaxed settings per package
 - **Import patterns**: ES modules with proper default/named exports
-- **Migration strategy**: Proper use of `@ts-ignore` during gradual migration
+- **Type safety**: No unnecessary `any` types in production code
 
-### OCLIF Command Patterns (Actual Implementation)
-- **Base class usage**: Extends `@contentstack/cli-command` (not `@oclif/core`)
-- **Command structure**: Proper `static description`, `examples`, `flags`
-- **Topic organization**: Uses `cm` topic structure (`cm:stacks:import`)
+### OCLIF Command Patterns
+- **Base class usage**: Extends `@contentstack/cli-command` Command
+- **Command structure**: Proper `static description`, `static examples`, `static flags`
+- **Topic organization**: Uses `cm` topic structure (`cm:config:set`, `cm:auth:login`)
 - **Error handling**: Uses `handleAndLogError` from utilities
-- **Validation**: Early flag validation and user-friendly error messages
+- **Flag validation**: Early validation and user-friendly error messages
 - **Service delegation**: Commands orchestrate, services implement business logic
 
-### Testing Excellence (Mocha/Chai/Sinon Stack)
-- **Framework compliance**: Uses Mocha + Chai + Sinon (not Jest)
-- **File patterns**: Follows `*.test.ts` naming (or `*.test.js` for bootstrap)
-- **Directory structure**: Proper placement in `test/unit/`, `test/lib/`, etc.
-- **Mock patterns**: Proper Sinon stubbing of SDK methods
-- **Coverage configuration**: Correct nyc setup (watch for `inlcude` typo)
-- **Test isolation**: Proper `beforeEach`/`afterEach` with `sinon.restore()`
+### Testing Excellence (Mocha/Chai Stack)
+- **Framework compliance**: Uses Mocha + Chai (not Jest)
+- **File patterns**: Follows `*.test.ts` naming convention
+- **Directory structure**: Proper placement in `test/unit/`
+- **Test organization**: Arrange-Act-Assert pattern consistently used
+- **Isolation**: Proper setup/teardown with beforeEach/afterEach
 - **No real API calls**: All external dependencies properly mocked
 
-### Contentstack API Integration (Real Patterns)
-- **SDK usage**: Proper `managementSDKClient` and fluent API chaining
-- **Authentication**: Correct `configHandler` and token alias handling
-- **Rate limiting compliance**: 
-  - Batch spacing (minimum 1 second between batches)
-  - 429 retry handling with exponential backoff
-  - Pagination throttling for variants
-- **Error handling**: Proper `handleAndLogError` usage and user-friendly messages
-- **Configuration**: Proper regional endpoint and management token handling
+### Error Handling Standards
+- **Consistent patterns**: Use `handleAndLogError` from utilities
+- **User-friendly messages**: Clear error descriptions for end users
+- **Logging**: Proper use of `log.debug` for diagnostic information
+- **Status messages**: Use `cliux` for user feedback (success, error, info)
 
-### Import/Export Module Architecture
-- **BaseClass extension**: Proper inheritance from import/export BaseClass
-- **Batch processing**: Correct use of `makeConcurrentCall` and `logMsgAndWaitIfRequired`
-- **Module organization**: Proper entity-specific module structure
-- **Configuration handling**: Proper `ModuleClassParams` usage
-- **Progress feedback**: Appropriate user feedback during long operations
+### Build and Compilation
+- **TypeScript compilation**: Clean compilation with no errors
+- **OCLIF manifest**: Generated for command discovery
+- **README generation**: Commands documented in package README
+- **Source maps**: Properly configured for debugging
+- **No build artifacts in commit**: `.gitignore` excludes `lib/` directories
+
+### Testing Coverage
+- **Test structure**: Tests in `test/unit/` with descriptive names
+- **Command testing**: Uses @oclif/test for command validation
+- **Error scenarios**: Tests for both success and failure paths
+- **Mocking**: All dependencies properly mocked
+
+### Package.json Compliance
+- **Correct metadata**: name, description, version, author
+- **Script definitions**: build, compile, test, lint scripts present
+- **Dependencies**: Correct versions of shared packages
+- **Main/types**: Properly configured for library packages
+- **OCLIF config**: Present for plugin packages
 
 ### Security and Best Practices
-- **Token security**: No API keys or tokens logged or committed
+- **No secrets**: No API keys or tokens in code or tests
 - **Input validation**: Proper validation of user inputs and flags
-- **Error exposure**: No sensitive information in error messages
-- **File permissions**: Proper handling of file system operations
-- **Process management**: Appropriate use of `process.exit(1)` for critical failures
+- **Process management**: Appropriate use of error codes
+- **File operations**: Safe handling of file system operations
 
-### Performance Considerations
-- **Concurrent processing**: Proper use of `Promise.allSettled` for batch operations
-- **Memory management**: Appropriate handling of large datasets
-- **Rate limiting**: Compliance with Contentstack API limits (10 req/sec)
-- **Batch sizing**: Appropriate batch sizes for different operations
-- **Progress tracking**: Efficient progress reporting without performance impact
-
-### Package-Specific Patterns
-- **Plugin vs Library**: Correct `oclif.commands` configuration for plugin packages
-- **Command compilation**: Proper build pipeline (`tsc` → `lib/commands` → `oclif manifest`)
-- **Dependency management**: Correct use of shared vs package-specific dependencies
-- **Test variations**: Handles different test patterns per package (JS vs TS, different structures)
+### Code Quality
+- **Naming consistency**: Follow established conventions
+- **Comments**: Only for non-obvious logic (no "narration" comments)
+- **Error messages**: Clear, actionable messages for users
+- **Module organization**: Proper separation of concerns
 
 ## Review Execution
 
 ### Automated Checks
-1. **Lint compliance**: ESLint and TypeScript compiler checks
-2. **Test coverage**: nyc coverage thresholds (where enforced)
-3. **Build verification**: Successful compilation to `lib/` directories
-4. **Dependency audit**: No security vulnerabilities in dependencies
+1. **Lint compliance**: ESLint checks for code style
+2. **TypeScript compiler**: Successful compilation to `lib/` directories
+3. **Test execution**: All tests pass successfully
+4. **Build verification**: Build scripts complete without errors
 
 ### Manual Review Focus Areas
-1. **API integration patterns**: Verify proper SDK usage and error handling
-2. **Rate limiting implementation**: Check for proper throttling mechanisms
-3. **Test quality**: Verify comprehensive mocking and error scenario coverage
-4. **Command usability**: Ensure clear help text and examples
-5. **Monorepo consistency**: Check for consistent patterns across packages
+1. **Command usability**: Clear help text and realistic examples
+2. **Error handling**: Appropriate error messages and recovery options
+3. **Test quality**: Comprehensive test coverage for critical paths
+4. **Monorepo consistency**: Consistent patterns across all packages
+5. **Flag design**: Intuitive flag names and combinations
 
 ### Common Issues to Flag
-- **Coverage config typos**: `"inlcude"` instead of `"include"` in `.nycrc.json`
-- **Inconsistent TypeScript**: Mixed strict mode usage without migration plan
-- **Real API calls in tests**: Any unmocked external dependencies
-- **Missing rate limiting**: API calls without proper throttling
-- **Build artifacts committed**: Any `lib/` directories in version control
-- **Inconsistent error handling**: Not using utilities error handling patterns
+- **Inconsistent TypeScript settings**: Mixed strict mode without reason
+- **Real API calls in tests**: Unmocked external dependencies
+- **Missing error handling**: Commands that fail silently
+- **Poor test organization**: Tests without clear Arrange-Act-Assert
+- **Build artifacts committed**: `lib/` directories in version control
+- **Unclear error messages**: Non-actionable error descriptions
+- **Inconsistent flag naming**: Similar flags with different names
+- **Missing command examples**: Examples not showing actual usage
+
+## Repository-Specific Checklist
+
+### For Modularized CLI
+- [ ] Command properly extends `@contentstack/cli-command` Command
+- [ ] Flags defined with proper types from `@contentstack/cli-utilities`
+- [ ] Error handling uses `handleAndLogError` utility
+- [ ] User feedback uses `cliux` utilities
+- [ ] Tests use Mocha + Chai pattern with mocked dependencies
+- [ ] Package.json has correct scripts (build, compile, test, lint)
+- [ ] TypeScript compiles with no errors
+- [ ] Tests pass: `pnpm test`
+- [ ] No `.only` or `.skip` in test files
+- [ ] Build succeeds: `pnpm run build`
+- [ ] OCLIF manifest generated successfully
+
+### Before Merge
+- [ ] All review items addressed
+- [ ] No build artifacts in commit
+- [ ] Tests added for new functionality
+- [ ] Documentation updated if needed
+- [ ] No console.log() statements (use log.debug instead)
+- [ ] Error messages are user-friendly
+- [ ] No secrets or credentials in code
