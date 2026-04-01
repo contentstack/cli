@@ -9,7 +9,8 @@ Context-aware rules that load automatically based on the files you're editing, o
 | `dev-workflow.md` | `**/*.ts`, `**/*.js`, `**/*.json` | Yes | Monorepo TDD workflow, pnpm workspace patterns (6 packages) |
 | `typescript.mdc` | `**/*.ts`, `**/*.tsx` | No | TypeScript configurations and naming conventions |
 | `testing.mdc` | `**/test/**/*.ts`, `**/test/**/*.js`, `**/__tests__/**/*.ts`, `**/*.spec.ts`, `**/*.test.ts` | Yes | Mocha, Chai test patterns and test structure |
-| `oclif-commands.mdc` | `**/commands/**/*.ts` | No | OCLIF command patterns and CLI validation |
+| `oclif-commands.mdc` | `**/commands/**/*.ts`, `**/base-command.ts` | No | OCLIF command patterns and CLI validation |
+| `contentstack-core.mdc` | `packages/contentstack/src/**/*.ts`, `packages/contentstack/src/**/*.js` | No | Core package plugin aggregation, hooks, and entry point patterns |
 
 ## Commands
 
@@ -23,6 +24,8 @@ Context-aware rules that load automatically based on the files you're editing, o
 ### File Type Mapping
 - **TypeScript files** → `typescript.mdc` + `dev-workflow.md`
 - **Command files** (`packages/*/src/commands/**/*.ts`) → `oclif-commands.mdc` + `typescript.mdc` + `dev-workflow.md`
+- **Base command files** (`packages/*/src/base-command.ts`) → `oclif-commands.mdc` + `typescript.mdc` + `dev-workflow.md`
+- **Core package files** (`packages/contentstack/src/**/*.ts`) → `contentstack-core.mdc` + `typescript.mdc` + `dev-workflow.md`
 - **Test files** (`packages/*/test/**/*.{ts,js}`) → `testing.mdc` + `dev-workflow.md`
 - **Utility files** (`packages/*/src/utils/**/*.ts`) → `typescript.mdc` + `dev-workflow.md`
 
@@ -76,5 +79,6 @@ Context-aware rules that load automatically based on the files you're editing, o
 For detailed patterns:
 - **Testing**: See `testing.mdc` for Mocha/Chai test structure
 - **Commands**: See `oclif-commands.mdc` for command development
+- **Core Package**: See `contentstack-core.mdc` for plugin aggregation and hook patterns
 - **Development**: See `dev-workflow.md` for TDD and monorepo workflow
 - **TypeScript**: See `typescript.mdc` for type safety patterns

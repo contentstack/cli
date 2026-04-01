@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.60.0-beta.6 darwin-arm64 node-v24.13.0
+@contentstack/cli/1.60.0-beta.7 darwin-arm64 node-v22.13.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -70,7 +70,7 @@ USAGE
 * [`csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`](#csdx-cmstacksimport-setup--k-value--d-value--a-value---modules-valuevalue)
 * [`csdx cm:migrate-rte`](#csdx-cmmigrate-rte)
 * [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple)
-* [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value---locale-value)
+* [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y] [-s <value>] [--locale <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y--s-value---locale-value)
 * [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent)
 * [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
 * [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix)
@@ -83,7 +83,7 @@ USAGE
 * [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
 * [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
 * [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
-* [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value---locale-value)
+* [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y] [-s <value>] [--locale <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y--s-value---locale-value)
 * [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries)
 * [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
 * [`csdx config:get:ea-header`](#csdx-configgetea-header)
@@ -582,14 +582,14 @@ Bootstrap contentstack apps
 
 ```
 USAGE
-  $ csdx cm:bootstrap [--app-name <value>] [--project-dir <value>] [-k <value> | --org <value> | -n <value>] [-y
-    <value>] [--run-dev-server] [-a <value>]
+  $ csdx cm:bootstrap [--app-name <value>] [--project-dir <value>] [-k <value> | --org <value> | -n <value>] [-y]
+    [--run-dev-server] [-a <value>]
 
 FLAGS
   -a, --alias=<value>          Alias of the management token
   -k, --stack-api-key=<value>  Provide stack API key to seed content
   -n, --stack-name=<value>     Name of the new stack that will be created.
-  -y, --yes=<value>            [Optional] Skip stack confirmation
+  -y, --yes                    [Optional] Skip stack confirmation
       --app-name=<value>       App name, kickstart-next, kickstart-next-ssr, kickstart-next-ssg, kickstart-next-graphql,
                                kickstart-next-middleware, kickstart-nuxt, kickstart-nuxt-ssr
       --org=<value>            Provide organization UID to create a new stack
@@ -2566,14 +2566,14 @@ EXAMPLES
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
 
-## `csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]`
+## `csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y] [-s <value>] [--locale <value>]`
 
 Create a stack from existing content types, entries, assets, etc
 
 ```
 USAGE
-  $ csdx cm:seed cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s
-    <value>] [--locale <value>]
+  $ csdx cm:seed cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y] [-s <value>]
+    [--locale <value>]
 
 FLAGS
   -a, --alias=<value>          Alias of the management token
@@ -2582,7 +2582,7 @@ FLAGS
   -o, --org=<value>            Provide Organization UID to create a new stack
   -r, --repo=<value>           GitHub organization name or GitHub user name/repository name.
   -s, --stack=<value>          Provide the stack UID to seed content.
-  -y, --yes=<value>            [Optional] Skip the stack confirmation.
+  -y, --yes                    [Optional] Skip the stack confirmation.
 
 DESCRIPTION
   Create a stack from existing content types, entries, assets, etc
@@ -3213,14 +3213,14 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish-revert.js)_
 
-## `csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]`
+## `csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y] [-s <value>] [--locale <value>]`
 
 Create a stack from existing content types, entries, assets, etc
 
 ```
 USAGE
-  $ csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]
-    [--locale <value>]
+  $ csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y] [-s <value>] [--locale
+    <value>]
 
 FLAGS
   -a, --alias=<value>          Alias of the management token
@@ -3229,7 +3229,7 @@ FLAGS
   -o, --org=<value>            Provide Organization UID to create a new stack
   -r, --repo=<value>           GitHub organization name or GitHub user name/repository name.
   -s, --stack=<value>          Provide the stack UID to seed content.
-  -y, --yes=<value>            [Optional] Skip the stack confirmation.
+  -y, --yes                    [Optional] Skip the stack confirmation.
 
 DESCRIPTION
   Create a stack from existing content types, entries, assets, etc
