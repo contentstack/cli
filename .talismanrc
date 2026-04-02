@@ -1,6 +1,6 @@
 fileignoreconfig:
   - filename: pnpm-lock.yaml
-    checksum: e7531b8f9e2f1139336e2a33a45261b1417e63361c5f2a9ed55620cb60cf265b
+    checksum: 522dcf8109025e446e05d92fc168106fff3b7dbdf6c837c1d3fd97a917554211
   - filename: packages/contentstack-utilities/src/proxy-helper.ts
     checksum: 2169f25563bca3a0fe54edd00c73646ed56d36aa7e8effe904de26b0c1633759
   - filename: .cursor/skills/code-review/SKILL.md
