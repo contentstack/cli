@@ -1,0 +1,352 @@
+---
+description: 'OCLIF command development patterns and CLI best practices'
+globs: ['**/commands/**/*.ts', '**/base-command.ts']
+alwaysApply: false
+---
+
+# OCLIF Command Standards
+
+## Command Structure
+
+### Standard Command Pattern
+```typescript
+// ✅ GOOD - Standard command structure
+import { Command } from '@contentstack/cli-command';
+import { cliux, flags, FlagInput, handleAndLogError } from '@contentstack/cli-utilities';
+
+export default class ConfigSetCommand extends Command {
+  static description = 'Set CLI configuration values';
+  
+  static flags: FlagInput = {
+    region: flags.string({
+      char: 'r',
+      description: 'Set region (us/eu)',
+    }),
+    alias: flags.string({
+      char: 'a',
+      description: 'Configuration alias',
+    }),
+  };
+  
+  static examples = [
+    'csdx config:set --region eu',
+    'csdx config:set --region us --alias default',
+  ];
+  
+  async run(): Promise<void> {
+    try {
+      const { flags: configFlags } = await this.parse(ConfigSetCommand);
+      // Command logic here
+    } catch (error) {
+      handleAndLogError(error, { module: 'config-set' });
+    }
+  }
+}
+```
+
+## Base Classes
+
+### Command Base Class
+```typescript
+// ✅ GOOD - Extend Command from @contentstack/cli-command
+import { Command } from '@contentstack/cli-command';
+
+export default class MyCommand extends Command {
+  async run(): Promise<void> {
+    // Command implementation
+  }
+}
+```
+
+### Custom Base Classes
+```typescript
+// ✅ GOOD - Create custom base classes for shared functionality
+export abstract class BaseCommand<T extends typeof Command> extends Command {
+  protected contextDetails = {
+    command: this.id || 'unknown',
+  };
+
+  async init(): Promise<void> {
+    await super.init();
+    log.debug('Command initialized', this.contextDetails);
+  }
+}
+```
+
+## OCLIF Configuration
+
+### Package.json Setup
+```json
+{
+  "oclif": {
+    "commands": "./lib/commands",
+    "bin": "csdx",
+    "topicSeparator": ":"
+  }
+}
+```
+
+### Command Topics
+- All commands use `cm` topic: `cm:config:set`, `cm:auth:login`
+- Built commands live in `lib/commands` (compiled from `src/commands`)
+- Commands use nested directories: `src/commands/config/set.ts` → `cm:config:set`
+
+### Command Naming
+- **Topic hierarchy**: `config/remove/proxy.ts` → `cm:config:remove:proxy`
+- **Descriptive names**: Use verb-noun pattern (`set`, `remove`, `show`)
+- **Grouping**: Related commands share parent topics
+
+## Flag Management
+
+### Flag Definition Patterns
+```typescript
+// ✅ GOOD - Define flags clearly
+static flags: FlagInput = {
+  'stack-api-key': flags.string({
+    char: 'k',
+    description: 'Stack API key',
+    required: false,
+  }),
+  region: flags.string({
+    char: 'r',
+    description: 'Set region',
+    options: ['us', 'eu'],
+  }),
+  verbose: flags.boolean({
+    char: 'v',
+    description: 'Show verbose output',
+    default: false,
+  }),
+};
+```
+
+### Flag Parsing
+```typescript
+// ✅ GOOD - Parse and validate flags
+async run(): Promise<void> {
+  const { flags: parsedFlags } = await this.parse(MyCommand);
+  
+  // Validate flag combinations
+  if (!parsedFlags['stack-api-key'] && !parsedFlags.alias) {
+    this.error('Either --stack-api-key or --alias is required');
+  }
+  
+  // Use parsed flags
+  const region = parsedFlags.region || 'us';
+}
+```
+
+## Error Handling
+
+### Standard Error Pattern
+```typescript
+// ✅ GOOD - Use handleAndLogError from utilities
+try {
+  await this.executeCommand();
+} catch (error) {
+  handleAndLogError(error, { module: 'my-command' });
+}
+```
+
+### User-Friendly Messages
+```typescript
+// ✅ GOOD - Clear user feedback
+import { cliux } from '@contentstack/cli-utilities';
+
+// Success message
+cliux.success('Configuration updated successfully', { color: 'green' });
+
+// Error message
+cliux.error('Invalid region specified', { color: 'red' });
+
+// Info message
+cliux.print('Setting region to eu', { color: 'blue' });
+```
+
+## Validation Patterns
+
+### Early Validation
+```typescript
+// ✅ GOOD - Validate flags early
+async run(): Promise<void> {
+  const { flags } = await this.parse(MyCommand);
+  
+  // Validate required flags
+  if (!flags.region) {
+    this.error('--region is required');
+  }
+  
+  // Validate flag values
+  if (!['us', 'eu'].includes(flags.region)) {
+    this.error('Region must be "us" or "eu"');
+  }
+  
+  // Proceed with validated input
+}
+```
+
+## Progress and Logging
+
+### User Feedback
+```typescript
+// ✅ GOOD - Provide user feedback
+import { log, cliux } from '@contentstack/cli-utilities';
+
+// Regular logging
+this.log('Starting configuration update...');
+
+// Debug logging
+log.debug('Detailed operation information', { context: 'data' });
+
+// Status messages
+cliux.print('Processing...', { color: 'blue' });
+```
+
+### Progress Indication
+```typescript
+// ✅ GOOD - Show progress for long operations
+cliux.print('Processing items...', { color: 'blue' });
+let count = 0;
+for (const item of items) {
+  await this.processItem(item);
+  count++;
+  cliux.print(`Processed ${count}/${items.length} items`, { color: 'blue' });
+}
+```
+
+## Command Delegation
+
+### Service Layer Separation
+```typescript
+// ✅ GOOD - Commands orchestrate, services implement
+async run(): Promise<void> {
+  try {
+    const { flags } = await this.parse(MyCommand);
+    const config = this.buildConfig(flags);
+    const service = new ConfigService(config);
+    
+    await service.execute();
+    cliux.success('Operation completed successfully');
+  } catch (error) {
+    this.handleError(error);
+  }
+}
+```
+
+## Testing Commands
+
+### OCLIF Test Support
+```typescript
+// ✅ GOOD - Use @oclif/test for command testing
+import { test } from '@oclif/test';
+
+describe('cm:config:set', () => {
+  test
+    .stdout()
+    .command(['cm:config:set', '--help'])
+    .it('shows help', ctx => {
+      expect(ctx.stdout).to.contain('Set CLI configuration');
+    });
+
+  test
+    .stdout()
+    .command(['cm:config:set', '--region', 'eu'])
+    .it('sets region to eu', ctx => {
+      expect(ctx.stdout).to.contain('success');
+    });
+});
+```
+
+## Log Integration
+
+### Debug Logging
+```typescript
+// ✅ GOOD - Use structured debug logging
+import { log } from '@contentstack/cli-utilities';
+
+log.debug('Command started', { 
+  command: this.id, 
+  flags: this.flags,
+  timestamp: new Date().toISOString(),
+});
+
+log.debug('Processing complete', { 
+  itemsProcessed: count,
+  module: 'my-command',
+});
+```
+
+### Error Context
+```typescript
+// ✅ GOOD - Include context in error handling
+try {
+  await operation();
+} catch (error) {
+  handleAndLogError(error, { 
+    module: 'config-set',
+    command: 'cm:config:set',
+    flags: { region: 'eu' },
+  });
+}
+```
+
+## Multi-Topic Commands
+
+### Nested Command Structure
+```typescript
+// File: src/commands/config/show.ts
+export default class ShowConfigCommand extends Command {
+  static description = 'Show current configuration';
+  static examples = ['csdx config:show'];
+  async run(): Promise<void> { }
+}
+
+// File: src/commands/config/set.ts
+export default class SetConfigCommand extends Command {
+  static description = 'Set configuration values';
+  static examples = ['csdx config:set --region eu'];
+  async run(): Promise<void> { }
+}
+
+// Generated commands:
+// - cm:config:show
+// - cm:config:set
+```
+
+## Best Practices
+
+### Command Organization
+```typescript
+// ✅ GOOD - Well-organized command
+export default class MyCommand extends Command {
+  static description = 'Clear, concise description';
+  
+  static flags: FlagInput = {
+    // Define all flags
+  };
+  
+  static examples = [
+    'csdx my:command',
+    'csdx my:command --flag value',
+  ];
+  
+  async run(): Promise<void> {
+    try {
+      const { flags } = await this.parse(MyCommand);
+      await this.execute(flags);
+    } catch (error) {
+      handleAndLogError(error, { module: 'my-command' });
+    }
+  }
+  
+  private async execute(flags: Flags<typeof MyCommand>): Promise<void> {
+    // Implementation
+  }
+}
+```
+
+### Clear Help Text
+- Write description as action-oriented statement
+- Provide multiple examples for common use cases
+- Document each flag with clear description
+- Show output format or examples of results
