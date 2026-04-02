@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli",
   "description": "Command-line tool (CLI) to interact with Contentstack",
-  "version": "1.60.0",
+  "version": "1.60.1",
   "author": "Contentstack",
   "bin": {
     "csdx": "./bin/run.js"
@@ -32,10 +32,10 @@
     "@contentstack/cli-cm-migrate-rte": "~1.6.4",
     "@contentstack/cli-cm-seed": "~1.15.0",
     "@contentstack/cli-command": "~1.8.0",
-    "@contentstack/cli-config": "~1.20.0",
+    "@contentstack/cli-config": "~1.20.1",
     "@contentstack/cli-launch": "^1.9.6",
     "@contentstack/cli-migration": "~1.12.0",
-    "@contentstack/cli-utilities": "~1.18.0",
+    "@contentstack/cli-utilities": "~1.18.1",
     "@contentstack/cli-variants": "~1.4.0",
     "@contentstack/management": "~1.27.5",
     "@oclif/core": "^4.8.3",
