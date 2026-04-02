@@ -15,4 +15,6 @@ fileignoreconfig:
     checksum: 2130a0c665821cd2831644aa238afef09992388f67f682c867820c0d98ab2406
   - filename: .cursor/skills/code-review/references/code-review-checklist.md
     checksum: bdf7453f08d7209deaee411f47a1132ee872b28f0eb082563dfe20aa56eab057
+  - filename: packages/contentstack/README.md
+    checksum: cd1b51296e747630b398fdb972ddc602aa4a9dd6bb661742f805e219c9d72a52
 version: '1.0'
