@@ -3,7 +3,15 @@ import { IHttpClient } from './client-interface';
 import { HttpResponse } from './http-response';
 import configStore from '../config-handler';
 import authHandler from '../auth-handler';
-import { hasProxy, getProxyUrl, getProxyConfig, getProxyConfigForHost } from '../proxy-helper';
+import {
+  hasProxy,
+  getProxyUrl,
+  getProxyConfigForHost,
+  resolveRequestHost,
+  shouldBypassProxy,
+} from '../proxy-helper';
+
+type AxiosRequestConfigWithRetry = AxiosRequestConfig & { __httpClientRetryCount?: number };
 
 /**
  * Derive request host from baseURL or url for NO_PROXY checks.
@@ -52,6 +60,62 @@ export class HttpClient implements IHttpClient {
 
     // Sets payload format as json by default
     this.asJson();
+    this.attachResponseInterceptor();
+  }
+
+  /** Single interceptor per instance — avoids stacking handlers on every request (major perf win). */
+  private attachResponseInterceptor(): void {
+    this.axiosInstance.interceptors.response.use(null, async (error) => {
+      const cfg = error.config as AxiosRequestConfigWithRetry | undefined;
+      if (!cfg) {
+        return Promise.reject(error);
+      }
+
+      const { message, response, code } = error;
+      const proxyFromCfg = cfg.proxy;
+      const isProxyConfigured = !!proxyFromCfg || hasProxy();
+
+      const proxyErrorCodes = ['ECONNREFUSED', 'ETIMEDOUT', 'ENOTFOUND', 'ERR_BAD_RESPONSE'];
+      if (isProxyConfigured && (proxyErrorCodes.includes(code) || message?.includes('ERR_BAD_RESPONSE'))) {
+        const p = proxyFromCfg as { protocol?: string; host?: string; port?: number } | undefined;
+        const proxyUrl =
+          p && typeof p === 'object' && p.host
+            ? `${p.protocol ?? 'http'}://${p.host}:${p.port ?? 80}`
+            : getProxyUrl();
+
+        return Promise.reject(
+          new Error(
+            `Proxy error: Unable to connect to proxy server at ${proxyUrl}. Please verify your proxy configuration.`,
+          ),
+        );
+      }
+
+      if (response?.data?.error_message?.includes('access token is invalid or expired')) {
+        const token = await this.refreshToken();
+        this.headers({ ...this.request.headers, authorization: token.authorization });
+        return this.axiosInstance({
+          ...cfg,
+          headers: { ...cfg.headers, authorization: token.authorization },
+        });
+      }
+
+      if (
+        !(
+          message?.includes('timeout') ||
+          message?.includes('Network Error') ||
+          message?.includes('getaddrinfo ENOTFOUND')
+        )
+      ) {
+        return Promise.reject(error);
+      }
+
+      const retries = cfg.__httpClientRetryCount ?? 0;
+      if (retries < 1) {
+        cfg.__httpClientRetryCount = retries + 1;
+        return this.axiosInstance(cfg);
+      }
+      return Promise.reject(error);
+    });
   }
 
   /**
@@ -373,52 +437,6 @@ export class HttpClient implements IHttpClient {
    * @returns {Request}
    */
   async createAndSendRequest(method: HttpMethod, url: string): Promise<AxiosResponse> {
-    let counter = 0;
-    this.axiosInstance.interceptors.response.use(null, async (error) => {
-      const { message, response, code } = error;
-      
-      // Don't retry proxy connection errors - fail fast
-      const proxyErrorCodes = ['ECONNREFUSED', 'ETIMEDOUT', 'ENOTFOUND', 'ERR_BAD_RESPONSE'];
-      const isProxyConfigured = this.request.proxy || hasProxy();
-      
-      if (isProxyConfigured && (proxyErrorCodes.includes(code) || message?.includes('ERR_BAD_RESPONSE'))) {
-        const proxyUrl = this.request.proxy && typeof this.request.proxy === 'object'
-          ? `${this.request.proxy.protocol}://${this.request.proxy.host}:${this.request.proxy.port}`
-          : getProxyUrl();
-        
-        return Promise.reject(new Error(`Proxy error: Unable to connect to proxy server at ${proxyUrl}. Please verify your proxy configuration.`));
-      }
-      
-      if (response?.data?.error_message?.includes('access token is invalid or expired')) {
-        const token = await this.refreshToken();
-        this.headers({ ...this.request.headers, authorization: token.authorization });
-        return await this.axiosInstance({
-          url,
-          method,
-          withCredentials: true,
-          ...this.request,
-          data: this.prepareRequestPayload(),
-        });
-      }
-      
-      if (
-        !(message.includes('timeout') || message.includes('Network Error') || message.includes('getaddrinfo ENOTFOUND'))
-      ) {
-        return Promise.reject(error);
-      }
-      if (counter < 1) {
-        counter++;
-        return await this.axiosInstance({
-          url,
-          method,
-          withCredentials: true,
-          ...this.request,
-          data: this.prepareRequestPayload(),
-        });
-      }
-      return Promise.reject(error);
-    });
-
     if (!this.disableEarlyAccessHeaders) {
       // Add early access header by default
       const earlyAccessHeaders = configStore.get(`earlyAccessHeaders`);
@@ -427,12 +445,14 @@ export class HttpClient implements IHttpClient {
       }
     }
 
-    // Configure proxy if available. NO_PROXY has priority: hosts in NO_PROXY never use proxy.
+    // Configure proxy if available. NO_PROXY has priority; fall back to region CMA for host resolution.
     if (!this.request.proxy) {
-      const host = getRequestHost(this.request.baseURL, url);
-      const proxyConfig = host ? getProxyConfigForHost(host) : getProxyConfig();
+      const host = getRequestHost(this.request.baseURL, url) || resolveRequestHost({});
+      const proxyConfig = getProxyConfigForHost(host);
       if (proxyConfig) {
         this.request.proxy = proxyConfig;
+      } else if (host && shouldBypassProxy(host)) {
+        this.request.proxy = false;
       }
     }
 
