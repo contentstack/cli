@@ -1,0 +1,358 @@
+---
+description: "Contentstack core CLI package patterns — plugin aggregation, hooks, and entry point"
+globs: ["packages/contentstack/src/**/*.ts", "packages/contentstack/src/**/*.js"]
+alwaysApply: false
+---
+
+# Contentstack Core Package Standards
+
+## Overview
+
+The `@contentstack/cli` core package is the entry point for the entire CLI. Unlike plugin packages (auth, config), it:
+- **Aggregates all plugins** — declared in `oclif.plugins` array in `package.json`
+- **Implements hooks** — `init` and `prerun` hooks in `src/hooks/` for global behaviors
+- **Shares interfaces** — Core types used across all plugins in `src/interfaces/`
+- **Provides utilities** — Helper classes like `CsdxContext` in `src/utils/`
+- **Has no command files** — Commands are provided by plugin packages
+
+## Architecture
+
+### Entry Point
+
+```typescript
+// ✅ GOOD - bin/run.js (CommonJS)
+// This is the executable entry point referenced in package.json "bin"
+// Standard OCLIF entry point pattern
+```
+
+### Package Configuration
+
+The `oclif` configuration in `package.json`:
+```json
+{
+  "oclif": {
+    "bin": "csdx",
+    "topicSeparator": ":",
+    "helpClass": "./lib/help.js",
+    "plugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-not-found",
+      "@oclif/plugin-plugins",
+      "@contentstack/cli-config",
+      "@contentstack/cli-auth"
+      // ... more plugins
+    ],
+    "hooks": {
+      "init": [
+        "./lib/hooks/init/context-init",
+        "./lib/hooks/init/utils-init"
+      ],
+      "prerun": [
+        "./lib/hooks/prerun/init-context-for-command",
+        "./lib/hooks/prerun/command-deprecation-check",
+        "./lib/hooks/prerun/default-rate-limit-check",
+        "./lib/hooks/prerun/latest-version-warning"
+      ]
+    },
+    "topics": {
+      "auth": { "description": "Perform authentication-related activities" },
+      "config": { "description": "Perform configuration related activities" },
+      "cm": { "description": "Perform content management activities" }
+    }
+  }
+}
+```
+
+## Hook Lifecycle
+
+### OCLIF Hook Execution Order
+
+1. **CLI initialization** → Node process starts
+2. **`init` hooks** → Set up global context and utilities (executed once)
+3. **Command detection** → OCLIF matches command name to plugin
+4. **`prerun` hooks** → Validate state, check auth, prepare for command execution (per command)
+5. **Command execution** → Plugin command's `run()` method executes
+
+### Init Hooks
+
+Init hooks run once during CLI startup. Use them for expensive setup operations.
+
+```typescript
+// ✅ GOOD - src/hooks/init/context-init.ts
+// Initialize CLI context that commands depend on
+import { CsdxContext } from '../../utils';
+import { configHandler } from '@contentstack/cli-utilities';
+
+export default function (opts): void {
+  // Store command ID for session-based log organization
+  if (opts.id) {
+    configHandler.set('currentCommandId', opts.id);
+  }
+  // Make context available to all commands via this.config.context
+  this.config.context = new CsdxContext(opts, this.config);
+}
+```
+
+### Prerun Hooks
+
+Prerun hooks run before each command. Use them for validation and state checks.
+
+```typescript
+// ✅ GOOD - src/hooks/prerun/auth-guard.ts
+// Validate authentication before running protected commands
+
+import { cliux, isAuthenticated, managementSDKClient } from '@contentstack/cli-utilities';
+
+export default async function (opts): Promise<void> {
+  const { context: { region = null } = {} } = this.config;
+  
+  // Validate region is set (required for all non-region commands)
+  if (opts.Command.id !== 'config:set:region') {
+    if (!region) {
+      cliux.error('No region found, please set a region via config:set:region');
+      this.exit();
+      return;
+    }
+  }
+  
+  // Example: Validate auth for protected commands
+  if (isProtectedCommand(opts.Command.id)) {
+    if (!isAuthenticated()) {
+      cliux.error('Please log in to execute this command');
+      this.exit();
+    }
+  }
+}
+```
+
+### Hook Patterns
+
+#### Accessing Configuration
+```typescript
+// ✅ GOOD - Access global config in hooks
+export default function (opts): void {
+  const { config } = this;  // OCLIF Config object
+  const { context, region } = config;  // Custom properties set by other hooks
+}
+```
+
+#### Async Hooks
+```typescript
+// ✅ GOOD - Async hooks for operations requiring I/O
+export default async function (opts): Promise<void> {
+  const client = await managementSDKClient({ host: this.config.region.cma });
+  const user = await client.getUser();
+  // Hook runs to completion before command starts
+}
+```
+
+#### Early Exit
+```typescript
+// ✅ GOOD - Exit hook execution when validation fails
+export default function (opts): void {
+  if (!isValid()) {
+    cliux.error('Validation failed');
+    this.exit();  // Stops command from executing
+    return;
+  }
+}
+```
+
+## Context Object
+
+The `CsdxContext` class wraps OCLIF config and adds CLI-specific state.
+
+```typescript
+// ✅ GOOD - Accessing context in commands
+import { CLIConfig } from '../interfaces';
+
+export default class MyCommand extends Command {
+  async run(): Promise<void> {
+    const config: CLIConfig = this.config;
+    const { context } = config;
+    
+    // Available context properties:
+    // - context.id: unique session identifier
+    // - context.user: authenticated user info (authtoken, email)
+    // - context.region: current region configuration
+    // - context.config: regional configuration
+    // - context.plugin: current plugin metadata
+  }
+}
+```
+
+## Shared Interfaces
+
+Interfaces in `src/interfaces/index.ts` are exported and consumed by all plugins.
+
+```typescript
+// ✅ GOOD - Define shared types
+export interface Context {
+  id: string;
+  user: {
+    authtoken: string;
+    email: string;
+  };
+  region: Region;
+  plugin: Plugin;
+  config: any;
+}
+
+export interface CLIConfig extends Config {
+  context: Context;
+}
+
+export interface Region {
+  name: string;
+  cma: string;    // Content Management API endpoint
+  cda: string;    // Content Delivery API endpoint
+}
+```
+
+## Utilities
+
+Core utilities in `src/utils/` provide shared functionality.
+
+```typescript
+// ✅ GOOD - src/utils/context-handler.ts
+// Wrapper around context initialization and access
+export class CsdxContext {
+  constructor(opts: any, config: any) {
+    this.id = opts.id || generateId();
+    this.region = config.region;
+    this.user = extractUserFromToken();
+  }
+}
+
+// Export utilities for use in hooks and contexts
+export { CsdxContext };
+```
+
+## Plugin Registration
+
+Plugins are registered via `oclif.plugins` in `package.json`. Each plugin package must:
+
+1. **Provide commands** — via `oclif.commands` in its `package.json`
+2. **Be installed** — as a dependency in the core package
+3. **Be listed** — in `oclif.plugins` array for auto-discovery
+
+```json
+{
+  "dependencies": {
+    "@contentstack/cli-config": "~1.20.0-beta.1",
+    "@contentstack/cli-auth": "~1.8.0-beta.1"
+  },
+  "oclif": {
+    "plugins": [
+      "@contentstack/cli-config",
+      "@contentstack/cli-auth"
+    ]
+  }
+}
+```
+
+### Plugin Discovery
+
+OCLIF automatically discovers commands in:
+1. Built-in plugins (`@oclif/plugin-help`, etc.)
+2. Core package commands (none in contentstack core)
+3. Registered plugins (listed in `oclif.plugins`)
+
+## Differences from Plugin Packages
+
+| Aspect | Core Package | Plugin Package |
+|--------|--------------|----------------|
+| **OCLIF config** | No `commands` field | Has `oclif.commands: "./lib/commands"` |
+| **Source structure** | `src/hooks/`, `src/interfaces/`, `src/utils/` | `src/commands/`, `src/services/` |
+| **Entry point** | `bin/run.js` | None |
+| **Dependencies** | References all plugins | Depends on `@contentstack/cli-command` |
+| **Execution role** | Aggregates and initializes | Implements business logic |
+
+## Build Process
+
+The core package build includes hook compilation and OCLIF manifest generation.
+
+```bash
+# In package.json scripts
+"build": "pnpm compile && oclif manifest && oclif readme"
+```
+
+### Build Steps
+
+1. **compile** — TypeScript → JavaScript in `lib/`
+2. **oclif manifest** — Generate `oclif.manifest.json` for plugin discovery
+3. **oclif readme** — Generate README with available commands
+
+### Build Artifacts
+
+- `lib/` — Compiled hooks, utilities, interfaces
+- `oclif.manifest.json` — Plugin and command registry
+- `bin/run.js` — Executable entry point
+- `README.md` — Generated command documentation
+
+## Testing Hooks
+
+Hooks cannot be tested with standard command testing. Test hook behavior by:
+
+1. **Unit test hook functions** — Import and invoke directly
+2. **Integration test via CLI** — Run commands that trigger hooks
+3. **Mock OCLIF config** — Provide mocked `this.config` object
+
+```typescript
+// ✅ GOOD - Test hook function directly
+import contextInit from '../src/hooks/init/context-init';
+
+describe('context-init hook', () => {
+  it('should set context on config', () => {
+    const mockConfig = { context: null };
+    const hookContext = { config: mockConfig };
+    const opts = { id: 'test-command' };
+    
+    contextInit.call(hookContext, opts);
+    
+    expect(mockConfig.context).to.exist;
+  });
+});
+```
+
+## Error Handling in Hooks
+
+Hooks should fail fast and provide clear error messages to users.
+
+```typescript
+// ✅ GOOD - Clear error messages with user guidance
+export default function (opts): void {
+  if (!isRegionSet()) {
+    cliux.error('No region configured');
+    cliux.print('Run: csdx config:set:region --region us', { color: 'blue' });
+    this.exit();
+  }
+}
+```
+
+## Best Practices
+
+### Hook Organization
+- Keep hooks focused on a single concern (validation, initialization, etc.)
+- Use descriptive names that indicate when they run (`prerun-`, `init-`)
+- Initialize dependencies in `init` hooks, not in `prerun` hooks
+
+### Performance
+- Minimize work in `init` hooks (they run once per CLI session)
+- Cache expensive operations in context for reuse
+- Avoid repeated API calls across hooks
+
+### Ordering
+- Place hooks that prepare data before hooks that consume it
+- Auth validation (`auth-guard`) should run after region validation
+- Version warnings can run last (non-critical)
+
+### Context Usage
+- Store computed values in context to avoid recalculation
+- Make context available to all commands via `this.config.context`
+- Document context properties that plugins should expect
+
+### Plugin Development
+- Ensure plugins depend on `@contentstack/cli-command`, not the core package
+- Commands should extend the shared Command base class
+- Plugins should not modify or depend on core hooks directly
