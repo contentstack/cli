@@ -1,0 +1,246 @@
+---
+description: 'TypeScript strict mode standards and naming conventions'
+globs: ['**/*.ts', '**/*.tsx']
+alwaysApply: false
+---
+
+# TypeScript Standards
+
+## Configuration
+
+### Standard Configuration (All Packages)
+```json
+{
+  "compilerOptions": {
+    "declaration": true,
+    "importHelpers": true,
+    "module": "commonjs",
+    "outDir": "lib",
+    "rootDir": "src",
+    "strict": false,           // Relaxed for compatibility
+    "target": "es2017",
+    "sourceMap": false,
+    "allowJs": true,           // Mixed JS/TS support
+    "skipLibCheck": true,
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*"]
+}
+```
+
+### Root Configuration
+```json
+// tsconfig.json - Baseline configuration
+{
+  "compilerOptions": {
+    "strict": false,
+    "module": "commonjs",
+    "target": "es2017",
+    "declaration": true,
+    "outDir": "lib",
+    "rootDir": "src"
+  }
+}
+```
+
+## Naming Conventions (Actual Usage)
+
+### Files
+- **Primary pattern**: `kebab-case.ts` (e.g., `base-command.ts`, `config-handler.ts`)
+- **Single-word modules**: `index.ts`, `types.ts`
+- **Commands**: Follow OCLIF topic structure (`cm/auth/login.ts`, `cm/config/region.ts`)
+
+### Classes
+```typescript
+// ✅ GOOD - PascalCase for classes
+export default class ConfigCommand extends Command { }
+export class AuthService { }
+export class ValidationError extends Error { }
+```
+
+### Functions and Methods
+```typescript
+// ✅ GOOD - camelCase for functions
+export async function loadConfig(): Promise<Config> { }
+async validateInput(input: string): Promise<boolean> { }
+createCommandContext(): CommandContext { }
+```
+
+### Constants
+```typescript
+// ✅ GOOD - SCREAMING_SNAKE_CASE for constants
+const DEFAULT_REGION = 'us';
+const MAX_RETRIES = 3;
+const API_BASE_URL = 'https://api.contentstack.io';
+```
+
+### Interfaces and Types
+```typescript
+// ✅ GOOD - PascalCase for types
+export interface CommandConfig {
+  region: string;
+  alias?: string;
+}
+
+export type CommandResult = {
+  success: boolean;
+  message?: string;
+};
+```
+
+## Import/Export Patterns
+
+### ES Modules (Preferred)
+```typescript
+// ✅ GOOD - ES import/export syntax
+import { Command } from '@oclif/core';
+import type { CommandConfig } from '../types';
+import { loadConfig } from '../utils';
+
+export default class ConfigCommand extends Command { }
+export { CommandConfig };
+```
+
+### Default Exports
+```typescript
+// ✅ GOOD - Default export for commands and main classes
+export default class ConfigCommand extends Command { }
+```
+
+### Named Exports
+```typescript
+// ✅ GOOD - Named exports for utilities and types
+export async function delay(ms: number): Promise<void> { }
+export interface CommandOptions { }
+export type ActionResult = 'success' | 'failure';
+```
+
+## Type Definitions
+
+### Local Types
+```typescript
+// ✅ GOOD - Define types close to usage
+export interface AuthOptions {
+  email: string;
+  password: string;
+  token?: string;
+}
+
+export type ConfigResult = {
+  success: boolean;
+  config?: Record<string, unknown>;
+};
+```
+
+### Type Organization
+```typescript
+// ✅ GOOD - Organize types in dedicated files
+// src/types/index.ts
+export interface CommandConfig { }
+export interface AuthConfig { }
+export type ConfigValue = string | number | boolean;
+```
+
+## Null Safety
+
+### Function Return Types
+```typescript
+// ✅ GOOD - Explicit return types
+export async function getConfig(): Promise<CommandConfig> {
+  return await this.loadFromFile();
+}
+
+export function createDefaults(): CommandConfig {
+  return {
+    region: 'us',
+    timeout: 30000,
+  };
+}
+```
+
+### Null/Undefined Handling
+```typescript
+// ✅ GOOD - Handle null/undefined explicitly
+function processConfig(config: CommandConfig | null): void {
+  if (!config) {
+    throw new Error('Configuration is required');
+  }
+  // Process config safely
+}
+```
+
+## Error Handling Types
+
+### Custom Error Classes
+```typescript
+// ✅ GOOD - Typed error classes
+export class ValidationError extends Error {
+  constructor(
+    message: string,
+    public readonly code?: string
+  ) {
+    super(message);
+    this.name = 'ValidationError';
+  }
+}
+```
+
+### Error Union Types
+```typescript
+// ✅ GOOD - Model expected errors
+type AuthResult<T> = {
+  success: true;
+  data: T;
+} | {
+  success: false;
+  error: string;
+};
+```
+
+## Strict Mode Adoption
+
+### Current Status
+- Most packages use `strict: false` for compatibility
+- Gradual migration path available
+- Team working toward stricter TypeScript
+
+### Gradual Adoption
+```typescript
+// ✅ ACCEPTABLE - Comments for known issues
+// TODO: Fix type issues in legacy code
+const legacyData = unknownData as unknown;
+```
+
+## Package-Specific Patterns
+
+### Command Packages (auth, config)
+- Extend `@oclif/core` Command
+- Define command flags with `static flags`
+- Use @oclif/core flag utilities
+- Define command-specific types
+
+### Library Packages (command, utilities)
+- No OCLIF dependencies
+- Pure TypeScript interfaces
+- Consumed by command packages
+- Focus on type safety for exports
+
+### Main Package (contentstack)
+- Aggregates command plugins
+- May have common types
+- Shared interfaces for plugin integration
+
+## Export Patterns
+
+### Package Exports (lib/index.js)
+```typescript
+// ✅ GOOD - Barrel exports for libraries
+export { Command } from './command';
+export { loadConfig } from './config';
+export type { CommandConfig, AuthOptions } from './types';
+```
+
+### Entry Points
+- Libraries export from `lib/index.js`
+- Commands export directly as default classes
+- Type definitions included via `types` field in package.json
