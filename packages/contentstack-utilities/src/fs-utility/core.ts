@@ -429,12 +429,10 @@ export default class FsUtility {
       this.pageInfo.before = 1;
     }
 
-    /* eslint-disable unicorn/consistent-destructuring */
     if (!isEmpty(this.readIndexer[this.pageInfo.after + 1])) {
       this.pageInfo.hasNextPage = true;
     }
 
-    /* eslint-disable unicorn/consistent-destructuring */
     if (!isEmpty(this.readIndexer[this.pageInfo.after - 1])) {
       this.pageInfo.hasPreviousPage = true;
     }

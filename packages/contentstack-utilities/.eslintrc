@@ -11,24 +11,20 @@
         "plugin:@typescript-eslint/recommended"
     ],
     "rules": {
+        "@typescript-eslint/no-empty-object-type": "off",
+        "@typescript-eslint/no-this-alias": "off",
+        "@typescript-eslint/no-unsafe-function-type": "off",
         "@typescript-eslint/no-unused-vars": [
             "error",
             {
-                "args": "none"
+                "args": "none",
+                "varsIgnorePattern": "^_"
             }
         ],
         "@typescript-eslint/prefer-namespace-keyword": "error",
-        "@typescript-eslint/quotes": [
-            "error",
-            "single",
-            {
-                "avoidEscape": true,
-                "allowTemplateLiterals": true
-            }
-        ],
         "semi": "off",
-        "@typescript-eslint/type-annotation-spacing": "error",
         "@typescript-eslint/no-redeclare": "off",
+        "@typescript-eslint/no-explicit-any": "off",
         "eqeqeq": [
             "error",
             "smart"

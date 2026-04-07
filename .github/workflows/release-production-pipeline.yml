@@ -1,0 +1,16 @@
+name: CLI Production Release Pipeline
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # This enables manual triggering
+
+jobs:
+  plugins:
+    uses: ./.github/workflows/release-production-platform-plugins.yml
+    secrets: inherit
+
+  core:
+    needs: plugins
+    uses: ./.github/workflows/release-production-core.yml
+    secrets: inherit

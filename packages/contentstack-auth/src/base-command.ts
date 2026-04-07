@@ -3,9 +3,7 @@ import {
   configHandler,
   createLogContext,
   Flags,
-  getAuthenticationMethod,
   Interfaces,
-  log,
 } from '@contentstack/cli-utilities';
 import { Context } from './interfaces';
 

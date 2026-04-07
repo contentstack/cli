@@ -1,4 +1,12 @@
 fileignoreconfig:
-  - filename: pnpm-lock.yaml
-    checksum: 840d10a9ef1d60aeb0edd46a5cf8ae8306c9eee321aff72a9bb0e1a7e5031159
+  - filename: .github/workflows/release-production-pipeline.yml
+    checksum: 4aef94feea3ea0538162a9454cfd30457ec85e3123672f0933713e3d113d4504
+  - filename: packages/contentstack-utilities/src/proxy-helper.ts
+    checksum: 2169f25563bca3a0fe54edd00c73646ed56d36aa7e8effe904de26b0c1633759
+  - filename: packages/contentstack-config/test/unit/commands/proxy.test.ts
+    checksum: b92210826693683300728e7e82e6789f0ad697b17e6b99a8a004c9a041bced00
+  - filename: packages/contentstack/test/unit/context-handler.test.ts
+    checksum: 6ef78899d3089685271bd16c156d057c807fd9b8560189387ae44e9576d23095
+  - filename: packages/contentstack/README.md
+    checksum: cdd03f1f11ef3ecf04f71ed0a468501633ce92f0d487ee097312644578cb3cdc
 version: '1.0'

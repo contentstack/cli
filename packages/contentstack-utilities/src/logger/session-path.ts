@@ -53,7 +53,7 @@ function createSessionMetadataFile(sessionPath: string, metadata: Record<string,
   const metadataPath = path.join(sessionPath, 'session.json');
   try {
     fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2), 'utf8');
-  } catch (error) {
+  } catch {
     // Silently fail if metadata file cannot be created
     // Logging here would cause circular dependency
     // The session folder and logs will still be created

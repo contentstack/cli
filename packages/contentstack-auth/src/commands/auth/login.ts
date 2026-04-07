@@ -1,5 +1,4 @@
 import {
-  cliux,
   CLIError,
   authHandler as oauthHandler,
   flags,
