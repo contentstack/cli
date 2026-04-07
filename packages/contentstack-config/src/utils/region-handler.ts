@@ -42,7 +42,7 @@ function getRegionObject(regionKey: string): Region {
       composableStudioUrl: endpoints.composableStudio,
       assetManagementUrl: endpoints.assetManagement,
     };
-  } catch (error) {
+  } catch {
     return null;
   }
 }
