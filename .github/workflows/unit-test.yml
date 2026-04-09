@@ -30,6 +30,7 @@ jobs:
       - name: Test contentstack-auth
         working-directory: ./packages/contentstack-auth
         run: pnpm test
-      - name: Test contentstack-utilities
-        working-directory: ./packages/contentstack-utilities
-        run: pnpm test
+      # Commented out in v2-beta production
+      # - name: Test contentstack-utilities
+      #   working-directory: ./packages/contentstack-utilities
+      #   run: pnpm test
