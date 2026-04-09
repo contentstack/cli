@@ -6,7 +6,7 @@ import { User } from '../../src/interfaces';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-const config = JSON.parse(readFileSync(join(__dirname, '../config.json'), "utf-8"));
+const config = JSON.parse(readFileSync(join(__dirname, '../unit/config.json'), "utf-8"));
 
 const user: User = { email: '***REMOVED***', authtoken: 'testtoken' };
 const credentials = { email: '***REMOVED***', password: config.password };
