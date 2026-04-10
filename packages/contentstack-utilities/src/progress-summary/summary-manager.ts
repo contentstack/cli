@@ -1,6 +1,5 @@
 import { getChalk } from '../chalk';
 import { ModuleResult, SummaryOptions } from '../interfaces/index';
-import { getSessionLogPath } from '../logger/log';
 
 export default class SummaryManager {
   private modules: Map<string, ModuleResult> = new Map();
@@ -160,6 +159,7 @@ export default class SummaryManager {
 
     if (modulesWithFailures.length === 0) return;
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- kept for future session log path / totals UX
     const totalFailures = modulesWithFailures.reduce((sum, m) => sum + m.failures.length, 0);
 
     console.log('\n' + getChalk().bold.red('Failure Summary:'));

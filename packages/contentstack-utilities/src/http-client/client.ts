@@ -3,19 +3,25 @@ import { IHttpClient } from './client-interface';
 import { HttpResponse } from './http-response';
 import configStore from '../config-handler';
 import authHandler from '../auth-handler';
-import { hasProxy, getProxyUrl, getProxyConfig, getProxyConfigForHost } from '../proxy-helper';
+import {
+  hasProxy,
+  getProxyUrl,
+  getProxyConfigForHost,
+  resolveRequestHost,
+  shouldBypassProxy,
+} from '../proxy-helper';
 
 /**
  * Derive request host from baseURL or url for NO_PROXY checks.
  */
 function getRequestHost(baseURL?: string, url?: string): string | undefined {
   const toTry = [baseURL, url].filter(Boolean) as string[];
-  for (const candidateUrl of toTry) {
+  for (const u of toTry) {
     try {
-      const parsed = new URL(candidateUrl.startsWith('http') ? candidateUrl : `https://${candidateUrl}`);
+      const parsed = new URL(u.startsWith('http') ? u : `https://${u}`);
       return parsed.hostname || undefined;
     } catch {
-      // Invalid URL; try next candidate (baseURL or url)
+      // ignore
     }
   }
   return undefined;
@@ -427,12 +433,14 @@ export class HttpClient implements IHttpClient {
       }
     }
 
-    // Configure proxy if available. NO_PROXY has priority: hosts in NO_PROXY never use proxy.
+    // Configure proxy if available. NO_PROXY has priority; fall back to region CMA for host resolution.
     if (!this.request.proxy) {
-      const host = getRequestHost(this.request.baseURL, url);
-      const proxyConfig = host ? getProxyConfigForHost(host) : getProxyConfig();
+      const host = getRequestHost(this.request.baseURL, url) || resolveRequestHost({});
+      const proxyConfig = getProxyConfigForHost(host);
       if (proxyConfig) {
         this.request.proxy = proxyConfig;
+      } else if (host && shouldBypassProxy(host)) {
+        this.request.proxy = false;
       }
     }
 
