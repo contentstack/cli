@@ -32,6 +32,7 @@ describe('MFAHandler', () => {
     });
 
     it.skip('should throw error for invalid secret', () => {
+      // otplib does not throw for invalid secret; it logs and may return a value
       expect(() => mfaHandler.generateMFACode(invalidSecret)).to.throw();
     });
   });
@@ -58,7 +59,7 @@ describe('MFAHandler', () => {
     it('should prioritize environment variable over stored configuration', async () => {
       const envSecret = 'JBSWY3DPEHPK3PXQ'; // Different from stored secret
       process.env.CONTENTSTACK_MFA_SECRET = envSecret;
-      
+
       const code = await mfaHandler.getMFACode();
       expect(code).to.match(/^\d{6}$/);
       expect(authenticator.verify({ token: code, secret: envSecret })).to.be.true;

@@ -43,6 +43,7 @@ USAGE
 * [`csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>] [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]`](#csdx-cmbranchesmerge--k-value--compare-branch-value---no-revert---export-summary-path-value---use-merge-summary-value---comment-value---base-branch-value)
 * [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
 * [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple)
+* [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value---locale-value)
 * [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent)
 * [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
 * [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix)
@@ -53,7 +54,12 @@ USAGE
 * [`csdx cm:stacks:import [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport---config-value---stack-api-key-value---data-dir-value---alias-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
 * [`csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--modules <value,value>]`](#csdx-cmstacksimport-setup--k-value--d-value--a-value---modules-valuevalue)
 * [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple)
-* [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [--stack-api-key <value>] [--stack-name <value>] [-y] [--alias <value>] [--locale <value>]`](#csdx-cmstacksseed---repo-value---org-value---stack-api-key-value---stack-name-value--y---alias-value---locale-value)
+* [`csdx cm:stacks:publish`](#csdx-cmstackspublish)
+* [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
+* [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
+* [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
+* [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value---locale-value)
+* [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries)
 * [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
 * [`csdx config:get:ea-header`](#csdx-configgetea-header)
 * [`csdx config:get:early-access-header`](#csdx-configgetearly-access-header)
@@ -625,7 +631,43 @@ EXAMPLES
 
   $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
 
-  $ csdx cm:migration --alias <management-token-alias> --file-path <migration/script/file/path>
+  $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
+```
+
+## `csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]`
+
+Create a stack from existing content types, entries, assets, etc
+
+```
+USAGE
+  $ csdx cm:seed cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s
+    <value>] [--locale <value>]
+
+FLAGS
+  -a, --alias=<value>          Alias of the management token
+  -k, --stack-api-key=<value>  Provide stack API key to seed content to
+  -n, --stack-name=<value>     Name of a new stack that needs to be created.
+  -o, --org=<value>            Provide Organization UID to create a new stack
+  -r, --repo=<value>           GitHub organization name or GitHub user name/repository name.
+  -s, --stack=<value>          Provide the stack UID to seed content.
+  -y, --yes=<value>            [Optional] Skip the stack confirmation.
+
+DESCRIPTION
+  Create a stack from existing content types, entries, assets, etc
+
+ALIASES
+  $ csdx cm:seed
+
+EXAMPLES
+  $ csdx cm:stacks:seed
+
+  $ csdx cm:stacks:seed --repo "account"
+
+  $ csdx cm:stacks:seed --repo "account/repository"
+
+  $ csdx cm:stacks:seed --repo "account/repository" --stack-api-key "stack-api-key" //seed content into specific stack
+
+  $ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack in given org uid
 ```
 
 ## `csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`
@@ -1213,27 +1255,117 @@ EXAMPLES
 
   $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
 
-  $ csdx cm:migration --alias <management-token-alias> --file-path <migration/script/file/path>
+  $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
+```
+
+_See code: [@contentstack/cli-migration](https://github.com/contentstack/cli/blob/main/packages/contentstack-migration/src/commands/cm/stacks/migration.js)_
+
+## `csdx cm:stacks:publish`
+
+Publish entries and assets to multiple environments and locales
+
+```
+USAGE
+  $ csdx cm:stacks:publish
+
+DESCRIPTION
+  Publish entries and assets to multiple environments and locales
+  The publish command is used to publish entries and assets, to the specified environments and locales.
+
+  Note: Content types, Environments and Locales are required to execute the publish entries command successfully.
+  Note: Environments and Locales are required to execute the publish assets command successfully.
+  But, if retry-failed flag is set, then only a logfile is required
+
+EXAMPLES
+  General Usage
+
+  $ csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS]
+
+
+
+  Using --config or -c flag
+
+  Generate a config file in the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`
+
+  $ csdx cm:stacks:publish --config [PATH TO CONFIG FILE]
+
+  $ csdx cm:stacks:publish -c [PATH TO CONFIG FILE]
+
+
+
+  Using --retry-failed flag
+
+  $ csdx cm:stacks:publish --retry-failed [LOG FILE NAME]
+
+
+
+  Using --branch flag
+
+  $ csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
+
+
+
+  Using --api-version flag
+
+  $ csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --api-version [API VERSION]
 ```
 
 _See code: [@contentstack/cli-migration](https://github.com/contentstack/cli/blob/main/packages/contentstack-migration/src/commands/cm/stacks/migration.ts)_
 
-## `csdx cm:stacks:seed [--repo <value>] [--org <value>] [--stack-api-key <value>] [--stack-name <value>] [-y] [--alias <value>] [--locale <value>]`
+## `csdx cm:stacks:publish-revert`
+
+Revert publish operations by using a log file
+
+```
+USAGE
+  $ csdx cm:stacks:publish-revert [--retry-failed <value>] [--log-file <value>]
+
+FLAGS
+  --log-file=<value>      Path of the success logfile of a particular publish action.
+  --retry-failed=<value>  (optional)  Use this option to retry publishing the failed entries from the logfile. Specify
+                          the name of the logfile that lists failed publish calls. If this option is used, it will
+                          override all other flags.
+
+DESCRIPTION
+  Revert publish operations by using a log file
+  The revert command is used to revert all publish operations performed using bulk-publish script.
+  A log file name is required to execute revert command
+
+
+ALIASES
+  $ csdx cm:bulk-publish:revert
+
+EXAMPLES
+  Using --log-file
+
+  cm:bulk-publish:revert --log-file [LOG FILE NAME]
+
+
+
+  Using --retry-failed
+
+  cm:bulk-publish:revert --retry-failed [LOG FILE NAME]
+```
+
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish-revert.js)_
+
+## `csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>] [--locale <value>]`
 
 Create a stack from existing content types, entries, assets, etc
 
 ```
 USAGE
-  $ csdx cm:stacks:seed [--repo <value>] [--org <value>] [--stack-api-key <value>] [--stack-name <value>] [-y]
-    [--alias <value>] [--locale <value>]
+  $ csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]
+    [--locale <value>]
 
 FLAGS
   -a, --alias=<value>          Alias of the management token
   -k, --stack-api-key=<value>  Provide stack API key to seed content to
   -n, --stack-name=<value>     Name of a new stack that needs to be created.
-  -y, --yes                    [Optional] Skip the stack confirmation.
-      --org=<value>            Provide Organization UID to create a new stack
-      --repo=<value>           GitHub organization name or GitHub user name/repository name.
+  -o, --org=<value>            Provide Organization UID to create a new stack
+  -r, --repo=<value>           GitHub organization name or GitHub user name/repository name.
+  -s, --stack=<value>          Provide the stack UID to seed content.
+  -y, --yes=<value>            [Optional] Skip the stack confirmation.
 
 DESCRIPTION
   Create a stack from existing content types, entries, assets, etc
@@ -2054,7 +2186,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.59/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:add PLUGIN`
 
@@ -2128,7 +2260,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.59/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN`
 
@@ -2177,7 +2309,7 @@ EXAMPLES
     $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.59/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PATH`
 
@@ -2208,7 +2340,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.59/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:remove [PLUGIN]`
 
@@ -2249,7 +2381,7 @@ FLAGS
   --reinstall  Reinstall all plugins after uninstalling.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.59/src/commands/plugins/reset.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/reset.ts)_
 
 ## `csdx plugins:uninstall [PLUGIN]`
 
@@ -2277,7 +2409,7 @@ EXAMPLES
   $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.59/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:unlink [PLUGIN]`
 
@@ -2321,7 +2453,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.59/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.55/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 

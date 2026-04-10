@@ -1,10 +1,10 @@
 import { Agent } from 'node:https';
-import { App, AppData } from '@contentstack/marketplace-sdk/types/marketplace/app';
+import type { App, AppData } from '@contentstack/marketplace-sdk/types/marketplace/app';
 import { client, ContentstackConfig, ContentstackClient, ContentstackToken } from '@contentstack/marketplace-sdk';
+import type { Installation } from '@contentstack/marketplace-sdk/types/marketplace/installation';
 
 import authHandler from './auth-handler';
 import configStore from './config-handler';
-import { Installation } from '@contentstack/marketplace-sdk/types/marketplace/installation';
 
 type ConfigType = Pick<ContentstackConfig, 'host' | 'endpoint' | 'retryDelay' | 'retryLimit'> & {
   skipTokenValidity?: string;
