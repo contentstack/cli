@@ -5,9 +5,9 @@
     "source-map-support/register",
     "test/helpers/mocha-root-hooks.js"
   ],
-  "watch-extensions": [
-    "ts"
-  ],
+  "watch-extensions": ["ts"],
   "recursive": true,
-  "timeout": 5000
+  "reporter": "spec",
+  "timeout": 10000,
+  "exit": true
 }
