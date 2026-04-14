@@ -881,8 +881,8 @@ packages:
   '@contentstack/utils@1.7.1':
     resolution: {integrity: sha512-b/0t1malpJeFCNd9+1uN3BuO8mRn2b5+aNtrYEZ6YlSNjYNRu9IjqSxZ5Clhs5267950UV1ayhgFE8z3qre2eQ==}
 
-  '@contentstack/utils@1.9.0':
-    resolution: {integrity: sha512-4U2YN/twGP1yJj4nA1KQ/VhS67iTUFSgN8W8HNQDQ0PQEkPiqWdouS0Bv1AvggthKbBYYU0vfMqsoU8J++J7rA==}
+  '@contentstack/utils@1.9.1':
+    resolution: {integrity: sha512-THZM0rNuq0uOSKkKnvzp8lsPDvvdKIvJIcMa9JBv4foL9rC8RWkWffa2yMyb+9m/5HZrdAmpEWdubkGwARa8WQ==}
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -6682,7 +6682,7 @@ snapshots:
 
   '@contentstack/management@1.29.2(debug@4.4.3)':
     dependencies:
-      '@contentstack/utils': 1.9.0
+      '@contentstack/utils': 1.9.1
       assert: 2.1.0
       axios: 1.13.6(debug@4.4.3)
       buffer: 6.0.3
@@ -6704,7 +6704,7 @@ snapshots:
 
   '@contentstack/utils@1.7.1': {}
 
-  '@contentstack/utils@1.9.0': {}
+  '@contentstack/utils@1.9.1': {}
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
