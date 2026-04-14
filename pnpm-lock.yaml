@@ -392,8 +392,8 @@ importers:
   packages/contentstack-utilities:
     dependencies:
       '@contentstack/management':
-        specifier: ~1.29.1
-        version: 1.29.2(debug@4.4.3)
+        specifier: ~1.30.0
+        version: 1.30.0
       '@contentstack/marketplace-sdk':
         specifier: ^1.5.0
         version: 1.5.0(debug@4.4.3)
@@ -401,8 +401,8 @@ importers:
         specifier: ^4.8.3
         version: 4.8.3
       axios:
-        specifier: ^1.13.5
-        version: 1.13.6(debug@4.4.3)
+        specifier: ^1.15.0
+        version: 1.15.0(debug@4.4.3)
       chalk:
         specifier: ^5.6.2
         version: 5.6.2
@@ -873,6 +873,10 @@ packages:
 
   '@contentstack/management@1.29.2':
     resolution: {integrity: sha512-ZTlxhUTlMIX0t3orbh4bJ73KOyC0553CC/1I12GavnOcVEbtJ26YLj7IG20lO4vDo3KjgSs604X+e2yX/0g1aA==}
+    engines: {node: '>=8.0.0'}
+
+  '@contentstack/management@1.30.0':
+    resolution: {integrity: sha512-nMq/SDHMkoYS362ie2oiPwsYAx+RWiv7J9dEiyU/4rxZgdd9qEyqNT88YDs3YoXKlF9HSTH9gZWfrKQ34bGVRA==}
     engines: {node: '>=8.0.0'}
 
   '@contentstack/marketplace-sdk@1.5.0':
@@ -2300,8 +2304,8 @@ packages:
     peerDependencies:
       axios: '>= 0.17.0'
 
-  axios@1.13.6:
-    resolution: {integrity: sha512-ChTCHMouEe2kn713WHbQGcuYrr6fXTBiu460OTwWrWob16g1bXn4vtz07Ope7ewMozJAnEquLk5lWQWtBig9DQ==}
+  axios@1.15.0:
+    resolution: {integrity: sha512-wWyJDlAatxk30ZJer+GeCWS209sA42X+N5jU2jy6oHTp7ufw8uzUTVFBX9+wTfAlhiJXGS0Bq7X6efruWjuK9Q==}
 
   balanced-match@4.0.4:
     resolution: {integrity: sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==}
@@ -4731,8 +4735,9 @@ packages:
     resolution: {integrity: sha512-llQsMLSUDUPT44jdrU/O37qlnifitDP+ZwrmmZcoSKyLKvtZxpyV0n2/bD/N4tBAAZ/gJEdZU7KMraoK1+XYAg==}
     engines: {node: '>= 0.10'}
 
-  proxy-from-env@1.1.0:
-    resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
+  proxy-from-env@2.1.0:
+    resolution: {integrity: sha512-cJ+oHTW1VAEa8cJslgmUZrc+sjRKgAKl3Zyse6+PV38hZe/V6Z14TbCuXcan9F9ghlz4QrFr2c92TNF82UkYHA==}
+    engines: {node: '>=10'}
 
   punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
@@ -6569,7 +6574,7 @@ snapshots:
       '@contentstack/management': 1.27.6(debug@4.4.3)
       '@contentstack/marketplace-sdk': 1.5.0(debug@4.4.3)
       '@oclif/core': 4.8.3
-      axios: 1.13.6(debug@4.4.3)
+      axios: 1.15.0(debug@4.4.3)
       chalk: 4.1.2
       cli-cursor: 3.1.0
       cli-progress: 3.12.0
@@ -6604,7 +6609,7 @@ snapshots:
       '@contentstack/management': 1.29.2(debug@4.4.3)
       '@contentstack/marketplace-sdk': 1.5.0(debug@4.4.3)
       '@oclif/core': 4.8.3
-      axios: 1.13.6(debug@4.4.3)
+      axios: 1.15.0(debug@4.4.3)
       chalk: 5.6.2
       cli-cursor: 3.1.0
       cli-progress: 3.12.0
@@ -6648,8 +6653,8 @@ snapshots:
 
   '@contentstack/core@1.3.12(debug@4.4.3)':
     dependencies:
-      axios: 1.13.6(debug@4.4.3)
-      axios-mock-adapter: 2.1.0(axios@1.13.6(debug@4.4.3))
+      axios: 1.15.0(debug@4.4.3)
+      axios-mock-adapter: 2.1.0(axios@1.15.0(debug@4.4.3))
       lodash: 4.18.1
       qs: 6.15.0
       tslib: 2.8.1
@@ -6660,7 +6665,7 @@ snapshots:
     dependencies:
       '@contentstack/core': 1.3.12(debug@4.4.3)
       '@contentstack/utils': 1.7.1
-      axios: 1.13.6(debug@4.4.3)
+      axios: 1.15.0(debug@4.4.3)
       humps: 2.0.1
     transitivePeerDependencies:
       - debug
@@ -6669,7 +6674,7 @@ snapshots:
     dependencies:
       '@contentstack/utils': 1.7.1
       assert: 2.1.0
-      axios: 1.13.6(debug@4.4.3)
+      axios: 1.15.0(debug@4.4.3)
       buffer: 6.0.3
       form-data: 4.0.5
       husky: 9.1.7
@@ -6684,7 +6689,22 @@ snapshots:
     dependencies:
       '@contentstack/utils': 1.9.1
       assert: 2.1.0
-      axios: 1.13.6(debug@4.4.3)
+      axios: 1.15.0(debug@4.4.3)
+      buffer: 6.0.3
+      form-data: 4.0.5
+      husky: 9.1.7
+      lodash: 4.18.1
+      otplib: 12.0.1
+      qs: 6.15.0
+      stream-browserify: 3.0.0
+    transitivePeerDependencies:
+      - debug
+
+  '@contentstack/management@1.30.0':
+    dependencies:
+      '@contentstack/utils': 1.9.1
+      assert: 2.1.0
+      axios: 1.15.0(debug@4.4.3)
       buffer: 6.0.3
       form-data: 4.0.5
       husky: 9.1.7
@@ -6698,7 +6718,7 @@ snapshots:
   '@contentstack/marketplace-sdk@1.5.0(debug@4.4.3)':
     dependencies:
       '@contentstack/utils': 1.7.1
-      axios: 1.13.6(debug@4.4.3)
+      axios: 1.15.0(debug@4.4.3)
     transitivePeerDependencies:
       - debug
 
@@ -8652,17 +8672,17 @@ snapshots:
     dependencies:
       possible-typed-array-names: 1.1.0
 
-  axios-mock-adapter@2.1.0(axios@1.13.6(debug@4.4.3)):
+  axios-mock-adapter@2.1.0(axios@1.15.0(debug@4.4.3)):
     dependencies:
-      axios: 1.13.6(debug@4.4.3)
+      axios: 1.15.0(debug@4.4.3)
       fast-deep-equal: 3.1.3
       is-buffer: 2.0.5
 
-  axios@1.13.6(debug@4.4.3):
+  axios@1.15.0(debug@4.4.3):
     dependencies:
       follow-redirects: 1.15.11(debug@4.4.3)
       form-data: 4.0.5
-      proxy-from-env: 1.1.0
+      proxy-from-env: 2.1.0
     transitivePeerDependencies:
       - debug
 
@@ -11563,7 +11583,7 @@ snapshots:
       forwarded: 0.2.0
       ipaddr.js: 1.9.1
 
-  proxy-from-env@1.1.0: {}
+  proxy-from-env@2.1.0: {}
 
   punycode@2.3.1: {}
 
