@@ -65,6 +65,7 @@ describe('Delete config', () => {
     expect(askConfirmation.calledOnce).to.be.true;
   });
 
+<<<<<<< HEAD
   it('Should show base branch and stack-api-key before deletion', async () => {
     const successStub = stub(cliux, 'success');
     const askConfirmation = stub(interactive, 'askConfirmation').resolves(true);
@@ -105,5 +106,13 @@ describe('Delete config', () => {
     expect(deleteStub.called).to.be.false;
 
     deleteStub.restore();
+=======
+    const askConfirmation = stub(interactive, 'askConfirmation').resolves(true);
+    const showSuccess = stub(cliux, 'success');
+    await RemoveBranchConfigCommand.run(['--stack-api-key', removeConfigMockData.flags.apiKey]);
+    if (getConfig && askConfirmation.calledOnce) expect(showSuccess.called).to.be.true;
+    askConfirmation.restore();
+    showSuccess.restore();
+>>>>>>> main
   });
 });

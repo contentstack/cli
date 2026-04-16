@@ -5,6 +5,7 @@
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
+<<<<<<< HEAD
     "allowSyntheticDefaultImports": true,
     "rootDir": ".."
   },
@@ -12,4 +13,9 @@
     "../src/**/*",
     "**/*.ts"
   ]
+=======
+    "module": "commonjs"
+  },
+  "include": ["../src/**/*"]
+>>>>>>> main
 }
