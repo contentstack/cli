@@ -3,10 +3,15 @@ import * as sinon from 'sinon';
 import { authHandler, interactive } from '../../src/utils';
 import { CLIError, cliux } from '@contentstack/cli-utilities';
 import { User } from '../../src/interfaces';
+<<<<<<< HEAD
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
 const config = JSON.parse(readFileSync(join(__dirname, './config.json'), 'utf-8'));
+=======
+// @ts-ignore
+import * as config from './config.json';
+>>>>>>> main
 
 const user: User = { email: '***REMOVED***', authtoken: 'testtoken' };
 const credentials = { email: '***REMOVED***', password: config.password };

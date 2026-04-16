@@ -5,10 +5,15 @@ import TokensAddCommand from '../../../src/commands/auth/tokens/add';
 import { stub, assert } from 'sinon';
 import { config as dotenvConfig } from 'dotenv';
 import nock from 'nock';
+<<<<<<< HEAD
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
 const conf = JSON.parse(readFileSync(join(__dirname, '../config.json'), "utf-8"));
+=======
+// @ts-ignore
+import * as conf from '../config.json';
+>>>>>>> main
 
 dotenvConfig();
 

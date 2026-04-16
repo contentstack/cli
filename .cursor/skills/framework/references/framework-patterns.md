@@ -347,6 +347,7 @@ if (!configHandler.get('authenticationMethod')) {
 }
 ```
 
+<<<<<<< HEAD
 ### OAuth Token Refresh Serialization
 
 When multiple API calls happen concurrently and a token refresh is needed, serialize the refresh operation so all concurrent callers await the same refresh instead of duplicate refresh attempts.
@@ -413,6 +414,8 @@ async compareOAuthExpiry(force: boolean = false): Promise<void> {
 - Any critical operation that should only run once even with concurrent triggers
 - Operations where parallel execution would cause conflicts or race conditions
 
+=======
+>>>>>>> main
 ## Common Patterns
 
 ### Error and Success Pattern

@@ -43,6 +43,7 @@ describe('Region command', function () {
     expect(cliuxPrintStub.callCount).to.equal(7);
   });
   it('should log an error and exit when the region is not set', async function () {
+<<<<<<< HEAD
     const command = new GetRegionCommand([], {} as any);
 
     // Stub the region property to return undefined
@@ -58,11 +59,22 @@ describe('Region command', function () {
     cliuxPrintStub.reset();
 
     // Call the run method directly, expect it to throw
+=======
+    configGetStub.callsFake((key) => {
+      if (key === 'region') return undefined;
+      return undefined;
+    });
+    const exitStub = sinon.stub(process, 'exit').callsFake((code) => {
+      throw new Error(`CLI_CONFIG_GET_REGION_NOT_FOUND EEXIT: ${code}`);
+    });
+    let result;
+>>>>>>> main
     try {
       await command.run();
     } catch (error) {
       // Expected to throw due to exit stub
     }
+<<<<<<< HEAD
 
     // Verify that cliux.error was called with the correct message
     expect(errorStub.calledWith('CLI_CONFIG_GET_REGION_NOT_FOUND')).to.be.true;
@@ -71,6 +83,10 @@ describe('Region command', function () {
     expect(exitStub.called).to.be.true;
 
     errorStub.restore();
+=======
+    exitStub.restore();
+    expect(result.message).to.include('CLI_CONFIG_GET_REGION_NOT_FOUND EEXIT: 1');
+>>>>>>> main
   });
 
   // Test cases for predefined regions

@@ -1,9 +1,14 @@
 {
   "require": [
     "test/helpers/init.js",
+<<<<<<< HEAD
     "ts-node/register",
     "source-map-support/register",
     "test/helpers/mocha-root-hooks.js"
+=======
+    "ts-node/register/transpile-only",
+    "source-map-support/register"
+>>>>>>> main
   ],
   "watch-extensions": ["ts"],
   "recursive": true,

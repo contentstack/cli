@@ -9,10 +9,15 @@ import {
   authHandler as oauthHandler
 } from '@contentstack/cli-utilities';
 import * as managementSDK from '@contentstack/cli-utilities';
+<<<<<<< HEAD
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
 const conf = JSON.parse(readFileSync(join(__dirname, '../config.json'), "utf-8"));
+=======
+// @ts-ignore
+import * as conf from '../config.json';
+>>>>>>> main
 
 const config = configHandler;
 
