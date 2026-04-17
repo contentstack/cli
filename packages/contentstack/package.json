@@ -55,6 +55,11 @@
     "uuid": "^9.0.1",
     "winston": "^3.19.0"
   },
+  "overrides": {
+    "@oclif/core": {
+      "picomatch": "^4.0.4"
+    }
+  },
   "devDependencies": {
     "@oclif/test": "^4.1.16",
     "@types/chai": "^4.3.20",
