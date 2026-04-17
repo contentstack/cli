@@ -55,7 +55,7 @@ abstract class ContentstackCommand extends Command {
   }
 
   get cmaHost() {
-    let cma = this.region.cma;
+    const cma = this.region.cma;
     if (cma.startsWith('http')) {
       const u = new URL(cma);
       if (u.host) return u.host;
@@ -64,7 +64,7 @@ abstract class ContentstackCommand extends Command {
   }
 
   get cdaHost() {
-    let cda = this.region.cda;
+    const cda = this.region.cda;
     if (cda.startsWith('http')) {
       const u = new URL(cda);
       if (u.host) return u.host;
@@ -77,12 +77,12 @@ abstract class ContentstackCommand extends Command {
   }
 
   get cdaAPIUrl() {
-    let cda = this.region.cda;
+    const cda = this.region.cda;
     return cda.startsWith('http') ? cda : `https://${cda}`;
   }
 
   get cmaAPIUrl() {
-    let cma = this.region.cma;
+    const cma = this.region.cma;
     return cma.startsWith('http') ? cma : `https://${cma}`;
   }
 

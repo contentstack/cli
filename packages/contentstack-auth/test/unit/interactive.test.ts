@@ -5,7 +5,7 @@ import { cliux } from '@contentstack/cli-utilities';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-const config = JSON.parse(readFileSync(join(__dirname, '../config.json'), "utf-8"));
+const config = JSON.parse(readFileSync(join(__dirname, './config.json'), "utf-8"));
 
 describe('Interactive', () => {
   let inquireStub: sinon.SinonStub;
