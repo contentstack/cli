@@ -12,7 +12,7 @@ import * as managementSDK from '@contentstack/cli-utilities';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-const conf = JSON.parse(readFileSync(join(__dirname, '../../config.json'), "utf-8"));
+const conf = JSON.parse(readFileSync(join(__dirname, '../config.json'), "utf-8"));
 
 const config = configHandler;
 
