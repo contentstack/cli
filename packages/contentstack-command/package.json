@@ -14,7 +14,7 @@
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
-    "@contentstack/cli-utilities": "~1.18.1",
+    "@contentstack/cli-utilities": "~1.18.2",
     "contentstack": "^3.27.0",
     "@oclif/core": "^4.10.5",
     "@oclif/plugin-help": "^6.2.28"
