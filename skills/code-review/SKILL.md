@@ -1,8 +1,58 @@
-# Code Review Checklist
+---
+name: code-review
+description: Automated PR review checklist covering security, performance, architecture, and code quality. Use when reviewing pull requests, examining code changes, or performing code quality assessments.
+---
 
-Automated PR review guidelines covering security, performance, architecture, and code quality for the Contentstack CLI monorepo.
+# Code Review Skill
 
-## Review Process
+Use the **Quick checklist template** for a short paste into a PR description. Everything from **Review process** through **Approval criteria** is the full deep checklist.
+
+## Quick checklist template
+
+```markdown
+## Security Review
+- [ ] No hardcoded secrets or tokens
+- [ ] Input validation present
+- [ ] Error handling secure (no sensitive data in logs)
+
+## Correctness Review  
+- [ ] Logic correctly implemented
+- [ ] Edge cases handled
+- [ ] Error scenarios covered
+- [ ] Async/await chains correct
+
+## Architecture Review
+- [ ] Proper code organization
+- [ ] Design patterns followed
+- [ ] Good modularity
+- [ ] No circular dependencies
+
+## Performance Review
+- [ ] Efficient implementation
+- [ ] No unnecessary API calls
+- [ ] Memory leaks avoided
+- [ ] Concurrency handled correctly
+
+## Testing Review
+- [ ] Adequate test coverage (80%+)
+- [ ] Quality tests (not just passing)
+- [ ] TDD compliance
+- [ ] Both success and failure paths tested
+
+## Code Conventions
+- [ ] TypeScript strict mode
+- [ ] Consistent naming conventions
+- [ ] No unused imports or variables
+- [ ] Documentation adequate
+
+## Monorepo Checks
+- [ ] Cross-package imports use published names
+- [ ] Workspace dependencies declared correctly
+- [ ] OCLIF manifest updated if commands changed
+- [ ] No breaking changes to exported APIs
+```
+
+## Review process
 
 ### Severity Levels
 - **🔴 Critical** (must fix before merge):
@@ -311,47 +361,7 @@ import { configHandler } from '../../../contentstack-utilities/src';
 - [ ] Race conditions in tests
 - [ ] Hardcoded timeouts
 
-## Review Checklist Template
-
-```markdown
-## Security
-- [ ] No hardcoded secrets
-- [ ] Input validation present
-- [ ] Error handling secure
-
-## Correctness
-- [ ] Logic is correct
-- [ ] Edge cases handled
-- [ ] Error scenarios covered
-
-## Architecture
-- [ ] Good code organization
-- [ ] Design patterns followed
-- [ ] Modularity intact
-
-## Performance
-- [ ] Efficient implementation
-- [ ] Rate limits respected
-- [ ] Memory managed properly
-
-## Testing
-- [ ] Adequate coverage
-- [ ] Quality tests
-- [ ] Both paths tested
-
-## Conventions
-- [ ] TypeScript standards met
-- [ ] Code style consistent
-- [ ] Documentation adequate
-
-## Monorepo
-- [ ] Package imports correct
-- [ ] Dependencies declared properly
-- [ ] Manifest/build updated
-- [ ] No breaking changes
-```
-
-## Approval Criteria
+## Approval criteria
 
 **APPROVE when:**
 - ✅ All 🔴 Critical items addressed
@@ -371,3 +381,54 @@ import { configHandler } from '../../../contentstack-utilities/src';
 - 💬 🟢 Suggestions (non-blocking)
 - 💬 Questions about implementation
 - 💬 Appreciation for good patterns
+
+## Additional PR review notes (former .cursor/commands/code-review.md)
+
+## Review Execution
+
+### Automated Checks
+1. **Lint compliance**: ESLint checks for code style
+2. **TypeScript compiler**: Successful compilation to `lib/` directories
+3. **Test execution**: All tests pass successfully
+4. **Build verification**: Build scripts complete without errors
+
+### Manual Review Focus Areas
+1. **Command usability**: Clear help text and realistic examples
+2. **Error handling**: Appropriate error messages and recovery options
+3. **Test quality**: Comprehensive test coverage for critical paths
+4. **Monorepo consistency**: Consistent patterns across all packages
+5. **Flag design**: Intuitive flag names and combinations
+
+### Common Issues to Flag
+- **Inconsistent TypeScript settings**: Mixed strict mode without reason
+- **Real API calls in tests**: Unmocked external dependencies
+- **Missing error handling**: Commands that fail silently
+- **Poor test organization**: Tests without clear Arrange-Act-Assert
+- **Build artifacts committed**: `lib/` directories in version control
+- **Unclear error messages**: Non-actionable error descriptions
+- **Inconsistent flag naming**: Similar flags with different names
+- **Missing command examples**: Examples not showing actual usage
+
+## Repository-Specific Checklist
+
+### For Modularized CLI
+- [ ] Command properly extends `@contentstack/cli-command` Command
+- [ ] Flags defined with proper types from `@contentstack/cli-utilities`
+- [ ] Error handling uses `handleAndLogError` utility
+- [ ] User feedback uses `cliux` utilities
+- [ ] Tests use Mocha + Chai pattern with mocked dependencies
+- [ ] Package.json has correct scripts (build, compile, test, lint)
+- [ ] TypeScript compiles with no errors
+- [ ] Tests pass: `pnpm test`
+- [ ] No `.only` or `.skip` in test files
+- [ ] Build succeeds: `pnpm run build`
+- [ ] OCLIF manifest generated successfully
+
+### Before Merge
+- [ ] All review items addressed
+- [ ] No build artifacts in commit
+- [ ] Tests added for new functionality
+- [ ] Documentation updated if needed
+- [ ] No console.log() statements (use log.debug instead)
+- [ ] Error messages are user-friendly
+- [ ] No secrets or credentials in code

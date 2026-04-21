@@ -1,3 +1,8 @@
+---
+name: framework
+description: Core utilities, configuration, logging, and framework patterns for CLI development. Use when working with utilities, configuration management, error handling, or core framework components.
+---
+
 # Framework Patterns
 
 Core utilities, configuration, logging, and framework patterns for Contentstack CLI development.
@@ -94,7 +99,7 @@ The utilities provide error handling functions and error classes.
 import { handleAndLogError } from '@contentstack/cli-utilities';
 
 try {
-  await risky operation();
+  await riskyOperation();
 } catch (error) {
   handleAndLogError(error, {
     module: 'config-set-region',
