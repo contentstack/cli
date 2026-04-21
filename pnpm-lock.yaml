@@ -7,6 +7,11 @@ settings:
 overrides:
   picomatch: 4.0.4
   brace-expansion: 5.0.5
+  '@tootallnate/once': 3.0.1
+  follow-redirects: 1.16.0
+  lodash: 4.18.1
+  path-to-regexp: 0.1.13
+  tmp: 0.2.4
 
 importers:
 
@@ -188,8 +193,8 @@ importers:
         specifier: ^21.1.2
         version: 21.1.2
       tmp:
-        specifier: ^0.2.5
-        version: 0.2.5
+        specifier: 0.2.4
+        version: 0.2.4
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@18.19.130)(typescript@4.9.5)
@@ -340,7 +345,7 @@ importers:
         specifier: ^6.2.44
         version: 6.2.44
       lodash:
-        specifier: ^4.18.1
+        specifier: 4.18.1
         version: 4.18.1
     devDependencies:
       '@oclif/test':
@@ -440,7 +445,7 @@ importers:
         specifier: ^2.0.6
         version: 2.0.6
       lodash:
-        specifier: ^4.18.1
+        specifier: 4.18.1
         version: 4.18.1
       mkdirp:
         specifier: ^1.0.4
@@ -4540,10 +4545,6 @@ packages:
     resolution: {integrity: sha512-weP+BZ8MVNnlCm8c0Qdc1WSWq4Qn7I+9CJGm7Qali6g44e/PUzbjNqJX5NJ9ljlNMosfJvg1fKEGILklK9cwnw==}
     engines: {node: '>=18'}
 
-  os-tmpdir@1.0.2:
-    resolution: {integrity: sha512-D2FR03Vir7FIu45XBY20mTb+/ZSWB00sjU9jdQXt83gDrI4Ztz5Fs7/yy74g2N5SVQY4xY1qDr4rNddwYRVX0g==}
-    engines: {node: '>=0.10.0'}
-
   otplib@12.0.1:
     resolution: {integrity: sha512-xDGvUOQjop7RDgxTQ+o4pOol0/3xSZzawTiPKRrHnQWAy0WjhNs/5HdIDJCrqC4MBynmjXgULc6YfioaxZeFgg==}
 
@@ -5350,12 +5351,8 @@ packages:
     resolution: {integrity: sha512-pn99VhoACYR8nFHhxqix+uvsbXineAasWm5ojXoN8xEwK5Kd3/TrhNn1wByuD52UxWRLy8pu+kRMniEi6Eq9Zg==}
     engines: {node: '>=12.0.0'}
 
-  tmp@0.0.33:
-    resolution: {integrity: sha512-jRCJlojKnZ3addtTOjdIqoRuPEKBvNXcGYqzO6zWZX8KfKEpnGY5jfggJQ3EjKuu8D4bJRr0y+cYJFmYbImXGw==}
-    engines: {node: '>=0.6.0'}
-
-  tmp@0.2.5:
-    resolution: {integrity: sha512-voyz6MApa1rQGUxT3E+BK7/ROe8itEx7vD8/HEvt4xwXucvQ5G5oeEiHkmHZJuBO21RpOf+YYm9MOivj709jow==}
+  tmp@0.2.4:
+    resolution: {integrity: sha512-UdiSoX6ypifLmrfQ/XfiawN6hkjSBpCjhKxxZcWlUUmoXLaCKQU0bx4HF/tdDK2uzRuchf1txGvrWBzYREssoQ==}
     engines: {node: '>=14.14'}
 
   to-regex-range@5.0.1:
@@ -6521,7 +6518,7 @@ snapshots:
       inquirer: 12.11.1(@types/node@18.19.130)
       mkdirp: 1.0.4
       tar: 7.5.13
-      tmp: 0.2.5
+      tmp: 0.2.4
     transitivePeerDependencies:
       - '@types/node'
       - debug
@@ -10014,7 +10011,7 @@ snapshots:
     dependencies:
       chardet: 0.4.2
       iconv-lite: 0.4.24
-      tmp: 0.0.33
+      tmp: 0.2.4
 
   eyes@0.1.8: {}
 
@@ -11456,8 +11453,6 @@ snapshots:
       string-width: 7.2.0
       strip-ansi: 7.2.0
 
-  os-tmpdir@1.0.2: {}
-
   otplib@12.0.1:
     dependencies:
       '@otplib/core': 12.0.1
@@ -12325,11 +12320,7 @@ snapshots:
       fdir: 6.5.0(picomatch@4.0.4)
       picomatch: 4.0.4
 
-  tmp@0.0.33:
-    dependencies:
-      os-tmpdir: 1.0.2
-
-  tmp@0.2.5: {}
+  tmp@0.2.4: {}
 
   to-regex-range@5.0.1:
     dependencies:
