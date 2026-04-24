@@ -40,6 +40,10 @@ class Messages {
     }
     return msg;
   }
+
+  isEmptyMessages(): boolean {
+    return Object.keys(this.messages).length === 0;
+  }
 }
 
 export default new Messages();
