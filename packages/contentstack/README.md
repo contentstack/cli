@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.60.1 darwin-arm64 node-v22.13.1
+@contentstack/cli/1.60.1 darwin-arm64 node-v24.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -3838,10 +3838,11 @@ Launch related operations
 ```
 USAGE
   $ csdx launch [-d <value>] [-c <value>] [--type GitHub|FileUpload] [--framework Gatsby|NextJs|CRA (Create
-    React App)|CSR (Client-Side Rendered)|Angular|Nuxt|VueJs|Remix|Other] [--org <value>] [-n <value>] [-e <value>]
-    [--branch <value>] [--build-command <value>] [--out-dir <value>] [--server-command <value>] [--variable-type Import
-    variables from a stack|Manually add custom variables to the list|Import variables from the .env.local file|Skip
-    adding environment variables...] [-a <value>] [--env-variables <value>] [--redeploy-latest] [--redeploy-last-upload]
+    React App)|CSR (Client-Side Rendered)|Analog|Angular|Nuxt|Astro|VueJs|Remix|Other] [--org <value>] [-n <value>] [-e
+    <value>] [--branch <value>] [--build-command <value>] [--out-dir <value>] [--server-command <value>]
+    [--variable-type Import variables from a stack|Manually add custom variables to the list|Import variables from the
+    .env.local file|Skip adding environment variables...] [-a <value>] [--env-variables <value>] [--redeploy-latest]
+    [--redeploy-last-upload]
 
 FLAGS
   -a, --alias=<value>              [optional] Alias (name) for the delivery token.
@@ -3855,7 +3856,7 @@ FLAGS
                                    comma. For example: APP_ENV:prod, TEST_ENV:testVal.
       --framework=<option>         [optional] Type of framework. <options: Gatsby|NextJS|Other>
                                    <options: Gatsby|NextJs|CRA (Create React App)|CSR (Client-Side
-                                   Rendered)|Angular|Nuxt|VueJs|Remix|Other>
+                                   Rendered)|Analog|Angular|Nuxt|Astro|VueJs|Remix|Other>
       --org=<value>                [optional] Provide the organization UID to create a new project or deployment.
       --out-dir=<value>            [optional] Output Directory.
       --redeploy-last-upload       [optional] Redeploy with last file upload
