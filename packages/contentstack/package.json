@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli",
   "description": "Command-line tool (CLI) to interact with Contentstack",
-  "version": "1.61.0",
+  "version": "1.61.1",
   "author": "Contentstack",
   "bin": {
     "csdx": "./bin/run.js"
@@ -49,8 +49,7 @@
     "node-machine-id": "^1.1.12",
     "open": "^8.4.2",
     "semver": "^7.7.2",
-    "short-uuid": "^4.2.2",
-    "uuid": "^9.0.1",
+    "short-uuid": "^6.0.0",
     "winston": "^3.17.0"
   },
   "overrides": {
@@ -68,7 +67,7 @@
     "@types/semver": "^7.7.0",
     "@types/sinon": "^21.0.0",
     "chai": "^4.5.0",
-    "eslint": "^8.57.1",
+    "eslint": "^9.26.0",
     "eslint-config-oclif": "^6.0.137",
     "eslint-config-oclif-typescript": "^3.1.14",
     "globby": "^10.0.2",
