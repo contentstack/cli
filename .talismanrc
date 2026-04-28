@@ -1,6 +1,4 @@
 fileignoreconfig:
-  - filename: pnpm-lock.yaml
-    checksum: 18165cc0d24a142ba68182e5251b8f6ead686824119754067a442677cb37acba
-  - filename: packages/contentstack/README.md
-    checksum: 4fbf9f74f2288364521d67cca0145f83db5387286923f24e08207e331011e9d5
+  - filename: eslint.config.base.js
+    checksum: 42ffeeab54d02b41d9cc9253f380a5269603d4a9da3798d32bf5c815684ea466
 version: '1.0'
