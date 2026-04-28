@@ -37,7 +37,7 @@
     "@types/sinon": "^21.0.0",
     "chai": "^4.5.0",
     "dotenv": "^16.4.7",
-    "eslint": "^8.57.1",
+    "eslint": "^9.26.0",
     "eslint-config-oclif": "^5.2.2",
     "eslint-config-oclif-typescript": "^3.1.14",
     "mocha": "10.8.2",

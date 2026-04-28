@@ -53,7 +53,7 @@
     "traverse": "^0.6.11",
     "tty-table": "^4.2.3",
     "unique-string": "^2.0.0",
-    "uuid": "^9.0.1",
+    "uuid": "^14.0.0",
     "winston": "^3.19.0",
     "xdg-basedir": "^4.0.0"
   },
@@ -71,7 +71,7 @@
     "@types/sinon": "^21.0.0",
     "@types/traverse": "^0.6.37",
     "chai": "^4.5.0",
-    "eslint": "^8.57.1",
+    "eslint": "^9.26.0",
     "eslint-config-oclif": "^6.0.62",
     "eslint-config-oclif-typescript": "^3.1.14",
     "fancy-test": "^2.0.42",

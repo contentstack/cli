@@ -1,4 +1,4 @@
 fileignoreconfig:
-  - filename: pnpm-lock.yaml
-    checksum: 5bf275a8f6843072ceadaef8e1aafaef8a80ef71d8d0719a653dc6ecee6e9355
+  - filename: eslint.config.base.js
+    checksum: 42ffeeab54d02b41d9cc9253f380a5269603d4a9da3798d32bf5c815684ea466
 version: '1.0'
