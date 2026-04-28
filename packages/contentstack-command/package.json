@@ -16,8 +16,7 @@
   "dependencies": {
     "@contentstack/cli-utilities": "~1.18.3",
     "contentstack": "^3.27.0",
-    "@oclif/core": "^4.10.5",
-    "@oclif/plugin-help": "^6.2.28"
+    "@oclif/core": "^4.10.5"
   },
   "overrides": {
     "@oclif/core": {
@@ -26,7 +25,6 @@
   },
   "devDependencies": {
     "@oclif/test": "^4.1.13",
-    "@types/mkdirp": "^1.0.2",
     "@types/mocha": "^8.2.3",
     "@types/node": "^14.18.63",
     "eslint": "^9.26.0",

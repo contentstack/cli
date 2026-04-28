@@ -1,4 +1,4 @@
 fileignoreconfig:
-  - filename: eslint.config.base.js
-    checksum: 42ffeeab54d02b41d9cc9253f380a5269603d4a9da3798d32bf5c815684ea466
+  - filename: packages/contentstack/README.md
+    checksum: 1846c4aefe667bf30c352009ac7aa90f6f966af5a9dfc71c4b5a7c66cd444c9c
 version: '1.0'
