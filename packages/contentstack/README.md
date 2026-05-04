@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.60.1 darwin-arm64 node-v22.13.1
+@contentstack/cli/1.61.1 darwin-arm64 node-v24.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -45,6 +45,7 @@ USAGE
 * [`csdx cm:branches:delete [-uid <value>] [-k <value>]`](#csdx-cmbranchesdelete--uid-value--k-value)
 * [`csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>] [--format <value>] [--csv-path <value>]`](#csdx-cmbranchesdiff---base-branch-value---compare-branch-value--k-value--module-value---format-value---csv-path-value)
 * [`csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>] [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]`](#csdx-cmbranchesmerge--k-value--compare-branch-value---no-revert---export-summary-path-value---use-merge-summary-value---comment-value---base-branch-value)
+* [`csdx cm:branches:merge-status -k <value> --merge-uid <value>`](#csdx-cmbranchesmerge-status--k-value---merge-uid-value)
 * [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
 * [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value)
 * [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value)
@@ -792,6 +793,29 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/merge.ts)_
+
+## `csdx cm:branches:merge-status -k <value> --merge-uid <value>`
+
+Check the status of a branch merge job
+
+```
+USAGE
+  $ csdx cm:branches:merge-status -k <value> --merge-uid <value>
+
+FLAGS
+  -k, --stack-api-key=<value>  (required) Provide your stack API key.
+      --merge-uid=<value>      (required) Merge job UID to check status for.
+
+DESCRIPTION
+  Check the status of a branch merge job
+
+EXAMPLES
+  $ csdx cm:branches:merge-status -k bltxxxxxxxx --merge-uid merge_abc123
+
+  $ csdx cm:branches:merge-status --stack-api-key bltxxxxxxxx --merge-uid merge_abc123
+```
+
+_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/merge-status.ts)_
 
 ## `csdx cm:bulk-publish`
 
@@ -3838,10 +3862,11 @@ Launch related operations
 ```
 USAGE
   $ csdx launch [-d <value>] [-c <value>] [--type GitHub|FileUpload] [--framework Gatsby|NextJs|CRA (Create
-    React App)|CSR (Client-Side Rendered)|Angular|Nuxt|VueJs|Remix|Other] [--org <value>] [-n <value>] [-e <value>]
-    [--branch <value>] [--build-command <value>] [--out-dir <value>] [--server-command <value>] [--variable-type Import
-    variables from a stack|Manually add custom variables to the list|Import variables from the .env.local file|Skip
-    adding environment variables...] [-a <value>] [--env-variables <value>] [--redeploy-latest] [--redeploy-last-upload]
+    React App)|CSR (Client-Side Rendered)|Analog|Angular|Nuxt|Astro|VueJs|Remix|Other] [--org <value>] [-n <value>] [-e
+    <value>] [--branch <value>] [--build-command <value>] [--out-dir <value>] [--server-command <value>]
+    [--variable-type Import variables from a stack|Manually add custom variables to the list|Import variables from the
+    .env.local file|Skip adding environment variables...] [-a <value>] [--env-variables <value>] [--redeploy-latest]
+    [--redeploy-last-upload]
 
 FLAGS
   -a, --alias=<value>              [optional] Alias (name) for the delivery token.
@@ -3855,7 +3880,7 @@ FLAGS
                                    comma. For example: APP_ENV:prod, TEST_ENV:testVal.
       --framework=<option>         [optional] Type of framework. <options: Gatsby|NextJS|Other>
                                    <options: Gatsby|NextJs|CRA (Create React App)|CSR (Client-Side
-                                   Rendered)|Angular|Nuxt|VueJs|Remix|Other>
+                                   Rendered)|Analog|Angular|Nuxt|Astro|VueJs|Remix|Other>
       --org=<value>                [optional] Provide the organization UID to create a new project or deployment.
       --out-dir=<value>            [optional] Output Directory.
       --redeploy-last-upload       [optional] Redeploy with last file upload
