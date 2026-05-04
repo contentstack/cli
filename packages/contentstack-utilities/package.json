@@ -53,6 +53,7 @@
     "traverse": "^0.6.11",
     "tty-table": "^4.2.3",
     "unique-string": "^2.0.0",
+    "short-uuid": "^6.0.0",
     "uuid": "^14.0.0",
     "winston": "^3.19.0",
     "xdg-basedir": "^4.0.0"
