@@ -166,25 +166,17 @@ describe('Auth Handler', () => {
         refresh_token: refreshToken,
       };
 
-      try {
-        const expectedPayload = {
-          grant_type: 'authorization_code',
-          client_id: authHandler.OAuthClientId,
-          code_verifier: authHandler.codeVerifier,
-          redirect_uri: authHandler.OAuthRedirectURL,
-          code,
-        };
-
-        const httpClientStub = sandbox.stub(HttpClient.prototype, 'post').resolves({ data: userData });
-        const getUserDetailsStub = sandbox.stub(authHandler, 'getUserDetails').resolves(userData);
-        const setConfigDataStub = sandbox.stub(authHandler, 'setConfigData').resolves();
-
-        await authHandler.getAccessToken(code);
-
-        assert.calledWith(httpClientStub, `${authHandler.OAuthBaseURL}/apps-api/apps/token`, expectedPayload);
-        assert.calledWith(getUserDetailsStub, userData);
-        assert.calledWith(setConfigDataStub, 'oauth', userData);
-      } catch (error) {}
+      const exchangeStub = sandbox.stub().resolves(userData);
+      sandbox.stub(authHandler, 'oauthHandler').value({
+        exchangeCodeForToken: exchangeStub,
+      });
+      const getUserDetailsStub = sandbox.stub(authHandler, 'getUserDetails').resolves(userData);
+      const setConfigDataStub = sandbox.stub(authHandler, 'setConfigData').resolves();
+      await authHandler.getAccessToken(code);
+      // Verify the actual calls made:
+      assert.calledWith(exchangeStub, code); // exchangeCodeForToken called with code
+      assert.calledWith(getUserDetailsStub, userData); // getUserDetails called with result from exchange
+      assert.calledWith(setConfigDataStub, 'oauth', userData); // setConfigData called with 'oauth' and userData
     });
   });
 
@@ -296,30 +288,31 @@ describe('Auth Handler', () => {
     });
 
     it('should refresh the token and resolve with data when refresh token is valid', async () => {
-      const configOauthRefreshToken = 'valid_refresh_token'; // Set a valid refresh token here
+      const configOauthRefreshToken = 'valid_refresh_token';
       const configAuthorisationType = authHandler.authorisationTypeOAUTHValue;
       const expectedData = {
-        access_token: config.access_token,
+        access_token: 'new_access_token',
         refresh_token: 'new_refresh_token',
       };
-
-      const postStub = sandbox.stub().resolves({ data: expectedData });
-      const httpClientStub = {
-        post: postStub,
-      };
-      const httpClientInstance = new HttpClient().headers().asFormParams();
-      sandbox.stub(httpClientInstance, 'post').value(httpClientStub);
-
-      sandbox.stub(authHandler, 'setConfigData').resolves(expectedData);
-
+      // Stub oauthHandler with refreshAccessToken method
+      const refreshAccessTokenStub = sandbox.stub().resolves(expectedData);
+      sandbox.stub(authHandler, 'oauthHandler').value({
+        refreshAccessToken: refreshAccessTokenStub,
+      });
+      // Stub configHandler.get to return proper values
       sandbox
         .stub(configHandler, 'get')
         .withArgs(authHandler.oauthRefreshTokenKeyName)
         .returns(configOauthRefreshToken)
         .withArgs(authHandler.authorisationTypeKeyName)
         .returns(configAuthorisationType);
-
-      authHandler.refreshToken();
+      // Stub setConfigData
+      sandbox.stub(authHandler, 'setConfigData').resolves(expectedData);
+      const result = await authHandler.refreshToken();
+      // Verify calls
+      assert.calledWith(refreshAccessTokenStub, configOauthRefreshToken);
+      assert.calledWith(authHandler.setConfigData, 'refreshToken', expectedData);
+      expect(result).to.deep.equal(expectedData);
     });
   });
 
@@ -354,7 +347,7 @@ describe('Auth Handler', () => {
       const data = {
         access_token: '',
       };
-    
+
       try {
         await authHandler.getUserDetails(data);
         throw new Error('Expected getUserDetails to throw'); // ensure failure if no error is thrown
@@ -362,7 +355,7 @@ describe('Auth Handler', () => {
         expect(error).to.be.instanceOf(Error);
         expect(error.message).to.equal('Invalid or empty access token.');
       }
-    }); 
+    });
   });
 
   describe('isAuthenticated', () => {
