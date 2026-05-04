@@ -28,7 +28,7 @@ importers:
         specifier: ~1.19.2
         version: 1.19.2(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-auth':
-        specifier: ~1.8.1
+        specifier: ~1.8.2
         version: link:../contentstack-auth
       '@contentstack/cli-cm-bootstrap':
         specifier: ~1.19.1
@@ -61,10 +61,10 @@ importers:
         specifier: ~1.15.1
         version: 1.15.1(@types/node@14.18.63)
       '@contentstack/cli-command':
-        specifier: ~1.8.1
+        specifier: ~1.8.2
         version: link:../contentstack-command
       '@contentstack/cli-config':
-        specifier: ~1.20.2
+        specifier: ~1.20.3
         version: link:../contentstack-config
       '@contentstack/cli-launch':
         specifier: ^1.9.7
@@ -170,7 +170,7 @@ importers:
   packages/contentstack-auth:
     dependencies:
       '@contentstack/cli-command':
-        specifier: ~1.8.1
+        specifier: ~1.8.2
         version: link:../contentstack-command
       '@contentstack/cli-utilities':
         specifier: ~1.18.3
@@ -280,7 +280,7 @@ importers:
   packages/contentstack-config:
     dependencies:
       '@contentstack/cli-command':
-        specifier: ~1.8.1
+        specifier: ~1.8.2
         version: link:../contentstack-command
       '@contentstack/cli-utilities':
         specifier: ~1.18.3
@@ -9232,7 +9232,7 @@ snapshots:
       eslint-config-xo: 0.49.0(eslint@9.39.4)
       eslint-config-xo-space: 0.35.0(eslint@9.39.4)
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@9.39.4)(typescript@4.9.5))(eslint@9.39.4))(eslint@9.39.4)
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.59.1(eslint@9.39.4)(typescript@4.9.5))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.59.1(eslint@9.39.4)(typescript@4.9.5))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@9.39.4)(typescript@4.9.5))(eslint@9.39.4))(eslint@9.39.4))(eslint@9.39.4)
       eslint-plugin-jsdoc: 50.8.0(eslint@9.39.4)
       eslint-plugin-mocha: 10.5.0(eslint@9.39.4)
       eslint-plugin-n: 17.24.0(eslint@9.39.4)(typescript@4.9.5)
@@ -9352,7 +9352,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.59.1(eslint@9.39.4)(typescript@4.9.5))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.59.1(eslint@9.39.4)(typescript@4.9.5))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@9.39.4)(typescript@4.9.5))(eslint@9.39.4))(eslint@9.39.4))(eslint@9.39.4):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
