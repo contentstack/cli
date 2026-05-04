@@ -43,8 +43,7 @@
     "@oclif/plugin-plugins": "^5.4.54",
     "figlet": "1.8.1",
     "node-machine-id": "^1.1.12",
-    "semver": "^7.7.2",
-    "short-uuid": "^6.0.0"
+    "semver": "^7.7.2"
   },
   "overrides": {
     "@oclif/core": {
