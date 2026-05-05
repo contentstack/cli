@@ -1,4 +1,4 @@
-import { cliux, validatePath, getBranchFromAlias } from '../../lib';
+import { cliux, validatePath, getBranchFromAlias, generateUid, generateShortUid } from '../../lib';
 import { expect } from 'chai';
 import { fancy } from 'fancy-test';
 
@@ -244,5 +244,34 @@ describe('Testing the getBranchFromAlias function', () => {
         expect(error).to.equal(networkError);
       }
     });
+  });
+});
+
+describe('generateUid', () => {
+  it('should return a string', () => {
+    expect(generateUid()).to.be.a('string');
+  });
+
+  it('should return a valid UUID v4 format', () => {
+    const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    expect(generateUid()).to.match(uuidV4Regex);
+  });
+
+  it('should return a unique value on each call', () => {
+    expect(generateUid()).to.not.equal(generateUid());
+  });
+});
+
+describe('generateShortUid', () => {
+  it('should return a string', () => {
+    expect(generateShortUid()).to.be.a('string');
+  });
+
+  it('should return a non-empty string', () => {
+    expect(generateShortUid().length).to.be.greaterThan(0);
+  });
+
+  it('should return a unique value on each call', () => {
+    expect(generateShortUid()).to.not.equal(generateShortUid());
   });
 });
