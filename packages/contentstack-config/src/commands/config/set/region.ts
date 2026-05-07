@@ -46,8 +46,8 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     studio: _flags.string({
       description: 'Custom host to set for Studio API',
     }),
-    'asset-management': _flags.string({
-      description: 'Custom host to set for Asset Management API',
+    'cs-assets': _flags.string({
+      description: 'Custom host to set for Contentstack Assets API',
     }),
   };
   static examples = [
@@ -64,7 +64,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --personalize <custom_personalize_url>',
     '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --launch <custom_launch_url>',
     '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --studio <custom_studio_url>',
-    '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --asset-management <asset_management_url>',
+    '$ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --cs-assets <cs_assets_url>',
     '$ csdx config:set:region --cda <custom_cda_host_url> --cma <custom_cma_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url> --launch <custom_launch_url> --personalize <custom_personalize_url> --studio <custom_studio_url>',
   ];
 
@@ -82,7 +82,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     let personalizeUrl = regionSetFlags['personalize'];
     let launchHubUrl = regionSetFlags['launch'];
     let composableStudioUrl = regionSetFlags['studio'];
-    let assetManagementUrl = regionSetFlags['asset-management'];
+    let csAssetsUrl = regionSetFlags['cs-assets'];
     let selectedRegion = args.region;
     if (!(cda && cma && uiHost && name) && !selectedRegion) {
       selectedRegion = await interactive.askRegions();
@@ -113,8 +113,8 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
         if (!composableStudioUrl) {
           composableStudioUrl = this.transformUrl(cma, 'composable-studio-api');
         }
-        if (!assetManagementUrl) {
-          assetManagementUrl = this.transformUrl(cma, 'am-api');
+        if (!csAssetsUrl) {
+          csAssetsUrl = this.transformUrl(cma, 'am-api');
         }
         let customRegion: Region = {
           cda,
@@ -125,7 +125,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
           personalizeUrl,
           launchHubUrl,
           composableStudioUrl,
-          assetManagementUrl,
+          csAssetsUrl,
         };
         customRegion = regionHandler.setCustomRegion(customRegion);
         await authHandler.setConfigData('logout'); //Todo: Handle this logout flow well through logout command call
@@ -137,7 +137,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
         cliux.success(`Personalize URL: ${customRegion.personalizeUrl}`);
         cliux.success(`Launch URL: ${customRegion.launchHubUrl}`);
         cliux.success(`Studio URL: ${customRegion.composableStudioUrl}`);
-        cliux.success(`Asset Management URL: ${customRegion.assetManagementUrl}`);
+        cliux.success(`Contentstack Assets URL: ${customRegion.csAssetsUrl}`);
       } catch (error) {
         handleAndLogError(error, { ...this.contextDetails, module: 'config-set-region' });
       }
@@ -156,7 +156,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
       cliux.success(`Personalize URL: ${regionDetails.personalizeUrl}`);
       cliux.success(`Launch URL: ${regionDetails.launchHubUrl}`);
       cliux.success(`Studio URL: ${regionDetails.composableStudioUrl}`);
-      cliux.success(`Asset Management URL: ${regionDetails.assetManagementUrl}`);
+      cliux.success(`Contentstack Assets URL: ${regionDetails.csAssetsUrl}`);
     } else {
       cliux.error(`Invalid region specified.`);
     }

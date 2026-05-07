@@ -19,7 +19,7 @@ export interface Region {
   personalizeUrl: string;
   launchHubUrl: string;
   composableStudioUrl: string;
-  assetManagementUrl?: string;
+  csAssetsUrl?: string;
 }
 
 export interface Limit {
