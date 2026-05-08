@@ -51,8 +51,7 @@
     "open": "^8.4.2",
     "ora": "^8.2.0",
     "semver": "^7.7.4",
-    "short-uuid": "^4.2.2",
-    "uuid": "^9.0.1",
+    "short-uuid": "^6.0.0",
     "winston": "^3.19.0"
   },
   "overrides": {
@@ -63,15 +62,13 @@
   "devDependencies": {
     "@oclif/test": "^4.1.18",
     "@types/chai": "^4.3.20",
-    "@types/inquirer": "^9.0.9",
-    "@types/mkdirp": "^1.0.2",
     "@types/mocha": "^8.2.3",
     "@types/node": "^18.19.130",
     "@types/semver": "^7.7.1",
     "@types/sinon": "^10.0.20",
     "chai": "^4.5.0",
-    "eslint": "^8.57.1",
-    "eslint-config-oclif": "^6.0.157",
+    "eslint": "^9.26.0",
+    "eslint-config-oclif": "^6.0.137",
     "eslint-config-oclif-typescript": "^3.1.14",
     "globby": "^10.0.2",
     "mocha": "10.8.2",
