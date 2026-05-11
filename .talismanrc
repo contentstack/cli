@@ -1,4 +1,4 @@
 fileignoreconfig:
-  - filename: packages/contentstack/README.md
-    checksum: 1846c4aefe667bf30c352009ac7aa90f6f966af5a9dfc71c4b5a7c66cd444c9c
+  - filename: pnpm-lock.yaml
+    checksum: ce59711c92f86740c966bc881cac51f3afcea2af46858d715419b5d4914ad24e
 version: '1.0'
