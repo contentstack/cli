@@ -1,5 +1,7 @@
 import { checkSync } from 'recheck';
 import traverse from 'traverse';
+import { v4 as uuidV4 } from 'uuid';
+import { generate as shortUuidGenerate } from 'short-uuid';
 import authHandler from './auth-handler';
 import { ContentstackClient, HttpClient, cliux, configHandler } from '.';
 import { hasProxy, getProxyUrl } from './proxy-helper';
@@ -287,6 +289,14 @@ export function getAuthenticationMethod(): string {
  * @param authenticationMethod - Optional authentication method
  * @returns Context object with all session-level metadata
  */
+export function generateUid(): string {
+  return uuidV4();
+}
+
+export function generateShortUid(): string {
+  return shortUuidGenerate();
+}
+
 export function createLogContext(
   commandId: string,
   apiKey: string,
