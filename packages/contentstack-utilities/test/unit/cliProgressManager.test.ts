@@ -466,8 +466,10 @@ describe('CLIProgressManager', () => {
         moduleName: 'TEST',
       });
       try {
+        // Ignore prior tests in this describe; only assert console.log for this log() call.
+        consoleLogStub.resetHistory();
         silentManager.log('Test message');
-        expect(consoleLogStub.called).to.be.false;
+        expect(consoleLogStub.callCount).to.equal(0);
       } finally {
         try {
           silentManager.stop();
