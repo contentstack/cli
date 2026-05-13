@@ -17,7 +17,7 @@ describe('Region command', function () {
     launchHubUrl: 'https://launch-api.contentstack.com',
     personalizeUrl: 'https://personalization-api.contentstack.com',
     composableStudioUrl: 'https://composable-studio-api.contentstack.com',
-    assetManagementUrl: 'https://am-api.contentstack.com',
+    csAssetsUrl: 'https://am-api.contentstack.com',
   };
   let cliuxPrintStub: sinon.SinonStub;
   let configGetStub: sinon.SinonStub;
@@ -310,7 +310,7 @@ describe('Region command', function () {
       personalizeUrl: 'https://custom-personalize.com',
       launchHubUrl: 'https://custom-launch.com',
       composableStudioUrl: 'https://custom-composable-studio.com',
-      assetManagementUrl: 'https://custom-asset-management.com',
+      csAssetsUrl: 'https://custom-asset-management.com',
     };
     const result = UserConfig.setCustomRegion(customRegion);
     expect(result).to.deep.equal(customRegion);
