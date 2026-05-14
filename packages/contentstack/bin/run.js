@@ -1,4 +1,30 @@
 #!/usr/bin/env node
+
+const path = require('path');
+const fs = require('fs');
+const Module = require('module');
+
+// In this monorepo, pnpm can place a second physical copy of @contentstack/cli-utilities
+// (older chalk cache) while plugins resolve the main package's symlinked copy. Force all
+// requires to the same package root so loadChalk/getChalk share one implementation.
+const utilitiesPkgJson = path.resolve(__dirname, '..', 'node_modules', '@contentstack', 'cli-utilities', 'package.json');
+if (fs.existsSync(utilitiesPkgJson)) {
+  const resolveFromUtilities = Module.createRequire(utilitiesPkgJson);
+  const origResolveFilename = Module._resolveFilename.bind(Module);
+  Module._resolveFilename = (request, parent, isMain, options) => {
+    if (request === '@contentstack/cli-utilities' || request.startsWith('@contentstack/cli-utilities/')) {
+      try {
+        const relative =
+          request === '@contentstack/cli-utilities' ? '.' : `.${request.slice('@contentstack/cli-utilities'.length)}`;
+        return resolveFromUtilities.resolve(relative);
+      } catch {
+        /* fall through */
+      }
+    }
+    return origResolveFilename(request, parent, isMain, options);
+  };
+}
+
 // eslint-disable-next-line unicorn/prefer-top-level-await
 (async () => {
   try {
