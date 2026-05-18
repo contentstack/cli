@@ -458,7 +458,6 @@ export async function getFileList(dirName: string, onlyName = true): Promise<str
 
   for (const item of items) {
     if (item.isDirectory()) {
-      /* eslint-disable no-await-in-loop */
       files = [...files, ...(await getFileList(`${dirName}/${item.name}`))];
     } else {
       files.push(onlyName ? item.name : `${dirName}/${item.name}`);
