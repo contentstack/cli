@@ -1,6 +1,5 @@
-import * as shortUUID from 'short-uuid';
 import * as path from 'path';
-import { configHandler, pathValidator, sanitizePath } from '@contentstack/cli-utilities';
+import { configHandler, pathValidator, sanitizePath, generateShortUid } from '@contentstack/cli-utilities';
 import { machineIdSync } from 'node-machine-id';
 
 export default class CsdxContext {
@@ -33,7 +32,7 @@ export default class CsdxContext {
       configHandler.set('clientId', this.clientId);
     }
     analyticsInfo.push(this.clientId);
-    const sessionId = shortUUID.generate();
+    const sessionId = generateShortUid();
     configHandler.set('sessionId', sessionId);
     this.sessionId = sessionId;
     analyticsInfo.push(this.sessionId);

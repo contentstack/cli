@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-command",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "2.0.0-beta.6",
+  "version": "2.0.0-beta.7",
   "author": "Contentstack",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,10 +14,9 @@
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
-    "@contentstack/cli-utilities": "~2.0.0-beta.7",
+    "@contentstack/cli-utilities": "~2.0.0-beta.8",
     "contentstack": "^3.27.0",
-    "@oclif/core": "^4.10.5",
-    "@oclif/plugin-help": "^6.2.44"
+    "@oclif/core": "^4.10.5"
   },
   "overrides": {
     "@oclif/core": {
@@ -25,11 +24,10 @@
     }
   },
   "devDependencies": {
-    "@oclif/test": "^4.1.18",
-    "@types/mkdirp": "^1.0.2",
+    "@oclif/test": "^4.1.13",
     "@types/mocha": "^8.2.3",
     "@types/node": "^14.18.63",
-    "eslint": "^8.57.1",
+    "eslint": "^9.26.0",
     "eslint-config-oclif": "^6.0.15",
     "eslint-config-oclif-typescript": "^3.1.14",
     "mocha": "10.8.2",
