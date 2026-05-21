@@ -19,7 +19,7 @@
     "prepack": "pnpm compile && oclif manifest && oclif readme"
   },
   "dependencies": {
-    "@contentstack/apps-cli": "workspace:*",
+    "@contentstack/apps-cli": "~1.7.0",
     "@contentstack/cli-audit": "~1.19.3",
     "@contentstack/cli-cm-export": "~1.25.0",
     "@contentstack/cli-cm-import": "~1.33.0",
