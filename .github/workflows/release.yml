@@ -1,0 +1,29 @@
+name: CLI Release Pipeline
+
+on:
+  push:
+    branches: [v1-beta]
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      core: ${{ steps.filter.outputs.core }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            core:
+              - 'packages/contentstack/package.json'
+
+  plugins:
+    uses: ./.github/workflows/release-v1-beta-platform-plugins.yml
+    secrets: inherit
+
+  core:
+    needs: [plugins, changes]
+    if: needs.changes.outputs.core == 'true'
+    uses: ./.github/workflows/release-v1-beta-core.yml
+    secrets: inherit
