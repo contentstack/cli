@@ -19,6 +19,7 @@
     "prepack": "pnpm compile && oclif manifest && oclif readme"
   },
   "dependencies": {
+    "@contentstack/apps-cli": "workspace:*",
     "@contentstack/cli-audit": "~1.19.3",
     "@contentstack/cli-cm-export": "~1.25.0",
     "@contentstack/cli-cm-import": "~1.33.0",
@@ -117,6 +118,9 @@
       "cm:stacks": {
         "description": "Stacks related operations"
       },
+      "app": {
+        "description": "Perform developer-hub app related activities"
+      },
       "launch": {
         "description": "Launch related operations"
       },
@@ -144,7 +148,8 @@
       "@contentstack/cli-cm-branches",
       "@contentstack/cli-audit",
       "@contentstack/cli-cm-import-setup",
-      "@contentstack/cli-launch"
+      "@contentstack/cli-launch",
+      "@contentstack/apps-cli"
     ],
     "hooks": {
       "prerun": [
