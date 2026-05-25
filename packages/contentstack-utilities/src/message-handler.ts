@@ -1,35 +1,29 @@
 import fs from 'fs';
 import CLIError from './cli-error';
 
+const STORE_KEY = '__cs_messages__';
+
 /**
  * Message handler
  */
 class Messages {
-  private messages: object;
-  messageFilePath: any;
-
-  constructor() {
-    this.messages = {};
-  }
-
   init(context) {
     if (!context.messageFilePath) {
       return;
     }
     try {
-      this.messages = JSON.parse(fs.readFileSync(context.messageFilePath, 'utf-8'));
+      const loaded = JSON.parse(fs.readFileSync(context.messageFilePath, 'utf-8'));
+      (globalThis as any)[STORE_KEY] = { ...(globalThis as any)[STORE_KEY], ...loaded };
     } catch (error) {
-      // create empty messages object if message file is not exist
-      if (error.code === 'ENOENT') {
-        this.messages = {};
-      } else {
+      if (error.code !== 'ENOENT') {
         throw new CLIError(`Error: ${error.message}`);
       }
     }
   }
 
   parse(messageKey: string, ...substitutions: Array<any>): string {
-    const msg = this.messages[messageKey];
+    const store = (globalThis as any)[STORE_KEY] || {};
+    const msg = store[messageKey];
     if (!msg) {
       return messageKey;
     }
