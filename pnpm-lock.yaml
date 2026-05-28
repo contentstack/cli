@@ -77,7 +77,7 @@ importers:
         specifier: ~1.5.0
         version: 1.5.0(@types/node@14.18.63)(debug@4.4.3)
       '@oclif/core':
-        specifier: ^4.10.5
+        specifier: ^4.11.4
         version: 4.11.4
       '@oclif/plugin-help':
         specifier: ^6.2.28
@@ -99,7 +99,7 @@ importers:
         version: 7.8.1
     devDependencies:
       '@oclif/test':
-        specifier: ^4.1.16
+        specifier: ^4.1.18
         version: 4.1.18(@oclif/core@4.11.4)
       '@types/chai':
         specifier: ^4.3.20
@@ -348,7 +348,7 @@ importers:
         specifier: ^4.10.5
         version: 4.11.4
       axios:
-        specifier: ^1.15.2
+        specifier: ^1.16.1
         version: 1.16.1(debug@4.4.3)
       chalk:
         specifier: ^4.1.2
