@@ -5,8 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  lodash: 4.18.1
-  tmp: 0.2.4
+  tmp: 0.2.7
   uuid: 14.0.0
 
 importers:
@@ -153,8 +152,8 @@ importers:
         specifier: ^21.0.1
         version: 21.1.2
       tmp:
-        specifier: 0.2.4
-        version: 0.2.4
+        specifier: 0.2.7
+        version: 0.2.7
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@14.18.63)(typescript@4.9.5)
@@ -387,7 +386,7 @@ importers:
         specifier: ^2.0.6
         version: 2.0.6
       lodash:
-        specifier: 4.18.1
+        specifier: ^4.18.1
         version: 4.18.1
       mkdirp:
         specifier: ^1.0.4
@@ -3903,6 +3902,9 @@ packages:
   lodash.uniq@4.5.0:
     resolution: {integrity: sha512-xfBaXQd9ryd9dlSDvnvI0lvxfLJlYAZzXomUYzLKtUeOQvOP5piqAWuGtrhWeqaXK9hhoM/iyJc5AV+XfsX3HQ==}
 
+  lodash@4.17.23:
+    resolution: {integrity: sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==}
+
   lodash@4.18.1:
     resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
 
@@ -5129,8 +5131,8 @@ packages:
     resolution: {integrity: sha512-pn99VhoACYR8nFHhxqix+uvsbXineAasWm5ojXoN8xEwK5Kd3/TrhNn1wByuD52UxWRLy8pu+kRMniEi6Eq9Zg==}
     engines: {node: '>=12.0.0'}
 
-  tmp@0.2.4:
-    resolution: {integrity: sha512-UdiSoX6ypifLmrfQ/XfiawN6hkjSBpCjhKxxZcWlUUmoXLaCKQU0bx4HF/tdDK2uzRuchf1txGvrWBzYREssoQ==}
+  tmp@0.2.7:
+    resolution: {integrity: sha512-e0votIpp4Uo2AJYSzVHV6xCcawuiez3DzqDAbrTc3YxBkplN6e+dM13ZeIcZnDg/QpSuU2zfZ3rzwY8ukEnaXw==}
     engines: {node: '>=14.14'}
 
   to-regex-range@5.0.1:
@@ -6155,7 +6157,7 @@ snapshots:
       inquirer: 8.2.7(@types/node@14.18.63)
       mkdirp: 1.0.4
       tar: 7.5.15
-      tmp: 0.2.4
+      tmp: 0.2.7
     transitivePeerDependencies:
       - '@types/node'
       - debug
@@ -8898,7 +8900,7 @@ snapshots:
     dependencies:
       chardet: 0.4.2
       iconv-lite: 0.4.24
-      tmp: 0.2.4
+      tmp: 0.2.7
 
   eyes@0.1.8: {}
 
@@ -9915,6 +9917,8 @@ snapshots:
 
   lodash.uniq@4.5.0: {}
 
+  lodash@4.17.23: {}
+
   lodash@4.18.1: {}
 
   log-symbols@1.0.2:
@@ -10284,7 +10288,7 @@ snapshots:
 
   omit-deep-lodash@1.1.7:
     dependencies:
-      lodash: 4.18.1
+      lodash: 4.17.23
 
   on-finished@2.4.1:
     dependencies:
@@ -11183,7 +11187,7 @@ snapshots:
       fdir: 6.5.0(picomatch@4.0.4)
       picomatch: 4.0.4
 
-  tmp@0.2.4: {}
+  tmp@0.2.7: {}
 
   to-regex-range@5.0.1:
     dependencies:
