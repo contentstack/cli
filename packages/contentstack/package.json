@@ -61,7 +61,7 @@
     "eslint": "^9.26.0",
     "eslint-config-oclif": "^6.0.137",
     "eslint-config-oclif-typescript": "^3.1.14",
-    "globby": "^10.0.2",
+    "globby": "^11.1.0",
     "mocha": "10.8.2",
     "nock": "^13.5.6",
     "nyc": "^15.1.0",
