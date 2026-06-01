@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "2.0.0-beta.10",
+  "version": "2.0.0-beta.11",
   "author": "Contentstack",
   "scripts": {
     "build": "pnpm compile && oclif manifest && oclif readme",
@@ -14,10 +14,10 @@
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
-    "@contentstack/cli-command": "~2.0.0-beta.7",
-    "@contentstack/cli-utilities": "~2.0.0-beta.8",
+    "@contentstack/cli-command": "~2.0.0-beta.8",
+    "@contentstack/cli-utilities": "~2.0.0-beta.9",
     "@contentstack/utils": "~1.9.1",
-    "@oclif/core": "^4.8.3"
+    "@oclif/core": "^4.11.4"
   },
   "overrides": {
     "@oclif/core": {
@@ -32,11 +32,11 @@
     "@types/sinon": "^21.0.1",
     "chai": "^4.5.0",
     "eslint": "^9.26.0",
-    "eslint-config-oclif": "^6.0.62",
+    "eslint-config-oclif": "^6.0.166",
     "eslint-config-oclif-typescript": "^3.1.14",
     "mocha": "10.8.2",
     "nyc": "^15.1.0",
-    "oclif": "^4.23.0",
+    "oclif": "^4.23.8",
     "sinon": "^21.1.2",
     "ts-node": "^10.9.2",
     "typescript": "^4.9.5"
