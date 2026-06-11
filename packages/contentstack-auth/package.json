@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-auth",
   "description": "Contentstack CLI plugin for authentication activities",
-  "version": "2.0.0-beta.12",
+  "version": "2.0.0-beta.13",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "scripts": {
@@ -15,9 +15,9 @@
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
-    "@contentstack/cli-command": "~2.0.0-beta.7",
-    "@contentstack/cli-utilities": "~2.0.0-beta.8",
-    "@oclif/core": "^4.10.5",
+    "@contentstack/cli-command": "~2.0.0-beta.8",
+    "@contentstack/cli-utilities": "~2.0.0-beta.9",
+    "@oclif/core": "^4.11.4",
     "otplib": "^12.0.1"
   },
   "overrides": {
@@ -26,20 +26,20 @@
     }
   },
   "devDependencies": {
-    "@oclif/test": "^4.1.13",
+    "@oclif/test": "^4.1.18",
     "@types/chai": "^4.3.20",
     "@types/mocha": "^8.2.3",
     "@types/node": "^14.18.63",
     "@types/sinon": "^21.0.1",
     "chai": "^4.5.0",
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.6.1",
     "eslint": "^9.26.0",
     "eslint-config-oclif": "^5.2.2",
     "eslint-config-oclif-typescript": "^3.1.14",
     "mocha": "10.8.2",
     "nock": "^13.5.6",
     "nyc": "^15.1.0",
-    "oclif": "^4.23.0",
+    "oclif": "^4.23.8",
     "sinon": "^21.1.2",
     "ts-node": "^10.9.2",
     "typescript": "^4.9.5"
