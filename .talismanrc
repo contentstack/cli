@@ -1,4 +1,6 @@
 fileignoreconfig:
   - filename: pnpm-lock.yaml
     checksum: 3679e7796d7b2b35b3485f4d56a52778557e94a079900bb65ecd41785b234383
+  - filename: packages/contentstack-utilities/src/message-handler.ts
+    checksum: e7221e8413005b9efe3a230cd91aff130850976addc41c0acb10745a56ec3245
 version: '1.0'
