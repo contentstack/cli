@@ -70,9 +70,10 @@
       "auth:login": "LOGIN",
       "auth:logout": "LOGOUT",
       "auth:whoami": "WHOMAI",
-      "auth:tokens": "LSTTKN",
-      "auth:tokens:add": "ADDTKN",
-      "auth:tokens:remove": "RMVTKN"
+      "tokens": "TKNS",
+      "tokens:list": "LSTTKNS",
+      "tokens:add": "ADDTKNS",
+      "tokens:remove": "RMVTKNS"
     }
   },
   "repository": "contentstack/cli"

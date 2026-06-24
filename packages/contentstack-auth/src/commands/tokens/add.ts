@@ -9,24 +9,24 @@ import {
   log,
   handleAndLogError,
 } from '@contentstack/cli-utilities';
-import { BaseCommand } from '../../../base-command';
-import { askTokenType } from '../../../utils/interactive';
+import { BaseCommand } from '../../base-command';
+import { askTokenType } from '../../utils/interactive';
 
 export default class TokensAddCommand extends BaseCommand<typeof TokensAddCommand> {
   static description = 'Adds management/delivery tokens to your session to use it with other CLI commands';
 
   static examples = [
-    '$ csdx auth:tokens:add',
-    '$ csdx auth:tokens:add -a <alias>',
-    '$ csdx auth:tokens:add -k <stack api key>',
-    '$ csdx auth:tokens:add --delivery',
-    '$ csdx auth:tokens:add --management',
-    '$ csdx auth:tokens:add -e <environment>',
-    '$ csdx auth:tokens:add --token <token>',
-    '$ csdx auth:tokens:add -a <alias> -k <stack api key> --management --token <management token>',
-    '$ csdx auth:tokens:add -a <alias> -k <stack api key> --delivery -e <environment> --token <delivery token>',
-    '$ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --management --token <management token>',
-    '$ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --delivery -e <environment> --token <delivery token>',
+    '$ csdx tokens:add',
+    '$ csdx tokens:add -a <alias>',
+    '$ csdx tokens:add -k <stack api key>',
+    '$ csdx tokens:add --delivery',
+    '$ csdx tokens:add --management',
+    '$ csdx tokens:add -e <environment>',
+    '$ csdx tokens:add --token <token>',
+    '$ csdx tokens:add -a <alias> -k <stack api key> --management --token <management token>',
+    '$ csdx tokens:add -a <alias> -k <stack api key> --delivery -e <environment> --token <delivery token>',
+    '$ csdx tokens:add --alias <alias> --stack-api-key <stack api key> --management --token <management token>',
+    '$ csdx tokens:add --alias <alias> --stack-api-key <stack api key> --delivery -e <environment> --token <delivery token>',
   ];
 
   static flags: FlagInput = {
@@ -59,7 +59,7 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
   };
 
   static usage =
-    'auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]';
+    'tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]';
 
   async run(): Promise<any> {
     log.debug('TokensAddCommand run method started.', this.contextDetails);
@@ -107,7 +107,7 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
         log.debug(`Alias obtained: ${alias}`, this.contextDetails);
       }
 
-      isAliasExist = Boolean(configHandler.get(`${configKeyTokens}.${alias}`)); // get to Check if alias already present
+      isAliasExist = Boolean(configHandler.get(`${configKeyTokens}.${alias}`));
       log.debug(`Checking if alias exists: ${isAliasExist}`, { ...this.contextDetails, alias });
 
       if (isAliasExist && !skipAliasReplaceConfirmation) {

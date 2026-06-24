@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { configHandler } from '@contentstack/cli-utilities';
-import TokensRemoveCommand from '../../../src/commands/auth/tokens/remove';
+import TokensRemoveCommand from '../../../src/commands/tokens/remove';
 import { cliux } from '@contentstack/cli-utilities';
 
 // Check for PREPACK_MODE - GitHub workflows set NODE_ENV=PREPACK_MODE during setup

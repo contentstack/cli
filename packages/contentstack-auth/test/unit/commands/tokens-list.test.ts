@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { configHandler } from '@contentstack/cli-utilities';
-import TokensListCommand from '../../../src/commands/auth/tokens/index';
+import TokensListCommand from '../../../src/commands/tokens/list';
 import { cliux } from '@contentstack/cli-utilities';
 
 const config = configHandler;

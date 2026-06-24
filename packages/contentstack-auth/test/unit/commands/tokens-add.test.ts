@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { configHandler, cliux } from '@contentstack/cli-utilities';
-import TokensAddCommand from '../../../src/commands/auth/tokens/add';
+import TokensAddCommand from '../../../src/commands/tokens/add';
 import { stub, assert } from 'sinon';
 import { config as dotenvConfig } from 'dotenv';
 import nock from 'nock';

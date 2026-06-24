@@ -1,9 +1,9 @@
 import { cliux, configHandler, flags, FlagInput, log, handleAndLogError } from '@contentstack/cli-utilities';
-import { BaseCommand } from '../../../base-command';
+import { BaseCommand } from '../../base-command';
 
 export default class TokensRemoveCommand extends BaseCommand<typeof TokensRemoveCommand> {
   static description = 'Removes selected tokens';
-  static examples = ['$ csdx auth:tokens:remove', '$ csdx auth:tokens:remove -a <alias>'];
+  static examples = ['$ csdx tokens:remove', '$ csdx tokens:remove -a <alias>'];
   static flags: FlagInput = {
     alias: flags.string({ char: 'a', description: 'Alias (name) of the token to delete.' }),
     ignore: flags.boolean({ char: 'i', description: 'Ignores if the token is not present.' }),
@@ -12,24 +12,24 @@ export default class TokensRemoveCommand extends BaseCommand<typeof TokensRemove
   async run(): Promise<any> {
     log.debug('TokensRemoveCommand run method started', this.contextDetails);
     this.contextDetails.module = 'tokens-remove';
-    
+
     const { flags: removeTokenFlags } = await this.parse(TokensRemoveCommand);
     log.debug('Token removal flags parsed.', {...this.contextDetails, flags: removeTokenFlags });
-    
+
     const alias = removeTokenFlags.alias;
     const ignore = removeTokenFlags.ignore;
     log.debug('Token removal parameters set.', {...this.contextDetails, alias, ignore });
-    
+
     try {
       log.debug('Retrieving token from configuration.', {...this.contextDetails, alias });
       const token = configHandler.get(`tokens.${alias}`);
       log.debug('Token retrieved from configuration.', {...this.contextDetails, hasToken: !!token, tokenType: token?.type });
-      
+
       const tokens = configHandler.get('tokens');
       log.debug('All tokens retrieved from configuration.', {...this.contextDetails, tokenCount: tokens ? Object.keys(tokens).length : 0 });
-      
+
       const tokenOptions: Array<string> = [];
-      
+
       if (token || ignore) {
         log.debug('Token found, or ignore flag set.', {...this.contextDetails, hasToken: !!token, ignore });
         configHandler.delete(`tokens.${alias}`);
@@ -65,11 +65,11 @@ export default class TokensRemoveCommand extends BaseCommand<typeof TokensRemove
         log.debug('No tokens selected for removal.', this.contextDetails);
         return;
       }
-      
+
       selectedTokens.forEach((ele)=>{
         log.info(`Selected token: ${ele}`, this.contextDetails);
       })
-    
+
       log.debug('Removing selected tokens from configuration.', this.contextDetails);
       selectedTokens.forEach((element) => {
         const selectedToken = element.split(':')[0];
@@ -78,7 +78,7 @@ export default class TokensRemoveCommand extends BaseCommand<typeof TokensRemove
         cliux.success('CLI_AUTH_TOKENS_REMOVE_SUCCESS');
         log.info(`Token removed: ${selectedToken}`, this.contextDetails);
       });
-      
+
       log.debug('Token removal completed successfully.', this.contextDetails);
     } catch (error) {
       log.debug('Token removal failed.', {...this.contextDetails, error });
