@@ -83,7 +83,7 @@
     "typescript": "^5.9.3"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=22.0.0"
   },
   "files": [
     "/bin",
