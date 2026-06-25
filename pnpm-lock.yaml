@@ -62,7 +62,7 @@ importers:
         version: link:../contentstack-config
       '@contentstack/cli-launch':
         specifier: ^1.10.0
-        version: 1.11.0(@types/node@18.19.130)(debug@4.4.3)(tslib@2.8.1)(typescript@5.9.3)
+        version: 1.11.1(@types/node@18.19.130)(debug@4.4.3)(tslib@2.8.1)(typescript@5.9.3)
       '@contentstack/cli-migration':
         specifier: ~2.0.0-beta.13
         version: 2.0.0-beta.13(@types/node@18.19.130)(debug@4.4.3)
@@ -763,8 +763,8 @@ packages:
     resolution: {integrity: sha512-DnsWIkIBqWQSHESswDQVrbqnjTmlJFd9TRrGT/CJPLHsXLEtocUaBBV0T0ri9MttvyvQ8c4B1LyjZAFOb1iRjw==}
     engines: {node: '>=14.0.0'}
 
-  '@contentstack/cli-launch@1.11.0':
-    resolution: {integrity: sha512-W/TXIo6odfnPe+qHgoxAts5KahnMRBURGwf4olkoZFYGXoEQ6ZjPXuI2tHUvC0gmWcQOV0z6LDNK+99xJ0aBjg==}
+  '@contentstack/cli-launch@1.11.1':
+    resolution: {integrity: sha512-sInkejRj3BQY2P4EsAzkSy9OIWBFS5rFwP7v9sC9mMMo7UGuasF7hZUJHiIDCcwEnRTIRPQ41qX6NBlIr3steA==}
     engines: {node: '>=22.0.0'}
     hasBin: true
 
@@ -2615,8 +2615,8 @@ packages:
     resolution: {integrity: sha512-Q0n9HRi4m6JuGIV1eFlmvJB7ZEVxu93IrMyiMsGC0lrMJMWzRgx6WGquyfQgZVb31vhGgXnfmPNNXmxnOkRBrg==}
     engines: {node: '>= 0.8'}
 
-  enhanced-resolve@5.24.0:
-    resolution: {integrity: sha512-SkE2t82KlkkxQRVMVLAGKxLfORGQfrkx5dkj+vlgXRVNEdPc4eZcR+J/Fvj8C+yKSFH5L0q3NFlyufOVQnCcYQ==}
+  enhanced-resolve@5.24.1:
+    resolution: {integrity: sha512-7DdUaTjmNwMcH2gLr1qycesKII3BK4RLy/mdAb7x10Lq7bR4aNKHt1BR1ZALSv0rPM/hF5wYF0PhGop/rJm8vw==}
     engines: {node: '>=10.13.0'}
 
   env-paths@2.2.1:
@@ -3067,10 +3067,6 @@ packages:
   form-data-encoder@2.1.4:
     resolution: {integrity: sha512-yDYSgNMraqvnxiEXO4hi88+YZxaHC6QKzb5N84iRCTDeRO7ZALpir/lVmf/uXUhnwUr2O4HU8s/n6x+yNjQkHw==}
     engines: {node: '>= 14.17'}
-
-  form-data@4.0.4:
-    resolution: {integrity: sha512-KrGhL9Q4zjj0kiUt5OO4Mr/A/jlI2jDYs5eHBpYHPcBEVSiipAvn2Ko2HnPe20rmcuuvMHNdZFp+4IlGTMF0Ow==}
-    engines: {node: '>= 6'}
 
   form-data@4.0.6:
     resolution: {integrity: sha512-vKatAh4SlVfgbv+YtmhiRjhEMJsYpsG1Y2rMQtR+SVSbytsSD1YGzDIcrAJmdFec88u/+VoGmxnl+80gL1tRCQ==}
@@ -4101,8 +4097,8 @@ packages:
     resolution: {integrity: sha512-RM5oyBy45cLEoHqCeh+MNuFAxO0vTFBLskvQbOKnEE7YTTSN4tbN8QWDIPQ6L+WvKsB/qLEGpYe2ZZ9d4W9OIQ==}
     engines: {node: '>=8'}
 
-  node-releases@2.0.49:
-    resolution: {integrity: sha512-f06bl1D+8ZDkn2oOQQKAh5/otFWqVnM1Q5oerA8Pex7UfT66Tx4IPHIqVVFKqFT3FUtaDstdgkM7yT7JWhqxfw==}
+  node-releases@2.0.50:
+    resolution: {integrity: sha512-J6l92tKHX6w8Jy5nO1Vuc01NoIiRGi/d6qBKVxh+IQ8Cr3b6HbVNfKiF8ZpFKufTwpwxMmce2W3iQZ861ZRyTg==}
     engines: {node: '>=18'}
 
   normalize-package-data@2.5.0:
@@ -4508,6 +4504,10 @@ packages:
 
   qs@6.15.2:
     resolution: {integrity: sha512-Rzq0KEyX/w/tEybncDgdkZrJgVUsUMk3xjh3t5bv3S1HTAtg+uOYt72+ZfwiQwKdysThkTBdL/rTi6HDmX9Ddw==}
+    engines: {node: '>=0.6'}
+
+  qs@6.15.3:
+    resolution: {integrity: sha512-O9gl3zCl5h5blw1KGUzQKhA5oUXSl8rwUIM5o0S3nCXMliSvy5Dzx7/DJcI+SwgICv+IneSZwhBh1oSyEHA71A==}
     engines: {node: '>=0.6'}
 
   queue-microtask@1.2.3:
@@ -6047,7 +6047,7 @@ snapshots:
       - debug
       - supports-color
 
-  '@contentstack/cli-launch@1.11.0(@types/node@18.19.130)(debug@4.4.3)(tslib@2.8.1)(typescript@5.9.3)':
+  '@contentstack/cli-launch@1.11.1(@types/node@18.19.130)(debug@4.4.3)(tslib@2.8.1)(typescript@5.9.3)':
     dependencies:
       '@apollo/client': 3.14.1(graphql@16.14.2)
       '@contentstack/cli-command': 1.8.3(@types/node@18.19.130)(debug@4.4.3)
@@ -6065,7 +6065,7 @@ snapshots:
       cross-fetch: 4.1.0
       dotenv: 16.6.1
       express: 4.22.2
-      form-data: 4.0.4
+      form-data: 4.0.6
       graphql: 16.14.2
       ini: 3.0.1
       lodash: 4.18.1
@@ -6222,7 +6222,7 @@ snapshots:
       husky: 9.1.7
       lodash: 4.18.1
       otplib: 12.0.1
-      qs: 6.15.2
+      qs: 6.15.3
       stream-browserify: 3.0.0
     transitivePeerDependencies:
       - debug
@@ -7962,7 +7962,7 @@ snapshots:
       http-errors: 2.0.1
       iconv-lite: 0.4.24
       on-finished: 2.4.1
-      qs: 6.15.2
+      qs: 6.15.3
       raw-body: 2.5.3
       type-is: 1.6.18
       unpipe: 1.0.0
@@ -7999,7 +7999,7 @@ snapshots:
       baseline-browser-mapping: 2.10.38
       caniuse-lite: 1.0.30001799
       electron-to-chromium: 1.5.378
-      node-releases: 2.0.49
+      node-releases: 2.0.50
       update-browserslist-db: 1.2.3(browserslist@4.28.4)
 
   buffer-from@1.1.2: {}
@@ -8488,7 +8488,7 @@ snapshots:
 
   encodeurl@2.0.0: {}
 
-  enhanced-resolve@5.24.0:
+  enhanced-resolve@5.24.1:
     dependencies:
       graceful-fs: 4.2.11
       tapable: 2.3.3
@@ -8976,7 +8976,7 @@ snapshots:
   eslint-plugin-n@17.24.0(eslint@10.5.0)(typescript@4.9.5):
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@10.5.0)
-      enhanced-resolve: 5.24.0
+      enhanced-resolve: 5.24.1
       eslint: 10.5.0
       eslint-plugin-es-x: 7.8.0(eslint@10.5.0)
       get-tsconfig: 4.14.0
@@ -8991,7 +8991,7 @@ snapshots:
   eslint-plugin-n@17.24.0(eslint@10.5.0)(typescript@5.9.3):
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@10.5.0)
-      enhanced-resolve: 5.24.0
+      enhanced-resolve: 5.24.1
       eslint: 10.5.0
       eslint-plugin-es-x: 7.8.0(eslint@10.5.0)
       get-tsconfig: 4.14.0
@@ -9208,7 +9208,7 @@ snapshots:
       parseurl: 1.3.3
       path-to-regexp: 0.1.13
       proxy-addr: 2.0.7
-      qs: 6.15.2
+      qs: 6.15.3
       range-parser: 1.2.1
       safe-buffer: 5.2.1
       send: 0.19.2
@@ -9374,14 +9374,6 @@ snapshots:
       signal-exit: 4.1.0
 
   form-data-encoder@2.1.4: {}
-
-  form-data@4.0.4:
-    dependencies:
-      asynckit: 0.4.0
-      combined-stream: 1.0.8
-      es-set-tostringtag: 2.1.0
-      hasown: 2.0.4
-      mime-types: 2.1.35
 
   form-data@4.0.6:
     dependencies:
@@ -10400,7 +10392,7 @@ snapshots:
     dependencies:
       process-on-spawn: 1.1.0
 
-  node-releases@2.0.49: {}
+  node-releases@2.0.50: {}
 
   normalize-package-data@2.5.0:
     dependencies:
@@ -10835,6 +10827,11 @@ snapshots:
 
   qs@6.15.2:
     dependencies:
+      side-channel: 1.1.1
+
+  qs@6.15.3:
+    dependencies:
+      es-define-property: 1.0.1
       side-channel: 1.1.1
 
   queue-microtask@1.2.3: {}
