@@ -2,7 +2,7 @@
 
 It is Contentstack’s CLI plugin to perform authentication-related activities. To get started with authentication, refer to the [CLI’s Authentication documentation](https://www.contentstack.com/docs/developers/cli/authentication)
 
-[![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
+[![License](https://img.shields.io/npm/l/@contentstack/cli-auth)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
 * [@contentstack/cli-auth](#contentstackcli-auth)
@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-auth/1.8.2 darwin-arm64 node-v24.14.0
+@contentstack/cli-auth/1.8.4 darwin-arm64 node-v22.21.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND

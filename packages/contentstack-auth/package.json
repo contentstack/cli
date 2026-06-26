@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-auth",
   "description": "Contentstack CLI plugin for authentication activities",
-  "version": "1.8.3",
+  "version": "1.8.4",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "scripts": {
@@ -15,7 +15,7 @@
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
-    "@contentstack/cli-command": "~1.8.3",
+    "@contentstack/cli-command": "~1.8.4",
     "@contentstack/cli-utilities": "~1.18.4",
     "@oclif/core": "^4.11.4",
     "otplib": "^12.0.1"
@@ -45,7 +45,7 @@
     "typescript": "^4.9.5"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=22.0.0"
   },
   "files": [
     "/lib",
