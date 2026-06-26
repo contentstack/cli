@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-command",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.8.3",
+  "version": "1.8.4",
   "author": "Contentstack",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -36,7 +36,7 @@
     "typescript": "^4.9.5"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=22.0.0"
   },
   "files": [
     "/types",
