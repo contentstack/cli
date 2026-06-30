@@ -90,3 +90,5 @@ export {
   CustomProgressStrategy,
   DefaultProgressStrategy
 } from './progress-summary';
+
+export * from './feature-status';

@@ -49,6 +49,9 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     'cs-assets': _flags.string({
       description: 'Custom host to set for Contentstack Assets API',
     }),
+    'auth-api': _flags.string({
+      description: 'Custom host to set for Auth API',
+    }),
   };
   static examples = [
     '$ csdx config:set:region',
@@ -83,6 +86,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
     let launchHubUrl = regionSetFlags['launch'];
     let composableStudioUrl = regionSetFlags['studio'];
     let csAssetsUrl = regionSetFlags['cs-assets'];
+    let authUrl = regionSetFlags['auth-api'];
     let selectedRegion = args.region;
     if (!(cda && cma && uiHost && name) && !selectedRegion) {
       selectedRegion = await interactive.askRegions();
@@ -116,6 +120,9 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
         if (!csAssetsUrl) {
           csAssetsUrl = this.transformUrl(cma, 'am-api');
         }
+        if (!authUrl) {
+          authUrl = this.transformUrl(cma, 'auth-api');
+        }
         let customRegion: Region = {
           cda,
           cma,
@@ -126,6 +133,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
           launchHubUrl,
           composableStudioUrl,
           csAssetsUrl,
+          authUrl,
         };
         customRegion = regionHandler.setCustomRegion(customRegion);
         await authHandler.setConfigData('logout'); //Todo: Handle this logout flow well through logout command call
@@ -138,6 +146,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
         cliux.success(`Launch URL: ${customRegion.launchHubUrl}`);
         cliux.success(`Studio URL: ${customRegion.composableStudioUrl}`);
         cliux.success(`Contentstack Assets URL: ${customRegion.csAssetsUrl}`);
+        cliux.success(`Auth API URL: ${customRegion.authUrl}`);
       } catch (error) {
         handleAndLogError(error, { ...this.contextDetails, module: 'config-set-region' });
       }

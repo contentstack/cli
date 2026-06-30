@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-config/2.0.0-beta.7 darwin-arm64 node-v22.13.1
+@contentstack/cli-config/2.0.0-beta.11 darwin-arm64 node-v24.18.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -457,25 +457,25 @@ Set region for CLI
 ```
 USAGE
   $ csdx config:set:region [REGION] [--cda <value> --cma <value> --ui-host <value> -n <value>] [--developer-hub
-    <value>] [--personalize <value>] [--launch <value>] [--studio <value>] [--asset-management <value>]
+    <value>] [--personalize <value>] [--launch <value>] [--studio <value>] [--cs-assets <value>] [--auth-api <value>]
 
 ARGUMENTS
   [REGION]  Name for the region
 
 FLAGS
-  -n, --name=<value>              Name for the region, if this flag is added then cda, cma and ui-host flags are
-                                  required
-      --asset-management=<value>  Custom host to set for Asset Management API
-      --cda=<value>               Custom host to set for content delivery API, if this flag is added then cma, ui-host
-                                  and name flags are required
-      --cma=<value>               Custom host to set for content management API, , if this flag is added then cda,
-                                  ui-host and name flags are required
-      --developer-hub=<value>     Custom host to set for Developer hub API
-      --launch=<value>            Custom host to set for Launch API
-      --personalize=<value>       Custom host to set for Personalize API
-      --studio=<value>            Custom host to set for Studio API
-      --ui-host=<value>           Custom UI host to set for CLI, if this flag is added then cda, cma and name flags are
-                                  required
+  -n, --name=<value>           Name for the region, if this flag is added then cda, cma and ui-host flags are required
+      --auth-api=<value>       Custom host to set for Auth API
+      --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and
+                               name flags are required
+      --cma=<value>            Custom host to set for content management API, , if this flag is added then cda, ui-host
+                               and name flags are required
+      --cs-assets=<value>      Custom host to set for Contentstack Assets API
+      --developer-hub=<value>  Custom host to set for Developer hub API
+      --launch=<value>         Custom host to set for Launch API
+      --personalize=<value>    Custom host to set for Personalize API
+      --studio=<value>         Custom host to set for Studio API
+      --ui-host=<value>        Custom UI host to set for CLI, if this flag is added then cda, cma and name flags are
+                               required
 
 DESCRIPTION
   Set region for CLI
@@ -507,7 +507,7 @@ EXAMPLES
 
   $ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --studio <custom_studio_url>
 
-  $ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --asset-management <asset_management_url>
+  $ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --cs-assets <cs_assets_url>
 
   $ csdx config:set:region --cda <custom_cda_host_url> --cma <custom_cma_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url> --launch <custom_launch_url> --personalize <custom_personalize_url> --studio <custom_studio_url>
 ```
