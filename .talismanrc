@@ -1,6 +1,13 @@
 fileignoreconfig:
-  - filename: pnpm-lock.yaml
-    checksum: 0f2e17618b7c8286c5f76d4e25a98b830d3eb2d29acc6f8099f3501ff150d4f4
-  - filename: packages/contentstack-utilities/src/message-handler.ts
-    checksum: e7221e8413005b9efe3a230cd91aff130850976addc41c0acb10745a56ec3245
-version: '1.0'
+
+- filename: pnpm-lock.yaml
+  checksum: 0f2e17618b7c8286c5f76d4e25a98b830d3eb2d29acc6f8099f3501ff150d4f4
+- filename: packages/contentstack-utilities/src/message-handler.ts
+  checksum: e7221e8413005b9efe3a230cd91aff130850976addc41c0acb10745a56ec3245
+- filename: packages/contentstack-utilities/src/feature-status/build-auth-headers.ts
+  checksum: 9360dfbce41aa9c8a62889f4821c37fc222b04b8b1c552d1dfbcd8f2854d49e0
+- filename: packages/contentstack/src/hooks/prerun/plan-guard.ts
+  checksum: 74eeb5c98e9ae48bf6f2918e75a7cfca23915396ffdd177b8716acba35c287da
+- filename: packages/contentstack/README.md
+  checksum: c0f958f9650e7a26133758e4d0ceae34cdf736e7f54e1cf9114694e9c041f2a0
+  version: '1.0'

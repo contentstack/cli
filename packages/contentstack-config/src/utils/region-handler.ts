@@ -41,6 +41,7 @@ function getRegionObject(regionKey: string): Region {
       personalizeUrl: endpoints.personalizeManagement,
       composableStudioUrl: endpoints.composableStudio,
       csAssetsUrl: endpoints.assetManagement,
+      authUrl: endpoints.auth,
     };
   } catch {
     return null;
@@ -157,6 +158,7 @@ class UserConfig {
       launchHubUrl: regionObject['launchHubUrl'],
       composableStudioUrl: regionObject['composableStudioUrl'],
       csAssetsUrl: regionObject['csAssetsUrl'],
+      authUrl: regionObject['authUrl'],
     };
 
     return sanitizedRegion;
