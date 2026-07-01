@@ -30,7 +30,6 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
       dependsOn: ['cda', 'cma', 'name'],
     }),
     name: _flags.string({
-      char: 'n',
       description: 'Name for the region, if this flag is added then cda, cma and ui-host flags are required',
       dependsOn: ['cda', 'cma', 'ui-host'],
     }),
