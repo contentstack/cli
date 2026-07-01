@@ -6,7 +6,6 @@ export default class TokensRemoveCommand extends BaseCommand<typeof TokensRemove
   static examples = ['$ csdx auth:tokens:remove', '$ csdx auth:tokens:remove -a <alias>'];
   static flags: FlagInput = {
     alias: flags.string({ char: 'a', description: 'Alias (name) of the token to delete.' }),
-    ignore: flags.boolean({ char: 'i', description: 'Ignores if the token is not present.' }),
   };
 
   async run(): Promise<any> {
@@ -17,21 +16,20 @@ export default class TokensRemoveCommand extends BaseCommand<typeof TokensRemove
     log.debug('Token removal flags parsed.', {...this.contextDetails, flags: removeTokenFlags });
     
     const alias = removeTokenFlags.alias;
-    const ignore = removeTokenFlags.ignore;
-    log.debug('Token removal parameters set.', {...this.contextDetails, alias, ignore });
-    
+    log.debug('Token removal parameters set.', {...this.contextDetails, alias });
+
     try {
       log.debug('Retrieving token from configuration.', {...this.contextDetails, alias });
       const token = configHandler.get(`tokens.${alias}`);
       log.debug('Token retrieved from configuration.', {...this.contextDetails, hasToken: !!token, tokenType: token?.type });
-      
+
       const tokens = configHandler.get('tokens');
       log.debug('All tokens retrieved from configuration.', {...this.contextDetails, tokenCount: tokens ? Object.keys(tokens).length : 0 });
-      
+
       const tokenOptions: Array<string> = [];
-      
-      if (token || ignore) {
-        log.debug('Token found, or ignore flag set.', {...this.contextDetails, hasToken: !!token, ignore });
+
+      if (token) {
+        log.debug('Token found.', {...this.contextDetails, hasToken: !!token });
         configHandler.delete(`tokens.${alias}`);
         log.debug('Token removed from configuration.', {...this.contextDetails, alias });
         return cliux.success(`CLI_AUTH_TOKENS_REMOVE_SUCCESS`);
