@@ -14,7 +14,7 @@ abstract class ContentstackCommand extends Command {
 
   get context() {
     // @ts-ignore
-    return this.config.context || {};
+    return this.config.context || this.config.options?.context || {};
   }
 
   get email() {
