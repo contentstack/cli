@@ -1,12 +1,4 @@
-import {
-  configHandler,
-  assertFeatureEnabled,
-  FeatureCtx,
-  FeatureStatus,
-  log,
-  handleAndLogError,
-  cliux,
-} from '@contentstack/cli-utilities';
+import { configHandler, isFeatureEnabled, FeatureCtx, FeatureStatus, log } from '@contentstack/cli-utilities';
 
 function getArgvFlag(argv: string[], ...names: string[]): string | undefined {
   for (let i = 0; i < argv.length; i++) {
@@ -23,30 +15,17 @@ function getArgvFlag(argv: string[], ...names: string[]): string | undefined {
   return undefined;
 }
 
-export default async function (opts: { Command?: { id?: string }; argv?: string[]; config?: any }): Promise<void> {
+export default async function (opts: { Command?: { id?: string; planProtectedFeatures?: string[] }; argv?: string[]; config?: any }): Promise<void> {
   const config = opts?.config ?? this.config;
   const commandId = opts?.Command?.id;
   const argv: string[] = opts?.argv ?? [];
 
   if (!commandId) return;
 
-  const planProtectedCommands: Record<string, string[]> =
-    config?.context?.plugin?.config?.planProtectedCommands ?? {};
+  const requiredFeatures: string[] = opts?.Command?.planProtectedFeatures ?? [];
+  if (requiredFeatures.length === 0) return;
 
-  const requiredFeatures: string[] = planProtectedCommands[commandId];
-  if (!requiredFeatures || requiredFeatures.length === 0) return;
-
-  // Resolve alias → management token
-  const aliasFromArgv = getArgvFlag(argv, '--alias', '-a');
-
-  // Clone uses different flag names — handle both alias forms
-  const cloneSourceAlias =
-    commandId === 'cm:stacks:clone'
-      ? getArgvFlag(argv, '--source-management-token-alias') ??
-        getArgvFlag(argv, '--destination-management-token-alias')
-      : undefined;
-
-  const alias = aliasFromArgv ?? cloneSourceAlias;
+  const alias = getArgvFlag(argv, '--alias', '-a');
   let managementToken: string | undefined;
   let apiKeyFromAlias: string | undefined;
   if (alias) {
@@ -69,10 +48,7 @@ export default async function (opts: { Command?: { id?: string }; argv?: string[
   const apiKeyFromArgv = getArgvFlag(argv, '--stack-api-key', '-k');
   const orgUid = configHandler.get('oauthOrgUid') as string | undefined;
 
-  const canCheckNow =
-    (!!managementToken && !!apiKeyFromAlias) ||
-    isOAuth ||
-    (isBasic && !!(apiKeyFromArgv || orgUid));
+  const canCheckNow = (!!managementToken && !!apiKeyFromAlias) || isOAuth || (isBasic && !!(apiKeyFromArgv || orgUid));
 
   if (!canCheckNow) {
     config.context.planCheckRequired = requiredFeatures;
@@ -93,18 +69,22 @@ export default async function (opts: { Command?: { id?: string }; argv?: string[
   };
 
   const planStatus: Record<string, FeatureStatus> = {};
+  const failedFeatures: string[] = [];
   for (const featureUid of requiredFeatures) {
     try {
-      const result = await assertFeatureEnabled(featureUid, ctx);
-      planStatus[featureUid] = result;
-      log.debug(`[plan-guard] Feature "${featureUid}" is enabled.`, { module: 'plan-guard', commandId });
+      planStatus[featureUid] = await isFeatureEnabled(featureUid, ctx);
+      log.debug(`[plan-guard] Feature "${featureUid}" status fetched.`, { module: 'plan-guard', commandId });
     } catch (error) {
-      handleAndLogError(error, { module: 'plan-guard', commandId, featureUid });
-      cliux.error((error as Error).message);
-      this.exit(1);
-      return;
+      log.warn(`[plan-guard] Could not fetch status for "${featureUid}": ${(error as Error).message}`, {
+        module: 'plan-guard',
+        commandId,
+        featureUid,
+      });
+      failedFeatures.push(featureUid);
     }
   }
-
   config.context.planStatus = planStatus;
+  if (failedFeatures.length > 0) {
+    config.context.planCheckRequired = failedFeatures;
+  }
 }
