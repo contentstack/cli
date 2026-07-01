@@ -6,7 +6,7 @@ export default class TokensRemoveCommand extends BaseCommand<typeof TokensRemove
   static examples = ['$ csdx auth:tokens:remove', '$ csdx auth:tokens:remove -a <alias>'];
   static flags: FlagInput = {
     alias: flags.string({ char: 'a', description: 'Alias (name) of the token to delete.' }),
-    ignore: flags.boolean({ char: 'i', description: 'Ignores if the token is not present.' }),
+    ignore: flags.boolean({ description: 'Ignores if the token is not present.' }),
   };
 
   async run(): Promise<any> {
