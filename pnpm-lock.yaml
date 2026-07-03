@@ -7,6 +7,7 @@ settings:
 overrides:
   tmp: 0.2.7
   uuid: 14.0.0
+  brace-expansion: 5.0.7
 
 importers:
 
@@ -2025,9 +2026,6 @@ packages:
   axios@1.18.1:
     resolution: {integrity: sha512-3nTvFlvpn9Zu/RkHUqtc7/+al4UpRW5az71ap5zccp6e8RAYEzhMTecX8Dz1wWDYrPpUoB1HAQEGEAEvUr7S9g==}
 
-  balanced-match@1.0.2:
-    resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
-
   balanced-match@4.0.4:
     resolution: {integrity: sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==}
     engines: {node: 18 || 20 || >=22}
@@ -2059,12 +2057,6 @@ packages:
 
   bowser@2.14.1:
     resolution: {integrity: sha512-tzPjzCxygAKWFOJP011oxFHs57HzIhOEracIgAePE4pqB3LikALKnSzUyU4MGs9/iCEUuHlAJTjTc5M+u7YEGg==}
-
-  brace-expansion@1.1.15:
-    resolution: {integrity: sha512-EwOCDEex4quD37XhqM3omwtMoJjr//isUZz1JopUNWms+4Z2ViyM/k1YIRePpoVNnQhENnxtFjLaxNHrT7xIUg==}
-
-  brace-expansion@2.1.1:
-    resolution: {integrity: sha512-WR1cURNjuvBLMZBMbqM0UoE+WAfdUcEV1ccD8PVBVOI+Z3ND4+SZbN8RsfT2bMuG1qwz5RFvPukSZm5fF2D5eA==}
 
   brace-expansion@5.0.7:
     resolution: {integrity: sha512-7oFy703dxfY3/NLxC1fh2SUCQ0H9rmAY+5EpDVfXjUTTs+HEwR2nYaqLv+GWcTsumwxPfiz6CzCNkwXwBUwqCA==}
@@ -2318,9 +2310,6 @@ packages:
 
   commondir@1.0.1:
     resolution: {integrity: sha512-W9pAhw0ja1Edb5GVdIF1mjZw/ASI0AlShXM83UUGe2DVr5TdAPEA1OA8m/g8zWp9x6On7gqufY+FatDbC3MDQg==}
-
-  concat-map@0.0.1:
-    resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
   concat-stream@2.0.0:
     resolution: {integrity: sha512-MWufYdFw53ccGjCA+Ol7XJYpAlW6/prSMzuPOTRnJGcGzuhLn4Scrz7qf6o8bROZ514ltazcIFJZevcfbo0x7A==}
@@ -7802,8 +7791,6 @@ snapshots:
       - debug
       - supports-color
 
-  balanced-match@1.0.2: {}
-
   balanced-match@4.0.4: {}
 
   base64-js@1.5.1: {}
@@ -7847,15 +7834,6 @@ snapshots:
       - supports-color
 
   bowser@2.14.1: {}
-
-  brace-expansion@1.1.15:
-    dependencies:
-      balanced-match: 1.0.2
-      concat-map: 0.0.1
-
-  brace-expansion@2.1.1:
-    dependencies:
-      balanced-match: 1.0.2
 
   brace-expansion@5.0.7:
     dependencies:
@@ -8134,8 +8112,6 @@ snapshots:
   comment-parser@1.4.1: {}
 
   commondir@1.0.1: {}
-
-  concat-map@0.0.1: {}
 
   concat-stream@2.0.0:
     dependencies:
@@ -8512,7 +8488,7 @@ snapshots:
       '@typescript-eslint/parser': 6.21.0(eslint@10.6.0)(typescript@5.9.3)
       eslint-config-xo-space: 0.35.0(eslint@10.6.0)
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.6.0)(typescript@5.9.3))(eslint@10.6.0))(eslint@10.6.0)
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.6.0)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@10.6.0)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.6.0)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.6.0)(typescript@5.9.3))(eslint@10.6.0))(eslint@10.6.0))(eslint@10.6.0)
       eslint-plugin-mocha: 10.5.0(eslint@10.6.0)
       eslint-plugin-n: 15.7.0(eslint@10.6.0)
       eslint-plugin-perfectionist: 2.11.0(eslint@10.6.0)(typescript@5.9.3)
@@ -8572,7 +8548,7 @@ snapshots:
       eslint-config-xo: 0.49.0(eslint@10.6.0)
       eslint-config-xo-space: 0.35.0(eslint@10.6.0)
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.6.0)(typescript@5.9.3))(eslint@10.6.0))(eslint@10.6.0)
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.62.1(eslint@10.6.0)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@10.6.0)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.62.1(eslint@10.6.0)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.6.0)(typescript@5.9.3))(eslint@10.6.0))(eslint@10.6.0))(eslint@10.6.0)
       eslint-plugin-jsdoc: 50.8.0(eslint@10.6.0)
       eslint-plugin-mocha: 10.5.0(eslint@10.6.0)
       eslint-plugin-n: 17.24.0(eslint@10.6.0)(typescript@5.9.3)
@@ -8624,7 +8600,7 @@ snapshots:
       tinyglobby: 0.2.17
       unrs-resolver: 1.12.2
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.6.0)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@10.6.0)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.6.0)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.6.0)(typescript@5.9.3))(eslint@10.6.0))(eslint@10.6.0))(eslint@10.6.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -8729,7 +8705,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.6.0)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@10.6.0):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.6.0)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.6.0)(typescript@5.9.3))(eslint@10.6.0))(eslint@10.6.0))(eslint@10.6.0):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
@@ -8787,7 +8763,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.62.1(eslint@10.6.0)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@10.6.0):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.62.1(eslint@10.6.0)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.6.0)(typescript@5.9.3))(eslint@10.6.0))(eslint@10.6.0))(eslint@10.6.0):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
@@ -10165,19 +10141,19 @@ snapshots:
 
   minimatch@3.1.5:
     dependencies:
-      brace-expansion: 1.1.15
+      brace-expansion: 5.0.7
 
   minimatch@5.1.9:
     dependencies:
-      brace-expansion: 2.1.1
+      brace-expansion: 5.0.7
 
   minimatch@9.0.3:
     dependencies:
-      brace-expansion: 2.1.1
+      brace-expansion: 5.0.7
 
   minimatch@9.0.9:
     dependencies:
-      brace-expansion: 2.1.1
+      brace-expansion: 5.0.7
 
   minimist@1.2.8: {}
 
