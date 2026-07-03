@@ -23,6 +23,11 @@ export default class TokensRemoveCommand extends BaseCommand<typeof TokensRemove
       const token = configHandler.get(`tokens.${alias}`);
       log.debug('Token retrieved from configuration.', {...this.contextDetails, hasToken: !!token, tokenType: token?.type });
 
+      if (alias && !token) {
+        log.debug('Alias provided but token not found.', {...this.contextDetails, alias });
+        return cliux.print(`No token found with alias '${alias}'.`, { color: 'yellow' });
+      }
+
       const tokens = configHandler.get('tokens');
       log.debug('All tokens retrieved from configuration.', {...this.contextDetails, tokenCount: tokens ? Object.keys(tokens).length : 0 });
 
