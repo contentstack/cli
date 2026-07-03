@@ -37,15 +37,18 @@ describe('Tokens Remove Command', () => {
     expect(Boolean(config.get(`${configKeyTokens}.${token1Alias}`))).to.be.false;
   });
 
-  it('Remove the token with invalid alias, should list the table', async function () {
+  it('Remove the token with invalid alias, should print error and not show interactive picker', async function () {
     // Skip this test in PREPACK_MODE - config handler uses in-memory store that doesn't persist properly
     if (isPrepackMode) {
       this.skip();
       return;
     }
     const inquireStub = sinon.stub(cliux, 'inquire').resolves([]);
+    const printStub = sinon.stub(cliux, 'print');
     await TokensRemoveCommand.run(['-a', 'invalid-test-tokens-remove']);
-    expect(inquireStub.calledOnce).to.be.true;
+    expect(printStub.calledOnce).to.be.true;
+    expect(printStub.firstCall.args[0]).to.include('invalid-test-tokens-remove');
+    expect(inquireStub.called).to.be.false;
   });
 
   it('Selectes multiple token, remove all the selected tokens', async function () {
