@@ -75,5 +75,9 @@
       "auth:tokens:remove": "RMVTKN"
     }
   },
-  "repository": "contentstack/cli"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/contentstack/cli.git",
+    "directory": "packages/contentstack-auth"
+  }
 }
