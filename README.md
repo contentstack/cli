@@ -21,7 +21,7 @@ CLI supports content management scripts through which you can perform the follow
 ## Installing CLI
 ### Prerequisites
 Contentstack account
-Node.js version 16 or above
+Node.js version 22 or above
 
 ### Installation
 To install CLI on your system, run the below command in your terminal:
@@ -54,7 +54,7 @@ $ csdx --help
 ## Namespaces
 **auth**: To perform [authentication-related](/packages/contentstack-auth) activities
 
-**cm**: To perform content management activities such as [bulk publish](/packages/contentstack-bulk-publish), [import](/packages/contentstack-import), and [export](/packages/contentstack-export), [export-to-csv] (/packages/contentstack-export-to-csv), [seed] (/packages/contentstack-seed)
+**cm**: To perform content management activities such as [bulk operations](/packages/contentstack-bulk-operations), [import](/packages/contentstack-import), and [export](/packages/contentstack-export), [export-to-csv](/packages/contentstack-export-to-csv), [seed](/packages/contentstack-seed)
 
 **help**: To list the helpful commands in CLI
 
@@ -62,8 +62,8 @@ $ csdx --help
 
 ## Documentation
 
-To get a more detailed documentation for every command, visit the [CLI section](https://www.contentstack.com/docs/developers/cli) in our docs.
+To get a more detailed documentation for every command, visit the [CLI section](https://www.contentstack.com/docs/headless-cms/cli) in our docs.
 
 ## Useful Plugins
 
-- [Generate TypeScript typings from a Stack](https://github.com/Contentstack-Solutions/contentstack-cli-tsgen)
+- [Generate TypeScript typings from a Stack](https://github.com/contentstack/cli-plugins/tree/main/packages/contentstack-cli-tsgen)
