@@ -26,47 +26,47 @@ importers:
         specifier: ~2.0.0-beta.14
         version: 2.0.0-beta.14(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-auth':
-        specifier: ~2.0.0-beta.14
+        specifier: ~2.0.0-beta.15
         version: link:../contentstack-auth
       '@contentstack/cli-bulk-operations':
         specifier: ^2.0.0-beta.2
         version: 2.0.0-beta.2(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-cm-bootstrap':
-        specifier: ~2.0.0-beta.21
-        version: 2.0.0-beta.21(@types/node@18.19.130)(debug@4.4.3)
+        specifier: ~2.0.0-beta.22
+        version: 2.0.0-beta.22(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-cm-branches':
         specifier: ~2.0.0-beta.9
         version: 2.0.0-beta.9(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-cm-clone':
+        specifier: ~2.0.0-beta.23
+        version: 2.0.0-beta.23(@types/node@18.19.130)(debug@4.4.3)
+      '@contentstack/cli-cm-export':
         specifier: ~2.0.0-beta.22
         version: 2.0.0-beta.22(@types/node@18.19.130)(debug@4.4.3)
-      '@contentstack/cli-cm-export':
-        specifier: ~2.0.0-beta.21
-        version: 2.0.0-beta.21(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-cm-export-to-csv':
         specifier: ~2.0.0-beta.9
         version: 2.0.0-beta.9(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-cm-import':
-        specifier: ~2.0.0-beta.21
-        version: 2.0.0-beta.21(@types/node@18.19.130)
+        specifier: ~2.0.0-beta.22
+        version: 2.0.0-beta.22(@types/node@18.19.130)
       '@contentstack/cli-cm-import-setup':
-        specifier: ~2.0.0-beta.15
-        version: 2.0.0-beta.15(@types/node@18.19.130)(debug@4.4.3)
+        specifier: ~2.0.0-beta.16
+        version: 2.0.0-beta.16(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-cm-seed':
-        specifier: ~2.0.0-beta.21
-        version: 2.0.0-beta.21(@types/node@18.19.130)(debug@4.4.3)
+        specifier: ~2.0.0-beta.22
+        version: 2.0.0-beta.22(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-command':
         specifier: ~2.0.0-beta.9
         version: link:../contentstack-command
       '@contentstack/cli-config':
-        specifier: ~2.0.0-beta.12
+        specifier: ~2.0.0-beta.13
         version: link:../contentstack-config
       '@contentstack/cli-launch':
-        specifier: ^1.10.0
+        specifier: ^1.11.1
         version: 1.11.1(@types/node@18.19.130)(debug@4.4.3)(tslib@2.8.1)(typescript@5.9.3)
       '@contentstack/cli-migration':
-        specifier: ~2.0.0-beta.14
-        version: 2.0.0-beta.14(@types/node@18.19.130)(debug@4.4.3)
+        specifier: ~2.0.0-beta.15
+        version: 2.0.0-beta.15(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-utilities':
         specifier: ~2.0.0-beta.10
         version: link:../contentstack-utilities
@@ -74,23 +74,23 @@ importers:
         specifier: ~2.0.0-beta.17
         version: 2.0.0-beta.17(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/management':
-        specifier: ~1.30.3
+        specifier: ~1.30.4
         version: 1.30.4(debug@4.4.3)
       '@contentstack/utils':
         specifier: ~1.9.1
         version: 1.9.1
       '@oclif/core':
-        specifier: ^4.11.4
+        specifier: ^4.11.14
         version: 4.11.14
       '@oclif/plugin-help':
-        specifier: ^6.2.49
+        specifier: ^6.2.53
         version: 6.2.53
       '@oclif/plugin-not-found':
-        specifier: ^3.2.86
+        specifier: ^3.2.88
         version: 3.2.88(@types/node@18.19.130)
       '@oclif/plugin-plugins':
-        specifier: ^5.4.69
-        version: 5.4.82
+        specifier: ^5.4.84
+        version: 5.4.84
       chalk:
         specifier: ^5.6.2
         version: 5.6.2
@@ -116,7 +116,7 @@ importers:
         specifier: ^8.2.0
         version: 8.2.0
       semver:
-        specifier: ^7.8.1
+        specifier: ^7.8.5
         version: 7.8.5
       short-uuid:
         specifier: ^6.0.3
@@ -151,7 +151,7 @@ importers:
         version: 10.6.0
       eslint-config-oclif:
         specifier: ^6.0.137
-        version: 6.0.174(eslint@10.6.0)(typescript@5.9.3)
+        version: 6.0.175(eslint@10.6.0)(typescript@5.9.3)
       eslint-config-oclif-typescript:
         specifier: ^3.1.14
         version: 3.1.14(eslint@10.6.0)(typescript@5.9.3)
@@ -166,7 +166,7 @@ importers:
         version: 15.1.0
       oclif:
         specifier: ^4.23.0
-        version: 4.23.24(@types/node@18.19.130)
+        version: 4.23.27(@types/node@18.19.130)
       rimraf:
         specifier: ^5.0.10
         version: 5.0.10
@@ -245,7 +245,7 @@ importers:
         version: 15.1.0
       oclif:
         specifier: ^4.23.8
-        version: 4.23.24(@types/node@14.18.63)
+        version: 4.23.27(@types/node@14.18.63)
       sinon:
         specifier: ^21.1.2
         version: 21.1.2
@@ -282,7 +282,7 @@ importers:
         version: 10.6.0
       eslint-config-oclif:
         specifier: ^6.0.15
-        version: 6.0.174(eslint@10.6.0)(typescript@4.9.5)
+        version: 6.0.175(eslint@10.6.0)(typescript@4.9.5)
       eslint-config-oclif-typescript:
         specifier: ^3.1.14
         version: 3.1.14(eslint@10.6.0)(typescript@4.9.5)
@@ -337,7 +337,7 @@ importers:
         version: 10.6.0
       eslint-config-oclif:
         specifier: ^6.0.166
-        version: 6.0.174(eslint@10.6.0)(typescript@4.9.5)
+        version: 6.0.175(eslint@10.6.0)(typescript@4.9.5)
       eslint-config-oclif-typescript:
         specifier: ^3.1.14
         version: 3.1.14(eslint@10.6.0)(typescript@4.9.5)
@@ -349,7 +349,7 @@ importers:
         version: 15.1.0
       oclif:
         specifier: ^4.23.8
-        version: 4.23.24(@types/node@14.18.63)
+        version: 4.23.27(@types/node@14.18.63)
       sinon:
         specifier: ^21.1.2
         version: 21.1.2
@@ -482,7 +482,7 @@ importers:
         version: 10.6.0
       eslint-config-oclif:
         specifier: ^6.0.62
-        version: 6.0.174(eslint@10.6.0)(typescript@5.9.3)
+        version: 6.0.175(eslint@10.6.0)(typescript@5.9.3)
       eslint-config-oclif-typescript:
         specifier: ^3.1.14
         version: 3.1.14(eslint@10.6.0)(typescript@5.9.3)
@@ -689,36 +689,36 @@ packages:
     engines: {node: '>=22.0.0'}
     hasBin: true
 
-  '@contentstack/cli-cm-bootstrap@2.0.0-beta.21':
-    resolution: {integrity: sha512-Kv+dGRCT9XhwZMKTTbSJF1ZHAUiNBD1IEk5V3kv2mSPpAMR0pxAA2Fe8+1GOTR8FRL4LnSWyzCkdhHkJT3AQfg==}
+  '@contentstack/cli-cm-bootstrap@2.0.0-beta.22':
+    resolution: {integrity: sha512-VXFhq/GTGCVpJ3qnIjxI+zbF6xuWk9QFub5Fl1OTH0+rfg4nzXEeFF7Sa6AbTKI1Vzx4c6JKG0IEOriPLy9YgQ==}
     engines: {node: '>=22.0.0'}
 
   '@contentstack/cli-cm-branches@2.0.0-beta.9':
     resolution: {integrity: sha512-QjFI+wMuBNFq3atjJl0gqzRmq7+hkiZ12ApUzxnteSIM226blhh2Bk65Z3jpXTw2jF5i2o9nN4H7llVx7r+2PQ==}
     engines: {node: '>=22.0.0'}
 
-  '@contentstack/cli-cm-clone@2.0.0-beta.22':
-    resolution: {integrity: sha512-U+HvqCUCuO7GebiuoBcU8+jnWXoI3rfjo2p7xOBRlwU/C/jI2JfBKpk6ezYpT0n6S1CHK0Dn0VZ9LuVfS+BgRg==}
+  '@contentstack/cli-cm-clone@2.0.0-beta.23':
+    resolution: {integrity: sha512-TrkwNheyjMCoX9nNZClivljBRiBZ+Jyw+LwzP8IFDwZl1Pq/U/0bh9q4lzX1/T99kSp+K7+kTkGYEQltRxrj7A==}
     engines: {node: '>=22.0.0'}
 
   '@contentstack/cli-cm-export-to-csv@2.0.0-beta.9':
     resolution: {integrity: sha512-Twe66IZRsaY2DLqKZjsfKbKWk8t3s4triEZ0vClVi+f/sT1CT5e9BKZHkXMvVkAUQ0M8QALBKoFGRYa9NfufEw==}
     engines: {node: '>=22.0.0'}
 
-  '@contentstack/cli-cm-export@2.0.0-beta.21':
-    resolution: {integrity: sha512-dbIvH+JZi+mA+gZI4B5OZe1M83l+f5jhB4vC1r2wZD3OHyugbIOkXFYHQGf9n08knURjULJgrYiynXBMtk5pQg==}
+  '@contentstack/cli-cm-export@2.0.0-beta.22':
+    resolution: {integrity: sha512-kxbJyv1wUe2d8Dayrjz1BoB5vjps9a4kR3lMLlgAV0ypm53LNsxz978iHbOsK0Clueoh4MvR9bUUJld4+Fz3Zg==}
     engines: {node: '>=22.0.0'}
 
-  '@contentstack/cli-cm-import-setup@2.0.0-beta.15':
-    resolution: {integrity: sha512-fclVqlyAd/CCeMNsfWqSYsvf1f5yukC7hf/xda+Drpl1qFjloIJjEVY2tZh2+jmGgeH1r2VSDpDeXOU6lnY9bg==}
+  '@contentstack/cli-cm-import-setup@2.0.0-beta.16':
+    resolution: {integrity: sha512-3NJA4RxuJ2B9vDzw+2wMMuAJ/fU/EbqTK8+sUUM+O4YzowkB9UcFc07m+q++jb4BeQbOejScspffpMIKTxZDJg==}
     engines: {node: '>=22.0.0'}
 
-  '@contentstack/cli-cm-import@2.0.0-beta.21':
-    resolution: {integrity: sha512-LvKfoOAB8qwczoW3DQNBzYx/j0fD7OJXgJp+cgsjOm30iSzM1Bz7e/AQrErzHyQtavTeM633OxRLEb/dZcM0VQ==}
+  '@contentstack/cli-cm-import@2.0.0-beta.22':
+    resolution: {integrity: sha512-oXtxzWDmLYZjXNOP1gd1kRwWSK/OLVjE8Rd1Zx4pK/AitVkm1w0igQQNKUuT2Ht46/s3oMQr8gOiNMpO8E/elA==}
     engines: {node: '>=22.0.0'}
 
-  '@contentstack/cli-cm-seed@2.0.0-beta.21':
-    resolution: {integrity: sha512-/ctZF9ZQwO3GA+8Y1mI6/raNvg7Aaih5q9blNQxwRQe0Gx3J3Jrb8VW/uQvCX38IayfiiHMcSbS2Ct4fxEmyPw==}
+  '@contentstack/cli-cm-seed@2.0.0-beta.22':
+    resolution: {integrity: sha512-v8/m2OMhB2AmiPpM3uilBHL0PDv9KtnH1rFr344oEHiOM/HSsOmuRXoOLBVdXuhKw1zobj5qoZ3NGSBMZihg5A==}
     engines: {node: '>=22.0.0'}
 
   '@contentstack/cli-command@1.8.4':
@@ -729,8 +729,8 @@ packages:
     resolution: {integrity: sha512-7hcHEpj6NL9KS5fuhWqC0U3vMHXOeTVJoZiIatJwpqY29Ov4SP620Pe5dcXZKBjuETiPNusBv2L9sVQ4UrLxoQ==}
     engines: {node: '>=22.0.0'}
 
-  '@contentstack/cli-config@2.0.0-beta.12':
-    resolution: {integrity: sha512-ip1opE9HSZrFOM9L6re5DHIoCYYH0kdA0X1bAQ1BPJiWGuMXGlcE4b3uje9FD67TcRpTw+Yf0f7fVrcBH93z3g==}
+  '@contentstack/cli-config@2.0.0-beta.13':
+    resolution: {integrity: sha512-/l7iCbUJnpAaof/7tPgHweqv7p/3uCw7AsaPqvS7StbiwEy2Q0RmH0Rw7bhDxcFv+5RjZtMIpPC2UOSrfViUKQ==}
     engines: {node: '>=22.0.0'}
 
   '@contentstack/cli-launch@1.11.1':
@@ -738,8 +738,8 @@ packages:
     engines: {node: '>=22.0.0'}
     hasBin: true
 
-  '@contentstack/cli-migration@2.0.0-beta.14':
-    resolution: {integrity: sha512-YVXMTl/fpXJ9LFksq5Vwn7tJq7+6/bQooT6i2ZbKsAMfic/CBg0vPBpSklBH9SsSWYCxxKxmMdRDh8ctZrOPbA==}
+  '@contentstack/cli-migration@2.0.0-beta.15':
+    resolution: {integrity: sha512-IZKDX29gSoxgzeg+w0H2hI+nqkQT5zQG1OrM7c3/5IwaLpvs+MipcYef632AcyoIAc+9ve7uJZ9h86WVKr+2Sg==}
     engines: {node: '>=22.0.0'}
 
   '@contentstack/cli-utilities@1.18.5':
@@ -1125,8 +1125,8 @@ packages:
     resolution: {integrity: sha512-5YTKSpuV77910/iGnGsj0fr9kOazCy/h1brki1CocbfawdvaVPedcwCH25wMcdRfo8mFD656bG9/kdki/+Wb9A==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-plugins@5.4.82':
-    resolution: {integrity: sha512-KRF2M+UbgvH88O5R61KwuLfPWtEUsmjQC6px+UbNElUMd8kUbiZhR7fwgLD2FCJv6h1JjQF9eoP6Bzp7ZlKN6Q==}
+  '@oclif/plugin-plugins@5.4.84':
+    resolution: {integrity: sha512-MPWLirqUsclzOFzQ0LzF+5ZxZX7KaMKeMdmaPEGGNWHEKMXJxETDSj8EYQ0k38bJc7mqPxeg8fKGoSRj05n+Ag==}
     engines: {node: '>=18.0.0'}
 
   '@oclif/plugin-warn-if-update-available@3.1.68':
@@ -2033,8 +2033,8 @@ packages:
   base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
 
-  baseline-browser-mapping@2.10.41:
-    resolution: {integrity: sha512-WwS7MHhqGHHlaVsqRZnhvCEMS0owDX+SxRlve7JkuH7My1Ara3ZriTmCQupPfYjxMZ8I/tgxtJYr2t7taHaH4A==}
+  baseline-browser-mapping@2.10.42:
+    resolution: {integrity: sha512-c/jurFrDLyui7o1J86yLkRu4LMsTYcBohveus7/I2Hzdn9KIP2bdJPTue/lR1KH46enoPbD77GKeSYNdyPoD3Q==}
     engines: {node: '>=6.0.0'}
     hasBin: true
 
@@ -2136,8 +2136,8 @@ packages:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
 
-  caniuse-lite@1.0.30001800:
-    resolution: {integrity: sha512-MMHtuAz9Ys840zAY5F4k6fV5GaivZ9sPk+nz0mY+GYVzRBnYkN0mpqkSR92oWRQ19yQWo4HvBV/FnC16AJX8MA==}
+  caniuse-lite@1.0.30001802:
+    resolution: {integrity: sha512-vmv8ub2xwTNmljSKf82mtCk5JH7hC+YgzLj3P5zotvA0tPQ9016tdNNOG8WRca1IxOnhSsivB+J0z5FeE5LOUw==}
 
   capital-case@1.0.4:
     resolution: {integrity: sha512-ds37W8CytHgwnhGGTi88pcPyR15qoNkOpYwmMMfnWqqWgESapLqvDx6huFjQ5vqWSn2Z06173XNA7LtMOeUh1A==}
@@ -2538,8 +2538,8 @@ packages:
     engines: {node: '>=0.10.0'}
     hasBin: true
 
-  electron-to-chromium@1.5.385:
-    resolution: {integrity: sha512-78sa/M08MNAYHQfjoWMvOlKQqZ0ElhSm/L5HNUc96VZ3b+KvDVnngFm8sYQy0XrhTRgAhggHr5abA7yTvRdo4Q==}
+  electron-to-chromium@1.5.387:
+    resolution: {integrity: sha512-TaxwufTFDufvPEoXdhwVrA3UdFWBeWGkYoJ1K8ldF1xe6gKfth6iRNS5lTQ5JPNOHdGQm8PT1QYKUqFLCiUefQ==}
 
   elegant-spinner@1.0.1:
     resolution: {integrity: sha512-B+ZM+RXvRqQaAmkMlO/oSe5nMUOaUnyfGYCEHoR8wrXsZR2mA0XVibsxV1bvTwxdRWah1PkQqso2EzhILGHtEQ==}
@@ -2640,8 +2640,8 @@ packages:
     resolution: {integrity: sha512-NNTyyolSmKJicgxtoWZ/hoy2Rw56WIoWCFxgnBkXqDgi9qPKMwZs2Nx2b6SHLJvCiWWhZhWr5V46CFPo3PSPag==}
     engines: {node: '>=18.0.0'}
 
-  eslint-config-oclif@6.0.174:
-    resolution: {integrity: sha512-K2Fz0KdcYlypl5sRO2gxbIPD8M4RyhtZK20soW5HoLpvNXInaa7ruZvUHozwee9blQReV9Z1uFldPpWpUkXHlg==}
+  eslint-config-oclif@6.0.175:
+    resolution: {integrity: sha512-QO5NHJaMk2HkglS0mywfIrwDSXNeKfIS+uhNrXuuSLKeLPOpDYytsz5LMOGQxuHlkHpOYSrzDyL2yDR2WGgwGA==}
     engines: {node: '>=18.18.0'}
 
   eslint-config-xo-space@0.35.0:
@@ -3284,8 +3284,8 @@ packages:
     resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}
     engines: {node: '>=0.10.0'}
 
-  iconv-lite@0.7.2:
-    resolution: {integrity: sha512-im9DjEDQ55s9fL4EYzOAv0yMqmMBSZp6G0VvFyTMPKWxiSBHUj9NW/qqLmXUwXrrM7AvqSlTCfvqRb0cM8yYqw==}
+  iconv-lite@0.7.3:
+    resolution: {integrity: sha512-IKXpvIzjnC9XTAUbVBcMfGS0EPaIXtW6v+zr+RRp+hqULEpo0owZax6wyRwPOJbWbzjYspQwusTsfVr0ifh4uQ==}
     engines: {node: '>=0.10.0'}
 
   ieee754@1.2.1:
@@ -4194,8 +4194,8 @@ packages:
     resolution: {integrity: sha512-gXah6aZrcUxjWg2zR2MwouP2eHlCBzdV4pygudehaKXSGW4v2AsRQUK+lwwXhii6KFZcunEnmSUoYp5CXibxtA==}
     engines: {node: '>= 0.4'}
 
-  oclif@4.23.24:
-    resolution: {integrity: sha512-QbjHsrV5z5PWUIsLXHcPaWyECqOrX7JekXaTvL3WekUf5wl+B3kqZb5JD2dI3ndyDwTfJ8rLFMCIt6B4T6fpeA==}
+  oclif@4.23.27:
+    resolution: {integrity: sha512-DNUQ22pglqstzuTRb+E4yjJI20PVGNGHCJa/vzH3HQCrS0B0GQPjWwIeMWjgWaQHBi1oXO2jMDHHpCLDNgW/tQ==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -5760,11 +5760,11 @@ snapshots:
       - debug
       - supports-color
 
-  '@contentstack/cli-cm-bootstrap@2.0.0-beta.21(@types/node@18.19.130)(debug@4.4.3)':
+  '@contentstack/cli-cm-bootstrap@2.0.0-beta.22(@types/node@18.19.130)(debug@4.4.3)':
     dependencies:
-      '@contentstack/cli-cm-seed': 2.0.0-beta.21(@types/node@18.19.130)(debug@4.4.3)
+      '@contentstack/cli-cm-seed': 2.0.0-beta.22(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-command': 2.0.0-beta.9(@types/node@18.19.130)(debug@4.4.3)
-      '@contentstack/cli-config': 2.0.0-beta.12(@types/node@18.19.130)(debug@4.4.3)
+      '@contentstack/cli-config': 2.0.0-beta.13(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-utilities': 2.0.0-beta.10(@types/node@18.19.130)(debug@4.4.3)
       '@oclif/core': 4.11.14
       inquirer: 12.11.1(@types/node@18.19.130)
@@ -5788,11 +5788,11 @@ snapshots:
       - debug
       - supports-color
 
-  '@contentstack/cli-cm-clone@2.0.0-beta.22(@types/node@18.19.130)(debug@4.4.3)':
+  '@contentstack/cli-cm-clone@2.0.0-beta.23(@types/node@18.19.130)(debug@4.4.3)':
     dependencies:
       '@colors/colors': 1.6.0
-      '@contentstack/cli-cm-export': 2.0.0-beta.21(@types/node@18.19.130)(debug@4.4.3)
-      '@contentstack/cli-cm-import': 2.0.0-beta.21(@types/node@18.19.130)
+      '@contentstack/cli-cm-export': 2.0.0-beta.22(@types/node@18.19.130)(debug@4.4.3)
+      '@contentstack/cli-cm-import': 2.0.0-beta.22(@types/node@18.19.130)
       '@contentstack/cli-command': 2.0.0-beta.9(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-utilities': 2.0.0-beta.10(@types/node@18.19.130)(debug@4.4.3)
       '@oclif/core': 4.11.14
@@ -5820,7 +5820,7 @@ snapshots:
       - debug
       - supports-color
 
-  '@contentstack/cli-cm-export@2.0.0-beta.21(@types/node@18.19.130)(debug@4.4.3)':
+  '@contentstack/cli-cm-export@2.0.0-beta.22(@types/node@18.19.130)(debug@4.4.3)':
     dependencies:
       '@contentstack/cli-asset-management': 1.0.0-beta.5(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-command': 2.0.0-beta.9(@types/node@18.19.130)(debug@4.4.3)
@@ -5842,7 +5842,7 @@ snapshots:
       - debug
       - supports-color
 
-  '@contentstack/cli-cm-import-setup@2.0.0-beta.15(@types/node@18.19.130)(debug@4.4.3)':
+  '@contentstack/cli-cm-import-setup@2.0.0-beta.16(@types/node@18.19.130)(debug@4.4.3)':
     dependencies:
       '@contentstack/cli-asset-management': 1.0.0-beta.5(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-command': 2.0.0-beta.9(@types/node@18.19.130)(debug@4.4.3)
@@ -5860,7 +5860,7 @@ snapshots:
       - debug
       - supports-color
 
-  '@contentstack/cli-cm-import@2.0.0-beta.21(@types/node@18.19.130)':
+  '@contentstack/cli-cm-import@2.0.0-beta.22(@types/node@18.19.130)':
     dependencies:
       '@contentstack/cli-asset-management': 1.0.0-beta.5(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-audit': 2.0.0-beta.14(@types/node@18.19.130)(debug@4.4.3)
@@ -5883,9 +5883,9 @@ snapshots:
       - '@types/node'
       - supports-color
 
-  '@contentstack/cli-cm-seed@2.0.0-beta.21(@types/node@18.19.130)(debug@4.4.3)':
+  '@contentstack/cli-cm-seed@2.0.0-beta.22(@types/node@18.19.130)(debug@4.4.3)':
     dependencies:
-      '@contentstack/cli-cm-import': 2.0.0-beta.21(@types/node@18.19.130)
+      '@contentstack/cli-cm-import': 2.0.0-beta.22(@types/node@18.19.130)
       '@contentstack/cli-command': 2.0.0-beta.9(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-utilities': 2.0.0-beta.10(@types/node@18.19.130)(debug@4.4.3)
       inquirer: 12.11.1(@types/node@18.19.130)
@@ -5917,7 +5917,7 @@ snapshots:
       - debug
       - supports-color
 
-  '@contentstack/cli-config@2.0.0-beta.12(@types/node@18.19.130)(debug@4.4.3)':
+  '@contentstack/cli-config@2.0.0-beta.13(@types/node@18.19.130)(debug@4.4.3)':
     dependencies:
       '@contentstack/cli-command': 2.0.0-beta.9(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-utilities': 2.0.0-beta.10(@types/node@18.19.130)(debug@4.4.3)
@@ -5966,7 +5966,7 @@ snapshots:
       - tslib
       - typescript
 
-  '@contentstack/cli-migration@2.0.0-beta.14(@types/node@18.19.130)(debug@4.4.3)':
+  '@contentstack/cli-migration@2.0.0-beta.15(@types/node@18.19.130)(debug@4.4.3)':
     dependencies:
       '@contentstack/cli-command': 2.0.0-beta.9(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-utilities': 2.0.0-beta.10(@types/node@18.19.130)(debug@4.4.3)
@@ -6398,14 +6398,14 @@ snapshots:
   '@inquirer/external-editor@1.0.3(@types/node@14.18.63)':
     dependencies:
       chardet: 2.2.0
-      iconv-lite: 0.7.2
+      iconv-lite: 0.7.3
     optionalDependencies:
       '@types/node': 14.18.63
 
   '@inquirer/external-editor@1.0.3(@types/node@18.19.130)':
     dependencies:
       chardet: 2.2.0
-      iconv-lite: 0.7.2
+      iconv-lite: 0.7.3
     optionalDependencies:
       '@types/node': 18.19.130
 
@@ -6679,7 +6679,7 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
-  '@oclif/plugin-plugins@5.4.82':
+  '@oclif/plugin-plugins@5.4.84':
     dependencies:
       '@oclif/core': 4.11.14
       ansis: 3.17.0
@@ -7795,7 +7795,7 @@ snapshots:
 
   base64-js@1.5.1: {}
 
-  baseline-browser-mapping@2.10.41: {}
+  baseline-browser-mapping@2.10.42: {}
 
   big-json@3.2.0:
     dependencies:
@@ -7851,9 +7851,9 @@ snapshots:
 
   browserslist@4.28.4:
     dependencies:
-      baseline-browser-mapping: 2.10.41
-      caniuse-lite: 1.0.30001800
-      electron-to-chromium: 1.5.385
+      baseline-browser-mapping: 2.10.42
+      caniuse-lite: 1.0.30001802
+      electron-to-chromium: 1.5.387
       node-releases: 2.0.50
       update-browserslist-db: 1.2.3(browserslist@4.28.4)
 
@@ -7924,7 +7924,7 @@ snapshots:
 
   camelcase@6.3.0: {}
 
-  caniuse-lite@1.0.30001800: {}
+  caniuse-lite@1.0.30001802: {}
 
   capital-case@1.0.4:
     dependencies:
@@ -8327,7 +8327,7 @@ snapshots:
     dependencies:
       jake: 10.9.4
 
-  electron-to-chromium@1.5.385: {}
+  electron-to-chromium@1.5.387: {}
 
   elegant-spinner@1.0.1: {}
 
@@ -8512,7 +8512,7 @@ snapshots:
     transitivePeerDependencies:
       - eslint
 
-  eslint-config-oclif@6.0.174(eslint@10.6.0)(typescript@4.9.5):
+  eslint-config-oclif@6.0.175(eslint@10.6.0)(typescript@4.9.5):
     dependencies:
       '@eslint/compat': 1.4.1(eslint@10.6.0)
       '@eslint/eslintrc': 3.3.5
@@ -8537,7 +8537,7 @@ snapshots:
       - supports-color
       - typescript
 
-  eslint-config-oclif@6.0.174(eslint@10.6.0)(typescript@5.9.3):
+  eslint-config-oclif@6.0.175(eslint@10.6.0)(typescript@5.9.3):
     dependencies:
       '@eslint/compat': 1.4.1(eslint@10.6.0)
       '@eslint/eslintrc': 3.3.5
@@ -9519,7 +9519,7 @@ snapshots:
     dependencies:
       safer-buffer: 2.1.2
 
-  iconv-lite@0.7.2:
+  iconv-lite@0.7.3:
     dependencies:
       safer-buffer: 2.1.2
 
@@ -10365,7 +10365,7 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.1.2
 
-  oclif@4.23.24(@types/node@14.18.63):
+  oclif@4.23.27(@types/node@14.18.63):
     dependencies:
       '@aws-sdk/client-cloudfront': 3.1079.0
       '@aws-sdk/client-s3': 3.1079.0
@@ -10394,7 +10394,7 @@ snapshots:
       - '@types/node'
       - supports-color
 
-  oclif@4.23.24(@types/node@18.19.130):
+  oclif@4.23.27(@types/node@18.19.130):
     dependencies:
       '@aws-sdk/client-cloudfront': 3.1079.0
       '@aws-sdk/client-s3': 3.1079.0
