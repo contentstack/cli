@@ -14,7 +14,8 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git+https://github.com/contentstack/cli.git",
+    "directory": "packages/contentstack-utilities"
   },
   "keywords": [
     "contentstack",
