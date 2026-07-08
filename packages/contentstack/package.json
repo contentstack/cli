@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli",
   "description": "Command-line tool (CLI) to interact with Contentstack",
-  "version": "2.0.0-beta.25",
+  "version": "2.0.0-beta.27",
   "author": "Contentstack",
   "bin": {
     "csdx": "./bin/run.js"
@@ -19,29 +19,29 @@
     "prepack": "pnpm compile && oclif manifest && oclif readme"
   },
   "dependencies": {
-    "@contentstack/cli-audit": "~2.0.0-beta.13",
-    "@contentstack/cli-cm-export": "~2.0.0-beta.20",
-    "@contentstack/cli-cm-import": "~2.0.0-beta.20",
-    "@contentstack/cli-auth": "~2.0.0-beta.13",
-    "@contentstack/cli-bulk-operations": "^2.0.0-beta.1",
-    "@contentstack/cli-cm-bootstrap": "~2.0.0-beta.20",
-    "@contentstack/cli-cm-branches": "~2.0.0-beta.8",
-    "@contentstack/cli-cm-clone": "~2.0.0-beta.21",
-    "@contentstack/cli-cm-export-to-csv": "~2.0.0-beta.8",
-    "@contentstack/cli-cm-import-setup": "~2.0.0-beta.14",
-    "@contentstack/cli-cm-seed": "~2.0.0-beta.20",
-    "@contentstack/cli-command": "~2.0.0-beta.8",
-    "@contentstack/cli-config": "~2.0.0-beta.11",
+    "@contentstack/cli-audit": "~2.0.0-beta.14",
+    "@contentstack/cli-cm-export": "~2.0.0-beta.22",
+    "@contentstack/cli-cm-import": "~2.0.0-beta.22",
+    "@contentstack/cli-auth": "~2.0.0-beta.15",
+    "@contentstack/cli-bulk-operations": "^2.0.0-beta.2",
+    "@contentstack/cli-cm-bootstrap": "~2.0.0-beta.22",
+    "@contentstack/cli-cm-branches": "~2.0.0-beta.9",
+    "@contentstack/cli-cm-clone": "~2.0.0-beta.23",
+    "@contentstack/cli-cm-export-to-csv": "~2.0.0-beta.9",
+    "@contentstack/cli-cm-import-setup": "~2.0.0-beta.16",
+    "@contentstack/cli-cm-seed": "~2.0.0-beta.22",
+    "@contentstack/cli-command": "~2.0.0-beta.9",
+    "@contentstack/cli-config": "~2.0.0-beta.13",
     "@contentstack/cli-launch": "^1.11.1",
-    "@contentstack/cli-migration": "~2.0.0-beta.13",
-    "@contentstack/cli-utilities": "~2.0.0-beta.9",
-    "@contentstack/cli-variants": "~2.0.0-beta.16",
-    "@contentstack/management": "~1.30.3",
+    "@contentstack/cli-migration": "~2.0.0-beta.15",
+    "@contentstack/cli-utilities": "~2.0.0-beta.10",
+    "@contentstack/cli-variants": "~2.0.0-beta.17",
+    "@contentstack/management": "~1.30.4",
     "@contentstack/utils": "~1.9.1",
-    "@oclif/core": "^4.11.4",
-    "@oclif/plugin-help": "^6.2.49",
-    "@oclif/plugin-not-found": "^3.2.86",
-    "@oclif/plugin-plugins": "^5.4.69",
+    "@oclif/core": "^4.11.14",
+    "@oclif/plugin-help": "^6.2.53",
+    "@oclif/plugin-not-found": "^3.2.88",
+    "@oclif/plugin-plugins": "^5.4.84",
     "chalk": "^5.6.2",
     "cli-progress": "^3.12.0",
     "debug": "^4.4.3",
@@ -50,13 +50,13 @@
     "node-machine-id": "^1.1.12",
     "open": "^8.4.2",
     "ora": "^8.2.0",
-    "semver": "^7.8.1",
+    "semver": "^7.8.5",
     "short-uuid": "^6.0.3",
     "winston": "^3.19.0"
   },
   "overrides": {
     "@oclif/core": {
-      "picomatch": "^4.0.4"
+      "picomatch": "^4.0.5"
     }
   },
   "devDependencies": {
@@ -67,7 +67,7 @@
     "@types/semver": "^7.7.1",
     "@types/sinon": "^21.0.0",
     "chai": "^4.5.0",
-    "eslint": "^9.26.0",
+    "eslint": "^10.5.0",
     "eslint-config-oclif": "^6.0.137",
     "eslint-config-oclif-typescript": "^3.1.14",
     "mocha": "10.8.2",
@@ -166,5 +166,9 @@
       ]
     }
   },
-  "repository": "https://github.com/contentstack/cli"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/contentstack/cli.git",
+    "directory": "packages/contentstack"
+  }
 }
