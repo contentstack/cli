@@ -3,3 +3,5 @@ packages:
 overrides:
   tmp: 0.2.7
   uuid: 14.0.0
+  brace-expansion: 5.0.7
+  fast-uri: 3.1.3
