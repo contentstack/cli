@@ -5,4 +5,6 @@ fileignoreconfig:
     checksum: 9360dfbce41aa9c8a62889f4821c37fc222b04b8b1c552d1dfbcd8f2854d49e0
   - filename: packages/contentstack/src/hooks/prerun/plan-guard.ts
     checksum: 74eeb5c98e9ae48bf6f2918e75a7cfca23915396ffdd177b8716acba35c287da
+  - filename: packages/contentstack-config/src/utils/region-handler.ts
+    checksum: fe0713019d71cad642125de835a15a20784c961d6c83a9271f7287e73c1d4141
 version: '1.0'
