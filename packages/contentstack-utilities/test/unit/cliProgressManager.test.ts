@@ -336,11 +336,17 @@ describe('CLIProgressManager', () => {
     });
   });
 
-  describe('Complete count reconciliation (DX-7521)', () => {
+  describe('Complete count reconciliation', () => {
+    let bar: { update: sinon.SinonStub; setTotal: sinon.SinonStub; increment: sinon.SinonStub };
+
+    // Inject a stub bar at the rendering seam so assertions do not depend on the
+    // load-order-sensitive cli-progress module mock (which does not bind in CI).
+    function injectBar(processName: string) {
+      bar = { update: sinon.stub(), setTotal: sinon.stub(), increment: sinon.stub() };
+      (progressManager as any).processes.get(processName).progressBar = bar;
+    }
+
     beforeEach(() => {
-      mockProgressBar.update.resetHistory();
-      mockProgressBar.setTotal.resetHistory();
-      mockProgressBar.increment.resetHistory();
       progressManager = new CLIProgressManager({
         enableNestedProgress: true,
         moduleName: 'RECONCILE_TEST',
@@ -350,37 +356,41 @@ describe('CLIProgressManager', () => {
 
     fancy.it('renders the processed count, not the registered estimate, when fewer items were ticked', () => {
       progressManager.addProcess('gf-update', 37);
+      injectBar('gf-update');
       for (let i = 0; i < 27; i++) {
         progressManager.tick(true, `item-${i}`, null, 'gf-update');
       }
 
       progressManager.completeProcess('gf-update', true);
 
-      expect(mockProgressBar.setTotal.calledWith(27)).to.equal(true);
-      expect(mockProgressBar.update.lastCall.args[0]).to.equal(27);
+      expect(bar.setTotal.calledWith(27)).to.equal(true);
+      expect(bar.update.lastCall.args[0]).to.equal(27);
     });
 
     fancy.it('renders the full count unchanged when every registered item was ticked', () => {
       progressManager.addProcess('entries-create', 59);
+      injectBar('entries-create');
       for (let i = 0; i < 59; i++) {
         progressManager.tick(true, `item-${i}`, null, 'entries-create');
       }
 
       progressManager.completeProcess('entries-create', true);
 
-      expect(mockProgressBar.update.lastCall.args[0]).to.equal(59);
+      expect(bar.update.lastCall.args[0]).to.equal(59);
     });
 
     fancy.it('renders the registered total when a process completes with no ticks (skip case)', () => {
       progressManager.addProcess('skipped', 5);
+      injectBar('skipped');
 
       progressManager.completeProcess('skipped', true);
 
-      expect(mockProgressBar.update.lastCall.args[0]).to.equal(5);
+      expect(bar.update.lastCall.args[0]).to.equal(5);
     });
 
     fancy.it('reconciles the denominator for a failed process with partial ticks', () => {
       progressManager.addProcess('entries', 59);
+      injectBar('entries');
       for (let i = 0; i < 38; i++) {
         progressManager.tick(true, `ok-${i}`, null, 'entries');
       }
@@ -390,7 +400,7 @@ describe('CLIProgressManager', () => {
 
       progressManager.completeProcess('entries', false);
 
-      expect(mockProgressBar.update.lastCall.args[0]).to.equal(41);
+      expect(bar.update.lastCall.args[0]).to.equal(41);
     });
   });
 
