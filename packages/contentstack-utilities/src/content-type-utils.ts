@@ -7,6 +7,13 @@ import { resolve as pResolve } from 'node:path';
  * @param ignoredFiles - Files to ignore (defaults to schema.json, .DS_Store, __master.json, __priority.json)
  * @returns Array of content type schemas (empty if the path is missing or has no eligible files)
  */
+export function readGlobalFieldSchemas(
+  dirPath: string,
+  ignoredFiles?: string[],
+): Record<string, unknown>[] {
+  return readContentTypeSchemas(dirPath, ignoredFiles);
+}
+
 export function readContentTypeSchemas(
   dirPath: string,
   ignoredFiles: string[] = ['schema.json', '.DS_Store', '__master.json', '__priority.json', 'field_rules_uid.json'],
