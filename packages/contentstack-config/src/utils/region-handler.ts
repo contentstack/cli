@@ -1,5 +1,4 @@
-import { configHandler } from '@contentstack/cli-utilities';
-import { getContentstackEndpoint } from '@contentstack/utils';
+import { configHandler, resolveCanonicalEndpoints, buildRegionFromEndpoints } from '@contentstack/cli-utilities';
 import { Region, RegionsMap } from '../interfaces';
 
 function validURL(str) {
@@ -23,28 +22,10 @@ function validURL(str) {
  * @returns {object} Region object with all necessary URLs
  */
 function getRegionObject(regionKey: string): Region {
-  try {
-    // getContentstackEndpoint handles all aliases defined in regions.json
-    const endpoints = getContentstackEndpoint(regionKey) as any;
-
-    if (typeof endpoints === 'string') {
-      throw new Error('Invalid endpoint response');
-    }
-
-    return {
-      name: regionKey,
-      cma: endpoints.contentManagement,
-      cda: endpoints.contentDelivery,
-      uiHost: endpoints.application,
-      developerHubUrl: endpoints.developerHub,
-      launchHubUrl: endpoints.launch,
-      personalizeUrl: endpoints.personalizeManagement,
-      composableStudioUrl: endpoints.composableStudio,
-      authUrl: endpoints.auth,
-    };
-  } catch {
-    return null;
-  }
+  // resolveCanonicalEndpoints handles all aliases defined in regions.json
+  const endpoints = resolveCanonicalEndpoints(regionKey);
+  if (!endpoints) return null;
+  return buildRegionFromEndpoints(regionKey, endpoints) as Region;
 }
 
 /**
@@ -147,19 +128,22 @@ class UserConfig {
    * @returns { object } JSON object with only valid keys for region
    */
   sanitizeRegionObject(regionObject) {
-    const sanitizedRegion = {
-      cma: regionObject.cma,
-      cda: regionObject.cda,
-      uiHost: regionObject.uiHost,
-      name: regionObject.name,
-      developerHubUrl: regionObject['developerHubUrl'],
-      personalizeUrl: regionObject['personalizeUrl'],
-      launchHubUrl: regionObject['launchHubUrl'],
-      composableStudioUrl: regionObject['composableStudioUrl'],
-      authUrl: regionObject['authUrl'],
+    // endpoints is the single source of truth — every friendly field (cma, cda, ...,
+    // authUrl) is derived from it below via buildRegionFromEndpoints, same as named
+    // regions. Falls back to synthesizing endpoints from the individual raw fields
+    // when the caller didn't supply one directly.
+    const endpoints = regionObject['endpoints'] ?? {
+      contentManagement: regionObject.cma,
+      contentDelivery: regionObject.cda,
+      application: regionObject.uiHost,
+      developerHub: regionObject['developerHubUrl'],
+      launch: regionObject['launchHubUrl'],
+      personalizeManagement: regionObject['personalizeUrl'],
+      composableStudio: regionObject['composableStudioUrl'],
+      auth: regionObject['authUrl'],
     };
 
-    return sanitizedRegion;
+    return buildRegionFromEndpoints(regionObject.name, endpoints);
   }
 }
 

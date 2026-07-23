@@ -151,9 +151,11 @@
         "./lib/hooks/prerun/init-context-for-command",
         "./lib/hooks/prerun/command-deprecation-check",
         "./lib/hooks/prerun/default-rate-limit-check",
-        "./lib/hooks/prerun/latest-version-warning"
+        "./lib/hooks/prerun/latest-version-warning",
+        "./lib/hooks/prerun/plan-guard"
       ],
       "init": [
+        "./lib/hooks/init/region-refresh",
         "./lib/hooks/init/context-init",
         "./lib/hooks/init/utils-init"
       ]

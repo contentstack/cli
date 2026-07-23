@@ -59,7 +59,9 @@ export default async function (opts: { Command?: { id?: string; planProtectedFea
     return;
   }
 
-  const region = configHandler.get('region') as { authUrl?: string; name?: string } | undefined;
+  const region = configHandler.get('region') as
+    | { endpoints?: { auth?: string }; name?: string; cma?: string }
+    | undefined;
   const ctx: FeatureCtx = {
     managementToken,
     apiKey: apiKeyFromAlias ?? apiKeyFromArgv,

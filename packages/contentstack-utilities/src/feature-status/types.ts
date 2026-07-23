@@ -12,5 +12,5 @@ export interface FeatureCtx {
   orgUid?: string;
   managementToken?: string;
   authToken?: string;
-  region?: { authUrl?: string; name?: string; cma?: string };
+  region?: { name?: string; cma?: string; endpoints?: { auth?: string } };
 }
