@@ -15,14 +15,14 @@ function getArgvFlag(argv: string[], ...names: string[]): string | undefined {
   return undefined;
 }
 
-export default async function (opts: { Command?: { id?: string; planProtectedFeatures?: string[] }; argv?: string[]; config?: any }): Promise<void> {
+export default async function (opts: { Command?: { id?: string }; argv?: string[]; config?: any }): Promise<void> {
   const config = opts?.config ?? this.config;
   const commandId = opts?.Command?.id;
   const argv: string[] = opts?.argv ?? [];
 
   if (!commandId) return;
 
-  const requiredFeatures: string[] = opts?.Command?.planProtectedFeatures ?? [];
+  const requiredFeatures: string[] = config?.context?.plugin?.config?.planProtectedFeatures ?? [];
   if (requiredFeatures.length === 0) return;
 
   const alias = getArgvFlag(argv, '--alias', '-a');
