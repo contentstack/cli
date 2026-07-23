@@ -313,7 +313,87 @@ describe('Region command', function () {
       csAssetsUrl: 'https://custom-asset-management.com',
     };
     const result = UserConfig.setCustomRegion(customRegion);
-    expect(result).to.deep.equal(customRegion);
+    expect(result.cma).to.equal(customRegion.cma);
+    expect(result.cda).to.equal(customRegion.cda);
+    expect(result.uiHost).to.equal(customRegion.uiHost);
+    expect(result.name).to.equal(customRegion.name);
+    expect(result.developerHubUrl).to.equal(customRegion.developerHubUrl);
+    expect(result.personalizeUrl).to.equal(customRegion.personalizeUrl);
+    expect(result.launchHubUrl).to.equal(customRegion.launchHubUrl);
+    expect(result.composableStudioUrl).to.equal(customRegion.composableStudioUrl);
+  });
+
+  it('should include a matching endpoints object for a custom region without an auth host', function () {
+    const customRegion = {
+      cma: 'https://custom-cma.com',
+      cda: 'https://custom-cda.com',
+      uiHost: 'https://custom-ui.com',
+      name: 'Custom Region',
+      developerHubUrl: 'https://custom-developer-hub.com',
+      personalizeUrl: 'https://custom-personalize.com',
+      launchHubUrl: 'https://custom-launch.com',
+      composableStudioUrl: 'https://custom-composable-studio.com',
+    };
+    const result = UserConfig.setCustomRegion(customRegion);
+    expect(result.endpoints).to.deep.equal({
+      contentManagement: customRegion.cma,
+      contentDelivery: customRegion.cda,
+      application: customRegion.uiHost,
+      developerHub: customRegion.developerHubUrl,
+      launch: customRegion.launchHubUrl,
+      personalizeManagement: customRegion.personalizeUrl,
+      composableStudio: customRegion.composableStudioUrl,
+      assetManagement: undefined,
+      auth: undefined,
+    });
+  });
+
+  it('should preserve an explicitly supplied endpoints object for a custom region', function () {
+    const endpoints = {
+      contentManagement: 'https://custom-cma.com',
+      contentDelivery: 'https://custom-cda.com',
+      application: 'https://custom-ui.com',
+      auth: 'https://custom-auth.com',
+    };
+    const customRegion = {
+      cma: 'https://custom-cma.com',
+      cda: 'https://custom-cda.com',
+      uiHost: 'https://custom-ui.com',
+      name: 'Custom Region',
+      endpoints,
+    };
+    const result = UserConfig.setCustomRegion(customRegion);
+    expect(result.cma).to.equal(endpoints.contentManagement);
+    expect(result.cda).to.equal(endpoints.contentDelivery);
+    expect(result.uiHost).to.equal(endpoints.application);
+    expect(result.endpoints).to.deep.equal(endpoints);
+  });
+
+  it('should not fall back to a stale legacy authUrl input once endpoints.auth is supplied', function () {
+    // endpoints is the single source of truth: a stale/mismatched top-level
+    // authUrl on the raw input is never used — only endpoints.auth matters.
+    const customRegion = {
+      cma: 'https://custom-cma.com',
+      cda: 'https://custom-cda.com',
+      uiHost: 'https://custom-ui.com',
+      name: 'Custom Region',
+      authUrl: 'https://stale-auth.com',
+      endpoints: {
+        contentManagement: 'https://custom-cma.com',
+        contentDelivery: 'https://custom-cda.com',
+        application: 'https://custom-ui.com',
+        auth: 'https://correct-auth.com',
+      },
+    };
+    const result = UserConfig.setCustomRegion(customRegion);
+    expect(result.endpoints.auth).to.equal('https://correct-auth.com');
+  });
+
+  it('should include the full endpoints passthrough (incl. auth) for named regions', function () {
+    const result = UserConfig.setRegion('NA');
+    expect(result.endpoints).to.be.an('object');
+    expect(result.endpoints.auth).to.equal('https://auth-api.contentstack.com');
+    expect(result.endpoints.contentManagement).to.equal(result.cma);
   });
 
   it('should sanitize region object to only include valid properties', function () {

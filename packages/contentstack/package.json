@@ -161,6 +161,7 @@
         "./lib/hooks/prerun/latest-version-warning"
       ],
       "init": [
+        "./lib/hooks/init/region-refresh",
         "./lib/hooks/init/context-init",
         "./lib/hooks/init/utils-init"
       ]

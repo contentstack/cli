@@ -20,7 +20,7 @@ export interface Region {
   launchHubUrl: string;
   composableStudioUrl: string;
   csAssetsUrl?: string;
-  authUrl?: string;
+  endpoints?: Record<string, string>;
 }
 
 export interface Limit {

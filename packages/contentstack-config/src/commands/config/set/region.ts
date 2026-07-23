@@ -132,7 +132,17 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
           launchHubUrl,
           composableStudioUrl,
           csAssetsUrl,
-          authUrl,
+          endpoints: {
+            contentManagement: cma,
+            contentDelivery: cda,
+            application: uiHost,
+            developerHub: developerHubUrl,
+            launch: launchHubUrl,
+            personalizeManagement: personalizeUrl,
+            composableStudio: composableStudioUrl,
+            assetManagement: csAssetsUrl,
+            auth: authUrl,
+          },
         };
         customRegion = regionHandler.setCustomRegion(customRegion);
         await authHandler.setConfigData('logout'); //Todo: Handle this logout flow well through logout command call
@@ -145,7 +155,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
         cliux.success(`Launch URL: ${customRegion.launchHubUrl}`);
         cliux.success(`Studio URL: ${customRegion.composableStudioUrl}`);
         cliux.success(`Contentstack Assets URL: ${customRegion.csAssetsUrl}`);
-        cliux.success(`Auth API URL: ${customRegion.authUrl}`);
+        cliux.success(`Auth API URL: ${customRegion.endpoints?.auth}`);
       } catch (error) {
         handleAndLogError(error, { ...this.contextDetails, module: 'config-set-region' });
       }

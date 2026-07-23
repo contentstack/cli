@@ -1,10 +1,26 @@
 fileignoreconfig:
   - filename: pnpm-lock.yaml
-    checksum: dd5f6ad633313054c21fa0e24645a25dca360f12f21b877472f514d848340ac6
+    checksum: 6a2d0b32643423b7b3b5f3a5afab2db85f7cdd734c63128ddda5c7400065b83b
   - filename: packages/contentstack-utilities/src/message-handler.ts
     checksum: e7221e8413005b9efe3a230cd91aff130850976addc41c0acb10745a56ec3245
   - filename: packages/contentstack-auth/src/commands/auth/tokens/list.ts
     checksum: cff2456db5a6eb9c056096e5b08d4737ad4507386f9998f9182d3acab8be868d
   - filename: packages/contentstack/README.md
     checksum: 4aec6271d09ee38452460140b1d8da338df15c6ed765544246c00417d179dba5
+  - filename: packages/contentstack-utilities/src/feature-status/build-auth-headers.ts
+    checksum: 9360dfbce41aa9c8a62889f4821c37fc222b04b8b1c552d1dfbcd8f2854d49e0
+  - filename: packages/contentstack/src/hooks/prerun/plan-guard.ts
+    checksum: 74eeb5c98e9ae48bf6f2918e75a7cfca23915396ffdd177b8716acba35c287da
+  - filename: packages/contentstack-config/src/utils/region-handler.ts
+    checksum: 1dcf8b8991d172db535792116999f2ea98d8d529c64fa436088dbecdb4516fb9
+  - filename: packages/contentstack-utilities/test/unit/region-endpoints.test.ts
+    checksum: fe37fa11a72d154e6bfeef38a18039c68cf3cc4446183cb012596ad8c7ea5083
+  - filename: packages/contentstack-config/test/unit/commands/region.test.ts
+    checksum: 334e2a8c63338137cbf38b1fbabc73638b3ea1c30996318a1bd88392bf7687ed
+  - filename: packages/contentstack-utilities/src/region-endpoints.ts
+    checksum: 78902404db884ddc9ad812c4db3f410a52de2c895c2021733edc939d273030fb
+  - filename: packages/contentstack-utilities/test/unit/resolve-auth-host.test.ts
+    checksum: 19557d2905561d3dda94ebd68af342ecc646d2b5bbce3c1552bb9aea90f4bbbc
+  - filename: packages/contentstack-utilities/test/unit/region-refresh.test.ts
+    checksum: 1edac51f260df3ce28b538146e607d77742daed2364c25b4a922853b99f6d912
 version: '1.0'
