@@ -82,3 +82,5 @@ export { default as authenticationHandler } from './authentication-handler';
 export {v2Logger as log, cliErrorHandler, handleAndLogError, getLogPath} from './logger/log'
 
 export * from './feature-status';
+export * from './region-endpoints';
+export { refreshRegionEndpoints } from './region-refresh';
