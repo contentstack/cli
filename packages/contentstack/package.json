@@ -32,7 +32,6 @@
     "@contentstack/cli-cm-seed": "~2.0.0-beta.24",
     "@contentstack/cli-command": "~2.0.0-beta.10",
     "@contentstack/cli-config": "~2.0.0-beta.14",
-    "@contentstack/cli-launch": "^1.11.1",
     "@contentstack/cli-migration": "~2.0.0-beta.16",
     "@contentstack/cli-utilities": "~2.0.0-beta.11",
     "@contentstack/cli-variants": "~2.0.0-beta.19",
@@ -150,7 +149,6 @@
       "@contentstack/cli-cm-branches",
       "@contentstack/cli-audit",
       "@contentstack/cli-cm-import-setup",
-      "@contentstack/cli-launch",
       "@contentstack/cli-bulk-operations"
     ],
     "hooks": {
