@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-config/1.20.5 darwin-arm64 node-v22.21.1
+@contentstack/cli-config/1.20.5 darwin-arm64 node-v22.13.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -457,7 +457,7 @@ Set region for CLI
 ```
 USAGE
   $ csdx config:set:region [REGION] [-d <value> -m <value> --ui-host <value> -n <value>] [--developer-hub <value>]
-    [--personalize <value>] [--launch <value>] [--studio <value>]
+    [--personalize <value>] [--launch <value>] [--studio <value>] [--auth-api <value>]
 
 ARGUMENTS
   [REGION]  Name for the region
@@ -468,6 +468,7 @@ FLAGS
   -m, --cma=<value>            Custom host to set for content management API, , if this flag is added then cda, ui-host
                                and name flags are required
   -n, --name=<value>           Name for the region, if this flag is added then cda, cma and ui-host flags are required
+      --auth-api=<value>       Custom host to set for Auth API
       --developer-hub=<value>  Custom host to set for Developer hub API
       --launch=<value>         Custom host to set for Launch API
       --personalize=<value>    Custom host to set for Personalize API
