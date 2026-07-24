@@ -156,7 +156,8 @@
       ],
       "init": [
         "./lib/hooks/init/context-init",
-        "./lib/hooks/init/utils-init"
+        "./lib/hooks/init/utils-init",
+        "./lib/hooks/init/opt-in-plugin-guide"
       ]
     }
   },
