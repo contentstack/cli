@@ -421,14 +421,19 @@ export default class CLIProgressManager {
 
       if (!this.showConsoleLogs && process.progressBar) {
         const totalProcessed = process.current;
-        const percentage = Math.round((totalProcessed / process.total) * 100);
+        // Reconcile the bar's total with the number of items actually processed so the
+        // rendered "value/total" matches the "Complete (success/processed)" summary. A
+        // process registered with an estimated total larger than the items actually ticked
+        // would otherwise render mismatched counts, e.g. "37/37 | Complete (27/27)".
+        process.progressBar.setTotal(totalProcessed);
+        const percentage = totalProcessed > 0 ? 100 : 0;
         const formattedPercentage = this.formatPercentage(percentage);
         const statusText = success
-          ? getChalk().green(`✓ Complete (${process.successCount}/${process.current})`)
-          : getChalk().red(`✗ Failed (${process.successCount}/${process.current})`);
+          ? getChalk().green(`✓ Complete (${process.successCount}/${totalProcessed})`)
+          : getChalk().red(`✗ Failed (${process.successCount}/${totalProcessed})`);
         const displayName = this.formatProcessName(processName);
         const indentedLabel = `  ├─ ${displayName}`.padEnd(25);
-        process.progressBar.update(process.total, {
+        process.progressBar.update(totalProcessed, {
           label: success ? getChalk().green(indentedLabel) : getChalk().red(indentedLabel),
           status: statusText,
           percentage: formattedPercentage,
