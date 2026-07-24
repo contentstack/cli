@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { readContentTypeSchemas } from '../../src/content-type-utils';
+import { readContentTypeSchemas, readGlobalFieldSchemas } from '../../src/content-type-utils';
 
 describe('readContentTypeSchemas', () => {
   afterEach(() => {
@@ -143,5 +143,111 @@ describe('readContentTypeSchemas', () => {
     expect(result).to.have.lengthOf(0);
 
     sinon.restore();
+  });
+
+  it('should NOT ignore globalfields.json (that is readGlobalFieldSchemas responsibility)', () => {
+    const mockBulk = [{ uid: 'gf_1', title: 'GF 1' }];
+    const mockPerUid = { uid: 'gf_2', title: 'GF 2', schema: [] };
+
+    sinon.stub(require('fs'), 'existsSync').returns(true);
+    sinon.stub(require('fs'), 'readdirSync').returns(['globalfields.json', 'gf_2.json']);
+    const readFileStub = sinon.stub(require('fs'), 'readFileSync');
+    readFileStub.withArgs(sinon.match(/globalfields\.json/), 'utf8').returns(JSON.stringify(mockBulk));
+    readFileStub.withArgs(sinon.match(/gf_2\.json/), 'utf8').returns(JSON.stringify(mockPerUid));
+
+    const result = readContentTypeSchemas('/test/path');
+
+    expect(result).to.have.lengthOf(2);
+
+    sinon.restore();
+  });
+});
+
+describe('readGlobalFieldSchemas', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('should return empty array when directory does not exist', () => {
+    sinon.stub(require('fs'), 'existsSync').returns(false);
+
+    const result = readGlobalFieldSchemas('/nonexistent/path');
+
+    expect(result).to.be.an('array');
+    expect(result).to.have.lengthOf(0);
+  });
+
+  it('should read per-uid JSON files and ignore globalfields.json by default', () => {
+    const mockGF = { uid: 'gf_1', title: 'GF 1', schema: [] };
+
+    sinon.stub(require('fs'), 'existsSync').returns(true);
+    sinon.stub(require('fs'), 'readdirSync').returns(['gf_1.json', 'globalfields.json', '.DS_Store', 'schema.json']);
+    const readFileStub = sinon.stub(require('fs'), 'readFileSync');
+    readFileStub.withArgs(sinon.match(/gf_1\.json/), 'utf8').returns(JSON.stringify(mockGF));
+
+    const result = readGlobalFieldSchemas('/test/path');
+
+    expect(result).to.be.an('array');
+    expect(result).to.have.lengthOf(1);
+    expect(result[0].uid).to.equal('gf_1');
+  });
+
+  it('should not include globalfields.json — prevents bulk-array corruption on import', () => {
+    const mockBulkArray = [{ uid: 'gf_1' }, { uid: 'gf_2' }];
+    const mockPerUid = { uid: 'gf_3', title: 'GF 3', schema: [] };
+
+    sinon.stub(require('fs'), 'existsSync').returns(true);
+    sinon.stub(require('fs'), 'readdirSync').returns(['globalfields.json', 'gf_3.json']);
+    const readFileStub = sinon.stub(require('fs'), 'readFileSync');
+    readFileStub.withArgs(sinon.match(/globalfields\.json/), 'utf8').returns(JSON.stringify(mockBulkArray));
+    readFileStub.withArgs(sinon.match(/gf_3\.json/), 'utf8').returns(JSON.stringify(mockPerUid));
+
+    const result = readGlobalFieldSchemas('/test/path');
+
+    // Only the per-uid file is returned; globalfields.json array not parsed as a schema entry
+    expect(result).to.have.lengthOf(1);
+    expect(Array.isArray(result[0])).to.be.false;
+    expect((result[0] as any).uid).to.equal('gf_3');
+  });
+
+  it('should read multiple per-uid files', () => {
+    const mockGF1 = { uid: 'gf_1', title: 'GF 1', schema: [] };
+    const mockGF2 = { uid: 'gf_2', title: 'GF 2', schema: [] };
+
+    sinon.stub(require('fs'), 'existsSync').returns(true);
+    sinon.stub(require('fs'), 'readdirSync').returns(['gf_1.json', 'gf_2.json', 'globalfields.json']);
+    const readFileStub = sinon.stub(require('fs'), 'readFileSync');
+    readFileStub.withArgs(sinon.match(/gf_1\.json/), 'utf8').returns(JSON.stringify(mockGF1));
+    readFileStub.withArgs(sinon.match(/gf_2\.json/), 'utf8').returns(JSON.stringify(mockGF2));
+
+    const result = readGlobalFieldSchemas('/test/path');
+
+    expect(result).to.have.lengthOf(2);
+    expect(result.map((r: any) => r.uid)).to.include.members(['gf_1', 'gf_2']);
+  });
+
+  it('should return empty array when directory contains only globalfields.json', () => {
+    sinon.stub(require('fs'), 'existsSync').returns(true);
+    sinon.stub(require('fs'), 'readdirSync').returns(['globalfields.json', '.DS_Store']);
+
+    const result = readGlobalFieldSchemas('/test/path');
+
+    expect(result).to.be.an('array');
+    expect(result).to.have.lengthOf(0);
+  });
+
+  it('readContentTypeSchemas default ignore list is unchanged — no globalfields.json exclusion', () => {
+    sinon.stub(require('fs'), 'existsSync').returns(true);
+    sinon.stub(require('fs'), 'readdirSync').returns(['globalfields.json']);
+    sinon.stub(require('fs'), 'readFileSync')
+      .withArgs(sinon.match(/globalfields\.json/), 'utf8')
+      .returns(JSON.stringify([{ uid: 'gf_1' }]));
+
+    // readContentTypeSchemas includes globalfields.json; readGlobalFieldSchemas excludes it
+    const ctResult = readContentTypeSchemas('/test/path');
+    const gfResult = readGlobalFieldSchemas('/test/path');
+
+    expect(ctResult).to.have.lengthOf(1);
+    expect(gfResult).to.have.lengthOf(0);
   });
 });
