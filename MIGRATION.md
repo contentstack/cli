@@ -189,6 +189,45 @@ csdx cm:entries:publish --content-types blog --environments prod --locales en-us
 csdx cm:stacks:bulk-entries --operation publish --content-types blog --environments prod --locales en-us -k blt123
 ```
 
+### 7. 🚀 Launch Plugin Now Opt-In
+
+**What Changed:**
+- The `launch` plugin (`@contentstack/cli-launch`) is no longer bundled with the CLI
+- All `launch:*` commands now require installing the plugin explicitly before use
+- Brings `launch` in line with the opt-in, modular plugin model used elsewhere in 2.x
+
+> ⚠️ **This is a change relative to the 2.x beta — not only relative to 1.x.** `@contentstack/cli-launch` was bundled throughout the 1.x releases **and** the entire 2.x beta period, so `launch:*` worked out of the box for beta users too. Starting with 2.x GA it becomes opt-in, so beta users who rely on `launch:*` are also affected when they upgrade.
+
+**Before (1.x.x and 2.x.x-beta):**
+- `launch:*` commands were bundled with the CLI and available by default after installation
+
+**After (2.x.x GA):**
+- `launch:*` commands are provided by a separate, opt-in plugin that must be installed explicitly
+- Running any `launch:*` command without the plugin installed fails with a `command not found` error where it previously worked out of the box
+
+**Affected commands:** `launch`, `launch:deployments`, `launch:environments`, `launch:functions`, `launch:logs`, `launch:open`, `launch:rollback`
+
+**Installation Methods:**
+
+
+**Option 1: Using CLI Plugin Manager**
+```bash
+csdx plugins:install @contentstack/cli-launch
+```
+
+**Option 2: Using npm**
+```bash
+npm install -g @contentstack/cli-launch
+```
+
+**Usage:**
+After installation, launch commands will be available through the CLI:
+```bash
+csdx launch --help
+```
+
+**Migration Action:** If you use any `launch:*` command, install the `@contentstack/cli-launch` plugin before (or immediately after) upgrading to 2.x GA to avoid `command not found` errors. This applies to 2.x beta users as well, since `launch` was bundled during the beta.
+
 ## Troubleshooting
 
 ### Common Issues
@@ -208,6 +247,11 @@ csdx cm:stacks:bulk-entries --operation publish --content-types blog --environme
 **4. Performance differences:**
 - The 2.x.x-beta version should be faster due to TypeScript modules
 - If you are experiencing issues, switch to console log mode for debugging
+
+**5. `launch:*` command not found:**
+- In 2.x GA, `launch` is an opt-in plugin and is no longer bundled (it was bundled in 1.x and during the 2.x beta)
+- Install it with `csdx plugins:install @contentstack/cli-launch`, then re-run your `launch:*` command
+- Verify it is installed with `csdx plugins`
 
 ### Getting Help
 
