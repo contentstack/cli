@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { configHandler, pathValidator, sanitizePath, generateShortUid } from '@contentstack/cli-utilities';
+import { configHandler, pathValidator, sanitizePath, generateShortUid, FeatureStatus } from '@contentstack/cli-utilities';
 import { machineIdSync } from 'node-machine-id';
 
 export default class CsdxContext {
@@ -16,6 +16,8 @@ export default class CsdxContext {
   public flagWarningPrintState: any;
   public flags: any;
   public cliVersion: string;
+  public planStatus: Record<string, FeatureStatus> = {};
+  public planCheckRequired: string[] = [];
 
   constructor(cliOpts: any, cliConfig: any) {
     const analyticsInfo = [];
