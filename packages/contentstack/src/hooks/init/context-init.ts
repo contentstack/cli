@@ -9,5 +9,10 @@ export default function (opts): void {
   if (opts.id) {
     configHandler.set('currentCommandId', opts.id);
   }
-  this.config.context = new CsdxContext(opts, this.config);
+  const ctx = new CsdxContext(opts, this.config);
+  this.config.context = ctx;
+  // oclif v4 always recreates Config via Config.load(existingConfig), stripping custom
+  // properties like `context`. Storing it in options ensures it survives the spread:
+  //   new Config({ ...opts.options, plugins }) in Config.load
+  (this.config.options as any).context = ctx;
 }

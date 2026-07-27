@@ -1,4 +1,6 @@
 fileignoreconfig:
   - filename: pnpm-lock.yaml
-    checksum: 4bad5f9428f5bc7ed837c91567b28afc97acefa7086eb03d2ffd90b4a2820233
+    checksum: 117b66122d3f3043f48724ff9755ec2d4a9dff3c156ceedef753df3014cafee6
+  - filename: packages/contentstack/src/hooks/init/opt-in-plugin-guide.ts
+    checksum: 2b079a93988e2439a03c401f75695fcdbfeb138a75c84707e4bc892536680e9f
 version: '1.0'
