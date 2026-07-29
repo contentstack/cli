@@ -228,6 +228,381 @@ csdx launch --help
 
 **Migration Action:** If you use any `launch:*` command, install the `@contentstack/cli-launch` plugin before (or immediately after) upgrading to 2.x GA to avoid `command not found` errors. This applies to 2.x beta users as well, since `launch` was bundled during the beta.
 
+### 8. 🔁 Flag Renames on Export / Import / Export-to-CSV
+
+**What Changed:**
+Several flags on `cm:stacks:export`, `cm:stacks:import`, and `cm:stacks:export-to-csv` were renamed or removed. Passing the old flag names now causes an **immediate error** — V2 does not silently fall back.
+
+**cm:stacks:export — Removed Flags:**
+
+| V1 Flag | V2 Replacement |
+|---|---|
+| `--data` | `--data-dir` |
+| `--stack-uid` / `-s` | `--stack-api-key` |
+| `--management-token-alias` | `--alias` |
+| `--auth-token` / `-A` | use `csdx auth:login`, then `--alias` |
+| `-m` | `--module` (long form only) |
+| `-t` | `--content-types` (long form only) |
+| `-B` | `--branch` (long form only) |
+
+**cm:stacks:import — Removed Flags:**
+
+| V1 Flag | V2 Replacement |
+|---|---|
+| `--data` | `--data-dir` |
+| `--stack-uid` / `-s` | `--stack-api-key` |
+| `--management-token-alias` | `--alias` |
+| `--auth-token` / `-A` | use `csdx auth:login`, then `--alias` |
+| `-m` | `--module` (long form only) |
+| `-b` | `--backup-dir` (long form only) |
+| `-B` | `--branch` (long form only) |
+| `--skip-app-recreation` | **Removed — no replacement** |
+
+> ⚠️ `--skip-app-recreation` is gone entirely. Remove it from all import scripts.
+
+**cm:stacks:export-to-csv — Removed Flags:**
+
+| V1 Flag | V2 Replacement |
+|---|---|
+| `--data` | `--data-dir` |
+| `--stack-uid` / `-s` | `--stack-api-key` |
+
+**Before (1.x.x):**
+```bash
+csdx cm:stacks:export -s blt123 --data ./export -B main
+csdx cm:stacks:import -s blt123 --data ./export -b ./backup -B main
+```
+
+**After (2.x.x):**
+```bash
+csdx cm:stacks:export --stack-api-key blt123 --data-dir ./export --branch main
+csdx cm:stacks:import --stack-api-key blt123 --data-dir ./export --backup-dir ./backup --branch main
+```
+
+**Also note — `--module studio` renamed:**
+V1's `--module studio` is now `--module composable-studio`. Using the old value fails immediately:
+```bash
+# V1
+csdx cm:stacks:export --module studio
+
+# V2
+csdx cm:stacks:export --module composable-studio
+```
+
+**Migration Action:** Update all export and import scripts to use the new flag names above. Search your CI/CD configs for `--data`, `-s`, `-B`, `-b`, `-m`, `-t`, `--auth-token`, `--management-token-alias`, `--skip-app-recreation`, and `--module studio`.
+
+---
+
+### 9. ⚠️ Export Directory Structure Changed (CRITICAL — Silent Data Loss Risk)
+
+**What Changed:**
+V2 changes two structural aspects of the export directory that can cause **silent failures** in downstream pipelines and V1 import operations.
+
+#### 9.1 Global Fields: One File Per UID (was one combined file)
+
+V1 wrote all global field schemas into a single file. V2 writes one file per global field UID.
+
+```
+# V1 export layout
+export/global_fields/globalfields.json       ← all schemas in one array
+
+# V2 export layout
+export/global_fields/my_header.json          ← one file per UID
+export/global_fields/my_footer.json
+export/global_fields/shared_banner.json
+```
+
+#### 9.2 Content Types: Combined `schema.json` Removed
+
+V1 also wrote `content_types/schema.json` containing all content type schemas as an array. V2 removes this file — only individual `content_types/<uid>.json` files are written.
+
+```bash
+cat export/content_types/schema.json    # this file does not exist in V2 exports
+ls export/content_types/*.json          # correct: iterate per-UID files
+```
+
+#### 9.3 Branches: `branches.json` No Longer Written
+
+V1 wrote a `branches.json` to the export root. V2 does not write this file and raises no error.
+
+**Migration Action:**
+- Update any tooling that reads `globalfields.json` or `content_types/schema.json` to iterate per-UID files.
+- Remove any pipeline steps that check for or read `branches.json`.
+- If you run a V2 export and then import with a **V1 CLI**, content types and global fields will be silently skipped (see section 10).
+
+---
+
+### 10. 🚨 V2 Export Cannot Be Imported with V1 CLI — Silent Skip (CRITICAL)
+
+**What Changed:**
+V2's importer (`cm:stacks:import`) reads only per-UID `<uid>.json` files for content types and global fields. It **explicitly ignores** the V1 aggregate files (`schema.json`, `globalfields.json`). There is no error or warning — the import completes "successfully" with zero content types and zero global fields created.
+
+The same silent-skip applies when running `cm:stacks:audit` against a V1 export directory — the audit reads per-UID files only and will report 0 schemas found.
+
+| Module | V1 file (not read by V2) | V2 file (required) |
+|---|---|---|
+| Content types | `content_types/schema.json` | `content_types/<uid>.json` (one per UID) |
+| Global fields | `global_fields/globalfields.json` | `global_fields/<uid>.json` (one per UID) |
+
+**Scenario that breaks silently:**
+```bash
+# This appears to succeed but imports 0 content types and 0 global fields:
+csdx cm:stacks:export --data-dir ./export -k bltV1stack     # exported with V1 CLI
+csdx cm:stacks:import --data-dir ./export -k bltV2stack     # imported with V2 CLI
+```
+
+**Resolution:** Always re-export with the V2 CLI before importing with the V2 CLI. If you must work with a V1 export, split `schema.json` and `globalfields.json` into individual per-UID files first.
+
+**Migration Action:** Do not mix V1-exported data with a V2 import run. Add a step in your pipeline to verify exports were produced by the same CLI major version before importing.
+
+---
+
+### 11. 🔗 Command Aliases Removed
+
+**What Changed:**
+Several short-form command aliases that worked in V1 no longer exist in V2. Running them produces a `command not found` error.
+
+| Removed Alias (V1) | V2 Replacement |
+|---|---|
+| `csdx cm:export` | `csdx cm:stacks:export` |
+| `csdx cm:import` | `csdx cm:stacks:import` |
+| `csdx cm:import-setup` | `csdx cm:stacks:import-setup` |
+| `csdx cm:seed` | `csdx cm:stacks:seed` |
+| `csdx tokens` | `csdx auth:tokens:list` |
+| `csdx audit` | `csdx cm:stacks:audit` |
+| `csdx audit:fix` | `csdx cm:stacks:audit:fix` |
+
+> ✅ **Exception:** `csdx cm:migration` is the one V1 alias that **survived** — it still works in V2.
+
+**Before (1.x.x):**
+```bash
+csdx cm:export -s blt123 -d ./export
+csdx audit --report-path ./my-export
+```
+
+**After (2.x.x):**
+```bash
+csdx cm:stacks:export --stack-api-key blt123 --data-dir ./export
+csdx cm:stacks:audit --report-path ./my-export
+```
+
+**Migration Action:** Search your scripts and CI/CD configs for the removed aliases above and replace them with their full V2 equivalents.
+
+---
+
+### 12. 🧩 `content-type:*` Deprecated Flags Removed
+
+**What Changed:**
+All six `content-type:*` commands (`audit`, `compare`, `compare-remote`, `details`, `diagram`, `list`) had their deprecated V1 flags and multiple short chars removed. These flags printed deprecation warnings in V1 but now **fail with an error** in V2.
+
+**Removed across all `content-type:*` commands:**
+
+| Removed | V2 Replacement |
+|---|---|
+| `--stack` / `-s` | `--stack-api-key` / `-k` |
+| `--token-alias` | `--alias` / `-a` |
+
+**Additional short chars removed per command:**
+
+| Command | Removed Short Chars | Long Flag |
+|---|---|---|
+| `content-type:audit` | `-c` | `--content-type` |
+| `content-type:compare` | `-c`, `-l`, `-r` | `--content-type`, `--left`, `--right` |
+| `content-type:compare-remote` | `-o`, `-r`, `-c` | `--origin-stack`, `--remote-stack`, `--content-type` |
+| `content-type:details` | `-c`, `-p` | `--content-type`, `--path` |
+| `content-type:diagram` | `-o`, `-d`, `-t` | `--output`, `--direction`, `--type` |
+| `content-type:list` | `-o` | `--order` |
+
+**Before (1.x.x):**
+```bash
+csdx content-type:audit --stack blt123 --token-alias myalias -c blog
+csdx content-type:compare --stack blt123 -c blog -l 1 -r 2
+```
+
+**After (2.x.x):**
+```bash
+csdx content-type:audit --stack-api-key blt123 --alias myalias --content-type blog
+csdx content-type:compare --stack-api-key blt123 --content-type blog --left 1 --right 2
+```
+
+**Migration Action:** Replace `--stack` with `--stack-api-key`, `--token-alias` with `--alias`, and use long-form flags for all removed short chars.
+
+---
+
+### 13. 🚫 `--api-version` Flag Removed from Bulk Operations
+
+**What Changed:**
+The `--api-version` flag has been **removed** from `cm:stacks:bulk-entries` and `cm:stacks:bulk-taxonomies`. V2 hardcodes `api_version: 3.2` for all publish/unpublish calls. Passing `--api-version` now causes an immediate flag error.
+
+**Before (1.x.x):**
+```bash
+csdx cm:stacks:bulk-entries --operation publish --api-version 3.2 --environments prod --locales en-us -k blt123
+csdx cm:stacks:bulk-taxonomies --operation publish --api-version 3 --environments prod -k blt123
+```
+
+**After (2.x.x):**
+```bash
+csdx cm:stacks:bulk-entries --operation publish --environments prod --locales en-us -k blt123
+csdx cm:stacks:bulk-taxonomies --operation publish --environments prod -k blt123
+```
+
+**Migration Action:** Remove `--api-version` from all bulk-entries and bulk-taxonomies scripts. API version 3.2 is always used.
+
+---
+
+### 14. ✂️ Short Char Removals Across Other Commands
+
+**What Changed:**
+V2 resolved short char conflicts across multiple commands by removing ambiguous or deprecated single-letter flags. Long-form flags are unaffected.
+
+| Command | Removed Short Char | Long Flag (still works) |
+|---|---|---|
+| `cm:stacks:migration` | `-A` | `--authtoken` |
+| `cm:stacks:migration` | `-n` | `--filePath` |
+| `cm:stacks:migration` | `-B` | `--branch` |
+| `migrate:convert` | `-o` | `--output` |
+| `migrate:convert` | `-r` | `--rte` |
+| `migrate:export` | `-b` | `--branch` |
+| `migrate:export` | `-c` | `--config` |
+| `migrate:export` | `-o` | `--org` |
+| `app:create` | `-n` | `--name` |
+
+**Before (1.x.x):**
+```bash
+csdx cm:stacks:migration -n ./my-migration.js -A myAuthtoken
+csdx app:create -n my-app
+```
+
+**After (2.x.x):**
+```bash
+csdx cm:stacks:migration --filePath ./my-migration.js --authtoken myAuthtoken
+csdx app:create --name my-app
+```
+
+**Migration Action:** Replace removed short chars with their long-form equivalents in all scripts.
+
+---
+
+### 15. ⚙️ Console Log Config Key Renamed
+
+**What Changed:**
+The internal config key that stores the console log preference was renamed from hyphenated to camelCase. Your V1 log preference is **not carried over** to V2 — you must re-apply it after upgrading.
+
+| Config version | Key stored |
+|---|---|
+| V1 | `log["show-console-logs"]` |
+| V2 | `log["showConsoleLogs"]` |
+
+This does not affect the CLI flag name (`--show-console-logs` still works), only the stored config key. If your setup reads the Contentstack CLI config file directly (e.g. in a dotfile or CI bootstrap script), update the key name.
+
+**Migration Action:** After upgrading to V2, re-run your log preference command:
+
+```bash
+# If you use console log mode in CI:
+csdx config:set:log --show-console-logs
+
+# If you use progress bar mode (default — run this to clear any stale V1 setting):
+csdx config:set:log --no-show-console-logs
+```
+
+---
+
+### 16. 📦 Bootstrap App Configs Removed (13 Removed, 8 Remain)
+
+**What Changed:**
+`cm:bootstrap` no longer recognises 13 app name values that were valid in V1. Passing any of them now throws `CLI_BOOTSTRAP_INVALID_APP_NAME`. Additionally, the flag names themselves changed (see section 8 above).
+
+**Flag renames:**
+
+| V1 Flag | V2 Flag |
+|---|---|
+| `--appName` / `-a` | `--app-name` |
+| `--directory` / `-d` | `--project-dir` |
+| `--appType` / `-s` | `--app-type` |
+
+**Removed `--app-name` values (13 total):**
+
+| Removed App Name | Type |
+|---|---|
+| `reactjs` | Sample app |
+| `nextjs` | Sample app |
+| `gatsby` | Sample app |
+| `angular` | Sample app |
+| `reactjs-starter` | Deprecated starter |
+| `nextjs-starter` | Deprecated starter |
+| `gatsby-starter` | Deprecated starter |
+| `angular-starter` | Deprecated starter |
+| `nuxt-starter` | Deprecated starter |
+| `vue-starter` | Deprecated starter |
+| `stencil-starter` | Deprecated starter |
+| `nuxt3-starter` | Deprecated starter |
+| `nuxtjs-disabled` | Hidden config entry |
+
+**Valid `--app-name` values in V2 (8):**
+
+| App Name | Description |
+|---|---|
+| `compass-app` | Compass App |
+| `kickstart-next` | Kickstart Next.js |
+| `kickstart-next-ssr` | Kickstart Next.js SSR |
+| `kickstart-next-ssg` | Kickstart Next.js SSG |
+| `kickstart-next-graphql` | Kickstart Next.js GraphQL |
+| `kickstart-next-middleware` | Kickstart Next.js Middleware |
+| `kickstart-nuxt` | Kickstart NuxtJS |
+| `kickstart-nuxt-ssr` | Kickstart NuxtJS SSR |
+
+**Before (1.x.x):**
+```bash
+csdx cm:bootstrap --appName reactjs --directory ./myapp --appType sampleapp
+```
+
+**After (2.x.x):**
+```bash
+csdx cm:bootstrap --app-name compass-app --project-dir ./myapp
+```
+
+**Migration Action:** Replace removed `--app-name` values with one of the 8 valid V2 app names. Update `--appName` → `--app-name`, `--directory` → `--project-dir`, `--appType` → `--app-type`.
+
+---
+
+### 17. 🌱 Seed Stack List Is Now Curated (4 Stacks Only)
+
+**What Changed:**
+In V1, running `csdx cm:stacks:seed` without `--repo` triggered a live GitHub API search and presented all matching Contentstack repositories. In V2, the list is fixed — only 4 curated repos are shown in the interactive picker.
+
+**V2 curated list:**
+1. `contentstack/kickstart-stack-seed` — Kickstart stack seed
+2. `contentstack/kickstart-veda-seed` — Kickstart Veda
+3. `contentstack/compass-starter-stack` — Compass starter stack
+4. `contentstack/stack-starter-app` — Starter app
+
+If you previously relied on the interactive list to discover repos, those repos no longer appear. Any script that passed a repo name not in this list via the interactive prompt will now time out or fail.
+
+**Migration Action:** Use `--repo owner/repo-name` directly if you need a repository that is not in the curated list:
+
+```bash
+csdx cm:stacks:seed --repo contentstack/my-custom-seed-repo -k bltXXX
+```
+
+---
+
+### 18. 🛑 Ctrl+C Now Exits with Code 130 (Was an Uncaught Exception)
+
+**What Changed:**
+In V1, pressing Ctrl+C during an interactive prompt (e.g. environment selection, alias selection) caused an `ExitPromptError` to be thrown. Depending on how your shell or CI pipeline handled unhandled exceptions, this could produce a non-zero exit code or an error stack trace.
+
+In V2, SIGINT is caught and the process exits cleanly with **exit code 130** — the POSIX standard for SIGINT termination. No stack trace is printed.
+
+**Before (1.x.x):**
+- Ctrl+C → `ExitPromptError` thrown → unpredictable exit code, possible stack trace in logs
+
+**After (2.x.x):**
+- Ctrl+C → clean exit with code 130
+
+**Migration Action:** If your CI pipeline checks the exit code of CLI commands that may be cancelled interactively, update the expected exit code from a non-zero exception code to `130`. If you catch `ExitPromptError` in any wrapper scripts, remove that handler.
+
+---
+
 ## Troubleshooting
 
 ### Common Issues
