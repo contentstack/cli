@@ -52,10 +52,6 @@ export default async function (opts: { Command?: { id?: string }; argv?: string[
 
   if (!canCheckNow) {
     config.context.planCheckRequired = requiredFeatures;
-    log.debug(
-      `[plan-guard] Deferred plan check for: ${requiredFeatures.join(', ')} — credentials not resolvable at prerun`,
-      { module: 'plan-guard', commandId },
-    );
     return;
   }
 
@@ -75,7 +71,6 @@ export default async function (opts: { Command?: { id?: string }; argv?: string[
   for (const featureUid of requiredFeatures) {
     try {
       planStatus[featureUid] = await isFeatureEnabled(featureUid, ctx);
-      log.debug(`[plan-guard] Feature "${featureUid}" status fetched.`, { module: 'plan-guard', commandId });
     } catch (error) {
       log.warn(`[plan-guard] Could not fetch status for "${featureUid}": ${(error as Error).message}`, {
         module: 'plan-guard',
