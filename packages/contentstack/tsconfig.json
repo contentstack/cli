@@ -11,15 +11,8 @@
     "sourceMap": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "lib": [
-      "ES2019",
-      "es2020.promise"
-    ],
+    "lib": ["ES2019", "es2020.promise"]
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "src/**/*.d.ts"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["src/**/*.d.ts"]
 }
