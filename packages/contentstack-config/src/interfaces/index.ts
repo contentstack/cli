@@ -19,6 +19,7 @@ export interface Region {
   personalizeUrl: string;
   launchHubUrl: string;
   composableStudioUrl: string;
+  endpoints?: Record<string, string>;
 }
 
 export interface Limit {
