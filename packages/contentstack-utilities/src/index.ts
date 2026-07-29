@@ -90,3 +90,7 @@ export {
   CustomProgressStrategy,
   DefaultProgressStrategy
 } from './progress-summary';
+
+export * from './feature-status';
+export * from './region-endpoints';
+export { refreshRegionEndpoints } from './region-refresh';
