@@ -22,7 +22,7 @@
     "@contentstack/cli-audit": "~1.19.5",
     "@contentstack/cli-cm-export": "~1.25.3",
     "@contentstack/cli-cm-import": "~1.33.5",
-    "@contentstack/cli-auth": "~1.8.4",
+    "@contentstack/cli-auth": "~1.8.5",
     "@contentstack/cli-cm-bootstrap": "~1.19.7",
     "@contentstack/cli-cm-branches": "~1.8.3",
     "@contentstack/cli-cm-bulk-publish": "~1.12.1",
