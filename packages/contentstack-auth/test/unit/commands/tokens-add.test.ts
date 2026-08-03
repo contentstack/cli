@@ -254,8 +254,6 @@ describe('Management and Delivery token flags', () => {
         conf.validAPIKey,
         '--token',
         conf.validToken,
-        '--branch',
-        'main',
       ]);
 
       assert.calledOnce(successStub);
@@ -268,24 +266,6 @@ describe('Management and Delivery token flags', () => {
       } catch (error: any) {
         expect(error.message).to.contain('expects a value');
       }
-    });
-
-    it.skip('Should add a token successfully after all the values are passed with stack having branches enabled', async () => {
-      nock('https://api.contentstack.io').get('/v3/environments').query({ limit: 1 }).reply(200, { environments: [] });
-
-      await TokensAddCommand.run([
-        '--management',
-        '--alias',
-        'newToken',
-        '--stack-api-key',
-        conf.validAPIKey,
-        '--token',
-        conf.validToken,
-        '--branch',
-        'main',
-      ]);
-
-      assert.calledOnce(successStub);
     });
 
     it.skip('Should add a token successfully for stack with branches disabled after all the values are passed', async () => {
@@ -363,26 +343,6 @@ describe('Management and Delivery token flags', () => {
         process.env.BRANCH_DISABLED_ENVIRONMENT!,
       ]);
       assert.calledWith(successStub, 'CLI_AUTH_TOKENS_ADD_SUCCESS');
-    });
-    it('Should throw and error for stack with branches disabled', async () => {
-      let branch = 'my-branch';
-      try {
-        await TokensAddCommand.run([
-          '--delivery',
-          '--alias',
-          'newToken',
-          '--stack-api-key',
-          process.env.BRANCH_DISABLED_API_KEY!,
-          '--token',
-          process.env.BRANCH_DISABLED_DELIVERY_TOKEN!,
-          '--environment',
-          process.env.BRANCH_DISABLED_ENVIRONMENT!,
-          '--branch',
-          branch,
-        ]);
-      } catch (error: any) {
-        assert.calledOnce(errorStub);
-      }
     });
   });
 });
