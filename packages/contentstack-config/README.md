@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-config/2.0.0-beta.13 darwin-arm64 node-v22.21.1
+@contentstack/cli-config/2.0.0-beta.15 darwin-arm64 node-v24.18.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -457,12 +457,13 @@ Set region for CLI
 ```
 USAGE
   $ csdx config:set:region [REGION] [--cda <value> --cma <value> --ui-host <value> --name <value>] [--developer-hub
-    <value>] [--personalize <value>] [--launch <value>] [--studio <value>] [--cs-assets <value>]
+    <value>] [--personalize <value>] [--launch <value>] [--studio <value>] [--cs-assets <value>] [--auth-api <value>]
 
 ARGUMENTS
   [REGION]  Name for the region
 
 FLAGS
+  --auth-api=<value>       Custom host to set for Auth API
   --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and name
                            flags are required
   --cma=<value>            Custom host to set for content management API, , if this flag is added then cda, ui-host and
@@ -508,7 +509,7 @@ EXAMPLES
 
   $ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --cs-assets <cs_assets_url>
 
-  $ csdx config:set:region --cda <custom_cda_host_url> --cma <custom_cma_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url> --launch <custom_launch_url> --personalize <custom_personalize_url> --studio <custom_studio_url>
+  $ csdx config:set:region --cda <custom_cda_host_url> --cma <custom_cma_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url> --launch <custom_launch_url> --personalize <custom_personalize_url> --studio <custom_studio_url> --cs-assets <cs_assets_url>
 ```
 
 _See code: [src/commands/config/set/region.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/region.ts)_
