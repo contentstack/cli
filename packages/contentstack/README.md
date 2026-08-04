@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/2.0.0-beta.26 darwin-arm64 node-v22.21.1
+@contentstack/cli/2.0.0-beta.30 darwin-arm64 node-v24.18.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -36,26 +36,6 @@ USAGE
 * [`csdx auth:tokens:list`](#csdx-authtokenslist)
 * [`csdx auth:tokens:remove`](#csdx-authtokensremove)
 * [`csdx auth:whoami`](#csdx-authwhoami)
-* [`csdx cm:bootstrap`](#csdx-cmbootstrap)
-* [`csdx cm:branches`](#csdx-cmbranches)
-* [`csdx cm:branches:create`](#csdx-cmbranchescreate)
-* [`csdx cm:branches:delete [-uid <value>] [-k <value>]`](#csdx-cmbranchesdelete--uid-value--k-value)
-* [`csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>] [--format <value>] [--csv-path <value>]`](#csdx-cmbranchesdiff---base-branch-value---compare-branch-value--k-value--module-value---format-value---csv-path-value)
-* [`csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>] [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]`](#csdx-cmbranchesmerge--k-value--compare-branch-value---no-revert---export-summary-path-value---use-merge-summary-value---comment-value---base-branch-value)
-* [`csdx cm:branches:merge-status -k <value> --merge-uid <value>`](#csdx-cmbranchesmerge-status--k-value---merge-uid-value)
-* [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
-* [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
-* [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix)
-* [`csdx cm:stacks:bulk-am-assets`](#csdx-cmstacksbulk-am-assets)
-* [`csdx cm:stacks:bulk-assets`](#csdx-cmstacksbulk-assets)
-* [`csdx cm:stacks:bulk-entries`](#csdx-cmstacksbulk-entries)
-* [`csdx cm:stacks:bulk-taxonomies`](#csdx-cmstacksbulk-taxonomies)
-* [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent)
-* [`csdx cm:stacks:export [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport---config-value---stack-api-key-value---data-dir-value---alias-value---module-value---content-types-value---branch-value---secured-assets)
-* [`csdx cm:stacks:import [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport---config-value---stack-api-key-value---data-dir-value---alias-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
-* [`csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--module <value>...]`](#csdx-cmstacksimport-setup--k-value--d-value--a-value---module-value)
-* [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple)
-* [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [--stack-api-key <value>] [--stack-name <value>] [-y] [--alias <value>] [--locale <value>]`](#csdx-cmstacksseed---repo-value---org-value---stack-api-key-value---stack-name-value--y---alias-value---locale-value)
 * [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
 * [`csdx config:get:ea-header`](#csdx-configgetea-header)
 * [`csdx config:get:early-access-header`](#csdx-configgetearly-access-header)
@@ -297,898 +277,6 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/main/packages/contentstack-auth/src/commands/auth/whoami.ts)_
-
-## `csdx cm:bootstrap`
-
-Bootstrap contentstack apps
-
-```
-USAGE
-  $ csdx cm:bootstrap [--app-name <value>] [--project-dir <value>] [-k <value> | --org <value> | -n <value>] [-y]
-    [--run-dev-server] [-a <value>]
-
-FLAGS
-  -a, --alias=<value>          Alias of the management token
-  -k, --stack-api-key=<value>  Provide stack API key to seed content
-  -n, --stack-name=<value>     Name of the new stack that will be created.
-  -y, --yes                    [Optional] Skip stack confirmation
-      --app-name=<value>       App name, kickstart-next, kickstart-next-ssr, kickstart-next-ssg, kickstart-next-graphql,
-                               kickstart-next-middleware, kickstart-nuxt, kickstart-nuxt-ssr
-      --org=<value>            Provide organization UID to create a new stack
-      --project-dir=<value>    Directory to setup the project. If directory name has a space then provide the path as a
-                               string or escap the space using back slash eg: "../../test space" or ../../test\ space
-      --run-dev-server         Automatically start the development server after setup
-
-DESCRIPTION
-  Bootstrap contentstack apps
-
-EXAMPLES
-  $ csdx cm:bootstrap
-
-  $ csdx cm:bootstrap --project-dir <path/to/setup/the/app>
-
-  $ csdx cm:bootstrap --app-name "kickstart-next" --project-dir <path/to/setup/the/app>
-
-  $ csdx cm:bootstrap --app-name "kickstart-next" --project-dir <path/to/setup/the/app> --stack-api-key "stack-api-key"
-
-  $ csdx cm:bootstrap --app-name "kickstart-next" --project-dir <path/to/setup/the/app> --org "your-org-uid" --stack-name "stack-name"
-
-  $ csdx cm:bootstrap --app-name "kickstart-next" --project-dir <path/to/setup/the/app> --run-dev-server
-```
-
-_See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli-plugins/blob/main/packages/contentstack-bootstrap/src/commands/cm/bootstrap.ts)_
-
-## `csdx cm:branches`
-
-List the branches
-
-```
-USAGE
-  $ csdx cm:branches
-
-FLAGS
-  -k, --stack-api-key=<value>  Stack API key
-      --verbose                Verbose, display information in detailed format.
-
-DESCRIPTION
-  List the branches
-
-EXAMPLES
-  $ csdx cm:branches
-
-  $ csdx cm:branches --verbose
-
-  $ csdx cm:branches -k <stack api key>
-```
-
-_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli-plugins/blob/main/packages/contentstack-branches/src/commands/cm/branches/index.ts)_
-
-## `csdx cm:branches:create`
-
-Create a new branch
-
-```
-USAGE
-  $ csdx cm:branches:create
-  $ csdx cm:branches:create [--source <value>] [--uid <value>] [-k <value>]
-  $ csdx cm:branches:create [--source <value>] [--uid <value>] [--stack-api-key <value>]
-
-FLAGS
-  -k, --stack-api-key=<value>  Stack API key
-      --source=<value>         Source branch from which a new branch is to be created.
-      --uid=<value>            Branch UID (unique name) to be created.
-
-DESCRIPTION
-  Create a new branch
-
-EXAMPLES
-  $ csdx cm:branches:create
-
-  $ csdx cm:branches:create --source main -uid new_branch -k bltxxxxxxxx
-
-  $ csdx cm:branches:create --source main --uid new_branch --stack-api-key bltxxxxxxxx
-```
-
-_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli-plugins/blob/main/packages/contentstack-branches/src/commands/cm/branches/create.ts)_
-
-## `csdx cm:branches:delete [-uid <value>] [-k <value>]`
-
-Delete a branch
-
-```
-USAGE
-  $ csdx cm:branches:delete [-uid <value>] [-k <value>]
-  $ csdx cm:branches:delete [--uid <value>] [--stack-api-key <value>]
-
-FLAGS
-  -k, --stack-api-key=<value>  Stack API key
-  -y, --yes                    Force the deletion of the branch by skipping the confirmation
-      --uid=<value>            Branch UID to be deleted
-
-DESCRIPTION
-  Delete a branch
-
-EXAMPLES
-  $ csdx cm:branches:delete
-
-  $ csdx cm:branches:delete --uid main -k bltxxxxxxxx
-
-  $ csdx cm:branches:delete --uid main --stack-api-key bltxxxxxxxx
-
-  $ csdx cm:branches:delete --uid main --stack-api-key bltxxxxxxxx --yes
-```
-
-_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli-plugins/blob/main/packages/contentstack-branches/src/commands/cm/branches/delete.ts)_
-
-## `csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>] [--format <value>] [--csv-path <value>]`
-
-Differences between two branches
-
-```
-USAGE
-  $ csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>] [--format
-    <value>] [--csv-path <value>]
-
-FLAGS
-  -k, --stack-api-key=<value>   [optional] Provide the stack API key to show the difference between branches.
-      --base-branch=<value>     [optional] Base branch (Target branch).
-      --compare-branch=<value>  [optional] Compare branch (Source branch).
-      --csv-path=<value>        [optional] Custom path for CSV output file. If not provided, will use the current
-                                working directory.
-      --format=<option>         [default: compact-text] [default: compact-text] [optional] Type of flags to show the
-                                difference between two branches. <options: compact-text, detailed-text>
-                                <options: compact-text|detailed-text>
-      --module=<option>         [optional] Module. <options: content-types, global-fields, all>
-                                <options: content-types|global-fields|all>
-
-DESCRIPTION
-  Differences between two branches
-
-EXAMPLES
-  $ csdx cm:branches:diff
-
-  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx"
-
-  $ csdx cm:branches:diff --compare-branch "develop"
-
-  $ csdx cm:branches:diff --compare-branch "develop" --stack-api-key "bltxxxxxxxx"
-
-  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types"
-
-  $ csdx cm:branches:diff --module "content-types" --format "detailed-text"
-
-  $ csdx cm:branches:diff --compare-branch "develop" --format "detailed-text"
-
-  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main"
-
-  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop"
-
-  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --module "content-types"
-
-  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content-types"
-
-  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content-types" --format "detailed-text"
-
-  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content-types" --format "compact-text"
-
-  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content-types" --format "detailed-text" --csv-path "./reports/diff-report.csv"
-```
-
-_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli-plugins/blob/main/packages/contentstack-branches/src/commands/cm/branches/diff.ts)_
-
-## `csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>] [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]`
-
-Merge changes from a branch
-
-```
-USAGE
-  $ csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>]
-    [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]
-
-FLAGS
-  -k, --stack-api-key=<value>        [optional] Provide stack API key to show the difference between the branches.
-      --base-branch=<value>          [optional] Base branch (Target branch).
-      --comment=<value>              [optional] Pass a comment.
-      --compare-branch=<value>       [optional] Compare branch (Source branch).
-      --export-summary-path=<value>  [optional] Export summary file path.
-      --no-revert                    [optional] If passed, will not create the new revert branch.
-      --use-merge-summary=<value>    [optional] Path of merge summary file.
-
-DESCRIPTION
-  Merge changes from a branch
-
-EXAMPLES
-  $ csdx cm:branches:merge --stack-api-key bltxxxxxxxx --compare-branch feature-branch
-
-  $ csdx cm:branches:merge --stack-api-key bltxxxxxxxx --comment "merge comment"
-
-  $ csdx cm:branches:merge -k bltxxxxxxxx --base-branch base-branch
-
-  $ csdx cm:branches:merge --export-summary-path file/path
-
-  $ csdx cm:branches:merge --use-merge-summary file-path
-
-  $ csdx cm:branches:merge -k bltxxxxxxxx --no-revert
-
-  $ csdx cm:branches:merge -k bltxxxxxxxx --compare-branch feature-branch --no-revert
-```
-
-_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli-plugins/blob/main/packages/contentstack-branches/src/commands/cm/branches/merge.ts)_
-
-## `csdx cm:branches:merge-status -k <value> --merge-uid <value>`
-
-Check the status of a branch merge job
-
-```
-USAGE
-  $ csdx cm:branches:merge-status -k <value> --merge-uid <value>
-
-FLAGS
-  -k, --stack-api-key=<value>  (required) Provide your stack API key.
-      --merge-uid=<value>      (required) Merge job UID to check status for.
-
-DESCRIPTION
-  Check the status of a branch merge job
-
-EXAMPLES
-  $ csdx cm:branches:merge-status -k bltxxxxxxxx --merge-uid merge_abc123
-
-  $ csdx cm:branches:merge-status --stack-api-key bltxxxxxxxx --merge-uid merge_abc123
-```
-
-_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli-plugins/blob/main/packages/contentstack-branches/src/commands/cm/branches/merge-status.ts)_
-
-## `csdx cm:export-to-csv`
-
-Export entries, taxonomies, terms or organization users to csv using this command
-
-```
-USAGE
-  $ csdx cm:export-to-csv [--action entries|users|teams|taxonomies] [-a <value>] [--org <value>] [-n <value>]
-    [-k <value>] [--org-name <value>] [--locale <value>] [--content-type <value>] [--branch <value>] [--team-uid
-    <value>] [--taxonomy-uid <value>] [--include-fallback] [--fallback-locale <value>] [--delimiter <value>]
-
-FLAGS
-      --action=<option>          Option to export data (entries, users, teams, taxonomies).
-                                 <options: entries|users|teams|taxonomies>
-  -a, --alias=<value>            Alias of the management token.
-      --org=<value>              Provide organization UID to clone org users.
-  -n, --stack-name=<value>       Name of the stack that needs to be created as CSV filename.
-  -k, --stack-api-key=<value>    API Key of the source stack.
-      --org-name=<value>         Name of the organization that needs to be created as CSV filename.
-      --locale=<value>           Locale of entries that will be exported.
-      --content-type=<value>     Content type of entries that will be exported.
-      --branch=<value>           Branch from which entries will be exported.
-      --team-uid=<value>         Provide the UID of a specific team in an organization.
-      --taxonomy-uid=<value>     Provide the taxonomy UID of the related terms you want to export.
-      --include-fallback         [Optional] Include fallback locale data when exporting taxonomies.
-      --fallback-locale=<value>  [Optional] Specify a specific fallback locale for taxonomy export.
-      --delimiter=<value>        [optional] Provide a delimiter to separate individual data fields within the CSV file.
-
-DESCRIPTION
-  Export entries, taxonomies, terms or organization users to csv using this command
-
-EXAMPLES
-  $ csdx cm:export-to-csv --action entries --alias <management_token> --stack-api-key <stack_api_key> --locale en-us --content-type <content_type_uid>
-
-  $ csdx cm:export-to-csv --action users --org <org_uid>
-
-  $ csdx cm:export-to-csv --action teams --org <org_uid>
-
-  $ csdx cm:export-to-csv --action taxonomies --org <org_uid> --taxonomy-uid <taxonomy_uid>
-```
-
-_See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/cli-plugins/blob/main/packages/contentstack-export-to-csv/src/commands/cm/export-to-csv.ts)_
-
-## `csdx cm:stacks:audit`
-
-Perform audits and find possible errors in the exported Contentstack data
-
-```
-USAGE
-  $ csdx cm:stacks:audit [-c <value>] [-d <value>] [--show-console-output] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules|composable-studio...]
-    [--columns <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output
-    csv|json|yaml]
-
-FLAGS
-  --modules=<option>...  Provide the list of modules to be audited
-                         <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules|composable-studio>
-  --report-path=<value>  Path to store the audit reports
-
-COMMON FLAGS
-  -c, --config=<value>       Path of the external config
-  -d, --data-dir=<value>     Path where the data is stored
-      --show-console-output  Display the audit and audit fix result for individual modules
-
-TABLE FLAGS
-  --columns=<value>  Specify columns to display, comma-separated.
-  --csv              Output results in CSV format.
-  --filter=<value>   Filter rows by a column value (e.g., name=foo).
-  --no-header        Hide table headers in output.
-  --no-truncate      Prevent truncation of long text in columns.
-  --output=<option>  Specify output format: csv, json, or yaml.
-                     <options: csv|json|yaml>
-  --sort=<value>     Sort the table by a column. Use "-" for descending.
-
-DESCRIPTION
-  Perform audits and find possible errors in the exported Contentstack data
-
-EXAMPLES
-  $ csdx cm:stacks:audit
-
-  $ csdx cm:stacks:audit --report-path=<path>
-
-  $ csdx cm:stacks:audit --report-path=<path> --csv
-
-  $ csdx cm:stacks:audit --report-path=<path> --filter="name=<filter-value>"
-
-  $ csdx cm:stacks:audit --report-path=<path> --modules=content-types --filter="name=<filter-value>"
-```
-
-_See code: [@contentstack/cli-audit](https://github.com/contentstack/cli-plugins/blob/main/packages/contentstack-audit/src/commands/cm/stacks/audit/index.ts)_
-
-## `csdx cm:stacks:audit:fix`
-
-Perform audits and fix possible errors in the exported Contentstack data.
-
-```
-USAGE
-  $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>] [--show-console-output] [--report-path <value>] [--modules
-    content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules|composable-studio...]
-    [--copy-path <value> --copy-dir] [--fix-only
-    reference|global_field|json:rte|json:extension|blocks|group|content_types...] [--columns <value>] [--sort <value>]
-    [--filter <value>] [--csv] [--no-truncate] [--no-header] [--output csv|json|yaml]
-
-FLAGS
-  --copy-dir              Create backup from the original data.
-  --copy-path=<value>     Provide the path to backup the copied data
-  --fix-only=<option>...  Provide the list of fix options
-                          <options: reference|global_field|json:rte|json:extension|blocks|group|content_types>
-  --modules=<option>...   Provide the list of modules to be audited
-                          <options: content-types|global-fields|entries|extensions|workflows|custom-roles|assets|field-rules|composable-studio>
-  --report-path=<value>   Path to store the audit reports
-
-COMMON FLAGS
-  -c, --config=<value>       Path of the external config
-  -d, --data-dir=<value>     Path where the data is stored
-      --show-console-output  Display the audit and audit fix result for individual modules
-
-TABLE FLAGS
-  --columns=<value>  Specify columns to display, comma-separated.
-  --csv              Output results in CSV format.
-  --filter=<value>   Filter rows by a column value (e.g., name=foo).
-  --no-header        Hide table headers in output.
-  --no-truncate      Prevent truncation of long text in columns.
-  --output=<option>  Specify output format: csv, json, or yaml.
-                     <options: csv|json|yaml>
-  --sort=<value>     Sort the table by a column. Use "-" for descending.
-
-DESCRIPTION
-  Perform audits and fix possible errors in the exported Contentstack data.
-
-EXAMPLES
-  $ csdx cm:stacks:audit:fix --copy-dir
-
-  $ csdx cm:stacks:audit:fix --report-path=<path> --copy-dir
-
-  $ csdx cm:stacks:audit:fix --report-path=<path> --copy-dir --csv
-
-  $ csdx cm:stacks:audit:fix --fix-only=reference,global_field --copy-dir
-
-  $ csdx cm:stacks:audit:fix --report-path=<path> --filter="name=<filter-value>"
-
-  $ csdx cm:stacks:audit:fix --report-path=<path> --modules=content-types --filter="name=<filter-value>" --copy-dir --copy-path=<path>
-```
-
-_See code: [@contentstack/cli-audit](https://github.com/contentstack/cli-plugins/blob/main/packages/contentstack-audit/src/commands/cm/stacks/audit/fix.ts)_
-
-## `csdx cm:stacks:bulk-am-assets`
-
-Bulk delete or move assets via CS Assets API. Loads asset UIDs from a JSON file `{ "uids": [...] }`; pass organization via `--org-uid`.
-
-```
-USAGE
-  $ csdx cm:stacks:bulk-am-assets --operation delete|move --space-uid <value> --org-uid <value> --asset-uids-file
-    <value> [--workspace <value>] [--locale <value>] [--target-folder-uid <value>] [-y]
-
-FLAGS
-  -y, --yes                        Skips interactive confirmation prompts and runs the command immediately.
-      --asset-uids-file=<value>    Path to UTF-8 JSON file: exactly `{ "uids": ["uid1", "uid2"] }`
-      --locale=<value>             Locale code for bulk delete only. Not applicable for move.
-      --operation=<option>         Operation: delete (CS Assets bulk delete) or move (CS Assets bulk move)
-                                   <options: delete|move>
-      --org-uid=<value>            Organization UID for CS Assets API (organization_uid header)
-      --space-uid=<value>          CS Assets space UID
-      --target-folder-uid=<value>  Destination CS Assets folder UID for bulk move. Use "root" for root folder.
-      --workspace=<value>          [default: main] CS Assets workspace query parameter
-
-DESCRIPTION
-  Bulk delete or move assets via CS Assets API.
-
-EXAMPLES
-  $ csdx cm:stacks:bulk-am-assets --operation delete --space-uid am123 --org-uid bltcOrg --locale en-us --asset-uids-file ./assets.json
-
-  $ csdx cm:stacks:bulk-am-assets --operation move --space-uid am123 --org-uid bltcOrg --target-folder-uid amFolder --asset-uids-file ./assets.json
-```
-
-_See code: [@contentstack/cli-bulk-operations](https://github.com/contentstack/cli-plugins/blob/main/packages/contentstack-bulk-operations/src/commands/cm/stacks/bulk-am-assets.ts)_
-
-## `csdx cm:stacks:bulk-assets`
-
-Bulk operations for assets (publish/unpublish/cross-publish)
-
-```
-USAGE
-  $ csdx cm:stacks:bulk-assets [-a <value>] [-k <value>] [--operation publish|unpublish] [--environments <value>...]
-    [--locales <value>...] [--source-env <value>] [--source-alias <value>] [--publish-mode bulk|single] [--branch
-    <value>] [-c <value>] [-y] [--retry-failed <value>] [--revert <value>] [--bulk-operation-file <value>]
-    [--folder-uid <value>]
-
-FLAGS
-  -a, --alias=<value>                Management token alias.
-  -c, --config=<value>               Path to a JSON configuration file.
-  -k, --stack-api-key=<value>        API key of the source stack.
-  -y, --yes                          Skip confirmation prompts.
-      --branch=<value>               [default: main] Branch name.
-      --bulk-operation-file=<value>  [default: bulk-operation] Folder path to store operation logs.
-      --environments=<value>...      Target environments (space-separated).
-      --folder-uid=<value>           UID of the Assets folder to publish from.
-      --locales=<value>...           Locale codes (space-separated).
-      --operation=<option>           Publish or unpublish.
-                                     <options: publish|unpublish>
-      --publish-mode=<option>        [default: bulk] Publish mode.
-                                     <options: bulk|single>
-      --retry-failed=<value>         Retry failed operations from a log file.
-      --revert=<value>               Revert publish operations from a log folder.
-      --source-alias=<value>         Delivery token alias for cross-publish source environment.
-      --source-env=<value>           Source environment for cross-publish.
-
-DESCRIPTION
-  Bulk operations for assets (publish/unpublish/cross-publish)
-
-EXAMPLES
-  $ csdx cm:stacks:bulk-assets --operation publish --environments dev,staging --locales en-us -k blt123
-
-  $ csdx cm:stacks:bulk-assets --operation unpublish --environments prod --locales en-us -a myAlias
-
-  $ csdx cm:stacks:bulk-assets --operation publish --source-env production --source-alias prod-delivery --environments staging --locales en-us -a myAlias
-
-  $ csdx cm:stacks:bulk-assets --retry-failed ./bulk-operation -a myAlias
-```
-
-_See code: [@contentstack/cli-bulk-operations](https://github.com/contentstack/cli-plugins/blob/main/packages/contentstack-bulk-operations/src/commands/cm/stacks/bulk-assets.ts)_
-
-## `csdx cm:stacks:bulk-entries`
-
-Bulk operations for entries (publish/unpublish/cross-publish)
-
-```
-USAGE
-  $ csdx cm:stacks:bulk-entries [-a <value>] [-k <value>] [--operation publish|unpublish] [--environments <value>...]
-    [--locales <value>...] [--source-env <value>] [--source-alias <value>] [--publish-mode bulk|single] [--branch
-    <value>] [-c <value>] [-y] [--retry-failed <value>] [--revert <value>] [--bulk-operation-file <value>]
-    [--content-types <value>...] [--filter draft|modified|non-localized|unpublished] [--include-variants]
-    [--api-version <value>]
-
-FLAGS
-  -a, --alias=<value>                Management token alias.
-  -c, --config=<value>               Path to a JSON configuration file.
-  -k, --stack-api-key=<value>        API key of the source stack.
-  -y, --yes                          Skip confirmation prompts.
-      --api-version=<value>          [default: 3.2] Content Management API version.
-      --branch=<value>               [default: main] Branch name.
-      --bulk-operation-file=<value>  [default: bulk-operation] Folder path to store operation logs.
-      --content-types=<value>...     Content type UIDs. If not provided, operates on all content types.
-      --environments=<value>...      Target environments (space-separated).
-      --filter=<option>              Filter entries by status.
-                                     <options: draft|modified|non-localized|unpublished>
-      --include-variants             Include entry variants in the bulk operation.
-      --locales=<value>...           Locale codes (space-separated).
-      --operation=<option>           Publish or unpublish.
-                                     <options: publish|unpublish>
-      --publish-mode=<option>        [default: bulk] Publish mode.
-                                     <options: bulk|single>
-      --retry-failed=<value>         Retry failed operations from a log file.
-      --revert=<value>               Revert publish operations from a log folder.
-      --source-alias=<value>         Delivery token alias for cross-publish source environment.
-      --source-env=<value>           Source environment for cross-publish.
-
-DESCRIPTION
-  Bulk operations for entries (publish/unpublish/cross-publish)
-
-EXAMPLES
-  $ csdx cm:stacks:bulk-entries --operation publish --environments dev --locales en-us -k blt123
-
-  $ csdx cm:stacks:bulk-entries --operation publish --content-types blog,article --environments dev --locales en-us -k blt123
-
-  $ csdx cm:stacks:bulk-entries --operation publish --content-types blog --source-env production --source-alias prod-delivery --environments staging --locales en-us -a myAlias
-
-  $ csdx cm:stacks:bulk-entries --operation publish --content-types blog --environments prod --locales en-us --filter modified -k blt123
-
-  $ csdx cm:stacks:bulk-entries --retry-failed ./bulk-operation
-
-  $ csdx cm:stacks:bulk-entries --revert ./bulk-operation
-```
-
-_See code: [@contentstack/cli-bulk-operations](https://github.com/contentstack/cli-plugins/blob/main/packages/contentstack-bulk-operations/src/commands/cm/stacks/bulk-entries.ts)_
-
-## `csdx cm:stacks:bulk-taxonomies`
-
-Publish taxonomies to environments and locales
-
-```
-USAGE
-  $ csdx cm:stacks:bulk-taxonomies [-a <value>] [-k <value>] [--operation publish|unpublish] [--environments <value>...]
-    [--locales <value>...] [--source-env <value>] [--source-alias <value>] [--publish-mode bulk|single] [--branch
-    <value>] [-c <value>] [-y] [--retry-failed <value>] [--revert <value>] [--bulk-operation-file <value>]
-    [--taxonomies <value>] [--api-version <value>]
-
-FLAGS
-  -a, --alias=<value>                Management token alias.
-  -c, --config=<value>               Path to a JSON configuration file.
-  -k, --stack-api-key=<value>        API key of the source stack.
-  -y, --yes                          Skip confirmation prompts.
-      --api-version=<value>          [default: 3.2] Content Management API version.
-      --branch=<value>               [default: main] Branch name.
-      --bulk-operation-file=<value>  [default: bulk-operation] Folder path to store operation logs.
-      --environments=<value>...      Target environments (space-separated).
-      --locales=<value>...           Locale codes (space-separated).
-      --operation=<option>           Publish or unpublish.
-                                     <options: publish|unpublish>
-      --publish-mode=<option>        [default: bulk] Publish mode.
-                                     <options: bulk|single>
-      --retry-failed=<value>         Retry failed operations from a log file.
-      --revert=<value>               Revert publish operations from a log folder.
-      --source-alias=<value>         Delivery token alias for cross-publish source environment.
-      --source-env=<value>           Source environment for cross-publish.
-      --taxonomies=<value>           Comma-separated taxonomy UIDs. If omitted, all taxonomies are included.
-
-DESCRIPTION
-  Publish taxonomies to environments and locales
-
-EXAMPLES
-  $ csdx cm:stacks:bulk-taxonomies --operation publish --environments dev,staging --locales en-us --taxonomies products_tax,brands_tax -k blt123
-
-  $ csdx cm:stacks:bulk-taxonomies --operation unpublish --environments prod --locales en-us --taxonomies my_taxonomy -a myAlias
-
-  $ csdx cm:stacks:bulk-taxonomies --operation publish --environments staging --locales en-us,fr-fr --taxonomies taxonomy_a -a myAlias
-```
-
-_See code: [@contentstack/cli-bulk-operations](https://github.com/contentstack/cli-plugins/blob/main/packages/contentstack-bulk-operations/src/commands/cm/stacks/bulk-taxonomies.ts)_
-
-## `csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`
-
-Clone data (structure/content or both) of a stack into another stack
-
-```
-USAGE
-  $ csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias
-    <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>]
-    [--destination-stack-api-key <value>] [--import-webhook-status disable|current]
-
-FLAGS
-  -c, --config=<value>                              Path for the external configuration
-  -n, --stack-name=<value>                          Provide a name for the new stack to store the cloned content.
-  -y, --yes                                         Force override all Marketplace prompts.
-      --destination-management-token-alias=<value>  Destination management token alias.
-      --destination-stack-api-key=<value>           Destination stack API key
-      --import-webhook-status=<option>              [default: disable] [default: disable] (optional) The status of the
-                                                    import webhook. <options: disable|current>
-                                                    <options: disable|current>
-      --skip-audit                                  (optional) Skips the audit fix that occurs during an import
-                                                    operation.
-      --source-branch=<value>                       Branch of the source stack.
-      --source-branch-alias=<value>                 Alias of Branch of the source stack.
-      --source-management-token-alias=<value>       Source management token alias.
-      --source-stack-api-key=<value>                Source stack API key
-      --target-branch=<value>                       Branch of the target stack.
-      --target-branch-alias=<value>                 Alias of Branch of the target stack.
-      --type=<option>                               Type of data to clone. You can select option a or b.
-                                                    a) Structure (all modules except entries & assets).
-                                                    b) Structure with content (all modules including entries & assets).
-
-                                                    <options: a|b>
-
-DESCRIPTION
-  Clone data (structure/content or both) of a stack into another stack
-  Use this plugin to automate the process of cloning a stack in few steps.
-
-
-ALIASES
-  $ csdx cm:stack-clone
-
-EXAMPLES
-  $ csdx cm:stacks:clone
-
-  $ csdx cm:stacks:clone --source-branch <source-branch-name> --target-branch <target-branch-name> --yes
-
-  $ csdx cm:stacks:clone --source-stack-api-key <apiKey> --destination-stack-api-key <apiKey>
-
-  $ csdx cm:stacks:clone --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias>
-
-  $ csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias>
-
-  $ csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias> --type <value a or b>
-```
-
-_See code: [@contentstack/cli-cm-clone](https://github.com/contentstack/cli-plugins/blob/main/packages/contentstack-clone/src/commands/cm/stacks/clone.ts)_
-
-## `csdx cm:stacks:export [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`
-
-Export content from a stack
-
-```
-USAGE
-  $ csdx cm:stacks:export [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>]
-    [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]
-
-FLAGS
-  -a, --alias=<value>
-      The management token alias of the source stack from which you will export content.
-
-  -c, --config=<value>
-      [optional] Path of the config
-
-  -d, --data-dir=<value>
-      The path or the location in your file system to store the exported content. For e.g., ./content
-
-  -k, --stack-api-key=<value>
-      API Key of the source stack
-
-  -y, --yes
-      [optional] Force override all Marketplace prompts.
-
-  --branch=<value>
-      [optional] The name of the branch where you want to export your content. If you don't mention the branch name, then
-      by default the content will be exported from all the branches of your stack.
-
-  --branch-alias=<value>
-      (Optional) The alias of the branch from which you want to export content.
-
-  --content-types=<value>...
-      [optional]  The UID of the content type(s) whose content you want to export. In case of multiple content types,
-      specify the IDs separated by spaces.
-
-  --module=<option>
-      [optional] Specific module name. If not specified, the export command will export all the modules from the stack.
-      The available modules are stack, assets, locales, environments, extensions, webhooks, global-fields, entries,
-      content-types, custom-roles, workflows, labels, marketplace-apps, taxonomies, personalize, and composable-studio.
-      <options: stack|assets|locales|environments|extensions|webhooks|global-fields|entries|content-types|custom-roles|wor
-      kflows|labels|marketplace-apps|taxonomies|personalize|composable-studio>
-
-  --secured-assets
-      [optional] Use this flag for assets that are secured.
-
-DESCRIPTION
-  Export content from a stack
-
-EXAMPLES
-  $ csdx cm:stacks:export --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>
-
-  $ csdx cm:stacks:export --config <path/to/config/dir>
-
-  $ csdx cm:stacks:export --alias <management_token_alias>
-
-  $ csdx cm:stacks:export --alias <management_token_alias> --data-dir <path/to/export/destination/dir>
-
-  $ csdx cm:stacks:export --alias <management_token_alias> --config <path/to/config/file>
-
-  $ csdx cm:stacks:export --module <single module name>
-
-  $ csdx cm:stacks:export --branch [optional] branch name
-```
-
-_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli-plugins/blob/main/packages/contentstack-export/src/commands/cm/stacks/export.ts)_
-
-## `csdx cm:stacks:import [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
-
-Import content from a stack
-
-```
-USAGE
-  $ csdx cm:stacks:import [--config <value>] [--stack-api-key <value>] [--data-dir <value>] [--alias <value>]
-    [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]
-
-FLAGS
-  -a, --alias=<value>
-      The management token of the destination stack where you will import the content.
-
-  -c, --config=<value>
-      [optional] The path of the configuration JSON file containing all the options for a single run.
-
-  -d, --data-dir=<value>
-      The path or the location in your file system where the content, you intend to import, is stored. For example, -d
-      "C:\Users\Name\Desktop\cli\content". If the export folder has branches involved, then the path should point till the
-      particular branch. For example, “-d "C:\Users\Name\Desktop\cli\content\branch_name"
-
-  -k, --stack-api-key=<value>
-      API Key of the target stack
-
-  -y, --yes
-      [optional] Force override all Marketplace prompts.
-
-  --backup-dir=<value>
-      [optional] Backup directory name when using specific module.
-
-  --branch=<value>
-      The name of the branch where you want to import your content. If you don't mention the branch name, then by default
-      the content will be imported to the main branch.
-
-  --branch-alias=<value>
-      Specify the branch alias where you want to import your content. If not specified, the content is imported into the
-      main branch by default.
-
-  --exclude-global-modules
-      Excludes the branch-independent module from the import operation.
-
-  --import-webhook-status=<option>
-      [default: disable] [default: disable] (optional) This webhook state keeps the same state of webhooks as the source
-      stack. <options: disable|current>
-      <options: disable|current>
-
-  --module=<option>
-      [optional] Specify the module to import into the target stack. If not specified, the import command will import all
-      the modules into the stack. The available modules are stack, assets, locales, environments, extensions, webhooks,
-      global-fields, entries, content-types, custom-roles, workflows, labels, marketplace-apps, taxonomies, personalize,
-      and composable-studio.
-      <options: stack|assets|locales|environments|extensions|webhooks|global-fields|entries|content-types|custom-roles|wor
-      kflows|labels|marketplace-apps|taxonomies|personalize|composable-studio>
-
-  --personalize-project-name=<value>
-      (optional) Provide a unique name for the Personalize project.
-
-  --replace-existing
-      Replaces the existing module in the target stack.
-
-  --skip-assets-publish
-      Skips asset publishing during the import process.
-
-  --skip-audit
-      Skips the audit fix that occurs during an import operation.
-
-  --skip-entries-publish
-      Skips entry publishing during the import process
-
-  --skip-existing
-      Skips the module exists warning messages.
-
-  --skip-taxonomy-publish
-      Skips taxonomy publishing during the import process.
-
-DESCRIPTION
-  Import content from a stack
-
-EXAMPLES
-  $ csdx cm:stacks:import --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>
-
-  $ csdx cm:stacks:import --config <path/of/config/dir>
-
-  $ csdx cm:stacks:import --module <single module name>
-
-  $ csdx cm:stacks:import --module <single module name> --backup-dir <backup dir>
-
-  $ csdx cm:stacks:import --alias <management_token_alias>
-
-  $ csdx cm:stacks:import --alias <management_token_alias> --data-dir <path/of/export/destination/dir>
-
-  $ csdx cm:stacks:import --alias <management_token_alias> --config <path/of/config/file>
-
-  $ csdx cm:stacks:import --branch <branch name>  --yes --skip-audit
-```
-
-_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli-plugins/blob/main/packages/contentstack-import/src/commands/cm/stacks/import.ts)_
-
-## `csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--module <value>...]`
-
-Helps to generate mappers and backup folder for importing (overwriting) specific modules
-
-```
-USAGE
-  $ csdx cm:stacks:import-setup [-k <value>] [-d <value>] [-a <value>] [--module <value>...]
-
-FLAGS
-  -a, --alias=<value>          The management token of the destination stack where you will import the content.
-  -d, --data-dir=<value>       The path or the location in your file system where the content, you intend to import, is
-                               stored. For example, -d "C:\Users\Name\Desktop\cli\content". If the export folder has
-                               branches involved, then the path should point till the particular branch. For example,
-                               “-d "C:\Users\Name\Desktop\cli\content\branch_name"
-  -k, --stack-api-key=<value>  API key of the target stack
-      --branch=<value>         The name of the branch where you want to import your content. If you don't mention the
-                               branch name, then by default the content will be imported to the main branch.
-      --branch-alias=<value>   Specify the branch alias where you want to import your content. If not specified, the
-                               content is imported into the main branch by default.
-      --module=<option>...     [optional] Specify the modules/module to import into the target stack. currently options
-                               are global-fields, content-types, entries
-                               <options: global-fields|content-types|entries>
-
-DESCRIPTION
-  Helps to generate mappers and backup folder for importing (overwriting) specific modules
-
-EXAMPLES
-  $ csdx cm:stacks:import-setup --stack-api-key <target_stack_api_key> --data-dir <path/of/export/destination/dir> --module content-types --module entries --branch <branch_name>
-```
-
-_See code: [@contentstack/cli-cm-import-setup](https://github.com/contentstack/cli-plugins/blob/main/packages/contentstack-import-setup/src/commands/cm/stacks/import-setup.ts)_
-
-## `csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`
-
-Contentstack migration script.
-
-```
-USAGE
-  $ csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>]
-    [--config <value>] [--multiple]
-
-FLAGS
-  -a, --alias=<value>          Use this flag to add the management token alias. You must use either the --alias flag or
-                               the --stack-api-key flag.
-  -k, --stack-api-key=<value>  Use this flag to add the API key of your stack. You must use either the --stack-api-key
-                               flag or the --alias flag.
-      --branch=<value>         Use this flag to add the branch name where you want to perform the migration. (target
-                               branch name)
-      --config=<value>...      [optional] Inline configuration, <key1>:<value1>. Passing an external configuration makes
-                               the script re-usable.
-      --config-file=<value>    [optional] Path of the JSON configuration file.
-      --file-path=<value>      Use this flag to provide the path of the file of the migration script.
-      --multiple               This flag helps you to migrate multiple content files in a single instance. Mention the
-                               folder path where your migration script files are stored.
-
-DESCRIPTION
-  Contentstack migration script.
-
-ALIASES
-  $ csdx cm:migration
-
-EXAMPLES
-  $ csdx cm:migration --file-path <migration/script/file/path> -k <api-key>
-
-  $ csdx cm:migration --file-path <migration/script/file/path> -k <api-key> --branch <target branch name>
-
-  $ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... --file-path <migration/script/file/path>
-
-  $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
-
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
-
-  $ csdx cm:migration --alias <management-token-alias> --file-path <migration/script/file/path>
-```
-
-_See code: [@contentstack/cli-migration](https://github.com/contentstack/cli-plugins/blob/main/packages/contentstack-migration/src/commands/cm/stacks/migration.ts)_
-
-## `csdx cm:stacks:seed [--repo <value>] [--org <value>] [--stack-api-key <value>] [--stack-name <value>] [-y] [--alias <value>] [--locale <value>]`
-
-Create a stack from existing content types, entries, assets, etc
-
-```
-USAGE
-  $ csdx cm:stacks:seed [--repo <value>] [--org <value>] [--stack-api-key <value>] [--stack-name <value>] [-y]
-    [--alias <value>] [--locale <value>]
-
-FLAGS
-  -a, --alias=<value>          Alias of the management token
-  -k, --stack-api-key=<value>  Provide stack API key to seed content to
-  -n, --stack-name=<value>     Name of a new stack that needs to be created.
-  -y, --yes                    [Optional] Skip the stack confirmation.
-      --org=<value>            Provide Organization UID to create a new stack
-      --repo=<value>           GitHub organization name or GitHub user name/repository name.
-
-DESCRIPTION
-  Create a stack from existing content types, entries, assets, etc
-
-EXAMPLES
-  $ csdx cm:stacks:seed
-
-  $ csdx cm:stacks:seed --repo "account"
-
-  $ csdx cm:stacks:seed --repo "account/repository"
-
-  $ csdx cm:stacks:seed --repo "account/repository" --stack-api-key "stack-api-key" //seed content into specific stack
-
-  $ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack in given org uid
-```
-
-_See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli-plugins/blob/main/packages/contentstack-seed/src/commands/cm/stacks/seed.ts)_
 
 ## `csdx config:get:base-branch`
 
@@ -1457,8 +545,8 @@ USAGE
   $ csdx config:set:ea-header [--header-alias <value>] [--header <value>]
 
 FLAGS
-  --header=<value>        (optional) Provide the Early Access header alias name.
-  --header-alias=<value>  (optional) Provide the Early Access header value.
+  --header=<value>        (optional) Provide the Early Access header value.
+  --header-alias=<value>  (optional) Provide a name (alias) for this Early Access header.
 
 DESCRIPTION
   Set Early Access header
@@ -1481,8 +569,8 @@ USAGE
   $ csdx config:set:early-access-header [--header-alias <value>] [--header <value>]
 
 FLAGS
-  --header=<value>        (optional) Provide the Early Access header alias name.
-  --header-alias=<value>  (optional) Provide the Early Access header value.
+  --header=<value>        (optional) Provide the Early Access header value.
+  --header-alias=<value>  (optional) Provide a name (alias) for this Early Access header.
 
 DESCRIPTION
   Set Early Access header
@@ -1598,12 +686,13 @@ Set region for CLI
 ```
 USAGE
   $ csdx config:set:region [REGION] [--cda <value> --cma <value> --ui-host <value> --name <value>] [--developer-hub
-    <value>] [--personalize <value>] [--launch <value>] [--studio <value>] [--cs-assets <value>]
+    <value>] [--personalize <value>] [--launch <value>] [--studio <value>] [--cs-assets <value>] [--auth-api <value>]
 
 ARGUMENTS
   [REGION]  Name for the region
 
 FLAGS
+  --auth-api=<value>       Custom host to set for Auth API
   --cda=<value>            Custom host to set for content delivery API, if this flag is added then cma, ui-host and name
                            flags are required
   --cma=<value>            Custom host to set for content management API, , if this flag is added then cda, ui-host and
@@ -1649,7 +738,7 @@ EXAMPLES
 
   $ csdx config:set:region --cma <custom_cma_host_url> --cda <custom_cda_host_url> --ui-host <custom_ui_host_url> --name "India" --cs-assets <cs_assets_url>
 
-  $ csdx config:set:region --cda <custom_cda_host_url> --cma <custom_cma_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url> --launch <custom_launch_url> --personalize <custom_personalize_url> --studio <custom_studio_url>
+  $ csdx config:set:region --cda <custom_cda_host_url> --cma <custom_cma_host_url> --ui-host <custom_ui_host_url> --name "India" --developer-hub <custom_developer_hub_url> --launch <custom_launch_url> --personalize <custom_personalize_url> --studio <custom_studio_url> --cs-assets <cs_assets_url>
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/region.ts)_
@@ -1673,14 +762,6 @@ DESCRIPTION
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/6.2.53/src/commands/help.ts)_
-
-> **Note:** The `launch` commands are provided by the opt-in [`@contentstack/cli-launch`](https://github.com/contentstack/launch-cli) plugin and are **not bundled** with `@contentstack/cli`. Install the plugin before using them:
->
-> ```sh-session
-> $ csdx plugins:add @contentstack/cli-launch
-> ```
->
-> For the full list of `launch` commands and their flags, see the [`@contentstack/cli-launch` README](https://github.com/contentstack/launch-cli#readme).
 
 ## `csdx login`
 
@@ -1759,7 +840,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.82/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.84/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:add PLUGIN`
 
@@ -1833,7 +914,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.82/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.84/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN`
 
@@ -1882,7 +963,7 @@ EXAMPLES
     $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.82/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.84/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PATH`
 
@@ -1913,7 +994,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.82/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.84/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:remove [PLUGIN]`
 
@@ -1954,7 +1035,7 @@ FLAGS
   --reinstall  Reinstall all plugins after uninstalling.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.82/src/commands/plugins/reset.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.84/src/commands/plugins/reset.ts)_
 
 ## `csdx plugins:uninstall [PLUGIN]`
 
@@ -1982,7 +1063,7 @@ EXAMPLES
   $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.82/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.84/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:unlink [PLUGIN]`
 
@@ -2026,7 +1107,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.82/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.84/src/commands/plugins/update.ts)_
 
 ## `csdx whoami`
 
