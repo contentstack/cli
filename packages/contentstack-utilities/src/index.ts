@@ -88,7 +88,7 @@ export {
   PrimaryProcessStrategy,
   ProgressStrategyRegistry,
   CustomProgressStrategy,
-  DefaultProgressStrategy
+  DefaultProgressStrategy,
 } from './progress-summary';
 
 export * from './feature-status';
