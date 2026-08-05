@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.21.0",
+  "version": "2.0.0-beta.15",
   "author": "Contentstack",
   "scripts": {
     "build": "pnpm compile && oclif manifest && oclif readme",
@@ -14,8 +14,8 @@
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
-    "@contentstack/cli-command": "~1.8.5",
-    "@contentstack/cli-utilities": "~1.19.0",
+    "@contentstack/cli-command": "~2.0.0-beta.11",
+    "@contentstack/cli-utilities": "~2.0.0-beta.12",
     "@contentstack/utils": "~1.9.1",
     "@oclif/core": "^4.11.4"
   },
@@ -29,15 +29,15 @@
     "@types/chai": "^4.3.20",
     "@types/mocha": "^8.2.3",
     "@types/node": "^14.18.63",
-    "@types/sinon": "^21.0.0",
+    "@types/sinon": "^21.0.1",
     "chai": "^4.5.0",
     "eslint": "^10.5.0",
-    "eslint-config-oclif": "^6.0.62",
+    "eslint-config-oclif": "^6.0.166",
     "eslint-config-oclif-typescript": "^3.1.14",
     "mocha": "10.8.2",
     "nyc": "^15.1.0",
     "oclif": "^4.23.8",
-    "sinon": "^21.0.1",
+    "sinon": "^21.1.2",
     "ts-node": "^10.9.2",
     "typescript": "^4.9.5"
   },
@@ -90,5 +90,9 @@
       "config:remove:rate-limit": "RLRM"
     }
   },
-  "repository": "contentstack/cli"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/contentstack/cli.git",
+    "directory": "packages/contentstack-config"
+  }
 }

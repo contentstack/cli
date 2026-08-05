@@ -10,7 +10,7 @@ export class RateLimitHandler {
   }
 
   async setRateLimit(config) {
-    const rateLimit = configHandler.get('rateLimit');
+    const rateLimit = configHandler.get('rateLimit') || {};
     rateLimit.default = { ...defaultRalteLimitConfig };
 
     if (config.default) {
@@ -66,7 +66,10 @@ export class RateLimitHandler {
         }
       });
     } catch (error) {
-      throw new Error(error);
+      if (error instanceof Error) {
+        throw new Error(`Error: ${error.message}`);
+      }
+      throw new Error(String(error));
     }
   }
 }
