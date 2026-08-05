@@ -44,8 +44,6 @@ For complete documentation, visit the [Contentstack CLI docs](https://www.conten
 | [`@contentstack/cli-audit`](https://www.npmjs.com/package/@contentstack/cli-audit) | Audit and fix content type and entry issues |
 | [`@contentstack/cli-launch`](https://www.npmjs.com/package/@contentstack/cli-launch) | Deploy and manage Contentstack Launch projects |
 
-> For new bulk workflows, prefer [`@contentstack/cli-bulk-operations`](https://www.npmjs.com/package/@contentstack/cli-bulk-operations) — it replaces `cli-cm-bulk-publish` with optimized, dedicated commands.
-
 ## Installable Plugins
 
 These are Contentstack-owned plugins not bundled in the default install. Add any of them with:
@@ -57,14 +55,11 @@ csdx plugins:install <plugin-name>
 | Plugin | Description |
 |--------|-------------|
 | [`@contentstack/apps-cli`](https://www.npmjs.com/package/@contentstack/apps-cli) | Build, deploy, and manage Contentstack apps |
-| [`contentstack-cli-tsgen`](https://www.npmjs.com/package/contentstack-cli-tsgen) `*` | Generate TypeScript typings from a stack's content types |
-| [`contentstack-cli-content-type`](https://www.npmjs.com/package/contentstack-cli-content-type) `*` | Retrieve and inspect content types in a stack |
-| [`@contentstack/cli-bulk-operations`](https://www.npmjs.com/package/@contentstack/cli-bulk-operations) | Run bulk operations across stack content |
+| [`contentstack-cli-tsgen`](https://www.npmjs.com/package/contentstack-cli-tsgen) | Generate TypeScript typings from a stack's content types |
+| [`contentstack-cli-content-type`](https://www.npmjs.com/package/contentstack-cli-content-type) | Retrieve and inspect content types in a stack |
 | [`@contentstack/cli-cm-regex-validate`](https://www.npmjs.com/package/@contentstack/cli-cm-regex-validate) | Validate regex properties on content type and global fields |
 | [`@contentstack/cli-external-migrate`](https://www.npmjs.com/package/@contentstack/cli-external-migrate) | Migrate content from an external source into Contentstack |
 | [`@contentstack/cli-cm-export-query`](https://www.npmjs.com/package/@contentstack/cli-cm-export-query) | Export stack content using query filters |
-
-`*` Published before the `@contentstack/` npm scope was adopted — the package name is correct.
 
 ## License
 
