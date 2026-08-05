@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-config/1.20.5 darwin-arm64 node-v22.13.1
+@contentstack/cli-config/1.21.1 darwin-arm64 node-v24.18.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -316,8 +316,8 @@ USAGE
   $ csdx config:set:ea-header [--header-alias <value>] [--header <value>]
 
 FLAGS
-  --header=<value>        (optional) Provide the Early Access header alias name.
-  --header-alias=<value>  (optional) Provide the Early Access header value.
+  --header=<value>        (optional) Provide the Early Access header value.
+  --header-alias=<value>  (optional) Provide a name (alias) for this Early Access header.
 
 DESCRIPTION
   Set Early Access header
@@ -340,8 +340,8 @@ USAGE
   $ csdx config:set:early-access-header [--header-alias <value>] [--header <value>]
 
 FLAGS
-  --header=<value>        (optional) Provide the Early Access header alias name.
-  --header-alias=<value>  (optional) Provide the Early Access header value.
+  --header=<value>        (optional) Provide the Early Access header value.
+  --header-alias=<value>  (optional) Provide a name (alias) for this Early Access header.
 
 DESCRIPTION
   Set Early Access header
