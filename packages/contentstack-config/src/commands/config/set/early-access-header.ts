@@ -6,8 +6,8 @@ export default class SetEarlyAccessHeaderCommand extends Command {
   static description = 'Set Early Access header';
   static aliases: string[] = ['config:set:ea-header'];
   static flags: FlagInput = {
-    'header-alias': flags.string({ description: '(optional) Provide the Early Access header value.' }),
-    header: flags.string({ description: '(optional) Provide the Early Access header alias name.' }),
+    'header-alias': flags.string({ description: '(optional) Provide a name (alias) for this Early Access header.' }),
+    header: flags.string({ description: '(optional) Provide the Early Access header value.' }),
   };
   static examples: string[] = [
     '$ <%= config.bin %> <%= command.id %>',
