@@ -27,20 +27,20 @@ For complete documentation, visit the [Contentstack CLI docs](https://www.conten
 
 ## Bundled Plugins
 
-| Plugin | Description |
-|--------|-------------|
-| [`@contentstack/cli-auth`](https://www.npmjs.com/package/@contentstack/cli-auth) | Authentication — login, logout, token management |
-| [`@contentstack/cli-config`](https://www.npmjs.com/package/@contentstack/cli-config) | Region and early-access header configuration |
-| [`@contentstack/cli-cm-import`](https://www.npmjs.com/package/@contentstack/cli-cm-import) | Import stacks and modules into Contentstack |
-| [`@contentstack/cli-cm-export`](https://www.npmjs.com/package/@contentstack/cli-cm-export) | Export stacks and modules from Contentstack |
-| [`@contentstack/cli-cm-seed`](https://www.npmjs.com/package/@contentstack/cli-cm-seed) | Seed a stack from a GitHub repository |
-| [`@contentstack/cli-cm-bootstrap`](https://www.npmjs.com/package/@contentstack/cli-cm-bootstrap) | Bootstrap a new Contentstack project |
-| [`@contentstack/cli-cm-export-to-csv`](https://www.npmjs.com/package/@contentstack/cli-cm-export-to-csv) | Export entries, taxonomies, terms, and org users to CSV |
-| [`@contentstack/cli-cm-clone`](https://www.npmjs.com/package/@contentstack/cli-cm-clone) | Clone a stack to another stack |
-| [`@contentstack/cli-migration`](https://www.npmjs.com/package/@contentstack/cli-migration) | Run stack migration scripts |
-| [`@contentstack/cli-cm-branches`](https://www.npmjs.com/package/@contentstack/cli-cm-branches) | Branch management — create, diff, and merge |
-| [`@contentstack/cli-audit`](https://www.npmjs.com/package/@contentstack/cli-audit) | Audit and fix content type and entry issues |
-| [`@contentstack/cli-bulk-operations`](https://www.npmjs.com/package/@contentstack/cli-bulk-operations) | Bulk operations across stack content |
+| Plugin | Description | Docs |
+|--------|-------------|------|
+| [`@contentstack/cli-auth`](https://www.npmjs.com/package/@contentstack/cli-auth) | Authentication — login, logout, token management | [Docs](https://www.contentstack.com/docs/headless-cms/cli-authentication) |
+| [`@contentstack/cli-config`](https://www.npmjs.com/package/@contentstack/cli-config) | Region and early-access header configuration | [Docs](https://www.contentstack.com/docs/headless-cms/configure-regions-in-the-cli) |
+| [`@contentstack/cli-cm-import`](https://www.npmjs.com/package/@contentstack/cli-cm-import) | Import stacks and modules into Contentstack | [Docs](https://www.contentstack.com/docs/headless-cms/import-content-using-the-cli) |
+| [`@contentstack/cli-cm-export`](https://www.npmjs.com/package/@contentstack/cli-cm-export) | Export stacks and modules from Contentstack | [Docs](https://www.contentstack.com/docs/headless-cms/export-content-using-the-cli) |
+| [`@contentstack/cli-cm-seed`](https://www.npmjs.com/package/@contentstack/cli-cm-seed) | Seed a stack from a GitHub repository | [Docs](https://www.contentstack.com/docs/headless-cms/import-content-using-the-seed-command) |
+| [`@contentstack/cli-cm-bootstrap`](https://www.npmjs.com/package/@contentstack/cli-cm-bootstrap) | Bootstrap a new Contentstack project | — |
+| [`@contentstack/cli-cm-export-to-csv`](https://www.npmjs.com/package/@contentstack/cli-cm-export-to-csv) | Export entries, taxonomies, terms, and org users to CSV | [Docs](https://www.contentstack.com/docs/headless-cms/export-content-to-csv-file/) |
+| [`@contentstack/cli-cm-clone`](https://www.npmjs.com/package/@contentstack/cli-cm-clone) | Clone a stack to another stack | [Docs](https://www.contentstack.com/docs/headless-cms/cloning-a-stack) |
+| [`@contentstack/cli-migration`](https://www.npmjs.com/package/@contentstack/cli-migration) | Run stack migration scripts | [Docs](https://www.contentstack.com/docs/headless-cms/migrate-your-content-using-the-cli-migration-command/) |
+| [`@contentstack/cli-cm-branches`](https://www.npmjs.com/package/@contentstack/cli-cm-branches) | Branch management — create, diff, and merge | [Docs](https://www.contentstack.com/docs/headless-cms/compare-and-merge-branches-using-the-cli/) |
+| [`@contentstack/cli-audit`](https://www.npmjs.com/package/@contentstack/cli-audit) | Audit and fix content type and entry issues | [Docs](https://www.contentstack.com/docs/headless-cms/audit-plugin) |
+| [`@contentstack/cli-bulk-operations`](https://www.npmjs.com/package/@contentstack/cli-bulk-operations) | Bulk operations across stack content | — |
 
 ## Installable Plugins
 
@@ -50,15 +50,15 @@ These are Contentstack-owned plugins not bundled in the default install. Add any
 csdx plugins:install <plugin-name>
 ```
 
-| Plugin | Description |
-|--------|-------------|
-| [`@contentstack/apps-cli`](https://www.npmjs.com/package/@contentstack/apps-cli) | Build, deploy, and manage Contentstack apps |
-| [`contentstack-cli-tsgen`](https://www.npmjs.com/package/contentstack-cli-tsgen) | Generate TypeScript typings from a stack's content types |
-| [`contentstack-cli-content-type`](https://www.npmjs.com/package/contentstack-cli-content-type) | Retrieve and inspect content types in a stack |
-| [`@contentstack/cli-launch`](https://www.npmjs.com/package/@contentstack/cli-launch) | Deploy and manage Contentstack Launch projects |
-| [`@contentstack/cli-cm-regex-validate`](https://www.npmjs.com/package/@contentstack/cli-cm-regex-validate) | Validate regex properties on content type and global fields |
-| [`@contentstack/cli-external-migrate`](https://www.npmjs.com/package/@contentstack/cli-external-migrate) | Migrate content from an external source into Contentstack |
-| [`@contentstack/cli-cm-export-query`](https://www.npmjs.com/package/@contentstack/cli-cm-export-query) | Export stack content using query filters |
+| Plugin | Description | Docs |
+|--------|-------------|------|
+| [`@contentstack/apps-cli`](https://www.npmjs.com/package/@contentstack/apps-cli) | Build, deploy, and manage Contentstack apps | — |
+| [`contentstack-cli-tsgen`](https://www.npmjs.com/package/contentstack-cli-tsgen) | Generate TypeScript typings from a stack's content types | — |
+| [`contentstack-cli-content-type`](https://www.npmjs.com/package/contentstack-cli-content-type) | Retrieve and inspect content types in a stack | — |
+| [`@contentstack/cli-launch`](https://www.npmjs.com/package/@contentstack/cli-launch) | Deploy and manage Contentstack Launch projects | [Docs](https://www.contentstack.com/docs/headless-cms/cli-for-launch/) |
+| [`@contentstack/cli-cm-regex-validate`](https://www.npmjs.com/package/@contentstack/cli-cm-regex-validate) | Validate regex properties on content type and global fields | — |
+| [`@contentstack/cli-external-migrate`](https://www.npmjs.com/package/@contentstack/cli-external-migrate) | Migrate content from an external source into Contentstack | — |
+| [`@contentstack/cli-cm-export-query`](https://www.npmjs.com/package/@contentstack/cli-cm-export-query) | Export stack content using query filters | — |
 
 ## License
 
