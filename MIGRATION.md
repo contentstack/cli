@@ -372,7 +372,7 @@ Several short-form command aliases that worked in V1 no longer exist in V2. Runn
 | `csdx audit` | `csdx cm:stacks:audit` |
 | `csdx audit:fix` | `csdx cm:stacks:audit:fix` |
 
-> ✅ **Exception:** `csdx cm:migration` is the one V1 alias that **survived** — it still works in V2.
+> ❌ **Note:** `csdx cm:migration` was also removed in V2 — use `csdx cm:stacks:migration` instead.
 
 **Before (1.x.x):**
 ```bash
@@ -518,7 +518,7 @@ csdx config:set:log --no-show-console-logs
 |---|---|
 | `--appName` / `-a` | `--app-name` |
 | `--directory` / `-d` | `--project-dir` |
-| `--appType` / `-s` | `--app-type` |
+| `--appType` / `-s` | *(removed — no replacement needed)* |
 
 **Removed `--app-name` values (13 total):**
 
@@ -561,20 +561,21 @@ csdx cm:bootstrap --appName reactjs --directory ./myapp --appType sampleapp
 csdx cm:bootstrap --app-name compass-app --project-dir ./myapp
 ```
 
-**Migration Action:** Replace removed `--app-name` values with one of the 8 valid V2 app names. Update `--appName` → `--app-name`, `--directory` → `--project-dir`, `--appType` → `--app-type`.
+**Migration Action:** Replace removed `--app-name` values with one of the 8 valid V2 app names. Update `--appName` → `--app-name`, `--directory` → `--project-dir`. Remove any `--appType` / `-s` usage — the flag no longer exists and app type is hardcoded internally.
 
 ---
 
-### 17. 🌱 Seed Stack List Is Now Curated (4 Stacks Only)
+### 17. 🌱 Seed Stack List Is Now Curated (3 Stacks Only)
 
 **What Changed:**
-In V1, running `csdx cm:stacks:seed` without `--repo` triggered a live GitHub API search and presented all matching Contentstack repositories. In V2, the list is fixed — only 4 curated repos are shown in the interactive picker.
+In V1, running `csdx cm:stacks:seed` without `--repo` triggered a live GitHub API search and presented all matching Contentstack repositories. In V2, the list is fixed — only 3 curated repos are shown in the interactive picker.
 
 **V2 curated list:**
 1. `contentstack/kickstart-stack-seed` — Kickstart stack seed
 2. `contentstack/kickstart-veda-seed` — Kickstart Veda
 3. `contentstack/compass-starter-stack` — Compass starter stack
-4. `contentstack/stack-starter-app` — Starter app
+
+> **Note:** `contentstack/stack-starter-app` was removed from the curated list. If you need it, pass it directly via `--repo contentstack/stack-starter-app`.
 
 If you previously relied on the interactive list to discover repos, those repos no longer appear. Any script that passed a repo name not in this list via the interactive prompt will now time out or fail.
 
