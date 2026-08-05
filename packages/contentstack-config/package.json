@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.21.0",
+  "version": "1.21.1",
   "author": "Contentstack",
   "scripts": {
     "build": "pnpm compile && oclif manifest && oclif readme",
