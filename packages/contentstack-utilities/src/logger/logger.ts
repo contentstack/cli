@@ -63,7 +63,7 @@ export default class Logger {
           winston.format.printf((info) => {
             // Apply minimal redaction for files (debugging info preserved)
             const redactedInfo = this.redact(info, false);
-            return JSON.stringify(redactedInfo);
+            return this.safeStringify(redactedInfo);
           }),
         ),
       }),
@@ -75,7 +75,7 @@ export default class Logger {
       const logConfig = configHandler.get('log') || {};
       const currentModule = logConfig.progressSupportedModule;
       const hasProgressSupport = currentModule && PROGRESS_SUPPORTED_MODULES.includes(currentModule);
-      
+
       if (hasProgressSupport) {
         // Plugin has progress bars - respect user's explicit setting, or default to false (show progress bars)
         showConsoleLogs = logConfig.showConsoleLogs ?? false;
@@ -143,6 +143,26 @@ export default class Logger {
       return copy;
     } catch {
       return info;
+    }
+  }
+
+  /**
+   * Stringifies a log entry without throwing on circular references.
+   * `redact()` can fall back to the original (still-circular) object when
+   * cloning fails, so this must never assume the input is cycle-free.
+   */
+  private safeStringify(value: any): string {
+    const seen = new WeakSet();
+    try {
+      return JSON.stringify(value, (_key, val) => {
+        if (typeof val === 'object' && val !== null) {
+          if (seen.has(val)) return '[Circular]';
+          seen.add(val);
+        }
+        return val;
+      });
+    } catch {
+      return JSON.stringify({ level: value?.level, message: value?.message ?? '[Unserializable log entry]' });
     }
   }
 
@@ -215,9 +235,12 @@ export default class Logger {
       this.loggers.error.error(logPayload);
     }
 
-    // For console, use debug level if hidden, otherwise error level
+    // For console, use debug level if hidden, otherwise error level. Each level's
+    // winston logger instance bundles both the file and console transports, so only
+    // write again here when the target differs from the one already written above —
+    // otherwise this would duplicate both the console line and the file entry.
     const consoleLevel: LogType = params.hidden ? 'debug' : 'error';
-    if (this.shouldLog(consoleLevel, 'console')) {
+    if (consoleLevel !== 'error' && this.shouldLog(consoleLevel, 'console')) {
       this.loggers[consoleLevel].error(logPayload);
     }
   }
