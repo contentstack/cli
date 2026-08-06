@@ -1,5 +1,9 @@
 fileignoreconfig:
 
 - filename: pnpm-lock.yaml
-  checksum: 3d5920821aca485d93dc90dc2006bb81b077344b5f5fd6487002d8b4222cff09
+  checksum: 98cc0f62b09ea6768f3a20152860a327722a92efaa372acfc7d37bdd2afd014e
+- filename: packages/contentstack/README.md
+  checksum: df0892cbcf3f04972161b30a1a0ef8844a2682ce8a3270f2911909e7789ad8d7
+- filename: packages/contentstack-utilities/src/logger/logger.ts
+  checksum: 8c960b88f59f2efd233e7e00fb69dfb90e6eccf52e7253d144d4e20ff72a6906
   version: '1.0'
