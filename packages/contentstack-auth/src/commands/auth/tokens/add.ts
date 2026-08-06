@@ -50,12 +50,6 @@ export default class TokensAddCommand extends BaseCommand<typeof TokensAddComman
       description: 'Add the token name',
       env: 'TOKEN',
     }),
-    branch: flags.string({
-      required: false,
-      multiple: false,
-      description: 'Branch name',
-      hidden: true,
-    }),
   };
 
   static usage =
