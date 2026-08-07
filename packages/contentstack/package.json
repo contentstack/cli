@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli",
   "description": "Command-line tool (CLI) to interact with Contentstack",
-  "version": "2.0.0-beta.30",
+  "version": "2.0.0",
   "author": "Contentstack",
   "bin": {
     "csdx": "./bin/run.js"
@@ -59,20 +59,20 @@
     }
   },
   "devDependencies": {
-    "@oclif/test": "^4.1.18",
+    "@oclif/test": "^4.1.20",
     "@types/chai": "^4.3.20",
     "@types/mocha": "^10.0.10",
     "@types/node": "^18.19.130",
     "@types/semver": "^7.7.1",
-    "@types/sinon": "^21.0.0",
+    "@types/sinon": "^21.0.1",
     "chai": "^4.5.0",
-    "eslint": "^10.5.0",
-    "eslint-config-oclif": "^6.0.137",
+    "eslint": "^10.6.0",
+    "eslint-config-oclif": "^6.0.175",
     "eslint-config-oclif-typescript": "^3.1.14",
     "mocha": "10.8.2",
     "nock": "^13.5.6",
     "nyc": "^15.1.0",
-    "oclif": "^4.23.0",
+    "oclif": "^4.23.27",
     "rimraf": "^5.0.10",
     "shelljs": "^0.10.0",
     "sinon": "^21.1.2",
