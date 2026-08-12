@@ -43,7 +43,7 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack/package.json
-          tag: v1
+          tag: v1-latest
 
       - name: Create Core Production Release
         id: create_release

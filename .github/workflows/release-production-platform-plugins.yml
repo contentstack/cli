@@ -43,7 +43,7 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-utilities/package.json
-          tag: v1
+          tag: v1-latest
 
       # Command
       - name: Publishing command (Production)
@@ -51,7 +51,7 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-command/package.json
-          tag: v1
+          tag: v1-latest
 
       # Config
       - name: Publishing config (Production)
@@ -59,7 +59,7 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-config/package.json
-          tag: v1
+          tag: v1-latest
 
       # Auth
       - name: Publishing auth (Production)
@@ -67,4 +67,4 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-auth/package.json
-          tag: v1
+          tag: v1-latest
