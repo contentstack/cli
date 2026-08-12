@@ -60,13 +60,22 @@ function createSessionMetadataFile(sessionPath: string, metadata: Record<string,
   }
 }
 
+// Cache session path for the process so multiple callers (e.g. Logger's 5 level
+// loggers, export/import command at end, completeProgressWithMessage per module)
+// get one folder instead of many.
+let cachedSessionPath: string | null = null;
+
 /**
  * Get the session-based log path for date-organized logging
  * Structure: {basePath}/{YYYY-MM-DD}/{command}-{YYYYMMDD-HHMMSS}-{sessionId}/
- * 
+ *
  * @returns The session-specific log directory path
  */
 export function getSessionLogPath(): string {
+  if (cachedSessionPath) {
+    return cachedSessionPath;
+  }
+
   // Get base log path
   const basePath = getLogPath();
 
@@ -115,6 +124,15 @@ export function getSessionLogPath(): string {
     createSessionMetadataFile(sessionPath, metadata);
   }
 
+  cachedSessionPath = sessionPath;
   return sessionPath;
+}
+
+/**
+ * Clear the cached session path. Used by tests so each test gets a fresh path.
+ * Not needed in normal CLI usage (one process = one command = one cache).
+ */
+export function clearSessionLogPathCache(): void {
+  cachedSessionPath = null;
 }
 

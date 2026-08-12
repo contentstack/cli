@@ -129,9 +129,9 @@ class UserConfig {
    */
   sanitizeRegionObject(regionObject) {
     // endpoints is the single source of truth — every friendly field (cma, cda, ...,
-    // authUrl) is derived from it below via buildRegionFromEndpoints, same as named
-    // regions. Falls back to synthesizing endpoints from the individual raw fields
-    // when the caller didn't supply one directly.
+    // auth, csAssetsUrl) is derived from it below via buildRegionFromEndpoints, same
+    // as named regions. Falls back to synthesizing endpoints from the individual raw
+    // fields when the caller didn't supply one directly.
     const endpoints = regionObject['endpoints'] ?? {
       contentManagement: regionObject.cma,
       contentDelivery: regionObject.cda,
@@ -140,6 +140,7 @@ class UserConfig {
       launch: regionObject['launchHubUrl'],
       personalizeManagement: regionObject['personalizeUrl'],
       composableStudio: regionObject['composableStudioUrl'],
+      assetManagement: regionObject['csAssetsUrl'],
       auth: regionObject['authUrl'],
     };
 

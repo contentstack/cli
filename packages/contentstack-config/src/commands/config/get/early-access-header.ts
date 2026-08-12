@@ -8,9 +8,9 @@ export default class GetEarlyAccessHeaderCommand extends Command {
 
   async run() {
     try {
-      let config = configHandler.get(`earlyAccessHeaders`);
+      const config = configHandler.get(`earlyAccessHeaders`);
       if (config && Object.keys(config).length > 0) {
-        let tableData = Object.keys(config).map((key) => ({
+        const tableData = Object.keys(config).map((key) => ({
           ['Alias']: key,
           ['Early access header']: config[key],
         }));

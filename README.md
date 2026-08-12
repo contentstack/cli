@@ -21,7 +21,7 @@ CLI supports content management scripts through which you can perform the follow
 ## Installing CLI
 ### Prerequisites
 Contentstack account
-Node.js version 16 or above
+Node.js version 22 or above
 
 ### Installation
 To install CLI on your system, run the below command in your terminal:
@@ -31,6 +31,18 @@ npm install -g @contentstack/cli
 ```
 
 To verify the installation, run `csdx` in the command window.
+
+## Migration Guide
+
+If you're upgrading from CLI 1.x to 2.x, please refer to our comprehensive [Migration Guide](./MIGRATION.md) for:
+
+- **Breaking changes** and new default behaviors
+- **Step-by-step migration instructions**
+- **New features** like TypeScript module support and Progress Manager UI
+- **Command syntax updates** and configuration changes
+- **Troubleshooting tips** for common migration issues
+
+📖 **[View Migration Guide →](./MIGRATION.md)**
 
 ## Usage
 After the successful installation of CLI, use the `--help` parameter to display the help section of the CLI. You can even combine this parameter with a specific command to get the help section of that command.
@@ -42,7 +54,7 @@ $ csdx --help
 ## Namespaces
 **auth**: To perform [authentication-related](/packages/contentstack-auth) activities
 
-**cm**: To perform content management activities such as [bulk publish](/packages/contentstack-bulk-publish), [import](/packages/contentstack-import), and [export](/packages/contentstack-export), [export-to-csv] (/packages/contentstack-export-to-csv), [seed] (/packages/contentstack-seed)
+**cm**: To perform content management activities such as [bulk operations](/packages/contentstack-bulk-operations), [import](/packages/contentstack-import), and [export](/packages/contentstack-export), [export-to-csv](/packages/contentstack-export-to-csv), [seed](/packages/contentstack-seed)
 
 **help**: To list the helpful commands in CLI
 
@@ -50,8 +62,8 @@ $ csdx --help
 
 ## Documentation
 
-To get a more detailed documentation for every command, visit the [CLI section](https://www.contentstack.com/docs/developers/cli) in our docs.
+To get a more detailed documentation for every command, visit the [CLI section](https://www.contentstack.com/docs/headless-cms/cli) in our docs.
 
 ## Useful Plugins
 
-- [Generate TypeScript typings from a Stack](https://github.com/Contentstack-Solutions/contentstack-cli-tsgen)
+- [Generate TypeScript typings from a Stack](https://github.com/contentstack/cli-plugins/tree/main/packages/contentstack-cli-tsgen)

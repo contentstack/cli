@@ -1,8 +1,8 @@
 # @contentstack/cli-auth
 
-It is Contentstack’s CLI plugin to perform authentication-related activities. To get started with authentication, refer to the [CLI’s Authentication documentation](https://www.contentstack.com/docs/developers/cli/authentication)
+It is Contentstack’s CLI plugin to perform authentication-related activities. To get started with authentication, refer to the [CLI’s Authentication documentation](https://www.contentstack.com/docs/headless-cms/cli/authentication)
 
-[![License](https://img.shields.io/npm/l/@contentstack/cli-auth)](https://github.com/contentstack/cli/blob/main/LICENSE)
+[![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
 * [@contentstack/cli-auth](#contentstackcli-auth)
@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-auth/1.8.6 darwin-arm64 node-v24.18.0
+@contentstack/cli-auth/2.0.0 darwin-arm64 node-v22.21.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -33,11 +33,11 @@ USAGE
 * [`csdx auth:logout`](#csdx-authlogout)
 * [`csdx auth:tokens`](#csdx-authtokens)
 * [`csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]`](#csdx-authtokensadd--a-value---delivery---management--e-value--k-value--y---token-value)
+* [`csdx auth:tokens:list`](#csdx-authtokenslist)
 * [`csdx auth:tokens:remove`](#csdx-authtokensremove)
 * [`csdx auth:whoami`](#csdx-authwhoami)
 * [`csdx login`](#csdx-login)
 * [`csdx logout`](#csdx-logout)
-* [`csdx tokens`](#csdx-tokens)
 * [`csdx whoami`](#csdx-whoami)
 
 ## `csdx auth:login`
@@ -102,7 +102,7 @@ _See code: [src/commands/auth/logout.ts](https://github.com/contentstack/cli/blo
 
 ## `csdx auth:tokens`
 
-Lists all existing tokens added to the session
+Manage authentication tokens for API access
 
 ```
 USAGE
@@ -120,13 +120,14 @@ TABLE FLAGS
   --sort=<value>     Sort the table by a column. Use "-" for descending.
 
 DESCRIPTION
-  Lists all existing tokens added to the session
-
-ALIASES
-  $ csdx tokens
+  Manage authentication tokens for API access
 
 EXAMPLES
-  $ csdx auth:tokens
+  $ csdx auth:tokens:list
+
+  $ csdx auth:tokens:add --alias mytoken
+
+  $ csdx auth:tokens:remove --alias mytoken
 ```
 
 _See code: [src/commands/auth/tokens/index.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-auth/src/commands/auth/tokens/index.ts)_
@@ -141,12 +142,12 @@ USAGE
 
 FLAGS
   -a, --alias=<value>          Alias (name) you want to assign to the token
-  -d, --delivery               Set this flag to save delivery token
   -e, --environment=<value>    Environment name for delivery token
   -k, --stack-api-key=<value>  Stack API Key
-  -m, --management             Set this flag to save management token
-  -t, --token=<value>          [env: TOKEN] Add the token name
   -y, --yes                    Use this flag to skip confirmation
+      --delivery               Set this flag to save delivery token
+      --management             Set this flag to save management token
+      --token=<value>          [env: TOKEN] Add the token name
 
 DESCRIPTION
   Adds management/delivery tokens to your session to use it with other CLI commands
@@ -177,17 +178,44 @@ EXAMPLES
 
 _See code: [src/commands/auth/tokens/add.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-auth/src/commands/auth/tokens/add.ts)_
 
+## `csdx auth:tokens:list`
+
+Lists all existing tokens added to the session
+
+```
+USAGE
+  $ csdx auth:tokens:list [--columns <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate]
+    [--no-header] [--output csv|json|yaml]
+
+TABLE FLAGS
+  --columns=<value>  Specify columns to display, comma-separated.
+  --csv              Output results in CSV format.
+  --filter=<value>   Filter rows by a column value (e.g., name=foo).
+  --no-header        Hide table headers in output.
+  --no-truncate      Prevent truncation of long text in columns.
+  --output=<option>  Specify output format: csv, json, or yaml.
+                     <options: csv|json|yaml>
+  --sort=<value>     Sort the table by a column. Use "-" for descending.
+
+DESCRIPTION
+  Lists all existing tokens added to the session
+
+EXAMPLES
+  $ csdx auth:tokens:list
+```
+
+_See code: [src/commands/auth/tokens/list.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-auth/src/commands/auth/tokens/list.ts)_
+
 ## `csdx auth:tokens:remove`
 
 Removes selected tokens
 
 ```
 USAGE
-  $ csdx auth:tokens:remove [-a <value>] [-i]
+  $ csdx auth:tokens:remove [-a <value>]
 
 FLAGS
   -a, --alias=<value>  Alias (name) of the token to delete.
-  -i, --ignore         Ignores if the token is not present.
 
 DESCRIPTION
   Removes selected tokens
@@ -202,14 +230,14 @@ _See code: [src/commands/auth/tokens/remove.ts](https://github.com/contentstack/
 
 ## `csdx auth:whoami`
 
-Display current users email address
+Display current user's email address
 
 ```
 USAGE
   $ csdx auth:whoami
 
 DESCRIPTION
-  Display current users email address
+  Display current user's email address
 
 ALIASES
   $ csdx whoami
@@ -276,45 +304,16 @@ EXAMPLES
   $ csdx auth:logout --yes
 ```
 
-## `csdx tokens`
-
-Lists all existing tokens added to the session
-
-```
-USAGE
-  $ csdx tokens [--columns <value>] [--sort <value>] [--filter <value>] [--csv] [--no-truncate]
-    [--no-header] [--output csv|json|yaml]
-
-TABLE FLAGS
-  --columns=<value>  Specify columns to display, comma-separated.
-  --csv              Output results in CSV format.
-  --filter=<value>   Filter rows by a column value (e.g., name=foo).
-  --no-header        Hide table headers in output.
-  --no-truncate      Prevent truncation of long text in columns.
-  --output=<option>  Specify output format: csv, json, or yaml.
-                     <options: csv|json|yaml>
-  --sort=<value>     Sort the table by a column. Use "-" for descending.
-
-DESCRIPTION
-  Lists all existing tokens added to the session
-
-ALIASES
-  $ csdx tokens
-
-EXAMPLES
-  $ csdx auth:tokens
-```
-
 ## `csdx whoami`
 
-Display current users email address
+Display current user's email address
 
 ```
 USAGE
   $ csdx whoami
 
 DESCRIPTION
-  Display current users email address
+  Display current user's email address
 
 ALIASES
   $ csdx whoami

@@ -2,7 +2,7 @@ import { cliux, log, handleAndLogError, messageHandler } from '@contentstack/cli
 import { BaseCommand } from '../../base-command';
 
 export default class WhoamiCommand extends BaseCommand<typeof WhoamiCommand> {
-  static description = 'Display current users email address';
+  static description = "Display current user's email address";
 
   static examples = ['$ csdx auth:whoami'];
 

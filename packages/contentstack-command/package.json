@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-command",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.8.6",
+  "version": "2.0.0",
   "author": "Contentstack",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,9 +14,9 @@
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
-    "@contentstack/cli-utilities": "~1.19.1",
+    "@contentstack/cli-utilities": "~2.0.0",
     "contentstack": "^3.27.0",
-    "@oclif/core": "^4.11.4"
+    "@oclif/core": "^4.11.14"
   },
   "overrides": {
     "@oclif/core": {
@@ -24,12 +24,12 @@
     }
   },
   "devDependencies": {
-    "@oclif/test": "^4.1.18",
+    "@oclif/test": "^4.1.20",
     "@types/mocha": "^8.2.3",
     "@types/node": "^14.18.63",
-    "eslint": "^10.5.0",
-    "eslint-config-oclif": "^6.0.15",
-    "eslint-config-oclif-typescript": "^3.1.13",
+    "eslint": "^10.6.0",
+    "eslint-config-oclif": "^6.0.175",
+    "eslint-config-oclif-typescript": "^3.1.14",
     "mocha": "10.8.2",
     "nyc": "^15.1.0",
     "ts-node": "^8.10.2",
@@ -61,5 +61,9 @@
     "bin": "csdx",
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-command/<%- commandPath %>"
   },
-  "repository": "contentstack/cli"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/contentstack/cli.git",
+    "directory": "packages/contentstack-command"
+  }
 }

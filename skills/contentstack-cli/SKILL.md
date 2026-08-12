@@ -1,6 +1,9 @@
-# Contentstack CLI Patterns
+---
+name: contentstack-cli
+description: Contentstack CLI development patterns, OCLIF commands, API integration, and authentication/configuration workflows. Use when working with Contentstack CLI plugins, OCLIF commands, CLI commands, or Contentstack API integration.
+---
 
-Contentstack CLI development patterns, OCLIF commands, API integration, and configuration workflows.
+# Contentstack CLI Development
 
 ## OCLIF Command Structure
 
