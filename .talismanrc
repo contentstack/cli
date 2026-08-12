@@ -3,3 +3,5 @@ fileignoreconfig:
 - filename: pnpm-lock.yaml
   checksum: 17d63745bf9d45e29848c2c512c31d7aab42c5aeb986996adf049905a31c7322
   version: '1.0'
+- filename: .github/workflows/release-production-pipeline.yml
+  checksum: dd858a2c2a3297c5651c2843ddae73ad0776a0386329200d01b051ddc489871e
